@@ -41,15 +41,15 @@ struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	bool adjust;		/* Round/adjust the region from polygons using the incs */
 	bool extend;		/* Extend region rather than quantize it */
 	char *codes;		/* Comma separated list of codes with modifiers */
-	unsigned int mode;	/* 0 = get -R, 1 = paint, 2 = dump */
+	uint32_t mode;	/* 0 = get -R, 1 = paint, 2 = dump */
 	double inc[4];		/* Increments for rounded region */
 	struct GMT_PEN pen;	/* Pen for outline [no outline] */
 	struct GMT_FILL fill;	/* Fill for polygons */
 };
 
-EXTERN_MSC unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode);
-EXTERN_MSC unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
-EXTERN_MSC void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot);
-EXTERN_MSC struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode);
+EXTERN_MSC uint32_t GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode);
+EXTERN_MSC uint32_t GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
+EXTERN_MSC void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, uint32_t plot);
+EXTERN_MSC struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], uint32_t mode);
 
 #endif /* _GMT_DCW_H */

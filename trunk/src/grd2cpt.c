@@ -53,7 +53,7 @@ struct GRD2CPT_CTRL {
 	} Out;
 	struct A {	/* -A+ */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
@@ -62,15 +62,15 @@ struct GRD2CPT_CTRL {
 	} C;
 	struct D {	/* -D[i|o] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} D;
 	struct E {	/* -E<nlevels> */
 		bool active;
-		unsigned int levels;
+		uint32_t levels;
 	} E;
 	struct F {	/* -F[R|r|h|c] */
 		bool active;
-		unsigned int model;
+		uint32_t model;
 	} F;
 	struct G {	/* -Glow/high for input CPT truncation */
 		bool active;
@@ -91,12 +91,12 @@ struct GRD2CPT_CTRL {
 	} N;
 	struct Q {	/* -Q[i|o] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} Q;
 	struct S {	/* -S<z_start>/<z_stop>/<z_inc> or -S<n_levels> */
 		bool active;
-		unsigned int mode;	/* 0 or 1 (-Sn) */
-		unsigned int n_levels;
+		uint32_t mode;	/* 0 or 1 (-Sn) */
+		uint32_t n_levels;
 		double low, high, inc;
 		char *file;
 	} S;
@@ -183,7 +183,7 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 	 */
 
 	int n;
-	unsigned int n_errors = 0, n_files[2] = {0, 0};
+	uint32_t n_errors = 0, n_files[2] = {0, 0};
 	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""};
 	char kind;
 	struct GMT_OPTION *opt = NULL;
@@ -326,7 +326,7 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 int GMT_grd2cpt (void *V_API, int mode, void *args)
 {
 	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
-	unsigned int row, col, j, cpt_flags = 0;
+	uint32_t row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
 
@@ -479,7 +479,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 
 	/* Decide how to make steps in z.  */
 	if (Ctrl->S.active && Ctrl->S.mode == 0) {	/* Use predefined levels and interval */
-		unsigned int i, j;
+		uint32_t i, j;
 
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
 		Ctrl->E.levels += urint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;

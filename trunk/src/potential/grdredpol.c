@@ -59,9 +59,9 @@ struct REDPOL_CTRL {
 	} E;
 	struct F {	/* -F */
 		bool active;
-		unsigned int	ncoef_row;
-		unsigned int	ncoef_col;
-		unsigned int	compute_n;	/* Compute ncoef_col */
+		uint32_t	ncoef_row;
+		uint32_t	ncoef_col;
+		uint32_t	compute_n;	/* Compute ncoef_col */
 		double	width;
 	} F;
 	struct G {	/* -G<file> */
@@ -76,8 +76,8 @@ struct REDPOL_CTRL {
 		bool active;
 	} N;
 	struct S {	/* -S, size of working grid */
-		unsigned int	nx;
-		unsigned int	ny;
+		uint32_t	nx;
+		uint32_t	ny;
 	} S;
 	struct T {	/* -T */
 		double	year;
@@ -1024,7 +1024,7 @@ int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct 
 	 */
 
 
-	unsigned int n_errors = 0, n_files = 0, pos = 0;
+	uint32_t n_errors = 0, n_files = 0, pos = 0;
 	int j;
 	char	p[GMT_LEN256] = {""};
 	struct	GMT_OPTION *opt = NULL;
@@ -1135,8 +1135,8 @@ int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct 
 int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	bool wrote_one = false;
-	unsigned int i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
-        unsigned int k, l, i3, n_jlon, n_jlat, n_coef;
+	uint32_t i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
+        uint32_t k, l, i3, n_jlon, n_jlat, n_coef;
 	int error = 0;
 	uint64_t ij, jj;
         double	tmp_d, sloni, slati, slonf, slatf, slonm, slatm;

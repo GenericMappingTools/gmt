@@ -60,7 +60,7 @@ struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coo
 };
 
 struct GMTSELECT_ZLIMIT {	/* Used to hold info for each -Z option given */
-	unsigned int col;	/* Column to test */
+	uint32_t col;	/* Column to test */
 	bool equal;	/* Just check if z == min withing 5 ULps */
 	double min;	/* Smallest z-value to pass through, for this column */
 	double max;	/* Largest z-value to pass through, for this column */
@@ -86,11 +86,11 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} D;
 	struct E {	/* -E<operators> , <op> = combination or f,n */
 		bool active;
-		unsigned int inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
+		uint32_t inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
 		bool active;
-		unsigned int end_mode;	/* Controls what happens beyond segment endpoints */
+		uint32_t end_mode;	/* Controls what happens beyond segment endpoints */
 		int mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Distance of influence for each line */
 		char unit;	/* Unit name */
@@ -106,13 +106,13 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} I;
 	struct N {	/* -N<maskvalues> */
 		bool active;
-		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
+		uint32_t mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		bool mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
 	struct Z {	/* -Z<min>/<max>[+c<col>] */
 		bool active;
-		unsigned int n_tests;	/* How many of these tests did we get */
-		unsigned int max_col;	/* The largest column we encountered */
+		uint32_t n_tests;	/* How many of these tests did we get */
+		uint32_t max_col;	/* The largest column we encountered */
 		struct GMTSELECT_ZLIMIT *limit;
 	} Z;
 	struct dbg {	/* -+step */
@@ -228,7 +228,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos, j, k, col, n_z_alloc = 0;
+	uint32_t n_errors = 0, pos, j, k, col, n_z_alloc = 0;
 	char ptr[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -420,8 +420,8 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 int GMT_gmtselect (void *V_API, int mode, void *args)
 {
 	int err;	/* Required by GMT_err_fail */
-	unsigned int base = 3, np[2] = {0, 0}, r_mode;
-	unsigned int side, col, id;
+	uint32_t base = 3, np[2] = {0, 0}, r_mode;
+	uint32_t side, col, id;
 	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX, error = 0;
 	bool inside, need_header = false, shuffle, just_copy_record = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;

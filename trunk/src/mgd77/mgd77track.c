@@ -71,7 +71,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 	} A;
 	struct C {	/* -C */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} C;
 	struct D {	/* -D */
 		bool active;
@@ -85,11 +85,11 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 	} F;
 	struct G {	/* -G */
 		bool active[2];
-		unsigned int value[2];
+		uint32_t value[2];
 	} G;
 	struct I {	/* -I */
 		bool active;
-		unsigned int n;
+		uint32_t n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
@@ -276,7 +276,7 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, mrk = 0;
+	uint32_t n_errors = 0, mrk = 0;
 	bool error = false;
 	int j;
 	char ms[GMT_LEN64] = {""}, mc[GMT_LEN64] = {""}, tmp[GMT_LEN64] = {""}, mfs[GMT_LEN64] = {""}, mf[GMT_LEN64] = {""};
@@ -546,7 +546,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, use, n_paths, argno, n_cruises = 0;
 	int this_julian = 0, last_julian, error = 0;
 	bool first, form, both = false;
-	unsigned int annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0}, dist_flag = 2;
+	uint32_t annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0}, dist_flag = 2;
 	
 	size_t n_alloc_c = GMT_SMALL_CHUNK;
 	
@@ -820,7 +820,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	GMT_map_basemap (GMT);
 	
 	if (Ctrl->A.mode > 0 && Ctrl->N.active) {	/* Plot leg names after clipping is terminated ( see -N) */
-		unsigned int id;
+		uint32_t id;
 		double size;
 		size = GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size;
 		for (id = 0; id < n_id; id++) annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat, cruise_id[id].angle, cruise_id[id].text, size);

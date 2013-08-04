@@ -220,7 +220,7 @@ int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k;
+	uint32_t n_errors = 0, k;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -296,8 +296,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	uint64_t n_read = 0;	/* Number of records read */
 	uint64_t node, node_0;		/* Grid indices */
 	uint64_t n_expected_fields;
-	unsigned int n_stages;	/* Number of stage rotations (poles) */
-	unsigned int row, col, kx, ky, m;
+	uint32_t n_stages;	/* Number of stage rotations (poles) */
+	uint32_t row, col, kx, ky, m;
 	int node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	int node_y_width;		/* Number of y-nodes covered by the seamount */
 	int d_col, d_row, col_0, row_0, nx, ny;
@@ -494,9 +494,9 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 
 			/* OK, this point is within our region, get node index */
 
-			col = (unsigned int)GMT_grd_x_to_col (GMT, c[kx], G_rad->header);
+			col = (uint32_t)GMT_grd_x_to_col (GMT, c[kx], G_rad->header);
 			yg = GMT_lat_swap (GMT, R2D * c[ky], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-			row = (unsigned int)GMT_grd_y_to_row (GMT, yg, G->header);
+			row = (uint32_t)GMT_grd_y_to_row (GMT, yg, G->header);
 			node = GMT_IJP (G->header, row, col);
 
 			if (!processed_node[node]) {	/* Have not added to the CVA at this node yet */

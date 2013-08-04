@@ -153,7 +153,7 @@ int GMT_rotconverter_parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -247,8 +247,8 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct EULER *a = NULL, *b = NULL;	/* Pointer to arrays of stage poles */
 
-	unsigned int col, k, stage;	/* Misc. counters */
-	unsigned int n_slash, n_out = 0, n_opt = 0, n_p, n_a = 1, n_b;
+	uint32_t col, k, stage;	/* Misc. counters */
+	uint32_t n_slash, n_out = 0, n_opt = 0, n_p, n_a = 1, n_b;
 	int last_sign;
 	bool confusion = false, online_stage = false;
 	int error = 0;			/* nonzero if arguments are inconsistent */

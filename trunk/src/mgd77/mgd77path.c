@@ -35,7 +35,7 @@ struct MGD77PATH_CTRL {	/* All control options for this program (except common a
 	} D;
 	struct I {	/* -I */
 		bool active;
-		unsigned int n;
+		uint32_t n;
 		char code[3];
 	} I;
 };
@@ -81,7 +81,7 @@ int GMT_mgd77path_parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -143,7 +143,7 @@ int GMT_mgd77path_parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, stru
 
 int GMT_mgd77path (void *V_API, int mode, void *args)
 {
-	unsigned int i, n_cruises = 0, n_paths;
+	uint32_t i, n_cruises = 0, n_paths;
 	int error = 0;
 	
 	char path[GMT_BUFSIZ] = {""}, **list = NULL;

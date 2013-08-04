@@ -35,7 +35,7 @@
 struct GRD2XYZ_CTRL {
 	struct GRD2XYZ_C {	/* -C[f|i] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} C;
 	struct GRD2XYZ_E {	/* -E[f][<nodata>] */
 		bool active;
@@ -122,7 +122,7 @@ int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, k = 0;
+	uint32_t n_errors = 0, n_files = 0, k = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -210,7 +210,7 @@ int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct G
 int GMT_grd2xyz (void *V_API, int mode, void *args)
 {
 	bool first = true;
-	unsigned int row, col, n_output;
+	uint32_t row, col, n_output;
 	int error = 0, write_error;
 	
 	uint64_t ij, gmt_ij, n_total = 0, n_suppressed = 0;

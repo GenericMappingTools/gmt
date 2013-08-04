@@ -27,15 +27,15 @@ enum GMT_enum_inside {
 
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {
-	unsigned int n_arg;	/* How many commands this macro represents */
+	uint32_t n_arg;	/* How many commands this macro represents */
 	char *name;	/* The macro name */
 	char **arg;	/* List of those commands */
 };
 
 /* Definition of structure use for finding optimal nx.ny for surface */
 struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
-	unsigned int nx;
-	unsigned int ny;
+	uint32_t nx;
+	uint32_t ny;
 	double factor;	/* Speed up by a factor of factor  */
 };
 

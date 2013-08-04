@@ -161,7 +161,7 @@ size_t GMT_strlcmp (char *str1, char *str2)
 	return i;
 }
 
-unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos, char *token)
+uint32_t GMT_strtok (const char *string, const char *sep, uint32_t *pos, char *token)
 {
 	/* Reentrant replacement for strtok that uses no static variables.
 	 * Breaks string into tokens separated by one of more separator
@@ -191,7 +191,7 @@ unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos,
 
 	/* Wind up *pos to next non-separating character */
 	while (string[i] && strchr (sep, (int)string[i])) i++;
-	*pos = (unsigned int)i;
+	*pos = (uint32_t)i;
 
 	return 1;
 }

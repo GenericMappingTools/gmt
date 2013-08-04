@@ -79,7 +79,7 @@ struct PSVELO_CTRL {
 	struct S {	/* -r<fill> */
 		bool active;
 		int symbol;
-		unsigned int readmode;
+		uint32_t readmode;
 		double scale, wedge_amp, conrad;
 		double fontsize, confidence;
 		struct GMT_FILL fill;
@@ -168,7 +168,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	int n;
 	bool no_size_needed, n_set, got_A = false;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};

@@ -37,7 +37,7 @@ struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
 		bool active;
-		unsigned int mode;	/* 1 turns off all labels */
+		uint32_t mode;	/* 1 turns off all labels */
 		double interval;
 		double single_cont;
 	} A;
@@ -67,7 +67,7 @@ struct PSCONTOUR_CTRL {
 	} N;
 	struct S {	/* -S[p|t] */
 		bool active;
-		unsigned int mode;	/* 0 skip points; 1 skip triangles */
+		uint32_t mode;	/* 0 skip points; 1 skip triangles */
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
 		bool active;
@@ -95,7 +95,7 @@ struct PSCONTOUR_CTRL {
 struct SAVE {
 	double *x, *y;
 	double cval;
-	unsigned int n;
+	uint32_t n;
 	struct GMT_PEN pen;
 	bool do_it, high;
 };
@@ -113,7 +113,7 @@ struct PSCONTOUR {
 	double val;
 	double angle;
 	size_t n_alloc;
-	unsigned int nl;
+	uint32_t nl;
 	bool do_tick;
 	struct PSCONTOUR_LINE *L;
 	char type;
@@ -161,13 +161,13 @@ void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, unsigned int n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, unsigned int **v, unsigned int **cindex)
+int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, uint32_t n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, uint32_t **v, uint32_t **cindex)
 {
 	/* This routine finds all the contour crossings for this triangle.  Each contour consists of
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
 	 */
 	 
-	unsigned int i, j, k, k2, i1, nx, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
+	uint32_t i, j, k, k2, i1, nx, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
 	bool ok;
 	double xx[3], yy[3], zz[3], zmin, zmax, dz, frac, *xout = NULL, *yout = NULL, *zout = NULL, *ztmp = NULL;
 	size_t n_alloc;
@@ -195,9 +195,9 @@ int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, unsigned 
 	yout = GMT_memory (GMT, NULL, n_alloc, double);
 	ztmp = GMT_memory (GMT, NULL, n_alloc, double);
 	zout = GMT_memory (GMT, NULL, n_alloc, double);
-	vout = GMT_memory (GMT, NULL, n_alloc, unsigned int);
-	ctmp = GMT_memory (GMT, NULL, nx, unsigned int);
-	cind = GMT_memory (GMT, NULL, nx, unsigned int);
+	vout = GMT_memory (GMT, NULL, n_alloc, uint32_t);
+	ctmp = GMT_memory (GMT, NULL, nx, uint32_t);
+	cind = GMT_memory (GMT, NULL, nx, uint32_t);
 
 	/* Fill out array zout which holds the nx contour levels */
 
@@ -276,13 +276,13 @@ void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[], unsigned int mode)
+void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, uint32_t nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[], uint32_t mode)
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones.
 	
 	   Note: mode = 1 (plot only), 2 (save labels only), 3 (both).
 	*/
-	unsigned int np, pol, pol2, j, kk, inside, n_ticks, form;
+	uint32_t np, pol, pol2, j, kk, inside, n_ticks, form;
 	int way, k;
 	double add, dx, dy, x_back, y_back, x_end, y_end, sa, ca, s;
 	double x_mean, y_mean, a, xmin, xmax, ymin, ymax, length;
@@ -451,7 +451,7 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, id;
+	uint32_t n_errors = 0, id;
 	int k, j, n;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -637,9 +637,9 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	int add, error = 0;
 	bool two_only = false, make_plot, skip = false, is_closed, skip_points, skip_triangles;
 	
-	unsigned int pscontour_sum, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
-	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped = 0, n_out;
-	unsigned int i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
+	uint32_t pscontour_sum, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
+	uint32_t label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped = 0, n_out;
+	uint32_t i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
 	
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
 	
@@ -822,7 +822,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	
 	if (skip_triangles) {	/* Must check if triangles are outside plot region */
 		for (k = i = 0; i < np; i++) {	/* For all triangles */
-			k2 = (unsigned int)k;
+			k2 = (uint32_t)k;
 			for (k3 = n_out = 0; k3 < 3; k3++, k++) {
 				if (GMT_cart_outside (GMT, x[ind[k]], y[ind[k]])) n_out++;	/* Count how many vertices are outside */
 			}
@@ -1047,8 +1047,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				/* Find vertices with the lowest and highest values */
 
 				for (k = 1, low = high = 0; k < 3; k++) {
-					if (zz[k] < zz[low])   low = (unsigned int)k;
-					if (zz[k] > zz[high]) high = (unsigned int)k;
+					if (zz[k] < zz[low])   low = (uint32_t)k;
+					if (zz[k] > zz[high]) high = (uint32_t)k;
 				}
 
 				/* Paint the piece delimited by the low node and the first contour */
@@ -1302,7 +1302,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				}
 				if (Ctrl->D.active) {
 					size_t count;
-					unsigned int closed;
+					uint32_t closed;
 					double *xtmp = NULL, *ytmp = NULL;
 					/* Must first apply inverse map transform */
 					xtmp = GMT_memory (GMT, NULL, n, double);

@@ -91,7 +91,7 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 	} W;
 	struct Z {	/* -Zu|<scale> */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double scale;
 	} Z;
 };
@@ -189,7 +189,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 	 */
 
 	int n;
-	unsigned int n_errors = 0, n_files = 0, k;
+	uint32_t n_errors = 0, n_files = 0, k;
 	double range;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -342,7 +342,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 {
 	bool find_mean = false, do_fill = false;
 	bool automatic = false, sector_plot = false, windrose = true;
-	unsigned int n_bins, n_modes, form, n_in, half_only = 0, bin;
+	uint32_t n_bins, n_modes, form, n_in, half_only = 0, bin;
 	int error = 0, k, n_annot, n_alpha, sbin;
 	
 	uint64_t n = 0, i;
@@ -679,7 +679,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->C.active) {
-		unsigned int this_mode;
+		uint32_t this_mode;
 		if (!Ctrl->W.active[1]) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* No separate pen specified; use same as for rose outline */
 		if (!Ctrl->C.file) {	/* Not given, calculate and use mean direction only */
 			find_mean = true;
@@ -694,7 +694,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 			P = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */
-			n_modes = (unsigned int)P->n_records;
+			n_modes = (uint32_t)P->n_records;
 			mode_direction = P->segment[0]->coord[GMT_X];
 			mode_length = P->segment[0]->coord[GMT_Y];
 		}

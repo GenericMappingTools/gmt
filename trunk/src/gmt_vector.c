@@ -29,10 +29,10 @@
 
 struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functions */
 	double value;
-	unsigned int order;
+	uint32_t order;
 };
 
-int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m, double *d, double *v, double *b, double *z, unsigned int *nrots) {
+int GMT_jacobi (struct GMT_CTRL *GMT, double *a, uint32_t n, uint32_t m, double *d, double *v, double *b, double *z, uint32_t *nrots) {
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -123,7 +123,7 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
  * Revised:	PW: 12-MAR-1998 for GMT 3.1
  * Revision by WHF Smith, March 03, 2000, to speed up loop indexes.
  */
-	unsigned int p, q, pp, pq, mp1, pm, qm, nsweeps, j, jm, i, k;
+	uint32_t p, q, pp, pq, mp1, pm, qm, nsweeps, j, jm, i, k;
 	double sum, threshold, g, h, t, theta, c, s, tau;
 
 	/* Begin by initializing v, b, d, and z.  v = identity matrix,
@@ -276,7 +276,7 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
 	return(0);
 }
 
-int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag)
+int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, uint32_t n, uint32_t nstore, bool itriag)
 {
 
 /* subroutine gauss, by william menke */
@@ -292,15 +292,15 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
  *					on true useful when solving
  *					multiple systems with same a
  */
-	static unsigned int l1;
-	unsigned int *line = NULL, i = 0, j, k, l, j1, j2, *isub = NULL;
+	static uint32_t l1;
+	uint32_t *line = NULL, i = 0, j, k, l, j1, j2, *isub = NULL;
 	int iet, ieb;
 	size_t n_alloc = 0;
 	double big, testa, b, sum;
 
 	iet = 0;  /* initial error flags, one for triagularization*/
 	ieb = 0;  /* one for backsolving */
-	GMT_malloc2 (GMT, line, isub, n, &n_alloc, unsigned int);
+	GMT_malloc2 (GMT, line, isub, n, &n_alloc, uint32_t);
 
 /* triangularize the matrix a */
 /* replacing the zero elements of the triangularized matrix */
@@ -402,7 +402,7 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 
 /* Modified from similar function in Numerical Recipes */
 
-int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigned int ndim, double *b, unsigned int m_in, unsigned int mdim)
+int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, uint32_t n_in, uint32_t ndim, double *b, uint32_t m_in, uint32_t mdim)
 {
 	int i, j, k, l, ll, *ipiv = NULL, *indxc = NULL, *indxr = NULL, irow = 0, icol = 0;
 	int n = n_in, m = m_in;
@@ -500,7 +500,7 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigne
 
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
-int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
+int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, uint32_t m_in, uint32_t n_in, double *w, double *v)
 {
 	/* void svdcmp(double *a,int m,int n,double *w,double *v) */
 	
@@ -716,18 +716,18 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	return (GMT_NOERROR);
 }
 
-void gmt_mat_trans (double a[], unsigned int mrow, unsigned int ncol, double at[])
+void gmt_mat_trans (double a[], uint32_t mrow, uint32_t ncol, double at[])
 {
 	/* Return the transpose of a */
-	unsigned int i, j;
+	uint32_t i, j;
 	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
 }
 
-void gmt_mat_mult (double a[], unsigned int mrow, unsigned int ncol, double b[], unsigned int kcol, double c[])
+void gmt_mat_mult (double a[], uint32_t mrow, uint32_t ncol, double b[], uint32_t kcol, double c[])
 {
 	/* Matrix multiplication a * b = c */
 	
-	unsigned int i, j, k, ij;
+	uint32_t i, j, k, ij;
 	
 	for (i = 0; i < kcol; i++) {
 		for (j = 0; j < mrow; j++) {
@@ -760,10 +760,10 @@ int compare_singular_values (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
+int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, uint32_t m, uint32_t n, double *v, double *w, double *b, uint32_t k, double *x, double *cutoff, uint32_t mode)
 {
 	double *ut = NULL, sing_max, total_variance, variance = 0.0, limit;
-	unsigned int i, j, n_use = 0;
+	uint32_t i, j, n_use = 0;
 
 	/* allocate work space */
 	
@@ -786,9 +786,9 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		 * so that the singular values are the individual variace contributions. */
 		struct GMT_SINGULAR_VALUE {
 			double value;
-			unsigned int order;
+			uint32_t order;
 		} *eigen;
-		unsigned int n_eigen = 0;
+		uint32_t n_eigen = 0;
 		eigen = GMT_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
 		for (i = 0; i < n; i++) {	/* Load in original order from w */
 			eigen[i].value = w[i];
@@ -797,7 +797,7 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), compare_singular_values);
 		/* Need desired variance level in % */
 		limit = (*cutoff) * total_variance * 0.01;
-		if (mode == 2) n_eigen = (unsigned int)lrint (*cutoff);
+		if (mode == 2) n_eigen = (uint32_t)lrint (*cutoff);
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if ((mode == 1 && variance <= limit) || (mode == 2 && i < n_eigen)) {	/* Still within specified limit so we add this singular value */
 				variance += eigen[i].value;
@@ -909,9 +909,9 @@ void GMT_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
 	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
 }
 
-void GMT_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3])
+void GMT_matrix_vect_mult (struct GMT_CTRL *GMT, uint32_t dim, double a[3][3], double b[3], double c[3])
 {	/* c = A * b for 2 or 3 D */
-	unsigned int i, j;
+	uint32_t i, j;
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
 }
@@ -1021,7 +1021,7 @@ void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *
 	if (degrees) *theta *= R2D;
 }
 
-uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode)
+uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, uint32_t mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
@@ -1032,7 +1032,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	 * Returns the new number of points (original plus auxiliary).
 	 */
 
-	unsigned int k = 1;
+	uint32_t k = 1;
 	bool meridian;
 	size_t n_alloc = 0;
 	uint64_t i, j, n_tmp, n_step = 0;
@@ -1138,7 +1138,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	return (n_tmp);
 }
 
-uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode)
+uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, uint32_t mode)
 {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
@@ -1149,7 +1149,7 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 	 * Returns the new number of points (original plus auxiliary).
 	 */
 
-	unsigned int k = 1;
+	uint32_t k = 1;
 	size_t n_alloc = 0;
 	uint64_t i, j, n_tmp, n_step = 0;
 	double *x_tmp = NULL, *y_tmp = NULL, *x = NULL, *y = NULL, c;
@@ -1228,7 +1228,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 
 	bool meridian, new_pair;
 	uint64_t last_row_in = 0, row_in, row_out, n_out;
-	unsigned int k;
+	uint32_t k;
 	double dist_out, gap, d_lon = 0.0, L = 0.0, frac_to_a, frac_to_b, minlon, maxlon, a[3], b[3], c[3];
 	double P[3], Rot0[3][3], Rot[3][3], total_angle_rad = 0.0, angle_rad, ya = 0.0, yb = 0.0;
 	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;

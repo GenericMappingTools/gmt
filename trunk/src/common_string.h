@@ -52,7 +52,7 @@ extern "C" {
 #	define PATH_MAX 1024
 #endif
 
-EXTERN_MSC unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *start, char *token);
+EXTERN_MSC uint32_t GMT_strtok (const char *string, const char *sep, uint32_t *start, char *token);
 EXTERN_MSC void GMT_chop (char *string);
 EXTERN_MSC char *GMT_chop_ext (char *string);
 EXTERN_MSC void GMT_strstrip(char *string, bool strip_leading);

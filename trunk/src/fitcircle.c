@@ -84,11 +84,11 @@ struct FITCIRCLE_CTRL {	/* All control options for this program (except common a
 	/* active is true if the option has been activated */
 	struct L {	/* -L[<n>] */
 		bool active;
-		unsigned int norm;	/* 1, 2, or 3 (both) */
+		uint32_t norm;	/* 1, 2, or 3 (both) */
 	} L;
 	struct S {	/* -S[<lat] */
 		bool active;
-		unsigned int mode;	/* 0 = find latitude, 1 = use specified latitude */
+		uint32_t mode;	/* 0 = find latitude, 1 = use specified latitude */
 		double lat;	/* 0 for great circle */
 	} S;
 };
@@ -139,7 +139,7 @@ int GMT_fitcircle_parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -322,7 +322,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 int GMT_fitcircle (void *V_API, int mode, void *args)
 {
 	bool greenwich = false, allocate;
-	unsigned int imin, imax, nrots, j, k, n, np;
+	uint32_t imin, imax, nrots, j, k, n, np;
 	int error = 0;
 	uint64_t i, n_data;
 	size_t n_alloc;

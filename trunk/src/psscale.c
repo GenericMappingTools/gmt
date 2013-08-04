@@ -47,7 +47,7 @@ double GMT_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T)
 struct PSSCALE_CTRL {
 	struct A {	/* -A */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} A;
 	struct C {	/* -C<cptfile> */
 		bool active;
@@ -60,7 +60,7 @@ struct PSSCALE_CTRL {
 	} D;
 	struct E {	/* -E[b|f][<length>][+n[<text>]] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double length;
 		char *text;
 	} E;
@@ -77,7 +77,7 @@ struct PSSCALE_CTRL {
 	} M;
 	struct N {	/* -N<dpi>|p */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double dpi;
 	} N;
 	struct L {	/* -L[i][<gap>] */
@@ -105,7 +105,7 @@ struct PSSCALE_CTRL {
 
 void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSCALE_CTRL *C;
-	unsigned int k;
+	uint32_t k;
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
 	
@@ -205,7 +205,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n, pos, n_errors = 0, n_files = 0;
+	uint32_t n, pos, n_errors = 0, n_files = 0;
 	int j;
 	char flag, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	char txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
@@ -239,7 +239,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				n = (unsigned int)strlen (opt->arg) - 1;
+				n = (uint32_t)strlen (opt->arg) - 1;
 				flag = opt->arg[n];
 				if (flag == 'h' || flag == 'H') {
 					Ctrl->D.horizontal = true;
@@ -393,9 +393,9 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n)
+double get_z (struct GMT_PALETTE *P, double x, double *width, uint32_t n)
 {
-	unsigned int i = 0;
+	uint32_t i = 0;
 	double tmp;
 
 	tmp = width[0];
@@ -406,7 +406,7 @@ double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n)
 
 void fix_format (char *unit, char *format)
 {
-	unsigned int i, j;
+	uint32_t i, j;
 	char text[GMT_LEN64] = {""}, new_format[GMT_BUFSIZ] = {""};
 
 	/* Check if annotation units should be added */
@@ -432,13 +432,13 @@ void fix_format (char *unit, char *format)
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
 
 void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, \
-	double bit_dpi, unsigned int N_mode, unsigned int flip, bool B_set, bool equi, bool horizontal, bool logscl, bool intens, \
-	double *max_intens, bool skip_lines, unsigned int extend, \
+	double bit_dpi, uint32_t N_mode, uint32_t flip, bool B_set, bool equi, bool horizontal, bool logscl, bool intens, \
+	double *max_intens, bool skip_lines, uint32_t extend, \
 	double e_length, char *nan_text, double gap, bool interval_annot, bool monochrome, struct T Ctrl_T)
 {
-	unsigned int i, ii, id, j, nb, ndec = 0, dec, p_val, depth, Label_justify, form;
-	unsigned int cap = PSL->internal.line_cap, join = PSL->internal.line_join;
-	unsigned int nx = 0, ny = 0, nm, barmem, k, justify, l_justify, n_use_labels = 0;
+	uint32_t i, ii, id, j, nb, ndec = 0, dec, p_val, depth, Label_justify, form;
+	uint32_t cap = PSL->internal.line_cap, join = PSL->internal.line_join;
+	uint32_t nx = 0, ny = 0, nm, barmem, k, justify, l_justify, n_use_labels = 0;
 	int this_just;
 	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""};
@@ -1113,7 +1113,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 int GMT_psscale (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psscale task */
 	int error = 0;
-	unsigned int i;
+	uint32_t i;
 
 	char text[GMT_LEN256] = {""};
 

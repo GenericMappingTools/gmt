@@ -201,7 +201,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n;
+	uint32_t n_errors = 0, n;
 	char txt[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;

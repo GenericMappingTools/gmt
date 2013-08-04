@@ -69,15 +69,15 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 		bool replace;
 		bool interpolate;
 		bool ignore_verify;
-		unsigned int mode;
-		unsigned int kind;
+		uint32_t mode;
+		uint32_t kind;
 		bool e77_skip_mode[N_E77_MODES];
 		char *file;
 		double parameters[N_PAR];
 	} A;
 	struct C {	/* -C */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} C;
 	struct D {	/* -D */
 		bool active;
@@ -225,7 +225,7 @@ int decode_A_options (int mode, char *line, char *file, double parameters[])
 
 int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[])
 {	/* -I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\" */
-	unsigned int i = 0, k, error, pos = 0;
+	uint32_t i = 0, k, error, pos = 0;
 	char p[GMT_BUFSIZ] = {""};
 	
 	while (i < 7 && GMT_strtok (line, "/", &pos, p)) {	/* Process the 7 items */
@@ -326,7 +326,7 @@ int GMT_mgd77manage_parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n_cruises = 0;
+	uint32_t n_errors = 0, k, n_cruises = 0;
 	bool got_table, got_grid, strings;
 	nc_type c_nc_type;
 	char file[GMT_BUFSIZ] = {""};
@@ -503,7 +503,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	bool transform, verified, strings = false, got_grid, got_table;
 	bool two_cols = false, constant, ok_to_read = true, interpolate = false;
 	
-	unsigned int MTF_col = 1, pos, c_kind = 0, row, col;
+	uint32_t MTF_col = 1, pos, c_kind = 0, row, col;
 	uint64_t argno, n_expected_fields, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
 	size_t n_alloc = GMT_CHUNK;
 	
@@ -972,8 +972,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 					colvalue[rec] = GMT_get_bcr_z (GMT, G, x, y);
 				}
 				else {	/* Take IMG nearest node and do special stuff (values already set during read) */
-					col = (unsigned int)GMT_grd_x_to_col (GMT, x, G->header);
-					row = (unsigned int)GMT_grd_y_to_row (GMT, y, G->header);
+					col = (uint32_t)GMT_grd_x_to_col (GMT, x, G->header);
+					row = (uint32_t)GMT_grd_y_to_row (GMT, y, G->header);
 					colvalue[rec] = G->data[GMT_IJP(G->header,row,col)];
 				}
 				n_sampled++;
@@ -1063,7 +1063,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			int number, type, it, id, key, n_E77_flags, day, month, year, item;
 			int n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0, old_flags;
 			uint64_t n_recs, rec, from, to;
-			unsigned int *flags = NULL, pattern;
+			uint32_t *flags = NULL, pattern;
 			size_t length;
 			bool has_time;
 			struct MGD77_HEADER_PARAMS *P = NULL;
@@ -1173,7 +1173,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			GMT_rewind (fp_e);
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U));	/* Read until we get to Header record section */
 			
-			flags = GMT_memory (GMT, NULL, D->H.n_records, unsigned int);
+			flags = GMT_memory (GMT, NULL, D->H.n_records, uint32_t);
 			n_E77_flags = n_E77_headers = n_E77_scales = n_E77_offsets = n_E77_recalcs = 0;
 
 			MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */

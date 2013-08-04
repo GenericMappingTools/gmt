@@ -19,10 +19,10 @@
 #include "okbfuns.h"
 
 double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, bool is_grav,
-		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int pm, struct LOC_OR *loc_or) {
+		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, uint32_t km, uint32_t pm, struct LOC_OR *loc_or) {
 
 	double okb = 0, tot = 0, c_tet = 0, s_tet = 0, c_phi = 0, s_phi = 0;
-	unsigned int i, l, k, cnt_v = 0, n_vert;
+	uint32_t i, l, k, cnt_v = 0, n_vert;
 	bool top = true;
 
 /* x_o, y_o, z_o are the coordinates of the observation point
@@ -89,13 +89,13 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 }
 
 /* ---------------------------------------------------------------------- */
-void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
+void rot_17 (uint32_t n_vert, bool top, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 	/* Rotates coordinates by teta and phi acording to equation (17) of Okabe */
 	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */
 	double xi, xj, xk, yi, yj, yk, zi, zj, zk, v, x, y, z;
 	double r, r2, r_3d, Sxy, Szx, Syz;
-	unsigned int i = 0, j, k, l;
+	uint32_t i = 0, j, k, l;
 
 	loc_or[n_vert].x = loc_or[0].x;		loc_or[n_vert].y = loc_or[0].y;
 	loc_or[n_vert].z = loc_or[0].z;		/* Last point = first point */
@@ -131,10 +131,10 @@ void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
 }
 
 /* ---------------------------------------------------------------------- */
-double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double *c_phi) {
+double okb_grv (uint32_t n_vert, struct LOC_OR *loc_or, double *c_phi) {
 /*  Computes the gravity anomaly due to a facet. */
 
-	unsigned int l;
+	uint32_t l;
 	double x1, x2, y1, y2, dx, dy, r, c_psi, s_psi, grv = 0, grv_p;
 
 	if (fabs(*c_phi) < FLT_EPSILON) return 0.0;
@@ -169,11 +169,11 @@ double eq_30 (double c, double s, double x, double y, double z) {
 }
 
 /* ---------------------------------------------------------------------- */
-double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
+double okb_mag (uint32_t n_vert, uint32_t km, uint32_t pm, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 /*  Computes the total magnetic anomaly due to a facet. */
 
-	unsigned int i;
+	uint32_t i;
 	double qsi1, qsi2, eta1, eta2, z2, z1, dx, dy, kx, ky, kz, v, r, c_psi, s_psi;
 	double ano = 0, ano_p, mag_fac, xi, xi1, yi, yi1, mx, my, mz, r_1, tg_psi, auxil;
 

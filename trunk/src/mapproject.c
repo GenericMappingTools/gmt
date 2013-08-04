@@ -74,8 +74,8 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	} F;
 	struct G {	/* -G<lon0>/<lat0>[d|e|f|k|m|M|n|s|c|C] */
 		bool active;
-		unsigned int mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
-		unsigned int sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
+		uint32_t mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
+		uint32_t sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		double lon, lat;	/* Fixed point of reference */
 		char unit;
 	} G;
@@ -84,18 +84,18 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	} I;
 	struct L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
 		bool active;
-		unsigned int mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
-		unsigned int sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
+		uint32_t mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
+		uint32_t sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		char *file;	/* Name of file with lines */
 		char unit;
 	} L;
 	struct N {	/* -N */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} N;
 	struct Q {	/* -Q[e|d] */
 		bool active;
-		unsigned int mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
+		uint32_t mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
 	} Q;
 	struct S {	/* -S */
 		bool active;
@@ -203,7 +203,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_slash,k, n_errors = 0, slash;
+	uint32_t n_slash,k, n_errors = 0, slash;
 	int n;
 	size_t last;
 	bool geodetic_calc = false;
@@ -423,7 +423,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	bool line_start = true, do_geo_conv = false;
 	bool geodetic_calc = false, datum_conv_only = false, double_whammy = false;
 	
-	unsigned int i = 0, pos;
+	uint32_t i = 0, pos;
 	
 	uint64_t row, n_read_in_seg, seg, n_read = 0, n = 0, k, n_output = 0;
 

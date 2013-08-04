@@ -53,7 +53,7 @@ struct SPHINTERPOLATE_CTRL {
 	} I;
 	struct Q {	/* -Q<interpolation> */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double value[2];
 	} Q;
 	struct T {	/* -T for variable tension */
@@ -138,7 +138,7 @@ int GMT_sphinterpolate_parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	int m;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -215,7 +215,7 @@ int GMT_sphinterpolate_parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *
 
 int GMT_sphinterpolate (void *V_API, int mode, void *args)
 {
-	unsigned int row, col;
+	uint32_t row, col;
 	int error = 0;
 
 	size_t n_alloc = 0;

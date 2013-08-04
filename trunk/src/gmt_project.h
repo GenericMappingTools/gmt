@@ -178,11 +178,11 @@ struct GMT_THREE_D {
 	double x_off, y_off;			/* Offsets to the final projected coordinates */
 	double sign[4];		/* Used to determine direction of tickmarks etc */
 	double level;		/* Indicates the last level of the perspective plane (if any) */
-	unsigned int view_plane;	/* Determines on which plane needs to be projected */
+	uint32_t view_plane;	/* Determines on which plane needs to be projected */
 	int plane;		/* Indicates which last plane was plotted in perspective (-1 = none) */
-	unsigned int quadrant;	/* quadrant we're looking from */
-	unsigned int z_axis;	/* Which z-axis to draw. */
-	unsigned int face[3];	/* Tells if this facet has normal in pos direction */
+	uint32_t quadrant;	/* quadrant we're looking from */
+	uint32_t z_axis;	/* Which z-axis to draw. */
+	uint32_t face[3];	/* Tells if this facet has normal in pos direction */
 	bool draw[4];	/* axes to draw */
 	bool fixed;		/* true if we want a given point to be fixed in the projection [for animations] */
 	bool world_given;	/* true if a fixed world point was given in -E ..+glon/lat/z */
@@ -207,7 +207,7 @@ struct GMT_DATUM_CONV {
 
 struct GMT_PROJ4 {	/* Used to assign proj4 projections from GMT projections */
 	char *name;
-	unsigned int id;
+	uint32_t id;
 };
 
 struct GMT_PROJ {
@@ -238,7 +238,7 @@ struct GMT_PROJ {
 	bool JZ_set;		/* true if -Jz|Z was set */
 	bool GMT_convert_latitudes;	/* true if using spherical code with authalic/conformal latitudes */
 	bool inv_coordinates;	/* true if -fp[unit] was given and we must first recover lon,lat during reading */
-	unsigned int n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
+	uint32_t n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
 	enum GMT_enum_units inv_coord_unit;		/* Index to scale that converts input map coordinates to meter before inverting for lon,lat */
@@ -262,7 +262,7 @@ struct GMT_PROJ {
 	double DIST_KM_PR_DEG;		/* Current spherical approximations to convert degrees to km even if -J was not set */
 	double half_ECC, i_half_ECC;	/* 0.5 * ECC and 0.5 / ECC */
 	double one_m_ECC2, i_one_m_ECC2; /* 1.0 - ECC2 and inverse */
-	unsigned int gave_map_width;	/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
+	uint32_t gave_map_width;	/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
 
 	uint64_t n_geodesic_calls;	/* Number of calls for geodesics in this session */
 	uint64_t n_geodesic_approx;	/* Number of calls for geodesics in this session that exceeded iteration limit */
@@ -271,7 +271,7 @@ struct GMT_PROJ {
 
 	/* Linear plot parameters */
 
-	unsigned int xyz_projection[3];	/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
+	uint32_t xyz_projection[3];	/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
 	bool xyz_pos[3];		/* true if x,y,z-axis increases in normal positive direction */
 	bool compute_scale[3];	/* true if axes lengths were set rather than scales */
 	double xyz_pow[3];		/* For GMT_POW projection */
@@ -302,7 +302,7 @@ struct GMT_PROJ {
 	double t_i1, t_i2, t_i3, t_i4, t_i5;
 	double t_r, t_ir;		/* Short for GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor and its inverse */
 	int utm_hemisphere;	/* -1 for S, +1 for N, 0 if to be set by -R */
-	unsigned int utm_zonex;	/* The longitude component 1-60 */
+	uint32_t utm_zonex;	/* The longitude component 1-60 */
 	char utm_zoney;			/* The latitude component A-Z */
 
 	/* Lambert Azimuthal Equal-Area Projection */
@@ -383,7 +383,7 @@ struct GMT_PROJ {
         double g_xmin, g_xmax;
         double g_ymin, g_ymax;
 
-        unsigned int g_debug;
+        uint32_t g_debug;
         int g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
 
 	/* Polar (cylindrical) projection */
@@ -434,19 +434,19 @@ enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis
 
 struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	double interval;		/* Distance between ticks in user units */
-	unsigned int parent;		/* Id of axis this item belongs to (0,1,2) */
+	uint32_t parent;		/* Id of axis this item belongs to (0,1,2) */
 	bool active;			/* true if we want to use this item */
 	bool special;		/* true if custom interval annotations */
-	unsigned int flavor;		/* Index into month/day name abbreviation array (0-2) */
+	uint32_t flavor;		/* Index into month/day name abbreviation array (0-2) */
 	bool upper_case;		/* true if we want upper case text (used with flavor) */
 	char type;			/* One of a, A, i, I, f, F, g, G */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
 
 struct GMT_PLOT_AXIS {		/* Information for one time axis */
-	unsigned int id;		/* 0 (x), 1(y), or 2(z) */
-	unsigned int type;		/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
-	unsigned int special;		/* 0, GMT_CUSTOM, GMT_CPT */
+	uint32_t id;		/* 0 (x), 1(y), or 2(z) */
+	uint32_t type;		/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
+	uint32_t special;		/* 0, GMT_CUSTOM, GMT_CPT */
 	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_LEN256];	/* Label of the axis */
@@ -468,10 +468,10 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool primary;			/* true if current axis is primary, false if secondary */
 	bool slash;			/* true if slashes were used in the -B argument */
 	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
-	unsigned int set_frame[2];	/* 1 if a -B<WESNframe> setting was given */
-	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
-	unsigned int side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
-	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
+	uint32_t set_frame[2];	/* 1 if a -B<WESNframe> setting was given */
+	uint32_t horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
+	uint32_t side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
+	uint32_t z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
 };
 
 #endif /* _GMT_PROJECT_H */

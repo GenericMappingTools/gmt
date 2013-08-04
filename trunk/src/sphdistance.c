@@ -159,7 +159,7 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -237,7 +237,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	bool first = false, periodic, duplicate_col;
 	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
-	unsigned int row, col, p_col, west_col, east_col, nx1;
+	uint32_t row, col, p_col, west_col, east_col, nx1;
 	uint64_t n_dup = 0, n_set = 0, side, ij, node, n = 0;
 	uint64_t vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 

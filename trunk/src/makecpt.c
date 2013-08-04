@@ -36,7 +36,7 @@
 
 #define GMT_PROG_OPTIONS "->Vh"
 
-unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
+uint32_t GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
 
@@ -47,7 +47,7 @@ struct MAKECPT_CTRL {
 	} Out;
 	struct A {	/* -A+ */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
@@ -56,11 +56,11 @@ struct MAKECPT_CTRL {
 	} C;
 	struct D {	/* -D[i|o] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} D;
 	struct F {	/* -F[r|R|h|c] */
 		bool active;
-		unsigned int model;
+		uint32_t model;
 	} F;
 	struct G {	/* -Glow/high for input CPT truncation */
 		bool active;
@@ -82,7 +82,7 @@ struct MAKECPT_CTRL {
 	} T;
 	struct Q {	/* -Q[i|o] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} Q;
 	struct W {	/* -W */
 		bool active;
@@ -161,7 +161,7 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 	 */
 
 	int n;
-	unsigned int n_errors = 0, n_files[2] = {0, 0};
+	uint32_t n_errors = 0, n_files[2] = {0, 0};
 	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 
@@ -266,7 +266,7 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 int GMT_makecpt (void *V_API, int mode, void *args)
 {
 	int i, nz, error = 0;
-	unsigned int cpt_flags = 0;
+	uint32_t cpt_flags = 0;
 
 	double *z = NULL;
 

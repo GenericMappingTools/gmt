@@ -80,16 +80,16 @@ struct PSMECA_CTRL {
 	struct S {	/* -S<format><scale>[/fontsize[/justify/offset/angle/form]] */
 		bool active;
 		bool no_label;
-		unsigned int readmode;
-		unsigned int plotmode;
-		unsigned int justify;
+		uint32_t readmode;
+		uint32_t plotmode;
+		uint32_t justify;
 		double scale;
 		double fontsize, offset;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
 		bool active;
-		unsigned int n_plane;
+		uint32_t n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct Z2 {	/* -z<pen>] */
@@ -261,7 +261,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	bool no_size_needed;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;

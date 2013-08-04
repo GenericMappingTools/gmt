@@ -251,7 +251,7 @@ int GMT_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	return (GMT_NOERROR);
 }
 
-int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	FILE *fp = NULL;
@@ -261,8 +261,8 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	float *tFloat = NULL;
 	bool piping = false, swap_all = false, is_float = false;
 	int j, first_col, last_col, first_row, last_row;
-	unsigned int width_in, height_in;
-	unsigned int i, width_out, *actual_col = NULL;
+	uint32_t width_in, height_in;
+	uint32_t i, width_out, *actual_col = NULL;
 	uint64_t kk, ij, j2, imag_offset;
 	off_t long_offset;	/* For fseek only */
 	size_t n_expected;	/* Items in one row */
@@ -356,12 +356,12 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	return (GMT_NOERROR);
 }
 
-int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	bool is_float = false, check;
 	int i, j, err;
-	unsigned int i2, ju, iu, width_out, height_out, width_in, *actual_col = NULL;
+	uint32_t i2, ju, iu, width_out, height_out, width_in, *actual_col = NULL;
 	int first_col, last_col, first_row, last_row;
 	uint64_t ij, kk, j2, imag_offset;
 	size_t size;

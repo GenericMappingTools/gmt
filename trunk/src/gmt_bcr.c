@@ -79,7 +79,7 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
-unsigned int gmt_bcr_reject (struct GMT_GRID_HEADER *h, double xx, double yy)
+uint32_t gmt_bcr_reject (struct GMT_GRID_HEADER *h, double xx, double yy)
 {
 	/* First check that xx,yy are not Nan - if so return NaN */
 
@@ -214,7 +214,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. */
 
-	unsigned int i, j;
+	uint32_t i, j;
 	uint64_t ij, node;
 	double retval, wsum, wx[4], wy[4], w;
 
@@ -249,7 +249,7 @@ int GMT_get_bcr_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, doubl
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
 
-	unsigned int i, j, b, nb = G->header->n_bands;
+	uint32_t i, j, b, nb = G->header->n_bands;
 	uint64_t ij;
 	double retval[4], wsum, wx[4], wy[4], w;
 

@@ -94,7 +94,7 @@ struct IMG2GRD_CTRL {
 	} N;
 	struct S {	/* -S<scale> */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double value;
 	} S;
 	struct T {	/* -T<type> */
@@ -174,7 +174,7 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -280,8 +280,8 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 int GMT_img2grd (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
-	unsigned int nx, ny, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
+	uint32_t navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
+	uint32_t nx, ny, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
 	int in_ID, out_ID = GMT_NOTSET, jin, iinstart, iinstop;
 
 	uint64_t ij;
@@ -522,7 +522,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	/* Now malloc some space for integer pixel index, and int16_t data buffer.  */
 
 	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
-	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, unsigned int);
+	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, uint32_t);
 
 	/* Load ix with the index to the correct column, for each output desired.  This helps for Greenwich, 
 	   also faster averaging of the file, etc.  Note for averaging each n by n block is looped in turn. */

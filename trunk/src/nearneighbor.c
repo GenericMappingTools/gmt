@@ -57,7 +57,7 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 	} G;
 	struct N {	/* -N[<sectors>[/<min_sectors>]] */
 		bool active;
-		unsigned int sectors, min_sectors;
+		uint32_t sectors, min_sectors;
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
@@ -95,7 +95,7 @@ void Free_nearneighbor_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) 
 	GMT_free (GMT, C);
 }
 
-struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n)
+struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, uint32_t n)
 {	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
 	struct NEARNEIGHBOR_NODE *new_node = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
 	new_node->distance = GMT_memory (GMT, NULL, n, float);
@@ -105,7 +105,7 @@ struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n)
 	return (new_node);
 }
 
-void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigned int n_sector, unsigned int sector, double distance, uint64_t id)
+void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, uint32_t n_sector, uint32_t sector, double distance, uint64_t id)
 {	/* Allocates node space if not already used and updates the value if closer to node than the current value */
 
 	if (!(*node)) *node = add_new_node (GMT, n_sector);
@@ -168,7 +168,7 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	int n;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -260,7 +260,7 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 int GMT_nearneighbor (void *V_API, int mode, void *args)
 {
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
-	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
+	uint32_t k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	bool wrap_180, replicate_x, replicate_y;
 #ifdef MEMDEBUG
 	bool mem_track_enabled;

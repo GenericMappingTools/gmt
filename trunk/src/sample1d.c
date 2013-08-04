@@ -51,11 +51,11 @@ struct SAMPLE1D_CTRL {
 	} A;
 	struct F {	/* -Fl|a|c */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} F;
 	struct I {	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		int smode;
 		double inc;
 		char unit;
@@ -66,12 +66,12 @@ struct SAMPLE1D_CTRL {
 	} N;
 	struct S {	/* -S<xstart>[/<xstop>] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double start, stop;
 	} S;
 	struct T {	/* -T<time_col> */
 		bool active;
-		unsigned int col;
+		uint32_t col;
 	} T;
 };
 
@@ -145,7 +145,7 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	int col;
 	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -244,7 +244,7 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 
 int GMT_sample1d (void *V_API, int mode, void *args)
 {
-	unsigned int geometry;
+	uint32_t geometry;
 	bool resample_path = false;
 	int error = 0, result;
 	

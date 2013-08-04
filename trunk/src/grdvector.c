@@ -150,7 +150,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	int j;
 	size_t len;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
@@ -294,7 +294,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 
 int GMT_grdvector (void *V_API, int mode, void *args)
 {
-	unsigned int row, col, col_0, row_0, d_col, d_row, k;
+	uint32_t row, col, col_0, row_0, d_col, d_row, k;
 	int error = 0;
 	bool justify, Geographic;
 	

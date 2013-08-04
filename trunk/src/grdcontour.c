@@ -43,7 +43,7 @@ struct GRDCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
 		bool active;
-		unsigned int mode;	/* 1 turns off all labels */
+		uint32_t mode;	/* 1 turns off all labels */
 		double interval;
 		double single_cont;
 	} A;
@@ -71,11 +71,11 @@ struct GRDCONTOUR_CTRL {
 	} L;
 	struct Q {	/* -Q<cut> */
 		bool active;
-		unsigned int min;
+		uint32_t min;
 	} Q;
 	struct S {	/* -S<smooth> */
 		bool active;
-		unsigned int value;
+		uint32_t value;
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
 		bool active;
@@ -251,7 +251,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, id;
+	uint32_t n_errors = 0, n_files = 0, id;
 	int j, k, n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -443,7 +443,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 /* Three sub functions used by GMT_grdcontour */
 
-void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[], unsigned int mode)
+void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[], uint32_t mode)
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
@@ -734,8 +734,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	
 	enum grdcontour_contour_type closed;
 	
-	unsigned int id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl, label_mode = 0;
-	unsigned int cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
+	uint32_t id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl, label_mode = 0;
+	uint32_t cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
 	
 	uint64_t ij, *n_seg = NULL;
 
@@ -1041,7 +1041,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
  	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (EXIT_FAILURE); /* Original copy of grid used for contouring */
 	n_edges = G->header->ny * (urint (ceil (G->header->nx / 16.0)));
-	edge = GMT_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
+	edge = GMT_memory (GMT, NULL, n_edges, uint32_t);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {
 		uint64_t dim[4] = {0, 0, 0, 3};
@@ -1120,7 +1120,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		n_alloc = 0;
 		begin = true;
 
-		while ((n = (unsigned int)GMT_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
+		while ((n = (uint32_t)GMT_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
 
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 			is_closed = (closed != cont_is_not_closed);
@@ -1161,7 +1161,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 					save[n_save].n = n + extra;
 					n_save++;
 				}
-				if (need_proj && (nn = (unsigned int)GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
+				if (need_proj && (nn = (uint32_t)GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
 					/* From here on, xp/yp are map inches */
 					if (cont_type[c] == 'A' || cont_type[c] == 'a') {	/* Annotated contours */
 						if (data_is_time) {

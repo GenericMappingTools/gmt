@@ -50,7 +50,7 @@ struct GRDINFO_CTRL {
 	} F;
 	struct I {	/* -Idx[/dy] */
 		bool active;
-		unsigned int status;
+		uint32_t status;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
@@ -58,7 +58,7 @@ struct GRDINFO_CTRL {
 	} M;
 	struct L {	/* -L[1|2] */
 		bool active;
-		unsigned int norm;
+		uint32_t norm;
 	} L;
 	struct T {	/* -T[s]<dz> */
 		bool active;
@@ -121,7 +121,7 @@ int GMT_grdinfo_parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -201,7 +201,7 @@ int GMT_grdinfo_parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct G
 int GMT_grdinfo (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int n_grds = 0;
+	uint32_t n_grds = 0;
 	bool subset;
 
 	uint64_t ij, n_nan = 0, n = 0;
@@ -275,7 +275,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			uint64_t ij_min, ij_max;
-			unsigned int col, row;
+			uint32_t col, row;
 
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
@@ -298,12 +298,12 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 
 			n_nan = G->header->nm - n;
 			if (n) {	/* Meaning at least one non-NaN node was found */
-				col = (unsigned int)GMT_col (G->header, ij_min);
-				row = (unsigned int)GMT_row (G->header, ij_min);
+				col = (uint32_t)GMT_col (G->header, ij_min);
+				row = (uint32_t)GMT_row (G->header, ij_min);
 				x_min = GMT_grd_col_to_x (GMT, col, G->header);
 				y_min = GMT_grd_row_to_y (GMT, row, G->header);
-				col = (unsigned int)GMT_col (G->header, ij_max);
-				row = (unsigned int)GMT_row (G->header, ij_max);
+				col = (uint32_t)GMT_col (G->header, ij_max);
+				row = (uint32_t)GMT_row (G->header, ij_max);
 				x_max = GMT_grd_col_to_x (GMT, col, G->header);
 				y_max = GMT_grd_row_to_y (GMT, row, G->header);
 			}

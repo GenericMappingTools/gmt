@@ -66,7 +66,7 @@ struct GMTCONVERT_CTRL {
 	} L;
 	struct I {	/* -I[ast] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} I;
 	struct N {	/* -N */
 		bool active;
@@ -158,7 +158,7 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 	 */
 
 	size_t arg_length;
-	unsigned int n_errors = 0, k, n_files = 0;
+	uint32_t n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -464,7 +464,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		/* TODO: move this block to GMT_gmtconvert_parse() and replace exit() with
 		 * Return() */
 		/* Must write individual segments to separate files so create the needed template */
-		unsigned int n_formats = 0;
+		uint32_t n_formats = 0;
 		if (!Ctrl->D.name) {
 			Ctrl->D.name = GMT->common.b.active[GMT_OUT] ?
 					strdup ("gmtconvert_segment_%d.bin") : strdup ("gmtconvert_segment_%d.txt");

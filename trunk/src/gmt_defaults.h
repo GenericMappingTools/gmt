@@ -52,7 +52,7 @@ struct gmt_encoding {
 
 struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default parameters */
 	/* COLOR group [sorted by type to optimize storage] */
-	unsigned int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
+	uint32_t color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
 									 * Add 128 to disallow output of color names */
 	double color_patch[3][4];		/* Color of background, foreground, nan [black,white,127.5] */
 	double color_hsv_min_s;			/* For smallest or most negative intensity [1.0] */
@@ -79,21 +79,21 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char format_time[2][GMT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	char format_time_stamp[GMT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
-	unsigned int compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
-	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
-	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
-	unsigned int verbose;     /* Level of verbosity 0-4 [1] */
-	unsigned int fft;         /* Any of FFT_implementations: k_fft_auto, k_fft_accelerate, k_fft_fftw3, k_fft_kiss, k_fft_brenner */
+	uint32_t compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
+	uint32_t interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
+	uint32_t triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
+	uint32_t verbose;     /* Level of verbosity 0-4 [1] */
+	uint32_t fft;         /* Any of FFT_implementations: k_fft_auto, k_fft_accelerate, k_fft_fftw3, k_fft_kiss, k_fft_brenner */
 #ifdef HAVE_FFTW3F
-	unsigned int fftw_plan;   /* Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
+	uint32_t fftw_plan;   /* Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
 #endif
-	unsigned int history;     /* mode to pass information via history file .gmtcommands (k_history_off, k_history_read, k_history_write) */
+	uint32_t history;     /* mode to pass information via history file .gmtcommands (k_history_off, k_history_read, k_history_write) */
 	double extrapolate_val[2];/* Choose between [0] = 0, 1D extrapolated vals are NaN, = 1 -> extrapolate, = 2 -> set to const stored in [1] */
 	/* IO group */
-	unsigned int io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */
-	unsigned int io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
+	uint32_t io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */
+	uint32_t io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
 	size_t io_nc4_chunksize[2]; /* NetCDF chunk size (lat,lon) on output [0] */
-	unsigned int io_nc4_deflation_level;	/* NetCDF deflation level on output [0] */
+	uint32_t io_nc4_deflation_level;	/* NetCDF deflation level on output [0] */
 	bool io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [false] */
 	bool io_header[2];			/* Input & Output data has header records [false, false] */
 	bool io_nan_records;			/* Determines what NaNs in input records should mean (beyond skipping the record) */
@@ -118,9 +118,9 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double map_tick_length[4];			/* Length of primary and secondary major and minor tickmarks [5p/2.5p/15p/3.75p] */
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
-	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [0] */
-	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
-	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
+	uint32_t map_annot_oblique;	/* Controls annotations and tick angles etc. [0] */
+	uint32_t map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
+	uint32_t map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	bool map_logo;			/* Plot time and map projection on map [false] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
@@ -131,8 +131,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } map_degree_symbol;
 	/* PROJ group */
 	double proj_scale_factor;		/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
-	unsigned int proj_ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */
-	unsigned int proj_length_unit;	/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
+	uint32_t proj_ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */
+	uint32_t proj_length_unit;	/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
 	enum GMT_enum_radius proj_mean_radius;	/* Choose 0 (mean), 1 (authalic), 2 (volumetric), 3 (meridional) or 4 (quadratic) [0] */
 	enum GMT_enum_latswap proj_aux_latitude;	/* Choose GMT_LATSWAP_NONE, GMT_LATSWAP_G2A, GMT_LATSWAP_G2C, GMT_LATSWAP_G2M, GMT_LATSWAP_G2O, GMT_LATSWAP_G2P [GMT_LATSWAP_NONE] */
 	struct DATUM proj_datum[GMT_N_DATUMS];	/* Datum parameters */
@@ -143,8 +143,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double ps_page_rgb[4];			/* Default paper color [white] */
 	double ps_magnify[2];			/* Width and height of paper to plot on in points [Letter or A4] */
 	double ps_transparency;			/* Later transparency [0] */
-	unsigned int ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
-	unsigned int ps_copies;		/* How man copies of each plot [>=1] [GMT4 COMPATIBILITY ONLY] */
+	uint32_t ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
+	uint32_t ps_copies;		/* How man copies of each plot [>=1] [GMT4 COMPATIBILITY ONLY] */
 	int ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
 	bool ps_orientation;			/* Orientation of page [false = Landscape, true = Portrait] */
 	bool ps_comments;			/* true if we write comments in the PS file */
@@ -154,8 +154,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double time_interval_fraction;		/* How much of a partial interval is needed in order to annotate it */
 	bool time_is_interval;		/* Does a time given as a month (or year or day) mean the middle of the interval? */
 	bool time_leap_seconds;		/* Do we need to worry about leap seconds? */
-	unsigned int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
-	unsigned int time_Y2K_offset_year;	/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
+	uint32_t time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
+	uint32_t time_Y2K_offset_year;	/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 	struct GMT_TIME_SYSTEM time_system;	/* All the information about the selected time system */
 	char time_language[GMT_LEN64];	/* Language file for time support */
 	/* Related parameters */

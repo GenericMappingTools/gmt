@@ -49,7 +49,7 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double g;			/* g magnitude scale */
 	double df;			/* Degrees of freedom in the estimate of rotation */
 	bool has_cov;		/* true if there is a covariance matrix for this R */
-	unsigned int id[2];		/* The ID numbers for GPlates pairs */
+	uint32_t id[2];		/* The ID numbers for GPlates pairs */
 };
 
 struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
@@ -63,7 +63,7 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 	/* Record is lon lat abbrev id [radius toff t_on create fit plot name] */
         double lon, lat;		/* Current location of hot spot (degrees)*/
 	char abbrev[4];			/* Max 3-char abbreviation of hotspot name */
-        unsigned int id;		/* Hot spot id flag */
+        uint32_t id;		/* Hot spot id flag */
 	double radius;			/* Uncertainty radius (in km) for hotspot location */
 	double t_off, t_on;		/* Time interval hotspot was active */
 	bool create, fit, plot;	/* true if we want to create, fit, or plot hotspot */
@@ -74,30 +74,30 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 
 /* ANSI-C Function prototypes (see libspotter.c for details): */
 
-EXTERN_MSC int spotter_stage (struct GMT_CTRL *GMT, double t, struct EULER p[], unsigned int ns);
+EXTERN_MSC int spotter_stage (struct GMT_CTRL *GMT, double t, struct EULER p[], uint32_t ns);
 EXTERN_MSC bool spotter_GPlates_pair (char *file);
-EXTERN_MSC unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, bool flowline, bool total_out, bool invert, double *t_max);
-EXTERN_MSC unsigned int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p);
-EXTERN_MSC unsigned int spotter_backtrack  (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int do_time, double wesn[], double **c);
-EXTERN_MSC unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int do_time, double wesn[], double **c);
-EXTERN_MSC void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], unsigned int n, bool total_rates, bool stage_rates);
-EXTERN_MSC void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], unsigned int n, bool total_rates, bool stage_rates);
-EXTERN_MSC void spotter_add_rotations (struct GMT_CTRL *GMT, struct EULER a[], int n_a, struct EULER b[], int n_b, struct EULER *c[], unsigned int *n_c);
-EXTERN_MSC double spotter_t2w (struct GMT_CTRL *GMT, struct EULER a[], unsigned int n, double t);
-EXTERN_MSC bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double t, struct EULER *p, unsigned int np, char conf, bool forward, double out[]);
+EXTERN_MSC uint32_t spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, bool flowline, bool total_out, bool invert, double *t_max);
+EXTERN_MSC uint32_t spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p);
+EXTERN_MSC uint32_t spotter_backtrack  (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], uint32_t np, struct EULER p[], uint32_t ns, double d_km, double t_zero, uint32_t do_time, double wesn[], double **c);
+EXTERN_MSC uint32_t spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], uint32_t np, struct EULER p[], uint32_t ns, double d_km, double t_zero, uint32_t do_time, double wesn[], double **c);
+EXTERN_MSC void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], uint32_t n, bool total_rates, bool stage_rates);
+EXTERN_MSC void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], uint32_t n, bool total_rates, bool stage_rates);
+EXTERN_MSC void spotter_add_rotations (struct GMT_CTRL *GMT, struct EULER a[], int n_a, struct EULER b[], int n_b, struct EULER *c[], uint32_t *n_c);
+EXTERN_MSC double spotter_t2w (struct GMT_CTRL *GMT, struct EULER a[], uint32_t n, double t);
+EXTERN_MSC bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double t, struct EULER *p, uint32_t np, char conf, bool forward, double out[]);
 EXTERN_MSC void spotter_matrix_transpose (struct GMT_CTRL *GMT, double At[3][3], double A[3][3]);
 EXTERN_MSC void spotter_matrix_add (struct GMT_CTRL *GMT, double A[3][3], double B[3][3], double C[3][3]);
 EXTERN_MSC void spotter_matrix_mult (struct GMT_CTRL *GMT, double A[3][3], double B[3][3], double C[3][3]);
 EXTERN_MSC void spotter_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3]);
 EXTERN_MSC void spotter_covar_to_record (struct GMT_CTRL *GMT, struct EULER *e, double K[]);
 EXTERN_MSC void spotter_cov_of_inverse (struct GMT_CTRL *GMT, struct EULER *e, double Ct[3][3]);
-EXTERN_MSC void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, unsigned int np, double t, double *lon, double *lat, double *w);
+EXTERN_MSC void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, uint32_t np, double t, double *lon, double *lat, double *w);
 EXTERN_MSC void spotter_matrix_to_pole (struct GMT_CTRL *GMT, double T[3][3], double *plon, double *plat, double *w);
 EXTERN_MSC void spotter_matrix_1Dto2D (struct GMT_CTRL *GMT, double *M, double X[3][3]);
 EXTERN_MSC void spotter_matrix_2Dto1D (struct GMT_CTRL *GMT, double *M, double X[3][3]);
 EXTERN_MSC void spotter_inv_cov (struct GMT_CTRL *GMT, double Ci[3][3], double C[3][3]);
-EXTERN_MSC unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y);
-EXTERN_MSC unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y);
+EXTERN_MSC uint32_t spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y);
+EXTERN_MSC uint32_t spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y);
 EXTERN_MSC void spotter_tangentplane (struct GMT_CTRL *GMT, double lon, double lat, double R[3][3]);
 EXTERN_MSC void spotter_project_ellipsoid_new (struct GMT_CTRL *GMT, double X[3][3], double *par);
 EXTERN_MSC void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3][3], double *par);

@@ -42,7 +42,7 @@ struct GRDSEAMOUNT_CTRL {
 	} I;
 	struct L {	/* -L[<hcut>] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double value;
 	} L;
 	struct N {	/* -N<norm> */
@@ -55,7 +55,7 @@ struct GRDSEAMOUNT_CTRL {
 	} S;
 	struct T {	/* -T[<flattening>] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double value;
 	} T;
 	struct Z {	/* -Z<base> */
@@ -127,7 +127,7 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, n_expected_fields;
+	uint32_t n_errors = 0, n_files = 0, n_expected_fields;
 	char T1[GMT_LEN32] = {""}, T2[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 
@@ -267,7 +267,7 @@ void gaussian_area_volume_height (double a, double b, double h, double hc, doubl
 int GMT_grdseamount (void *V_API, int mode, void *args)
 {
 	int error, scol, srow, scol_0, srow_0;
-	unsigned int n_expected_fields, n_out, nx1, d_mode = 0, row, col, row_0, col_0, max_d_col, d_row, *d_col = NULL;
+	uint32_t n_expected_fields, n_out, nx1, d_mode = 0, row, col, row_0, col_0, max_d_col, d_row, *d_col = NULL;
 	uint64_t n_read = 0, n_smts = 0, ij;
 	bool map = false, periodic = false, replicate, first;
 	char unit = 'X';

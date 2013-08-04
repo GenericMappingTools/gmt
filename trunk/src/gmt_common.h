@@ -62,7 +62,7 @@ struct GMT_COMMON {
 	} API_I;	
 	struct J {	/* -J<params> */
 		bool active, zactive;
-		unsigned int id;
+		uint32_t id;
 		double par[6];
 		char string[GMT_LEN256];
 	} J;		
@@ -83,7 +83,7 @@ struct GMT_COMMON {
 	} R;
 	struct U {	/* -U */
 		bool active;
-		unsigned int just;
+		uint32_t just;
 		double x, y;
 		char *label;		/* Content not counted by sizeof (struct) */
 	} U;
@@ -102,13 +102,13 @@ struct GMT_COMMON {
 	} Y;
 	struct a {	/* -a<col>=<name>[:<type>][,col>=<name>[:<type>], etc][+g<geometry>] */
 		bool active;
-		unsigned int geometry;
-		unsigned int n_aspatial;
+		uint32_t geometry;
+		uint32_t n_aspatial;
 		bool clip;		/* true if we wish to clip lines/polygons at Dateline [false] */
 		bool output;		/* true when we wish to build OGR output */
 		int col[MAX_ASPATIAL];	/* Col id, include negative items such as GMT_IS_T (-5) */
 		int ogr[MAX_ASPATIAL];	/* Column order, or -1 if not set */
-		unsigned int type[MAX_ASPATIAL];
+		uint32_t type[MAX_ASPATIAL];
 		char *name[MAX_ASPATIAL];
 	} a;
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
@@ -122,14 +122,14 @@ struct GMT_COMMON {
 	} b;
 	struct c {	/* -c */
 		bool active;
-		unsigned int copies;
+		uint32_t copies;
 	} c;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
 		bool active;
-		unsigned int n_methods;			/* How many different criteria to apply */
+		uint32_t n_methods;			/* How many different criteria to apply */
 		uint64_t n_col;				/* Largest column-number needed to be read */
 		bool match_all;			/* If true then all specified criteria must be met to be a gap [default is any of them] */
 		enum GMT_enum_gaps method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
@@ -140,8 +140,8 @@ struct GMT_COMMON {
 	struct h {	/* -h[i|o][<nrecs>][+d][+c][+r<remark>][+t<title>] */
 		bool active;
 		bool add_colnames;
-		unsigned int mode;
-		unsigned int n_recs;
+		uint32_t mode;
+		uint32_t n_recs;
 		char *title;
 		char *remark;
 		char *colnames;	/* Not set by -h but maintained here */
@@ -153,7 +153,7 @@ struct GMT_COMMON {
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+t<threshold>] */
 		bool active;
 		bool antialias;	/* Defaults to true, if supported */
-		unsigned int interpolant;	/* Defaults to BCR_BICUBIC */
+		uint32_t interpolant;	/* Defaults to BCR_BICUBIC */
 		bool bc_set;	/* true if +b was parsed */
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */
@@ -167,7 +167,7 @@ struct GMT_COMMON {
 	} p;
 	struct r {	/* -r */
 		bool active;
-		unsigned int registration;
+		uint32_t registration;
 	} r;
 	struct s {	/* -s[r] */
 		bool active;

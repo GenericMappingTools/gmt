@@ -37,13 +37,13 @@ struct TESTAPI_CTRL {
 	} T;
 	struct I {	/* -I sets input method */
 		bool active;
-		unsigned int mode;
-		unsigned int via;
+		uint32_t mode;
+		uint32_t via;
 	} I;
 	struct W {	/* -W sets output method */
 		bool active;
-		unsigned int mode;
-		unsigned int via;
+		uint32_t mode;
+		uint32_t via;
 	} W;
 };
 
@@ -105,7 +105,7 @@ int GMT_testapi_parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */

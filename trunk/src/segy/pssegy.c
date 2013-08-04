@@ -91,7 +91,7 @@ struct PSSEGY_CTRL {
 	} Q;
 	struct S {	/* -S */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		int value;
 	} S;
 	struct T {	/* -T */
@@ -183,7 +183,7 @@ int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -447,7 +447,7 @@ void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, i
 int GMT_pssegy (void *V_API, int mode, void *args)
 {
 	bool plot_it = false;
-	unsigned int i, nm, ix, iy;
+	uint32_t i, nm, ix, iy;
 	uint32_t n_samp = 0, n_tracelist = 0;
 	int error = 0, check, bm_nx, bm_ny;
 

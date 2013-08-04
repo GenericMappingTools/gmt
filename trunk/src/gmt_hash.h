@@ -40,8 +40,8 @@
 #define GMT_HASH_MAXDEPTH	16
 
 struct GMT_HASH {	/* Used to relate text keywords to array indices */
-	unsigned int id[GMT_HASH_MAXDEPTH];	/* Indices of corresponding keyword with identical hash value */
-	unsigned int n_id;			/* Number of hash entries for this item */
+	uint32_t id[GMT_HASH_MAXDEPTH];	/* Indices of corresponding keyword with identical hash value */
+	uint32_t n_id;			/* Number of hash entries for this item */
 	char *key[GMT_HASH_MAXDEPTH];		/* Name of these entries */
 };
 

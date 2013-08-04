@@ -228,10 +228,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	
 	int error = 0;
 	
-	unsigned int argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
-	unsigned int dtc_index = 0, pos = 0;
+	uint32_t argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
+	uint32_t dtc_index = 0, pos = 0;
 
-	unsigned int MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
+	uint32_t MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
 
 	double time_factor = 1.0, distance_factor = 1.0, maxTime, west=0.0, east=0.0, north=0.0, south=0.0, adjustDC[32];
 	double test_slope[5] = {0.1, 10.0, MGD77_METERS_PER_FATHOM, MGD77_FATHOMS_PER_METER}, adjustScale[32];
@@ -255,11 +255,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	/* THESE VARIABLES VARY FOR EACH CRUISE AND REQUIRE EXTRA CARE (RESET FOR EACH CRUISE) */
 	int type, field, bccCode, col, *iMaxDiff = NULL;
 	int j, noTimeStart, timeErrorStart, distanceErrorStart, overLandStart, last_day, utc_offset;
-	unsigned int i, k, ju, m, curr = 0, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_wrap;
-	unsigned int noTimeCount, timeErrorCount, overLandCount, extreme, spike_amplitude, distanceErrorCount;
-	unsigned int duplicates[MGD77_N_NUMBER_FIELDS], n_bad, grav_formula, n_comma;
+	uint32_t i, k, ju, m, curr = 0, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_wrap;
+	uint32_t noTimeCount, timeErrorCount, overLandCount, extreme, spike_amplitude, distanceErrorCount;
+	uint32_t duplicates[MGD77_N_NUMBER_FIELDS], n_bad, grav_formula, n_comma;
 	size_t n_alloc = GMT_CHUNK;
-	unsigned int lowPrecision, lowPrecision5, MGD77_sign_bit[32];
+	uint32_t lowPrecision, lowPrecision5, MGD77_sign_bit[32];
 
 	double gradient, dvalue, dt, ds, **out, thisArea, speed, prev_speed, **G = NULL, min, *distance, date, range, range2;
 	double *offsetArea, stats[MGD77_N_STATS], stats2[MGD77_N_STATS], *ship_val, *grid_val, max;
@@ -1505,7 +1505,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 		/* REGRESSION ON REPORTED VS RECOMPUTED FAA AND MAG ANOMALIES */
 		if (do_regression && (M.bit_pattern[0] & (1 << MGD77_GOBS) &&  M.bit_pattern[0] & (1 << MGD77_FAA))) {
 			/* CHECK FAA REFERENCE MODEL */
-			for (m=0; m < (unsigned int)(1+((M.bit_pattern[0] & (1 << MGD77_EOT))>0)); m++) { /* If cruise stores eot then run regression twice */
+			for (m=0; m < (uint32_t)(1+((M.bit_pattern[0] & (1 << MGD77_EOT))>0)); m++) { /* If cruise stores eot then run regression twice */
 				n_alloc = GMT_CHUNK;
 				new_anom = GMT_memory (GMT, NULL, n_alloc, double);
 				old_anom = GMT_memory (GMT, NULL, n_alloc, double);
@@ -2705,9 +2705,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	bailout (GMT_OK);
 }
 
-void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
+void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, uint32_t nvalues, double *stats, uint32_t col)
 {
-	unsigned int i, n;
+	uint32_t i, n;
 	double y_hat, threshold, s_0, res, *xx = NULL, *yy = NULL, corr=0.0;
 
 	regress_lms (GMT, x, y, nvalues, stats, col);
@@ -2743,9 +2743,9 @@ void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalu
 	GMT_free (GMT, yy);
 }
 
-void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned int col)
+void regress_ls (double *x, double *y, uint32_t n, double *stats, uint32_t col)
 {
-	unsigned int i;
+	uint32_t i;
 	double sum_x, sum_y, sum_x2, sum_y2, sum_xy, d, ss;
 	double mean_x, mean_y, S_xx, S_xy, S_yy, y_discrepancy;
 
@@ -2788,7 +2788,7 @@ void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned i
 	stats[MGD77_RLS_SUMX2] = sum_x2;                             /* Sum of x^2 */
 }
 
-void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
+void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, uint32_t nvalues, double *stats, uint32_t col)
 {
 
 	double d_angle, limit, a, old_error, d_error, angle_0, angle_1;
@@ -2812,10 +2812,10 @@ void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalu
 	}
 }
 
-void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, unsigned int nvalues, unsigned int n_angle, double *stats, unsigned int col)
+void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, uint32_t nvalues, uint32_t n_angle, double *stats, uint32_t col)
 {
 	double da, *slp = NULL, *icept = NULL, *z = NULL, *sq_misfit = NULL, *angle = NULL, *e = NULL, emin = DBL_MAX, d;
-	unsigned int i, j = 0;
+	uint32_t i, j = 0;
 
 	slp = GMT_memory (GMT, NULL, n_angle, double);
 	icept = GMT_memory (GMT, NULL, n_angle, double);
@@ -2865,16 +2865,16 @@ void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, 
 	GMT_free (GMT, sq_misfit);
 }
 
-double lms (struct GMT_CTRL *GMT, double *x, unsigned int n)
+double lms (struct GMT_CTRL *GMT, double *x, uint32_t n)
 {
 	double mode;
-	unsigned int GMT_n_multiples = 0;
+	uint32_t GMT_n_multiples = 0;
 
 	GMT_mode (GMT, x, n, n/2, 1, 0, &GMT_n_multiples, &mode);
 	return mode;
 }
 
-double median (struct GMT_CTRL *GMT, double *x, unsigned int n)
+double median (struct GMT_CTRL *GMT, double *x, uint32_t n)
 {
 	double *sorted = NULL, med;
 
@@ -2887,7 +2887,7 @@ double median (struct GMT_CTRL *GMT, double *x, unsigned int n)
 }
 
 /* Read Grid Header (from Smith & Wessel grdtrack.c) */
-void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[], unsigned int interpolant, double threshold) {
+void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[], uint32_t interpolant, double threshold) {
 
 	if (strlen (info->fname) == 0) return;	/* No name */
 
@@ -2913,9 +2913,9 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 }
 
 /* Sample Grid at Cruise Locations (from Smith & Wessel grdtrack.c) */
-unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, unsigned int n_grid, unsigned int n) {
+uint32_t sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, uint32_t n_grid, uint32_t n) {
 
-	unsigned int rec, pts = 0;
+	uint32_t rec, pts = 0;
 	double MGD77_NaN = GMT->session.d_NaN, x, y;
 
 	/* Get grid values at cruise locations */
@@ -2959,9 +2959,9 @@ unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, st
 /* intervals for any ship grid comparisons by reducing excessive */
 /* number of degrees of freedom */
 /* Then create arrays for passing to RLS */
-int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *fieldTest) {
+int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, uint32_t nclean, double min, double max, double delta, double **dec_new, double **dec_orig, uint32_t *extreme, char *fieldTest) {
 
-	unsigned int n, j, k, npts, ship_bin, grid_bin;
+	uint32_t n, j, k, npts, ship_bin, grid_bin;
 	int **bin2d = NULL;
 	double *dorig, *dnew = NULL;
 #ifdef DUMP_DECIMATE

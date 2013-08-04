@@ -53,7 +53,7 @@ void GMT_duplicate_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *Sin, s
 struct DUP {
 	uint64_t point;
 	uint64_t segment;
-	unsigned int table;
+	uint32_t table;
 	int mode;
 	bool inside;
 	double distance;
@@ -80,7 +80,7 @@ struct GMTSPATIAL_CTRL {
 	} Out;
 	struct A {	/* -Aa<min_dist>[unit], -A[unit] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		int smode;
 		double min_dist;
 		char unit;
@@ -97,11 +97,11 @@ struct GMTSPATIAL_CTRL {
 	} D;
 	struct E {	/* -D[-|+] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} E;
 	struct I {	/* -I[i|e] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} I;
 	struct L {	/* -L */
 		bool active;
@@ -111,8 +111,8 @@ struct GMTSPATIAL_CTRL {
 	struct N {	/* -N<file>[+a][+p>ID>][+r][+z] */
 		bool active;
 		bool all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
-		unsigned int mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
-		unsigned int ID;	/* If 1 we use running numbers */
+		uint32_t mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
+		uint32_t ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
 	struct Q {	/* -Q[+] */
@@ -122,7 +122,7 @@ struct GMTSPATIAL_CTRL {
 	} Q;
 	struct S {	/* -S[u|i|c] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} S;
 	struct T {	/* -T[pol] */
 		bool active;
@@ -212,7 +212,7 @@ void centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double 
 	}
 }
 
-unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int *geo)
+uint32_t area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int *geo)
 {
 	uint64_t i;
 	double wesn[4], xx, yy, size, ix, iy;
@@ -336,7 +336,7 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GM
 	 */
 	
 	bool status;
-	unsigned int k, tbl, n_close = 0, n_dup = 0, mode1, mode3;
+	uint32_t k, tbl, n_close = 0, n_dup = 0, mode1, mode3;
 	uint64_t row, seg, pt, np;
 	int k_signed;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
@@ -725,7 +725,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_files[2] = {0, 0}, pos, n_errors = 0;
+	uint32_t n_files[2] = {0, 0}, pos, n_errors = 0;
 	int n;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *s = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -904,7 +904,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 int GMT_gmtspatial (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int geometry = GMT_IS_POLY;
+	uint32_t geometry = GMT_IS_POLY;
 	bool internal = false, external = false, mseg = false;
 
 	static char *kind[2] = {"CCW", "CW"};
@@ -1162,7 +1162,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
 		uint64_t seg, row_f, row_l, tbl, col;
-		unsigned int handedness = 0;
+		uint32_t handedness = 0;
 		int mode, poly, geo;
 
 		char line[GMT_BUFSIZ];
@@ -1243,7 +1243,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
 		bool same_feature;
-		unsigned int in;
+		uint32_t in;
 		uint64_t tbl1, tbl2, col, nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
@@ -1428,7 +1428,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->D.active) {	/* Look for duplicates of lines or polygons */
-		unsigned int n_dup, poly_D, poly_S2;
+		uint32_t n_dup, poly_D, poly_S2;
 		uint64_t tbl, tbl2, col, seg, seg2;
 		bool same_feature = false;
 		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
@@ -1548,7 +1548,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
 		uint64_t tbl, row, first, last, n, p, np, seg, seg2, n_inside;
-		unsigned int *count = NULL;
+		uint32_t *count = NULL;
 		int ID = -1;
 		char seg_label[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
@@ -1591,7 +1591,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			else	/* Increment running polygon ID */
 				ID++;
 
-			count = GMT_memory (GMT, NULL, D->n_segments, unsigned int);
+			count = GMT_memory (GMT, NULL, D->n_segments, uint32_t);
 			for (tbl = p = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++, p++) {
 					S = D->table[tbl]->segment[seg];
