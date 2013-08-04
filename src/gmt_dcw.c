@@ -227,7 +227,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	
 	if (!F->codes || F->codes[0] == '\0') return NULL;	/* No countries requested */
-	if (mode != GMT_DCW_REGION && F->region && (F->mode & 12) == 0) return NULL;	/* No plotting requested, just -R */
+	if (mode != GMT_DCW_REGION && F->region && (mode & 12) == 0) return NULL;	/* No plotting/dumping requested, just -R */
 
 	for (k = 0; k < strlen (F->codes); k++) if (F->codes[k] == ',') n_items++;	/* Determine how many items we specified */
 
@@ -273,9 +273,6 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	/* Get global attributes */
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char version[GMT_LEN16] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
-		GMT_memset (version, GMT_LEN16, char);
-		GMT_memset (source, GMT_LEN256, char);
-		GMT_memset (title, GMT_LEN256, char);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source);

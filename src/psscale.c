@@ -450,7 +450,6 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	struct GMT_PLOT_AXIS *A;
 
 	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
-	GMT_memset (format, GMT_LEN256, char);
 
 	/* Temporarily change to miter join so boxes and end triangles have near corners */
 	PSL_setlinejoin (PSL, PSL_MITER_JOIN);

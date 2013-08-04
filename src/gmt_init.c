@@ -1864,7 +1864,6 @@ int gmt_parse_f_option (struct GMT_CTRL *GMT, char *arg)
 		k = 0;
 	}
 
-	GMT_memset (copy, GMT_BUFSIZ, char);	/* Clean the copy */
 	strncpy (copy, &arg[k], GMT_BUFSIZ);	/* arg should NOT have a leading i|o part */
 
 	if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
@@ -1953,7 +1952,6 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg)
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -i requires an argument */
 
-	GMT_memset (copy, GMT_BUFSIZ, char);	/* Get a clean copy */
 	strncpy (copy, arg, GMT_BUFSIZ);
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
 
@@ -2017,7 +2015,6 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -o requires an argument */
 
-	GMT_memset (copy, GMT_BUFSIZ, char);	/* Get a clean copy */
 	strncpy (copy, arg, GMT_BUFSIZ);
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
@@ -6424,7 +6421,6 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		n_B++;
 	}
 	for (k = 0, B_id = -1; k < GMT_N_UNIQUE && B_id == -1; k++) if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id = 0 but just in case this changes we do this anyway */
-	GMT_memset (B_string, GMT_BUFSIZ, char);
 
 	for (opt = options; opt; opt = opt->next) {
 		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
@@ -6985,7 +6981,6 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		
 		if (GMT->current.map.frame.axis[i].prefix[0]) {	/* Deal with space/no space before prefix */
 			char workspace[GMT_LEN64] = {""};
-			GMT_memset (workspace, GMT_LEN64, char);
 			if (GMT->current.map.frame.axis[i].prefix[0] == '-') /* Dont want a space */
 				strcpy (workspace, &GMT->current.map.frame.axis[i].prefix[1]);
 			else {	/* Want a space */
@@ -6996,7 +6991,6 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 		if (GMT->current.map.frame.axis[i].unit[0]) {	/* Deal with space/no space before unit */
 			char workspace[GMT_LEN64] = {""};
-			GMT_memset (workspace, GMT_LEN64, char);
 			if (GMT->current.map.frame.axis[i].unit[0] == '-') /* Dont want a space */
 				strcpy (workspace, &GMT->current.map.frame.axis[i].unit[1]);
 			else {	/* Want a space */

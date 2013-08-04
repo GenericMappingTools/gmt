@@ -655,7 +655,6 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 		char *mod = NULL;
 		if ((ptr = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
 			mod = ptr->arg; /* Gave old -L option */
-			GMT_memset (argument, GMT_LEN16, char);
 			if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
 			else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
 			else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */

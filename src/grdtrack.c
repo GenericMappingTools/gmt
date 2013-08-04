@@ -205,8 +205,6 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	GMT_memset (line, GMT_BUFSIZ, char);
-
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 

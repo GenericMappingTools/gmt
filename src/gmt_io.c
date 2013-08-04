@@ -603,7 +603,6 @@ int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of output columns set by -o exceeds those set by -bo!\n");
 		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
-	GMT_memset (message, GMT_LEN256, char);	/* Start with a blank message */
 	for (col = 0; col < GMT->common.b.ncol[direction]; col++) {	/* For each binary column of data */
 		if (GMT->current.io.fmt[direction][col].skip < 0) {	/* Must skip n_bytes BEFORE reading this column */
 			n_bytes = -GMT->current.io.fmt[direction][col].skip;
@@ -1736,7 +1735,7 @@ void gmt_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, double geo, char 
 {
 	int k, n_items, d, m, s, m_sec, h_pos = 0;
 	bool minus;
-	char hemi[3], *f = NULL;
+	char hemi[3] = {""}, *f = NULL;
 
 	if (!is_lat) GMT_lon_range_adjust (GMT->current.io.geo.range, &geo);
 	if (GMT->current.io.geo.decimal) {	/* Easy */
@@ -1745,7 +1744,6 @@ void gmt_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, double geo, char 
 		return;
 	}
 
-	GMT_memset (hemi, 3, char);
 	if (GMT->current.io.geo.wesn) {	/* Trailing WESN */
 		if (GMT->current.io.geo.wesn == 2) hemi[h_pos++] = ' ';	/* Want space between numbers and hemisphere letter */
 		if (is_lat)
@@ -4613,8 +4611,7 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *GMT, void *source, u
 		}
 		if (GMT_REC_IS_EOF (GMT)) continue;	/* At EOF; get out of this loop */
 		if (!no_segments) {			/* Handle info stored in multi-seg header record */
-			char buffer[GMT_BUFSIZ];
-			GMT_memset (buffer, GMT_BUFSIZ, char);
+			char buffer[GMT_BUFSIZ] = {""};
 			if (GMT_parse_segment_item (GMT, GMT->current.io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
 			if (strlen (GMT->current.io.segment_header)) T->segment[seg]->header = strdup (GMT->current.io.segment_header);
 		}
@@ -6044,9 +6041,8 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 		}
 		if (GMT_REC_IS_EOF (GMT)) continue;	/* At EOF; get out of this loop */
 		if (ascii && !no_segments) {	/* Only ascii files can have info stored in multi-seg header record */
-			char buffer[GMT_BUFSIZ];
+			char buffer[GMT_BUFSIZ] = {""};
 			if (strlen (GMT->current.io.segment_header)) {
-				GMT_memset (buffer, GMT_BUFSIZ, char);
 				T->segment[seg]->header = strdup (GMT->current.io.segment_header);
 				if (GMT_parse_segment_item (GMT, GMT->current.io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
 			}
