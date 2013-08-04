@@ -249,7 +249,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_gcal *gcal
 
 	gcal->year = gmt_gyear_from_rd (date);
 	prior_days = date - GMT_rd_from_gymd (GMT, gcal->year, 1, 1);
-	gcal->day_y = (unsigned int)prior_days + 1;
+	gcal->day_y = (uint32_t)prior_days + 1;
 	
 	tempdate = GMT_rd_from_gymd (GMT, gcal->year, 3, 1);
 	if (date < tempdate)
@@ -261,7 +261,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_gcal *gcal
 	
 	tempdate = GMT_rd_from_gymd (GMT, gcal->year, gcal->month, 1);
 	
-	gcal->day_m = (unsigned int)(date - tempdate + 1);
+	gcal->day_m = (uint32_t)(date - tempdate + 1);
 	
 	/* ISO operations:  */
 	
@@ -272,7 +272,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_gcal *gcal
 	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7U;
 }
 
-int GMT_y2_to_y4_yearfix (struct GMT_CTRL *GMT, unsigned int y2) {
+int GMT_y2_to_y4_yearfix (struct GMT_CTRL *GMT, uint32_t y2) {
 
 	/* Convert 2-digit year to 4-digit year, using 
 	   GMT->current.setting.time_Y2K_offset_year.
@@ -358,8 +358,8 @@ void GMT_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_gcal *cal) {
 	GMT_gcal_from_rd (GMT, rd, cal);
 	/* split double seconds and integer time */
 	i = GMT_splitinteger (x, 60, &cal->sec);
-	cal->hour = (unsigned int)(i / GMT_MIN2SEC_I);
-	cal->min  = (unsigned int)(i % GMT_MIN2SEC_I);
+	cal->hour = (uint32_t)(i / GMT_MIN2SEC_I);
+	cal->min  = (uint32_t)(i % GMT_MIN2SEC_I);
 }
 
 int GMT_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
@@ -555,7 +555,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 	*/
 	
 	int k, kws, kyd;
-	unsigned int kml;
+	uint32_t kml;
 
 	if (init) {
 		/* Temporarily store a breakdown of dt_in in p->stuff[0].
@@ -835,7 +835,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 	}
 }		
 
-void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, bool upper, unsigned int kind, double dt)
+void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, bool upper, uint32_t kind, double dt)
 {	/* Given the internal time representation dt and the formatting information
 	 * in the D and C structure, write the calendar representation to strings date and clock,
 	 * but skip either string if it is a NULL pointer */

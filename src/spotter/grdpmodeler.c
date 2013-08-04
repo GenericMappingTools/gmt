@@ -66,7 +66,7 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 	} I;
 	struct S {	/* -Sa|d|r|w|x|y|X|Y */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} S;
 	struct T {	/* -T<fixtime> */
 		bool active;
@@ -134,7 +134,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -228,7 +228,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 
 int GMT_grdpmodeler (void *V_API, int mode, void *args)
 {
-	unsigned int col, row, inside, stage, n_stages, registration;
+	uint32_t col, row, inside, stage, n_stages, registration;
 	int retval, error = 0;
 	
 	uint64_t node, seg;

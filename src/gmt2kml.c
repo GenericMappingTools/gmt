@@ -55,7 +55,7 @@ void GMT_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 #define NO_LABEL		3
 #define FMT_LABEL		4
 
-/* Need unsigned int BGR triplets */
+/* Need uint32_t BGR triplets */
 #define GMT_3u255(t) GMT_u255(t[2]),GMT_u255(t[1]),GMT_u255(t[0])
 
 #define F_ID	0	/* Indices into arrays */
@@ -69,7 +69,7 @@ struct GMT2KML_CTRL {
 	struct A {	/* -A */
 		bool active;
 		bool get_alt;
-		unsigned int mode;
+		uint32_t mode;
 		double scale;
 		double altitude;
 	} A;
@@ -86,8 +86,8 @@ struct GMT2KML_CTRL {
 	} E;
 	struct F {	/* -F */
 		bool active;
-		unsigned int mode;
-		unsigned int geometry;
+		uint32_t mode;
+		uint32_t geometry;
 	} F;
 	struct G {	/* -G<fill> */
 		bool active[2];
@@ -99,12 +99,12 @@ struct GMT2KML_CTRL {
 	} I;
 	struct L {	/* -L */
 		bool active;
-		unsigned int n_cols;
+		uint32_t n_cols;
 		char **name;
 	} L;
 	struct N {	/* -N */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		char *fmt;
 	} N;
 	struct R2 {	/* -R */
@@ -122,7 +122,7 @@ struct GMT2KML_CTRL {
 	} T;
 	struct W {	/* -W<pen> */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z */
@@ -164,7 +164,7 @@ void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deall
 	if (C->T.title) free (C->T.title);
 	if (C->T.folder) free (C->T.folder);
 	if (C->L.active) {
-		unsigned int col;
+		uint32_t col;
 		for (col = 0; col < C->L.n_cols; col++) free ((void *)C->L.name[col]);
 		GMT_free (GMT, C->L.name);
 	}
@@ -253,7 +253,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos = 0, k, n_files = 0;
+	uint32_t n_errors = 0, pos = 0, k, n_files = 0;
 	size_t n_alloc = 0;
 	char buffer[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, T[4][GMT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -600,7 +600,7 @@ void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, dou
 int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, double wesn[])
 {
 	/* Because we read as textset we must determine the data extent the hard way */
-	unsigned int tbl, ix, iy, way;
+	uint32_t tbl, ix, iy, way;
 	uint64_t row, seg;
 	char T[2][GMT_LEN64];
 	double x, y, y_min = 90.0, y_max = -90.0;
@@ -648,7 +648,7 @@ bool crossed_dateline (double this_x, double last_x)
 int GMT_gmt2kml (void *V_API, int mode, void *args)
 {
 	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act;
-	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
+	uint32_t n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
 	
 	uint64_t row, seg;
 	int set_nr = 0, index = -4, N = 1, error = 0;

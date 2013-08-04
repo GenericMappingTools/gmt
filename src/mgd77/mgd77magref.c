@@ -161,7 +161,7 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
+	uint32_t n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
 	int j;
 	char p[GMT_BUFSIZ] = {""}, tfixed[GMT_LEN64] = {""};
 	bool do_CM4core = false;
@@ -407,9 +407,9 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 
 int GMT_mgd77magref (void *V_API, int mode, void *args)
 {
-	unsigned int j, nval = 0, nfval = 0, error = 0;
-	unsigned int lval = 0, lfval = 0, n_field_components, tbl;
-	unsigned int n_out = 0, n_in, t_col = 3;
+	uint32_t j, nval = 0, nfval = 0, error = 0;
+	uint32_t lval = 0, lfval = 0, n_field_components, tbl;
+	uint32_t n_out = 0, n_in, t_col = 3;
 	bool cm4_igrf_T = false;
 	
 	size_t i, s, need = 0, n_alloc = 0;
@@ -544,7 +544,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	n_out = n_field_components + ((Ctrl->copy_input) ? (unsigned int)Din->n_columns : 0);
+	n_out = n_field_components + ((Ctrl->copy_input) ? (uint32_t)Din->n_columns : 0);
 	if (cm4_igrf_T) n_out -= 2;	/* Decrease by 2 because the x,y,z were imposed internaly only. i.e not for output */
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
 		Return (error);

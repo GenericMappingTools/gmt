@@ -79,14 +79,14 @@ struct GRDTRACK_CTRL {
 	} D;
 	struct E {	/* -E<line1>[,<line2>,...][+a<az>][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		char *lines;
 		double step;
 		char unit;
 	} E;
 	struct G {	/* -G<grdfile> */
 		bool active;
-		unsigned int n_grids;
+		uint32_t n_grids;
 		char *file[MAX_GRIDS];
 		double scale[MAX_GRIDS], lat[MAX_GRIDS];
 		int mode[MAX_GRIDS];
@@ -98,7 +98,7 @@ struct GRDTRACK_CTRL {
 	struct S {	/* -S[<mode>][<modifiers>] */
 		bool active;
 		bool selected[STACK_N_OPT];	/* For +a +d +e +r +s */
-		unsigned int mode;		/* Type of stack a|m|p|l|L|u|U */
+		uint32_t mode;		/* Type of stack a|m|p|l|L|u|U */
 		double factor;			/* Set via +c<factor> */
 		char *file;			/* Output file for stack */
 	} S;
@@ -118,7 +118,7 @@ void *New_grdtrack_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 }
 
 void Free_grdtrack_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deallocate control structure */
-	unsigned int g;
+	uint32_t g;
 	if (!C) return;
 	if (C->In.file) free (C->In.file);
 	if (C->D.file) free (C->D.file);
@@ -199,7 +199,7 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 	 */
 
 	int j, mode;
-	unsigned int pos, n_errors = 0, ng = 0, n_files = 0, n_units = 0, n_modes = 0;
+	uint32_t pos, n_errors = 0, ng = 0, n_files = 0, n_units = 0, n_modes = 0;
 	char line[GMT_BUFSIZ] = {""}, ta[GMT_LEN64] = {""}, tb[GMT_LEN64] = {""};
 	char tc[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *c = NULL, X;
 	struct GMT_OPTION *opt = NULL;
@@ -366,9 +366,9 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, bool img, double x_in, double y_in, double value[])
+int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, uint32_t n_grids, bool img, double x_in, double y_in, double value[])
 {
-	unsigned int g, n_in, n_set;
+	uint32_t g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
 	
 	if (img) GMT_geo_to_xy (GMT, x_in, y_in, &x0, &y0);	/* At least one Mercator IMG grid in use - get Mercator coordinates x,y */
@@ -419,7 +419,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	int status, error, ks;
 	uint64_t n_points = 0, n_read = 0;
-	unsigned int g, k;
+	uint32_t g, k;
 	bool img_conv_needed = false, some_outside = false;
 	
 	char line[GMT_BUFSIZ];
@@ -601,8 +601,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			struct GMT_DATASEGMENT *M = NULL;
 			uint64_t dim[4], n_rows;
 			uint64_t colx, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */
-			unsigned int n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
-			unsigned int GMT_mode_selection = 0, GMT_n_multiples = 0;
+			uint32_t n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
+			uint32_t GMT_mode_selection = 0, GMT_n_multiples = 0;
 			double **stack = NULL, *stacked_val = NULL, *stacked_dev = NULL, *stacked_hi = NULL, *stacked_lo = NULL, *dev = NULL;
 			dim[GMT_TBL] = 1;			/* One table */
 			dim[GMT_SEG] = Dout->n_tables;		/* Number of stacks */
@@ -690,7 +690,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->E.active) {	/* Quick sampling along given lines */
 		int status;
-		unsigned int k;
+		uint32_t k;
 		uint64_t col, n_cols = Din->n_columns + Ctrl->G.n_grids, row, seg;
 		struct GMT_DATASEGMENT *Sin = NULL, *Sout = NULL;
 		

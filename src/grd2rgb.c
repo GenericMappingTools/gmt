@@ -57,8 +57,8 @@ struct GRD2RGB_CTRL {
 	} L;
 	struct W {	/* -W<width/height>[/<n_bytes>] */
 		bool active;
-		unsigned int nx, ny;	/* Dimension of image */
-		unsigned int size;	/* Number of bytes per pixels */
+		uint32_t nx, ny;	/* Dimension of image */
+		uint32_t size;	/* Number of bytes per pixels */
 	} W;
 };
 
@@ -86,7 +86,7 @@ void Free_grd2rgb_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Deall
 int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byte_per_pixel, int nx, int ny, unsigned char **P) {
 	/* loadraw reads a raw binary grb or rgba rasterfile of depth 24, or 32 into memory */
 
-	unsigned int k;
+	uint32_t k;
 	uint64_t j, i;
 	size_t nm;
 	unsigned char *buffer = NULL;
@@ -126,9 +126,9 @@ int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byt
 	return (0);
 }
 
-int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, unsigned int *raw_nx, unsigned int *raw_ny) {
+int guess_width (struct GMT_CTRL *GMT, char *file, uint32_t byte_per_pixel, uint32_t *raw_nx, uint32_t *raw_ny) {
 	int inc, even;
-	unsigned int k = 0, j, i, l, n_pix;
+	uint32_t k = 0, j, i, l, n_pix;
 	unsigned char *buffer = NULL;
 	size_t img_size;
 	float *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = -FLT_MAX, pm;
@@ -144,7 +144,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 	img_size = ftell (fp);
 	fseek (fp, 0, SEEK_SET);
 
-	n_pix = (unsigned int) (img_size / byte_per_pixel);
+	n_pix = (uint32_t) (img_size / byte_per_pixel);
 
 	buffer  = GMT_memory (GMT, NULL, img_size, unsigned char);
 	datac   = GMT_memory (GMT, NULL, 2*n_pix, float);
@@ -274,7 +274,7 @@ int GMT_grd2rgb_parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, pos, entry;
+	uint32_t n_errors = 0, n_files = 0, pos, entry;
 	bool guess = false;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
@@ -361,7 +361,7 @@ int GMT_grd2rgb_parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct G
 
 int GMT_grd2rgb (void *V_API, int mode, void *args)
 {
-	unsigned int channel, row, col;
+	uint32_t channel, row, col;
 	int error = 0;
 	
 	uint64_t ij, k, k3;

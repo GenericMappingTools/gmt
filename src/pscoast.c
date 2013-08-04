@@ -90,8 +90,8 @@ struct PSCOAST_CTRL {
 	} G;
 	struct I {	/* -I<feature>[/<pen>] */
 		bool active;
-		unsigned int use[GSHHS_N_RLEVELS];
-		unsigned int n_rlevels;
+		uint32_t use[GSHHS_N_RLEVELS];
+		uint32_t n_rlevels;
 		struct GMT_PEN pen[GSHHS_N_RLEVELS];
 	} I;
 	struct L {	/* -L */
@@ -103,8 +103,8 @@ struct PSCOAST_CTRL {
 	} M;
 	struct N {	/* -N<feature>[/<pen>] */
 		bool active;
-		unsigned int use[GSHHS_N_BLEVELS];
-		unsigned int n_blevels;
+		uint32_t use[GSHHS_N_BLEVELS];
+		uint32_t n_blevels;
 		struct GMT_PEN pen[GSHHS_N_BLEVELS];
 	} N;
 	struct Q {	/* -Q */
@@ -133,7 +133,7 @@ struct PSCOAST_CTRL {
 };
 
 void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	unsigned int k;
+	uint32_t k;
 	struct PSCOAST_CTRL *C = GMT_memory (GMT, NULL, 1, struct PSCOAST_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
@@ -257,7 +257,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	int k;
 	bool clipping;
 	struct GMT_OPTION *opt = NULL;

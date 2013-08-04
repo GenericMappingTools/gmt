@@ -90,9 +90,9 @@ enum GMT_profmode {
 };
 
 struct CPT_Z_SCALE {	/* Internal struct used in the processing of CPT z-scaling and truncation */
-	unsigned int z_adjust;	/* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
-	unsigned int z_mode;	/* 1 if +U<unit> was parsed, 0 otherwise */
-	unsigned int z_unit;	/* Unit enum specified via +u<unit> */
+	uint32_t z_adjust;	/* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
+	uint32_t z_mode;	/* 1 if +U<unit> was parsed, 0 otherwise */
+	uint32_t z_unit;	/* Unit enum specified via +u<unit> */
 	double z_unit_to_meter;	/* Scale, given z_unit, to convert z from <unit> to meters */
 };
 
@@ -161,9 +161,9 @@ void GMT_memtrack_off (struct GMT_CTRL *GMT)
 	GMT->hidden.mem_keeper->active = false;
 }
 
-double gmt_memtrack_mem (struct GMT_CTRL *GMT, size_t mem, unsigned int *unit)
+double gmt_memtrack_mem (struct GMT_CTRL *GMT, size_t mem, uint32_t *unit)
 {	/* Report the memory in the chosen unit */
-	unsigned int k = 0;
+	uint32_t k = 0;
 	double val = mem / 1024.0;	/* Kb */
 	if (val > 1024.0) {val /= 1024.0; k++;}	/* Now in Mb */
 	if (val > 1024.0) {val /= 1024.0; k++;}	/* Now in Gb */
@@ -338,7 +338,7 @@ void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, void *ptr) {
 }
 
 void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) {
-	unsigned int u;
+	uint32_t u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot = gmt_memtrack_mem (GMT, x->size, &u);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s (ID = %" PRIu64 "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, tot, unit[u], x->size);
@@ -356,7 +356,7 @@ void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x)
 }
 
 void GMT_memtrack_report (struct GMT_CTRL *GMT) {	/* Called at end of GMT_end() */
-	unsigned int u;
+	uint32_t u;
 	uint64_t excess;
 	double tot;
 	char *unit[3] = {"kb", "Mb", "Gb"};
@@ -400,7 +400,7 @@ char *GMT_file_unitscale (char *name)
 void gmt_rgb_to_hsv (struct GMT_CTRL *GMT, double rgb[], double hsv[])
 {
 	double diff;
-	unsigned int i, imax = 0, imin = 0;
+	uint32_t i, imax = 0, imin = 0;
 
 	/* This had checks using rgb value in doubles (e.g. (max_v == xr)), which failed always on some compilers.
 	   Changed to integer logic: 2009-02-05 by RS.
@@ -592,7 +592,7 @@ void gmt_lab_to_rgb (struct GMT_CTRL *GMT, double rgb[], double lab[])
 
 #define gmt_is_fill(GMT,word) (!strcmp(word,"-") || gmt_is_pattern (word) || gmt_is_color (GMT, word))
 
-unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned int *f)
+uint32_t GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, uint32_t *f)
 {
 	/* Fills the integer array f with the prime factors of n.
 	 * Returns the number of locations filled in f, which is
@@ -619,19 +619,19 @@ unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned i
 	 *
 	 * W. H. F. Smith, 26 Feb 1992, after D.E. Knuth, vol. II  */
 
-	unsigned int current_factor = 0;	/* The factor currently being tried  */
-	unsigned int max_factor;		/* Don't try any factors bigger than this  */
-	unsigned int n_factors = 0;		/* Returned; one if n is prime  */
-	unsigned int two_four_toggle = 0;	/* Used to add 2 or 4 to get next trial factor  */
-	unsigned int ten_twenty_toggle = 0;	/* Used to add 10 or 20 to skip_five  */
-	unsigned int skip_five = 25;	/* Used to skip multiples of 5 in the list  */
-	unsigned int base_factor[3] = {2, 3, 5};	/* Standard factors to try */
-	unsigned int m;			/* Used to keep a working copy of n  */
-	unsigned int k;			/* counter */
+	uint32_t current_factor = 0;	/* The factor currently being tried  */
+	uint32_t max_factor;		/* Don't try any factors bigger than this  */
+	uint32_t n_factors = 0;		/* Returned; one if n is prime  */
+	uint32_t two_four_toggle = 0;	/* Used to add 2 or 4 to get next trial factor  */
+	uint32_t ten_twenty_toggle = 0;	/* Used to add 10 or 20 to skip_five  */
+	uint32_t skip_five = 25;	/* Used to skip multiples of 5 in the list  */
+	uint32_t base_factor[3] = {2, 3, 5};	/* Standard factors to try */
+	uint32_t m;			/* Used to keep a working copy of n  */
+	uint32_t k;			/* counter */
 
 	/* Initialize m and max_factor  */
 
-	m = (unsigned int)GMT_abs (n);
+	m = (uint32_t)GMT_abs (n);
 	if (m < 2) return (0);
 	max_factor = urint (floor(sqrt((double)m)));
 
@@ -808,7 +808,7 @@ int gmt_comp_uint_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	const unsigned int *point_1 = p_1, *point_2 = p_2;
+	const uint32_t *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -875,7 +875,7 @@ int gmt_comp_char_asc (const void *p_1, const void *p_2)
 	return (0);
 }
 
-void GMT_sort_array (struct GMT_CTRL *GMT, void *base, uint64_t n, unsigned int type)
+void GMT_sort_array (struct GMT_CTRL *GMT, void *base, uint64_t n, uint32_t type)
 { /* Front function to call qsort on all <type> array into ascending order */
 	size_t width[GMT_N_TYPES] = {
 		sizeof(uint8_t),      /* GMT_UCHAR */
@@ -950,7 +950,7 @@ bool gmt_check_hsv (struct GMT_CTRL *GMT, double hsv[])
 
 bool gmt_check_cmyk (double cmyk[])
 {
-	unsigned int i;
+	uint32_t i;
 	for (i = 0; i < 4; i++) cmyk[i] *= 0.01;
 	for (i = 0; i < 4; i++) if (cmyk[i] < 0.0 || cmyk[i] > 1.0) return (true);
 	return (false);
@@ -1041,9 +1041,9 @@ bool GMT_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill)
 	return (error);
 }
 
-unsigned int gmt_char_count (char *txt, char c)
+uint32_t gmt_char_count (char *txt, char c)
 {
-	unsigned int i = 0, n = 0;
+	uint32_t i = 0, n = 0;
 	while (txt[i]) if (txt[i++] == c) n++;
 	return (n);
 }
@@ -1110,7 +1110,7 @@ bool GMT_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[])
 		t[0] = '\0';	/* Chop off transparency for the rest of this function */
 	}
 	if (buffer[0] == '#') {	/* #rrggbb */
-		n = sscanf (buffer, "#%2x%2x%2x", (unsigned int *)&irgb[0], (unsigned int *)&irgb[1], (unsigned int *)&irgb[2]);
+		n = sscanf (buffer, "#%2x%2x%2x", (uint32_t *)&irgb[0], (uint32_t *)&irgb[1], (uint32_t *)&irgb[2]);
 		return (n != 3 || gmt_check_irgb (irgb, rgb));
 	}
 
@@ -1198,7 +1198,7 @@ bool gmt_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[])
 	}
 
 	if (buffer[0] == '#') {	/* #rrggbb */
-		n = sscanf (buffer, "#%2x%2x%2x", (unsigned int *)&irgb[0], (unsigned int *)&irgb[1], (unsigned int *)&irgb[2]);
+		n = sscanf (buffer, "#%2x%2x%2x", (uint32_t *)&irgb[0], (uint32_t *)&irgb[1], (uint32_t *)&irgb[2]);
 		if (n != 3 || gmt_check_irgb (irgb, rgb)) return (true);
 		gmt_rgb_to_hsv (GMT, rgb, hsv);
 		return (false);
@@ -1262,19 +1262,19 @@ bool gmt_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[])
 	return (true);
 }
 
-void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size)
+void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, uint32_t size)
 {
 	/* Purpose is to replace things like @;lightgreen; with @r/g/b; which PSL_plottext understands.
 	 * Likewise, if @transparency is appended we change it to =transparency so PSL_plottext can parse it */
 
-	unsigned int i, j, k = 0, n, last = 0, n_slash;
+	uint32_t i, j, k = 0, n, last = 0, n_slash;
 	double rgb[4];
 	char buffer[GMT_BUFSIZ] = {""}, color[GMT_LEN256] = {""}, *p = NULL;
 
 	if (!strchr (text, '@')) return;	/* Nothing to do since no espace sequence in string */
 
 	while ((p = strstr (text, "@;"))) {	/* Found a @; sequence */
-		i = (unsigned int)(p - text) + 2;	/* Position of first character after @; */
+		i = (uint32_t)(p - text) + 2;	/* Position of first character after @; */
 		for (j = last; j < i; j++, k++) buffer[k] = text[j];	/* Copy everything from last stop up to the color specification */
 		text[i-1] = 'X';	/* Wipe the ; so that @; wont be found a 2nd time */
 		if (text[i] != ';') {	/* Color info now follows */
@@ -1350,7 +1350,7 @@ bool gmt_is_color (struct GMT_CTRL *GMT, char *word)
 
 int gmt_getfonttype (struct GMT_CTRL *GMT, char *name)
 {
-	unsigned int i;
+	uint32_t i;
 
 	if (!name[0]) return (-1);
 	if (!isdigit ((unsigned char) name[0])) {	/* Does not start with number. Try font name */
@@ -1365,7 +1365,7 @@ int gmt_getfonttype (struct GMT_CTRL *GMT, char *name)
 
 bool gmt_is_fontname (struct GMT_CTRL *GMT, char *word) {
 	/* Returns true if the word is one of the named fonts */
-	unsigned int i;
+	uint32_t i;
 
 	if (!word[0]) return (false);
 	for (i = 0; i < GMT->session.n_fonts && strcmp (word, GMT->session.font[i].name); i++);
@@ -1375,7 +1375,7 @@ bool gmt_is_fontname (struct GMT_CTRL *GMT, char *word) {
 
 int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F)
 {
-	unsigned int i, n;
+	uint32_t i, n;
 	int k;
 	double pointsize;
 	char size[GMT_LEN256] = {""}, name[GMT_LEN256] = {""}, fill[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *s = NULL;
@@ -1536,7 +1536,7 @@ int gmt_getpenwidth (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 }
 
 int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
-	unsigned int i, n, pos, unit = GMT_PT;
+	uint32_t i, n, pos, unit = GMT_PT;
 	double width;
 	char tmp[GMT_LEN256] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
 
@@ -1547,7 +1547,7 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 
 	width = (P->width < GMT_SMALL) ? GMT_PENWIDTH : P->width;
 	if (isdigit ((int)line[0])) {	/* Specified numeric pattern will start with an integer */
-		unsigned int c_pos;
+		uint32_t c_pos;
 
 		for (i = 1, c_pos = 0; line[i] && c_pos == 0; i++) if (line[i] == ':') c_pos = i;
 		if (c_pos == 0) {
@@ -1753,9 +1753,9 @@ bool GMT_getinc (struct GMT_CTRL *GMT, char *line, double inc[])
 	return (false);
 }
 
-int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
+int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], uint32_t n)
 {
-	unsigned int last, i, pos;
+	uint32_t last, i, pos;
 	char p[GMT_BUFSIZ];
 	double scale = 1.0;
 
@@ -1768,7 +1768,7 @@ int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 	i = pos = GMT->current.io.inc_code[GMT_X] = GMT->current.io.inc_code[GMT_Y] = 0;
 
 	while (i < n && (GMT_strtok (line, "/", &pos, p))) {
-		last = (unsigned int)strlen (p) - 1;
+		last = (uint32_t)strlen (p) - 1;
 		if (p[last] == '=') {	/* Let -I override -R */
 			p[last] = 0;
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_EXACT;
@@ -1923,7 +1923,7 @@ void GMT_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 	   On output the grid boundaries are always gridline or pixel oriented, depending on registration.
 	   The routine is not run when nx and ny are already set.
 	*/
-	unsigned int one_or_zero;
+	uint32_t one_or_zero;
 	double s;
 
 	one_or_zero = !h->registration;
@@ -2051,7 +2051,7 @@ struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *GMT, uint64_t n_colors
 	struct GMT_PALETTE *P = NULL;
 	P = GMT_memory (GMT, NULL, 1, struct GMT_PALETTE);
 	if (n_colors > 0) P->range = GMT_memory (GMT, NULL, n_colors, struct GMT_LUT);
-	P->n_colors = (unsigned int)n_colors;
+	P->n_colors = (uint32_t)n_colors;
 	P->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
 	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
@@ -2067,7 +2067,7 @@ void GMT_free_range  (struct GMT_CTRL *GMT, struct GMT_LUT *S)
 
 void GMT_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P)
 {
-	unsigned int i;
+	uint32_t i;
 	if (!P) return;
 	/* Frees all memory used by this palette but does not free the palette itself */
 	for (i = 0; i < P->n_colors; i++) {
@@ -2083,7 +2083,7 @@ void GMT_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P)
 
 void gmt_copy_palette_hdrs (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct GMT_PALETTE *P_from)
 {
-	unsigned int hdr;
+	uint32_t hdr;
 	if (P_from->n_headers == 0) return;	/* Nothing to do */
 	/* Must duplicate the header records */
 	P_to->n_headers = P_from->n_headers;
@@ -2093,7 +2093,7 @@ void gmt_copy_palette_hdrs (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, stru
 
 void GMT_copy_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct GMT_PALETTE *P_from)
 {
-	unsigned int i;
+	uint32_t i;
 	/* Makes the specified palette the current palette */
 	GMT_free_cpt_ptr (GMT, P_to);	/* Frees everything inside P_to */
 	GMT_memcpy (P_to, P_from, 1, struct GMT_PALETTE);
@@ -2112,7 +2112,7 @@ void GMT_copy_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct GM
 	gmt_copy_palette_hdrs (GMT, P_to, P_from);
 }
 
-struct GMT_PALETTE * GMT_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_from, unsigned int mode)
+struct GMT_PALETTE * GMT_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_from, uint32_t mode)
 {	/* Mode not used yet */
 	struct GMT_PALETTE *P = GMT_create_palette (GMT, P_from->n_colors);
 	GMT_copy_palette (GMT, P, P_from);
@@ -2148,10 +2148,10 @@ int GMT_list_cpt (struct GMT_CTRL *GMT, char option)
 	return (GMT_NOERROR);
 }
 
-struct CPT_Z_SCALE *gmt_cpt_parse_z_unit (struct GMT_CTRL *GMT, char *file, unsigned int direction)
+struct CPT_Z_SCALE *gmt_cpt_parse_z_unit (struct GMT_CTRL *GMT, char *file, uint32_t direction)
 {	/* Decode the optional +u|U<unit> and determine scales */
 	enum GMT_enum_units u_number;
-	unsigned int mode = 0;
+	uint32_t mode = 0;
 	char *c = NULL;
 	struct CPT_Z_SCALE *Z = NULL;
 	
@@ -2173,9 +2173,9 @@ struct CPT_Z_SCALE *gmt_cpt_parse_z_unit (struct GMT_CTRL *GMT, char *file, unsi
 	return (Z);
 }
 
-void gmt_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, struct CPT_Z_SCALE *Z, unsigned int direction)
+void gmt_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, struct CPT_Z_SCALE *Z, uint32_t direction)
 {
-	unsigned int k;
+	uint32_t k;
 	double scale = 1.0;
 	/* Apply the scaling of z as given by the header's z_* settings.
 	 * After reading a cpt it will have z in meters.
@@ -2220,7 +2220,7 @@ void gmt_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, struct CPT_Z_
 	}
 }
 
-struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int cpt_flags)
+struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, uint32_t source_type, uint32_t cpt_flags)
 {
 	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length.
 	 * Return the result as a palette struct.
@@ -2230,7 +2230,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
-	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model, n_master = 0;
+	uint32_t n = 0, i, nread, annot, id, n_cat_records = 0, color_model, n_master = 0;
 	size_t k;
 	bool gap, error = false, close_file = false, check_headers = true, master = false;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
@@ -2671,11 +2671,11 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 	return (P);
 }
 
-void GMT_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double transparency, unsigned int mode)
+void GMT_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double transparency, uint32_t mode)
 {
 	/* Set transparency for all slices, and possibly BNF */
 
-	unsigned int i;
+	uint32_t i;
 
 	for (i = 0; i < P->n_colors; i++) P->range[i].hsv_low[3] = P->range[i].hsv_high[3] = P->range[i].rgb_low[3] = P->range[i].rgb_high[3] = transparency;
 
@@ -2693,7 +2693,7 @@ struct GMT_PALETTE * GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P
 	 * New cpt may be continuous and/or reversed.
 	 * We write the new cpt table to stdout. */
 
-	unsigned int i = 0, j, k, upper, lower, nz;
+	uint32_t i = 0, j, k, upper, lower, nz;
 	bool even = false;	/* even is true when nz is passed as negative */
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
 	double *x = NULL, *z_out = NULL, a, b, f, x_inc;
@@ -2898,7 +2898,7 @@ struct GMT_PALETTE * GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P
 	return (P);
 }
 
-int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int cpt_flags, struct GMT_PALETTE *P)
+int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, uint32_t dest_type, uint32_t cpt_flags, struct GMT_PALETTE *P)
 {
 	/* We write the cpt table to fpr [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
@@ -2907,7 +2907,7 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
-	unsigned int i;
+	uint32_t i;
 	bool close_file = false;
 	double cmyk[5];
 	char format[GMT_BUFSIZ] = {""}, cpt_file[GMT_BUFSIZ] = {""}, code[3] = {'B', 'F', 'N'};
@@ -3045,7 +3045,7 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 void truncate_cpt_slice (struct GMT_CTRL *GMT, struct GMT_LUT *S, bool do_hsv, double z_cut, int side)
 {	/* Interpolate this slice to the new low or high value, depending on side */
 	double f = (z_cut - S->z_low) * S->i_dz, hsv[4], rgb[4];
-	unsigned int k;
+	uint32_t k;
 	if (do_hsv) {	/* Interpolation in HSV space */
 		for (k = 0; k < 4; k++) hsv[k] = S->hsv_low[k] + (S->hsv_high[k] - S->hsv_low[k]) * f;
 		gmt_hsv_to_rgb (GMT, rgb, hsv);
@@ -3070,7 +3070,7 @@ void truncate_cpt_slice (struct GMT_CTRL *GMT, struct GMT_LUT *S, bool do_hsv, d
 struct GMT_PALETTE * GMT_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high)
 {	/* Truncate this CPT table to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
 	
-	unsigned int k, j, first = 0, last = P->n_colors - 1;
+	uint32_t k, j, first = 0, last = P->n_colors - 1;
 	
 	if (GMT_is_dnan (z_low) && GMT_is_dnan (z_high)) return (P);	/* No change */
 	
@@ -3102,7 +3102,7 @@ struct GMT_PALETTE * GMT_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 
 int GMT_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value)
 {
-	unsigned int index, lo, hi, mid;
+	uint32_t index, lo, hi, mid;
 
 	if (GMT_is_dnan (value)) return (GMT_NAN - 3);				/* Set to NaN color */
 	if (value > P->range[P->n_colors-1].z_high)
@@ -3144,7 +3144,7 @@ int GMT_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value)
 
 void GMT_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb)
 {
-	unsigned int i;
+	uint32_t i;
 	double rel, hsv[4];
 
 	if (index < 0) {	/* NaN, Foreground, Background */
@@ -3511,21 +3511,21 @@ int GMT_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t
 }
 
 // Non-square matrix transpose of matrix of size r x c and base address A
-unsigned int is_set (unsigned int *mark, uint64_t k, unsigned int *bits)
+uint32_t is_set (uint32_t *mark, uint64_t k, uint32_t *bits)
 {	/* Return nonzero if this bit is set */
 	uint64_t w = k / 32ULL;
-	unsigned int b = (unsigned int)(k % 32ULL);
+	uint32_t b = (uint32_t)(k % 32ULL);
 	return (mark[w] & bits[b]);
 }
 
-void set_bit (unsigned int *mark, uint64_t k, unsigned int *bits)
+void set_bit (uint32_t *mark, uint64_t k, uint32_t *bits)
 {	/* Set this bit */
  	uint64_t w = k / 32ULL;
-	unsigned int b = (unsigned int)(k % 32ULL);
+	uint32_t b = (uint32_t)(k % 32ULL);
  	mark[w] |= bits[b];
 }
 
-void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols)
+void GMT_inplace_transpose (float *A, uint32_t n_rows, uint32_t n_cols)
 {	/* In-place transpose of a float grid array.  Based on example
 	 * code from http://www.geeksforgeeks.org/inplace-m-x-n-size-matrix-transpose
 	 * Switched to C-style bit flag.
@@ -3536,10 +3536,10 @@ void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols)
 	uint64_t cycleBegin;	/* holds start of cycle */
 	uint64_t i;	/* iterator */
 	uint64_t n_words = ((size + 1ULL) / 32ULL) + 1ULL;
-	unsigned int *mark = NULL;
-	unsigned int bits[32];
+	uint32_t *mark = NULL;
+	uint32_t bits[32];
 
-	mark = calloc (n_words, sizeof (unsigned int));
+	mark = calloc (n_words, sizeof (uint32_t));
 	for (i = 1, bits[0] = 1; i < 32; i++) bits[i] = bits[i-1] << 1;
 	set_bit (mark, 0ULL, bits);
 	set_bit (mark, size, bits);
@@ -3567,7 +3567,7 @@ void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols)
 int die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where)
 {	/* Handle reporting and aborting if memory allocation fails */
 	double mem = ((double)nelem) * ((double)size);
-	unsigned int k = 0;
+	uint32_t k = 0;
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
 	while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 	GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
@@ -3744,7 +3744,7 @@ void GMT_reset_meminc (struct GMT_CTRL *GMT)
 	GMT->session.min_meminc = GMT_MIN_MEMINC;
 }
 
-void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned int mode)
+void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, uint32_t mode)
 {	/* Assign default values to structure */
 	GMT_memset (G, 1, struct GMT_CONTOUR);	/* Sets all to 0 */
 	if (mode == 1) {
@@ -3776,7 +3776,7 @@ void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 
 int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 {
-	unsigned int k, bad = 0, pos = 0;
+	uint32_t k, bad = 0, pos = 0;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, c;
 	char *specs = NULL;
 
@@ -4151,9 +4151,9 @@ double gmt_determine_endpoints (struct GMT_CTRL *GMT, double x[], double y[], do
 	return (GMT_distance (GMT, x[0], y[0], x[1], y[1]));
 }
 
-uint64_t gmt_determine_circle (struct GMT_CTRL *GMT, double x0, double y0, double r, double x[], double y[], unsigned int n)
+uint64_t gmt_determine_circle (struct GMT_CTRL *GMT, double x0, double y0, double r, double x[], double y[], uint32_t n)
 {	/* Given an origin, radius, and n points, compute a circular path and return it */
-	unsigned int k;
+	uint32_t k;
 	uint64_t np = n;
 	double d_angle = 360.0 / n;
 	
@@ -4187,7 +4187,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	 * If resample is true then we sample the track between the end points.
 	 * If project is true then we convert to plot units.
 	 */
-	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	uint32_t n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	enum GMT_profmode p_mode;
 	int n, error = 0;
 	double L, az = 0.0, length = 0.0, r = 0.0;
@@ -4351,7 +4351,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 
 	/* Prepares contour labeling machinery as needed */
 
-	unsigned int error = 0;
+	uint32_t error = 0;
 	uint64_t k, i;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double x, y;
@@ -4386,7 +4386,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		G->xp = GMT_make_profile (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		unsigned int geometry = GMT_IS_LINE;
+		uint32_t geometry = GMT_IS_LINE;
 		G->xp = GMT_read_table (GMT, G->file, GMT_IS_FILE, false, &geometry, false);
 		for (k = 0; k < G->xp->n_segments; k++) {
 			for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
@@ -4652,7 +4652,7 @@ void gmt_get_radii_of_curvature (double x[], double y[], uint64_t n, double r[])
 	r[0] = r[n-1] = DBL_MAX;	/* Boundary conditions has zero curvature at end points so r = inf */
 }
 
-void gmt_edge_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int col, unsigned int row, unsigned int side, double d, double *x, double *y)
+void gmt_edge_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, uint32_t col, uint32_t row, uint32_t side, double d, double *x, double *y)
 {
 	if (side == 0) {
 		*x = GMT_grd_col_to_x (GMT, col+d, G->header);
@@ -4701,10 +4701,10 @@ void gmt_setcontjump (float *z, uint64_t nz)
 	}
 }
 
-uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test, unsigned int *edge, double **x, double **y, unsigned int col, unsigned int row, unsigned int side, uint64_t offset, unsigned int *bit, unsigned int *nan_flag)
+uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test, uint32_t *edge, double **x, double **y, uint32_t col, uint32_t row, uint32_t side, uint64_t offset, uint32_t *bit, uint32_t *nan_flag)
 {
 	/* Note: side must be signed due to calculations like (side-2)%2 which will not work with unsigned */
-	unsigned int side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit;
+	uint32_t side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit;
 	int p[5], mx;
 	bool more;
 	size_t n_alloc;
@@ -4721,8 +4721,8 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test,
 	/* Check if this edge was already used */
 
 	ij0 = GMT_IJ0 (G->header, row + d_row[side], col + d_col[side]);	/* Index to use with the edge array */
-	edge_word = (unsigned int)(ij0 / 32 + d_side[side] * offset);
-	edge_bit = (unsigned int)(ij0 % 32);
+	edge_word = (uint32_t)(ij0 / 32 + d_side[side] * offset);
+	edge_bit = (uint32_t)(ij0 % 32);
 	if (test && (edge[edge_word] & bit[edge_bit])) return (0);
 
 	ij_in = GMT_IJP (G->header, row, col);	/* Index to use with the padded G->data array */
@@ -4835,8 +4835,8 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test,
 		/* Mark the new edge as used */
 
 		ij0 = GMT_IJ0 (G->header, row + d_row[side], col + d_col[side]);	/* Non-padded index used for edge array */
-		edge_word = (unsigned int)(ij0 / 32 + d_side[side] * offset);
-		edge_bit  = (unsigned int)(ij0 % 32);
+		edge_word = (uint32_t)(ij0 / 32 + d_side[side] * offset);
+		edge_bit  = (uint32_t)(ij0 % 32);
 		edge[edge_word] |= bit[edge_bit];
 
 		if ((side == 0 && row == G->header->ny - 1) || (side == 1 && col == G->header->nx - 2) ||
@@ -5069,7 +5069,7 @@ void gmt_orient_contour (struct GMT_GRID *G, double *x, double *y, uint64_t n, i
 	}
 }
 
-uint64_t GMT_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smooth_factor, unsigned int int_scheme, int orient, unsigned int *edge, bool *first, double **x, double **y)
+uint64_t GMT_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, uint32_t smooth_factor, uint32_t int_scheme, int orient, uint32_t *edge, bool *first, double **x, double **y)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
@@ -5079,20 +5079,20 @@ uint64_t GMT_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int sm
 	 * Note: grd has a pad while edge does not!
 	 */
 
-	static unsigned int col_0, row_0, side;
-	unsigned int nans = 0, row, col;
+	static uint32_t col_0, row_0, side;
+	uint32_t nans = 0, row, col;
 	int scol;
 	uint64_t n = 0, n2, n_edges, offset;
 	double *x2 = NULL, *y2 = NULL;
-	static unsigned int bit[32];
+	static uint32_t bit[32];
 
 	n_edges = G->header->ny * (uint64_t) ceil (G->header->nx / 16.0);
 	offset = n_edges / 2;
 
 	/* Reset edge-flags to zero, if necessary */
 	if (*first) {	/* Set col_0,row_0 for southern boundary */
-		unsigned int i;
-		GMT_memset (edge, n_edges, unsigned int);
+		uint32_t i;
+		GMT_memset (edge, n_edges, uint32_t);
 		col_0 = side = 0;
 		row_0 = G->header->ny - 1;
 		for (i = 1, bit[0] = 1; i < 32; i++) bit[i] = bit[i-1] << 1;
@@ -5214,7 +5214,7 @@ uint64_t GMT_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int sm
 
 struct GMT_DATASEGMENT * GMT_dump_contour (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double z)
 {	/* Returns a segment with this contour */
-	unsigned int n_cols;
+	uint32_t n_cols;
 	char header[GMT_BUFSIZ];
 	struct GMT_DATASEGMENT *S = NULL;
 
@@ -5237,7 +5237,7 @@ struct GMT_DATASEGMENT * GMT_dump_contour (struct GMT_CTRL *GMT, double *x, doub
 	return (S);
 }
 
-char * GMT_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt[], double z, bool closed, unsigned int count[])
+char * GMT_make_filename (struct GMT_CTRL *GMT, char *template, uint32_t fmt[], double z, bool closed, uint32_t count[])
 {
 	/* Produce a filename given the template and the running values.
 	 * Here, c, d, f stands for the O/C character, the running count,
@@ -5245,7 +5245,7 @@ char * GMT_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt
 	 * incremented.  If c is not used the only count[0] is used, else
 	 * we used count[0] for open and count[1] for closed contours. */
 
-	unsigned int i, n_fmt;
+	uint32_t i, n_fmt;
 	static char kind[2] = {'O', 'C'};
 	char file[GMT_BUFSIZ];
 
@@ -5579,7 +5579,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 			GMT_init_track (GMT, yy, nn, &(G->ylist));
 			for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
 				GMT_init_track (GMT, G->xp->segment[line_no]->coord[GMT_Y], G->xp->segment[line_no]->n_rows, &(G->ylist_XP));
-				G->nx = (unsigned int)GMT_crossover (GMT, G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, &G->XC);
+				G->nx = (uint32_t)GMT_crossover (GMT, G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, &G->XC);
 				GMT_free (GMT, G->ylist_XP);
 				if (G->nx == 0) continue;
 
@@ -5717,7 +5717,7 @@ void GMT_get_plot_array (struct GMT_CTRL *GMT) {	/* Allocate more space for plot
 	GMT->current.plot.n_alloc = (GMT->current.plot.n_alloc == 0) ? GMT_CHUNK : (GMT->current.plot.n_alloc << 1);
 	GMT->current.plot.x = GMT_memory (GMT, GMT->current.plot.x, GMT->current.plot.n_alloc, double);
 	GMT->current.plot.y = GMT_memory (GMT, GMT->current.plot.y, GMT->current.plot.n_alloc, double);
-	GMT->current.plot.pen = GMT_memory (GMT, GMT->current.plot.pen, GMT->current.plot.n_alloc, unsigned int);
+	GMT->current.plot.pen = GMT_memory (GMT, GMT->current.plot.pen, GMT->current.plot.n_alloc, uint32_t);
 }
 
 int GMT_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *prefix, char *format)
@@ -5774,7 +5774,7 @@ int GMT_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	return (ndec);
 }
 
-unsigned int GMT_non_zero_winding (struct GMT_CTRL *GMT, double xp, double yp, double *x, double *y, uint64_t n_path)
+uint32_t GMT_non_zero_winding (struct GMT_CTRL *GMT, double xp, double yp, double *x, double *y, uint64_t n_path)
 {
 	/* Routine returns (2) if (xp,yp) is inside the
 	   polygon x[n_path], y[n_path], (0) if outside,
@@ -5989,7 +5989,7 @@ static inline bool gmt_same_longitude (double a, double b) {
 
 #define GMT_SAME_LATITUDE(A,B)  (doubleAlmostEqualZero (A,B))			/* A and B are the same latitude */
 
-int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEGMENT *P, unsigned int count[])
+int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEGMENT *P, uint32_t count[])
 {	/* Case of a polar cap */
 	uint64_t i, in, ip, prev;
 	int cut;
@@ -5997,7 +5997,7 @@ int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEG
 
 	/* Draw meridian through P and count all the crossings with the line segments making up the polar cap S */
 
-	GMT_memset (count, 2, unsigned int);	/* Initialize counts to zero */
+	GMT_memset (count, 2, uint32_t);	/* Initialize counts to zero */
 	for (i = 0; i < P->n_rows - 1; i++) {	/* -1, since we know last point repeats the first */
 		/* Here lon1 and lon2 are the end points (in longitude) of the current line segment in S.  There are
 		 * four cases to worry about:
@@ -6072,7 +6072,7 @@ int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEG
 	return (0);	/* This means no special cases were detected that warranted an immediate return */
 }
 
-unsigned int GMT_inonout_sphpol (struct GMT_CTRL *GMT, double plon, double plat, const struct GMT_DATASEGMENT *P)
+uint32_t GMT_inonout_sphpol (struct GMT_CTRL *GMT, double plon, double plat, const struct GMT_DATASEGMENT *P)
 /* This function is used to see if some point P is located inside, outside, or on the boundary of the
  * spherical polygon S read by GMT_import_table.  Note GMT->current.io.skip_duplicates must be true when the polygon
  * was read so there are NO duplicate (repeated) points.
@@ -6094,7 +6094,7 @@ unsigned int GMT_inonout_sphpol (struct GMT_CTRL *GMT, double plon, double plat,
 	 * In all cases, we check if P is on the outline of S
 	 */
 
-	unsigned int count[2];
+	uint32_t count[2];
 
 	if (P->pole) {	/* Case 1 of an enclosed polar cap */
 		if (P->pole == +1) {	/* N polar cap */
@@ -6129,9 +6129,9 @@ unsigned int GMT_inonout_sphpol (struct GMT_CTRL *GMT, double plon, double plat,
 	return (GMT_OUTSIDE);	/* Nothing triggered the tests; we are outside */
 }
 
-unsigned int gmt_inonout_sub (struct GMT_CTRL *GMT, double x, double y, const struct GMT_DATASEGMENT *S)
+uint32_t gmt_inonout_sub (struct GMT_CTRL *GMT, double x, double y, const struct GMT_DATASEGMENT *S)
 {	/* Front end for both spherical and Cartesian in-on-out functions */
-	unsigned int side;
+	uint32_t side;
 
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Assumes these are input polygons */
 		if (S->pole)	/* 360-degree polar cap, must check fully */
@@ -6150,10 +6150,10 @@ unsigned int gmt_inonout_sub (struct GMT_CTRL *GMT, double x, double y, const st
 	return (side);
 }
 
-unsigned int GMT_inonout (struct GMT_CTRL *GMT, double x, double y, const struct GMT_DATASEGMENT *S)
+uint32_t GMT_inonout (struct GMT_CTRL *GMT, double x, double y, const struct GMT_DATASEGMENT *S)
 {	/* Front end for both spherical and Cartesian in-on-out functions.
  	 * Knows to check for polygons with holes as well. */
-	unsigned int side, side_h;
+	uint32_t side, side_h;
 	struct GMT_DATASEGMENT *H = NULL;
 
 	if ((side = gmt_inonout_sub (GMT, x, y, S)) <= GMT_ONEDGE) return (side);	/* Outside polygon or on perimeter, we are done */
@@ -6688,7 +6688,7 @@ int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 	return (GMT_NOERROR);
 }
 
-int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction)
+int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, uint32_t direction)
 {
 	/* Set two rows of padding (pad[] can be larger) around data according
 	   to desired boundary condition info in that header.
@@ -6714,8 +6714,8 @@ int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	uint64_t jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
 	uint64_t jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
 	uint64_t j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
-	unsigned int n_skip, n_set;
-	unsigned int bok;		/* bok used to test that things are OK  */
+	uint32_t n_skip, n_set;
+	uint32_t bok;		/* bok used to test that things are OK  */
 	bool set[4] = {true, true, true, true};
 	 
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
@@ -7138,9 +7138,9 @@ int GMT_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G)
 	uint64_t jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
 	uint64_t jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
 	uint64_t j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
-	unsigned int n_skip, n_set;
-	unsigned int b, nb = G->header->n_bands;
-	unsigned int bok;		/* bok used to test that things are OK  */
+	uint32_t n_skip, n_set;
+	uint32_t b, nb = G->header->n_bands;
+	uint32_t bok;		/* bok used to test that things are OK  */
 	bool set[4] = {true, true, true, true};
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
@@ -7625,7 +7625,7 @@ bool GMT_x_out_of_bounds (struct GMT_CTRL *GMT, int *i, struct GMT_GRID_HEADER *
 	return (false);	/* OK, we are inside grid now for sure */
 }
 
-bool GMT_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col)
+bool GMT_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, uint32_t *row, uint32_t *col)
 {	/* Return false and pass back unsigned row,col if inside region, or return true (outside) */
 	int signed_row, signed_col;
 	signed_row = (int)GMT_grd_y_to_row (GMT, in[GMT_Y], h);
@@ -7681,7 +7681,7 @@ bool GMT_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double righ
 int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_INSERT *B)
 {	/* Parse the map insert option: 
 	 * -D[unit]<xmin/xmax/ymin/ymax>|<width>[/<height>][+c<clon>/<clat>][+p<pen>][+g<fill>] */
-	unsigned int col_type[2], k = 0, i, start = 0, pos = 0, error = 0, n;
+	uint32_t col_type[2], k = 0, i, start = 0, pos = 0, error = 0, n;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	
 	if (!text) {
@@ -7747,7 +7747,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 		return (1);
 	}
 	if (k == 0 && !B->center) {	/* Got geographic w/e/s/n or <w/s/e/n>r */
-		n = (unsigned int)strlen(txt_d) - 1;
+		n = (uint32_t)strlen(txt_d) - 1;
 		if (txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
 			B->oblique = true;
 			txt_d[n] = '\0';
@@ -7873,7 +7873,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	}
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
 		char p[GMT_BUFSIZ];
-		unsigned int pos = 0, bad = 0;
+		uint32_t pos = 0, bad = 0;
 		while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'f':	/* Fill specification */
@@ -7928,7 +7928,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_ROSE *ms)
 {
 	int plus;
-	unsigned int j = 0, i, error = 0, colon, slash, k, pos, order[4] = {3,1,0,2};
+	uint32_t j = 0, i, error = 0, colon, slash, k, pos, order[4] = {3,1,0,2};
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, tmpstring[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
 
 	/* SYNTAX is -?[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+<aint>/<fint>/<gint>[/<aint>/<fint>/<gint>]], where <info> is
@@ -7962,7 +7962,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	/* Determine if we have the optional label components specified */
 
 	for (i = j, slash = 0; text[i] && slash < 2; i++) if (text[i] == '/') slash++;	/* Move i until the 2nd slash is reached */
-	for (k = (unsigned int)strlen(text) - 1, colon = 0; text[k] && k > i && colon < 2; k--)
+	for (k = (uint32_t)strlen(text) - 1, colon = 0; text[k] && k > i && colon < 2; k--)
 		if (text[k] == ':') colon++;	/* Move k to starting colon of :label: */
 	if (colon == 2 && k > i)
 		colon = k + 2;	/* Beginning of label */
@@ -8061,7 +8061,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	return (error);
 }
 
-unsigned int GMT_minmaxinc_verify (struct GMT_CTRL *GMT, double min, double max, double inc, double slop)
+uint32_t GMT_minmaxinc_verify (struct GMT_CTRL *GMT, double min, double max, double inc, double slop)
 {
 	double range;
 
@@ -8115,7 +8115,7 @@ void GMT_str_setcase (struct GMT_CTRL *GMT, char *value, int mode)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Bad mode (%d)\n", mode);
 }
 
-unsigned int GMT_getmodopt (struct GMT_CTRL *GMT, const char *string, const char *sep, unsigned int *pos, char *token)
+uint32_t GMT_getmodopt (struct GMT_CTRL *GMT, const char *string, const char *sep, uint32_t *pos, char *token)
 {
 	/* Breaks string into tokens separated by one of more modifier separator
 	 * characters (in sep) following a +.  Set *pos to 0 before first call.
@@ -8125,10 +8125,10 @@ unsigned int GMT_getmodopt (struct GMT_CTRL *GMT, const char *string, const char
 	 * string is not changed by GMT_getmodopt.
 	 */
 
-	unsigned int i, j, string_len;
+	uint32_t i, j, string_len;
 	bool done = false;
 
-	string_len = (unsigned int)strlen (string);
+	string_len = (uint32_t)strlen (string);
 	token[0] = 0;	/* Initialize token to NULL in case we are at end */
 
 	while (!done) {
@@ -8175,20 +8175,20 @@ double GMT_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T)
 	}
 }
 
-int GMT_just_decode (struct GMT_CTRL *GMT, char *key, unsigned int def)
+int GMT_just_decode (struct GMT_CTRL *GMT, char *key, uint32_t def)
 {
 	/* Converts justification info (key) like BL (bottom left) to justification indices
 	 * def = default value.
 	 * When def % 4 = 0, horizontal position must be specified
 	 * When def / 4 = 3, vertical position must be specified
 	 */
-	unsigned int i, j, k;
+	uint32_t i, j, k;
 
 	if (isdigit ((int)key[0])) return (atoi(key));
 
 	i = def % 4;
 	j = def / 4;
-	for (k = 0; k < (unsigned int)strlen (key); k++) {
+	for (k = 0; k < (uint32_t)strlen (key); k++) {
 		switch (key[k]) {
 			case 'b':	/* Bottom baseline */
 			case 'B':
@@ -8231,7 +8231,7 @@ int GMT_just_decode (struct GMT_CTRL *GMT, char *key, unsigned int def)
 	return (j * 4 + i);
 }
 
-void GMT_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx, double dy, double *x_shift, double *y_shift, unsigned int mode)
+void GMT_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx, double dy, double *x_shift, double *y_shift, uint32_t mode)
 {	/* mode = 2: Assume a radius offset so that corner shifts are adjusted by 1/sqrt(2) */
 	double s, c, xx, yy, f;
 	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
@@ -8242,9 +8242,9 @@ void GMT_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	*y_shift += s * xx + c * yy;
 }
 
-unsigned int GMT_verify_expectations (struct GMT_CTRL *GMT, unsigned int wanted, unsigned int got, char *item)
+uint32_t GMT_verify_expectations (struct GMT_CTRL *GMT, uint32_t wanted, uint32_t got, char *item)
 {	/* Compare what we wanted with what we got and see if it is OK */
-	unsigned int error = 0;
+	uint32_t error = 0;
 
 	if (wanted == GMT_IS_UNKNOWN) {	/* No expectations set */
 		switch (got) {
@@ -8351,11 +8351,11 @@ void GMT_rotate2D (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 	}
 }
 
-unsigned int GMT_get_arc (struct GMT_CTRL *GMT, double x0, double y0, double r, double dir1, double dir2, double **x, double **y)
+uint32_t GMT_get_arc (struct GMT_CTRL *GMT, double x0, double y0, double r, double dir1, double dir2, double **x, double **y)
 {
 	/* Create an array with a circular arc. r in inches, angles in degrees */
 
-	unsigned int i, n;
+	uint32_t i, n;
 	double da, s, c, *xx = NULL, *yy = NULL;
 
 	n = urint (D2R * fabs (dir2 - dir1) * r / GMT->current.setting.map_line_step);
@@ -8810,7 +8810,7 @@ void GMT_x_free (struct GMT_CTRL *GMT, struct GMT_XOVER *X) {
 	GMT_free (GMT, X->xnode[1]);
 }
 
-unsigned int GMT_linear_array (struct GMT_CTRL *GMT, double min, double max, double delta, double phase, double **array)
+uint32_t GMT_linear_array (struct GMT_CTRL *GMT, double min, double max, double delta, double phase, double **array)
 {
 	/* Create an array of values between min and max, with steps delta and given phase.
 	   Example: min = 0, max = 9, delta = 2, phase = 1
@@ -8846,7 +8846,7 @@ unsigned int GMT_linear_array (struct GMT_CTRL *GMT, double min, double max, dou
 	return (n);
 }
 
-unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array)
+uint32_t GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array)
 {
 	int first, last, i, n, nticks;
 	double *val = NULL, tvals[10];
@@ -8917,7 +8917,7 @@ unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double
 	return (n);
 }
 
-unsigned int GMT_pow_array (struct GMT_CTRL *GMT, double min, double max, double delta, unsigned int x_or_y_or_z, double **array)
+uint32_t GMT_pow_array (struct GMT_CTRL *GMT, double min, double max, double delta, uint32_t x_or_y_or_z, double **array)
 {
 	int i, n;
 	double *val = NULL, v0, v1;
@@ -8954,9 +8954,9 @@ unsigned int GMT_pow_array (struct GMT_CTRL *GMT, double min, double max, double
 	return (n);
 }
 
-unsigned int GMT_time_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array)
+uint32_t GMT_time_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array)
 {	/* When T->active is true we must return interval start/stop even if outside min/max range */
-	unsigned int n = 0;
+	uint32_t n = 0;
 	bool interval;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	struct GMT_MOMENT_INTERVAL I;
@@ -8984,7 +8984,7 @@ unsigned int GMT_time_array (struct GMT_CTRL *GMT, double min, double max, struc
 	return (n);
 }
 
-unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels)
+uint32_t gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels)
 {
 	/* Reads a file with one or more records of the form
 	 * value	types	[label]
@@ -8996,7 +8996,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	 */
 	int error = 0, nc;
 	bool text, found;
- 	unsigned int k = 0, n_annot = 0, n_int = 0;
+ 	uint32_t k = 0, n_annot = 0, n_int = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double *x = NULL;
 	char **L = NULL, line[GMT_BUFSIZ] = {""}, str[GMT_LEN64] = {""}, type[8] = {""}, txt[GMT_BUFSIZ] = {""};
@@ -9036,9 +9036,9 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	return (k);
 }
 
-unsigned int GMT_coordinate_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels)
+uint32_t GMT_coordinate_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels)
 {
-	unsigned int n;
+	uint32_t n;
 
 	if (!T->active) return (0);	/* Nothing to do */
 
@@ -9202,7 +9202,7 @@ int gmt_polar_adjust (struct GMT_CTRL *GMT, int side, double angle, double x, do
 	return (justify);
 }
 
-bool gmt_get_label_parameters (struct GMT_CTRL *GMT, int side, double line_angle, int type, double *text_angle, unsigned int *justify)
+bool gmt_get_label_parameters (struct GMT_CTRL *GMT, int side, double line_angle, int type, double *text_angle, uint32_t *justify)
 {
 	bool ok;
 
@@ -9284,7 +9284,7 @@ int gmt_gnomonic_adjust (struct GMT_CTRL *GMT, double angle, double x, double y)
 	return ((inside) ? 7 : 5);
 }
 
-int GMT_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double x, double y, unsigned int type, double *line_angle, double *text_angle, unsigned int *justify)
+int GMT_prepare_label (struct GMT_CTRL *GMT, double angle, uint32_t side, double x, double y, uint32_t type, double *line_angle, double *text_angle, uint32_t *justify)
 {
 	bool set_angle;
 
@@ -9325,7 +9325,7 @@ int GMT_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, do
 	return 0;
 }
 
-void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, unsigned int lonlat, bool worldmap)
+void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, uint32_t lonlat, bool worldmap)
 /* val:		Degree value of annotation */
 /* label:	String to hold the final annotation */
 /* do_minutes:	true if degree and minutes are desired, false for just integer degrees */
@@ -9334,7 +9334,7 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 /* worldmap:	T/F, whatever GMT->current.map.is_world is */
 {
 	int sign, d, m, s, m_sec;
-	unsigned int k, n_items, h_pos = 0, level, type;
+	uint32_t k, n_items, h_pos = 0, level, type;
 	bool zero_fix = false;
 	char hemi[3], format[GMT_LEN64] = {""};
 
@@ -9470,7 +9470,7 @@ double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon
 	return (direction);
 }
 
-double GMT_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int level)
+double GMT_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, uint32_t level)
 {
 	/* Return offset in inches for text annotation.  If annotation
 	 * is to be placed 'inside' the map, set flip to true */
@@ -9491,7 +9491,7 @@ double GMT_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int leve
 	return (a);
 }
 
-int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify)
+int GMT_flip_justify (struct GMT_CTRL *GMT, uint32_t justify)
 {
 	/* Return the opposite justification */
 
@@ -9520,7 +9520,7 @@ int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify)
 }
 
 int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
-	unsigned int k, nc = 0, error = 0;
+	uint32_t k, nc = 0, error = 0;
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true;
@@ -9568,7 +9568,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_LEN64] = {""};
 			nc = sscanf (&buffer[2], "%d %s", &head->n_required, flags);
-			head->type = GMT_memory (GMT, NULL, head->n_required, unsigned int);
+			head->type = GMT_memory (GMT, NULL, head->n_required, uint32_t);
 			if (nc == 2) {	/* Got optional types argument */
 				if (strlen (flags) != head->n_required) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", name);
@@ -9692,7 +9692,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 
 			case 'R':		/* Rotate coordinate system about (0,0) */
 				if (last != 1) error++;
-				k = (unsigned int)strlen (col[0]) - 1;	/* Index of last character */
+				k = (uint32_t)strlen (col[0]) - 1;	/* Index of last character */
 				if (col[0][0] == '$') {	/* Got a variable as angle */
 					s->var = atoi (&col[0][1]);
 					s->action = GMT_SYMBOL_VARROTATE;	/* Mark as a different rotate action */
@@ -9750,7 +9750,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				k = 1;
 				while (col[last][k] && col[last][k] != '+') k++;
 				if (col[last][k]) {	/* Gave modifiers */
-					unsigned int pos = 0;
+					uint32_t pos = 0;
 					char p[GMT_BUFSIZ];
 					while ((GMT_strtok (&col[last][k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 						switch (p[0]) {
@@ -9830,7 +9830,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 }
 
 struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (struct GMT_CTRL *GMT, char *name) {
-	unsigned int i;
+	uint32_t i;
 	int found = -1;
 
 	/* First see if we already have loaded this symbol */
@@ -9848,7 +9848,7 @@ struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (struct GMT_CTRL *GMT, char *na
 }
 
 void GMT_free_custom_symbols (struct GMT_CTRL *GMT) {	/* Free the allocated list of custom symbols */
-	unsigned int i;
+	uint32_t i;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *current = NULL;
 
 	if (GMT->init.n_custom_symbols == 0) return;
@@ -9930,7 +9930,7 @@ int GMT_polygon_centroid (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n
 	return ((A < 0.0) ? -1 : +1);	/* -1 means CCW, +1 means CW */
 }
 
-unsigned int * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, unsigned int mode, unsigned int *d_row, unsigned int *actual_max_d_col)
+uint32_t * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, uint32_t mode, uint32_t *d_row, uint32_t *actual_max_d_col)
 {
 	/* When we search all nodes within a radius R on a grid, we first rule out nodes that are
 	 * outside the circumscribing rectangle.  However, for geographic data the circle becomes
@@ -9941,7 +9941,7 @@ unsigned int * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 	 * in the same units as the radius.  We also return the widest value in the d_col array via
 	 * the actual_max_d_col value.
 	 */
-	unsigned int max_d_col, row, *d_col = GMT_memory (GMT, NULL, G->header->ny, unsigned int);
+	uint32_t max_d_col, row, *d_col = GMT_memory (GMT, NULL, G->header->ny, uint32_t);
 	double dist_x, dist_y, lon, lat;
 	
 	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];
@@ -9976,7 +9976,7 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M)
 	/* Load in any gmt/grdmath macros.  These records are of the format
 	 * MACRO = ARG1 ARG2 ... ARGN : comments on what they do */
 
-	unsigned int n = 0, k = 0, pos = 0;
+	uint32_t n = 0, k = 0, pos = 0;
 	size_t n_alloc = 0;
 	char line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""}, item[GMT_LEN64] = {""}, args[GMT_BUFSIZ] = {""};
 	struct MATH_MACRO *macro = NULL;
@@ -10009,11 +10009,11 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M)
 	return (n);
 }
 
-int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M)
+int gmt_find_macro (char *arg, uint32_t n_macros, struct MATH_MACRO *M)
 {
 	/* See if the arg matches the name of a macro; return its ID or -1 */
 
-	unsigned int n;
+	uint32_t n;
 
 	if (n_macros == 0 || !M) return (GMT_NOTSET);
 
@@ -10022,11 +10022,11 @@ int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M)
 	return (GMT_NOTSET);
 }
 
-void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M)
+void gmt_free_macros (struct GMT_CTRL *GMT, uint32_t n_macros, struct MATH_MACRO **M)
 {
 	/* Free space allocated for macros */
 
-	unsigned int n, k;
+	uint32_t n, k;
 
 	if (n_macros == 0 || !(*M)) return;
 
@@ -10086,7 +10086,7 @@ void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3])
 }
 
 #if 0
-void GMT_dataset_detrend (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int mode, double *coeff)
+void GMT_dataset_detrend (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint32_t mode, double *coeff)
 {	/* Will detrend the x [and y if not NULL] columns separately. */
 	unsigned id = 0, tbl, col, n_cols;
 	uint64_t row, seg;
@@ -10131,7 +10131,7 @@ void GMT_dataset_detrend (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned 
 	}
 }
 
-void GMT_cols_detrend (struct GMT_CTRL *GMT, double *t, double *x, double *y, uint64_t n, unsigned int mode, double *coeff)
+void GMT_cols_detrend (struct GMT_CTRL *GMT, double *t, double *x, double *y, uint64_t n, uint32_t mode, double *coeff)
 {	/* Will detrend the x [and y if not NULL] columns separately. */
 	unsigned id = 0, tbl, col, n_cols;
 	uint64_t row, seg;
@@ -10177,7 +10177,7 @@ void GMT_cols_detrend (struct GMT_CTRL *GMT, double *t, double *x, double *y, ui
 #define SEG_DIST 2
 #define SEG_AZIM 3
 
-struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, unsigned int mode, unsigned int ex_cols, enum GMT_enum_track smode)
+struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, uint32_t mode, uint32_t ex_cols, enum GMT_enum_track smode)
 {
 	/* Spherical version; see GMT_resample_data for details */
 	int ndig;
@@ -10232,7 +10232,7 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 	return (D);
 }
 
-struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, unsigned int mode, unsigned int ex_cols, enum GMT_enum_track smode)
+struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, uint32_t mode, uint32_t ex_cols, enum GMT_enum_track smode)
 {
 	/* Cartesian version; see GMT_resample_data for details */
 
@@ -10289,7 +10289,7 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 
 }
 
-struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds,  unsigned int mode, unsigned int ex_cols, enum GMT_enum_track smode)
+struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds,  uint32_t mode, uint32_t ex_cols, enum GMT_enum_track smode)
 {
 	/* Din is a data set with at least two columns (x,y or lon/lat);
 	 * it can contain any number of tables and segments with lines.
@@ -10327,7 +10327,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 
 	int k, ndig, sdig, n_half_cross;
 
-	unsigned int ii, np_cross;
+	uint32_t ii, np_cross;
 	
 	uint64_t dim[4] = {0, 0, 0, 0};
 	
@@ -10469,7 +10469,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 
 	int k, ndig, sdig, n_half_cross;
 
-	unsigned int ii, np_cross;
+	uint32_t ii, np_cross;
 	
 	uint64_t tbl, row, seg, seg_no, n_tot_cols;
 	
@@ -10599,10 +10599,10 @@ bool GMT_crossing_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 	return (cross);
 }
 
-unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout)
+uint32_t GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout)
 {	/* Create two or more feature segments by splitting them across the Dateline.
 	 * GMT_split_line_at_dateline should ONLY be called when we KNOW we must split. */
-	unsigned int n_split;
+	uint32_t n_split;
 	uint64_t k, col, seg, row, start, length, *pos = GMT_memory (GMT, NULL, S->n_rows, uint64_t);
 	char label[GMT_BUFSIZ] = {""}, *txt = NULL, *feature = "Line";
 	double r;
@@ -10720,7 +10720,7 @@ char *GMT_putusername (struct GMT_CTRL *GMT)
 
 /* Various functions from surface that are now used elsewhere as well */
 
-unsigned int GMT_gcd_euclid (unsigned int a, unsigned int b)
+uint32_t GMT_gcd_euclid (uint32_t a, uint32_t b)
 {
 	/* Returns the greatest common divisor of u and v by Euclid's method.
 	 * I have experimented also with Stein's method, which involves only
@@ -10731,7 +10731,7 @@ unsigned int GMT_gcd_euclid (unsigned int a, unsigned int b)
 	 *
 	 * Walter H. F. Smith, 25 Feb 1992, after D. E. Knuth, vol. II  */
 
-	unsigned int u, v, r;
+	uint32_t u, v, r;
 
 	u = MAX (a, b);
 	v = MIN (a, b);
@@ -10744,7 +10744,7 @@ unsigned int GMT_gcd_euclid (unsigned int a, unsigned int b)
 	return (u);
 }
 
-double gmt_guess_surface_time (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny)
+double gmt_guess_surface_time (struct GMT_CTRL *GMT, uint32_t factors[], uint32_t nx, uint32_t ny)
 {
 	/* Routine to guess a number proportional to the operations
 	 * required by surface working on a user-desired grid of
@@ -10771,10 +10771,10 @@ double gmt_guess_surface_time (struct GMT_CTRL *GMT, unsigned int factors[], uns
 	 *
 	 * W. H. F. Smith, 26 Feb 1992.  */
 
-	unsigned int gcd;		/* Current value of the gcd  */
-	unsigned int nxg, nyg;	/* Current value of the grid dimensions  */
-	unsigned int nfactors = 0;	/* Number of prime factors of current gcd  */
-	unsigned int factor;	/* Currently used factor  */
+	uint32_t gcd;		/* Current value of the gcd  */
+	uint32_t nxg, nyg;	/* Current value of the grid dimensions  */
+	uint32_t nfactors = 0;	/* Number of prime factors of current gcd  */
+	uint32_t factor;	/* Currently used factor  */
 	/* Doubles are used below, even though the values will be integers,
 		because the multiplications might reach sizes of O(n**3)  */
 	double t_sum;		/* Sum of values of T at each grid cycle  */
@@ -10821,7 +10821,7 @@ int compare_sugs (const void *point_1, const void *point_2)
 	return (0);
 }
 
-unsigned int GMT_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny, struct GMT_SURFACE_SUGGESTION **S)
+uint32_t GMT_optimal_dim_for_surface (struct GMT_CTRL *GMT, uint32_t factors[], uint32_t nx, uint32_t ny, struct GMT_SURFACE_SUGGESTION **S)
 {
 	/* Calls gmt_guess_surface_time for a variety of trial grid
 	 * sizes, where the trials are highly composite numbers
@@ -10837,10 +10837,10 @@ unsigned int GMT_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int fac
 
 	double users_time;	/* Time for user's nx, ny  */
 	double current_time;	/* Time for current nxg, nyg  */
-	unsigned int nxg, nyg;	/* Guessed by this routine  */
-	unsigned int nx2, ny2, nx3, ny3, nx5, ny5;	/* For powers  */
-	unsigned int xstop, ystop;	/* Set to 2*nx, 2*ny  */
-	unsigned int n_sug = 0;	/* N of suggestions found  */
+	uint32_t nxg, nyg;	/* Guessed by this routine  */
+	uint32_t nx2, ny2, nx3, ny3, nx5, ny5;	/* For powers  */
+	uint32_t xstop, ystop;	/* Set to 2*nx, 2*ny  */
+	uint32_t n_sug = 0;	/* N of suggestions found  */
 	struct GMT_SURFACE_SUGGESTION *sug = NULL;
 
 	users_time = gmt_guess_surface_time (GMT, factors, nx, ny);
@@ -10883,17 +10883,17 @@ unsigned int GMT_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int fac
 	return n_sug;
 }
 
-int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int in_dim[], unsigned int out_dim[])
+int GMT_best_dim_choice (struct GMT_CTRL *GMT, uint32_t mode, uint32_t in_dim[], uint32_t out_dim[])
 {
 	/* Depending on mode, returns the closest out_dim >= in_dim that will speed up computations
 	 * in surface (mode = 1) or for FFT work (mode = 2).  We return 0 if we found a better
 	 * choice or 1 if the in_dim is the best choice. */
-	unsigned int retval = 0;
-	GMT_memcpy (out_dim, in_dim, 2U, unsigned int);	/* Default we return input if we cannot find anything better */
+	uint32_t retval = 0;
+	GMT_memcpy (out_dim, in_dim, 2U, uint32_t);	/* Default we return input if we cannot find anything better */
 	
 	if (mode == 1) {
 		struct GMT_SURFACE_SUGGESTION *S = NULL;
-		unsigned int factors[32], n_sugg = GMT_optimal_dim_for_surface (GMT, factors, in_dim[GMT_X], in_dim[GMT_Y], &S);
+		uint32_t factors[32], n_sugg = GMT_optimal_dim_for_surface (GMT, factors, in_dim[GMT_X], in_dim[GMT_Y], &S);
 		if (n_sugg) {
 			out_dim[GMT_X] = S[0].nx;
 			out_dim[GMT_Y] = S[0].ny;

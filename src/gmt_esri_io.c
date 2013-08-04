@@ -428,14 +428,14 @@ int GMT_esri_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	return (GMT_NOERROR);
 }
 
-int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
 {
 	int error;
 	bool check, is_binary = false, swap = false;
-	unsigned int col, height_in, ii, in_nx;
+	uint32_t col, height_in, ii, in_nx;
 	int row, first_col, last_col, first_row, last_row;
-	unsigned int row2, width_in, *actual_col = NULL;
-	unsigned int nBits = 32U;
+	uint32_t row2, width_in, *actual_col = NULL;
+	uint32_t nBits = 32U;
 	uint64_t ij, kk, width_out, imag_offset, n_left = 0;
 	size_t n_expected;
 	char *r_mode = NULL;
@@ -568,11 +568,11 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	return (GMT_NOERROR);
 }
 
-int GMT_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, int floating)
+int GMT_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode, int floating)
 {
-	unsigned int i2, j, j2, width_out, height_out, last;
+	uint32_t i2, j, j2, width_out, height_out, last;
 	int first_col, last_col, first_row, last_row;
-	unsigned int i, *actual_col = NULL;
+	uint32_t i, *actual_col = NULL;
 	uint64_t ij, width_in, kk, imag_offset;
 	char item[GMT_LEN64], c[2] = {0, 0};
 	FILE *fp = NULL;
@@ -623,12 +623,12 @@ int GMT_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	return (GMT_NOERROR);
 }
 
-int GMT_esri_writei_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_esri_writei_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
 {	/* Standard integer values on output only */
 	return (GMT_esri_write_grd (GMT, header, grid, wesn, pad, complex_mode, false));
 }
 
-int GMT_esri_writef_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_esri_writef_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
 {	/* Write floating point on output */
 	return (GMT_esri_write_grd (GMT, header, grid, wesn, pad, complex_mode, true));
 }

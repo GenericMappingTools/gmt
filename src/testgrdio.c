@@ -33,7 +33,7 @@
 
 int main (int argc, char *argv[])
 {
-	unsigned int k;
+	uint32_t k;
 	char *format[6] = {"in_real.grd%s", "in_imag.grd%s", "out_real.grd%s", "out_imag.grd%s", "out_real_after_demux.grd%s", "out_imag_after_demux.grd%s"};
 	char *name[6], *code, *def_code = "", buffer[GMT_LEN64] = {""};
 	struct GMTAPI_CTRL *API = NULL;	/* GMT API control structure */

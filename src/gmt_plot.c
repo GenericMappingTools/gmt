@@ -274,7 +274,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 
 void gmt_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
-	unsigned int form, cap = PSL->internal.line_cap;
+	uint32_t form, cap = PSL->internal.line_cap;
 	double x_length, y_length;
 
 	x_length = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
@@ -311,10 +311,10 @@ void gmt_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 	GMT->current.map.frame.plotted_header = true;
 }
 
-unsigned int gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
+uint32_t gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
 {	/* Return the primary annotation item number [== GMT_ANNOT_UPPER if there are no unit set]*/
 
-	unsigned int i, no[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
+	uint32_t i, no[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
 	double val[2], s;
 
 	for (i = 0; i < 2; i++) {
@@ -352,9 +352,9 @@ unsigned int gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
 	return ((val[0] > val[1]) ? GMT_ANNOT_UPPER : GMT_ANNOT_LOWER);
 }
 
-bool gmt_skip_second_annot (unsigned int item, double x, double x2[], unsigned int n, unsigned int primary)
+bool gmt_skip_second_annot (uint32_t item, double x, double x2[], uint32_t n, uint32_t primary)
 {
-	unsigned int i;
+	uint32_t i;
 	bool found;
 	double small;
 
@@ -370,10 +370,10 @@ bool gmt_skip_second_annot (unsigned int item, double x, double x2[], unsigned i
 
 void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, bool annotate)
 {
-	unsigned int k, i, nx, nx1, np = 0;/* Misc. variables */
-	unsigned int annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
-	unsigned int primary;		/* Axis item number of annotation with largest interval/unit */
-	unsigned int axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
+	uint32_t k, i, nx, nx1, np = 0;/* Misc. variables */
+	uint32_t annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
+	uint32_t primary;		/* Axis item number of annotation with largest interval/unit */
+	uint32_t axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
 	bool horizontal;		/* true if axis is horizontal */
 	bool neg = below;		/* true if annotations are to the left of or below the axis */
 	bool faro;			/* true if the anchor point of annotations is on the far side of the axis */
@@ -597,7 +597,7 @@ void gmt_map_lonline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, do
 void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {
 	double *x = NULL, ys, yn, p_cap = 0.0, cap_start[2] = {0.0, 0.0}, cap_stop[2] = {0.0, 0.0};
-	unsigned int idup = 0, i, nx;
+	uint32_t idup = 0, i, nx;
 	bool cap = false;
 
 	/* Do we have duplicate e and w boundaries ? */
@@ -651,7 +651,7 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {	/* x gridlines in oblique coordinates for all but the Oblique Mercator projection [which already is oblique] */
 	double *x = NULL, *lon = NULL, *lat = NULL, *lat_obl = NULL, tval, p_cap, s_cap;
-	unsigned int idup = 0, i, j, k, nx, np, nc1 = 0, nc2, npc, np1;
+	uint32_t idup = 0, i, j, k, nx, np, nc1 = 0, nc2, npc, np1;
 	bool cap = false;
 
 	/* Ideally we should determine the w/e/s/n of the oblique coordinates but here we will simply
@@ -728,7 +728,7 @@ void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 void gmt_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {
 	double *y = NULL;
-	unsigned int i, ny;
+	uint32_t i, ny;
 
 	if (GMT->current.proj.z_down) {
 		ny = GMT_linear_array (GMT, 0.0, n-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
@@ -743,9 +743,9 @@ void gmt_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 
 }
 
-void gmt_x_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double s, double n, double *x, unsigned int nx)
+void gmt_x_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double s, double n, double *x, uint32_t nx)
 {
-	unsigned int i;
+	uint32_t i;
 	double x1, y1, x2, y2;
 
 	for (i = 0; i < nx; i++) {
@@ -760,7 +760,7 @@ void GMT_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 
 	double *y = NULL, *lon = NULL, *lon_obl = NULL, *lat = NULL, tval, p_cap;
 	bool cap;
-	unsigned int i, k, ny, np;
+	uint32_t i, k, ny, np;
 
 	/* Ideally we should determine the w/e/s/n of the oblique coordinates but here we will simply
 	 * create oblique coordinates for the full 0/360/-90/90, convert to regular coordinates and
@@ -802,9 +802,9 @@ void GMT_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 	GMT_free (GMT, lat);
 }
 
-void gmt_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double *y, unsigned int ny)
+void gmt_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double *y, uint32_t ny)
 {
-	unsigned int i;
+	uint32_t i;
 	double x1, y1, x2, y2;
 
 	for (i = 0; i < ny; i++) {
@@ -814,9 +814,9 @@ void gmt_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e,
 	}
 }
 
-void gmt_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item)
+void gmt_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, uint32_t item)
 {
-	unsigned int nx;
+	uint32_t nx;
 	double *x = NULL;
 
 	nx = GMT_time_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item], &x);
@@ -824,9 +824,9 @@ void gmt_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, doubl
 	if (nx) GMT_free (GMT, x);
 }
 
-void gmt_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item)
+void gmt_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, uint32_t item)
 {
-	unsigned int ny;
+	uint32_t ny;
 	double *y = NULL;
 
 	ny = GMT_time_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &y);
@@ -836,7 +836,7 @@ void gmt_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, doubl
 
 void gmt_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {
-	unsigned int nx;
+	uint32_t nx;
 	double *x = NULL;
 
 	nx = GMT_log_array (GMT, w, e, dval, &x);
@@ -846,7 +846,7 @@ void gmt_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 
 void gmt_logy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {
-	unsigned int ny;
+	uint32_t ny;
 	double *y = NULL;
 
 	ny = GMT_log_array (GMT, s, n, dval, &y);
@@ -856,7 +856,7 @@ void gmt_logy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 
 void gmt_powx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {
-	unsigned int nx;
+	uint32_t nx;
 	double *x = NULL;
 
 	nx = GMT_pow_array (GMT, w, e, dval, 0, &x);
@@ -866,7 +866,7 @@ void gmt_powx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 
 void gmt_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {
-	unsigned int ny;
+	uint32_t ny;
 	double *y = NULL;
 
 	ny = GMT_pow_array (GMT, s, n, dval, 1, &y);
@@ -890,7 +890,7 @@ void gmt_fancy_frame_offset (struct GMT_CTRL *GMT, double angle, double shift[2]
 void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, bool secondary_too)
 {	/* Plot checkers along straight longitude boundaries */
 	int i, k, nx;
-	unsigned int shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	uint32_t shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dx, w1, val, v1, v2, x1, x2, y1, y2, shift_s[2], shift_n[2], scale[2];
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;
 
@@ -937,7 +937,7 @@ void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL
 void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, bool secondary_too)
 {	/* Plot checkers along curved longitude boundaries */
 	int i, k, nx;
-	unsigned int shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	uint32_t shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dx, w1, v1, v2, val, x1, x2, y1, y2, az1, az2, dr, scale[2], radius_s, radius_n;
 	struct GMT_PLOT_AXIS_ITEM *T;
 
@@ -999,7 +999,7 @@ void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL *
 void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, bool secondary_too)
 {	/* Plot checkers along straight latitude boundaries */
 	int i, k, ny;
-	unsigned int shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
+	uint32_t shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dy, s1, val, v1, v2, x1, x2, y1, y2, shift_w[2], shift_e[2], scale[2];
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;
 
@@ -1045,9 +1045,9 @@ void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL
 	}
 }
 
-void gmt_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lonA, double latA, double lonB, double latB, unsigned int side, bool secondary_too)
+void gmt_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lonA, double latA, double lonB, double latB, uint32_t side, bool secondary_too)
 {
-	unsigned int k, kn = 1;
+	uint32_t k, kn = 1;
 	double scale = 1.0, x[2], y[2], angle, s, c, dx, dy, Ldx, Ldy;
 
 	if (!GMT->current.map.frame.side[side]) return;	/* Do not draw this frame side */
@@ -1075,7 +1075,7 @@ void gmt_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PS
 	}
 }
 
-void gmt_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lonA, double latA, double lonB, double latB, unsigned int side, bool secondary_too)
+void gmt_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lonA, double latA, double lonB, double latB, uint32_t side, bool secondary_too)
 {
 	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, r_inc, az1, az2, da0, da, width, s;
 
@@ -1114,7 +1114,7 @@ void gmt_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 
 void gmt_rounded_framecorners (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, bool secondary_too)
 {
-	unsigned int k, kn;
+	uint32_t k, kn;
 	double x1, y1, x2, y2, anglew, anglee, x, y, width;
 
 	if (GMT->current.setting.map_frame_type != GMT_IS_ROUNDED) return;	/* Only do this if rounded corners are requested */
@@ -1204,7 +1204,7 @@ void gmt_fancy_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 {
 	double fat_pen, thin_pen;
 	bool dual = false;
-	unsigned int cap = PSL->internal.line_cap;
+	uint32_t cap = PSL->internal.line_cap;
 
 	if (!(GMT->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		gmt_wesn_map_boundary (GMT, PSL, w, e, s, n);
@@ -1246,7 +1246,7 @@ void gmt_fancy_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 
 void gmt_rect_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double x1, double y1)
 {
-	unsigned int cap = PSL->internal.line_cap;
+	uint32_t cap = PSL->internal.line_cap;
 
 	GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
 	/* Temporarily change to square cap so rectangular frames have neat corners */
@@ -1264,7 +1264,7 @@ void gmt_rect_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x
 void gmt_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
 	bool dual = false;
-	unsigned int cap = PSL->internal.line_cap;
+	uint32_t cap = PSL->internal.line_cap;
 	double thin_pen, fat_pen;
 
 	if (GMT->common.R.oblique) { /* Draw rectangular boundary and return */
@@ -1322,7 +1322,7 @@ void gmt_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 void gmt_conic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
 	bool dual = false;
-	unsigned int cap = PSL->internal.line_cap;
+	uint32_t cap = PSL->internal.line_cap;
 	double thin_pen, fat_pen;
 
 	if (GMT->common.R.oblique) { /* Draw rectangular boundary and return */
@@ -1491,10 +1491,10 @@ void gmt_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	}
 }
 
-void gmt_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, unsigned int *sides, double *angles, unsigned int nx, unsigned int type, double len)
+void gmt_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint32_t *sides, double *angles, uint32_t nx, uint32_t type, double len)
 {
 	double angle, xl, yl, c, s, tick_length;
-	unsigned int i;
+	uint32_t i;
 
 	for (i = 0; i < nx; i++) {
 		if (!GMT->current.proj.edge[sides[i]]) continue;
@@ -1522,7 +1522,7 @@ void gmt_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, doubl
 
 void gmt_map_lontick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, double south, double north, double len)
 {
-	unsigned int i, nc;
+	uint32_t i, nc;
 	struct GMT_XINGS *xings = NULL;
 
 	nc = GMT_map_loncross (GMT, lon, south, north, &xings);
@@ -1533,7 +1533,7 @@ void gmt_map_lontick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, do
 
 void gmt_map_lattick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, double west, double east, double len)
 {
-	unsigned int i, nc;
+	uint32_t i, nc;
 
 	struct GMT_XINGS *xings = NULL;
 
@@ -1543,9 +1543,9 @@ void gmt_map_lattick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, do
 	if (nc) GMT_free (GMT, xings);
 }
 
-bool gmt_annot_too_crowded (struct GMT_CTRL *GMT, double x, double y, unsigned int side) {
+bool gmt_annot_too_crowded (struct GMT_CTRL *GMT, double x, double y, uint32_t side) {
 	/* Checks if the proposed annotation is too close to a previously plotted annotation */
-	unsigned int i;
+	uint32_t i;
 	double d_min;
 
 	if (GMT->current.setting.map_annot_min_spacing <= 0.0) return (false);
@@ -1562,12 +1562,12 @@ bool gmt_annot_too_crowded (struct GMT_CTRL *GMT, double x, double y, unsigned i
 	return (false);
 }
 
-void gmt_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, unsigned int *sides, double *line_angles, char *label, unsigned int nx, unsigned int type, bool annot, unsigned int level, unsigned int form)
+void gmt_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint32_t *sides, double *line_angles, char *label, uint32_t nx, uint32_t type, bool annot, uint32_t level, uint32_t form)
 {
 	/* type = 0 for lon and 1 for lat */
 
 	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa;
-	unsigned int i, annot_type, justify;
+	uint32_t i, annot_type, justify;
 	bool flip;	
 
 	len = GMT_get_annot_offset (GMT, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
@@ -1607,9 +1607,9 @@ void gmt_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, dou
 	}
 }
 
-void gmt_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, char *label, double west, double east, bool annot, unsigned int level, unsigned int form)
+void gmt_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, char *label, double west, double east, bool annot, uint32_t level, uint32_t form)
 {
-	unsigned int i, nc;
+	uint32_t i, nc;
 	struct GMT_XINGS *xings = NULL;
 
 	nc = GMT_map_latcross (GMT, lat, west, east, &xings);
@@ -1618,9 +1618,9 @@ void gmt_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, 
 	if (nc) GMT_free (GMT, xings);
 }
 
-void gmt_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, char *label, double south, double north, bool annot, unsigned int level, unsigned int form)
+void gmt_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, char *label, double south, double north, bool annot, uint32_t level, uint32_t form)
 {
-	unsigned int i, nc;
+	uint32_t i, nc;
 	struct GMT_XINGS *xings = NULL;
 
 	nc = GMT_map_loncross (GMT, lon, south, north, &xings);
@@ -1631,7 +1631,7 @@ void gmt_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, 
 
 void gmt_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int xz_or_yz)
 {
-	unsigned int k, i, nz, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	uint32_t k, i, nz, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double dz, zz, min, max, *z = NULL;
 	char *plane[2] = {"x-z", "y-z"};
 
@@ -1663,7 +1663,7 @@ void gmt_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, d
 
 void gmt_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
-	unsigned int k, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	uint32_t k, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double dx, dy, *v = NULL;
 
 	for (k = 0; k < 2; k++) {
@@ -1716,7 +1716,7 @@ void gmt_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 
 void gmt_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
-	unsigned int i, j, k, nx, ny, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	uint32_t i, j, k, nx, ny, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
 	double x_angle, y_angle, Ca, Sa, L;
 
@@ -1816,9 +1816,9 @@ void gmt_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 	GMT_map_clip_off (GMT);
 }
 
-void gmt_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item)
+void gmt_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, uint32_t item)
 {
-	unsigned int i, nx, ny;
+	uint32_t i, nx, ny;
 	bool do_x, do_y;
 	double dx, dy, *val = NULL, len;
 
@@ -1922,7 +1922,7 @@ void gmt_label_trim (char *label, int stage)
 
 void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
-	unsigned int i, k, nx, ny, form, remove[2] = {0,0}, add;
+	uint32_t i, k, nx, ny, form, remove[2] = {0,0}, add;
 	bool do_minutes, do_seconds, done_Greenwich, done_Dateline;
 	bool full_lat_range, proj_A, proj_B, annot_0_and_360 = false, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_LEN256] = {""};
@@ -2039,7 +2039,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		}
 
 		if (dy[k] > 0.0 && (GMT_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR)) {	/* Annotate W and E boundaries */
-			unsigned int lonlat;
+			uint32_t lonlat;
 			double *tval = NULL;
 
 			if (GMT_y_is_lat (GMT, GMT_IN)) {
@@ -2217,7 +2217,7 @@ bool gmt_is_fancy_boundary (struct GMT_CTRL *GMT)
 
 void GMT_map_basemap (struct GMT_CTRL *GMT)
 {
-	unsigned int side;
+	uint32_t side;
 	bool clip_on = false;
 	double w, e, s, n;
 	struct PSL_CTRL *PSL= GMT->PSL;
@@ -2283,10 +2283,10 @@ void gmt_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int quadrant
 	}
 }
 
-void GMT_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode)
+void GMT_vertical_axis (struct GMT_CTRL *GMT, uint32_t mode)
 {
 	/* Mode means: 1 = background walls and title, 2 = foreground walls and axis, 3 = all */
-	unsigned int fore, back, old_plane, form;
+	uint32_t fore, back, old_plane, form;
 	double nesw[4], old_level, xx, yy, az;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -2317,8 +2317,8 @@ void GMT_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode)
 	/* Vertical axis */
 
 	if (fore && GMT->current.map.frame.side[Z_SIDE]) {
-		unsigned int k, n_z, quadrant, corner_to_quadrant[5] = {0, 2, 1, 4, 3}, z_axis[4];	/* Given corner ID 1-4, return quadrant, or vice versa (0 is unused) */
-		GMT_memcpy (z_axis, GMT->current.map.frame.z_axis, 4, unsigned int);
+		uint32_t k, n_z, quadrant, corner_to_quadrant[5] = {0, 2, 1, 4, 3}, z_axis[4];	/* Given corner ID 1-4, return quadrant, or vice versa (0 is unused) */
+		GMT_memcpy (z_axis, GMT->current.map.frame.z_axis, 4, uint32_t);
 		for (k = n_z = 0; k < 4; k++) if (z_axis[k]) n_z++;	/* Count # of vertical axes specified; if 0 then we do an auto-select */
 		if (n_z == 0) z_axis[corner_to_quadrant[GMT->current.proj.z_project.quadrant]-1] = 1;	/* Set the default corner given the quadrant */
 		GMT_plane_perspective (GMT, -1, 0.0);
@@ -2350,7 +2350,7 @@ void GMT_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode)
 	GMT_plane_perspective (GMT, old_plane, old_level);
 }
 
-void GMT_map_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag)
+void GMT_map_clip_on (struct GMT_CTRL *GMT, double rgb[], uint32_t flag)
 {
 	/* This function sets up a clip path so that only plotting
 	 * inside the map area will be drawn on paper. map_setup
@@ -2401,9 +2401,9 @@ void GMT_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline)
 		PSL_setfill (PSL, fill->rgb, outline);
 }
 
-unsigned int GMT_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F)
+uint32_t GMT_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F)
 {	/* Set all attributes of the selected font in the PS */
-	unsigned int outline;
+	uint32_t outline;
 	
 	PSL_setfont (GMT->PSL, F->id);	/* Set the current font ID */
 	if (F->form & 2) {	/* Outline font requested; set pen and fill (rgb[0] == -1 means no fill) */
@@ -2422,7 +2422,7 @@ unsigned int GMT_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F)
 	return (outline);
 }
 
-void gmt_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label)
+void gmt_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, uint32_t justify, char *U_label)
 {
 	/* x, y = location of the time stamp box
 	 * justify indicates the corner of the box that (x,y) refers to, see below
@@ -2550,7 +2550,7 @@ void gmt_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_OP
 	PSL_command (PSL, "%s\n", outstring);
 }
 
-void gmt_NaN_pen_up (double x[], double y[], unsigned int pen[], uint64_t n)
+void gmt_NaN_pen_up (double x[], double y[], uint32_t pen[], uint64_t n)
 {
 	/* Ensure that if there are NaNs we set pen = PSL_MOVE */
 
@@ -2564,7 +2564,7 @@ void gmt_NaN_pen_up (double x[], double y[], unsigned int pen[], uint64_t n)
 	}
 }
 
-void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n)
+void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, uint32_t *pen, uint64_t n)
 {
 	uint64_t i, j, i1;
 	int way;
@@ -2678,9 +2678,9 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 
 int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 {
-	unsigned int i, j, jj, form;
-	unsigned int n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
-	unsigned int n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
+	uint32_t i, j, jj, form;
+	uint32_t n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
+	uint32_t n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
 	enum GMT_enum_units unit;
 	double dlon, x1, x2, y1, y2, a0, tx, ty, off, f_len, a_len, x_left, x_right, bar_length, x_label, y_label;
 	double base, d_base, width, half, bar_width, dx, dx_f, dx_a;
@@ -2817,7 +2817,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 
 void gmt_Nstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double r)
 {	/* Draw a fancy 5-pointed North star */
-	unsigned int a;
+	uint32_t a;
 	double r2, x[4], y[4], dir, dir2, s, c;
 
 	r2 = r * 0.3;
@@ -2860,7 +2860,7 @@ void gmt_Nstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0
 
 void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr)
 {	/* Magnetic compass rose */
-	unsigned int i, k, level, just, ljust[4] = {10, 5, 2, 7}, n_tick, form;
+	uint32_t i, k, level, just, ljust[4] = {10, 5, 2, 7}, n_tick, form;
 	double ew_angle, angle, R[2], tlen[3], L, s, c, x[5], y[5], xp[5], yp[5], offset, t_angle, scale[2], base, *val = NULL, dim[PSL_MAX_DIMS];
 	char label[16];
 	struct GMT_FILL f;
@@ -2989,7 +2989,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 
 void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr)
 {
-	unsigned int i, kind, form, just[4] = {10, 5, 2, 7};
+	uint32_t i, kind, form, just[4] = {10, 5, 2, 7};
 	int k;
 	double angle, L[4], R[4], x[8], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	struct GMT_FILL f;
@@ -3149,7 +3149,7 @@ bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL
 	return (!result);			/* Return the opposite of the test result */
 }
 
-void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, unsigned int outline, bool *flush)
+void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, uint32_t outline, bool *flush)
 {
 	bool draw_outline;
 
@@ -3167,13 +3167,13 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 }
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
 
-void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], unsigned int *type, unsigned int start, char *text)
+void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], uint32_t *type, uint32_t start, char *text)
 {	/* Returns the [possibly reformatted] string to use for the letter macro */
-	unsigned int n;
+	uint32_t n;
 	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text */
 		strcpy (text, s->string);
 	else if (s->string[0] == '$' && strlen (s->string) == 2 && isdigit (s->string[1]) && type[n=(s->string[1]-'1')] == GMT_IS_STRING) {	/* Get entire string from input */
-		unsigned int want_col, col, pos;
+		uint32_t want_col, col, pos;
 		/* Tricky, how do we know which column in the input goes with this variable $n, i.e. how is n related to record col?.  Then,
 		   we must scan the GMT->io.current.current_record for the col'th item and strcpy that into text.  The reason n -> col is
 		   tricky is while we may now this is the 3rd extra variable, we dont know if -C<cpt< was used or if this is psxyz, no? */
@@ -3181,7 +3181,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 		for (col = pos = 0; col <= want_col; col++) GMT_strtok (GMT->current.io.current_record, " \t,", &pos, text);
 	}
 	else {	/* Must replace special items within a template string */
-		unsigned int n_skip, in, out;
+		uint32_t n_skip, in, out;
 		char tmp[GMT_LEN64] = {""};
 		GMT_memset (text, GMT_LEN256, char);
 		for (in = out = 0; s->string[in]; in++) {
@@ -3192,7 +3192,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 						GMT_ascii_format_col (GMT, tmp, GMT->current.io.curr_rec[n], GMT_IN, n);
 						strcat (text, tmp);
 						in++;	/* Skip past the X or Y */
-						out += (unsigned int)strlen (tmp);
+						out += (uint32_t)strlen (tmp);
 					}
 					else /* Just a % sign */
 						text[out++] = s->string[in];
@@ -3211,7 +3211,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 							sprintf (tmp, GMT->current.setting.format_float_out, size[n]);
 						strcat (text, tmp);
 						in += n_skip;	/* Skip past the $n[+X|Y|T] */
-						out += (unsigned int)strlen (tmp);
+						out += (uint32_t)strlen (tmp);
 					}
 					else	/* Just pass regular text along */
 						text[out++] = s->string[in];
@@ -3224,9 +3224,9 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 	}
 }
 
-int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
+int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, uint32_t outline)
 {
-	unsigned int na, i, level = 0, start, *type = NULL;
+	uint32_t na, i, level = 0, start, *type = NULL;
 	bool flush = false, this_outline = false, found_elseif = false, skip[11];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
@@ -3557,9 +3557,9 @@ void gmt_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT
 	}
 	else if (G->crossing) {	/* Draw a thin line */
 		uint64_t seg;
-		unsigned int *pen = NULL;
+		uint32_t *pen = NULL;
 		for (seg = 0; seg < G->xp->n_segments; seg++) {
-			pen = GMT_memory (GMT, NULL, G->xp->segment[seg]->n_rows, unsigned int);
+			pen = GMT_memory (GMT, NULL, G->xp->segment[seg]->n_rows, uint32_t);
 			for (row = 1, pen[0] = PSL_MOVE; row < G->xp->segment[seg]->n_rows; row++) pen[row] = PSL_DRAW;
 			GMT_plot_line (GMT, G->xp->segment[seg]->coord[GMT_X], G->xp->segment[seg]->coord[GMT_Y], pen, G->xp->segment[seg]->n_rows);
 			GMT_free (GMT, pen);
@@ -3567,16 +3567,16 @@ void gmt_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT
 	}
 }
 
-void gmt_contlabel_drawlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, unsigned int mode)
+void gmt_contlabel_drawlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, uint32_t mode)
 {
 	uint64_t seg, k;
-	unsigned int *pen = NULL;
+	uint32_t *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
 		if (L->annot && mode == 1) continue; /* Annotated lines done with curved text routine */
 		GMT_setpen (GMT, &L->pen);
-		pen = GMT_memory (GMT, NULL, L->n, unsigned int);
+		pen = GMT_memory (GMT, NULL, L->n, uint32_t);
 		for (k = 1, pen[0] = PSL_MOVE; k < L->n; k++) pen[k] = PSL_DRAW;
 		PSL_comment (PSL, "%s: %s\n", G->line_name, L->name);
 		GMT_plot_line (GMT, L->x, L->y, pen, L->n);
@@ -3584,7 +3584,7 @@ void gmt_contlabel_drawlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	}
 }
 
-void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, unsigned int mode)
+void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, uint32_t mode)
 {	/* mode = 1 when clipping is in effect */
 	int just, form, *node = NULL;
 	uint64_t first_i, last_i, k, m, seg;
@@ -3677,7 +3677,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	}
 }
 
-void gmt_contlabel_clippath (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, unsigned int mode)
+void gmt_contlabel_clippath (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, uint32_t mode)
 {
 	uint64_t seg, k, m, nseg;
 	int just, form;
@@ -3746,7 +3746,7 @@ void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *LP, double Brgb[],
 
 void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 {
-	unsigned int i;
+	uint32_t i;
 	bool no_labels;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -3904,7 +3904,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	 * and places a time stamp, if selected */
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last;
-	unsigned int this_proj;
+	uint32_t this_proj;
 	char title[GMT_BUFSIZ];
 	char *mode[2] = {"w","a"};
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
@@ -4111,7 +4111,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 		 */
 
 		if ((GMT->current.plot.n = GMT_clip_to_map (GMT, lon, lat, n, &xp, &yp)) == 0) return;		/* All points are outside region */
-		PSL_plotpolygon (PSL, xp, yp, (unsigned int)GMT->current.plot.n);	/* Fill Cartesian polygon and possibly draw outline */
+		PSL_plotpolygon (PSL, xp, yp, (uint32_t)GMT->current.plot.n);	/* Fill Cartesian polygon and possibly draw outline */
 		/* Free the memory we are done with */
 		GMT_free (GMT, xp);
 		GMT_free (GMT, yp);
@@ -4122,7 +4122,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, lon, lat, n)) == 0) return;		/* Convert to (x,y,pen) - return if nothing to do */
 
 		if (!GMT_is_geographic (GMT, GMT_IN)) {		/* Not geographic data so there are no periodic boundaries to worry about */
-			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);
+			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (uint32_t)GMT->current.plot.n);
 			return;
 		}
 
@@ -4130,7 +4130,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 
 		for (first = 1, jump = false; first < n && !jump; first++) jump = (GMT->current.plot.pen[first] != PSL_DRAW);
 		if (!jump) {	/* We happened to avoid the periodic boundary - just paint and return */
-			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);
+			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (uint32_t)GMT->current.plot.n);
 			return;
 		}
 
@@ -4153,7 +4153,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 			}
 			xp[i] = (jump) ? (*x_on_border[jump_dir]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i];
 		}
-		PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+		PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (uint32_t)GMT->current.plot.n);	/* Paint the truncated polygon */
 
 		/* Then do the Left truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 
@@ -4165,7 +4165,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 			}
 			xp[i] = (jump || jump_dir == JUMP_R) ? (*x_on_border[JUMP_R]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i], k++;
 		}
-		if (k) PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+		if (k) PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (uint32_t)GMT->current.plot.n);	/* Paint the truncated polygon */
 
 		/* Then do the R truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 
@@ -4177,7 +4177,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 			}
 			xp[i] = (jump || jump_dir == JUMP_L) ? (*x_on_border[JUMP_L]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i], k++;
 		}
-		if (k) PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+		if (k) PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (uint32_t)GMT->current.plot.n);	/* Paint the truncated polygon */
 
 		/* Free the memory we are done with */
 		GMT_free (GMT, xp);
@@ -4725,7 +4725,7 @@ void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 			GMT_memcpy (Pa, C.P, 3, double);	/* ...and use circle pole */
 			arc = rot_v[0];
 		}
-		n2 = (unsigned int)gmt_small_circle_arc (GMT, C.A, P, 0.0, Pa, arc, S, &xp2, &yp2);	/* Compute great circle arc from A to P */
+		n2 = (uint32_t)gmt_small_circle_arc (GMT, C.A, P, 0.0, Pa, arc, S, &xp2, &yp2);	/* Compute great circle arc from A to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
 		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
@@ -4770,7 +4770,7 @@ void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 			GMT_memcpy (Pa, C.P, 3, double);	/* ...and use circle pole */
 			arc = rot_v[1];
 		}
-		n2 = (unsigned int)gmt_small_circle_arc (GMT, C.B, P, 0.0, Pa, -arc, S, &xp2, &yp2);	/* Compute small circle arc from B to P */
+		n2 = (uint32_t)gmt_small_circle_arc (GMT, C.B, P, 0.0, Pa, -arc, S, &xp2, &yp2);	/* Compute small circle arc from B to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
 		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */

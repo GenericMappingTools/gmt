@@ -99,7 +99,7 @@ int GMT_grdreformat_parse (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_in = 0;
+	uint32_t n_errors = 0, n_in = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -144,7 +144,7 @@ int GMT_grdreformat_parse (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *Ctrl, 
 int GMT_grdreformat (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int hmode, type[2];
+	uint32_t hmode, type[2];
 
 	char fname[2][GMT_BUFSIZ];
 

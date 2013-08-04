@@ -72,7 +72,7 @@
 
 #ifndef SIZEOF_MODE_T
   /* MSC does not define mode_t */
-	typedef unsigned int mode_t;
+	typedef uint32_t mode_t;
 #endif
 
 #ifdef HAVE_FCNTL_H_

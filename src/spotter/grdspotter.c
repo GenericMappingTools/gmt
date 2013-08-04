@@ -159,8 +159,8 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 	} PA;
 	struct Q {	/* -Q */
 		bool active;
-		unsigned int mode;
-		unsigned int id;
+		uint32_t mode;
+		uint32_t id;
 		char *file;
 	} Q;
 	struct S2 {	/* -S2 */
@@ -176,7 +176,7 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 	} T;
 	struct W {	/* -W */
 		bool active;
-		unsigned int n_try;
+		uint32_t n_try;
 	} W;
 	struct Z {	/* -Z */
 		bool active;
@@ -257,7 +257,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n_files = 0;
+	uint32_t n_errors = 0, k, n_files = 0;
 	int m, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -386,7 +386,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow)
+int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, uint32_t n_stages, double d_km, uint32_t step, uint32_t flag, double wesn[], double **flow)
 {
 	int64_t n_track, m, kx, ky, np, first, last;
 	double *c = NULL, *f = NULL;
@@ -465,7 +465,7 @@ bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, uint64_t 
 void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data)
 {	/* Determines the grid's min/max z-values and normalizes the grid
 	 * so that zmax is 100% */
-	unsigned int row, col;
+	uint32_t row, col;
 	uint64_t node;
 	double CVA_scale;	/* Used to normalize CVAs to percent */
 	
@@ -489,10 +489,10 @@ void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data)
 
 int GMT_grdspotter (void *V_API, int mode, void *args)
 {
-	unsigned int n_stages;	/* Number of stage rotations (poles) */
-	unsigned int try;		/* Number of current bootstrap estimate */
-	unsigned int row, row2, col, col2, k_step;
-	unsigned int forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
+	uint32_t n_stages;	/* Number of stage rotations (poles) */
+	uint32_t try;		/* Number of current bootstrap estimate */
+	uint32_t row, row2, col, col2, k_step;
+	uint32_t forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
 	bool keep_flowlines = false;	/* true if Ctrl->D.active, Ctrl->PA.active, or bootstrap is true */
 	int error = 0;			/* nonzero when arguments are wrong */
 	int i, j;			/* Signed row,col variables */
@@ -808,7 +808,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->Z.mode) {	/* Do CVA calculations for each z-slice using stored flowlines */
-		unsigned int layer, nz;
+		uint32_t layer, nz;
 		size_t len;
 		char file[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""};
 		double z0, z1;
@@ -831,7 +831,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			for (m = 0; m < n_nodes; m++) {				/* Loop over all active flowlines */
 				ij = flowline[m].ij;
 				if (Z->data[ij] <= z0 || Z->data[ij] > z1) continue;	/* z outside current slice */
-				row = (unsigned int)GMT_row (Z->header, ij);
+				row = (uint32_t)GMT_row (Z->header, ij);
 				cva_contribution = lat_area[row] * (Ctrl->T.active[UPPER] ? Ctrl->T.t_fix : Z->data[ij]);	/* This node's contribution to the convolution */
 				GMT_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				for (k = 0; k < flowline[m].n; k++) {			/* For each point along this flowline */
@@ -969,7 +969,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		/* Now do bootstrap sampling of flowlines */
 	
 		try = 0;
-		srand ((unsigned int)time(NULL));	/* Initialize random number generator */
+		srand ((uint32_t)time(NULL));	/* Initialize random number generator */
 		x_scale = (double)G->header->nx / (double)RAND_MAX;
 		y_scale = (double)G->header->ny / (double)RAND_MAX;
 		for (try = 1; try <= Ctrl->W.n_try; try++) {
@@ -1002,8 +1002,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 					max_ij = ij;
 				}
 			}
-			col = (unsigned int)GMT_col (G->header, max_ij);
-			row = (unsigned int)GMT_row (G->header, max_ij);
+			col = (uint32_t)GMT_col (G->header, max_ij);
+			row = (uint32_t)GMT_row (G->header, max_ij);
 			out[0] = GMT_grd_col_to_x (GMT, col, G->header);
 			out[1] = GMT_grd_row_to_y (GMT, row, G->header);
 			out[2] = CVA_max;

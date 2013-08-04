@@ -89,7 +89,7 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -124,7 +124,7 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 
 int GMT_kml2gmt (void *V_API, int mode, void *args)
 {
-	unsigned int i, start, fmode = POINT;
+	uint32_t i, start, fmode = POINT;
 	int error = 0;
 	size_t length;
 	bool scan = true, first = true;

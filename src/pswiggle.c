@@ -250,7 +250,7 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, k, wantx, wanty, n_errors = 0;
+	uint32_t j, k, wantx, wanty, n_errors = 0;
 	bool N_active = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *units = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -345,7 +345,7 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
-				j = (unsigned int)strlen (opt->arg) - 1;
+				j = (uint32_t)strlen (opt->arg) - 1;
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[j])) Ctrl->Z.unit = opt->arg[j];
 				Ctrl->Z.scale = atof (opt->arg);
 				break;
@@ -387,7 +387,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 	bool negative;
 	int error = 0;
 	
-	unsigned int tbl;
+	uint32_t tbl;
 	
 	uint64_t row, seg, j;
 	size_t n_alloc = GMT_CHUNK;

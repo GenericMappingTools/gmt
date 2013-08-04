@@ -33,7 +33,7 @@
 #define GMT_PROG_OPTIONS "-:>Vbfghiors" GMT_OPT("HMm")
 
 int gmt_geo_C_format (struct GMT_CTRL *GMT);
-unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
+uint32_t GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 #define REPORT_PER_DATASET	0
 #define REPORT_PER_TABLE	1
@@ -47,7 +47,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	/* active is true if the option has been activated */
 	struct A {	/* -A */
 		bool active;
-		unsigned int mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
+		uint32_t mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
 	} A;
 	struct C {	/* -C */
 		bool active;
@@ -60,8 +60,8 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	} E;
 	struct I {	/* -I[f|p|s]dx[/dy[/<dz>..]] */
 		bool active;
-		unsigned int ncol;
-		unsigned int mode;	/* Nominally 0, unless set to BEST_FOR_SURF, BEST_FOR_FFT or ACTUAL_BOUNDS */
+		uint32_t ncol;
+		uint32_t mode;	/* Nominally 0, unless set to BEST_FOR_SURF, BEST_FOR_FFT or ACTUAL_BOUNDS */
 		double inc[GMT_MAX_COLUMNS];
 	} I;
 	struct S {	/* -S[x|y] */
@@ -71,7 +71,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	struct T {	/* -T<dz>[/<col>] */
 		bool active;
 		double inc;
-		unsigned int col;
+		uint32_t col;
 	} T;
 };
 
@@ -146,7 +146,7 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 	 */
 
 	int j;
-	unsigned int n_errors = 0, k;
+	uint32_t n_errors = 0, k;
 	bool special = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -260,7 +260,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, save_range, done;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
-	unsigned int fixed_phase[2] = {1, 1}, min_cols, o_mode;
+	uint32_t fixed_phase[2] = {1, 1}, min_cols, o_mode;
 	uint64_t col, ncol = 0, n = 0;
 
 	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, delimeter[2] = {""};
@@ -384,7 +384,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 				}
 				if (east < west) east += 360.0;
 				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting nx/ny */
-					unsigned int sub, add, in_dim[2], out_dim[2];
+					uint32_t sub, add, in_dim[2], out_dim[2];
 					double ww, ee, ss, nn;
 					in_dim[GMT_X] = GMT_get_n (GMT, west, east, Ctrl->I.inc[GMT_X], GMT->common.r.active);
 					in_dim[GMT_Y] = GMT_get_n (GMT, south, north, Ctrl->I.inc[GMT_Y], GMT->common.r.active);

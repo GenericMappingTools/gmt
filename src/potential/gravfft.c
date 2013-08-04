@@ -49,12 +49,12 @@ enum Gravfft_fields {
 };
 
 struct GRAVFFT_CTRL {
-	unsigned int n_par;
+	uint32_t n_par;
 	double *par;
 
 	struct GRVF_In {
 		bool active;
-		unsigned int n_grids;	/* 1 or 2 */
+		uint32_t n_grids;	/* 1 or 2 */
 		char *file[2];
 	} In;
 	struct GRVF_A {	/* -A<z_offset> */
@@ -63,7 +63,7 @@ struct GRAVFFT_CTRL {
 	} A;
 	struct GRVF_C {	/* -C<zlevel> */
 		bool active;
-		unsigned int n_pt;
+		uint32_t n_pt;
 		double theor_inc;
 	} C;
 	struct GRVF_D {	/* -D[<scale>|g] */
@@ -71,11 +71,11 @@ struct GRAVFFT_CTRL {
 	} D;
 	struct GRVF_E {	/* -E */
 		bool active;
-		unsigned int n_terms;
+		uint32_t n_terms;
 	} E;
 	struct GRVF_F {	/* -F[f|g|e|n|v] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} F;
 	struct GRVF_G {	/* -G<outfile> */
 		bool active;
@@ -159,13 +159,13 @@ void do_isostasy__(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_C
 void do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K);
 void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_below);
 void load_from_top_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top);
-void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
-void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint32_t n);
+void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint32_t n);
 void compute_only_admitts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top_or_bot, double delta_pt);
 
 int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 
 	int n, override_mode = GMT_FFT_REMOVE_MEAN;
 	struct GMT_OPTION *opt = NULL,  *popt = NULL;
@@ -446,7 +446,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 
 int GMT_gravfft (void *V_API, int mode, void *args) {
 
-	unsigned int i, j, k, n;
+	uint32_t i, j, k, n;
 	int error = 0;
 	uint64_t m;
 	char	format[64] = {""}, buffer[256] = {""};
@@ -811,7 +811,7 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	 */
 
 	uint64_t	k, k_0 = 0, nk, ifreq;
-	unsigned int *nused = NULL;
+	uint32_t *nused = NULL;
 	size_t n_alloc;
 	char	format[64] = {""}, buffer[256] = {""};
 	double	delta_k, r_delta_k, freq;
@@ -838,7 +838,7 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	if (Ctrl->misc.from_top)
 		z_from_top = GMT_memory (GMT, NULL, n_alloc, double);
 	n_alloc   = K->nx2 * K->ny2;
-	nused   = GMT_memory (GMT, NULL, n_alloc, unsigned int);
+	nused   = GMT_memory (GMT, NULL, n_alloc, uint32_t);
 
 	if (Ctrl->misc.coherence)
 		Ctrl->I.active = false;
@@ -940,7 +940,7 @@ void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, str
 	   The z_from_below is a vector that must have been previously allocated 
 	   with a size of "nk" like that variable is computed here.	*/
 
-	unsigned int k, nk;
+	uint32_t k, nk;
 	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2, t3;
 
 	if (K->delta_kx < K->delta_ky)
@@ -976,7 +976,7 @@ void load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, stru
 	   The z_from_top is a vector that must have been previously allocated 
 	   with a size of "nk" like that variable is computed here.	*/
 
-	unsigned int k, nk;
+	uint32_t k, nk;
 	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2;
 
 	if (K->delta_kx < K->delta_ky) 
@@ -1002,12 +1002,12 @@ void load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, stru
 	}
 }
 
-void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n) {
+void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint32_t n) {
 
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from top" model --  M. McNutt & Shure (1986)  */
 
-	unsigned int i;
+	uint32_t i;
 	uint64_t k;
 	double	earth_curvature, alfa, D, twopi, t1, t2, f, p, t, mk;
 	float *datac = Grid->data;
@@ -1042,12 +1042,12 @@ void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRA
 	}
 }
 
-void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n) {
+void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint32_t n) {
 
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from below" model --  M. McNutt & Shure (1986)  */
 
-	unsigned int i;
+	uint32_t i;
 	uint64_t k;
 	double	earth_curvature, alfa, D, twopi, t1, t2, t3, f, p, t, mk;
 	float *datac = Grid->data;

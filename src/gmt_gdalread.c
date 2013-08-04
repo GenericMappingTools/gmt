@@ -30,7 +30,7 @@ int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adf
 int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_filename, int got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
 int ReportCorner (struct GMT_CTRL *GMT, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
 void ComputeRasterMinMax (struct GMT_CTRL *GMT, unsigned char *tmp, GDALRasterBandH hBand, double adfMinMax[2], int nXSize, int nYSize, double, double);
-int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, unsigned int n_col);
+int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, uint32_t n_col);
 
 int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GDALDatasetH hDataset;
@@ -61,7 +61,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	bool	fliplr, got_R = false, got_r = false, error = false;
 	int	*whichBands = NULL, *rowVec = NULL, *colVec = NULL;
 	int	off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
-	unsigned int nn, mm;
+	uint32_t nn, mm;
 	size_t n_alloc;
 	//int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	unsigned char *tmp = NULL;
@@ -87,8 +87,8 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 			if (prhs->B.bands[n] == '-') n_dash = (int)n;
 		nn = MAX(n_commas+1, n_dash);
 		if (nn) {
-			nn = MAX( nn, (unsigned int)atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
-			if (n_dash)	nn = MAX( nn, (unsigned int)atoi(&prhs->B.bands[nn+1])+1 );
+			nn = MAX( nn, (uint32_t)atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
+			if (n_dash)	nn = MAX( nn, (uint32_t)atoi(&prhs->B.bands[nn+1])+1 );
 		}
 		else		/* Hmm, this else case is never reached */
 			nn = atoi(prhs->B.bands);
@@ -1108,8 +1108,8 @@ void ComputeRasterMinMax(struct GMT_CTRL *GMT, unsigned char *tmp, GDALRasterBan
 }
 
 /* -------------------------------------------------------------------- */
-int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, unsigned int n_col) {
-	unsigned int n = 0, i, start, stop, pos = 0;
+int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, uint32_t n_col) {
+	uint32_t n = 0, i, start, stop, pos = 0;
 	char p[GMT_BUFSIZ];
 
 	while ((GMT_strtok (txt, ",", &pos, p))) {

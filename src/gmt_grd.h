@@ -125,7 +125,7 @@ enum GMT_enum_wesnIDs {
 
 /* GMT_grd_setpad copies the given pad into the header */
 
-#define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(unsigned int))
+#define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(uint32_t))
 
 /* gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
 

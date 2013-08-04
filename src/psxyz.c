@@ -70,14 +70,14 @@ struct PSXYZ_CTRL {
 	} S;
 	struct W {	/* -W<pen> */
 		bool active;
-		unsigned int mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
+		uint32_t mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
 };
 
 struct PSXYZ_DATA {
 	int symbol, outline;
-	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-fucntions, 4 = x-base in units, 8 y-base in units */
+	uint32_t flag;	/* 1 = convert azimuth, 2 = use geo-fucntions, 4 = x-base in units, 8 y-base in units */
 	double x, y, z, dim[PSL_MAX_DIMS], dist[2];
 	struct GMT_FILL f;
 	struct GMT_PEN p;
@@ -225,7 +225,7 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, n_errors = 0;
+	uint32_t j, n_errors = 0;
 	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -380,9 +380,9 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb, read_symbol, clip_set = false, fill_active;
 	bool default_outline, outline_active, save_u = false, geovector = false;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, set_type;
-	unsigned int n_cols_start = 3, justify;
-	unsigned int bcol, ex1, ex2, ex3, change, n_needed, read_mode;
+	uint32_t k, j, geometry, tbl, pos2x, pos2y, set_type;
+	uint32_t n_cols_start = 3, justify;
+	uint32_t bcol, ex1, ex2, ex3, change, n_needed, read_mode;
 	int error = GMT_NOERROR;
 	
 	uint64_t i, n, n_total_read = 0;

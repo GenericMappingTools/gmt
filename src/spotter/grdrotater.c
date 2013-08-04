@@ -132,7 +132,7 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n, n_files = 0;
+	uint32_t n_errors = 0, n, n_files = 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -231,7 +231,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	 * Note that the path is the same for pixel or grid-registered grids.
 	 */
 
-	unsigned int np = 0, add, col, row;
+	uint32_t np = 0, add, col, row;
 	uint64_t dim[4] = {1, 1, 0, 2};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -309,7 +309,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon, double lat)
 {	/* Returns true if the selected point is outside the polygon */
 	uint64_t seg;
-	unsigned int inside = 0;
+	uint32_t inside = 0;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
 		if (GMT_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
 		inside = (GMT_inonout (GMT, lon, lat, P->segment[seg]) > 0);
@@ -324,7 +324,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 {
 	int scol, srow, error = 0;	/* Signed row, col */
 	bool not_global, global = false;
-	unsigned int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
+	uint32_t col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	
 	uint64_t ij, ij_rot, seg, rec;
 

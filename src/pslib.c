@@ -308,7 +308,7 @@ struct PSL_CTRL *New_PSL_Ctrl (char *session)
 	return (PSL);
 }
 
-int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir, char *userdir)
+int PSL_beginsession (struct PSL_CTRL *PSL, uint32_t search, char *sharedir, char *userdir)
 {	/* Allocate a new common control structure and initialize PSL session
 	 * err:		Stream pointer to send error messages to (usually stderr = NULL).
 	 * unit:	The unit used for lengths (0 = cm, 1 = inch, 2 = m, 3 = points).
@@ -2256,7 +2256,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	 */
 	int n, p, n_scan, last_k = -1, error = 0, old_font, font, after, len;
 	int *font_unique = NULL;
-	unsigned int i, i1, i0, j, k, n_items, n_font_unique, n_rgb_unique;
+	uint32_t i, i1, i0, j, k, n_items, n_font_unique, n_rgb_unique;
 	size_t n_alloc, n_words = 0;
 	double old_size, last_rgb[4], rgb[4];
 	int sub, super, small, plain_word = false, under, escape;
@@ -2822,12 +2822,12 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 * param[7] = vector-shape (0-1), and param[8] = asymmetry (-1 = left, +1 = right, 0 is normal) */
 
 	int i, side, heads, outline, fill, sign[2] = {+1, -1};
-	unsigned int status;
+	uint32_t status;
 	double head_arc_length, head_half_width, arc_width, da, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape;
 	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift;
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
-	status = (unsigned int)lrint (param[7]);
+	status = (uint32_t)lrint (param[7]);
 	if (status & PSL_VEC_MARC90 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
 		return (psl_mathrightangle (PSL, x, y, param));
 	}
@@ -2906,7 +2906,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	double angle, xtip, ytip, tailwidth, headlength, headwidth, headshape, off, length_inch;
 	double xx[4], yy[4], yshift;
 	int length, asymmetry, n, heads, outline, fill;
-	unsigned int status;
+	uint32_t status;
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
 	xtip = param[0];	ytip = param[1];
@@ -2917,7 +2917,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	tailwidth = param[2];
 	headlength = param[3];	headwidth = 0.5 * param[4];	headshape = param[5];
 	off = 0.5 * (2.0 - headshape) * headlength;
-	status = (unsigned int)lrint (param[6]);
+	status = (uint32_t)lrint (param[6]);
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
@@ -3649,7 +3649,7 @@ void psl_a85_encode (struct PSL_CTRL *PSL, unsigned char quad[], int nbytes)
 	 * Special cases:	#00000000 is encoded as z
 	 *			When n < 4, output only n+1 bytes */
 	int j;
-	unsigned int n = 0;	/* Was size_t but that fails under 64-bit mode */
+	uint32_t n = 0;	/* Was size_t but that fails under 64-bit mode */
 	unsigned char c[5];
 
 	if (nbytes < 1) return;		/* Ignore empty input */
@@ -4149,7 +4149,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 {
 	FILE *in = NULL;
 	int n_PSL_fonts;
-	unsigned int i = 0;
+	uint32_t i = 0;
 	size_t n_alloc = 64;
 	char buf[PSL_BUFSIZ];
 	char fullname[PSL_BUFSIZ];

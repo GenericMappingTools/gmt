@@ -89,7 +89,7 @@ int GMT_gmtwrite_parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -146,7 +146,7 @@ int GMT_gmtwrite_parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtwrite_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
+EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, uint32_t direction, char *ifile, char *ofile);
 
 int GMT_write (void *V_API, int mode, void *args)
 {

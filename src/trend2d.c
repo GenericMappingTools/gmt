@@ -43,7 +43,7 @@
 #define TREND2D_N_OUTPUT_CHOICES 6
 
 struct TREND2D_CTRL {
-	unsigned int n_outputs;
+	uint32_t n_outputs;
 	bool weighted_output;
 	struct C {	/* -C<condition_#> */
 		bool active;
@@ -60,7 +60,7 @@ struct TREND2D_CTRL {
 	struct N {	/* -N<n_model>[r] */
 		bool active;
 		bool robust;
-		unsigned int value;
+		uint32_t value;
 	} N;
 	struct W {	/* -W */
 		bool active;
@@ -139,10 +139,10 @@ void allocate_the_memory_2d (struct GMT_CTRL *GMT, uint64_t np, double **gtg, do
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs)
+void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, char *output_choice, uint32_t n_outputs)
 {
 	uint64_t i;
-	unsigned int j;
+	uint32_t j;
 	double out[6];
 
 	for (i = 0; i < n_data; i++) {
@@ -221,7 +221,7 @@ void untransform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, 
 	}
 }
 
-double get_chisq_2d (struct TREND2D_DATA *data, uint64_t n_data, unsigned int n_model)
+double get_chisq_2d (struct TREND2D_DATA *data, uint64_t n_data, uint32_t n_model)
 {
 	uint64_t i, nu;
 	double chi = 0.0;
@@ -263,7 +263,7 @@ void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint
 	}
 }
 
-void load_g_row_2d (double x, double y, unsigned int n, double *gr)
+void load_g_row_2d (double x, double y, uint32_t n, double *gr)
 {
 	/* Current data position, appropriately normalized.  */
 	/* Number of model parameters, and elements of gr[]  */
@@ -272,7 +272,7 @@ void load_g_row_2d (double x, double y, unsigned int n, double *gr)
 	   G matrix (Menke notation), where x,y is the ith datum's
 	   location.  */
 
-	unsigned int j;
+	uint32_t j;
 
 	j = 0;
 	while (j < n) {
@@ -312,13 +312,13 @@ void load_g_row_2d (double x, double y, unsigned int n, double *gr)
 	}
 }
 
-void calc_m_and_r_2d (struct TREND2D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, double *grow)
+void calc_m_and_r_2d (struct TREND2D_DATA *data, uint64_t n_data, double *model, uint32_t n_model, double *grow)
 {
 	/*	model[n_model] holds solved coefficients of m_type model.
 		grow[n_model] is a vector for a row of G matrix.  */
 
 	uint64_t i;
-	unsigned int j;
+	uint32_t j;
 	for (i = 0; i < n_data; i++) {
 		load_g_row_2d (data[i].x, data[i].y, n_model, grow);
 		data[i].m = 0.0;
@@ -327,18 +327,18 @@ void calc_m_and_r_2d (struct TREND2D_DATA *data, uint64_t n_data, double *model,
 	}
 }
 
-void move_model_a_to_b_2d (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b)
+void move_model_a_to_b_2d (double *model_a, double *model_b, uint32_t n_model, double *chisq_a, double *chisq_b)
 {
-	unsigned int i;
+	uint32_t i;
 	for (i = 0; i < n_model; i++) model_b[i] = model_a[i];
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp)
+void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, uint32_t n_model, uint32_t mp)
 {	/* mp is row dimension of gtg  */
 
 	uint64_t i;
-	unsigned int j, k;
+	uint32_t j, k;
 	double wz;
 
 	/* First zero the contents for summing */
@@ -367,10 +367,10 @@ void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint6
 	}
 }
 
-void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir)
+void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, uint32_t n_model, uint32_t mp, double *lambda, double *v, double *b, double *z, double c_no, uint32_t *ir)
 {
 
-	unsigned int i, j, k, rank = 0, nrots;
+	uint32_t i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;
 
 	if (n_model == 1) {
@@ -450,7 +450,7 @@ int GMT_trend2d_parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, j;
+	uint32_t n_errors = 0, j;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -523,7 +523,7 @@ int GMT_trend2d_parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct G
 
 int GMT_trend2d (void *V_API, int mode, void *args)
 {
-	unsigned int i, n_model, rank, np;
+	uint32_t i, n_model, rank, np;
 	int error = 0;
 	bool significant;
 	

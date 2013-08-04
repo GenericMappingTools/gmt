@@ -49,11 +49,11 @@ struct GRDGRADIENT_CTRL {
 	} A;
 	struct D {	/* -D[a][o][n] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} D;
 	struct E {	/* -E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]> */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double azimuth, elevation;
 		double ambient, diffuse, specular, shine;
 	} E;
@@ -63,7 +63,7 @@ struct GRDGRADIENT_CTRL {
 	} G;
 	struct N {	/* -N[t_or_e][<amp>[/<sigma>[/<offset>]]] */
 		bool active;
-		unsigned int mode;	/* 1 = atan, 2 = exp */
+		uint32_t mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset;
 	} N;
 	struct S {	/* -S<slopefile> */
@@ -166,7 +166,7 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, j, entry, pos;
+	uint32_t n_errors = 0, n_files = 0, j, entry, pos;
 	int n_opt_args = 0;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
@@ -323,7 +323,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 {
 	bool sigma_set = false, offset_set = false, bad, new_grid = false;
 	int p[4], mx, error = 0;
-	unsigned int row, col, n;
+	uint32_t row, col, n;
 	uint64_t ij, ij0, index, n_used = 0;
 	
 	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};

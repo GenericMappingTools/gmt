@@ -74,7 +74,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	} A;
 	struct MGD77LIST_C {	/* -C */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 	} C;
 	struct MGD77LIST_D {	/* -D */
 		bool active;
@@ -96,7 +96,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	} G;
 	struct MGD77LIST_I {	/* -I */
 		bool active;
-		unsigned int n;
+		uint32_t n;
 		char code[3];
 	} I;
 	struct MGD77LIST_L {	/* -L */
@@ -332,7 +332,7 @@ int GMT_mgd77list_parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k;
+	uint32_t n_errors = 0, k;
 	int code;
 	char *t = NULL, buffer[GMT_BUFSIZ] = {""};
 	double dist_scale;
@@ -668,7 +668,7 @@ int GMT_mgd77list_parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, stru
 
 int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
 {
-	unsigned int i, j, k, n_aux;
+	uint32_t i, j, k, n_aux;
 	int this_aux;
 
 	fx_setting[0] = '\0';
@@ -720,8 +720,8 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	int ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
 	
-	unsigned int select_option, n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
-	unsigned int kk, ku, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
+	uint32_t select_option, n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
+	uint32_t kk, ku, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
 	
 	uint64_t rec, prevrec;
 	

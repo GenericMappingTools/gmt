@@ -63,7 +63,7 @@ struct SPHTRIANGULATE_CTRL {
 	} N;
 	struct Q {	/* -Q */
 		bool active;
-		unsigned int mode;	/* 0 is Delaunay, 1 is Voronoi */
+		uint32_t mode;	/* 0 is Delaunay, 1 is Voronoi */
 	} Q;
 	struct T {	/* -T */
 		bool active;
@@ -71,7 +71,7 @@ struct SPHTRIANGULATE_CTRL {
 };
 
 int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, uint64_t get_arcs, \
-	unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[], char *file0, char *file1)
+	uint32_t get_area, uint64_t nodes, struct GMT_DATASET *Dout[], char *file0, char *file1)
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	uint64_t i, ij;
 	bool do_authalic;
@@ -182,10 +182,10 @@ int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, st
 }
 
 int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, double *lat, struct STRIPACK_VORONOI *V, bool get_arcs, \
-	unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[], char *file0, char *file1)
+	uint32_t get_area, uint64_t nodes, struct GMT_DATASET *Dout[], char *file0, char *file1)
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
 	bool do_authalic;
-	unsigned int geometry;
+	uint32_t geometry;
 	
 	uint64_t i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
 	uint64_t dim[4] = {1, 0, 0, 0};
@@ -432,7 +432,7 @@ int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

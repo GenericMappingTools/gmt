@@ -74,7 +74,7 @@ struct SEGY2GRD_CTRL {
 	} L;
 	struct M {	/* -M */
 		bool active;
-		unsigned int value;
+		uint32_t value;
 	} M;
 	struct N {	/* -N */
 		bool active;
@@ -87,7 +87,7 @@ struct SEGY2GRD_CTRL {
 	} Q;
 	struct S {	/* -S */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		int value;
 	} S;
 };
@@ -157,7 +157,7 @@ int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	uint32_t n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -270,8 +270,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 {
 	bool  read_cont = false, swap_bytes = !GMT_BIGENDIAN;
 	int error = 0;
-	unsigned int ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
-	unsigned int n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix;
+	uint32_t ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
+	uint32_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix;
 
 	uint64_t ij, ij0, n_samp = 0, isamp;
 	
@@ -323,7 +323,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
-	flag = GMT_memory (GMT, NULL, Grid->header->size, unsigned int);
+	flag = GMT_memory (GMT, NULL, Grid->header->size, uint32_t);
 
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 
@@ -499,12 +499,12 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 
 			if (!(x0 < GMT->common.R.wesn[XLO] || x0 > GMT->common.R.wesn[XHI])) {	/* inside x-range */
 				/* find horizontal grid pos of this trace */
-				ii = (unsigned int)GMT_grd_x_to_col (GMT, x0, Grid->header);
+				ii = (uint32_t)GMT_grd_x_to_col (GMT, x0, Grid->header);
 				if (ii == Grid->header->nx) ii--, n_confused++;
 				for (isamp = 0; isamp< n_samp; ++isamp) {
 					yval = isamp*Ctrl->Q.value[Y_ID];
 					if (!(yval < GMT->common.R.wesn[YLO] || yval > GMT->common.R.wesn[YHI])) {	/* inside y-range */
-						jj = (unsigned int)GMT_grd_y_to_row (GMT, yval, Grid->header);
+						jj = (uint32_t)GMT_grd_y_to_row (GMT, yval, Grid->header);
 						if (jj == Grid->header->ny) jj--, n_confused++;
 						ij = GMT_IJ0 (Grid->header, jj, ii);
 						Grid->data[ij] += data[isamp];	/* Add up incase we must average */

@@ -82,12 +82,12 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 	/* active is true if the option has been activated */
 	struct A {	/* -A[young/old] */
 		bool active;
-		unsigned int mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
+		uint32_t mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
 		double t_low, t_high;
 	} A;
 	struct D {	/* -Df|b */
 		bool active;
-		unsigned int mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
+		uint32_t mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
 	struct E {	/* -E[+]rotfile */
 		bool active;
@@ -202,7 +202,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	uint32_t n_errors = 0;
 	int k;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -347,7 +347,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 #define SPOTTER_BACK -1
 #define SPOTTER_FWD  +1
 
-int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int time_flag, double wesn[], double **c)
+int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], double tp[], uint32_t np, struct EULER p[], uint32_t ns, double d_km, double t_zero, uint32_t time_flag, double wesn[], double **c)
 {
 	int n = -1;
 	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
@@ -382,7 +382,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	uint64_t row;
 	uint64_t i, j;
 	uint64_t n_out, n_expected_fields, col;
-	unsigned int n_stages = 0;	/* Number of stage poles */
+	uint32_t n_stages = 0;	/* Number of stage poles */
 	int n_fields, error;		/* Misc. signed counters */
 	int spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	bool make_path = false;		/* true means create continuous path, false works on discrete points */

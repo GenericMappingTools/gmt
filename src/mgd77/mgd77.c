@@ -98,7 +98,7 @@ struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 int (*MGD77_column_test_double[9]) (double, double);
 int (*MGD77_column_test_string[9]) (char *, char *, size_t);
 
-unsigned int MGD77_this_bit[MGD77_SET_COLS];
+uint32_t MGD77_this_bit[MGD77_SET_COLS];
 
 int64_t GMT_splitinteger (double value, int epsilon, double *doublepart);
 bool GMT_is_gleap (int gyear);
@@ -163,7 +163,7 @@ static inline int MGD77_eq_test (double value, double limit)
 
 static inline int MGD77_bit_test (double value, double limit)
 {
-	unsigned int ivalue, ilimit;
+	uint32_t ivalue, ilimit;
 
 	/* Test that checks for (value & limit) > 0 */
 	/* We except both value and limit to be integers encoded as doubles, but we first check for NaNs anyway */
@@ -345,7 +345,7 @@ static inline int wrong_filler (char *field, size_t length) {
 
 static inline int MGD77_atoi (char *txt) {
 	/* Like atoi but checks if txt is not all integers - if bad it returns -9999 */
-	unsigned int i;
+	uint32_t i;
 	/* First skip leading blanks and sign (we really should count signs but ...) */
 	for (i = 0; i < strlen (txt) && (txt[i] == ' ' || txt[i] == '-' || txt[i] == '+'); i++);
 	/* Now check if the remainder is just digits - if not return bad value */
@@ -629,7 +629,7 @@ static void MGD77_Place_Text (struct GMT_CTRL *GMT, int dir, char *struct_member
 		MGD77_Fatal_Error (GMT, MGD77_BAD_ARG);
 }
 
-static int MGD77_Find_Cruise_ID (struct GMT_CTRL *GMT, char *name, char **cruises, unsigned int n_cruises, bool sorted)
+static int MGD77_Find_Cruise_ID (struct GMT_CTRL *GMT, char *name, char **cruises, uint32_t n_cruises, bool sorted)
 {
 	if (!cruises) return (-1);	/* Null pointer passed */
 
@@ -652,7 +652,7 @@ static int MGD77_Find_Cruise_ID (struct GMT_CTRL *GMT, char *name, char **cruise
 		return (low);
 	}
 	else {	/* Brute force scan */
-		unsigned int i;
+		uint32_t i;
 		for (i = 0; i < n_cruises; i++) if (!strcmp (name, cruises[i])) return (i);
 		return (MGD77_NOT_SET);
 	}
@@ -958,7 +958,7 @@ static int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, s
 {	/* Having processed -F and read the file's header, we can organize which
 	 * columns must be read and in what order.  If -F was never set we call
 	 * MGD77_Select_All_Columns to select every column for output. */
-	unsigned int i, id;
+	uint32_t i, id;
 	int set, item;
 
 	MGD77_Select_All_Columns (GMT, F, H);	/* Make sure n_out_columns is set */
@@ -1276,9 +1276,9 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	return (MGD77_NO_ERROR);
 }
 
-static int get_integer (char *text, unsigned int start, unsigned int length)
+static int get_integer (char *text, uint32_t start, uint32_t length)
 {
-	unsigned int k;
+	uint32_t k;
 	char tmp[16] = {""};
 	GMT_memset (tmp, 16, char);
 	for (k = 0; k < length; k++) tmp[k] = text[start+k];
@@ -1358,7 +1358,7 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTR
 static int MGD77_Read_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
 {
 	int j, n9, nwords, k, yyyy, mm, dd;
-	unsigned int pos, i;
+	uint32_t pos, i;
 	int64_t rata_die;
 	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
 	double tz, secs;
@@ -1423,7 +1423,7 @@ int MGD77_Read_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, s
 static int MGD77_Read_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will read all MGD77 records in current file */
 {
 	uint64_t rec, n_nan_times;
-	unsigned int k, col, n_txt, n_val;
+	uint32_t k, col, n_txt, n_val;
 	size_t Clength[3] = {8U, 5U, 6U};
 	int id, err, entry, mgd77_col[MGD77_SET_COLS];
 	struct MGD77_DATA_RECORD MGD77Record;
@@ -1609,7 +1609,7 @@ int MGD77_Write_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, 
 static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will write all MGD77 records in current file */
 {
 	uint64_t rec;
-	unsigned int k, id;
+	uint32_t k, id;
 	size_t Clength[3] = {8U, 5U, 6U};
 	int err, col[MGD77_N_DATA_FIELDS+1];
 	bool make_ymdhm;
@@ -1949,11 +1949,11 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	/* Reads the entire data file and applies bitflags and corrections unless they are turned off by calling programs */
 	int nc_id;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
-	unsigned int i, k, col;
+	uint32_t i, k, col;
 	uint64_t rec, rec_in;
 	int c, id;
 	bool apply_bits[MGD77_N_SETS];
-	unsigned int *flags = NULL;
+	uint32_t *flags = NULL;
 	char *text = NULL, *flagname[MGD77_N_SETS] = {"MGD77_flags", "CDF_flags"};
 	double scale, offset, *values = NULL;
 	struct MGD77_E77_APPLY E;
@@ -2143,7 +2143,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	GMT_memset (apply_bits, MGD77_N_SETS, bool);
 	for (k = 0; k < MGD77_N_SETS; k++) {
 		if (F->use_flags[k] && nc_inq_varid (F->nc_id, flagname[k], &nc_id) == NC_NOERR) {	/* There are bitflags for this set and we want them */
-			flags = GMT_memory (GMT, NULL, count[0], unsigned int);
+			flags = GMT_memory (GMT, NULL, count[0], uint32_t);
 			MGD77_nc_status (GMT, nc_get_vara_int (F->nc_id, nc_id, start, count, (int *)flags));
 			S->flags[k] = flags;
 			apply_bits[k] = F->use_flags[MGD77_M77_SET]; /* Consider the bitflags for this set */
@@ -2153,8 +2153,8 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	/* Possibly replace values with NaNs, according to the bitflags (if any) */
 
 	if (apply_bits[MGD77_M77_SET] || apply_bits[MGD77_CDF_SET]) {
-		unsigned int bad_nav_bits;
-		unsigned int n_bad = 0;
+		uint32_t bad_nav_bits;
+		uint32_t n_bad = 0;
 		bad_nav_bits = (set_bit(NCPOS_LON) | set_bit(NCPOS_LAT));	/* If flags has these bits turned on we must remove the record (no nav) */
 		for (rec = 0; rec < S->H.n_records; rec++) {	/* Apply bit flags and count how many bad records (i.e., no lon, lat) we found */
 			MGD77_Apply_Bitflags (GMT, F, S, rec, apply_bits);
@@ -2202,7 +2202,7 @@ static int MGD77_Read_Data_Record_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	 * 2. You must have preallocated enough space for the dvals and tvals arrays.
 	 */
 
-	unsigned int i, c, id, n_val, n_txt;
+	uint32_t i, c, id, n_val, n_txt;
 	size_t start, count;
 
 	for (i = n_val = n_txt = 0; i < F->n_out_columns; i++) {
@@ -2246,7 +2246,7 @@ static int MGD77_Write_Data_Record_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTR
 	 * 1. You must specify record number via F->rec_no before calling this function
 	 */
 
-	unsigned int i, c, id, n_val, n_txt;
+	uint32_t i, c, id, n_val, n_txt;
 	double single_val;
 	size_t start, count;
 
@@ -2562,7 +2562,7 @@ static void MGD77_dt2rdc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double 
 
 int MGD77_Info_from_Abbrev (struct GMT_CTRL *GMT, char *name, struct MGD77_HEADER *H, int *set, int *item)
 {
-	unsigned int id, c;
+	uint32_t id, c;
 
 	/* Returns the number in the output list AND passes set,item as the entry in H */
 
@@ -2580,7 +2580,7 @@ int MGD77_Info_from_Abbrev (struct GMT_CTRL *GMT, char *name, struct MGD77_HEADE
 }
 
 int MGD77_Param_Key (struct GMT_CTRL *GMT, int record, int item) {
-	unsigned int i, u_rec, u_item;
+	uint32_t i, u_rec, u_item;
 	int status = MGD77_BAD_HEADER_RECNO;
 	/* Given record and item, return the structure array key that matches these two values.
 	 * If not found return BAD_HEADER if record is outside range, or BAD_ITEM if no such item */
@@ -2686,7 +2686,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 	 *      - append .mgd77 and see if we can find it in listed directories
 	 */
 	int has_suffix = MGD77_NOT_SET;
-	unsigned int id, fmt, f_start, f_stop;
+	uint32_t id, fmt, f_start, f_stop;
 	bool append = false, hard_path;
 	char geo_path[GMT_BUFSIZ] = {""};
 
@@ -3028,7 +3028,7 @@ int MGD77_Write_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, stru
 int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp)
 {
 	int i, k, ix, iy, w, e, s, n, n_block, kind = 0, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
-	unsigned int pos;
+	uint32_t pos;
 	char copy[151] = {""}, p[GMT_LEN128] = {""}, text[GMT_LEN64] = {""};
 	char *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
 	time_t now;
@@ -3652,10 +3652,10 @@ void MGD77_List_Header_Items (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 
 int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, char *item)
 {
-	unsigned int i, id, match, pick[MGD77_N_HEADER_ITEMS];
+	uint32_t i, id, match, pick[MGD77_N_HEADER_ITEMS];
 	size_t length;
 
-	GMT_memset (pick, MGD77_N_HEADER_ITEMS, unsigned int);
+	GMT_memset (pick, MGD77_N_HEADER_ITEMS, uint32_t);
 	GMT_memset (F->Want_Header_Item, MGD77_N_HEADER_ITEMS, bool);
 
 	if (item && item[0] == '-') return 1;	/* Just wants a listing */
@@ -3760,7 +3760,7 @@ int MGD77_Select_Format (struct GMT_CTRL *GMT, int format)
 
 int MGD77_Process_Ignore (struct GMT_CTRL *GMT, char code, char *format)
 {
-	unsigned int i;
+	uint32_t i;
 
 	for (i = 0; i < strlen(format); i++) {
 		switch (format[i]) {
@@ -3837,7 +3837,7 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 void MGD77_Reset (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 {
 	/* Reset the entire MGD77 control system except system paths, etc */
-	unsigned int k;
+	uint32_t k;
 	for (k = 0; k < F->n_out_columns; k++) if (F->desired_column[k]) free ((void *)F->desired_column[k]);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = true;		/* true means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = true;	/* true means we will apply correction factors (if present) when reading data */
@@ -3854,7 +3854,7 @@ void MGD77_Reset (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 	GMT_memset (F->Bit_test, MGD77_MAX_COLS, struct MGD77_PAIR);
 }
 
-int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL *F, unsigned int option)
+int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL *F, uint32_t option)
 {
 	/* Scan the -Fstring and select which columns to use and which order
 	 * they should appear on output.  columns given in upper case must
@@ -3875,7 +3875,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 	char p[GMT_BUFSIZ] = {""}, cstring[GMT_BUFSIZ] = {""}, bstring[GMT_BUFSIZ] = {""}, word[GMT_LEN256] = {""}, value[GMT_LEN256] = {""};
 	int k;
 	size_t n;
-	unsigned int pos, i, j, constraint, ku;
+	uint32_t pos, i, j, constraint, ku;
 	bool exact, all_exact;
 
 	/* Special test for keywords mgd77 and all */
@@ -4008,7 +4008,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 
 int MGD77_Get_Column (struct GMT_CTRL *GMT, char *word, struct MGD77_CONTROL *F)
 {
-	unsigned int j;
+	uint32_t j;
 	int k;
 
 	for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < F->n_out_columns; j++)
@@ -4016,9 +4016,9 @@ int MGD77_Get_Column (struct GMT_CTRL *GMT, char *word, struct MGD77_CONTROL *F)
 	return (k);
 }
 
-int MGD77_Match_List (struct GMT_CTRL *GMT, char *word, unsigned int n_fields, char **list)
+int MGD77_Match_List (struct GMT_CTRL *GMT, char *word, uint32_t n_fields, char **list)
 {
-	unsigned int j;
+	uint32_t j;
 	int k;
 
 	for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < n_fields; j++) if (!strcmp (word, list[j])) k = j;
@@ -4027,7 +4027,7 @@ int MGD77_Match_List (struct GMT_CTRL *GMT, char *word, unsigned int n_fields, c
 
 int MGD77_Get_Set (struct GMT_CTRL *GMT, char *word)
 {	/* If word is one of the standard 27 MGD77 columns or time, return 0, else return 1 */
-	unsigned int j;
+	uint32_t j;
 	int k;
 
 	for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j <= MGD77_SSPN; j++) if (!strcmp (word, mgd77defs[j].abbrev)) k = j;
@@ -4037,7 +4037,7 @@ int MGD77_Get_Set (struct GMT_CTRL *GMT, char *word)
 
 void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 {	/* Free memory used by MGD77 machinery */
-	unsigned int i;
+	uint32_t i;
 	if (F->MGD77_HOME) GMT_free (GMT, F->MGD77_HOME);
 	for (i = 0; i < F->n_MGD77_paths; i++) GMT_free (GMT, F->MGD77_datadir[i]);
 	if (F->MGD77_datadir) GMT_free (GMT, F->MGD77_datadir);
@@ -4067,7 +4067,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 
 	int i;
-	unsigned int n = 0, n_dig, j, k;
+	uint32_t n = 0, n_dig, j, k;
 	bool all, NGDC_ID_likely;
 #ifdef MEMDEBUG
 	bool mem_track_enabled;
@@ -4165,7 +4165,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 				d_name = line;
 #endif /* HAVE_DIRENT_H_ */
 				if (length && strncmp (d_name, this_arg, length)) continue;
-				k = (unsigned int)strlen (d_name) - 1;
+				k = (uint32_t)strlen (d_name) - 1;
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
 				if (k < 8) continue;	/* Not a NGDC 8-char ID */
 				if (n == n_alloc) L = GMT_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
@@ -4224,7 +4224,7 @@ void MGD77_Path_Free (struct GMT_CTRL *GMT, uint64_t n, char **list)
 
 void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec, bool apply_bits[])
 {
-	unsigned int set, i;
+	uint32_t set, i;
 	double *value;
 
 	/* We get here when we need to take action on the bitflags */
@@ -4240,7 +4240,7 @@ void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 
 bool MGD77_Pass_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec)
 {
-	unsigned int i, col, c, id, n_passed;
+	uint32_t i, col, c, id, n_passed;
 	int match;
 	bool pass;
 	double *value = NULL;
@@ -5460,7 +5460,7 @@ double MGD77_Recalc_Mag_Anomaly_CM4 (struct GMT_CTRL *GMT, double time, double l
  * and apply the corrections to data before output in mgd77list
  */
 
-unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises, unsigned int n_cruises, unsigned int n_fields, char **field_names, char ***item_names, unsigned int mode)
+uint32_t MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises, uint32_t n_cruises, uint32_t n_fields, char **field_names, char ***item_names, uint32_t mode)
 {
 	/* This function scans the correction table to determine which named columns
 	 * are needed for corrections as well as which auxilliary variables (e.g.,
@@ -5468,7 +5468,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 	 * Returns number of entries in the list, or 0.
 	 */
 
-	unsigned int n_list = 0, rec = 0, pos;
+	uint32_t n_list = 0, rec = 0, pos;
 	bool sorted;
 	int id, cruise_id;
 	size_t n_alloc = GMT_SMALL_CHUNK;
@@ -5537,15 +5537,15 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 	return (n_list);
 }
 
-void MGD77_Free_Table (struct GMT_CTRL *GMT, unsigned int n_items, char **item_names)
+void MGD77_Free_Table (struct GMT_CTRL *GMT, uint32_t n_items, char **item_names)
 {
-	unsigned int i;
+	uint32_t i;
 	if (!n_items) return;
 	for (i = 0; i < n_items; i++) free (item_names[i]);	/* free because they were allocated with strdup */
 	GMT_free (GMT, item_names);
 	
 }
-int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises, unsigned int n_cruises, unsigned int n_fields, char **field_names, unsigned int mode, struct MGD77_CORRTABLE ***CORR)
+int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises, uint32_t n_cruises, uint32_t n_fields, char **field_names, uint32_t mode, struct MGD77_CORRTABLE ***CORR)
 {
 	/* We seek to make the correction system very flexible, in particular
 	 * since it is difficult to anticipate exactly what systematic trends
@@ -5568,7 +5568,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 	 * cruise abbrev term_1 term_2 ... term_n
 	 */
 
-	unsigned int i, n_aux, rec = 0, pos;
+	uint32_t i, n_aux, rec = 0, pos;
 	int id, cruise_id;
 	bool sorted, mgd77;
 	char line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""}, factor[GMT_LEN64] = {""}, origin[GMT_LEN64] = {""}, basis[GMT_BUFSIZ] = {""};
@@ -5750,9 +5750,9 @@ double MGD77_Correction_Rec (struct GMT_CTRL *GMT, struct MGD77_CORRECTION *C, d
 	return (dz);
 }
 
-void MGD77_Free_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE **CORR, unsigned int n)
+void MGD77_Free_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE **CORR, uint32_t n)
 {	/* Free up memory */
-	unsigned int i, col;
+	uint32_t i, col;
 	struct MGD77_CORRECTION *current, *past;
 	struct MGD77_CORRTABLE *T;
 

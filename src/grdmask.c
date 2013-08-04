@@ -39,7 +39,7 @@
 struct GRDMASK_CTRL {
 	struct A {	/* -A[m|p|step] */
 		bool active;
-		unsigned int mode;
+		uint32_t mode;
 		double step;
 	} A;
 	struct G {	/* -G<maskfile> */
@@ -52,7 +52,7 @@ struct GRDMASK_CTRL {
 	} I;
 	struct N {	/* -N<maskvalues> */
 		bool active;
-		unsigned int mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
+		uint32_t mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
 		double mask[GRDMASK_N_CLASSES];	/* values for each level */
 	} N;
 	struct S {	/* -S[-|=|+]<radius|z>[d|e|f|k|m|M|n] */
@@ -131,7 +131,7 @@ int GMT_grdmask_parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, j, pos;
+	uint32_t n_errors = 0, j, pos;
 	char ptr[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
@@ -232,8 +232,8 @@ int GMT_grdmask_parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct G
 int GMT_grdmask (void *V_API, int mode, void *args)
 {
 	bool periodic = false, periodic_grid = false, do_test = true;
-	unsigned int side = 0, *d_col = NULL, d_row = 0, col_0, row_0;
-	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2;
+	uint32_t side = 0, *d_col = NULL, d_row = 0, col_0, row_0;
+	uint32_t tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2;
 	int row, col, nx, ny, error = 0;
 	
 	uint64_t ij, k, seg;
@@ -360,9 +360,9 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 
 					/* OK, this point is within bounds, but may be exactly on the border */
 
-					col_0 = (unsigned int)GMT_grd_x_to_col (GMT, xtmp, Grid->header);
+					col_0 = (uint32_t)GMT_grd_x_to_col (GMT, xtmp, Grid->header);
 					if (col_0 == Grid->header->nx) col_0--;	/* Was exactly on the xmax edge */
-					row_0 = (unsigned int)GMT_grd_y_to_row (GMT, S->coord[GMT_Y][k], Grid->header);
+					row_0 = (uint32_t)GMT_grd_y_to_row (GMT, S->coord[GMT_Y][k], Grid->header);
 					if (row_0 == Grid->header->ny) row_0--;	/* Was exactly on the ymin edge */
 					ij = GMT_IJP (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
