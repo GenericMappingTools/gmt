@@ -104,6 +104,8 @@ Optional Arguments
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
     specified unless **+r**, **+R**, or **-M** is in effect, and only one **-F** option can be given.
     To plot multiple countries in different colors, call pscoast multiple times.
+    If modifiers **+r** or **+R** are used and neither **-J** nor **-M** is set then
+    we just print the **-R**\ *wesn* string.
 
 **-G**\ *fill*\ \|\ **c**
     Select filling or clipping of "dry" areas. Append the shade, color,

@@ -49,12 +49,12 @@ struct GMT_DCW_COUNTRY {	/* Information per country */
 
 struct GMT_DCW_STATE {		/* Information per state */
 	char country[4];	/* 2-char country code ISO 3166-1 (e.g., BR, US) */
-	char code[4];		/* 2-char state codes for US, Canada, Australia, Brazil (e.g., TX) */
+	char code[4];		/* 2/3-char state codes for US, Canada, China, Argentina, Australia, Brazil, Russia (e.g., TX) */
 	char name[80];		/* Full name of the state */
 };
 
 struct GMT_DCW_COUNTRY_STATE {		/* Information per country with state */
-	char country[4];		/* 2-char country code ISO 3166-1 (e.g., BR, US) for countries with states */
+	char country[4];		/* 2/3-char country code ISO 3166-1 (e.g., BR, US) for countries with states */
 };
 
 /* Compile in read-only structures and arrays with the information */
@@ -498,7 +498,8 @@ void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 	GMT_Message (API, GMT_TIME_NONE, "\t     for a region in these multiples [none].  Use +R to extend region by increments instead [0].\n");
 	if (plot == 1) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +g<fill> to fill [none].\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified unless -M is in effect.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified unless -M is in effect to plot or get data.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   If modifier +r or +R is given and no -J or -M is set we just print the -Rstring.\n");
 	}
 }
 
