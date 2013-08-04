@@ -121,7 +121,7 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
-	uint32_t status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
+	unsigned int status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
@@ -140,9 +140,9 @@ struct GMT_SYMBOL {
 	char string[GMT_LEN256];	/* Character code to plot (could be octal) */
 
 	int symbol;	/* Symbol id */
-	uint32_t n_required;	/* Number of additional columns necessary to decode chosen symbol */
-	uint32_t justify;	/* Justification of text item for -Sl symbol [PSL_MC = centered] */
-	uint32_t u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
+	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
+	unsigned int justify;	/* Justification of text item for -Sl symbol [PSL_MC = centered] */
+	unsigned int u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
 	bool u_set;		/* true if u was set */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
@@ -153,17 +153,17 @@ struct GMT_SYMBOL {
 	bool read_size;	/* true when we must read symbol size from file for the current record */
 	bool shade3D;	/* true when we should simulate shading of 3D symbols cube and column */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
-	uint32_t convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
-	uint32_t n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
-	uint32_t nondim_col[6];	/* Which columns has angles or km for this symbol */
-	uint32_t convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
+	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
+	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
+	unsigned int nondim_col[6];	/* Which columns has angles or km for this symbol */
+	unsigned int convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
 	double scale, origin;	/* Used to convert size = (given_size - origin) * scale */
 
 	/* These apply to bar|column symbols */
 
 	double base;		/* From what level to draw the bar|column */
 	bool user_unit[2];	/* If true then we must project the base via R -J to get base values, otherwise they are in c|i|p units */
-	uint32_t base_set;	/* 1 if user provided a custom base, 2 if we should read it from last column [otherwise 0: default to bottom axis] */
+	unsigned int base_set;	/* 1 if user provided a custom base, 2 if we should read it from last column [otherwise 0: default to bottom axis] */
 
 	/* These apply to vectors */
 

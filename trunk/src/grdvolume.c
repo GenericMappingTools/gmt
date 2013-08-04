@@ -53,7 +53,7 @@ struct GRDVOLUME_CTRL {
 	} S;
 	struct T {	/* -T[c|z] */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} T;
 	struct Z {	/* Z<fact>[/<shift>] */
 		bool active;
@@ -247,9 +247,9 @@ double median3 (double x[])
 	}
 }
 
-int ors_find_kink (struct GMT_CTRL *GMT, double y[], uint32_t n, uint32_t mode)
+int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned int mode)
 {	/* mode: 0 = find value maximum, 1 = find curvature maximum */
-	uint32_t i, im;
+	unsigned int i, im;
 	double *c = NULL, *f = NULL;
 
 	if (mode == 0) {	/* Find maximum value */
@@ -331,7 +331,7 @@ int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	int n = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -406,7 +406,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 {
 	bool bad, cut[4];
 	int error = 0, ij_inc[5];
-	uint32_t row, col, c, k, pos, neg, nc, n_contours;
+	unsigned int row, col, c, k, pos, neg, nc, n_contours;
 	
 	uint64_t ij;
 

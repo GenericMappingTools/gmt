@@ -96,7 +96,7 @@ struct GMT_GRID_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<g
 struct GMT_GRID_ROWBYROW {	/* Holds book-keeping information needed for row-by-row actions */
 	size_t size;		/* Bytes per item [4 for float, 1 for byte, etc] */
 	size_t n_byte;		/* Number of bytes for row */
-	uint32_t row;	/* Current row */
+	unsigned int row;	/* Current row */
 	bool open;		/* true if we have already opened the file */
 	bool check;		/* true if we must replace NaNs with another representation on i/o */
 	bool auto_advance;	/* true if we want to read file sequentially */
@@ -146,12 +146,12 @@ static inline void scale_and_offset_f (float *data, size_t length, float scale, 
 #endif
 }
 
-EXTERN_MSC int GMT_grd_format_decoder (struct GMT_CTRL *GMT, const char *code, uint32_t *type_id);
+EXTERN_MSC int GMT_grd_format_decoder (struct GMT_CTRL *GMT, const char *code, unsigned int *type_id);
 EXTERN_MSC int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, bool magic);
-EXTERN_MSC int GMT_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double wesn[], uint32_t *width, uint32_t *height, int *first_col, int *last_col, int *first_row, int *last_row, uint32_t **index);
+EXTERN_MSC int GMT_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index);
 EXTERN_MSC int GMT_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void GMT_scale_and_offset_f (struct GMT_CTRL *GMT, float *data, size_t length, double scale, double offset);
-EXTERN_MSC int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *grid, uint32_t complex_mode, uint32_t direction);
-EXTERN_MSC void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *data, uint32_t mode);
+EXTERN_MSC int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *grid, unsigned int complex_mode, unsigned int direction);
+EXTERN_MSC void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *data, unsigned int mode);
 
 #endif /* GMT_GRDIO_H */

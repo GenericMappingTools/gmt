@@ -71,7 +71,7 @@ struct PSMASK_CTRL {
 	} N;
 	struct Q {	/* -Q<cut> */
 		bool active;
-		uint32_t min;
+		unsigned int min;
 	} Q;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n|s] */
 		bool active;
@@ -87,10 +87,10 @@ struct PSMASK_CTRL {
 struct PSMASK_INFO {
 	bool first_dump;
 	int p[5], i_off[5], j_off[5], k_off[5];
-	uint32_t bit[32], offset;
+	unsigned int bit[32], offset;
 };
 
-void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint64_t nn, double rgb[], uint32_t id, uint32_t flag)
+void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint64_t nn, double rgb[], unsigned int id, unsigned int flag)
 {
 	uint64_t i;
 	double x, y;
@@ -108,7 +108,7 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %d\n", id);
 }
 
-uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, uint32_t *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max)
+uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max)
 {
 	int k, k0, n_cuts, kk_opposite, first_k, more;
 	uint64_t n = 1, edge_word, edge_bit, ij, ij0, m;
@@ -231,15 +231,15 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	return (n);
 }
 
-uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], uint32_t *edge, uint32_t first, double **x, double **y, uint64_t *max)
+uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points
 	 */
 	 
-	uint32_t n_edges, edge_bit, i, j;
-	static uint32_t i0, j0, side;
+	unsigned int n_edges, edge_bit, i, j;
+	static unsigned int i0, j0, side;
 	uint64_t edge_word, ij, n = 0;
 	bool go_on = true;
 	 
@@ -267,7 +267,7 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 			ij = GMT_IJP (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {	/* nx-1 since the last bin starts at nx-2 and ends at nx-1 */
 				edge_word = ij / 32 + info->offset;
-				edge_bit = (uint32_t)(ij % 32ULL);
+				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij-h->nx]) == 1)) { /* Start tracing contour */
 					*x[0] = GMT_grd_col_to_x (GMT, i, h);
 					*y[0] = GMT_grd_row_to_y (GMT, j, h);
@@ -291,7 +291,7 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 			ij = GMT_IJP (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {
 				edge_word = ij / 32 + info->offset;
-				edge_bit = (uint32_t)(ij % 32ULL);
+				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij+1]) == 1)) { /* Start tracing contour */
 					*x[0] = GMT_grd_col_to_x (GMT, i, h);
 					*y[0] = GMT_grd_row_to_y (GMT, j, h);
@@ -393,7 +393,7 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 	 */
 
 	int n_plus = -1, k;
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -492,9 +492,9 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 
 int GMT_psmask (void *V_API, int mode, void *args)
 {
-	uint32_t section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
-	uint32_t io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
-	uint32_t fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
+	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
+	unsigned int io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
+	unsigned int fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
 	int error = 0;
 	bool node_only, make_plot, closed;
 	
@@ -700,7 +700,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 
 			n_edges = Grid->header->ny * (urint (ceil (Grid->header->nx / 16.0)));
-			edge = GMT_memory (GMT, NULL, n_edges, uint32_t);
+			edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
 
 			if (make_plot) GMT_map_basemap (GMT);
 

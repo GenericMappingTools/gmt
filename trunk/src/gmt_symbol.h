@@ -38,8 +38,8 @@
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3], const_val[2];
 	int action, operator, var;
-	uint32_t conditional;
-	uint32_t justify;	/* For macro code l text justification [PSL_MC] */
+	unsigned int conditional;
+	unsigned int justify;	/* For macro code l text justification [PSL_MC] */
 	bool negate;
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
@@ -51,10 +51,10 @@ struct GMT_CUSTOM_SYMBOL_ITEM {
 struct GMT_CUSTOM_SYMBOL {
 	char name[GMT_LEN64];
 	char *PS_macro;		/* Contains all the PS commands if PS is true */
-	uint32_t n_required;	/* Number of additional columns necessary to decode chosen symbol */
-	uint32_t start;	/* Column number of first additional column [2-4 depending on -C and psxy vs psxyz] */
+	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
+	unsigned int start;	/* Column number of first additional column [2-4 depending on -C and psxy vs psxyz] */
 	bool PS;		/* true if a PSL symbol */
-	uint32_t *type;	/* Array with type of each parameter [0 = dimensionless, 1 = dimension, 2 = geographic angle (convert via projection)] */
+	unsigned int *type;	/* Array with type of each parameter [0 = dimensionless, 1 = dimension, 2 = geographic angle (convert via projection)] */
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
@@ -103,8 +103,8 @@ struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and ps
 	double g_int[2];	/* Tick (small) interval for geographic and magnetic directions */
 	bool plot;		/* true if we want to draw the rose */
 	bool gave_xy;	/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
-	uint32_t type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
-	uint32_t kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
+	unsigned int type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
+	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_LEN64];	/* User-changable labels for W, E, S, N point */
 	char dlabel[GMT_LEN256];	/* Magnetic declination label */
 };

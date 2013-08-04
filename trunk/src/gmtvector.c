@@ -52,12 +52,12 @@ struct GMTVECTOR_CTRL {
 	} Out;
 	struct In {	/* infile */
 		bool active;
-		uint32_t n_args;
+		unsigned int n_args;
 		char *arg;
 	} In;
 	struct A {	/* -A[m[<conf>]|<vec>] */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 		double conf;
 		char *arg;
 	} A;
@@ -148,7 +148,7 @@ int GMT_gmtvector_parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_in, n_errors = 0, n_files = 0;
+	unsigned int n_in, n_errors = 0, n_files = 0;
 	int n;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -259,8 +259,8 @@ int GMT_gmtvector_parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-uint32_t decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int cartesian, int geocentric) {
-	uint32_t n_out, n_errors = 0, ix, iy;
+unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int cartesian, int geocentric) {
+	unsigned int n_out, n_errors = 0, ix, iy;
 	int n;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
 	
@@ -302,7 +302,7 @@ uint32_t decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int car
 void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3])
 {	/* Given points in A and B, return the bisector pole via P */
 	 
-	uint32_t i;
+	unsigned int i;
 	double Pa[3], M[3];
 	 
 	/* Get mid point between A and B */
@@ -334,7 +334,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 {
 	/* Determines the mean vector M and the covariance matrix C */
 	
-	uint32_t i, j, k, n_components, nrots;
+	unsigned int i, j, k, n_components, nrots;
 	uint64_t row, n, seg, tbl, p;
 	double lambda[3], V[9], work1[3], work2[3], lon, lat, lon2, lat2, scl, L, Y;
 	double *P[3], X[3], B[3], C[9];
@@ -414,7 +414,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 
 int GMT_gmtvector (void *V_API, int mode, void *args)
 {
-	uint32_t tbl, error = 0, k, n, n_components, n_out, add_cols = 0;
+	unsigned int tbl, error = 0, k, n, n_components, n_out, add_cols = 0;
 	bool single = false;
 	
 	uint64_t row, seg;

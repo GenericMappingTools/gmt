@@ -75,16 +75,16 @@ struct GSHHG_CTRL {
 	} G;
 	struct I {	/* -I[<id>|c] */
 		bool active;
-		uint32_t mode;
-		uint32_t id;
+		unsigned int mode;
+		unsigned int id;
 	} I;
 	struct N {	/* -N<level> */
 		bool active;
-		uint32_t level;
+		unsigned int level;
 	} N;
 	struct Q {	/* -Qe|i */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} Q;
 };
 
@@ -133,7 +133,7 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
 
@@ -208,7 +208,7 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 
 int GMT_gshhg (void *V_API, int mode, void *args)
 {
-	uint32_t row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id;
+	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id;
 	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;
 	size_t n_read;

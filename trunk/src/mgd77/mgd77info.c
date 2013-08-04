@@ -40,25 +40,25 @@ struct MGD77INFO_CTRL {	/* All control options for this program (except common a
 	/* active is true if the option has been activated */
 	struct C {	/* -C */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} C;
 	struct E {	/* -E */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} E;
 	struct I {	/* -I */
 		bool active;
-		uint32_t n;
+		unsigned int n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} L;
 	struct M {	/* -M */
 		bool active;
-		uint32_t mode;
-		uint32_t flag;
+		unsigned int mode;
+		unsigned int flag;
 	} M;
 };
 
@@ -123,7 +123,7 @@ int GMT_mgd77info_parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -252,7 +252,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 	size_t length;
 	
 	uint64_t rec, argno, n_paths, counter[MGD77_MAX_COLS];
-	uint32_t saved_range, quad_no, n_quad, use, k;
+	unsigned int saved_range, quad_no, n_quad, use, k;
 	bool first = true, read_file, quad[4] = {false, false, false, false};
 	
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;

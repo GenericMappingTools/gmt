@@ -49,7 +49,7 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 #endif
 	struct E {	/* -E */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} E;
 	struct G {	/* -G<outfile> */
 		bool active;
@@ -76,7 +76,7 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 #endif
 	struct S {	/* -S<item> */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} S;
 	struct W {	/* -W[i][o] */
 		bool active;

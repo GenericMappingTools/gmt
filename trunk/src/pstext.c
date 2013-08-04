@@ -34,7 +34,7 @@
 
 #define GMT_PROG_OPTIONS "-:>BJKOPRUVXYacfhptxy" GMT_OPT("E")
 
-void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, uint32_t size);
+void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
 bool GMT_is_a_blank_line (char *line);
 
 #define PSTEXT_CLIP		1
@@ -62,7 +62,7 @@ struct PSTEXT_CTRL {
 		struct GMT_FONT font;
 		double angle;
 		int justify, R_justify, nread;
-		uint32_t get_text;	/* 0 = from data record, 1 = segment label (+l), or 2 = segment header (+h) */
+		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), or 2 = segment header (+h) */
 		char read[4];		/* Contains a, c, f, and/or j in order required to be read from input */
 	} F;
 	struct PSTEXT_G {	/* -G<fill> */
@@ -277,7 +277,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information).\n");
 
 	if (show_fonts) {	/* List fonts */
-		uint32_t i;
+		unsigned int i;
 		GMT_Message (API, GMT_TIME_NONE, "\n\tFont #	Font Name\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t------------------------------------\n");
 		for (i = 0; i < API->GMT->session.n_fonts; i++)
@@ -350,7 +350,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 	 */
 
 	int j, k;
-	uint32_t pos, n_errors = 0;
+	unsigned int pos, n_errors = 0;
 	bool explicit_justify = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -596,8 +596,8 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	int  error = 0, k, fmode, nscan;
 	bool master_record = false, skip_text_records = false, old_is_world;
 	
-	uint32_t length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
-	uint32_t n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
+	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
+	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
 	
 	size_t n_alloc = 0;
 

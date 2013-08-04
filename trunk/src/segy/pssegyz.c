@@ -95,7 +95,7 @@ struct PSSEGYZ_CTRL {
 	struct S {	/* -S */
 		bool active;
 		bool fixed[2];
-		uint32_t mode[2];
+		unsigned int mode[2];
 		int value[2];
 		double orig[2];
 	} S;
@@ -184,7 +184,7 @@ int GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, struct 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t k, n_errors = 0, n_files = 0;
+	unsigned int k, n_errors = 0, n_files = 0;
 	char *txt[2] = {NULL, NULL}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

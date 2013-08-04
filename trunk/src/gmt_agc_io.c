@@ -40,8 +40,8 @@
 int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
-int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
+int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 
 Private Functions used by the public functions:
 
@@ -100,7 +100,7 @@ void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *header)
 void SaveAGCHeader (char *remark, float *agchead)
 {	/* Place AGC header data in remark string */
 	char floatvalue[PARAMSIZE+1];	/* Allow space for final \0 */
-	uint32_t i;
+	unsigned int i;
 	size_t j;
 
 	strcpy (remark, AGCHEADINDICATOR);
@@ -156,7 +156,7 @@ int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 {	/* Read header info. NOTE: All AGC files are assumed to be gridline-registered */
-	uint32_t i;
+	unsigned int i;
 	FILE *fp = NULL;
 	float recdata[RECORDLENGTH], agchead[BUFFHEADSIZE];
 
@@ -215,7 +215,7 @@ int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
+int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:     	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -227,13 +227,13 @@ int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	int first_col, last_col, j, col;		/* First and last column to deal with */
 	int first_row, last_row, j_gmt, colend;		/* First and last row to deal with */
-	uint32_t width_in;			/* Number of items in one row of the subregion */
-	uint32_t width_out;			/* Width of row as return (may include padding) */
-	uint32_t height_in;			/* Number of columns in subregion */
-	uint32_t i;				/* Misc. counters */
-	uint32_t *k = NULL;			/* Array with indices */
-	uint32_t block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
-	uint32_t datablockcol, datablockrow, rowstart, rowend, colstart, row;
+	unsigned int width_in;			/* Number of items in one row of the subregion */
+	unsigned int width_out;			/* Width of row as return (may include padding) */
+	unsigned int height_in;			/* Number of columns in subregion */
+	unsigned int i;				/* Misc. counters */
+	unsigned int *k = NULL;			/* Array with indices */
+	unsigned int block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
+	unsigned int datablockcol, datablockrow, rowstart, rowend, colstart, row;
 	uint64_t ij, imag_offset;
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	FILE *fp = NULL;			/* File pointer to data or pipe */
@@ -298,7 +298,7 @@ int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
+int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]
@@ -310,13 +310,13 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	int first_col, last_col, col, colend = 0;		/* First and last column to deal with */
 	int j_gmt, i, j, first_row, last_row;		/* First and last row to deal with */
-	uint32_t width_in;			/* Number of items in one row of the subregion */
-	uint32_t width_out;			/* Width of row as return (may include padding) */
-	uint32_t height_out;			/* Number of columns in subregion */
-	uint32_t i2, j2;			/* Misc. counters */
-	uint32_t *k = NULL;			/* Array with indices */
-	uint32_t block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
-	uint32_t row, rowstart, rowend, colstart, datablockcol, datablockrow;
+	unsigned int width_in;			/* Number of items in one row of the subregion */
+	unsigned int width_out;			/* Width of row as return (may include padding) */
+	unsigned int height_out;			/* Number of columns in subregion */
+	unsigned int i2, j2;			/* Misc. counters */
+	unsigned int *k = NULL;			/* Array with indices */
+	unsigned int block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
+	unsigned int row, rowstart, rowend, colstart, datablockcol, datablockrow;
 	uint64_t kk, ij, imag_offset;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];

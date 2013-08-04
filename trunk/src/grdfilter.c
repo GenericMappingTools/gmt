@@ -45,7 +45,7 @@ struct GRDFILTER_CTRL {
 	struct A {	/* -A<a|r|w|c>row/col */
 		bool active;
 		char mode;
-		uint32_t ROW, COL;
+		unsigned int ROW, COL;
 		double x, y;
 	} A;
 #endif
@@ -75,7 +75,7 @@ struct GRDFILTER_CTRL {
 	} I;
 	struct N {	/* -Np|i|r */
 		bool active;
-		uint32_t mode;	/* 0 is default (i), 1 is replace (r), 2 is preserve (p) */
+		unsigned int mode;	/* 0 is default (i), 1 is replace (r), 2 is preserve (p) */
 	} N;
 	struct T {	/* -T */
 		bool active;
@@ -137,11 +137,11 @@ struct GRDFILTER_CTRL {
 #define NAN_PRESERVE	2
 
 struct FILTER_INFO {
-	uint32_t nx;		/* The max number of filter weights in x-direction */
-	uint32_t ny;		/* The max number of filter weights in y-direction */
+	unsigned int nx;		/* The max number of filter weights in x-direction */
+	unsigned int ny;		/* The max number of filter weights in y-direction */
 	int x_half_width;		/* Number of filter nodes to either side needed at this latitude */
 	int y_half_width;		/* Number of filter nodes above/below this point (ny_f/2) */
-	uint32_t d_flag;
+	unsigned int d_flag;
 	bool rect;		/* For 2-D rectangular filtering */
 	bool debug;		/* Normally unused except under DEBUG */
 	double dx, dy;		/* Grid spacing in original units */
@@ -284,7 +284,7 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 	 * 3. Grid-registered grids have boundary nodes that only apply to 1/2 the area
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
-	uint32_t row, col;
+	unsigned int row, col;
 	uint64_t ij;
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
 	struct GMT_GRID *A = NULL;
@@ -411,7 +411,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	char c, a[GMT_LEN64] = {""}, b[GMT_LEN64] = {""}, txt[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -558,11 +558,11 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 {
 	bool fast_way, slow = false, slower = false, same_grid = false;
 	bool spherical = false, full_360, visit_check = false, go_on, get_weight_sum = true;
-	uint32_t n_in_median, n_nan = 0, col_out, row_out, effort_level;
-	uint32_t filter_type, one_or_zero = 1, GMT_n_multiples = 0;
+	unsigned int n_in_median, n_nan = 0, col_out, row_out, effort_level;
+	unsigned int filter_type, one_or_zero = 1, GMT_n_multiples = 0;
 	int tid = 0, col_in, row_in, ii, jj, *col_origin = NULL, row_origin, nx_wrap = 0, error = 0;
 #ifdef DEBUG
-	uint32_t n_conv = 0;
+	unsigned int n_conv = 0;
 #endif
 	uint64_t ij_in, ij_out, ij_wt;
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, y, par[GRDFILTER_N_PARS];
@@ -898,7 +898,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		if (Ctrl->D.mode == GRDFILTER_GEO_FLATEARTH2) par[GRDFILTER_X_SCALE] = GMT->current.proj.DIST_KM_PR_DEG * cosd (lat_out);	/* Update flat-Earth longitude scale */
 
 		if (Ctrl->D.mode > GRDFILTER_GEO_FLATEARTH1) {	/* Update max filterweight nodes to deal with for this latitude */
-			uint32_t test_nx;
+			unsigned int test_nx;
 			y = fabs (lat_out);
 			if (Ctrl->D.mode == GRDFILTER_GEO_SPHERICAL) y += (par[GRDFILTER_HALF_WIDTH] / par[GRDFILTER_Y_SCALE]);	/* Highest latitude within filter radius */
 			test_nx = urint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)));

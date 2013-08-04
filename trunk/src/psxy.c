@@ -37,7 +37,7 @@
 struct PSXY_CTRL {
 	struct A {	/* -A[m|p|step] */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> */
@@ -50,8 +50,8 @@ struct PSXY_CTRL {
 	} D;
 	struct E {	/* -E[x|X][y|Y][cap][/[+|-]<pen>] */
 		bool active;
-		uint32_t xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
-		uint32_t mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
+		unsigned int xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
+		unsigned int mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
 		double size;
 		struct GMT_PEN pen;
 	} E;
@@ -78,7 +78,7 @@ struct PSXY_CTRL {
 	} T;
 	struct W {	/* -W<pen> */
 		bool active;
-		uint32_t mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
+		unsigned int mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
 };
@@ -150,8 +150,8 @@ void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, doub
 }
 
 void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double error_width2, double rgb[], int line, int kind) {
-	uint32_t i;
-	static uint32_t q[4] = {0, 25, 75, 100};
+	unsigned int i;
+	static unsigned int q[4] = {0, 25, 75, 100};
 	double xx[4], yy[4];
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
@@ -193,8 +193,8 @@ void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 }
 
 void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double error_width2, double rgb[], int line, int kind) {
-	uint32_t i;
-	static uint32_t q[4] = {0, 25, 75, 100};
+	unsigned int i;
+	static unsigned int q[4] = {0, 25, 75, 100};
 	double xx[4], yy[4];
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
@@ -364,7 +364,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t j0, n_errors = 0;
+	unsigned int j0, n_errors = 0;
 	int j;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -508,10 +508,10 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	bool get_rgb, read_symbol, clip_set = false, fill_active;
 	bool error_x = false, error_y = false, def_err_xy = false;
 	bool default_outline, outline_active, geovector = false;
-	uint32_t set_type, n_needed, n_cols_start = 2, justify, tbl;
-	uint32_t i, n_total_read = 0, j, geometry, read_mode;
-	uint32_t bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
-	uint32_t xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
+	unsigned int set_type, n_needed, n_cols_start = 2, justify, tbl;
+	unsigned int i, n_total_read = 0, j, geometry, read_mode;
+	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
+	unsigned int xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
 	int error = GMT_NOERROR;
 
 	char *text_rec = NULL;
@@ -778,7 +778,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (text_rec);	/* Get rid of \n \r */
-				i = (uint32_t)strlen (text_rec) - 1;
+				i = (unsigned int)strlen (text_rec) - 1;
 				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
 				GMT_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, false);
 				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */

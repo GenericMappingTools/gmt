@@ -39,7 +39,7 @@ struct GRDHISTEQ_CTRL {
 	} In;
 	struct C {	/* -C<n_cells>*/
 		bool active;
-		uint32_t value;
+		unsigned int value;
 	} C;
 	struct D {	/* -D[<file>] */
 		bool active;
@@ -117,7 +117,7 @@ int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
 
@@ -169,9 +169,9 @@ int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-float get_cell (float x, struct CELL *cell, uint32_t n_cells_m1, uint32_t last_cell)
+float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell)
 {
-	uint32_t low, high, i;
+	unsigned int low, high, i;
 
 	low = 0;
 	high = n_cells_m1;
@@ -200,10 +200,10 @@ float get_cell (float x, struct CELL *cell, uint32_t n_cells_m1, uint32_t last_c
 	return (0.0f);	/* Cannot get here - just used to quiet compiler */
 }
 
-int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, uint32_t n_cells, bool quadratic, bool dump_intervals)
+int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals)
 {	/* Do basic histogram equalization */
 	uint64_t i, j, nxy;
-	uint32_t last_cell, n_cells_m1 = 0, current_cell, pad[4];
+	unsigned int last_cell, n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
@@ -284,7 +284,7 @@ int compare_indices (const void *point_1, const void *point_2)
 
 int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 {	/* Make an output grid file with standard normal scores */
-	uint32_t row, col;
+	unsigned int row, col;
 	uint64_t i = 0, j = 0, ij, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;

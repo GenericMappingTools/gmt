@@ -213,7 +213,7 @@ int GMT_x2sys_solve_parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -603,7 +603,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 			}
 			
 			for (i = 0; i < 2; i++) {	/* Look up track IDs */
-				ID[i][n_COE] = x2sys_find_track (GMT, trk[i], trk_list, (uint32_t)n_tracks);	/* Return track id # for this leg */
+				ID[i][n_COE] = x2sys_find_track (GMT, trk[i], trk_list, (unsigned int)n_tracks);	/* Return track id # for this leg */
 				if (ID[i][n_COE] == -1) {	/* Leg not in the data base yet */
 					if (grow_list) {	/* Add it */
 						trk_list[n_tracks] = strdup (trk[i]);
@@ -718,7 +718,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 
 	/* Get LS solution */
 
-	if ((ierror = GMT_gauss (GMT, N, b, (uint32_t)m, (uint32_t)m, true)))
+	if ((ierror = GMT_gauss (GMT, N, b, (unsigned int)m, (unsigned int)m, true)))
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Divisions by a small number (< DBL_EPSILON) occurred in GMT_gauss()!\n");
 
 	GMT_free (GMT, N);

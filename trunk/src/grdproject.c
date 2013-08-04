@@ -123,7 +123,7 @@ int GMT_grdproject_parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	int sval, ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
@@ -213,7 +213,7 @@ int GMT_grdproject_parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, st
 int GMT_grdproject (void *V_API, int mode, void *args)
 {
 	bool set_n = false, shift_xy = false;
-	uint32_t use_nx = 0, use_ny = 0, offset, k, unit = 0;
+	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
 	int error = 0;
 
 	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};

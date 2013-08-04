@@ -76,7 +76,7 @@ struct SPLITXYZ_CTRL {
 
 double *filterxy_setup (struct GMT_CTRL *GMT)
 {
-	uint32_t i;
+	unsigned int i;
 	double tmp, sum = 0.0, *fwork = NULL;
 
 	fwork = GMT_memory (GMT, NULL, SPLITXYZ_F_RES, double);	/* Initialized to zeros */
@@ -89,7 +89,7 @@ double *filterxy_setup (struct GMT_CTRL *GMT)
 	return (fwork);
 }
 
-void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, uint32_t d_col, uint32_t n_cols, uint32_t cols[], double filter_width, double *fwork)
+void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork)
 {
 	uint64_t i, j, k, p, istart, istop, ndata;
 	int64_t kk;
@@ -199,7 +199,7 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t j, n_errors = 0, n_outputs = 0, n_files = 0;
+	unsigned int j, n_errors = 0, n_outputs = 0, n_files = 0;
 	bool z_selected = false;
 	char txt_a[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -308,8 +308,8 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 
 int GMT_splitxyz (void *V_API, int mode, void *args)
 {
-	uint32_t i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
-	uint32_t output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0;
+	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
+	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0;
 	int error = 0;
 	bool ok, io_mode = 0, first = true;
 	uint64_t dim[4] = {1, 0, 0, 0};
@@ -421,7 +421,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 
 	if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
 		n_columns = D[GMT_IN]->n_columns + 2;
-		d_col = (uint32_t)D[GMT_IN]->n_columns;
+		d_col = (unsigned int)D[GMT_IN]->n_columns;
 		h_col = d_col + 1;
 	}
 	else {	/* Comes with d and az in file */

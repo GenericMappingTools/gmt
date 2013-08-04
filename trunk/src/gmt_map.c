@@ -315,7 +315,7 @@ void gmt_lat_swap_init (struct GMT_CTRL *GMT)
 	 *	 programs can use functions like GMT_lat_swap whenever needed.
 	 */
 
-	uint32_t i;
+	unsigned int i;
 	double x, xx[4], a, f, e2, e4, e6, e8;
 
 	f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening;
@@ -642,14 +642,14 @@ bool gmt_lon_inside (struct GMT_CTRL *GMT, double lon, double w, double e)
 	return (true);
 }
 
-uint32_t gmt_wesn_crossing (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, uint32_t *sides)
+unsigned int gmt_wesn_crossing (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, unsigned int *sides)
 {
 	/* Compute all crossover points of a line segment with the rectangular lat/lon boundaries
 	 * Since it may not be obvious which side the line may cross, and since in some cases the two points may be
 	 * entirely outside the region but still cut through it, we first find all possible candidates and then decide
 	 * which ones are valid crossings.  We may find 0, 1, or 2 intersections */
 
-	uint32_t n = 0, i;
+	unsigned int n = 0, i;
 	double d, x0, y0;
 
 	/* If wrapping is allowed: first bring both points between W and E boundaries,
@@ -788,11 +788,11 @@ bool gmt_is_rect_corner (struct GMT_CTRL *GMT, double x, double y)
 	return (GMT->current.map.corner > 0);
 }
 
-uint32_t gmt_rect_crossing (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, uint32_t *sides)
+unsigned int gmt_rect_crossing (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, unsigned int *sides)
 {
 	/* Compute all crossover points of a line segment with the boundaries in a rectangular projection */
 
-	uint32_t i, j, n = 0;
+	unsigned int i, j, n = 0;
 	double x0, x1, y0, y1, d;
 
 	/* Since it may not be obvious which side the line may cross, and since in some cases the two points may be
@@ -896,7 +896,7 @@ uint32_t gmt_rect_crossing (struct GMT_CTRL *GMT, double lon0, double lat0, doub
 	return (2);
 }
 
-uint32_t gmt_radial_crossing (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, uint32_t *sides)
+unsigned int gmt_radial_crossing (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, unsigned int *sides)
 {
 	/* Computes the lon/lat of a point that is f_horizon spherical degrees from
 	 * the origin and lies on the great circle between points 1 and 2 */
@@ -1022,7 +1022,7 @@ int GMT_eqdist_crossing (struct GMT_CTRL *GMT, double lon1, double lat1, double 
 
 /*  Routines to do with clipping */
 
-uint32_t gmt_map_crossing (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, uint32_t *sides)
+unsigned int gmt_map_crossing (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, unsigned int *sides)
 {
 	if (GMT->current.map.prev_x_status == GMT->current.map.this_x_status && GMT->current.map.prev_y_status == GMT->current.map.this_y_status) {
 		/* This is naive. We could have two points outside with a line drawn between crossing the plotting area. */
@@ -1170,8 +1170,8 @@ uint64_t gmt_move_to_rect (struct GMT_CTRL *GMT, double *x_edge, double *y_edge,
 uint64_t gmt_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double **x, double **y, uint64_t *total_nx)
 {
 	uint64_t i, j = 0;
-	uint32_t nx, k;
-	uint32_t sides[4];
+	unsigned int nx, k;
+	unsigned int sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
@@ -1233,7 +1233,7 @@ uint64_t gmt_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
  */
 #define INTERSECTION_COORD(x_curr,y_curr,x_prev,y_prev,border) x_curr + (x_prev - x_curr) * (border - y_curr) / (y_prev - y_curr)
 
-uint32_t gmt_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, bool (*inside) (double, double), bool (*outside) (double, double), int *cross)
+unsigned int gmt_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, bool (*inside) (double, double), bool (*outside) (double, double), int *cross)
 {	/* Clip against the south or north boundary (i.e., a horizontal line with y = border) */
 	*cross = 0;
 	if (doubleAlmostEqualZero (x_prev, x_curr) && doubleAlmostEqualZero (y_prev, y_curr))
@@ -1254,7 +1254,7 @@ uint32_t gmt_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr
 	y[0] = border;	x[0] = INTERSECTION_COORD (x_curr, y_curr, x_prev, y_prev, border);	return (1);
 }
 
-uint32_t gmt_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, bool (*inside) (double, double), bool (*outside) (double, double), int *cross)
+unsigned int gmt_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, bool (*inside) (double, double), bool (*outside) (double, double), int *cross)
 {	/* Clip against the west or east boundary (i.e., a vertical line with x = border) */
 	*cross = 0;
 	if (doubleAlmostEqualZero (x_prev, x_curr) && doubleAlmostEqualZero (y_prev, y_curr))
@@ -1290,11 +1290,11 @@ uint64_t gmt_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 {
 	uint64_t i, n_get, m;
 	size_t n_alloc = 0;
-	uint32_t side, in = 1, out = 0, j, np;
+	unsigned int side, in = 1, out = 0, j, np;
 	int cross = 0;
 	bool polygon;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
-	uint32_t (*clipper[4]) (double, double, double, double, double *, double *, double, bool (*inside) (double, double), bool (*outside) (double, double), int *);
+	unsigned int (*clipper[4]) (double, double, double, double, double *, double *, double, bool (*inside) (double, double), bool (*outside) (double, double), int *);
 	bool (*inside[4]) (double, double);
 	bool (*outside[4]) (double, double);
 	
@@ -1377,7 +1377,7 @@ uint64_t gmt_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 
 /* GMT_dateline_clip simply clips a polygon agains the dateline and results in two polygons in L */
 
-uint32_t GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout)
+unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout)
 {
 	int side, j, np, cross = 0;
 	uint64_t row, m;
@@ -1487,7 +1487,7 @@ int gmt_move_to_wesn (struct GMT_CTRL *GMT, double *x_edge, double *y_edge, doub
 uint64_t gmt_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double **x, double **y, uint64_t *total_nx)
 {
 	uint64_t i, j = 0, nx, k;
-	uint32_t sides[4];
+	unsigned int sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
@@ -1550,12 +1550,12 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	char *x_type = NULL;
 	size_t n_alloc = 0, n_x_alloc = 0, n_t_alloc = 0;
 	uint64_t new_n, i, n_get, n, m, n_cross = 0, *x_index = NULL;
-	uint32_t j, np, side, in = 1, out = 0;
+	unsigned int j, np, side, in = 1, out = 0;
 	int cross = 0;
 	bool curved, jump = false, polygon, periodic = false;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
-	uint32_t (*clipper[4]) (double, double, double, double, double *, double *, double, bool (*inside) (double, double), bool (*outside) (double, double), int *);
+	unsigned int (*clipper[4]) (double, double, double, double, double *, double *, double, bool (*inside) (double, double), bool (*outside) (double, double), int *);
 	bool (*inside[4]) (double, double);
 	bool (*outside[4]) (double, double);
 	
@@ -1789,8 +1789,8 @@ uint64_t gmt_radial_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 {
 	size_t n_alloc = 0;
 	uint64_t n = 0, n_arc;
-	uint32_t i, nx;
-	uint32_t sides[4];
+	unsigned int i, nx;
+	unsigned int sides[4];
 	bool this_side = false, add_boundary = false;
 	double xlon[4], xlat[4], xc[4], yc[4], end_x[3], end_y[3], xr, yr;
 	double *xx = NULL, *yy = NULL, *xarc = NULL, *yarc = NULL;
@@ -1918,7 +1918,7 @@ bool gmt_genper_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double 
 
 void gmt_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0)
 {
-	uint32_t i, j;
+	unsigned int i, j;
 	double xmin, xmax, ymin, ymax, w, s, x, y, dlon, dlat;
 
 	/* Find min/max forward values */
@@ -2347,7 +2347,7 @@ double GMT_az_backaz (struct GMT_CTRL *GMT, double lonE, double latE, double lon
 	return (GMT->current.map.azimuth_func (GMT, lonE, latE, lonS, latS, baz));
 }
 
-void GMT_auto_frame_interval (struct GMT_CTRL *GMT, uint32_t axis, uint32_t item) {
+void GMT_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned int item) {
 	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
 	int i = 0;
 	bool set_a = false;
@@ -3041,7 +3041,7 @@ bool gmt_map_init_cylstereo (struct GMT_CTRL *GMT) {
  */
 
 bool gmt_map_init_stereo (struct GMT_CTRL *GMT) {
-	uint32_t i;
+	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius, latg, D = 1.0;
 
 	GMT->current.proj.GMT_convert_latitudes = !GMT_IS_SPHERICAL (GMT);
@@ -3402,7 +3402,7 @@ bool gmt_map_init_oblique (struct GMT_CTRL *GMT) {
 
 /* For global TM maps */
 
-uint32_t gmt_wrap_around_check_tm (struct GMT_CTRL *GMT, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, uint32_t *sides)
+unsigned int gmt_wrap_around_check_tm (struct GMT_CTRL *GMT, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, unsigned int *sides)
 {
 	double dx, dy, width, jump;
 
@@ -3653,7 +3653,7 @@ bool gmt_map_init_utm (struct GMT_CTRL *GMT) {
 }
 
 #if 0
-double GMT_UTMzone_to_clon (struct GMT_CTRL *GMT, uint32_t zone_x, char zone_y)
+double GMT_UTMzone_to_clon (struct GMT_CTRL *GMT, unsigned int zone_x, char zone_y)
 { /* Return the central longitude of this UTM zone */
 	double clon = 180.0 + 6.0 * zone_x - 3.0;	/* This is valid for most zones */
 
@@ -3677,7 +3677,7 @@ double GMT_UTMzone_to_clon (struct GMT_CTRL *GMT, uint32_t zone_x, char zone_y)
 
 /* Setting w/e/s/n for a fully qualified UTM zone */
 
-bool GMT_UTMzone_to_wesn (struct GMT_CTRL *GMT, uint32_t zone_x, char zone_y, int hemi, double wesn[])
+bool GMT_UTMzone_to_wesn (struct GMT_CTRL *GMT, unsigned int zone_x, char zone_y, int hemi, double wesn[])
 {	/* Given the full UTM zone specification, return w/e/s/n */
 
 	bool error = false;
@@ -3735,7 +3735,7 @@ bool GMT_UTMzone_to_wesn (struct GMT_CTRL *GMT, uint32_t zone_x, char zone_y, in
  */
 
 bool gmt_map_init_lambeq (struct GMT_CTRL *GMT) {
-	uint32_t i;
+	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	GMT->current.proj.Dx = GMT->current.proj.Dy = 1.0;
@@ -3840,7 +3840,7 @@ bool gmt_map_init_lambeq (struct GMT_CTRL *GMT) {
  */
 
 bool gmt_map_init_ortho (struct GMT_CTRL *GMT) {
-	uint32_t i;
+	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	GMT_set_spherical (GMT, true);	/* PW: Force spherical for now */
@@ -3934,7 +3934,7 @@ bool gmt_map_init_ortho (struct GMT_CTRL *GMT) {
 
 bool gmt_map_init_genper (struct GMT_CTRL *GMT) {
 	bool search;
-	uint32_t i;
+	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius = 0.0;
 	double alt, azimuth, tilt, width, height;
 	double twist, scale, units;
@@ -4133,7 +4133,7 @@ bool gmt_map_init_gnomonic (struct GMT_CTRL *GMT) {
  */
 
 bool gmt_map_init_azeqdist (struct GMT_CTRL *GMT) {
-	uint32_t i;
+	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	GMT_set_spherical (GMT, true);	/* PW: Force spherical for now */
@@ -4858,7 +4858,7 @@ bool gmt_map_init_polyconic (struct GMT_CTRL *GMT) {
 
 void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north) {
 	double dx, dy, w, e, s, n, x, y, lat, *lon = NULL;
-	uint32_t i, j, k;
+	unsigned int i, j, k;
 
 	/* Search for extreme lon/lat coordinates by matching along the rectangular boundary */
 
@@ -4897,7 +4897,7 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 
 int gmt_horizon_search (struct GMT_CTRL *GMT, double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {
 	double dx, dy, d, x, y, lon, lat;
-	uint32_t i, j;
+	unsigned int i, j;
 	bool beyond = false;
 
 	/* Search for extreme original coordinates lon/lat and see if any fall beyond the horizon */
@@ -4935,7 +4935,7 @@ bool GMT_map_outside (struct GMT_CTRL *GMT, double lon, double lat)
 	return ((*GMT->current.map.outside) (GMT, lon, lat));
 }
 
-uint32_t gmt_wrap_around_check_x (struct GMT_CTRL *GMT, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, uint32_t *sides)
+unsigned int gmt_wrap_around_check_x (struct GMT_CTRL *GMT, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, unsigned int *sides)
 {
 	double dx, dy, width, jump, GMT_half_map_width (struct GMT_CTRL *GMT, double y);
 
@@ -5184,7 +5184,7 @@ uint64_t GMT_map_truncate (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 
 /* GMT generic distance calculations between a pair of points in 2-D */
 
-double GMT_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, uint32_t id)
+double GMT_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, unsigned int id)
 {	/* Generic function available to programs for contour/label distance calculations */
 	return (GMT->current.map.dist[id].scale * GMT->current.map.dist[id].func (GMT, lonS, latS, lonE, latE));
 }
@@ -5199,12 +5199,12 @@ bool GMT_near_a_point (struct GMT_CTRL *GMT, double lon, double lat, struct GMT_
 	return (GMT->current.map.near_point_func (GMT, lon, lat, T, dist));
 }
 
-bool GMT_near_lines (struct GMT_CTRL *GMT, double lon, double lat, struct GMT_DATATABLE *T, uint32_t return_mindist, double *dist_min, double *x_near, double *y_near)
+bool GMT_near_lines (struct GMT_CTRL *GMT, double lon, double lat, struct GMT_DATATABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {	/* Compute distance to nearest line in T from (lon,lat) */
 	return (GMT->current.map.near_lines_func (GMT, lon, lat, T, return_mindist, dist_min, x_near, y_near));
 }
 
-bool GMT_near_a_line (struct GMT_CTRL *GMT, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, uint32_t return_mindist, double *dist_min, double *x_near, double *y_near)
+bool GMT_near_a_line (struct GMT_CTRL *GMT, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {	/* Compute distance to the line S from (lon,lat) */
 	return (GMT->current.map.near_a_line_func (GMT, lon, lat, seg, S, return_mindist, dist_min, x_near, y_near));
 }
@@ -5621,7 +5621,7 @@ bool gmt_near_a_point_cartesian (struct GMT_CTRL *GMT, double x, double y, struc
 
 /* Functions involving distance from arbitrary points to a line */
 
-bool gmt_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, uint32_t return_mindist, double *dist_min, double *x_near, double *y_near)
+bool gmt_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	bool perpendicular_only = false, interior, within;
 	uint64_t row0, row1;
@@ -5738,7 +5738,7 @@ bool gmt_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, double lat, ui
 	return (within);	/* All tests failed, we are not close to the line(s), or we just return distance and interior (see comments above) */
 }
 
-bool gmt_near_lines_cartesian (struct GMT_CTRL *GMT, double lon, double lat, struct GMT_DATATABLE *T, uint32_t return_mindist, double *dist_min, double *x_near, double *y_near)
+bool gmt_near_lines_cartesian (struct GMT_CTRL *GMT, double lon, double lat, struct GMT_DATATABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	uint64_t seg;
 	int mode = return_mindist, status;
@@ -5756,7 +5756,7 @@ bool gmt_near_lines_cartesian (struct GMT_CTRL *GMT, double lon, double lat, str
 	return (OK);	
 }
 
-bool gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, uint32_t return_mindist, double *dist_min, double *x_near, double *y_near)
+bool gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	bool perpendicular_only = false, interior, within;
 	uint64_t row, prev_row;
@@ -5845,7 +5845,7 @@ bool gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, uint
 	return (within);	/* All tests failed, we are not close to the line(s), or we return a mindist (see comments above) */
 }
 
-bool gmt_near_lines_spherical (struct GMT_CTRL *P, double lon, double lat, struct GMT_DATATABLE *T, uint32_t return_mindist, double *dist_min, double *x_near, double *y_near)
+bool gmt_near_lines_spherical (struct GMT_CTRL *P, double lon, double lat, struct GMT_DATATABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	uint64_t seg;
 	int mode = return_mindist, status;
@@ -5872,7 +5872,7 @@ int GMT_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[],
 	 * X is the point on (A,B) closest to C.  We must test if X is
 	 * between A,B or outside.
 	 */
-	uint32_t i;
+	unsigned int i;
 	double P[3], E[3], M[3], Xneg[3], cos_AB, cos_MX1, cos_MX2, cos_test;
 
 	GMT_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and origin O) */
@@ -6249,8 +6249,8 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
 	uint64_t j, np;
  	bool inside;
-	uint32_t sides[4];
-	uint32_t nx;
+	unsigned int sides[4];
+	unsigned int nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
 	double this_x, this_y, last_x, last_y, dummy[4];
 
@@ -6342,7 +6342,7 @@ uint64_t GMT_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 
 /* Routines to transform grdfiles to/from map projections */
 
-int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, uint32_t nx, uint32_t ny, uint32_t dpi, uint32_t offset)
+int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int nx, unsigned int ny, unsigned int dpi, unsigned int offset)
 {
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
 		if (GMT->current.io.inc_code[GMT_X] || GMT->current.io.inc_code[GMT_Y]) {	/* Must convert from distance units to degrees */
@@ -7004,7 +7004,7 @@ double GMT_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[])
 	return (lat + R2D * delta);
 }
 
-double GMT_lat_swap (struct GMT_CTRL *GMT, double lat, uint32_t itype)
+double GMT_lat_swap (struct GMT_CTRL *GMT, double lat, unsigned int itype)
 {
 	/* Return latitude, in degrees, given latitude, in degrees, based on itype */
 
@@ -7114,7 +7114,7 @@ void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DA
 {
 	/* Initialize datum conv structures based on the parsed values*/
 
-	uint32_t k;
+	unsigned int k;
 
 	GMT->current.proj.datum.h_given = heights;
 
@@ -7247,7 +7247,7 @@ void GMT_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[])
 	/* Convert ECEF coordinates to geodetic lon, lat, height given the datum parameters.
 	 * GMT->current.proj.datum.from is always the ellipsoid to use */
 
-	uint32_t i;
+	unsigned int i;
 	double in_p[3], sin_lat, cos_lat, N, p, theta, sin_theta, cos_theta;
 
 	/* First remove the xyz shifts, us in_p to avoid changing in */
@@ -7347,10 +7347,10 @@ double * GMT_dist_array_2 (struct GMT_CTRL *GMT, double x[], double y[], uint64_
 	return (d);
 }
 
-uint32_t GMT_map_latcross (struct GMT_CTRL *GMT, double lat, double west, double east, struct GMT_XINGS **xings)
+unsigned int GMT_map_latcross (struct GMT_CTRL *GMT, double lat, double west, double east, struct GMT_XINGS **xings)
 {
 	bool go = false;
-	uint32_t i, nx, nc = 0;
+	unsigned int i, nx, nc = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lon_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	struct GMT_XINGS *X = NULL;
@@ -7405,10 +7405,10 @@ uint32_t GMT_map_latcross (struct GMT_CTRL *GMT, double lat, double west, double
 	return (nc);
 }
 
-uint32_t GMT_map_loncross (struct GMT_CTRL *GMT, double lon, double south, double north, struct GMT_XINGS **xings)
+unsigned int GMT_map_loncross (struct GMT_CTRL *GMT, double lon, double south, double north, struct GMT_XINGS **xings)
 {
 	bool go = false;
-	uint32_t j, nx, nc = 0;
+	unsigned int j, nx, nc = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lat, lat_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	struct GMT_XINGS *X = NULL;
@@ -7463,7 +7463,7 @@ uint32_t GMT_map_loncross (struct GMT_CTRL *GMT, double lon, double south, doubl
 }
 
 int gmt_init_three_D (struct GMT_CTRL *GMT) {
-	uint32_t i;
+	unsigned int i;
 	bool easy, positive;
 	double x, y, zmin = 0.0, zmax = 0.0, z_range;
 
@@ -7701,7 +7701,7 @@ int gmt_init_three_D (struct GMT_CTRL *GMT) {
 
 int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 {
-	uint32_t i;
+	unsigned int i;
 	bool search, double_auto[6];
 
 	if (!GMT->common.J.active) Return (GMT_MAP_NO_PROJECTION);
@@ -7925,7 +7925,7 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 	return (GMT_NOERROR);
 }
 
-void gmt_set_distaz (struct GMT_CTRL *GMT, uint32_t mode, uint32_t type)
+void gmt_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type)
 {	/* Assigns pointers to the chosen distance and azimuth functions */
 	char *type_name[3] = {"Map", "Contour", "Contour annotation"};
 	char *aux[6] = {"no", "authalic", "conformal", "meridional", "geocentric", "parametric"};
@@ -8028,7 +8028,7 @@ void gmt_set_distaz (struct GMT_CTRL *GMT, uint32_t mode, uint32_t type)
 	}
 }
 
-uint32_t GMT_init_distaz (struct GMT_CTRL *GMT, char unit, uint32_t mode, uint32_t type)
+unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode, unsigned int type)
 {
 	/* Initializes distance calcuation given the selected values for:
 	 * Distance unit: must be on of the following:
@@ -8043,7 +8043,7 @@ uint32_t GMT_init_distaz (struct GMT_CTRL *GMT, char unit, uint32_t mode, uint32
 	 * The input args for GMT_init_distaz normally comes from calling GMT_get_distance.
 	 */
 
-	uint32_t proj_type = GMT_GEOGRAPHIC;	/* Default is to just use the geographic coordinates as they are */
+	unsigned int proj_type = GMT_GEOGRAPHIC;	/* Default is to just use the geographic coordinates as they are */
 
 	if (strchr (GMT_LEN_UNITS, unit) && !GMT_is_geographic (GMT, GMT_IN)) {	/* Want geographic distance units but -fg (or -J) not set */
 		GMT_parse_common_options (GMT, "f", 'f', "g");

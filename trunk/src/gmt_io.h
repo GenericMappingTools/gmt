@@ -159,7 +159,7 @@ enum GMT_io_nan_enum {
 
 struct GMT_QUAD {	/* Counting parameters needed to determine proper longitude min/max range */
 	uint64_t quad[4];		/* Keeps track if a longitude fell in these quadrants */
-	uint32_t range[2];	/* The format for reporting longitude */
+	unsigned int range[2];	/* The format for reporting longitude */
 	double min[2], max[2];		/* Min/max values in either -180/180 or 0/360 counting */
 };
 
@@ -167,7 +167,7 @@ struct GMT_CLOCK_IO {
 	bool skip;			/* Only true if a format string was pass as NULL */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	int order[3];		/* The relative order of hour, mn, sec in input clock string (-ve if unused) */
-	uint32_t n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
+	unsigned int n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
 	bool compact;		/* true if we do not want leading zeros in items (e.g., 03) */
 	bool twelve_hr_clock;	/* true if we are doing am/pm on output */
 	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
@@ -177,7 +177,7 @@ struct GMT_CLOCK_IO {
 
 struct GMT_DATE_IO {
 	bool skip;			/* Only true if a format string was pass as NULL */
-	uint32_t T_pos;		/* String position of the expected 'T' marker (INPUT only) */
+	unsigned int T_pos;		/* String position of the expected 'T' marker (INPUT only) */
 	int item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string (-ve if unused) */
 	int item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string (-ve if unused) */
 	bool Y2K_year;		/* true if we have 2-digit years */
@@ -192,8 +192,8 @@ struct GMT_DATE_IO {
 
 struct GMT_GEO_IO {			/* For geographic output and plotting */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
-	uint32_t n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
-	uint32_t range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
+	unsigned int n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
+	unsigned int range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
 	int order[3];		/* The relative order of degree, minute, seconds in form (-ve if unused) */
 	bool decimal;		/* true if we want to use the D_FORMAT for decimal degrees only */
 	bool wesn;		/* true if we want sign encoded with suffix W, E, S, N */
@@ -204,15 +204,15 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 };
 
 struct GMT_COL_INFO {	/* Used by -i and input parsing */
-	uint32_t col;	/* The column number in the order requested via -i */
-	uint32_t order;	/* The initial order (0,1,...) but this will be sorted on col */
-	uint32_t convert;	/* 2 if we must convert the data by log10, 1 if scale, offset */
+	unsigned int col;	/* The column number in the order requested via -i */
+	unsigned int order;	/* The initial order (0,1,...) but this will be sorted on col */
+	unsigned int convert;	/* 2 if we must convert the data by log10, 1 if scale, offset */
 	double scale;		/* Multiplier for raw in value */
 	double offset;		/* Offset applied after multiplier */ 
 };
 
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
-	uint32_t type;	/* Data type e.g., GMT_FLOAT */
+	unsigned int type;	/* Data type e.g., GMT_FLOAT */
 	off_t skip;		/* Rather than read/write an item, jump |skip| bytes before (-ve) or after (+ve) read/write */
 	int (*io) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to the correct read or write function given type/swab */
 };
@@ -224,8 +224,8 @@ struct GMT_IO {				/* Used to process input data records */
 	int (*write_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function writing 1-col z tables in xyz2grd */
 	bool (*ogr_parser) (struct GMT_CTRL *, char *);				/* Set to handle either header or data OGR records */
 
-	uint32_t pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
-	uint32_t inc_code[2];
+	unsigned int pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
+	unsigned int inc_code[2];
 	double curr_rec[GMT_MAX_COLUMNS];	/* The most recently processed data record */
 	double prev_rec[GMT_MAX_COLUMNS];	/* The previous data record */
 	struct GMT_GRID_INFO grd_info;
@@ -241,10 +241,10 @@ struct GMT_IO {				/* Used to process input data records */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	uint64_t n_bad_records;		/* Number of bad records encountered during i/o */
-	uint32_t tbl_no;		/* Number of current table in entire data set */
-	uint32_t io_nan_ncols;	/* Number of columns to consider for -s option */
+	unsigned int tbl_no;		/* Number of current table in entire data set */
+	unsigned int io_nan_ncols;	/* Number of columns to consider for -s option */
 	enum GMT_ogr_status ogr;	/* Tells us if current input source has OGR/GMT metadata (GMT_OGR_TRUE) or not (GMT_OGR_FALSE) or not set (GMT_OGR_UNKNOWN) */
-	uint32_t status;		/* 0	All is ok
+	unsigned int status;		/* 0	All is ok
 					   1	Current record is segment header
 					   2	Mismatch between actual and expected fields
 					   4	EOF
@@ -274,8 +274,8 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_GEO_IO geo;		/* Has all the info on how to write geographic coordinates */
 	bool skip_if_NaN[GMT_MAX_COLUMNS];	/* true if column j cannot be NaN and we must skip the record */
 	bool col_skip[GMT_MAX_COLUMNS];	/* true of input column is to be ignored [Default reads all columns, but see -i] */
-	uint32_t col_type[2][GMT_MAX_COLUMNS];	/* Type of column on input and output: Time, geographic, etc, see GMT_IS_<TYPE> */
-	uint32_t io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir true */
+	unsigned int col_type[2][GMT_MAX_COLUMNS];	/* Type of column on input and output: Time, geographic, etc, see GMT_IS_<TYPE> */
+	unsigned int io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir true */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
@@ -292,15 +292,15 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	bool input;		/* true if we are reading, false if we are writing */
 	int x_step;	/* +1 if logical x values increase to right, else -1 */
 	int y_step;	/* +1 if logical y values increase upwards, else -1 */
-	uint32_t x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
-	uint32_t y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
-	uint32_t format;	/* Either GMT_IS_COL_FORMAT or GMT_IS_ROW_FORMAT */
-	uint32_t x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
-	uint32_t y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
-	uint32_t start_col;	/* First logical column in file */
-	uint32_t start_row;	/* First logical row in file */
-	uint32_t gmt_i;		/* Current column number in the GMT registered grid */
-	uint32_t gmt_j;		/* Current row number in the GMT registered grid */
+	unsigned int x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
+	unsigned int y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
+	unsigned int format;	/* Either GMT_IS_COL_FORMAT or GMT_IS_ROW_FORMAT */
+	unsigned int x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
+	unsigned int y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
+	unsigned int start_col;	/* First logical column in file */
+	unsigned int start_row;	/* First logical row in file */
+	unsigned int gmt_i;		/* Current column number in the GMT registered grid */
+	unsigned int gmt_j;		/* Current row number in the GMT registered grid */
 	uint64_t n_expected;	/* Number of data element expected to be read */
 	off_t skip;		/* Number of bytes to skip before reading data */
 	uint64_t (*get_gmt_ij) (struct GMT_Z_IO *, struct GMT_GRID *, uint64_t);	/* Pointer to function that converts running number to GMT ij */

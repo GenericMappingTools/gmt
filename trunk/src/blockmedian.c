@@ -80,7 +80,7 @@ int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -155,11 +155,11 @@ int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, 
 }
 
 void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra,
-	uint32_t go_quickly, uint32_t emode, double *quantile, uint32_t n_quantiles, struct BLK_DATA *data)
+	unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data)
 {
 	double weight_half, weight_count;
 	uint64_t node, n_in_cell, node1;
-	uint32_t k, k_for_xy;
+	unsigned int k, k_for_xy;
 	int way;
 
 	/* Remember: Data are already sorted on z for each cell */
@@ -244,7 +244,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	bool do_extra, duplicate_col;
 	
 	int error = 0;
-	uint32_t row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
+	unsigned int row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
 	
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
 

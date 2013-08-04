@@ -122,7 +122,7 @@ int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	int col;
 	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;

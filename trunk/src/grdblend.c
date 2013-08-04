@@ -55,7 +55,7 @@ struct GRDBLEND_CTRL {
 	struct In {	/* Input files */
 		bool active;
 		char **file;
-		uint32_t n;	/* If n > 1 we probably got *.grd or something */
+		unsigned int n;	/* If n > 1 we probably got *.grd or something */
 	} In;
 	struct G {	/* -G<grdfile> */
 		bool active;
@@ -63,7 +63,7 @@ struct GRDBLEND_CTRL {
 	} G;
 	struct C {	/* -C */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} C;
 	struct I {	/* -Idx[/dy] */
 		bool active;
@@ -107,7 +107,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 
 int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file)
 {	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
-	uint32_t i;
+	unsigned int i;
 	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef", "gd"};
 	for (i = 0; i < N_NOT_SUPPORTED; i++) {	/* Only allow netcdf (both v3 and new) and native binary output */
 		if (GMT_grd_format_decoder (GMT, not_supported[i], &h->type) != GMT_NOERROR) {
@@ -120,7 +120,7 @@ int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, c
 }
 
 void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
-	uint32_t i, pos, error = 0;
+	unsigned int i, pos, error = 0;
 	char text[GMT_BUFSIZ];
 
 	/* Needed to decode the inner region -Rw/e/s/n string */
@@ -137,7 +137,7 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 
 bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h)
 {	/* Look for phase shifts in w/e/s/n between the two grids */
-	uint32_t way, side;
+	unsigned int way, side;
 	double a;
 	for (side = 0; side < 4; side++) {
 		way = side / 2;
@@ -149,7 +149,7 @@ bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h)
 	return false;
 }
 
-bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, uint32_t mode)
+bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, unsigned int mode)
 {
 	double w, e, shift = 720.0;
 	char *type[2] = {"grid", "inner grid"};
@@ -172,10 +172,10 @@ bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GR
 	return false;
 }
 
-int init_blend_job (struct GMT_CTRL *GMT, char **files, uint32_t n_files, struct GMT_GRID_HEADER *h, struct GRDBLEND_INFO **blend) {
+int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER *h, struct GRDBLEND_INFO **blend) {
 	int type, status;
 	bool do_sample, not_supported;
-	uint32_t one_or_zero = !h->registration, n = 0, nr;
+	unsigned int one_or_zero = !h->registration, n = 0, nr;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, *V_level = "qncvld", buffer[GMT_BUFSIZ] = {""};
 	char Targs[GMT_LEN256] = {""}, Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_BUFSIZ] = {""};
@@ -281,14 +281,14 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, uint32_t n_files, struct
 		}
 		if (out_of_phase (B[n].G->header, h)) {	/* Set explicit -R for resampling that is multiple of desired increments AND inside both original grid and desired grid */
 			double wesn[4];	/* Make sure wesn is equal to or larger than B[n].G->header->wesn so all points are included */
-			uint32_t k;
-			k = (uint32_t)floor ((MAX (h->wesn[XLO], B[n].G->header->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
+			unsigned int k;
+			k = (unsigned int)floor ((MAX (h->wesn[XLO], B[n].G->header->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XLO] = GMT_grd_col_to_x (GMT, k, h);
-			k = (uint32_t)ceil  ((MIN (h->wesn[XHI], B[n].G->header->wesn[XHI]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
+			k = (unsigned int)ceil  ((MIN (h->wesn[XHI], B[n].G->header->wesn[XHI]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XHI] = GMT_grd_col_to_x (GMT, k, h);
-			k = h->ny - 1 - (uint32_t)floor ((MAX (h->wesn[YLO], B[n].G->header->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
+			k = h->ny - 1 - (unsigned int)floor ((MAX (h->wesn[YLO], B[n].G->header->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YLO] = GMT_grd_row_to_y (GMT, k, h);
-			k = h->ny - 1 - (uint32_t)ceil  ((MIN (h->wesn[YHI], B[n].G->header->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
+			k = h->ny - 1 - (unsigned int)ceil  ((MIN (h->wesn[YHI], B[n].G->header->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YHI] = GMT_grd_row_to_y (GMT, k, h);
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
@@ -388,8 +388,8 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, uint32_t n_files, struct
 	return (n_files);
 }
 
-int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, uint32_t n_blend, double half) {
-	uint32_t k;
+int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, unsigned int n_blend, double half) {
+	unsigned int k;
 
 	for (k = 0; k < n_blend; k++) {	/* Get every input grid ready for the new row */
 		if (B[k].ignore) continue;
@@ -493,7 +493,7 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
- 	uint32_t n_errors = 0;
+ 	unsigned int n_errors = 0;
 	size_t n_alloc = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -573,7 +573,7 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 
 int GMT_grdblend (void *V_API, int mode, void *args)
 {
-	uint32_t col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final;
+	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final;
 	int status, pcol, err, error;
 	bool reformat, wrap_x, write_all_at_once = false;
 	
@@ -673,7 +673,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		write_all_at_once = true;
 	}
 	else {
-		uint32_t w_mode;
+		unsigned int w_mode;
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
 			sprintf (outtemp, "/tmp/grdblend_temp_%" PRIu64 ".nc", (uint64_t)getpid());	/* Get temporary file name */
 			outfile = outtemp;

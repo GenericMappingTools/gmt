@@ -74,11 +74,11 @@ struct SURFACE_CTRL {
 		bool active;
 		char *low, *high;
 		double min, max;
-		uint32_t lmode, hmode;
+		unsigned int lmode, hmode;
 	} L;
 	struct N {	/* -N<max_iterations> */
 		bool active;
-		uint32_t value;
+		unsigned int value;
 	} N;
 	struct Q {	/* -Q */
 		bool active;
@@ -124,10 +124,10 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	char format[GMT_BUFSIZ];
 	char *low_file, *high_file;	/* Pointers to grids with low and high limits, if selected */
 	int grid, old_grid;	/* Node spacings  */
-	uint32_t n_fact;		/* Number of factors in common (ny-1, nx-1) */
-	uint32_t factors[32];		/* Array of common factors */
-	uint32_t set_low;		/* 0 unconstrained,1 = by min data value, 2 = by user value */
-	uint32_t set_high;		/* 0 unconstrained,1 = by max data value, 2 = by user value */
+	unsigned int n_fact;		/* Number of factors in common (ny-1, nx-1) */
+	unsigned int factors[32];		/* Array of common factors */
+	unsigned int set_low;		/* 0 unconstrained,1 = by min data value, 2 = by user value */
+	unsigned int set_high;		/* 0 unconstrained,1 = by max data value, 2 = by user value */
 	size_t n_alloc;
 	uint64_t npoints;			/* Number of data points */
 	uint64_t ij_sw_corner, ij_se_corner,ij_nw_corner, ij_ne_corner;
@@ -140,7 +140,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	uint64_t mxmy;		/* Total number of grid nodes with boundaries  */
 	int block_nx;		/* Number of nodes in x-dir for a given grid factor */
 	int block_ny;		/* Number of nodes in y-dir for a given grid factor */
-	uint32_t max_iterations;	/* Max iter per call to iterate */
+	unsigned int max_iterations;	/* Max iter per call to iterate */
 	uint64_t total_iterations;
 	bool periodic;		/* true if geographic grid and west-east == 360 */
 	int grid_east;
@@ -228,7 +228,7 @@ void set_offset (struct SURFACE_INFO *C)
 	 * related to how close we are to the left/right or top/bottom boundary.
 	 */
 	int add_w[5], add_e[5], add_s[5], add_n[5], add_w2[5], add_e2[5], add_s2[5], add_n2[5];
-	uint32_t i, j, kase;
+	unsigned int i, j, kase;
 
 	add_w[0] = -C->my; add_w[1] = add_w[2] = add_w[3] = add_w[4] = -C->grid_east;
 	add_w2[0] = -2 * C->my;  add_w2[1] = -C->my - C->grid_east;  add_w2[2] = add_w2[3] = add_w2[4] = -2 * C->grid_east;
@@ -667,7 +667,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 
 int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transform)
 {	/* Deal with the constants or grids supplied via -L */
-	uint32_t i, j;
+	unsigned int i, j;
 	uint64_t ij;
 	double yy;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -1314,7 +1314,7 @@ int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	return (0);
 }
 
-void suggest_sizes_for_surface (struct GMT_CTRL *GMT, uint32_t factors[], uint32_t nx, uint32_t ny)
+void suggest_sizes_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny)
 {
 	/* Calls GMT_optimal_dim_for_surface to determine if there are
 	 * better choices for nx, ny that might speed up calculations
@@ -1322,8 +1322,8 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, uint32_t factors[], uint32
 	 *
 	 * W. H. F. Smith, 26 Feb 1992.  */
 
-	uint32_t i;
-	uint32_t n_sug = 0;	/* N of suggestions found  */
+	unsigned int i;
+	unsigned int n_sug = 0;	/* N of suggestions found  */
 	struct GMT_SURFACE_SUGGESTION *sug = NULL;
 
 	n_sug = GMT_optimal_dim_for_surface (GMT, factors, nx, ny, &sug);
@@ -1545,7 +1545,7 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, k;
+	unsigned int n_errors = 0, k;
 	char modifier;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;

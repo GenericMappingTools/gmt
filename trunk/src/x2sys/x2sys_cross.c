@@ -65,7 +65,7 @@ struct X2SYS_CROSS_CTRL {
 	} T;
 	struct X2S_CROSS_W {	/* -W */
 		bool active;
-		uint32_t width;
+		unsigned int width;
 	} W;
 	struct X2S_CROSS_Q {	/* -Q */
 		bool active;
@@ -144,7 +144,7 @@ int GMT_x2sys_cross_parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -272,7 +272,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	uint64_t n_tracks = 0;			/* Total number of data sets to compare */
 	uint64_t nx;				/* Number of crossovers found for this pair */
 	uint64_t *col_number = NULL;		/* Array with the column numbers of the data fields */
-	uint32_t n_output;			/* Number of columns on output */
+	unsigned int n_output;			/* Number of columns on output */
 	uint64_t n_pairs = 0;			/* Number of acceptable combinations */
 	uint64_t A, B, i, j, col, k, start, n_bad;	/* Misc. counters and local variables */
 	uint64_t end, first, n_ok;
@@ -282,7 +282,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	uint64_t add_chunk;
 	int scol;
 	int error = 0;				/* nonzero for invalid arguments */
-	uint32_t *ok = NULL;
+	unsigned int *ok = NULL;
 
 	bool xover_locations_only = false;	/* true if only x,y (and possible indices) to be output */
 	bool internal = true;		/* false if only external xovers are needed */
@@ -445,7 +445,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	got_time = (s->t_col >= 0);
 	if (!got_time) Ctrl->S.active[VLO] = false;	/* Cannot check speed if there is no time */
 
-	n_output = (uint32_t)(10 + 2 * n_data_col);
+	n_output = (unsigned int)(10 + 2 * n_data_col);
 	GMT->current.io.col_type[GMT_OUT][GMT_X] = (!strcmp (s->info[s->x_col].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
 	GMT->current.io.col_type[GMT_OUT][GMT_Y] = (!strcmp (s->info[s->x_col].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
 	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT->current.io.col_type[GMT_OUT][3] = (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT;
@@ -459,7 +459,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 		t = GMT_memory (GMT, NULL, window_width, double);
 		y = GMT_memory (GMT, NULL, window_width, double);
 		col_number = GMT_memory (GMT, NULL, n_data_col, uint64_t);
-		ok = GMT_memory (GMT, NULL, n_data_col, uint32_t);
+		ok = GMT_memory (GMT, NULL, n_data_col, unsigned int);
 		for (col = k = scol = 0; col < s->n_out_columns; col++, scol++) {
 			if (scol == s->x_col || scol == s->y_col || scol == s->t_col) continue;
 			col_number[k++] = col;
@@ -633,7 +633,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 
 				for (i = 0; i < nx; i++) {	/* For each potential crossover */
 
-					GMT_memset (ok, n_data_col, uint32_t);
+					GMT_memset (ok, n_data_col, unsigned int);
 					n_ok = 0;
 
 					for (k = 0; k < 2; k++) {	/* For each of the two data sets involved */

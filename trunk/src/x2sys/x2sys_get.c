@@ -118,7 +118,7 @@ int GMT_x2sys_get_parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, k = 0;
+	unsigned int n_errors = 0, k = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -173,9 +173,9 @@ int GMT_x2sys_get_parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int find_leg (char *name, struct X2SYS_BIX *B, uint32_t n)
+int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n)
 {	/* Return track id # for this leg */
-	uint32_t i;
+	unsigned int i;
 	
 	for (i = 0; i < n; i++) if (B->head[i].trackname && !strcmp (name, B->head[i].trackname)) return (i);
 	return (-1);
@@ -191,7 +191,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
 
 	uint32_t *in_bin_flag = NULL;   /* Match type in struct X2SYS_BIX_TRACK */
-	uint32_t *matrix = NULL;        /* Needs to be a 32-bit uint32_t, not int */
+	uint32_t *matrix = NULL;        /* Needs to be a 32-bit unsigned int, not int */
 	
 	double x, y;
 
@@ -201,8 +201,8 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 
 	bool y_ok, n_ok, first, *include = NULL;
 	int error = 0, i, j, k, start_j, start_i, stop_j, stop_i;
-	uint32_t combo = 0, n_tracks_found, n_tracks, ii;
-	uint32_t bit, missing = 0, id1, id2, item, n_flags = 0;
+	unsigned int combo = 0, n_tracks_found, n_tracks, ii;
+	unsigned int bit, missing = 0, id1, id2, item, n_flags = 0;
 
 	FILE *fp = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -337,11 +337,11 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 					for (id2 = id1 + 1; id2 < kk; id2++) {	/* Loop over all pairs */
 						if (!(include[ids_in_bin[id1]] || include[ids_in_bin[id2]])) continue;	/* At last one leg must be from our list (if given) */
 						/* This all requires matrix to be an in (32-bit) */
-						item = (uint32_t)(ids_in_bin[id2] / 32);
-						bit = (uint32_t)(ids_in_bin[id2] % 32);
+						item = (unsigned int)(ids_in_bin[id2] / 32);
+						bit = (unsigned int)(ids_in_bin[id2] % 32);
 						matrix[ids_in_bin[id1]*n_flags+item] |= (1 << bit);
-						item = (uint32_t)(ids_in_bin[id1] / 32);
-						bit = (uint32_t)(ids_in_bin[id1] % 32);
+						item = (unsigned int)(ids_in_bin[id1] / 32);
+						bit = (unsigned int)(ids_in_bin[id1] % 32);
 						matrix[ids_in_bin[id2]*n_flags+item] |= (1 << bit);
 					}
 				}

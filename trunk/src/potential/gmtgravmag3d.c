@@ -101,7 +101,7 @@ struct TRIANG {
 } *triang;
 
 struct  VERT {
-	uint32_t  a, b, c;
+	unsigned int  a, b, c;
 } *vert;
 
 struct  TRI_CENTER {
@@ -147,10 +147,10 @@ int read_t (struct GMT_CTRL *GMT, char *fname);
 int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
 int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
 int read_poly (struct GMT_CTRL *GMT, char *fname, bool switch_xy);
-void set_center (uint32_t n_triang);
-int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, uint32_t i, bool bat);
-int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, uint32_t i, bool geo);
-int check_triang_cw (uint32_t n, uint32_t type);
+void set_center (unsigned int n_triang);
+int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat);
+int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo);
+int check_triang_cw (unsigned int n, unsigned int type);
 
 int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -196,7 +196,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t j, pos = 0, n_errors = 0, n_files = 0;
+	unsigned int j, pos = 0, n_errors = 0, n_files = 0;
 	char	ptr[GMT_LEN256] = {""};
 	struct	GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -343,9 +343,9 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	bool bat = true, switch_xy = false, DO = true;
-	uint32_t row, col, i, j, k, kk, ndata_r = 0;
-	uint32_t ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
-	uint32_t z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
+	unsigned int row, col, i, j, k, kk, ndata_r = 0;
+	unsigned int ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
+	unsigned int z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
 	int retval, error = 0;
 	uint64_t ij;
 	size_t nm;
@@ -482,12 +482,12 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.triangulate) {
 		n_triang = ndata_t;
 		body_desc.n_f = 5;		/* Number of prism facets */
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, uint32_t);
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, unsigned int);
 		body_desc.n_v[0] = 3;	body_desc.n_v[1] = 3;
 		body_desc.n_v[2] = 4;	body_desc.n_v[3] = 4;
 		body_desc.n_v[4] = 4;
 		body_desc.ind = GMT_memory (GMT, NULL, (body_desc.n_v[0] + body_desc.n_v[1] +
-			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), uint32_t);
+			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), unsigned int);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;	/* top triang */
 		body_desc.ind[3] = 3;	body_desc.ind[4] = 5; 	body_desc.ind[5] = 4;	/* bot triang */
 		body_desc.ind[6] = 1;	body_desc.ind[7] = 4; 	body_desc.ind[8] = 5;	body_desc.ind[9] = 2;
@@ -502,9 +502,9 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else if (Ctrl->T.raw || Ctrl->T.stl) {
 		n_triang = (Ctrl->T.raw) ? ndata_r : ndata_s;
 		body_desc.n_f = 1;
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, uint32_t);
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, unsigned int);
 		body_desc.n_v[0] = 3;
-		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], uint32_t);
+		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], unsigned int);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;
 	}
 	else {
@@ -714,7 +714,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
 
-	uint32_t ndata_xyz;
+	unsigned int ndata_xyz;
 	size_t n_alloc;
 	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
@@ -811,7 +811,7 @@ int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, doubl
 /* -----------------------------------------------------------------*/
 int read_t (struct GMT_CTRL *GMT, char *fname) {
 	/* read file with vertex indexes of triangles */
-	uint32_t ndata_t;
+	unsigned int ndata_t;
 	size_t n_alloc;
 	int in[3];
 	char line[GMT_LEN256] = {""};
@@ -846,7 +846,7 @@ int read_t (struct GMT_CTRL *GMT, char *fname) {
 /* -----------------------------------------------------------------*/
 int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the raw format and returns nb of triangles */
-	uint32_t ndata_r;
+	unsigned int ndata_r;
 	size_t n_alloc;
 	double in[9];
 	char line[GMT_LEN256] = {""};
@@ -884,7 +884,7 @@ int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 /* -----------------------------------------------------------------*/
 int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the stl format and returns nb of triangles */
-	uint32_t ndata_s;
+	unsigned int ndata_s;
 	size_t n_alloc;
 	double in[3];
 	char line[GMT_LEN256] = {""}, text[128] = {""}, ver_txt[128] = {""}, *dumb = NULL;
@@ -933,7 +933,7 @@ int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 /* -----------------------------------------------------------------*/
 int read_poly (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 	/* Read file with xy points where anomaly is going to be computed*/
-	uint32_t ndata, ix = 0, iy = 1;
+	unsigned int ndata, ix = 0, iy = 1;
 	size_t n_alloc;
 	double in[2];
 	char line[GMT_LEN256] = {""};
@@ -963,7 +963,7 @@ int read_poly (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, uint32_t i, bool bat) {
+int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat) {
 	/* Sets coodinates for the facet whose effect is beeing calculated */
 	double x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1030,7 +1030,7 @@ int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, 
 }
 
 /* -----------------------------------------------------------------*/
-int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, uint32_t i, bool geo) {
+int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo) {
 	/* Sets coodinates for the facet in the RAW format */
 	double cos_a, cos_b, cos_c, x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1054,9 +1054,9 @@ int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, uint32_t
 }
 
 /* ---------------------------------------------------------------------- */
-void set_center (uint32_t n_triang) {
+void set_center (unsigned int n_triang) {
 	/* Calculates triangle center by an aproximate (iterative) formula */
-	uint32_t i, j, k = 5;
+	unsigned int i, j, k = 5;
 	double x, y, z, xa[6], ya[6], xb[6], yb[6], xc[6], yc[6];
 
 	for (i = 0; i < n_triang; i++) {
@@ -1110,7 +1110,7 @@ void triang_norm (int n_triang) {
 }
 #endif
 
-int check_triang_cw (uint32_t n, uint32_t type) {
+int check_triang_cw (unsigned int n, unsigned int type) {
 	/* Checks that triangles are given in the correct clock-wise order.
 	If not swap them. This is a tricky issue. In the case of "classic"
 	trihedron (x positive right; y positive "north" and z positive up),
@@ -1120,7 +1120,7 @@ int check_triang_cw (uint32_t n, uint32_t type) {
 	x->north; y->east; z->down)), counter clockwise order follows if
 	determinant is negative. */
 
-	uint32_t i, n_swaped = 0, tmp;
+	unsigned int i, n_swaped = 0, tmp;
 	double x1 = 0, x2 = 0, x3 = 0, y1 = 0, y2 = 0, y3 = 0, det, d_tmp[3];
 
 	if (type > 0)	/* Not yet implemented || 28-4-2010. Dont't undersand why but seams true !!!! */

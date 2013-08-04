@@ -164,7 +164,7 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	bool do_grid, b_only = false;
 	char *ptr_to_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -292,7 +292,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow, ndumb;
-	uint32_t zcol, row, col, i, *flag = NULL;
+	unsigned int zcol, row, col, i, *flag = NULL;
 	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
 	uint64_t ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
 	
@@ -527,8 +527,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	}
 	else {
 		zcol = GMT_Z;
-		flag = GMT_memory (GMT, NULL, Grid->header->nm, uint32_t);	/* No padding needed for flag array */
-		GMT_memset (Grid->header->pad, 4, uint32_t);	/* Algorithm below expects no padding; we repad at the end */
+		flag = GMT_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
+		GMT_memset (Grid->header->pad, 4, unsigned int);	/* Algorithm below expects no padding; we repad at the end */
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 

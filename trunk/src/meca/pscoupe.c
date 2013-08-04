@@ -87,9 +87,9 @@ struct PSCOUPE_CTRL {
 		bool active;
 		bool zerotrace;
 		bool no_label;
-		uint32_t readmode;
-		uint32_t plotmode;
-		uint32_t justify;
+		unsigned int readmode;
+		unsigned int plotmode;
+		unsigned int justify;
 		int symbol;
 		char P_symbol, T_symbol;
 		double scale;
@@ -98,7 +98,7 @@ struct PSCOUPE_CTRL {
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
 		bool active;
-		uint32_t n_plane;
+		unsigned int n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
@@ -525,7 +525,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	double lon1, lat1, lon2, lat2;

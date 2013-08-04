@@ -15,7 +15,7 @@ void MGD77_Read_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, stru
 	 * look for revised parameters and fall back on the original if no revision is found. */
 
 	struct MGD77_HEADER_LOOKUP *L;
-	uint32_t i;
+	unsigned int i;
 
 	L = MGD77_Header_Lookup;
 
@@ -342,9 +342,9 @@ void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "E77");
 }
 
-uint32_t MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev)
+unsigned int MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev)
 {	/* Get a single parameter: original if requested, otherwise check for revised value first */
-	uint32_t got_rev = 0;
+	unsigned int got_rev = 0;
 
 	if (!F->original) { /* Must look for revised attribute unless explicitly turned off [ e.g, mgd77convert -FC] */
 		char Att[64] = {""};
@@ -358,7 +358,7 @@ uint32_t MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *nam
 	return (got_rev);
 }
 
-void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, uint32_t revised)
+void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, unsigned int revised)
 {	/* Function assumes we are in define mode.
 	 * Place a single parameter in one of several ways:
 	 * revised == 2: Only write the revised attribute [This only happens in mgd77manage where we update a value via -Ae]

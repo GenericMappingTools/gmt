@@ -119,7 +119,7 @@ int GMT_x2sys_datalist_parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -172,7 +172,7 @@ int GMT_x2sys_datalist_parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *
 
 bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
-	uint32_t k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
+	unsigned int k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
 	int n_fields;
 	uint64_t n = 0, n_expected_fields = 2;
 	size_t n_alloc = GMT_CHUNK;
@@ -216,7 +216,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 
 	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;
 	bool cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
-	uint32_t ocol, last_col, bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0;
+	unsigned int ocol, last_col, bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0;
 	uint64_t row;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];

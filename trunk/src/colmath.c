@@ -111,7 +111,7 @@ int GMT_colmath_parse (struct GMT_CTRL *GMT, struct COLMATH_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {

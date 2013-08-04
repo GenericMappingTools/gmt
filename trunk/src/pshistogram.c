@@ -47,8 +47,8 @@ struct PSHISTOGRAM_CTRL {
 	} C;
 	struct D {	/* -D[+r][+f<font>][+o<off>][+b] */
 		bool active;
-		uint32_t mode;	/* 0 for horizontal, 1 for vertical */
-		uint32_t just;	/* 0 for top of bar, 1 for below */
+		unsigned int mode;	/* 0 for horizontal, 1 for vertical */
+		unsigned int just;	/* 0 for top of bar, 1 for below */
 		struct GMT_FONT font;
 		double offset;
 	} D;
@@ -61,7 +61,7 @@ struct PSHISTOGRAM_CTRL {
 	} G;
 	struct I {	/* -I[o] */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} I;
 	struct L {	/* -L<pen> */
 		bool active;
@@ -84,7 +84,7 @@ struct PSHISTOGRAM_CTRL {
 	} W;
 	struct Z {	/* -Z<type> */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} Z;
 };
 
@@ -109,11 +109,11 @@ struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	uint64_t n_counted;
 	uint64_t *boxh;
 	bool center_box, cumulative;
-	uint32_t hist_type;
+	unsigned int hist_type;
 };
 
 void *New_pshistogram_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	uint32_t k;
+	unsigned int k;
 	struct PSHISTOGRAM_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSHISTOGRAM_CTRL);
@@ -332,7 +332,7 @@ int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
 	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
 
 	uint64_t i, j;
-	uint32_t n_multiples;
+	unsigned int n_multiples;
 	double dx;
 
 	if (n < 3) return (-1);
@@ -432,7 +432,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0, mode = 0, pos = 0;
+	unsigned int n_errors = 0, n_files = 0, mode = 0, pos = 0;
 	int sval;
 	char *c = NULL, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -762,8 +762,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 		}
 		else {	/* Report the min/max values as the data result */
 			double out[4];
-			uint32_t col_type[4];
-			GMT_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4U, uint32_t);	/* Save first 4 current output col types */
+			unsigned int col_type[4];
+			GMT_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4U, unsigned int);	/* Save first 4 current output col types */
 			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_IN][0];
 			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 4U)) != GMT_OK) {
@@ -783,7 +783,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 				Return (API->error);
 			}
-			GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 4U, uint32_t);	/* Restore 4 current output col types */
+			GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 4U, unsigned int);	/* Restore 4 current output col types */
 		}
 		GMT_free (GMT, data);
 		GMT_free (GMT, F.boxh);
@@ -844,7 +844,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Area under histogram is %g\n", area);
 	
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
-		uint32_t type, k, NP = 101U;
+		unsigned int type, k, NP = 101U;
 		double f, z, xtmp, ytmp, inc;
 		double *xp = GMT_memory (GMT, NULL, NP, double);
 		double *yp = GMT_memory (GMT, NULL, NP, double);

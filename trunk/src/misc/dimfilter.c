@@ -52,14 +52,14 @@ struct DIMFILTER_CTRL {
 	} C;
 	struct D {	/* -D<distflag> */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 	} D;
 	struct E {	/* -E */
 		bool active;
 	} E;
 	struct F {	/* <type><filter_width>*/
 		bool active;
-		uint32_t filter;	/* Id for the filter */
+		unsigned int filter;	/* Id for the filter */
 		double width;
 	} F;
 	struct G {	/* -G<file> */
@@ -72,12 +72,12 @@ struct DIMFILTER_CTRL {
 	} I;
 	struct N {	/* -N */
 		bool active;
-		uint32_t n_sectors;
-		uint32_t filter;	/* Id for the filter */
+		unsigned int n_sectors;
+		unsigned int filter;	/* Id for the filter */
 	} N;
 	struct Q {	/* -Q */
 		bool active;
-		uint32_t err_cols;
+		unsigned int err_cols;
 	} Q;
 	struct S {	/* -S<file> */
 		bool active;
@@ -163,7 +163,7 @@ int GMT_dimfilter_parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	int k;
 	struct GMT_OPTION *opt = NULL;
 #ifdef OBSOLETE
@@ -371,8 +371,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 {
 	unsigned short int **sector = NULL;
 
-	uint32_t *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
-	uint32_t GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
+	unsigned int *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
+	unsigned int GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
 	bool full_360, shift = false, slow, slow2, fast_way;
 	int j_origin, *i_origin = NULL, ii, jj, scol, srow, error = 0;
 
@@ -602,7 +602,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 				}
 			}
 		}
-		n_in_median = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, uint32_t);
+		n_in_median = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, unsigned int);
 		value = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double);
 		wt_sum = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double);
 
@@ -616,7 +616,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 			for (col_out = 0; col_out < Gout->header->nx; col_out++) {
 
 				if (effort_level == 3) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
-				GMT_memset (n_in_median, Ctrl->N.n_sectors, uint32_t);
+				GMT_memset (n_in_median, Ctrl->N.n_sectors, unsigned int);
 				GMT_memset (value, Ctrl->N.n_sectors, double);
 				GMT_memset (wt_sum, Ctrl->N.n_sectors, double);
 #ifdef OBSOLETE

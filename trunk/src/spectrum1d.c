@@ -58,16 +58,16 @@ struct SPECTRUM1D_CTRL {
 	struct L {	/* -L[m|h] */
 		bool active;
 		bool debug;
-		uint32_t mode;
+		unsigned int mode;
 	} L;
 	struct N {	/* -N[+]<namestem> */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 		char *name;
 	} N;
 	struct S {	/* -S<segment_size> */
 		bool active;
-		uint32_t size;
+		unsigned int size;
 	} S;
 	struct W {	/* -W */
 		bool active;
@@ -97,7 +97,7 @@ void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C)
 	C->datac = GMT_memory (GMT, NULL, C->window_2, float);
 }
 
-void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, uint32_t mode)
+void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode)
 {
 	/* If leave_trend is true we do not remove best-fitting LS trend.  Otherwise
 	 * we do, modulated by mode: 0: remove trend, 1: remove mean, 2: remove mid-value.
@@ -171,7 +171,7 @@ void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, uint32_t 
 	}
 }
 
-void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, uint32_t mode)
+void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode)
 {
 	int n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
@@ -565,7 +565,7 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 	 */
 
 	int sval;
-	uint32_t n_errors = 0, j, window_test = 2;
+	unsigned int n_errors = 0, j, window_test = 2;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -645,7 +645,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 {
 	bool one_table;
 	int error = 0;
-	uint32_t k, n_outputs;
+	unsigned int k, n_outputs;
 	
 	uint64_t tbl, seg;
 

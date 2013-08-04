@@ -182,7 +182,7 @@ int GMT_grdsample_parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, stru
 int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	int error = 0;
-	uint32_t row, col, registration;
+	unsigned int row, col, registration;
 	
 	uint64_t ij;
 	

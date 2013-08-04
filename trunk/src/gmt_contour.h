@@ -56,7 +56,7 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 
 struct GMT_CONTOUR_LINE {
 	uint64_t n;			/* Length of the contour */
-	uint32_t n_labels;		/* Number of labels; if 0 we just have a line segment */
+	unsigned int n_labels;		/* Number of labels; if 0 we just have a line segment */
 	bool annot;			/* true if we want labels */
 	double z;			/* Datum of this contour (z-value) */
 	double rgb[4];			/* Box rgb */
@@ -82,27 +82,27 @@ struct GMT_CONTOUR {
 	double nudge[2];		/* Shift between calculated and desired text placement */
 	double rgb[4];			/* Opaque box fill */
 	uint64_t current_seg_no;	/* Number (0->) of current segment in current data file */
-	uint32_t current_file_no;	/* Number (0->) of current input data file */
-	uint32_t line_type;	/* Kind of line: contour (1) or line (0) */
-	uint32_t dist_kind;	/* What kind of distance [0 = xy, 1 = map ] */
-	uint32_t dist_unit;	/* Units for labelled distances along tracks [cip] */
-	uint32_t proj_type;	/* type of scaling */
-	uint32_t L_proj_type;	/* type of scaling for label content only */
-	uint32_t half_width;	/* Number of points to use in smoothing the angle [10/2] */
-	uint32_t n_cont;		/* Number of labels per segment */
+	unsigned int current_file_no;	/* Number (0->) of current input data file */
+	unsigned int line_type;	/* Kind of line: contour (1) or line (0) */
+	unsigned int dist_kind;	/* What kind of distance [0 = xy, 1 = map ] */
+	unsigned int dist_unit;	/* Units for labelled distances along tracks [cip] */
+	unsigned int proj_type;	/* type of scaling */
+	unsigned int L_proj_type;	/* type of scaling for label content only */
+	unsigned int half_width;	/* Number of points to use in smoothing the angle [10/2] */
+	unsigned int n_cont;		/* Number of labels per segment */
 	enum GMT_enum_contline crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */
-	uint32_t nx;		/* Number of crossovers at any time */
-	uint32_t f_n;			/* Number of such points */
-	uint32_t clearance_flag;	/* 1 if spacing given in % of labelfont size, 0 otherwise */
-	uint32_t nudge_flag;	/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
-	uint32_t box;		/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
-	uint32_t n_label;		/* Length of list */
-	uint32_t just;		/* Label justification */
-	uint32_t end_just[2];	/* Justification for end of lines */
-	uint32_t angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
-	uint32_t label_type;	/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
-	uint32_t n_segments;		/* The number of segments */
-	uint32_t save_labels;	/* 1 if we wish to save label locations to a text file, 2 if we wish to include label angles [1 = no angles] */
+	unsigned int nx;		/* Number of crossovers at any time */
+	unsigned int f_n;			/* Number of such points */
+	unsigned int clearance_flag;	/* 1 if spacing given in % of labelfont size, 0 otherwise */
+	unsigned int nudge_flag;	/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
+	unsigned int box;		/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
+	unsigned int n_label;		/* Length of list */
+	unsigned int just;		/* Label justification */
+	unsigned int end_just[2];	/* Justification for end of lines */
+	unsigned int angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
+	unsigned int label_type;	/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
+	unsigned int n_segments;		/* The number of segments */
+	unsigned int save_labels;	/* 1 if we wish to save label locations to a text file, 2 if we wish to include label angles [1 = no angles] */
 	int number_placement;	/* How the n_cont labels are distributed [-1/0/+1]*/
 	int hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
 	bool annot;			/* true if we want labels */

@@ -53,9 +53,9 @@
 
 /* Limit casting to one place (here) for dropping lrint output to signed or unsigned ints */
 #define irint(x) ((int)lrint(x))
-#define urint(x) ((uint32_t)lrint(x))
+#define urint(x) ((unsigned int)lrint(x))
 #define irintf(x) ((int)lrintf(x))
-#define urintf(x) ((uint32_t)lrintf(x))
+#define urintf(x) ((unsigned int)lrintf(x))
 
 /* Inline functions for safe rounding of float and double to various signed and unsigned 4 and 8 byte ints */
 static inline int32_t  irint32  (double x) { return ((int32_t) rint    (x));}
@@ -116,7 +116,7 @@ static inline uint64_t urint64f (float x)  { return ((uint64_t)llrintf (x));}
 #define bool_swap(x, y) {bool bool_tmp; bool_tmp = x, x = y, y = bool_tmp;}
 #define uint64_swap(x, y) {uint64_t uint64_t_tmp; uint64_t_tmp = x, x = y, y = uint64_t_tmp;}
 #define int_swap(x, y) {int int_tmp; int_tmp = x, x = y, y = int_tmp;}
-#define uint_swap(x, y) {uint32_t uint_tmp; uint_tmp = x, x = y, y = uint_tmp;}
+#define uint_swap(x, y) {unsigned int uint_tmp; uint_tmp = x, x = y, y = uint_tmp;}
 #define double_swap(x, y) {double double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define float_swap(x, y) {float float_tmp; float_tmp = x, x = y, y = float_tmp;}
 

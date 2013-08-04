@@ -85,7 +85,7 @@ struct COE_ADJUST {	/* Holds adjustment spline knots */
 
 struct COE_ADJLIST {	/* Array with the growing arrays of COE_ADJUST per track */
 	struct COE_ADJUST *K;
-	uint32_t n;
+	unsigned int n;
 	size_t n_alloc;
 };
 
@@ -144,7 +144,7 @@ int GMT_x2sys_report_parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -232,7 +232,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, k, n, n_use, n_tracks;
 	uint64_t p, np, nx, Tnx = 0;
-	uint32_t coe_kind;
+	unsigned int coe_kind;
 	double sum, sum2, sum_w, Tsum, Tsum2, COE, sign, scale, corr[2] = {0.0, 0.0};
 	double Tmean, Tstdev, Trms;
 	struct GMT_OPTION *opt = NULL;
@@ -388,7 +388,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
-		uint32_t n_out, n1;
+		unsigned int n_out, n1;
 		char file[GMT_BUFSIZ] = {""};
 		double out[2], z[2], z_ij;
 		FILE *fp = NULL;
@@ -457,7 +457,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	GMT_free (GMT, trk_name);
 	GMT_free (GMT, R);
 
-	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (uint32_t)n_tracks);
+	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 	x2sys_end (GMT, s);
 
 	Return (GMT_OK);

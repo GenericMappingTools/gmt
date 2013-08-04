@@ -50,7 +50,7 @@ struct PSLEGEND_CTRL {
 	} D;
 	struct F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]] */
 		bool active;
-		uint32_t mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
+		unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
 		double radius;			/* Radius for rounded corner */
 		double dx, dy;			/* Offset for background shaded rectangle (+s) */
 		double gap;			/* Space bewteen main and secondary frame */
@@ -139,8 +139,8 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t k, n_errors = 0, pos;
-	uint32_t n;
+	unsigned int k, n_errors = 0, pos;
+	unsigned int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, txt_f[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -296,7 +296,7 @@ void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1,
 }
 #endif
 
-struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, uint32_t geometry)
+struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry)
 {
 	uint64_t dim[3] = {1, 1, GMT_SMALL_CHUNK};
 	struct GMT_TEXTSET *D = NULL;
@@ -320,7 +320,7 @@ struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct G
 
 int GMT_pslegend (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pslegend task */
-	uint32_t tbl;
+	unsigned int tbl;
 	int i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
 	int status = 0, object_ID;
 	bool flush_paragraph = false, draw_vertical_line = false, gave_label, gave_mapscale_options, did_old = false;
@@ -474,7 +474,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 						if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
 							char txt_cpy[GMT_BUFSIZ] = {""}, p[GMT_LEN256] = {""};
-							uint32_t pos = 0;
+							unsigned int pos = 0;
 							strncpy (txt_cpy, opt, GMT_BUFSIZ);
 							while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 								switch (p[0]) {
@@ -763,7 +763,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 						if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
 							char txt_cpy[GMT_BUFSIZ] = {""}, p[GMT_LEN256] = {""};
-							uint32_t pos = 0;
+							unsigned int pos = 0;
 							strncpy (txt_cpy, opt, GMT_BUFSIZ);
 							while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 								switch (p[0]) {

@@ -57,7 +57,7 @@ struct GRDIMAGE_CTRL {
 	struct E {	/* -Ei|<dpi> */
 		bool active;
 		bool device_dpi;
-		uint32_t dpi;
+		unsigned int dpi;
 	} E;
 	struct G {	/* -G[f|b]<rgb> */
 		bool active;
@@ -164,7 +164,7 @@ int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 #ifdef HAVE_GDAL
@@ -311,7 +311,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struc
 	 * nx/ny are set accordingly.  Not that some of these may change
 	 * if GMT_project_init is called at a later stage */
 
-	uint32_t i, k;
+	unsigned int i, k;
 	bool all_lats = false, all_lons = false;
 	double x, y;
 
@@ -370,8 +370,8 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid;
-	uint32_t k, nx = 0, ny = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
-	uint32_t colormask_offset = 0, try, row, actual_row, col;
+	unsigned int k, nx = 0, ny = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
+	unsigned int colormask_offset = 0, try, row, actual_row, col;
 	uint64_t node_RGBA = 0;		/* uint64_t for the RGB(A) image array. */
 	uint64_t node, kk, nm, byte;
 	int index = 0, ks, error = 0;
@@ -871,7 +871,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 #ifdef HAVE_GDAL
 	if (Ctrl->A.active) {
 		int	id, k;
-		uint32_t this_proj = GMT->current.proj.projection;
+		unsigned int this_proj = GMT->current.proj.projection;
 		to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
 		to_GDALW->driver = Ctrl->A.driver;
 		to_GDALW->type = strdup("byte");

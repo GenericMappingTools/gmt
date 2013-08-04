@@ -552,7 +552,7 @@ void define_second_plane (struct nodal_plane NP1, struct nodal_plane *NP2)
 void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struct AXIS *N, struct AXIS *P)
 {
 	/* This version uses GMT_jacobi and does not suffer from the convert_matrix bug */
-	uint32_t j, nrots, np = 3;
+	unsigned int j, nrots, np = 3;
 	double *a, *d, *b, *z, *v;
 	double az[3], pl[3];
 

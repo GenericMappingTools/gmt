@@ -101,21 +101,21 @@ struct X2SYS_INFO {
 	/* Information of this datasets particular organization */
 
 	char *TAG;			/* The system TAG */
-	uint32_t n_fields;		/* Number of input columns */
-	uint32_t n_out_columns;	/* Number of output columns */
-	uint32_t n_data_cols;	/* Number of data columns (other than x,y,t) */
+	unsigned int n_fields;		/* Number of input columns */
+	unsigned int n_out_columns;	/* Number of output columns */
+	unsigned int n_data_cols;	/* Number of data columns (other than x,y,t) */
 	size_t rec_size;		/* Number of bytes for a potential x2sys_dbase_*.b file */
 	int x_col, y_col, t_col;	/* Column numbers for x, y, and t [== -1 if not set] */
-	uint32_t skip;		/* Number of header records to skip */
-	uint32_t flags;		/* Various processing flags for internal use */
-	uint32_t *in_order;		/* Array with output column number as function of input column */
-	uint32_t *out_order;	/* Array with input column number as function of output column */
+	unsigned int skip;		/* Number of header records to skip */
+	unsigned int flags;		/* Various processing flags for internal use */
+	unsigned int *in_order;		/* Array with output column number as function of input column */
+	unsigned int *out_order;	/* Array with input column number as function of output column */
 	bool *use_column;		/* Array of T/F for which columns to use */
-	uint32_t geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
-	uint32_t dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
+	unsigned int geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
+	unsigned int dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
 	/* read_file is a pointer to function that reads this file */
 	int (*read_file) (struct GMT_CTRL *, char *, double ***, struct X2SYS_INFO *, struct X2SYS_FILE_INFO *, struct GMT_IO *, uint64_t *);
-	uint32_t file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
+	unsigned int file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
 	bool ascii_out;			/* true if output should be in ascii */
 	bool multi_segment;		/* true if there are multiple segments in this file */
 	bool geographic;		/* true if x/y data are lon/lat */
@@ -133,9 +133,9 @@ struct X2SYS_DATA_INFO {
 	double nan_proxy;	/* Value that signifies lack of data (NaN) */
 	double scale;		/* Input value should be multiplied by this value */
 	double offset;		/* And then add this value */
-	uint32_t start_col;	/* For cardformat: starting column */
-	uint32_t stop_col;	/* For cardformat: last column */
-	uint32_t n_cols;	/* For cardformat: number of columns */
+	unsigned int start_col;	/* For cardformat: starting column */
+	unsigned int stop_col;	/* For cardformat: last column */
+	unsigned int n_cols;	/* For cardformat: number of columns */
 	bool has_nan_proxy;	/* true if there is a special value that indicates NaN */
 	bool has_nans;	/* true if there are NaNs in this field */
 	bool do_scale;	/* true if scale != 1 or offset != 0 */
@@ -165,7 +165,7 @@ struct X2SYS_BIX {
 	int ny_bin;	/* Number of y bins */
 	uint64_t nm_bin;	/* Total number of bins */
 	bool periodic;	/* 1 if x is periodic */
-	uint32_t *binflag;	/* The bin array */
+	unsigned int *binflag;	/* The bin array */
 	struct X2SYS_BIX_DATABASE *base;
 	struct X2SYS_BIX_TRACK_INFO *head;
 };
@@ -204,8 +204,8 @@ struct X2SYS_COE {	/* Holds the information for a single crossover */
 struct X2SYS_COE_PAIR {	/* Holds the information for COE between a pair of tracks */
 	char trk[2][GMT_LEN64];	/* Track names */
 	int year[2];		/* Start year for each track */
-	uint32_t id[2];		/* Internal ID track numbers */
-	uint32_t nx;		/* Number of crossovers */
+	unsigned int id[2];		/* Internal ID track numbers */
+	unsigned int nx;		/* Number of crossovers */
 	double start[2];		/* Time of first point for each track */
 	double stop[2];			/* Time of last point for each track */
 	double dist[2];			/* Length of each track */
@@ -231,11 +231,11 @@ EXTERN_MSC int x2sys_read_gmtfile     (struct GMT_CTRL *GMT, char *fname, double
 EXTERN_MSC int x2sys_read_mgd77file   (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
 EXTERN_MSC int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
 EXTERN_MSC int x2sys_read_ncfile      (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
-EXTERN_MSC uint32_t x2sys_n_data_cols (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
-EXTERN_MSC int x2sys_read_list (struct GMT_CTRL *GMT, char *file, char ***list, uint32_t *n);
-EXTERN_MSC int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double **weights, uint32_t *nf);
+EXTERN_MSC unsigned int x2sys_n_data_cols (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
+EXTERN_MSC int x2sys_read_list (struct GMT_CTRL *GMT, char *file, char ***list, unsigned int *n);
+EXTERN_MSC int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double **weights, unsigned int *nf);
 EXTERN_MSC void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
-EXTERN_MSC int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, uint32_t n);
+EXTERN_MSC int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, unsigned int n);
 int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char ***tracklist, bool *cmdline);
 
 EXTERN_MSC double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n);
@@ -243,7 +243,7 @@ EXTERN_MSC double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n);
 EXTERN_MSC void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp);
 EXTERN_MSC void x2sys_free_info (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
-EXTERN_MSC void x2sys_free_data (struct GMT_CTRL *GMT, double **data, uint32_t n, struct X2SYS_FILE_INFO *p);
+EXTERN_MSC void x2sys_free_data (struct GMT_CTRL *GMT, double **data, unsigned int n, struct X2SYS_FILE_INFO *p);
 EXTERN_MSC int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s);
 
 EXTERN_MSC int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);

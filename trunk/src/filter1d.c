@@ -125,8 +125,8 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	int filter_type;		/* Flag indicating desired filter type  */
 	int kind;			/* -1 skip +ve, +1 skip -ve, else use all  [for the l|L|u|U filter] */
 	int way;			/* -1 find minimum, +1 find maximum  [for the l|L|u|U filter] */
-	uint32_t mode_selection;
-	uint32_t n_multiples;
+	unsigned int mode_selection;
+	unsigned int n_multiples;
 
 	double *f_wt;			/* Pointer for array of filter coefficients  */
 	double *min_loc;		/* Pointer for array of values, one per [column]  */
@@ -234,7 +234,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	int sval;
 	char c, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;

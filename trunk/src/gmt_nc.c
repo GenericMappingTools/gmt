@@ -72,7 +72,7 @@
 #define NC_CACHE_PREEMPTION 0.75
 
 int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *header, char job);
-int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode);
+int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
 
 static int nc_libvers[] = {-1, -1, -1, -1}; /* holds the version of the netCDF library */
 
@@ -480,8 +480,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 			size_t chunksize[5]; /* chunksize of z */
 			GMT_err_trap (nc_inq_var_chunking (ncid, z_id, &storage_mode, chunksize));
 			if (storage_mode == NC_CHUNKED) {
-				header->z_chunksize[0] = (uint32_t)chunksize[dims[0]]; /* chunk size of lat */
-				header->z_chunksize[1] = (uint32_t)chunksize[dims[1]]; /* chunk size of lon */
+				header->z_chunksize[0] = (unsigned int)chunksize[dims[0]]; /* chunk size of lat */
+				header->z_chunksize[1] = (unsigned int)chunksize[dims[1]]; /* chunk size of lon */
 			}
 			else { /* NC_CONTIGUOUS */
 				header->z_chunksize[0] = header->z_chunksize[1] = 0;
@@ -520,7 +520,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 	}
 	else {
 		/* Store global attributes */
-		uint32_t row, col;
+		unsigned int row, col;
 		const int *nc_vers = netcdf_libvers();
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
 		if (header->title[0]) {
@@ -921,7 +921,7 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 
 	if (height * width * z_size > NC_CACHE_SIZE) {
 		/* memory needed for subset exceeds the cache size */
-		uint32_t level;
+		unsigned int level;
 		size_t chunks_per_row = (size_t) ceil (width / chunksize[yx_dim[1]]);
 		*n_contiguous_chunk_rows = (size_t) floor (NC_CACHE_SIZE / (width * z_size) / chunksize[yx_dim[0]]);
 #ifdef NC4_DEBUG
@@ -1014,7 +1014,7 @@ int io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned d
 
 		/* adjust row count, so that it ends on the bottom of a chunk */
 		count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
-		remainder = (uint32_t)(start[yx_dim[0]] % chunksize[yx_dim[0]]);
+		remainder = (unsigned int)(start[yx_dim[0]] % chunksize[yx_dim[0]]);
 		count[yx_dim[0]] -= remainder;
 
 		count[yx_dim[1]] = width;
@@ -1063,7 +1063,7 @@ int io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned d
 	return status;
 }
 
-int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double wesn[4], uint32_t *width, uint32_t *height, int *n_shift, unsigned origin[2], unsigned dim[2], unsigned origin2[2], unsigned dim2[2]) {
+int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double wesn[4], unsigned int *width, unsigned int *height, int *n_shift, unsigned origin[2], unsigned dim[2], unsigned origin2[2], unsigned dim2[2]) {
 	/* Determines which rows and columns to extract to extract from a grid, based on w,e,s,n.
 	 * This routine first rounds the w,e,s,n boundaries to the nearest gridlines or pixels,
 	 * then determines the first and last columns and rows, and the width and height of the subset (in cells).
@@ -1105,8 +1105,8 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 		/* Global grids: ensure that wesn >= header->wesn (w+e only) */
 		if ( is_global ) {
 			while (wesn[XLO] < header->wesn[XLO]) {
-				//uint32_t diff = (uint32_t)(header->wesn[XHI] - header->wesn[XLO]);
-				uint32_t diff = 360;
+				//unsigned int diff = (unsigned int)(header->wesn[XHI] - header->wesn[XLO]);
+				unsigned int diff = 360;
 				wesn[XLO] += diff;
 				wesn[XHI] += diff;
 			}
@@ -1173,7 +1173,7 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 	return GMT_NOERROR;
 }
 
-int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
+int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 { /* header:       grid structure header
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -1234,7 +1234,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		io_nc_grid (GMT, header, dim, origin, header->stride, k_get_netcdf, pgrid + header->data_offset);
 	else {
 		/* read grid in two parts */
-		uint32_t stride_or_width = header->stride != 0 ? (uint32_t)header->stride : (uint32_t)width;
+		unsigned int stride_or_width = header->stride != 0 ? (unsigned int)header->stride : (unsigned int)width;
 		io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + header->data_offset);
 		io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + header->data_offset + dim[1]);
 	}
@@ -1282,7 +1282,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	}
 	else {
 		/* report z-range of grid (with scale and offset applied): */
-		uint32_t level;
+		unsigned int level;
 #ifdef NC4_DEBUG
 		level = GMT_MSG_NORMAL;
 #else
@@ -1326,7 +1326,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	return GMT_NOERROR;
 }
 
-int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], uint32_t *pad, uint32_t complex_mode)
+int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 { /* header:       grid structure header
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to write out  [Use entire file if 0,0,0,0]
@@ -1427,7 +1427,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	if (header->z_min <= header->z_max) {
 		/* Warn if z-range exceeds the precision of a single precision float: */
 		static const uint32_t exp2_24 = 0x1000000; /* exp2 (24) */
-		uint32_t level;
+		unsigned int level;
 		if (fabs(header->z_min) >= exp2_24 || fabs(header->z_max) >= exp2_24)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: The z-range, [%g,%g], might exceed the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
 
