@@ -61,9 +61,9 @@ struct GRDCLIP_CTRL {
 	} G;
 	struct S {	/* -Sa<high/above>, -Sb<low/below>, -Si<low/high/between>, -Sr<old>/<new> */
 		bool active;
-		uint32_t mode;
-		uint32_t n_class;
-		uint32_t n_replace;
+		unsigned int mode;
+		unsigned int n_class;
+		unsigned int n_replace;
 		float high, above;
 		float low, below;
 		struct GRDCLIP_RECLASSIFY *class;
@@ -130,7 +130,7 @@ int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0, n_class = 0;
+	unsigned int n_errors = 0, n_files = 0, n_class = 0;
 	int n, n_to_expect;
 	size_t n_alloc = GMT_TINY_CHUNK;
 	char txt[GMT_LEN64] = {""};
@@ -222,7 +222,7 @@ int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct G
 		}
 	}
 	if (Ctrl->S.mode & GRDCLIP_BETWEEN) {	/* Reallocate, sort and check that no classes overlap */
-		uint32_t k;
+		unsigned int k;
 		Ctrl->S.class = GMT_memory (GMT, Ctrl->S.class, n_class, struct GRDCLIP_RECLASSIFY);
 		Ctrl->S.n_class = n_class;
 		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), compare_classes);
@@ -261,7 +261,7 @@ int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct G
 #define Return(code) {Free_grdclip_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdclip (void *V_API, int mode, void *args) {
-	uint32_t row, col, k;
+	unsigned int row, col, k;
 	int error = 0;
 	bool new_grid, go = false;
 	

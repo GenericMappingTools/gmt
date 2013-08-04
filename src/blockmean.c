@@ -86,7 +86,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -171,7 +171,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 int GMT_blockmean (void *V_API, int mode, void *args)
 {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
-	uint32_t row, col;
+	unsigned int row, col;
 	int error;
 	bool use_xy, use_weight, duplicate_col;
 
@@ -241,7 +241,7 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	}
 	
 	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
-		uint32_t kind = 0;
+		unsigned int kind = 0;
 		size_t n_bytes_per_record = sizeof (struct BLK_PAIR);
 		double mem;
 		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */
@@ -338,7 +338,7 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Calculating block means\n");
 
 	if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
-		uint32_t k = 3;
+		unsigned int k = 3;
 		char header[GMT_BUFSIZ] = {""}, txt[GMT_LEN16] = {""}, *names[4] = {"\tmean_z", "\tsum_z", "\twsum_z", "\tn_z"};
 		GMT_set_xycolnames (GMT, header);
 		strcat (header, names[Ctrl->S.mode]);	strcat (header, "[2]");
@@ -366,8 +366,8 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 			out[GMT_Y] = xy[node].a[GMT_Y] * iw;
 		}
 		else {		/* Report block center */
-			col = (uint32_t)GMT_col (Grid->header, node);
-			row = (uint32_t)GMT_row (Grid->header, node);
+			col = (unsigned int)GMT_col (Grid->header, node);
+			row = (unsigned int)GMT_row (Grid->header, node);
 			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
 			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
 		}

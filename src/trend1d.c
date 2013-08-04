@@ -100,8 +100,8 @@ struct TREND1D_CTRL {
 	struct N {	/* -N[f]<n_model>[r] */
 		bool active;
 		bool robust;
-		uint32_t mode;
-		uint32_t value;
+		unsigned int mode;
+		unsigned int value;
 	} N;
 	struct W {	/* -W */
 		bool active;
@@ -166,7 +166,7 @@ int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_
 	return (0);
 }
 
-void allocate_the_memory_1d (struct GMT_CTRL *GMT, uint32_t np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
+void allocate_the_memory_1d (struct GMT_CTRL *GMT, unsigned int np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
 {
 	*gtg = GMT_memory (GMT, NULL, np*np, double);
 	*v = GMT_memory (GMT, NULL, np*np, double);
@@ -179,10 +179,10 @@ void allocate_the_memory_1d (struct GMT_CTRL *GMT, uint32_t np, double **gtg, do
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, char *output_choice, uint32_t n_outputs)
+void write_output_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs)
 {
 	uint64_t i;
-	uint32_t j;
+	unsigned int j;
 	double out[5];
 
 	for (i = 0; i < n_data; i++) {
@@ -224,7 +224,7 @@ void free_the_memory_1d (struct GMT_CTRL *GMT, double *gtg, double *v, double *g
 	GMT_free (GMT, gtg);
 }
 
-void transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, uint32_t model_type, double xmin, double xmax)
+void transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, unsigned int model_type, double xmin, double xmax)
 {
 	uint64_t i;
 	double offset, scale;
@@ -237,7 +237,7 @@ void transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, uint32_t model_
 	for (i = 0; i < n_data; i++) data[i].x = (data[i].x - offset) * scale;
 }
 
-void untransform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, uint32_t model_type, double xmin, double xmax)
+void untransform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, unsigned int model_type, double xmin, double xmax)
 {
 	uint64_t i;
 	double offset, scale;
@@ -250,7 +250,7 @@ void untransform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, uint32_t mode
 	for (i = 0; i < n_data; i++) data[i].x = (data[i].x * scale) + offset;
 }
 
-double get_chisq_1d (struct TREND1D_DATA *data, uint64_t n_data, uint32_t n_model)
+double get_chisq_1d (struct TREND1D_DATA *data, uint64_t n_data, unsigned int n_model)
 {
 	uint64_t i, nu;
 	double chi = 0.0;
@@ -292,7 +292,7 @@ void recompute_weights_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint
 	}
 }
 
-void load_g_row_1d (double x, int n, double *gr, uint32_t type)
+void load_g_row_1d (double x, int n, double *gr, unsigned int type)
 {
 	/* Current data position, appropriately normalized.  */
 	/* Number of model parameters, and elements of gr[]  */
@@ -326,13 +326,13 @@ void load_g_row_1d (double x, int n, double *gr, uint32_t type)
 	}
 }
 
-void calc_m_and_r_1d (struct TREND1D_DATA *data, uint64_t n_data, double *model, uint32_t n_model, uint32_t m_type, double *grow)
+void calc_m_and_r_1d (struct TREND1D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, unsigned int m_type, double *grow)
 {
 	/* model[n_model] holds solved coefficients of m_type model.
 	  grow[n_model] is a vector for a row of G matrix.  */
 
 	uint64_t i;
-	uint32_t j;
+	unsigned int j;
 	for (i = 0; i < n_data; i++) {
 		load_g_row_1d (data[i].x, n_model, grow, m_type);
 		data[i].m = 0.0;
@@ -341,19 +341,19 @@ void calc_m_and_r_1d (struct TREND1D_DATA *data, uint64_t n_data, double *model,
 	}
 }
 
-void move_model_a_to_b_1d (double *model_a, double *model_b, uint32_t n_model, double *chisq_a, double *chisq_b)
+void move_model_a_to_b_1d (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b)
 {
-	uint32_t i;
+	unsigned int i;
 	for (i = 0; i < n_model; i++) model_b[i] = model_a[i];
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, uint32_t n_model, uint32_t mp, uint32_t m_type)
+void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp, unsigned int m_type)
 {
    	/* mp is row dimension of gtg  */
 
 	uint64_t i;
-	uint32_t j, k;
+	unsigned int j, k;
 	double wy;
 
 	/* First zero the contents for summing */
@@ -382,9 +382,9 @@ void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t n_data, double *gt
 	}
 }
 
-void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, uint32_t n_model, uint32_t mp, double *lambda, double *v, double *b, double *z, double c_no, uint32_t *ir)
+void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir)
 {
-	uint32_t i, j, k, rank = 0, nrots;
+	unsigned int i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;
 
 	if (n_model == 1) {
@@ -411,13 +411,13 @@ void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 	}
 }
 
-void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], uint32_t n, double a, double b)
+void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, double a, double b)
 {
 	/* Convert from Chebyshev coefficients used on a t =  [-1,+1] interval
 	 * to polynomial coefficients on the original x = [a b] interval.
 	 * Modified from Numerical Miracles, ...eh Recipes */
 	 
-	 uint32_t j, k;
+	 unsigned int j, k;
 	 double sv, cnst, fac, *d, *dd;
 	 
 	 d  = GMT_memory (GMT, NULL, n, double);
@@ -512,7 +512,7 @@ int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, j;
+	unsigned int n_errors = 0, j;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -599,7 +599,7 @@ int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct G
 
 int GMT_trend1d (void *V_API, int mode, void *args)
 {
-	uint32_t i, n_model, rank, np;
+	unsigned int i, n_model, rank, np;
 	int error = 0;
 	bool significant;
 	

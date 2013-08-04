@@ -94,7 +94,7 @@ int GMT_gmtset_parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {

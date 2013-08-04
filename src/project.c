@@ -57,7 +57,7 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 	struct G {	/* -G<inc>[/<colat>][+] */
 		bool active;
 		bool header;
-		uint32_t mode;
+		unsigned int mode;
 		double inc;
 		double colat;
 	} G;
@@ -304,7 +304,7 @@ void flat_project_setup (double alat, double alon, double blat, double blon, dou
 void copy_text_from_col3 (char *line, char *z_cols)
 {	/* returns the input line starting at the 3rd column */
 
-	uint32_t i;
+	unsigned int i;
 
 	/* First replace any commas with spaces */
 
@@ -397,7 +397,7 @@ int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, j, k;
+	unsigned int n_errors = 0, j, k;
 	size_t len;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -625,7 +625,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 int GMT_project (void *V_API, int mode, void *args)
 {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
-	uint32_t rmode;
+	unsigned int rmode;
 	bool pure_ascii, skip, z_first = true;
 #ifdef MEMDEBUG
 	bool mem_track_enabled;

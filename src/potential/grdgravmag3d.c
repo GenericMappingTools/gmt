@@ -80,7 +80,7 @@ struct GRDOKB_CTRL {
 	} Z;
 	struct GRDOKB_Q {	/* -Q */
 		bool active;
-		uint32_t n_pad;
+		unsigned int n_pad;
 		char region[GMT_BUFSIZ];	/* gmt_parse_R_option has this!!!! */
 		double pad_dist;
 	} Q;
@@ -95,14 +95,14 @@ struct DATA {
 } *data;
 
 int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy);
-void set_center (uint32_t n_triang);
+void set_center (unsigned int n_triang);
 int grdgravmag3d_body_set (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
-	double *cos_vec, uint32_t j, uint32_t i, uint32_t inc_j, uint32_t inc_i);
+	double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i);
 int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
-	struct BODY_VERTS **body_verts, uint32_t face);
+	struct BODY_VERTS **body_verts, unsigned int face);
 void grdgravmag3d_calc_top_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
-	struct GMT_GRID *Gout, double *g, uint32_t n_pts, double *x_grd, double *y_grd, double *x_obs,
+	struct GMT_GRID *Gout, double *g, unsigned int n_pts, double *x_grd, double *y_grd, double *x_obs,
 	double *y_obs, double *cos_vec, struct MAG_VAR *mag_var, struct LOC_OR *loc_or,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts);
 
@@ -173,7 +173,7 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct	GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	int i = 0;
@@ -294,11 +294,11 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 
 int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
-	uint32_t nx_p, ny_p, i, j, k, ndata = 0, clockwise_type[] = {0, 5};
+	unsigned int nx_p, ny_p, i, j, k, ndata = 0, clockwise_type[] = {0, 5};
 	bool two_grids = false, switch_xy = false;
-	uint32_t km = 0;		/* index of current body facet (for mag only) */
+	unsigned int km = 0;		/* index of current body facet (for mag only) */
 	int error = 0, retval;
-	uint32_t n_vert_max;
+	unsigned int n_vert_max;
 	double	a, d, x_o, y_o;
 	double	*x_obs = NULL, *y_obs = NULL, *x_grd = NULL, *y_grd = NULL, *cos_vec = NULL;
 	double	*g = NULL, *x_grd2 = NULL, *y_grd2 = NULL, *cos_vec2 = NULL;
@@ -727,7 +727,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 	/* Read file with xy points where anomaly is going to be computed
 	   This is a temporary function while we not use the API to do this job. */
-	uint32_t ndata, ix = 0, iy = 1;
+	unsigned int ndata, ix = 0, iy = 1;
 	size_t n_alloc;
 	double in[2];
 	char line[GMT_LEN256] = {""};
@@ -757,7 +757,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc, struct BODY_VERTS **body_verts, uint32_t face) {
+int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc, struct BODY_VERTS **body_verts, unsigned int face) {
 /*
 		__________________________________________
 		|                                        |
@@ -779,10 +779,10 @@ int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struc
 	if (face == 0) {			/* Decompose the TOP square surface in 2 triangles using CW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
-			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, uint32_t);
+			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, unsigned int);
 		body_desc->n_v[0] = body_desc->n_v[1] = 3;
 		if (body_desc->ind == NULL)
-			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], uint32_t);
+			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], unsigned int);
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 1; 	body_desc->ind[2] = 2;	/* 1st top triang (0 1 3)*/
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 2; 	body_desc->ind[5] = 3;	/* 2nd top triang (1 2 3) */
 		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
@@ -791,10 +791,10 @@ int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struc
 	else if (face == 5) {			/* Decompose the BOT square surface in 2 triangles using CCW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
-			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, uint32_t);
+			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, unsigned int);
 		body_desc->n_v[0] = body_desc->n_v[1] = 3;
 		if (body_desc->ind == NULL)
-			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], uint32_t);
+			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], unsigned int);
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 2; 	body_desc->ind[2] = 1;	/* 1st bot triang */
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 3; 	body_desc->ind[5] = 2;	/* 2nd bot triang */
 		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
@@ -806,10 +806,10 @@ int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struc
 
 int grdgravmag3d_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
-		double *cos_vec, uint32_t j, uint32_t i, uint32_t inc_j, uint32_t inc_i) {
+		double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i) {
 	/* Allocate and fille the body_desc structure with the description on how to
 	   connect the vertex of the polygonal planar surface */
-	uint32_t i1, j1;
+	unsigned int i1, j1;
 	bool is_geog = Ctrl->box.is_geog;
 	float *z = Grid->data;
 	double cosj, cosj1;
@@ -909,13 +909,13 @@ int grdgravmag3d_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct
 }
 
 void grdgravmag3d_calc_top_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
-		struct GMT_GRID *Gout, double *g, uint32_t n_pts, double *x_grd, double *y_grd, double *x_obs,
+		struct GMT_GRID *Gout, double *g, unsigned int n_pts, double *x_grd, double *y_grd, double *x_obs,
 		double *y_obs, double *cos_vec, struct MAG_VAR *mag_var, struct LOC_OR *loc_or,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts) {
 
 	/* Send g = NULL for grid computations (e.g. -G) or Gout = NULL otherwise (-F).
 	   In case of polyline output (-F) n_pts is the number of output locations (irrelevant otherwise) */
-	uint32_t row, col, k, i, km;
+	unsigned int row, col, k, i, km;
 	double x_o, y_o, tmp = 1, a;
 
 /*#ifdef _OPENMP

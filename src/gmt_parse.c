@@ -107,7 +107,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	 */
 
 	int error = GMT_OK;
-	uint32_t arg, first_char, n_args;
+	unsigned int arg, first_char, n_args;
 	char option, **args = NULL, **new_args = NULL;
 	struct GMT_OPTION *head = NULL, *new_opt = NULL;
 	struct GMT_CTRL *G = NULL;
@@ -120,7 +120,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	API = gmt_get_api_ptr (V_API);	/* Convert API to a GMTAPI_CTRL pointer */
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
-		uint32_t pos = 0, new_n_args = 0;
+		unsigned int pos = 0, new_n_args = 0;
 		size_t n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ] = {""}, *txt_in = in;	/* Passed a single text string */
 		new_args = GMT_memory (G, NULL, n_alloc, char *);
@@ -202,7 +202,7 @@ char ** GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head)
 	 */
 
 	char **txt = NULL, buffer[GMT_BUFSIZ] = {""};
-	uint32_t arg = 0;
+	unsigned int arg = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = NULL;
@@ -524,7 +524,7 @@ int gmt_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	 * The latter will result in a syntax error.
 	 */
 	struct GMT_OPTION *opt = NULL;
-	uint32_t n4_expected = 0, n_B = 0, gmt4 = 0, gmt5 = 0, k;
+	unsigned int n4_expected = 0, n_B = 0, gmt4 = 0, gmt5 = 0, k;
 	int verdict;
 	
 	for (opt = options; opt; opt = opt->next) {	/* Loop over all given options */
@@ -556,7 +556,7 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 
 	struct GMT_OPTION *opt = NULL;
 	char list[2] = {0, 0}, *critical_opt_order = NULL;
-	uint32_t i, n_errors = 0;
+	unsigned int i, n_errors = 0;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */

@@ -101,7 +101,7 @@ struct GRDTREND_CTRL {	/* All control options for this program (except common ar
 	struct N {	/* -N[r]<n_model> */
 		bool active;
 		bool robust;
-		uint32_t value;
+		unsigned int value;
 	} N;
 	struct T {	/* -T<trend.grd> */
 		bool active;
@@ -166,7 +166,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0, j;
+	unsigned int n_errors = 0, n_files = 0, j;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -229,9 +229,9 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void set_up_vals (double *val, uint32_t nval, double vmin, double vmax, double dv, uint32_t pixel_reg)
+void set_up_vals (double *val, unsigned int nval, double vmin, double vmax, double dv, unsigned int pixel_reg)
 {	/* Store x[i], y[j] once for all to save time  */
-	uint32_t i;
+	unsigned int i;
 	double v, middle, drange, true_min, true_max;
 
 	true_min = (pixel_reg) ? vmin + 0.5 * dv : vmin;
@@ -249,7 +249,7 @@ void set_up_vals (double *val, uint32_t nval, double vmin, double vmax, double d
 	return;
 }
 
-void load_pstuff (double *pstuff, uint32_t n_model, double x, double y, uint32_t newx, uint32_t newy)
+void load_pstuff (double *pstuff, unsigned int n_model, double x, double y, unsigned int newx, unsigned int newy)
 {	/* Compute Legendre polynomials of x[i],y[j] as needed  */
 	/* If either x or y has changed, compute new Legendre polynomials as needed  */
 
@@ -272,9 +272,9 @@ void load_pstuff (double *pstuff, uint32_t n_model, double x, double y, uint32_t
 	return;
 }
 
-void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, uint32_t n_model, double *pstuff)
+void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, unsigned int n_model, double *pstuff)
 {	/* Find trend from a model  */
-	uint32_t row, col, k;
+	unsigned int row, col, k;
 	uint64_t ij;
 
 	GMT_grd_loop (GMT, T, row, col, ij) {
@@ -286,20 +286,20 @@ void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, doub
 
 void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
 {	/* Find residuals from a trend  */
-	uint32_t row, col;
+	unsigned int row, col;
 	uint64_t ij;
 
 	GMT_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
 
-void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, uint32_t n_model)
+void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model)
 {
 	/* Routine to fit up elementary polynomial model of grd data, 
 	model = gtd[0] + gtd[1]*x + gtd[2]*y + gtd[3] * x * y,
 	where x,y are normalized to range [-1,1] and there are no
 	NaNs in grid file, and problem is unweighted least squares.  */
 
-	uint32_t row, col;
+	unsigned int row, col;
 	uint64_t ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
 
@@ -335,7 +335,7 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 
 double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale)
 {	/* Find Chi-Squared from weighted residuals  */
-	uint32_t row, col;
+	unsigned int row, col;
 	uint64_t ij;
 	double tmp, chisq = 0.0;
 
@@ -352,7 +352,7 @@ double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID 
 
 double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W)
 {	/* Find weights from residuals  */
-	uint32_t row, col;
+	unsigned int row, col;
 	uint64_t j = 0, j2, ij;
 	float r, mad, scale;
 
@@ -384,9 +384,9 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 	return (scale);
 }
 
-void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, uint32_t n_model)
+void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, unsigned int n_model)
 {	/* Do reports if gmtdefs.verbose = NORMAL or above  */
-	uint32_t i;
+	unsigned int i;
 	char pbasis[10][16], format[GMT_BUFSIZ];
 
 	sprintf (pbasis[0], "Mean");
@@ -406,7 +406,7 @@ void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, uint32_t n_model
 	return;
 }
 
-void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, uint32_t n_model, struct GMT_GRID *W, bool weighted)
+void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, unsigned int n_model, struct GMT_GRID *W, bool weighted)
 {
 	/* Routine to load the matrix G'G (gtg) and vector G'd (gtd)
 	for the normal equations.  Routine uses indices i,j to refer
@@ -416,7 +416,7 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 	loading only lower triangular part of gtg and then filling
 	by symmetry after i,j loop.  */
 
-	uint32_t row, col, k, l, n_used = 0;
+	unsigned int row, col, k, l, n_used = 0;
 	uint64_t ij;
 
 	/* First zero things out to start */
@@ -476,7 +476,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	bool trivial, weighted,iterations, set_ones = true;
 	int error = 0;
-	uint32_t row, col;
+	unsigned int row, col;
 	
 	uint64_t ij;
 	

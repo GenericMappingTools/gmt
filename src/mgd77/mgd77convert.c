@@ -42,17 +42,17 @@ struct MGD77CONVERT_CTRL {	/* All control options for this program (except commo
 	} D;
 	struct L {	/* -L */
 		bool active;
-		uint32_t mode;
-		uint32_t dest;
+		unsigned int mode;
+		unsigned int dest;
 	} L;
 	struct F {	/* -F */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 		int format;
 	} F;
 	struct T {	/* -T */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 		int format;
 	} T;
 };
@@ -107,7 +107,7 @@ int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, code_pos, i;
+	unsigned int n_errors = 0, code_pos, i;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

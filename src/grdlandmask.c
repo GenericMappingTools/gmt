@@ -49,7 +49,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	} D;
 	struct E {	/* -E */
 		bool active;
-		uint32_t inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
+		unsigned int inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct G {	/* -G<maskfile> */
 		bool active;
@@ -61,7 +61,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	} I;
 	struct N {	/* -N<maskvalues>[o] */
 		bool active;
-		uint32_t mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
+		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		double mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
 };
@@ -127,7 +127,7 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, j, pos, n_files = 0;
+	unsigned int n_errors = 0, j, pos, n_files = 0;
 	char line[GMT_LEN256] = {""}, ptr[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -208,7 +208,7 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 int GMT_grdlandmask (void *V_API, int mode, void *args)
 {
 	bool temp_shift = false, wrap, used_polygons;
-	uint32_t base = 3, k, bin, np, side, np_new;
+	unsigned int base = 3, k, bin, np, side, np_new;
 	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;
 	
 	uint64_t ij;
@@ -435,7 +435,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	}
 
 	if (wrap && Grid->header->registration == GMT_GRID_NODE_REG) { /* Copy over values to the repeating right column */
-		uint32_t row_l;
+		unsigned int row_l;
 		for (row_l = 0, ij = GMT_IJP (Grid->header, row_l, 0); row_l < Grid->header->ny; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
 	

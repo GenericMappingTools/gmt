@@ -43,7 +43,7 @@
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
 		bool active;
-		uint32_t dir;
+		unsigned int dir;
 	} D;
 	struct E {	/* -E<value> */
 		bool active;
@@ -72,7 +72,7 @@ struct TRIANGULATE_CTRL {
 };
 
 struct TRIANGULATE_EDGE {
-	uint32_t begin, end;
+	unsigned int begin, end;
 };
 
 int compare_edge (const void *p1, const void *p2)
@@ -141,7 +141,7 @@ int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -228,7 +228,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	int *link = NULL;	/* Must remain int and not int due to triangle function */
 	
 	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
-	uint32_t n_input, n_output;
+	unsigned int n_input, n_output;
 	int row, col, col_min, col_max, row_min, row_max, error = 0;
 	bool triplets[2] = {false, false}, map_them = false;
 	

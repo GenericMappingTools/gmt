@@ -146,29 +146,29 @@ int gmt_shore_desc_sort (const void *a, const void *b)
 
 void gmt_shore_done_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c)
 {	/* Free the now empty list of side structures */
-	uint32_t i;
+	unsigned int i;
 	for (i = 0; i < 4; i++) GMT_free (GMT, c->side[i]);
 }
 
-void GMT_free_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL *p, uint32_t n)
+void GMT_free_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL *p, unsigned int n)
 {	/* Free the given list of polygon coordinates */
-	uint32_t k;
+	unsigned int k;
 	for (k = 0; k < n; k++) {
 		GMT_free (GMT, p[k].lon);
 		GMT_free (GMT, p[k].lat);
 	}
 }
 
-void gmt_shore_path_shift (double *lon, uint32_t n, double edge)
+void gmt_shore_path_shift (double *lon, unsigned int n, double edge)
 {	/* Shift all longitudes >= edige by 360 westwards */
-	uint32_t i;
+	unsigned int i;
 
 	for (i = 0; i < n; i++) if (lon[i] >= edge) lon[i] -= 360.0;
 }
 
-void gmt_shore_path_shift2 (double *lon, uint32_t n, double west, double east, int leftmost)
+void gmt_shore_path_shift2 (double *lon, unsigned int n, double west, double east, int leftmost)
 {	/* Adjust longitudes so there are no jumps with respect to current bin boundaries */
-	uint32_t i;
+	unsigned int i;
 
 	if (leftmost) {	/* Must check this bin differently  */
 		for (i = 0; i < n; i++) if (lon[i] >= east && (lon[i]-360.0) >= west) lon[i] -= 360.0;
@@ -536,7 +536,7 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	return (GMT_NOERROR);
 }
 
-int GMT_get_shore_bin (struct GMT_CTRL *GMT, uint32_t b, struct GMT_SHORE *c)
+int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c)
 /* b: index number into c->bins */
 /* min_area: Polygons with area less than this are ignored */
 /* min_level: Polygons with lower levels are ignored */
@@ -784,7 +784,7 @@ int GMT_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	return (0);
 }
 
-int GMT_get_br_bin (struct GMT_CTRL *GMT, uint32_t b, struct GMT_BR *c, uint32_t *level, uint32_t n_levels)
+int GMT_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsigned int *level, unsigned int n_levels)
 /* b: index number into c->bins */
 /* level: Levels of features to extract */
 /* n_levels: # of such levels. 0 means use all levels */
@@ -793,7 +793,7 @@ int GMT_get_br_bin (struct GMT_CTRL *GMT, uint32_t b, struct GMT_BR *c, uint32_t
 	int *seg_start = NULL;
 	short *seg_n = NULL, *seg_level = NULL, s_level;
 	int s, i, err;
-	uint32_t k;
+	unsigned int k;
 	bool skip;
 	
 
@@ -853,7 +853,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 	int start_side, next_side, id, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
 	int cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
 	bool completely_inside, more;
-	uint32_t P = 0, k;
+	unsigned int P = 0, k;
 	size_t n_alloc, p_alloc;
 	double *xtmp = NULL, *ytmp = NULL, plon, plat;
 
@@ -1090,7 +1090,7 @@ void GMT_br_cleanup (struct GMT_CTRL *GMT, struct GMT_BR *c)
 	nc_close (c->cdfid);
 }
 
-int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old, uint32_t np, bool sample, double step, int anti_bin)
+int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old, unsigned int np, bool sample, double step, int anti_bin)
 {
 	/* This function will go through each of the polygons and determine
 	 * if the polygon is clipped by the map boundary, and if so if it
@@ -1106,7 +1106,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 	 * We also explicitly close all polygons if they are not so already.
 	 */
 
-	uint32_t k, np_new, n, n_use;
+	unsigned int k, np_new, n, n_use;
 	uint64_t start;
 	bool close;
 	size_t n_alloc;
@@ -1123,7 +1123,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 
-		if ((n = (uint32_t)GMT_clip_to_map (GMT, p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
+		if ((n = (unsigned int)GMT_clip_to_map (GMT, p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
 			p[k].n = 0;	/* Note the memory in lon, lat not freed yet */
 			continue;
 		}
@@ -1135,7 +1135,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 			/* First truncate against left border */
 
 			GMT->current.plot.n = GMT_map_truncate (GMT, xtmp, ytmp, n, start, -1);
-			n_use = (uint32_t)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+			n_use = (unsigned int)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
 			close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
 			p[k].lon = GMT_memory (GMT, p[k].lon, n_alloc, double);
@@ -1151,7 +1151,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 			/* Then truncate against right border */
 
 			GMT->current.plot.n = GMT_map_truncate (GMT, xtmp, ytmp, n, start, +1);
-			n_use = (uint32_t)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+			n_use = (unsigned int)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
 			p = GMT_memory (GMT, p, np_new + 1, struct GMT_GSHHS_POL);
 			close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
@@ -1170,7 +1170,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 			np_new++;
 		}
 		else {
-			n_use = (uint32_t)GMT_compact_line (GMT, xtmp, ytmp, n, false, 0);
+			n_use = (unsigned int)GMT_compact_line (GMT, xtmp, ytmp, n, false, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
 				GMT_free (GMT, xtmp);

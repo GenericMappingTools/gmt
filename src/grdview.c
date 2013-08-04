@@ -90,13 +90,13 @@ struct GRDVIEW_CTRL {
 		bool outline;
 		bool mask;
 		bool monochrome;
-		uint32_t mode;	/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
-		uint32_t dpi;
+		unsigned int mode;	/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
+		unsigned int dpi;
 		struct GMT_FILL fill;
 	} Q;
 	struct S {	/* -S<smooth> */
 		bool active;
-		uint32_t value;
+		unsigned int value;
 	} S;
 	struct T {	/* -T[s][o[<pen>]] */
 		bool active;
@@ -201,9 +201,9 @@ double get_intensity (struct GMT_CTRL *GMT, struct GMT_GRID *I, uint64_t k)
 	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
 }
 
-uint32_t pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, uint64_t bin, int bin_inc[])
+unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, uint64_t bin, int bin_inc[])
 {	/* Returns true of the ip,jp point is inside the polygon defined by the tile */
-	uint32_t i, what;
+	unsigned int i, what;
 	double x[6], y[6];
 
 	for (i = 0; i < 4; i++) {
@@ -222,11 +222,11 @@ int quick_idist (struct GMT_CTRL *GMT, int x1, int y1, int x2, int y2)
 	return (x2 + y2 - (((x2 > y2) ? y2 : x2) >> 1));
 }
 
-uint32_t get_side (struct GMT_CTRL *GMT, double x, double y, double x_left, double y_bottom, double inc[], double inc2[]) {
+unsigned int get_side (struct GMT_CTRL *GMT, double x, double y, double x_left, double y_bottom, double inc[], double inc2[]) {
 	/* Figure out on what side this point sits on */
 
 	double del_x, del_y;
-	uint32_t side;
+	unsigned int side;
 
 	del_x = x - x_left;
 	if (del_x > inc2[GMT_X]) del_x = inc[GMT_X] - del_x;
@@ -239,8 +239,8 @@ uint32_t get_side (struct GMT_CTRL *GMT, double x, double y, double x_left, doub
 	return (side);
 }
 
-void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], uint32_t ncont, uint64_t *n) {
-	uint32_t k;
+void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
+	unsigned int k;
 	for (k = 0; k < ncont; k++, (*n)++) {
 		x[*n] = xcont[k];
 		y[*n] = ycont[k];
@@ -249,8 +249,8 @@ void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], d
 	}
 }
 
-void copy_points_bw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], uint32_t ncont, uint64_t *n) {
-	uint32_t k, k2;
+void copy_points_bw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
+	unsigned int k, k2;
 	for (k2 = 0, k = ncont - 1; k2 < ncont; k2++, k--, (*n)++) {
 		x[*n] = xcont[k];
 		y[*n] = ycont[k];
@@ -267,7 +267,7 @@ double get_z_ave (struct GMT_CTRL *GMT, double v[], double next_up, uint64_t n) 
 	return (z_ave / n);
 }
 
-void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], uint64_t *k, uint32_t node, double X_vert[], double Y_vert[], float topo[], float zgrd[], uint64_t ij) {
+void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], float topo[], float zgrd[], uint64_t ij) {
 	/* Adds a corner node to list of points and increments *k */
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
@@ -312,7 +312,7 @@ void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_grdview_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallocate control structure */
-	uint32_t i;
+	unsigned int i;
 	if (!C) return;
 	if (C->In.file) free (C->In.file);	
 	if (C->C.file) free (C->C.file);	
@@ -388,7 +388,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id, n_drape;
+	unsigned int n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id, n_drape;
 	int sval;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -576,7 +576,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_drape = Ctrl->G.image ? 3 : 1;
 	if (Ctrl->G.active) {
-		uint32_t i;
+		unsigned int i;
 		for (i = 0; i < n_drape; i++) {
 			n_errors += GMT_check_condition (GMT, !Ctrl->G.file[i][0], "Syntax error -G option: Must specify drape file\n");
 		}
@@ -597,8 +597,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 {
 	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid;
-	uint32_t c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;
-	uint32_t t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
+	unsigned int c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;
+	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
 	int i_inc, j_inc, way, bin_inc[4], ij_inc[4], error = 0;
 		
@@ -757,7 +757,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		struct GMT_GRID *Z_orig = NULL;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Find contours\n");
 		n_edges = Z->header->ny * (urint (ceil (Z->header->nx / 16.0)));
-		edge = GMT_memory (GMT, NULL, n_edges, uint32_t);
+		edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */

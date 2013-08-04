@@ -73,7 +73,7 @@ struct Gmt_moduleinfo g_suppl_module[] = {
 
 /* Pretty print all GMT suppl module names and their purposes */
 void gmt_suppl_module_show_all (void *API) {
-	uint32_t module_id = 0;
+	unsigned int module_id = 0;
 	char message[256];
 
 	GMT_Message (API, GMT_TIME_NONE, "\n=== " "GMT suppl: The official supplements to the Generic Mapping Tools" " ===\n");

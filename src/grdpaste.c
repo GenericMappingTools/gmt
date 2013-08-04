@@ -88,7 +88,7 @@ int GMT_grdpaste_parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_in = 0;
+	unsigned int n_errors = 0, n_in = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -140,7 +140,7 @@ static inline bool is_nc_grid (struct GMT_GRID *grid) {
 int GMT_grdpaste (void *V_API, int mode, void *args)
 {
 	int error = 0, way;
-	uint32_t one_or_zero;
+	unsigned int one_or_zero;
 
 	char format[GMT_BUFSIZ];
 

@@ -91,10 +91,10 @@ bool gmt_get_dcw_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *pat
 	return (found);
 }
 
-int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, uint32_t dim[])
+int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, unsigned int dim[])
 {	/* Open and read list of countries and states and return via two struct and one char arrays plus dimensions in dim */
 	size_t n_alloc = 300;
-	uint32_t k, n;
+	unsigned int k, n;
 	char path[GMT_BUFSIZ] = {""}, line[BUFSIZ] = {""};
 	FILE *fp = NULL;
 	struct GMT_DCW_COUNTRY *Country = NULL;
@@ -195,14 +195,14 @@ int gmt_dcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *slist, i
 	return (-1);
 }
 
-bool gmt_dcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_country, uint32_t n)
+bool gmt_dcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_country, unsigned int n)
 {	/* Return true if this country has interior state boundaries */
-	uint32_t i;
+	unsigned int i;
 	for (i = 0; i < n; i++) if (!strcmp (code, st_country[i].country)) return (true);
 	return (false);
 }
 
-struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], uint32_t mode)
+struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode)
 {	/* Given comma-separated names, read the corresponding netCDF variables.
  	 * mode = GMT_DCW_REGION	: Return the joint w/e/s/n limits
 	 * mode = GMT_DCW_PLOT		: Plot the polygons
@@ -213,9 +213,9 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	int64_t first, last;
 	size_t np, max_np = 0U;
 	uint64_t k, seg, n_segments;
-	uint32_t n_items = 1, pos = 0, kk, tbl = 0;
+	unsigned int n_items = 1, pos = 0, kk, tbl = 0;
 	unsigned short int *dx = NULL, *dy = NULL;
-	uint32_t GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
+	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
 	bool done, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
@@ -455,9 +455,9 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	return (D);
 }
 
-uint32_t GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode)
+unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode)
 {	/* List available countries [and optionally states]; then make program exit */
-	uint32_t i, j, k, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[3] = {0, 0, 0};
+	unsigned int i, j, k, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[3] = {0, 0, 0};
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_DCW_COUNTRY_STATE *GMT_DCW_country_with_state = NULL;
@@ -484,7 +484,7 @@ uint32_t GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode)
 	return ((list_mode & 3));
 }
 
-void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, uint32_t plot)
+void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 {	/* Show the usage */
 	char *action[2] = {"extract", "plot"};
 	if (plot == 1)
@@ -505,9 +505,9 @@ void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, uint32_t plot)
 	}
 }
 
-uint32_t GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F)
+unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F)
 {	/* Parse the F option in pscoast */
-	uint32_t n_errors = 0, pos = 0, n;
+	unsigned int n_errors = 0, pos = 0, n;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL, *a = NULL;
 
 	if (F->codes) {	/* Cannot be called more than once */

@@ -62,7 +62,7 @@ struct GRDRASTER_CTRL {
 
 struct GRDRASTER_INFO {
 	struct GMT_GRID_HEADER h;
-	uint32_t id;	/* File number  */
+	unsigned int id;	/* File number  */
 	int nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
 	int nanflag;
 	off_t skip;		/* Skip this number of header bytes when opening file  */
@@ -75,7 +75,7 @@ struct GRDRASTER_INFO {
 static inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
 {
 	/* convert unsigned char */
-	uint32_t i;
+	unsigned int i;
 	unsigned char tempval;
 	for (i = 0; i < ras.h.nx; ++i) {
 		GMT_memcpy (&tempval, &buffer[i], 1, char);
@@ -94,7 +94,7 @@ static inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 static inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
 {
 	/* convert char */
-	uint32_t i;
+	unsigned int i;
 	char tempval;
 	for (i = 0; i < ras.h.nx; ++i) {
 		tempval = buffer[i];
@@ -113,7 +113,7 @@ static inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 static inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
 {
 	/* convert uint16_t */
-	uint32_t i;
+	unsigned int i;
 	uint16_t tempval;
 	for (i = 0; i < ras.h.nx; ++i) {
 		GMT_memcpy (&tempval, &buffer[i * sizeof(uint16_t)], 1, uint16_t);
@@ -134,7 +134,7 @@ static inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 static inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
 {
 	/* convert int16_t */
-	uint32_t i;
+	unsigned int i;
 	int16_t tempval;
 	uint16_t *u = (uint16_t *)&tempval;
 	for (i = 0; i < ras.h.nx; i++) {
@@ -156,7 +156,7 @@ static inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
 {
 	/* convert int32_t */
-	uint32_t i;
+	unsigned int i;
 	int32_t tempval;
 	uint32_t *u = (uint32_t *)&tempval;
 	for (i = 0; i < ras.h.nx; i++) {
@@ -175,7 +175,7 @@ static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-uint32_t get_byte_size (struct GMT_CTRL *GMT, char type) {
+unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
 	/* Return byte size of each item, or 0 if bits */
 	int ksize;
 	switch (type) {
@@ -565,9 +565,9 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 				rasinfo[nfound].h.command[stop_point] = '\0';
 
 				i = lrint ((rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO])/rasinfo[nfound].h.inc[GMT_X]);
-				rasinfo[nfound].h.nx = (uint32_t)((rasinfo[nfound].h.registration) ? i : i + 1);
+				rasinfo[nfound].h.nx = (unsigned int)((rasinfo[nfound].h.registration) ? i : i + 1);
 				j = lrint ((rasinfo[nfound].h.wesn[YHI] - rasinfo[nfound].h.wesn[YLO])/rasinfo[nfound].h.inc[GMT_Y]);
-				rasinfo[nfound].h.ny = (uint32_t)((rasinfo[nfound].h.registration) ? j : j + 1);
+				rasinfo[nfound].h.ny = (unsigned int)((rasinfo[nfound].h.registration) ? j : j + 1);
 
 				if ((ksize = get_byte_size (GMT, rasinfo[nfound].type)) == 0)
 					expected_size = lrint ((ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
@@ -672,7 +672,7 @@ int GMT_grdraster_parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -725,8 +725,8 @@ int GMT_grdraster_parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, stru
 
 int GMT_grdraster (void *V_API, int mode, void *args)
 {
-	uint32_t i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
-	uint32_t ijras, jseek, jras2, iras2;
+	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
+	unsigned int ijras, jseek, jras2, iras2;
 	uint64_t n_nan;
 	int jrasstart, irasstart, iras, jras, error = 0;
 	bool firstread;
@@ -954,7 +954,7 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 
 	/* Get space */
 	if (Ctrl->T.active) {	/* Need just space for one row */
-		uint32_t col;
+		unsigned int col;
 		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (col = 0; col < Grid->header->nx; col++) x[col] = GMT_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);

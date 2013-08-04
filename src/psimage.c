@@ -53,7 +53,7 @@ struct PSIMAGE_CTRL {
 	} F;
 	struct G {	/* -G[f|b|t]<rgb> */
 		bool active;
-		uint32_t mode;	/* 0 for f|b, 1 for t */
+		unsigned int mode;	/* 0 for f|b, 1 for t */
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
@@ -66,7 +66,7 @@ struct PSIMAGE_CTRL {
 	} M;
 	struct N {	/* -N<nx>/<ny> */
 		bool active;
-		uint32_t nx, ny;
+		unsigned int nx, ny;
 	} N;
 	struct W {	/* -W[-]<width>[/<height>] */
 		bool active;
@@ -140,7 +140,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, letter;
 	struct GMT_OPTION *opt = NULL;
@@ -293,7 +293,7 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 int GMT_psimage (void *V_API, int mode, void *args)
 {
 	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
-	uint32_t row, col;
+	unsigned int row, col;
 	bool free_GMT = false;
 
 	double x, y, wesn[4];

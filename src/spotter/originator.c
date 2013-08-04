@@ -126,7 +126,7 @@ struct HOTSPOT_ORIGINATOR {
 	double np_lon;		/* Longitude of nearest point on the current flowline */
 	double np_lat;		/* Latitude  of nearest point on the current flowline */
 	uint64_t nearest;	/* Point id of current flowline node points closest to hotspot */
-	uint32_t stage;	/* Stage to which seamount belongs */
+	unsigned int stage;	/* Stage to which seamount belongs */
 	struct GMT_DATASEGMENT *D;	/* Used for drifting hotspots only */
 };
 
@@ -148,7 +148,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 	} F;
 	struct L {	/* -L */
 		bool active;
-		uint32_t mode;
+		unsigned int mode;
 		bool degree;	/* Report degrees */
 	} L;
 	struct N {	/* -N */
@@ -161,7 +161,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 	} Q;
 	struct S {	/* -S */
 		bool active;
-		uint32_t n;
+		unsigned int n;
 	} S;
 	struct T {	/* -T */
 		bool active;
@@ -250,7 +250,7 @@ int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_input;
+	unsigned int n_errors = 0, n_input;
 	int k;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -351,8 +351,8 @@ int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, st
 
 int GMT_originator (void *V_API, int mode, void *args)
 {
-	uint32_t n_max_spots, n_input;
-	uint32_t spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
+	unsigned int n_max_spots, n_input;
+	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;
 	
 	int error = 0;
@@ -609,7 +609,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 
 			k = 0;
 			while (k < n_stages && hot[spot].np_time <= p[k].t_stop) k++;
-			hot[spot].stage = n_stages - (uint32_t)k;
+			hot[spot].stage = n_stages - (unsigned int)k;
 			if (hot[spot].stage == 0) hot[spot].stage++;
 		}
 

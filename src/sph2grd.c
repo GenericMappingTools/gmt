@@ -135,7 +135,7 @@ int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, k, n;
+	unsigned int n_errors = 0, k, n;
 	char A[GMT_LEN32] = {""}, B[GMT_LEN32] = {""}, D[GMT_LEN32] = {""}, E[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -223,7 +223,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 {
 	bool ortho = false, duplicate_col;
 	int error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0;
-	uint32_t row, col, nx, n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
+	unsigned int row, col, nx, n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
 	uint64_t tbl, seg, drow, node, node_L, k;
 	char text[GMT_LEN32] = {""};
 	double lon, lat, sum, lo, hi, filter, percent_inc, percent = 0;
@@ -389,7 +389,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 		Sinm[col] = &Sinmx[k];	/* Sinm[col][M] has sin(M*lon) terms for all lon[col], fixed M <= L_max */
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
-		uint32_t kind = 0;
+		unsigned int kind = 0;
 		size_t n_bytes = sizeof (struct GMT_GRID);
 		double mem;
 		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */

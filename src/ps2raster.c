@@ -73,7 +73,7 @@ void GMT_str_toupper (char *string);
 
 struct PS2RASTER_CTRL {
 	struct In {	/* Input file info */
-		uint32_t n_files;
+		unsigned int n_files;
 	} In;
 	struct A {             /* -A[u][-] [Adjust boundingbox] */
 		bool active;
@@ -97,7 +97,7 @@ struct PS2RASTER_CTRL {
 	} D;
 	struct E {	/* -E<resolution> */
 		bool active;
-		uint32_t dpi;
+		unsigned int dpi;
 	} E;
 	struct F {	/* -F<out_name> */
 		bool active;
@@ -120,7 +120,7 @@ struct PS2RASTER_CTRL {
 	struct Q {	/* -Q[g|t]<bits> */
 		bool active;
 		bool on[2];	/* [0] for graphics, [1] for text antialiasing */
-		uint32_t bits[2];
+		unsigned int bits[2];
 	} Q;
 	struct S {	/* -S */
 		bool active;
@@ -135,7 +135,7 @@ struct PS2RASTER_CTRL {
 		bool folder;
 		bool warp;
 		bool kml;
-		uint32_t mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
+		unsigned int mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
 		int min_lod, max_lod;	/* minLodPixels and maxLodPixels settings */
 		int min_fade, max_fade;	/* minFadeExtent and maxFadeExtent settings */
 		char *doctitle;		/* Name of KML document */
@@ -150,7 +150,7 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 	/* Syntax: -A[u][<margins>][-][+r][+s<width>[u][/<height>[u]]] */
 	
 	bool error = false;
-	uint32_t pos = 0;
+	unsigned int pos = 0;
 	int j, k = 0;
 	char txt[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
@@ -231,7 +231,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 	
 	bool error = false;
-	uint32_t pos = 0;
+	unsigned int pos = 0;
 	char txt[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
 	
 	C->W.active = true;
@@ -464,7 +464,7 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, mode;
+	unsigned int n_errors = 0, mode;
 	int j;
 	bool grayscale;
 	char text[GMT_LEN64] = {""}, *anti = NULL;
@@ -617,7 +617,7 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 
 int GMT_ps2raster (void *V_API, int mode, void *args)
 {
-	uint32_t i, j, k, pix_w = 0, pix_h = 0;
+	unsigned int i, j, k, pix_w = 0, pix_h = 0;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len;
 	bool got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape, landscape_orig;
@@ -834,14 +834,14 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		got_BB = got_HRBB = file_has_HRBB = got_BBatend = got_end = landscape = landscape_orig = setup = false;
 
 		len = strlen (ps_file);
-		j = (uint32_t)len - 1;
+		j = (unsigned int)len - 1;
 		pos_file = -1;
 		pos_ext = -1;	/* In case file has no extension */
 		for (i = 0; i < len; i++, j--) {
 			if (pos_ext < 0 && ps_file[j] == '.') pos_ext = j;	/* Beginning of file extension */
 			if (pos_file < 0 && (ps_file[j] == '/' || ps_file[j] == '\\')) pos_file = j + 1;	/* Beginning of file name */
 		}
-		if (pos_ext == -1) pos_ext = (uint32_t)len - 1;	/* File has no extension */
+		if (pos_ext == -1) pos_ext = (unsigned int)len - 1;	/* File has no extension */
 		if (!Ctrl->D.active || pos_file == -1) pos_file = 0;	/* File either has no leading directory or we want to use it */
 
 		/* Adjust to a tight BoundingBox if user requested so */

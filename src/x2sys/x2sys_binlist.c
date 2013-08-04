@@ -95,7 +95,7 @@ int GMT_x2sys_binlist_parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -144,9 +144,9 @@ int outside (double x, double y, struct X2SYS_BIX *B, int geo)
 	return (0);	/* Inside */
 }
 
-uint32_t get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s)
+unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s)
 {
-	uint32_t i, bit, flag;
+	unsigned int i, bit, flag;
 	for (i = flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
 		if (GMT_is_dnan (data[i][j])) continue;	/* NaN, so no data here */
 		flag |= bit;
@@ -171,7 +171,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	char **trk_name = NULL;
 
 	uint64_t this_bin_index, index, last_bin_index, row;
-	uint32_t trk, curr_x_pt, prev_x_pt, n_tracks;
+	unsigned int trk, curr_x_pt, prev_x_pt, n_tracks;
 	int ii_notused, jj_notused, bcol, brow, start_col, end_col, jump_180, jump_360;
 	int this_bin_col;	/* This col node for bin */
 	int this_bin_row;	/* This row node for bin */
@@ -181,7 +181,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	bool gap, cmdline_files, last_not_set;
 	size_t nx, nx_alloc = GMT_SMALL_CHUNK;
 	
-	uint32_t nav_flag;
+	unsigned int nav_flag;
 
 	double **data = NULL, *dist_km = NULL, *dist_bin = NULL, dist_scale, x, y, dx, del_x, del_y, y_max = 90.0;
 
@@ -282,7 +282,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 		
 		/* Reset bin flags */
 
-		GMT_memset (B.binflag, B.nm_bin, uint32_t);
+		GMT_memset (B.binflag, B.nm_bin, unsigned int);
 		if (Ctrl->D.active) {
 			int signed_flag = s->dist_flag;
 			GMT_memset (dist_bin, B.nm_bin, double);

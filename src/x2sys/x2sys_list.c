@@ -66,7 +66,7 @@ struct X2SYS_LIST_CTRL {
 	} L;
 	struct X2SYS_LIST_N {	/* -N */
 		bool active;
-		uint32_t min;
+		unsigned int min;
 	} N;
 	struct X2SYS_LIST_Q {	/* -Q */
 		bool active;
@@ -168,7 +168,7 @@ int GMT_x2sys_list_parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, i, n_files = 0;
+	unsigned int n_errors = 0, i, n_files = 0;
 	bool mixed = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -288,7 +288,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, j, k, one, two, n_items, n_tracks;
 	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
-	uint32_t n_weights = 0, coe_kind, n_out;
+	unsigned int n_weights = 0, coe_kind, n_out;
 	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
@@ -661,7 +661,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 			if (mixed)
 				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 			else
-				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], (uint32_t)j, out);
+				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], (unsigned int)j, out);
 		}
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
@@ -672,7 +672,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	GMT_free (GMT, trk_nx);
 	if (Ctrl->A.active) GMT_free (GMT,  trk_symm);
 
-	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (uint32_t)n_tracks);
+	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 	GMT_free (GMT, trk_name);
 	x2sys_end (GMT, s);
 

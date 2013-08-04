@@ -83,9 +83,9 @@ struct GMTAPI_DATA_OBJECT {
 	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
 	uint64_t n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
 	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
-	uint32_t ID;			/* Unique identifier which is >= 0 */
-	uint32_t alloc_level;		/* Nested module level when object was allocated */
-	uint32_t status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
+	unsigned int ID;			/* Unique identifier which is >= 0 */
+	unsigned int alloc_level;		/* Nested module level when object was allocated */
+	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
 	bool selected;				/* true if requested by current module, false otherwise */
 	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
 	bool region;				/* true if wesn was passed, false otherwise */
@@ -118,27 +118,27 @@ struct GMTAPI_CTRL {
 	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
 
 	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
-	uint32_t n_objects;			/* Number of currently active input and output data objects */
-	uint32_t unique_ID;			/* Used to create unique IDs for duration of session */
-	uint32_t session_ID;		/* ID of this session */
-	uint32_t unique_var_ID;		/* Used to create unique object IDs (grid,dataset, etc) for duration of session */
-	uint32_t current_item[2];		/* Array number of current dataset being processed (in and out)*/
-	uint32_t pad;			/* Session default for number of rows/cols padding for grids [2] */
+	unsigned int n_objects;			/* Number of currently active input and output data objects */
+	unsigned int unique_ID;			/* Used to create unique IDs for duration of session */
+	unsigned int session_ID;		/* ID of this session */
+	unsigned int unique_var_ID;		/* Used to create unique object IDs (grid,dataset, etc) for duration of session */
+	unsigned int current_item[2];		/* Array number of current dataset being processed (in and out)*/
+	unsigned int pad;			/* Session default for number of rows/cols padding for grids [2] */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
 	int shelf;				/* Place to pass hidden values within API */
-	uint32_t io_mode[2];		/* 1 if access as set, 0 if record-by-record */
+	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
 	bool deep_debug;			/* temprorary for debug */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
-	uint32_t do_not_exit;		/* 0 by default, mieaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
+	unsigned int do_not_exit;		/* 0 by default, mieaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
 	struct Gmt_libinfo *lib;		/* List of shared libs to consider */
-	uint32_t n_shared_libs;		/* How many in lib */
+	unsigned int n_shared_libs;		/* How many in lib */
 };
 
 EXTERN_MSC void GMT_list_API (struct GMTAPI_CTRL *ptr, char *txt);

@@ -57,7 +57,7 @@ enum GMT_FFT_DIMSET {
 
 struct GMT_FFT_WAVENUMBER {	/* Holds parameters needed to calculate kx, ky, kr */
 	int nx2, ny2;
-	uint32_t dim;	/* FFT dimension as setup by Init */
+	unsigned int dim;	/* FFT dimension as setup by Init */
 	double delta_kx, delta_ky;
 	double (*k_ptr) (uint64_t k, struct GMT_FFT_WAVENUMBER *K);	/* pointer to function returning either kx, ky, or kr */
 	double coeff[3];		/* Detrending coefficients returned, if used */
@@ -70,18 +70,18 @@ struct GMT_FFT_INFO {
 					/* save[GMT_OUT] means save the complex output grid just after calling the FFT */
 	bool polar;			/* true if we are to save the complex output grid in polar form */
 	char *suffix;			/* Suffix used to form output names if save[GMT_IN] is true [tapered] */
-	uint32_t nx;		/* Desired hard FFT nx dimensionl or 0 if free to adjust */
-	uint32_t ny;		/* Desired hard FFT ny dimensionl or 0 if free to adjust */
-	uint32_t taper_mode;	/* One of the GMT_FFT_EXTEND for extension/mirroring */
-	uint32_t info_mode;		/* One of the GMT_FFT_INFO for setting nx/ny or inquire */
-	uint32_t trend_mode;	/* One of the GMT_FFT_TREND for handling detrending */
+	unsigned int nx;		/* Desired hard FFT nx dimensionl or 0 if free to adjust */
+	unsigned int ny;		/* Desired hard FFT ny dimensionl or 0 if free to adjust */
+	unsigned int taper_mode;	/* One of the GMT_FFT_EXTEND for extension/mirroring */
+	unsigned int info_mode;		/* One of the GMT_FFT_INFO for setting nx/ny or inquire */
+	unsigned int trend_mode;	/* One of the GMT_FFT_TREND for handling detrending */
 	double taper_width;		/* Amount of tapering in percent */
 	struct GMT_FFT_WAVENUMBER *K;	/* Pointer to wavenumber structure */
 };
 
 struct GMT_FFT_SUGGESTION {
-	uint32_t nx;
-	uint32_t ny;
+	unsigned int nx;
+	unsigned int ny;
 	size_t worksize;	/* # single-complex elements needed in work array  */
 	size_t totalbytes;	/* (8*(nx*ny + worksize))  */
 	double run_time;
@@ -90,7 +90,7 @@ struct GMT_FFT_SUGGESTION {
 
 
 struct GMT_FFT_HIDDEN {	/* Items needed by various FFT packages */
-	uint32_t n_1d, n_2d;	/* Bill Gates says: error C2016: C requires that a struct or union has at least one member */
+	unsigned int n_1d, n_2d;	/* Bill Gates says: error C2016: C requires that a struct or union has at least one member */
 #ifdef __APPLE__ /* Accelerate framework */
 	FFTSetup setup_1d, setup_2d;
 	DSPSplitComplex dsp_split_complex_1d;

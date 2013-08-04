@@ -102,7 +102,7 @@ struct GDALREAD_CTRL {
 	} registration;
 	struct GD_hdr {	/* Some fields of the header structure */
 		int active;
-		uint32_t BB_mx, BB_my;
+		unsigned int BB_mx, BB_my;
 		char side[1];		/* If array is going to pasted (grdpaste), tell in what side 'lrtb' */
 		int offset;
 	} mini_hdr;
@@ -133,7 +133,7 @@ struct GD_CTRL {
 		int active;
 		short int *data;
 	} Int16;
-	struct UInt32 {			/* Declare uint32_t pointers */
+	struct UInt32 {			/* Declare unsigned int pointers */
 		int active;
 		int *data;
 	} UInt32;

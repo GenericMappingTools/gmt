@@ -77,7 +77,7 @@ struct GMTCONNECT_CTRL {
 struct BUDDY {	/* Holds information on nearest segment to one end of a segment */
 	uint64_t id;
 	uint64_t orig_id;
-	uint32_t end_order;
+	unsigned int end_order;
 	double dist, next_dist;
 };
 
@@ -152,7 +152,7 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	int n = 0;
 	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -249,8 +249,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 
 	bool save_type = false, first, wrap_up = false, done, closed, *skip = NULL;
 
-	uint32_t nearest_end[2][2], j, n_qfiles = 0, end_order;
-	uint32_t io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
+	unsigned int nearest_end[2][2], j, n_qfiles = 0, end_order;
+	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
 
 	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts;
 

@@ -607,11 +607,11 @@ double GMT_i1 (struct GMT_CTRL *GMT, double x)
 	return (res);
 }
 
-double GMT_in (struct GMT_CTRL *GMT, uint32_t n, double x)
+double GMT_in (struct GMT_CTRL *GMT, unsigned int n, double x)
 {
 	/* Modified Bessel function In(x) */
 
-	uint32_t j, m, IACC = 40;
+	unsigned int j, m, IACC = 40;
 	double res, tox, bip, bi, bim;
 	double BIGNO = 1.0e10, BIGNI = 1.0e-10;
 
@@ -677,11 +677,11 @@ double GMT_k1 (struct GMT_CTRL *GMT, double x)
 	return (res);
 }
 
-double GMT_kn (struct GMT_CTRL *GMT, uint32_t n, double x)
+double GMT_kn (struct GMT_CTRL *GMT, unsigned int n, double x)
 {
 	/* Modified Bessel function Kn(x) */
 
-	uint32_t j;
+	unsigned int j;
 	double bkm, bk, bkp, tox;
 
 	if (n == 0) return (GMT_k0 (GMT, x));
@@ -1669,10 +1669,10 @@ double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64
 	return ((double)(0.5 * (data[j].value + data[i].value)));
 }
 
-int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort, uint32_t mode_selection, uint32_t *n_multiples, double *mode_est)
+int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est)
 {
 	uint64_t i, istop;
-	uint32_t multiplicity;
+	unsigned int multiplicity;
 	double mid_point_sum = 0.0, length, short_length = DBL_MAX, this_mode;
 
 	if (n == 0) return (0);
@@ -1724,10 +1724,10 @@ int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 	return (0);
 }
 
-int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, uint32_t mode_selection, uint32_t *n_multiples, double *mode_est)
+int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est)
 {
 	uint64_t i, istop;
-	uint32_t multiplicity;
+	unsigned int multiplicity;
 	double mid_point_sum = 0.0, length, short_length = FLT_MAX, this_mode;
 
 	if (n == 0) return (0);
@@ -1876,7 +1876,7 @@ int GMT_chebyshev (struct GMT_CTRL *GMT, double x, int n, double *t)
 	return (GMT_NOERROR);
 }
 
-double GMT_corrcoeff (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint32_t mode)
+double GMT_corrcoeff (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, unsigned int mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
@@ -1911,7 +1911,7 @@ double GMT_corrcoeff (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, ui
 	return (r);
 }
 
-double GMT_corrcoeff_f (struct GMT_CTRL *GMT, float *x, float *y, uint64_t n, uint32_t mode)
+double GMT_corrcoeff_f (struct GMT_CTRL *GMT, float *x, float *y, uint64_t n, unsigned int mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
@@ -2093,7 +2093,7 @@ double GMT_psi (struct GMT_CTRL *P, double zz[], double p[])
 #define QV_RE 2
 #define QV_IM 3
 
-void GMT_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], uint32_t *iter)
+void GMT_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsigned int *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
 	 * the real amd imaginary parts of Pv(x) and Qv(x) in the pq array.

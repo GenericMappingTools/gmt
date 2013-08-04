@@ -50,8 +50,8 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 	double o_offset;	/* 0.0 if we are to report center the bins on multiples of width, else 0.5 */
 	double i_width;		/* 1/width, to avoid divisions later */
 	int min, max;		/* The raw min,max bin numbers (min can be negative) */
-	uint32_t n_bins;	/* Number of bins required */
-	uint32_t *count;	/* The histogram counts, to be reset before each spatial block */
+	unsigned int n_bins;	/* Number of bins required */
+	unsigned int *count;	/* The histogram counts, to be reset before each spatial block */
 	int mode_choice;	/* For multiple modes: BLOCKMODE_LOW picks lowest, BLOCKMODE_AVE picks average, BLOCKMODE_HIGH picks highest */
 };
 
@@ -100,7 +100,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, pos = 0;
+	unsigned int n_errors = 0, pos = 0;
 	struct GMT_OPTION *opt = NULL;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 
@@ -216,7 +216,7 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	B->min = irint (floor ((d[0].a[k]   * B->i_width) + B->i_offset));
 	B->max = irint (ceil  ((d[n-1].a[k] * B->i_width) + B->i_offset));
 	B->n_bins = B->max - B->min + 1;
-	B->count = GMT_memory (GMT, NULL, B->n_bins, uint32_t);
+	B->count = GMT_memory (GMT, NULL, B->n_bins, unsigned int);
 	B->mode_choice = mode_choice;
 	
 	return (B);
@@ -231,10 +231,10 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 
 	double value = 0.0;
 	uint64_t i;
-	uint32_t bin, mode_bin, mode_count = 0, n_modes = 0;
+	unsigned int bin, mode_bin, mode_count = 0, n_modes = 0;
 	bool done;
 
-	GMT_memset (B->count, B->n_bins, uint32_t);	/* Reset the counts */
+	GMT_memset (B->count, B->n_bins, unsigned int);	/* Reset the counts */
 	for (i = 0; i < n; i++) {	/* Loop over sorted data points */
 		bin = urint (floor ((d[i].a[k] * B->i_width) + B->i_offset)) - B->min;
 		B->count[bin]++;
@@ -272,7 +272,7 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 	return (value);
 }
 
-double weighted_mode (struct BLK_DATA *d, double wsum, uint32_t emode, uint64_t n, uint32_t k, uint64_t *index)
+double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index)
 {
 	/* Estimate mode by finding a maximum in the estimated
 	   pdf of weighted data.  Estimate the pdf as the finite
@@ -347,7 +347,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	
 	int way, error = 0;
 	
-	uint32_t row, col, emode = 0, n_input, n_output;
+	unsigned int row, col, emode = 0, n_input, n_output;
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id;
@@ -546,8 +546,8 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 			nz = 1;
 		}
 		if (Ctrl->C.active) {	/* Use block center */
-			row = (uint32_t)GMT_row (Grid->header, data[first_in_cell].ij);
-			col = (uint32_t)GMT_col (Grid->header, data[first_in_cell].ij);
+			row = (unsigned int)GMT_row (Grid->header, data[first_in_cell].ij);
+			col = (unsigned int)GMT_col (Grid->header, data[first_in_cell].ij);
 			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
 			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
 		}

@@ -102,7 +102,7 @@ int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	uint32_t n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -245,7 +245,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 	GMT_map_basemap (GMT);
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
-		uint32_t tbl;
+		unsigned int tbl;
 		bool first = !Ctrl->N.active;
 		uint64_t row, seg;
 		double *x = NULL, *y = NULL;

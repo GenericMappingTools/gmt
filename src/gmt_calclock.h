@@ -33,20 +33,20 @@
 
 struct GMT_gcal {	/* (proleptic) Gregorian calendar  */
 	int year;		/* signed; negative and 0 allowed  */
-	uint32_t month;	/* Always between 1 and 12  */
-	uint32_t day_m;	/* Day of month; always in 1 - 31  */
-	uint32_t day_y;	/* Day of year; 1 thru 366  */
-	uint32_t day_w;	/* Day of week; 0 (Sun) thru 6 (Sat)  */
+	unsigned int month;	/* Always between 1 and 12  */
+	unsigned int day_m;	/* Day of month; always in 1 - 31  */
+	unsigned int day_y;	/* Day of year; 1 thru 366  */
+	unsigned int day_w;	/* Day of week; 0 (Sun) thru 6 (Sat)  */
 	int iso_y;		/* ISO year; not necessarily == year */
-	uint32_t iso_w;	/* ISO week of iso_y; must be in 1 -- 53  */
-	uint32_t iso_d;	/* ISO day of iso_w; uses 1 (Mon) thru 7 (Sun)  */
-	uint32_t hour;	/* 00 through 23  */
-	uint32_t min;	/* 00 through 59  */
+	unsigned int iso_w;	/* ISO week of iso_y; must be in 1 -- 53  */
+	unsigned int iso_d;	/* ISO day of iso_w; uses 1 (Mon) thru 7 (Sun)  */
+	unsigned int hour;	/* 00 through 23  */
+	unsigned int min;	/* 00 through 59  */
 	double sec;		/* 00 through 59.xxxx; leap not yet handled  */
 };
 
 struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
-	uint32_t y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttoff, add y100 else add y200 */
+	unsigned int y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttoff, add y100 else add y200 */
 	int y100;	/* The multiple of 100 to add to the 2-digit year if we are above the time_Y2K_offset_year */
 	int y200;	/* The multiple of 100 to add to the 2-digit year if we are below the time_Y2K_offset_year */
 };
@@ -56,13 +56,13 @@ struct GMT_MOMENT_INTERVAL {
 	double dt[2];		
 	double sd[2];		/* Seconds since the start of the day.  */
 	int64_t rd[2];
-	uint32_t step;
+	unsigned int step;
 	char unit;
 };
 
 struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
 	struct GMT_MOMENT_INTERVAL T;
-	uint32_t direction;		/* 0 [+] to center on next interval, 1 [-] for previous interval */
+	unsigned int direction;		/* 0 [+] to center on next interval, 1 [-] for previous interval */
 };
 
 #endif /* !_GMT_CALCLOCK_H */
