@@ -216,6 +216,9 @@
  * seek to use them.  If not available then we compile in
  * replacements from gmt_notposix.c */
 
+#ifndef HAVE_ABS
+#	define abs(x) (int)labs(x)
+#endif
 #ifndef HAVE_ACOSF
 #	define acosf(x) (float)acos((double)(x))
 #endif
@@ -305,13 +308,13 @@
 #	define log1pf(x) (float)log1p((double)(x))
 #endif
 #ifndef HAVE_LRINT
-#	define lrint (long)rint
+#	define lrint(x) (long)rint(x)
 #endif
 #ifndef HAVE_LRINTF
 #	define lrintf(x) lrint((double)(x))
 #endif
 #ifndef HAVE_LLRINT
-#	define llrint (long)rint
+#	define llrint(x) (long long)rint(x)
 #endif
 #ifndef HAVE_LLRINTF
 #	define llrintf(x) llrint((double)(x))

@@ -617,7 +617,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 					if (!(good_one[i_col])) continue;
 					n_l = F->n_left[i_col];
 					n_r = F->n_right[i_col];
-					symmetry = ((double)GMT_abs (n_l - n_r))/(n_l + n_r);
+					symmetry = ((double)int64_abs (n_l - n_r))/(n_l + n_r);
 					if (symmetry > F->sym_coeff) good_one[i_col] = false;
 				}
 			}
@@ -691,7 +691,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				if (F->check_asym && !(F->robust) ) {
 					n_l = F->n_left[i_col];
 					n_r = F->n_right[i_col];
-					symmetry = ((double)GMT_abs (n_l - n_r))/(n_l + n_r);
+					symmetry = ((double)int64_abs (n_l - n_r))/(n_l + n_r);
 					if (symmetry > F->sym_coeff) {
 						good_one[i_col] = false;
 						continue;
