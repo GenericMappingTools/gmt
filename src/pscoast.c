@@ -459,6 +459,31 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	if (!GMT->common.R.active && Ctrl->F.info.region) {	/* Must pick up region from chosen polygons */
 		(void) GMT_DCW_operation (GMT, &Ctrl->F.info, GMT->common.R.wesn, GMT_DCW_REGION);
 		GMT->common.R.active = true;
+		if (!GMT->common.J.active && !Ctrl->M.active) {	/* No plotting or no dumping means just return the -R string */
+			char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
+			size_t i, j;
+			GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+			GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			/* Remove any white space due to selected formatting */
+			for (i = j = 2; i < strlen (record); i++) {
+				if (record[i] == ' ') continue;	/* Skip spaces */
+				record[j++] = record[i];
+			}
+			record[j] = '\0';
+			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+				return (API->error);
+			}
+			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+				return (API->error);
+			}
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+				return (API->error);
+			}
+			return 1;	/* To exit, basically */
+		}
 	}
 
 	/* Check that the options selected are mutually consistent */
