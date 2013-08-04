@@ -310,6 +310,12 @@
 #ifndef HAVE_LRINTF
 #	define lrintf(x) lrint((double)(x))
 #endif
+#ifndef HAVE_LLRINT
+#	define llrint (long)rint
+#endif
+#ifndef HAVE_LLRINTF
+#	define llrintf(x) llrint((double)(x))
+#endif
 #ifndef HAVE_RINTF
 #	define rintf(x) (float)rint((double)(x))
 #endif
