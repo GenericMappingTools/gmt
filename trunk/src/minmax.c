@@ -296,7 +296,6 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	give_r_string = (Ctrl->I.active && !Ctrl->C.active);
 	delimeter[0] = (Ctrl->C.active) ? '\t' : '/';
 	delimeter[1] = '\0';
-	GMT_memset (file, GMT_BUFSIZ, char);
 	off = (GMT->common.r.active) ? 0.5 : 0.0;
 
 	brackets = !Ctrl->C.active;

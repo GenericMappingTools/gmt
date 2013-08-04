@@ -2505,7 +2505,6 @@ void gmt_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_OP
 	char outstring[GMT_BUFSIZ] = {""}, tmpstring[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	GMT_memset (outstring, GMT_BUFSIZ, char);
 	PSL_command (PSL, "\n%% PostScript produced by:\n%%%%GMT: %s", GMT->init.module_name);
 	for (opt = options; opt; opt = opt->next) {
 		if (length >= 512) {

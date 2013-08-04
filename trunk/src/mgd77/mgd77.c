@@ -1280,7 +1280,6 @@ static int get_integer (char *text, unsigned int start, unsigned int length)
 {
 	unsigned int k;
 	char tmp[16] = {""};
-	GMT_memset (tmp, 16, char);
 	for (k = 0; k < length; k++) tmp[k] = text[start+k];
 	return (atoi (tmp));
 }

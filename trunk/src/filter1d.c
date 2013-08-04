@@ -543,7 +543,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	uint64_t i_row, left, right, n_l, n_r;
 	uint64_t i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
 	uint64_t iq, i_col;
-	int64_t i_f_wt;
+	int64_t i_f_wt, diff;
 	bool *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
 	double t_time, delta_time, *outval = NULL, wt, val, med, scl, small, symmetry;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
@@ -617,7 +617,8 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 					if (!(good_one[i_col])) continue;
 					n_l = F->n_left[i_col];
 					n_r = F->n_right[i_col];
-					symmetry = ((double)int64_abs (n_l - n_r))/(n_l + n_r);
+					diff = (n_l >= n_r) ? n_l - n_r : n_r - n_l;
+					symmetry = ((double)diff)/(n_l + n_r);
 					if (symmetry > F->sym_coeff) good_one[i_col] = false;
 				}
 			}
@@ -691,7 +692,8 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				if (F->check_asym && !(F->robust) ) {
 					n_l = F->n_left[i_col];
 					n_r = F->n_right[i_col];
-					symmetry = ((double)int64_abs (n_l - n_r))/(n_l + n_r);
+					diff = (n_l >= n_r) ? n_l - n_r : n_r - n_l;
+					symmetry = ((double)diff)/(n_l + n_r);
 					if (symmetry > F->sym_coeff) {
 						good_one[i_col] = false;
 						continue;

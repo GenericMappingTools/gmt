@@ -129,7 +129,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	size_t length;
 	bool scan = true, first = true;
 	
-	char line[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, header[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""};
+	char line[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""};
 
 	double out[3];
 	
@@ -162,9 +162,6 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-	GMT_memset (header, GMT_BUFSIZ, char);
-	GMT_memset (name, GMT_BUFSIZ, char);
-	GMT_memset (description, GMT_BUFSIZ, char);
 	
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {
 		Return (error);

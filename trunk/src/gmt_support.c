@@ -1389,10 +1389,6 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F)
 
 	/* Processes font settings given as [size][,name][,fill][=pen] */
 
-	GMT_memset (size, GMT_LEN256, char);
-	GMT_memset (name, GMT_LEN256, char);
-	GMT_memset (fill, GMT_LEN256, char);
-
 	F->form = 1;	/* Default is to fill the text with a solid color */
 	if ((s = strchr (line, '='))) {	/* Specified an outline pen */
 		s[0] = 0;	/* Chop of this modifier */
@@ -1562,7 +1558,6 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 
 		/* Must convert given units to points */
 
-		GMT_memset (string, GMT_BUFSIZ, char);
 		pos = 0;
 		while ((GMT_strtok (P->style, " ", &pos, ptr))) {
 			sprintf (tmp, "%g ", (atof (ptr) * GMT->session.u2u[unit][GMT_PT]));
@@ -1630,9 +1625,6 @@ bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P)
 
 	/* Processes pen specifications given as [width[<unit>][,<color>[,<style>[t<unit>]]][@<transparency>] */
 
-	GMT_memset (width, GMT_LEN256, char);
-	GMT_memset (color, GMT_LEN256, char);
-	GMT_memset (style, GMT_LEN256, char);
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", width, color, style);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
@@ -9335,7 +9327,7 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, h_pos = 0, level, type;
 	bool zero_fix = false;
-	char hemi[3], format[GMT_LEN64] = {""};
+	char hemi[3] = {""}, format[GMT_LEN64] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -9354,7 +9346,6 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 			val = 0.0;
 	}
 
-	GMT_memset (hemi, 3, char);
 	if (GMT->current.plot.calclock.geo.wesn) {
 		if (GMT->current.plot.calclock.geo.wesn == 2) hemi[h_pos++] = ' ';
 		if (lonlat == 0) {
@@ -9535,7 +9526,6 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	/* Parse the *.def files.  Note: PS_MACRO is off and will be worked on later.  For now the
 	 * extended macro language works well and can handle most situations. PW 10/11/10 */
 	length = strlen (in_name);
-	GMT_memset (name, GMT_BUFSIZ, char);
 	if (length > 4 && !strcmp (&in_name[length-4], ".def"))	/* User gave trailing .def extension (not needed) - just chop */
 		strncpy (name, in_name, length-4);
 	else	/* Use as is */
