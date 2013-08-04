@@ -272,7 +272,7 @@ L2:
 
     /* Function Body */
     lp = lstptr_(&lend[*in1], in2, &list[1], &lptr[1]);
-    if ((i__1 = list[lp], GMT_abs(i__1)) == *in2) {
+    if ((i__1 = list[lp], int64_abs(i__1)) == *in2) {
 	*lp21 = 0;
 	return 0;
     }
@@ -837,7 +837,7 @@ L3:
 
 L4:
     lp = lptr[lp];
-    n2 = (i__1 = list[lp], GMT_abs(i__1));
+    n2 = (i__1 = list[lp], int64_abs(i__1));
     if (xp * (y[n0] * z__[n2] - y[n2] * z__[n0]) - yp * (x[n0] * z__[n2] - x[
 	    n2] * z__[n0]) + zp * (x[n0] * y[n2] - x[n2] * y[n0]) < 0.) {
 	goto L7;
@@ -866,7 +866,7 @@ L5:
 		- x[n0] * z__[n1]) + zp * (x[n1] * y[n0] - x[n0] * y[n1]) >= 
 		0.) {
 	    lp = lptr[lp];
-	    n1 = (i__1 = list[lp], GMT_abs(i__1));
+	    n1 = (i__1 = list[lp], int64_abs(i__1));
 	    if (n1 == nl) {
 		goto L14;
 	    }
@@ -909,7 +909,7 @@ L8:
 	    goto L9;
 	}
 	lp = lptr[lp];
-	n4 = (i__1 = list[lp], GMT_abs(i__1));
+	n4 = (i__1 = list[lp], int64_abs(i__1));
 
 /*   Define a new arc N1->N2 which intersects the geodesic */
 /*     N0-P. */
@@ -1492,7 +1492,7 @@ integer addnod_(integer *nst, integer *k, doublereal *x,
     lpf = lptr[lp];
     io2 = list[lpf];
     lpo1 = lptr[lpf];
-    io1 = (i__1 = list[lpo1], GMT_abs(i__1));
+    io1 = (i__1 = list[lpo1], int64_abs(i__1));
 
 /* Begin loop:  find the node opposite K. */
 
@@ -1502,7 +1502,7 @@ L1:
 	goto L2;
     }
     lp = lptr[lp];
-    in1 = (i__1 = list[lp], GMT_abs(i__1));
+    in1 = (i__1 = list[lp], int64_abs(i__1));
 
 /* Swap test:  if a swap occurs, two new arcs are */
 /*             opposite K and must be tested. */
@@ -1534,7 +1534,7 @@ L2:
     }
     io2 = io1;
     lpo1 = lptr[lpo1];
-    io1 = (i__1 = list[lpo1], GMT_abs(i__1));
+    io1 = (i__1 = list[lpo1], int64_abs(i__1));
     goto L1;
 
 /* KK < 4. */
@@ -2398,7 +2398,7 @@ L9:
 L10:
 	lp = lptr[lp];
 	n2 = n3;
-	n3 = (i__2 = list[lp], GMT_abs(i__2));
+	n3 = (i__2 = list[lp], int64_abs(i__2));
 	if (n2 <= n1 || n3 <= n1) {
 	    goto L11;
 	}
@@ -2684,7 +2684,7 @@ L1:
 
 /*   Test for error 2 (NB not found). */
 
-    if ((i__1 = list[lpb], GMT_abs(i__1)) != *nb) {
+    if ((i__1 = list[lpb], int64_abs(i__1)) != *nb) {
 	*lph = -2;
 	return 0;
     }
@@ -2859,7 +2859,7 @@ L5:
     lpl = lend[n1];
     lp = lptr[lpl];
     lp = lptr[lp];
-    n3 = (i__1 = list[lp], GMT_abs(i__1));
+    n3 = (i__1 = list[lp], int64_abs(i__1));
     lpl = lend[n3];
     if (list[lpl] <= 0) {
 	*ier = 3;
@@ -3183,7 +3183,7 @@ L2:
 /*     arc and bypass the swap test if IO1 is a boundary */
 /*     node. */
 
-	if ((i__2 = list[lp], GMT_abs(i__2)) != io2) {
+	if ((i__2 = list[lp], int64_abs(i__2)) != io2) {
 	    goto L8;
 	}
 	if (list[lp] < 0) {
@@ -3199,7 +3199,7 @@ L3:
 	    goto L4;
 	}
 	lp = lptr[lp];
-	n1 = (i__2 = list[lp], GMT_abs(i__2));
+	n1 = (i__2 = list[lp], int64_abs(i__2));
 
 /*   Test IO1-IO2 for a swap, and update IWK if necessary. */
 
@@ -3473,7 +3473,7 @@ L9:
 /* Top of loop:  set NL to the neighbor following N2. */
 
 L1:
-    nl = (i__1 = list[lp], GMT_abs(i__1));
+    nl = (i__1 = list[lp], int64_abs(i__1));
     if (nl == nfrst && bdry) {
 	goto L3;
     }
@@ -3553,7 +3553,7 @@ L1:
     z2 = zr;
     lp21 = lptr[lp21];
     lp21 = lptr[lp21];
-    nr = (i__1 = list[lp21], GMT_abs(i__1));
+    nr = (i__1 = list[lp21], int64_abs(i__1));
     xr = x[nr];
     yr = y[nr];
     zr = z__[nr];
@@ -3628,7 +3628,7 @@ L5:
 
 L6:
     lp = lptr[lp];
-    n2 = (i__1 = list[lp], GMT_abs(i__1));
+    n2 = (i__1 = list[lp], int64_abs(i__1));
     delnb_(&n2, &n1, n, &list[1], &lptr[1], &lend[1], &lnw, &lph);
     if (lph < 0) {
 	goto L23;
@@ -3961,7 +3961,7 @@ L26:
 /*   neighbor of N1. */
 
     lpl = lend[n1];
-    n0 = (i__1 = list[lpl], GMT_abs(i__1));
+    n0 = (i__1 = list[lpl], int64_abs(i__1));
     lp = lpl;
 L1:
     if (n0 == n2) {
@@ -4029,7 +4029,7 @@ L3:
 L4:
     nr = nl;
     lp = lptr[lp];
-    nl = (i__1 = list[lp], GMT_abs(i__1));
+    nl = (i__1 = list[lp], int64_abs(i__1));
     if (left_(&x1, &y1, &z1, &x2, &y2, &z2, &x[nl], &y[nl], &z__[nl])) {
 
 /*   NL LEFT N1->N2 and NR LEFT N2->N1.  The Forward tests */
@@ -4116,7 +4116,7 @@ L7:
 
 L8:
     lp = lptr[lp];
-    next = (i__1 = list[lp], GMT_abs(i__1));
+    next = (i__1 = list[lp], int64_abs(i__1));
     if (next == n2) {
 	goto L9;
     }
@@ -5114,7 +5114,7 @@ L2:
 	goto L3;
     }
     lp = lptr[lp];
-    n3 = (i__1 = list[lp], GMT_abs(i__1));
+    n3 = (i__1 = list[lp], int64_abs(i__1));
 
 /* Swap test:  Exit the loop if L = LMAX. */
 
@@ -5500,7 +5500,7 @@ L1:
 	lp2 = lptr[lp2];
 	n2 = list[lp2];
 	lp = lptr[lp2];
-	n3 = (i__2 = list[lp], GMT_abs(i__2));
+	n3 = (i__2 = list[lp], int64_abs(i__2));
 	if (n2 < n1 || n3 < n1) {
 	    goto L8;
 	}
@@ -5545,7 +5545,7 @@ L2:
 /*     is invalid.  Bypass the search for a neighboring */
 /*     triangle if I2->I1 is a boundary arc. */
 
-	    if ((i__2 = list[lp], GMT_abs(i__2)) != i2) {
+	    if ((i__2 = list[lp], int64_abs(i__2)) != i2) {
 		goto L12;
 	    }
 	    kn = 0;
@@ -5558,7 +5558,7 @@ L2:
 
 L3:
 	    lp = lptr[lp];
-	    i3 = (i__2 = list[lp], GMT_abs(i__2));
+	    i3 = (i__2 = list[lp], int64_abs(i__2));
 
 /* Find J such that LTRI(J,KN) = I3 (not used if KN > KT), */
 /*   and permute the vertex indexes of KN so that I1 is */
@@ -6049,7 +6049,7 @@ L2:
 	lp = lpl;
 L3:
 	lp = lptr[lp];
-	j = (i__2 = list[lp], GMT_abs(i__2));
+	j = (i__2 = list[lp], int64_abs(i__2));
 
 /* Loop on elements I in the sequence of unprocessed nodes */
 /*   associated with J:  K is a candidate for replacing J */

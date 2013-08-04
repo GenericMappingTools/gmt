@@ -42,31 +42,6 @@
 #define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
 #endif
 
-/* Abstraction to deal with 32 vs 64-bit versions of abs(integer) */
-#if defined(__LP64__)
-#define GMT_abs(n) labs(n)
-#elif defined(_WIN64)
-#define GMT_abs(n) _abs64(n)
-#else
-#define GMT_abs(n) abs(n)
-#endif
-
-/* Limit casting to one place (here) for dropping lrint output to signed or unsigned ints */
-#define irint(x) ((int)lrint(x))
-#define urint(x) ((unsigned int)lrint(x))
-#define irintf(x) ((int)lrintf(x))
-#define urintf(x) ((unsigned int)lrintf(x))
-
-/* Inline functions for safe rounding of float and double to various signed and unsigned 4 and 8 byte ints */
-static inline int32_t  irint32  (double x) { return ((int32_t) rint    (x));}
-static inline int64_t  irint64  (double x) { return ((int64_t) llrint  (x));}
-static inline uint32_t urint32  (double x) { return ((uint32_t)rint    (x));}
-static inline uint64_t urint64  (double x) { return ((uint64_t)llrint  (x));}
-static inline int32_t  irint32f (float x)  { return ((int32_t) rintf   (x));}
-static inline int64_t  irint64f (float x)  { return ((int64_t) llrintf (x));}
-static inline uint32_t urint32f (float x)  { return ((uint32_t)rintf   (x));}
-static inline uint64_t urint64f (float x)  { return ((uint64_t)llrintf (x));}
-
 /* Checking of h,m,s */
 
 #define GMT_hms_is_bad(h,m,s) ((h) < 0 || (h) > 23 || (m) < 0 || (m) > 59 || (s) < 0.0 || (s) >= 61.0)

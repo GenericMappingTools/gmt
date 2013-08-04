@@ -49,25 +49,45 @@ extern "C" {
 #	include "compat/stdbool.h"
 #endif /* HAVE_STDBOOL_H_ */
 
-
 	/* int32_abs function that works with int32_t */
-#if defined(SIZEOF_INT) && SIZEOF_INT >= 4
+#if defined(SIZEOF_INT) && SIZEOF_INT == 4 && defined(HAVE_ABS)
 #	define int32_abs abs
-#elif defined(SIZEOF_LONG) && SIZEOF_LONG >= 4
+#elif defined(SIZEOF_LONG) && SIZEOF_LONG == 4
 #	define int32_abs labs
 #else
 #	define int32_abs(x) ((int32_t)(((x) >= 0) ? (x) : -(x)))
 #endif
 
 	/* int64_abs function that works with int64_t */
-#if defined(SIZEOF_INT) && SIZEOF_INT >= 8
+#if defined(_WIN64)
+#	define int64_abs _abs64
+#elif defined(SIZEOF_INT) && SIZEOF_INT == 8 && defined(HAVE_ABS)
 #	define int64_abs abs
-#elif defined(SIZEOF_LONG) && SIZEOF_LONG >= 8
+#elif defined(SIZEOF_LONG) && SIZEOF_LONG == 8
 #	define int64_abs labs
-#elif defined(SIZEOF_LONG_LONG) && SIZEOF_LONG_LONG >= 8 && defined(HAVE_LLABS)
+#elif defined(SIZEOF_LONG_LONG) && SIZEOF_LONG_LONG == 8 && defined(HAVE_LLABS)
 #	define int64_abs llabs
 #else
 #	define int64_abs(x) ((int64_t)(((x) >= 0) ? (x) : -(x)))
+#endif
+
+	/* Limit casting to one place (here) for dropping lrint output to signed or unsigned ints */
+#define irint(x) ((int)lrint(x))
+#define urint(x) ((unsigned int)lrint(x))
+#define irintf(x) ((int)lrintf(x))
+#define urintf(x) ((unsigned int)lrintf(x))
+
+	/* Safe rounding of float and double to signed and unsigned 64 bit ints */
+#if defined(SIZEOF_INT) && SIZEOF_LONG == 8
+#	define irint64(x) lrint(x)
+#	define urint64(x) ((uint64_t)lrint(x))
+#	define irint64f(x) lrintf(x)
+#	define urint64f(x) ((uint64_t)lrintf(x))
+#else /* SIZEOF_LONG_LONG == 8 by ISO C definition */
+#	define irint64(x) llrint(x)
+#	define urint64(x) ((uint64_t)llrint(x))
+#	define irint64f(x) llrintf(x)
+#	define urint64f(x) ((uint64_t)llrintf(x))
 #endif
 
 	EXTERN_MSC bool floatAlmostEqualUlpsAndAbs(float A, float B, float maxDiff, int maxUlpsDiff);

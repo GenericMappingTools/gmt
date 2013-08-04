@@ -1066,7 +1066,7 @@ uint64_t GMT_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 	}
 	else if (out == np) {	/* All points are outside map boundary */
 		np2 = 2 * np;
-		if (GMT_abs (out_x) == np2 || GMT_abs (out_y) == np2)	/* All points safely outside the region, no part of polygon survives */
+		if (int64_abs (out_x) == np2 || int64_abs (out_y) == np2)	/* All points safely outside the region, no part of polygon survives */
 			n = 0;
 		else {	/* All points are outside, but they are not just to one side so lines _may_ intersect the region */
 			n = (*GMT->current.map.clip) (GMT, lon, lat, np, x, y, &total_nx);

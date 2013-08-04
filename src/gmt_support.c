@@ -626,12 +626,11 @@ unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned i
 	unsigned int ten_twenty_toggle = 0;	/* Used to add 10 or 20 to skip_five  */
 	unsigned int skip_five = 25;	/* Used to skip multiples of 5 in the list  */
 	unsigned int base_factor[3] = {2, 3, 5};	/* Standard factors to try */
-	unsigned int m;			/* Used to keep a working copy of n  */
+	uint64_t m = n;			/* Used to keep a working copy of n  */
 	unsigned int k;			/* counter */
 
-	/* Initialize m and max_factor  */
+	/* Initialize max_factor  */
 
-	m = (unsigned int)GMT_abs (n);
 	if (m < 2) return (0);
 	max_factor = urint (floor(sqrt((double)m)));
 

@@ -1496,7 +1496,7 @@ int GMT_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 	double lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
 	double lub, glb, xx, temp;
 	uint64_t i;
-	int64_t n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers (PW: Why?) */
+	int64_t n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers (PW: Why? -> (unsigned)x - (unsigned)y will never become negative) */
 	int iteration = 0;
 	bool finished = false;
 
@@ -1556,15 +1556,15 @@ int GMT_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 
 		/* Now test counts, watch multiple roots, think even/odd:  */
 
-		if ((GMT_abs ((n_above - n_below))) <= n_equal) {
+		if ((int64_abs (n_above - n_below)) <= n_equal) {
 			*med = (n_equal) ? m_guess : 0.5 * (lub + glb);
 			finished = true;
 		}
-		else if ((GMT_abs (((n_above - n_lub) - (n_below + n_equal)))) < n_lub) {
+		else if ((int64_abs ((n_above - n_lub) - (n_below + n_equal))) < n_lub) {
 			*med = lub;
 			finished = true;
 		}
-		else if ((GMT_abs (((n_below - n_glb) - (n_above + n_equal)))) < n_glb) {
+		else if ((int64_abs ((n_below - n_glb) - (n_above + n_equal))) < n_glb) {
 			*med = glb;
 			finished = true;
 		}

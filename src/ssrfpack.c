@@ -1198,7 +1198,7 @@ L1:
 
 L2:
 	lp1 = lptr[lp1];
-	n2 = (i__2 = list[lp1], GMT_abs(i__2));
+	n2 = (i__2 = list[lp1], int64_abs(i__2));
 	if (n2 <= n1) {
 	    goto L9;
 	}
@@ -1986,7 +1986,7 @@ L1:
 	lpj = lpl;
 L2:
 	lpj = lptr[lpj];
-	j = (i__2 = list[lpj], GMT_abs(i__2));
+	j = (i__2 = list[lpj], int64_abs(i__2));
 
 /*   Compute the coordinates of J in the rotated system. */
 
@@ -2240,7 +2240,7 @@ L13:
 /* Loop on neighbors NB of NI. */
 
 L2:
-	nb = (i__2 = list[lp], GMT_abs(i__2));
+	nb = (i__2 = list[lp], int64_abs(i__2));
 	if (lend[nb] < 0) {
 	    goto L3;
 	}
@@ -3756,7 +3756,7 @@ L1:
 	if (lp1 != lpl) {
 	    goto L1;
 	}
-	if ((i__1 = list[lp1], GMT_abs(i__1)) != *n2) {
+	if ((i__1 = list[lp1], int64_abs(i__1)) != *n2) {
 	    goto L11;
 	}
 
@@ -3771,7 +3771,7 @@ L3:
 	if (lp2 != lpl) {
 	    goto L3;
 	}
-	if ((i__1 = list[lp2], GMT_abs(i__1)) != *n1) {
+	if ((i__1 = list[lp2], int64_abs(i__1)) != *n1) {
 	    goto L11;
 	}
     }
@@ -4294,7 +4294,7 @@ L1:
 	if (lp1 != lpl) {
 	    goto L1;
 	}
-	if ((i__1 = list[lp1], GMT_abs(i__1)) != *n2) {
+	if ((i__1 = list[lp1], int64_abs(i__1)) != *n2) {
 	    goto L11;
 	}
 
@@ -4309,7 +4309,7 @@ L3:
 	if (lp2 != lpl) {
 	    goto L3;
 	}
-	if ((i__1 = list[lp2], GMT_abs(i__1)) != *n1) {
+	if ((i__1 = list[lp2], int64_abs(i__1)) != *n1) {
 	    goto L11;
 	}
     }
@@ -4765,7 +4765,7 @@ L1:
 	if (lp1 != lpl) {
 	    goto L1;
 	}
-	if ((i__1 = list[lp1], GMT_abs(i__1)) != *n2) {
+	if ((i__1 = list[lp1], int64_abs(i__1)) != *n2) {
 	    goto L11;
 	}
 
@@ -4780,7 +4780,7 @@ L3:
 	if (lp2 != lpl) {
 	    goto L3;
 	}
-	if ((i__1 = list[lp2], GMT_abs(i__1)) != *n1) {
+	if ((i__1 = list[lp2], int64_abs(i__1)) != *n1) {
 	    goto L11;
 	}
     }
@@ -5115,7 +5115,7 @@ L1:
 	lpj = lpl;
 L2:
 	lpj = lptr[lpj];
-	j = (i__2 = list[lpj], GMT_abs(i__2));
+	j = (i__2 = list[lpj], int64_abs(i__2));
 
 /*   Compute the coordinates of J in the rotated system. */
 
