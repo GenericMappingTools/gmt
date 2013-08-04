@@ -542,8 +542,8 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 {
 	uint64_t i_row, left, right, n_l, n_r;
 	uint64_t i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
-	uint64_t iq, i_col;
-	int64_t i_f_wt, diff;
+	uint64_t iq, i_col, diff;
+	int64_t i_f_wt;
 	bool *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
 	double t_time, delta_time, *outval = NULL, wt, val, med, scl, small, symmetry;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
