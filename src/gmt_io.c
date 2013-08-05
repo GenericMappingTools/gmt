@@ -6841,6 +6841,7 @@ char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path)
 	DIR *D = NULL;
 	struct dirent *F = NULL;
 	size_t d_namlen;
+
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	if ((D = opendir (path)) == NULL) {	/* Unable to open directory listing */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error opening directory %s\n", path);
@@ -6866,14 +6867,15 @@ char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path)
 	char text[GMT_LEN256] = {""};
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
+
+	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	strcpy (text, path);
-	strcat (text, "/*.*");	/* Look for all files in this dir */
+	strcat (text, "/*.dll");	/* Look for dll files in this dir */
 	if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
-		/* Directory doesn't exist but since we default to search in bin/gmt_plugins no warning is issued */ 
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error opening directory %s\n", path);
 		return NULL;
 	}
-	else
-		list = GMT_memory (GMT, NULL, n_alloc, char *);
+	list = GMT_memory (GMT, NULL, n_alloc, char *);
 	do {
 		list[n++] = strdup (FindFileData.cFileName);	/* Save the file name */
 		if (n == n_alloc) {			/* Allocate more memory for list */
