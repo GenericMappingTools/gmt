@@ -28,6 +28,7 @@
  *                               at run-time, generic *NIX implementation
  *  GMT_runtime_bindir_osx       MacOSX implementation
  *  GMT_runtime_bindir_win32     Windows implementation
+ *  GMT_runtime_libdir           Get the directory that contains the shared libs
  *  GMT_guess_sharedir           Determine GMT_SHAREDIR relative to current runtime location
  *  GMT_verify_sharedir_version  Verifies the correct version of the share directory
  */
@@ -61,7 +62,6 @@
 /* #define DEBUG_RUNPATH */
 
 /* Private functions */
-static char *this_runtime_libdir (char *result);
 static char *sharedir_from_runtime_libdir (char *sharedir);
 static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_bindir);
 
@@ -208,12 +208,12 @@ char *GMT_runtime_bindir (char *result, const char *candidate) {
 #endif /* defined (__APPLE__) */
 
 /* Get the directory that contains this shared library at run-time */
-static char *this_runtime_libdir (char *result) {
+char *GMT_runtime_libdir (char *result) {
 #ifdef HAVE_DLADDR
 	char *p;
 	Dl_info info;
 
-	if ( dladdr (this_runtime_libdir, &info) && info.dli_fname[0] == '/') {
+	if ( dladdr (GMT_runtime_libdir, &info) && info.dli_fname[0] == '/') {
 		/* Resolve symlinks */
 		if (realpath (info.dli_fname, result) == NULL)
 			return NULL;
@@ -276,7 +276,7 @@ static char *sharedir_from_runtime_libdir (char *sharedir) {
 	char runtime_libdir[PATH_MAX+1];
 
 	/* Get runtime library dir */
-	if ( this_runtime_libdir(runtime_libdir) == NULL )
+	if ( GMT_runtime_libdir(runtime_libdir) == NULL )
 		return NULL;
 
 	/* Get string lengths */

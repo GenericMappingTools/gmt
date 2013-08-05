@@ -48,6 +48,7 @@ extern "C" {
 	EXTERN_MSC char *GMT_runtime_bindir (char *result, const char *candidate);
 #endif
 
+EXTERN_MSC char *GMT_runtime_libdir (char *result);
 EXTERN_MSC char *GMT_guess_sharedir (char *sharedir, const char *runpath);
 EXTERN_MSC int GMT_verify_sharedir_version (const char *dir);
 
