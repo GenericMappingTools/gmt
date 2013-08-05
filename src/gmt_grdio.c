@@ -381,7 +381,7 @@ int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *heade
 		 * grid is truncated to float.
 		 * Don't allow infitiy: */
 		if (!isfinite (header->nan_value))
-			header->nan_value = NAN;
+			header->nan_value = (float)NAN;
 	}
 
 	return GMT_NOERROR;
@@ -537,7 +537,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	 * 'recycled' and used for output grids that may have a different type and z-range: */
 	header->z_scale_factor = 1.0;
 	header->z_add_offset   = 0.0;
-	header->nan_value      = NAN;
+	header->nan_value      = (float)NAN;
 
 	i = strcspn (header->name, "="); /* get number of chars until first '=' or '\0' */
 

@@ -922,8 +922,8 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	if (height * width * z_size > NC_CACHE_SIZE) {
 		/* memory needed for subset exceeds the cache size */
 		unsigned int level;
-		size_t chunks_per_row = (size_t) ceil (width / chunksize[yx_dim[1]]);
-		*n_contiguous_chunk_rows = (size_t) floor (NC_CACHE_SIZE / (width * z_size) / chunksize[yx_dim[0]]);
+		size_t chunks_per_row = (size_t) ceil ((double)(width / chunksize[yx_dim[1]]));
+		*n_contiguous_chunk_rows = (size_t) floor ( (double)(NC_CACHE_SIZE / (width * z_size) / chunksize[yx_dim[0]]) );
 #ifdef NC4_DEBUG
 		level = GMT_MSG_NORMAL;
 #else

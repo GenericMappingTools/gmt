@@ -6863,6 +6863,9 @@ char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path)
 	}
 	(void)closedir (D);
 #elif defined(WIN32)
+	char text[GMT_LEN256] = {""};
+	HANDLE hFind;
+	WIN32_FIND_DATA FindFileData;
 	strcpy (text, path);
 	strcat (text, "/*.*");	/* Look for all files in this dir */
 	if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
