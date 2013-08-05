@@ -6057,7 +6057,8 @@ void GMT_end (struct GMT_CTRL *GMT)
 #endif
 #endif
 
-	free (GMT->init.runtime_bindir);
+	if (GMT->init.runtime_bindir) free (GMT->init.runtime_bindir);
+	if (GMT->init.runtime_libdir) free (GMT->init.runtime_libdir);
 	free (GMT->session.SHAREDIR);
 	free (GMT->session.HOMEDIR);
 	if (GMT->session.DCWDIR)
@@ -9689,6 +9690,10 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	/* Set runtime bindir */
 	GMT_runtime_bindir (path, session);
 	GMT->init.runtime_bindir = strdup (path);
+
+	/* Set runtime libdir */
+	GMT_runtime_libdir (path);
+	GMT->init.runtime_libdir = strdup (path);
 
 	GMT_set_env (GMT);	/* Get GMT_SHAREDIR and other environment path parameters */
 
