@@ -6868,12 +6868,12 @@ char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path)
 	WIN32_FIND_DATA FindFileData;
 	strcpy (text, path);
 	strcat (text, "/*.*");	/* Look for all files in this dir */
+	list = GMT_memory (GMT, NULL, n_alloc, char *);
 	if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error opening directory: %s\n", path);
 		return NULL;
 	}
 	do {
-		list = GMT_memory (GMT, NULL, n_alloc, char *);
 		list[n++] = strdup (FindFileData.cFileName);	/* Save the file name */
 		if (n == n_alloc) {			/* Allocate more memory for list */
 			n_alloc <<= 1;
