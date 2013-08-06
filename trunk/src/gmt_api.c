@@ -335,13 +335,13 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 char *lib_tag (char *name)
 {	/* Pull out the tag from a name like [lib][gmt]<tag>[.extension] */
 	char *tag = NULL;
-	size_t p = 0;
-	while (name[p] && name[p] != '.') p++;		/* Find the first period in the name */
-	name[p] = '\0';					/* Temporarily chop off library extension */
+	size_t p = 0, e = 0, last = strlen (name);
+	while (name[e] && name[e] != '.') e++;		/* Find the first period in the name */
+	if (e < last) name[e] = '\0';			/* Temporarily chop off library extension */
 	p = (strncmp (name, "lib", 3U)) ? 0 : 3;	/* Do we have a leading "lib" or not ? */
-	if (strcmp (&name[p], "gmt")) p += 3;		/* Skip passed any gmt in gmt<tag> */
+	if (!strcmp (&name[p], "gmt")) p += 3;		/* Skip passed any gmt in gmt<tag> */
 	tag = strdup (&name[p]);			/* Get the shared library tag */
-	name[p] = '.';					/* Add back library extension */
+	if (e < last) name[e] = '.';			/* Add back library extension */
 	return (tag);
 }
 
@@ -350,18 +350,32 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
 	 * We can now determine how many shared libraries and plugins to consider, and open the core lib */
 	unsigned int n_custom_libs = 0, k, n_alloc = GMT_TINY_CHUNK;
-	char text[GMT_LEN256] = {""}, libpath[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""};
+	char text[GMT_LEN256] = {""}, plugindir[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""};
 	char *libname = NULL, **list = NULL;
+#ifdef WIN32
+	char *extension = ".dll";
+#else
+	char *extension = ".so";
+#endif
+
+#ifdef SUPPORT_EXEC_IN_BINARY_DIR
+	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to load plugins from the
+	 * build tree */
+
+	/* Only true, when we are running in a subdir of GMT_BINARY_DIR_SRC_DEBUG: */
+	bool running_in_bindir_src = !strncmp (API->GMT->init.runtime_bindir, GMT_BINARY_DIR_SRC_DEBUG, strlen(GMT_BINARY_DIR_SRC_DEBUG));
+#endif
 
 	API->lib = GMT_memory (API->GMT, NULL, n_alloc, struct Gmt_libinfo);
 
 	/* 1. Load in the GMT core library by default [unless static build] */
 	/* Note: To extract symbols from the currently executing process we need to load it as a special library.
-	 * This is done by passing NULL under Linux and by calling GetModuleHandleEx under Windows, hence we 
+	 * This is done by passing NULL under Linux and by calling GetModuleHandleEx under Windows, hence we
 	 * use the dlopen_special call which is defined in gmt_module.c */
-	
+
 	API->lib[0].name = strdup ("core");
 	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
+	++n_custom_libs;
 #ifdef BUILD_SHARED_LIBS
 	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
@@ -370,32 +384,35 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	dlerror (); /* Clear any existing error */
 #endif
 
-	/* 2. Add the optional GMT supplemental library to the list of libraries to consider
-	      We will find when trying to open it if it was installed as part of the build */
-	API->lib[1].name = strdup ("suppl");
-	API->lib[1].path = strdup (GMT_SUPPL_LIB_NAME);
-	
-	n_custom_libs = 2;	/* This is the default number of shared libs GMT knows about so far */
-
 	/* 3. Add any plugins installed in <installdir>/lib/gmt/plugins */
-	
+
 	if (API->GMT->init.runtime_libdir) {	/* Successfully determined runtime dir for shared libs */
-#ifdef WIN32
-		sprintf (libpath, "%s/gmt_plugins", API->GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
-#else
-		sprintf (libpath, "%s/gmt/plugins", API->GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
+#ifdef SUPPORT_EXEC_IN_BINARY_DIR
+		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 )
+			/* Running in build dir: search plugins in build-dir/src/plugins */{
+				strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_BUFSIZ-1);
+			}
+		else
 #endif
-		if ((list = GMT_get_dir_list (API->GMT, libpath))) {	/* Add these files to the libs */
+		{
+#ifdef WIN32
+			sprintf (plugindir, "%s/gmt_plugins", API->GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
+#else
+			sprintf (plugindir, "%s/gmt/plugins", API->GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
+#endif
+		}
+		if ((list = GMT_get_dir_list (API->GMT, plugindir, extension))) {	/* Add these files to the libs */
 			k = 0;
 			while (list[k]) {
 				API->lib[n_custom_libs].name = lib_tag (list[k]);
-				sprintf (path, "%s/%s", libpath, list[k]);
+				sprintf (path, "%s/%s", plugindir, list[k]);
 				API->lib[n_custom_libs].path = strdup (path);
 				n_custom_libs++;			/* Add up entries found */
 				if (n_custom_libs == n_alloc) {		/* Allocate more memory for list */
 					n_alloc <<= 1;
 					API->lib = GMT_memory (API->GMT, API->lib, n_alloc, struct Gmt_libinfo);
 				}
+				++k;
 			}
 			GMT_free_dir_list (API->GMT, &list);
 		}
@@ -407,17 +424,20 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	if (API->GMT->session.CUSTOM_LIBS) {	/* We specified custom shared libraries */
 		k = (unsigned int)strlen (API->GMT->session.CUSTOM_LIBS) - 1;	/* Index of last char in CUSTOM_LIBS */
 		if (API->GMT->session.CUSTOM_LIBS[k] == '/' || API->GMT->session.CUSTOM_LIBS[k] == '\\') {	/* We gave CUSTOM_LIBS as a subdirectory, add all files found inside it to shared libs list */
-			if ((list = GMT_get_dir_list (API->GMT, libpath))) {	/* Add these to the libs */
+			strcpy (plugindir, API->GMT->session.CUSTOM_LIBS);
+			plugindir[k] = '\0';	/* Chop off trailing slash */
+			if ((list = GMT_get_dir_list (API->GMT, plugindir, extension))) {	/* Add these to the libs */
 				k = 0;
 				while (list[k]) {
 					API->lib[n_custom_libs].name = lib_tag (list[k]);
-					sprintf (path, "%s/%s", libpath, list[k]);
+					sprintf (path, "%s/%s", plugindir, list[k]);
 					API->lib[n_custom_libs].path = strdup (path);
 					n_custom_libs++;		/* Add up entries found */
 					if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
 						n_alloc <<= 1;
 						API->lib = GMT_memory (API->GMT, API->lib, n_alloc, struct Gmt_libinfo);
 					}
+					++k;
 				}
 				GMT_free_dir_list (API->GMT, &list);
 			}
@@ -437,10 +457,10 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 			}
 		}
 	}
-	
+
 	API->n_shared_libs = n_custom_libs;	/* Update total number of shared libraries */
 	API->lib = GMT_memory (API->GMT, API->lib, API->n_shared_libs, struct Gmt_libinfo);
-	
+
 	return (GMT_NOERROR);
 }
 

@@ -6832,21 +6832,23 @@ int GMT_load_aspatial_string (struct GMT_CTRL *GMT, struct GMT_OGR *G, uint64_t 
 	return (1);
 }
 
-char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path)
+char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext)
 {
-	/* Return an array of filenames found in the given directory, or NULL if path cannot be opened */
+	/* Return an array of filenames found in the given directory, or NULL if path cannot be opened.
+	 * If ext is not NULL we only return filenames that end in <ext> */
 	size_t n = 0, n_alloc = GMT_TINY_CHUNK;
 	char **list = NULL;
 #ifdef HAVE_DIRENT_H_
 	DIR *D = NULL;
 	struct dirent *F = NULL;
-	size_t d_namlen;
+	size_t d_namlen = 0, e_len = 0;
 
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	if ((D = opendir (path)) == NULL) {	/* Unable to open directory listing */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error opening directory %s\n", path);
 		return NULL;
 	}
+	if (ext) e_len = strlen (ext);
 	list = GMT_memory (GMT, NULL, n_alloc, char *);
 	/* Now read the contents of the dir and add each file to array */
 	while ((F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes true */
@@ -6856,6 +6858,7 @@ char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path)
 #ifdef HAVE_SYS_DIR_H_
 		if (F->d_type == DT_DIR) continue;	/* Entry is a directory; skip it */
 #endif
+		if (ext && strncmp (&F->d_name[d_namlen-e_len], ext, e_len)) continue;	/* Does not end in <ext> */
 		list[n++] = strdup (F->d_name);	/* Save the file name */
 		if (n == n_alloc) {		/* Allocate more memory for list */
 			n_alloc <<= 1;
@@ -6869,8 +6872,11 @@ char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path)
 	WIN32_FIND_DATA FindFileData;
 
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
-	strcpy (text, path);
-	strcat (text, "/*.dll");	/* Look for dll files in this dir */
+	sprintf (text, "%s/*", path);
+	if (ext)
+		strcat (text, ext);	/* Look for files with given ending in this dir */
+	else
+		strcat (text, ".*");	/* Look for all files in this dir */
 	if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error opening directory %s\n", path);
 		return NULL;
@@ -6893,10 +6899,14 @@ char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path)
 	return (list);
 }
 
-void GMT_free_dir_list (struct GMT_CTRL *GMT, char ***path)
+void GMT_free_dir_list (struct GMT_CTRL *GMT, char ***addr)
 {	/* Free allocated array with directory content */
 	unsigned int k = 0;
+	char **list = *addr;
 	
-	while (*path[k]) free ((void *)*path[k++]);
-	GMT_free (GMT, *path);
+	while (list[k]) {
+		free ((void *)list[k]);
+		k++;
+	}
+	GMT_free (GMT, list);
 }

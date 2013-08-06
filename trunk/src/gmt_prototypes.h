@@ -203,7 +203,7 @@ EXTERN_MSC int GMT_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GM
 EXTERN_MSC void GMT_check_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G);
 EXTERN_MSC void GMT_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir);
 EXTERN_MSC void GMT_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_columns);
-EXTERN_MSC char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path);
+EXTERN_MSC char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext);
 EXTERN_MSC void GMT_free_dir_list (struct GMT_CTRL *GMT, char ***list);
 
 /* gmt_support.c: */
