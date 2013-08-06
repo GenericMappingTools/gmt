@@ -3105,7 +3105,9 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	 *   originating within this session.
 	 * Pad sets the default number or rows/cols used for grid padding.  GMT uses 2; users of
 	 *   the API may wish to use 0 if they have no need for BCs, etc.
-	 * The mode argument is currently not used and reserved for future expansion.
+	 * The mode argument is a bitflag that controls a few things:
+	 *   bit 1 means call return and not exit
+	 *   bit 2 means we are called by an external API (e.g., Matlab, Python).
 	 * We return the pointer to the allocated API structure.
 	 * If any error occurs we report the error, set the error code via API->error, and return NULL.
 	 * We terminate each session with a call to GMT_Destroy_Session.
@@ -3118,6 +3120,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & 1;	/* if set, then GMT_exit is simply a return; otherwise it is an exit */
+	API->mode = mode & 2;		/* if false|0 then we dont list read and write as modules */
 	
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
 	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
