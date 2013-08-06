@@ -424,22 +424,22 @@ if (BUILD_SUPPLEMENTS)
 		${CMAKE_THREAD_LIBS_INIT}
 		gmtlib
 		pslib)
-		
+
 	set_target_properties (supplib
 		PROPERTIES
-		OUTPUT_NAME gmtsuppl
-		PREFIX "${LIB_PREFIX}"
-		IMPORT_PREFIX "${LIB_PREFIX}"
+		OUTPUT_NAME supplements
+		RUNTIME_OUTPUT_NAME supplements
+		LIBRARY_OUTPUT_DIRECTORY ${GMT_LIBDIR}/gmt/plugins
+		RUNTIME_OUTPUT_DIRECTORY ${GMT_LIBDIR}/gmt/plugins
+		PREFIX ""
 		INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
 		LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
 		DEFINE_SYMBOL "LIBRARY_EXPORTS")
+
 	if (HAVE_DLADDR AND HAVE_LIBDL)
 		# link the dynamic linking loader library
 		target_link_libraries (supplib dl)
 	endif (HAVE_DLADDR AND HAVE_LIBDL)
-	if (WIN32 AND SUPP_DLL_RENAME)
-		set_target_properties (supplib PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
-	endif ()
 
 	if (HAVE_M_LIBRARY)
 		# link the math library
@@ -491,9 +491,6 @@ if (HAVE_DLADDR AND HAVE_LIBDL)
 	# link the dynamic linking loader library
 	target_link_libraries (pslib dl)
 	target_link_libraries (gmtlib dl)
-	if (BUILD_SUPPLEMENTS)
-		target_link_libraries (supplib dl)
-	endif (BUILD_SUPPLEMENTS)
 endif (HAVE_DLADDR AND HAVE_LIBDL)
 
 # If a renaming of the gmt dll has been set in ConfigUser.cmake
