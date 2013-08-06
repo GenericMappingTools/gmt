@@ -6267,7 +6267,7 @@ slightly deviating from the standards used by *GMT* can also be read.
 | node_offset          | 0 for gridline node registration (default),                        |
 |                      | 1 for pixel registration                                           |
 +----------------------+--------------------------------------------------------------------+
-|                      | *z-variable attributes*                                            |
+|                      | *x- and y-variable attributes*                                     |
 +----------------------+--------------------------------------------------------------------+
 | long_name            | Coordinate name (e.g., "Longitude" and "Latitude")                 |
 +----------------------+--------------------------------------------------------------------+
