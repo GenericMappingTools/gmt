@@ -440,6 +440,9 @@ if (BUILD_SUPPLEMENTS)
 		# link the dynamic linking loader library
 		target_link_libraries (supplib dl)
 	endif (HAVE_DLADDR AND HAVE_LIBDL)
+	if (WIN32 AND SUPP_DLL_RENAME)
+		set_target_properties (supplib PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
+	endif ()
 
 	if (HAVE_M_LIBRARY)
 		# link the math library
