@@ -212,7 +212,7 @@ capabilities of the previous versions while adding new tricks to many of
 the tools. Furthermore, we have added system-wide capabilities for
 handling PDF transparency, dealing with GIS aspatial data, and
 eliminated the need for the **-m** option. Our *PostScript* library
-:doc:`PSL` has seen a complete rewrite as well
+:doc:`PSL <pslib>` has seen a complete rewrite as well
 and produce shorter and more compact *PostScript*. However, the big news
 is for developers who wish to leverage *GMT* in their own applications.
 We have completely revamped the code base so that high-level
@@ -227,7 +227,7 @@ Documentation for more details.
 Most of the *GMT* default parameters have changed named in order to
 group parameters into logical groups and to use more consistent naming.
 Some new default parameters have been added as well, such as
-**MAP_ANNOT_ORTHO**, which controls whether axes annotations for
+:ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`, which controls whether axes annotations for
 Cartesian plots are horizontal or orthogonal to the individual axes.
 
 Because of the default name changes and other command-line changes (such
@@ -2298,8 +2298,9 @@ negative number.
 +------------+-------------------------------------+
 
 Note that the appearance of certain time annotations (month-, week-, and
-day-names) may be affected by the **TIME_LANGUAGE**,
-**FORMAT_TIME_PRIMARY_MAP**, and **FORMAT_TIME_SECONDARY_MAP** settings.
+day-names) may be affected by the :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`,
+:ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>`, and
+:ref:`FORMAT_TIME_SECONDARY_MAP <FORMAT_TIME_SECONDARY_MAP>` settings.
 
 For automated plots the region may not always be the same and thus it
 can be difficult to determine the appropriate *stride* in advance. Here
@@ -2378,9 +2379,9 @@ Geographic basemaps
 
 Geographic basemaps may differ from regular plot axis in that some
 projections support a "fancy" form of axis and is selected by the
-**MAP_FRAME_TYPE** setting. The annotations will be formatted
-according to the **FORMAT_GEO_MAP** template and
-**MAP_DEGREE_SYMBOL** setting. A simple example of part of a basemap
+:ref:`MAP_FRAME_TYPE <MAP_FRAME_TYPE>` setting. The annotations will be formatted
+according to the :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>` template and
+:ref:`MAP_DEGREE_SYMBOL <MAP_DEGREE_SYMBOL>` setting. A simple example of part of a basemap
 is shown in Figure .
 
 .. figure:: /_images/GMT_-B_geo_1.*
@@ -2389,7 +2390,7 @@ is shown in Figure .
 
    Geographic map border using separate selections for annotation,
    frame, and grid intervals.  Formatting of the annotation is controlled by
-   the parameter **FORMAT_GEO_MAP** in your gmt.conf.
+   the parameter :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>` in your gmt.conf.
 
 
 The machinery for primary and secondary annotations introduced for
@@ -7114,7 +7115,7 @@ green, and blue. For example, you can use ``#79ff00`` for chartreuse,
 ``#D2691E`` for chocolate.
 
 .. figure:: /_images/GMT_RGBchart_a4.*
-   :width: 500 px
+   :width: 700 px
    :align: center
 
    The 555 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
@@ -8213,7 +8214,7 @@ d:
     **d**\ *dist*\ [**c\ \|\ i\ \|\ p**][/\ *frac*].
     Place labels according to the distance measured along the projected
     line on the map. Append the unit you want to measure distances in
-    [Default is taken from **PROJ_LENGTH_UNIT**]. Starting at the
+    [Default is taken from :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. Starting at the
     beginning of a line, place labels every *dist* increment of distance
     along the line. To ensure that closed lines whose total length is
     less than *dist* get annotated, we may append *frac* which will
@@ -8426,7 +8427,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
     +Ld:
         Take the Cartesian plot distances along the line as the label;
         append **c\ \|\ i\ \|\ p** as the unit [Default is
-        **PROJ_LENGTH_UNIT**]. The label will be formatted according
+        :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. The label will be formatted according
         to the **FORMAT_FLOAT_OUT** string, *unless* label placement
         was determined from map distances along the segment lines, in
         which case we determine the appropriate format from the distance
