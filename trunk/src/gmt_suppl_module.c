@@ -72,21 +72,20 @@ struct Gmt_moduleinfo g_suppl_module[] = {
 };
 
 /* Pretty print all GMT suppl module names and their purposes */
-void gmt_suppl_module_show_all (void *API) {
+void gmt_suppl_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
 	char message[256];
-
-	GMT_Message (API, GMT_TIME_NONE, "\n=== " "GMT suppl: The official supplements to the Generic Mapping Tools" " ===\n");
+	GMT_Message (V_API, GMT_TIME_NONE, "\n=== " "GMT suppl: The official supplements to the Generic Mapping Tools" " ===\n");
 	while (g_suppl_module[module_id].name != NULL) {
 		if (module_id == 0 || strcmp (g_suppl_module[module_id-1].component, g_suppl_module[module_id].component)) {
 			/* Start of new supplemental group */
 			sprintf (message, "\nModule name:     Purpose of %s module:\n", g_suppl_module[module_id].component);
-			GMT_Message (API, GMT_TIME_NONE, message);
-			GMT_Message (API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
+			GMT_Message (V_API, GMT_TIME_NONE, message);
+			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
 		sprintf (message, "%-16s %s\n",
 			g_suppl_module[module_id].name, g_suppl_module[module_id].purpose);
-		GMT_Message (API, GMT_TIME_NONE, message);
+			GMT_Message (V_API, GMT_TIME_NONE, message);
 		++module_id;
 	}
 }
