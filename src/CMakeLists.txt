@@ -447,7 +447,7 @@ if (BUILD_SUPPLEMENTS)
 
 	# install target
 	if (WIN32)
-		set (_plugin_dir "${GMT_LIBDIR}/gmt_plugins")
+		set (_plugin_dir "${GMT_BINDIR}/gmt_plugins")
 	else (WIN32)
 		set (_plugin_dir "${GMT_LIBDIR}/gmt/plugins")
 	endif (WIN32)
