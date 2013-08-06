@@ -190,8 +190,7 @@ the index associated with the layer (starting at zero) in the form:
 *ingrdfile*\ **?**\ *varname*\ **[**\ *layer*\ **]**. Alternatively,
 specify the value associated with that layer using parentheses in stead
 of brackets:
-*ingridfile*\ **?\ :doc:`varname.level`
-.**
+*ingridfile*\ **?**\ *varname*\ **(**\ *layer*\ **)**.
 
 In a similar way layers can be extracted from 4- or even 5-dimensional
 grids. For example, if a grid has the dimensions (parameter, time,

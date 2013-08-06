@@ -13,7 +13,7 @@ offset, the user should add the suffix
 to all grid values, and *nan* is the value used to indicate missing
 data. When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
-names. See :doc:`grdreformat </grdreformat>` and Section 
+names. See :doc:`grdreformat </grdreformat>` and Section
 :ref:`grid-file-format`
 of the GMT Technical Reference and Cookbook for more information.
 
