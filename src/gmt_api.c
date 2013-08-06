@@ -389,9 +389,8 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	if (API->GMT->init.runtime_libdir) {	/* Successfully determined runtime dir for shared libs */
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 )
-			/* Running in build dir: search plugins in build-dir/src/plugins */{
-				strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_BUFSIZ-1);
-			}
+			/* Running in build dir: search plugins in build-dir/src/plugins */
+			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_BUFSIZ-1);
 		else
 #endif
 		{
@@ -417,7 +416,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 			GMT_free_dir_list (API->GMT, &list);
 		}
 	}
-	
+
 	/* 4. Add any custom GMT libraries to the list of libraries/plugins to consider, if specified.
 	      We will find when trying to open if any of these are actually available. */
 
