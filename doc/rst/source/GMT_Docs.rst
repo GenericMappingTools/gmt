@@ -81,53 +81,46 @@ publish papers containing results or illustrations obtained using *GMT*.
 The EOS articles on *GMT* are
 
 -  Wessel, P., and W. H. F. Smith, New, improved version of Generic
-   Mapping Tools released, *EOS Trans. Amer. Geophys. U.*, vol. 79 (47),
-   pp. 579, 1998.
+   Mapping Tools released, *EOS Trans. AGU*, 79(47),
+   p. 579, 1998. `doi:10.1029/98EO00426 <http://dx.doi.org/10.1029/98EO00426>`_.
 
 -  Wessel, P., and W. H. F. Smith, New version of the Generic Mapping
-   Tools released, *EOS Trans. Amer. Geophys. U.*, vol. 76 (33), pp.  329, 1995.
-
--  Wessel, P., and W. H. F. Smith, New version of the Generic Mapping
-   Tools released, *EOS Trans. Amer. Geophys. U. electronic supplement*,
-   http://www.agu.org/eos_elec/95154e.html, 1995.
+   Tools released, *EOS Trans. AGU*, 76(33), 329, 1995. `doi:10.1029/95EO00198 <http://dx.doi.org/10.1029/95EO00198>`_.
 
 -  Wessel, P., and W. H. F. Smith, Free software helps map and display
-   data, *EOS Trans. Amer. Geophys. U.*, vol. 72 (41), pp. 441, 445-446, 1991.
+   data, *EOS Trans. AGU*, 72(41), 445--446, 1991. `doi:10.1029/90EO00319 <http://dx.doi.org/10.1029/90EO00319>`_.
+
 
 Some *GMT* programs are based on algorithms we have developed and
 published, such as
 
--  Kim, S.-S., and P. Wessel, Directional Median Filtering for
-   Regional-Residual Separation of Bathymetry, *Geochem. Geophys.
-   Geosyst., 9(Q03005)*, doi:10.1029/2007GC001850.
-   [:doc:`dimfilter <supplements/misc/dimfilter>` **misc** supplement].
+-  Wessel, P., Tools for analyzing intersecting tracks: The x2sys
+   package, *Computers & Geosciences*, 36, 348--354, 2010. `doi:10.1016/j.cageo.2009.05.009 <http://dx.doi.org/10.1016/j.cageo.2009.05.009>`_.
+   [**x2sys** supplement]
 
--  Smith, W. H. F., and P. Wessel, Gridding with Continuous Curvature
-   Splines in Tension, *Geophysics*, vol. 55 (3), pp. 293-305, 1990
-   [:doc:`surface`].
+-  Wessel, P., A General-purpose Green's function-based interpolator,
+   *Computers & Geosciences*, 35, 1247--1254, 2009. `doi:10.1016/j.cageo.2008.08.012 <http://dx.doi.org/10.1016/j.cageo.2008.08.012>`_.
+   [:doc:`greenspline`]
 
--  Wessel, P., A General-purpose Green's Function-based Interpolator,
-   *Computers & Geosciences*, vol. 35, pp. 1247-1254, 2009
-   [:doc:`greenspline`].
+-  Kim, S.-S., and P. Wessel, Directional median filtering for
+	regional-residual separation of bathymetry, *Geochem. Geophys.
+   Geosyst.*, 9, Q03005, 2008. `doi:10.1029/2007GC001850 <http://dx.doi.org/10.1029/2007GC001850>`_.
+   [:doc:`dimfilter <supplements/misc/dimfilter>` **misc** supplement]
 
--  Wessel, P., Tools for Analyzing Intersecting Tracks: the x2sys
-   package, *Computers & Geosciences*, vol. 36, 348-354, 2010
-   [**x2sys** supplement].
-
--  Wessel, P. and J. M. Becker, Interpolation using a Generalized
-   Green's Function for a Spherical Surface Spline in Tension, *Geophys.
-   J. Int.*, vol. 174, pp. 21-28, 2008
-   [:doc:`greenspline`].
-
--  Kim, S.-S., and P. Wessel, Directional Median Filtering for
-   Regional-Residual Separation of Bathymetry, *Geochem. Geophys.
-   Geosyst., 9(Q03005)*, doi:10.1029/2007GC001850.
-
--  Luis, J.F and J.M. Miranda, Reevaluation of magnetic chrons in the
+-  Luis, J. F. and J. M. Miranda, Reevaluation of magnetic chrons in the
    North Atlantic between 35N and 47N: Implications for the formation of the
-   Azores Triple Junction and associated plateau, 
-   J. Geophys. Res., 113, B10105, 2008. doi:10.1029/2007JB005573 
-   [:doc:`grdredpol <supplements/potential/grdredpol>` **potential** supplement].
+   Azores Triple Junction and associated plateau,
+   *J. Geophys. Res.*, 113, B10105, 2008. `doi:10.1029/2007JB005573 <http://dx.doi.org/10.1029/2007JB005573>`_.
+   [:doc:`grdredpol <supplements/potential/grdredpol>` **potential** supplement]
+
+-  Wessel, P. and J. M. Becker, Interpolation using a generalized
+   Green's function for a spherical surface spline in tension, *Geophys.
+   J. Int.*, 174, 21--28, 2008. `doi:10.1111/j.1365-246X.2008.03829.x <http://dx.doi.org/10.1111/j.1365-246X.2008.03829.x>`_.
+   [:doc:`greenspline`]
+
+-  Smith, W. H. F., and P. Wessel, Gridding with continuous curvature
+   splines in tension, *Geophysics*, 55(3), 293--305, 1990. `doi:10.1190/1.1442837 <http://dx.doi.org/10.1190/1.1442837>`_.
+   [:doc:`surface`]
 
 Finally, *GMT* includes some code supplied by others, in particular the
 Triangle code used for Delaunay triangulation. Its author, Jonathan
@@ -267,7 +260,7 @@ promoted from earlier supplements:
     Perform basic vector manipulation in 2-D and 3-D.
 
 Below is a list of improvements that affect several
-`GMT <http://gmt.soest.hawaii.edu>`_ programs equally:
+`GMT <http://gmt.soest.hawaii.edu/>`_ programs equally:
 
 #. All programs now use consistent, standardized choices for plot
    dimension units (**c**\ m, **i**\ nch, or **p**\ oint; we no longer
@@ -508,33 +501,33 @@ Incompatibilities between GMT 5.x and GMT 4.x
 
 As features are added and bugs are discovered, it is occasionally
 necessary to break the established syntax of a
-`GMT <http://gmt.soest.hawaii.edu>`_ program option, such as when
+`GMT <http://gmt.soest.hawaii.edu/>`_ program option, such as when
 the intent of the option is non-unique due to a modifier key being the
 same as a distance unit indicator. Other times we see a greatly improved
 commonality across similar options by making minor adjustments. However,
 we are aware that such changes may cause grief and trouble with
 established scripts and the habits of many
-`GMT <http://gmt.soest.hawaii.edu>`_ users. To alleviate this
+`GMT <http://gmt.soest.hawaii.edu/>`_ users. To alleviate this
 situation we have introduced a configuration that allows
-`GMT <http://gmt.soest.hawaii.edu>`_ to tolerate and process
+`GMT <http://gmt.soest.hawaii.edu/>`_ to tolerate and process
 obsolete program syntax (to the extent possible). To activate you must
 make sure **GMT_COMPAT** is not set to "no"in your ``ConfigUser.cmake`` file. When not
 running in compatibility mode any obsolete syntax will be considered as
 errors. We recommend that users with prior
-`GMT <http://gmt.soest.hawaii.edu>`_ 4 experience run
-`GMT <http://gmt.soest.hawaii.edu>`_ 5 in compatibility mode, heed
+`GMT <http://gmt.soest.hawaii.edu/>`_ 4 experience run
+`GMT <http://gmt.soest.hawaii.edu/>`_ 5 in compatibility mode, heed
 the warnings about obsolete syntax, and correct their scripts or habits
 accordingly. When this transition has been successfully navigated it is
 better to turn compatibility mode off and leave the past behind.
 Occasionally, users will supply an ancient
-`GMT <http://gmt.soest.hawaii.edu>`_ 3 syntax which may have worked
-in `GMT <http://gmt.soest.hawaii.edu>`_ 4 but is not tolerated in
-`GMT <http://gmt.soest.hawaii.edu>`_ 5.
+`GMT <http://gmt.soest.hawaii.edu/>`_ 3 syntax which may have worked
+in `GMT <http://gmt.soest.hawaii.edu/>`_ 4 but is not tolerated in
+`GMT <http://gmt.soest.hawaii.edu/>`_ 5.
 
 Here are a list of known incompatibilities that are correctly processed
 correctly with a warning under compatibility mode:
 
-#. `GMT <http://gmt.soest.hawaii.edu>`_ **default names**: We have
+#. `GMT <http://gmt.soest.hawaii.edu/>`_ **default names**: We have
    organized the default parameters logically by group and renamed
    several to be easier to remember and to group. Old and new names can
    be found in Tables :ref:`obsolete1 <tbl-obsoletedefs1>` and :ref:`obsolete2 <tbl-obsoletedefs2>`. In
@@ -561,7 +554,7 @@ correctly with a warning under compatibility mode:
 #. **3-D perspective**: Some programs used a combination of **-E**,
    **-Z** to set up a 3-D perspective view, but these options were not
    universal. The new 3-D perspective in
-   `GMT <http://gmt.soest.hawaii.edu>`_ 5 means you instead use the
+   `GMT <http://gmt.soest.hawaii.edu/>`_ 5 means you instead use the
    common option **-p** to configure the 3-D projection.
 
 #. **Pixel vs. gridline registration:** Some programs used to have a
@@ -632,7 +625,7 @@ correctly with a warning under compatibility mode:
 
 #. :doc:`grdmath`: LDIST and PDIST now return
    distances in spherical degrees; while in
-   `GMT <http://gmt.soest.hawaii.edu>`_ 4 it returned km; use
+   `GMT <http://gmt.soest.hawaii.edu/>`_ 4 it returned km; use
    DEG2KM for conversion, if needed.
 
 #. :doc:`grdproject`: **-S** is
@@ -706,7 +699,7 @@ correctly with a warning under compatibility mode:
 #. :doc:`grdraster`: Now in the main GMT core.  The
    H\ *skip* field in ``grdraster.info`` is no longer expected as we automatically
    determine if a raster has a
-   `GMT <http://gmt.soest.hawaii.edu>`_ header. Also, to output
+   `GMT <http://gmt.soest.hawaii.edu/>`_ header. Also, to output
    *x,y,z* triplets instead of writing a grid now requires **-T**.
 
 #. :doc:`img2grd <supplements/img/img2grd>`: **-m**\ *inc* is
@@ -727,7 +720,7 @@ correctly with a warning under compatibility mode:
 
 #. :doc:`mgd77path <supplements/mgd77/mgd77path>`: **-P** is
    deprecated (clashes with
-   `GMT <http://gmt.soest.hawaii.edu>`_ common options); use **-A** instead.
+   `GMT <http://gmt.soest.hawaii.edu/>`_ common options); use **-A** instead.
 
 #. :doc:`backtracker <supplements/spotter/backtracker>`:
    **-C** is deprecated as stage vs. finite rotations are detected
@@ -1089,34 +1082,18 @@ promote sharing of research software among investigators in the US and abroad.
 References
 ----------
 
-#. Kernighan, B. W., and D. M. Ritchie, *The C programming language*,
-   2nd edition, p. 272, Prentice-Hall, Englewood Cliffs, New Jersey, 1988.
-
 #. Adobe Systems Inc., *PostScript Language Reference Manual*, 2nd
-   edition, p. 764, Addison-Wesley, Reading, Massachusetts, 1990.
+   edition, 764, Addison-Wesley, Reading, Massachusetts, 1990.
 
-#. Lewine, D., POSIX programmer's guide, 1st edition, p. 607, O'Reilly &
+#. Kernighan, B. W., and D. M. Ritchie, *The C programming language*,
+   2nd edition, 272, Prentice-Hall, Englewood Cliffs, New Jersey, 1988.
+
+#. Lewine, D., POSIX programmer's guide, 1st edition, 607, O'Reilly &
    Associates, Sebastopol, California, 1991.
 
 #. Treinish, L. A., and M. L. Gough, A software package for the
-   data-independent management of multidimensional data, *EOS trans.
-   AGU, 68,* 633-635, 1987.
-
-#. Smith, W. H. F., and P. Wessel, Gridding with continuous curvature
-   splines in tension, *Geophysics, 55,* 293-305, 1990.
-
-#. Wessel, P., and W. H. F. Smith, New, improved version of Generic
-   Mapping Tools released, *EOS trans. AGU*, 79, 579, 1998.
-
-#. Wessel, P., and W. H. F. Smith, New version of the Generic Mapping
-   Tools released, *EOS trans. AGU*, 76, 329, 1995a.
-
-#. Wessel, P., and W. H. F. Smith, New version of the Generic Mapping
-   Tools released, *EOS electronic supplement*,
-   http://www.agu.org/eos_elec/95154e.html, 1995b.
-
-#. Wessel, P., and W. H. F. Smith, Free software helps map and display
-   data, *EOS trans. AGU*, 72, 441 & 445-446, 1991.
+   data-independent management of multidimensional data, *EOS Trans.
+   AGU*, 68(28), 633--635, 1987. `doi:10.1029/EO068i028p00633 <http://dx.doi.org/10.1029/EO068i028p00633>`_.
 
 GMT overview and quick reference
 ================================
@@ -1803,7 +1780,7 @@ instance, a search radius of 5000 feet using this mode of computation
 would be specified as **-S**\ 5000\ **f**.
 
 Note: There are two additional
-`GMT <http://gmt.soest.hawaii.edu>`_ defaults that control how
+`GMT <http://gmt.soest.hawaii.edu/>`_ defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
 :ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`, which selects one of several possible
@@ -7927,7 +7904,7 @@ and how to switch the color bar around (by using a negative length).
    :align: center
 
 
-For additional color tables, visit `CPT-CITY <http://soliton.vm.bytemark.co.uk/pub/cpt-city>`_.
+For additional color tables, visit `CPT-CITY <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
 M. Custom Plot Symbols
 ======================
@@ -9183,14 +9160,14 @@ Finally we show an example of a polygon file:
    Version 1.0 was then informally released at the Lamont-Doherty Earth Observatory.
 
 .. [2]
-   See GNU Lesser General Public License (www.gnu.org/copyleft/gpl.html)
+   See GNU Lesser General Public License (`<http://www.gnu.org/copyleft/gpl.html>`_)
    for terms on redistribution and modifications.
 
 .. [3]
    The tools can also be installed on other platforms (see Appendix [app:L]).
 
 .. [4]
-   One public-domain RIP is **ghostscript**, available from www.gnu.org.
+   One public-domain RIP is **ghostscript**, available from `<http://www.gnu.org/>`_.
 
 .. [5]
    Programs now also allow for fast, binary multicolumn file i/o.
@@ -9275,15 +9252,15 @@ Finally we show an example of a polygon file:
    Robinson provided a table of *y*-coordinates for latitudes
    every 5. To project values for intermediate latitudes one must
    interpolate the table. Different interpolants may result in slightly
-   different maps. `GMT <http://gmt.soest.hawaii.edu>`_ uses the
+   different maps. `GMT <http://gmt.soest.hawaii.edu/>`_ uses the
    interpolant selected by the parameter :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in the
    file.
 
 .. [24]
-   These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
+   These data are available on CD-ROM from NGDC (`<http://www.ngdc.noaa.gov/>`_).
 
 .. [26]
-   See http://topex.ucsd.edu/marine_grav/mar_grav.html.
+   See `<http://topex.ucsd.edu/marine_grav/mar_grav.html>`_.
 
 .. [28]
    Pedants who wish to argue about the "other" arc going the long way
@@ -9297,10 +9274,10 @@ Finally we show an example of a polygon file:
    QuickTime Pro can do this, as can most video-editing programs.
 
 .. [33]
-   For data bases, see http://topex.ucsd.edu/marine_grav/mar_grav.html.
+   For data bases, see `http://topex.ucsd.edu/marine_grav/mar_grav.html`_.
 
 .. [36]
-   The ASCII MGD77 data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
+   The ASCII MGD77 data are available on CD-ROM from NGDC (`<http://www.ngdc.noaa.gov/>`_).
 
 .. [37]
    Okabe, M., 1979, Analytical expressions for gravity anomalies due to
@@ -9316,10 +9293,10 @@ Finally we show an example of a polygon file:
 
 .. [42]
    R. Bracewell, *The Fourier Transform and its Applications*,
-   McGraw-Hill, London, 444p., 1965.
+   McGraw-Hill, London, 444 p., 1965.
 
 .. [43]
-   www.ngdc.noaa.gov
+   `<http://www.ngdc.noaa.gov/>`_
 
 .. [44]
    Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction
@@ -9346,6 +9323,6 @@ Finally we show an example of a polygon file:
 
 .. [51]
    Travel times were calculated using Geoware's travel time calculator,
-   **ttt**; see
+   **ttt**; see `<http://www.geoware-online.com/>`_.
 
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
+.. vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
