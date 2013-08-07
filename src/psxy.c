@@ -514,7 +514,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	unsigned int xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
 	int error = GMT_NOERROR;
 
-	char *text_rec = NULL;
+	char *text_rec = NULL, s_args[GMT_BUFSIZ] = {""};
 
 	double direction, length, dx, dy, dim[PSL_MAX_DIMS], *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
@@ -765,6 +765,13 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 					}
 					if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
+					if (GMT_parse_segment_item (GMT, GMT->current.io.segment_header, "-S", s_args)) {	/* Found -Sargs */
+						if (!(s_args[0] == 'q'|| s_args[0] == 'f')) { /* Update parameters */
+							GMT_parse_symbol_option (GMT, s_args, &S, 0, false);
+						}
+						else
+							GMT_Report (API, GMT_MSG_NORMAL, "Segment header tries to switch to a line symbol like quoted line or fault - ignored\n");
+					}
 					continue;
 				}
 			}
@@ -1079,7 +1086,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				if (P && P->skip) continue;	/* Chosen cpt file indicates skip for this z */
 
 				if (L->header && L->header[0]) {
-					char s_args[GMT_BUFSIZ];
 					PSL_comment (PSL, "Segment header: %s\n", L->header);
 					if (GMT_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S, which only can apply to front or quoted line */
 						if ((S.symbol == GMT_SYMBOL_QUOTED_LINE && s_args[0] == 'q') || (S.symbol == GMT_SYMBOL_FRONT && s_args[0] == 'f')) { /* Update parameters */

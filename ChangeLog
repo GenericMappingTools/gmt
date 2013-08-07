@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-08-06	pwessel
+	* psxy[z].c:		Will now processes -Sargs strings in multisegment headers.
+
 2013-07-23	pwessel
 	* nearneighbor.c:	Clarify how -N works, what the defaults are, and let the
 				minimum number of sectors default to 50% of sectors instead
