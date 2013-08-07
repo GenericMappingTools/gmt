@@ -1070,24 +1070,15 @@ these types of output:
    table output.
 
 *GMT* is available over the Internet at no charge. To obtain a copy,
-read the relevant information on the *GMT* home page
-gmt.soest.hawaii.edu, or email a note containing the single message
-
-| **information gmt-group**
-
-The listserver will mail you back a shell-script that you may run to
-obtain all necessary programs, libraries, and support data. After you
-obtain the *GMT* archive, you will find that it contains information on
-how to install *GMT* on your hardware platform and how to obtain
-additional files that you may need or want. The archive also contains a
-license agreement and registration file. We also maintain two electronic
+goto *GMT* home page gmt.soest.hawaii.edu and follow instructions.
+We also maintain two electronic
 mailing lists you may subscribe to in order to stay informed about bug
 fixes and upgrades (See Chapter [ch:7]).
 
 For those without net-access that need to obtain *GMT*: Geoware makes
 and distributes CD-R and DVD-R media with the *GMT* package, compatible
 supplements, and several Gb of useful Earth and ocean science data sets.
-For more information send e-mail to .
+For more information send e-mail to geoware@geoware-online.com.
 
 *GMT* has served a multitude of scientists very well, and their
 responses have prompted us to develop these programs even further. It is
