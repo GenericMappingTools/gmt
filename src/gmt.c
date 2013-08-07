@@ -40,10 +40,10 @@
 
 int main (int argc, char *argv[]) {
 	int status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
-	unsigned int gmt_main = 0;		/* Set to 1 if no module specified */
+	bool gmt_main = false;		/* Set to true if no module specified */
 	unsigned int modulename_arg_n = 0;	/* Argument number in argv[] that contains module name */
 	struct GMTAPI_CTRL *api_ctrl = NULL;	/* GMT API control structure */
-	char gmt_module[GMT_LEN16] = "gmt";
+	char gmt_module[GMT_LEN32] = "gmt";
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
@@ -58,8 +58,8 @@ int main (int argc, char *argv[]) {
 
 	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
-	gmt_main = !strcmp (module, PROGRAM_NAME);	/* 1 if running the main program, 0 otherwise */
-	
+	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
+
 	if ((gmt_main || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
 		/* argv[0] does not contain a valid module name, and
 		 * argv[1] either holds the name of the module or an option: */
@@ -67,7 +67,7 @@ int main (int argc, char *argv[]) {
 		module = argv[1];	/* Try this module name */
 		if ((status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL) == GMT_NOT_A_VALID_MODULE)) {
 			/* argv[1] does not contain a valid module name; try prepending gmt: */
-			strncat (gmt_module, argv[1], GMT_LEN16-4U);
+			strncat (gmt_module, argv[1], GMT_LEN32-4U);
 			status = GMT_Call_Module (api_ctrl, gmt_module, GMT_MODULE_EXIST, NULL); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
 			if (status != GMT_NOT_A_VALID_MODULE) module = gmt_module;
 		}
