@@ -21,6 +21,9 @@
     diameter *size*, while the size of the corresponding lowercase symbols
     refers to the diameter of a circumscribed circle.
 
+    You can change symbols by adding the required **-S** option to any of
+    your multisegment headers.
+
     Choose between these symbol codes:
 
     **-S-**
