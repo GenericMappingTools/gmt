@@ -103,7 +103,7 @@ published, such as
    [:doc:`greenspline`]
 
 -  Kim, S.-S., and P. Wessel, Directional median filtering for
-	regional-residual separation of bathymetry, *Geochem. Geophys.
+   regional-residual separation of bathymetry, *Geochem. Geophys.
    Geosyst.*, 9, Q03005, 2008. `doi:10.1029/2007GC001850 <http://dx.doi.org/10.1029/2007GC001850>`_.
    [:doc:`dimfilter <supplements/misc/dimfilter>` **misc** supplement]
 
