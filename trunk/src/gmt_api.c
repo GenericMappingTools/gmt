@@ -5473,7 +5473,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	API = gmt_get_api_ptr (V_API);
 	
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
-		char gmt_module[GMT_LEN32] = {""};	/* To form gmt_<lib>_module_show_all */
+		char gmt_module[GMT_LEN256] = {""};	/* To form gmt_<lib>_module_show_all */
 		int (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show_all which takes one arg (the API) */
 
 		/* Here we list purpose of all the available modules in each shared library */
