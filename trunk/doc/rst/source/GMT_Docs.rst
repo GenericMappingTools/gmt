@@ -3222,8 +3222,9 @@ Most programs write their results, including *PostScript*\ plots, to
 standard output. The exceptions are those which may create binary netCDF
 grid files such as :doc:`surface` (due to the
 design of netCDF a filename must be provided; however, alternative
-binary output formats allowing piping are available; see
-Section [sec:grdformats]). Most operating systems let you can redirect
+binary output formats allowing piping are available; see Section
+`Grid file format specifications`_).
+Most operating systems let you can redirect
 standard output to a file or pipe it into another process. Error
 messages, usage messages, and verbose comments are written to standard
 error in all cases. You can usually redirect standard error as well, if
@@ -3959,8 +3960,8 @@ from standard input which means you can connect *GMT* programs that
 operate on grid files with pipes, thereby speeding up execution and
 eliminating the need for large, intermediate grid files. You specify
 standard input/output by leaving out the filename entirely. That means
-the "filename" will begin with "=\ *ID*" since no *GMT*  netCDF format
-allow piping (due to the design of netCDF).
+the "filename" will begin with "=\ *ID*". Note, that the netCDF format
+does not allow piping.
 
 Everything looks clearer after a few examples:
 
@@ -6223,6 +6224,14 @@ reads, but does not write, netCDF tabular data.
 Grid files
 ----------
 
+*GMT* allows numerous grid formats to be read. In addition to the default
+netCDF format it can use binary floating points, short integers, bytes, and
+bits, as well as 8-bit Sun raster files (colormap ignored).  Additional
+formats may be used by supplying read/write functions and linking these with
+the *GMT* libraries. The source file ``gmt_customio.c`` has the information
+that programmers will need to augment *GMT* to read custom grid files. See
+Section [sec:grdformats] for more information.
+
 NetCDF files
 ~~~~~~~~~~~~
 
@@ -6238,9 +6247,9 @@ convention for netCDF data called CF-1.5 (Climate and Forecast, version
 However, since CF-1.5 has more general application than COARDS, not all
 CF-1.5 compliant netCDF files can be read by *GMT*.
 
-The netCDF grid file in *GMT* has several attributes (See
-Table :ref:`netcdf-format <tbl-netcdf-format>`) to describe the content. The routine that
-deals with netCDF grid files is sufficiently flexible so that grid files
+The netCDF grid file in *GMT* has several attributes (See Table
+:ref:`netcdf-format <tbl-netcdf-format>`) to describe the content. The routine
+that deals with netCDF grid files is sufficiently flexible so that grid files
 slightly deviating from the standards used by *GMT* can also be read.
 
 .. _tbl-netcdf-format:
@@ -6284,25 +6293,59 @@ slightly deviating from the standards used by *GMT* can also be read.
 | (or missing_value)   | appropriate default value is assumed, depending on data type.      |
 +----------------------+--------------------------------------------------------------------+
 
-By default, the first 2-dimensional variable in a netCDF file will by
-read as the *z* variable and the coordinate axes *x* and
-*y* will be determined from the dimensions of the *z*
-variable. *GMT* will recognize whether the *y* (latitude) variable
-increases or decreases. Both forms of data storage are handled
-appropriately.
+By default, the first 2-dimensional variable in a netCDF file will be read as
+the *z* variable and the coordinate axes *x* and *y* will be determined from
+the dimensions of the *z* variable. *GMT* will recognize whether the *y*
+(latitude) variable increases or decreases. Both forms of data storage are
+handled appropriately.
 
-For more information on the use of COARDS-compliant netCDF files, and on
-how to load multi-dimensional grids, read Section [sec:netcdf].
+For more information on the use of COARDS-compliant netCDF files, and on how
+to load multi-dimensional grids, read Section [sec:netcdf].
 
-*GMT* also allows other formats to be read. In addition to the default
-netCDF format it can use binary floating points, short integers, bytes,
-and bits, as well as 8-bit Sun raster files (colormap ignored).
-Additional formats may be used by supplying read/write functions and
-linking these with the *GMT* libraries. The source file ``gmt_customio.c`` has the
-information that programmers will need to augment *GMT* to read custom
-grid files. We anticipate that the number of pre-programmed formats will
-increase as enterprising users implement what they need. See
-Section [sec:grdformats] for more information.
+Chunking and compression with netCDF
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GMT supports reading and writing of netCDF-4 files since release 5.0.  For
+performance reasons with ever-increasing grid sizes, the default output format
+of GMT is netCDF-4 with chunking enabled for grids with more than 16384 cells.
+Chunking means that the data is not stored sequentially in rows along latitude
+but rather split up into tiles.  Figure :ref:`netcdf_chunking` illustrates
+the layout in a chunked netCDF file.  To access a subset of the data (e.g.,
+the four blue tiles in the lower left), netCDF only reads those tiles
+("chunks") instead of extracting data from long rows.
+
+.. _netcdf_chunking:
+
+.. figure:: /_images/GMT_chunking.*
+   :width: 500 px
+   :align: center
+
+   Grid split into 9 by 9 chunks
+
+Gridded datasets in the earth sciences usually exhibit a strong spatial
+dependence (e.g. topography, potential fields, illustrated by blue and white
+cells in Figure :ref:`netcdf_chunking`) and deflation can greatly reduce the
+file size and hence the file access time (deflating/inflating is faster than
+hard disk I/O).  It is therefore convenient to deflate grids with spatial
+dependence (levels 1--3 give the best speed/size-tradeoff).
+
+You may control the size of the chunks of data and compression with the
+configuration parameters :ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>`
+and :ref:`IO_NC 4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>` as specified in
+:doc:`gmt.conf` and you can check the netCDF format with :doc:`grdinfo`.
+
+Classic netCDF files were the de facto standard until netCDF 4.0 was released
+in 2008.  Most programs supporting netCDF by now are using the netCDF-4
+library and are thus capable of reading netCDF files generated with GMT 5,
+this includes official GMT releases since revision 4.5.8.  In rare occasions,
+when you have to load netCDF files with old software, you may be forced to
+export your grids in the old classic format.  This can be achieved by setting
+:ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>` to **c**\ lassic.
+
+Further reading:
+  `<http://www.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf>`_
+  (NetCDF-4 Performance Report)
+  `<http://www.unidata.ucar.edu/software/netcdf/workshops/2012/nc4chunking/WhatIsChunking.html>`_
 
 Gridline and Pixel node registration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9304,3 +9347,5 @@ Finally we show an example of a polygon file:
 .. [51]
    Travel times were calculated using Geoware's travel time calculator,
    **ttt**; see
+
+# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
