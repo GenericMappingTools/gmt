@@ -337,7 +337,7 @@ char *lib_tag (char *name) {
 	char *extension;
 	char *tag = strdup (name);
 	extension = strrchr (tag, '.'); /* last period in name */
-	extension = '\0'; /* remove extension */
+	*extension = '\0'; /* remove extension */
 	return (tag);
 }
 
