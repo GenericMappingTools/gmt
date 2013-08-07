@@ -43,5 +43,5 @@ painted black. A color scale bar was then added to complete the illustration.
 
 
 .. [1]
-   You could also use :doc:`img2mercgrd </img2mercgrd>`
+   You could also use :doc:`img2grd </supplements/img/img2grd>`
    directly - your only option under DOS
