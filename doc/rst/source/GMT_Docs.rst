@@ -96,7 +96,7 @@ published, such as
 
 -  Wessel, P., Tools for analyzing intersecting tracks: The x2sys
    package, *Computers & Geosciences*, 36, 348--354, 2010. `doi:10.1016/j.cageo.2009.05.009 <http://dx.doi.org/10.1016/j.cageo.2009.05.009>`_.
-   [**x2sys** supplement]
+   [:doc:`x2sys <supplements/x2sys/x2sys_init>` supplement]
 
 -  Wessel, P., A General-purpose Green's function-based interpolator,
    *Computers & Geosciences*, 35, 1247--1254, 2009. `doi:10.1016/j.cageo.2008.08.012 <http://dx.doi.org/10.1016/j.cageo.2008.08.012>`_.
@@ -105,13 +105,13 @@ published, such as
 -  Kim, S.-S., and P. Wessel, Directional median filtering for
    regional-residual separation of bathymetry, *Geochem. Geophys.
    Geosyst.*, 9, Q03005, 2008. `doi:10.1029/2007GC001850 <http://dx.doi.org/10.1029/2007GC001850>`_.
-   [:doc:`dimfilter <supplements/misc/dimfilter>` **misc** supplement]
+   [:doc:`dimfilter <supplements/misc/dimfilter>`, **misc** supplement]
 
 -  Luis, J. F. and J. M. Miranda, Reevaluation of magnetic chrons in the
    North Atlantic between 35N and 47N: Implications for the formation of the
    Azores Triple Junction and associated plateau,
    *J. Geophys. Res.*, 113, B10105, 2008. `doi:10.1029/2007JB005573 <http://dx.doi.org/10.1029/2007JB005573>`_.
-   [:doc:`grdredpol <supplements/potential/grdredpol>` **potential** supplement]
+   [:doc:`grdredpol <supplements/potential/grdredpol>`, **potential** supplement]
 
 -  Wessel, P. and J. M. Becker, Interpolation using a generalized
    Green's function for a spherical surface spline in tension, *Geophys.
