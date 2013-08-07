@@ -5430,7 +5430,7 @@ void * gmt_get_shared_module_func (struct GMTAPI_CTRL *API, const char *module, 
 	void *p_func = NULL;       /* function pointer */
 	if (API->lib[lib_no].skip) return (NULL);	/* Tried to open this shared library before and it was not available */
 	if (API->lib[lib_no].handle == NULL && (API->lib[lib_no].handle = dlopen (API->lib[lib_no].path, RTLD_LAZY)) == NULL) {	/* Not opened this shared library yet */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Unable to open GMT shared %s library: %s\n", API->lib[lib_no].name, dlerror());
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open GMT shared %s library: %s\n", API->lib[lib_no].name, dlerror());
 		API->lib[lib_no].skip = true;	/* Not bother the next time... */
 		return (NULL);			/* ...and obviously no function would be found */
 	}
@@ -5467,11 +5467,11 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	struct GMTAPI_CTRL *API = NULL;
 	char gmt_module[GMT_LEN32] = "GMT_";
 	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
-	
+
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (module == NULL && mode != GMT_MODULE_PURPOSE) return_error (V_API, GMT_ARG_IS_NULL);
 	API = gmt_get_api_ptr (V_API);
-	
+
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
 		char gmt_module[GMT_LEN256] = {""};	/* To form gmt_<lib>_module_show_all */
 		int (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show_all which takes one arg (the API) */
@@ -5486,7 +5486,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 		return (status);
 	}
 	/* Here we call a named module */
-	
+
 	strncat (gmt_module, module, GMT_LEN32-5);		/* Concatenate GMT_-prefix and module name to get function name */
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
 		*(void **) (&p_func) = gmt_get_module_func (API, gmt_module, lib);
