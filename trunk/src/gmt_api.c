@@ -332,16 +332,12 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 }
 #endif
 
-char *lib_tag (char *name)
-{	/* Pull out the tag from a name like [lib][gmt]<tag>[.extension] */
-	char *tag = NULL;
-	size_t p = 0, e = 0, last = strlen (name);
-	while (name[e] && name[e] != '.') e++;		/* Find the first period in the name */
-	if (e < last) name[e] = '\0';			/* Temporarily chop off library extension */
-	p = (strncmp (name, "lib", 3U)) ? 0 : 3;	/* Do we have a leading "lib" or not ? */
-	if (!strcmp (&name[p], "gmt")) p += 3;		/* Skip passed any gmt in gmt<tag> */
-	tag = strdup (&name[p]);			/* Get the shared library tag */
-	if (e < last) name[e] = '.';			/* Add back library extension */
+char *lib_tag (char *name) {
+	/* Pull out the tag from a name like <tag>[.extension] */
+	char *extension;
+	char *tag = strdup (name);
+	extension = strrchr (tag, '.'); /* last period in name */
+	extension = '\0'; /* remove extension */
 	return (tag);
 }
 
