@@ -195,7 +195,7 @@ if (UNIX AND NOT CYGWIN)
 	string (REGEX REPLACE "/$" "" _rpath "${_rpath}")
 	if (APPLE)
 		# relative RPATH on osx
-		set (CMAKE_INSTALL_NAME_DIR @loader_path/${_rpath})
+		set (CMAKE_INSTALL_NAME_DIR @executable_path/${_rpath})
 	else (APPLE)
 		# relative RPATH on Linux, Solaris, etc.
 		set (CMAKE_INSTALL_RPATH "\$ORIGIN/${_rpath}")
