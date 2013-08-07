@@ -1964,7 +1964,7 @@ ways in which this can be accomplished.
    during the running of a single script, reverting to the original
    settings after the script is run, as if the script was run in
    "isolation". The isolation mode is discussed in
-   Section [sec:isolationmode].
+   Section `Running GMT in isolation mode`_.
 
 In addition to those parameters that directly affect the plot there are
 numerous parameters than modify units, scales, etc. For a complete
@@ -2075,7 +2075,7 @@ may be specified in one of three ways (Figure ):
    grid in specified file. Note that depending on the nature of the
    calling program, this mechanism will also set grid spacing and
    possibly the grid registration (see
-   Section [sec:grid_registration]).
+   Section `Grid registration: The -r option`_).
 
 .. figure:: /_images/GMT_-R.*
    :width: 500 px
@@ -2091,7 +2091,7 @@ data), the boundary coordinates may take on several different formats:
 Geographic coordinates:
     These are longitudes and latitudes and may be given in decimal
     degrees (e.g., -123.45417) or in the
-    []*ddd*\ [:*mm*\ [:*ss*\ [*.xxx*\ ]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+    []*ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
     format (e.g., 123:27:15W). Note that **-Rg** and **-Rd** are
     shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and
     **-R**\ *-180*/*180*/*-90*/*90*, respectively.
@@ -2112,7 +2112,7 @@ Geographic coordinates:
        **-R**\ *0*/*360G*/*-90*/*90N*.
 
     Alternatively, you may indicate geographical coordinates by
-    supplying **-fg**; see Section [sec:fg:sub:`o`\ ption].
+    supplying **-fg**; see Section `Data type selection: The -f option`_.
 
 Projected coordinates:
     These are Cartesian projected coordinates compatible with the chosen
@@ -2205,7 +2205,7 @@ The projections available in *GMT* are presented in Figure . For details
 on all *GMT* projections and the required parameters, see the
 :doc:`psbasemap` man page. We will also
 show examples of every projection in the next Chapters, and a quick
-summary of projection syntax was given in Chapter [ch:3].
+summary of projection syntax was given in Chapter `GMT overview and quick reference`.
 
 .. figure:: /_images/GMT_-J.*
    :width: 500 px
@@ -2217,7 +2217,7 @@ summary of projection syntax was given in Chapter [ch:3].
 Map frame and axes annotations: The **-B** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:timeaxis] This is potentially the most complicated option in *GMT*,
+This is potentially the most complicated option in *GMT*,
 but most examples of its usage are actually quite simple. We distinguish
 between to sets of information: Frame settings and Axes parameters.  These
 are set separately by their own **-B** invocations; hence multiple **-B**
@@ -2742,7 +2742,7 @@ which will plot the current command string (Figure ).
 Verbose feedback: The **-V** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:verbose] The **-V** option selects verbose mode, which will send
+The **-V** option selects verbose mode, which will send
 progress reports to standard error. Even more verbose levels are **-Vl**
 (long verbose) and **-Vd** (debug). Normal verbosity level produces only
 error and warning messages. This is the default or can be selected by
@@ -2829,7 +2829,7 @@ Binary table i/o: The **-b** option
 
 All *GMT* programs that accept table data input may read ASCII, native
 binary, or netCDF data. Native binary files may have a header section
-and the **-h**\ *n* option (see Section [sec:header]) can be used to
+and the **-h**\ *n* option (see Section `Header data records: The -h option`_) can be used to
 skip the first *n* bytes. The data record can be in any format, mixing
 different data types and even containing byte-swapped items. When using
 native binary data the user must be aware of the fact that *GMT* has no
@@ -2902,7 +2902,7 @@ which *requires* **-J** and lets you use *projected* map coordinates
 (e.g., UTM meters) as data input. Such coordinates are automatically
 inverted to longitude, latitude during the data import. Optionally,
 append a length *unit* (see Table :ref:`distunits <tbl-distunits>`) [meter]. For more
-information, see Sections [sec:input data] and [sec:output data].
+information, see Sections `Input data formats`_ and `Output data formats`_.
 
 Data gap detection: The **-g** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3115,7 +3115,7 @@ Command line history
 --------------------
 
 *GMT* programs "remember" the standardized command line options (See
-Section [sec:stopt]) given during their previous invocations and this
+Section `Standardized command line options`_) given during their previous invocations and this
 provides a shorthand notation for complex options. For example, if a
 basemap was created with an oblique Mercator projection, specified as
 
@@ -3169,7 +3169,7 @@ next character as an instruction; if an argument begins without a
 hyphen, it tries to open this argument as a filename). This feature
 allows you to connect programs with pipes if you like. If your input is
 ASCII and has one or more header records that do not begin with #, you
-must use the **-h** option (see Section [sec:header]). ASCII files may
+must use the **-h** option (see Section `Header data records: The -h option`_). ASCII files may
 in many cases also contain segment-headers separating data segments.
 These are called "multi-segment files". For binary table data the **-h**
 option may specify how many bytes should be skipped before the data
@@ -3202,7 +3202,7 @@ Verbose operation
 -----------------
 
 Most of the programs take an optional **-V** argument which will run the
-program in the "verbose" mode (see Section [sec:verbose]). Verbose will
+program in the "verbose" mode (see Section `Verbose feedback: The -V option`_). Verbose will
 write to standard error information about the progress of the operation
 you are running. Verbose reports things such as counts of points read,
 names of data files processed, convergence of iterative solutions, and
@@ -8665,7 +8665,7 @@ O. Special Operations
 Running GMT in *isolation mode*
 -------------------------------
 
-In Chapter [ch:4] it is described how *GMT* creates
+In Chapter `General features`_ it is described how *GMT* creates
 several (temporary) files to communicate between the different commands
 that make up the script that finally creates a plot. Among those files
 are:
@@ -8682,7 +8682,7 @@ are:
        avoids that issue.
 
     **.gmtcommands** This file is created to communicate the command line history from
-       one command to the next (Section [sec:gmtcommands]) so that
+       one command to the next (Section `Command line history`_) so that
        shorthands like **-R** or **-J** can be used once it has been set in
        a previous *GMT* command. The existence of this file makes if
        impossible to run two *GMT* scripts simultaneously in the same
