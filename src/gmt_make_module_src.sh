@@ -6,10 +6,10 @@
 # by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
-# Below, <X> is either core, suppl, or a users custom shared lib tag
+# Below, <X> is either core, supplements, or a users custom shared lib tag
 #
 # This script will find all the C files in the current dir (if core)
-# or in subdirs (if suppl) and extract all the THIS_MODULE_PURPOSE
+# or in subdirs (if supplements) and extract all the THIS_MODULE_PURPOSE
 # and other strings from the sources files, then create two files:
 # gmt_<X>_module.h and gmt_<X>_module.c.
 #
@@ -21,7 +21,7 @@ if [ $# -ne 1 ]; then
 cat << EOF
 usage: gmt_make_module_src.sh [tag]
 	tag is the name of the set of modules.
-	It is core or suppl for the GMT developers;
+	It is core or supplements for the GMT developers;
 	It is whatever you call it for your custom extension.
 EOF
 	exit 0
@@ -33,7 +33,7 @@ LIB=$1
 U_TAG=`echo $LIB | tr '[a-z]' '[A-Z]'`
 L_TAG=`echo $LIB | tr '[A-Z]' '[a-z]'`
 
-if [ "$U_TAG" = "SUPPL" ]; then	# Look in directories under the current directory
+if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory
 	grep "#define THIS_MODULE_LIB		" */*.c | awk -F: '{print $1}' | sort > /tmp/tmp.lis
 else	# Just look in current dir (for core or users)
 	grep "#define THIS_MODULE_LIB		\"$L_TAG\"" *.c | awk -F: '{print $1}' | sort > /tmp/tmp.lis
