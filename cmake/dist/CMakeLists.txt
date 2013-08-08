@@ -180,6 +180,7 @@ if (APPLE)
 	set (CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
 	set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/startup_macosx.sh")
 
+
 	# Fix bundle:
 	install (CODE "
 	set (BU_CHMOD_BUNDLE_ITEMS TRUE CACHE INTERNAL
@@ -190,6 +191,25 @@ if (APPLE)
 		# Workaround incompatible 'file' utilities possibly used in
 		# is_file_executable() from GetPrerequisites.cmake:
 		set (file_cmd /usr/bin/file)
+
+		# gp_item_default_embedded_path item default_embedded_path_var
+		#
+		# Return the path that others should refer to the item by when the item
+		# is embedded inside a bundle.
+		#
+		# Override on a per-project basis by providing a project-specific
+		# gp_item_default_embedded_path_override function.
+		#
+		function(gp_item_default_embedded_path_override item default_embedded_path_var)
+		  # By default, embed items as set by gp_item_default_embedded_path:
+			set(path \"\${\${default_embedded_path_var}}\")
+			# Embed *.dylib in the lib folder:
+			if(item MATCHES \"[.]dylib\$\")
+				set(path \"@executable_path/../lib\")
+			endif()
+			set(\${default_embedded_path_var} \"\${path}\" PARENT_SCOPE)
+		endfunction(gp_item_default_embedded_path_override)
+
 		include (BundleUtilities)
 		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
 	endif ()

@@ -11,7 +11,7 @@ BUNDLE_RESOURCES="${PWD}/Resources"
 osascript << EOF
   tell application "Terminal"
     activate
-    do script with command "export PATH=\"${BUNDLE_RESOURCES}/@GMT_BINDIR@:\${PATH}\" gmt"
+    do script with command "export PATH=\"${BUNDLE_RESOURCES}/@GMT_BINDIR@:\${PATH}\"; gmt"
   end tell
 EOF
 
