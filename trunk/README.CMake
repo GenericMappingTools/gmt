@@ -102,17 +102,16 @@ configure _DCW_ROOT_ in cmake/ConfigUser.cmake.
 Documentation:
 ~~~~~~~~~~~~~~
 
-Manpages are available in different formats and can be generated with:
+The GMT manual is available in different formats and can be generated with:
 
-  $ make -jx_ manpages_all
+  $ make -jx_ docs_man  # UNIX manual pages
+  $ make -jx_ docs_html # HTML manual, cookbook, and API reference
+  $ make -jx_ docs_pdf  # PDF manual, cookbook, and API reference
 
-To generate the PDF documentation you need LaTeX:
-
-  $ make -jx_ gmt_doc
-
-You can choose to install documentation files from an external location instead
-of generating the PDF and HTML files from the sources. This is convenient if
-LaTeX is not available. Set GMT_INSTALL_EXTERNAL_DOC in cmake/ConfigUser.cmake.
+To generate the PDF documentation you need LaTeX.  You can choose to install
+documentation files from an external location instead of generating the PDF
+and HTML files from the sources.  This is convenient if LaTeX is not
+available.  Set GMT_INSTALL_EXTERNAL_DOC in cmake/ConfigUser.cmake.
 
 Installing:
 ~~~~~~~~~~~
@@ -192,26 +191,6 @@ Optionally set _N_TEST_JOBS_ to the number of ctest jobs to run
 simultaneously. You can also select individual tests using regexp with ctest:
 
   $ ctest -R job1[3-6]
-
-
-TODO list
----------
-
-* Replace GMT_(malloc|memory): perl -i -pe 's/(GMT_(malloc|memory)[^_].+, )([^,)]+)/$1sizeof($3)/g' files ...
-
-* Clean up config.h.in gmt_version.h.in gmt_notposix.h.in.
-  Right now this is a mixture of partly redundant defines that can be
-  simplified. (almost done)
-
-* Make exported cmake variables consistent GMT_..., prefix temporary
-  variables with "_"
-
-* Add further tests/cmake-find-modules:
-  - fftw/Accelerate Framework
-  - WIN32: test for USE_MEM_ALIGNED, defined in src/gmt_config.h.in
-
-* Generate macros
-  - to build a release (including precompiled manpages, pdf docu, ...)
 
 ////
 vim: ft=asciidoc tw=78 et ts=2 sts=2 sw=2 autoindent smartindent
