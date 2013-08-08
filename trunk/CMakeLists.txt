@@ -145,7 +145,7 @@ message(
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
 	"*  GDAL library               : ${GDAL_LIBRARY}\n"
 	"*  GDAL include dir           : ${GDAL_INCLUDE_DIR}\n"
-	"*  FFTW library               : ${FFTW3_LIBRARY}\n"
+	"*  FFTW library               : ${FFTW3F_LIBRARY}\n"
 	"*  FFTW include dir           : ${FFTW3_INCLUDE_DIR}\n"
 	"*  Accelerate Framework       : ${ACCELERATE_FRAMEWORK}\n"
 	"*  Regex support              : ${GMT_CONFIG_REGEX_MESSAGE}\n"
