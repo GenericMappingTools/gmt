@@ -131,12 +131,12 @@ Optional Arguments
     is a closed polygon.
 .. include:: explain_-Rgeo.rst_
 
-**-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j**
+**-S**\ **i**\ \|\ **j**\ \|\ **s**\ \|\ **u**
     Spatial processing of polygons. Choose from **-Si** which returns
-    the intersection of polygons (closed), **-Sc** which returns the
+    the intersection of polygons (closed), **-Su** which returns the
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline.
+    were split by the Dateline.  Note: Only **-Ss** has been implemented.
 
 **-T**\ [*clippolygon*]
     Truncate polygons against the specified polygon given, possibly
