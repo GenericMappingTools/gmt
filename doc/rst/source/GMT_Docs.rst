@@ -6294,10 +6294,10 @@ the four blue tiles in the lower left), netCDF only reads those tiles
 .. _netcdf_chunking:
 
 .. figure:: /_images/GMT_chunking.*
-   :width: 500 px
+   :width: 494 px
    :align: center
 
-   Grid split into 9 by 9 chunks
+   Grid split into 3 by 3 chunks
 
 Gridded datasets in the earth sciences usually exhibit a strong spatial
 dependence (e.g. topography, potential fields, illustrated by blue and white
@@ -6320,9 +6320,10 @@ export your grids in the old classic format.  This can be achieved by setting
 :ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>` to **c**\ lassic.
 
 Further reading:
-  `<http://www.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf>`_
-  (NetCDF-4 Performance Report)
-  `<http://www.unidata.ucar.edu/software/netcdf/workshops/2012/nc4chunking/WhatIsChunking.html>`_
+
+- `Unidata NetCDF Workshop: NetCDF Formats and Performance <http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/performance/index.html>`_
+- `Unidata NetCDF Workshop: What is Chunking? <http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/nc4chunking/WhatIsChunking.html>`_
+- `HDF NetCDF-4 Performance Report <http://www.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf>`_
 
 Gridline and Pixel node registration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
