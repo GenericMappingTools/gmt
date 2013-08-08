@@ -109,7 +109,7 @@ if (SPHINX_FOUND)
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Manpages.pdf
 			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages.pdf
-			DEPENDS docs_pdf svn_export_release)
+			DEPENDS docs_pdf_shrink svn_export_release)
 		add_depend_to_target (gmt_release _pdf_release)
 		# Manpages
 		add_custom_target (_man_release

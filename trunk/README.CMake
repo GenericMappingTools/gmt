@@ -166,14 +166,17 @@ Creating a source package:
 
 Set GMT_RELEASE_PREFIX in cmake/ConfigUser.cmake and run cmake. Then do
 
-  $ make gmt_doc         # make PDF and HTML documentation
-  $ make gmt_doc_shrink  # reduce the size of the PDFs
-  $ make gmt_release     # export the source tree and install doc
+  $ make -jx_              # make executables (parallel build)
+  $ make -jx_ docs_depends # make doc images (parallel build)
+  $ make gmt_release       # export the source tree and install doc
 
 You should then edit ${GMT_RELEASE_PREFIX}/cmake/ConfigDefault.cmake and
 set GMT_PACKAGE_VERSION_MAJOR, GMT_PACKAGE_VERSION_MINOR, and
 GMT_PACKAGE_VERSION_PATCH. Also uncomment and set
-GMT_SOURCE_CODE_CONTROL_VERSION_STRING to the current svn version.
+GMT_SOURCE_CODE_CONTROL_VERSION_STRING to the current svn version. Then
+create tarballs with:
+
+  $ make -jx_ gmt_release_tar
 
 In-build-dir tests:
 ~~~~~~~~~~~~~~~~~~~
