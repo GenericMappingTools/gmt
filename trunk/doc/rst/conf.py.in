@@ -187,6 +187,7 @@ latex_logo = '@CMAKE_CURRENT_BINARY_DIR@/_source/_images/GMT_coverlogo.pdf'
 
 # LaTeX preamble
 tex_preamble = r"""
+\frenchspacing % use a standard word space between sentences
 \fvset{fontsize=\scriptsize} % verbatim font size
 """
 

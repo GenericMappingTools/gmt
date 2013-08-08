@@ -67,5 +67,5 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`gmt.conf`,
-:doc:`img2google`,
+:doc:`img2google <supplements/img/img2google>`,
 :doc:`ps2raster`, :doc:`gmt2kml`

@@ -351,6 +351,6 @@ description tags, respectively, for the current feature.
 See Also
 --------
 
-:doc:`gmt` , :doc:`gmt.conf` ,
-:doc:`img2google` ,
+:doc:`gmt` , :doc:`gmt.conf`,
+:doc:`img2google <supplements/img/img2google>`,
 :doc:`kml2gmt` , :doc:`ps2raster`
