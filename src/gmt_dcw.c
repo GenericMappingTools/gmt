@@ -219,7 +219,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	bool done, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
-	char file[GMT_LEN16] = {""}, msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[GMT_BUFSIZ] = {""};
+	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[GMT_BUFSIZ] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
@@ -402,7 +402,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			}
 			else {	/* mdoe & GMT_DCW_PLOT: Plot this piece */
 				if (fill) {	/* Plot filled polygon, w/ or w/o outline */
-					if (!strncmp (file, "AN/AQ", 5U)) GMT_set_seg_polar (GMT, P);
+					if (!strncmp (TAG, "AQ", 2U)) GMT_set_seg_polar (GMT, P);
 					GMT_geo_polygons (GMT, P);
 				}
 				else {	/* Plot outline only */
