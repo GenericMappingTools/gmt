@@ -3077,7 +3077,7 @@ levels of objects. The **-t** option allows you to change the
 transparency level for the current overlay by appending a percentage in
 the 0--100 range; the default is 0, or opaque. Transparency may also be
 controlled on a feature by feature basis when setting color or fill (see
-section [sec:fill]).
+section `Specifying area fill attributes`_).
 
 Latitude/Longitude or Longitude/Latitude?: The **-:** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3232,7 +3232,7 @@ must specify exactly the format of the records. However, for ASCII input
 there are numerous ways to encode data coordinates (which may be
 separated by white-space or commas). Valid input data are generally of
 the same form as the arguments to the **-R** option (see
-Section [sec:R]), with additional flexibility for calendar data.
+Section `Data domain or map region: The -R option`_), with additional flexibility for calendar data.
 Geographical coordinates, for example, can be given in decimal degrees
 (e.g., -123.45417) or in the
 []*ddd*\ [:*mm*\ [:*ss*\ [*.xxx*\ ]]][\ **W**\ \| \ **E**\ \| \ **S**\ \| \ **N**]
@@ -3423,7 +3423,7 @@ fashion. See the :doc:`gmt.conf` man page for more information.
    :width: 500 px
    :align: center
 
-   Line appearance can be varied by using **PS_LINE_CAP**
+   Line appearance can be varied by using :ref:`PS_LINE_CAP <PS_LINE_CAP>`
 
 Specifying area fill attributes
 -------------------------------
@@ -3442,7 +3442,7 @@ fill:
     CMYK color (*cyan*/*magenta*/*yellow*/*black*, each ranging from
     0--100%), or a valid color *name*; in that respect it is similar to
     specifying the pen color settings (see pen color discussion under
-    Section [sec:pen]).
+    Section `Specifying pen attributes`_).
 
 pattern:
     The second form allows us to use a predefined bit-image pattern.
@@ -3514,7 +3514,7 @@ optional. The *size* is the font size (usually in points) but **c**,
 **i** or **p** can be added to indicate a specific unit. The *fonttype*
 is the name (case sensitive!) of the font or its equivalent numerical ID
 (e.g., Helvetica-Bold or 1). *fill* specifies the gray shade, color or
-pattern of the text (see section [sec:fill] above). Optionally, you may
+pattern of the text (see section `Specifying area fill attributes`_ above). Optionally, you may
 append **=**\ *pen* to the *fill* value in order to draw the text
 outline with the specified *pen*; if used you may optionally skip the
 filling of the text by setting *fill* to **-**. If any of the attributes
@@ -3529,7 +3529,7 @@ However, *PostScript*\ extensions make it possible to request
 transparency, and tools that can render such extensions will produce
 transparency effects. We specify transparency in percent: 0 is opaque
 [Default] while 100 is fully transparent (i.e., nothing will show). As
-noted in section [sec:ltransp], we can control transparency on a
+noted in section `Layer PDF transparency: The -t option`_, we can control transparency on a
 layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*
@@ -3570,7 +3570,7 @@ Color palette tables (CPT) comes in two flavors: (1) Those designed to
 work with categorical data (e.g., data where interpolation of values is
 undefined) and (2) those designed for regular, continuously-varying
 data. In both cases the *fill* information follows the format given in
-Section [sec:fill].
+Section `Specifying area fill attributes`_.
 
 Categorical CPT files
 ~~~~~~~~~~~~~~~~~~~~~
@@ -3594,7 +3594,7 @@ consecutive. The format is
 | key\ :sub:`n`   | *Fill* | [;\ *label*] |
 +-----------------+--------+--------------+
 
-The *Fill* information follows the format given in Section [sec:fill].
+The *Fill* information follows the format given in Section `Specifying area fill attributes`_.
 While not always applicable to categorical data, the background color
 (for *key*-values < :math:`key_1`), foreground color (for
 *key*-values > :math:`key_{n}`), and not-a-number (NaN)
@@ -3666,7 +3666,7 @@ A few programs (i.e., those that plot polygons such as
 :doc:`grdview`, :doc:`psscale`,
 :doc:`psxy` and
 :doc:`psxyz`) can accept pattern fills instead
-of gray-shades. You must specify the pattern as in Section [sec:fill]
+of gray-shades. You must specify the pattern as in Section `Specifying area fill attributes`_
 (no leading **-G** of course), and only the first pattern (for low
 *z*) is used (we cannot interpolate between patterns). Finally,
 some programs let you skip features whose *z*-slice in the CPT
@@ -3857,7 +3857,7 @@ by other programs that conform to those conventions. Three such programs are
 In addition, users with some C-programming experience may add their own
 read/write functions and link them with the *GMT* library to extend the
 number of predefined formats. Technical information on this topic can be
-found in the source file ``gmtcustom_io.c``. Users who are considering this approach
+found in the source file ``gmt_customio.c``. Users who are considering this approach
 should contact the *GMT* team.
 
 .. _tbl-grdformats:
@@ -4357,7 +4357,7 @@ series of points (e.g., a line), and programs can act upon this
 information, e.g., not to draw a line across the gap or to break the
 line into separate segments. The alternative setting (*bad*) makes no
 such interpretation and simply reports back how many bad records were
-skipped during reading; see Section [sec:gap] for details.
+skipped during reading; see Section `Data gap detection: The -g option`_ for details.
 
 GMT environment parameters
 --------------------------
@@ -4497,7 +4497,7 @@ our :math:`y = \sqrt{x}` data sets will plot as shown in
 Figure :ref:`missing` [fig:GMT\ :sub:`l`\ inear].
 
 .. figure:: /_images/GMT_linear.*
-   :width: 500 px
+   :width: 400 px
    :align: center
 
    Linear transformation of Cartesian coordinates.
@@ -4555,7 +4555,7 @@ Calendar time coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. figure:: /_images/GMT_linear_cal.*
-   :width: 500 px
+   :width: 400 px
    :align: center
 
    Linear transformation of calendar coordinates.
@@ -4595,10 +4595,10 @@ Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_images/GMT_log.*
-   :width: 500 px
+   :width: 400 px
    :align: center
 
-   Logarithmic transformation of hBcoordinates.
+   Logarithmic transformation of x--coordinates.
 
 
 The log\ :math:`_{10}` transformation is simply
@@ -4622,10 +4622,10 @@ Cartesian power projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_images/GMT_pow.*
-   :width: 500 px
+   :width: 400 px
    :align: center
 
-   Exponential or power transformation of hBcoordinates.
+   Exponential or power transformation of x--coordinates.
 
 
 This projection uses :math:`u' = a u^b + c` and allows us to explore
@@ -4647,7 +4647,7 @@ Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
 -------------------------------------------------------------------------------
 
 .. figure:: /_images/GMT_polar.*
-   :width: 500 px
+   :width: 400 px
    :align: center
 
    Polar (Cylindrical) transformation of (:math:`\theta, r`) coordinates.
@@ -4702,7 +4702,7 @@ operates on or creates grid files.
 We used :doc:`grdcontour` to make a
 contour map of this data. Because the data file only contains values
 with :math:`2 \leq r \leq 4`, a donut shaped plot appears in
-Figure :ref:`missing` [fig:GMT\ :sub:`p`\ olar].
+Figure :ref:`missing` [fig:GMT_polar].
 
 GMT Map Projections
 ===================
@@ -5046,7 +5046,7 @@ use rectangular boundaries rather than the wedge-shape typically
 associated with polar projections. This choice is defined by selecting
 two points as corners in the rectangle and appending an "r" to the
 **-R** option. This command produces a map as presented in
-Figure :ref:`missing` [fig:GMT\ :sub:`s`\ tereographic\ :sub:`r`\ ect]:
+Figure :ref:`missing` [fig:GMT_stereographic_rect]:
 
    ::
 
@@ -5083,8 +5083,8 @@ hemispheric maps. Our example shows Australia using a projection pole at
 
 
 By choosing 0/0as the pole, we obtain the conformal stereonet presented
-next to its equal-area cousin in the Section [sec:lamb] on the Lambert
-azimuthal equal-area projection (Figure :ref:`missing` [fig:GMT:sub:`s`\ tereonets]).
+next to its equal-area cousin in the Section `Lambert Azimuthal Equal-Area (-Ja -JA)`_ on the Lambert
+azimuthal equal-area projection (Figure :ref:`missing` [fig:GMT_stereonets]).
 
 Perspective projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5093,7 +5093,7 @@ The perspective projection imitates in 2 dimensions the 3-dimensional
 view of the earth from space. The implementation in *GMT* is very
 flexible, and thus requires many input variables. Those are listed and
 explained below, with the values used in
-Figure :ref:`missing` [fig:GMT\ :sub:`p`\ erspective] between brackets.
+Figure :ref:`missing` [fig:GMT_perspective] between brackets.
 
 -  Longitude and latitude of the projection center (4E/52N).
 
@@ -5368,7 +5368,7 @@ equivalent of the 360 Mercator map. Using the command
     gmt pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 \
                 -Slightblue -G0 -P > GMT_TM.ps
 
-we made the map illustrated in Figure :ref:`missing` [fig:GMT\ :sub:`T`\ M]. Note that
+we made the map illustrated in Figure :ref:`missing` [fig:GMT_TM]. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
 arguments are interpreted to mean oblique degrees, i.e., the 360 range
 is understood to mean the extent of the plot along the central meridian,
@@ -5393,7 +5393,7 @@ large-scale military maps. Here, the globe is divided into 60 zones
 between 84S and 84N, most of which are 6 wide. Each of these UTM zones
 have their unique central meridian. Furthermore, each zone is divided
 into latitude bands but these are not needed to specify the projection
-for most cases. See Figure :ref:`missing` [fig:GMT\ :sub:`u`\ tm\ :sub:`z`\ ones] for
+for most cases. See Figure :ref:`missing` [fig:GMT_utm_zones] for
 all zone designations.
 
 .. figure:: /_images/GMT_utm_zones.*
@@ -5612,7 +5612,7 @@ that result in known (or named) projections. These are listed in Table :ref:`JY 
 +-------------------+---------------------+
 
 For instance, a world map centered on the 35E meridian using the Behrman
-projection (Figure :ref:`missing` [fig:GMT:sub:`g`\ eneral\ :sub:`c`\ yl]) can be
+projection (Figure :ref:`missing` [fig:GMT_general_cyl]) can be
 obtained by running the command:
 
    ::
@@ -5647,7 +5647,7 @@ this projection. Specify the projection by:
 -  Scale in inch/degree or as 1:xxxxx (**-Jj**), or map width (**-JJ**).
 
 For instance, a world map centered on the 90E meridian at a map scale of
-1:400,000,000 (Figure :ref:`missing` [fig:GMT:sub:`m`\ iller]) can be obtained as
+1:400,000,000 (Figure :ref:`missing` [fig:GMT_miller]) can be obtained as
 follows:
 
    ::
@@ -5703,7 +5703,7 @@ cartographer or publication that popularized the projection
 
 A map of the world, centered on the Greenwich meridian, using the Gall's
 stereographic projection (standard parallel is 45,
-Figure :ref:`missing` [fig:GMT\ :sub:`g`\ all\ :sub:`s`\ tereo]), is obtained as follows:
+Figure :ref:`missing` [fig:GMT_gall_stereo]), is obtained as follows:
 
    ::
 
@@ -5811,7 +5811,7 @@ use it you must enter
 
 -  Scale along equator in inch/degree or 1:xxxxx (**-Jr**), or map width (**-JR**).
 
-Centered on Greenwich, the example in Figure :ref:`missing` [fig:GMT\ :sub:`w`\ inkel]
+Centered on Greenwich, the example in Figure :ref:`missing` [fig:GMT_winkel]
 was created by this command:
 
    ::
@@ -6191,7 +6191,7 @@ Binary tables
 
 *GMT* programs also support native binary tables to speed up
 input-output for i/o-intensive tasks like gridding and preprocessing.
-This is discussed in more detail in section [sec:b\ :sub:`o`\ ption].
+This is discussed in more detail in section `Binary table i/o: The -b option`_.
 
 NetCDF tables
 ~~~~~~~~~~~~~
@@ -6221,7 +6221,7 @@ bits, as well as 8-bit Sun raster files (colormap ignored).  Additional
 formats may be used by supplying read/write functions and linking these with
 the *GMT* libraries. The source file ``gmt_customio.c`` has the information
 that programmers will need to augment *GMT* to read custom grid files. See
-Section [sec:grdformats] for more information.
+Section `Grid file format specifications`_ for more information.
 
 NetCDF files
 ~~~~~~~~~~~~
@@ -6291,7 +6291,7 @@ the dimensions of the *z* variable. *GMT* will recognize whether the *y*
 handled appropriately.
 
 For more information on the use of COARDS-compliant netCDF files, and on how
-to load multi-dimensional grids, read Section [sec:netcdf].
+to load multi-dimensional grids, read Section `Modifiers for COARDS-compliant netCDF files`_.
 
 Chunking and compression with netCDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -6360,7 +6360,7 @@ convert from one format to the other;
 :doc:`grdedit` can make changes to the grid
 header and convert a pixel- to a gridline-registered grid, or *vice
 versa*. The grid registration is determined by the common *GMT* **-r**
-option (see Section [sec:grid\ :sub:`r`\ egistration]).
+option (see Section `Grid registration: The -r option`_).
 
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -6371,7 +6371,7 @@ that operate on grids (e.g.,
 :doc:`grdtrack`, :doc:`nearneighbor`, and
 :doc:`grdview`, to name a few. The desired
 condition can be set with the common *GMT* option **-n**; see Section
-[sec:resample]. The boundary conditions come into play when
+`Grid interpolation parameters: The -n option`_. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
 covered by the grid. The *default* boundary conditions used are those
 which are "natural" for the boundary of a minimum curvature
@@ -6869,7 +6869,7 @@ GMT graphics in **PowerPoint**
    **PowerPoint**'s Format Picture dialogue to set scale and rotation.
 
 In Figure :ref:`missing` C.1 we have attempted to include
-Figure :ref:`missing` [fig:example\ :sub:`2`\ 0] into a **PowerPoint** presentation.
+Figure :ref:`missing` [fig:example_20] into a **PowerPoint** presentation.
 First the *PostScript* file was converted to PDF (using
 :doc:`ps2raster`), then loaded into
 **PowerPoint** and the white background color was made transparent
@@ -6991,7 +6991,7 @@ instructions in the ``CUSTOM_font_info.d`` under the ``share/pslib`` directory a
 not read or process any font files and thus does not know anything about
 installed fonts and their metrics. In order to use extra fonts in
 *GMT* you need to specify the *PostScript* name of the relevant fonts in
-the file C``USTOM_font_info.d``. You can either edit the existing file distributed with
+the file ``CUSTOM_font_info.d``. You can either edit the existing file distributed with
 *GMT* to make the changes global or you can create a new file in the
 current working directory, e.g.,
 
@@ -7018,7 +7018,7 @@ you can set the *GMT* font parameters to your non-standard fonts:
 
 After setting the encoding and the degree symbol, the configuration part
 for *GMT* is finished and you can proceed to create *GMT*-maps as usual.
-An example script is discussed in Section [sec:non-default-fonts-example].
+An example script is discussed in Example [sec:non-default-fonts-example].
 
 Embedding fonts in *PostScript* and PDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
