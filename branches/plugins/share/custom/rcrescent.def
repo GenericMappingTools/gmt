@@ -1,7 +1,0 @@
-#	$Id$
-#
-#	Definition file a rightpointing crescent symbol.
-#
--0.25		-0.5	M
--0.25		0	1 		-90	90	A
--0.538675135	0	1.154700538	60	-60	A

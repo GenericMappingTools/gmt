@@ -1,7 +1,0 @@
-.SH GEOGRAPHICAL AND TIME COORDINATES
-When the output grid type is netCDF, the coordinates will be labeled "longitude", "latitude", or "time" based on the
-attributes of the input data or grid (if any) or on the
-OPT(f) or OPT(R) options. For example, both OPT(f0x) OPT(f1t) and OPT(R)90w/90e/0t/3t will result in a longitude/time
-grid. When the x, y, or z coordinate is time, it will be stored in the grid as relative time since epoch as 
-specified by BD(TIME_UNIT) and BD(TIME_EPOCH) in the BD(gmt.conf) file or on the command line.
-In addition, the BD(unit) attribute of the time variable will indicate both this unit and epoch.

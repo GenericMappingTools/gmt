@@ -1,9 +1,0 @@
-**-^**
-    Print a short message about the syntax of the command, then exits. (NOTE: on Windows use just **-**)
-**-?**
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**-**\ **-version**
-    Print GMT version and exit.
-**-**\ **-show-sharedir**
-    Print full path to GMT share directory and exit.

@@ -1,3 +1,0 @@
-.TP
-OPT(T)IT(TAG)
-Specify the x2sys IT(TAG) which tracks the attributes of this data type.
