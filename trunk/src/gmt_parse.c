@@ -555,7 +555,7 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 	 */
 
 	struct GMT_OPTION *opt = NULL;
-	char list[2] = {0, 0}, *critical_opt_order = NULL;
+	char list[2] = {0, 0}, critical_opt_order[] = GMT_CRITICAL_OPT_ORDER;
 	unsigned int i, n_errors = 0;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -570,7 +570,6 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmt_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
 
 	/* First parse the common options in the order they appear in GMT_CRITICAL_OPT_ORDER */
-	critical_opt_order = strdup (GMT_CRITICAL_OPT_ORDER);
 	for (i = 0; i < strlen (critical_opt_order); i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
 		if (strchr (given_options, critical_opt_order[i]) == NULL) continue;	/* Not a selected option */
 		list[0] = critical_opt_order[i];	/* Just look for this particular option in the linked opt list */
@@ -590,8 +589,6 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 		}
 	}
 
-	free ((void *)critical_opt_order);
-	
 	/* Update [read-only] pointer to the current option list */
 	API->GMT->current.options = options;
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
