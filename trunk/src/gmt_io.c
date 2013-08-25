@@ -6063,12 +6063,12 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 				return (NULL);
 			}
 
-			if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {
-				if (greenwich && T->segment[seg]->coord[GMT_X][row] > 180.0) T->segment[seg]->coord[GMT_X][row] -= 360.0;
-				if (!greenwich && T->segment[seg]->coord[GMT_X][row] < 0.0)  T->segment[seg]->coord[GMT_X][row] += 360.0;
-			}
 			for (col = 0; col < T->segment[seg]->n_columns; col++) {
 				T->segment[seg]->coord[col][row] = in[col];
+				if (GMT->current.io.col_type[GMT_IN][col] & GMT_IS_LON) {	/* Must handle greenwich/dateline alignments */
+					if (greenwich && T->segment[seg]->coord[col][row] > 180.0) T->segment[seg]->coord[col][row] -= 360.0;
+					if (!greenwich && T->segment[seg]->coord[col][row] < 0.0)  T->segment[seg]->coord[col][row] += 360.0;
+				}
 				if (T->segment[seg]->coord[col][row] < T->segment[seg]->min[col]) T->segment[seg]->min[col] = T->segment[seg]->coord[col][row];
 				if (T->segment[seg]->coord[col][row] > T->segment[seg]->max[col]) T->segment[seg]->max[col] = T->segment[seg]->coord[col][row];
 			}
