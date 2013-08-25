@@ -55,7 +55,7 @@ function fix_mingw_path()
 }
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export PATH=$(fix_mingw_path "@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@"):"${PATH}"
+#export PATH=$(fix_mingw_path "@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@"):"${PATH}"
 unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
@@ -63,6 +63,17 @@ export GMT_DATADIR="$src"
 
 # Reset error count
 ERROR=0
+
+# valgrind gmt wrapper
+function gmt()
+{
+  if [ -n "${VALGRIND_ARGS}" ]; then
+    valgrind ${VALGRIND_ARGS} --log-file=valgrind_%p.log \
+      --dsymutil=yes @GMT_BINARY_DIR@/src/gmt "$@"
+  else
+    @GMT_BINARY_DIR@/src/gmt "$@"
+  fi
+}
 
 # Convert PS to PDF
 function make_pdf()
@@ -119,8 +130,17 @@ passfail () {
 # Make sure to cleanup at end
 function cleanup()
 {
+  valgrind_err=0
+  if [ -n "${VALGRIND_ARGS}" ]; then
+    for log_file in valgrind_*.log; do
+      n_err=$(perl -ne 'print $1 if /ERROR SUMMARY: ([0-9]+) /' ${log_file})
+      (( valgrind_err += n_err ))
+      test "$n_err" -eq 0 && rm -f ${log_file} # remove logs w/o errors
+    done
+    echo "valgrind errors: $valgrind_err"
+  fi
   cd "@CMAKE_CURRENT_BINARY_DIR@" # get out of exec_dir before removing it
-  test "$ERROR" -eq 0 && rm -rf "$exec_dir"
+  test "$ERROR" -eq 0 -a "$valgrind_err" -eq 0 && rm -rf "$exec_dir"
   echo "exit status: $ERROR"
   exit $ERROR
 }
@@ -156,18 +176,21 @@ cd "$exec_dir"
 ln -sf "$script" .
 
 # Make a script to capture everything that can be run again
-cat > gmtest.sh <<%
-export PATH="$PATH"
+cat > gmtest.sh << EOF
+export PATH="@GMT_BINARY_DIR@/src:\$PATH"
 unset GMT5_SHAREDIR
 export GMT_SHAREDIR="$GMT_SHAREDIR"
 export GMT_USERDIR="$GMT_USERDIR"
 export GMT_DATADIR="$src"
 gmt gmtset -Du
-. "$script"
-%
+. "${script}"
+EOF
 chmod 755 gmtest.sh
 
-# Now run it
-. gmtest.sh
+# Start with proper GMT defaults
+gmt gmtset -Du
+
+# Now run the original script
+. "${script}"
 
 # vim: ft=sh
