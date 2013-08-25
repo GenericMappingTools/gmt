@@ -150,6 +150,7 @@
 
 # 4d) Extra debugging for developers:
 #add_definitions(-DDEBUG)
+#add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
 #set (CMAKE_C_FLAGS_DEBUG -ggdb3)                          # gdb debugging symbols
