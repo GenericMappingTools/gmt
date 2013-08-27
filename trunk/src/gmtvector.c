@@ -41,6 +41,8 @@ enum gmtvector_method {	/* The available methods */
 	DO_SUM,
 	DO_ROT2D,
 	DO_ROT3D,
+	DO_ROTVAR2D,
+	DO_ROTVAR3D,
 	DO_DOT,
 	DO_POLE,
 	DO_BISECTOR};
@@ -104,7 +106,7 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|s|r<rot>|x] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|s|r<rot>|R|x] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -132,6 +134,8 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ts gives the sum of the secondary vector (see -S) and the input vector(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Tr will rotate the input vectors. Depending on your input (2-D or 3-D), append\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <angle> or <plon/plat/angle>, respectively, to define the rotation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -TR will instead assume the input vectors/angles are different rotations and repeatedly\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      rotate the fixed secondary vector (see -S) using the input rotations.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
 	GMT_Option (API, "V,bi0");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
@@ -234,6 +238,9 @@ int GMT_gmtvector_parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, stru
 							GMT_Report (API, GMT_MSG_NORMAL, "Bad arguments given to -Tr (%s)\n", opt->arg);
 							n_errors++;
 						}
+						break;
+					case 'R':	/* Rotate secondary vector using input rotations */
+						Ctrl->T.mode = DO_ROTVAR2D;	/* Change to 3D later if that is what we are doing */
 						break;
 				}
 				break;
@@ -409,13 +416,22 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
 }
 
+void GMT_make_rot2d_matrix (struct GMT_CTRL *GMT, double angle, double R[3][3])
+{
+	double s, c;
+	GMT_memset (R, 9, double);
+	sincosd (angle, &s, &c);
+	R[0][0] = c;	R[0][1] = -s;
+	R[1][0] = s;	R[1][1] = c;
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtvector_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtvector (void *V_API, int mode, void *args)
 {
 	unsigned int tbl, error = 0, k, n, n_components, n_out, add_cols = 0;
-	bool single = false;
+	bool single = false, convert;
 	
 	uint64_t row, seg;
 
@@ -451,13 +467,8 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	GMT_memset (vector_3, 3, double);
 	if (Ctrl->T.mode == DO_ROT3D)	/* Spherical 3-D rotation */
 		GMT_make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
-	else if (Ctrl->T.mode == DO_ROT2D) {	/* Cartesian 2-D rotation */
-		double s, c;
-		GMT_memset (R, 9, double);
-		sincosd (Ctrl->T.par[2], &s, &c);
-		R[0][0] = c;	R[0][1] = -s;
-		R[1][0] = s;	R[1][1] = c;
-	}
+	else if (Ctrl->T.mode == DO_ROT2D)	/* Cartesian 2-D rotation */
+		GMT_make_rot2d_matrix (GMT, Ctrl->T.par[2], R);
 	else if (!(Ctrl->T.mode == DO_NOTHING || Ctrl->T.mode == DO_POLE)) {	/* Will need secondary vector, get that first before input file */
 		n = decode_vector (GMT, Ctrl->S.arg, vector_2, Ctrl->C.active[GMT_IN], Ctrl->E.active);
 		if (n == 0) Return (EXIT_FAILURE);
@@ -520,6 +531,10 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 		n_out = 1;	/* Override prior setting since we just will report an angle in one column */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;
 	}
+	else if (Ctrl->T.mode == DO_ROTVAR2D) {	/* 2D or 3D */
+		if (Din->n_columns == 1) n_out = 2;
+		if (Din->n_columns == 3) Ctrl->T.mode = DO_ROTVAR3D;	/* OK, it is 3D */
+	}
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 
@@ -530,14 +545,15 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	
 	if (Ctrl->T.mode == DO_DOT) Ctrl->T.mode = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? DO_DOT3D : DO_DOT2D;
 	n_components = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
-	
+	if (Ctrl->T.mode == DO_ROTVAR2D) n_components = 1;	/* Override in case of 2-D Cartesian rotation angles on input */
+	convert = (!single && !Ctrl->C.active[GMT_IN] && !Ctrl->T.mode == DO_ROTVAR2D && !Ctrl->T.mode == DO_ROTVAR3D);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			Sin = Din->table[tbl]->segment[seg];
 			Sout = Dout->table[tbl]->segment[seg];
 			if (Sin->header) Sout->header = strdup (Sin->header);
 			for (row = 0; row < Sin->n_rows; row++) {
-				if (!single && !Ctrl->C.active[GMT_IN]) {	/* Want to turn geographic or polar into Cartesian */
+				if (convert) {	/* Want to turn geographic or polar into Cartesian */
 					if (GMT_is_geographic (GMT, GMT_IN))
 						GMT_geo_to_cart (GMT, Sin->coord[GMT_Y][row], Sin->coord[GMT_X][row], vector_1, true);	/* get x/y/z */
 					else
@@ -574,6 +590,14 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 						break;
 					case DO_ROT3D:	/* Rotate a 3-D vector about an arbitrary pole encoded in 3x3 matrix R */
 						GMT_matrix_vect_mult (GMT, 3U, R, vector_1, vector_3);
+						break;
+					case DO_ROTVAR2D:	/* Rotate a 2-D vector about the z_axis */
+						GMT_make_rot2d_matrix (GMT, vector_1[0], R);
+						GMT_matrix_vect_mult (GMT, 2U, R, vector_2, vector_3);
+						break;
+					case DO_ROTVAR3D:	/* Rotate a 3-D vector about an arbitrary pole encoded in 3x3 matrix R */
+						GMT_make_rot_matrix (GMT, vector_1[0], vector_1[1], vector_1[2], R);
+						GMT_matrix_vect_mult (GMT, 3U, R, vector_2, vector_3);
 						break;
 					case DO_POLE:	/* Return pole of great circle defined by center point an azimuth */
 						get_azpole (GMT, vector_1, vector_3, Ctrl->T.par[0]);

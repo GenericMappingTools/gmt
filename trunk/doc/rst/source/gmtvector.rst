@@ -16,7 +16,7 @@ Synopsis
 **gmtvector** [ *table* ] [ **-A**\ **m**\ [*conf*]\|\ *vector* ] 
 [ **-C**\ [**i**\ \|\ **o**] ] 
 [ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
-[ **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **s**\ \|\ **x**] ] 
+[ **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ] 
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-f| ]
@@ -91,15 +91,16 @@ Optional Arguments
     vector. Required by operations in **-T** that need two vectors
     (average, bisector, dot product, cross product, and sum).
 
-**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **s**\ \|\ **r**\ [*arg*\ \|\ **x**]
+**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **s**\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **x**]
     Specify the vector transformation of interest. Append **a** for
     average, **b** for the pole of the two points bisector, **d** for
     dot product (use **D** to get angle in degrees between the two
     vectors), **p**\ *az* for the pole to the great circle specified by
-    input vector and the circle's *az* (no second vector used),
+    input vector and the circle's *az* (no second vector used), **s** for vector sum, 
     **r**\ *par* for vector rotation (here, *par* is a single
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
-    pole and angle), **s** for vector sum, and **x** for cross-product.
+    pole and angle), **R** will instead rotate the fixed secondary vector
+    by the rotations implied by the input records, and **x** for cross-product.
     If **-T** is not given then no transformation takes place; the
     output is determined by other options such as **-A**, **-C**,
     **-E**, and **-N**. 
@@ -146,6 +147,12 @@ Cartesian 3-D vectors, use
    ::
 
     gmt gmtvector points.txt -Tr133/34 -Co -fg > reconstructed.txt
+
+To rotate the point 65/33 by all rotations given in file rots.txt, use
+
+   ::
+
+    gmt gmtvector rots.txt -TR -S64/33 -fg > reconstructed.txt
 
 To compute the cross-product between the two Cartesian vectors 0.5/1/2
 and 1/0/0.4, and normalizing the result, try
