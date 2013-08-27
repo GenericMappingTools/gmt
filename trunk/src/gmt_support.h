@@ -40,8 +40,8 @@ struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dime
 };
 
 /* Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
-#ifdef DEBUG
-#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE)
+#if defined (DEBUG) || defined (MEMDEBUG)
+#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE_FUNC)
 #else
 #define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__func__)
 #endif
@@ -51,18 +51,18 @@ struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dime
 #define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = GMT_malloc(C,b,n,&__k,type); __k = (__kp) ? *__kp : 0U; c = GMT_malloc(C,c,n,&__k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
 
 /* Convenience macro for GMT_memory_func */
-#ifdef DEBUG
-#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),false,__SOURCE_LINE)
-#define GMT_memory_aligned(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),true,__SOURCE_LINE)
+#if defined (DEBUG) || defined (MEMDEBUG)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),false,__SOURCE_LINE_FUNC)
+#define GMT_memory_aligned(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),true,__SOURCE_LINE_FUNC)
 #else
 #define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),false,__func__)
 #define GMT_memory_aligned(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),true,__func__)
 #endif
 
 /* Convenience macro for GMT_free_func */
-#ifdef DEBUG
-#define GMT_free(C,ptr) (GMT_free_func(C,ptr,false,__SOURCE_LINE),(ptr)=NULL)
-#define GMT_free_aligned(C,ptr) (GMT_free_func(C,ptr,true,__SOURCE_LINE),(ptr)=NULL)
+#if defined (DEBUG) || defined (MEMDEBUG)
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,false,__SOURCE_LINE_FUNC),(ptr)=NULL)
+#define GMT_free_aligned(C,ptr) (GMT_free_func(C,ptr,true,__SOURCE_LINE_FUNC),(ptr)=NULL)
 #else
 #define GMT_free(C,ptr) (GMT_free_func(C,ptr,false,__func__),(ptr)=NULL)
 #define GMT_free_aligned(C,ptr) (GMT_free_func(C,ptr,true,__func__),(ptr)=NULL)

@@ -250,7 +250,7 @@ void gmt_treedelete (struct GMT_CTRL *GMT, void *addr) {
 		x->l = t->l;	x->r = t->r;
 	}
 	if (M->do_log)
-		fprintf (M->fp, "DEL: *p = x%lx %10" PRIuS " bytes %s\n", (long)t->ptr, t->size, t->name);
+		fprintf (M->fp, "DEL: *p = x%lx %10" PRIuS " bytes %s %s\n", (long)t->ptr, t->size, GMT->init.module_name, t->name);
 	if (t->name) free (t->name);
 	free (t);
 	if (addr < p->ptr) p->l = x; else p->r = x;
@@ -270,7 +270,7 @@ void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, void *ptr, void 
 	entry = (M->search) ? gmt_memtrack_find (GMT, use) : NULL;
 	if (!entry) { /* Not found, must insert new_entry entry at end */
 		entry = gmt_treeinsert (GMT, use);
-		entry->name = strdup ( GMT_basename (where) );
+		entry->name = strdup (where);
 		old = 0;
 		M->n_ptr++;
 		M->n_allocated++;
@@ -311,7 +311,7 @@ void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, void *ptr, void 
 
 	entry->size = size;
 	if (M->do_log)
-		fprintf (M->fp, "%s: *p = x%lx %10" PRIuS " bytes %s\n", mode[kind], (long)entry->ptr, entry->size, entry->name);
+		fprintf (M->fp, "%s: *p = x%lx %10" PRIuS " bytes %s %s\n", mode[kind], (long)entry->ptr, entry->size, GMT->init.module_name, entry->name);
 	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
 	if (size > M->largest) M->largest = size;		/* Update largest single item */
 }
@@ -323,11 +323,11 @@ void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, void *ptr) {
 
 	entry = gmt_memtrack_find (GMT, ptr);
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
-		GMT_report_func (GMT, GMT_MSG_NORMAL, GMT_basename (where), "Wrongly tries to free item\n");
+		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
 		return;
 	}
 	if (entry->size > M->current) {
-		GMT_report_func (GMT, GMT_MSG_NORMAL, GMT_basename (where), "Memory tracker reports < 0 bytes allocated!\n");
+		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Memory tracker reports < 0 bytes allocated!\n");
 		M->current = 0;
 	}
 	else
@@ -340,8 +340,8 @@ void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, void *ptr) {
 void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) {
 	unsigned int u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
-	double tot = gmt_memtrack_mem (GMT, x->size, &u);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s (ID = %" PRIu64 "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, tot, unit[u], x->size);
+	double size = gmt_memtrack_mem (GMT, x->size, &u);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s (ID = %" PRIu64 "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 }
 
 void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x)
@@ -358,24 +358,30 @@ void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x)
 void GMT_memtrack_report (struct GMT_CTRL *GMT) {	/* Called at end of GMT_end() */
 	unsigned int u;
 	uint64_t excess;
-	double tot;
+	double size;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 
 	if (!M->active) return;	/* Not activated */
-	if (M->current > 0) {
-		tot = gmt_memtrack_mem (GMT, M->maximum, &u);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n", tot, unit[u], M->maximum);
-		tot = gmt_memtrack_mem (GMT, M->largest, &u);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", tot, unit[u], M->largest);
-		tot = gmt_memtrack_mem (GMT, M->current, &u);
-		if (M->current) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n", tot, unit[u], M->current);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
-		excess = M->n_allocated - M->n_freed;
-		if (excess) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Items not properly freed: %" PRIu64 "\n", excess);
-		gmt_treeprint (GMT, M->list_head->r);
+
+	size = gmt_memtrack_mem (GMT, M->maximum, &u);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->maximum);
+	size = gmt_memtrack_mem (GMT, M->largest, &u);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
+	if (M->current) {
+		size = gmt_memtrack_mem (GMT, M->current, &u);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->current);
 	}
-	if (M->do_log) fclose (M->fp);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
+	excess = M->n_allocated - M->n_freed;
+	if (excess) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Items not properly freed: %" PRIu64 "\n", excess);
+	gmt_treeprint (GMT, M->list_head->r);
+
+	if (M->do_log) {
+		time_t now = time (NULL);
+		fprintf (M->fp, "# %s", ctime (&now));
+		fclose (M->fp);
+	}
 
 	free (M->list_head);
 	free (M->list_tail);
