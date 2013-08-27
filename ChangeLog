@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-08-26	pwessel
+	* gmtveector.c:		Needed to add -TR option to gmtvector to apply different
+				rotations to fixed secondary vector.
+
 2013-08-06	pwessel
 	* psxy[z].c:		Will now processes -Sargs strings in multisegment headers.
 
