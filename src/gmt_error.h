@@ -109,11 +109,27 @@ EXTERN_MSC const char * GMT_strerror (int err);
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define __SOURCE_LINE __FILE__ ":" TOSTRING(__LINE__)
+static inline char* __source_line_func (const char* src_line, const char* func) {
+	/* This function is not thread-safe */
+	static char str[256];
+	const char *c = src_line;
+	size_t len;
+  *str = '\0';
+	while ((c = strpbrk (c, "/\\"))) /* get basename of src_line */
+		src_line = ++c;
+	strncat (str, src_line, 255);
+	len = strlen (src_line);
+	strncat (str, "(", 255 - 1 - len);
+	strncat (str, func, 255 - 2 - len);
+	strcat (str, ")");
+	return str;
+}
+#define __SOURCE_LINE_FUNC __source_line_func (__FILE__ ":" TOSTRING(__LINE__), __func__)
 
 /* Convenience functions to GMT_err_func */
 #ifdef DEBUG
-#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__SOURCE_LINE)
-#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__SOURCE_LINE)
+#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__SOURCE_LINE_FUNC)
+#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__SOURCE_LINE_FUNC)
 #else
 #	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__func__)
 #	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__func__)
