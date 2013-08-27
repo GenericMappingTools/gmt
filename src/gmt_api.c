@@ -5726,7 +5726,7 @@ int GMT_Message_ (void *V_API, unsigned int *mode, char *message, int len)
 int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 {	/* Message whose output depends on verbosity setting */
 	size_t source_info_len;
-	char message[GMT_BUFSIZ] = {""}, source_line[GMT_BUFSIZ] = {""};
+	char message[GMT_BUFSIZ] = {""};
 	struct GMTAPI_CTRL *API = NULL;
 	va_list args;
 
@@ -5735,13 +5735,7 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	API = gmt_get_api_ptr (V_API);
 	if (level > API->GMT->current.setting.verbose)
 		return 0;
-#ifdef DEBUG
-	sprintf (source_line, __SOURCE_LINE);
-#else
-	sprintf (source_line, __func__);
-#endif
-	snprintf (message, GMT_BUFSIZ, "%s (%s): ",
-			API->GMT->init.module_name, GMT_basename (source_line));
+	snprintf (message, GMT_BUFSIZ, "%s: ", API->GMT->init.module_name);
 	source_info_len = strlen (message);
 	source_info_len = strlen (message);
 	va_start (args, format);
