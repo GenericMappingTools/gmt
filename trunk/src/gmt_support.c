@@ -197,6 +197,7 @@ int GMT_memtrack_init (struct GMT_CTRL *GMT)
 		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 	fprintf (M->fp, "# %s", ctime (&now));
+	fprintf (M->fp, "#           addr     size_b total_k module line/function\n");
 	return (GMT_OK);
 }
 
@@ -250,7 +251,7 @@ void gmt_treedelete (struct GMT_CTRL *GMT, void *addr) {
 		x->l = t->l;	x->r = t->r;
 	}
 	if (M->do_log)
-		fprintf (M->fp, "DEL: *p = x%lx %10" PRIuS " bytes %s %s\n", (long)t->ptr, t->size, GMT->init.module_name, t->name);
+		fprintf (M->fp, "DEL: 0x%zx %10" PRIuS " %7.0lf %s %s\n", (size_t)t->ptr, t->size, M->current / 1024.0, GMT->init.module_name, t->name);
 	if (t->name) free (t->name);
 	free (t);
 	if (addr < p->ptr) p->l = x; else p->r = x;
@@ -311,7 +312,7 @@ void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, void *ptr, void 
 
 	entry->size = size;
 	if (M->do_log)
-		fprintf (M->fp, "%s: *p = x%lx %10" PRIuS " bytes %s %s\n", mode[kind], (long)entry->ptr, entry->size, GMT->init.module_name, entry->name);
+		fprintf (M->fp, "%s: 0x%zx %10" PRIuS " %7.0lf %s %s\n", mode[kind], (size_t)entry->ptr, entry->size, M->current / 1024.0, GMT->init.module_name, entry->name);
 	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
 	if (size > M->largest) M->largest = size;		/* Update largest single item */
 }
