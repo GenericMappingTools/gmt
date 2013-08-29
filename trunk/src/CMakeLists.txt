@@ -364,9 +364,11 @@ endif ()
 
 if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
+	# PROTOSUPPLEMENTS are for testing new supplements that are not yet in
+	# subversion.  
 	#set (GMT_SUPPL_DIRS gshhg img kiss_fft meca mgd77 misc potential segy
 	set (GMT_SUPPL_DIRS gshhg img meca mgd77 misc potential segy
-		spotter x2sys)
+		spotter x2sys $ENV{PROTOSUPPLEMENTS})
 endif (BUILD_SUPPLEMENTS)
 
 # path to all binary dirs (used to set PATH in test scripts)
