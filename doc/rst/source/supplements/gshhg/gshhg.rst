@@ -176,5 +176,4 @@ hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`gshhg_dp`,
-:doc:`gshhgtograss`
+:doc:`gmt </gmt>`
