@@ -143,7 +143,7 @@ See Also
 
 :doc:`mgd77manage`,
 :doc:`mgd77list`,
-:doc:`mgd77sample`,
+:doc:`mgd77info`,
 :doc:`mgd77track`
 :doc:`x2sys_init <../x2sys/x2sys_init>`
 
