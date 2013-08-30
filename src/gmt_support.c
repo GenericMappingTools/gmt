@@ -185,10 +185,10 @@ int GMT_memtrack_init (struct GMT_CTRL *GMT)
 		if (ID > 2) M->find = ID;
 	}
 	M->search = true;
-	M->list_tail = calloc (1U, sizeof *M->list_tail);
+	M->list_tail = calloc (1U, sizeof (struct MEMORY_ITEM));
 	M->list_tail->l = M->list_tail;
 	M->list_tail->r = M->list_tail;
-	M->list_head = calloc (1U, sizeof *M->list_head);
+	M->list_head = calloc (1U, sizeof (struct MEMORY_ITEM));
 	M->list_head->r = M->list_tail;
 	if (!M->do_log) /* Logging not requested */
 		return GMT_OK;
@@ -263,7 +263,7 @@ void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, void *ptr, void 
 	size_t old, diff;
 	void *use = NULL;
 	struct MEMORY_ITEM *entry = NULL, *new_entry = NULL;
-	static char *mode[3] = {"INI", "ADD", "SET"};
+	static const char *mode[3] = {"INI", "ADD", "SET"};
 	int kind;
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 
@@ -3711,7 +3711,9 @@ void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_all
 	else {		/* B) n >= n_alloc: Compute an increment, but make sure not to exceed int limit under 32-bit systems */
 		size_t add;	/* The increment of memory (in items) */
 		add = MAX (GMT->session.min_meminc, MIN (*n_alloc/2, GMT->session.max_meminc));	/* Suggested increment from 50% rule, but no less than GMT->session.min_meminc */
-		in_n_alloc = MIN (add + in_n_alloc, LONG_MAX);	/* Limit n_alloc to LONG_MAX */
+		if (add < SIZE_MAX - in_n_alloc) /* test if addition of add and in_n_alloc is safe */
+			/* add + in_n_alloc will not overflow */
+			in_n_alloc = add + in_n_alloc;
 		if (n >= in_n_alloc) in_n_alloc = n + 1;	/* If still not big enough, set n_alloc to n + 1 */
 	}
 
@@ -3719,7 +3721,7 @@ void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_all
 
 	ptr = GMT_memory_func (GMT, ptr, in_n_alloc, element_size, false, where);
 	if (n_alloc) *n_alloc = in_n_alloc;	/* Pass allocated count back out unless given NULL */
-	
+
 	return (ptr);
 }
 
