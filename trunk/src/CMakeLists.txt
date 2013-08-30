@@ -181,7 +181,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_vector.h gmt_version.h gshhg_version.h pslib.h s_rint.h triangle.h gmt.h
 	gmt_resources.h gmt_define.h gmt_private.h gmt_error_codes.h gmt_api.c
 	gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c gmt_customio.c gmt_dcw.c
-	gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c gmt_nc.c gmt_notposix.c
+	gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c gmt_memory.c gmt_nc.c gmt_notposix.c
 	gmt_proj.c gmt_shore.c gmt_sph.c gmt_stat.c gmt_support.c gmt_regexp.c
 	gmt_vector.c gmt_parse.c gmt_error_codes.c gshhg_version.c gmtread.c
 	gmtwrite.c common_math.c common_string.c common_runpath.c compat/qsort.c
