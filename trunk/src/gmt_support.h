@@ -74,7 +74,7 @@ struct MEMORY_ITEM {
 	size_t size;	/* Size of memory allocated */
 	void *ptr;	/* Memory pointer */
 	char *name;	/* Source filename and line or function name */
-	uint64_t ID;	/* Unique ID for this allocation */
+	size_t ID;	/* Unique ID for this allocation */
 	struct MEMORY_ITEM *l, *r;
 };
 
@@ -92,7 +92,7 @@ struct MEMORY_TRACKER {
 	size_t maximum;		/* Highest memory count during execution */
 	size_t largest;		/* Highest memory allocation to a single variable */
 	size_t n_alloc;		/* Allocated size of memory pointer array */
-	struct MEMORY_ITEM *list_head, *list_tail;
+	struct MEMORY_ITEM *root; /* Pointer to splay tree */
 	FILE *fp;	/* For logging if GMT_TRACK_MEMORY is 2 */
 };
 
