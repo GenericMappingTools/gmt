@@ -302,6 +302,18 @@ static inline struct MEMORY_ITEM * gmt_treedelete (struct MEMORY_ITEM *t, void *
 	return t; /* It wasn't there */
 }
 
+static inline void gmt_treedestroy (struct MEMORY_ITEM **t) {
+	/* Remves all items from the tree rooted at t. */
+	struct MEMORY_ITEM *x = *t;
+	if (x != NULL) {
+		gmt_treedestroy (&x->l);
+		gmt_treedestroy (&x->r);
+		if (x->name != NULL) free (x->name);
+		free (x);
+		*t = NULL;
+	}
+}
+
 static inline void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, void *ptr, void *prev_ptr, size_t size) {
 	/* Called from GMT_memory to update current list of memory allocated */
 	size_t old, diff;
@@ -423,6 +435,7 @@ void GMT_memtrack_report (struct GMT_CTRL *GMT) {
 	excess = M->n_allocated - M->n_freed;
 	if (excess) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Items not properly freed: %" PRIu64 "\n", excess);
 	gmt_treeprint (GMT, M->root);
+	gmt_treedestroy (&M->root); /* Remove remaining items from tree if any */
 
 	if (M->do_log) {
 		time_t now = time (NULL);
