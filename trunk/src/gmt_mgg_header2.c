@@ -276,7 +276,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.r_mode)) != NULL) {
 		if (GMT_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
 		swap_all = gmt_swap_mgg_header (&mggHeader);
-		if (swap_all == -1) return (GMT_GRDIO_GRD98_BADMAGIC);
+		if (swap_all == false) return (GMT_GRDIO_GRD98_BADMAGIC);
 		if (mggHeader.numType == 0) mggHeader.numType = sizeof (int);
 	}
 	else

@@ -420,7 +420,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				break;
 			case GDT_Int16:
 				if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
-				tmpI16 = (GInt16 *)tmp;
+				memcpy (&tmpI16, tmp, sizeof(GInt16));
 				if (fliplr) {
 					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 						nn = (pad+m)*(nXSize_withPad) + startColPos;
@@ -444,7 +444,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				break;
 			case GDT_UInt16:
 				if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
-				tmpUI16 = (GUInt16 *)tmp;
+				memcpy (&tmpUI16, tmp, sizeof(GUInt16));
 				if (fliplr) {
 					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 						nn = (pad+m)*(nXSize_withPad) + startColPos;
@@ -468,7 +468,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				break;
 			case GDT_Int32:
 				if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
-				tmpI32 = (GInt32 *)tmp;
+				memcpy (&tmpI32, tmp, sizeof(GInt32));
 				if (fliplr) {
 					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 						nn = (pad+m)*(nXSize_withPad) + startColPos;
@@ -492,7 +492,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				break;
 			case GDT_UInt32:
 				if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
-				tmpUI32 = (GUInt32 *)tmp;
+				memcpy (&tmpUI32, tmp, sizeof(GUInt32));
 				if (fliplr) {
 					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 						nn = (pad+m)*(nXSize_withPad) + startColPos;
