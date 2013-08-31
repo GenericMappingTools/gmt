@@ -1399,25 +1399,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	if (Ctrl->Q.active) {
 		GMT_free (GMT, ind);	/* Allocated above by GMT_memory */
 	}
-	else {
-#ifdef MEMDEBUG
-		bool mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-#endif
-#ifdef TRIANGLE_D
-#ifdef MEMDEBUG
-	/* Shewchuk's function allocated the memory separately */
-		if (mem_track_enabled && GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK)
-			GMT_memtrack_off (GMT);
-#endif
-#endif
+	else
 		GMT_free (GMT, ind);
-#ifdef TRIANGLE_D
-#ifdef MEMDEBUG
-		if (mem_track_enabled && GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK)
-			GMT_memtrack_on (GMT);
-#endif
-#endif
-	}
 
 	Return (GMT_OK);
 }

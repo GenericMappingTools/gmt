@@ -1265,19 +1265,12 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	char track_file[GMT_BUFSIZ] = {""}, track_path[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
 	FILE *ftrack = NULL;
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL;
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
 
 	sprintf (track_file, "%s/%s_tracks.d", S->TAG, S->TAG);
 	x2sys_path (GMT, track_file, track_path);
 
 	if ((ftrack = fopen (track_path, "r")) == NULL) return (GMT_GRDIO_FILE_NOT_FOUND);
 
-#ifdef MEMDEBUG
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
 	if (mode == 1)
 		B->head = GMT_memory (GMT, NULL, n_alloc, struct X2SYS_BIX_TRACK_INFO);
 	else
@@ -1315,9 +1308,6 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	fclose (ftrack);
 	last_id++;
 	if (mode == 1) B->head = GMT_memory (GMT, B->head, last_id, struct X2SYS_BIX_TRACK_INFO);
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 
 	*ID = last_id;
 
@@ -1330,9 +1320,6 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 	char index_file[GMT_BUFSIZ] = {""}, index_path[GMT_BUFSIZ] = {""};
 	FILE *fbin = NULL;
 	uint32_t i, index = 0, flag, no_of_tracks, id; /* These must remain uint32_t */
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
 
 	sprintf (index_file, "%s/%s_index.b", S->TAG, S->TAG);
 	x2sys_path (GMT, index_file, index_path);
@@ -1341,10 +1328,6 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open %s\n", index_path);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
-#ifdef MEMDEBUG
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
 	B->base = GMT_memory (GMT, NULL, B->nm_bin, struct X2SYS_BIX_DATABASE);
 
 	while ((fread (&index, sizeof (uint32_t), 1U, fbin)) == 1U) {
@@ -1375,9 +1358,6 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 			B->base[index].n_tracks++;
 		}
 	}
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 	fclose (fbin);
 	return (X2SYS_NOERROR);
 }

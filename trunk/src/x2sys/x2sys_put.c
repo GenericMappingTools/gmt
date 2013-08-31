@@ -197,9 +197,6 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 
 	int error = 0;
 	bool found_it, skip;
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
 
 	FILE *fp = NULL, *fbin = NULL, *ftrack = NULL;
 
@@ -264,24 +261,20 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 
 	/* Ok, now we can start reading new info */
 
-#ifdef MEMDEBUG
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
 	if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 2nd line of track binindex file\n");
 		Return (EXIT_FAILURE);
 	}
 	while (line[0] == '>') {	/* Next segment */
 		sscanf (line, "> %s", track);
-		
+
 		/* Determine if this track is already in the data base */
-		
+
 		this_info = x2sys_bix_find_track (track, &found_it, &B);	/* Returns found_it = true if found */
-		
+
 		/* In either case, this_info now points to the previous track so that this_info->next is the found track OR
 		 * it is the point after which a new track should be inserted */
-		
+
 		free_id = 0;	/* Default is to add a new track entry */
 		if (found_it) {	/* This track already exists in the database */
 			if (Ctrl->D.active) {	/* Here we wish to delete it (and possibly replace the contents) */
@@ -350,9 +343,6 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 		}
 	}
 	GMT_fclose (GMT, fp);
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 
 	/* Done, now we must rewrite the <ID>_index.b and <ID>_tracks.d files */
 
