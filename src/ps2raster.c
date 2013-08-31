@@ -158,7 +158,7 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 	Ctrl->A.active = true;
 
 	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}
-	if (arg[strlen(arg)-1] == '-') {
+	if (*arg != '\0' && arg[strlen(arg)-1] == '-') {
 		Ctrl->A.reset = true;
 		return (error);
 	}
