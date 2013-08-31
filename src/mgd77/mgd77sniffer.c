@@ -273,9 +273,6 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 #ifdef FIX
 	bool deleteRecord = false;
 #endif
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
 
 	/* INITIALIZE MEMORY FOR MGD77 DATA STRUCTURES */
 	struct MGD77_DATA_RECORD *D;
@@ -303,11 +300,6 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) bailout (API->error);
-
-#ifdef MEMDEBUG
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
 
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);
 	gmt_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
@@ -2698,9 +2690,6 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 
 	bailout (GMT_OK);
 }

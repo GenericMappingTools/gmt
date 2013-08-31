@@ -627,11 +627,8 @@ int GMT_project (void *V_API, int mode, void *args)
 	uint64_t rec, n_total_read, col, n_total_used = 0;
 	unsigned int rmode;
 	bool pure_ascii, skip, z_first = true;
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
 	int error = 0;
-	
+
 	size_t n_alloc = GMT_CHUNK;
 
 	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0;
@@ -663,9 +660,6 @@ int GMT_project (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the project main code ----------------------------*/
 
-#ifdef MEMDEBUG
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-#endif
 	GMT_memset (&P, 1, struct PROJECT_INFO);
 	GMT_memset (a, 3, double);
 	GMT_memset (b, 3, double);
@@ -979,9 +973,6 @@ int GMT_project (void *V_API, int mode, void *args)
 			p_data[P.n_used].t = NULL;	/* Initialize since that is not done by realloc */
 			p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
 			if (P.n_z) {	/* Copy over z column(s) */
-#ifdef MEMDEBUG
-				if (mem_track_enabled) GMT_memtrack_off (GMT);	/* Because it gives way too many pointers to search through */
-#endif
 				if (pure_ascii) {	/* Must store all text beyond x,y columns */
 					p_data[P.n_used].t = GMT_memory (GMT, NULL, strlen (GMT->current.io.current_record), char);
 					copy_text_from_col3 (GMT->current.io.current_record, p_data[P.n_used].t);
@@ -990,9 +981,6 @@ int GMT_project (void *V_API, int mode, void *args)
 					p_data[P.n_used].z = GMT_memory (GMT, NULL, P.n_z, double);
 					GMT_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);
 				}
-#ifdef MEMDEBUG
-				if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 			}
 			P.n_used++;
 			if (P.n_used == n_alloc) {
@@ -1020,16 +1008,10 @@ int GMT_project (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
-#ifdef MEMDEBUG
-	if (mem_track_enabled && P.n_z) GMT_memtrack_off (GMT);	/* Free pointers that were allocated when tracking was off */
-#endif
 	for (rec = 0; rec < P.n_used; rec++) {
 		if (p_data[rec].t) GMT_free (GMT, p_data[rec].t);
 		if (p_data[rec].z) GMT_free (GMT, p_data[rec].z);
 	}
-#ifdef MEMDEBUG
-	if (mem_track_enabled && P.n_z) GMT_memtrack_on (GMT);	/* Continue memory tracking */
-#endif
 
 	GMT_free (GMT, p_data);
 

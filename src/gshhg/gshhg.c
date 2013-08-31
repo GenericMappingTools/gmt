@@ -213,12 +213,9 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	int32_t max_east = 270000000;
 	size_t n_read;
 	bool must_swab, OK, first = true;
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
-	
+
 	uint64_t dim[4] = {1, 0, 0, 2};
-	
+
 	size_t n_alloc = 0;
 
 	double w, e, s, n, area, f_area, scale = 10.0;
@@ -248,11 +245,6 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gshhg_usage (API, GMT_SYNOPSIS));		/* Return the synopsis */
 
 	/* Parse the command-line arguments */
-
-#ifdef MEMDEBUG
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
@@ -440,8 +432,5 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 	Return (GMT_OK);
 }

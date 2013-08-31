@@ -262,11 +262,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
 	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	bool wrap_180, replicate_x, replicate_y;
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
 	size_t n_alloc = GMT_CHUNK;
-	
+
 	uint64_t ij, ij0, kk, n, n_read, n_almost, n_none, n_set, n_filled;
 
 	double weight, weight_sum, grd_sum, dx, dy, delta, distance = 0.0;
@@ -345,11 +342,6 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
 	x_wrap = Grid->header->nx - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
-#ifdef MEMDEBUG
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
-
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
@@ -444,26 +436,17 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 		if (!(n%1000)) GMT_Report (API, GMT_MSG_VERBOSE, "Processed record %10ld\r", n);
 		if (n == n_alloc) {
 			size_t old_n_alloc = n_alloc;
-#ifdef MEMDEBUG
-			if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 			n_alloc <<= 1;
 			point = GMT_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
 			GMT_memset (&(point[old_n_alloc]), n_alloc - old_n_alloc, struct NEARNEIGHBOR_POINT);	/* Set to NULL/0 */
-#ifdef MEMDEBUG
-			if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
 		}
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processed record %10ld\n", n);
 
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	/* Compute weighted averages based on the nearest neighbors */
 
@@ -474,9 +457,6 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 	three_over_radius = 3.0 / Ctrl->S.radius;
 
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
 	ij0 = 0;
 	GMT_row_loop (GMT, Grid, row) {
 		GMT_col_loop (GMT, Grid, row, col, ij) {
@@ -516,12 +496,9 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Gridded row %10ld\r", row);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Gridded row %10ld\n", row);
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-	
+
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}

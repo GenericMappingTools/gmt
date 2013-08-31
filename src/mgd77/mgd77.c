@@ -4068,9 +4068,6 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 	int i;
 	unsigned int n = 0, n_dig, j, k;
 	bool all, NGDC_ID_likely;
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
 	size_t n_alloc = 0, length;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ] = {""}, this_arg[GMT_BUFSIZ] = {""}, *flist = NULL;
@@ -4079,11 +4076,6 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 	struct dirent *entry = NULL;
 #else
 	FILE *fp = NULL;
-#endif
-#ifdef MEMDEBUG
-	/* Since the sorting throws this machinery off */
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 
 	for (opt = options; opt; opt = opt->next) {
@@ -4193,32 +4185,16 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 
 	if (n != n_alloc) L = GMT_memory (GMT, L, n, char *);
 	*list = L;
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 	return (n);
 }
 
 void MGD77_Path_Free (struct GMT_CTRL *GMT, uint64_t n, char **list)
 {	/* Free list of cruise IDs */
 	uint64_t i;
-#ifdef MEMDEBUG
-	bool mem_track_enabled;
-#endif
-#ifdef DEBUG
-#endif
 	if (n == 0) return;
 
-#ifdef MEMDEBUG
-	/* Since the sorting throws this machinery off */
-	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT);
-#endif
 	for (i = 0; i < n; i++) GMT_free (GMT, list[i]);
 	GMT_free (GMT, list);
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT);
-#endif
 }
 
 void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec, bool apply_bits[])
