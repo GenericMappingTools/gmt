@@ -3,8 +3,12 @@
 -----------------------------------------------------------------------------------------
 
 2013-08-26	pwessel
-	* gmtveector.c:		Needed to add -TR option to gmtvector to apply different
+	* gmtvector.c:		Needed to add -TR option to gmtvector to apply different
 				rotations to fixed secondary vector.
+
+2013-08-24	pwessel
+	* gmt_io.c:		The GMT_read_table function checked for greenwich before assigning
+				the input data (issue #357).
 
 2013-08-06	pwessel
 	* psxy[z].c:		Will now processes -Sargs strings in multisegment headers.
