@@ -279,10 +279,7 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
-	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	/* The remainder are just pointers to memory allocated elsewhere */
-	size_t *mem_rows;		/* Current number of allocated rows per column for temp memory */
-	double **mem_coord;		/* Columns of temp memory */
 	int *varid;			/* Array of variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */
 	double *add_offset;		/* Array of offsets (netCDF only) */
