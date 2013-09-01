@@ -47,10 +47,10 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	bool is_world;			/* true if map has 360 degrees of longitude range */
 	bool is_world_tm;			/* true if GMT_TM map is global? */
 	bool lon_wrap;			/* true when longitude wrapping over 360 degrees is allowed */
-	bool meridian_straight;		/* true if meridians plot as straight lines */
-	bool parallel_straight;		/* true if parallels plot as straight lines */
 	bool z_periodic;			/* true if grid values are 0-360 degrees (phases etc) */
 	bool loxodrome;				/* true if we are computing loxodrome distances */
+	unsigned int meridian_straight;		/* 1 if meridians plot as straight lines, 2 for special case */
+	unsigned int parallel_straight;		/* 1 if parallels plot as straight lines, 2 for special case */
 	unsigned int n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 	unsigned int n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
 	unsigned int path_mode;		/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */

@@ -3482,7 +3482,8 @@ int gmt_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_GEO_IO *S)
 	sequence[0] = sequence[1] = sequence[2] = -1;
 
 	S->range = GMT_IS_M180_TO_P180_RANGE;			/* -180/+180 range, may be overwritten below by + or - */
-	S->decimal = S->wesn = S->no_sign = false;
+	S->decimal = S->no_sign = false;
+	S->wesn = 0;
 
 	i1 = strlen (text) - 1;
 	for (i = order = 0; i <= i1; i++) {
