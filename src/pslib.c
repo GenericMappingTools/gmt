@@ -114,6 +114,7 @@
 #include <stdarg.h>
 #include "gmt_notposix.h"
 #include "common_string.h"
+#include "common_byteswap.h"
 #include "pslib.h"
 
 #if ! defined PATH_MAX && defined _MAX_PATH
@@ -2706,22 +2707,22 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 int psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, int i0, int i1)
 {
 	/* Reads the header of a Sun rasterfile (or any other).
-	   Since the byte order is defined as Big Endian, the bytes are read
-	   byte by byte to ensure portability onto Little Endian platforms.
+	   Since the byte order is defined as Big Endian, the bytes are
+		 swapped on Little Endian platforms.
 	 */
 
-	unsigned char byte[4];
-	int i, j, value, in[4];
+	int i;
+	int32_t value;
 
 	for (i = i0; i <= i1; i++) {
 
-		if (fread (byte, sizeof (unsigned char), 4U, fp) != 4U) {
+		if (fread (&value, sizeof (int32_t), 1, fp) != 1) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading rasterfile header\n");
 			return (-1);
 		}
-		for (j = 0; j < 4; j++) in[j] = (int)byte[j];
-
-		value = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
+#ifndef WORDS_BIGENDIAN
+		value = bswap32 (value);
+#endif
 
 		switch (i) {
 			case 0:
@@ -2751,7 +2752,8 @@ int psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, int
 		}
 	}
 
-	if (h->type == RT_OLD && h->length == 0) h->length = 2 * ((int)lrint (ceil (h->width * h->depth / 16.0))) * h->height;
+	if (h->type == RT_OLD && h->length == 0)
+		h->length = 2 * ((int)lrint (ceil (h->width * h->depth / 16.0))) * h->height;
 
 	return (0);
 }
@@ -4222,6 +4224,8 @@ int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile)
 	unsigned char *picture = NULL;
 	struct imageinfo h;
 	int found;
+
+	memset (&h, 0, sizeof(struct imageinfo)); /* initialize struct */
 
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && PSL->internal.pattern[image_no].status) return (image_no);	/* Already done this */
 
