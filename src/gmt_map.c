@@ -2790,7 +2790,7 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 	GMT->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	GMT->current.map.frame.check_side = true;
 	GMT->current.map.frame.horizontal = 1;
-	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = true;
+	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
 	return (false);
 }
@@ -2836,7 +2836,7 @@ bool gmt_map_init_polar (struct GMT_CTRL *GMT)
 	GMT->current.map.frame.horizontal = 1;
 	if (!GMT->current.proj.got_elevations) GMT->current.plot.r_theta_annot = true;	/* Special labeling case (see GMT_get_annot_label) */
 	GMT->current.map.n_lat_nodes = 2;
-	GMT->current.map.meridian_straight = true;
+	GMT->current.map.meridian_straight = 1;
 
 	return (false);
 }
@@ -2879,7 +2879,7 @@ bool gmt_map_init_merc (struct GMT_CTRL *GMT) {
 	GMT->current.map.right_edge = &gmt_right_rect;
 	GMT->current.map.frame.horizontal = 1;
 	GMT->current.map.frame.check_side = true;
-	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = true;
+	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
 	return (false);	/* No need to search for wesn */
 }
@@ -2928,7 +2928,7 @@ bool gmt_map_init_cyleq (struct GMT_CTRL *GMT) {
 	GMT->current.map.right_edge = &gmt_right_rect;
 	GMT->current.map.frame.horizontal = 1;
 	GMT->current.map.frame.check_side = true;
-	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = true;
+	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
 	return (false);	/* No need to search for wesn */
 }
@@ -2962,7 +2962,7 @@ bool gmt_map_init_cyleqdist (struct GMT_CTRL *GMT) {
 	GMT->current.map.right_edge = &gmt_right_rect;
 	GMT->current.map.frame.horizontal = 1;
 	GMT->current.map.frame.check_side = true;
-	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = true;
+	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
 	return (false);	/* No need to search for wesn */
 }
@@ -2996,7 +2996,7 @@ bool gmt_map_init_miller (struct GMT_CTRL *GMT) {
 	GMT->current.map.right_edge = &gmt_right_rect;
 	GMT->current.map.frame.horizontal = 1;
 	GMT->current.map.frame.check_side = true;
-	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = true;
+	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
 	return (false);	/* No need to search for wesn */
 }
@@ -3030,7 +3030,7 @@ bool gmt_map_init_cylstereo (struct GMT_CTRL *GMT) {
 	GMT->current.map.right_edge = &gmt_right_rect;
 	GMT->current.map.frame.horizontal = 1;
 	GMT->current.map.frame.check_side = true;
-	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = true;
+	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
 	return (false);	/* No need to search for wesn */
 }
@@ -3095,7 +3095,7 @@ bool gmt_map_init_stereo (struct GMT_CTRL *GMT) {
 		}
 		else
 			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[3];
-		GMT->current.map.meridian_straight = true;
+		GMT->current.map.meridian_straight = 1;
 	}
 	else {
 		GMT->current.proj.fwd = (GMT_IS_ZERO (GMT->current.proj.pole)) ? &GMT_stereo2_sph : &GMT_stereo1_sph;
@@ -3227,7 +3227,7 @@ bool gmt_map_init_lambert (struct GMT_CTRL *GMT) {
 	GMT->current.map.n_lat_nodes = 2;
 	GMT->current.map.frame.horizontal = 1;
 	GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
-	GMT->current.map.meridian_straight = true;
+	GMT->current.map.meridian_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -3830,7 +3830,7 @@ bool gmt_map_init_lambeq (struct GMT_CTRL *GMT) {
 	gmt_map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[3]);
 	GMT->current.proj.r = 0.5 * GMT->current.proj.rect[XHI];
 	GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
-	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = true;
+	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -3923,7 +3923,7 @@ bool gmt_map_init_ortho (struct GMT_CTRL *GMT) {
 	gmt_map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[3]);
 	GMT->current.proj.r = 0.5 * GMT->current.proj.rect[XHI];
 	GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
-	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = true;
+	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -4205,7 +4205,7 @@ bool gmt_map_init_azeqdist (struct GMT_CTRL *GMT) {
 	gmt_map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[3]);
 	GMT->current.proj.r = 0.5 * GMT->current.proj.rect[XHI];
 	GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
-	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = true;
+	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -4259,7 +4259,7 @@ bool gmt_map_init_mollweide (struct GMT_CTRL *GMT) {
 	GMT->current.proj.fwd = &GMT_mollweide;
 	GMT->current.proj.inv = &GMT_imollweide;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-	GMT->current.map.parallel_straight = true;
+	GMT->current.map.parallel_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -4470,7 +4470,7 @@ bool gmt_map_init_eckert4 (struct GMT_CTRL *GMT) {
 	GMT->current.proj.fwd = &GMT_eckert4;
 	GMT->current.proj.inv = &GMT_ieckert4;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-	GMT->current.map.parallel_straight = true;
+	GMT->current.map.parallel_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -4522,7 +4522,7 @@ bool gmt_map_init_eckert6 (struct GMT_CTRL *GMT) {
 	GMT->current.proj.fwd = &GMT_eckert6;
 	GMT->current.proj.inv = &GMT_ieckert6;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-	GMT->current.map.parallel_straight = true;
+	GMT->current.map.parallel_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -4573,7 +4573,7 @@ bool gmt_map_init_robinson (struct GMT_CTRL *GMT) {
 	GMT->current.proj.fwd = &GMT_robinson;
 	GMT->current.proj.inv = &GMT_irobinson;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-	GMT->current.map.parallel_straight = true;
+	GMT->current.map.parallel_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -4629,7 +4629,7 @@ bool gmt_map_init_sinusoidal (struct GMT_CTRL *GMT) {
 	}
 
 	gmt_map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
-	GMT->current.map.parallel_straight = true;
+	GMT->current.map.parallel_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -4741,7 +4741,7 @@ bool gmt_map_init_albers (struct GMT_CTRL *GMT) {
 	az = 2.0 * d_atan2 (dy, x1 - GMT->current.proj.c_x0);
 	dy /= (1.0 - cos (az));
 	GMT->current.proj.c_y0 += dy;
-	GMT->current.map.meridian_straight = true;
+	GMT->current.map.meridian_straight = 1;
 
 	return (GMT->common.R.oblique);
 }
@@ -4792,7 +4792,7 @@ bool gmt_map_init_econic (struct GMT_CTRL *GMT) {
 	az = 2.0 * d_atan2 (dy, x1 - GMT->current.proj.c_x0);
 	dy /= (1.0 - cos (az));
 	GMT->current.proj.c_y0 += dy;
-	GMT->current.map.meridian_straight = true;
+	GMT->current.map.meridian_straight = 1;
 
 	return (GMT->common.R.oblique);
 }

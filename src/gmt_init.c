@@ -7044,6 +7044,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 void gmt5_handle_plussign (struct GMT_CTRL *GMT, char *in, unsigned way)
 {	/* Way = 0: replace ++ with ASCII 1, Way = 1: Replace ASCII 1 with + */
 	size_t i, o;
+	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace pairs of ++ with a single ASCII 1 */
 		for (i = 1, o = 0; in[i]; i++, o++) {
 			if (in[i-1] == '+' && in[i] == '+') {

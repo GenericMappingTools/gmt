@@ -909,8 +909,8 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 int GMT_gmtspatial (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int geometry = GMT_IS_POLY;
-	bool internal = false, external = false, mseg = false;
+	unsigned int geometry = GMT_IS_POLY, internal = 0, external = 0;
+	bool mseg = false;
 
 	static char *kind[2] = {"CCW", "CW"};
 
@@ -944,7 +944,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	if (Ctrl->I.active) {
 		switch (Ctrl->I.mode) {
 			case 0:
-				internal = external = true;
+				internal = external = 1;
 				break;
 			case 1:
 				internal = 1;
@@ -983,7 +983,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 	
-	if (Ctrl->S.active && Ctrl->S.mode != POL_SPLIT) external = true;
+	if (Ctrl->S.active && Ctrl->S.mode != POL_SPLIT) external = 1;
 	
 	GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Use Cartesian calculations and user units */
 	
@@ -1299,7 +1299,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 						S2 = D->table[tbl2]->segment[seg2];
 						if (S2->n_rows == 0) continue;
 						if (Ctrl->S.mode != POL_CLIP) {
-							same_feature = (external == 2 || internal == 2) ? (tbl1 == tbl2) : (tbl1 == tbl2 && seg1 == seg2);	/* What constitues the same feature */
+							same_feature = (external == 2 || internal == 2) ? (tbl1 == tbl2) : (tbl1 == tbl2 && seg1 == seg2);	/* What constitutes the same feature */
 							if (!internal && same_feature) continue;	/* Do not do internal crossings */
 							if (!external && !same_feature) continue;	/* Do not do external crossings */
 						}
