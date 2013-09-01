@@ -238,14 +238,14 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 {
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
 	uint64_t n_read, nz, n_pitched, n_cells_filled, w_col, i_col = 0, sid_col;
-	
+
 	size_t n_alloc = 0, nz_alloc = 0;
-	
-	bool do_extra, duplicate_col;
-	
+
+	bool do_extra = false, duplicate_col;
+
 	int error = 0;
 	unsigned int row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
-	
+
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
 
 	char format[GMT_BUFSIZ] = {""}, *old_format = NULL;
