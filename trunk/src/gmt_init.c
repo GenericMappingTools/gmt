@@ -4161,8 +4161,11 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			if (*value) {
-				if (GMT->session.CUSTOM_LIBS)
+				if (GMT->session.CUSTOM_LIBS) {
+					if ((strcmp (GMT->session.CUSTOM_LIBS, value) == 0))
+						break; /* stop here if string in place is equal */
 					free (GMT->session.CUSTOM_LIBS);
+				}
 				/* Set Extension shared libraries */
 				GMT->session.CUSTOM_LIBS = strdup (value);
 			}
@@ -4188,7 +4191,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
 			}
 			break;
-			
+
 		case GMTCASE_GMT_FFT:
 			if (!strncmp (lower_value, "auto", 4))
 				GMT->current.setting.fft = k_fft_auto;
@@ -4282,16 +4285,22 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 
 		case GMTCASE_DIR_DCW:
 			if (*value) {
-				if (GMT->session.DCWDIR)
+				if (GMT->session.DCWDIR) {
+					if ((strcmp (GMT->session.DCWDIR, value) == 0))
+						break; /* stop here if string in place is equal */
 					free (GMT->session.DCWDIR);
+				}
 				/* Set session DCW dir */
 				GMT->session.DCWDIR = strdup (value);
 			}
 			break;
 		case GMTCASE_DIR_GSHHG:
 			if (*value) {
-				if (GMT->session.GSHHGDIR)
+				if (GMT->session.GSHHGDIR) {
+					if ((strcmp (GMT->session.GSHHGDIR, value) == 0))
+						break; /* stop here if string in place is equal */
 					free (GMT->session.GSHHGDIR);
+				}
 				/* Set session GSHHG dir */
 				GMT->session.GSHHGDIR = strdup (value);
 			}
@@ -4299,16 +4308,22 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 		case GMTCASE_DIR_TMP:
 			if (*value) {
 				/* Replace the session temp dir from the environment, if any */
-				if (GMT->session.TMPDIR)
+				if (GMT->session.TMPDIR) {
+					if ((strcmp (GMT->session.TMPDIR, value) == 0))
+						break; /* stop here if string in place is equal */
 					free (GMT->session.TMPDIR);
+				}
 				GMT->session.TMPDIR = strdup (value);
 			}
 			break;
 		case GMTCASE_DIR_USER:
 			if (*value) {
 				/* Replace the session user dir from the environment, if any */
-				if (GMT->session.USERDIR)
+				if (GMT->session.USERDIR) {
+					if ((strcmp (GMT->session.USERDIR, value) == 0))
+						break; /* stop here if string in place is equal */
 					free (GMT->session.USERDIR);
+				}
 				GMT->session.USERDIR = strdup (value);
 			}
 			break;
@@ -6095,7 +6110,6 @@ void GMT_end (struct GMT_CTRL *GMT)
 	GMT_memtrack_report (GMT);
 	free (GMT->hidden.mem_keeper);
 #endif
-	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 
 	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
 }
@@ -6244,6 +6258,8 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 	/* GMT_IO */
 
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
+
+	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 
 	/* Overwrite GMT with what we saved in GMT_begin_module */
 	GMT_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */

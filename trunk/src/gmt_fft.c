@@ -43,7 +43,7 @@
  * GMT_FFT_Option     : Lets user code display FFT options
  * GMT_FFT_Parse      : Allows parsing of user option for the FFT settings
  * GMT_FFT_Create     : Initializes the 1-D or 2-D FFT machinery, preps the table/grid.
- * GMT_FFT	      : 1-D or 2-D FFT
+ * GMT_FFT            : 1-D or 2-D FFT
  * GMT_FFT_Wavenumber : Return any wavenumber given index
  * GMT_FFT_Destroy    : Frees the FFT machinery.
  *
@@ -665,14 +665,14 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	if (GMT_Destroy_Data (GMT->parent, &Grid) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error freeing temporary grid\n");
 	}
-		
+
 	GMT_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT pad */
 }
 
 void gmt_fft_save2d (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_WAVENUMBER *K)
 {
 	/* Handle the writing of the grid going into the FFT and comping out of the FFT, per F settings */
-	
+
 	if (G == NULL || (K == NULL ||  K->info == NULL)) return;
 	if (direction == GMT_IN  && K->info->save[GMT_IN])  gmt_grd_save_taper (GMT, G, K->info->suffix);
 	if (direction == GMT_OUT && K->info->save[GMT_OUT]) gmt_grd_save_fft (GMT, G, K->info);
@@ -879,7 +879,7 @@ int GMT_fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsign
 void GMT_fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 {
 	if (Z->setup_1d) {	/* Free single-precision FFT data structure and arrays */
-  		vDSP_destroy_fftsetup (Z->setup_1d);
+		vDSP_destroy_fftsetup (Z->setup_1d);
 		free (Z->dsp_split_complex_1d.realp);
 		free (Z->dsp_split_complex_1d.imagp);
 	}
@@ -902,7 +902,7 @@ int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int dire
 
 	if (GMT->current.fft.n_1d != n) {	/* Must update the FFT setup arrays */
 		/* Build data structure that contains precalculated data for use by
-	 	* single-precision FFT functions: */
+		 * single-precision FFT functions: */
 		GMT_fft_1d_vDSP_reset (&GMT->current.fft);
 		GMT->current.fft.setup_1d = vDSP_create_fftsetup (log2n, kFFTRadix2);
 		GMT->current.fft.dsp_split_complex_1d.realp = malloc (n * sizeof(float));
@@ -925,7 +925,7 @@ int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int dire
 void GMT_fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 {
 	if (Z->setup_2d) {	/* Free single-precision 2D FFT data structure and arrays */
-  		vDSP_destroy_fftsetup (Z->setup_2d);
+		vDSP_destroy_fftsetup (Z->setup_2d);
 		free (Z->dsp_split_complex_2d.realp);
 		free (Z->dsp_split_complex_2d.imagp);
 	}

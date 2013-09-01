@@ -77,7 +77,7 @@ enum GMT_enum_length {
 	GMT_LEN256 = 256U,         /* Max size of some text items */
 	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
 	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
-	GMT_MIN_MEMINC  = 2048U,        /* E.g., 16 kb of 8-byte doubles */
+	GMT_MIN_MEMINC  = 1U,        /* E.g., 16 kb of 8-byte doubles */
 	GMT_MAX_MEMINC  = 67108864U};   /* E.g., 512 Mb of 8-byte doubles */
 
 /* The four plot length units [m just used internally] */
