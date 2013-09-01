@@ -332,7 +332,7 @@ int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
 	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
 
 	uint64_t i, j;
-	unsigned int n_multiples;
+	unsigned int n_multiples = 0;
 	double dx;
 
 	if (n < 3) return (-1);
