@@ -2251,11 +2251,21 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length
 	return (new_word);
 }
 
+void psl_freewords (struct PSL_CTRL *PSL, struct PSL_WORD **word, int n_words)
+{
+	/* Free all the words and their texts */
+	int k;
+	for (k = 0; k < n_words; k++) {
+		if (word[k]->txt) PSL_free (word[k]->txt);
+		PSL_free (word[k]);
+	}
+}
+
 int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char *paragraph)
 {	/* Typeset one or more paragraphs.  Separate paragraphs by adding \r to end of last word in a paragraph.
 	 * This is a subfunction that simply place all the text attributes on the stack.
 	 */
-	int n, p, n_scan, last_k = -1, error = 0, old_font, font, after, len;
+	int n, p, n_scan, last_k = -1, error = 0, old_font, font, after, len, n_alloc_txt;
 	int *font_unique = NULL;
 	unsigned int i, i1, i0, j, k, n_items, n_font_unique, n_rgb_unique;
 	size_t n_alloc, n_words = 0;
@@ -2479,8 +2489,8 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 
 	} /* End of word loop */
 	PSL_free (text);	/* Reclaim this memory */
-
-	k--;
+	n_alloc_txt = k;	/* Number of items in word array that might have text allocations */
+	k--;			/* Index of last word */
 	while (k && !word[k]->txt) k--;	/* Skip any blank lines at end */
 	n_items = k + 1;
 
@@ -2601,6 +2611,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	PSL_command (PSL, "    PSL_width k1 w1 w2 gt {w1} {w2} ifelse put\n    PSL_width k 0 put\n");
 	PSL_command (PSL, "    PSL_count k 0 put\n  } if\n} for\n");
 
+	psl_freewords (PSL, word, n_alloc_txt);
 	PSL_free (word);
 	return (PSL_NO_ERROR);
 }

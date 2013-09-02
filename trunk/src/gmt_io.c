@@ -5830,6 +5830,7 @@ struct GMT_DATATABLE * gmt_alloc_table (struct GMT_CTRL *GMT, struct GMT_DATATAB
 		T->segment[seg]->n_columns = n_columns;
 		T->n_records += nr;
 		if (Tin->segment[seg]->header) T->segment[seg]->header = strdup (Tin->segment[seg]->header);
+		if (Tin->segment[seg]->label) T->segment[seg]->label = strdup (Tin->segment[seg]->label);
 	}
 	return (T);
 }
