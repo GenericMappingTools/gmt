@@ -315,25 +315,25 @@ static inline void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *t) {
 
 void GMT_memtrack_report (struct GMT_CTRL *GMT) {
 	/* Called at end of GMT_end() */
-	unsigned int u;
+	unsigned int u, level;
 	uint64_t excess;
 	double size;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 
 	if (!M->active) return;	/* Not activated */
-
+	excess = M->n_allocated - M->n_freed;
+	level = (excess) ? GMT_MSG_NORMAL : GMT_MSG_VERBOSE;	/* Only insist on reporting if a leak, otherwise requires -V */
 	size = gmt_memtrack_mem (GMT, M->maximum, &u);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->maximum);
+	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->maximum);
 	size = gmt_memtrack_mem (GMT, M->largest, &u);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
+	GMT_Report (GMT->parent, level, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
 	if (M->current) {
 		size = gmt_memtrack_mem (GMT, M->current, &u);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->current);
+		GMT_Report (GMT->parent, level, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->current);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
-	excess = M->n_allocated - M->n_freed;
-	if (excess) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Items not properly freed: %" PRIu64 "\n", excess);
+	GMT_Report (GMT->parent, level, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
+	if (excess) GMT_Report (GMT->parent, level, "Items not properly freed: %" PRIu64 "\n", excess);
 	gmt_treeprint (GMT, M->root);
 	gmt_treedestroy (&M->root); /* Remove remaining items from tree if any */
 
