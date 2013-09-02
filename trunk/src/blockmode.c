@@ -231,7 +231,7 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 
 	double value = 0.0;
 	uint64_t i;
-	unsigned int bin, mode_bin, mode_count = 0, n_modes = 0;
+	unsigned int bin, mode_bin = 0, mode_count = 0, n_modes = 0;
 	bool done;
 
 	GMT_memset (B->count, B->n_bins, unsigned int);	/* Reset the counts */

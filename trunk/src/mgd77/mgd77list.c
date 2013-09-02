@@ -735,8 +735,8 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
 	
 	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, this_cc;
-	double dist_scale, vel_scale, ds, ds0, dt, cumulative_dist, aux_dvalue[N_MGD77_AUX];
-	double i_sound_speed = 0.0, date = 0.0, g, m, z, v, twt, prev_az, next_az;
+	double dist_scale, vel_scale, ds, ds0 = 0.0, dt, cumulative_dist, aux_dvalue[N_MGD77_AUX];
+	double i_sound_speed = 0.0, date = 0.0, g, m, z, v, twt, prev_az = 0.0, next_az;
 	double *cumdist = NULL, *cumdist_off = NULL, *mtf_bak = NULL, *mtf_int = NULL;
 	double *dvalue[MGD77_MAX_COLS], *out = NULL;
 	
