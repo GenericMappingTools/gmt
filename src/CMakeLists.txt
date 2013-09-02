@@ -573,18 +573,22 @@ install (TARGETS ${GMT_LIBS} ${GMT_PROGS}
 if (WIN32 AND _debug_build)
 	# install program database files
 	set (_pdb_files)
+	set (_pdb_files_s)
 	if (NOT DEFINED PSL_DLL_RENAME)
-		foreach (_target ${LIB_PREFIX}psl ${LIB_PREFIX}gmt ${LIB_PREFIX}gmtsuppl ${GMT_PROGS})
+		foreach (_target ${LIB_PREFIX}psl ${LIB_PREFIX}gmt ${GMT_PROGS})
 			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
 		endforeach ()
+		list (APPEND _pdb_files_s "${CMAKE_CURRENT_BINARY_DIR}/plugins/${LIB_PREFIX}gmtsuppl.pdb") 
 	else ()
-		foreach (_target ${LIB_PREFIX}${PSL_DLL_RENAME} ${LIB_PREFIX}${GMT_DLL_RENAME} ${LIB_PREFIX}${SUPP_DLL_RENAME} ${GMT_PROGS})
+		foreach (_target ${LIB_PREFIX}${PSL_DLL_RENAME} ${LIB_PREFIX}${GMT_DLL_RENAME} ${GMT_PROGS})
 			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
 		endforeach ()
+		list (APPEND _pdb_files_s "${CMAKE_CURRENT_BINARY_DIR}/plugins/${LIB_PREFIX}${SUPP_DLL_RENAME}.pdb") 
 	endif ()
 	install (FILES ${_pdb_files}
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
+	install (FILES ${_pdb_files_s} DESTINATION ${_plugin_dir} COMPONENT Runtime)
 endif (WIN32 AND _debug_build)
 
 string (REPLACE ".c" "" _gmt_modules "${GMT_PROGS_SRCS}")
