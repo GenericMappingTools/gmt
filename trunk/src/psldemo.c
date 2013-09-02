@@ -33,6 +33,8 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	struct imageinfo h;
 	unsigned char *picture;
 
+	memset (&h, 0, sizeof(struct imageinfo)); /* initialize struct */
+
 	size[0] = 0.3;
 
 	PSL = New_PSL_Ctrl (argv[0]);

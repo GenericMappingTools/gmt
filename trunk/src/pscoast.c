@@ -635,7 +635,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	clobber_background = (Ctrl->G.active && Ctrl->S.active);
 	recursive = (Ctrl->G.active != (Ctrl->S.active || Ctrl->C.active) || clipping);
 	paint_polygons = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active);
-	
+
 	if (GMT->common.R.wesn[XLO] > 360.0) {
 		GMT->common.R.wesn[XLO] -= 360.0;
 		GMT->common.R.wesn[XHI] -= 360.0;
