@@ -363,16 +363,16 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 {
 	unsigned int channel, row, col;
 	int error = 0;
-	
+
 	uint64_t ij, k, k3;
-	
+
 	char rgb[3] = {'r', 'g', 'b'}, *comp[3] = {"red", "green", "blue"};
 	char buffer[GMT_BUFSIZ] = {""}, *grdfile = NULL;
-	
+
 	unsigned char *picture = NULL;
-	
+
 	double f_rgb[4];
-	
+
 	struct imageinfo header;
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -381,6 +381,8 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+
+	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

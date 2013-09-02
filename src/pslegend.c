@@ -359,6 +359,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	struct GMT_DATASEGMENT *F = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
+	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);

@@ -7053,7 +7053,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 	}
 	if (g) in[g] = '+';	/* Restore + */
-	
+
 	return (error);
 }
 
@@ -7061,25 +7061,25 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 void gmt5_handle_plussign (struct GMT_CTRL *GMT, char *in, unsigned way)
 {	/* Way = 0: replace ++ with ASCII 1, Way = 1: Replace ASCII 1 with + */
-	size_t i, o;
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace pairs of ++ with a single ASCII 1 */
-		for (i = 1, o = 0; in[i]; i++, o++) {
-			if (in[i-1] == '+' && in[i] == '+') {
-				in[o] = 1;	i++;	/* Replace ++ with 1 and skip the next */
-			}
-			else if (i > 1 && in[i-2] == '@' && in[i-1] == '+') {
-				in[o] = 1;	/* Replace @+ with @1  */
-			}
-			else
-				in[o] = in[i-1];
+		char *c = in;
+		for ( ;; ) { /* Replace ++ with 1 */
+			c = strstr (c, "++");
+			if (c == NULL) break;
+			*c = 1;
+			GMT_strlshift (++c, 1);
 		}
-		if (in[o-1] != 1) in[o++] = in[i-1];
-		in[o] = '\0';
+		c = in;
+		for ( ;; ) { /* Replace @+ with @1 */
+			c = strstr (c, "@+");
+			if (c == NULL) break;
+			++c;
+			*c = 1;
+		}
 	}
-	else {	/* Replace single ASCII 1 with + */
-		for (o = 0; in[o]; o++) if (in[o] == 1) in[o] = '+';
-	}
+	else /* way != 0: Replace single ASCII 1 with + */
+		GMT_strrepc (in, 1, '+');
 }
 
 int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
@@ -7087,11 +7087,11 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 	unsigned int pos = 0, k, error = 0, is_frame = 0;
 	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
 	double pole[2];
-	
+
 	/* Parsing of -B<framesettings> */
-	
+
 	/* First determine that the given -B<in> string is indeed the framesetting option.  If not return -1 */
-	
+
 	if (strchr ("pxyz", in[0])) return (-1);	/* -B[p[xyz] is definitively not the frame settings (-Bs is tricker; see below) */
 	if (strstr (in, "+b")) is_frame++;	/* Found a +b so likely frame */
 	if (strstr (in, "+g")) is_frame++;	/* Found a +g so likely frame */
