@@ -739,7 +739,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	
 	uint64_t ij, *n_seg = NULL;
 
-	size_t n_save = 0, n_alloc = 0, n_tmp, *n_seg_alloc = NULL;
+	size_t n_save = 0, n_alloc = 0, n_save_alloc = GMT_SMALL_CHUNK, n_tmp, *n_seg_alloc = NULL;
 	
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_LEN256] = {""}, format[GMT_LEN256] = {""};
@@ -1147,9 +1147,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 				if (make_plot && cont_do_tick[c] && is_closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */
 					int extra;
-					if (n_save == n_alloc) save = GMT_malloc (GMT, save, n_save, &n_alloc, struct SAVE);
+					if (n_save == 0) save = GMT_memory (GMT, save, n_save_alloc, struct SAVE);
+					else if (n_save == n_save_alloc) save = GMT_memory (GMT, save, n_save_alloc <<= 1, struct SAVE);
 					extra = (abs (closed) == 2);	/* Need extra slot to temporarily close half-polygons */
 					n_alloc = 0;
+					GMT_memset (&save[n_save], 1, struct SAVE);
 					GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, &n_alloc, double);
 					GMT_memcpy (save[n_save].x, x, n, double);
 					GMT_memcpy (save[n_save].y, y, n, double);
@@ -1219,7 +1221,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (make_plot && (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style)) PSL_setdash (PSL, NULL, 0.0);
 	
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
-		save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
+		save = GMT_memory (GMT, save, n_save, struct SAVE);
 
 		grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode);
 		for (i = 0; i < n_save; i++) {

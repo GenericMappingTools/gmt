@@ -6088,6 +6088,13 @@ int64_t GMT_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t 
 	return (-1);
 	
 }
+
+void GMT_delaunay_free (struct GMT_CTRL *GMT, int **link)
+{	/* Since one function uses GMT_memory and the other does not */
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) free (*link);
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON) GMT_free (GMT, *link);
+	*link = NULL;
+}
 /*
  * This section holds functions used for setting boundary  conditions in
  * processing grd file data.

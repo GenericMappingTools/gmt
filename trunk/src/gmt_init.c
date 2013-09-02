@@ -6103,6 +6103,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 	gmt_free_user_media (GMT);	/* Free any user-specified media formats */
 #endif
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
+	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);
@@ -6257,7 +6258,8 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 
 	/* GMT_IO */
 
-	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
+	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
+	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 
 	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 

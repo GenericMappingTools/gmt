@@ -1034,43 +1034,42 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 
 	unsigned int k = 1;
 	bool meridian;
-	size_t n_alloc = 0;
-	uint64_t i, j, n_tmp, n_step = 0;
-	double *lon_tmp = NULL, *lat_tmp = NULL;
+	uint64_t i, j, n_new, n_step = 0;
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
 
-	lon = *a_lon;	lat = *a_lat;
+	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
-	GMT_geo_to_cart (GMT, lat[0], lon[0], a, true);
-	GMT_malloc2 (GMT, lon_tmp, lat_tmp, 1U, &n_alloc, double);
-	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
-	n_tmp = 1;
+	GMT_geo_to_cart (GMT, lat[0], lon[0], a, true);	/* Start point of current arc */
+	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
+	GMT->hidden.mem_coord[GMT_X][0] = lon[0];
+	GMT->hidden.mem_coord[GMT_Y][0] = lat[0];
+	n_new = 1;
 	if (step <= 0.0) step = GMT->current.map.path_step;	/* Based on GMT->current.setting.map_line_step converted to degrees */
 	if (step <= 0.0) step = 0.1;				/* Safety valve when no -J and step not set. */
 
 	for (i = 1; i < n; i++) {
 
-		GMT_geo_to_cart (GMT, lat[i], lon[i], b, true);
+		GMT_geo_to_cart (GMT, lat[i], lon[i], b, true);	/* End point of current arc */
 
 		if (mode == 1) {	/* First follow meridian, then parallel */
 			theta = fabs (lon[i]-lon[i-1]) * cosd (lat[i-1]);
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
-				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
-				lat_tmp[n_tmp] = lat[i-1];
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1];
+				n_new++;
 			}
 			theta = fabs (lat[i]-lat[i-1]);
 			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
-				lon_tmp[n_tmp] = lon[i];
-				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i];
+				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] * (1 - c) + lat[i] * c;
+				n_new++;
 			}
 			k = 0;
 		}
@@ -1080,19 +1079,19 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
-				lon_tmp[n_tmp] = lon[i-1];
-				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1];
+				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] * (1 - c) + lat[i] * c;
+				n_new++;
 			}
 			theta = fabs (lon[i]-lon[i-1]) * cosd(lat[i]);
 			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
-				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
-				lat_tmp[n_tmp] = lat[i];
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i];
+				n_new++;
 			}
 			k = 0;
 		}
@@ -1103,42 +1102,41 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 
 		else if ((n_step = lrint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (double)n_step;
-			minlon = MIN (lon[i-1],lon[i]);
-			maxlon = MAX (lon[i-1],lon[i]);
+			minlon = MIN (lon[i-1], lon[i]);
+			maxlon = MAX (lon[i-1], lon[i]);
 			meridian = doubleAlmostEqualZero (maxlon, minlon);	/* A meridian; make a gap so tests below will give right range */
 			for (j = 1; j < n_step; j++) {
 				c = j * fraction;
 				d = 1 - c;
 				for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
-				GMT_normalize3v (GMT, x);
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
-				GMT_cart_to_geo (GMT, &lat_tmp[n_tmp], &lon_tmp[n_tmp], x, true);
+				GMT_normalize3v (GMT, x);		/* Make unit vector */
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT_cart_to_geo (GMT, &GMT->hidden.mem_coord[GMT_Y][n_new], &GMT->hidden.mem_coord[GMT_X][n_new], x, true);
 				if (meridian)
-					lon_tmp[n_tmp] = minlon;
-				else if (lon_tmp[n_tmp] < minlon)
-					lon_tmp[n_tmp] += 360.0;
-				else if (lon_tmp[n_tmp] > maxlon)
-					lon_tmp[n_tmp] -= 360.0;
-				n_tmp++;
+					GMT->hidden.mem_coord[GMT_X][n_new] = minlon;
+				else if (GMT->hidden.mem_coord[GMT_X][n_new] < minlon)
+					GMT->hidden.mem_coord[GMT_X][n_new] += 360.0;
+				else if (GMT->hidden.mem_coord[GMT_X][n_new] > maxlon)
+					GMT->hidden.mem_coord[GMT_X][n_new] -= 360.0;
+				n_new++;
 			}
 		}
-		if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
-		lon_tmp[n_tmp] = lon[i];	lat_tmp[n_tmp] = lat[i];
-		n_tmp++;
+		GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+		GMT->hidden.mem_coord[GMT_X][n_new] = lon[i];	GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i];
+		n_new++;
 		GMT_cpy3v (a, b);
 	}
-	n_alloc = n_tmp;
-	GMT_malloc2 (GMT, lon_tmp, lat_tmp, 0U, &n_alloc, double);
 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (GMT, lon);
 	GMT_free (GMT, lat);
-	*a_lon = lon_tmp;
-	*a_lat = lat_tmp;
-	return (n_tmp);
+	*a_lon = GMT_assign_vector (GMT, n_new, GMT_X);
+	*a_lat = GMT_assign_vector (GMT, n_new, GMT_Y);
+	
+	return (n_new);
 }
 
-uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode)
+uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode)
 {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
@@ -1150,14 +1148,13 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 	 */
 
 	unsigned int k = 1;
-	size_t n_alloc = 0;
-	uint64_t i, j, n_tmp, n_step = 0;
-	double *x_tmp = NULL, *y_tmp = NULL, *x = NULL, *y = NULL, c;
+	uint64_t i, j, n_new, n_step = 0;
+	double *x = NULL, *y = NULL, c;
 
 	x = *a_x;	y = *a_y;
 
-	GMT_malloc2 (GMT, x_tmp, y_tmp, 1U, &n_alloc, double);
-	x_tmp[0] = x[0];	y_tmp[0] = y[0];	n_tmp = 1;
+	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
+	GMT->hidden.mem_coord[GMT_X][0] = x[0];	GMT->hidden.mem_coord[GMT_Y][0] = y[0];	n_new = 1;
 	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
 
 	for (i = 1; i < n; i++) {
@@ -1165,18 +1162,18 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 			n_step = lrint (fabs (x[i] - x[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
-				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
-				y_tmp[n_tmp] = y[i-1];
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1];
+				n_new++;
 			}
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
-				x_tmp[n_tmp] = x[i];
-				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i];
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1] * (1 - c) + y[i] * c;
+				n_new++;
 			}
 			k = 0;
 		}
@@ -1184,18 +1181,18 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
-				x_tmp[n_tmp] = x[i-1];
-				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1];
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1] * (1 - c) + y[i] * c;
+				n_new++;
 			}
 			n_step = lrint (fabs (x[i]-x[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
-				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
-				y_tmp[n_tmp] = y[i];
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];
+				n_new++;
 			}
 			k = 0;
 		}
@@ -1203,23 +1200,22 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 		else if ((n_step = lrint (hypot (x[i]-x[i-1], y[i]-y[i-1]) / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
-				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
-				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
-				n_tmp++;
+				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1] * (1 - c) + y[i] * c;
+				n_new++;
 			}
 		}
-		if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
-		x_tmp[n_tmp] = x[i];	y_tmp[n_tmp] = y[i];	n_tmp++;
+		GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+		GMT->hidden.mem_coord[GMT_X][n_new] = x[i];	GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];	n_new++;
 	}
-	n_alloc = n_tmp;
-	GMT_malloc2 (GMT, x_tmp, y_tmp, 0U, &n_alloc, double);
 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (GMT, x);	GMT_free (GMT, y);
-	*a_x = x_tmp;	*a_y = y_tmp;
+	*a_x = GMT_assign_vector (GMT, n_new, GMT_X);
+	*a_y = GMT_assign_vector (GMT, n_new, GMT_Y);
 	
-	return (n_tmp);
+	return (n_new);
 }
 
 uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double **lat, uint64_t n_in, double step_out, enum GMT_enum_track mode)
@@ -1349,7 +1345,7 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 		return (EXIT_FAILURE);
 	}
 	
-	if (mode < GMT_TRACK_SAMPLE_FIX) return (GMT_fix_up_path_cartesian (GMT, x, y, n_in, step_out, mode));	/* Insert extra points only */
+	if (mode < GMT_TRACK_SAMPLE_FIX) return (gmt_fix_up_path_cartesian (GMT, x, y, n_in, step_out, mode));	/* Insert extra points only */
 	
 	dist_in = GMT_dist_array (GMT, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
