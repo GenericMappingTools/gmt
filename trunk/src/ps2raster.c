@@ -1115,6 +1115,9 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 						new_off_y = -yt_bak + yt_bak * r_y;
 						Ctrl->A.new_dpi_y = Ctrl->E.dpi * r_y;
 					}
+					else
+						r_y = r_x;	/* Not sure of this. Added later to shut up a compiler warning of r_y potentially used uninitialized */
+
 					fprintf (fpo, "%% Recalculate translation and scale to obtain a resized image\n");
 					fprintf (fpo, "%g %g translate\n", new_off_x, new_off_y);
 					if (landscape_orig) {
