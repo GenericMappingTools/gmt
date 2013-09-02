@@ -343,16 +343,16 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 
 int GMT_blockmode (void *V_API, int mode, void *args)
 {
-	bool mode_xy, do_extra, is_integer, duplicate_col;
-	
+	bool mode_xy, do_extra = false, is_integer, duplicate_col;
+
 	int way, error = 0;
-	
+
 	unsigned int row, col, emode = 0, n_input, n_output;
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id;
 	uint64_t w_col, i_col = 0, sid_col;
-	
+
 	size_t n_alloc = 0, nz_alloc = 0;
 
 	double out[7], wesn[4], i_n_in_cell, d_intval, weight, half_dx, *in = NULL, *z_tmp = NULL;
