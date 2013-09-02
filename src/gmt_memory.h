@@ -19,6 +19,11 @@
 #ifndef _GMT_MEMORY_H
 #define _GMT_MEMORY_H
 
+enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
+	GMT_INITIAL_MEM_COL_ALLOC	= 2U,
+	GMT_INITIAL_MEM_ROW_ALLOC	= 2097152U	/* 2^21 */	
+};
+
 /* Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
 #if defined (DEBUG) || defined (MEMDEBUG)
 #define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE_FUNC)

@@ -1172,46 +1172,35 @@ uint64_t gmt_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 	uint64_t i, j = 0;
 	unsigned int nx, k;
 	unsigned int sides[4];
-	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
 	if (n == 0) return (0);
 
-	xx = GMT_memory (GMT, NULL, n_alloc, double);
-	yy = GMT_memory (GMT, NULL, n_alloc, double);
+	GMT_prep_tmp_arrays (GMT, 0, 2);	/* Init or reallocate tmp vectors */
+	xx = GMT->hidden.mem_coord[GMT_X];	/* Short-hands only */
+	yy = GMT->hidden.mem_coord[GMT_Y];
 	(void) GMT_map_outside (GMT, lon[0], lat[0]);
 	GMT_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
-	j += gmt_move_to_rect (GMT, xx, yy, j, 0);	/* May add 2 points, << n_alloc */
+	j += gmt_move_to_rect (GMT, xx, yy, j, 0);
 
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (GMT, lon[i], lat[i]);
 		nx = gmt_map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 		for (k = 0; k < nx; k++) {
+			GMT_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
 			xx[j] = xc[k];
 			yy[j++] = yc[k];
-			if (j >= (n_alloc-2)) {
-				n_alloc <<= 1;
-				xx = GMT_memory (GMT, xx, n_alloc, double);
-				yy = GMT_memory (GMT, yy, n_alloc, double);
-			}
 			(*total_nx) ++;
 		}
 		GMT_geo_to_xy (GMT, lon[i], lat[i], &xx[j], &yy[j]);
-		if (j >= (n_alloc-2)) {
-			n_alloc <<= 1;
-			xx = GMT_memory (GMT, xx, n_alloc, double);
-			yy = GMT_memory (GMT, yy, n_alloc, double);
-		}
-
-		j += gmt_move_to_rect (GMT, xx, yy, j, nx);	/* May add 2 points, which explains the n_alloc-2 stuff */
+		GMT_prep_tmp_arrays (GMT, j+2, 2);		/* Init or reallocate tmp vectors */
+		j += gmt_move_to_rect (GMT, xx, yy, j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
-	xx = GMT_memory (GMT, xx, j, double);
-	yy = GMT_memory (GMT, yy, j, double);
-	*x = xx;
-	*y = yy;
+	*x = GMT_assign_vector (GMT, j, GMT_X);
+	*y = GMT_assign_vector (GMT, j, GMT_Y);
 
 	return (j);
 }
@@ -1488,45 +1477,34 @@ uint64_t gmt_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 {
 	uint64_t i, j = 0, nx, k;
 	unsigned int sides[4];
-	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
 	if (n == 0) return (0);
 
-	xx = GMT_memory (GMT, NULL, n_alloc, double);
-	yy = GMT_memory (GMT, NULL, n_alloc, double);
+	GMT_prep_tmp_arrays (GMT, 0, 2);	/* Init or reallocate tmp vectors */
+	xx = GMT->hidden.mem_coord[GMT_X];	/* Short-hands only */
+	yy = GMT->hidden.mem_coord[GMT_Y];
 
 	(void) GMT_map_outside (GMT, lon[0], lat[0]);
-	j = gmt_move_to_wesn (GMT, xx, yy, lon[0], lat[0], 0.0, 0.0, 0, 0);	/* May add 2 points, << n_alloc */
+	j = gmt_move_to_wesn (GMT, xx, yy, lon[0], lat[0], 0.0, 0.0, 0, 0);	/* May add 2 points */
 
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (GMT, lon[i], lat[i]);
 		nx = gmt_map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 		for (k = 0; k < nx; k++) {
+			GMT_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
 			xx[j] = xc[k];
 			yy[j++] = yc[k];
-			if (j >= (n_alloc-2)) {
-				n_alloc <<= 1;
-				xx = GMT_memory (GMT, xx, n_alloc, double);
-				yy = GMT_memory (GMT, yy, n_alloc, double);
-			}
 			(*total_nx) ++;
 		}
-		if (j >= (n_alloc-2)) {
-			n_alloc <<= 1;
-			xx = GMT_memory (GMT, xx, n_alloc, double);
-
-			yy = GMT_memory (GMT, yy, n_alloc, double);
-		}
-		j += gmt_move_to_wesn (GMT, xx, yy, lon[i], lat[i], lon[i-1], lat[i-1], j, nx);	/* May add 2 points, which explains the n_alloc-2 stuff */
+		GMT_prep_tmp_arrays (GMT, j+2, 2);	/* Init or reallocate tmp vectors */
+		j += gmt_move_to_wesn (GMT, xx, yy, lon[i], lat[i], lon[i-1], lat[i-1], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
-	xx = GMT_memory (GMT, xx, j, double);
-	yy = GMT_memory (GMT, yy, j, double);
-	*x = xx;
-	*y = yy;
+	*x = GMT_assign_vector (GMT, j, GMT_X);
+	*y = GMT_assign_vector (GMT, j, GMT_Y);
 
 #ifdef CRAP
 {

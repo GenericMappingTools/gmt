@@ -888,6 +888,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 			/* Data record to process */
 
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
+			GMT_memset (&cont[c], 1, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? true : false;
@@ -931,6 +932,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 			aval = xyz[1][GMT_Z] + 1.0;
 		for (ic = irint (min/Ctrl->C.interval), c = 0; ic <= irint (max/Ctrl->C.interval); ic++, c++) {
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
+			GMT_memset (&cont[c], 1, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_SMALL) ? 'A' : 'C';
@@ -1333,6 +1335,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 					if (cont[c].do_tick && is_closed) {	/* Must store the entire contour for later processing */
 						if (n_save == n_save_alloc) save = GMT_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
 						n_alloc = 0;
+						GMT_memset (&save[n_save], 1, struct SAVE);
 						GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n, &n_alloc, double);
 						GMT_memcpy (save[n_save].x, xp, n, double);
 						GMT_memcpy (save[n_save].y, yp, n, double);
@@ -1396,11 +1399,10 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	GMT_free (GMT, y);
 	GMT_free (GMT, z);
 	GMT_free (GMT, cont);
-	if (Ctrl->Q.active) {
+	if (Ctrl->Q.active)
 		GMT_free (GMT, ind);	/* Allocated above by GMT_memory */
-	}
 	else
-		GMT_free (GMT, ind);
+		GMT_delaunay_free (GMT, &ind);
 
 	Return (GMT_OK);
 }

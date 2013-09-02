@@ -5854,6 +5854,54 @@ int GMT_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t
 	return (GMT_OK);
 }
 
+void GMT_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns)
+{	/* Allocates and memcpy over vectors from GMT->hidden.mem_coord.
+  	 * If n_rows > GMT_INITIAL_MEM_ROW_ALLOC then we pass the arrays and reset the tmp arrays to NULL
+	 */
+	uint64_t col;
+	if (n_rows == 0) return;	/* Nothing to do */
+	/* First allocate struct member arrays */
+	S->coord = GMT_memory (GMT, NULL, n_columns, double *);
+	S->min   = GMT_memory (GMT, NULL, n_columns, double);
+	S->max   = GMT_memory (GMT, NULL, n_columns, double);
+
+	if (n_rows > GMT_INITIAL_MEM_ROW_ALLOC) {	/* Large segment, just pass allocated pointers and start over with new tmp vectors later */
+		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
+			if (n_rows < GMT->hidden.mem_rows) GMT->hidden.mem_coord[col] = GMT_memory (GMT, GMT->hidden.mem_coord[col], n_rows, double);	/* Trim back */
+			S->coord[col] = GMT->hidden.mem_coord[col];	/* Pass the pointer */
+			GMT->hidden.mem_coord[col] = NULL;		/* Null this out to start over for next segment */
+		}
+		GMT->hidden.mem_cols = 0;	/* Flag that we need to reallocate new temp arrays for next segment, if any */
+	}
+	else {	/* Small segments, allocate and memcpy, leave tmp array as is for further use */
+		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
+			S->coord[col] = GMT_memory (GMT, NULL, n_rows, double);
+			GMT_memcpy (S->coord[col], GMT->hidden.mem_coord[col], n_rows, double);
+		}
+	}
+	S->n_rows = n_rows;
+}
+
+double *GMT_assign_vector (struct GMT_CTRL *GMT, uint64_t n_rows, uint64_t col)
+{	/* Allocates and memcpy over vectors from GMT->hidden.mem_coord.
+  	 * If n_rows > GMT_INITIAL_MEM_ROW_ALLOC then we pass the arrays and reset the tmp arrays to NULL.
+	 */
+	double *vector = NULL;
+	if (n_rows == 0) return NULL;	/* Nothing to do */
+
+	if (n_rows > GMT_INITIAL_MEM_ROW_ALLOC) {	/* Large segment, just pass allocated pointers and start over with new tmp vectors later */
+		if (n_rows < GMT->hidden.mem_rows) GMT->hidden.mem_coord[col] = GMT_memory (GMT, GMT->hidden.mem_coord[col], n_rows, double);	/* Trim back */
+		vector = GMT->hidden.mem_coord[col];	/* Pass the pointer */
+		GMT->hidden.mem_coord[col] = NULL;	/* Null this out to start over for next segment */
+		GMT->hidden.mem_cols = 0;	/* Flag that we need to reallocate new temp arrays for next segment, if any */
+	}
+	else {	/* Small segments, allocate and memcpy, leave tmp array as is for further use */
+		vector = GMT_memory (GMT, NULL, n_rows, double);
+		GMT_memcpy (vector, GMT->hidden.mem_coord[col], n_rows, double);
+	}
+	return (vector);
+}
+
 struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, bool alloc_only)
 {
 	/* Allocate the new Table structure given the specified dimensions.
@@ -5907,13 +5955,13 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables
 
 struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, bool use_GMT_io)
 {
-	/* Reads an entire data set into a single table memory with any number of segments */
+	/* Reads an entire data set into a single table in memory with any number of segments */
 
 	bool ascii, close_file = false, header = true, no_segments, first_seg = true, poly, check_geometry;
 	int status;
 	uint64_t n_expected_fields;
 	uint64_t n_read = 0, row = 0, seg = 0, col;
-	size_t n_row_alloc, n_head_alloc = GMT_TINY_CHUNK;
+	size_t n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, line[GMT_LEN64] = {""};
 	double d, *in = NULL;
 	FILE *fp = NULL;
@@ -5991,8 +6039,6 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 
 	T->file[GMT_IN] = strdup (file);
 	T->header = GMT_memory (GMT, NULL, n_head_alloc, char *);
-	n_row_alloc = GMT_CHUNK;	/* Initial space allocated for rows in the current segment. Since allcoation/reallocation is
-					 * expensive we will set n_row_alloc to the size of the previous segment */
 
 	while (status >= 0 && !GMT_REC_IS_EOF (GMT)) {	/* Not yet EOF */
 		if (header) {
@@ -6037,7 +6083,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets in = NULL */
 				while (!GMT_REC_IS_EOF (GMT) && (in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status)) == NULL) n_read++;
 			}
-			T->segment[seg]->n_columns = n_expected_fields;
+			T->segment[seg]->n_columns = n_expected_fields;	/* This is where number of columns are determined */
 			no_segments = false;	/* This has now served its purpose */
 		}
 		if (GMT_REC_IS_EOF (GMT)) continue;	/* At EOF; get out of this loop */
@@ -6055,8 +6101,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 			if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
 			return (NULL);
 		}
-		GMT_alloc_segment (GMT, T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, true);	/* Alloc space for this segment with n_row_alloc rows */
-
+		
 		while (! (GMT->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 "\n", status, n_expected_fields, n_read);
@@ -6064,62 +6109,57 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 				return (NULL);
 			}
 
+			GMT_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or reallocate tmp read vectors */
 			for (col = 0; col < T->segment[seg]->n_columns; col++) {
-				T->segment[seg]->coord[col][row] = in[col];
+				GMT->hidden.mem_coord[col][row] = in[col];
 				if (GMT->current.io.col_type[GMT_IN][col] & GMT_IS_LON) {	/* Must handle greenwich/dateline alignments */
-					if (greenwich && T->segment[seg]->coord[col][row] > 180.0) T->segment[seg]->coord[col][row] -= 360.0;
-					if (!greenwich && T->segment[seg]->coord[col][row] < 0.0)  T->segment[seg]->coord[col][row] += 360.0;
+					if (greenwich && GMT->hidden.mem_coord[col][row] > 180.0) GMT->hidden.mem_coord[col][row] -= 360.0;
+					if (!greenwich && GMT->hidden.mem_coord[col][row] < 0.0)  GMT->hidden.mem_coord[col][row] += 360.0;
 				}
-				if (T->segment[seg]->coord[col][row] < T->segment[seg]->min[col]) T->segment[seg]->min[col] = T->segment[seg]->coord[col][row];
-				if (T->segment[seg]->coord[col][row] > T->segment[seg]->max[col]) T->segment[seg]->max[col] = T->segment[seg]->coord[col][row];
 			}
 
 			row++;
-			if (row == (T->segment[seg]->n_alloc-1)) {	/* -1 because we may have to close the polygon and hence need 1 more cell */
-				T->segment[seg]->n_alloc <<= 1;
-				GMT_alloc_segment (GMT, T->segment[seg], T->segment[seg]->n_alloc, T->segment[seg]->n_columns, false);
-			}
 			in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
 			while (GMT_REC_IS_TABLE_HEADER (GMT)) in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Just wind past other comments */
 			n_read++;
 		}
-		T->segment[seg]->n_rows = row;	/* Number of records in this segment */
-		T->n_records += row;		/* Total number of records so far */
-		T->segment[seg]->id = seg;	/* Internal segment number */
 
-		GMT_set_seg_minmax (GMT, T->segment[seg]);
 		if (check_geometry) {	/* Determine if dealing with closed polygons or lines based on first segment only */
-			if (!GMT_polygon_is_open (GMT, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows)) poly = true;
+			if (!GMT_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row)) poly = true;
 			check_geometry = false;	/* Done with one-time checking */
 			*geometry = (poly) ? GMT_IS_POLY : GMT_IS_LINE;	/* Update the geometry setting */
 		}
 		if (poly) {	/* If file contains a polygon then we must close it if needed */
 			if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {	/* Must check for polar cap */
-				double dlon;
-				dlon = T->segment[seg]->coord[GMT_X][0] - T->segment[seg]->coord[GMT_X][row-1];
-				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && T->segment[seg]->coord[GMT_Y][0] == T->segment[seg]->coord[GMT_Y][row-1])) {
-					for (col = 0; col < T->segment[seg]->n_columns; col++) T->segment[seg]->coord[col][row] = T->segment[seg]->coord[col][0];
-					T->segment[seg]->n_rows++;	/* Explicitly close polygon */
+				double dlon = GMT->hidden.mem_coord[GMT_X][0] - GMT->hidden.mem_coord[GMT_X][row-1];
+				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && GMT->hidden.mem_coord[GMT_Y][0] == GMT->hidden.mem_coord[GMT_Y][row-1])) {
+					GMT_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Maybe reallocate tmp read vectors */
+					for (col = 0; col < T->segment[seg]->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
+					row++;	/* Explicitly close polygon */
 				}
-				GMT_set_seg_polar (GMT, T->segment[seg]);
 			}
-			else if (GMT_polygon_is_open (GMT, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], row)) {	/* Cartesian closure */
-				for (col = 0; col < T->segment[seg]->n_columns; col++) T->segment[seg]->coord[col][row] = T->segment[seg]->coord[col][0];
-				T->segment[seg]->n_rows++;
+			else if (GMT_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row)) {	/* Cartesian closure */
+				GMT_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or update tmp read vectors */
+				for (col = 0; col < T->segment[seg]->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
+				row++;	/* Explicitly close polygon */
 			}
 			if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-Ph", NULL)) T->segment[seg]->pol_mode = GMT_IS_HOLE;
 			/* If this is a hole then set link from previous segment to this one */
 			if (seg && GMT_polygon_is_hole (T->segment[seg])) T->segment[seg-1]->next = T->segment[seg];
 		}
 		
-		/* Reallocate to free up some memory */
-
-		if (n_row_alloc > T->segment[seg]->n_rows) GMT_alloc_segment (GMT, T->segment[seg], T->segment[seg]->n_rows, T->segment[seg]->n_columns, false);
-		n_row_alloc = MAX (2, T->segment[seg]->n_rows);	/* Reset initial allocation size to match last segment, except no smaller than 2 due to test on T->n_alloc -1 below */
-		if (T->segment[seg]->n_rows == 0) {	/* Empty segment; we delete to avoid problems downstream in applications */
+		if (row == 0) {	/* Empty segment; we delete to avoid problems downstream in applications */
 			GMT_free (GMT, T->segment[seg]);
 			seg--;	/* Go back to where we were */
 		}
+		else {	/* OK to populate segment and increment counters */
+			GMT_assign_segment (GMT, T->segment[seg], row, T->segment[seg]->n_columns);	/* Allocate and place arrays into segment */
+			GMT_set_seg_minmax (GMT, T->segment[seg]);	/* Set min/max */
+			if (poly && (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO)) GMT_set_seg_polar (GMT, T->segment[seg]);
+			T->n_records += row;		/* Total number of records so far */
+			T->segment[seg]->id = seg;	/* Internal segment number */
+		}
+		/* Reallocate to free up some memory */
 
 		if (seg == (T->n_alloc-1)) {	/* Need to allocate more segments */
 			size_t n_old_alloc = T->n_alloc;
