@@ -3,13 +3,13 @@
 # $Id$
 
 # test if testsuite is up to date and setup correctly
+# make sure we are using the gmt executable from the build tree
 
 # compare actual dirs with expected values
-GMT_PATH=$(fix_mingw_path "${GMT_BINARY_DIR}/src/${CMAKE_CONFIG_TYPE:-.}/gmt")
 echo -n "gmt location: "
-which gmt           | grep -E "^${GMT_PATH}($|[.]exe)$" # note: depending on regexp engine the $ in the subexpression may be mandatory
+gmt --show-bindir       | grep "^${GMT_BINARY_DIR}/src$"
 echo -n "sharedir    : "
-gmt --show-sharedir | grep "^${GMT_SHAREDIR}$"
+gmt --show-sharedir     | grep "^${GMT_SHAREDIR}$"
 echo -n "userdir     : "
 gmt gmtget DIR_USER     | grep "^${GMT_USERDIR}$"
 echo -n "gmt gshhg dir   : "
@@ -17,4 +17,4 @@ gmt gmtget DIR_GSHHG    | grep "^${GSHHG_DIR}$"
 
 # compare actual version with expected version
 echo -n "gmt version : "
-gmt --version       | grep "${GMT_VERSION}$"
+gmt --version           | grep "${GMT_VERSION}$"
