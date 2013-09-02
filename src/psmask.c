@@ -583,13 +583,6 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, 1, NULL)) == NULL) Return (API->error);
 		
-		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
-			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
-			d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
-		}
-		grd_x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
-		grd_y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
-
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];
 		
@@ -607,6 +600,13 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
 		GMT_set_grddim (GMT, Grid->header);
 		grd = GMT_memory (GMT, NULL, Grid->header->size, char);
+
+		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
+			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+			d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
+		}
+		grd_x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
+		grd_y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 
 		/* Add GMT_CONV_LIMIT to ensure that special case radius = inc --> lrint(0.5) actually rounds to 1 */
 		

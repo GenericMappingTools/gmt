@@ -416,8 +416,6 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 			D[GMT_OUT]->table[tbl_ver]->segment[seg]->n_rows = n_rows;	/* Possibly shorter than originally allocated if -E is used */
 			D[GMT_OUT]->table[tbl_ver]->n_records += n_rows;
 			D[GMT_OUT]->n_records = D[GMT_OUT]->table[tbl_ver]->n_records;
-			if (D[GMT_IN]->table[tbl_ver]->segment[seg]->label) D[GMT_OUT]->table[tbl_ver]->segment[seg]->label = strdup (D[GMT_IN]->table[tbl_ver]->segment[seg]->label);
-			if (D[GMT_IN]->table[tbl_ver]->segment[seg]->header) D[GMT_OUT]->table[tbl_ver]->segment[seg]->header = strdup (D[GMT_IN]->table[tbl_ver]->segment[seg]->header);
 			if (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr) GMT_duplicate_ogr_seg (GMT, D[GMT_OUT]->table[tbl_ver]->segment[seg], D[GMT_IN]->table[tbl_ver]->segment[seg]);
 		}
 		D[GMT_OUT]->table[tbl_ver]->id = tbl_ver;
