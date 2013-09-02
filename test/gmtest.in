@@ -64,15 +64,26 @@ export GMT_DATADIR="$src"
 # Reset error count
 ERROR=0
 
-# valgrind gmt wrapper
-function gmt()
+# valgrind wrapper
+function valgrind_wrapper()
 {
   if [ -n "${VALGRIND_ARGS}" ]; then
-    valgrind ${VALGRIND_ARGS} --log-file=valgrind_%p.log \
-      --dsymutil=yes @GMT_BINARY_DIR@/src/gmt "$@"
+    valgrind ${VALGRIND_ARGS} --log-file=valgrind_%p.log --dsymutil=yes "$@"
   else
-    @GMT_BINARY_DIR@/src/gmt "$@"
+    "$@"
   fi
+}
+
+# gmt wrapper
+function gmt()
+{
+  valgrind_wrapper @GMT_BINARY_DIR@/src/gmt "$@"
+}
+
+# psldemo wrapper
+function psldemo()
+{
+  valgrind_wrapper @GMT_BINARY_DIR@/src/psldemo "$@"
 }
 
 # Convert PS to PDF
