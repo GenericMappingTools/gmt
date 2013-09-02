@@ -257,8 +257,8 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
-	int k;
+	unsigned int n_errors = 0, k;
+	int ks;
 	bool clipping;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -344,13 +344,13 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 						for (k = GSHHS_RIVER_CANALS; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					default:
-						k = atoi (opt->arg);
-						if (k < 0 || k >= GSHHS_N_RLEVELS) {
+						ks = atoi (opt->arg);
+						if (ks < 0 || ks >= GSHHS_N_RLEVELS) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
-							Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
+							Ctrl->I.use[ks] = 1, Ctrl->I.pen[ks] = pen;
 						break;
 				}
 				break;
@@ -387,13 +387,13 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 						for (k = 0; k < GSHHS_N_BLEVELS; k++) Ctrl->N.use[k] = 1, Ctrl->N.pen[k] = pen;
 						break;
 					default:
-						k = opt->arg[0] - '1';
-						if (k < 0 || k >= GSHHS_N_BLEVELS) {
+						ks = opt->arg[0] - '1';
+						if (ks < 0 || ks >= GSHHS_N_BLEVELS) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
-							Ctrl->N.use[k] = 1, Ctrl->N.pen[k] = pen;
+							Ctrl->N.use[ks] = 1, Ctrl->N.pen[ks] = pen;
 						break;
 				}
 				break;
@@ -512,7 +512,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 			if (!Ctrl->I.use[k]) continue;
 			n_errors += GMT_check_condition (GMT, Ctrl->I.pen[k].width < 0.0, "Syntax error -I option: Pen thickness cannot be negative\n");
 			Ctrl->I.use[Ctrl->I.n_rlevels] = k;
-			Ctrl->I.pen[Ctrl->I.n_rlevels] = Ctrl->I.pen[k];
+			if (k != Ctrl->I.n_rlevels) Ctrl->I.pen[Ctrl->I.n_rlevels] = Ctrl->I.pen[k];
 			Ctrl->I.n_rlevels++;
 		}
 	}
@@ -522,7 +522,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 			if (!Ctrl->N.use[k]) continue;
 			n_errors += GMT_check_condition (GMT, Ctrl->N.pen[k].width < 0.0, "Syntax error -N option: Pen thickness cannot be negative\n");
 			Ctrl->N.use[Ctrl->N.n_blevels] = k + 1;
-			Ctrl->N.pen[Ctrl->N.n_blevels] = Ctrl->N.pen[k];
+			if (k != Ctrl->N.n_blevels) Ctrl->N.pen[Ctrl->N.n_blevels] = Ctrl->N.pen[k];
 			Ctrl->N.n_blevels++;
 		}
 	}

@@ -5096,10 +5096,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, char *args)
 				/* i/o modifiers */
 				case 'w':	/* Save FFT input; optionally append file suffix */
 					info->save[GMT_IN] = true;
-					if (p[1]) {
-						if (info->suffix) free (info->suffix);	/* Free previous string */
-						info->suffix = strdup (&p[1]);
-					}
+					if (p[1]) strncpy (info->suffix, &p[1], GMT_LEN64);
 					break;
 				case 'z': 	/* Save FFT output in two files; append p for polar form */
 					info->save[GMT_OUT] = true;
@@ -5130,7 +5127,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, char *args)
 			if (pos == 1) info->ny = info->nx;
 			if (pos) info->info_mode = GMT_FFT_SET;
 	}
-	if (info->suffix == NULL) info->suffix = strdup ("tapered");	/* Default suffix */
+	if (info->suffix[0] == '\0') strncpy (info->suffix, "tapered", GMT_LEN64);	/* Default suffix */
 	info->set = true;	/* We parsed this option */
 	if (info->info_mode == GMT_FFT_SET && (info->nx <= 0 || info->ny <= 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error -%c: nx and/or ny are <= 0\n", option);
