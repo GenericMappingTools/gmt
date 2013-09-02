@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-09-02	pwessel
+	* psmask.c:		Was off by one in grd index, thus exceeding array length at end.
+
 2013-08-26	pwessel
 	* gmtvector.c:		Needed to add -TR option to gmtvector to apply different
 				rotations to fixed secondary vector.

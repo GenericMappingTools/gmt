@@ -679,17 +679,17 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points\n", n_read);
 
-		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->nm; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
+		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->size; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
 
 		/* Force perimeter nodes to be false; thus all contours will be closed */
 
-		for (col = 0, ij = (Grid->header->ny-1) * Grid->header->nx; col < Grid->header->nx; col++) grd[col] = grd[col+ij] = false;
-		for (row = 0; row < Grid->header->ny; row++) grd[row*Grid->header->nx] = grd[(row+1)*Grid->header->nx-1] = false;
+		for (col = 0, ij = (Grid->header->ny-1) * Grid->header->nx; col < Grid->header->nx; col++) grd[col] = grd[col+ij] = 0;
+		for (row = 0; row < Grid->header->ny; row++) grd[row*Grid->header->nx] = grd[(row+1)*Grid->header->nx-1] = 0;
 
 #ifdef DEBUG
 		if (Ctrl->D.debug) {	/* Save a copy of the grid to psmask.nc */
-			float *z = GMT_memory (GMT, NULL, Grid->header->nm, float);
-			for (ij = 0; ij < Grid->header->nm; ij++) z[ij] = (float)grd[ij];
+			float *z = GMT_memory (GMT, NULL, Grid->header->size, float);
+			for (ij = 0; ij < Grid->header->size; ij++) z[ij] = (float)grd[ij];
 			GMT_write_grd (GMT, "psmask.nc", Grid->header, z, NULL, GMT->current.io.pad, false);
 			GMT_free (GMT, z);
 		}
@@ -753,7 +753,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			for (row = 0; row < Grid->header->ny; row++) {
 				y_bot = grd_y0[row] - inc2[GMT_Y];
 				y_top = grd_y0[row] + inc2[GMT_Y];
-				ij = GMT_IJP (Grid->header, row, 1);
+				ij = GMT_IJP (Grid->header, row, 0);
 				for (col = 0; col < Grid->header->nx; col++, ij++) {
 					if (grd[ij] == 0) continue;
 
@@ -784,7 +784,6 @@ int GMT_psmask (void *V_API, int mode, void *args)
 					GMT_free (GMT, yp);
 				}
 			}
-
 			GMT_map_basemap (GMT);
 		}
 
