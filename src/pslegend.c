@@ -717,6 +717,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 					case 'I':	/* Image record [use GMT_psimage] */
 						sscanf (&line[2], "%s %s %s", image, size, key);
 						PSL_loadimage (PSL, image, &header, &dummy);
+						PSL_free (dummy);
 						justify = GMT_just_decode (GMT, key, 12);
 						x_off = Ctrl->D.lon;
 						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
