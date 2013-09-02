@@ -787,7 +787,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	}
 
 	if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0 && !GMT_IS_LINEAR (GMT)) greenwich = true;
-	if ((360.0 - fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) ) < c.bsize) {
+	if (need_coast_base && (360.0 - fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) ) < c.bsize) {
 		GMT->current.map.is_world = true;
 		if (GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_GENPER) GMT->current.map.is_world = false;
 		if (GMT_IS_AZIMUTHAL (GMT)) GMT->current.map.is_world = false;

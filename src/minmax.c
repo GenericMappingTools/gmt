@@ -266,7 +266,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, delimeter[2] = {""};
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
-	double west, east, south, north, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
+	double west = 0.0, east = 0.0, south = 0.0, north = 0.0, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
 
 	struct GMT_QUAD *Q = NULL;
 	struct MINMAX_CTRL *Ctrl = NULL;

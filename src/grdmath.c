@@ -2538,7 +2538,7 @@ void grd_R2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 {
 	uint64_t node;
 	unsigned int prev;
-	double a, b;
+	double a = 0.0, b = 0.0;
 
 	prev = last - 1;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0!\n");

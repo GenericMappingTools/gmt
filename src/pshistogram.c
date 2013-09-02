@@ -221,7 +221,7 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 
 double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, int stairs, int flip_to_y, int draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, int cpt, struct D *D)
 {
-	int i, index, fmode, label_justify = (flip_to_y) ? PSL_ML : PSL_BC;
+	int i, index, fmode = 0, label_justify = (flip_to_y) ? PSL_ML : PSL_BC;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};
 	bool first = true;
