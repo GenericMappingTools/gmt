@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 #	$Id$
 #
 # Test the output of gmt grdseamount for Gaussian shapes

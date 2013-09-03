@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 #	$Id$
 
 # Testing gmt gmtmath for the DIFF, MEAN & -S Ops

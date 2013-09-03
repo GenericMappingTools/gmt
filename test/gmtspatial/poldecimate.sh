@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 #	$Id$
 # Testing gmt gmtspatial decimation near poles
 #

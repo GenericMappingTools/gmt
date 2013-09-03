@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 #	$Id$
 # Testing gmt grdfft -N+n with 10% and 25 % tapering
 

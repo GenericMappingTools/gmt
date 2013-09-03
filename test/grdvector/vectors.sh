@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 # $Id$
 
 ps=vectors.ps
