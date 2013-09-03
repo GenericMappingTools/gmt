@@ -1,4 +1,4 @@
-#!/bin/sh
+##!/bin/bash
 #	$Id$
 #
 # Compute admittance for synthetic model and data.
