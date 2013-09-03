@@ -6094,7 +6094,11 @@ void GMT_end (struct GMT_CTRL *GMT)
 	for (i = 0; i < GMT_N_UNIQUE; i++) {
 		if (GMT->init.history[i]) free ((void *) GMT->init.history[i]);
 	}
-
+	for (i = 0; i < GMT_MAX_COLUMNS; i++)
+		if (GMT->current.io.o_format[i]) free (GMT->current.io.o_format[i]);
+	for (i = 0; i < GMT->common.a.n_aspatial; i++)
+		if (GMT->common.a.name[i]) free (GMT->common.a.name[i]);
+		
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_freeshorthand (GMT);
 
 	fflush (GMT->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
@@ -6206,6 +6210,8 @@ void gmt_free_plot_array (struct GMT_CTRL *GMT) {
 void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 {
 	int i;
+	unsigned int V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
+	
 #if 0	/* I do not think we need the interstitial hist_cpy; just copy the pointers */
 	char *hist_cpy[GMT_N_UNIQUE];
 #endif
@@ -6265,6 +6271,7 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 
 	/* Overwrite GMT with what we saved in GMT_begin_module */
 	GMT_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
+	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
 
 	/* Now fix things that were allocated separately */
 

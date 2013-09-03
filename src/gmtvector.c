@@ -98,6 +98,7 @@ void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* D
 	if (!C) return;
 	if (C->In.arg) free (C->In.arg);	
 	if (C->Out.file) free (C->Out.file);	
+	if (C->A.arg) free (C->A.arg);	
 	if (C->S.arg) free (C->S.arg);	
 	GMT_free (GMT, C);	
 }
