@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 #	$Id$
 ps=flowvectors.ps
 gmt makecpt -Cseis -T0/2000/100 -Z > t.cpt
