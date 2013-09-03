@@ -14,14 +14,14 @@ cat << EOF > t.txt
 20
 EOF
 # Vertical bars
-pshistogram -R0/30/0/5 t.txt -L0.5p -Gred -B0 -P -JX2i -W5 -F -D+f12p -K -X2i -Y8i > $ps
-pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -D+f12p+r -K -X2.5i >> $ps
-pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -D+f12p+b -K -X-2.5i -Y-2.25i >> $ps
-pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -D+f12p+r+b -K -X2.5i >> $ps
+gmt pshistogram -R0/30/0/5 t.txt -L0.5p -Gred -B0 -P -JX2i -W5 -F -D+f12p -K -X2i -Y8i > $ps
+gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -D+f12p+r -K -X2.5i >> $ps
+gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -D+f12p+b -K -X-2.5i -Y-2.25i >> $ps
+gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -D+f12p+r+b -K -X2.5i >> $ps
 # Horizontal bars
-pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p -K -X-2.5i -Y-2.5i >> $ps
-pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+r -K -X2.5i >> $ps
-pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+b -K -X-2.5i -Y-2.25i >> $ps
-pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+r+b -K -X2.5i >> $ps
+gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p -K -X-2.5i -Y-2.5i >> $ps
+gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+r -K -X2.5i >> $ps
+gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+b -K -X-2.5i -Y-2.25i >> $ps
+gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+r+b -K -X2.5i >> $ps
 
-psxy -R -J -O -T >> $ps
+gmt psxy -R -J -O -T >> $ps

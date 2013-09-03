@@ -1,4 +1,4 @@
-#!/bin/sh
+##!/bin/bash
 #	$Id$
 # Testing gmt grd2xyz with -R and -s
 

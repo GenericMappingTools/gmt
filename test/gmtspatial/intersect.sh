@@ -1,4 +1,4 @@
-#!/bin/sh
+##!/bin/bash
 #	$Id$
 # Testing gmt gmtspatial intersection
 

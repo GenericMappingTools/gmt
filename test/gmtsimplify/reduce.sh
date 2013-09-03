@@ -1,4 +1,4 @@
-#!/bin/sh
+##!/bin/bash
 #	$Id$
 # Testing gmt gmtsimplify on GSHHS high Australia polygon.
 

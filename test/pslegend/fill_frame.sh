@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: fancy.sh 11026 2013-03-01 01:06:56Z pwessel $
+#	$Id$
 #
 # Testing gmt pslegend fill and frames
 

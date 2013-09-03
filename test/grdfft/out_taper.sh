@@ -1,4 +1,4 @@
-#!/bin/sh
+##!/bin/bash
 #	$Id$
 # Testing gmt grdfft -N+m mirror reflection and -N+e edge-point symmetry
 
