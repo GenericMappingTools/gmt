@@ -170,6 +170,8 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
+	memset (io, 0, sizeof(struct GMT_Z_IO)); /* Initialize with zero */
+
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
