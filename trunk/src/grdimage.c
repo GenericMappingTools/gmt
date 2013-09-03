@@ -1023,6 +1023,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	}
 	if (Ctrl->A.active) {
 		if (to_GDALW->P.ProjectionRefPROJ4) free (to_GDALW->P.ProjectionRefPROJ4);
+		free( to_GDALW->type);
 		GMT_free (GMT, to_GDALW);
 		free(Ctrl->A.driver);
 		free(Ctrl->A.file);

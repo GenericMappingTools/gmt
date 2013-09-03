@@ -294,6 +294,7 @@ int GMT_grd2rgb_parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct G
 				Ctrl->C.active = true;
 				break;
 			case 'G':	/* Output file template */
+				if (Ctrl->G.name) free (Ctrl->G.name);	
 				Ctrl->G.name = strdup (opt->arg);
 				break;
 			case 'I':	/* Get grid spacings */

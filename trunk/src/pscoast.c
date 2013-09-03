@@ -805,8 +805,10 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		GMT->common.R.wesn[XHI] += 360.0;
 		if (GMT->current.proj.central_meridian < 0.0) GMT->current.proj.central_meridian += 360.0;
 	}
-	west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
-	east_border = ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
+	if (need_coast_base) {
+		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
+		east_border = ceil  (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
+	}
 
 	if (!Ctrl->M.active && Ctrl->W.active) GMT_setpen (GMT, &Ctrl->W.pen[0]);
 

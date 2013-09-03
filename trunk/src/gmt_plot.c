@@ -4039,6 +4039,7 @@ void GMT_plotcanvas (struct GMT_CTRL *GMT)
 }
 
 void GMT_plotend (struct GMT_CTRL *GMT) {
+	unsigned int i;
 	struct PSL_CTRL *PSL= GMT->PSL;
 	PSL_endlayer (GMT->PSL);
 	if (GMT->common.t.active) PSL_command (PSL, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opague, if required */
@@ -4058,7 +4059,7 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 		if (GMT->current.ps.clip_level < 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
 		GMT->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in .gmtcommands */
 	}
-
+	for (i = 0; i < 3; i++) if (GMT->current.map.frame.axis[i].file_custom) free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !GMT->common.K.active);
 }
 
