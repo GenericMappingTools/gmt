@@ -93,7 +93,7 @@ fi
 for ps in *.ps ; do
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
   rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
-  rms=$(perl -ne 'print $1 if / +Total: ([0-9.]+) .+/' <<< "$rms")
+  rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
   else
@@ -131,7 +131,7 @@ function cleanup()
   valgrind_err=0
   if [ -n "${VALGRIND_ARGS}" ]; then
     for log_file in valgrind_*.log; do
-      n_err=$(perl -ne 'print $1 if /ERROR SUMMARY: ([0-9]+) /' ${log_file})
+      n_err=$(perl -ne 'print $1 if /ERROR SUMMARY: ([0-9]+)/' ${log_file})
       (( valgrind_err += n_err ))
       test "$n_err" -eq 0 && rm -f ${log_file} # remove logs w/o errors
     done
