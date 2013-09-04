@@ -854,11 +854,11 @@ unsigned int get_L (double x, double p, double err)
 double spline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *Lz)
 {	/* Evaluate g = M_PI * Pv(-x)/sin (v*x) - log (1-x) via series approximation */
 	unsigned int L_max, l;
-	double pp, P0, P1, P2, S;
+	double P0, P1, P2, S;
 
 	L_max = get_L (x, par[0], par[1]);	/* Highest order needed in sum given x, p, and err */
 
-	pp = par[0] * par[0];
+	/* pp = par[0] * par[0]; */
 	P0 = 1.0;	/* Initialize the P0 and P1 Legendre polynomials */
 	P1 = x;
 	S = par[2];	/* The constant l = 0 term was computed during setup */

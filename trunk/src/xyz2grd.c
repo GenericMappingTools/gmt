@@ -293,11 +293,11 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 int GMT_xyz2grd (void *V_API, int mode, void *args)
 {
 	bool previous_bin_i = false, previous_bin_o = false;
-	int error = 0, scol, srow, ndumb;
+	int error = 0, scol, srow;
 	unsigned int zcol, row, col, i, *flag = NULL;
 	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
 	uint64_t ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
-	
+
 	char c, Amode;
 
 	double *in = NULL, wesn[4];
@@ -461,9 +461,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->nm, float);
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids */
 		row = col = 0;
-		ndumb = fscanf (fp, "%s", line);	GMT_str_tolower (line);
+		fscanf (fp, "%s", line);
+		GMT_str_tolower (line);
 		if (!strcmp (line, "nodata_value")) {	/* Found the optional nodata word */
-			ndumb = fscanf (fp, "%lf", &value);
+			fscanf (fp, "%lf", &value);
 			if (Ctrl->E.set && !doubleAlmostEqualZero (value, Ctrl->E.nodata)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Your -E%g overrides the nodata_value of %g found in the ESRI file\n", Ctrl->E.nodata, value);
 			}
@@ -544,10 +545,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
-	
+
 	n_read = ij = 0;
 	if (Ctrl->Z.active) for (i = 0; i < io.skip; i++)
-		ndumb = (int)fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
+		fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
