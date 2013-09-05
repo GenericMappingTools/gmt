@@ -46,7 +46,7 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 Private Functions used by the public functions:
 
 int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
-int WriteRecord (FILE *file, float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
+int WriteRecord (FILE *file, float *outz[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
 void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *header)
 void SaveAGCHeader (char *remark, float *agchead)
 
@@ -68,19 +68,25 @@ int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
 	size_t nitems;
 	float garbage[PREHEADSIZE];
 
-	if (GMT_fread (garbage, sizeof(float), PREHEADSIZE, fpi) < PREHEADSIZE) return (GMT_GRDIO_READ_FAILED);
-	nitems = GMT_fread (z, sizeof(float), (ZBLOCKWIDTH * ZBLOCKHEIGHT), fpi);
+	if (GMT_fread (garbage, sizeof(float), PREHEADSIZE, fpi) < PREHEADSIZE)
+		return (GMT_GRDIO_READ_FAILED);
+	nitems = GMT_fread (z, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, fpi);
 
-	if (nitems != (ZBLOCKWIDTH * ZBLOCKHEIGHT) && !feof(fpi)) return (GMT_GRDIO_READ_FAILED);	/* Bad stuff */
-	if (GMT_fread (garbage, sizeof(float), POSTHEADSIZE, fpi) < POSTHEADSIZE) return (GMT_GRDIO_READ_FAILED);
+	if (nitems != ZBLOCKWIDTH * ZBLOCKHEIGHT && !feof(fpi))
+		return (GMT_GRDIO_READ_FAILED);	/* Bad stuff */
+	if (GMT_fread (garbage, sizeof(float), POSTHEADSIZE, fpi) < POSTHEADSIZE)
+		return (GMT_GRDIO_READ_FAILED);
 	return (GMT_NOERROR);
 }
 
 int WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
 {	/* Writes one block of data, including pre- and post-headers */
-	if (GMT_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (rec, sizeof(float), (ZBLOCKWIDTH * ZBLOCKHEIGHT), file) < (ZBLOCKWIDTH * ZBLOCKHEIGHT)) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (postrec, sizeof(float), POSTHEADSIZE, file) < POSTHEADSIZE)  return (GMT_GRDIO_WRITE_FAILED); 
+	if (GMT_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < PREHEADSIZE)
+		return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file) < ZBLOCKWIDTH * ZBLOCKHEIGHT)
+		return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (postrec, sizeof(float), POSTHEADSIZE, file) < POSTHEADSIZE)
+		return (GMT_GRDIO_WRITE_FAILED);
 	return (GMT_NOERROR);
 }
 
@@ -355,14 +361,14 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			}
 		}
 	}
-	
+
 	/* Since AGC files are always gridline-registered we must change -R when a pixel grid is to be written */
 	if (header->registration == GMT_GRID_PIXEL_REG) {
 		GMT_change_grdreg (GMT, header, GMT_GRID_NODE_REG);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", header->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
 	}
-	
+
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
 	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
@@ -377,12 +383,13 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
 			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
+			memset (outz, 0, ZBLOCKWIDTH * ZBLOCKHEIGHT * sizeof(float)); /* or WriteRecord (fp, outz, prez, postz); points to uninitialised buffer */
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = imag_offset + ((j_gmt - first_row) + pad[YHI]) * width_in + (col - first_col) + pad[XLO];
 				outz[j][i] = grid[ij];
 			}
-		} 
+		}
 
 		if (WriteRecord (fp, outz, prez, postz)) return (GMT_GRDIO_WRITE_FAILED);
 

@@ -390,12 +390,15 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &S, &B, &GMT->current.io), Ctrl->T.TAG);
 
 	/* Verify that the chosen column is known to the system */
-	
+
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C");
 	if (S->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
+
+	for (i = 0; i < N_COE_PARS; ++i)
+		active_col[i] = false; /* Initialize array */
 
 	active_col[COL_COE] = true;	/* Always used */
 	switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */

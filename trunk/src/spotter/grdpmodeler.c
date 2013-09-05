@@ -233,7 +233,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	
 	uint64_t node, seg;
 	
-	double lon, lat, d, value = 0.0, t_max, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
+	double lon, lat, d, value = 0.0, t_max = 0.0, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 	
 	char *quantity[N_PM_ITEMS] = { "velocity", "azimuth", "rotation rate", "longitude displacement", \
 		"longitude", "latitude displacement", "latitude", "distance displacement"};
