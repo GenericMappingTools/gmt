@@ -2495,7 +2495,8 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	n_items = k + 1;
 
 	for (i0 = 0, i1 = 1 ; i1 < n_items-1; i1++, i0++) {	/* Loop for periods ending sentences and indicate 2 spaces to follow */
-		if (isupper ((int)word[i1]->txt[0]) && word[i0]->txt[strlen(word[i0]->txt)-1] == '.') {
+		size_t len = strlen(word[i0]->txt);
+		if (len > 0 && isupper ((int)word[i1]->txt[0]) && word[i0]->txt[len-1] == '.') {
 			word[i0]->flag &= 60;	/* Sets bits 1 & 2 to zero */
 			word[i0]->flag |= 2;	/* Specify 2 spaces */
 		}
