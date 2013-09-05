@@ -132,8 +132,9 @@ function cleanup()
   if [ -n "${VALGRIND_ARGS}" ]; then
     for log_file in valgrind_*.log; do
       n_err=$(perl -ne 'print $1 if /ERROR SUMMARY: ([0-9]+)/' ${log_file})
+      n_err=${n_err:-1} # if valgrind crashes itself, there is no ERROR SUMMARY
       (( valgrind_err += n_err ))
-      test "$n_err" -eq 0 && rm -f ${log_file} # remove logs w/o errors
+      test ${n_err} -eq 0 && rm -f ${log_file} # remove logs w/o errors
     done
     echo "valgrind errors: $valgrind_err"
   fi
