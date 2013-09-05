@@ -291,7 +291,7 @@ struct GMT_GRID_HEADER {
 	int xy_dim[2];                   /* NetCDF: dimension order of x and y; normally {1, 0} */
 	size_t t_index[3];               /* NetCDF: index of higher coordinates */
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
-	size_t stride;                   /* NetCDF: distance between two rows in the in-memory grid */
+	unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
 	float nan_value;                 /* Missing value as stored in grid file */
 	double xy_off;                   /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
@@ -306,7 +306,7 @@ struct GMT_GRID_HEADER {
 	unsigned int gn;                 /* true if top    edge will be set as N pole  */
 	unsigned int gs;                 /* true if bottom edge will be set as S pole  */
 	unsigned int is_netcdf4;         /* true if netCDF-4/HDF5 format */
-	unsigned int z_chunksize[2];     /* chunk size (lat,lon) */
+	size_t z_chunksize[2];           /* chunk size (lat,lon) */
 	unsigned int z_shuffle;          /* if shuffle filter is turned on */
 	unsigned int z_deflate_level;    /* if deflate filter is in use */
 	unsigned int z_scale_autoadust;  /* if z_scale_factor should be auto-detected */

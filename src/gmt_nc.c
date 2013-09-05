@@ -480,8 +480,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 			size_t chunksize[5]; /* chunksize of z */
 			GMT_err_trap (nc_inq_var_chunking (ncid, z_id, &storage_mode, chunksize));
 			if (storage_mode == NC_CHUNKED) {
-				header->z_chunksize[0] = (unsigned int)chunksize[dims[0]]; /* chunk size of lat */
-				header->z_chunksize[1] = (unsigned int)chunksize[dims[1]]; /* chunk size of lon */
+				header->z_chunksize[0] = chunksize[dims[0]]; /* chunk size of lat */
+				header->z_chunksize[1] = chunksize[dims[1]]; /* chunk size of lon */
 			}
 			else { /* NC_CONTIGUOUS */
 				header->z_chunksize[0] = header->z_chunksize[1] = 0;
@@ -1234,7 +1234,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		io_nc_grid (GMT, header, dim, origin, header->stride, k_get_netcdf, pgrid + header->data_offset);
 	else {
 		/* read grid in two parts */
-		unsigned int stride_or_width = header->stride != 0 ? (unsigned int)header->stride : (unsigned int)width;
+		unsigned int stride_or_width = header->stride != 0 ? header->stride : width;
 		io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + header->data_offset);
 		io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + header->data_offset + dim[1]);
 	}
