@@ -27,6 +27,12 @@
  */
 
 #include "gmt_dev.h"
+
+#ifndef WIN32
+#	include <signal.h>
+#	include "common_sighandler.h"
+#endif
+
 #define PROGRAM_NAME	"gmt"
 
 /* Determine the system environmetal parameter that leads to shared libraries */
@@ -46,6 +52,20 @@ int main (int argc, char *argv[]) {
 	char gmt_module[GMT_LEN32] = "gmt";
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
+
+#ifndef WIN32
+	/* Install signal handler */
+	struct sigaction act;
+	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
+	act.sa_flags = SA_SIGINFO | SA_NODEFER; /* Do not prevent the signal from being received from within its own signal handler. */
+	act.sa_sigaction = sig_handler;
+	sigaction (SIGINT,  &act, NULL);
+	act.sa_flags = SA_SIGINFO;
+	sigaction (SIGILL,  &act, NULL);
+	sigaction (SIGFPE,  &act, NULL);
+	sigaction (SIGBUS,  &act, NULL);
+	sigaction (SIGSEGV, &act, NULL);
+#endif
 
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL)

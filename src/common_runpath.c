@@ -141,13 +141,11 @@ char *GMT_runtime_bindir_win32 (char *result) {
 char *GMT_runtime_bindir (char *result, const char *candidate) {
 	char *c, *path, *dir, *save_ptr = NULL;
 	char candidate_abs[PATH_MAX+1];
-	char link[PATH_MAX+1];
 	ssize_t len;
 	*result = '\0';
 
 	/* Try proc first */
-	snprintf (link, PATH_MAX+1, "/proc/%d/exe", getpid());
-	if ( (len = readlink (link, result, PATH_MAX)) != -1 ) {
+	if ( (len = readlink ("/proc/self/exe", result, PATH_MAX)) != -1 ) {
 		result[len] = '\0';
 		/* Truncate absolute path to dirname */
 		if ( (c = strrchr (result, '/')) && c != result )
