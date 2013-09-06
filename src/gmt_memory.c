@@ -461,11 +461,13 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 		}
 		if (align) {
 #ifdef HAVE_FFTW3F
-			tmp = fftwf_malloc (nelem * size);
+			tmp = NULL; /* currently defunct */
 #elif defined(WIN32) || defined(USE_MEM_ALIGNED)
 			tmp = _aligned_realloc ( prev_addr, nelem * size, 16U);
+#elif HAVE_POSIX_MEMALIGN
+			tmp = NULL; /* currently defunct */
 #else
-			posix_memalign (&prev_addr, 16U, nelem * size);
+			tmp = NULL; /* currently defunct */
 #endif
 		}
 		else
@@ -480,8 +482,10 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 			tmp = fftwf_malloc (nelem * size);
 #elif defined(WIN32) || defined(USE_MEM_ALIGNED)
 			tmp = _aligned_malloc (nelem * size, 16U);
-#else
+#elif HAVE_POSIX_MEMALIGN
 			posix_memalign (&tmp, 16U, nelem * size);
+#else
+			tmp = memalign (16U, nelem * size);
 #endif
 			if (tmp != NULL)
 				tmp = memset (tmp, 0, nelem * size);

@@ -283,7 +283,13 @@
 
 /* Enable 32 bit systems to use files of sizes beyond the usual limit of 2GB */
 #if defined(__i386__) && !defined _WIN32 /* on i386 with LFS support */
+#	ifdef _LARGEFILE_SOURCE
+#		undef _LARGEFILE_SOURCE
+#	endif
 #	define _LARGEFILE_SOURCE
+#	ifdef _FILE_OFFSET_BITS
+#		undef _FILE_OFFSET_BITS
+#	endif
 #	define _FILE_OFFSET_BITS 64
 #endif
 

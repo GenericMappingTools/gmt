@@ -186,6 +186,8 @@ if (UNIX)
 	endif (HAVE_LIBDL)
 	check_symbol_exists (dladdr    dlfcn.h  HAVE_DLADDR)
 	cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
+
+	check_symbol_exists (posix_memalign stdlib.h HAVE_POSIX_MEMALIGN)
 endif (UNIX)
 
 #
