@@ -85,6 +85,7 @@ set (CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
 check_include_file (assert.h            HAVE_ASSERT_H_)
 check_include_file (dirent.h            HAVE_DIRENT_H_)
 check_include_file (errno.h             HAVE_ERRNO_H_)
+check_include_file (execinfo.h          HAVE_EXECINFO_H_)
 check_include_file (fcntl.h             HAVE_FCNTL_H_)
 check_include_file (stdbool.h           HAVE_STDBOOL_H_)
 check_include_file (sys/dir.h           HAVE_SYS_DIR_H_)
