@@ -35,6 +35,10 @@
 
 #include "gmt_dev.h"
 
+#ifdef HAVE_MEMALIGN
+#	include <malloc.h>
+#endif
+
 #ifdef MEMDEBUG
 /* Memory tracking used to assist in finding memory leaks.  We internally keep track
  * of all memory allocated by GMT_memory and subsequently freed with GMT_free.  If
@@ -466,8 +470,10 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 			tmp = _aligned_realloc ( prev_addr, nelem * size, 16U);
 #elif HAVE_POSIX_MEMALIGN
 			tmp = NULL; /* currently defunct */
-#else
+#elif HAVE_MEMALIGN
 			tmp = NULL; /* currently defunct */
+#else
+#			error "missing memalign"
 #endif
 		}
 		else
@@ -484,8 +490,10 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 			tmp = _aligned_malloc (nelem * size, 16U);
 #elif HAVE_POSIX_MEMALIGN
 			posix_memalign (&tmp, 16U, nelem * size);
-#else
+#elif HAVE_MEMALIGN
 			tmp = memalign (16U, nelem * size);
+#else
+#			error "missing memalign"
 #endif
 			if (tmp != NULL)
 				tmp = memset (tmp, 0, nelem * size);

@@ -100,11 +100,13 @@
 #cmakedefine HAVE__GETPID
 #cmakedefine HAVE_GETPWUID
 #cmakedefine HAVE_LLABS
+#cmakedefine HAVE_MEMALIGN
 #cmakedefine HAVE__MKDIR
 #cmakedefine HAVE_PCLOSE
 #cmakedefine HAVE__PCLOSE
 #cmakedefine HAVE_POPEN
 #cmakedefine HAVE__POPEN
+#cmakedefine HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_QSORT_R_GLIBC
 #cmakedefine HAVE__SETMODE
 #cmakedefine HAVE_SNPRINTF_
