@@ -74,7 +74,7 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 # ifdef __x86_64__
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_RIP])
 # else
-#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[EIP])
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_EIP])
 # endif
 #else
 # ifdef __x86_64__
