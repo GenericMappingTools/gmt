@@ -468,9 +468,9 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 			tmp = NULL; /* currently defunct */
 #elif defined(WIN32) || defined(USE_MEM_ALIGNED)
 			tmp = _aligned_realloc ( prev_addr, nelem * size, 16U);
-#elif HAVE_POSIX_MEMALIGN
+#elif defined(HAVE_POSIX_MEMALIGN)
 			tmp = NULL; /* currently defunct */
-#elif HAVE_MEMALIGN
+#elif defined(HAVE_MEMALIGN)
 			tmp = NULL; /* currently defunct */
 #else
 #			error "missing memalign"
@@ -488,9 +488,9 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 			tmp = fftwf_malloc (nelem * size);
 #elif defined(WIN32) || defined(USE_MEM_ALIGNED)
 			tmp = _aligned_malloc (nelem * size, 16U);
-#elif HAVE_POSIX_MEMALIGN
+#elif defined(HAVE_POSIX_MEMALIGN)
 			posix_memalign (&tmp, 16U, nelem * size);
-#elif HAVE_MEMALIGN
+#elif defined(HAVE_MEMALIGN)
 			tmp = memalign (16U, nelem * size);
 #else
 #			error "missing memalign"
