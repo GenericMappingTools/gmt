@@ -229,6 +229,7 @@
 #cmakedefine SIZEOF__BOOL       @SIZEOF__BOOL@
 #cmakedefine SIZEOF_BOOL        @SIZEOF_BOOL@
 #cmakedefine SIZEOF_INT         @SIZEOF_INT@
+#cmakedefine SIZEOF_GREG_T      @SIZEOF_GREG_T@
 #cmakedefine SIZEOF_LONG        @SIZEOF_LONG@
 #cmakedefine SIZEOF_LONG_LONG   @SIZEOF_LONG_LONG@
 #cmakedefine SIZEOF_LONG_DOUBLE @SIZEOF_LONG_DOUBLE@
