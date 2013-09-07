@@ -52,28 +52,35 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 }
 #endif
 
+/* Macro for retrieving instruction pointer */
 #if defined(__APPLE__)
 # include <mach/mach.h>
 # if __DARWIN_UNIX03
 #  ifdef __x86_64__
-#   define SC_EIP(uc) ((void *) (uc)->uc_mcontext->__ss.__rip)
+#   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__rip)
 #  else
-#   define SC_EIP(uc) ((void *) (uc)->uc_mcontext->__ss.__eip)
+#   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__eip)
 #  endif
 # else
-#  define SC_EIP(uc) ((void *) (uc)->uc_mcontext->ss.eip)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext->ss.eip)
 # endif
 #elif defined(__FreeBSD__)
 # ifdef __x86_64__
-#  define SC_EIP(uc) ((void *) (uc)->uc_mcontext.mc_rip)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_rip)
 # else
-#  define SC_EIP(uc) ((void *) (uc)->uc_mcontext.mc_eip)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_eip)
+# endif
+#elif defined(SIZEOF_GREG_T)
+# ifdef __x86_64__
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_RIP])
+# else
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[EIP])
 # endif
 #else
 # ifdef __x86_64__
-#  define SC_EIP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_RIP])
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.rip)
 # else
-#  define SC_EIP(uc) ((void *) (uc)->uc_mcontext.gregs[EIP])
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.eip)
 # endif
 #endif
 
@@ -134,7 +141,7 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 	void *array[50];
 	ucontext_t *uc = (ucontext_t *)ucontext;
 
-	array [0] = SC_EIP (uc); /* caller's address */
+	array [0] = UC_IP (uc); /* caller's address */
 	array [1] = info->si_addr; /* address of faulting instruction */
 
 	if (sig_num == SIGINT) {
