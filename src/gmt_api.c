@@ -3108,7 +3108,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	 * If any error occurs we report the error, set the error code via API->error, and return NULL.
 	 * We terminate each session with a call to GMT_Destroy_Session.
 	 */
-	
+
 	struct GMTAPI_CTRL *API = NULL;
 	static char *unknown = "unknown";
 
@@ -3117,26 +3117,30 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	API->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & 1;	/* if set, then GMT_exit is simply a return; otherwise it is an exit */
 	API->mode = mode & 2;		/* if false|0 then we dont list read and write as modules */
-	
+
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
 	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
 		free (API);	/* Free API */
 		return_null (API, GMT_MEMORY_ERROR);
 	}
-		
+
 	/* Allocate memory to keep track of registered data resources */
-	
+
 	API->n_objects_alloc = GMT_SMALL_CHUNK;	/* Start small; this may grow as more resources are registered */
 	API->object = GMT_memory (API->GMT, NULL, API->n_objects_alloc, struct GMTAPI_DATA_OBJECT *);
-	
+
 	/* Set the unique Session parameters */
-	
+
 	API->session_ID = GMTAPI_session_counter++;		/* Guarantees each session ID will be unique and sequential from 0 up */
-	if (session) API->session_tag = strdup (session);	/* Only used in reporting and error messages */
-	API->GMT->init.module_name = (session) ? API->session_tag : unknown;	/* So non-modules can report name of program, or unknown */
-	
+	if (session) {
+		API->session_tag = strdup (GMT_basename (session));	/* Only used in reporting and error messages */
+		API->GMT->init.module_name = API->session_tag;	/* So non-modules can report name of program, */
+	}
+	else
+		API->GMT->init.module_name = unknown; /* or unknown */
+
 	GMTAPI_init_sharedlibs (API);				/* Count how many shared libraries we should know about, and get their names and paths */
-	
+
 	return (API);	/* Pass the structure back out */
 }
 
