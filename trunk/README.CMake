@@ -188,9 +188,21 @@ and/or _DO_TESTS_ in ConfigUser.cmake and do:
   $ make check
 
 Optionally set _N_TEST_JOBS_ to the number of ctest jobs to run
-simultaneously. You can also select individual tests using regexp with ctest:
+simultaneously. You can also select individual tests using regexp with ctest,
+e.g.:
 
-  $ ctest -R job1[3-6]
+  $ ctest -R ex2[3-6]
+
+Tests are preferably run through valgrind and GMT's internal memory tracker.
+Configure cmake with _add_definitions(-DMEMDEBUG)_ and prior to invoking the
+test, export the following variables:
+
+  $ export GMT_TRACK_MEMORY=2
+  $ export VALGRIND_ARGS="--track-origins=yes --leak-check=full"
+
+The test script will keep gmt_memtrack_<pid>.log and valgrind_<pid>.log files
+in the test directories for later inspection, when memory related errors were
+identified.
 
 ////
 vim: ft=asciidoc tw=78 et ts=2 sts=2 sw=2 autoindent smartindent
