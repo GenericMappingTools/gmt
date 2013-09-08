@@ -229,6 +229,7 @@ man_pages = [
 ('gmt.conf', 'gmt.conf', 'Configuration for GMT', '', 5),
 ('gmt', 'gmt', 'The Generic Mapping Tools data processing and display software package', '', 1),
 ('gmt2kml', 'gmt2kml', 'Convert GMT data tables to KML files for Google Earth', '', 1),
+('gmt5syntax', 'gmt5syntax', 'Convert old GMT script to use new \'gmt <module>\' syntax', '', 1),
 ('gmtcolors', 'gmtcolors', 'Explanation of color codes in GMT', '', 5),
 ('gmtconnect', 'gmtconnect', 'Connect individual lines whose end points match within tolerance', '', 1),
 ('gmtconvert', 'gmtconvert', 'Convert, Paste, and/or Extract columns from data tables', '', 1),

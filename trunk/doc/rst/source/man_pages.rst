@@ -19,6 +19,7 @@ Core modules
    gmt.conf
    gmt
    gmt2kml
+   gmt5syntax
    gmtcolors
    gmtconnect
    gmtconvert
