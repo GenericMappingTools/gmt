@@ -175,6 +175,22 @@ static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
+void reset_coltype (struct GMT_CTRL *GMT, char *Rarg) {
+	/* Because grdraster can deal with either geographic or Cartesian data
+	 * we need to be able to recognized geo arguments and set col_type correctly. */
+		size_t last;
+	if (!Rarg || (last = strlen (Rarg) == 0)) return;	/* Unable to do anything */
+	last--;	/* Index of last character in Rarg */
+	if (strchr (Rarg, ':') || strchr ("WESN", Rarg[last])) {
+		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
+		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+	}
+	else {	/* Treat as Cartesian */
+		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;
+		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+	}
+}
+
 unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
 	/* Return byte size of each item, or 0 if bits */
 	int ksize;
@@ -218,14 +234,22 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 	size_t length, i, j, stop_point;
 	off_t delta;
 	double global_lon, lon_tol;
-	char path[GMT_BUFSIZ] = {""}, buf[GMT_GRID_REMARK_LEN160] = {""}, *record = NULL, *file = "grdraster.info";
+	char path[GMT_BUFSIZ] = {""}, buf[GMT_GRID_REMARK_LEN160] = {""}, *record = NULL, *file = "grdraster.info", *ptr = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	struct GMT_TEXTSET *In = NULL;
 	struct stat F;
 
 	/* Find and open the file grdraster.info */
 
-	if ((In = GMT_Read_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
+	if (!GMT_access (GMT, file, R_OK))	/* Found in current directory */
+		ptr = file;
+	else if (GMT_getdatapath (GMT, file, path) || GMT_getsharepath (GMT, "dbase", file, "", path))
+		ptr = path;	/* Found it in the data or share path/dbase directory */
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: Unable to find file %s.\n", file);
+		return (0);
+	}
+	if ((In = GMT_Read_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ptr, NULL)) == NULL) {
 		return (0);
 	}
 
@@ -326,15 +350,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 				}
 				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
 				buf[j-i]='\0';
-				if (strchr (buf, ':') || strchr (buf, 'W') || strchr (buf, 'E') || strchr (buf, 'S') || strchr (buf, 'N')) {
-					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
-				}
-				else {
-					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;
-					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
-				}
-
+				reset_coltype (GMT, buf);	/* Make sure geo coordinates will be recognized */
 				GMT->common.R.active = false;	/* Forget that -R was used before */
 				if (GMT_parse_common_options (GMT, "R", 'R', buf)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
@@ -757,6 +773,12 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	
+	/* Hardwire a -fg setting since this is geographic data */
+	
+	API->GMT->current.io.col_type[GMT_IN][GMT_X] = API->GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
+	API->GMT->current.io.col_type[GMT_IN][GMT_Y] = API->GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+
 	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdraster_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
@@ -779,6 +801,7 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 
 	r_opt = GMT_Find_Option (GMT->parent, 'R', options);
 	GMT->common.R.active = false;	/* Forget that -R was used before */
+	reset_coltype (GMT, r_opt->arg);	/* Make sure geo coordinates will be recognized */
 	if (GMT_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reprocessing -R?.\n");
 		Return (EXIT_FAILURE);
@@ -1120,7 +1143,6 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 		GMT_free (GMT, floatrasrow);
 	}
 	GMT_fclose (GMT, fp);
-	GMT_free (GMT, rasinfo);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Finished reading from %s\n", myras.h.remark);
 	GMT_Report (API, GMT_MSG_VERBOSE, "min max and # NaN found: %g %g %" PRIu64 "\n", Grid->header->z_min, Grid->header->z_max, n_nan);
