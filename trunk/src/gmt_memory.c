@@ -90,8 +90,11 @@ int GMT_memtrack_init (struct GMT_CTRL *GMT) { /* Called in GMT_begin() */
 		if (ID > 2) M->find = ID;
 	}
 	M->search = true;
-	if (!M->do_log) /* Logging not requested */
+	if (!M->do_log) /* Logging not requested */ {
+		if (M->active) M->fp = stderr;
 		return GMT_OK;
+	}
+	else
 	{
 		int pid = getpid();
 		char logfile[32];
