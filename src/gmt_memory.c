@@ -295,6 +295,8 @@ static inline void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, vo
 	entry = gmt_treefind (&M->root, ptr);
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
 		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
+		if (M->do_log)
+			fprintf (M->fp, "!!!: 0x%zx ---------- %7.0lf %s %s\n", (size_t)ptr, M->current / 1024.0, GMT->init.module_name, entry->name);
 		return;
 	}
 	if (entry->size > M->current) {
@@ -343,25 +345,30 @@ void GMT_memtrack_report (struct GMT_CTRL *GMT) {
 	size = gmt_memtrack_mem (GMT, M->maximum, &u);
 	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n",
 							size, unit[u], M->maximum);
-	fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
-					 PRIuS " bytes]\n", size, unit[u], M->maximum);
+		if (M->do_log)
+			fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
+							 PRIuS " bytes]\n", size, unit[u], M->maximum);
 	size = gmt_memtrack_mem (GMT, M->largest, &u);
 	GMT_Report (GMT->parent, level, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
-	fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
-					 PRIuS " bytes]\n", size, unit[u], M->largest);
+		if (M->do_log)
+			fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
+							 PRIuS " bytes]\n", size, unit[u], M->largest);
 	if (M->current) {
 		size = gmt_memtrack_mem (GMT, M->current, &u);
 		GMT_Report (GMT->parent, level, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
 								size, unit[u], M->current);
-		fprintf (M->fp, "# MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
-						 size, unit[u], M->current);
+		if (M->do_log)
+			fprintf (M->fp, "# MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
+							 size, unit[u], M->current);
 	}
 	GMT_Report (GMT->parent, level, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
-	fprintf (M->fp, "# Items allocated: %" PRIu64 " reallocated: %" PRIu64 " freed: %"
-					 PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
+	if (M->do_log)
+		fprintf (M->fp, "# Items allocated: %" PRIu64 " reallocated: %" PRIu64 " freed: %"
+						 PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
 	if (excess) {
 		GMT_Report (GMT->parent, level, "Items not properly freed: %" PRIu64 "\n", excess);
-		fprintf (M->fp, "# Items not properly freed: %" PRIu64 "\n", excess);
+		if (M->do_log)
+			fprintf (M->fp, "# Items not properly freed: %" PRIu64 "\n", excess);
 	}
 	gmt_treeprint (GMT, M->root);
 	gmt_treedestroy (&M->root); /* Remove remaining items from tree if any */

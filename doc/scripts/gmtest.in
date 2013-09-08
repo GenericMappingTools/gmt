@@ -92,9 +92,19 @@ pscmp () {
 # Make sure to cleanup at end
 function cleanup()
 {
+  memtrack_err=0
+  for log_file in gmt_memtrack_*.log; do
+    test -f ${log_file} || continue
+    n_err=$(perl -lne '$a++ if /(Memory not freed|^!)/; END {print $a+0}' ${log_file})
+    (( memtrack_err += n_err ))
+    test ${n_err} -eq 0 && rm -f ${log_file} # remove logs w/o errors
+  done
+  echo "memtrack errors: $memtrack_err"
+
   valgrind_err=0
   if [ -n "${VALGRIND_ARGS}" ]; then
     for log_file in valgrind_*.log; do
+      test -f ${log_file} || continue
       n_err=$(perl -ne 'print $1 if /ERROR SUMMARY: ([0-9]+)/' ${log_file})
       n_err=${n_err:-1} # if valgrind crashes itself, there is no ERROR SUMMARY
       (( valgrind_err += n_err ))
@@ -102,8 +112,9 @@ function cleanup()
     done
     echo "valgrind errors: $valgrind_err"
   fi
+
   cd "@CMAKE_CURRENT_BINARY_DIR@" # get out of exec_dir before removing it
-  test "$ERROR" -eq 0 -a "$valgrind_err" -eq 0 && rm -rf "$exec_dir"
+  test "$ERROR" -eq 0 -a "$memtrack_err" -eq 0 -a "$valgrind_err" -eq 0 && rm -rf "$exec_dir"
   echo "exit status: $ERROR"
   exit $ERROR
 }
