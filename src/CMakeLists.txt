@@ -326,6 +326,7 @@ configure_file (gmt_config.h.in gmt_config.h)
 configure_file (gmt_version.h.in gmt_version.h)
 configure_file (isogmt.in isogmt @ONLY)
 configure_file (gmt-config.in gmt-config @ONLY)
+configure_file (gmt5syntax.in gmt5syntax @ONLY)
 
 # gmtprogram
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
@@ -366,7 +367,7 @@ endif ()
 if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
 	# PROTOSUPPLEMENTS are for testing new supplements that are not yet in
-	# subversion.  
+	# subversion.
 	#set (GMT_SUPPL_DIRS gshhg img kiss_fft meca mgd77 misc potential segy
 	set (GMT_SUPPL_DIRS gshhg img meca mgd77 misc potential segy
 		spotter x2sys $ENV{PROTOSUPPLEMENTS})
@@ -665,7 +666,7 @@ endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 install (PROGRAMS
 	${CMAKE_CURRENT_BINARY_DIR}/isogmt
 	${CMAKE_CURRENT_BINARY_DIR}/gmt-config
-	gmt5convert
+	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
 	gmtlogo
 	gmtswitch
 	gmt_shell_functions.sh
