@@ -50,7 +50,7 @@
  * b. Set GMT_TRACK_MEMORY to 1 (or any but 0) to activate the memory tracking.
  * c. Set GMT_TRACK_MEMORY to 2 to activate the memory tracking and to write a
  *    detailed log of all transactions taking place during a session to the file
- *    GMT_Memory_Tracker.log
+ *    gmt_memtrack_<pid>.log
  *
  * Paul Wessel, Latest revision June 2012.
  * Florian Wobbe, Latest revision August 2013.
@@ -92,9 +92,14 @@ int GMT_memtrack_init (struct GMT_CTRL *GMT) { /* Called in GMT_begin() */
 	M->search = true;
 	if (!M->do_log) /* Logging not requested */
 		return GMT_OK;
-	if ((M->fp = fopen ("GMT_Memory_Tracker.log", "w")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create log file GMT_Memory_Tracker.log\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+	{
+		int pid = getpid();
+		char logfile[32];
+		snprintf (logfile, 32, "gmt_memtrack_%d.log", pid);
+		if ((M->fp = fopen (logfile, "w")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create log file gmt_memtrack_%d.log\n", pid);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		}
 	}
 	fprintf (M->fp, "# %s", ctime (&now));
 	fprintf (M->fp, "#           addr     size_b total_k module line/function\n");
@@ -306,7 +311,11 @@ static inline void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) 
 	unsigned int u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double size = gmt_memtrack_mem (GMT, x->size, &u);
+	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s (ID = %zu): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
+	if (M->do_log)
+		fprintf (M->fp, "# Memory not freed first allocated in %s (ID = %zu): %.3f %s [%"
+						 PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 }
 
 static inline void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *t) {
@@ -329,15 +338,28 @@ void GMT_memtrack_report (struct GMT_CTRL *GMT) {
 	excess = M->n_allocated - M->n_freed;
 	level = (excess) ? GMT_MSG_NORMAL : GMT_MSG_VERBOSE;	/* Only insist on reporting if a leak, otherwise requires -V */
 	size = gmt_memtrack_mem (GMT, M->maximum, &u);
-	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->maximum);
+	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n",
+							size, unit[u], M->maximum);
+	fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
+					 PRIuS " bytes]\n", size, unit[u], M->maximum);
 	size = gmt_memtrack_mem (GMT, M->largest, &u);
 	GMT_Report (GMT->parent, level, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
+	fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
+					 PRIuS " bytes]\n", size, unit[u], M->largest);
 	if (M->current) {
 		size = gmt_memtrack_mem (GMT, M->current, &u);
-		GMT_Report (GMT->parent, level, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->current);
+		GMT_Report (GMT->parent, level, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
+								size, unit[u], M->current);
+		fprintf (M->fp, "# MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
+						 size, unit[u], M->current);
 	}
-	GMT_Report (GMT->parent, level, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
-	if (excess) GMT_Report (GMT->parent, level, "Items not properly freed: %" PRIu64 "\n", excess);
+	GMT_Report (GMT->parent, level, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
+	fprintf (M->fp, "# Items allocated: %" PRIu64 " reallocated: %" PRIu64 " freed: %"
+					 PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
+	if (excess) {
+		GMT_Report (GMT->parent, level, "Items not properly freed: %" PRIu64 "\n", excess);
+		fprintf (M->fp, "# Items not properly freed: %" PRIu64 "\n", excess);
+	}
 	gmt_treeprint (GMT, M->root);
 	gmt_treedestroy (&M->root); /* Remove remaining items from tree if any */
 
