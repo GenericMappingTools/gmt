@@ -1184,49 +1184,49 @@ int GMT_default_error (struct GMT_CTRL *GMT, char option)
 
 		case '-': break;	/* Skip indiscriminently */
 		case '>': break;	/* Skip indiscriminently since dealt with internally */
-		case 'B': error += GMT->common.B.active[0] + GMT->common.B.active[1] == 0; break;
-		case 'J': error += GMT->common.J.active == 0; break;
-		case 'K': error += GMT->common.K.active == 0; break;
-		case 'O': error += GMT->common.O.active == 0; break;
-		case 'P': error += GMT->common.P.active == 0; break;
-		case 'R': error += GMT->common.R.active == 0; break;
-		case 'U': error += GMT->common.U.active == 0; break;
-		case 'V': error += GMT->common.V.active == 0; break;
-		case 'X': error += GMT->common.X.active == 0; break;
-		case 'Y': error += GMT->common.Y.active == 0; break;
-		case 'a': error += GMT->common.a.active == 0; break;
-		case 'b': error += GMT->common.b.active[GMT_IN] + GMT->common.b.active[GMT_OUT] == 0; break;
-		case 'c': error += GMT->common.c.active == 0; break;
-		case 'f': error += GMT->common.f.active[GMT_IN] + GMT->common.f.active[GMT_OUT] == 0; break;
-		case 'g': error += GMT->common.g.active == 0; break;
+		case 'B': error += (GMT->common.B.active[0] == false && GMT->common.B.active[1] == false); break;
+		case 'J': error += GMT->common.J.active == false; break;
+		case 'K': error += GMT->common.K.active == false; break;
+		case 'O': error += GMT->common.O.active == false; break;
+		case 'P': error += GMT->common.P.active == false; break;
+		case 'R': error += GMT->common.R.active == false; break;
+		case 'U': error += GMT->common.U.active == false; break;
+		case 'V': error += GMT->common.V.active == false; break;
+		case 'X': error += GMT->common.X.active == false; break;
+		case 'Y': error += GMT->common.Y.active == false; break;
+		case 'a': error += GMT->common.a.active == false; break;
+		case 'b': error += (GMT->common.b.active[GMT_IN] == false && GMT->common.b.active[GMT_OUT] == false); break;
+		case 'c': error += GMT->common.c.active == false; break;
+		case 'f': error += (GMT->common.f.active[GMT_IN] == false &&  GMT->common.f.active[GMT_OUT] == false); break;
+		case 'g': error += GMT->common.g.active == false; break;
 		case 'H':
 			if (GMT_compat_check (GMT, 4)) {
-				error += GMT->common.h.active == 0;
+				error += GMT->common.h.active == false;
 			}
 			else
 				error++;
 			break;
-		case 'h': error += GMT->common.h.active == 0; break;
-		case 'i': error += GMT->common.i.active == 0; break;
-		case 'n': error += GMT->common.n.active == 0; break;
-		case 'o': error += GMT->common.o.active == 0; break;
+		case 'h': error += GMT->common.h.active == false; break;
+		case 'i': error += GMT->common.i.active == false; break;
+		case 'n': error += GMT->common.n.active == false; break;
+		case 'o': error += GMT->common.o.active == false; break;
 		case 'Z':
 			if (!GMT_compat_check (GMT, 4)) error++;
 			break;
 		case 'E':
 			if (GMT_compat_check (GMT, 4))
-				error += GMT->common.p.active == 0;
+				error += GMT->common.p.active == false;
 			else
 				error++;
 			break;
-		case 'p': error += GMT->common.p.active == 0; break;
+		case 'p': error += GMT->common.p.active == false; break;
 		case 'm': if (!GMT_compat_check (GMT, 4)) error++; break;
 		case 'S': if (!GMT_compat_check (GMT, 4)) error++; break;
 		case 'F': if (!GMT_compat_check (GMT, 4)) error++; break;
-		case 'r': error += GMT->common.r.active == 0; break;
-		case 's': error += GMT->common.s.active == 0; break;
-		case 't': error += GMT->common.t.active == 0; break;
-		case ':': error += GMT->common.colon.active == 0; break;
+		case 'r': error += GMT->common.r.active == false; break;
+		case 's': error += GMT->common.s.active == false; break;
+		case 't': error += GMT->common.t.active == false; break;
+		case ':': error += GMT->common.colon.active == false; break;
 
 		default:
 			/* Not a processed common options */
@@ -9426,6 +9426,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'r':
+			if (GMT->current.io.grd_info.active) GMT->common.r.active = false;	/* OK to override registration given via -Rfile */
 			error += GMT_more_than_once (GMT, GMT->common.r.active);
 			GMT->common.r.active = true;
 			GMT->common.r.registration = GMT_GRID_PIXEL_REG;

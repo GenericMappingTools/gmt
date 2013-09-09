@@ -482,8 +482,6 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
 		}
 
-		Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
-
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
 			if ((Sout = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Gout)) == NULL) Return (API->error);

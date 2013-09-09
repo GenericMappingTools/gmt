@@ -157,6 +157,7 @@ int GMT_grdsample_parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, stru
 				break;
 			case 'T':	/* Convert from pixel file <-> gridfile */
 				Ctrl->T.active = true;
+				if (GMT->current.io.grd_info.active) GMT->common.r.active = false;	/* Override any implicit -r via -Rgridfile */
 				break;
 
 			default:	/* Report bad options */
@@ -169,7 +170,7 @@ int GMT_grdsample_parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, stru
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.r.active && Ctrl->T.active, 
+	n_errors += GMT_check_condition (GMT, GMT->common.r.active && Ctrl->T.active && !GMT->current.io.grd_info.active, 
 					"Syntax error: Only one of -r, -T may be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), 
 					"Syntax error -I: Must specify positive increments\n");
