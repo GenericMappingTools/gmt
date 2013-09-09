@@ -264,6 +264,8 @@ int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	/* Rows are read south to north */
 	
+	GMT_memset (z, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* Initialize buffer to zero */
+
 	header->z_min = +DBL_MAX;	header->z_max = -DBL_MAX;
 	
 	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
@@ -371,6 +373,8 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
+	GMT_memset (outz, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* or WriteRecord (fp, outz, prez, postz); points to uninitialised buffer */
+
 	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
 	n_blocks_x = urint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
@@ -383,7 +387,6 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
 			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
-			memset (outz, 0, ZBLOCKWIDTH * ZBLOCKHEIGHT * sizeof(float)); /* or WriteRecord (fp, outz, prez, postz); points to uninitialised buffer */
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = imag_offset + ((j_gmt - first_row) + pad[YHI]) * width_in + (col - first_col) + pad[XLO];
