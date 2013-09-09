@@ -6098,6 +6098,9 @@ void GMT_end (struct GMT_CTRL *GMT)
 		if (GMT->current.io.o_format[i]) free (GMT->current.io.o_format[i]);
 	for (i = 0; i < GMT->common.a.n_aspatial; i++)
 		if (GMT->common.a.name[i]) free (GMT->common.a.name[i]);
+	if (GMT->common.h.title) free ((void *)GMT->common.h.title);
+	if (GMT->common.h.remark) free ((void *)GMT->common.h.remark);
+	if (GMT->common.h.colnames) free ((void *)GMT->common.h.colnames);
 		
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_freeshorthand (GMT);
 

@@ -1117,12 +1117,16 @@ void do_normalization_1d (double **X, double *obs, uint64_t n, unsigned int mode
 
 }
 
-void do_normalization (double **X, double *obs, uint64_t n, unsigned int mode, double *coeff)
+void do_normalization (double **X, double *obs, uint64_t n, unsigned int mode, unsigned int dim, double *coeff)
 {	/* mode == 1 norm z; mode == 2: also remove plane, norm & 4: also normalize result by range */
 
 	uint64_t i;
 	double d;
 	
+	if (dim == 1) {	/* 1-D trend or mean only */
+		do_normalization_1d (X, obs, n, mode, coeff);
+		return;
+	}
 	GMT_memset (coeff, 5, double);
 	for (i = 0; i < n; i++) {	/* Find mean z-value */
 		coeff[GMT_Z] += obs[i];
@@ -1177,13 +1181,16 @@ void do_normalization (double **X, double *obs, uint64_t n, unsigned int mode, d
 
 }
 
-double undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff)
+double undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim)
 {
 	double w;
 	w = w_norm;
 	if (mode & 4) w_norm *= coeff[6];
 	w += coeff[GMT_Z];
-	if (mode & 2) w += coeff[3] * (X[GMT_X] - coeff[GMT_X]) + coeff[4] * (X[GMT_Y] - coeff[GMT_Y]);
+	if (mode & 2) {
+		w += coeff[3] * (X[GMT_X] - coeff[GMT_X]);
+		if (dim == 2) w += coeff[4] * (X[GMT_Y] - coeff[GMT_Y]);
+	}
 	return (w);
 }
 
@@ -1677,7 +1684,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 
 	/* Remove mean (or LS plane) from data (we will add it back later) */
 
-	do_normalization (X, obs, n, normalize, norm);
+	do_normalization (X, obs, n, normalize, dimension, norm);
 		
 	/* Set up linear system Ax = z */
 	
@@ -1824,7 +1831,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 						part = G (GMT, r, par, Lz);
 					out[dimension] += alpha[p] * part;
 				}
-				out[dimension] = undo_normalization (out, out[dimension], normalize, norm);
+				out[dimension] = undo_normalization (out, out[dimension], normalize, norm, dimension);
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 		}
@@ -1881,7 +1888,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 							part = G (GMT, r, par, Lz);
 						wp += alpha[p] * part;
 					}
-					V[dimension] = (float)undo_normalization (V, wp, normalize, norm);
+					V[dimension] = (float)undo_normalization (V, wp, normalize, norm, dimension);
 					if (dimension == 2)	/* Special 2-D grid output */
 						Out->data[ij] = (float)V[dimension];
 					else	/* Crude dump for now for both 1-D and 3-D */

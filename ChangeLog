@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-09-09	pwessel
+	* greenspline.c:	Did compute 2-D trend for 1-D case, causing bad mem access.
+	* grdraster.c:		Did not understand dd:mm notation and failed to find grdraster.info
+
 2013-09-02	pwessel
 	* psmask.c:		Was off by one in grd index, thus exceeding array length at end.
 
