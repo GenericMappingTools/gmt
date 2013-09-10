@@ -59,6 +59,9 @@ function gmtlogo()
   @GMT_SOURCE_DIR@/src/gmtlogo "$@"
 }
 
+# export function definitions to subshells
+export -f gmt gmtlogo valgrind_wrapper
+
 # Convert PS to PDF
 function make_pdf()
 {
