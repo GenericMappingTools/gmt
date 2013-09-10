@@ -872,6 +872,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					if (x1 <= x0 || y1 <= y0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
 						fclose (fpb);
+						fpb = NULL; /* so we don't accidentally close twice */
 						remove (BB_file);	/* Remove the file */
 						sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
@@ -888,13 +889,15 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							Return (EXIT_FAILURE);
 						}
-
-						continue;
+						/* must leave loop because fpb has been closed and GMT_fgets would
+						 * read from cosed file: */
+						break;
 					}
 					got_BB = got_HRBB = true;
 				}
 			}
-			fclose (fpb);
+			if (fpb != NULL) /* don't close twice */
+				fclose (fpb);
 			remove (BB_file);	/* Remove the file with BB info */
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...", x0, y0, x1, y1);
 		}
