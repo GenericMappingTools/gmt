@@ -74,10 +74,10 @@ endif (NOT DEFINED FLOCK)
 # Build supplements is on
 set (BUILD_SUPPLEMENTS TRUE)
 
-# Monolithic install on
-if (NOT DEFINED GMT_INSTALL_MONOLITHIC)
-	set (GMT_INSTALL_MONOLITHIC ON)
-endif (NOT DEFINED GMT_INSTALL_MONOLITHIC)
+# Install into traditional directory structure per default
+if (NOT DEFINED GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
+	set (GMT_INSTALL_TRADITIONAL_FOLDERNAMES ON)
+endif (NOT DEFINED GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 
 # Do not enforce GPL conformity per default. This enables routines that cannot
 # normally be redistributed under the terms of the GPL such as Shewchuk's triangulation.

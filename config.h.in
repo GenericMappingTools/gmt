@@ -65,6 +65,8 @@
 /* Name of PSL library */
 #define PSL_LIB_NAME "@PSL_LIB_NAME@"
 
+/* Suffix of gmt executable, include dir, data dir, and plugin dir */
+#define GMT_INSTALL_NAME_SUFFIX "@GMT_INSTALL_NAME_SUFFIX@"
 
 #endif /* !_CONFIG_H */
 

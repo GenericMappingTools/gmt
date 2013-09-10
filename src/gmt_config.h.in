@@ -128,6 +128,20 @@
 #cmakedefine DECLARED_STRDUP
 #cmakedefine DECLARED_STRSEP
 
+/* support for inline functions */
+#cmakedefine HAVE_C_inline
+#cmakedefine HAVE_C___inline
+#cmakedefine HAVE_C___inline__
+#ifndef HAVE_C_inline
+#	if defined(HAVE_C___inline)
+#		define inline __inline
+#	elif defined(HAVE_C___inline__)
+#		define inline __inline__
+#	else
+#		define inline /* not supported */
+#	endif
+#endif /* !HAVE_C_inline */
+
 /* windows specific */
 
 #cmakedefine HAVE_DIRECT_H_
