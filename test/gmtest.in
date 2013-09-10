@@ -67,17 +67,20 @@ function gmt()
   valgrind_wrapper @GMT_BINARY_DIR@/src/gmt "$@"
 }
 
+# gmtlogo wrapper
+function gmtlogo()
+{
+  @GMT_SOURCE_DIR@/src/gmtlogo "$@"
+}
+
 # psldemo wrapper
 function psldemo()
 {
   valgrind_wrapper @GMT_BINARY_DIR@/src/psldemo "$@"
 }
 
-# gmtlogo wrapper
-function gmtlogo()
-{
-  @GMT_SOURCE_DIR@/src/gmtlogo "$@"
-}
+# export function definitions to subshells
+export -f gmt gmtlogo psldemo valgrind_wrapper
 
 # Convert PS to PDF
 function make_pdf()
