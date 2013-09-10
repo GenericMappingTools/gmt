@@ -296,7 +296,7 @@ static inline void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, vo
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
 		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
 		if (M->do_log)
-			fprintf (M->fp, "!!!: 0x%zx ---------- %7.0lf %s %s\n", (size_t)ptr, M->current / 1024.0, GMT->init.module_name, entry->name);
+			fprintf (M->fp, "!!!: 0x%zx ---------- %7.0lf %s\n", (size_t)ptr, M->current / 1024.0, GMT->init.module_name);
 		return;
 	}
 	if (entry->size > M->current) {
