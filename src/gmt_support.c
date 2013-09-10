@@ -2040,6 +2040,8 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	}
 
 	while (!error && fgets (line, GMT_BUFSIZ, fp)) {
+		GMT_strstrip (line, true);
+		c = line[0];
 
 		if (strstr (line, "COLOR_MODEL")) {	/* cpt file overrides default color model */
 			if (strstr (line, "+RGB") || strstr (line, "rgb"))
@@ -2062,7 +2064,6 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 		}
 		GMT->current.setting.color_model = X->model;
 
-		c = line[0];
 		if (c == '#') {	/* Possibly a header/comment record */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			if (!check_headers) continue;	/* Done with the initial header records */
@@ -2077,10 +2078,10 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 			if (X->n_headers >= n_hdr_alloc) X->header = GMT_memory (GMT, X->header, (n_hdr_alloc += GMT_TINY_CHUNK), char *);
 			continue;
 		}
-		if (c == '\n') continue;	/* Comment or blank */
+		if (c == '\0' || c == '\n') continue;	/* Comment or blank */
 		check_headers = false;	/* First non-comment record signals the end of headers */
 
-		GMT_chop(line);			/* Chop '\r\n' */
+		GMT_chop (line);	/* Chop '\r\n' */
 
 		T1[0] = T2[0] = T3[0] = T4[0] = T5[0] = T6[0] = T7[0] = T8[0] = T9[0] = 0;
 		switch (c) {
