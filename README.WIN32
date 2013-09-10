@@ -38,6 +38,9 @@ in the PATH. A Windows version is available here: http://alagazam.net/
 netCDF
 ======
 
+Update: Unidata officially provides CMake support since netCDF 4.3.0
+(http://www.unidata.ucar.edu/software/netcdf/docs/netCDF-CMake.html).
+
 Compiling netCDF from scratch on Windows is not an easy task since you need a
 lot of dependencies. You could either install a prepackaged development build
 from http://www.gfd-dennou.org/arch/ucar/netcdf/contrib/win32/. For instance
@@ -158,7 +161,6 @@ Finally we are ready to compile GMT5.
   an example:
 
   set (CMAKE_INSTALL_PREFIX z:/software/gmt5msc)
-  set (GMT_INSTALL_MONOLITHIC ON)
   set (GSHHG_ROOT z:/software/src/coast)
   set (NETCDF_ROOT z:/software)
   set (GDAL_ROOT z:/software)
@@ -174,7 +176,7 @@ Finally we are ready to compile GMT5.
   cmake -G "NMake Makefiles" ..
 
   nmake
-  nmake manpages_all
+  nmake docs_html
   nmake install
 
 - Typing 'gmt' should get you with a short message. You need to set your PATH
