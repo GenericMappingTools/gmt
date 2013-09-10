@@ -10,12 +10,14 @@ Contact info: gmt.soest.hawaii.edu
 CMake User Guide
 ================
 
+Note: This guide is also available at http://gmtrac.soest.hawaii.edu/
+
 Build and runtime prerequisites
 -------------------------------
 
 1. Software:
   You need Ghostscript, CMake (>=2.8.5), netCDF (>=4.0, netCDF-4/HDF5
-  support mandatory).  Optionally install PCRE, GDAL, and FFTW.
+  support mandatory).  Optionally install Sphinx, PCRE, GDAL, and FFTW.
 2. Data:
   You need gshhg (>=2.2.2); optionally install dcw-gmt (>=1.0.5)
 
@@ -36,14 +38,14 @@ Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
   $ mkdir build
   $ cd build
   $ cmake -DCMAKE_INSTALL_PREFIX=gmt5 -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
-  $ make -jx_
+  $ make -jx
 
 where _x_ is the number of threads you want to use and depends on the number
 of cores in your CPU and if hyperthreading is available or not.
 cmake ill build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
 can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
-  $ make -jx_ install
+  $ make -jx install
 
 installs a basic gmt in _build/gmt5_.
 
@@ -54,7 +56,7 @@ In more detail:
 ~~~~~~~~~~~~~~~
 
 For CMake related questions refer to the CMake manual which is available
-online: http://www.cmake.org/cmake/help/cmake-2-8-docs.html
+online: http://www.cmake.org/cmake/help/documentation.html
 
 To avoid CMake's lengthy command line options you can create your custom
 ConfigUser.cmake file in the cmake directory. Simply duplicate the
@@ -104,29 +106,33 @@ Documentation:
 
 The GMT manual is available in different formats and can be generated with:
 
-  $ make -jx_ docs_man  # UNIX manual pages
-  $ make -jx_ docs_html # HTML manual, cookbook, and API reference
-  $ make -jx_ docs_pdf  # PDF manual, cookbook, and API reference
+  $ make -jx docs_man  # UNIX manual pages
+  $ make -jx docs_html # HTML manual, cookbook, and API reference
+  $ make -jx docs_pdf  # PDF manual, cookbook, and API reference
 
-To generate the PDF documentation you need LaTeX.  You can choose to install
-documentation files from an external location instead of generating the PDF
-and HTML files from the sources.  This is convenient if LaTeX is not
-available.  Set GMT_INSTALL_EXTERNAL_DOC in cmake/ConfigUser.cmake.
+To generate the documentation you need to install the Sphinx documentation
+builder, and for PDFs you also need LaTeX.  You can choose to install the
+documentation files from an external location instead of generating the
+Manpages, PDF, and HTML files from the sources.  This is convenient if Sphinx
+and/or LaTeX are not available.  Set GMT_INSTALL_EXTERNAL_DOC in
+cmake/ConfigUser.cmake.
 
 Installing:
 ~~~~~~~~~~~
 
-  $ make -jx_ install
+  $ make -jx install
 
-will compile and install libps, libgmt, and all GMT modules. Optionally it
+will compile and install libps, libgmt, and the gmt executable. Optionally it
 will install the GSHHG shorelines (if found), DCW (if found), UNIX manpages,
 and HTML and PDF documentation.
+
 You have to explicitly make the latter two beforehand or they will be omitted
-during installation. You have the choice between a monolithic installation
-(_-DGMT_INSTALL_MONOLITHIC=ON_) where everything goes into a common
-subdirectory or a distribution-like installation (PREFIX/bin/gmt-VERSION,
-PREFIX/lib/gmt-VERSION/, PREFIX/share/gmt-VERSION/,
-PREFIX/share/doc/gmt-VERSION/).
+during installation.  You have the choice between installing into a
+traditional directory structure (_-DGMT_INSTALL_TRADITIONAL_FOLDERNAMES=ON_)
+where everything goes into a common subdirectory or a distribution-like
+installation (PREFIX/bin/gmtSUFFIX, PREFIX/lib/gmtSUFFIX/,
+PREFIX/include/gmtSUFFIX/, PREFIX/share/gmtSUFFIX/,
+PREFIX/share/doc/gmtSUFFIX/).
 
 GMT is shipped as a single executable.  By default we also set "classic mode"
 by installing convenience links for all GMT modules. New GMT users should set
@@ -141,7 +147,7 @@ working directory is the build directory this is just as simple as
   $ cd ..
   $ svn up
   $ cd -
-  $ make -jx_ install
+  $ make -jx install
 
 CMake will detect any changes to the source files and will automatically
 reconfigure. If you deleted all files inside the build directory you have to
@@ -157,17 +163,16 @@ Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install NSIS
   $ make package
   $ cpack -G <TGZ|TBZ2|Bundle|ZIP|NSIS>
 
-You probably also want to run cmake with _-DGMT_INSTALL_MONOLITHIC=ON_ before
-creating packages.
-
 Creating a source package:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Set GMT_RELEASE_PREFIX in cmake/ConfigUser.cmake and run cmake. Then do
 
-  $ make -jx_              # make executables (parallel build)
-  $ make -jx_ docs_depends # make doc images (parallel build)
-  $ make gmt_release       # export the source tree and install doc
+  $ make -jx           # make executables (parallel build)
+  $ make -jx docs_man  # UNIX manual pages
+  $ make -jx docs_html # HTML manual, cookbook, and API reference
+  $ make -jx docs_pdf  # PDF manual, cookbook, and API reference
+  $ make gmt_release   # export the source tree and install doc
 
 You should then edit ${GMT_RELEASE_PREFIX}/cmake/ConfigDefault.cmake and
 set GMT_PACKAGE_VERSION_MAJOR, GMT_PACKAGE_VERSION_MINOR, and
@@ -175,16 +180,18 @@ GMT_PACKAGE_VERSION_PATCH. Also uncomment and set
 GMT_SOURCE_CODE_CONTROL_VERSION_STRING to the current svn version. Then
 create tarballs with:
 
-  $ make -jx_ gmt_release_tar
+  $ make -jx gmt_release_tar
 
 In-build-dir tests:
 ~~~~~~~~~~~~~~~~~~~
 
+A complete set of the example scripts used to create all the example plots,
+including all necessary data files, are provided by the installation.
 Examples and tests can be build inside GMT_BINARY_DIR *without* installing.
-This is very convenient for testing. Just _enable_testing()_, set _DO_EXAMPLES_
-and/or _DO_TESTS_ in ConfigUser.cmake and do:
+This is very convenient for testing. Just _enable_testing()_, set
+_DO_EXAMPLES_ and/or _DO_TESTS_ in ConfigUser.cmake and do:
 
-  $ make -jx_
+  $ make -jx
   $ make check
 
 Optionally set _N_TEST_JOBS_ to the number of ctest jobs to run

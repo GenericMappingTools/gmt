@@ -14,22 +14,16 @@ Introduction
 You do not need to read these instructions unless you plan to build and
 install the programs manually.
 
-GMT has been installed successfully under Unix/Linux/OS X on workstations
-from Sun, Silicon Graphics, Cray, DEC, HP, Data General, IBM, Apple, NEXT,
-as well on any number of PC clones running Linux.  It also installs under
-WIN32 and in Unix emulators such as Cygwin on PCs and Machten on Macs.
-We anticipate few problems if you are installing the package on other platforms.
-Should you need to make small modifications, e.g., not use certain
-include files, please let us know so that future releases will be even
-more portable.  This is likely to mean that your platform is not
-POSIX compliant.  For a non-UNIX solution, see Appendix L for options
-and installation details.
+GMT has been installed successfully under UNIX/Linux/OS X on workstations.  It
+also installs under Windows and in UNIX emulators such as Cygwin or on virtual
+machines.  We anticipate few problems if you are installing the package on
+other platforms.
 
 Note there are three GMT tar archives available (#3 is optional):
 
-1. gmt-5.0.0.tar.bz2:           The GMT 5 distribution
-2. gshhg-gmt-nc4-2.2.3.tar.gz:	All five resolutions of GSHHG coastline data
-3. dcw-gmt-1.0.5.tar.bz2: 	Digital Chart of the World polygon data
+1. gmt-5.0.0.tar.bz2:          The GMT 5 distribution
+2. gshhg-gmt-nc4-2.2.3.tar.gz: All five resolutions of GSHHG coastline data
+3. dcw-gmt-1.0.5.tar.bz2:      Digital Chart of the World polygon data
 
 The archives are available in bzip2 (*.bz2) and gzip (*.gz) formats.
 If you do not have bzip2 installed you can obtain source or executables
@@ -49,25 +43,22 @@ Install CMake (>=2.8.5) from http://www.cmake.org/cmake/resources/software.html
 Install netCDF library
 ----------------------
 
-Get and install netCDF from http://www.unidata.ucar.edu/downloads/netcdf/.
-You need at least version 4.0 with netCDF-4/HDF5 data model support (do not
-disable HDF5/ZLIB in netCDF with --disable-netcdf-4).
-
 For all major Linux distributions there are prepackaged development binaries
 available. netCDF is also available on MacOSX trough the macports and fink
 package managers.
+
+Otherwise, get netCDF from http://www.unidata.ucar.edu/downloads/netcdf/.
+You need at least version 4.0 with netCDF-4/HDF5 data model support (do not
+disable HDF5/ZLIB in netCDF with --disable-netcdf-4).
 
 
 GDAL (optional)
 ---------------
 
 To use the GDAL interface (ability to provide grids or images to be imported
-via gdal) you must have the GDAL library and include files installed. Please
-report any problems or limitations that you might experience as this is an
-optional and experimental feature.
-
-Like netCDF, GDAL is available through your favorite package manager on many
-*NIX systems.
+via gdal) you must have the GDAL library and include files installed.  Like
+netCDF, GDAL is available through your favorite package manager on many *NIX
+systems.
 
 
 Install support data
@@ -100,61 +91,51 @@ where you eventually want to install GMT).
 Configuring
 -----------
 
-GMT can be build on any platform supported by CMake. CMake is a cross-platform,
-open-source system for managing the build process. Refer to the documentation
-at http://www.cmake.org/ for further details. In the source tree copy
-cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and edit the file
-according to your demands.
+GMT can be build on any platform supported by CMake.  CMake is a
+cross-platform, open-source system for managing the build process.
+Refer to README.CMake for further details.  In the source tree copy
+cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and edit
+the file according to your demands.
 
 By default, GMT will use Dave Watson's Delaunay triangulation routine.
 However, a much faster alternative is available from Jonathan Shewchuk, but
 his routine is not distributed under the GNU Public License.  If you work for
 a for-profit organization you should read Shewchuk's copyright statement (in
 src/triangle.c) first.  If you agree with the license terms you can enable
-Shewchuk's triangulation routine cmake/ConfigUser.cmake.
+Shewchuk's triangulation routine in cmake/ConfigUser.cmake.
 
-At run-time, GMT will initialize all default variables by reading
-either the share/gmtdefaults_SI or the share/gmtdefaults_US file.
-Both are installed, and the one that is read is given by the file
-share/gmt.conf.  This file will have either SI or US as the first
-two columns on a line.  SI is default. You can configure the default
-at build time in cmake/ConfigUser.cmake.
+At run-time, GMT will initialize all default variables by reading either the
+share/gmtdefaults_SI or the share/gmtdefaults_US file.  Both are installed,
+and the one that is read is given by the file share/gmt.conf.  This file will
+have either SI or US as the first two columns on a line.  SI is default. You
+can configure the default at build time in cmake/ConfigUser.cmake.
 
-The default values differ slightly between SI and US, mostly because
-it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm
-instead.  Although strongly discouraged, if you want to make
-permanent changes to some of the defaults you can edit the
-gmtdefaults_{SI,US} files directly.  A much better approach is to
-create a gmt.conf file in your home directory and edit those
-settings since GMT will check for that file before loading system
-defaults (actually, it will first look in the current directory,
-then the home directory, and then finally in share).  See the gmtdefaults
-man page for a description of all defaults.
+The default values differ slightly between SI and US, mostly because it is
+inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm instead.  Although
+strongly discouraged, if you want to make permanent changes to some of the
+defaults you can edit the gmtdefaults_{SI,US} files directly.  A much better
+approach is to create a gmt.conf file in your home directory and edit those
+settings since GMT will check for that file before loading system defaults
+(actually, it will first look in the current directory, then the home
+directory, and then finally in share).  See the gmtdefaults man page for a
+description of all defaults.
 
-To prevent two GMT processes writing to the same gmt.conf file
-simultaneously (thereby corrupting it), GMT can implement the POSIX
-advisory file locking scheme and sets and releases locks on these
-files.  Under GNU/Linux, this does not work when the files reside
-in directories mounted with NFS.  Since it works with NFS under
-other UNIX systems we suspect this is a [temporary] limitation of GNU
-NSF.  If you want to activate file locking you may enable it in
-cmake/ConfigUser.cmake.
+To prevent two GMT processes writing to the same gmt.conf file simultaneously
+(thereby corrupting it), GMT can implement the POSIX advisory file locking
+scheme and sets and releases locks on these files.  This might not be reliable
+when the files reside in directories on network filesystems, such as NFS.
+Whether flock works on network filesystems is implementation dependent.  If
+you want to activate file locking you may enable it in cmake/ConfigUser.cmake.
 
 By default, both GMT and all its supplements are built.  You can turn
 off all supplements via the BUILD_SUPPLEMENTS setting in ConfigUsers.cmake
-
-We provide two install modes via CMake: You have the choice between a
-monolithic installation (GMT_INSTALL_MONOLITHIC=ON) where everything goes
-into a common subdirectory, or a distribution-like installation
-(PREFIX/bin/gmt-VERSION, PREFIX/lib/gmt-VERSION/, PREFIX/share/gmt-VERSION/,
-PREFIX/share/doc/gmt-VERSION/).
 
 The top-level installation directory is configured with the variable
 CMAKE_INSTALL_PREFIX.
 
 Now that you made your configuration choices it is time for invoking CMake.
-In the source tree, create a subdirectory where the build files will be
-generated, e.g., 'mkdir build'.
+Create a subdirectory where the build files will be generated, e.g., in the
+source tree 'mkdir build'.
 
 In the build subdirectory, type
 
@@ -171,15 +152,12 @@ Build GMT
 
 In the build directory, type
 
-  make -jx
-  make -jx manpages_all
+  make
 
-which will compile all the programs and create the manual pages. You can
-define the number of jobs to run simultaneously by make with the -jx option,
-where x is typically the number of CPUs. After a successful compilation you
-may install the executables in the designated bin directory with the command
+which will compile all the programs.  After a successful compilation you may
+install the executables in the designated bin directory with the command
 
-  make -jx install
+  make install
 
 After a successful install you can have the object files and the local
 executables removed by saying
@@ -195,28 +173,16 @@ _____________
 The documentation is available online at http://gmt.soest.hawaii.edu/
 or as platform independent package that you can install along with GMT.
 
-The development sources from subversion does not contain the precompiled
-documentation in PDF format. The PDFs have to be created from source with
-LaTeX (e.g., TeX Live).
-
-port install py27-sphinx
-
 The GMT documentation includes HTML files for online browsing, user guide,
 cookbook, and manual pages. The Documentation also contains the
 GMT_Tutorial.pdf file which is a short course in how to use GMT.  It can be
+^^^^^^^^^^^^^^^^
+still missing!
 followed individually or in a lab setting by a group of users.
 
-While these are available from the main GMT home page in Hawaii, users may
-find it convenient to install these pages locally for added speed.  The
-subdirectories contain both HTML and PDF versions of the cookbook, and HTML
-versions of the manual pages.  All users need to do is to add a browser
-bookmark to the top-level file doc/html/gmt_services.html. To install all
-documentation in your chosen directory, type
-
-  make gmt_pdf_manpages
-  make gmt_doc
-  make gmt_doc_shrink
-  make install
+The development sources from subversion do not contain the precompiled
+documentation. The manuals, HTML pages, and PDFs have to be created from
+source with Sphinx (see README.CMake).
 
 
 Set path
@@ -230,11 +196,10 @@ like /usr/local/bin.  You should now be able to run GMT programs.
 GMT supplemental Code
 ---------------------
 
-GMT users elsewhere have developed programs that utilize the GMT
-libraries and produce PostScript code compatible with the rest of
-GMT or simply perform data manipulation.  In addition, misc.
-code developed by us depend on GMT libraries.
-Currently, the supplemental archive include the directories:
+GMT users elsewhere have developed programs that utilize the GMT libraries and
+produce PostScript code compatible with the rest of GMT or simply perform data
+manipulation.  In addition, misc.  code developed by us depend on GMT
+libraries.  Currently, the supplemental archive include the directories:
 
   gshhs     - Data extractor for GSHHS shoreline polygons.
   img       - Data extractor for Smith/Sandwell altimetry grids.
@@ -245,16 +210,6 @@ Currently, the supplemental archive include the directories:
   segyprogs - Plotting SEGY seismic data sets.
   spotter   - Plate tectonic & kinematics applications.
   x2sys     - Track intersection (crossover) tools.
-
-Example Scripts
----------------
-
-   A complete set of the example scripts used to create all the
-example plots, including all necessary data files, are provided by
-the installation; you can run all the examples from the
-src directory using CTest (enable in cmake/ConfigUser.cmake)
-
-	make check
 
 
 Misc
@@ -268,6 +223,7 @@ Before running programs, there are a few things you should do/know:
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms.  Then, before running individual gmt programs, read
     the associated man page.
+
 
 A reminder
 ----------
