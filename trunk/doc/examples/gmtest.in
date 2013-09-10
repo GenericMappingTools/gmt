@@ -55,6 +55,12 @@ function gmt()
   fi
 }
 
+# gmtlogo wrapper
+function gmtlogo()
+{
+  @GMT_SOURCE_DIR@/src/gmtlogo "$@"
+}
+
 # Convert PS to PDF
 function make_pdf()
 {

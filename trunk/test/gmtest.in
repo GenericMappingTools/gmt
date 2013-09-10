@@ -73,6 +73,12 @@ function psldemo()
   valgrind_wrapper @GMT_BINARY_DIR@/src/psldemo "$@"
 }
 
+# gmtlogo wrapper
+function gmtlogo()
+{
+  @GMT_SOURCE_DIR@/src/gmtlogo "$@"
+}
+
 # Convert PS to PDF
 function make_pdf()
 {
