@@ -393,7 +393,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 #ifdef WIN32
 			sprintf (plugindir, "%s/gmt_plugins", API->GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
 #else
-			sprintf (plugindir, "%s/gmt/plugins", API->GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
+			sprintf (plugindir, "%s/gmt" GMT_INSTALL_NAME_SUFFIX "/plugins", API->GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
 #endif
 		}
 		if ((list = GMT_get_dir_list (API->GMT, plugindir, extension))) {	/* Add these files to the libs */

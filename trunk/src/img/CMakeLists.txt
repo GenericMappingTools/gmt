@@ -23,8 +23,6 @@
 set (SUPPL_LIB_SRCS gmt_imgsubs.h gmt_imgsubs.c)
 set (SUPPL_PROGS_SRCS img2grd.c)
 
-set (SUPPL_SHELL_SCRIPTS img2google)
-
 # lib sources
 set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 
@@ -32,14 +30,10 @@ set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
 
-## Generate manpages
-#string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
-#gmt_create_manpages ("${SUPPL_MAN_1}")
-#
 # install shell script
 if (UNIX)
-	install (PROGRAMS ${SUPPL_SHELL_SCRIPTS}
-		DESTINATION ${GMT_BINDIR}
+	install (PROGRAMS img2google
+		DESTINATION ${GMT_SHARE_PATH}/tools
 		COMPONENT Runtime)
 endif (UNIX)
 

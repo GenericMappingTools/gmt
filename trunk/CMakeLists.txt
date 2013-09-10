@@ -109,16 +109,16 @@ if (SVN AND HAVE_SVN_VERSION)
 	endif (GNUTAR)
 endif (SVN AND HAVE_SVN_VERSION)
 
-get_property(GMT_CORE_LIB_PATH TARGET gmtlib PROPERTY LOCATION)
-GET_FILENAME_COMPONENT (GMT_CORE_LIB_NAME ${GMT_CORE_LIB_PATH} NAME)
+get_target_property (_location gmtlib LOCATION)
+get_filename_component (GMT_CORE_LIB_NAME ${_location} NAME)
 
-get_property(PSL_LIB_PATH TARGET pslib PROPERTY LOCATION)
-GET_FILENAME_COMPONENT (PSL_LIB_NAME ${PSL_LIB_PATH} NAME)
+get_target_property (_location pslib LOCATION)
+get_filename_component (PSL_LIB_NAME ${_location} NAME)
 
 if (BUILD_SUPPLEMENTS)
 	# Get name of shared supplemental library
-	get_property(GMT_SUPPL_LIB_PATH TARGET supplib PROPERTY LOCATION)
-	GET_FILENAME_COMPONENT (GMT_SUPPL_LIB_NAME ${GMT_SUPPL_LIB_PATH} NAME)
+	get_target_property (_location supplib LOCATION)
+	get_filename_component (GMT_SUPPL_LIB_NAME ${_location} NAME)
 	set (SUPPL "yes [${GMT_SUPPL_LIB_NAME}]")
 else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
@@ -161,5 +161,10 @@ message(
 	"*  GMT_SHARE_PATH             : ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}\n"
 	"*  GMT_DOC_PATH               : ${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}\n"
 	"*  GMT_MAN_PATH               : ${CMAKE_INSTALL_PREFIX}/${GMT_MAN_PATH}")
+
+#get_cmake_property(_variableNames VARIABLES)
+#foreach (_variableName ${_variableNames})
+#	message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

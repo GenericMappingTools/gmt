@@ -62,6 +62,31 @@ check_c_source_compiles (
 	"
 	HAVE___FUNCTION__)
 
+
+#
+# Check if compiler supports inline functions
+# This test is adapted from Jack Kelly on the CMake mailing list
+#
+
+cmake_push_check_state() # save state of CMAKE_REQUIRED_*
+foreach (KEYWORD "inline" "__inline" "__inline__")
+	if (NOT DEFINED HAVE_C_INLINE)
+		set (CMAKE_REQUIRED_DEFINITIONS -Dinline=${KEYWORD})
+		check_c_source_compiles(
+			"
+			typedef int foo_t;
+			static inline foo_t static_foo () {return 0;}
+			foo_t foo () {return 0;}
+			int main (int argc, char *argv[]) {return 0;}
+			"
+			HAVE_C_${KEYWORD})
+		if (HAVE_C_${KEYWORD})
+			set (HAVE_C_INLINE TRUE)
+		endif (HAVE_C_${KEYWORD})
+	endif (NOT DEFINED HAVE_C_INLINE)
+endforeach (KEYWORD)
+cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
+
 #
 # Check for windows header
 #

@@ -93,12 +93,12 @@
 ## Section 3: Advanced PATHs
 ##
 
-# 3a) Install monolithic tree instead of distribution type layout (doc and share
-# separated) [ON]:
-#set (GMT_INSTALL_MONOLITHIC OFF)
+# 3a) Install into traditional directory structure instead of distribution type
+# directory structure (doc and share separated) [on]:
+#set (GMT_INSTALL_TRADITIONAL_FOLDERNAMES OFF)
 
 # 3b) Set install name suffix used for directories and main gmt executable
-# [-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}]:
+# [not defined]:
 #set (GMT_INSTALL_NAME_SUFFIX "suffix")
 
 # 3c) Set share installation path [${CMAKE_INSTALL_PREFIX}/share]:
