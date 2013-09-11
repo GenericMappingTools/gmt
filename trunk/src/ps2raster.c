@@ -72,10 +72,10 @@ void GMT_str_toupper (char *string);
 #define add_to_list(list,item) { if (list[0]) strcat (list, " "); strcat (list, item); }
 
 struct PS2RASTER_CTRL {
-	struct In {	/* Input file info */
+	struct PS2R_In {	/* Input file info */
 		unsigned int n_files;
 	} In;
-	struct A {             /* -A[u][-] [Adjust boundingbox] */
+	struct PS2R_A {             /* -A[u][-] [Adjust boundingbox] */
 		bool active;
 		bool round;        /* Round HiRes BB instead of ceil */
 		bool strip;        /* Remove the -U time-stamp */
@@ -87,50 +87,50 @@ struct PS2RASTER_CTRL {
 		double margin[4];
 		double new_dpi_x, new_dpi_y;
 	} A;
-	struct C {	/* -C<option> */
+	struct PS2R_C {	/* -C<option> */
 		bool active;
 		char arg[GMT_BUFSIZ];
 	} C;
-	struct D {	/* -D<dir> */
+	struct PS2R_D {	/* -D<dir> */
 		bool active;
 		char *dir;
 	} D;
-	struct E {	/* -E<resolution> */
+	struct PS2R_E {	/* -E<resolution> */
 		bool active;
 		unsigned int dpi;
 	} E;
-	struct F {	/* -F<out_name> */
+	struct PS2R_F {	/* -F<out_name> */
 		bool active;
 		char *file;
 	} F;
-	struct G {	/* -G<GSpath> */
+	struct PS2R_G {	/* -G<GSpath> */
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -I */
+	struct PS2R_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L<listfile> */
+	struct PS2R_L {	/* -L<listfile> */
 		bool active;
 		char *file;
 	} L;
-	struct P2 {	/* -P */
+	struct PS2R_P {	/* -P */
 		bool active;
 	} P;
-	struct Q {	/* -Q[g|t]<bits> */
+	struct PS2R_Q {	/* -Q[g|t]<bits> */
 		bool active;
 		bool on[2];	/* [0] for graphics, [1] for text antialiasing */
 		unsigned int bits[2];
 	} Q;
-	struct S {	/* -S */
+	struct PS2R_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct PS2R_T {	/* -T */
 		bool active;
 		int eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
 		int device;	/* May be negative */
 	} T;
-	struct W {	/* -W -- for world file production */
+	struct PS2R_W {	/* -W -- for world file production */
 		bool active;
 		bool folder;
 		bool warp;
@@ -872,9 +872,10 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					if (x1 <= x0 || y1 <= y0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
 						fclose (fpb);
-						fpb = NULL; /* so we don't accidentally close twice */
-						remove (BB_file);	/* Remove the file */
-						sprintf (tmp_file, "%s/", Ctrl->D.dir);
+						fpb = NULL;                      /* so we don't accidentally close twice */
+						remove (BB_file);                /* Remove the file */
+						if (Ctrl->D.active)
+							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
 						sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g1x1 -r%d -sOutputFile=%s -f%s", 
