@@ -60,7 +60,7 @@ function gmtlogo()
 }
 
 # export function definitions to subshells
-export -f gmt gmtlogo valgrind_wrapper
+export -f gmt gmtlogo
 
 # Convert PS to PDF
 function make_pdf()
