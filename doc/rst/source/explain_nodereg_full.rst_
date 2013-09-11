@@ -2,5 +2,5 @@
 
 **-r**
     Force pixel node registration [Default is gridline registration].
-    (Node registrations are defined in **GMT** Technical Reference and
-    Cookbook, Appendix B on grid file formats.)
+    (Node registrations are defined in Section :ref:`grid-registration`
+    of the GMT Technical Reference and Cookbook.)

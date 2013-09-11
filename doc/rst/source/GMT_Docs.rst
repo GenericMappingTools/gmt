@@ -3002,6 +3002,8 @@ view point with **+v**\ *x0/y0*. When **-p** is used without any further
 arguments, the values from the last use of **-p** in a previous
 *GMT*\ command will be used.
 
+.. _grid-registration:
+
 Grid registration: The **-r** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
