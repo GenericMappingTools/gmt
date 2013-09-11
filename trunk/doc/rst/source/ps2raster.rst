@@ -242,7 +242,7 @@ Although **ps2raster** was developed as part of the **GMT**, it can be
 used to convert *PostScript* files created by nearly any graphics
 program. However, **-Au** is **GMT**-specific.
 
-See Appendix C of the **GMT Technical Reference and Cookbook** for more
+See :ref:`include-gmt-graphics` of the **GMT Technical Reference and Cookbook** for more
 information on how **ps2raster** is used to produce graphics that can be
 inserted into other documents (articles, presentations, posters, etc.).
 

@@ -6556,6 +6556,8 @@ Raster patterns may be created with *GMT* plotting tools by generating
 *PostScript* plots that can be rasterized by **ghostscript** and
 translated into the right raster format.
 
+.. _include-gmt-graphics:
+
 C. Including GMT graphics into your documents
 =============================================
 
