@@ -6186,7 +6186,10 @@ interoperability with other software packages easier. Choose the marker
 have data records whose fields equal NaN mean segment breaks (e.g., as
 used by Matlab or Octave). When these markers are used then no other
 segment header will be considered. Note that :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` can
-be set differently for input and output.
+be set differently for input and output.  Finally, if a segment represents
+a closed polygon that is a hole inside another polygon you indicate this
+with **-Ph**.  This setting will be read and processed if converting a
+file to the OGR format.
 
 Binary tables
 ~~~~~~~~~~~~~
