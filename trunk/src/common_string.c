@@ -562,12 +562,15 @@ int match_string_in_file (const char *filename, const char *string) {
 
 	/* search for string in each line */
 	while ( fgets (line, BUF_SIZE, fp) ) {
-		if ( strstr (line, string) )
+		if ( strstr (line, string) ) {
 			/* line matches */
+			fclose (fp);
 			return true;
+		}
 	}
 
 	/* string not found in file */
+	fclose (fp);
 	return false;
 }
 
