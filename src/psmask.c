@@ -114,7 +114,7 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	uint64_t n = 1, edge_word, edge_bit, ij, ij0, m;
 	double xk[4], yk[4], x0, y0;
 
-	m = *max - 2;
+	m = (*max) ? *max - 2 : 0;
 	
 	more = true;
 	do {
@@ -498,7 +498,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	int error = 0;
 	bool node_only, make_plot, closed;
 
-	uint64_t ij, n_points = 0, n_seg = 0, n_read, n;
+	uint64_t ij, n_seg = 0, n_read, n;
 
 	size_t n_seg_alloc = 0;
 
@@ -695,6 +695,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		}
 #endif
 		if (!Ctrl->T.active) {	/* Must trace the outline of ON/OFF values in grd */
+			uint64_t max_alloc_points = 0;
 			/* Arrays holding the contour xy values */
 			x = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
@@ -708,7 +709,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 			section = 0;
 			first = 1;
-			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &n_points)) > 0) {
+			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &max_alloc_points)) > 0) {
 				closed = false;
 				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
 				if (Ctrl->D.active && n > (uint64_t)Ctrl->Q.min) {	/* Save the contour as output data */
