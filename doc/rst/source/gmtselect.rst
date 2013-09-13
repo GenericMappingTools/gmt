@@ -16,7 +16,7 @@ Synopsis
 **gmtselect** [ *table* ]
 [ **-A**\ *min_area*\ [/*min_level*/*max_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
 [ **-C**\ *dist*\ [*unit*]/\ *ptfile* ]
-[ **-D**\ *resolution*\ [**+**] ] [ **-E**[**fn**] ]
+[ **-D**\ *resolution*\ [**+**] ] [ **-E**\ [**fn**] ]
 [ **-F**\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
 [ **-J**\ *parameters* ]
 [ **-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile* ]
@@ -66,19 +66,19 @@ Optional Arguments
 **-C**\ *dist*\ [*unit*]/\ *ptfile*
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *ptfile*. If *dist* is zero then the 3rd
-    column of *ptfile* must have each point’s individual radius of
+    column of *ptfile* must have each point's individual radius of
     influence. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances and append a distance unit
     (see UNITS). Alternatively, if **-R** and **-J** are used then
     geographic coordinates are projected to map coordinates (in cm,
-    inch, or points, as determined by **PROJ\_LENGTH\_UNIT**) before
+    inch, or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before
     Cartesian distances are compared to *dist*.
 
 **-D**\ *resolution*\ [**+**]
     Ignored unless **-N** is set. Selects the resolution of the
     coastline data set to use ((**f**)ull, (**h**)igh,
     (**i**)ntermediate, (**l**)ow, or (**c**)rude). The resolution drops
-    off by ~80% between data sets. [Default is **l**]. Append )+) to
+    off by ~80% between data sets. [Default is **l**]. Append (+) to
     automatically select a lower resolution should the one requested not
     be available [abort if not found]. Note that because the coastlines
     differ in details it is not guaranteed that a point will remain
@@ -125,7 +125,7 @@ Optional Arguments
     **-fg** to indicate spherical distances append a distance unit (see
     UNITS). Alternatively, if **-R** and **-J** are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
-    points, as determined by **PROJ\_LENGTH\_UNIT**) before Cartesian
+    points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before Cartesian
     distances are compared to *dist*. Use **-Lp** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
     within the segments endpoints [Default considers points "beyond" the
@@ -195,7 +195,7 @@ Note On Processing Ascii Input Records
 
 Unless you are using the **-:** option, selected ASCII input records are
 copied verbatim to output. That means that options like **-foT** and
-settings like **FORMAT_FLOAT_OUT** and **FORMAT_GEO_OUT** will not
+settings like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` and :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` will not
 have any effect on the output. On the other hand, it allows selecting
 records with diverse content, including character strings, quoted or
 not, comments, and other non-numerical content.
@@ -207,7 +207,7 @@ If options **-C** or **-L** are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
 geographical (lon, lat) coordinates. Alternatively, specify **-R** and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
-or points, as determined by **PROJ_LENGTH_UNIT**).
+or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`).
 
 This program has evolved over the years. Originally, the **-R** and
 **-J** were mandatory in order to handle geographic data, but now there
