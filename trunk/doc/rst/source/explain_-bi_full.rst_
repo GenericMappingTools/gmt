@@ -7,7 +7,7 @@
     (uint8_t, aka unsigned char), **h** (int16_t, 2-byte signed int),
     **H** (uint16_t, 2-byte unsigned int), **i** (int32_t, 4-byte
     signed int), **I** ((capital i) uint32_t, 4-byte unsigned int), **l**
-    ((lower case elle) int64_t, 8-byte signed int), **L** (uint64_t, 8-byte unsigned
+    ((lower case el) int64_t, 8-byte signed int), **L** (uint64_t, 8-byte unsigned
     int), **f** (4-byte single-precision float), and **d** (8-byte
     double-precision float). In addition, use **x** to skip *ncols*
     bytes anywhere in the record. Append **w** to any item to force
