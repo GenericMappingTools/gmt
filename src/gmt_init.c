@@ -1823,7 +1823,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 	//	GMT_memcpy (GMT->current.io.fmt[GMT_OUT], GMT->current.io.fmt[GMT_OUT], GMT->common.b.ncol[GMT_IN], struct GMT_COL_TYPE);
 	}
 
-	GMT_set_bin_input (GMT);	/* Make sure we point to binary i/o functions after processing -b option */
+	GMT_set_bin_io (GMT);	/* Make sure we point to binary i/o functions after processing -b option */
 
 	if (p) *p = '+';	/* Restore the + sign */
 	return (error);

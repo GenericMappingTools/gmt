@@ -1681,7 +1681,7 @@ int gmt_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr)
 	return (k);
 }
 
-void GMT_set_bin_input (struct GMT_CTRL *GMT)
+void GMT_set_bin_io (struct GMT_CTRL *GMT)
 {	/* Make sure we point to binary input functions after processing -b option */
 	if (GMT->common.b.active[GMT_IN]) {
 		GMT->current.io.input = &gmt_bin_input;

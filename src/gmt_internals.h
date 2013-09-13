@@ -74,7 +74,7 @@ EXTERN_MSC double GMT_right_boundary (struct GMT_CTRL *GMT, double y);
 EXTERN_MSC unsigned int GMT_map_latcross (struct GMT_CTRL *GMT, double lat, double west, double east, struct GMT_XINGS **xings);
 EXTERN_MSC unsigned int GMT_map_loncross (struct GMT_CTRL *GMT, double lon, double south, double north, struct GMT_XINGS **xings);
 EXTERN_MSC void GMT_rotate2D (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double x0, double y0, double angle, double xp[], double yp[]);
-EXTERN_MSC void GMT_set_bin_input (struct GMT_CTRL *GMT);
+EXTERN_MSC void GMT_set_bin_io (struct GMT_CTRL *GMT);
 EXTERN_MSC uint64_t * GMT_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, bool add_crossings);
 EXTERN_MSC int GMT_verify_time_step (struct GMT_CTRL *GMT, int step, char unit);	/* Check that time step and unit for time axis are OK  */
 EXTERN_MSC double GMT_xx_to_x (struct GMT_CTRL *GMT, double xx);
