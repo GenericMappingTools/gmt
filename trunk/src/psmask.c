@@ -110,38 +110,40 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 
 uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max)
 {
+	/* Loosely based on gmt_trace_contour in gmt_support.c.
+	 * Differs in that grd[] is known to only have values 0 (no data) or 1 (data point).
+	 */
 	int k, k0, n_cuts, kk_opposite, first_k, more;
 	uint64_t n = 1, edge_word, edge_bit, ij, ij0, m;
 	double xk[4], yk[4], x0, y0;
 
-	m = (*max) ? *max - 2 : 0;
+	m = (*max) ? *max - 2 : 0;	/* Very first time we have 0 points; next time we allow for maybe needing 2 more than we have */
 	
 	more = true;
 	do {
+		/* Determine lower left corner of current 4-node box */
 		ij = GMT_IJP (h, j, i);
 		x0 = GMT_grd_col_to_x (GMT, i, h);
 		y0 = GMT_grd_row_to_y (GMT, j, h);
 		n_cuts = 0;
 		k0 = kk;
 
-		for (k = 0; k < 4; k++) {	/* Loop over box sides */
+		for (k = 0; k < 4; k++) {	/* Loop over the 4 box sides */
 
-			/* Skip where we already have a cut (k == k0) */
+			if (k == k0) continue;	/* Skip where we already have a cut (k == k0) */
 
-			if (k == k0) continue;
-
-			/* Skip edge already has been used */
+			/* Skip edge that already have been used */
 
 			ij0 = GMT_IJ0 (h, j + info->j_off[k], i + info->i_off[k]);
 			edge_word = ij0 / 32 + info->k_off[k] * info->offset;
 			edge_bit = ij0 % 32;
-			if (edge[edge_word] & info->bit[edge_bit]) continue;
+			if (edge[edge_word] & info->bit[edge_bit]) continue;	/* Already used */
 
 			/* Skip if no zero-crossing on this edge */
 
 			if ((grd[ij+info->p[k+1]] + grd[ij+info->p[k]]) != 1) continue;
 
-			/* Here we have a crossing */
+			/* Here we have a crossing, which is always half-way between the 0 and 1 node */
 
 			if (k%2) {	/* Cutting a S-N line */
 				if (k == 1) {
@@ -163,17 +165,17 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 					yk[2] = y0 + h->inc[GMT_Y];
 				}
 			}
-			kk = k;
-			n_cuts++;
+			kk = k;		/* Remember id of last side with cut */
+			n_cuts++;	/* Update number of sides with cuts */
 		}
 
-		if (n > m) {	/* Must try to allocate more memory */
+		if (n > m) {	/* Must allocate more memory for x,y arrays */
 			*max = (*max == 0) ? GMT_CHUNK : ((*max) << 1);
 			m = (m == 0) ? GMT_CHUNK : (m << 1);
 			*xx = GMT_memory (GMT, *xx, *max, double);
 			*yy = GMT_memory (GMT, *yy, *max, double);
 		}
-		if (n_cuts == 0) {	/* Close interior contour and return */
+		if (n_cuts == 0) {	/* Close interior contour and return  [Will add 1 or 2 points] */
 			/* if (fmod ((*xx[0] - inc2[GMT_X]), h->inc[GMT_X]) == 0.0) */	/* On side 1 or 3 */
 			if (GMT_IS_ZERO (fmod ((*xx[0] - inc2[GMT_X]), h->inc[GMT_X])))	/* On side 1 or 3 */
 				/* first_k = ((*xx[0] - x0) == 0.0) ? 3 : 1; */
@@ -187,12 +189,12 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 				(*yy)[n] = y0 + 0.5*h->inc[GMT_Y];
 				n++;
 			}
-			(*xx)[n] = (*xx)[0];
+			(*xx)[n] = (*xx)[0];	/* Closed contour */
 			(*yy)[n] = (*yy)[0];
 			n++;
 			more = false;
 		}
-		else if (n_cuts == 1) {	/* Draw a line to this point and keep tracing */
+		else if (n_cuts == 1) {	/* Draw a line to this point and keep tracing [Will add 1 or 2 points] */
 			/* Add center of box if this and previous cut NOT on opposite edges */
 			kk_opposite = (k0 + 2) % 4;
 			if (kk != kk_opposite) {
@@ -204,7 +206,7 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 			(*yy)[n] = yk[kk];
 			n++;
 		}
-		else {	/* Saddle point, we decide to connect to the point nearest previous point */
+		else {	/* Saddle point, we decide to connect to the point nearest previous point [Will add 2 points]*/
 			kk = (k0 + 1)%4;	/* Pick next edge since it is arbitrarily where we go */
 			/* First add center of box */
 			(*xx)[n] = x0 + 0.5*h->inc[GMT_X];
@@ -228,7 +230,8 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 		kk = (kk+2)%4;
 
 	} while (more);
-	return (n);
+	
+	return (n);	/* Return length of polygon */
 }
 
 uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max)
@@ -245,9 +248,8 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	 
 	 
 	n_edges = h->ny * (urint (ceil (h->nx / 16.0)));
-	 
-	 /* Reset edge-flags to zero, if necessary */
-	 if (first) {
+
+	if (first) {	/* Reset edge-flags to zero, if necessary */
 		int signed_nx = h->nx;	/* Needed to assign p[3] below */
 		info->offset = n_edges / 2;
 	 	i0 = 0;	/* Begin with upper left bin which is i = 0 and j = 1 */
@@ -281,12 +283,12 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 			if (go_on) i0 = 0;	/* Go to start of next row unless we found something */
 		}
 		if (n == 0) {
-			side = 5;
+			side = 5;	/* Horizontal interior gridlines */
 			i0 = 0;
 			j0 = 1;
 		}
 	}
-	if (n == 0 && side == 5) {
+	if (n == 0 && side == 5) {	/* Look at horizontal interior gridlines */
 		for (j = j0; go_on && j < h->ny; j++) {
 			ij = GMT_IJP (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {
@@ -311,17 +313,17 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 
 void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double w, double e)
 {
-	/* Moves outside points to boundary */
+	/* Moves outside points to boundary.  Array length is not changed. */
 	uint64_t i;
 
 	for (i = 0; i < n; i++) {
 		if (x[i] < w)
 			x[i] = w;
-		if (x[i] > e)
+		else if (x[i] > e)
 			x[i] = e;
 		if (y[i] < GMT->common.R.wesn[YLO])
 			y[i] = GMT->common.R.wesn[YLO];
-		if (y[i] > GMT->common.R.wesn[YHI])
+		else if (y[i] > GMT->common.R.wesn[YHI])
 			y[i] = GMT->common.R.wesn[YHI];
 	}
 }
@@ -598,7 +600,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		Grid->header->wesn[XLO] -= Grid->header->inc[GMT_X];	Grid->header->wesn[XHI] += Grid->header->inc[GMT_X];	Grid->header->wesn[YLO] -= Grid->header->inc[GMT_Y];	Grid->header->wesn[YHI] += Grid->header->inc[GMT_Y];
 		GMT_set_pad (GMT, 0U);		/* Change default pad to 0 only */
 		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
-		GMT_set_grddim (GMT, Grid->header);
+		GMT_set_grddim (GMT, Grid->header);	/* Recompute dimensions of array */
 		grd = GMT_memory (GMT, NULL, Grid->header->size, char);
 
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
@@ -688,10 +690,17 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 #ifdef DEBUG
 		if (Ctrl->D.debug) {	/* Save a copy of the grid to psmask.nc */
-			float *z = GMT_memory (GMT, NULL, Grid->header->size, float);
-			for (ij = 0; ij < Grid->header->size; ij++) z[ij] = (float)grd[ij];
-			GMT_write_grd (GMT, "psmask.nc", Grid->header, z, NULL, GMT->current.io.pad, false);
-			GMT_free (GMT, z);
+			struct GMT_GRID *G = NULL;
+			char *dumpfile = "psmask.nc";
+			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Grid->header->wesn, Grid->header->inc, \
+				Grid->header->registration, 0, dumpfile)) == NULL) Return (API->error);
+			for (ij = 0; ij < Grid->header->size; ij++) G->data[ij] = (float)grd[ij];
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, dumpfile, G) != GMT_OK) {
+				Return (API->error);
+			}
+			if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 #endif
 		if (!Ctrl->T.active) {	/* Must trace the outline of ON/OFF values in grd */
