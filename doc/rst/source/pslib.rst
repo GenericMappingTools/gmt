@@ -882,8 +882,8 @@ Authors
 Paul Wessel, School of Ocean and Earth Science and Technology,
 `http://www.soest.hawaii.edu. <http://www.soest.hawaii.edu.>`_
 
-Remko Scharroo, Altimetrics,
-`http://www.altimetrics.com. <http://www.altimetrics.com.>`_
+Remko Scharroo, EUMETSAT, Darmstadt, Germany,
+`http://www.eumetsat.int. <http://www.eumetsat.int.>`_
 
 Bugs
 ----

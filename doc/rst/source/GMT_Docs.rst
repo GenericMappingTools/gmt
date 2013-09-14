@@ -12,7 +12,7 @@
 
 **Remko Scharroo**
 
-**Altimetrics LLC, Cornish, New Hampshire**
+**EUMETSAT, Darmstadt, Germany**
 
 **Joaquim F. Luis**
 
@@ -166,7 +166,7 @@ The Generic Mapping Tools (*GMT*) does not come with any warranties, nor
 is it guaranteed to work on your computer. The user assumes full
 responsibility for the use of this system. In particular, the University
 of Hawaii School of Ocean and Earth Science and Technology, the National
-Oceanic and Atmospheric Administration, Altimetrics LLC, the
+Oceanic and Atmospheric Administration, EUMETSAT, the
 Universidade do Algarve, Alfred Wegener Institute, the National Science
 Foundation, Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim F.
 Luis, Florian Wobbe or any other individuals involved in the design and

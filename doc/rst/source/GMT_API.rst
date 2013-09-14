@@ -12,7 +12,7 @@
 
 **Remko Scharroo**
 
-**Altimetrics LLC, Cornish, New Hampshire**
+**EUMETSAT, Darmstadt, Germany**
 
 **Joaquim F. Luis**
 
