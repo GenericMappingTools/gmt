@@ -117,7 +117,7 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	uint64_t n = 1, edge_word, edge_bit, ij, ij0, m;
 	double xk[4], yk[4], x0, y0;
 
-	m = (*max) ? *max - 2 : 0;	/* Very first time we have 0 points; next time we allow for maybe needing 2 more than we have */
+	m = *max - 2;	/* Note: *max starts at 2048 or so.  Allow for maybe needing 2 more than we have */
 	
 	more = true;
 	do {
@@ -170,8 +170,8 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 		}
 
 		if (n > m) {	/* Must allocate more memory for x,y arrays */
-			*max = (*max == 0) ? GMT_CHUNK : ((*max) << 1);
-			m = (m == 0) ? GMT_CHUNK : (m << 1);
+			*max <<= 1;	/* Double the memory */
+			m = *max - 2;	/* But still check for 2 less in case we add 2 points */
 			*xx = GMT_memory (GMT, *xx, *max, double);
 			*yy = GMT_memory (GMT, *yy, *max, double);
 		}
@@ -238,7 +238,8 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
-	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points
+	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points.
+	 * Note: info->offset is added to edge_word when looking at vertical edges.
 	 */
 	 
 	unsigned int n_edges, edge_bit, i, j;
@@ -272,7 +273,7 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij-h->nx]) == 1)) { /* Start tracing contour */
 					*x[0] = GMT_grd_col_to_x (GMT, i, h);
-					*y[0] = GMT_grd_row_to_y (GMT, j, h);
+					*y[0] = GMT_grd_row_to_y (GMT, j, h) + 0.5 * h->inc[GMT_Y];
 					edge[edge_word] |= info->bit[edge_bit];
 					n = trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 3, max);
 					go_on = false;
@@ -292,10 +293,10 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 		for (j = j0; go_on && j < h->ny; j++) {
 			ij = GMT_IJP (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {
-				edge_word = ij / 32 + info->offset;
+				edge_word = ij / 32;
 				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij+1]) == 1)) { /* Start tracing contour */
-					*x[0] = GMT_grd_col_to_x (GMT, i, h);
+					*x[0] = GMT_grd_col_to_x (GMT, i, h) + 0.5 * h->inc[GMT_X];
 					*y[0] = GMT_grd_row_to_y (GMT, j, h);
 					edge[edge_word] |= info->bit[edge_bit];
 					n = trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 2, max);
@@ -311,20 +312,20 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	return (n);
 }
 
-void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double w, double e)
+void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, uint64_t np, double w, double e, double s, double n)
 {
 	/* Moves outside points to boundary.  Array length is not changed. */
 	uint64_t i;
 
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < np; i++) {
 		if (x[i] < w)
 			x[i] = w;
 		else if (x[i] > e)
 			x[i] = e;
-		if (y[i] < GMT->common.R.wesn[YLO])
-			y[i] = GMT->common.R.wesn[YLO];
-		else if (y[i] > GMT->common.R.wesn[YHI])
-			y[i] = GMT->common.R.wesn[YHI];
+		if (y[i] < s)
+			y[i] = s;
+		else if (y[i] > n)
+			y[i] = n;
 	}
 }
 
@@ -565,12 +566,14 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
 	}
 	
-	if (Ctrl->C.active)
-		GMT->current.ps.nclip = -1;	/* Signal that this program terminates clipping that initiated prior to this process */
-	else if (!Ctrl->T.active)
-		GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
+	if (make_plot) {
+		if (Ctrl->C.active)
+			GMT->current.ps.nclip = -1;	/* Signal that this program terminates clipping that initiated prior to this process */
+		else if (!Ctrl->T.active)
+			GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
+		PSL = GMT_plotinit (GMT, options);
+	}
 
-	if (make_plot) PSL = GMT_plotinit (GMT, options);
 
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
@@ -704,10 +707,10 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		}
 #endif
 		if (!Ctrl->T.active) {	/* Must trace the outline of ON/OFF values in grd */
-			uint64_t max_alloc_points = 0;
-			/* Arrays holding the contour xy values */
-			x = GMT_memory (GMT, NULL, GMT_CHUNK, double);
-			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
+			uint64_t max_alloc_points = GMT_CHUNK;
+			/* Arrays holding the contour xy values; preallocate space */
+			x = GMT_memory (GMT, NULL, max_alloc_points, double);
+			y = GMT_memory (GMT, NULL, max_alloc_points, double);
 
 			n_edges = Grid->header->ny * (urint (ceil (Grid->header->nx / 16.0)));
 			edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
@@ -720,7 +723,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			first = 1;
 			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &max_alloc_points)) > 0) {
 				closed = false;
-				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
+				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
 				if (Ctrl->D.active && n > (uint64_t)Ctrl->Q.min) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, GMT->session.d_NaN);
 					/* Select which table this segment should be added to */
@@ -806,7 +809,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		if (Ctrl->S.active) GMT_free (GMT, d_col);
 		GMT_free (GMT, grd_x0);
 		GMT_free (GMT, grd_y0);
-		if (!Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "clipping on!\n");
+		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "clipping on!\n");
 	}
 
 	GMT_set_pad (GMT, API->pad);		/* Reset default pad */
