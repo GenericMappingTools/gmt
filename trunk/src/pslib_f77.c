@@ -86,8 +86,8 @@
  *
  * Authors:	Paul Wessel, Dept. of Geology and Geophysics, SOEST, U Hawaii
  *			   pwessel@hawaii.edu
- *		Remko Scharroo, Altimetrics
- *			   remko@altimetrics.com
+ *		Remko Scharroo, EUMETSAT, Darmstadt, Germany
+ *			   Remko.Scharroo@eumetsat.int
  * Date:	18-MAY-2011
  * Version:	5.0 [64-bit enabled API edition]
  *
