@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-09-14	pwessel
+	* psmask.c:		Multiple, ancient bugs fixed: properly mark used edges, fix
+				memory allocations, not report clipping if -D is used, starting
+				point for a contour was not offset by 1/2 pixel, debug-only grid
+				was mangled, preventing useful debugging.
+
 2013-09-09	pwessel
 	* greenspline.c:	Did compute 2-D trend for 1-D case, causing bad mem access.
 	* grdraster.c:		Did not understand dd:mm notation and failed to find grdraster.info
