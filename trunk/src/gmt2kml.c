@@ -300,10 +300,12 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* Color table */
 				Ctrl->C.active = true;
+				if (Ctrl->C.file) free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Description file */
 				Ctrl->D.active = true;
+				if (Ctrl->D.file) free (Ctrl->D.file);
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Extrude feature down to the ground*/

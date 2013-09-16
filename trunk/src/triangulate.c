@@ -171,6 +171,7 @@ int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, 
 				break;
 			case 'G':
 				Ctrl->G.active = true;
+				if (Ctrl->G.file) free (Ctrl->G.file);
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
