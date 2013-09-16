@@ -241,6 +241,7 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 			/* Processes program-specific parameters */
 
 			case 'C':
+				if (Ctrl->C.file) free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				Ctrl->C.active = true;
 				break;

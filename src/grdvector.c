@@ -172,6 +172,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 				break;
 			case 'C':	/* Vary symbol color with z */
 				Ctrl->C.active = true;
+				if (Ctrl->C.file) free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */

@@ -290,6 +290,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
+					if (Ctrl->C.file) free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (opt->arg[0] == '+')

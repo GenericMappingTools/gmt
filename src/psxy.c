@@ -390,6 +390,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'C':	/* Vary symbol color with z */
+				if (Ctrl->C.file) free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				Ctrl->C.active = true;
 				break;

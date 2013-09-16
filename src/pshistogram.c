@@ -454,6 +454,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 				Ctrl->A.active = true;
 				break;
 			case 'C':
+				if (Ctrl->C.file) free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				Ctrl->C.active = true;
 				break;

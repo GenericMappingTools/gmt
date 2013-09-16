@@ -214,6 +214,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Read mode file and plot directions */
 				Ctrl->C.active = true;
+				if (Ctrl->C.file) free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Center the bins */
