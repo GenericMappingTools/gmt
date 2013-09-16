@@ -9044,14 +9044,19 @@ double GMT_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int leve
 	 * is to be placed 'inside' the map, set flip to true */
 
 	double a = GMT->current.setting.map_annot_offset[level];
-	if (a >= 0.0) {	/* Outside annotation */
+	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {	/* Inside annotation */
+		a = -fabs (a);
+		a -= fabs (GMT->current.setting.map_tick_length[0]);
+		*flip = true;
+	}
+	else if (a >= 0.0) {	/* Outside annotation */
 		double dist = GMT->current.setting.map_tick_length[0];	/* Length of tickmark (could be negative) */
 		/* For fancy frame we must consider that the frame width might exceed the ticklength */
 		if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && GMT->current.setting.map_frame_width > dist) dist = GMT->current.setting.map_frame_width;
 		if (dist > 0.0) a += dist;
 		*flip = false;
 	}
-	else {		/* Inside annotation */
+	else {		/* Inside annotation via negative tick length */
 		if (GMT->current.setting.map_tick_length[0] < 0.0) a += GMT->current.setting.map_tick_length[0];
 		*flip = true;
 	}
