@@ -296,7 +296,7 @@ void gmt_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 
 		PSL_setlinecap (PSL, cap);	/* Reset back to default */
 	}
-	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header || GMT->current.setting.map_frame_type == GMT_IS_INSIDE) return;	/* No header today */
+	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header || GMT->current.setting.map_frame_type & GMT_IS_INSIDE) return;	/* No header today */
 
 	PSL_comment (PSL, "Placing plot title\n");
 
@@ -464,7 +464,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		if (do_tick) {
 			for (i = 0; i < nx; i++) {
 				if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;	/* Outside the range */
-				if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Minor tick marks skipped when coinciding with major */
 				x = (*xyz_fwd) (GMT, knots[i]);	/* Convert to inches on the page */
 				if (horizontal)
@@ -484,7 +484,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			for (i = 0; i < nx1; i++) {
 				if (GMT_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
-				if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (string, label_c[i], GMT_LEN256);
@@ -504,7 +504,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			for (i = 0; i < nx1; i++) {
 				if (GMT_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
-				if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
 				/* Move to new anchor point */
@@ -1836,6 +1836,7 @@ void gmt_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		(item == GMT_TICK_UPPER && dy != GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER])) ||
 		(item == GMT_TICK_LOWER && dy != GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER])));
 	len = GMT->current.setting.map_tick_length[item];
+	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) len = -fabs (len);	/* Negative to become inside */
 
 	GMT->current.map.on_border_is_outside = true;	/* Temporarily, points on the border are outside */
 
