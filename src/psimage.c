@@ -294,7 +294,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 {
 	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
 	unsigned int row, col;
-	bool free_GMT = false;
+	bool free_GMT = false, did_gray = false;
 
 	double x, y, wesn[4];
 
@@ -389,6 +389,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 #endif
 	
 	if (Ctrl->M.active && header.depth == 24) {	/* Downgrade to grayshade image */
+		did_gray = true;
 		n = 3 * header.width * header.height;
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
@@ -488,14 +489,14 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	GMT_plotend (GMT);
 
 #ifdef HAVE_GDAL
-	if (GMT_Destroy_Data (API, &I) != GMT_OK) {
+	if (I && GMT_Destroy_Data (API, &I) != GMT_OK) {
 		Return (API->error);	/* If I is NULL then nothing is done */
 	}
 #endif
 	if (free_GMT) {
 		GMT_free (GMT, picture);
 	}
-	else if (known)
+	else if (known || did_gray)
 		PSL_free (picture);
 
 	Return (GMT_OK);
