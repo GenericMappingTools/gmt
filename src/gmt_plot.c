@@ -358,7 +358,7 @@ bool gmt_skip_second_annot (unsigned int item, double x, double x2[], unsigned i
 	bool found;
 	double small;
 
-	if (!n) return (false);	/* Not set, no need to skip */
+	if (n < 2) return (false);	/* Need at least two points so no need to skip */
 	if (item == primary) return (false);		/* Not working on secondary annotation */
 	if (!x2) return (false);			/* None given */
 

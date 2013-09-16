@@ -956,6 +956,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	}
 	if (Ctrl->G.mode && m) {
 		int form;
+		unsigned int kk;
 		GMT_textpath_init (GMT, &Ctrl->W.pen, Ctrl->W.pen.rgb, &Ctrl->W.pen, Ctrl->G.fill.rgb);
 		form = (T.boxflag & 4) ? 16 : 0;
 		if (Ctrl->C.percent) {	/* Meant % of fontsize */
@@ -967,6 +968,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			offset[1] = T.y_space;
 		}
 		PSL_plottextclip (PSL, c_x, c_y, m, T.font.size, c_txt, c_angle, T.block_justify, offset, form);	/* This turns clipping ON */
+		for (kk = 0; kk < m; kk++) free (c_txt[kk]);
 		GMT_free (GMT, c_angle);
 		GMT_free (GMT, c_x);
 		GMT_free (GMT, c_y);

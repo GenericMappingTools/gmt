@@ -434,7 +434,7 @@ unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned i
 
 	/* Get here when all factors up to floor(sqrt(n)) have been tried.  */
 
-	if (m > 1) f[n_factors++] = m;	/* m is an additional prime factor of n  */
+	if (m > 1) f[n_factors++] = (unsigned int)m;	/* m is an additional prime factor of n  */
 
 	return (n_factors);
 }
