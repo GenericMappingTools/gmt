@@ -200,6 +200,7 @@ int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct
 #endif
 			case 'C':	/* CPT file */
 				Ctrl->C.active = true;
+				if (Ctrl->C.file) free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 #ifdef HAVE_GDAL

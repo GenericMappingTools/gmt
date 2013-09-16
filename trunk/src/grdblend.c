@@ -337,7 +337,8 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 			B[n].weight = fabs (B[n].weight);
 			B[n].invert = true;
 		}
-		B[n].RbR = B[n].G->extra;
+		B[n].RbR = GMT_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);		/* Allocate structure */
+		GMT_memcpy (B[n].RbR, B[n].G->extra, 1, struct GMT_GRID_ROWBYROW);	/* Duplicate, since GMT_Destroy_Data will free the header->extra */
 
 		/* Here, i0, j0 is the very first col, row to read, while i1, j1 is the very last col, row to read .
 		 * Weights at the outside i,j should be 0, and reach 1 at the edge of the inside block */
@@ -399,6 +400,7 @@ int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, uns
 				if (GMT_Destroy_Data (GMT->parent, &B[k].G)) return GMT_OK;
 				B[k].open = false;
 				GMT_free (GMT, B[k].z);
+				GMT_free (GMT, B[k].RbR);
 				if (B[k].delete) remove (B[k].file);	/* Delete the temporary resampled file */
 			}
 			continue;
