@@ -361,7 +361,7 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 		W->data[j++] = fabsf (R->data[ij]);
 	}
 
-	GMT_sort_array (GMT, R->data, j, GMT_FLOAT);
+	GMT_sort_array (GMT, W->data, j, GMT_FLOAT);
 
 	j2 = j / 2;
 	mad = (j%2) ? W->data[j2] : 0.5f *(W->data[j2] + W->data[j2 - 1]);
@@ -372,6 +372,7 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 
 	/* Use weight according to Huber (1981), but squared */
 
+	GMT_memset (W->data, W->header->size, float);	/* Wipe W clean */
 	GMT_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) {
 			W->data[ij] = R->data[ij];
@@ -439,7 +440,9 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 
 			if (weighted) {
 				/* Loop over all gtg and gtd elements */
-				for (k = 0; k < n_model; k++) {
+				gtd[0] += (G->data[ij] * W->data[ij]);
+				gtg[0] += W->data[ij];
+				for (k = 1; k < n_model; k++) {
 					gtd[k] += (G->data[ij] * W->data[ij] * pstuff[k]);
 					gtg[k] += (W->data[ij] * pstuff[k]);
 					for (l = k; l < n_model; l++) gtg[k + l*n_model] += (pstuff[k]*pstuff[l]*W->data[ij]);
@@ -447,7 +450,8 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 			}
 			else {	/* If !weighted  */
 				/* Loop over all gtg and gtd elements */
-				for (k = 0; k < n_model; k++) {
+				gtd[0] += G->data[ij];
+				for (k = 1; k < n_model; k++) {
 					gtd[k] += (G->data[ij] * pstuff[k]);
 					gtg[k] += pstuff[k];
 					for (l = k; l < n_model; l++) gtg[k + l*n_model] += (pstuff[k]*pstuff[l]);
