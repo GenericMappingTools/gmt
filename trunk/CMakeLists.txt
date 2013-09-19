@@ -130,6 +130,12 @@ else (BUILD_SHARED_LIBS)
 	set (BUILD_MODE "static")
 endif (BUILD_SHARED_LIBS)
 
+if (PROTOSUPPLEMENTS)
+	set (PROTO ${PROTOSUPPLEMENTS})
+else (PROTOSUPPLEMENTS)
+	set (PROTO "none")
+endif (PROTOSUPPLEMENTS)
+	
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file (
 	"${PROJECT_SOURCE_DIR}/config.h.in"
@@ -155,6 +161,7 @@ message(
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
+	"*  Build proto supplements    : ${PROTO}\n"
 	"*\n"                          
 	"*  Locations:\n"              
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"
