@@ -313,7 +313,7 @@ if (BUILD_SUPPLEMENTS)
 	# PROTOSUPPLEMENTS are for testing new supplements that are not yet in
 	# subversion.
 	set (GMT_SUPPL_DIRS gshhg img meca mgd77 misc potential segy
-		spotter x2sys $ENV{PROTOSUPPLEMENTS})
+		spotter x2sys ${PROTOSUPPLEMENTS})
 endif (BUILD_SUPPLEMENTS)
 
 # path to all binary dirs (used to set PATH in test scripts)
