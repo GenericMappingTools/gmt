@@ -30,7 +30,7 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 	bool do_IGRF;
 	bool do_CM4;
 	bool joint_IGRF_CM4;
-	struct A {	/* -A */
+	struct MGD77_MAGREF_A {	/* -A */
 		bool active;
 		bool fixed_alt;
 		bool fixed_time;
@@ -39,22 +39,22 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 		double altitude;
 		double time;
 	} A;
-	struct C {	/* -C */
+	struct MGD77_MAGREF_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D */
+	struct MGD77_MAGREF_D {	/* -D */
 		bool active;
 	} D;
-	struct F {	/* -F */
+	struct MGD77_MAGREF_F {	/* -F */
 		bool active;
 	} F;
-	struct G {	/* -G */
+	struct MGD77_MAGREF_G {	/* -G */
 		bool active;
 	} G;
-	struct L {	/* -L */
+	struct MGD77_MAGREF_L {	/* -L */
 		bool active;
 	} L;
-	struct S {	/* -S */
+	struct MGD77_MAGREF_S {	/* -S */
 		bool active;
 	} S;
 };
@@ -403,7 +403,8 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_mgd77magref_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {free(Ctrl->CM4->CM4_M.path); free(Ctrl->CM4->CM4_D.path); free(Ctrl->CM4->CM4_I.path); \
+	Free_mgd77magref_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77magref (void *V_API, int mode, void *args)
 {
@@ -672,6 +673,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
+	free(Ctrl->CM4->CM4_D.dst);
 	GMT_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
 	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) GMT_free (GMT, time_years);
 	if (Ctrl->joint_IGRF_CM4) GMT_free (GMT, igrf_xyz);
