@@ -317,7 +317,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 					jaft = 1;
 					mjdl = jmjd;
 				}
-				if (n > n_Dst_rows) {
+				if (n >= n_Dst_rows) {
 					n_Dst_rows += 1000;
 					dstx = realloc(dstx, (size_t)(n_Dst_rows * 24) * sizeof(double));
 				}
