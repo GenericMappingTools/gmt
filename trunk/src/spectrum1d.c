@@ -47,29 +47,29 @@
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
 
 struct SPECTRUM1D_CTRL {
-	struct C {	/* -C[<xycnpago>] */
+	struct SPECT1D_C {	/* -C[<xycnpago>] */
 		bool active;
 		char col[SPECTRUM1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} C;
-	struct D {	/* -D<inc> */
+	struct SPECT1D_D {	/* -D<inc> */
 		bool active;
 		double inc;
 	} D;
-	struct L {	/* -L[m|h] */
+	struct SPECT1D_L {	/* -L[m|h] */
 		bool active;
 		bool debug;
 		unsigned int mode;
 	} L;
-	struct N {	/* -N[+]<namestem> */
+	struct SPECT1D_N {	/* -N[+]<namestem> */
 		bool active;
 		unsigned int mode;
 		char *name;
 	} N;
-	struct S {	/* -S<segment_size> */
+	struct SPECT1D_S {	/* -S<segment_size> */
 		bool active;
 		unsigned int size;
 	} S;
-	struct W {	/* -W */
+	struct SPECT1D_W {	/* -W */
 		bool active;
 	} W;
 };
@@ -709,7 +709,8 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 		dim[GMT_SEG] = 0;			/* Don't know about segments yet */
 		dim[GMT_COL] = 1 + 2 * n_outputs;	/* Number of columns needed output file */
 		dim[GMT_ROW] = C.n_spec;		/* Number of rows */
-		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, Ctrl->N.name)) == NULL) Return (API->error);	/* An empty table for stacked results */
+		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, Ctrl->N.name)) == NULL)
+			Return (API->error);	/* An empty table for stacked results */
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
@@ -728,7 +729,8 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->coord);
 			}
 			else {
-				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name)) Return (EXIT_FAILURE);
+				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
+					Return (EXIT_FAILURE);
 			}
 		}
 	}
