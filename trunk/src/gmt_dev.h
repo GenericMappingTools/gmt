@@ -49,8 +49,6 @@ extern "C" {
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
-#define MEMDEBUG	/* For the time being we set this explicitly; later it will only be set via -DMEMDEBUG */
-
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
