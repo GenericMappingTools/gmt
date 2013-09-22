@@ -150,9 +150,9 @@
 # Testing and development
 #
 
-# Enable running examples/tests with "make check" (out-of-source) Need to set
-# either DO_EXAMPLES, DO_TESTS or both and uncomment the following line.
-# Requires set (SUPPORT_EXEC_IN_BINARY_DIR ON):
+# Enable running examples/tests with "ctest" or "make check" (out-of-source).
+# Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment the following
+# line.
 #enable_testing()
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
@@ -160,7 +160,8 @@
 #set (N_TEST_JOBS 4)
 
 # Enable this option to run GMT programs from within ${GMT_BINARY_DIR} without
-# installing or setting GMT_SHAREDIR and GMT_USERDIR first [OFF]:
+# installing or setting GMT_SHAREDIR and GMT_USERDIR first. This is required
+# for testing [OFF]:
 #set (SUPPORT_EXEC_IN_BINARY_DIR ON)
 
 # List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes
