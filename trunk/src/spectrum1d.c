@@ -649,6 +649,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	
 	uint64_t tbl, seg;
 
+	double *y = NULL;	/* Used for cross-spectra only */
 	struct SPECTRUM1D_INFO C;
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATATABLE *Tout = NULL;
@@ -721,7 +722,8 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points.\n", S->n_rows);
 
-			compute_spectra (GMT, &C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, Ctrl->L.active, Ctrl->L.mode);
+			y = (C.y_given) ? S->coord[GMT_Y] : NULL;
+			compute_spectra (GMT, &C, S->coord[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode);
 
 			if (one_table) {
 				Sout = Tout->segment[seg];	/* Current output segment */
