@@ -6,10 +6,6 @@
 
 ps=filtertest.ps
 
-if [ -z "$HAVE_GMT_DEBUG_SYMBOLS" ]; then
-	echo "[N/A]"
-	exit
-fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
 DATA="../genper/etopo10.nc" # Test on ETOP10 data
