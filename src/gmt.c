@@ -92,14 +92,16 @@ int main (int argc, char *argv[]) {
 			if (status != GMT_NOT_A_VALID_MODULE) module = gmt_module;
 		}
 	}
-	
+
 	if (status == GMT_NOT_A_VALID_MODULE) {
 		/* neither argv[0] nor argv[1] contain a valid module name */
-
 		int arg_n;
-		
-		if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL)	/* Just wanted to know if module exists */
+		status = GMT_OK; /* default exit status */
+
+		if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL) {
+			/* Just wanted to know if module exists */
 			goto exit;
+		}
 
 		for (arg_n = 1; arg_n < argc; ++arg_n) {
 			/* Try all remaining arguments: */
@@ -166,9 +168,9 @@ int main (int argc, char *argv[]) {
 	} /* status == GMT_NOT_A_VALID_MODULE */
 
 	/* Here we have found a recognized GMT module and the API has been initialized. */
-	
+
 	if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL)	/* Just want to know if module exists */
-		status = 0;
+		status = GMT_OK;
 	else {	/* Now run the specified GMT module: */
 		if ((argc-1-modulename_arg_n) == 0)	/* No args, call explicitly with NULL because under Cygwin argv[2] may not be NULL */
 			status = GMT_Call_Module (api_ctrl, module, 0, NULL);
