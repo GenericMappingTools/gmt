@@ -200,11 +200,7 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#ifdef DEBUG
-#define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_memtrack_on (GMT); bailout (code);}
-#else
 #define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
-#endif
 
 int GMT_gshhg (void *V_API, int mode, void *args)
 {
