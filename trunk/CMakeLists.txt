@@ -22,7 +22,7 @@
 #
 #	mkdir build
 #	cd build
-#	cmake -DCMAKE_INSTALL_PREFIX=gmt5 -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+#	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 #
 # CMAKE_BUILD_TYPE can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 #
@@ -135,7 +135,7 @@ if (PROTOSUPPLEMENTS)
 else (PROTOSUPPLEMENTS)
 	set (PROTO "none")
 endif (PROTOSUPPLEMENTS)
-	
+
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file (
 	"${PROJECT_SOURCE_DIR}/config.h.in"
@@ -162,13 +162,14 @@ message(
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
-	"*\n"                          
-	"*  Locations:\n"              
+	"*\n"
+	"*  Locations:\n"
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"
-	"*  GMT_SHARE_PATH             : ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}\n"
-	"*  GMT_DOC_PATH               : ${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}\n"
-	"*  GMT_MAN_PATH               : ${CMAKE_INSTALL_PREFIX}/${GMT_MAN_PATH}")
+	"*  GMT_DATADIR                : ${CMAKE_INSTALL_PREFIX}/${GMT_DATADIR}\n"
+	"*  GMT_DOCDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_DOCDIR}\n"
+	"*  GMT_MANDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_MANDIR}")
 
+# For debugging: print all set variables
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #	message(STATUS "${_variableName}=${${_variableName}}")

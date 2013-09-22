@@ -124,37 +124,37 @@ set (COPYING_GPL ${GMT_SOURCE_DIR}/COPYINGv3)
 set (COPYING_LGPL ${GMT_SOURCE_DIR}/COPYING.LESSERv3)
 
 # GMT paths used in the code
-if (NOT GMT_SHARE_PATH)
+if (NOT GMT_DATADIR)
 	# do not reset user setting
 	if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-		set (GMT_SHARE_PATH "share")
+		set (GMT_DATADIR "share")
 	else(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-		set (GMT_SHARE_PATH
+		set (GMT_DATADIR
 			"share/gmt${GMT_INSTALL_NAME_SUFFIX}")
 	endif(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-endif (NOT GMT_SHARE_PATH)
+endif (NOT GMT_DATADIR)
 
-# Install path GMT_DOC_PATH
-if (NOT GMT_DOC_PATH)
+# Install path GMT_DOCDIR
+if (NOT GMT_DOCDIR)
 	# do not reset user setting
 	if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-		set (GMT_DOC_PATH "${GMT_SHARE_PATH}/doc")
+		set (GMT_DOCDIR "${GMT_DATADIR}/doc")
 	else(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-		set (GMT_DOC_PATH
+		set (GMT_DOCDIR
 			"share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}")
 	endif(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-endif (NOT GMT_DOC_PATH)
+endif (NOT GMT_DOCDIR)
 
-# Install path GMT_MAN_PATH
-if (NOT GMT_MAN_PATH)
+# Install path GMT_MANDIR
+if (NOT GMT_MANDIR)
 	# do not reset user setting
 	if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-		set (GMT_MAN_PATH "${GMT_SHARE_PATH}/man")
+		set (GMT_MANDIR "${GMT_DATADIR}/man")
 	else(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-		set (GMT_MAN_PATH
-			"${GMT_DOC_PATH}/man")
+		set (GMT_MANDIR
+			"${GMT_DOCDIR}/man")
 	endif(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-endif (NOT GMT_MAN_PATH)
+endif (NOT GMT_MANDIR)
 
 # Install path for GMT binaries, headers and libraries
 include (GNUInstallDirs) # defines CMAKE_INSTALL_LIBDIR (lib/lib64)
@@ -166,9 +166,9 @@ if (NOT GMT_BINDIR)
 	set (GMT_BINDIR bin)
 endif(NOT GMT_BINDIR)
 
-if (NOT GMT_INCDIR)
-	set (GMT_INCDIR include/gmt${GMT_INSTALL_NAME_SUFFIX})
-endif(NOT GMT_INCDIR)
+if (NOT GMT_INCLUDEDIR)
+	set (GMT_INCLUDEDIR include/gmt${GMT_INSTALL_NAME_SUFFIX})
+endif(NOT GMT_INCLUDEDIR)
 
 # use, i.e. don't skip the full RPATH for the build tree
 set (CMAKE_SKIP_BUILD_RPATH FALSE)

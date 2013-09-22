@@ -170,7 +170,7 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install pdf figures (if found) when there is no external location
 	foreach (_fig ${_install_pdf})
 		install (FILES ${RST_BINARY_DIR}/_images/${_fig}
-			DESTINATION ${GMT_DOC_PATH}/pdf
+			DESTINATION ${GMT_DOCDIR}/pdf
 			COMPONENT Documentation
 			OPTIONAL)
 	endforeach (_fig ${_install_pdf})

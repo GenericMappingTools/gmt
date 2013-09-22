@@ -43,10 +43,10 @@ install_module_symlink (${_gmt_modules})
 # install example data
 if (UNIX)
 	install (FILES ${SUPPL_EXAMPLE_FILES}
-		DESTINATION ${GMT_DOC_PATH}/supplements/x2sys
+		DESTINATION ${GMT_DOCDIR}/supplements/x2sys
 		COMPONENT Documentation)
 	install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
-		DESTINATION ${GMT_DOC_PATH}/supplements/x2sys
+		DESTINATION ${GMT_DOCDIR}/supplements/x2sys
 		COMPONENT Documentation)
 endif (UNIX)
 

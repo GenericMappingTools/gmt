@@ -24,7 +24,7 @@ set (_gmt_share_dirs conf cpt custom dbase mgd77 mgg pattern
 
 # install target for data
 install (DIRECTORY ${_gmt_share_dirs}
-	DESTINATION ${GMT_SHARE_PATH}
+	DESTINATION ${GMT_DATADIR}
 	COMPONENT Runtime
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
@@ -33,16 +33,16 @@ install (DIRECTORY ${_gmt_share_dirs}
 # install version file (used during runtime to check for correct share dir)
 configure_file (VERSION.in VERSION @ONLY NEWLINE_STYLE LF)
 install (FILES ${CMAKE_CURRENT_BINARY_DIR}/VERSION
-	DESTINATION ${GMT_SHARE_PATH}
+	DESTINATION ${GMT_DATADIR}
 	COMPONENT Runtime)
 
 # only attempt to install shorelines when requested and path is known
 if (GSHHG_PATH AND COPY_GSHHG)
 	install (DIRECTORY ${GSHHG_PATH}/
-		DESTINATION ${GMT_SHARE_PATH}/coast
+		DESTINATION ${GMT_DATADIR}/coast
 		COMPONENT GSHHG)
 	# set installed location
-	set (GSHHG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}/coast)
+	set (GSHHG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_DATADIR}/coast)
 	# create coastline.conf which is needed for in-build-dir ctest
 	configure_file (coastline.conf.in coastline.conf @ONLY)
 else (GSHHG_PATH AND COPY_GSHHG)
@@ -53,10 +53,10 @@ endif (GSHHG_PATH AND COPY_GSHHG)
 # only attempt to install DCW file when requested and path is known
 if (DCW_PATH AND COPY_DCW)
 	install (DIRECTORY ${DCW_PATH}/
-		DESTINATION ${GMT_SHARE_PATH}/dcw
+		DESTINATION ${GMT_DATADIR}/dcw
 		COMPONENT DCW)
 	# set installed location
-	set (DCW_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}/dcw)
+	set (DCW_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_DATADIR}/dcw)
 else (DCW_PATH AND COPY_DCW)
 	# set installed location
 	set (DCW_INSTALL_PATH ${DCW_PATH})

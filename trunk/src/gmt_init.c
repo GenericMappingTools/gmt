@@ -2056,7 +2056,7 @@ int gmt_parse_dash_option (struct GMT_CTRL *GMT, char *text)
 	}
 
 	/* print GMT folders and exit */
-	if (strcmp (text, "show-sharedir") == 0) {
+	if (strcmp (text, "show-datadir") == 0) {
 		sprintf (message, "%s\n", GMT->session.SHAREDIR);
 		GMT->parent->print_func (stdout, message);
 		/* leaking on exit same as above. */
@@ -6336,13 +6336,13 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 		/* GMT_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( running_in_bindir_src && GMT_verify_sharedir_version (GMT_SHARE_PATH_DEBUG) )
+	else if ( running_in_bindir_src && GMT_verify_sharedir_version (GMT_SHARE_DIR_DEBUG) )
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
-		GMT->session.SHAREDIR = strdup (GMT_SHARE_PATH_DEBUG);
+		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR_DEBUG);
 #endif
-	else if ( GMT_verify_sharedir_version (GMT_SHARE_PATH) )
-		/* Found in hardcoded GMT_SHARE_PATH */
-		GMT->session.SHAREDIR = strdup (GMT_SHARE_PATH);
+	else if ( GMT_verify_sharedir_version (GMT_SHARE_DIR) )
+		/* Found in hardcoded GMT_SHARE_DIR */
+		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR);
 	else {
 		/* SHAREDIR still not found, make a smart guess based on runpath: */
 		if ( GMT_guess_sharedir (path, GMT->init.runtime_bindir) )
@@ -6379,9 +6379,9 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 		/* GMT_USERDIR was set */
 		GMT->session.USERDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( running_in_bindir_src && access (GMT_USER_PATH_DEBUG, R_OK|X_OK) == 0 )
+	else if ( running_in_bindir_src && access (GMT_USER_DIR_DEBUG, R_OK|X_OK) == 0 )
 		/* Use ${GMT_BINARY_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
-		GMT->session.USERDIR = strdup (GMT_USER_PATH_DEBUG);
+		GMT->session.USERDIR = strdup (GMT_USER_DIR_DEBUG);
 #endif
 	else {
 		/* Use default path for GMT_USERDIR (~/.gmt) */

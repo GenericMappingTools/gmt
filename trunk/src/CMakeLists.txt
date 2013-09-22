@@ -502,7 +502,7 @@ install_module_symlink (${_gmt_modules})
 
 # Install public headers
 install (FILES gmt.h gmt_define.h gmt_option.h gmt_resources.h declspec.h
-	DESTINATION ${GMT_INCDIR}
+	DESTINATION ${GMT_INCLUDEDIR}
 	COMPONENT Runtime)
 
 # symlink to gmt-wrapper in bindir and libdir:
@@ -547,7 +547,7 @@ endif (WIN32)
 install (PROGRAMS
 	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
 	ncdeflate.sh
-	DESTINATION ${GMT_SHARE_PATH}/tools
+	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
 
 # this prints out the final version of the compiler/linker flags

@@ -12,7 +12,8 @@
 #    GSHHG_FOUND        - True if GSHHG is found
 #    GSHHG_PATH         - A variable pointing to the GSHHG path
 #    GSHHG_VERSION      - String of the GSHHG version found
-#    GSHHG_MIN_REQUIRED - Struct of {major, minor, patch} version required
+#    GSHHG_MIN_REQUIRED_VERSION_{MAJOR, MINOR, PATCH}
+#                       - Major, minor, and patch version required
 #    GSHHG_EXT          - GSHHG netCDF file extension
 
 # get GSHHG path
@@ -41,8 +42,15 @@ if (GSHHG_PATH)
 		HINTS ${GSHHG_PATH})
 endif (GSHHG_PATH)
 
+# The minimum required GSHHG version
+set (GSHHG_MIN_REQUIRED_VERSION_MAJOR 2 CACHE INTERNAL "GSHHG required version major")
+set (GSHHG_MIN_REQUIRED_VERSION_MINOR 2 CACHE INTERNAL "GSHHG required version minor")
+set (GSHHG_MIN_REQUIRED_VERSION_PATCH 0 CACHE INTERNAL "GSHHG required version patch")
+set (GSHHG_MIN_REQUIRED_VERSION
+	"${GSHHG_MIN_REQUIRED_VERSION_MAJOR}.${GSHHG_MIN_REQUIRED_VERSION_MINOR}.${GSHHG_MIN_REQUIRED_VERSION_PATCH}"
+	CACHE INTERNAL "GSHHG required version")
+
 # check GSHHG version
-set (MIN_REQUIRED_GSHHG_VERSION "${MIN_REQUIRED_GSHHG_VERSION_MAJOR}.${MIN_REQUIRED_GSHHG_VERSION_MINOR}.${MIN_REQUIRED_GSHHG_VERSION_PATCH}")
 if (_GSHHG_FILE AND NOT GSHHG_FOUND)
 	try_run (_EXIT_GSHHG_VERSION _COMPILED_GSHHG_VERSION
 		${CMAKE_BINARY_DIR}/CMakeTmp
@@ -52,7 +60,7 @@ if (_GSHHG_FILE AND NOT GSHHG_FOUND)
 		-DLINK_LIBRARIES=${NETCDF_LIBRARIES}
 		COMPILE_DEFINITIONS -DSTANDALONE
 		RUN_OUTPUT_VARIABLE _GSHHG_VERSION_STRING
-		ARGS ${_GSHHG_FILE} ${MIN_REQUIRED_GSHHG_VERSION})
+		ARGS ${_GSHHG_FILE} ${GSHHG_MIN_REQUIRED_VERSION})
 
 	# check version string
 	if (_COMPILED_GSHHG_VERSION)
@@ -65,7 +73,7 @@ if (_GSHHG_FILE AND NOT GSHHG_FOUND)
 		elseif (_EXIT_GSHHG_VERSION EQUAL -1)
 			# found GSHHG but version is too old
 			message (WARNING "GSHHG found but it is too old (${GSHHG_VERSION}). "
-				"Need at least ${MIN_REQUIRED_GSHHG_VERSION}.")
+				"Need at least ${GSHHG_MIN_REQUIRED_VERSION}.")
 		endif (_EXIT_GSHHG_VERSION EQUAL 0)
 	endif (_COMPILED_GSHHG_VERSION)
 endif (_GSHHG_FILE AND NOT GSHHG_FOUND)

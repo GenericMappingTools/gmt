@@ -33,7 +33,7 @@ install_module_symlink (${_gmt_modules})
 # install shell script
 if (UNIX)
 	install (PROGRAMS img2google
-		DESTINATION ${GMT_SHARE_PATH}/tools
+		DESTINATION ${GMT_DATADIR}/tools
 		COMPONENT Runtime)
 endif (UNIX)
 

@@ -5,5 +5,5 @@
     options, then exits.
 **-**\ **-version**
     Print GMT version and exit.
-**-**\ **-show-sharedir**
+**-**\ **-show-datadir**
     Print full path to GMT share directory and exit.

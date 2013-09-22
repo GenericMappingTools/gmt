@@ -303,10 +303,10 @@ static char *sharedir_from_runtime_libdir (char *sharedir) {
 		/* The executable is not located in the expected binary directory */
 		return NULL;
 
-	/* Replace GMT_LIBDIR_RELATIVE suffix with GMT_SHAREDIR_RELATIVE */
+	/* Replace GMT_LIBDIR_RELATIVE suffix with GMT_SHARE_DIR_RELATIVE */
 	sharedir = strncpy (sharedir, runtime_libdir, len_base_dir);
 	sharedir[len_base_dir] = '\0';
-	strcat (sharedir, GMT_SHAREDIR_RELATIVE);
+	strcat (sharedir, GMT_SHARE_DIR_RELATIVE);
 
 	return sharedir;
 }
@@ -342,10 +342,10 @@ static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_b
 		/* The executable is not located in the expected binary directory */
 		return NULL;
 
-	/* Replace GMT_BINDIR_RELATIVE suffix with GMT_SHAREDIR_RELATIVE */
+	/* Replace GMT_BINDIR_RELATIVE suffix with GMT_SHARE_DIR_RELATIVE */
 	sharedir = strncpy (sharedir, runtime_bindir, len_base_dir);
 	sharedir[len_base_dir] = '\0';
-	strcat (sharedir, GMT_SHAREDIR_RELATIVE);
+	strcat (sharedir, GMT_SHARE_DIR_RELATIVE);
 
 	return sharedir;
 }
