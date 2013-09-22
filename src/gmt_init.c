@@ -5356,26 +5356,39 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			break;
 
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error in GMT_putparameter: Unrecognized keyword %s\n", keyword);
+			error = true; /* keyword not known */
 			break;
 	}
-	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error in GMT_putparameter: Unrecognized keyword %s\n", keyword);
+	if (error)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized keyword %s\n", keyword);
 	return (value);
 }
 
-void GMT_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *options)
+int GMT_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *options)
 {
-	int n = 0;
+	int error = GMT_OK, n = 0;
 	struct GMT_OPTION *opt = NULL;
+	char *param;
 
 	for (opt = options; opt; opt = opt->next) {
-		if (!(opt->option == '<' || opt->option == '#') || !opt->arg) continue;		/* Skip other and empty options */
-		if (!lines && n) GMT->parent->print_func (GMT->session.std[GMT_OUT], " ");	/* Separate by spaces */
-		GMT->parent->print_func (GMT->session.std[GMT_OUT], GMT_putparameter (GMT, opt->arg));		
-		if (lines) GMT->parent->print_func (GMT->session.std[GMT_OUT], "\n");		/* Separate lines */
+		if (!(opt->option == '<' || opt->option == '#') || !opt->arg)
+			continue;		/* Skip other and empty options */
+		if (!lines && n)
+			GMT->parent->print_func (GMT->session.std[GMT_OUT], " ");	/* Separate by spaces */
+		param = GMT_putparameter (GMT, opt->arg);
+		if (*param == '\0') {
+			/* if keyword unknown */
+			error = GMT_OPTION_NOT_FOUND;
+			break;
+		}
+		GMT->parent->print_func (GMT->session.std[GMT_OUT], param);
+		if (lines)
+			GMT->parent->print_func (GMT->session.std[GMT_OUT], "\n");		/* Separate lines */
 		n++;
 	}
-	if (!lines && n) GMT->parent->print_func (GMT->session.std[GMT_OUT], "\n");		/* Single lines */
+	if (!lines && n)
+		GMT->parent->print_func (GMT->session.std[GMT_OUT], "\n");		/* Single lines */
+	return error;
 }
 
 int GMT_savedefaults (struct GMT_CTRL *GMT, char *file)

@@ -118,8 +118,8 @@ int GMT_gmtget_parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT
 
 int GMT_gmtget (void *V_API, int mode, void *args)
 {
-	int error = 0;
-	
+	int error = GMT_OK;
+
 	struct GMTGET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -149,7 +149,7 @@ int GMT_gmtget (void *V_API, int mode, void *args)
 
 	if (Ctrl->G.active) GMT_getdefaults (GMT, Ctrl->G.file);
 
-	GMT_pickdefaults (GMT, Ctrl->L.active, options);		/* Process command line arguments */
+	error = GMT_pickdefaults (GMT, Ctrl->L.active, options);		/* Process command line arguments */
 
-	Return (GMT_OK);
+	Return (error);
 }
