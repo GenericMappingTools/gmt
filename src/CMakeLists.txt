@@ -280,6 +280,17 @@ set_source_files_properties (triangle.c
 	PROPERTIES
 	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY;ANSI_DECLARATORS")
 
+if (MSVC)
+	# Disable automatic manifest generation
+	string(REGEX REPLACE "/MANIFEST[^ ]*( |$)" ""
+		CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+
+	# To expand the command line arguments in Windows, see:
+	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
+endif(MSVC)
+
 # libpslib
 add_library (pslib
 	${GMT_GEN_HDRS}
@@ -435,12 +446,6 @@ if (WIN32 AND GMT_DLL_RENAME)
 	set_target_properties (gmtlib PROPERTIES RUNTIME_OUTPUT_NAME ${GMT_DLL_RENAME})
 endif ()
 
-# To expand the command line arguments in Windows, see:
-# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
-if (MSVC)
-	set_target_properties (gmtlib PROPERTIES LINK_FLAGS "setargv.obj")
-endif(MSVC)
-
 if (HAVE_DLADDR AND HAVE_LIBDL)
 	# link the dynamic linking loader library
 	target_link_libraries (pslib dl)
@@ -452,9 +457,6 @@ string (REPLACE ".c" "" _gmt_progs "gmt.c;${GMT_DEMOS_SRCS}")
 foreach (_gmt_prog ${_gmt_progs})
 	add_executable (${_gmt_prog} ${_gmt_prog}.c)
 	target_link_libraries (${_gmt_prog} gmtlib)
-	if (WIN32)
-		set_target_properties(${_gmt_prog} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
-	endif ()
 endforeach (_gmt_prog)
 
 configure_file (psldemo.h.in psldemo.h @ONLY)
