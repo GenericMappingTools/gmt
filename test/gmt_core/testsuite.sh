@@ -9,7 +9,7 @@
 echo -n "gmt location: "
 gmt --show-bindir       | grep "^${GMT_BINARY_DIR}/src$"
 echo -n "sharedir    : "
-gmt --show-sharedir     | grep "^${GMT_SHAREDIR}$"
+gmt --show-datadir     | grep "^${GMT_SHAREDIR}$"
 echo -n "userdir     : "
 gmt gmtget DIR_USER     | grep "^${GMT_USERDIR}$"
 echo -n "gmt gshhg dir   : "

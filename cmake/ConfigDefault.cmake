@@ -53,11 +53,6 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 # if not specified here:
 #set (GMT_VERSION_YEAR "2013")
 
-# The minimum required GSHHG version
-set (MIN_REQUIRED_GSHHG_VERSION_MAJOR 2)
-set (MIN_REQUIRED_GSHHG_VERSION_MINOR 2)
-set (MIN_REQUIRED_GSHHG_VERSION_PATCH 0)
-
 # The GMT wiki location
 set (GMT_TRAC_WIKI "http://gmtrac.soest.hawaii.edu/projects/gmt/wiki/")
 
@@ -86,14 +81,14 @@ if (NOT DEFINED LICENSE_RESTRICTED)
 endif (NOT DEFINED LICENSE_RESTRICTED)
 
 # Default location of release documentation. If the directory exists in the
-# source tree, the files will be copied to GMT_DOC_PATH instead of creating
+# source tree, the files will be copied to GMT_DOCDIR instead of creating
 # PDFs from source:
 if (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 	set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
 endif (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 
 # Default location of release manpages. If the directory exists in the source
-# tree, the files will be copied to GMT_MAN_PATH instead of creating manpages
+# tree, the files will be copied to GMT_MANDIR instead of creating manpages
 # from source:
 if (NOT DEFINED GMT_INSTALL_EXTERNAL_MAN)
 	set (GMT_INSTALL_EXTERNAL_MAN ${GMT_SOURCE_DIR}/man_release)

@@ -37,7 +37,7 @@ Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
 
   $ mkdir build
   $ cd build
-  $ cmake -DCMAKE_INSTALL_PREFIX=gmt5 -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+  $ cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
   $ make -jx
 
 where _x_ is the number of threads you want to use and depends on the number
@@ -67,13 +67,13 @@ There are two configuration files:
 
 1. "ConfigDefault.cmake" -- is version controlled and used to add new default
     variables and set defaults for everyone. You should not edit this file.
-2. "ConfigUser.cmake" -- is not version controlled (currently listed in svn:ignore
-    property) and used to override defaults on a per-user basis. There is a
-    template file, ConfigUserTemplate.cmake, that you should copy to
-    ConfigUser.cmake and make your changes therein.
+2. "ConfigUser.cmake" -- is not version controlled (currently listed in
+    svn:ignore property) and used to override defaults on a per-user basis.
+    There is a template file, ConfigUserTemplate.cmake, that you should copy
+    to ConfigUser.cmake and make your changes therein.
 
-NOTE: If you want to change CMake behaviour for your build then only modify the
-      "ConfigUser.cmake" file (not "ConfigDefault.cmake").
+NOTE: If you want to change CMake behaviour for your build then only modify
+      the "ConfigUser.cmake" file (not "ConfigDefault.cmake").
 
 Invoking CMake:
 ~~~~~~~~~~~~~~~
@@ -136,7 +136,7 @@ PREFIX/share/doc/gmtSUFFIX/).
 
 GMT is shipped as a single executable.  By default we also set "classic mode"
 by installing convenience links for all GMT modules. New GMT users should set
-INSTALL_MODULE_LINKS to FALSE in cmake/ConfigUser.cmake.
+GMT_INSTALL_MODULE_LINKS to FALSE in cmake/ConfigUser.cmake.
 
 Updating:
 ~~~~~~~~~

@@ -143,14 +143,14 @@ if (WIN32 AND NOT CYGWIN)
 		set (CPACK_NSIS_INSTALL_ROOT "c:\\\\programs")
 	endif (NOT DEFINED CPACK_NSIS_INSTALL_ROOT)
 	set (CPACK_NSIS_MODIFY_PATH ON)
-	string(REPLACE "/" "\\\\" _native_share_path "${GMT_SHARE_PATH}")
+	string(REPLACE "/" "\\\\" _native_share_path "${GMT_DATADIR}")
 	set (CPACK_NSIS_ADD_ENVVAR1 "GMT5_SHAREDIR")
 	set (CPACK_NSIS_ADD_ENVVAL1 "\\\$INSTDIR\\\\${_native_share_path}")
 
 	# StartMenu items:
 	set (CPACK_NSIS_MENU_LINKS
 		"${GMT_BINDIR}/startup_win.bat" "GMT Command Prompt"
-		"${GMT_DOC_PATH}" "Documentation")
+		"${GMT_DOCDIR}" "Documentation")
 
 	# Install startup batch file:
 	install (PROGRAMS startup_win.bat
@@ -219,7 +219,7 @@ if (APPLE)
 	install (CODE "
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages.+[.]app/Contents/Resources\")
 		execute_process (COMMAND ${CMAKE_COMMAND} -E rename
-			\${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}
+			\${CMAKE_INSTALL_PREFIX}/${GMT_DOCDIR}
 			\${CMAKE_INSTALL_PREFIX}/../../../Documentation)
 	endif ()
 	" COMPONENT Documentation)

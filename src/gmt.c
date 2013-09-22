@@ -117,7 +117,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Show share directory */
-			if (!strcmp (argv[arg_n], "--show-sharedir")) {
+			if (!strcmp (argv[arg_n], "--show-datadir")) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
 				goto exit;
 			}
@@ -145,7 +145,7 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "options:\n");
 		fprintf (stderr, "  --help            List and description of GMT modules.\n");
 		fprintf (stderr, "  --version         Print version and exit.\n");
-		fprintf (stderr, "  --show-sharedir   Show share directory and exit.\n");
+		fprintf (stderr, "  --show-datadir    Show data directory and exit.\n");
 		fprintf (stderr, "  --show-bindir     Show directory of executables and exit.\n\n");
 		fprintf (stderr, "if <module options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 		if (modulename_arg_n == 1) {

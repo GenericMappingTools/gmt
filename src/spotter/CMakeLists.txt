@@ -43,10 +43,10 @@ install_module_symlink (${_gmt_modules})
 # install example data
 if (UNIX)
 	install (FILES ${SUPPL_EXAMPLE_FILES}
-		DESTINATION ${GMT_DOC_PATH}/supplements/spotter
+		DESTINATION ${GMT_DOCDIR}/supplements/spotter
 		COMPONENT Documentation)
 	install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
-		DESTINATION ${GMT_DOC_PATH}/supplements/spotter
+		DESTINATION ${GMT_DOCDIR}/supplements/spotter
 		COMPONENT Documentation)
 endif (UNIX)
 
