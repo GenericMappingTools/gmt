@@ -79,6 +79,18 @@ function psldemo()
   valgrind_wrapper @GMT_BINARY_DIR@/src/psldemo "$@"
 }
 
+# testapi wrapper
+function testapi()
+{
+  valgrind_wrapper @GMT_BINARY_DIR@/src/testapi "$@"
+}
+
+# testgrdio wrapper
+function testgrdio()
+{
+  valgrind_wrapper @GMT_BINARY_DIR@/src/testgrdio "$@"
+}
+
 # export function definitions to subshells
 export -f gmt gmtlogo psldemo valgrind_wrapper
 
