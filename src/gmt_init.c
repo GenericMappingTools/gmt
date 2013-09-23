@@ -7651,7 +7651,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			if (slash) {	/* Separate y-scaling desired */
 				strncpy (args_cp, &args[slash+1], GMT_BUFSIZ);	/* Since GMT_to_inch modifies the string */
 				// k = (!strncmp (args_cp, "1:", 2U)) ? 1 : 0;	/* Special check for linear proj with separate 1:xxx scale for y-axis */
-				k = 0;	/* Hardwired since "slash not allowed with 1:xxxxx" */
+				k = -1;	/* Hardwired since "slash not allowed with 1:xxxxx" */
 				if ((i = MAX (l_pos[GMT_Y], p_pos[GMT_Y])) > 0)
 					args_cp[i-slash-1] = 0;	/* Chop off log or power part */
 				else if (t_pos[GMT_Y] > 0)
