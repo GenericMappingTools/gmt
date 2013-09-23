@@ -2679,7 +2679,7 @@ int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file)
 	return (GMT_NOERROR);
 }
 
-void GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
+unsigned int GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 {
 	unsigned int p, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
@@ -2706,6 +2706,7 @@ void GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	n_errors += (param != NULL);	/* param should be NULL */
 
 	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL, " %d conversion errors\n", n_errors);
+	return (n_errors);
 }
 
 bool gmt_true_false_or_error (char *value, bool *answer)

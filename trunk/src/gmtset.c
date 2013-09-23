@@ -186,7 +186,7 @@ int GMT_gmtset (void *V_API, int mode, void *args)
 	else if (Ctrl->G.active)
 		GMT_getdefaults (GMT, Ctrl->G.file);
 
-	GMT_setdefaults (GMT, options);		/* Process command line arguments */
+	if (GMT_setdefaults (GMT, options)) Return (GMT_PARSE_ERROR);		/* Process command line arguments, return error if failures */
 
 	GMT_putdefaults (GMT, Ctrl->G.file);	/* Write out the revised settings */
 

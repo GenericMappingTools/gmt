@@ -87,7 +87,7 @@ EXTERN_MSC int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S
 EXTERN_MSC int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S);
 EXTERN_MSC bool GMT_check_region (struct GMT_CTRL *GMT, double wesn[]);
 EXTERN_MSC int GMT_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *options);
-EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
+EXTERN_MSC unsigned int GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
 EXTERN_MSC int GMT_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd);
