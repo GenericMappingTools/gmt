@@ -1,7 +1,7 @@
 #!/bin/bash
 #		$Id$
 #
-#	Testing GMT gmt mapgmt project on examples in Snyder.
+#	Testing GMT gmt mapproject on examples in Snyder.
 #
 #
 #	usage:  snyder.sh [-v]
@@ -11,8 +11,8 @@
 #	Slop is 0.11 m for gmt projected values
 
 blabber () {
-	gf=(`echo "${sf[*]}" | gmt mapgmt project $* -F -C`)
-	gi=(`echo "${gf[*]}" | gmt mapgmt project $* -F -C -I --FORMAT_FLOAT_OUT=%lg`)
+	gf=(`echo "${sf[*]}" | gmt mapproject $* -F -C`)
+	gi=(`echo "${gf[*]}" | gmt mapproject $* -F -C -I --FORMAT_FLOAT_OUT=%lg`)
 	if [ $blabber -gt 0 ] ; then
 		echo "-------------------"
 		echo $p
