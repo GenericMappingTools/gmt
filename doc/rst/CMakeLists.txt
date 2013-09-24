@@ -28,9 +28,21 @@ if (SPHINX_FOUND)
 
 	# Copy reST sources to build tree
 	include (CopyDirIfDifferent)
-	copy_dir_if_different (_docs_copy_rst_tree ${CMAKE_CURRENT_SOURCE_DIR}/source/
+	copy_dir_if_different (_docs_copy_rst_tree_source
+		${CMAKE_CURRENT_SOURCE_DIR}/source/
 		${CMAKE_CURRENT_BINARY_DIR}/_source)
-	add_depend_to_target (docs_depends _docs_copy_rst_tree)
+	add_depend_to_target (docs_depends _docs_copy_rst_tree_source)
+	copy_dir_if_different (_docs_copy_rst_tree_themes
+		${CMAKE_CURRENT_SOURCE_DIR}/themes/
+		${CMAKE_CURRENT_BINARY_DIR}/_themes)
+	add_depend_to_target (docs_depends _docs_copy_rst_tree_themes)
+
+	# clean target
+	add_custom_target (_rst_clean
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}
+		COMMENT "Removing rst tree")
+	# register with spotless target
+	add_depend_to_spotless (_rst_clean)
 
 	# HTML build target
 	add_custom_target (docs_html
