@@ -2925,11 +2925,11 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		x[0] = mr->x0 + R[1] * c, y[0] = mr->y0 + R[1] * s;
 		x[1] = mr->x0 + (R[1] + tlen[0]) * c, y[1] = mr->y0 + (R[1] + tlen[0]) * s;
 		PSL_plotsegment (PSL, x[0], y[0], x[1], y[1]);
+		if (k == 4) k = 0;
 		if (!mr->label[k][0]) continue;	/* No label desired */
 		x[0] = mr->x0 + base * c, y[0] = mr->y0 + base * s;
 		x[1] = mr->x0 + (base + 2.0 * tlen[2]) * c, y[1] = mr->y0 + (base + 2.0 * tlen[2]) * s;
 		PSL_plotsegment (PSL, x[0], y[0], x[1], y[1]);
-		if (k == 4) k = 0;
 		if (k == 2 && mr->label[2][0] == '*') {
 			x[0] = mr->x0 + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset + 0.025*mr->size) * c, y[0] = mr->y0 + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset + 0.025*mr->size) * s;
 			gmt_Nstar (GMT, PSL, x[0], y[0], 0.1*mr->size);
