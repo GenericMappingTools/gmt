@@ -1,8 +1,10 @@
-.. GMT documentation master file, created by
-   sphinx-quickstart on Fri May 04 18:10:30 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. GMT documentation master file
+   Include man_pages to avoid "not included in toctree warning".
 
+.. toctree::
+   :hidden:
+
+   man_pages
 
 Man pages
 =========
@@ -11,36 +13,31 @@ Man pages
 | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |                 |
-|    B            |    GM           |    GR           |    PS           |
-|    C            |                 |                 |                 |
-|    F            |                 |                 |                 |
-|    G            |                 |                 |                 |
-|    I            |                 |                 |                 |
-|    K            |                 |                 |                 |
-|    M            |                 |                 |                 |
-|    N            |                 |                 |                 |
-|    P            |                 |                 |                 |
-|    S            |                 |                 |                 |
-|    T            |                 |                 |                 |
-|    X            |                 |                 |                 |
+|    B            |    GR           |    I            |    S            |
+|    C            |                 |    K            |    T            |
+|    F            |                 |    M            |    X            |
+|    GM           |                 |    N            |                 |
+|                 |                 |    P            |                 |
+|                 |                 |    PS           |                 |
 +-----------------+-----------------+-----------------+-----------------+
 
 Supplements
 -----------
 
-+-----------------+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |                 |
-|    SUP_GSHHS    |    SUP_MECA     |    SUP_POTENTIAL|    SUP_SEGY     |
-|    SUP_IMGSRC   |                 |                 |                 |
-|    SUP_MISC     |                 |                 |                 |
-+-----------------+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    |                 |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |                 |
-|                 |                 |                 |                 |
-|    SUP_MGD77    |    SUP_SPOTTER  |    SUP_X2SYS    |                 |
-+-----------------+-----------------+-----------------+-----------------+
++-----------------+-----------------+-----------------+
+| .. toctree::    | .. toctree::    | .. toctree::    |
+|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
+|                 |                 |                 |
+|    SUP_GSHHS    |    SUP_MGD77    |    SUP_MISC     |
+|    SUP_IMGSRC   |                 |    SUP_POTENTIAL|
+|    SUP_MECA     |                 |                 |
++-----------------+-----------------+-----------------+
+| .. toctree::    | .. toctree::    | .. toctree::    |
+|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
+|                 |                 |                 |
+|    SUP_SEGY     |                 |                 |
+|    SUP_SPOTTER  |    SUP_X2SYS    |                 |
++-----------------+-----------------+-----------------+
 
 Gallery
 =======
@@ -64,6 +61,7 @@ The CookBook
 |    cookbook        |
 +--------------------+
 
+
 API Reference
 =============
 
@@ -73,4 +71,3 @@ API Reference
 |                    |
 |    api             |
 +--------------------+
-
