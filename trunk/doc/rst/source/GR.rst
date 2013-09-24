@@ -5,6 +5,7 @@ GR
 .. toctree::
    :maxdepth: 1
 
+   greenspline
    grd2cpt
    grd2rgb
    grd2xyz

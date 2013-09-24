@@ -1,3 +1,5 @@
+:tocdepth: 2
+
 **The Generic Mapping Tools**
 
 **C/C++ Application Programming Interface**
@@ -21,15 +23,6 @@
 **Florian Wobbe**
 
 **Alfred Wegener Institute, Germany**
-
-
-.. only:: not latex
-
-    .. figure:: /_images/GMT_coverlogo.*
-       :width: 500 px
-       :align: center
-
-    .. contents:: Table of Contents
 
 Introduction
 ============

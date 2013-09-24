@@ -1,3 +1,5 @@
+:tocdepth: 2
+
 **The Generic Mapping Tools**
 
 **Technical Reference and Cookbook**
