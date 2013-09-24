@@ -1433,7 +1433,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 }
 
 int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
-	unsigned int i, icol, pos, error = 0;
+	unsigned int i, icol, pos, error = 0, n_slash = 0;
 	int got, col_type[2], expect_to_read;
 	size_t length;
 	bool inv_project = false, scale_coord = false;
@@ -1442,6 +1442,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
 	length = strlen (item) - 1;
+	for (i = 0; i < length; i++) if (item[i] == '/') n_slash++;
 	
 	strncpy (GMT->common.R.string, item, GMT_LEN256);	/* Verbatim copy */
 	if ((item[0] == 'g' || item[0] == 'd') && item[1] == '\0') {	/* Check -Rd|g separately in case user has files called d or g */
@@ -1481,7 +1482,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			return (GMT_NOERROR);
 		}
 	}
-	else if (item[0] == 'g' || item[0] == 'd') {	/* Here we have a region appended to -Rd|g */
+	else if ((item[0] == 'g' || item[0] == 'd') && n_slash == 3) {	/* Here we have a region appended to -Rd|g */
 		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 		strncpy (string, &item[1], GMT_BUFSIZ);
 		GMT->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
