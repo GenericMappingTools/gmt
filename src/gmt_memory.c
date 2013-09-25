@@ -435,8 +435,8 @@ void GMT_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols)
 	/* Check if we are exceeding our column count so far, if so we must allocate more columns */
 	else if (n_cols > GMT->hidden.mem_cols) {	/* Must allocate more columns, this is expected to happen rarely */
 		GMT->hidden.mem_coord = GMT_memory (GMT, GMT->hidden.mem_coord, n_cols, double *);	/* New ones are NOT NULL */
-		for (col = GMT->hidden.mem_cols; col < n_cols; col++)	/* Explicitly zero out the new additions */
-			GMT->hidden.mem_coord[col] = NULL;
+		for (col = GMT->hidden.mem_cols; col < n_cols; col++)	/* Explicitly allocate the new additions */
+			GMT->hidden.mem_coord[col] = GMT_memory (GMT, NULL, GMT->hidden.mem_rows, double);
 		GMT->hidden.mem_cols = n_cols;		/* Updated column count */
 	}
 
