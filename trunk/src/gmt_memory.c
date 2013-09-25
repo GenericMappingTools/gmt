@@ -446,7 +446,7 @@ void GMT_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols)
 	
 	/* Here we must allocate more rows, this is expected to happen rarely given the large initial allocation */
 
-	while (row > GMT->hidden.mem_rows) GMT->hidden.mem_rows <<= 1;	/* Double up until enough */
+	while (row >= GMT->hidden.mem_rows) GMT->hidden.mem_rows <<= 1;	/* Double up until enough */
 	for (col = 0; col < GMT->hidden.mem_cols; col++)	/* Add more memory via realloc */
 		GMT->hidden.mem_coord[col] = GMT_memory (GMT, GMT->hidden.mem_coord[col], GMT->hidden.mem_rows, double);
 
