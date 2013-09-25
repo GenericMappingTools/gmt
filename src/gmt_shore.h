@@ -41,13 +41,15 @@ enum GMT_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a uns
 	GSHHS_RIVER_INTERMITTENT	= 5,	/* Id for intermittent rivers */
 	GSHHS_RIVER_CANALS		= 8,	/* Id for river canals */
 	GSHHS_NO_RIVERLAKES		= 1,
-	GSHHS_NO_LAKES			= 2};
+	GSHHS_NO_LAKES			= 2,
+	GSHHS_ANTARCTICA_LIMIT		= -60};	/* Data below 60S is Antarctica */
 
 struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
 	int low;	/* Lowest hierarchical level to use [0] */
 	int high;	/* Highest hierarchical level to use [4] */
 	int flag;	/* 1 = no riverlakes from level 2; 2 = only riverlakes from level 2 */
 	int fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
+	int antarctica;	/* If 1, we skip all data south of 60S, i.e. the Antarctica continent and islands */
 	double area;	/* Area of smallest geographical feature to include [0] */
 };
 
