@@ -1,5 +1,5 @@
 .. GMT documentation master file
-   Include man_pages to avoid "not included in toctree warning".
+   Include man_pages to avoid "not included in toctree warning":
 
 .. toctree::
    :hidden:
@@ -28,15 +28,10 @@ Supplements
 | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |
-|    SUP_GSHHS    |    SUP_MGD77    |    SUP_MISC     |
-|    SUP_IMGSRC   |                 |    SUP_POTENTIAL|
-|    SUP_MECA     |                 |                 |
-+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |
-|    SUP_SEGY     |                 |                 |
-|    SUP_SPOTTER  |    SUP_X2SYS    |                 |
+|    SUP_GSHHS    |    SUP_MISC     |    SUP_X2SYS    |
+|    SUP_IMGSRC   |    SUP_POTENTIAL|                 |
+|    SUP_MECA     |    SUP_SEGY     |                 |
+|    SUP_MGD77    |    SUP_SPOTTER  |                 |
 +-----------------+-----------------+-----------------+
 
 Gallery
