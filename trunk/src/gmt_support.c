@@ -4431,7 +4431,7 @@ uint64_t gmt_smooth_contour (struct GMT_CTRL *GMT, double **x_in, double **y_in,
 	uint64_t i, j, k, n_out;
 	double ds, t_next, *x = NULL, *y = NULL;
 	double *t_in = NULL, *t_out = NULL, *x_tmp = NULL, *y_tmp = NULL, x0, x1, y0, y1;
-	char *flag = NULL;
+	bool *flag = NULL;
 
 	if (sfactor == 0 || n < 4) return (n);	/* Need at least 4 points to call Akima */
 
@@ -4440,10 +4440,6 @@ uint64_t gmt_smooth_contour (struct GMT_CTRL *GMT, double **x_in, double **y_in,
 	n_out = sfactor * n - 1;	/* Number of new points */
 
 	t_in  = GMT_memory (GMT, NULL, n, double);
-	t_out = GMT_memory (GMT, NULL, n_out + n, double);
-	x_tmp = GMT_memory (GMT, NULL, n_out + n, double);
-	y_tmp = GMT_memory (GMT, NULL, n_out + n, double);
-	flag  = GMT_memory (GMT, NULL, n_out + n, char);
 
 	/* Create dummy distance values for input points, and throw out duplicate points while at it */
 
@@ -4459,7 +4455,15 @@ uint64_t gmt_smooth_contour (struct GMT_CTRL *GMT, double **x_in, double **y_in,
 	}
 
 	n = j;	/* May have lost some duplicates */
-	if (sfactor == 0 || n < 4) return (n);	/* Need at least 4 points to call Akima */
+	if (sfactor == 0 || n < 4) {	/* Need at least 4 points to call Akima */
+		GMT_free (GMT, t_in);
+		return (n);
+	}
+
+	t_out = GMT_memory (GMT, NULL, n_out + n, double);
+	x_tmp = GMT_memory (GMT, NULL, n_out + n, double);
+	y_tmp = GMT_memory (GMT, NULL, n_out + n, double);
+	flag  = GMT_memory (GMT, NULL, n_out + n, bool);
 
 	/* Create equidistance output points */
 
@@ -4515,6 +4519,8 @@ uint64_t gmt_smooth_contour (struct GMT_CTRL *GMT, double **x_in, double **y_in,
 		i = j;
 	}
 
+	/* Replace original coordinates */
+	
 	GMT_free (GMT, x);
 	GMT_free (GMT, y);
 
