@@ -7885,7 +7885,8 @@ L. Of colors and color legends
 Built-in color palette tables
 -----------------------------
 
-Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`M1`] shows each of the 22 built-in
+Figures :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`M1a`] and
+:ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`M1b`] show the 36 built-in
 color palettes, stored in so-called CPT tables [49]_. The programs
 :doc:`makecpt` and
 :doc:`grd2cpt` are used to access these
@@ -7896,11 +7897,17 @@ some (like **globe**) are a mix of the two. The bottom half the color
 bar are built by using :doc:`makecpt`
 **-T**-1/1/0.25, thus splitting the color scale into 8 discrete colors.
 
-.. figure:: /_images/GMT_App_M_1.*
+.. figure:: /_images/GMT_App_M_1a.*
    :width: 500 px
    :align: center
 
-   The standard 22 CPT files supported by GMT
+   The first 18 of the standard 36 CPT files supported by GMT
+
+.. figure:: /_images/GMT_App_M_1b.*
+   :width: 500 px
+   :align: center
+
+   The second 18 of the standard 36 CPT files supported by GMT
 
 
 Labeled and non-equidistant color legends
