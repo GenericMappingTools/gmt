@@ -1,0 +1,17 @@
+#       $Id$
+#
+# Color table for bathymetry modeled after IBCSO
+# at depth but turning lighter towards sea level.
+# Designed by P. Wessel, SOEST
+# COLOR_MODEL = RGB
+-8000      black  	-7000	20/30/53
+-7000	20/30/53  	-6000	38/60/106
+-6000	38/60/106	-5000	46/80/133
+-5000	46/80/133	-4000	53/99/160
+-4000	53/99/160	-3000	72/151/211
+-3000	72/151/211	-2000	90/185/233
+-2000	90/185/233	-1000	141/210/239
+-1000	141/210/239	0	245/255/255
+B black
+F white
+N gray

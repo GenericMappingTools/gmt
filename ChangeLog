@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-09-27	pwessel
+	* share/cpt:		Added 10 new CPTs, mostly for bathymetry and topography.
+
 2013-09-14	pwessel
 	* psmask.c:		Multiple, ancient bugs fixed: properly mark used edges, fix
 				memory allocations, not report clipping if -D is used, starting
