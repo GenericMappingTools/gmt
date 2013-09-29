@@ -42,6 +42,7 @@ int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_BAD_VAL);
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s reads with GDAL driver %s\n", header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
+	GDALDestroyDriverManager();
 	header->type = GMT_GRID_IS_GD;
 
 	return GMT_NOERROR;
@@ -244,6 +245,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset) ) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
 					GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
+			GDALDestroyDriverManager();
 			return (-1);
 		}
 		xOrigin = anSrcWin[0];
@@ -335,6 +337,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	tmp = calloc(nBufYSize * nBufXSize, nPixelSize);
 	if (tmp == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
+		GDALDestroyDriverManager();
 		return(-1);
 	}
 
@@ -350,7 +353,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	colVec = GMT_memory(GMT, NULL, nX+4*pad, int);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
 
-	for ( i = 0; i < nBands; i++ ) {
+	for (i = 0; i < nBands; i++) {
 		if (!nReqBands)		/* No band selection, read them sequentialy */
 			hBand = GDALGetRasterBand( hDataset, i+1 );
 		else			/* Band selection. Read only the requested ones */
@@ -418,7 +421,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
 				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
-					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? --n : ++n)
+					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
 						if (prhs->f_ptr.active) {
 							int16_t tmpI16;
 							memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
@@ -432,7 +435,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
 				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
-					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? --n : ++n)
+					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
 						if (prhs->f_ptr.active) {
 							uint16_t tmpUI16;
 							memcpy (&tmpUI16, &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
@@ -446,11 +449,11 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
 				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
-					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? --n : ++n)
+					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
 						if (prhs->f_ptr.active) {
 							int32_t tmpI32;
 							memcpy (&tmpI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-							Ctrl->Float.data[nn++] = tmpI32;
+							Ctrl->Float.data[nn++] = (float)tmpI32;
 						}
 						else
 							memcpy (&Ctrl->Int32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
@@ -460,11 +463,11 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
 				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
-					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? --n : ++n)
+					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
 						if (prhs->f_ptr.active) {
 							int32_t tmpUI32;
 							memcpy (&tmpUI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-							Ctrl->Float.data[nn++] = tmpUI32;
+							Ctrl->Float.data[nn++] = (float)tmpUI32;
 						}
 						else
 							memcpy (&Ctrl->UInt32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
@@ -507,6 +510,8 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	GDALClose(hDataset);
 
 	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+
+	GDALDestroyDriverManager();
 
 	/* Return registration based on data type of the actually read first band.
 	   We do this at the end because 'populate_metadata' scans all bands in file 
@@ -592,41 +597,43 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 	/* ------------------------------------------------------------------------- */
 	/* Open the file (if we can). */
 	/* ------------------------------------------------------------------------- */
-	hDataset = GDALOpen ( gdal_filename, GA_ReadOnly );
-	if ( hDataset == NULL ) {
+	hDataset = GDALOpen (gdal_filename, GA_ReadOnly);
+	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open %s.\n", gdal_filename );
+		GDALDestroyDriverManager();
 		return ( -1 );
 	}
 
 	/* ------------------------------------------------------------------------- */
 	/* Record the ProjectionRef */
 	/* ------------------------------------------------------------------------- */
-	if( GDALGetProjectionRef( hDataset ) != NULL ) {
+	if (GDALGetProjectionRef(hDataset) != NULL) {
 		OGRSpatialReferenceH  hSRS;
 		char *pszProjection;
 		char *pszResult = NULL;
-		pszProjection = (char *)GDALGetProjectionRef( hDataset );
+		pszProjection = (char *)GDALGetProjectionRef(hDataset);
 
 		hSRS = OSRNewSpatialReference(NULL);
 		/* First in PROJ4 format */
-		if( OSRImportFromWkt( hSRS, &pszProjection) == CE_None ) {
-			OSRExportToProj4( hSRS, &pszResult );
-			Ctrl->ProjectionRefPROJ4 = pszResult;
+		if (OSRImportFromWkt(hSRS, &pszProjection) == CE_None) {
+			OSRExportToProj4(hSRS, &pszResult);
+			Ctrl->ProjectionRefPROJ4 = strdup(pszResult);
+			CPLFree(pszResult);
 		}
 		else
 			Ctrl->ProjectionRefPROJ4 = NULL;
 
 		/* Now in WKT format */
-		if( OSRImportFromWkt( hSRS, &pszProjection ) == CE_None ) {
+		if (OSRImportFromWkt( hSRS, &pszProjection) == CE_None) {
 			char	*pszPrettyWkt = NULL;
-			OSRExportToPrettyWkt( hSRS, &pszPrettyWkt, false );
+			OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
 			Ctrl->ProjectionRefWKT = pszPrettyWkt;
-			CPLFree( pszPrettyWkt );
+			CPLFree(pszPrettyWkt);
 		}
 		else
 			Ctrl->ProjectionRefWKT = NULL;
 
-		OSRDestroySpatialReference( hSRS );
+		OSRDestroySpatialReference(hSRS);
 	}
 
 	/* ------------------------------------------------------------------------- */
@@ -695,7 +702,7 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 		Ctrl->RasterYsize = nYSize;
 	}
 
-	Ctrl->RasterCount = raster_count = GDALGetRasterCount( hDataset );
+	Ctrl->RasterCount = raster_count = GDALGetRasterCount(hDataset);
 
 	/* ------------------------------------------------------------------------- */
 	/* Get some metadata for each band. */
@@ -706,24 +713,24 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 	/* ==================================================================== */
 	/*      Loop over bands.                                                */
 	/* ==================================================================== */
-	for ( nBand = 0; nBand < raster_count; ++nBand ) {
+	for (nBand = 0; nBand < raster_count; nBand++) {
 
-		hBand = GDALGetRasterBand( hDataset, nBand+1 );
+		hBand = GDALGetRasterBand(hDataset, nBand+1);
 
 		if (!got_R) {		/* Not sure about what will realy happen in this case */
-			Ctrl->band_field_names[nBand].XSize = GDALGetRasterBandXSize( hBand );
-			Ctrl->band_field_names[nBand].YSize = GDALGetRasterBandYSize( hBand );
+			Ctrl->band_field_names[nBand].XSize = GDALGetRasterBandXSize(hBand);
+			Ctrl->band_field_names[nBand].YSize = GDALGetRasterBandYSize(hBand);
 		}
 		else {
 			Ctrl->band_field_names[nBand].XSize = nXSize;
 			Ctrl->band_field_names[nBand].YSize = nYSize;
 		}
 
-		Ctrl->band_field_names[nBand].DataType = strdup( GDALGetDataTypeName( GDALGetRasterDataType ( hBand )) );
-		Ctrl->band_field_names[nBand].nodata = (double)GDALGetRasterNoDataValue( hBand, &status );
+		Ctrl->band_field_names[nBand].DataType = strdup(GDALGetDataTypeName( GDALGetRasterDataType (hBand)));
+		Ctrl->band_field_names[nBand].nodata = (double)GDALGetRasterNoDataValue(hBand, &status);
 
 		/* Get band's Min/Max. If the band has no record of it we won't compute it */
-		adfMinMax[0] = GDALGetRasterMinimum( hBand, &bGotMin );
+		adfMinMax[0] = GDALGetRasterMinimum(hBand, &bGotMin);
 		adfMinMax[1] = GDALGetRasterMaximum( hBand, &bGotMax );
 		if ( bGotMin && bGotMax ) {
 			Ctrl->band_field_names[nBand].MinMax[0] = adfMinMax[0];
