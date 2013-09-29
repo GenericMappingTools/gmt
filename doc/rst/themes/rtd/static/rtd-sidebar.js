@@ -106,7 +106,7 @@ $(function() {
       // find the height of the viewport to center the '<<' in the page
       var viewport_height;
       var document_height = $('.document').height();
-      if (window.innerHeighti)
+      if (window.innerHeight)
         viewport_height = window.innerHeight;
       else
         viewport_height = $(window).height();
@@ -142,7 +142,7 @@ $(function() {
 
     function set_position_from_cookie() {
       if (!document.cookie)
-        return;
+        return sidebar_collapse_on_small_screen();
       var items = document.cookie.split(';');
       for(var k=0; k<items.length; k++) {
         var key_val = items[k].split('=');
@@ -155,6 +155,17 @@ $(function() {
             expand_sidebar();
         }
       }
+    }
+
+    function sidebar_collapse_on_small_screen() {
+      // auto-collapse sidebar on small screens
+      var viewport_width;
+      if (window.innerWidth)
+        viewport_width = window.innerWidth;
+      else
+        viewport_width = $(window).width();
+      if (viewport_width < 700)
+        collapse_sidebar();
     }
 
     add_sidebar_button();
