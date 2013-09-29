@@ -9575,7 +9575,7 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M)
 		if ((c = strstr (line, ": ")))	/* This macro has comments */
 			c[0] = '\0';	/* Chop off comments */
 		GMT_strstrip (line, true);	/* Remove leading and trailing whitespace */
-		sscanf (line, "%s = %[^\0]", name, args);
+		sscanf (line, "%s = %[^\t\n]", name, args);
 		if (n == n_alloc) macro = GMT_memory (GMT, macro, n_alloc += GMT_TINY_CHUNK, struct MATH_MACRO);
 		macro[n].name = strdup (name);
 		pos = 0;
