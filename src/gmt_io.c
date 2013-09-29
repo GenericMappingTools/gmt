@@ -3193,7 +3193,8 @@ int GMT_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data)
 	int err;
 	if (gmt_skip_output (GMT, data, n)) return (0);	/* Record was skipped via -s[a|r] */
 	err = GMT->current.io.write_item (GMT, fp, n, data);
-	return (err ? 0 : n);	/* Return 0 if failed, else n items written */
+	/* Cast below since the output functions are declared with uint64_t but cannot really exceed 4096... SHould change uint64_t to uint32_t */
+	return (err ? -1 : (int)n);	/* Return -1 if failed, else n items written */
 }
 
 int GMT_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G)
