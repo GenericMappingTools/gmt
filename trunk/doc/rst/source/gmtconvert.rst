@@ -15,7 +15,7 @@ Synopsis
 
 **gmtconvert** [ *table* ] [ **-A** ] [ **-D**\ [*template*] ]
 [ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
-[ **-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ *seg* ]
+[ **-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ [**~**\ ]*selection* ]
 [ **-S**\ [**~**\ ]\ *"search string"* \|
 **-S**\ [**~**\ ]/\ *regexp*/[**i**\ ] ]
 [ **-T** ]
@@ -97,8 +97,13 @@ Optional Arguments
 **-N**
     Do not write records that only contain NaNs in every field [Default writes all records].
 
-**-Q**\ *seg*
-    Only write segment number *seg* and skip all others. Cannot be used with **-S**.
+**-Q**\ [**~**\ ]*selection*
+    Only write segments whose number is included in *selection* and skip
+    all others. Cannot be used with **-S**. The *selection* syntax is
+    *range*[,*range*,...] where each *range* of items is either a single
+    segment *number*, a range of segment numbers *start-stop*, or a range with
+    stepped increments given via *start:step:stop*.   A leading **~** will
+    invert the selection and write all segments but the ones listed.
 
 **-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
     Only output those segments whose header record contains the
@@ -206,7 +211,13 @@ of records within each segment, try
 
    ::
 
-    gmt gmtconvert lots of segments.txt -Is > last_segment_first.txt
+    gmt gmtconvert lots_of_segments.txt -Is > last_segment_first.txt
+
+To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try
+
+   ::
+
+    gmt gmtconvert lots_of_segments.txt -Q0,20:2:40 > my_segments.txt
 
 See Also
 --------

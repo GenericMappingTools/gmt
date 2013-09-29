@@ -71,9 +71,9 @@ struct GMTCONVERT_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q<segno> */
+	struct Q {	/* -Q<selections> */
 		bool active;
-		uint64_t seg;
+		struct GMT_SELECTION *select;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
 		bool active;
@@ -102,6 +102,7 @@ void Free_gmtconvert_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/*
 	if (C->Out.file) free (C->Out.file);	
 	if (C->D.name) free (C->D.name);	
 	if (C->S.pattern) free (C->S.pattern);	
+	if (C->Q.active) GMT_free_selection (GMT, &C->Q.select);	
 	GMT_free (GMT, C);	
 }
 
@@ -109,7 +110,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l|m<stride>]] [-I[tsr]] [-L] [-N] [-Q<seg>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l|m<stride>]] [-I[tsr]] [-L] [-N] [-Q[~]<selection>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -137,7 +138,10 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Output only segment headers and skip all data records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requires ASCII input data [Output headers and data].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Skip records where all fields == NaN [Write all records].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only output segment number <seg> [All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only output specificed segment numbers in <selection> [All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <selection> syntax is [~]<range>[,<range>,...] where each <range> of items is\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   either a single number, start-stop (for range), or start:step:stop (for stepped range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   A leading ~ will invert the selection and write all segments but the ones listed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Only output segments whose headers contain the pattern \"string\".\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If your pattern begins with ~, escape it with \\~.\n");
@@ -223,9 +227,9 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 			case 'N':	/* Skip all-NaN records */
 				Ctrl->N.active = true;
 				break;
-			case 'Q':	/* Only report for specified segment number */
+			case 'Q':	/* Only report for specified segment numbers */
 				Ctrl->Q.active = true;
-				Ctrl->Q.seg = atol (opt->arg);
+				Ctrl->Q.select = GMT_set_selection (GMT, opt->arg);
 				break;
 			case 'S':	/* Segment header pattern search */
 				Ctrl->S.active = true;
@@ -385,7 +389,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* true if we matched */
 				if (Ctrl->S.inverse == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
-			if (Ctrl->Q.active && seg != Ctrl->Q.seg) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
+			if (Ctrl->Q.active && !GMT_get_selection (GMT, Ctrl->Q.select, seg)) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			if (D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode) continue;	/* No point copying values given segment content will be skipped */
 			n_out_seg++;	/* Number of segments that passed the test */
 			last_row = D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows - 1;

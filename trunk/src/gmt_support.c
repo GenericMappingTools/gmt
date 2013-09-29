@@ -10501,3 +10501,89 @@ int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int i
 	}
 	return (retval);
 }
+
+void GMT_free_selection (struct GMT_CTRL *GMT, struct GMT_SELECTION **S) {
+	/* Free the selection structure */
+	if (*S == NULL) return;	/* Nothing to free */
+	if ((*S)->item) GMT_free (GMT, (*S)->item);
+	GMT_free (GMT, *S);
+}
+
+bool GMT_get_selection (struct GMT_CTRL *GMT, struct GMT_SELECTION *S, uint64_t this) {
+	/* Return true if this item should be used */
+	if (S == NULL) return (false);	/* No selection criteria given, so can only return false */
+	while (S->current < S->n && S->item[S->current] < this) S->current++;	/* Advance internal counter */
+	if (S->current == S->n) return (S->invert);	/* Ran out, return true or false depending on initial setting */
+	else if (S->item[S->current] == this) return (!S->invert);	/* Found, return true or false depending on initial setting */
+	else return (S->invert);	/* Not found, return initial setting */
+}
+
+struct GMT_SELECTION * GMT_set_selection (struct GMT_CTRL *GMT, char *item) {
+	/* item is of the form [~]<range>[,<range>, <range>]
+	 * where each <range> can be
+	 * a) A single number [e.g., 8]
+	 * b) a range of numbers given as start-stop [e.g., 6-11]
+	 * c) A range generator start:step:stop [e.g., 13:2:19]
+	 * If ~ is given we return the inverse selection.
+	 * We return a pointer to struct GMT_SELECTION, which holds the info.
+	 */
+	unsigned int error = 0, pos = 0, k = 0;
+	uint64_t i, max_value = 0, value = 0, start = 0, stop = 0, step = 1, n = 0;
+	int ns = 0;
+	struct GMT_SELECTION *select = NULL;
+	char p[GMT_BUFSIZ] = {""}, *c = NULL;
+
+	if (!item || !item[0]) return (NULL);	/* Nothing to do */
+	if (item[0] == '~') k = 1;		/* We want the inverse selection */
+	/* Determine the largest item given or implied; use that for initial array allocation */
+	while ((GMT_strtok (&item[k], ",-:", &pos, p))) {	/* While it is not empty, process it */
+		value = atol (p);
+		if (value > max_value) max_value = value;
+	}
+	max_value++;	/* Since we start at 0, n is the n+1'th item in array */
+	select = GMT_memory (GMT, NULL, 1, struct GMT_SELECTION);	/* Allocate the selection structure */
+	select->item = GMT_memory (GMT, NULL, max_value, uint64_t);	/* Allocate the sized array */
+	if (k) select->invert = true;		/* Save that we want the inverse selection */
+	/* Here we have user-supplied selection information */
+	pos = 0;	/* Reset since strtok changed it */
+	while (!error && (GMT_strtok (&item[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
+		step = 1;	/* Reset step to 1 */
+		if ((c = strchr (p, '-')))	/* Range of items given. e.g., 7-9 */
+			sscanf (p, "%" PRIu64 "-%" PRIu64, &start, &stop);
+		else if ((c = strchr (p, ':'))) {	/* Range generator given. e.g., 7:2:19 */
+			ns = sscanf (p, "%" PRIu64 ":%" PRIu64 ":%" PRIu64, &start, &step, &stop);
+			if (ns == 2) {	/* Assume we got just start:stop with implied step = 1 */
+				stop = step;
+				step = 1;
+			}
+			else if (ns != 3)
+				error++;	/* Got something odd */
+		}
+		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3 */
+			start = stop = atol (p);
+		else {	/* Unable to decode */
+			error++;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse %s for range selection\n", p);
+		}
+		if (stop < start) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad range: start-stop or start:step:stop must yield monotonically increasing selections\n");
+			error++;
+		}
+		if (error) break;	/* No point going further */
+		
+		/* Now set the item numbers for this sub-range */
+		assert (stop < max_value);	/* Somehow we allocated too little */
+			
+		for (i = start; i <= stop; i += step, n++) select->item[n] = i;
+	}
+	if (error) {	/* Parsing error(s) */
+		GMT_free_selection (GMT, &select);
+		return (NULL);
+	}
+	/* Here we got something to return */
+	select->n = n;							/* Total number of items */
+	select->item = GMT_memory (GMT, select->item, n, uint64_t);	/* Trim back array size */
+	GMT_sort_array (GMT, select->item, n, GMT_ULONG);		/* Sort the selection */
+	
+	return (select);
+}
