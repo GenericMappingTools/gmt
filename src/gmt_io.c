@@ -1739,7 +1739,12 @@ void gmt_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, double geo, char 
 	bool minus;
 	char hemi[3] = {""}, *f = NULL;
 
-	if (!is_lat) GMT_lon_range_adjust (GMT->current.io.geo.range, &geo);
+	if (is_lat && fabs (geo) > 90.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column selected for latitude-formatting has values that exceed +/- 90; set to NaN\n");
+		sprintf (text, "NaN");
+		return;
+	}
+	else GMT_lon_range_adjust (GMT->current.io.geo.range, &geo);
 	if (GMT->current.io.geo.decimal) {	/* Easy */
 		f = (GMT->current.io.o_format[is_lat]) ? GMT->current.io.o_format[is_lat] : GMT->current.setting.format_float_out;
 		sprintf (text, f, geo);
