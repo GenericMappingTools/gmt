@@ -551,6 +551,9 @@ modes that are inside the given circle to 1 and those outside to 0:
 INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1
 inside circle
 
+Note: Because geographic or time constants may be present in a macro, it
+is required that the optional comment flag (:) must be followed by a space.
+
 Examples
 --------
 

@@ -9552,11 +9552,13 @@ unsigned int * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M)
 {
 	/* Load in any gmt/grdmath macros.  These records are of the format
-	 * MACRO = ARG1 ARG2 ... ARGN : comments on what they do */
+	 * MACRO = ARG1 ARG2 ... ARGN [ : comments on what they do]
+	 * The comments, if present, must be preceded by :<space> to distinguish
+	 * teh flag from any dd:mm:ss or hh:mm:ss constants used in the macro. */
 
 	unsigned int n = 0, k = 0, pos = 0;
 	size_t n_alloc = 0;
-	char line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""}, item[GMT_LEN64] = {""}, args[GMT_BUFSIZ] = {""};
+	char line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""}, item[GMT_LEN64] = {""}, args[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct MATH_MACRO *macro = NULL;
 	FILE *fp = NULL;
 
@@ -9570,7 +9572,10 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M)
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;
 		GMT_chop (line);
-		sscanf (line, "%s = %[^:]", name, args);
+		if ((c = strstr (line, ": ")))	/* This macro has comments */
+			c[0] = '\0';	/* Chop off comments */
+		GMT_strstrip (line, true);	/* Remove leading and trailing whitespace */
+		sscanf (line, "%s = %[^\0]", name, args);
 		if (n == n_alloc) macro = GMT_memory (GMT, macro, n_alloc += GMT_TINY_CHUNK, struct MATH_MACRO);
 		macro[n].name = strdup (name);
 		pos = 0;

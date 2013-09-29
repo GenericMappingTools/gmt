@@ -511,7 +511,7 @@ Users may save their favorite operator combinations as macros via the
 file *gmtmath.macros* in their current or user directory. The file may contain
 any number of macros (one per record); comment lines starting with # are
 skipped. The format for the macros is **name** = **arg1 arg2 ... arg2**
-: *comment* where **name** is how the macro will be used. When this
+[ : *comment*] where **name** is how the macro will be used. When this
 operator appears on the command line we simply replace it with the
 listed argument list. No macro may call another macro. As an example,
 the following macro expects that the time-column contains seafloor ages
@@ -519,6 +519,13 @@ in Myr and computes the predicted half-space bathymetry:
 
 **DEPTH** = **SQRT 350 MUL 2500 ADD NEG** : *usage: DEPTH to return
 half-space seafloor depths*
+
+Note: Because geographic or time constants may be present in a macro, it
+is required that the optional comment flag (:) must be followed by a space.
+As another example, we show a macro **GPSWEEK** which determines which GPS week
+a timestamp belongs to:
+
+**GPSWEEK** = 1980-01-06T00:00:00 SUB 86400 DIV 7 DIV FLOOR : GPS week without rollover
 
 Examples
 --------
