@@ -363,7 +363,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t       p<power>  x^power projection\n");
 			GMT_message (GMT, "\t       t         Calendar time projection using relative time coordinates\n");
 			GMT_message (GMT, "\t       T         Calendar time projection using absolute time coordinates\n");
-			GMT_message (GMT, "\t     Use / to specify separate x/y scaling (e.g., -Jx0.5c/0.3c).  Not allowed with 1:xxxxx.\n");
+			GMT_message (GMT, "\t     Use / to specify separate x/y scaling (e.g., -Jx0.5c/0.3c).  If 1:xxxxx is used it implies -R is in meters.\n");
 			GMT_message (GMT, "\t     If -JX is used then give axes lengths rather than scales.\n");
 			break;
 
@@ -7527,7 +7527,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 	int i, j, k, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
 	int n_slashes = 0, last_pos, error = 0;
 	unsigned int mod_flag = 0;
-	bool width_given = false, skip = false;
+	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char;
@@ -7592,7 +7592,6 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_UNKNOWN;
 
 			error += (n_slashes > 1) ? 1 : 0;
-			if (!strncmp (args, "1:", 2U)) k = 1;	/* Special check for linear proj with 1:xxx scale */
 
 			/* Find occurrences of /, l, p, t, or d */
 			for (j = 0, slash = 0; args[j] && slash == 0; j++) if (args[j] == '/') slash = j;
@@ -7602,11 +7601,6 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 				if (strchr ("Pp"  , (int)args[j])) p_pos[id] = j;
 				if (strchr ("Tt"  , (int)args[j])) t_pos[id] = j;
 				if (strchr ("DdGg", (int)args[j])) d_pos[id] = j;
-			}
-
-			if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
-				if (n_slashes) error++;	/* Cannot have 1:xxx separately for x/y */
-				if (l_pos[GMT_X] || l_pos[GMT_Y] || p_pos[GMT_X] || p_pos[GMT_Y] || t_pos[GMT_X] || t_pos[GMT_Y] || d_pos[GMT_X] || d_pos[GMT_Y]) error++;
 			}
 
 			/* Distinguish between p for points and p<power> for scaling */
@@ -7625,18 +7619,21 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 
 			strncpy (args_cp, args, GMT_BUFSIZ);	/* Since GMT_to_inch modifies the string */
 			if (slash) args_cp[slash] = 0;	/* Chop off y part */
+			k = (!strncmp (args_cp, "1:", 2U)) ? 1 : -1;	/* Special check for linear proj with 1:xxx scale */
+			if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
+				if (l_pos[GMT_X] || p_pos[GMT_X] || t_pos[GMT_X] || d_pos[GMT_X]) error++;
+			}
+			
 			if ((i = MAX (l_pos[GMT_X], p_pos[GMT_X])) > 0)
 				args_cp[i] = 0;	/* Chop off log or power part */
 			else if (t_pos[GMT_X] > 0)
 				args_cp[t_pos[GMT_X]] = 0;	/* Chop off time part */
 			else if (d_pos[GMT_X] > 0)	/* Chop of trailing 'd' */
 				args_cp[d_pos[GMT_X]] = 0;
-			if (!skip) {
-				if (k >= 0)	/* Scale entered as 1:mmmmm - this implies -R is in meters */
-					GMT->current.proj.pars[0] = GMT->session.u2u[GMT_M][GMT_INCH] / atof (&args_cp[2]);
-				else
-					GMT->current.proj.pars[0] = GMT_to_inch (GMT, args_cp);	/* x-scale */
-			}
+			if (k > 0)	/* Scale entered as 1:mmmmm - this implies -R is in meters */
+				GMT->current.proj.pars[0] = GMT->session.u2u[GMT_M][GMT_INCH] / atof (&args_cp[2]);
+			else
+				GMT->current.proj.pars[0] = GMT_to_inch (GMT, args_cp);	/* x-scale */
 			if (l_pos[GMT_X] > 0)
 				GMT->current.proj.xyz_projection[GMT_X] = GMT_LOG10;
 			else if (p_pos[GMT_X] > 0) {
@@ -7652,20 +7649,20 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 
 			if (slash) {	/* Separate y-scaling desired */
 				strncpy (args_cp, &args[slash+1], GMT_BUFSIZ);	/* Since GMT_to_inch modifies the string */
-				// k = (!strncmp (args_cp, "1:", 2U)) ? 1 : 0;	/* Special check for linear proj with separate 1:xxx scale for y-axis */
-				k = -1;	/* Hardwired since "slash not allowed with 1:xxxxx" */
+				k = (!strncmp (args_cp, "1:", 2U)) ? 1 : -1;	/* Special check for linear proj with separate 1:xxx scale for y-axis */
+				if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
+					if (l_pos[GMT_Y] || p_pos[GMT_Y] || t_pos[GMT_Y] || d_pos[GMT_Y]) error++;
+				}
 				if ((i = MAX (l_pos[GMT_Y], p_pos[GMT_Y])) > 0)
 					args_cp[i-slash-1] = 0;	/* Chop off log or power part */
 				else if (t_pos[GMT_Y] > 0)
 					args_cp[t_pos[GMT_Y]-slash-1] = 0;	/* Chop off log or power part */
 				else if (d_pos[GMT_Y] > 0)
 					args_cp[d_pos[GMT_Y]-slash-1] = 0;	/* Chop of trailing 'd' part */
-				if (!skip) {
-					if (k >= 0)	/* Scale entered as 1:mmmmm - this implies -R is in meters */
-						GMT->current.proj.pars[1] = GMT->session.u2u[GMT_M][GMT_INCH] / atof (&args_cp[2]);
-					else
-						GMT->current.proj.pars[1] = GMT_to_inch (GMT, args_cp);	/* y-scale */
-				}
+				if (k > 0)	/* Scale entered as 1:mmmmm - this implies -R is in meters */
+					GMT->current.proj.pars[1] = GMT->session.u2u[GMT_M][GMT_INCH] / atof (&args_cp[2]);
+				else
+					GMT->current.proj.pars[1] = GMT_to_inch (GMT, args_cp);	/* y-scale */
 
 				if (l_pos[GMT_Y] > 0)
 					GMT->current.proj.xyz_projection[GMT_Y] = GMT_LOG10;
@@ -7681,7 +7678,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			}
 			else {	/* Just copy x parameters */
 				GMT->current.proj.xyz_projection[GMT_Y] = GMT->current.proj.xyz_projection[GMT_X];
-				if (!skip) GMT->current.proj.pars[1] = GMT->current.proj.pars[0];
+				GMT->current.proj.pars[1] = GMT->current.proj.pars[0];
 				GMT->current.proj.pars[3] = GMT->current.proj.pars[2];
 				if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 			}
