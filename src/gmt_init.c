@@ -5803,7 +5803,7 @@ bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYST
 		time_system->unit = 'd';
 	}
 	else if (!strcmp (name, "jd")) {
-		strcpy (time_system->epoch, "-4713-11-25T12:00:00");
+		strcpy (time_system->epoch, "-4713-11-24T12:00:00");
 		time_system->unit = 'd';
 	}
 	else if (!strcmp (name, "mjd")) {
