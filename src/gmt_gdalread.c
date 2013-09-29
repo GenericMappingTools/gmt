@@ -164,7 +164,8 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		if( OSRImportFromProj4( hSRS, Ctrl->ProjectionRefPROJ4) == CE_None ) {
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt( hSRS, &pszPrettyWkt, false );
-			Ctrl->ProjectionRefWKT = pszPrettyWkt;
+			Ctrl->ProjectionRefWKT = strdup(pszPrettyWkt);
+			CPLFree(pszPrettyWkt);
 		}
 		else {
 			Ctrl->ProjectionRefWKT = NULL;
@@ -627,7 +628,7 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 		if (OSRImportFromWkt( hSRS, &pszProjection) == CE_None) {
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
-			Ctrl->ProjectionRefWKT = pszPrettyWkt;
+			Ctrl->ProjectionRefWKT = strdup(pszPrettyWkt);
 			CPLFree(pszPrettyWkt);
 		}
 		else
