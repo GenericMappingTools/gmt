@@ -39,4 +39,12 @@ struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dime
 	double factor;	/* Speed up by a factor of factor  */
 };
 
+/* Definition of structure used for holding information of items to be selected */
+struct GMT_SELECTION {	/* Used to hold array with items (0-n) that have been selected */
+	uint64_t *item;		/* Array with item numbers given (0 is first), sorted into ascending order */
+	uint64_t n;		/* Number of items */
+	uint64_t current;	/* Current item in item array */
+	bool invert;		/* Instead select the items NOT listed in item[] */
+};
+
 #endif /* _GMT_SUPPORT_H */
