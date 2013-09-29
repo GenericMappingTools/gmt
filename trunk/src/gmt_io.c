@@ -1662,7 +1662,7 @@ int gmt_x_write (struct GMT_CTRL *GMT, FILE *fp, off_t n)
 }
 
 int gmt_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr)
-{
+{	/* Return 0 if record was suppressed, otherwise number of items written */
 	int k;
 	uint64_t i, n_out, col_pos;
 	double val;
@@ -3190,8 +3190,10 @@ void * GMT_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 
 int GMT_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data)
 {
+	int err;
 	if (gmt_skip_output (GMT, data, n)) return (0);	/* Record was skipped via -s[a|r] */
-	return (GMT->current.io.write_item (GMT, fp, n, data));
+	err = GMT->current.io.write_item (GMT, fp, n, data);
+	return (err ? 0 : n);	/* Return 0 if failed, else n items written */
 }
 
 int GMT_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G)

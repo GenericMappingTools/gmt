@@ -4542,11 +4542,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			switch (mode) {
 				case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
 					s = (record) ? record : API->GMT->current.io.current_record;	/* Default to last input record if NULL */
-					GMT_write_tableheader (API->GMT, S_obj->fp, s);
+					GMT_write_tableheader (API->GMT, S_obj->fp, s);	error = 1;	/* Write one item */
 					break;
 				case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 					if (record) strncpy (API->GMT->current.io.segment_header, record, GMT_BUFSIZ);	/* Default to last segment record if NULL */
-					GMT_write_segmentheader (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT]);
+					GMT_write_segmentheader (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT]);	error = 1;	/* Write one item */
 					break;
 				case GMT_WRITE_DOUBLE:		/* Export either a formatted ASCII data record or a binary record */
 					if (API->GMT->common.b.ncol[GMT_OUT] == UINT_MAX) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
@@ -4554,10 +4554,10 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 					break;
 				case GMT_WRITE_TEXT:		/* Export the current text record; skip if binary */
 					s = (record) ? record : API->GMT->current.io.current_record;
-					GMT_write_textrecord (API->GMT, S_obj->fp, s);
+					GMT_write_textrecord (API->GMT, S_obj->fp, s);	error = 1;	/* Write one item */
 					break;
 				case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
-					GMT_write_newheaders (API->GMT, S_obj->fp, S_obj->n_columns);
+					GMT_write_newheaders (API->GMT, S_obj->fp, S_obj->n_columns);	error = 1;	/* Write one item */
 					break;
 				default:
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");
