@@ -65,16 +65,12 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	size_t n_alloc;
 	//int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	unsigned char *tmp = NULL;
-	double	tmpF64, adfMinMax[2];
+	double	adfMinMax[2];
 	double	dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
 	double	z_min = 1e50, z_max = -1e50;
 	GDALDatasetH	hDataset;
 	GDALRasterBandH	hBand;
 	GDALDriverH	hDriver;
-	GInt16	*tmpI16;
-	GUInt16	*tmpUI16;
-	GInt32	*tmpI32;
-	GUInt32	*tmpUI32;
 
 	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */
 	GMT_memset (anSrcWin, 4, int);
@@ -420,98 +416,58 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				break;
 			case GDT_Int16:
 				if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
-				tmpI16 = (GInt16 *)tmp; 
-				if (fliplr) {
-					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = nXSize-1; n >= 0; n--)
-							if (prhs->f_ptr.active)
-								Ctrl->Float.data[nn++] = tmpI16[rowVec[mm]+n];
-							else
-								Ctrl->Int16.data[nn++] = tmpI16[rowVec[mm]+n];
-					}
-				}
-				else {
-					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = 0; n < nXSize; n++)
-							if (prhs->f_ptr.active)
-								Ctrl->Float.data[nn++] = tmpI16[rowVec[mm]+n];
-							else
-								Ctrl->Int16.data[nn++] = tmpI16[rowVec[mm]+n];
-					}
+				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+					nn = (pad+m)*(nXSize_withPad) + startColPos;
+					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? --n : ++n)
+						if (prhs->f_ptr.active) {
+							int16_t tmpI16;
+							memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+							Ctrl->Float.data[nn++] = tmpI16;
+						}
+						else
+							memcpy (&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
 				}
 				break;
 			case GDT_UInt16:
 				if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
-				tmpUI16 = (GUInt16 *)tmp;
-				if (fliplr) {
-					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = nXSize-1; n >= 0; n--)
-							if (prhs->f_ptr.active)
-								Ctrl->Float.data[nn++]  = tmpUI16[rowVec[mm]+n];
-							else
-								Ctrl->UInt16.data[nn++] = tmpUI16[rowVec[mm]+n];
-					}
-				}
-				else {
-					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = 0; n < nXSize; n++)
-							if (prhs->f_ptr.active)
-								Ctrl->Float.data[nn++]  = tmpUI16[rowVec[mm]+n];
-							else
-								Ctrl->UInt16.data[nn++] = tmpUI16[rowVec[mm]+n];
-					}
+				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+					nn = (pad+m)*(nXSize_withPad) + startColPos;
+					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? --n : ++n)
+						if (prhs->f_ptr.active) {
+							uint16_t tmpUI16;
+							memcpy (&tmpUI16, &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
+							Ctrl->Float.data[nn++] = tmpUI16;
+						}
+						else
+							memcpy (&Ctrl->UInt16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
 				}
 				break;
 			case GDT_Int32:
 				if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
-				tmpI32 = (GInt32 *)tmp;
-				if (fliplr) {
-					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = nXSize-1; n >= 0; n--)
-							if (prhs->f_ptr.active)
-								Ctrl->Float.data[nn++]  = (float)tmpI32[rowVec[mm]+n];
-							else
-								Ctrl->Int32.data[nn++]  = tmpI32[rowVec[mm]+n];
-					}
-				}
-				else {
-					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = 0; n < nXSize; n++)
-							if (prhs->f_ptr.active)
-								Ctrl->Float.data[nn++]  = (float)tmpI32[rowVec[mm]+n];
-							else
-								Ctrl->Int32.data[nn++]  = tmpI32[rowVec[mm]+n];
-					}
+				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+					nn = (pad+m)*(nXSize_withPad) + startColPos;
+					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? --n : ++n)
+						if (prhs->f_ptr.active) {
+							int32_t tmpI32;
+							memcpy (&tmpI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
+							Ctrl->Float.data[nn++] = tmpI32;
+						}
+						else
+							memcpy (&Ctrl->Int32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
 				}
 				break;
 			case GDT_UInt32:
 				if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
-				tmpUI32 = (GUInt32 *)tmp;
-				if (fliplr) {
-					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = nXSize-1; n >= 0; n--)
-							if (prhs->f_ptr.active)
-								Ctrl->Float.data[nn++]  = (float)tmpUI32[rowVec[mm]+n];
-							else
-								Ctrl->UInt32.data[nn++]  = tmpUI32[rowVec[mm]+n];
-					}
-				}
-				else {
-					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = 0; n < nXSize; n++)
-							if (prhs->f_ptr.active)
-								Ctrl->Float.data[nn++]  = (float)tmpUI32[rowVec[mm]+n];
-							else
-								Ctrl->UInt32.data[nn++]  = tmpUI32[rowVec[mm]+n];
-					}
+				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+					nn = (pad+m)*(nXSize_withPad) + startColPos;
+					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? --n : ++n)
+						if (prhs->f_ptr.active) {
+							int32_t tmpUI32;
+							memcpy (&tmpUI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
+							Ctrl->Float.data[nn++] = tmpUI32;
+						}
+						else
+							memcpy (&Ctrl->UInt32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
 				}
 				break;
 			case GDT_Float32:
@@ -530,6 +486,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
 					for (n = 0; n < nXSize; n++) {
+						double tmpF64;
 						memcpy (&tmpF64,
 								&tmp[(rowVec[mm]+n) * sizeof(double)], sizeof(double));
 						Ctrl->Float.data[nn] = (float)tmpF64;
