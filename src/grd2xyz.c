@@ -211,7 +211,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 {
 	bool first = true;
 	unsigned int row, col, n_output;
-	int error = 0, write_error;
+	int error = 0, write_error = 0;
 	
 	uint64_t ij, gmt_ij, n_total = 0, n_suppressed = 0;
 
@@ -312,7 +312,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 				else if (Ctrl->N.active && Ctrl->N.inverse && d_value == Ctrl->N.value)
 					d_value = GMT->session.d_NaN;
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, &d_value);
-				if (write_error) n_suppressed++;	/* Bad value caught by -s[r] */
+				if (write_error == 0) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			GMT->current.io.output = save;			/* Reset pointer */
 			GMT->common.b.active[GMT_OUT] = previous;	/* Reset binary */
@@ -436,7 +436,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 						out[GMT_Z] = GMT->session.f_NaN;
 				}
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
-				if (write_error) n_suppressed++;	/* Bad value caught by -s[r] */
+				if (write_error == 0) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			GMT_free (GMT, x);
 			GMT_free (GMT, y);
