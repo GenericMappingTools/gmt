@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-09-28	remko
+	* gmt_init.c:		Moved origin of JD by one day (24 Nov instead of 25 Nov).
+	* ConfigUserTemplate.cmake:	Added option GMT_DOCS_DEPEND_ON_GMT
+
 2013-09-27	pwessel
 	* share/cpt:		Added 10 new CPTs, mostly for bathymetry and topography.
 

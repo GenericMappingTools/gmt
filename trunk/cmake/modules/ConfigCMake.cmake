@@ -212,4 +212,15 @@ if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel)" AND NOT CMAKE_C_FLAGS MATCHES "-st
 	set (CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
 endif ()
 
+# Handle the special developer option GMT_DOCS_DEPEND_ON_GMT
+# Normally this is ON.
+if (NOT DEFINED GMT_DOCS_DEPEND_ON_GMT)
+	set (GMT_DOCS_DEPEND_ON_GMT TRUE)
+endif (NOT DEFINED GMT_DOCS_DEPEND_ON_GMT)
+if (GMT_DOCS_DEPEND_ON_GMT)
+	add_custom_target (gmt_for_img_convert DEPENDS gmt)
+else (GMT_DOCS_DEPEND_ON_GMT)
+	add_custom_target (gmt_for_img_convert)
+endif (GMT_DOCS_DEPEND_ON_GMT)
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

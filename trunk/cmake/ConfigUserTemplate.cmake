@@ -172,6 +172,11 @@
 # [${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src]:
 #set (GMT_RELEASE_PREFIX "release-src-prefix")
 
+# If set to false, image conversion from PS images to PNG and PDF does
+# not depend on the gmt binary target. Note: "make gmt" is then required
+# before docs_depends [TRUE].
+#set (GMT_DOCS_DEPEND_ON_GMT FALSE)
+
 #
 # Debugging
 #
