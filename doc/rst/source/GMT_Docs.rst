@@ -908,6 +908,10 @@ correctly with a warning under compatibility mode:
 | **INTERPOLANT**          | **GMT_INTERPOLANT**        |
 +--------------------------+----------------------------+
 
+Note: While **TIME_LEAP_SECONDS** is a recognized keyword it is
+currently not implemented and has no effect.  We reserve the right
+to enable this feature in the future.
+
 Introduction
 ============
 
