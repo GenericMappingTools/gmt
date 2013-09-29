@@ -1168,6 +1168,11 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 			GMT_message (GMT, "\t   Swap 1st and 2nd column on input and/or output.\n");
 			break;
 
+		case '-':	/* --PAR=value  */
+			GMT_message (GMT, "\t--<PARAMETER>=<value>.\n");
+			GMT_message (GMT, "\t   See gmt.conf for list of parameters.\n");
+			break;
+
 		default:
 			break;
 	}
@@ -4419,6 +4424,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			break;
 	}
 
+	/* Store possible unit.  For most cases these are irrelevant as no unit is expected */
 	if (len) GMT->current.setting.given_unit[case_val] = value[len-1];
 
 	if (error && case_val >= 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
