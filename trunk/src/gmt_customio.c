@@ -1507,6 +1507,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
  *-----------------------------------------------------------*/
 
 int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+	int i;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
 
@@ -1546,6 +1547,12 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	GMT_free (GMT, to_gdalread);
 	if (from_gdalread->ColorMap) GMT_free (GMT, from_gdalread->ColorMap);
+	for (i = 0; i < from_gdalread->RasterCount; i++)
+		free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
+	if (from_gdalread->ProjectionRefPROJ4 != NULL)
+		free (from_gdalread->ProjectionRefPROJ4);
+	if (from_gdalread->ProjectionRefWKT != NULL)
+		free (from_gdalread->ProjectionRefWKT);
 	GMT_free (GMT, from_gdalread->band_field_names);
 	GMT_free (GMT, from_gdalread);
 
@@ -1702,6 +1709,10 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (from_gdalread->ColorMap) GMT_free (GMT, from_gdalread->ColorMap);
 	for (i = 0; i < (uint64_t)from_gdalread->RasterCount; i++)
 		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
+	if (from_gdalread->ProjectionRefPROJ4 != NULL)
+		free (from_gdalread->ProjectionRefPROJ4);
+	if (from_gdalread->ProjectionRefWKT != NULL)
+		free (from_gdalread->ProjectionRefWKT);
 	GMT_free (GMT, from_gdalread->band_field_names);
 	GMT_free (GMT, from_gdalread);
 
