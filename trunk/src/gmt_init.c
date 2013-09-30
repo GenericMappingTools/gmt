@@ -1103,7 +1103,9 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 
 		case 'R':	/* Region option */
 			GMT_message (GMT, "\t-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>]\n");
-			GMT_message (GMT, "\tAppend r if giving lower left and upper right coordinates\n");
+			GMT_message (GMT, "\t  Append r if giving lower left and upper right coordinates\n");
+			GMT_message (GMT, "\t-Rg or -Rd for global domain\n");
+			GMT_message (GMT, "\t-R<grdfile> to take the domain from a grid file\n");
 			break;
 
 		case 'U':	/* Set time stamp option */
