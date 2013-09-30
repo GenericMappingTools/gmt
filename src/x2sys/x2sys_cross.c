@@ -93,6 +93,7 @@ void *New_x2sys_cross_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 }
 
 void Free_x2sys_cross_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->A.file) free (C->A.file);
 	if (C->C.file) free (C->C.file);
 	if (C->T.TAG) free (C->T.TAG);

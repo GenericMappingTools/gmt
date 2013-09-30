@@ -121,6 +121,7 @@ void *New_pspolar_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_pspolar_Ctrl (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);
 }
 

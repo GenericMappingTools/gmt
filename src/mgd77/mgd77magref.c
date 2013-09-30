@@ -72,6 +72,7 @@ void *New_mgd77magref_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 }
 
 void Free_mgd77magref_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	free (C->CM4);
 	GMT_free (GMT, C);
 }

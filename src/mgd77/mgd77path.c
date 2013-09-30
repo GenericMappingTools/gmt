@@ -51,6 +51,7 @@ void *New_mgd77path_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 }
 
 void Free_mgd77path_Ctrl (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);	
 }
 

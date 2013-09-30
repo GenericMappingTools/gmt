@@ -142,6 +142,7 @@ void *New_mgd77track_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 }
 
 void Free_mgd77track_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);	
 }
 

@@ -125,6 +125,7 @@ void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_grdmath_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->Out.file) free (C->Out.file);	
 	GMT_free (GMT, C);
 }

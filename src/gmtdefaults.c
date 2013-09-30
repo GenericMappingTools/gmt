@@ -50,6 +50,7 @@ void *New_gmtdefaults_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 }
 
 void Free_gmtdefaults_Ctrl (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);	
 }
 

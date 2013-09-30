@@ -70,6 +70,7 @@ void *New_grd2xyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_grd2xyz_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);	
 }
 

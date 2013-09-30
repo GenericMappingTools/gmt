@@ -108,6 +108,7 @@ void *New_fitcircle_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 }
 
 void Free_fitcircle_Ctrl (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);	
 }
 

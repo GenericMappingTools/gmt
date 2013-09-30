@@ -78,6 +78,7 @@ void *New_grdinfo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_grdinfo_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);
 }
 

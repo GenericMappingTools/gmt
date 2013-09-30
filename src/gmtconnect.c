@@ -104,6 +104,7 @@ void *New_gmtconnect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 }
 
 void Free_gmtconnect_Ctrl (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->Out.file) free (C->Out.file);
 	if (C->C.file) free (C->C.file);
 	if (C->D.format) free (C->D.format);

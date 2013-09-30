@@ -121,6 +121,7 @@ void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 }
 
 void Free_mgd77manage_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->A.file) free (C->A.file);	
 	if (C->D.file) free (C->D.file);	
 	GMT_free (GMT, C);	

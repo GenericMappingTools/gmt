@@ -91,6 +91,7 @@ void *New_x2sys_init_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 }
 
 void Free_x2sys_init_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->In.TAG) free (C->In.TAG);
 	if (C->C.string) free (C->C.string);
 	if (C->D.file) free (C->D.file);

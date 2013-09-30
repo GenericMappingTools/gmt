@@ -409,6 +409,7 @@ void *New_trend2d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_trend2d_Ctrl (struct GMT_CTRL *GMT, struct TREND2D_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);	
 }
 
