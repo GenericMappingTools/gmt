@@ -289,14 +289,14 @@ static inline void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, vo
 
 static inline void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, void *ptr) {
 	/* Called from GMT_free to remove memory pointer */
-	struct MEMORY_ITEM *entry = NULL;
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
+	struct MEMORY_ITEM *entry = gmt_treefind (&M->root, ptr);
 
-	entry = gmt_treefind (&M->root, ptr);
+	M->n_freed++; /* Increment first to also count multiple frees on same address */
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
 		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
 		if (M->do_log)
-			fprintf (M->fp, "!!!: 0x%zx ---------- %7.0lf %s\n", (size_t)ptr, M->current / 1024.0, GMT->init.module_name);
+			fprintf (M->fp, "!!!: 0x%zx ---------- %7.0lf %s @%s\n", (size_t)ptr, M->current / 1024.0, GMT->init.module_name, where);
 		return;
 	}
 	if (entry->size > M->current) {
@@ -309,7 +309,6 @@ static inline void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, vo
 		fprintf (M->fp, "DEL: 0x%zx %10" PRIuS " %7.0lf %s %s\n", (size_t)entry->ptr, entry->size, M->current / 1024.0, GMT->init.module_name, entry->name);
 	M->root = gmt_treedelete (entry, entry->ptr);
 	M->n_ptr--;
-	M->n_freed++;
 }
 
 static inline void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) {
@@ -334,14 +333,18 @@ static inline void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *t) {
 void GMT_memtrack_report (struct GMT_CTRL *GMT) {
 	/* Called at end of GMT_end() */
 	unsigned int u, level;
-	uint64_t excess;
+	uint64_t excess = 0, n_multi_frees = 0;
 	double size;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 
 	if (!M->active) return;	/* Not activated */
-	excess = M->n_allocated - M->n_freed;
-	level = (excess) ? GMT_MSG_NORMAL : GMT_MSG_VERBOSE;	/* Only insist on reporting if a leak, otherwise requires -V */
+	if (M->n_allocated > M->n_freed)
+		excess = M->n_allocated - M->n_freed;
+	else if (M->n_freed > M->n_allocated)
+		n_multi_frees = M->n_freed - M->n_allocated;
+	/* Only insist on report if a leak or multi free, otherwise requires -V: */
+	level = (excess || n_multi_frees) ? GMT_MSG_NORMAL : GMT_MSG_VERBOSE;
 	size = gmt_memtrack_mem (GMT, M->maximum, &u);
 	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n",
 							size, unit[u], M->maximum);
@@ -365,10 +368,16 @@ void GMT_memtrack_report (struct GMT_CTRL *GMT) {
 	if (M->do_log)
 		fprintf (M->fp, "# Items allocated: %" PRIu64 " reallocated: %" PRIu64 " freed: %"
 						 PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
-	if (excess) {
-		GMT_Report (GMT->parent, level, "Items not properly freed: %" PRIu64 "\n", excess);
+	if (M->n_freed > M->n_allocated) {
+		uint64_t n_multi_frees = M->n_freed - M->n_allocated;
+		GMT_Report (GMT->parent, level, "Items FREED MULTIPLE TIMES: %" PRIu64 "\n", n_multi_frees);
 		if (M->do_log)
-			fprintf (M->fp, "# Items not properly freed: %" PRIu64 "\n", excess);
+			fprintf (M->fp, "# Items FREED MULTIPLE TIMES: %" PRIu64 "\n", n_multi_frees);
+	}
+	if (excess) {
+		GMT_Report (GMT->parent, level, "Items NOT PROPERLY FREED: %" PRIu64 "\n", excess);
+		if (M->do_log)
+			fprintf (M->fp, "# Items NOT PROPERLY FREED: %" PRIu64 "\n", excess);
 	}
 	gmt_treeprint (GMT, M->root);
 	gmt_treedestroy (&M->root); /* Remove remaining items from tree if any */
