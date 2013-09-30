@@ -1343,6 +1343,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	char buffer[GMT_BUFSIZ] = {""}, in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""};
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call GMT_rectR_to_geoR to convert projected -R to geo -R\n");
 	if (GMT_is_dnan (GMT->current.proj.lon0)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Central meridian is not known; cannot convert -R<unit>... to geographic corners\n");
 		return (GMT_MAP_NO_PROJECTION);
