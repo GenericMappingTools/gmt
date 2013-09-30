@@ -120,6 +120,9 @@ void *New_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 
 void Free_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	if (C->In.file[0]) free (C->In.file[0]);
+	if (C->In.file[1]) free (C->In.file[1]);
+	if (C->F.file) free (C->F.file);
 	if (C->G.file) free (C->G.file);
 	GMT_free (GMT, C);
 }

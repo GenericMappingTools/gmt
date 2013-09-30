@@ -638,8 +638,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	int add, error = 0;
 	bool two_only = false, make_plot, skip = false, is_closed, skip_points, skip_triangles;
 	
-	unsigned int pscontour_sum, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
-	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped = 0, n_out;
+	unsigned int pscontour_sum, m, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
+	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped, n_out;
 	unsigned int i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
 	
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
@@ -783,6 +783,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
 		uint64_t seg, row, col;
+		double d_n = (double)n - 0.5;	/* So we can use > in test near line 806 */
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_DATATABLE *T = NULL;
 
@@ -800,15 +801,21 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		T = Tin->table[0];	/* Since we only have one table here */
 		np = T->n_records;
 		ind = GMT_memory (GMT, NULL, 3 * np, int);	/* Allocate the integer index array */
-		for (seg = ij = 0; seg < T->n_segments; seg++) {
-			for (row = 0; row < T->segment[seg]->n_rows; row++, ij++) {
-				for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->coord[col][row]);
+		for (seg = ij = n_skipped = 0; seg < T->n_segments; seg++) {
+			for (row = 0; row < T->segment[seg]->n_rows; row++) {
+				if (T->segment[seg]->coord[0][row] > d_n || T->segment[seg]->coord[1][row] > d_n || T->segment[seg]->coord[2][row] > d_n)
+					n_skipped++;	/* Outside point range */
+				else {
+					for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->coord[col][row]);
+				}
 			}
 		}
+		np = ij / 3;	/* The actual number of vertices passing the test */
 		if (GMT_Destroy_Data (API, &Tin) != GMT_OK) {
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read %d indices triplets from %s.\n", np, Ctrl->Q.file);
+		if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "Found %d indices triplets exceeding range of known vertices - skipped.\n", n_skipped);
 	}
 	else {	/* Do our own Delaunay triangulation */
 		np = GMT_delaunay (GMT, x, y, n, &ind);
@@ -822,7 +829,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	/* Determine if some triangles are outside the region and should be removed entirely */
 	
 	if (skip_triangles) {	/* Must check if triangles are outside plot region */
-		for (k = i = 0; i < np; i++) {	/* For all triangles */
+		for (k = i = n_skipped = 0; i < np; i++) {	/* For all triangles */
 			k2 = (unsigned int)k;
 			for (k3 = n_out = 0; k3 < 3; k3++, k++) {
 				if (GMT_cart_outside (GMT, x[ind[k]], y[ind[k]])) n_out++;	/* Count how many vertices are outside */
@@ -1061,7 +1068,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				if (node1 == low) {	/* Contour and low node make up a triangle */
 					xout[1] = xc[0];	yout[1] = yc[0];
 					xout[2] = xc[1];	yout[2] = yc[1];
-					n = 3;
+					m = 3;
 				}
 				else {	/* Need the other two vertices to form a 4-sided polygon */
 					node2 = get_other_node (node1, low);	/* The other node needed */
@@ -1074,47 +1081,47 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 						xout[2] = xc[0];	yout[2] = yc[0];
 						xout[3] = xc[1];	yout[3] = yc[1];
 					}
-					n = 4;
+					m = 4;
 				}
-				paint_it_pscontour (GMT, PSL, P, xout, yout, n, 0.5 * (zz[low] + zc[1]));	/* z is contour value */
+				paint_it_pscontour (GMT, PSL, P, xout, yout, m, 0.5 * (zz[low] + zc[1]));	/* z is contour value */
 
 				/* Then loop over contours and paint the part between contours */
 
 				for (k = 1, k2 = 2, k3 = 3; k < nx; k++, k2 += 2, k3 += 2) {
 					xout[0] = xc[k2-2];	yout[0] = yc[k2-2];
 					xout[1] = xc[k3-2];	yout[1] = yc[k3-2];
-					n = 2;
+					m = 2;
 					last_entry = vert[k2-2];
 					last_exit  = vert[k3-2];
 					if (last_exit == vert[k2]) {
-						xout[n] = xc[k2];	yout[n] = yc[k2];	n++;
-						xout[n] = xc[k3];	yout[n] = yc[k3];	n++;
+						xout[m] = xc[k2];	yout[m] = yc[k2];	m++;
+						xout[m] = xc[k3];	yout[m] = yc[k3];	m++;
 						if (vert[k3] != last_entry) {	/* Need to add an intervening corner */
 							node1 = get_node_index (last_entry, vert[k3]);	/* Find corner id */
-							xout[n] = xx[node1];	yout[n] = yy[node1];	n++;
+							xout[m] = xx[node1];	yout[m] = yy[node1];	m++;
 						}
 					}
 					else if (last_exit == vert[k3]) {
-						xout[n] = xc[k3];	yout[n] = yc[k3];	n++;
-						xout[n] = xc[k2];	yout[n] = yc[k2];	n++;
+						xout[m] = xc[k3];	yout[m] = yc[k3];	m++;
+						xout[m] = xc[k2];	yout[m] = yc[k2];	m++;
 						if (vert[k2] != last_entry) {	/* Need to add an intervening corner */
 							node1 = get_node_index (last_entry, vert[k2]);	/* Find corner id */
-							xout[n] = xx[node1];	yout[n] = yy[node1];	n++;
+							xout[m] = xx[node1];	yout[m] = yy[node1];	m++;
 						}
 					}
 					else if (last_entry == vert[k2]) {
 						node1 = get_node_index (last_exit, vert[k3]);	/* Find corner id */
-						xout[n] = xx[node1];	yout[n] = yy[node1];	n++;
-						xout[n] = xc[k3];	yout[n] = yc[k3];	n++;
-						xout[n] = xc[k2];	yout[n] = yc[k2];	n++;
+						xout[m] = xx[node1];	yout[m] = yy[node1];	m++;
+						xout[m] = xc[k3];	yout[m] = yc[k3];	m++;
+						xout[m] = xc[k2];	yout[m] = yc[k2];	m++;
 					}
 					else {
 						node1 = get_node_index (last_exit, vert[k2]);	/* Find corner id */
-						xout[n] = xx[node1];	yout[n] = yy[node1];	n++;
-						xout[n] = xc[k2];	yout[n] = yc[k2];	n++;
-						xout[n] = xc[k3];	yout[n] = yc[k3];	n++;
+						xout[m] = xx[node1];	yout[m] = yy[node1];	m++;
+						xout[m] = xc[k2];	yout[m] = yc[k2];	m++;
+						xout[m] = xc[k3];	yout[m] = yc[k3];	m++;
 					}
-					paint_it_pscontour (GMT, PSL, P, xout, yout, n, 0.5 * (zc[k2]+zc[k2-2]));
+					paint_it_pscontour (GMT, PSL, P, xout, yout, m, 0.5 * (zc[k2]+zc[k2-2]));
 				}
 
 				/* Add the last piece between last contour and high node */
@@ -1125,7 +1132,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				if (node1 == high) {	/* Cut off a triangular piece */
 					xout[1] = xc[k2];	yout[1] = yc[k2];
 					xout[2] = xc[k3];	yout[2] = yc[k3];
-					n = 3;
+					m = 3;
 				}
 				else {	/* Need a 4-sided polygon */
 					node2 = get_other_node (node1, high);	/* The other node needed */
@@ -1138,26 +1145,26 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 						xout[2] = xc[k2];	yout[2] = yc[k2];
 						xout[3] = xc[k3];	yout[3] = yc[k3];
 					}
-					n = 4;
+					m = 4;
 				}
-				paint_it_pscontour (GMT, PSL, P, xout, yout, n, 0.5 * (zz[high] + zc[k2]));	/* z is contour value */
+				paint_it_pscontour (GMT, PSL, P, xout, yout, m, 0.5 * (zz[high] + zc[k2]));	/* z is contour value */
 			}
 		}
 
 		if (Ctrl->W.active && nx > 0) {	/* Save contour line segments L for later */
 			for (k = k2 = 0; k < nx; k++) {
 				c = cind[k];
-				n = cont[c].nl;
-				cont[c].L[n].x0 = xc[k2];
-				cont[c].L[n].y0 = yc[k2++];
-				cont[c].L[n].x1 = xc[k2];
-				cont[c].L[n].y1 = yc[k2++];
-				n++;
-				if (n >= cont[c].n_alloc) {
+				m = cont[c].nl;
+				cont[c].L[m].x0 = xc[k2];
+				cont[c].L[m].y0 = yc[k2++];
+				cont[c].L[m].x1 = xc[k2];
+				cont[c].L[m].y1 = yc[k2++];
+				m++;
+				if (m >= cont[c].n_alloc) {
 					cont[c].n_alloc <<= 1;
 					cont[c].L = GMT_memory (GMT, cont[c].L, cont[c].n_alloc, struct PSCONTOUR_LINE);
 				}
-				cont[c].nl = n;
+				cont[c].nl = m;
 			}
 		}
 
@@ -1268,12 +1275,12 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				yp = GMT_memory (GMT, NULL, GMT_SMALL_CHUNK, double);
 				n_alloc = GMT_SMALL_CHUNK;
 				p = this_c->begin;
-				n = 0;
+				m = 0;
 				while (p) {	/* More points to add */
-					xp[n] = p->x;	yp[n++] = p->y;
+					xp[m] = p->x;	yp[m++] = p->y;
 					q = p;		p = p->next;
 					GMT_free (GMT, q);	/* Free linked list as we go along */
-					if (n == n_alloc) {
+					if (m == n_alloc) {
 						n_alloc <<= 1;
 						xp = GMT_memory (GMT, xp, n_alloc, double);
 						yp = GMT_memory (GMT, yp, n_alloc, double);
@@ -1283,7 +1290,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				this_c = this_c->next;
 				GMT_free (GMT, last_c);	/* Free last item */
 
-				is_closed = !GMT_polygon_is_open (GMT, xp, yp, n);
+				is_closed = !GMT_polygon_is_open (GMT, xp, yp, m);
 
 				if (current_contour != cont[c].val) {
 					if (make_plot) {
@@ -1308,10 +1315,10 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 					unsigned int closed;
 					double *xtmp = NULL, *ytmp = NULL;
 					/* Must first apply inverse map transform */
-					xtmp = GMT_memory (GMT, NULL, n, double);
-					ytmp = GMT_memory (GMT, NULL, n, double);
-					for (count = 0; count < n; count++) GMT_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
-					S = GMT_dump_contour (GMT, xtmp, ytmp, n, cont[c].val);
+					xtmp = GMT_memory (GMT, NULL, m, double);
+					ytmp = GMT_memory (GMT, NULL, m, double);
+					for (count = 0; count < m; count++) GMT_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
+					S = GMT_dump_contour (GMT, xtmp, ytmp, m, cont[c].val);
 					/* Select which table this segment should be added to */
 					closed = (is_closed) ? 1 : 0;
 					tbl = (io_mode == GMT_WRITE_TABLE) ? ((two_only) ? closed : tbl_scl * c) : 0;
@@ -1322,7 +1329,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 					}
 					D->table[tbl]->segment[n_seg[tbl]++] = S;
 					D->table[tbl]->n_segments++;	D->n_segments++;
-					D->table[tbl]->n_records += n;	D->n_records += n;
+					D->table[tbl]->n_records += m;	D->n_records += m;
 					/* Generate a file name and increment cont_counts, if relevant */
 					if (io_mode == GMT_WRITE_TABLE && !D->table[tbl]->file[GMT_OUT])
 						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
@@ -1337,16 +1344,16 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 						if (n_save == n_save_alloc) save = GMT_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
 						n_alloc = 0;
 						GMT_memset (&save[n_save], 1, struct SAVE);
-						GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n, &n_alloc, double);
-						GMT_memcpy (save[n_save].x, xp, n, double);
-						GMT_memcpy (save[n_save].y, yp, n, double);
-						save[n_save].n = n;
+						GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, m, &n_alloc, double);
+						GMT_memcpy (save[n_save].x, xp, m, double);
+						GMT_memcpy (save[n_save].y, yp, m, double);
+						save[n_save].n = m;
 						GMT_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
 						save[n_save].do_it = true;
 						save[n_save].cval = cont[c].val;
 						n_save++;
 					}
-					GMT_hold_contour (GMT, &xp, &yp, n, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, &Ctrl->contour);
+					GMT_hold_contour (GMT, &xp, &yp, m, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, &Ctrl->contour);
 				}
 
 				GMT_free (GMT, xp);
