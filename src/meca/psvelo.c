@@ -186,6 +186,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 			case 'A':	/* Change size of arrow head */
 				got_A = true;
 				if (GMT_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -A<awidth>/<alength>/<hwidth>; use -A<vecpar> instead.\n");
 					sscanf (opt->arg, "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 					Ctrl->A.S.v.pen.width = GMT_to_points (GMT, txt);
 					Ctrl->A.S.v.h_length = (float)GMT_to_inch (GMT, txt_b);
