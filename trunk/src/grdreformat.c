@@ -52,6 +52,7 @@ void *New_grdreformat_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 }
 
 void Free_grdreformat_Ctrl (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->IO.file[0]) free (C->IO.file[0]);	
 	if (C->IO.file[1]) free (C->IO.file[1]);	
 	GMT_free (GMT, C);	

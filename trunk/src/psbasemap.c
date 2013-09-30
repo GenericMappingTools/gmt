@@ -65,6 +65,7 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 }
 
 void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	GMT_free (GMT, C);
 }
 

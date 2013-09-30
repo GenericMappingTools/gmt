@@ -157,6 +157,7 @@ void *New_gmt2kml_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->C.file) free (C->C.file);
 	if (C->D.file) free (C->D.file);
 	if (C->I.file) free (C->I.file);

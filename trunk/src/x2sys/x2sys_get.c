@@ -79,6 +79,7 @@ void *New_x2sys_get_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 }
 
 void Free_x2sys_get_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->F.flags) free (C->F.flags);
 	if (C->L.file) free (C->L.file);
 	if (C->N.flags) free (C->N.flags);

@@ -78,6 +78,7 @@ void *New_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 }
 
 void Free_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;
 	if (C->F.flags) free (C->F.flags);
 	if (C->I.file) free (C->I.file);
 	if (C->L.file) free (C->L.file);
