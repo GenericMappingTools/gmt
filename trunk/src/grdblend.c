@@ -789,6 +789,8 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 
 	for (k = 0; k < n_blend; k++) if (blend[k].open) {
 		GMT_free (GMT, blend[k].z);
+		GMT_free (GMT, blend[k].RbR);
+		if (blend[k].delete) remove (blend[k].file);	/* Delete the temporary resampled file */
 		if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_OK) Return (error);
 	}
 

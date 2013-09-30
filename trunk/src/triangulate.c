@@ -525,7 +525,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);
 	if (triplets[GMT_IN]) GMT_free (GMT, zz);
-	if (!Ctrl->Q.active) GMT_free (GMT, link);
+	if (!Ctrl->Q.active) GMT_delaunay_free (GMT, &link);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
