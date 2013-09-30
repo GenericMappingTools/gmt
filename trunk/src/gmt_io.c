@@ -1739,12 +1739,14 @@ void gmt_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, double geo, char 
 	bool minus;
 	char hemi[3] = {""}, *f = NULL;
 
-	if (is_lat && fabs (geo) > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column selected for latitude-formatting has values that exceed +/- 90; set to NaN\n");
-		sprintf (text, "NaN");
-		return;
+	if (is_lat) {	/* Column is supposedly latitudes */
+		if (fabs (geo) > 90.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column selected for latitude-formatting has values that exceed +/- 90; set to NaN\n");
+			sprintf (text, "NaN");
+			return;
+		}
 	}
-	else GMT_lon_range_adjust (GMT->current.io.geo.range, &geo);
+	else GMT_lon_range_adjust (GMT->current.io.geo.range, &geo);	/* Adjust longitudes */
 	if (GMT->current.io.geo.decimal) {	/* Easy */
 		f = (GMT->current.io.o_format[is_lat]) ? GMT->current.io.o_format[is_lat] : GMT->current.setting.format_float_out;
 		sprintf (text, f, geo);
@@ -5886,11 +5888,13 @@ void GMT_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64
 	}
 	else {	/* Small segments, allocate and memcpy, leave tmp array as is for further use */
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
-			S->coord[col] = GMT_memory (GMT, NULL, n_rows, double);
+			//S->coord[col] = GMT_memory (GMT, NULL, n_rows, double);
+			S->coord[col] = GMT_memory (GMT, S->coord[col], n_rows, double);
 			GMT_memcpy (S->coord[col], GMT->hidden.mem_coord[col], n_rows, double);
 		}
 	}
 	S->n_rows = n_rows;
+	S->n_columns = n_columns;
 }
 
 double *GMT_assign_vector (struct GMT_CTRL *GMT, uint64_t n_rows, uint64_t col)

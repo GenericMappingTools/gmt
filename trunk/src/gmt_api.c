@@ -1336,8 +1336,8 @@ int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int d
 
 	item = s_item;
 	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Unregistering object no %d\n", API->object[item]->ID);
- 	if (API->object[item]->data) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO:Oobject no %d has non-NULL data pointer\n", API->object[item]->ID);
- 	if (API->object[item]->resource) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO:Oobject no %d has non-NULL resource pointer\n", API->object[item]->ID);
+ 	if (API->object[item]->data) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Object no %d has non-NULL data pointer\n", API->object[item]->ID);
+ 	if (API->object[item]->resource) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Object no %d has non-NULL resource pointer\n", API->object[item]->ID);
 
 	if (API->object[item]->method == GMT_IS_FILE && API->object[item]->filename) free (API->object[item]->filename);	/* Free any strdup-allocated filenames */
 	GMT_free (API->GMT, API->object[item]);		/* Free the current data object */
