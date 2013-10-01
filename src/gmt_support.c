@@ -5879,6 +5879,8 @@ uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in,
 	*y_out = y_edge;	/* List of x-coordinates for all edges */
 
 	if (Out.pointlist) free (Out.pointlist);
+	if (Out.trianglelist) free (Out.trianglelist);
+	if (vorOut.pointattributelist) free (vorOut.pointattributelist);
 	if (vorOut.pointlist) free (vorOut.pointlist);
 	if (vorOut.edgelist) free (vorOut.edgelist);
 	if (vorOut.normlist) free (vorOut.normlist);
@@ -5915,7 +5917,7 @@ uint64_t gmt_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, 
 	/* pointer to List of point ids per triangle.  Vertices for triangle no i
 	   is in link[i*3], link[i*3+1], link[i*3+2] */
 {
-	int *index = NULL;	/* Must be int not int */
+	int *index = NULL;	/* Must be int not uint64_t */
 	int ix[3], iy[3];
 	bool done;
 	uint64_t i, j, nuc, ij, jt, km, id, isp, l1, l2, k, k1, jz, i2, kmt, kt, size;
