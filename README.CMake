@@ -106,9 +106,10 @@ Documentation:
 
 The GMT manual is available in different formats and can be generated with:
 
-  $ make -jx docs_man  # UNIX manual pages
-  $ make -jx docs_html # HTML manual, cookbook, and API reference
-  $ make -jx docs_pdf  # PDF manual, cookbook, and API reference
+  $ make -jx docs_man        # UNIX manual pages
+  $ make -jx docs_html       # HTML manual, cookbook, and API reference
+  $ make -jx docs_pdf        # PDF manual, cookbook, and API reference
+  $ make -jx docs_pdf_shrink # Like docs_pdf but with reduced size
 
 To generate the documentation you need to install the Sphinx documentation
 builder, and for PDFs you also need LaTeX.  You can choose to install the
@@ -158,7 +159,8 @@ Packaging:
 
 Currently, packaging with CPack works on MacOSX (Bundle, TGZ, TBZ2),
 Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install NSIS
-(http://nsis.sourceforge.net/). After building GMT run either one of these:
+(http://nsis.sourceforge.net/). After building GMT and the documentation run
+either one of these:
 
   $ make package
   $ cpack -G <TGZ|TBZ2|Bundle|ZIP|NSIS>
@@ -168,11 +170,8 @@ Creating a source package:
 
 Set GMT_RELEASE_PREFIX in cmake/ConfigUser.cmake and run cmake. Then do
 
-  $ make -jx           # make executables (parallel build)
-  $ make -jx docs_man  # UNIX manual pages
-  $ make -jx docs_html # HTML manual, cookbook, and API reference
-  $ make -jx docs_pdf  # PDF manual, cookbook, and API reference
-  $ make gmt_release   # export the source tree and install doc
+  $ make -jx docs_depends # optional but increases speed (parallel build)
+  $ make gmt_release      # export the source tree and install doc
 
 You should then edit ${GMT_RELEASE_PREFIX}/cmake/ConfigDefault.cmake and
 set GMT_PACKAGE_VERSION_MAJOR, GMT_PACKAGE_VERSION_MINOR, and
