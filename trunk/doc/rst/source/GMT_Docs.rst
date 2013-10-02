@@ -1126,7 +1126,7 @@ listing sorted by program purpose, see Section `GMT quick reference`_.
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`fitcircle`      | Finds the best-fitting great or small circle for a set of points    |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`gmt2kml`        | Like  **psxy** but plots KML for use in Google Earth                |
+| :doc:`gmt2kml`        | Like :doc:`psxy` but plots KML for use in Google Earth              |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtconnect`     | Connect segments into more complete lines or polygons               |
 +-----------------------+---------------------------------------------------------------------+
@@ -1404,7 +1404,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
 +=======================+=====================================================================+
-| :doc:`gmt2kml`        | Like  **psxy** but plots KML for use in Google Earth                |
+| :doc:`gmt2kml`        | Like :doc:`psxy` but plots KML for use in Google Earth              |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtconnect`     | Connect segments into more complete lines or polygons               |
 +-----------------------+---------------------------------------------------------------------+
@@ -8766,35 +8766,36 @@ We encourage all *GMT* users to start using version 5 immediately; it
 has been tested extensively by the *GMT* team and has benefitted from
 bug reports for the 4.5.x versions. Users who still worry about the new
 version breaking things may install *GMT* 4.5.x versions and 5.x and use
-our utility **gmtswitch** to select their current version should the
-need to switch arises. You will find **gmtswitch** among the other
+our utility :doc:`gmtswitch` to select their current version should the
+need to switch arises. You will find :doc:`gmtswitch` among the other
 executables; initialize it as explained below.
 
 Because *GMT* 5.x is backwards compatible with the 4.5.x series
 (provided you configured it that way) yet maintains its parameters and
-history in separate files (e.g. ``.gmtdefaults4``, versus ``gmt.conf``) it is possible to install and
+history in separate files (e.g. ``.gmtdefaults4``, versus ``gmt.conf``)
+it is possible to install and
 use both versions on the same workstation. To simplify such setups we
-supply the utility **gmtswitch** which simplifies switching back and
+supply the utility :doc:`gmtswitch` which simplifies switching back and
 forth between any number of installed *GMT* 4-versions and *GMT* 5.x.
-Run **gmtswitch** after you have finished installing all
-*GMT* versions of interest. The first time you run **gmtswitch** it
+Run :doc:`gmtswitch` after you have finished installing all
+*GMT* versions of interest. The first time you run :doc:`gmtswitch` it
 will try to find all the available versions installed on your file
 system. The versions found will be listed in the file ``.gmtversions`` in your home
 directory; each line is the full path to a *GMT* root directory (e.g.,
 /usr/local/GMT4.5.9). You may manually add or remove entries there at
 any time. You are then instructed to make two changes to your
-environment (the details are shell-dependent but explained by **gmtswitch**):
+environment (the details are shell-dependent but explained by :doc:`gmtswitch`):
 
-#. **gmtswitch** creates and maintains a symbolic link ``this_gmt`` in your home
+#. :doc:`gmtswitch` creates and maintains a symbolic link ``this_gmt`` in your home
    directory that will point to a directory with one of the installed
    GMT versions.
 
 #. Make sure **$HOME**/this_gmt/bin is in your executable **PATH**.
 
 Make those edits, logout, and log and back in again. The next time you
-run **gmtswitch** you will be able to switch between versions. Typing
-**gmtswitch** with no argument will list the available versions in a
-numerical menu and prompt you to choose one, whereas **gmtswitch**
+run :doc:`gmtswitch` you will be able to switch between versions. Typing
+:doc:`gmtswitch` with no argument will list the available versions in a
+numerical menu and prompt you to choose one, whereas :doc:`gmtswitch`
 *version* will immediately switch to that version (*version* must be a
 piece of unique text making up the full path to a version, e.g., 4.5.9).
 If you use **tcsh** or **csh** you may have to type "rehash" to
