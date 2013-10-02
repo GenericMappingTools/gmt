@@ -42,6 +42,11 @@ double GMT_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T)
 #define N_FAVOR_IMAGE	1
 #define N_FAVOR_POLY	2
 
+#ifdef DEBUG
+bool dump = false;
+double dump_int_val;
+#endif
+
 /* Control structure for psscale */
 
 struct PSSCALE_CTRL {
@@ -367,6 +372,12 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
+#ifdef DEBUG
+			case 'd':	/* Dump out interpolated colors for debugging */
+				dump = true;
+				dump_int_val = (opt->arg[0]) ? atof (opt->arg) : 1.0;
+				break;
+#endif
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -449,11 +460,25 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], xp[4], yp[4], prev_del_z, this_del_z = 0.0;
 	struct GMT_FILL *f = NULL;
 	struct GMT_PLOT_AXIS *A;
+#ifdef DEBUG
+	unsigned int dump_k_val;
+#endif
 
 	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
 
 	/* Temporarily change to miter join so boxes and end triangles have near corners */
 	PSL_setlinejoin (PSL, PSL_MITER_JOIN);
+
+#ifdef DEBUG
+	if (!intens) dump = false;	/* Must be run with -I */
+	if (dump) {
+		ny = urint (width * bit_dpi);
+		inc_j = (ny > 1) ? (max_intens[1] - max_intens[0]) / (ny - 1) : 0.0;
+		dump_k_val = ny - urint ((dump_int_val - max_intens[0])/inc_j) - 1;
+		fprintf (stderr, "#Produced with dump_int_val = %g, dump_k_val = %u of %u\n", dump_int_val, dump_k_val, ny);
+		fprintf (stderr, "#z\tred\tgreen\tblue\tr_int\tg_int\tb_int\tps_r\tps_g\tps_b\n");
+	}
+#endif
 
 	/* Find max decimals needed */
 
@@ -578,6 +603,10 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					bar[k++] = GMT_u255 (rgb[0]);
 					bar[k++] = GMT_u255 (rgb[1]);
 					bar[k++] = GMT_u255 (rgb[2]);
+#ifdef DEBUG
+					if (dump && j == dump_k_val) fprintf (stderr, "%g\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%d\t%d\t%d\n",
+						z, rrggbb[0], rrggbb[1], rrggbb[2], rgb[0], rgb[1], rgb[2], bar[k-3], bar[k-2], bar[k-1]);
+#endif
 				}
 			}
 		}
