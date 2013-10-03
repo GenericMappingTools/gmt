@@ -24,7 +24,7 @@ Wessel bought a few shares, and zoom in on the developments since 2004;
 in the inset we label the time-axis in Finnish in honor of Linus
 Thorvalds. Because the time coordinates are Y2K-challenged and the order
 is backwards (big units of years come *after* smaller units like days)
-we must change the default input/output formats used by *GMT*. Finally,
+we must change the default input/output formats used by GMT. Finally,
 we want to prefix prices with the $ symbol to indicate the currency.
 Here is how it all comes out:
 

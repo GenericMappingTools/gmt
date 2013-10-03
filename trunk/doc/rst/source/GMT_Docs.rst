@@ -38,7 +38,7 @@
 Acknowledgments
 ===============
 
-The Generic Mapping Tools (*GMT*) could not have been designed without
+The Generic Mapping Tools (GMT) could not have been designed without
 the generous support of several people. We gratefully acknowledge A. B.
 Watts and the late W. F. Haxby for supporting our efforts on the
 original version 1.0 while we were their graduate students at
@@ -50,7 +50,7 @@ the HIGP/SOEST Post-Doctoral Fellowship program to Paul Wessel. Walter
 H. F. Smith gratefully acknowledges the generous support of the C. H.
 and I. M. Green Foundation for Earth Sciences at the Institute of
 Geophysics and Planetary Physics, Scripps Institution of Oceanography,
-University of California at San Diego. *GMT* series 3.x, 4.x, and 5.x
+University of California at San Diego. GMT series 3.x, 4.x, and 5.x
 owe their existence to grants EAR-93-02272, OCE-95-29431, OCE-00-82552,
 OCE-04-52126, and OCE-1029874 from the National Science Foundation,
 which we gratefully acknowledge.
@@ -61,13 +61,13 @@ Ben Horner-Johnson, John Kuhn, Angel Li, Andrew Macrae, Alex Madon, Ken
 McLean, Greg Neumann, Ameet Raval, Georg Schwarz, Richard Signell, Peter
 Schmidt, Dirk Stoecker, Eduardo Suárez, Mikhail Tchernychev, Malte
 Thoma, David Townsend, Garry Vaughan, William Weibel, and many others,
-including their advice on how to make *GMT* portable to a wide range of
+including their advice on how to make GMT portable to a wide range of
 platforms. John Lillibridge and Stephan Eickschen provided the original
 examples 11 and 32, respectively; Hanno von Lom helped resolve early
 problems with DLL libraries for Win32; Lloyd Parkes enabled indexed
-color images in *PostScript*; Kurt Schwehr maintains the packages; Wayne
+color images in PostScript; Kurt Schwehr maintains the packages; Wayne
 Wilson implemented the full general perspective projection; and William
-Yip helped translate *GMT* to POSIX ANSI C and incorporate netCDF 3. The
+Yip helped translate GMT to POSIX ANSI C and incorporate netCDF 3. The
 SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux, web, and CGI script issues.
 
@@ -79,10 +79,10 @@ A Reminder
 ==========
 
 If you feel it is appropriate, you may consider paying us back by citing
-our *EOS* articles on *GMT* (and perhaps also our Geophysics article on
-the *GMT* program :doc:`surface`) when you
-publish papers containing results or illustrations obtained using *GMT*.
-The EOS articles on *GMT* are
+our EOS articles on GMT (and perhaps also our Geophysics article on
+the GMT program :doc:`surface`) when you
+publish papers containing results or illustrations obtained using GMT.
+The EOS articles on GMT are
 
 -  Wessel, P., and W. H. F. Smith, New, improved version of Generic
    Mapping Tools released, *EOS Trans. AGU*, 79(47),
@@ -95,7 +95,7 @@ The EOS articles on *GMT* are
    data, *EOS Trans. AGU*, 72(41), 445--446, 1991. `doi:10.1029/90EO00319 <http://dx.doi.org/10.1029/90EO00319>`_.
 
 
-Some *GMT* programs are based on algorithms we have developed and
+Some GMT programs are based on algorithms we have developed and
 published, such as
 
 -  Wessel, P., Tools for analyzing intersecting tracks: The x2sys
@@ -126,7 +126,7 @@ published, such as
    splines in tension, *Geophysics*, 55(3), 293--305, 1990. `doi:10.1190/1.1442837 <http://dx.doi.org/10.1190/1.1442837>`_.
    [:doc:`surface`]
 
-Finally, *GMT* includes some code supplied by others, in particular the
+Finally, GMT includes some code supplied by others, in particular the
 Triangle code used for Delaunay triangulation. Its author, Jonathan
 Shewchuk, says
 
@@ -138,13 +138,13 @@ Shewchuk, says
     three-dimensional successor to Triangle, which in turn will benefit
     you."
 
-A few *GMT* users take the time to write us letters, telling us of the
-difference *GMT* is making in their work. We appreciate receiving these
-letters. On days when we wonder why we ever released *GMT* we pull these
+A few GMT users take the time to write us letters, telling us of the
+difference GMT is making in their work. We appreciate receiving these
+letters. On days when we wonder why we ever released GMT we pull these
 letters out and read them. Seriously, as financial support for
-*GMT* depends on how well we can "sell" the idea to funding agencies and
-our superiors, letter-writing is one area where *GMT* users can affect
-such decisions by supporting the *GMT* project.
+GMT depends on how well we can "sell" the idea to funding agencies and
+our superiors, letter-writing is one area where GMT users can affect
+such decisions by supporting the GMT project.
 
 Copyright and Caveat Emptor!
 ============================
@@ -152,21 +152,21 @@ Copyright and Caveat Emptor!
 Copyright ©1991--2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
 Luis and F. Wobbe
 
-The Generic Mapping Tools (*GMT*) is free software; you can
+The Generic Mapping Tools (GMT) is free software; you can
 redistribute it and/or modify it under the terms of the GNU Lesser
 General Public License as published by the Free Software Foundation.
 
-The *GMT* package is distributed in the hope that it will be useful,
+The GMT package is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the file ``LICENSE.TXT`` in the
-*GMT* directory or the for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the file
+``LICENSE.TXT`` in the GMT directory or the for more details.
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided that the copyright notice and these paragraphs are
-preserved on all copies. The *GMT* package may be included in a bundled
+preserved on all copies. The GMT package may be included in a bundled
 distribution of software for which a reasonable fee may be charged.
 
-The Generic Mapping Tools (*GMT*) does not come with any warranties, nor
+GMT does not come with any warranties, nor
 is it guaranteed to work on your computer. The user assumes full
 responsibility for the use of this system. In particular, the University
 of Hawaii School of Ocean and Earth Science and Technology, the National
@@ -174,30 +174,30 @@ Oceanic and Atmospheric Administration, EUMETSAT, the
 Universidade do Algarve, Alfred Wegener Institute, the National Science
 Foundation, Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim F.
 Luis, Florian Wobbe or any other individuals involved in the design and
-maintenance of *GMT* are NOT responsible for any damage that may follow
-from correct *or* incorrect use of these programs.
+maintenance of GMT are NOT responsible for any damage that may follow
+from correct or incorrect use of these programs.
 
 Preface
 =======
 
-While *GMT* has served the map-making and data processing needs of
+While GMT has served the map-making and data processing needs of
 scientists since 1988 [1]_, the current global use was heralded by the
 first official release in *EOS Trans. AGU* in the fall of 1991. Since
-then, *GMT* has grown to become a standard tool for many users,
+then, GMT has grown to become a standard tool for many users,
 particularly in the Earth and Ocean Sciences but the global collective
-of *GMT* users is incredibly diverse. Development has at times been
+of GMT users is incredibly diverse. Development has at times been
 rapid, and numerous releases have seen the light of day since the early
 versions. For a detailed history of the changes from release to release,
-see file ``ChangeLog`` in the main *GMT* directory. For a nightly snapshot of ongoing
+see file ``ChangeLog`` in the main GMT directory. For a nightly snapshot of ongoing
 activity, see the online page. For a historical perspective of the
-origins and development of *GMT* see the video podcast "20 Years with
+origins and development of GMT see the video podcast "20 Years with
 GMT -- The Generic Mapping Tools" produced following a seminar given by
-Paul Wessel on the 20th anniversary of *GMT*; a link is available on the
-*GMT* website.
+Paul Wessel on the 20th anniversary of GMT; a link is available on the
+GMT website.
 
-The success of *GMT* is to a large degree due to the input of the user
+The success of GMT is to a large degree due to the input of the user
 community. In fact, most of the capabilities and options in
-*GMT* programs originated as user requests. We would like to hear from
+GMT programs originated as user requests. We would like to hear from
 you should you have any suggestions for future enhancements and
 modification. Please send your comments to the GMT help list or create an
 issue in the bug tracker (see `<http://gmtrac.soest.hawaii.edu/>`_).
@@ -205,16 +205,16 @@ issue in the bug tracker (see `<http://gmtrac.soest.hawaii.edu/>`_).
 What is new in GMT 5.x?
 -----------------------
 
-*GMT* 5 represents a new branch of *GMT* development that preserves the
+GMT 5 represents a new branch of GMT development that preserves the
 capabilities of the previous versions while adding new tricks to many of
 the tools. Furthermore, we have added system-wide capabilities for
 handling PDF transparency, dealing with GIS aspatial data, and
-eliminated the need for the **-m** option. Our *PostScript* library
+eliminated the need for the **-m** option. Our PostScript library
 :doc:`PSL <pslib>` has seen a complete rewrite as well
-and produce shorter and more compact *PostScript*. However, the big news
-is for developers who wish to leverage *GMT* in their own applications.
+and produce shorter and more compact PostScript. However, the big news
+is for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level
-*GMT* functionality is now accessible via *GMT* "modules". These are
+GMT functionality is now accessible via GMT "modules". These are
 high-level functions named after their corresponding programs (.e.g.,
 ``GMT_grdimage``) that contains all of the functionality of that program
 within the function. While currently callable from C/C++ only, we are
@@ -222,23 +222,23 @@ making progress on the Matlab interface modules as well and will soon
 start on the Python version. Developers should consult the GMT API
 Documentation for more details.
 
-Most of the *GMT* default parameters have changed named in order to
+Most of the GMT default parameters have changed named in order to
 group parameters into logical groups and to use more consistent naming.
 Some new default parameters have been added as well, such as
 :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`, which controls whether axes annotations for
 Cartesian plots are horizontal or orthogonal to the individual axes.
 
 Because of the default name changes and other command-line changes (such
-as making **-m** obsolete), we recommend that users of *GMT* 4 consider
+as making **-m** obsolete), we recommend that users of GMT 4 consider
 learning the new rules and defaults. However, to ease the transition to
-*GMT* 5 you may use the enable-compat switch when running configure ,
+GMT 5 you may use the enable-compat switch when running configure ,
 thus allowing the use of many obsolete default names and command
 switches (you will receive a warning instead).
 
 Overview of 5.0.0 [Jul-1, 2013]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This version shares the same bug fixes applied to *GMT* 4.5.9, released
+This version shares the same bug fixes applied to GMT 4.5.9, released
 Jan 1, 2013. Several new programs have been added; some have been
 promoted from earlier supplements:
 
@@ -265,7 +265,7 @@ promoted from earlier supplements:
     Perform basic vector manipulation in 2-D and 3-D.
 
 Below is a list of improvements that affect several
-`GMT <http://gmt.soest.hawaii.edu/>`_ programs equally:
+GMT programs equally:
 
 #. All programs now use consistent, standardized choices for plot
    dimension units (**c**\ m, **i**\ nch, or **p**\ oint; we no longer
@@ -286,8 +286,8 @@ Below is a list of improvements that affect several
    **ogr2ogr** (a GDAL tool) when selecting the -f "GMT" output
    format. See Appendix `P. The GMT Vector Data Format for OGR Compatibility`_
    for an explanation of the OGR/GMT file format.
-   Because all GIS information is encoded via *GMT* comment lines these
-   files can also be used in *GMT* 4 (the GIS metadata is simply
+   Because all GIS information is encoded via GMT comment lines these
+   files can also be used in GMT 4 (the GIS metadata is simply
    skipped).
 
 #. Programs that read data tables can control which columns to read and
@@ -312,12 +312,12 @@ Below is a list of improvements that affect several
    processing. If a subset then the boundary conditions are taken from
    the surrounding grid values.
 
-#. There is new *GMT*  defaults
+#. There is new GMT  defaults
    parameters that control which algorithms to use for Fourier
    transforms (:ref:`GMT_FFT <GMT_FFT>`) and triangulation (:ref:`GMT_TRIANGULATE <GMT_TRIANGULATE>`).
 
 #. Great circle distance approximations can now be fine-tuned via new
-   *GMT* default parameters
+   GMT default parameters
    :ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>` and :ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`. Geodesics are now even
    more accurate by using the Vincenty [1975] algorithm instead of
    Rudoe's method.
@@ -325,7 +325,7 @@ Below is a list of improvements that affect several
 #. New parameter EXTRAPOLATE_VAL controls what splines should do if
    requested to extrapolate beyond the given data domain.
 
-#. *GMT* 5 only produces *PostScript* and no longer has a setting for
+#. GMT 5 only produces PostScript and no longer has a setting for
    EPS. We made this decision since a) our EPS effort was always very
    approximate (no consideration of font metrics. etc.) and often wrong,
    and b) :doc:`ps2raster` handles it exactly.
@@ -345,14 +345,14 @@ Below is a list of improvements that affect several
    projected values, e.g., UTM coordinates while **-Ju** is given.
 
 #. All plot programs can take a new **-p** option for perspective view
-   from infinity. In *GMT* 4, only some programs could do this (e.g.,
+   from infinity. In GMT 4, only some programs could do this (e.g.,
    :doc:`pscoast`) and it took a
    program-specific option, typically **-E** and sometimes an option
    **-Z** would be needed as well. This information is now all passed
-   via **-p** and applies across all *GMT* plotting programs.
+   via **-p** and applies across all GMT plotting programs.
 
 #. All plot programs can take a new **-t** option to modify the PDF
-   transparency level. However, as *PostScript* has no provision for
+   transparency level. However, as PostScript has no provision for
    transparency you can only see the effect if you convert it to PDF.
 
 #. All text can now optionally be filled with patterns and/or drawn with
@@ -457,7 +457,7 @@ Here is a list of recent enhancements to specific programs:
 
 #. :doc:`pscontour` now similar to
    :doc:`grdcontour` in the options it
-   takes, e.g., **-C** in particular. In *GMT* 4, the program could only
+   takes, e.g., **-C** in particular. In GMT 4, the program could only
    read a CPT file and not take a specific contour interval.
 
 #. :doc:`psrose` has added **-Wv**\ *pen* to
@@ -506,40 +506,40 @@ Incompatibilities between GMT 5.x and GMT 4.x
 
 As features are added and bugs are discovered, it is occasionally
 necessary to break the established syntax of a
-`GMT <http://gmt.soest.hawaii.edu/>`_ program option, such as when
+GMT program option, such as when
 the intent of the option is non-unique due to a modifier key being the
 same as a distance unit indicator. Other times we see a greatly improved
 commonality across similar options by making minor adjustments. However,
 we are aware that such changes may cause grief and trouble with
 established scripts and the habits of many
-`GMT <http://gmt.soest.hawaii.edu/>`_ users. To alleviate this
+GMT users. To alleviate this
 situation we have introduced a configuration that allows
-`GMT <http://gmt.soest.hawaii.edu/>`_ to tolerate and process
+GMT to tolerate and process
 obsolete program syntax (to the extent possible). To activate you must
 make sure **GMT_COMPAT** is not set to "no"in your ``ConfigUser.cmake`` file. When not
 running in compatibility mode any obsolete syntax will be considered as
 errors. We recommend that users with prior
-`GMT <http://gmt.soest.hawaii.edu/>`_ 4 experience run
-`GMT <http://gmt.soest.hawaii.edu/>`_ 5 in compatibility mode, heed
+GMT 4 experience run
+GMT 5 in compatibility mode, heed
 the warnings about obsolete syntax, and correct their scripts or habits
 accordingly. When this transition has been successfully navigated it is
 better to turn compatibility mode off and leave the past behind.
 Occasionally, users will supply an ancient
-`GMT <http://gmt.soest.hawaii.edu/>`_ 3 syntax which may have worked
-in `GMT <http://gmt.soest.hawaii.edu/>`_ 4 but is not tolerated in
-`GMT <http://gmt.soest.hawaii.edu/>`_ 5.
+GMT 3 syntax which may have worked
+in GMT 4 but is not tolerated in
+GMT 5.
 
 Here are a list of known incompatibilities that are correctly processed
 correctly with a warning under compatibility mode:
 
-#. `GMT <http://gmt.soest.hawaii.edu/>`_ **default names**: We have
+#. GMT **default names**: We have
    organized the default parameters logically by group and renamed several to
    be easier to remember and to group. Old and new names can be found in
    Tables :ref:`obsolete1 <tbl-obsoletedefs1>` and :ref:`obsolete2
    <tbl-obsoletedefs2>`. In addition, a few defaults are no longer recognized,
    such as N_COPIES, PS_COPIES, DOTS_PR_INCH, GMT_CPTDIR, PS_DPI, and PS_EPS,
    TRANSPARENCY. This also means the old common option **-c** for specifying
-   *PostScript* copies is no longer available.
+   PostScript copies is no longer available.
 
 #. **Units**: The unit abbreviation for arc seconds is finally **s**
    instead of **c**, with the same change for upper case in some clock
@@ -559,7 +559,7 @@ correctly with a warning under compatibility mode:
 #. **3-D perspective**: Some programs used a combination of **-E**,
    **-Z** to set up a 3-D perspective view, but these options were not
    universal. The new 3-D perspective in
-   `GMT <http://gmt.soest.hawaii.edu/>`_ 5 means you instead use the
+   GMT 5 means you instead use the
    common option **-p** to configure the 3-D projection.
 
 #. **Pixel vs. gridline registration:** Some programs used to have a
@@ -630,7 +630,7 @@ correctly with a warning under compatibility mode:
 
 #. :doc:`grdmath`: LDIST and PDIST now return
    distances in spherical degrees; while in
-   `GMT <http://gmt.soest.hawaii.edu/>`_ 4 it returned km; use
+   GMT 4 it returned km; use
    DEG2KM for conversion, if needed.
 
 #. :doc:`grdproject`: **-S** is
@@ -704,7 +704,7 @@ correctly with a warning under compatibility mode:
 #. :doc:`grdraster`: Now in the main GMT core.  The
    H\ *skip* field in ``grdraster.info`` is no longer expected as we automatically
    determine if a raster has a
-   `GMT <http://gmt.soest.hawaii.edu/>`_ header. Also, to output
+   GMT header. Also, to output
    *x,y,z* triplets instead of writing a grid now requires **-T**.
 
 #. :doc:`img2grd <supplements/img/img2grd>`: **-m**\ *inc* is
@@ -725,7 +725,7 @@ correctly with a warning under compatibility mode:
 
 #. :doc:`mgd77path <supplements/mgd77/mgd77path>`: **-P** is
    deprecated (clashes with
-   `GMT <http://gmt.soest.hawaii.edu/>`_ common options); use **-A** instead.
+   GMT common options); use **-A** instead.
 
 #. :doc:`backtracker <supplements/spotter/backtracker>`:
    **-C** is deprecated as stage vs. finite rotations are detected
@@ -1036,33 +1036,33 @@ presentations, many scientists spend large amounts of time and money to
 create camera-ready figures. This process can be tedious and is often
 done manually, since available commercial or in-house software usually
 can do only part of the job. To expedite this process we introduce the
-Generic Mapping Tools (*GMT* for short), which is a free [2]_, software
+Generic Mapping Tools (GMT for short), which is a free [2]_, software
 package that can be used to manipulate columns of tabular data,
 time-series, and gridded data sets, and display these data in a variety
 of forms ranging from simple *x*--*y* plots to maps and color,
-perspective, and shaded-relief illustrations. *GMT* uses the
-*PostScript* page description language [*Adobe Systems Inc.*, 1990].
-With *PostScript*, multiple plot files can easily be superimposed to
+perspective, and shaded-relief illustrations. GMT uses the
+PostScript page description language [*Adobe Systems Inc.*, 1990].
+With PostScript, multiple plot files can easily be superimposed to
 create arbitrarily complex images in gray tones or 24-bit true color.
 Line drawings, bitmapped images, and text can be easily combined in one
-illustration. *PostScript* plot files are device-independent: The same
+illustration. PostScript plot files are device-independent: The same
 file can be printed at 300 dots per inch (dpi) on an ordinary
 laserwriter or at 2470 dpi on a phototypesetter when ultimate quality is
-needed. *GMT* software is written as a set of *UNIX* tools [3]_ and is
+needed. GMT software is written as a set of UNIX tools [3]_ and is
 totally self-contained and fully documented. The system is offered free
 of charge and is distributed over the computer network (Internet)
 [*Wessel and Smith, 1991; 1995; 1998*].
 
-The original version 1.0 of *GMT* was released in the summer of 1988
+The original version 1.0 of GMT was released in the summer of 1988
 when the authors were graduate students at Lamont-Doherty Earth
 Observatory of Columbia University. During our tenure as graduate
 students, L-DEO changed its computing environment to a distributed
-network of *UNIX* workstations, and we wrote *GMT* to run in this
+network of UNIX workstations, and we wrote GMT to run in this
 environment. It became a success at L-DEO, and soon spread to numerous
 other institutions in the US, Canada, Europe, and Japan. The current
 version benefits from the many suggestions contributed by users of the
 earlier versions, and now includes more than 50 tools, more than 30
-projections, and many other new, more flexible features. *GMT* provides
+projections, and many other new, more flexible features. GMT provides
 scientists with a variety of tools for data manipulation and display,
 including routines to sample, filter, compute spectral estimates, and
 determine trends in time series, grid or triangulate arbitrarily spaced
@@ -1076,14 +1076,14 @@ choosing from many common map projections, contour plots, mesh plots,
 monochrome or color images, and artificially illuminated shaded-relief
 and 3-D perspective illustrations.
 
-*GMT* is written in the highly portable ANSI C programming language
+GMT is written in the highly portable ANSI C programming language
 [*Kernighan and Ritchie*, 1988], is fully POSIX compliant [*Lewine*,
 1991], has no Year 2000 problems, and may be used with any hardware
-running some flavor of *UNIX*, possibly with minor modifications. In
-writing *GMT*, we have followed the modular design philosophy of *UNIX*:
+running some flavor of UNIX, possibly with minor modifications. In
+writing GMT, we have followed the modular design philosophy of UNIX:
 The *raw data* :math:`\rightarrow` *processing* :math:`\rightarrow` *final
 illustration* flow is broken down to a series of elementary steps; each
-step is accomplished by a separate *GMT* or *UNIX* tool. This modular
+step is accomplished by a separate GMT or UNIX tool. This modular
 approach brings several benefits: (1) only a few programs are needed,
 (2) each program is small and easy to update and maintain, (3) each step
 is independent of the previous step and the data type and can therefore
@@ -1092,67 +1092,67 @@ chained together in shell scripts or with pipes, thereby creating a
 process tailored to do a user-specific task. The decoupling of the data
 retrieval step from the subsequent massage and plotting is particularly
 important, since each institution will typically have its own data base
-formats. To use *GMT* with custom data bases, one has only to write a
+formats. To use GMT with custom data bases, one has only to write a
 data extraction tool which will put out data in a form readable by
-*GMT* (discussed below). After writing the extractor, all other
-*GMT* modules will work as they are.
+GMT (discussed below). After writing the extractor, all other
+GMT modules will work as they are.
 
-*GMT* makes full use of the *PostScript* page description language, and
-can produce color illustrations if a color *PostScript* device is
+GMT makes full use of the PostScript page description language, and
+can produce color illustrations if a color PostScript device is
 available. One does not necessarily have to have access to a
 top-of-the-line color printer to take advantage of the color
-capabilities offered by *GMT*: Several companies offer imaging services
-where the customer provides a *PostScript* plot file and gets color
+capabilities offered by GMT: Several companies offer imaging services
+where the customer provides a PostScript plot file and gets color
 slides or hardcopies in return. Furthermore, general-purpose
-*PostScript* raster image processors (RIPs) are now becoming available,
-letting the user create raster images from *PostScript* and plot these
+PostScript raster image processors (RIPs) are now becoming available,
+letting the user create raster images from PostScript and plot these
 bitmaps on raster devices like computer screens, dot-matrix printers,
 large format raster plotters, and film writers [4]_. Because the
-publication costs of color illustrations are high, *GMT* offers 90
+publication costs of color illustrations are high, GMT offers 90
 common bit and hachure patterns, including many geologic map symbol
 types, as well as complete graytone shading operations. Additional bit
 and hachure patterns may also be designed by the user. With these tools,
 it is possible to generate publication-ready monochrome originals on a
 common laserwriter.
 
-*GMT* is thoroughly documented and comes with a technical reference and
+GMT is thoroughly documented and comes with a technical reference and
 cookbook which explains the purpose of the package and its many
 features, and provides numerous examples to help new users quickly
 become familiar with the operation and philosophy of the system. The
 cookbook contains the shell scripts that were used for each example;
-*PostScript*\ files of each illustration are also provided. All programs
+PostScript\ files of each illustration are also provided. All programs
 have individual manual pages which can be installed as part of the
-on-line documentation under the *UNIX* **man** utility or as web
+on-line documentation under the UNIX **man** utility or as web
 pages. In addition, the programs offer friendly help messages which make
 them essentially self-teaching -- if a user enters invalid or ambiguous
 command arguments, the program will print a warning to the screen with a
 synopsis of the valid arguments. All the documentation is available for
 web browsing and may be installed at the user's site.
 
-The processing and display routines within *GMT* are completely general
+The processing and display routines within GMT are completely general
 and will handle any (*x,y*) or (*x,y,z*) data as input. For many
 purposes the (*x,y*) coordinates will be (longitude, latitude) but in
 most cases they could equally well be any other variables (e.g.,
-wavelength, power spectral density). Since the *GMT*\ plot tools will
+wavelength, power spectral density). Since the GMT\ plot tools will
 map these (*x,y*) coordinates to positions on a plot or map using a
 variety of transformations (linear, log-log, and several map
 projections), they can be used with any data that are given by two or
 three coordinates. In order to simplify and standardize input and
-output, *GMT* uses two file formats only. Arbitrary sequences of (*x,y*)
+output, GMT uses two file formats only. Arbitrary sequences of (*x,y*)
 or (*x,y,z*) data are read from multi-column ASCII tables, i.e., each
 file consists of several records, in which each coordinate is confined
 to a separate column [5]_. This format is straightforward and allows the
 user to perform almost any simple (or complicated) reformatting or
-processing task using standard *UNIX* utilities such as **cut**,
+processing task using standard UNIX utilities such as **cut**,
 **paste**, **grep**, **sed** and **awk**. Two-dimensional data
 that have been sampled on an equidistant grid are read and written by
-*GMT* in a binary grid file using the functions provided with the netCDF
+GMT in a binary grid file using the functions provided with the netCDF
 library (a free, public-domain software library available separately
 from UCAR, the University Corporation of Atmospheric Research [*Treinish
 and Gough*, 1987]). This XDR (External Data Representation) based format
 is architecture independent, which allows the user to transfer the
 binary data files from one computer system to another [6]_.
-*GMT* contains programs that will read ASCII (*x,y,z*) files and produce
+GMT contains programs that will read ASCII (*x,y,z*) files and produce
 grid files. One such program, :doc:`surface`,
 includes new modifications to the gridding algorithm developed by *Smith
 and Wessel* [1990] using continuous splines in tension.
@@ -1169,12 +1169,12 @@ these types of output:
    ASCII (*x,y,z*) data or operate on existing grid files produce
    this type of output.
 
-#. *PostScript* -- The plotting programs all use the *PostScript*\ page
+#. PostScript -- The plotting programs all use the PostScript\ page
    description language to define plots. These commands are stored as
    ASCII text and can be edited should you want to customize the plot
    beyond the options available in the programs themselves.
 
-#. Reports -- Several *GMT* programs read input files and report
+#. Reports -- Several GMT programs read input files and report
    statistics and other information. Nearly all programs have an
    optional "verbose" operation, which reports on the progress of
    computation. All programs feature usage messages, which prompt the
@@ -1182,18 +1182,18 @@ these types of output:
    the standard error stream and can therefore be separated from ASCII
    table output.
 
-*GMT* is available over the Internet at no charge. To obtain a copy,
-goto *GMT* home page gmt.soest.hawaii.edu and follow instructions.
+GMT is available over the Internet at no charge. To obtain a copy,
+goto GMT home page http://gmt.soest.hawaii.edu/ and follow instructions.
 We also maintain two electronic
 mailing lists you may subscribe to in order to stay informed about bug
 fixes and upgrades (See Chapter [ch:7]).
 
-For those without net-access that need to obtain *GMT*: Geoware makes
-and distributes CD-R and DVD-R media with the *GMT* package, compatible
+For those without net-access that need to obtain GMT: Geoware makes
+and distributes CD-R and DVD-R media with the GMT package, compatible
 supplements, and several Gb of useful Earth and ocean science data sets.
 For more information send e-mail to geoware@geoware-online.com.
 
-*GMT* has served a multitude of scientists very well, and their
+GMT has served a multitude of scientists very well, and their
 responses have prompted us to develop these programs even further. It is
 our hope that the new version will satisfy these users and attract new
 users as well. We present this system to the community in order to
@@ -1221,9 +1221,9 @@ GMT overview and quick reference
 GMT summary
 -----------
 
-The following is a summary of all the programs supplied with *GMT* and
+The following is a summary of all the programs supplied with GMT and
 a very short description of their purpose. For more details, see the
-individual *UNIX* manual pages or the online web documentation. For a
+individual UNIX manual pages or the online web documentation. For a
 listing sorted by program purpose, see Section `GMT quick reference`_.
 
 +-----------------------+---------------------------------------------------------------------+
@@ -1329,7 +1329,7 @@ listing sorted by program purpose, see Section `GMT quick reference`_.
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`project`        | Project table data onto lines or great circles                      |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`ps2raster`      | Crop and convert *PostScript* files to raster images, EPS, and PDF  |
+| :doc:`ps2raster`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psbasemap`      | Create a basemap plot                                               |
 +-----------------------+---------------------------------------------------------------------+
@@ -1390,7 +1390,7 @@ GMT quick reference
 Instead of an alphabetical listing, this section
 contains a summary sorted by program purpose. Also included is a quick
 summary of the standard command line options and a breakdown of the
-**-J** option for each of the over 30 projections available in *GMT*.
+**-J** option for each of the over 30 projections available in GMT.
 
 +-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
@@ -1587,14 +1587,14 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
 +=======================+=====================================================================+
-| :doc:`ps2raster`      | Crop and convert *PostScript* files to raster images, EPS, and PDF  |
+| :doc:`ps2raster`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
 +-----------------------+---------------------------------------------------------------------+
 
 
-*GMT* offers 31 map projections. These are specified using the **-J**
-common option. There are two conventions you may use: (a) *GMT*-style
+GMT offers 31 map projections. These are specified using the **-J**
+common option. There are two conventions you may use: (a) GMT-style
 syntax and (b) **Proj4**\ -style syntax. The projection codes for the
-*GMT*-style are tabulated below.
+GMT-style are tabulated below.
 
 .. | **-JA**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *width*   | Lambert azimuthal equal area                           |
 
@@ -1751,7 +1751,7 @@ these all accept a map *scale*.
 | *exp*\ \|\ **T**\ \|\ **t**]][**d**]                       | Linear, log\ :math:`_{10}`, :math:`x^a-y^b`, and time |
 +------------------------------------------------------------+-------------------------------------------------------+
 
-Finally, the rest of the *GMT* common options are given below:
+Finally, the rest of the GMT common options are given below:
 
 +------------------------------------------------------------+--------------------------------------------------------+
 |         **STANDARDIZED COMMAND LINE OPTIONS**                                                                       |
@@ -1807,7 +1807,7 @@ Finally, the rest of the *GMT* common options are given below:
 General features
 ================
 
-This section explains features common to all the programs in *GMT* and
+This section explains features common to all the programs in GMT and
 summarizes the philosophy behind the system. Some of the features
 described here may make more sense once you reach the cook-book section
 where we present actual examples of their use.
@@ -1815,7 +1815,7 @@ where we present actual examples of their use.
 GMT units
 ---------
 
-While *GMT* has default units for both actual Earth distances and plot
+While GMT has default units for both actual Earth distances and plot
 lengths (dimensions) of maps, it is recommended that you specifically
 indicate the units of your arguments by appending the unit character, as
 discussed below. This will aid you in debugging, let others understand your
@@ -1842,7 +1842,7 @@ Distance units
 For Cartesian data and scaling the data units do not normally matter
 (they could be kg or Lumens for all we know) and are never entered.
 Geographic data are different as distances can be specified in a variety
-of ways. *GMT* programs that accept actual Earth length scales like
+of ways. GMT programs that accept actual Earth length scales like
 search radii or distances can therefore handle a variety of units. These
 choices are listed in Table :ref:`distunits <tbl-distunits>`; simply append the desired
 unit to the distance value you supply. A value without a unit suffix
@@ -1854,7 +1854,7 @@ Distance calculations
 
 The calculation of distances on Earth (or other planetary bodies)
 depends on the ellipsoidal parameters of the body (via
-:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) and the method of computation. *GMT* offers three
+:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) and the method of computation. GMT offers three
 alternatives that trade off accuracy and computation time.
 
 Flat Earth distances
@@ -1901,7 +1901,7 @@ instance, a search radius of 5000 feet using this mode of computation
 would be specified as **-S**\ 5000\ **f**.
 
 Note: There are two additional
-`GMT <http://gmt.soest.hawaii.edu/>`_ defaults that control how
+GMT defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
 :ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`, which selects one of several possible
@@ -1925,9 +1925,9 @@ computation would be set by **-S+**\ 20\ **k**.
 Length units
 ~~~~~~~~~~~~
 
-*GMT* programs can accept dimensional quantities and plot lengths in
+GMT programs can accept dimensional quantities and plot lengths in
 **c**\ m, **i**\ nch, or **p**\ oint (1/72 of an inch) [8]_. There are
-two ways to ensure that *GMT* understands which unit you intend to use:
+two ways to ensure that GMT understands which unit you intend to use:
 
 #. Append the desired unit to the dimension you supply. This way is
    explicit and clearly communicates what you intend, e.g.,
@@ -1950,7 +1950,7 @@ Overview and the gmt.conf file
 There are about 100 parameters which can be adjusted individually to
 modify the appearance of plots or affect the manipulation of data. When
 a program is run, it initializes all parameters to the
-*GMT*\ defaults [9]_, then tries to open the file ``gmt.conf`` in the current
+GMT\ defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
 sub-directory ``/.gmt`` of your home directory, and finally in your home directory
 itself. If successful, the program will read the contents and set the
@@ -1980,23 +1980,23 @@ E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
    :width: 500 px
    :align: center
 
-   Some *GMT* parameters that affect plot appearance.
+   Some GMT parameters that affect plot appearance.
 
 
 .. figure:: /_images/GMT_Defaults_1b.*
    :width: 500 px
    :align: center
 
-   More *GMT* parameters that affect plot appearance.
+   More GMT parameters that affect plot appearance.
 
 
 .. figure:: /_images/GMT_Defaults_1c.*
    :width: 500 px
    :align: center
 
-   Even more *GMT* parameters that affect plot appearance.
+   Even more GMT parameters that affect plot appearance.
 
-There are at least two good reasons why the *GMT* default options are
+There are at least two good reasons why the GMT default options are
 placed in a separate parameter file:
 
 #. It would not be practical to allow for command-line syntax covering
@@ -2005,12 +2005,12 @@ placed in a separate parameter file:
 
 #. It is convenient to keep separate ``gmt.conf`` files for specific projects, so
    that one may achieve a special effect simply by running
-   *GMT* commands in the directory whose ``gmt.conf`` file has the desired settings.
+   GMT commands in the directory whose ``gmt.conf`` file has the desired settings.
    For example, when making final illustrations for a journal article
    one must often standardize on font sizes and font types, etc. Keeping
    all those settings in a separate ``gmt.conf`` file simplifies this process and
    will allow you to generate those illustrations with the same settings
-   later on. Likewise, *GMT* scripts that make figures for PowerPoint
+   later on. Likewise, GMT scripts that make figures for PowerPoint
    presentations often use a different color scheme and font size than
    output intended for laser printers. Organizing these various
    scenarios into separate ``gmt.conf`` files will minimize headaches associated with
@@ -2019,7 +2019,7 @@ placed in a separate parameter file:
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
 
-As mentioned, *GMT* programs will attempt to open a file named  ``gmt.conf``. At
+As mentioned, GMT programs will attempt to open a file named  ``gmt.conf``. At
 times it may be desirable to override that default. There are several
 ways in which this can be accomplished.
 
@@ -2030,7 +2030,7 @@ ways in which this can be accomplished.
    which means the final resetting does not take place (unless you write
    your script very carefully.)
 
-#. To permanently change some of the *GMT* parameters on the fly
+#. To permanently change some of the GMT parameters on the fly
    inside a script the :doc:`gmtset` utility
    can be used. E.g., to change the primary annotation font to 12 point
    Times-Bold in red we run
@@ -2049,7 +2049,7 @@ ways in which this can be accomplished.
    say, for map projection coordinate output, append
    **-**\ **-**\ :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`\ =%.16lg to the command in question.
 
-#. Finally, *GMT* provides to possibility to override the settings only
+#. Finally, GMT provides to possibility to override the settings only
    during the running of a single script, reverting to the original
    settings after the script is run, as if the script was run in
    "isolation". The isolation mode is discussed in
@@ -2274,7 +2274,7 @@ general format is
    projection parameter, and *width* is map width (map height is
    automatically computed from the implied map scale and region).
 
-Since *GMT* version 4.3.0, there is an alternative way to specify the
+Since GMT version 4.3.0, there is an alternative way to specify the
 projections: use the same abbreviation as in the mapping package
 **Proj4**. The options thus either look like:
 
@@ -2290,8 +2290,8 @@ projections: use the same abbreviation as in the mapping package
    parameter, and *width* is map width (map height is automatically
    computed from the implied map scale and region).
 
-The projections available in *GMT* are presented in Figure
-:ref:`gmt_projections`. For details on all *GMT* projections and the required
+The projections available in GMT are presented in Figure
+:ref:`gmt_projections`. For details on all GMT projections and the required
 parameters, see the :doc:`psbasemap` man page. We will also show examples of
 every projection in the next Chapters, and a quick summary of projection
 syntax was given in Chapter `GMT overview and quick reference`.
@@ -2302,13 +2302,13 @@ syntax was given in Chapter `GMT overview and quick reference`.
    :width: 500 px
    :align: center
 
-   The 30+ map projections and coordinate transformations available in *GMT*
+   The 30+ map projections and coordinate transformations available in GMT
 
 
 Map frame and axes annotations: The **-B** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is potentially the most complicated option in *GMT*,
+This is potentially the most complicated option in GMT,
 but most examples of its usage are actually quite simple. We distinguish
 between to sets of information: Frame settings and Axes parameters.  These
 are set separately by their own **-B** invocations; hence multiple **-B**
@@ -2395,7 +2395,7 @@ day-names) may be affected by the :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`,
 
 For automated plots the region may not always be the same and thus it
 can be difficult to determine the appropriate *stride* in advance. Here
-*GMT* provides the opportunity to autoselect the spacing between the
+GMT provides the opportunity to autoselect the spacing between the
 major and minor ticks and the grid lines, by not specifying the *stride*
 value. For example, **-Bafg** will select all three spacings
 automatically for both axes. In case of longitude--latitude plots, this
@@ -2802,13 +2802,13 @@ Plot overlays: The **-K** **-O** options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-K** and **-O** options control the generation of
-*PostScript* code for multiple overlay plots. All *PostScript* files
+PostScript code for multiple overlay plots. All PostScript files
 must have a header (for initializations), a body (drawing the figure),
 and a trailer (printing it out) (see Figure :ref:`missing`). Thus, when overlaying
-several *GMT* plots we must make sure that the first plot call omits the
+several GMT plots we must make sure that the first plot call omits the
 trailer, that all intermediate calls omit both header and trailer, and
 that the final overlay omits the header. The **-K** omits the trailer
-which implies that more *PostScript* code will be appended later
+which implies that more PostScript code will be appended later
 [Default terminates the plot system]. The **-O** selects Overlay plot
 mode and omits the header information [Default initializes a new plot
 system]. Most unexpected results for multiple overlay plots can be
@@ -2820,13 +2820,13 @@ when stacking plots.
    :width: 500 px
    :align: center
 
-   A final **PS** file consists of any number of individual pieces.
+   A final PostScript file consists of any number of individual pieces.
 
 
 Timestamps on plots: The **-U** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The **-U** option draws *UNIX* System time stamp. Optionally, append an
+The **-U** option draws UNIX System time stamp. Optionally, append an
 arbitrary text string (surrounded by double quotes), or the code **c**,
 which will plot the current command string (Figure :ref:`missing`).
 
@@ -2876,18 +2876,18 @@ overlays are ignored).
 OGR/GMT GIS i/o: The **-a** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-*GMT* relies on external tools to translate geospatial files such as
+GMT relies on external tools to translate geospatial files such as
 shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
 package can do such translations and preserve the aspatial metadata via
 a new OGR/GMT format specification (See Appendix `P. The GMT Vector Data Format for OGR Compatibility`_).
 For this to be useful we need a mechanism to associate certain metadata values with
-required input and output columns expected by *GMT* programs. The **-a**
+required input and output columns expected by GMT programs. The **-a**
 option allows you to supply one or more comma-separated associations
 *col=name*, where *name* is the name of an aspatial attribute field in a
 OGR/GMT file and whose value we wish to as data input for column *col*.
 The given aspatial field thus replaces any other value already set. Note
 that *col = 0* is the first data columns. Note that if no aspatial
-attributes are needed then the **-a** option is not needed -- *GMT* will
+attributes are needed then the **-a** option is not needed -- GMT will
 still process and read such data files.
 
 OGR/GMT input with **-a** option
@@ -2907,8 +2907,8 @@ options via its segment headers (See Appendix `B. GMT file formats`_).
 OGR/GMT output with **-a** option
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can also make *GMT* table-writing tools output the OGR/GMT format
-directly. Again, specify if certain *GMT* data columns with constant
+You can also make GMT table-writing tools output the OGR/GMT format
+directly. Again, specify if certain GMT data columns with constant
 values should be stored as aspatial metadata using the
 *col=name*\ [:*type*], where you can optionally specify what data type
 it should be (double, integer, string, logical, byte, or datetime)
@@ -2925,14 +2925,14 @@ features that straddle the Dateline.
 Binary table i/o: The **-b** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-All *GMT* programs that accept table data input may read ASCII, native
+All GMT programs that accept table data input may read ASCII, native
 binary, or netCDF data. Native binary files may have a header section
 and the **-h**\ *n* option (see Section `Header data records: The -h option`_) can be used to
 skip the first *n* bytes. The data record can be in any format, mixing
 different data types and even containing byte-swapped items. When using
-native binary data the user must be aware of the fact that *GMT* has no
+native binary data the user must be aware of the fact that GMT has no
 way of determining the actual number of columns in the file. You must
-therefore pass that information to *GMT* via the binary
+therefore pass that information to GMT via the binary
 **-bi** option, where *n* is the actual number of data
 columns and **t** must be one of **c** (signed 1-byte character,
 int8_t), **u** (unsigned 1-byte character, uint8_t), **h** (signed
@@ -2947,7 +2947,7 @@ several [*n*]\ **t** combinations, separated by commas. You may append
 **+L**\ \|\ **B** to indicate that the entire data file should be
 read or written as little- or big-endian, respectively. Here, *n* is the
 number of each item in your binary file. Note that *n* may be larger
-than *m*, the number of columns that the *GMT* program requires to do
+than *m*, the number of columns that the GMT program requires to do
 its task. If *n* is not given then it defaults to *m* and all columns
 are assumed to be of the single specified type **t** [**d** (double), if
 not set]. If *n* < *m* an error is generated. Multiple segment
@@ -2973,7 +2973,7 @@ Number of Copies: The **-c** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-c** option specifies the number of plot copies [Default is 1].
-This value is embedded in the *PostScript* file and will make a printer
+This value is embedded in the PostScript file and will make a printer
 issue the chosen number of copies without respooling.
 
 Data type selection: The **-f** option
@@ -3005,7 +3005,7 @@ information, see Sections `Input data formats`_ and `Output data formats`_.
 Data gap detection: The **-g** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-*GMT* has several mechanisms that can determine line
+GMT has several mechanisms that can determine line
 segmentation. Typically, data segments are separated by multiple segment
 header records (see Appendix `B. GMT file formats`_). However, if key data columns contain a
 NaN we may also use that information to break lines into multiple
@@ -3034,7 +3034,7 @@ Header data records: The **-h** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-h**\ [**i**\ \|\ **o**][*n_recs*] option
-lets *GMT* know that input file(s) have *n_recs* header records [0]. If
+lets GMT know that input file(s) have *n_recs* header records [0]. If
 there are more than one header record you must specify the number after
 the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
 that start with the character # are automatically considered header
@@ -3058,7 +3058,7 @@ Input columns selection: The **-i** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-i**\ *columns* option allows you to specify which
-input file data columns to use and in what order. By default, *GMT* will
+input file data columns to use and in what order. By default, GMT will
 read all the data columns in the file, starting with the first column
 (0). Using **-i** modifies that process. For instance, to use the 4th,
 7th, and 3rd data column as the required *x,y,z* to
@@ -3097,7 +3097,7 @@ Output columns selection: The **-o** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-o**\ *columns* option allows you to specify which
-columns to write on output and in what order. By default, *GMT* will
+columns to write on output and in what order. By default, GMT will
 write all the data columns produced by the program. Using **-o**
 modifies that process. For instance, to write just the 4th and 2nd data
 column to the output you would use **-o**\ 3,1 (since 0 is the first column).
@@ -3119,16 +3119,16 @@ point with **+w**\ *lon0/lat*\ [*z*\ ]) which will project to the center
 of your page size (or you may specify the coordinates of the *projected*
 view point with **+v**\ *x0/y0*. When **-p** is used without any further
 arguments, the values from the last use of **-p** in a previous
-*GMT*\ command will be used.
+GMT\ command will be used.
 
 .. _grid-registration:
 
 Grid registration: The **-r** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-All 2-D grids in *GMT* have their nodes
+All 2-D grids in GMT have their nodes
 organized in one of two ways, known as *gridline*- and *pixel*
-registration. The *GMT* default is gridline registration; programs that
+registration. The GMT default is gridline registration; programs that
 allow for the creation of grids can use the **-r** option to select
 pixel registration instead.
 
@@ -3192,8 +3192,8 @@ consider for this NaN test.
 Layer PDF transparency: The **-t** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-While the *PostScript* language does not support transparency, PDF does,
-and via *PostScript* extensions one can manipulate the transparency
+While the PostScript language does not support transparency, PDF does,
+and via PostScript extensions one can manipulate the transparency
 levels of objects. The **-t** option allows you to change the
 transparency level for the current overlay by appending a percentage in
 the 0--100 range; the default is 0, or opaque. Transparency may also be
@@ -3214,7 +3214,7 @@ grids are expected to have the longitude as first (minor) dimension.
 Command line history
 --------------------
 
-*GMT* programs "remember" the standardized command line options (See
+GMT programs "remember" the standardized command line options (See
 Section `Standardized command line options`_) given during their previous invocations and this
 provides a shorthand notation for complex options. For example, if a
 basemap was created with an oblique Mercator projection, specified as
@@ -3231,10 +3231,10 @@ since chances are that data manipulations and plotting for each project
 will share many of the same options. Note that an option spelled out on
 the command line will always override the last entry in the ``.gmtcommands`` file and, if
 execution is successful, will replace this entry as the previous option
-argument in the ``.gmtcommands`` file. If you call several *GMT* modules piped together
-then *GMT* cannot guarantee that the ``.gmtcommands`` file is processed in the intended
+argument in the ``.gmtcommands`` file. If you call several GMT modules piped together
+then GMT cannot guarantee that the ``.gmtcommands`` file is processed in the intended
 order from left to right. The only guarantee is that the file will not
-be clobbered since *GMT* uses advisory file locking. The uncertainty in
+be clobbered since GMT uses advisory file locking. The uncertainty in
 processing order makes the use of shorthands in pipes unreliable. We
 therefore recommend that you only use shorthands in single process
 command lines, and spell out the full command option when using chains
@@ -3277,7 +3277,7 @@ section is reached. Binary files may also contain segment-headers
 separating data segments. These segment-headers are simply data records
 whose fields are all set to NaN; see Appendix [app:B] for complete documentation.
 
-If filenames are given for reading, *GMT* programs will first look for
+If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
 will look in two other directories pointed to by environmental
 parameters (if set). These are **GMT_USERDIR** and **GMT_DATADIR**,
@@ -3291,7 +3291,7 @@ grids accessible via
 :doc:`img2grd <supplements/img/img2grd>`; see Appendix [app:A] for
 information about these supplemental programs. The **GMT_USERDIR**
 directory may hold miscellaneous data sets more specific to the user;
-this directory also stores *GMT* defaults and other configuration files.
+this directory also stores GMT defaults and other configuration files.
 Any directory that ends in a trailing slash (/) will be searched
 recursively. Data sets that the user finds are often needed may be
 placed in these directories, thus eliminating the need to specify a full
@@ -3327,7 +3327,7 @@ The verbosity is cumulative, i.e., mode **l** means all messages of mode
 Program output
 --------------
 
-Most programs write their results, including *PostScript*\ plots, to
+Most programs write their results, including PostScript\ plots, to
 standard output. The exceptions are those which may create binary netCDF
 grid files such as :doc:`surface` (due to the
 design of netCDF a filename must be provided; however, alternative
@@ -3344,7 +3344,7 @@ limited in DOS.
 Input data formats
 ------------------
 
-Most of the time, *GMT* will know what kind of *x* and *y*
+Most of the time, GMT will know what kind of *x* and *y*
 coordinates it is reading because you have selected a particular
 coordinate transformation or map projection. However, there may be times
 when you must explicitly specify what you are providing as input using
@@ -3372,14 +3372,14 @@ delimiters between fields. Thus, the processing of input clock
 coordinates is guided by the template :ref:`FORMAT_CLOCK_IN <FORMAT_CLOCK_IN>` which
 defaults to *hh:mm:ss.xxx*.
 
-*GMT* programs that require a map projection argument will implicitly
+GMT programs that require a map projection argument will implicitly
 know what kind of data to expect, and the input processing is done
 accordingly. However, some programs that simply report on minimum and
 maximum values or just do a reformatting of the data will in general not
 know what to expect, and furthermore there is no way for the programs to
 know what kind of data other columns (beyond the leading *x* and
 *y* columns) contain. In such instances we must explicitly tell
-*GMT* that we are feeding it data in the specific geographic or calendar
+GMT that we are feeding it data in the specific geographic or calendar
 formats (floating point data are assumed by default). We specify the
 data type via the **-f** option (which sets both input and output
 formats; use **-fi** and **-fo** to set input and output separately).
@@ -3391,9 +3391,9 @@ details, see the man page for the program you need to use.
 Output data formats
 -------------------
 
-The numerical output from *GMT* programs can be binary (when **-bo** is
+The numerical output from GMT programs can be binary (when **-bo** is
 used) or ASCII [Default]. In the latter case the issue of formatting
-becomes important. *GMT* provides extensive machinery for allowing just
+becomes important. GMT provides extensive machinery for allowing just
 about any imaginable format to be used on output. Analogous to the
 processing of input data, several templates guide the formatting
 process. These are :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>` for
@@ -3405,34 +3405,34 @@ to create limited FORTRAN-style card records by setting
 :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` to %7.3lf and :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>` to none
 [Default is tab].
 
-*PostScript* features
+PostScript features
 ---------------------
 
-*PostScript* is a command language for driving graphics devices such as
+PostScript is a command language for driving graphics devices such as
 laser printers. It is ASCII text which you can read and edit as you wish
 (assuming you have some knowledge of the syntax). We prefer this to
 binary metafile plot systems since such files cannot easily be modified
-after they have been created. *GMT* programs also write many comments to
+after they have been created. GMT programs also write many comments to
 the plot file which make it easier for users to orient themselves should
 they need to edit the file (e.g., % Start of x-axis) [16]_. All
-*GMT* programs create *PostScript* code by calling the :doc:`PSL <pslib>` plot
+GMT programs create PostScript code by calling the :doc:`PSL <pslib>` plot
 library (The user may call these functions from his/her own C or FORTRAN
 plot programs. See the manual pages for :doc:`PSL <pslib>` syntax). Although
-*GMT* programs can create very individualized plot code, there will
+GMT programs can create very individualized plot code, there will
 always be cases not covered by these programs. Some knowledge of
-*PostScript* will enable the user to add such features directly into the
-plot file. By default, *GMT* will produce freeform *PostScript* output
+PostScript will enable the user to add such features directly into the
+plot file. By default, GMT will produce freeform PostScript output
 with embedded printer directives. To produce Encapsulated
-*PostScript* (EPS) that can be imported into graphics programs such as
+PostScript (EPS) that can be imported into graphics programs such as
 **CorelDraw**, **Illustrator** or **InkScape** for further
 embellishment, simply run :doc:`ps2raster`
 **-Te**. See Appendix [app:C] for an extensive discussion of converting
-*PostScript* to other formats.
+PostScript to other formats.
 
 Specifying pen attributes
 -------------------------
 
-A pen in *GMT* has three attributes: *width*, *color*, and
+A pen in GMT has three attributes: *width*, *color*, and
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
@@ -3525,8 +3525,8 @@ suitable for, say, :doc:`psxy`.
 +-------------------------------+-----------------------------------------------------+
 
 In addition to these pen settings there are several
-*PostScript* settings that can affect the appearance of lines. These are
-controlled via the *GMT* defaults settings :ref:`PS_LINE_CAP <PS_LINE_CAP>`,
+PostScript settings that can affect the appearance of lines. These are
+controlled via the GMT defaults settings :ref:`PS_LINE_CAP <PS_LINE_CAP>`,
 :ref:`PS_LINE_JOIN <PS_LINE_JOIN>`, and :ref:`PS_MITER_LIMIT <PS_MITER_LIMIT>`. They determine how a line
 segment ending is rendered, be it at the termination of a solid line or
 at the end of all dashed line segments making up a line, and how a
@@ -3569,7 +3569,7 @@ pattern:
     The second form allows us to use a predefined bit-image pattern.
     *pattern* can either be a number in the range 1--90 or the name of a
     1-, 8-, or 24-bit Sun raster file. The former will result in one of
-    the 90 predefined 64 x 64 bit-patterns provided with *GMT* and
+    the 90 predefined 64 x 64 bit-patterns provided with GMT and
     reproduced in Appendix [app:E]. The latter allows the user to create
     customized, repeating images using standard Sun raster files [18]_.
     The *dpi* parameter sets the resolution of this image on the page;
@@ -3585,14 +3585,14 @@ pattern:
     fore- or background colors to - yields a *transparent* image where
     only the back- *or* foreground pixels will be painted.
 
-Due to *PostScript* implementation limitations the raster images used
+Due to PostScript implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`psimage`. The format of Sun
 raster files is outlined in Appendix [app:B]. Note that under
-*PostScript* Level 1 the patterns are filled by using the polygon as a
+PostScript Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
-*PostScript* interpreter has been assigned. There is therefore the
-possibility that some *PostScript* interpreters (especially those
+PostScript interpreter has been assigned. There is therefore the
+possibility that some PostScript interpreters (especially those
 supplied with older laserwriters) will run out of memory and abort.
 Should that occur we recommend that you use a regular gray-shade fill
 instead of the patterns. Installing more memory in your printer *may or
@@ -3626,8 +3626,8 @@ Table :ref:`fillex <tbl-fillex>` contains a few examples of fill specifications.
 Specifying Fonts
 ----------------
 
-The fonts used by *GMT* are typically set indirectly via the
-*GMT* defaults parameters. However, some programs, like
+The fonts used by GMT are typically set indirectly via the
+GMT defaults parameters. However, some programs, like
 :doc:`pstext` may wish to have this
 information passed directly. A font is specified by a comma-delimited
 attribute list of *size*, *fonttype* and *fill*, each of which is
@@ -3640,13 +3640,13 @@ append **=**\ *pen* to the *fill* value in order to draw the text
 outline with the specified *pen*; if used you may optionally skip the
 filling of the text by setting *fill* to **-**. If any of the attributes
 is omitted their default or previous setting will be retained. See
-Appendix `G. PostScript fonts used by GMT`_ for a list of all fonts recognized by *GMT*.
+Appendix `G. PostScript fonts used by GMT`_ for a list of all fonts recognized by GMT.
 
 Stroke, Fill and Font Transparency
 ----------------------------------
 
-The *PostScript* language has no built-in mechanism for transparency.
-However, *PostScript*\ extensions make it possible to request
+The PostScript language has no built-in mechanism for transparency.
+However, PostScript\ extensions make it possible to request
 transparency, and tools that can render such extensions will produce
 transparency effects. We specify transparency in percent: 0 is opaque
 [Default] while 100 is fully transparent (i.e., nothing will show). As
@@ -3655,15 +3655,15 @@ layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*
 to colors or pattern fills. The transparency *mode* can be changed by
-using the *GMT* default parameter :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>`; the default is
+using the GMT default parameter :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>`; the default is
 Normal but you can choose among Color, ColorBurn, ColorDodge, Darken,
 Difference, Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply,
 Normal, Overlay, Saturation, SoftLight, and Screen. For more
 information, see for instance (search online for) the Adobe pdfmark
-Reference Manual. Most printers and many *PostScript* viewers can
+Reference Manual. Most printers and many PostScript viewers can
 neither print nor show transparency. They will simply ignore your
 attempt to create transparency and will plot any material as opaque.
-**GhostScript** and its derivatives such as *GMT*\ 's
+Ghostscript and its derivatives such as GMT's
 :doc:`ps2raster` support transparency (if
 compiled with the correct build option). Note: If you use **Acrobat
 Distiller** to create a PDF file you must first change some settings to
@@ -3756,7 +3756,7 @@ be **L**, **U**, or **B** to select annotation of the lower, upper, or
 both limits of the particular *z*-slice, respectively. However,
 the standard **-B** option can be used by
 :doc:`psscale` to affect annotation and
-ticking of color scales. Just as other *GMT* programs, the *stride* can
+ticking of color scales. Just as other GMT programs, the *stride* can
 be omitted to determine the annotation and tick interval automatically
 (e.g., **-Baf**). The optional semicolon followed by a text label will
 make :doc:`psscale`, when used with the
@@ -3833,11 +3833,11 @@ on topography by using the former for colors and the latter for shading.
 The Drawing of Vectors
 ----------------------
 
-*GMT* supports plotting vectors in various forms. A vector is one of
+GMT supports plotting vectors in various forms. A vector is one of
 many symbols that may be plotted by :doc:`psxy`
 and :doc:`psxyz`, is the main feature in
 :doc:`grdvector`, and is indirectly used by
-other programs. All vectors plotted by *GMT* consist of two separate
+other programs. All vectors plotted by GMT consist of two separate
 parts: The vector line (controlled by the chosen pen attributes) and the
 optional vector head(s) (controlled by the chosen fill). We distinguish
 between three types of vectors:
@@ -3867,11 +3867,11 @@ Character escape sequences
 --------------------------
 
 For annotation labels or text strings plotted with
-:doc:`pstext`, *GMT* provides several escape
+:doc:`pstext`, GMT provides several escape
 sequences that allow the user to temporarily switch to the symbol font,
 turn on sub- or superscript, etc., within words. These conditions are
 toggled on/off by the escape sequence @\ **x**, where **x** can be one
-of several types. The escape sequences recognized in *GMT* are listed in
+of several types. The escape sequences recognized in GMT are listed in
 Table :ref:`escape <tbl-escape>`. Only one level of sub- or superscript is supported.
 Note that under Windows the percent symbol indicates a batch variable,
 hence you must use two percent-signs for each one required in the escape
@@ -3923,7 +3923,7 @@ Shorthand notation for a few special European characters has also been added:
 | @s       | ß          |          |            |
 +----------+------------+----------+------------+
 
-*PostScript* fonts used in *GMT* may be re-encoded to include several
+PostScript fonts used in GMT may be re-encoded to include several
 accented characters used in many European languages. To access these,
 you must specify the full octal code \\xxx allowed for
 your choice of character encodings determined by the
@@ -3934,7 +3934,7 @@ characters not directly available by using single octal codes may be
 constructed with the composite character mechanism @!.
 
 Some examples of escape sequences and embedded octal codes in
-*GMT* strings using the Standard+ encoding:
+GMT strings using the Standard+ encoding:
 
 | ``2@~p@~r@+2@+h@-0@- E\363tv\363s`` = 2\ :math:`\pi r^2h_0` Eötvös
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
@@ -3952,23 +3952,23 @@ Appendix [app:F].
 Grid file format specifications
 -------------------------------
 
-*GMT* has the ability to read and write grids using
+GMT has the ability to read and write grids using
 more than one grid file format (see Table :ref:`grdformats <tbl-grdformats>` for supported
-format and their IDs). For reading, *GMT* will automatically determine
+format and their IDs). For reading, GMT will automatically determine
 the format of grid files, while for writing you will normally have to
-append *=ID* to the filename if you want *GMT* to use a different format
+append *=ID* to the filename if you want GMT to use a different format
 than the default.
 
-By default, *GMT* will create new grid files using the **nf** format;
+By default, GMT will create new grid files using the **nf** format;
 however, this behavior can be overridden by setting the
 :ref:`IO_GRIDFILE_FORMAT <IO_GRIDFILE_FORMAT>` defaults parameter to any of the other
 recognized values (or by appending *=ID*).
 
-*GMT* can also read netCDF grid files produced by other software
+GMT can also read netCDF grid files produced by other software
 packages, provided the grid files satisfy the COARDS and Hadley Centre
 conventions for netCDF grids. Thus, products created under those
 conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be
-read directly by *GMT* and the netCDF grids written by *GMT* can be read
+read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
 `ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_, `Panoply
 <http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
@@ -3976,10 +3976,10 @@ by other programs that conform to those conventions. Three such programs are
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 
 In addition, users with some C-programming experience may add their own
-read/write functions and link them with the *GMT* library to extend the
+read/write functions and link them with the GMT library to extend the
 number of predefined formats. Technical information on this topic can be
 found in the source file ``gmt_customio.c``. Users who are considering this approach
-should contact the *GMT* team.
+should contact the GMT team.
 
 .. _tbl-grdformats:
 
@@ -4048,7 +4048,7 @@ store it is sometimes necessary to provide more than simply the name of
 the file and its ID on the command line. For instance, a native short
 integer file may use a unique value to signify an empty node or NaN, and
 the data may need translation and scaling prior to use. Therefore, all
-*GMT* programs that read or write grid files will decode the given
+GMT programs that read or write grid files will decode the given
 filename as follows:
 
 name[=\ *ID*\ [/*scale*/*offset*\ [/*nan*]]]
@@ -4068,7 +4068,7 @@ auto-adjusting the scale and/or offset of packed integer grids
 (=\ *ID*/*a* is a shorthand for =\ *ID*/*a*/*a*).
 
 Some of the grid formats allow writing to standard output and reading
-from standard input which means you can connect *GMT* programs that
+from standard input which means you can connect GMT programs that
 operate on grid files with pipes, thereby speeding up execution and
 eliminating the need for large, intermediate grid files. You specify
 standard input/output by leaving out the filename entirely. That means
@@ -4144,7 +4144,7 @@ small as 1/32 the size of the corresponding grid float format file.
 Modifiers for changing the grid coordinates
 -------------------------------------------
 
-A few *GMT* tools require that the two horizontal dimensions be
+A few GMT tools require that the two horizontal dimensions be
 specified in meters. One example is
 :doc:`grdfft` which must compute the 2-D
 Fourier transform of a grid and evaluate wavenumbers in the proper units
@@ -4179,7 +4179,7 @@ Modifiers for COARDS-compliant netCDF files
 -------------------------------------------
 
 When the netCDF grid file contains more than one 2-dimensional variable,
-*GMT* programs will load the first such variable in the file and ignore
+GMT programs will load the first such variable in the file and ignore
 all others. Alternatively, the user can select the required variable by
 adding the suffix "?\ *varname*" to the grid file name. For example, to
 get information on the variable "slp" in file , use:
@@ -4191,7 +4191,7 @@ get information on the variable "slp" in file , use:
 Since COARDS-compliant netCDF files are the default, the additional
 suffix "=nf" can be omitted.
 
-In case the named grid is 3-dimensional, *GMT* will load the first
+In case the named grid is 3-dimensional, GMT will load the first
 (bottom) layer. If another layer is required, either add "[*index*]"
 or "(*level*)", where *index* is the index of the third (depth) variable
 (starting at 0 for the first layer) and *level* is the numerical value
@@ -4199,7 +4199,7 @@ of the third (depth) variable associated with the requested layer. To
 indicate the second layer of the 3-D variable "slp" use as file name: ``file.nc?slp[1]``.
 
 When you supply the numerical value for the third variable using
-"(*level*)", *GMT* will pick the layer closest to that value. No
+"(*level*)", GMT will pick the layer closest to that value. No
 interpolation is performed.
 
 Note that the question mark, brackets and parentheses have special
@@ -4295,20 +4295,20 @@ netCDF file (to be obtained using **ncdump**):
 
 This file contains two grids, which can be plotted separately using the
 names ``M2_fes2004.nc?amp`` and ``M2_fes2004.nc?pha``. The attributes ``long_name`` and ``unit`` for each variable
-are combined in *GMT* to a single unit string. For example, after
+are combined in GMT to a single unit string. For example, after
 reading the grid ``y_unit`` equals ``latitude [degrees_north]``. The
 same method can be used in reverse to set the proper variable names and
 units when writing a grid. However, when the coordinates are set
-properly as geographical or time axes, *GMT* will take care of this. The
+properly as geographical or time axes, GMT will take care of this. The
 user is, however, still responsible for setting the variable name and
 unit of the z-coordinate. The default is simply "z".
 
 Modifiers to read and write grids and images via GDAL
 -----------------------------------------------------
 
-If the support has been configured during installation, then *GMT* can
+If the support has been configured during installation, then GMT can
 read and write a variety of grid and image formats via GDAL. This
-extends the capability of *GMT* to handle data sets from a variety of
+extends the capability of GMT to handle data sets from a variety of
 sources.
 
 Reading multi-band images
@@ -4335,7 +4335,7 @@ a gray-scale image, and
 
 will plot the same image in color but where the RGB band order has been reversed.
 
-Instead of treating them as images, all other *GMT* programs that
+Instead of treating them as images, all other GMT programs that
 process grids can read individual bands from an image but will consider
 the values to be regular data. For example, let ``multiband`` be the name of a
 multi-band file with a near infrared component in band 4 and red in band
@@ -4385,7 +4385,7 @@ must extract the necessary metadata from the file:
      SUBDATASET_2_NAME=HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":1
      SUBDATASET_2_DESC=[2160x4320] l3m_qual (8-bit unsigned integer)
 
-Now, to access this file with *GMT* we need to use the =gd mechanism and
+Now, to access this file with GMT we need to use the =gd mechanism and
 append the name of the sub-dataset that we want to extract. Here, a
 simple example using :doc:`grdinfo` would be
 
@@ -4407,7 +4407,7 @@ Be warned, however, that things are not yet completed because while the
 data are scaled according to the equation printed above ("Scaling
 Equation=(Slope\*l3m_data) + Intercept = Parameter value"), this
 scaling is not applied by GDAL on reading so it cannot be done
-automatically by *GMT*. One solution is to do the reading and scaling
+automatically by GMT. One solution is to do the reading and scaling
 via :doc:`grdmath` first, i.e.,
 
    ::
@@ -4448,14 +4448,14 @@ days" such information was passed by letting a value like -9999.99 take
 on the special meaning of "this is not really a value, it is missing".
 The problem with this scheme is that -9999.99 (or any other floating
 point value) may be a perfectly reasonable data value and in such a
-scenario would be skipped. The solution adopted in *GMT* is to use the
+scenario would be skipped. The solution adopted in GMT is to use the
 IEEE concept Not-a-Number (NaN) for this purpose. Mathematically, a NaN
 is what you get if you do an undefined mathematical operation like
 0/0; in ASCII data files they appear as the textstring NaN. This
 value is internally stored with a particular bit pattern defined by IEEE
 so that special action can be taken when it is encountered by programs.
 In particular, a standard library function called ``isnan`` is used to
-test if a floating point is a NaN. *GMT* uses these tests extensively to
+test if a floating point is a NaN. GMT uses these tests extensively to
 determine if a value is suitable for plotting or processing (if a NaN is
 used in a calculation the result would become NaN as well). Data points
 whose values equal NaN are not normally plotted (or plotted with the
@@ -4483,20 +4483,20 @@ skipped during reading; see Section `Data gap detection: The -g option`_ for det
 GMT environment parameters
 --------------------------
 
-*GMT* relies on several environment parameters, in particular to find
+GMT relies on several environment parameters, in particular to find
 data files and program settings.
 
 $GMT_SHAREDIR
-    points to the *GMT* share directory where all run-time support files
-    such as coastlines, custom symbols, *PostScript* macros, color
+    points to the GMT share directory where all run-time support files
+    such as coastlines, custom symbols, PostScript macros, color
     tables, and much more reside. If this parameter is not set it
-    defaults to the share sub-directory selected during the *GMT*
+    defaults to the share sub-directory selected during the GMT
     install process (see if installing from source), which normally is
-    the share directory under the *GMT* installation directory.
+    the share directory under the GMT installation directory.
 
 $GMT_DATADIR
     points to one or more directories where large and/or widely used
-    data files can be placed. All *GMT* programs look in these
+    data files can be placed. All GMT programs look in these
     directories when a file is specified on the command line and it is
     not present in the current directory. This allows maintainers to
     consolidate large data files and to simplify scripting that use
@@ -4512,11 +4512,11 @@ $GMT_USERDIR
     :doc:`gmtmath` and
     :doc:`grdmath`, and shorthands for
     gridfile extensions via ``.gmt.io``). Users may also place their own data files
-    in this directory as *GMT* programs will search for files given on
+    in this directory as GMT programs will search for files given on
     the command line in both **$GMT_DATADIR** and **$GMT_USERDIR**.
 
 $GMT_TMPDIR
-    is where *GMT* will write its state parameters via the two files ``.gmtcommands`` and
+    is where GMT will write its state parameters via the two files ``.gmtcommands`` and
     ``gmt.conf``. If **$GMT_TMPDIR** is not set, these files are written to the
     current directory. See Appendix [app:P] for more on the use of
     **$GMT_TMPDIR**.
@@ -4527,7 +4527,7 @@ any of these directories.
 GMT Coordinate Transformations
 ==============================
 
-*GMT* programs read real-world coordinates and convert them to positions
+GMT programs read real-world coordinates and convert them to positions
 on a plot. This is achieved by selecting one of several coordinate
 transformations or projections. We distinguish between three sets of
 such conversions:
@@ -4538,10 +4538,10 @@ such conversions:
 
 -  Map coordinate transformations
 
-The next chapter will be dedicated to *GMT* map projections in its
+The next chapter will be dedicated to GMT map projections in its
 entirety. Meanwhile, the present chapter will summarize the properties
 of the Cartesian and Polar coordinate transformations available in
-*GMT*, list which parameters define them, and demonstrate how they are
+GMT, list which parameters define them, and demonstrate how they are
 used to create simple plot axes. We will mostly be using
 :doc:`psbasemap` (and occasionally
 :doc:`psxy`) to demonstrate the various
@@ -4554,7 +4554,7 @@ unit instead (see the :doc:`gmt.conf` man page).
 Cartesian transformations
 -------------------------
 
-*GMT* Cartesian coordinate transformations come in three flavors:
+GMT Cartesian coordinate transformations come in three flavors:
 
 -  Linear coordinate transformation
 
@@ -4655,7 +4655,7 @@ Geographic coordinates
 While the Cartesian linear projection is primarily designed for regular
 floating point *x*,\ *y* data, it is sometimes necessary to plot
 geographical data in a linear projection. This poses a problem since
-longitudes have a 360 periodicity. *GMT* therefore needs to be informed
+longitudes have a 360 periodicity. GMT therefore needs to be informed
 that it has been given geographical coordinates even though a linear
 transformation has been chosen. We do so by adding a **g** (for
 geographical) or **d** (for degrees) directly after **-R** or by
@@ -4702,7 +4702,7 @@ example, we will make a plot of a school week calendar
 
 When the coordinate ranges provided by the **-R** option and the
 projection type given by **-JX** (including the optional **d**, **g**,
-**t** or **T**) conflict, *GMT* will warn the users about it. In
+**t** or **T**) conflict, GMT will warn the users about it. In
 general, the options provided with **-JX** will prevail.
 
    ::
@@ -4828,7 +4828,7 @@ Figure :ref:`missing` [fig:GMT_polar].
 GMT Map Projections
 ===================
 
-*GMT* implements more than 30 different projections. They all project
+GMT implements more than 30 different projections. They all project
 the input coordinates longitude and latitude to positions on a map. In
 general, *x' = f(x,y,z)* and *y' = g(x,y,z)*, where
 *z* is implicitly given as the radial vector length to the
@@ -4837,7 +4837,7 @@ general, *x' = f(x,y,z)* and *y' = g(x,y,z)*, where
 in this document. The interested read is referred to *Snyder*
 [1987] [20]_. We will mostly be using the
 :doc:`pscoast` command to demonstrate each of
-the projections. *GMT* map projections are grouped into four categories
+the projections. GMT map projections are grouped into four categories
 depending on the nature of the projection. The groups are
 
 #. Conic map projections
@@ -4860,11 +4860,11 @@ to select the minimum map dimension, append **-**, whereas you may
 append **+** to select the maximum map dimension. Without the modifier
 the map width is selected by default.
 
-In *GMT* version 4.3.0 we noticed we ran out of the alphabet for
+In GMT version 4.3.0 we noticed we ran out of the alphabet for
 1-letter (and sometimes 2-letter) projection codes. To allow more
 flexibility, and to make it easier to remember the codes, we implemented
 the option to use the abbreviations used by the **Proj4** mapping
-package. Since some of the *GMT* projections are not in **Proj4**, we
+package. Since some of the GMT projections are not in **Proj4**, we
 invented some of our own as well. For a full list of both the old 1- and
 2-letter codes, as well as the **Proj4**-equivalents see the quick
 reference cards in Section `GMT quick reference`_. For example, **-JM**\ 15c and
@@ -4885,7 +4885,7 @@ radii about a common center, and cut the parallels at right angles.
 Distortion in scale and shape vanishes along the two standard parallels.
 Between them, the scale along parallels is too small; beyond them it is
 too large. The opposite is true for the scale along meridians. To define
-the projection in *GMT* you need to provide the following information:
+the projection in GMT you need to provide the following information:
 
 -  Longitude and latitude of the projection center.
 
@@ -4923,7 +4923,7 @@ The equidistant conic projection was described by the Greek philosopher
 Claudius Ptolemy about A.D. 150. It is neither conformal or equal-area,
 but serves as a compromise between them. The scale is true along all
 meridians and the standard parallels. To select this projection in
-*GMT* you must provide the same information as for the other conic
+GMT you must provide the same information as for the other conic
 projection, i.e.,
 
 -  Longitude and latitude of the projection center.
@@ -4958,7 +4958,7 @@ projection. Unlike the Albers projection, Lambert's conformal projection
 is not equal-area. The parallels are arcs of circles with a common
 origin, and meridians are the equally spaced radii of these circles. As
 with Albers projection, it is only the two standard parallels that are
-distortion-free. To select this projection in *GMT* you must provide the
+distortion-free. To select this projection in GMT you must provide the
 same information as for the Albers projection, i.e.,
 
 -  Longitude and latitude of the projection center.
@@ -5039,7 +5039,7 @@ This projection was developed by Lambert in 1772 and is typically used
 for mapping large regions like continents and hemispheres. It is an
 azimuthal, equal-area projection, but is not perspective. Distortion is
 zero at the center of the projection, and increases radially away from
-this point. To define this projection in *GMT* you must provide the
+this point. To define this projection in GMT you must provide the
 following information:
 
 -  Longitude and latitude of the projection center.
@@ -5079,7 +5079,7 @@ rectangular by defining the corners of a rectangular map boundary. Using
    Rectangular map using the Lambert azimuthal equal-area projection.
 
 
-Note that an "r" is appended to the **-R** option to inform *GMT* that
+Note that an "r" is appended to the **-R** option to inform GMT that
 the region has been selected using the rectangle technique, otherwise it
 would try to decode the values as *west, east, south, north* and report
 an error since *'east'* < *'west'*.
@@ -5211,7 +5211,7 @@ Perspective projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The perspective projection imitates in 2 dimensions the 3-dimensional
-view of the earth from space. The implementation in *GMT* is very
+view of the earth from space. The implementation in GMT is very
 flexible, and thus requires many input variables. Those are listed and
 explained below, with the values used in
 Figure :ref:`missing` [fig:GMT_perspective] between brackets.
@@ -5382,7 +5382,7 @@ Cylindrical projections
 Cylindrical projections are easily recognized for its shape: maps are
 rectangular and meridians and parallels are straight lines crossing at
 right angles. But that is where similarities between the cylindrical
-projections supported by *GMT* (Mercator, transverse Mercator, universal
+projections supported by GMT (Mercator, transverse Mercator, universal
 transverse Mercator, oblique Mercator, Cassini, cylindrical equidistant,
 cylindrical equal-area, Miller, and cylindrical stereographic
 projections) stops. Each have a different way of spacing the meridians
@@ -5414,7 +5414,7 @@ the Transverse and Oblique Mercator projections, respectively. We will
 discuss these generalizations following the regular Mercator projection.
 
 The regular Mercator projection requires a minimum of parameters. To use
-it in *GMT* programs you supply this information (the first two items
+it in GMT programs you supply this information (the first two items
 are optional and have defaults):
 
 -  Central meridian [Middle of your map].
@@ -5524,7 +5524,7 @@ all zone designations.
    Universal Transverse Mercator zone layout.
 
 
-*GMT* implements both the transverse Mercator and the UTM projection.
+GMT implements both the transverse Mercator and the UTM projection.
 When selecting UTM you must specify:
 
 -  UTM zone (A, B, 1--60, Y, Z). Use negative values for numerical zones
@@ -5552,7 +5552,7 @@ projection. It is particularly useful when mapping regions of large
 lateral extent in an oblique direction. Both parallels and meridians are
 complex curves. The projection was developed in the early 1900s by
 several workers. Several parameters must be provided to define the
-projection. *GMT* offers three different definitions:
+projection. GMT offers three different definitions:
 
 #. Option **-Joa** or **-JOa**:
 
@@ -5842,7 +5842,7 @@ Figure :ref:`missing` [fig:GMT_gall_stereo]), is obtained as follows:
 Miscellaneous projections
 -------------------------
 
-*GMT* supports 8 common projections for global presentation of data or
+GMT supports 8 common projections for global presentation of data or
 models. These are the Hammer, Mollweide, Winkel Tripel, Robinson, Eckert
 IV and VI, Sinusoidal, and Van der Grinten projections. Due to the small
 scale used for global maps these projections all use the spherical
@@ -6110,7 +6110,7 @@ A. GMT supplemental packages
 ============================
 
 These packages are for the most part written and supported by us, but
-there are some exceptions. They provide extensions of *GMT* that are
+there are some exceptions. They provide extensions of GMT that are
 needed for particular rather than general applications. The software is
 provided in a separate, supplemental archive (GMT_suppl.tar.gz (or .bz2)).
 Questions or bug reports for this software
@@ -6129,7 +6129,7 @@ This package contains :doc:`gshhg <supplements/gshhg/gshhg>` which you
 can use to extract shoreline polygons from the Global Self-consistent
 Hierarchical High-resolution Shorelines (GSHHG) available separately
 from or the (GSHHG is the polygon data base from which the
-*GMT* coastlines derive). The package is maintained by Paul Wessel.
+GMT coastlines derive). The package is maintained by Paul Wessel.
 
 img: gridded altimetry extractor
 --------------------------------
@@ -6150,7 +6150,7 @@ This package contains the programs
 and geodesists for plotting focal mechanisms (including cross-sections
 and polarities), error ellipses, velocity arrows, rotational wedges, and
 more. The package was developed by Kurt Feigl and Genevieve
-Patau but is now maintained by the *GMT* team.
+Patau but is now maintained by the GMT team.
 
 mgd77: MGD77 extractor and plotting tools
 -----------------------------------------
@@ -6196,13 +6196,13 @@ segyprogs: plotting SEGY seismic data
 -------------------------------------
 
 This package contains programs to plot SEGY seismic data files using the
-*GMT* mapping transformations and postscript library.
+GMT mapping transformations and postscript library.
 :doc:`pssegy <supplements/segy/pssegy>` generates a 2-D plot (x:location
 and y:time/depth) while :doc:`pssegyz <supplements/segy/pssegyz>`
 generates a 3-D plot (x and y: location coordinates, z: time/depth).
 Locations may be read from predefined or arbitrary portions of each
 trace header. Finally, :doc:`segy2grd <supplements/segy/segy2grd>` can
-convert SEGY data to a *GMT* grid file. The package is maintained by Tim Henstock [38]_.
+convert SEGY data to a GMT grid file. The package is maintained by Tim Henstock [38]_.
 
 spotter: backtracking and hotspotting
 -------------------------------------
@@ -6254,7 +6254,7 @@ Table data
 ----------
 
 These files have *N* records which have *M* fields each. All programs
-that handle tables can read multicolumn files. *GMT* can read both
+that handle tables can read multicolumn files. GMT can read both
 ASCII, native binary, and netCDF table data.
 
 ASCII tables
@@ -6268,7 +6268,7 @@ records that begins with '#' is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
 **-h** option and set the parameter :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` in the ``gmt.conf`` file
-(*GMT* default is one header record if **-h** is given; you may also use
+(GMT default is one header record if **-h** is given; you may also use
 **-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, or commas. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
@@ -6285,7 +6285,7 @@ have each profile in separate files. However, this may sometimes prove
 impractical due to large numbers of profiles. An example is files of
 digitized lineations where the number of individual features may range
 into the thousands. One file per feature would in this case be
-unreasonable and furthermore clog up the directory. *GMT* provides a
+unreasonable and furthermore clog up the directory. GMT provides a
 mechanism for keeping more than one profile in a file. Such files are
 called *multiple segment files* and are identical to the ones just
 outlined except that they have segment headers interspersed with data
@@ -6298,7 +6298,7 @@ for a distance value, **-W** and **-G** options for specifying pen and
 fill attributes for individual segments, **-Z** to change color via a
 CPT file, **-L** for label specifications, or **-T** for general-purpose
 text descriptions. These settings (and occasionally others) will
-override the corresponding command line options. *GMT* also provides for
+override the corresponding command line options. GMT also provides for
 two special values for :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` that can make
 interoperability with other software packages easier. Choose the marker
 **B** to have blank lines recognized as segment breaks, or use **N** to
@@ -6313,7 +6313,7 @@ file to the OGR format.
 Binary tables
 ~~~~~~~~~~~~~
 
-*GMT* programs also support native binary tables to speed up
+GMT programs also support native binary tables to speed up
 input-output for i/o-intensive tasks like gridding and preprocessing.
 This is discussed in more detail in section `Binary table i/o: The -b option`_.
 
@@ -6321,11 +6321,11 @@ NetCDF tables
 ~~~~~~~~~~~~~
 
 More and more programs are now producing binary data in the netCDF
-format, and so *GMT* programs started to support tabular netCDF data
+format, and so GMT programs started to support tabular netCDF data
 (files containing one or more 1-dimensional arrays) starting with
-*GMT* version 4.3.0. Because of the meta data contained in those files,
+GMT version 4.3.0. Because of the meta data contained in those files,
 reading them is much less complex than reading native binary tables, and
-even than ASCII tables. *GMT* programs will read as many 1-dimensional
+even than ASCII tables. GMT programs will read as many 1-dimensional
 columns as are needed by the program, starting with the first
 1-dimensional it can find in the file. To specifically specify which
 variables are to be read, append the suffix
@@ -6333,39 +6333,39 @@ variables are to be read, append the suffix
 add the option **-bic**\ *var1*\ **/**\ *var2*\ **/**\ *...*, where
 *var1*, *var2*, etc.are the names of the variables to be processed. The
 latter option is particularly practical when more than one file is read:
-the **-bic** option will apply to all files. Currently, *GMT* only
+the **-bic** option will apply to all files. Currently, GMT only
 reads, but does not write, netCDF tabular data.
 
 Grid files
 ----------
 
-*GMT* allows numerous grid formats to be read. In addition to the default
+GMT allows numerous grid formats to be read. In addition to the default
 netCDF format it can use binary floating points, short integers, bytes, and
 bits, as well as 8-bit Sun raster files (colormap ignored).  Additional
 formats may be used by supplying read/write functions and linking these with
-the *GMT* libraries. The source file ``gmt_customio.c`` has the information
-that programmers will need to augment *GMT* to read custom grid files. See
+the GMT libraries. The source file ``gmt_customio.c`` has the information
+that programmers will need to augment GMT to read custom grid files. See
 Section `Grid file format specifications`_ for more information.
 
 NetCDF files
 ~~~~~~~~~~~~
 
-By default, *GMT* stores 2-D grids as COARDS-compliant netCDF files.
+By default, GMT stores 2-D grids as COARDS-compliant netCDF files.
 COARDS (which stands for Cooperative Ocean/Atmosphere Research Data
 Service) is a convention used by many agencies distributing gridded data
 for ocean and atmosphere research. Sticking to this convention allows
-*GMT* to read gridded data provided by other institutes and other
+GMT to read gridded data provided by other institutes and other
 programs. Conversely, other general domain programs will be able to read
-grids created by *GMT*. COARDS is a subset of a more extensive
+grids created by GMT. COARDS is a subset of a more extensive
 convention for netCDF data called CF-1.5 (Climate and Forecast, version
-1.5). Hence, *GMT* grids are also automatically CF-1.5-compliant.
+1.5). Hence, GMT grids are also automatically CF-1.5-compliant.
 However, since CF-1.5 has more general application than COARDS, not all
-CF-1.5 compliant netCDF files can be read by *GMT*.
+CF-1.5 compliant netCDF files can be read by GMT.
 
-The netCDF grid file in *GMT* has several attributes (See Table
+The netCDF grid file in GMT has several attributes (See Table
 :ref:`netcdf-format <tbl-netcdf-format>`) to describe the content. The routine
 that deals with netCDF grid files is sufficiently flexible so that grid files
-slightly deviating from the standards used by *GMT* can also be read.
+slightly deviating from the standards used by GMT can also be read.
 
 .. _tbl-netcdf-format:
 
@@ -6410,7 +6410,7 @@ slightly deviating from the standards used by *GMT* can also be read.
 
 By default, the first 2-dimensional variable in a netCDF file will be read as
 the *z* variable and the coordinate axes *x* and *y* will be determined from
-the dimensions of the *z* variable. *GMT* will recognize whether the *y*
+the dimensions of the *z* variable. GMT will recognize whether the *y*
 (latitude) variable increases or decreases. Both forms of data storage are
 handled appropriately.
 
@@ -6474,7 +6474,7 @@ is always defined as the intersections of all
 *x* ( :math:`x = x_{min}, x_{min} + x_{inc}, x_{min} + 2 \cdot x_{inc}, \ldots, x_{max}` )
 and *y* ( :math:`y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max}` )
 lines. The two scenarios differ as to which area each data point
-represents. The default node registration in *GMT* is gridline node
+represents. The default node registration in GMT is gridline node
 registration. Most programs can handle both types, and for some programs
 like :doc:`grdimage` a pixel registered file
 makes more sense. Utility programs like
@@ -6483,18 +6483,18 @@ makes more sense. Utility programs like
 convert from one format to the other;
 :doc:`grdedit` can make changes to the grid
 header and convert a pixel- to a gridline-registered grid, or *vice
-versa*. The grid registration is determined by the common *GMT* **-r**
+versa*. The grid registration is determined by the common GMT **-r**
 option (see Section `Grid registration: The -r option`_).
 
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-*GMT* has the option to specify boundary conditions in some programs
+GMT has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
 :doc:`grdsample`, :doc:`grdgradient`,
 :doc:`grdtrack`, :doc:`nearneighbor`, and
 :doc:`grdview`, to name a few. The desired
-condition can be set with the common *GMT* option **-n**; see Section
+condition can be set with the common GMT option **-n**; see Section
 `Grid interpolation parameters: The -n option`_. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
 covered by the grid. The *default* boundary conditions used are those
@@ -6556,7 +6556,7 @@ Native binary grid files
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The old style native grid file format that was common in earlier version
-of *GMT* is still supported, although the use of netCDF files is
+of GMT is still supported, although the use of netCDF files is
 strongly recommended. The file starts with a header of 892 bytes
 containing a number of attributes defining the content. The
 :doc:`grdedit` utility program will allow you
@@ -6566,7 +6566,7 @@ in the order given (except the *z*-array which is not part of the
 header structure, but makes up the rest of the file). As this header was
 designed long before 64-bit architectures became available, the jump
 from the first three integers to the subsequent doubles in the structure
-does not occur on a 16-byte alignment. While *GMT* handles the reading
+does not occur on a 16-byte alignment. While GMT handles the reading
 of these structures correctly, enterprising programmers must take care
 to read this header correctly (see our code for details).
 
@@ -6622,7 +6622,7 @@ Sun raster files
 The Sun raster file format consists of a header followed by a series of
 unsigned 1-byte integers that represents the bit-pattern. Bits are
 scanline oriented, and each row must contain an even number of bytes.
-The predefined 1-bit patterns in *GMT* have dimensions of 64 by 64, but
+The predefined 1-bit patterns in GMT have dimensions of 64 by 64, but
 other sizes will be accepted when using the **-Gp|P** option. The Sun
 header structure is outline in Table :ref:`sunheader <tbl-sunheader>`.
 
@@ -6674,8 +6674,8 @@ Table :ref:`sundef <tbl-sundef>`.
 Numerous public-domain programs exist, such as **xv** and
 **convert** (in the ImageMagick package), that will translate between
 various raster file formats such as tiff, gif, jpeg, and Sun raster.
-Raster patterns may be created with *GMT* plotting tools by generating
-*PostScript* plots that can be rasterized by **ghostscript** and
+Raster patterns may be created with GMT plotting tools by generating
+PostScript plots that can be rasterized by ghostscript and
 translated into the right raster format.
 
 .. _include-gmt-graphics:
@@ -6684,67 +6684,67 @@ C. Including GMT graphics into your documents
 =============================================
 
 
-Now that you made some nice graphics with *GMT*, it is time to add them
+Now that you made some nice graphics with GMT, it is time to add them
 to a document, an article, a report, your dissertation, a poster, a web
 page, or a presentation. Of course, you could try the old-fashioned
 scissors and glue stick. More likely, you want to incorporate your
 graphics electronically into the document. Depending on the application,
-the *GMT* *PostScript* file will need to be converted to Encapsulated
-*PostScript* (EPS), Portable Document Format (PDF), or some raster
+the GMT PostScript file will need to be converted to Encapsulated
+PostScript (EPS), Portable Document Format (PDF), or some raster
 format (e.g., JPEG, PNG, or TIFF) in order to incorporate them into the
 document.
 
 -  When creating a document intended for printing (article,
    dissertation, or poster) it is best to preserve the scalable vector
-   characteristics of the *PostScript* file. Many applications can
-   directly incorporate *PostScript* in the form of EPS files. Modern
+   characteristics of the PostScript file. Many applications can
+   directly incorporate PostScript in the form of EPS files. Modern
    programs will often allow the inclusion of PDF files. Either way, the
    sharpness of lines and fonts will be preserved and can be scaled up
    or down as required.
 
 -  When the aim is to display the graphics on a computer screen or
    present it using a projector, it is wise to convert the
-   *PostScript* into a raster format. Although applications like
-   **PowerPoint** can do this for you, you can best take the
+   PostScript into a raster format. Although applications like
+   PowerPoint can do this for you, you can best take the
    conversion into your own hands for the best results.
 
 A large number of questions to the GMT-Help mailing list are related to
 these rendering issues, showing that something as seemingly
-straightforward as incorporating a *PostScript* file into a document is
+straightforward as incorporating a PostScript file into a document is
 a far from trivial exercise. This Appendix will show how to include
-*GMT* graphics into documents and how to achieve the best quality results.
+GMT graphics into documents and how to achieve the best quality results.
 
-Making GMT Encapsulated *PostScript* Files
+Making GMT Encapsulated PostScript Files
 ------------------------------------------
 
-*GMT* produces freeform *PostScript* files. Note that a freeform
-*PostScript* file may contain special operators (such as
+GMT produces freeform PostScript files. Note that a freeform
+PostScript file may contain special operators (such as
 ``Setpagedevice``) that is specific to printers (e.g., selection of
-paper tray). Some previewers (among them, Sun's **pageview**) may not
+paper tray). Some previewers (among them, Sun's pageview) may not
 understand these valid instructions and may fail to image the file.
-Also, embedding freeform *PostScript* with such instructions in it into
+Also, embedding freeform PostScript with such instructions in it into
 a larger document can cause printing to fail. While you could choose
 another viewer (we recommend **ghostview**) to view single plots
-prepared by *GMT*, it is generally wiser to convert *PostScript* to EPS
+prepared by GMT, it is generally wiser to convert PostScript to EPS
 output when you are creating a plot intended for inclusion into a larger
 document. Some programs (and some publishers as well) do not allow the
 use of instructions like ``Setpagedevice`` as part of embedded graphics.
 
 An EPS file that is to be placed into another document needs to have
 correct bounding box parameters. These are found in the
-*PostScript* Document Comment %%BoundingBox. Applications that generate
-EPS files should set these parameters correctly. Because *GMT*\ makes
-the *PostScript* files on the fly, often with several overlays, it is
+PostScript Document Comment %%BoundingBox. Applications that generate
+EPS files should set these parameters correctly. Because GMT\ makes
+the PostScript files on the fly, often with several overlays, it is
 not possible to do so accurately. Therefore, if you need and EPS version
 with a "tight" BoundingBox you need to post-process your
-*PostScript* file. There are several ways in which this can be
+PostScript file. There are several ways in which this can be
 accomplished.
 
--  Programs such as Adobe **Illustrator**, Aldus **Freehand**, and
-   Corel **Draw** will allow you to edit the BoundingBox graphically.
+-  Programs such as Adobe Illustrator, Aldus Freehand, and
+   Corel Draw will allow you to edit the BoundingBox graphically.
 
 -  A command-line alternative is to use freely-available program
-   **epstool** from the makers of Aladdin **ghostscript**. Running
+   **epstool** from the makers of Aladdin ghostscript. Running
 
       ::
 
@@ -6754,7 +6754,7 @@ accomplished.
    page size and not a huge poster.
 
 -  Another option is to use **ps2epsi** which also comes with the
-   **ghostscript** package. Running
+   ghostscript package. Running
 
       ::
 
@@ -6763,66 +6763,66 @@ accomplished.
    should also do the trick. The downside is that this program adds an
    "image" of the plot in the preamble of the EPS file, thus increasing
    the file size significantly. This image is a rough rendering of your
-   *PostScript* graphics that some programs will show on screen while
+   PostScript graphics that some programs will show on screen while
    you are editing your document. This image is basically a placeholder
-   for the *PostScript* graphics that will actually be printed.
+   for the PostScript graphics that will actually be printed.
 
--  The preferred option is to use the *GMT* utility
+-  The preferred option is to use the GMT utility
    :doc:`ps2raster`. Its **-A** option will
-   figure out the tightest BoundingBox, again using **ghostscript** in
+   figure out the tightest BoundingBox, again using ghostscript in
    the background. For example, running
 
       ::
 
        ps2raster -A -Te myplot.ps
 
-   will convert the *PostScript* file ``myplot.ps`` into an encapsulated
-   *PostScript* file ``myplot.eps`` which is exactly cropped to the tightest possible
+   will convert the PostScript file ``myplot.ps`` into an encapsulated
+   PostScript file ``myplot.eps`` which is exactly cropped to the tightest possible
    BoundingBox.
 
 If you do not want to modify your illustration but just include it in a
-text document: many word processors (such as Microsoft **Word**  or Apple **Pages**) will let you include a
-*PostScript* file that you may place but not edit. Newer versions of
+text document: many word processors (such as Microsoft Word  or Apple Pages) will let you include a
+PostScript file that you may place but not edit. Newer versions of
 those programs also allow you to include PDF versions of your graphics.
-Except for **Pages**, you will not be able to view the figure
+Except for Pages, you will not be able to view the figure
 on-screen, but it will print correctly.
 
-Converting GMT *PostScript* to PDF or raster images
+Converting GMT PostScript to PDF or raster images
 ---------------------------------------------------
 
 Since Adobe's PDF (Portable Document Format) seems to have become the
 *de facto* standard for vector graphics, you are often well off
-converting *GMT* produced *PostScript* files to PDF. Being both vector
+converting GMT produced PostScript files to PDF. Being both vector
 formats (i.e., they basically describe all objects, text and graphics as
 lines and curves), such conversion sounds awfully straightforward and
 not worth a full section in this document. But experience has shown
 differently, since most converters cut corners by using the same tool
-(Aladdin's **ghostscript**) with basic default options that are not
+(Aladdin's ghostscript) with basic default options that are not
 devised to produce the best quality PDF files.
 
 For some applications it is practical or even essential that you convert
-your *PostScript* file into a raster format, such as GIF (Graphics
+your PostScript file into a raster format, such as GIF (Graphics
 Interchange Format), TIFF (Tagged Image File Format), PNG (Portable
 Network Graphics), or JPEG (Joint Photographic Experts Group). A web
 page is better served with a raster image that will immediately show on
-a web browser, than with a *PostScript* file that needs to be downloaded
-to view, despite the better printing quality of the *PostScript* image.
+a web browser, than with a PostScript file that needs to be downloaded
+to view, despite the better printing quality of the PostScript image.
 A less obvious reason to convert your image to a raster format is to
-by-pass **PowerPoint**\ 's rendering engine in case you want to embed
+by-pass PowerPoint's rendering engine in case you want to embed
 the image into a presentation.
 
-The are a number of programs that will convert *PostScript* files to PDF
+The are a number of programs that will convert PostScript files to PDF
 or raster formats, like Aladdin's **pstopdf**, pbmplus' **pstoimg**,
-or ImageMagick's **convert**, most of which run **ghostscript**
+or ImageMagick's **convert**, most of which run ghostscript
 behind the scenes. The same is true for viewers like **ghostview** and
-Apple's **Preview**. So a lot of the times when people report that
-their *PostScript* plot does not look right but prints fine, it is the
-way **ghostscript** is used with its most basic settings that is to blame.
+Apple's Preview*. So a lot of the times when people report that
+their PostScript plot does not look right but prints fine, it is the
+way ghostscript is used with its most basic settings that is to blame.
 
-When converting or viewing *PostScript* goes awry
+When converting or viewing PostScript goes awry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here are some notorious pitfalls with **ghostscript** (and other
+Here are some notorious pitfalls with ghostscript (and other
 rendering programs for that matter).
 
 Rendering.
@@ -6844,10 +6844,10 @@ Image compression.
     leave JPEG to photographs.
 
 Embedded image compression.
-    When your *GMT* plot includes objects produced by
+    When your GMT plot includes objects produced by
     :doc:`grdimage`, :doc:`psimage` or
     :doc:`pslegend`, they are seen as
-    "images". The default options of **ghostscript** will use a
+    "images". The default options of ghostscript will use a
     *lossy* compression (similar to JPEG) on those images when
     converting them to PDF objects. This can be avoided, however, by
     inhibiting the compression altogether, or using the non-lossy
@@ -6856,14 +6856,14 @@ Embedded image compression.
     that your image does not suffer any loss.
 
 Auto-rotation.
-    The **ghostscript** engine has the annoying habit to automatically
+    The ghostscript engine has the annoying habit to automatically
     rotate an image produced with portrait orientation (using the **-P**
     option) so that the height is always larger than the width. So if
     you have an image that was printed in portrait mode but happens to
     have a width larger than height (for example a global map), it would
     suddenly get rotated. Again, this function needs to be switched off.
-    Apple's **Preview** uses the **ghostscript** engine and suffers
-    from the same annoying habit. Oddly enough, **ghostscript** does
+    Apple's Preview uses the ghostscript engine and suffers
+    from the same annoying habit. Oddly enough, ghostscript does
     not force landscape plots to be "horizontal".
 
 Anti-aliasing.
@@ -6879,7 +6879,7 @@ Anti-aliasing.
     and lines get blurry and second, the assumption of a white
     background causes the gray shades to stand out when transferring the
     image to background with a different color (like the popular
-    sleep-inducing blue in **PowerPoint** presentations). A more
+    sleep-inducing blue in PowerPoint presentations). A more
     surprising effect of anti-aliasing is that the seams between tiles
     that make up the land mask when using
     :doc:`pscoast` will become visible. The
@@ -6892,18 +6892,18 @@ Anti-aliasing.
 Including fonts.
     When you are producing print-ready copy to publishers, they will
     often (and justifiably) ask that you include all fonts in your PDF
-    document. Again, **ghostscript** (and all converters relying on
+    document. Again, ghostscript (and all converters relying on
     that engine) will not do so by default.
 
 Using :doc:`ps2raster`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The remedy to all the problems mentioned in the previous section is
-readily available to you in the form of the *GMT* utility
+readily available to you in the form of the GMT utility
 :doc:`ps2raster`. It is designed to provide
-the best quality PDF and raster files using **ghostscript** as a
+the best quality PDF and raster files using ghostscript as a
 rendering engine. The program :doc:`ps2raster` avoids anti-aliasing and
-lossy compression techniques that are default to **ghostscript** and
+lossy compression techniques that are default to ghostscript and
 includes the fonts into the resulting PDF file to ensure portability. By
 default the fonts are rendered at 720 dots-per-inch in a PDF file and
 images are sampled to 300 dpi, but that can be changed with the **-E**
@@ -6913,13 +6913,13 @@ option. Simply run
 
     gmt ps2raster -A -P -Tf *.ps
 
-to convert all *PostScript* files to PDF while cropping it to the
+to convert all PostScript files to PDF while cropping it to the
 smallest possible BoundingBox. Or use the **-Tg** option to convert your
 files to PNG.
 
 The **-P** option of :doc:`ps2raster` may
 also come in handy. When you have *not* supplied the **-P** option in
-your first *GMT* plot command, your plot will be in Landscape mode. That
+your first GMT plot command, your plot will be in Landscape mode. That
 means that the plot will be rotated 90 degrees (anti-clockwise) to fit
 on a Portrait mode page when coming out of the printer. The **-P**
 option of :doc:`ps2raster` will undo that
@@ -6932,8 +6932,8 @@ Examples
 GMT graphics in LaTeX
 ~~~~~~~~~~~~~~~~~~~~~
 
-Nearly all illustrations in this *GMT* documentation were *GMT*-produced
-*PostScript* files. They were converted to PDF files using
+Nearly all illustrations in this GMT documentation were GMT-produced
+PostScript files. They were converted to PDF files using
 :doc:`ps2raster` and then included into a
 LaTeX document that was processed with **pdflatex** to create the PDF
 document you are reading.
@@ -6963,7 +6963,7 @@ look automatically for ``myplot.pdf``. If you run **latex**, it will use ``myplo
 
 You can scale your plot using the options ``width=``, ``height=``, or
 ``scale=``. In addition, if your original graphics was produced in
-Landscape mode (i.e., you did *not* use *GMT*\ 's **-P** option: not
+Landscape mode (i.e., you did *not* use GMT's **-P** option: not
 while plotting, nor in :doc:`ps2raster`),
 you will need to rotate the plot as well. For example,
 
@@ -6992,15 +6992,15 @@ GMT graphics in **PowerPoint**
    :align: center
    :scale: 50 %
 
-   **PowerPoint**'s Format Picture dialogue to set scale and rotation.
+   PowerPoint's Format Picture dialogue to set scale and rotation.
 
 In Figure :ref:`missing` C.1 we have attempted to include
-Figure :ref:`missing` [fig:example_20] into a **PowerPoint** presentation.
-First the *PostScript* file was converted to PDF (using
+Figure :ref:`missing` [fig:example_20] into a PowerPoint presentation.
+First the PostScript file was converted to PDF (using
 :doc:`ps2raster`), then loaded into
-**PowerPoint** and the white background color was made transparent
+PowerPoint and the white background color was made transparent
 using the formatting toolbar (shown on the left side of
-Figure :ref:`missing` C.1). Clearly, when we let **PowerPoint** do the
+Figure :ref:`missing` C.1). Clearly, when we let PowerPoint do the
 rendering, we do not get the best result:
 
 #. The anti-aliasing causes the tiles that make up the land to stand
@@ -7016,7 +7016,7 @@ versions of a portion of the same example. This shows the workings of
 anti-aliasing and different resolutions. All samples were obtained with
 **convert**. The one on the top uses all default settings, resulting
 in an anti-aliased image at 72 dpi resolution (very much like the PDF
-included directly into **PowerPoint**).
+included directly into PowerPoint).
 
 Just switching anti-aliasing off (middle) is clearly not an option
 either. It is true that we got rid of the gray blurring and the seams
@@ -7026,7 +7026,7 @@ blocky. The solution is to render the image at a higher resolution
 appropriate size (bottom of the central column in
 Figure :ref:`missing` C.1). The scaling, rotation as well as the selection
 of the transparent color can be accomplished through the "Formatting"
-tool bar and the "Format Picture" dialogue box of **PowerPoint**
+tool bar and the "Format Picture" dialogue box of PowerPoint
 (Figure :ref:`missing` C.2), which can be found by double clicking the
 included image (or selecting and right-clicking or control-clicking on a
 one-button mouse).
@@ -7036,14 +7036,14 @@ Concluding remarks
 
 These examples do not constitute endorsements of the products mentioned
 above; they only represent our limited experience with adding
-*PostScript* to various types of documents. For other solutions and
+PostScript to various types of documents. For other solutions and
 further help, please post messages to.
 
 E. Predefined bit and hachure patterns in GMT
 =============================================
 
 
-*GMT* provides 90 different bit and hachure patterns that can be
+GMT provides 90 different bit and hachure patterns that can be
 selected with the **-Gp** or **-GP** option in most plotting programs.
 The left side of each image was created using **-Gp**, the right side
 shows the inverted version using **-GP**. These patterns are reproduced
@@ -7070,7 +7070,7 @@ characters (shown in the light green boxes) you need to set
 
    Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts.
 
-The chart for the Symbol character set (*GMT* font number 12) and Pifont
+The chart for the Symbol character set (GMT font number 12) and Pifont
 ZapfDingbats character set (font number 34) are presented in
 Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`Fs`\ ymbol] below. The octal code
 is obtained by appending the column value to the \\??
@@ -7086,23 +7086,23 @@ firmware will not know about the euro).
    Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts.
 
 
-G. *PostScript* fonts used by GMT
+G. PostScript fonts used by GMT
 =================================
 
-*GMT* uses the standard 35 fonts that come with most
-*PostScript* laserwriters. If your printer does not support some of
+GMT uses the standard 35 fonts that come with most
+PostScript laserwriters. If your printer does not support some of
 these fonts, it will automatically substitute the default font (which is
-usually Courier). The following is a list of the *GMT* fonts:
+usually Courier). The following is a list of the GMT fonts:
 
 .. figure:: /_images/GMT_App_G.*
    :width: 500 px
    :align: center
 
-   The standard 35 **PS** fonts recognized by *GMT*.
+   The standard 35 PostScript fonts recognized by GMT.
 
 
 For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
-charts in Appendix [app:F]. When specifying fonts in *GMT*, you can
+charts in Appendix [app:F]. When specifying fonts in GMT, you can
 either give the entire font name *or* just the font number listed in
 this table. To change the fonts used in plotting basemap frames, see the
 man page for :doc:`gmt.conf`. For direct
@@ -7113,12 +7113,12 @@ Using non-default fonts with GMT
 
 To add additional fonts that you may have purchased or that are
 available freely in the internet or at your institution, see the
-instructions in the ``CUSTOM_font_info.d`` under the ``share/pslib`` directory and continue reading. *GMT* does
+instructions in the ``CUSTOM_font_info.d`` under the ``share/pslib`` directory and continue reading. GMT does
 not read or process any font files and thus does not know anything about
 installed fonts and their metrics. In order to use extra fonts in
-*GMT* you need to specify the *PostScript* name of the relevant fonts in
+GMT you need to specify the PostScript name of the relevant fonts in
 the file ``CUSTOM_font_info.d``. You can either edit the existing file distributed with
-*GMT* to make the changes global or you can create a new file in the
+GMT to make the changes global or you can create a new file in the
 current working directory, e.g.,
 
    ::
@@ -7126,14 +7126,14 @@ current working directory, e.g.,
     LinBiolinumO      0.700    0
     LinLibertineOB    0.700    0
 
-The format is a space delimited list of the *PostScript* font name, the
-font height-point size-ratio, and a boolean variable that tells *GMT* to
+The format is a space delimited list of the PostScript font name, the
+font height-point size-ratio, and a boolean variable that tells GMT to
 re-encode the font (if set to zero). The latter has to be set to zero as
 additional fonts will most likely not come in standard
-*PostScript* encoding. *GMT* determines how tall typical annotations
+PostScript encoding. GMT determines how tall typical annotations
 might be from the font size ratio so that the vertical position of
 labels and titles can be adjusted to a more uniform typesetting. Now,
-you can set the *GMT* font parameters to your non-standard fonts:
+you can set the GMT font parameters to your non-standard fonts:
 
    ::
 
@@ -7143,38 +7143,38 @@ you can set the *GMT* font parameters to your non-standard fonts:
     MAP_DEGREE_SYMBOL degree
 
 After setting the encoding and the degree symbol, the configuration part
-for *GMT* is finished and you can proceed to create *GMT*-maps as usual.
+for GMT is finished and you can proceed to create GMT-maps as usual.
 An example script is discussed in Example [sec:non-default-fonts-example].
 
-Embedding fonts in *PostScript* and PDF
+Embedding fonts in PostScript and PDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you have Type 1 fonts in PFA (Printer Font ASCII) format you can
 embed them directly by copying them at the very top of your
-*PostScript*-file, before even the %!PS header comment. PFB (Printer
+PostScript-file, before even the %!PS header comment. PFB (Printer
 Font Binary), TrueType or OpenType fonts cannot be embedded in
-*PostScript*\ directly and therefore have to be converted to PFA first.
+PostScript directly and therefore have to be converted to PFA first.
 
-However, you most likely will have to tell **Ghostscript** where to
-find your custom fonts in order to convert your *GMT*-*PostScript*-plot
+However, you most likely will have to tell Ghostscript where to
+find your custom fonts in order to convert your GMT-PostScript-plot
 to PDF or an image with :doc:`ps2raster`.
-When you have used the correct *PostScript*-names of the fonts in ``CUSTOM_font_info.d`` you
+When you have used the correct PostScript-names of the fonts in ``CUSTOM_font_info.d`` you
 only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
 :doc:`ps2raster` in the usual way. Likewise
-you can specify **Ghostscript**\ 's ``-sFONTPATH`` option on the
-command line with ``C -sFONTPATH=/path/to/fontdir``. **Ghostscript**,
+you can specify Ghostscript's ``-sFONTPATH`` option on the
+command line with ``C -sFONTPATH=/path/to/fontdir``. Ghostscript,
 which is invoked by :doc:`ps2raster`, does
 not depend on file names. It will automatically find the relevant font
-files by their *PostScript*-names and embed and subset them in
+files by their PostScript-names and embed and subset them in
 PDF-files. This is quite convenient as the document can be displayed and
 printed even on other computers when the font is not available locally.
-There is no need to convert your fonts as **Ghostscript** can handle
+There is no need to convert your fonts as Ghostscript can handle
 all Type 1, TrueType and OpenType fonts. Note also, that you do not need
-to edit **Ghostscript**\ 's Fontmap.GS.
+to edit Ghostscript's Fontmap.
 
 If you do not want or cannot embed the fonts you can convert them to
-outlines (shapes with fills) with **Ghostscript** in the following
+outlines (shapes with fills) with Ghostscript in the following
 way:
 
    ::
@@ -7185,8 +7185,8 @@ way:
 
 Note, that this only works with the *pswrite* device. If you need
 outlined fonts in PDF, create the PDF from the converted
-*PostScript*-file. Also, :doc:`ps2raster`
-cannot correctly crop **Ghostscript** converted *PostScript*-files
+PostScript-file. Also, :doc:`ps2raster`
+cannot correctly crop Ghostscript converted PostScript-files
 anymore. Use Heiko Oberdiek's instead or crop with
 :doc:`ps2raster` **-A** **-Te** before (See
 Example [sec:non-default-fonts-example]).
@@ -7194,12 +7194,12 @@ Example [sec:non-default-fonts-example]).
 Character encoding
 ~~~~~~~~~~~~~~~~~~
 
-Since *PostScript* itself does not support Unicode fonts,
-**Ghostscript** will re-encode the fonts on the fly. You have to make
+Since PostScript itself does not support Unicode fonts,
+Ghostscript will re-encode the fonts on the fly. You have to make
 sure to set the correct :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` with gmtset and save your
 script file with the same character encoding. Alternatively, you can
 substitute all non ASCII characters with their corresponding octal
-codes, e.g., \\265 instead of μ. Note, that *PostScript* fonts support
+codes, e.g., \\265 instead of μ. Note, that PostScript fonts support
 only a small range of glyphs and you may have to switch the
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
 
@@ -7209,7 +7209,7 @@ H. Color Space: The final frontier
 
 In this Appendix, we are going to try to explain the relationship
 between the RGB, CMYK, and HSV color systems so as to (hopefully) make
-them more intuitive. *GMT* allows users to specify colors in CPT files
+them more intuitive. GMT allows users to specify colors in CPT files
 in either of these three systems. Interpolation between colors is
 performed in either RGB or HSV, depending on the specification in the
 CPT file. Below, we will explain why this all matters.
@@ -7225,10 +7225,10 @@ have black. All of them at maximum, *r=g=b=255*, creates white.
 Your computer screen works the same way.
 
 A mix of levels of red, green, and blue creates basically any color
-imaginable. In *GMT* each color can be represented by the triplet
+imaginable. In GMT each color can be represented by the triplet
 *r7g7b*. For example, 127/255/0 (half red, full
 green, and no blue) creates a color called chartreuse. The color sliders
-in the graphics program **GIMP** are an excellent way to experiment
+in the graphics program GIMP are an excellent way to experiment
 with colors, since they show you in advance how moving one of the color
 sliders will change the color. As Figure :ref:`missing` [fig:gimp]\ *a* shows: increase
 the red and you will get a more yellow color, while lowering the blue
@@ -7247,20 +7247,20 @@ level will turn it into brown.
    :align: center
    :scale: 75 %
 
-   Chartreuse in *GIMP*. *(a)* Sliders indicate how the color is altered
+   Chartreuse in GIMP. *(a)* Sliders indicate how the color is altered
    when changing the H, S, V, R, G, or B levels. *(b)* For a constant hue (here 90)
    value increases to the right and saturation increases up, so the pure
    color is on the top right.
 
 
 Is chocolate your favorite color, but you do not know the RGB equivalent
-values? Then look them up in Figure :ref:`missing` [fig:RGBchart] or type **man
-gmtcolors** for a full list. It's 210/105/30. But *GMT* makes it easy
+values? Then look them up in Figure :ref:`missing` [fig:RGBchart] or type
+``man gmtcolors`` for a full list. It's 210/105/30. But GMT makes it easy
 on you: you can specify pen, fill, and palette colors by any of the more
 than 500 unique colors found in that file.
 
 Are you very web-savvy and work best with hexadecimal color codes as
-they are used in HTML? Even that is allowed in *GMT*. Just start with a
+they are used in HTML? Even that is allowed in GMT. Just start with a
 hash mark (``#``) and follow with the 2 hexadecimal characters for red,
 green, and blue. For example, you can use ``#79ff00`` for chartreuse,
 ``#D2691E`` for chocolate.
@@ -7292,7 +7292,7 @@ or "lightness", used in other color geometries. "Brilliance" may be the
 best alternative word to describe "value". Apple calls it as
 "brightness", and hence refers to HSB for this color space.
 
-Want more chartreuse or chocolate? You can specify them in *GMT* as
+Want more chartreuse or chocolate? You can specify them in GMT as
 90-1-1 and 25-0.86-0.82, respectively.
 
 The color cube
@@ -7425,10 +7425,10 @@ likely, red will be recorded as 0-1-1, so hue will be interpolated the
 other way around, reducing hue from 240 to 0, via cyan, green, and yellow.
 
 Depending on the design of your color palette, you may want to have it
-either way. By default, *GMT* interpolates in RGB space, even when the
+either way. By default, GMT interpolates in RGB space, even when the
 original color palette is in the HSV system. However, when you add the
 line ``#COLOR_MODEL=+HSV`` (with the leading ‘+' sign) in the header of
-the color palette file, *GMT* will not only read the color
+the color palette file, GMT will not only read the color
 representation as HSV values, but also interpolate colors in the HSV
 system. That means that H, S, and V values are interpolated linearly
 between two colors, instead of their respective R, G, and B values.
@@ -7452,7 +7452,7 @@ terribly wrong when you do the interpolation in the other system.
 Artificial illumination
 -----------------------
 
-*GMT* uses the HSV system to achieve artificial illumination of colored
+GMT uses the HSV system to achieve artificial illumination of colored
 images (e.g., **-I** option in :doc:`grdimage`) by changing the saturation
 *s* and value *v* coordinates of the color. When the intensity is zero
 (flat illumination), the data are colored according to the CPT file. If
@@ -7501,7 +7501,7 @@ paints does not give you true black, so that means that you really need
 four colors to do it right. Open up your color printer and you'll
 probably find four cartridges: cyan, magenta, yellow (often these are
 combined into one), and black. They form the CMYK system of colors, each
-value running from 0 to 1 (or 100%). In *GMT* CMYK color coding can be
+value running from 0 to 1 (or 100%). In GMT CMYK color coding can be
 achieved using *c/m/y/k* quadruplets.
 
 Obviously, there is no unique way to go from the 3-dimensional RGB
@@ -7513,15 +7513,15 @@ to go from the colors on your screen to the colors on your printer. It
 might explain why what you see is not necessarily what you get. If you
 are really concerned about how your color plots will show up in your PhD
 thesis, for example, it might be worth trying to save and print all your
-color plots using the CMYK system. Letting *GMT* do the conversion to
+color plots using the CMYK system. Letting GMT do the conversion to
 CMYK may avoid some nasty surprises when it comes down to printing. To
-specify the color space of your *PostScript* file, set
+specify the color space of your PostScript file, set
 :ref:`PS_COLOR_MODEL <PS_COLOR_MODEL>` in the ``gmt.conf`` file to RGB, HSV, or CMYK.
 
 I. Filtering of data in GMT
 ===========================
 
-The *GMT* programs :doc:`filter1d` (for
+The GMT programs :doc:`filter1d` (for
 tables of data indexed to one independent variable) and
 :doc:`grdfilter` (for data given as
 2-dimensional grids) allow filtering of data by a moving-window process.
@@ -7554,7 +7554,7 @@ diametrical cross-section through the filter weights
    :width: 500 px
    :align: center
 
-   Impulse responses for *GMT* filters.
+   Impulse responses for GMT filters.
 
 
 Although the impulse responses look the same in 1-D and 2-D, this is not
@@ -7577,7 +7577,7 @@ they require more work (doubling the width to achieve the same cut-off wavelengt
    :width: 500 px
    :align: center
 
-   Transfer functions for 1-D *GMT* filters.
+   Transfer functions for 1-D GMT filters.
 
 
 One of the nice things about the gaussian filter is that its transfer
@@ -7594,21 +7594,21 @@ the wavelength at which the transfer function equals 0.5 is about 5.34
    :width: 500 px
    :align: center
 
-   Transfer functions for 2-D (radial) *GMT* filters.
+   Transfer functions for 2-D (radial) GMT filters.
 
 
 J. The GMT High-Resolution Coastline Data
 =========================================
 
 
-Starting with version 3.0, *GMT* use a completely new coastline database
+Starting with version 3.0, GMT use a completely new coastline database
 and the :doc:`pscoast` utility was been
 completely rewritten to handle the new file format. Many users have
-asked us why it has taken so long for *GMT* to use a high-resolution
+asked us why it has taken so long for GMT to use a high-resolution
 coastline database; after all, such data have been available in the
 public domain for years. To answer such questions we will take you along
 the road that starts with these public domain data sets and ends up with
-the database used by *GMT*.
+the database used by GMT.
 
 Selecting the right data
 ------------------------
@@ -7755,7 +7755,7 @@ becomes a complicated processing step.
       that is represented by the land and lake, and then plot the
       island.
 
-   *GMT* uses a polygon-assembly routine that carries out these tasks on the fly.
+   GMT uses a polygon-assembly routine that carries out these tasks on the fly.
 
 The Five Resolutions
 --------------------
@@ -7816,7 +7816,7 @@ minor features less than 100 km^2 in area. We still add
 national borders to the plot. The low database is less decimated and
 simplified by the DP-routine: The total file size of the coastlines,
 rivers, and borders combined grows to 907 kbytes; it is the default
-resolution in *GMT*. The plot is generated by the script:
+resolution in GMT. The plot is generated by the script:
 
   ::
 
@@ -7915,38 +7915,38 @@ reproduced by the single command:
 We hope you will study these examples to enable you to make efficient
 and wise use of this vast data set.
 
-K. GMT on non-\ *UNIX* platforms
+K. GMT on non-\ UNIX platforms
 ================================
 
 
 Introduction
 ------------
 
-While *GMT* was ported to non-\ *UNIX* systems such as Windows, it is
-also true that one of the strengths of *GMT* lies its symbiotic
-relationship with *UNIX*. We therefore recommend that *GMT* be installed
-in a POSIX-compliant *UNIX* environment such as traditional
-*UNIX*-systems, Linux, or Mac OS X. If abandoning your
-non-\ *UNIX* operating system is not an option, consider one of these
+While GMT was ported to non-\ UNIX systems such as Windows, it is
+also true that one of the strengths of GMT lies its symbiotic
+relationship with UNIX. We therefore recommend that GMT be installed
+in a POSIX-compliant UNIX environment such as traditional
+UNIX-systems, Linux, or Mac OS X. If abandoning your
+non-\ UNIX operating system is not an option, consider one of these
 solutions:
 
 WINDOWS:
     Choose among these three possibilities:
 
-    #. Install *GMT* under MinGW/MSYS (A collection of GNU utilities).
+    #. Install GMT under MinGW/MSYS (A collection of GNU utilities).
 
-    #. Install *GMT* under Cygwin (A GNU port to Windows).
+    #. Install GMT under Cygwin (A GNU port to Windows).
 
-    #. Install *GMT* in Windows using Microsoft C/C++ or other
+    #. Install GMT in Windows using Microsoft C/C++ or other
        compilers. Unlike the first two, this option will not provide you
-       with any *UNIX* tools so you will be limited to what you can do
+       with any UNIX tools so you will be limited to what you can do
        with DOS batch files.
 
 Cygwin and GMT
 --------------
 
-Because *GMT* works best in conjugation with *UNIX* tools we suggest you
-install *GMT* using the Cygwin product from Cygnus (now assimilated by
+Because GMT works best in conjugation with UNIX tools we suggest you
+install GMT using the Cygwin product from Cygnus (now assimilated by
 Redhat, Inc.). This free version works on any Windows version and it
 comes with both the Bourne Again shell **bash** and the **tcsh**.
 You also have access to most standard GNU development tools such as
@@ -7957,7 +7957,7 @@ Follow the instructions on the Cygwin page on how to install the
 package; note you must explicitly add all the development tool packages
 (e.g., **gcc** etc) as the basic installation does not include them by
 default. Once you are up and running under Cygwin, you may install
-*GMT*  the same way you do under any other *UNIX* platform by either
+GMT  the same way you do under any other UNIX platform by either
 running the automated install via **install_gmt** or manually running
 configure first, then type make all. If you install via the web form,
 make sure you save the parameter file without DOS CR/LF endings. Use
@@ -8059,27 +8059,27 @@ M. Custom Plot Symbols
 Background
 ----------
 
-The *GMT* tools :doc:`psxy` and :doc:`psxyz` are capable of using custom
+The GMT tools :doc:`psxy` and :doc:`psxyz` are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
 like circles, triangles, and many others. One the command line, custom
 symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
 selection, where *symbolname* refers to a special symbol definition file
-called ``symbolname.def`` that must be available via the standard *GMT* user paths. Several
-custom symbols comes pre-configured with *GMT*\ (see
+called ``symbolname.def`` that must be available via the standard GMT user paths. Several
+custom symbols comes pre-configured with GMT\ (see
 Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`N1`])
 
 .. figure:: /_images/GMT_App_N_1.*
    :width: 500 px
    :align: center
 
-   Custom plot symbols supported by *GMT*. Note that we only show
+   Custom plot symbols supported by GMT. Note that we only show
    the symbol outline and not any fill. These are all single-parameter symbols.
    Be aware that some symbols may have a hardwired fill or no-fill component,
    while others duplicate what is already available as standard built-in symbols.
 
 
 You may find it convenient to examine some of these and use them as a
-starting point for your own design; they can be found in *GMT*\ 's
+starting point for your own design; they can be found in GMT's
 share/custom directory.
 
 The macro language
@@ -8100,7 +8100,7 @@ Comment lines
 ~~~~~~~~~~~~~
 
 Your definition file may have any number of comment lines, defined to
-begin with the character #. These are skipped by *GMT* but provides a
+begin with the character #. These are skipped by GMT but provides a
 mechanism for you to clarify what your symbol does.
 
 Symbol variables
@@ -8336,14 +8336,14 @@ N. Annotation of Contours and "Quoted Lines"
 ============================================
 
 
-The *GMT* programs :doc:`grdcontour` (for
+The GMT programs :doc:`grdcontour` (for
 data given as 2-dimensional grids) and
 :doc:`pscontour` (for *x,y,z* tables) allow
 for contouring of data sets, while :doc:`psxy`
 and :doc:`psxyz` can plot lines based on *x,y*-
 and *x,y,z*-tables, respectively. In both cases it may be necessary to
 attach labels to these lines. Clever or optimal placements of labels is
-a very difficult topic, and *GMT* provides several algorithms for this
+a very difficult topic, and GMT provides several algorithms for this
 placement as well as complete freedom in specifying the attributes of
 the labels. Because of the richness of these choices we present this
 Appendix which summarizes the various options and gives several examples
@@ -8352,8 +8352,8 @@ of their use.
 Label Placement
 ---------------
 
-While the previous *GMT* versions 1--3 allowed for a single algorithm
-that determined where labels would be placed, *GMT* 4 allows for five
+While the previous GMT versions 1--3 allowed for a single algorithm
+that determined where labels would be placed, GMT 4 allows for five
 different algorithms. Furthermore, a new "symbol" option (**-Sq** for
 "quoted line") has been added to :doc:`psxy` and
 :doc:`psxyz` and hence the new label placement
@@ -8532,7 +8532,7 @@ universally. These codes are:
 
 +p:
     Selects the drawing of the label box outline; append your preferred
-    *pen* unless you want the default *GMT* pen [0.25p,black].
+    *pen* unless you want the default GMT pen [0.25p,black].
 
 +r:
     Do not place labels at points along the line whose local radius of
@@ -8622,7 +8622,7 @@ Examples of Contour Label Placement
 
 We will demonstrate the use of these options with a few simple examples.
 First, we will contour a subset of the global geoid data used in
-*GMT* Example 01; the region selected encompasses the world's strongest
+GMT Example 01; the region selected encompasses the world's strongest
 "geoid dipole": the Indian Low and the New Guinea High.
 
 Equidistant labels
@@ -8642,7 +8642,7 @@ the 1.5 inch distance from the start at the bottom of the map.
    :align: center
 
    Equidistant contour label placement with **-Gd**, the only algorithm
-   available in previous *GMT* versions.
+   available in previous GMT versions.
 
 
 Fixed number of labels
@@ -8823,7 +8823,7 @@ O. Special Operations
 Running GMT in *isolation mode*
 -------------------------------
 
-In Chapter `General features`_ it is described how *GMT* creates
+In Chapter `General features`_ it is described how GMT creates
 several (temporary) files to communicate between the different commands
 that make up the script that finally creates a plot. Among those files
 are:
@@ -8842,17 +8842,17 @@ are:
     **.gmtcommands** This file is created to communicate the command line history from
        one command to the next (Section `Command line history`_) so that
        shorthands like **-R** or **-J** can be used once it has been set in
-       a previous *GMT* command. The existence of this file makes if
-       impossible to run two *GMT* scripts simultaneously in the same
+       a previous GMT command. The existence of this file makes if
+       impossible to run two GMT scripts simultaneously in the same
        directory, since those ``.gmtcommands`` files may clash (contain different histories)
        and adversely affect the results of both scripts.
 
 A cure to all these woes is the *isolation mode* introduced in
-*GMT* version 4.2.2. This mode allows you to run a *GMT* script without
-leaving any traces other than the resulting *PostScript*  or data files,
+GMT version 4.2.2. This mode allows you to run a GMT script without
+leaving any traces other than the resulting PostScript  or data files,
 and not altering the ``gmt.conf`` or ``.gmtcommands`` files. Those files will be placed in a temporary
 directory instead. And if properly set up, this temporary directory will
-only be used by a single script, even if another *GMT* script is running
+only be used by a single script, even if another GMT script is running
 simultaneously. This also provides the opportunity to create any other
 temporary files that the script might create in the same directory.
 
@@ -8868,7 +8868,7 @@ The example below shows how *isolation mode* works.
 The files ``gmt.conf`` and ``.gmtcommands`` are automatically created in the temporary directory
 ``$GMT_TMPDIR``. The script is also adjusted such that the temporary grid file ``lat.nc`` and colormap
 ``lat.cpt`` are created in that directory as well. To make things even more easy,
-*GMT* now provides a set of handy shell functions in :doc:`gmt_shell_functions.sh`:
+GMT now provides a set of handy shell functions in :doc:`gmt_shell_functions.sh`:
 simply include that file in the script and the creation and the removal
 of the temporary directory is reduced to a single command.
 
@@ -8881,27 +8881,27 @@ Background
 ----------
 
 The National Institute for Water and Atmospheric Research (NIWA) in New
-Zealand has funded the implementation of a *GMT* driver (read and write)
+Zealand has funded the implementation of a GMT driver (read and write)
 for the OGR package. OGR is an Open Source toolkit for accessing or
 reformatting vector (spatial) data stored in a variety of formats and is
 part of the. The intention was to enable the easy rendering (using
-*GMT*) of spatial data held in non-\ *GMT* formats, and the export of
-vector data (e.g., contours) created by *GMT* for use with other GIS and
+GMT) of spatial data held in non-\ GMT formats, and the export of
+vector data (e.g., contours) created by GMT for use with other GIS and
 mapping packages. While **ogr2ogr** has had the capability to write
-this new format since 2009, *GMT* 4 did not have the capability to use
+this new format since 2009, GMT 4 did not have the capability to use
 the extra information.
 
-*GMT* 5 now allows for more advanced vector data, including donut
+GMT 5 now allows for more advanced vector data, including donut
 polygons (polygons with holes) and aspatial attribute data. At the same
-time, the spatial data implementation will not disrupt older *GMT* 4
+time, the spatial data implementation will not disrupt older GMT 4
 programs since all the new information are written via comments.
 
-The identification of spatial feature types in *GMT* files generally
+The identification of spatial feature types in GMT files generally
 follows the technical description, (which is largely consistent with the
 OGC SFS specification). This specification provides for non-topological
 point, line and polygon (area) features, as well as multipoint,
 multiline and multipolygon features, and was written by Brent Wood
-(b.wood@niwa.co.nz) based on input from Paul Wessel and others on the *GMT* list.
+(b.wood@niwa.co.nz) based on input from Paul Wessel and others on the GMT list.
 
 The OGR/GMT format
 ------------------
@@ -8910,9 +8910,9 @@ Several key properties of the OGR/GMT format is summarized below:
 
 -  All new data fields are stored as comment lines, i.e., in lines
    starting with a "#". OGR/GMT files are therefore compatible with
-   *GMT* 4 binaries, which will simply ignore this new information.
+   GMT 4 binaries, which will simply ignore this new information.
 
--  To be consistent with current practice in *GMT*, data fields are
+-  To be consistent with current practice in GMT, data fields are
    represented as whitespace-separated strings within the comments, each
    identified by the "@" character as a prefix, followed by a single
    character identifying the content of the field. To avoid confusion
@@ -8922,7 +8922,7 @@ Several key properties of the OGR/GMT format is summarized below:
 -  Standard UNIX "\\" escaping is used, such as \\n for newline in a string.
 
 -  All new data are stored before the spatial data (coordinates) in the
-   file, so when any *GMT* 5 program is processing the coordinate data
+   file, so when any GMT 5 program is processing the coordinate data
    for a feature, it will already have parsed any non-spatial
    information for each feature, which may impact on how the spatial
    data is treated (e.g., utilizing the aspatial attribute data for a
@@ -8930,40 +8930,40 @@ Several key properties of the OGR/GMT format is summarized below:
 
 -  The first comment line must specify the version of the OGR/GMT data
    format, to allow for future changes or enhancements to be supported
-   by future *GMT* programs. This document describes v1.0.
+   by future GMT programs. This document describes v1.0.
 
 -  For consistency with other GIS formats (such as shapefiles) the
    OGR/GMT format explicitly contains a field specifying whether the
    features are points, linestrings or polygons, or the "multi" versions
    of these. (Other shapefile feature types will not be supported at
-   this stage). At present, *GMT* programs are informed of this via
+   this stage). At present, GMT programs are informed of this via
    command line parameters. This will now be explicit in the data file,
    but does not preclude command line switches setting symbologies for
    plotting polygons as lines (perimeters) or with fills, as is
    currently the practice.
 
 -  Note that what is currently called a "multiline" (multi-segment) file
-   in *GMT* parlance is generally a set of "lines" in shapefile/OGR
+   in GMT parlance is generally a set of "lines" in shapefile/OGR
    usage. A multiline in this context is a single feature comprising
    multiple lines. For example, all the transects from a particular
    survey may be stored as lines, each with it's own attribute set, such
    as transect number, date/time, etc. They may also be stored as a
    single multiline feature with one attribute set, such as trip ID.
    This difference is explicitly stored in the data in OGR/shapefiles,
-   but currently specified only on the command line in *GMT*. This
-   applies also to points and polygons. The *GMT* equivalent to
+   but currently specified only on the command line in GMT. This
+   applies also to points and polygons. The GMT equivalent to
    {multipoint, multiline, multipolygon} datatypes is multiple
-   *GMT* files, each comprising a single {multipoint, multiline,
+   GMT files, each comprising a single {multipoint, multiline,
    multipolygon} feature.
 
--  The new *GMT* vector data files includes a header comment specifying
+-  The new GMT vector data files includes a header comment specifying
    the type of spatial features it contains, as well as the description
    of the aspatial attribute data to be associated with each feature.
    Unlike the shapefile format, which stores the spatial and aspatial
-   attribute data in separate files, the *GMT* format will store all
+   attribute data in separate files, the GMT format will store all
    data in a single file.
 
--  All the features in a *GMT* file must be of the same type.
+-  All the features in a GMT file must be of the same type.
 
 OGR/GMT Metadata
 ----------------
@@ -9018,7 +9018,7 @@ Table :ref:`geometries <tbl-geometries>`.
 +----------+-----------------+---------------------------------------------------------------------------------------+
 | G        | LINESTRING      | File with features comprising multiple single lines                                   |
 +----------+-----------------+---------------------------------------------------------------------------------------+
-|          |                 | (Effectively the current *GMT* multiline file, each line feature will have it's own   |
+|          |                 | (Effectively the current GMT multiline file, each line feature will have it's own     |
 +----------+-----------------+---------------------------------------------------------------------------------------+
 |          |                 | attribute and header data)                                                            |
 +----------+-----------------+---------------------------------------------------------------------------------------+
@@ -9034,10 +9034,10 @@ Table :ref:`geometries <tbl-geometries>`.
 +----------+-----------------+---------------------------------------------------------------------------------------+
 | G        | MULTIPOLYGON    | File with a single multipolygon                                                       |
 +----------+-----------------+---------------------------------------------------------------------------------------+
-|          |                 | (Similar to a *GMT* multiline file, except the feature is a closed multipolygon)      |
+|          |                 | (Similar to a GMT multiline file, except the feature is a closed multipolygon)        |
 +----------+-----------------+---------------------------------------------------------------------------------------+
 
-An example *GMT* polygon file header using this specification (in format 1.0) is
+An example GMT polygon file header using this specification (in format 1.0) is
 
    ::
 
@@ -9047,7 +9047,7 @@ Domain and map projections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The new format will also support region and projection information. The
-region will be stored in *GMT* **-R** format (i.e., **-R**\ *W/E/S/N*,
+region will be stored in GMT **-R** format (i.e., **-R**\ *W/E/S/N*,
 where the *W/E/S/N* values represent the extent of features); the **@R**
 code sequence marks the domain information. A sample region header is:
 
@@ -9056,7 +9056,7 @@ code sequence marks the domain information. A sample region header is:
     # @R150/190/-45/-54
 
 Projection information will be represented as four optional strings,
-prefixed by **@J** (J being the *GMT* character for projection
+prefixed by **@J** (J being the GMT character for projection
 information. The **@J** code will be followed by a character identifying
 the format, as shown in Table :ref:`projectspec <tbl-projectspec>`.
 
@@ -9067,7 +9067,7 @@ the format, as shown in Table :ref:`projectspec <tbl-projectspec>`.
 +============+=================================================================================================+
 | @Je        | EPSG code for the projection                                                                    |
 +------------+-------------------------------------------------------------------------------------------------+
-| @Jg        | A string representing the projection parameters as used by *GMT*                                |
+| @Jg        | A string representing the projection parameters as used by GMT                                  |
 +------------+-------------------------------------------------------------------------------------------------+
 | @Jp        | A string comprising the Proj.4 parameters representing the projection parameters                |
 +------------+-------------------------------------------------------------------------------------------------+
@@ -9086,11 +9086,11 @@ Sample projection strings are:
     AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]"
 
 Note that an OGR-generated file will not have a **@Jg** string, as OGR
-does not have any knowledge of the *GMT* projection specification
-format. *GMT* supports at least one of the other formats to provide
+does not have any knowledge of the GMT projection specification
+format. GMT supports at least one of the other formats to provide
 interoperability with other Open Source related GIS software packages.
 One relatively simple approach, (with some limitations), would be a
-lookup table matching EPSG codes to *GMT* strings.
+lookup table matching EPSG codes to GMT strings.
 
 Declaration of aspatial fields
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9175,13 +9175,13 @@ while for a polygon it may look like
 Polygon topologies
 ~~~~~~~~~~~~~~~~~~
 
-New to *GMT* is the concept of polygon holes. Most other formats do
+New to GMT is the concept of polygon holes. Most other formats do
 support this structure, so that a polygon is specified as a sequence of
 point defining the perimeter, optionally followed by similar coordinate
 sequences defining any holes (the "donut" polygon concept).
 
 To implement this in a way which is compatible with previous
-*GMT* versions, each polygon feature must be able to be identified as
+GMT versions, each polygon feature must be able to be identified as
 the outer perimeter, or an inner ring (hole). This is done using a
 **@P** or **@H** on the data comment preceding the polygon coordinates.
 The **@P** specifies a new feature boundary (perimeter), any following
@@ -9273,7 +9273,7 @@ Finally we show an example of a polygon file:
    The tools can also be installed on other platforms (see Appendix [app:L]).
 
 .. [4]
-   One public-domain RIP is **ghostscript**, available from `<http://www.gnu.org/>`_.
+   One public-domain RIP is ghostscript, available from `<http://www.gnu.org/>`_.
 
 .. [5]
    Programs now also allow for fast, binary multicolumn file i/o.
@@ -9287,16 +9287,16 @@ Finally we show an example of a polygon file:
    XXII(176)*, 88--93.
 
 .. [8]
-   *PostScript* definition. In the typesetting industry a slightly
+   PostScript definition. In the typesetting industry a slightly
    different definition of point (1/72.27 inch) is used, presumably to
    cause needless trouble.
 
 .. [9]
    Choose between SI and US default units by modifying in the
-   *GMT* share directory.
+   GMT share directory.
 
 .. [10]
-   To remain backwards compatible with *GMT* 4.x we will also look for
+   To remain backwards compatible with GMT 4.x we will also look for
    but only if cannot be found.
 
 .. [11]
@@ -9326,14 +9326,14 @@ Finally we show an example of a polygon file:
    Please consult the man page for *printf* or any book on C.
 
 .. [14]
-   For historical reasons, the *GMT* default is Landscape; see
+   For historical reasons, the GMT default is Landscape; see
    :doc:`gmt.conf` to change this.
 
 .. [15]
    Ensures that boundary annotations do not fall off the page.
 
 .. [16]
-   To keep *PostScript* files small, such comments are by default turned
+   To keep PostScript files small, such comments are by default turned
    off; see :ref:`PS_COMMENTS <PS_COMMENTS>` to enable them.
 
 .. [17]
@@ -9344,7 +9344,7 @@ Finally we show an example of a polygon file:
    **convert** program.
 
 .. [19]
-   Requires building *GMT* with GDAL.
+   Requires building GMT with GDAL.
 
 .. [20]
    Snyder, J. P., 1987, Map Projections A Working Manual, U.S.
@@ -9358,7 +9358,7 @@ Finally we show an example of a polygon file:
    Robinson provided a table of *y*-coordinates for latitudes
    every 5. To project values for intermediate latitudes one must
    interpolate the table. Different interpolants may result in slightly
-   different maps. `GMT <http://gmt.soest.hawaii.edu/>`_ uses the
+   different maps. GMT uses the
    interpolant selected by the parameter :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in the
    file.
 

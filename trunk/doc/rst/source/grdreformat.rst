@@ -80,7 +80,7 @@ Optional Arguments
 ------------------
 
 **-N**
-    Suppress the writing of the **GMT** header structure. This is useful
+    Suppress the writing of the GMT header structure. This is useful
     when you want to write a native grid to be used by **grdraster**. It
     only applies to native grids and is ignored for netCDF output. 
 
@@ -100,13 +100,13 @@ Format Identifier
 
 By default, grids will be written as floating point data stored in
 binary files using the netCDF format and meta-data structure. This
-format is conform the COARDS conventions. **GMT** versions prior to 4.1
+format is conform the COARDS conventions. GMT versions prior to 4.1
 produced netCDF files that did not conform to these conventions.
 Although these files are still supported, their use is deprecated. To
 write other than floating point COARDS-compliant netCDF files, append
 the =\ *id* suffix to the filename *outgrdfile*.
 
-When reading files, **grdreformat** and other **GMT** programs will try
+When reading files, **grdreformat** and other GMT programs will try
 to automatically recognize the type of the input grid file. If this
 fails you may append the =\ *id* suffix to the filename *ingrdfile*.
 
@@ -175,7 +175,7 @@ Appendix B.
 
 **Multi-variable grid files**
 
-By default, **GMT** programs will read the first 2-dimensional grid
+By default, GMT programs will read the first 2-dimensional grid
 contained in a COARDS-compliant netCDF file. Alternatively, use
 *ingrdfile*\ **?**\ *varname* (ahead of any optional suffix **=**\ *id*)
 to specify the requested variable *varname*. Since **?** has special
@@ -204,7 +204,7 @@ suffix between quotes.
 Native Binary Files
 -------------------
 
-For binary native **GMT** files the size of the **GMT** grdheader block
+For binary native GMT files the size of the GMT grdheader block
 is *hsize* = 892 bytes, and the total size of the file is *hsize* + *nx*
 \* *ny* \* *item_size*, where *item_size* is the size in bytes of each
 element (1, 2, 4). Bit grids are stored using 4-byte integers, each
@@ -212,7 +212,7 @@ holding 32 bits, so for these files the size equation is modified by
 using ceil (*nx* / 32) \* 4 instead of *nx*. Note that these files are
 platform-dependent. Files written on Little Endian machines (e.g., PCs)
 can not be read on Big Endian machines (e.g., most workstations). Also
-note that it is not possible for **GMT** to determine uniquely if a
+note that it is not possible for GMT to determine uniquely if a
 4-byte grid is float or int; in such cases it is best to use the *=ID*
 mechanism to specify the file format. In all cases a native grid is
 considered to be signed (i.e., there are no provision for unsigned short

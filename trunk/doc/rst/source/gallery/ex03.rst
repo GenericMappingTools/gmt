@@ -3,7 +3,7 @@
 (3) Spectral estimation and xy-plots
 ------------------------------------
 
-In this example we will show how to use the *GMT* programs
+In this example we will show how to use the GMT programs
 :doc:`fitcircle </fitcircle>`, :doc:`project </project>`,
 :doc:`sample1d </sample1d>`, :doc:`spectrum1d </spectrum1d>`,
 :doc:`psxy </psxy>`, and
@@ -23,7 +23,7 @@ and maximum values for multi-column ASCII tables. Use this information
 to select the range of the projected distance coordinate they have in
 common. The script prompts you for that information after reporting the
 values. We decide to make a file of equidistant sampling points spaced 1
-km apart from -1167 to +1169, and use the *UNIX* utility **awk** to
+km apart from -1167 to +1169, and use the UNIX utility **awk** to
 accomplish this step. We can then resample the projected data, and carry
 out the cross-spectral calculations, assuming that the ship is the input
 and the satellite is the output data. There are several intermediate

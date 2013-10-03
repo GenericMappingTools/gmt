@@ -11,13 +11,13 @@ gmt
 Introduction
 ------------
 
-**GMT** is a collection of public-domain Unix tools that allows you to
+GMT is a collection of public-domain Unix tools that allows you to
 manipulate x,y and x,y,z data sets (filtering, trend fitting, gridding,
-projecting, etc.) and produce *PostScript* illustrations ranging from
+projecting, etc.) and produce PostScript illustrations ranging from
 simple x-y plots, via contour maps, to artificially illuminated surfaces
 and 3-D perspective views in black/white or full color. Linear, log10,
 and power scaling is supported in addition to over 30 common map
-projections. The processing and display routines within **GMT** are
+projections. The processing and display routines within GMT are
 completely general and will handle any (x,y) or (x,y,z) data as input.
 
 Synopsis
@@ -27,7 +27,7 @@ Synopsis
 
 **gmt** module module-options
 
-where module is the name of a **GMT** module and the options are those
+where module is the name of a GMT module and the options are those
 that pertain to that particular module.  In addition to all the regular
 module-options that the various modules support, you can also give the
 special option **=**.  It will check if that module exist and if so the
@@ -37,7 +37,7 @@ be non-zero.
 GMT Overview
 ------------
 
-The following is a summary of all the programs supplied with **GMT** and
+The following is a summary of all the programs supplied with GMT and
 a very short description of their purpose. Detailed information about
 each program can be found in the separate manual pages.
 
@@ -157,8 +157,8 @@ See Also
 --------
 
 Look up the individual man pages for more details and full syntax. Run
-**gmt --help** to list all GMT programs and to show all installation
-directories. For an explanation of the various **GMT** settings in this
+``gmt --help`` to list all GMT programs and to show all installation
+directories. For an explanation of the various GMT settings in this
 man page (like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
-**GMT** home page gmt.soest.hawaii.edu
+GMT home page http://gmt.soest.hawaii.edu/

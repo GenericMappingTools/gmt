@@ -50,7 +50,7 @@ Required Arguments
 **-A**
     If necessary, adjust the file’s *x\_inc*, *y\_inc* to be compatible
     with its domain (or a new domain set with **-R**). Older grid files
-    (i.e., created prior to **GMT** 3.1) often had excessive slop in
+    (i.e., created prior to GMT 3.1) often had excessive slop in
     *x\_inc*, *y\_inc* and an adjustment is necessary. Newer files are
     created correctly.
 **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark*
@@ -122,14 +122,14 @@ the limits would be -180/180/-72/72, use
 
     gmt grdedit world.nc -R-180/180/-72/72 -S
 
-The file junk.nc was created prior to **GMT** 3.1 with incompatible
+The file junk.nc was created prior to GMT 3.1 with incompatible
 **-R** and **-I** arguments. To reset the x- and y-increments we run
 
    ::
 
     gmt grdedit junk.nc -A
 
-The file junk.nc was created prior to **GMT** 4.1.3 and does not contain
+The file junk.nc was created prior to GMT 4.1.3 and does not contain
 the required information to indicate that the grid is geographic. To add
 this information, run
 

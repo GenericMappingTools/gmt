@@ -6,7 +6,7 @@
     should fall on the page relative to lower left corner of the plot.
     For example, BL/0/0 will align the lower left corner of the time
     stamp with the lower left corner of the plot. Optionally, append a
-    *label*, or **c** (which will plot the command string.). The **GMT**
+    *label*, or **c** (which will plot the command string.). The GMT
     parameters :ref:`MAP_LOGO <MAP_LOGO>`, :ref:`MAP_LOGO_POS <MAP_LOGO_POS>`, and
     :ref:`FORMAT_TIME_STAMP <FORMAT_TIME_STAMP>` can affect the appearance; see the
     :doc:`gmt.conf` man page for details. The time string will be in the

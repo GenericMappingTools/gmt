@@ -42,7 +42,7 @@ Description
 -----------
 
 **psxyz** reads (x,y,z) triplets from *files* [or standard input] and
-generates *PostScript* code that will plot lines, polygons, or symbols
+generates PostScript code that will plot lines, polygons, or symbols
 at those locations in 3-D. If a symbol is selected and no symbol size
 given, then **psxyz** will interpret the fourth column of the input data
 as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
@@ -52,7 +52,7 @@ data points will be drawn instead. To explicitly close polygons, use
 **-L**. Select a fill with **-G**. If **-G** is set, **-W** will control
 whether the polygon outline is drawn or not. If a symbol is selected,
 **-G** and **-W** determines the fill and outline/no outline,
-respectively. The *PostScript* code is written to standard output. 
+respectively. The PostScript code is written to standard output. 
 
 Required Arguments
 ------------------
@@ -229,7 +229,7 @@ combine to give the desired effect when filled; to draw outline use the
 original polygon.
 
 The **-N** option does not adjust the BoundingBox information so you may
-have to post-process the *PostScript* output with :doc:`ps2raster` **-A**
+have to post-process the PostScript output with :doc:`ps2raster` **-A**
 to obtain the correct BoundingBox.
 
 See Also

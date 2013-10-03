@@ -281,7 +281,7 @@ switching between folders and documents.
 Kml Hierarchy
 -------------
 
-**GMT** stores the different features in hierarchical folders by feature
+GMT stores the different features in hierarchical folders by feature
 type (when using **-O**, **-K** or **-T/**\ *foldername*), by input file
 (if not standard input), and by line segment (using the name from the
 segment header, or **-N**). This makes it more easy in Google Earth to

@@ -40,7 +40,7 @@ Optional Arguments
 *version*
     Search for a unique match in the ~/.gmtversions file. If one match
     is found we switch to that entry; otherwise an error is generated.
-    where module is the name of a **GMT** program and the options are
+    where module is the name of a GMT program and the options are
     those that pertain to that particular program.
 
 Setup

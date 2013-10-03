@@ -7,7 +7,7 @@ The 40 Examples
 ----------------
 
 In this section we will be giving numerous examples of typical usage of
-*GMT* programs. In general, we will start with a raw data set,
+GMT programs. In general, we will start with a raw data set,
 manipulate the numbers in various ways, then display the results in
 diagram or map view. The resulting plots will have in common that they
 are all made up of simpler plots that have been overlaid to create a

@@ -104,7 +104,7 @@ Optional Arguments
     for image plot, and optionally append the effective dpi resolution
     for the rasterization [100]. 4. Specify **c**. Same as **-Qi** but
     will make nodes with z = NaN transparent, using the colormasking
-    feature in *PostScript* Level 3 (the PS device must support PS Level
+    feature in PostScript Level 3 (the PS device must support PS Level
     3). For any of these choices, you may force a monochrome image by
     appending the modifier **+m**. Colors are then converted to shades
     of gray using the (monochrome television) YIQ transformation. 
@@ -196,7 +196,7 @@ To make the same plot using the rastering option with dpi = 50, use
 
     gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qi50 -p135/30 -Iintens.nc > image3D.ps
 
-To create a color *PostScript* perspective plot of the gridded data set
+To create a color PostScript perspective plot of the gridded data set
 magnetics.nc, using the color palette file mag_intens.cpt, draped over
 the relief given by the file topography.nc, with Mercator map width of 6
 inch and tickmarks every 1 degree, with intensities provided by the file
@@ -220,12 +220,12 @@ the topography and shade the result for good measure. The commands are
 Remarks
 -------
 
-For the **-Qs** option: *PostScript* provides no way of smoothly varying
+For the **-Qs** option: PostScript provides no way of smoothly varying
 colors within a polygon, so colors can only vary from polygon to
 polygon. To obtain smooth images this way you may resample the grid
 file(s) using **grdsample** or use a finer grid size when running
 gridding programs like **surface** or **nearneighbor**. Unfortunately,
-this produces huge *PostScript* files. The alternative is to use the
+this produces huge PostScript files. The alternative is to use the
 **-Qi** option, which computes bilinear or bicubic continuous color
 variations within polygons by using scanline conversion to image the polygons.
 

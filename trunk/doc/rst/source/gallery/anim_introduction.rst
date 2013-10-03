@@ -4,10 +4,10 @@ Introduction
 Here we will explore what is
 involved in creating animations (i.e., movies). Of course, an animation
 is nothing more than a series of individual images played back in an
-orderly fashion. Here, these images will have been created with *GMT*.
+orderly fashion. Here, these images will have been created with GMT.
 To ensure a smooth transition from frame to frame we will be following
 some general guidelines when writing our scripts. Since there is no
-"movie" mode in *GMT* we must take care of all the book-keeping in our
+"movie" mode in GMT we must take care of all the book-keeping in our
 script. Thus, animations may require a bit of planning and may use more
 advanced scripting than the previous static examples. Note: This is a
 new chapter introduced with the 4.4.0 version and should be considered
@@ -22,7 +22,7 @@ phases of movie making:
    layers that are *independent* of your time variable.
 
 #. Have a frame-number loop where each frame is created as a
-   *PostScript* plot, then rasterized to a TIFF file of chosen
+   PostScript plot, then rasterized to a TIFF file of chosen
    dimension.
 
 #. Convert the individual frames to a single movie of suitable format.
@@ -34,7 +34,7 @@ example.
 
 #. There are several coordinates that you need to consider when planning
    your movie. The first is the coordinates of your data, i.e., the
-   *user coordinates*. As with all *GMT* plots you will transform those
+   *user coordinates*. As with all GMT plots you will transform those
    to the second set of *plot coordinates* in inches (or cm) by applying
    a suitable region and map projection. As before, you normally do this
    with a particular paper size in mind. When printed you get a
@@ -71,13 +71,13 @@ example.
    your frame counter equals the desired number of frames. You must use
    your frame counter to create a unique file name for each frame image
    so that the series of images can be lexically arranged. We recommend
-   using the *GMT* shell function **gmt_set_framename** to format
+   using the GMT shell function **gmt_set_framename** to format
    the frame counter with an adequate number of leading zeros; see our
    examples for details. The bulk of your main loop involves create the
-   single *PostScript* plot for this particular frame (time). This can
+   single PostScript plot for this particular frame (time). This can
    be trivial or a serious scripting exercise depending on what you want
    to show. We will give a few examples with increasing complexity. Once
-   the *PostScript* plot is created you need to rasterize it; we
+   the PostScript plot is created you need to rasterize it; we
    recommend you use :doc:`ps2raster </ps2raster>` to
    generate a TIFF image at the agreed-upon resolution. We also
    recommend that you place all frame images in a sub-directory. You may

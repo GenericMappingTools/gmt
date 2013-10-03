@@ -41,16 +41,16 @@ Preamble
    GMT 4 programs contain all the high-level functionality.
 
 
-Prior to version 5, the bulk of *GMT* functionality was coded directly
-in the standard *GMT* C program modules (e.g., ``surface.c``, ``psxy.c``, ``grdimage.c``, etc.). The
-*GMT* library only offered access to low-level functions from which
-those high-level *GMT* programs were built. The standard *GMT* programs
+Prior to version 5, the bulk of GMT functionality was coded directly
+in the standard GMT C program modules (e.g., ``surface.c``, ``psxy.c``, ``grdimage.c``, etc.). The
+GMT library only offered access to low-level functions from which
+those high-level GMT programs were built. The standard GMT programs
 have been very successful, with tens of thousands of users world-wide.
 However, the design of the main programs prevented developers from
-leveraging *GMT* functionality from within other programming
-environments since access to *GMT* tools could only be achieved via
+leveraging GMT functionality from within other programming
+environments since access to GMT tools could only be achieved via
 system calls [1]_. Consequently, all data i/o had to be done via
-temporary files. The design also prevented the *GMT* developers
+temporary files. The design also prevented the GMT developers
 themselves from taking advantage of these modules directly. For
 instance, the tool :doc:`pslegend` needed to
 make extensive use of system calls to :doc:`psxy` and
@@ -67,11 +67,11 @@ program to maintain.
    GMT 5 programs contain all the high-level functionality.
 
 
-Starting with *GMT* version 5, all standard *GMT* programs have been
-split into a short driver program (the “new” *GMT*  programs) and a
+Starting with GMT version 5, all standard GMT programs have been
+split into a short driver program (the “new” GMT  programs) and a
 function “module”. The drivers simply call the corresponding
-*GMT* modules; it is these modules that do all the work. These new
-functions have been placed in a new *GMT* high-level API library and can
+GMT modules; it is these modules that do all the work. These new
+functions have been placed in a new GMT high-level API library and can
 be called from a variety of environments (C/C++, Fortran, Python,
 Matlab, Visual Basic, Julia, R, etc.) [2]_. For example, the main
 program ``blockmean.c`` has been reconfigured as a high-level function
@@ -79,9 +79,9 @@ program ``blockmean.c`` has been reconfigured as a high-level function
 pass the result back to the calling program (or write it to file). The
 previous behavior of ``blockmean.c`` is replicated by a short driver program that simply
 collects user arguments and then calls ``GMT_blockmean()``. Indeed, the
-driver programs for all the standard *GMT* programs are identical so
+driver programs for all the standard GMT programs are identical so
 that the makefile generates them on-the-fly when it compiles and links
-them with the *GMT* library into executables. Thus, ``blockmean.c`` and others do in
+them with the GMT library into executables. Thus, ``blockmean.c`` and others do in
 fact no longer exist.
 
 The i/o abstraction layer
@@ -89,31 +89,31 @@ The i/o abstraction layer
 
 In order for this interface to be as flexible as possible we have
 generalized the notion of input and output. Data that already reside in
-an application's memory may serve as input to a *GMT* function. Other
+an application's memory may serve as input to a GMT function. Other
 sources of input may be file pointers and file descriptors (as well as
 the already-supported mechanism for passing file names). For standard
-data table i/o, the *GMT* API takes care of the task of assembling any
+data table i/o, the GMT API takes care of the task of assembling any
 combination of files, pointers, and memory locations into *a single
-virtual data set* from which the *GMT* function may read (a) all
+virtual data set* from which the GMT function may read (a) all
 records at once into memory, or (b) read one record at a time. Likewise,
-*GMT* functions may write their output to a virtual destination, which
+GMT functions may write their output to a virtual destination, which
 might be a memory location in the user’s application, a file pointer or
-descriptor, or an output file. The *GMT* functions are unaware of these
+descriptor, or an output file. The GMT functions are unaware of these
 details and simply read from a “source” and write to a “destination”.
 
 Our audience
 ------------
 
-Here, we document the new functions in the *GMT* API library for
+Here, we document the new functions in the GMT API library for
 application developers who wish to call these functions from their own
-custom programs. At this point, only the new high-level *GMT* API is
+custom programs. At this point, only the new high-level GMT API is
 fully documented and intended for public use. The structure and
-documentation of the under-lying lower-level *GMT* library is not
+documentation of the under-lying lower-level GMT library is not
 finalized. Developers using these functions may risk disruption to their
 programs due to changes we may make in the library in support of the
-*GMT* API. However, developers who wish to make supplemental packages to
-be distributed as part of *GMT* will (other than talk to us) probably
-want to access the entire low-level *GMT* library as well. It is
+GMT API. However, developers who wish to make supplemental packages to
+be distributed as part of GMT will (other than talk to us) probably
+want to access the entire low-level GMT library as well. It is
 unlikely that the low-level library will ever be fully documented.
 
 Definitions
@@ -121,33 +121,33 @@ Definitions
 
 For the purpose of this documentation a few definitions are needed:
 
-#. "Standard *GMT* program" refers to one of the traditional stand-alone
-   command-line executables known to all *GMT* users, e.g.,
+#. "Standard GMT program" refers to one of the traditional stand-alone
+   command-line executables known to all GMT users, e.g.,
    :doc:`blockmean`, :doc:`psxy`,
    :doc:`grdimage`, etc. Prior to version 5,
-   these were the only *GMT* executables available.
+   these were the only GMT executables available.
 
-#. "\ *GMT* module" refers to the function in the *GMT* API library that
+#. "\ GMT module" refers to the function in the GMT API library that
    is responsible for all the action taken by the corresponding
-   *GMT* program. All such modules are given the same name as the
+   GMT program. All such modules are given the same name as the
    corresponding program but carry the prefix ``GMT_``, e.g.,
    ``GMT_blockmean``.
 
-#. "\ *GMT* application" refers to a new application written by any
-   developer and may call one or more *GMT* functions to create a new
-   *GMT*-compatible executable.
+#. "\ GMT application" refers to a new application written by any
+   developer and may call one or more GMT functions to create a new
+   GMT-compatible executable.
 
 #. In the API description that follows we will use the type ``int`` to
    mean a 4-byte integer. All integers used in the API are 4-byte
    integers with the exception of one function where a longer integer is
    used. Since different operating systems have their own way of
    defining 8-byte integers we use C99’s ``int64_t`` for this purpose;
-   it is guaranteed to yield the correct type that the *GMT* function
+   it is guaranteed to yield the correct type that the GMT function
    expect.
 
-In version 5, the standard *GMT* programs are themselves specific but
-overly simple examples of *GMT* applications that only call the single
-*GMT* function they are associated with. However, some programs such as
+In version 5, the standard GMT programs are themselves specific but
+overly simple examples of GMT applications that only call the single
+GMT function they are associated with. However, some programs such as
 :doc:`pslegend`, :doc:`gmtconvert`,
 :doc:`grdblend`,
 :doc:`grdfilter` and others call several modules.
@@ -155,52 +155,52 @@ overly simple examples of *GMT* applications that only call the single
 Recognized resources
 --------------------
 
-The *GMT* API knows how to read and write five types of data common to
-*GMT* operations: CPT palette tables, data tables (ASCII or binary),
-text tables, *GMT* grids and images (reading only). In addition, we
+The GMT API knows how to read and write five types of data common to
+GMT operations: CPT palette tables, data tables (ASCII or binary),
+text tables, GMT grids and images (reading only). In addition, we
 present two data types to facilitate the passing of simple user arrays
 (one or more equal-length data columns of any data type, e.g., double,
 char) and 2-D or 3-D user matrices (of any data type and column/row
-organization [3]_). We refer to these data types as *GMT* *resources*.
+organization [3]_). We refer to these data types as GMT *resources*.
 There are many attributes for each of these resources and therefore we
 use a top-level structure for each type to keep them all in one
-container. These containers are given or returned by the *GMT* API
+container. These containers are given or returned by the GMT API
 functions using opaque pointers (``void *``). Below we discuss these
 containers in some detail; we will later present how they are used when
 importing or exporting them to or from files, memory locations, or
-streams. The first five are the standard *GMT* objects, while the latter
+streams. The first five are the standard GMT objects, while the latter
 two are the special user data containers to facilitate converting user
-data into *GMT* resources. These resources are defined in the include
+data into GMT resources. These resources are defined in the include
 file ``gmt_resources.h``; please consult this file to ensure correctness as it is difficult
 to keep the documentation up-to-date.
 
 Data tables
 ~~~~~~~~~~~
 
-Much data processed in *GMT* come in the form of ASCII, netCDF, or
+Much data processed in GMT come in the form of ASCII, netCDF, or
 native binary data tables. These may have any number of header records
-(ASCII files only) and perhaps segment headers. *GMT* programs will read
+(ASCII files only) and perhaps segment headers. GMT programs will read
 one or more such tables when importing data. However, to avoid memory
 duplication or limitations some programs may prefer to read records one
-at the time. The *GMT* API has functions that let you read
+at the time. The GMT API has functions that let you read
 record-by-record by presenting a virtual data set that combines all the
 data tables specified as input. This simplifies record processing
 considerably. A ``struct GMT_DATASET`` may contain any number of tables,
 each with any number of segments, each segment with any number of
 records, and each record with any number of columns. Thus, the arguments
-to *GMT* API functions that handle such data sets expect this type of
+to GMT API functions that handle such data sets expect this type of
 variable. All segments are expected to have the same number of columns.
 
 Text tables
 ~~~~~~~~~~~
 
-Some data needed by *GMT* are simply free-form ASCII text tables. These
+Some data needed by GMT are simply free-form ASCII text tables. These
 are handled similarly to data tables. E.g., they may have any number of
-header records and even segment headers, and *GMT* programs can read one
+header records and even segment headers, and GMT programs can read one
 or more tables or get text records one at the time. A
 ``struct GMT_TEXTSET`` may contain any number of tables, each with any
 number of segments, and each segment with any number of records. Thus,
-the arguments to *GMT* API functions that handle such data sets expect
+the arguments to GMT API functions that handle such data sets expect
 this type of variable. The user's program may then parse and process
 such text records as required. This resources is particularly useful
 when your data consist of a mix or data coordinates and ordinary text
@@ -210,32 +210,32 @@ only.
 GMT grids
 ~~~~~~~~~
 
-*GMT* grids are used to represent equidistant and organized 2-D
+GMT grids are used to represent equidistant and organized 2-D
 surfaces. These can be plotted as contour maps, color images, or as
-perspective surfaces. Because the native *GMT* grid is simply a 1-D
+perspective surfaces. Because the native GMT grid is simply a 1-D
 float array with all the metadata kept in a separate header, we pass
 this information via a ``struct GMT_GRID``, which is a container that
-holds both items. Thus, the arguments to *GMT* API functions that handle
-such *GMT* grids expect this type of variable.
+holds both items. Thus, the arguments to GMT API functions that handle
+such GMT grids expect this type of variable.
 
 CPT palette tables
 ~~~~~~~~~~~~~~~~~~
 
 The color palette table files, or just CPT tables, contain colors and
-patterns used for plotting data such as surfaces (i.e., *GMT* grids) or
-symbols, lines and polygons (i.e., *GMT* tables). *GMT* programs will
+patterns used for plotting data such as surfaces (i.e., GMT grids) or
+symbols, lines and polygons (i.e., GMT tables). GMT programs will
 generally read in a CPT palette table, make it the current palette, do
 the plotting, and destroy the table when done. The information is
 referred to via a pointer to ``struct GMT_PALETTE``. Thus, the arguments
-to *GMT* API functions that handle palettes expect this type of
+to GMT API functions that handle palettes expect this type of
 variable. It is not expected that users will wish to manipulate a CPT
 table directly, but rather use this mechanism to hold them in memory and
-pass as arguments to *GMT* modules.
+pass as arguments to GMT modules.
 
 GMT images
 ~~~~~~~~~~
 
-*GMT* images are used to represent bit-mapped images typically obtained
+GMT images are used to represent bit-mapped images typically obtained
 via the GDAL bridge. These can be reprojected internally, such as when
 used in grdimage. Since images and grids share the concept of a header,
 we use the same header structure for grids as for images; however, some
@@ -243,7 +243,7 @@ additional metadata attributes are also needed. Finally, the image
 itself may be of any data type and have more than one band (channel).
 Both image and header information are passed via a ``struct GMT_IMAGE``,
 which is a container that holds both items. Thus, the arguments to
-*GMT* API functions that handle *GMT* images expect this type of
+GMT API functions that handle GMT images expect this type of
 variable. Unlike the other objects, writting images has only partial
 support via ``GMT_grdimage`` [4]_.
 
@@ -266,7 +266,7 @@ support via ``GMT_grdimage`` [4]_.
 User data columns (GMT vectors)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Programs that wish to call *GMT* modules may hold data in their own
+Programs that wish to call GMT modules may hold data in their own
 particular data structures. For instance, the user’s program may have
 three column arrays of type float and wishes to use these as the input
 source to the ``GMT_surface`` module, which normally expects double
@@ -275,7 +275,7 @@ given by memory reference. Simply create a new ``struct GMT_VECTOR``
 (see section [sec:create]) and assign the union array pointers (see
 :ref:`univector <tbl-univector>`) to your data columns and provide the required
 information on length, data types, and optionally range (see
-Table :ref:`vector <tbl-vector>`). By letting the *GMT* module know you are passing a
+Table :ref:`vector <tbl-vector>`). By letting the GMT module know you are passing a
 data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correctly.
 
 .. _tbl-univector:
@@ -347,7 +347,7 @@ normally expects a ``struct GMT_GRID`` with floating point data via a
 file or provided by memory reference. As for user vectors, we create a
 ``struct GMT_MATRIX`` (see section [sec:create]), assign the appropriate
 union pointer to your data matrix and provide information on dimensions
-and data type (see Table :ref:`matrix <tbl-matrix>`). Let the *GMT* module know you
+and data type (see Table :ref:`matrix <tbl-matrix>`). Let the GMT module know you
 are passing a grid via a ``struct GMT_MATRIX`` and it will know how to
 read the matrix properly.
 
@@ -398,33 +398,33 @@ Overview of the GMT C Application Program Interface
 ===================================================
 
 
-Users who wish to create their own *GMT* application based on the API
+Users who wish to create their own GMT application based on the API
 must make sure their program goes through the steps below; details for
 each step will be revealed in the following chapter. We have kept the
-API simple: In addition to the *GMT* modules, there are only 52 public
+API simple: In addition to the GMT modules, there are only 52 public
 functions to become familiar with, but most applications will only use a
 small subset of this selection. Functions either return an integer error
 code (when things go wrong; otherwise it is set to GMT_OK (0)), or they
-return a void pointer to a *GMT* resources (or NULL if things go wrong).
+return a void pointer to a GMT resources (or NULL if things go wrong).
 In either case the API will report what the error is. The layout here
 assumes you wish to use data in memory as input sources; if the data are
 simply command-line files then things simplify considerably.
 
-#. Initialize a new *GMT* session with ``GMT_Create_Session``, which
-   allocates a hidden *GMT* API control structure and returns an opaque
+#. Initialize a new GMT session with ``GMT_Create_Session``, which
+   allocates a hidden GMT API control structure and returns an opaque
    pointer to it. This pointer is the first argument to all subsequent
-   *GMT* API function calls within the session.
+   GMT API function calls within the session.
 
-#. For each intended call to a *GMT* module, several steps are involved:
+#. For each intended call to a GMT module, several steps are involved:
 
    a. Register input sources and output destination with ``GMT_Register_IO``.
 
    b. Each resource registration generates a unique ID number. For
       memory resources, we embed these numbers in unique filenames of
-      the form "@GMTAPI@-######". When *GMT* i/o library functions
+      the form "@GMTAPI@-######". When GMT i/o library functions
       encounter such filenames they extract the ID and make a connection
       to the corresponding resource. Multiple table data or text sources
-      are combined into a single virtual source for *GMT* modules to
+      are combined into a single virtual source for GMT modules to
       operate on. In contrast, CPT, Grid, and Image resources are
       operated on individually.
 
@@ -433,12 +433,12 @@ simply command-line files then things simplify considerably.
    d. Read data into memory. You may choose to read everything at once
       or read record-by-record (tables only).
 
-   e. Prepare required arguments and call the *GMT* module you wish to use.
+   e. Prepare required arguments and call the GMT module you wish to use.
 
    f. Process any results returned to memory via pointers rather than
       written to files.
 
-   g. Destroy the resources allocated by *GMT* modules to hold results,
+   g. Destroy the resources allocated by GMT modules to hold results,
       or let the garbage collector do this automatically at the end of
       the module and at the end of the session.
 
@@ -448,10 +448,10 @@ simply command-line files then things simplify considerably.
 
 The steps a–d collapse into a single step if data are simply read from files.
 
-Advanced programs may be calling more than one *GMT* session and thus
+Advanced programs may be calling more than one GMT session and thus
 run several sessions, perhaps concurrently as different threads on
 multi-core machines. We will now discuss these steps in more detail.
-Throughout, we will introduce upper-case *GMT* C enum constants *in
+Throughout, we will introduce upper-case GMT C enum constants *in
 lieu* of simple integer constants. These are considered part of the API
 and are available for developers via the ``gmt_resources.h`` include file.
 
@@ -574,11 +574,11 @@ The GMT C Application Program Interface
 Initialize a new GMT session
 ----------------------------
 
-Most applications will need to initialize only a single *GMT* session.
-This is true of all the standard *GMT* programs since they only call one
-*GMT* module and then exit. Most user-developed *GMT* applications are
+Most applications will need to initialize only a single GMT session.
+This is true of all the standard GMT programs since they only call one
+GMT module and then exit. Most user-developed GMT applications are
 likely to only initialize one session even though they may call many
-*GMT* modules. However, the *GMT* API supports any number of
+GMT modules. However, the GMT API supports any number of
 simultaneous sessions should the programmer wish to take advantage of
 it. This might be useful when you have access to several CPUs and want
 to spread the computing load [5]_. In the following discussion we will
@@ -600,15 +600,15 @@ and you will typically call it thus:
     void *API = NULL;
     API = GMT_Create_Session ("Session name", 2, 0, NULL);
 
-where ``API`` is an opaque pointer to the hidden *GMT* API control
+where ``API`` is an opaque pointer to the hidden GMT API control
 structure. You will need to pass this pointer to *all* subsequent
-*GMT* API functions; this is how essential internal information is
+GMT API functions; this is how essential internal information is
 passed from module to module. The key task of this initialization is to
-set up the *GMT* machinery and its internal variables used for map
+set up the GMT machinery and its internal variables used for map
 projections, plotting, i/o, etc. The initialization also allocates space
 for internal structures used to register resources. The ``pad`` argument
 sets how many rows and columns should be used for padding for grids and
-images so that boundary conditions can be applied. *GMT* uses 2 so we
+images so that boundary conditions can be applied. GMT uses 2 so we
 recommend that value. The ``mode`` argument is only used for external APIs
 that need to replace GMT's calls to a hard exit upon failure with a soft return. Likewise,
 the *print_func* argument is a pointer to a function that is used to print
@@ -620,12 +620,12 @@ Should something go wrong then ``API`` will be returned as ``NULL``.
 Register input or output resources
 ----------------------------------
 
-When using the standard *GMT* programs, you specify input files on the
+When using the standard GMT programs, you specify input files on the
 command line or via special program options (e.g.,
 **-I**\ *intensity.nc*). The output of the programs are either written
 to standard output (which you redirect to files or pipe to other
 programs) or to files specified by specific program options (e.g.,
-**-G**\ *output.nc*). Alternatively, the *GMT* API allows you to specify
+**-G**\ *output.nc*). Alternatively, the GMT API allows you to specify
 input (and output) to be associated with open file handles or program
 variables. We will examine this more closely below. Registering a
 resource is a required step before attempting to import or export data
@@ -652,7 +652,7 @@ methods, as well as modifiers you can add; these are listed in Table
 :ref:`geometry <tbl-geometry>` for recognized geometries), ``ptr`` is the address of the
 pointer to the named resource. If ``direction`` is GMT_OUT and the
 ``method`` is not related to a file (filename, stream, or handle), then
-``ptr`` must be NULL. After the *GMT* module has written the data you
+``ptr`` must be NULL. After the GMT module has written the data you
 can use GMT_Retrieve_Data_ to assign a pointer to the memory location
 (variable) where the output was allocated. For grid (and image)
 resources you may request to obtain a subset via the :ref:`wesn <tbl-wesn>` array (see
@@ -690,11 +690,11 @@ it returns FALSE (0).
 +------------------+-------+--------------------------------+
 | GMT_IS_TEXTSET   | 1     | A [multi-segment] text file    |
 +------------------+-------+--------------------------------+
-| GMT_IS_GRID      | 2     | A *GMT* grid file              |
+| GMT_IS_GRID      | 2     | A GMT grid file              |
 +------------------+-------+--------------------------------+
 | GMT_IS_CPT       | 3     | A CPT file                     |
 +------------------+-------+--------------------------------+
-| GMT_IS_IMAGE     | 4     | A *GMT* image                  |
+| GMT_IS_IMAGE     | 4     | A GMT image                  |
 +------------------+-------+--------------------------------+
 +------------------+-------+--------------------------------+
 
@@ -771,7 +771,7 @@ it returns FALSE (0).
 Resource initialization
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-All *GMT* programs dealing with input or output files given on the
+All GMT programs dealing with input or output files given on the
 command line, and perhaps defaulting to the standard input or output
 streams if no files are given, must call the i/o initializer function
 ``GMT_Init_IO`` once for each direction required (i.e., input and output
@@ -818,7 +818,7 @@ in Section [sec:func]); otherwise ``args`` is an array of ``n_args``
 strings (i.e., the int argc, char \*argv[] model)
 
 Many programs will register an export location where results of a
-*GMT* function (say, a filtered grid) should be returned, but may then
+GMT function (say, a filtered grid) should be returned, but may then
 wish to use that variable as an *input* resource in a subsequent module
 call. This is accomplished by re-registering the resource as an *input*
 source, thereby changing the *direction* of the data set. The function
@@ -829,13 +829,13 @@ Dimension parameters for user 1-D column vectors
 
 We refer to Table [tbl:vector]. The ``type`` array must hold the data
 type of each data column in the user’s program. All types other than
-GMT_DOUBLE will be converted internally in *GMT* to ``double``, thus
+GMT_DOUBLE will be converted internally in GMT to ``double``, thus
 possibly increasing memory requirements. If the type is GMT_DOUBLE then
-*GMT* will be able to use the column directly by reference. The
+GMT will be able to use the column directly by reference. The
 ``n_columns`` and ``n_rows`` parameters indicate the number of vectors
 and their common length. If these are not yet known you may pass 0 for
 these values and set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will
-make sure *GMT* will allocate the necessary memory to the variable you
+make sure GMT will allocate the necessary memory to the variable you
 specify.
 
 Dimension parameters for user 2-D table arrays
@@ -843,12 +843,12 @@ Dimension parameters for user 2-D table arrays
 
 We refer to Table [tbl:matrix]. The ``type`` parameter specifies the
 data type used for the array in the user's program. All types other than
-GMT_FLOAT will be converted internally in *GMT* to ``float``, thus
+GMT_FLOAT will be converted internally in GMT to ``float``, thus
 possibly increasing memory requirements. If the type is GMT_FLOAT then
-*GMT* may be able to use the matrix directly by reference. The
+GMT may be able to use the matrix directly by reference. The
 ``n_rows`` and ``n_columns`` parameters indicate the dimensions of the
 matrix. If these are not yet known you may pass 0 for these values and
-set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will make sure *GMT* will
+set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will make sure GMT will
 allocate the necessary memory at the location you specify. Fortran users
 will instead have to specify a size large enough to hold the anticipated
 output data. The ``registration`` and ``range`` gives the grid
@@ -857,7 +857,7 @@ matrix has a dimension that exceeds that of the leading row (or column)
 dimension. Note: For GMT_IS_TEXTSET the user matrix is expected to be
 a 2-D character array with a fixed row length of ``dim`` but we only
 consider the first ``n_columns`` characters. For data grids you will
-also need to specify the ``registration`` (see the *GMT* Cookbook and
+also need to specify the ``registration`` (see the GMT Cookbook and
 Reference, Appendix B for description of the two forms of registration)
 and data domain ``range``.
 
@@ -865,7 +865,7 @@ Create empty resources
 ----------------------
 
 
-If your application needs to build and populate *GMT* resources in ways
+If your application needs to build and populate GMT resources in ways
 that do not depend on external resources (files, memory locations,
 etc.), then youGMT_Create_Data can obtain a “blank slate” by calling
 
@@ -921,7 +921,7 @@ For method (1), pass the ``par`` array, as indicated below:
 In this case, pass ``wesn``, ``inc`` as NULL. For method (2), you
 instead pass ``wesn``, ``inc``, and ``registration`` and leave as NULL.
 For grids and images you may pass ``pad`` to set the padding, or -1 to
-accept the *GMT* default. The ``mode`` determines what is actually
+accept the GMT default. The ``mode`` determines what is actually
 allocated when you have chosen grids or images. As for GMT_Read_Data_
 you can pass ``GMT_GRID_ALL`` to initialize the header and allocate
 space for the array. Alternatively, you can pass
@@ -988,7 +988,7 @@ Import Data
 -----------
 
 If your main program needs to read any of the five recognized data types
-(CPT files, data tables, text tables, *GMT* grids, or images) you will
+(CPT files, data tables, text tables, GMT grids, or images) you will
 use the GMT_Get_Data_ or GMT_Read_Data_ functions, which both
 return entire data sets. In the case of data and text tables you may
 also select record-by-record reading using the GMT_Get_Record_
@@ -1053,7 +1053,7 @@ Import a data set
 ~~~~~~~~~~~~~~~~~
 
 If your program needs to import any of the five recognized data types
-(CPT table, data table, text table, *GMT* grid, or image) you will use
+(CPT table, data table, text table, GMT grid, or image) you will use
 either the GMT_Read_Data_ or GMT_Get_Data_ functions. The former
 is typically used when reading from files, streams (e.g., ``stdin``), or
 an open file handle, while the latter is only used with a registered
@@ -1114,7 +1114,7 @@ different data types.
     ``mode`` contains bit-flags that control how the CPT file’s back-,
     fore-, and NaN-colors should be initialized. Select 0 to use the CPT
     file’s back-, fore-, and NaN-colors, 2 to replace these with the
-    *GMT* default values, or 4 to replace them with the color table’s
+    GMT default values, or 4 to replace them with the color table’s
     entries for highest and lowest value.
 
 **Data table**
@@ -1204,7 +1204,7 @@ records in a loop using
 where the returned value is either a pointer to a double array with the
 current row values or to a character string with the current row,
 depending on ``mode``. In either case these pointers point to memory
-internal to *GMT* and should be considered read-only. When we reach
+internal to GMT and should be considered read-only. When we reach
 end-of-file, encounter conversion problems, read header comments, or
 identify segment headers we return a NULL pointer. The ``nfields``
 pointer will return the number of fields returned; pass NULL if your
@@ -1215,10 +1215,10 @@ the double array. To read text records, supply instead ``mode`` ==
 GMT_READ_TEXT (or 1) and we instead return a pointer to the text
 record. However, if you have input records that mixes organized
 floating-point columns with text items you could pass ``mode`` ==
-GMT_READ_MIXED (2). Then, *GMT* will attempt to extract the
+GMT_READ_MIXED (2). Then, GMT will attempt to extract the
 floating-point values; you can still access the record string, as
 discussed below. Finally, if your application needs to be notified when
-*GMT* closes one file and opens the next, add GMT_FILE_BREAK to
+GMT closes one file and opens the next, add GMT_FILE_BREAK to
 ``mode`` and check for the status code GMT_IO_NEXT_FILE (by default,
 we treat the concatenation of many input files as a single virtual
 file). Using ``GMT_Get_Record`` requires you to first initialize the
@@ -1377,7 +1377,7 @@ grid and assign each node the product x \* y:
     }
 
 Note the use of ``GMT_Get_Index`` to get the grid node number associated
-with the ``row`` and ``col`` we are visiting. Because *GMT* grids have
+with the ``row`` and ``col`` we are visiting. Because GMT grids have
 padding (for boundary conditions) the relationship between rows,
 columns, and node indices is more complicated and hence we hide that
 complexity in ``GMT_Get_Index``. Note that for trivial procedures such
@@ -1399,7 +1399,7 @@ Manipulate data tables
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Another common application is to process the records in a data table.
-Because *GMT* consider the GMT_DATASET resources to contain one or more
+Because GMT consider the GMT_DATASET resources to contain one or more
 tables, each of which may contain one or more segments, all of which may
 contain one or more columns, you will need to have multiple loops to
 visit all entries. The following code snippet will visit all data
@@ -1521,8 +1521,8 @@ Presenting and accessing GMT options
 ------------------------------------
 
 [sec:parsopt] As you develop a program you may need to rely on some of
-the *GMT* common options. For instance, you may wish to have your
-program present the ``-R`` option to the user, let *GMT*\ handle the
+the GMT common options. For instance, you may wish to have your
+program present the ``-R`` option to the user, let GMT handle the
 parsing, and examine the values. You may also wish to encode your own
 custom options that may require you to parse user text into the
 corresponding floating point dimensions, length, coordinates, time, etc.
@@ -1531,13 +1531,13 @@ tasks. This section is intended to show how the programmer will obtain
 information from the user that is necessary to do the task at hand
 (e.g., special options to provide values and settings for the program).
 In the following section we will concern ourselves with preparing
-arguments for calling any of the *GMT* modules.
+arguments for calling any of the GMT modules.
 
 Display usage syntax for GMT common options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can have your program menu display the standard usage message for a
-*GMT* common option by calling the function
+GMT common option by calling the function
 
 .. _GMT_Option:
 
@@ -1545,16 +1545,16 @@ You can have your program menu display the standard usage message for a
 
     int GMT_Option (void *API, char *options);
 
-where ``options`` is a comma-separated list of *GMT* common options
+where ``options`` is a comma-separated list of GMT common options
 (e.g., “R,J,O,X”). You can repeat this function with different sets of
 options in order to intersperse your own custom options with in an
-overall alphabetical order; see any *GMT* module for examples of typical
+overall alphabetical order; see any GMT module for examples of typical
 layouts.
 
 Parsing the GMT common options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The parsing of all *GMT* common option is done by
+The parsing of all GMT common option is done by
 
 .. _GMT_Parse_Common:
 
@@ -1562,17 +1562,17 @@ The parsing of all *GMT* common option is done by
 
     int GMT_Parse_Common (void *API, char *args, struct GMT_OPTION *list);
 
-where ``args`` is a string of the common *GMT* options your program may
-use. An error will be reported if any of the common *GMT* options fail
+where ``args`` is a string of the common GMT options your program may
+use. An error will be reported if any of the common GMT options fail
 to parse, and if so we return TRUE; if not errors we return FALSE. All
 other options, including file names, will be silently ignored. The
-parsing will update the internal *GMT* information structure that
+parsing will update the internal GMT information structure that
 affects program operations.
 
 Inquiring about the GMT common options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The API provide only a limited window into the full *GMT* machinery
+The API provide only a limited window into the full GMT machinery
 accessible to the modules. You can determine if a particular common
 option has been parsed and in some cases determine the values that was set with
 
@@ -1595,7 +1595,7 @@ the ``-R`` was set and what the resulting region was set to you may call
     }
 
 The ``wesn`` array could now be passed to the various read and create
-functions for *GMT* resources.
+functions for GMT resources.
 
 Parsing text values
 ~~~~~~~~~~~~~~~~~~~
@@ -1625,7 +1625,7 @@ obtain the two coordinates as decimal degrees by calling
 
 Your program can now check that ``n`` equals 2 and then use the values
 in ``pairs``. Note: Dimensions given with units of inches, cm, or points
-are converted to the *GMT* default length unit (:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`)
+are converted to the GMT default length unit (:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`)
 [cm], while distances given in km, nautical miles, miles, feet, or
 survey feet are returned in meters. Arc lengths in minutes and seconds
 are returned in decimal degrees, and date/time values are returned in
@@ -1635,7 +1635,7 @@ Inquiring about a GMT default parameter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If your program needs to determine one or more of the current
-*GMT* default settings you can do so via
+GMT default settings you can do so via
 
 .. _GMT_Get_Default:
 
@@ -1652,7 +1652,7 @@ Prepare module options
 ----------------------
 
 [sec:func] One of the advantages of programming with the API is that you
-have access to the high-level *GMT* modules. For example, if your
+have access to the high-level GMT modules. For example, if your
 program must compute the distance from a point to all other points on
 the node you can simply set up options and call ``GMT_grdmath`` to do it
 for you and accept the result back as an input grid. All the module
@@ -1664,7 +1664,7 @@ interfaces are identical are looks like
 
     int GMT_Call_Module (void *API, const char *module, int mode, void *args);
 
-Here, ``module`` can be any of the *GMT* modules, such as
+Here, ``module`` can be any of the GMT modules, such as
 ``psxy`` or ``grdvolume``.  All GMT modules may be called with one of
 three sets of ``args`` depending on ``mode``. The three modes differ in
 how the options are passed to the module:
@@ -1686,7 +1686,7 @@ how the options are passed to the module:
 
     *mode > 0*
         Expects ``args`` to be an array of text options and ``mode`` to be a count of how many
-        options are passed (i.e., the ``argc, argv[]`` model used by the *GMT* programs themselves).
+        options are passed (i.e., the ``argc, argv[]`` model used by the GMT programs themselves).
 
 
 If no module by the given name is found we return -1.
@@ -1698,7 +1698,7 @@ When ``mode > 0`` we expect an array ``args`` of character
 strings that each holds a single command line options (e.g.,
 “-R120:30/134:45/8S/3N”) and interpret ``mode`` to be the count of how
 many options are passed. This, of course, is almost exactly how the
-stand-alone *GMT* programs are called (and reflects how they themselves
+stand-alone GMT programs are called (and reflects how they themselves
 are activated internally). We call this the “argc–argv” mode. Depending
 on how your program obtains the necessary options you may find that this
 interface offers all you need.
@@ -1725,7 +1725,7 @@ this interface can be more involved since you need to generate the
 linked list of program options; however, utility functions exist to
 simplify its use. This interface is intended for programs whose internal
 workings are better suited to generate such arguments – we call this the
-“options” mode. The order in the list is not important as *GMT* will
+“options” mode. The order in the list is not important as GMT will
 sort it internally according to need. The option structure is defined below.
 
 .. _options:
@@ -1808,7 +1808,7 @@ text string command, use
 
     char *GMT_Create_Cmd (void *API, struct GMT_OPTION *list);
 
-Developers who plan to import and export *GMT* shell scripts might find
+Developers who plan to import and export GMT shell scripts might find
 it convenient to use these functions. In case of an error we return a
 NULL pointer and set ``API->error``, otherwise a pointer to an allocated
 string is returned.  When you no longer have
@@ -1832,8 +1832,8 @@ wish to manipulate program option structures within their own programs.
 These allow you to create new option structures, append them to the
 linked list, replace existing options with new values, find a particular
 option, and remove options from the list. Note: The order in which the
-options appear in the linked list is of no consequence to *GMT*.
-Internally, *GMT* will sort and process the options in the manner
+options appear in the linked list is of no consequence to GMT.
+Internally, GMT will sort and process the options in the manner
 required. Externally, you are free to maintain your own order.
 
 Make a new option structure
@@ -1950,7 +1950,7 @@ Calling a GMT module
 --------------------
 
 Given your linked list of program options (or text array) and possibly
-some registered resources, you can now call the required *GMT* module
+some registered resources, you can now call the required GMT module
 using one of the two flavors discussed in section [sec:func]. All
 modules return an error or status code that your program should consider
 before processing the results.
@@ -1977,7 +1977,7 @@ by adding (bitwise “or”). The ``GMT_Set_Comment`` does not actually
 output anything but sets the relevant comment and header records in the
 relevant structure. When a file is written out the information will be
 output as well (Note: Users can always decide if they wish to turn
-header output on or off via the common *GMT* option ``-h``. For
+header output on or off via the common GMT option ``-h``. For
 record-by-record writing you must enable the header block output when
 you call GMT_Begin_IO_
 
@@ -2020,7 +2020,7 @@ Exporting Data
 --------------
 
 If your program needs to write any of the four recognized data types
-(CPT files, data tables, text tables, or *GMT* grids) you can use the
+(CPT files, data tables, text tables, or GMT grids) you can use the
 ``GMT_Put_Data``. In the case of data and text tables, you may also
 consider the ``GMT_Put_Record`` function. As a general rule, your
 program organization may simplify if you can write the export the entire
@@ -2053,7 +2053,7 @@ upcoming writing.
 Exporting a data set
 ~~~~~~~~~~~~~~~~~~~~
 
-To have your program accept results from *GMT* modules and write them
+To have your program accept results from GMT modules and write them
 separately requires you to use the ``GMT_Write_Data`` or
 ``GMT_Put_Data`` functions. They are very similar to the
 ``GMT_Read_Data`` and ``GMT_Get_Data`` functions encountered earlier.
@@ -2263,7 +2263,7 @@ Terminate a GMT session
 -----------------------
 
 Before your program exits it should properly terminate the
-*GMT* session, which involves a call to
+GMT session, which involves a call to
 
 .. _GMT_Destroy_Session:
 
@@ -2271,11 +2271,11 @@ Before your program exits it should properly terminate the
 
     int GMT_Destroy_Session (void *API);
 
-which simply takes the pointer to the *GMT* API control structure as its
-only arguments. It terminates the *GMT* machinery and deallocates all
-memory used by the *GMT* API book-keeping. It also unregisters any
+which simply takes the pointer to the GMT API control structure as its
+only arguments. It terminates the GMT machinery and deallocates all
+memory used by the GMT API book-keeping. It also unregisters any
 remaining resources previously registered with the session. The
-*GMT* API will only close files that it was responsible for opening in
+GMT API will only close files that it was responsible for opening in
 the first place. Finally, the API structure itself is freed so your main
 program does not need to do so. The function returns TRUE (1) if there
 is an error when trying to free the memory (the error code is passed
@@ -2297,7 +2297,7 @@ further development.
 Presenting and Parsing the FFT options
 --------------------------------------
 
-Several *GMT* programs using FFTs present the same unified option and
+Several GMT programs using FFTs present the same unified option and
 modifier sets to the user. The API makes these available as well. If
 your program needs to present the option usage you can call
 
@@ -2309,8 +2309,8 @@ your program needs to present the option usage you can call
                                  char *string);
 
 Here, ``option`` is the unique character used for this particular
-program option (most *GMT* programs have standardized on using 'N' but
-you are free to choose whatever you want except existing *GMT* common
+program option (most GMT programs have standardized on using 'N' but
+you are free to choose whatever you want except existing GMT common
 options). The ``dim`` sets the dimension of the transform, currently you
 must choose 1 or 2, while the ``string`` is a one-line message that
 states what the option does; you should tailor this to your program. If
@@ -2493,7 +2493,7 @@ which simply frees up the memory allocated by the FFT machinery.
 FORTRAN interfaces
 ==================
 
-FORTRAN 90 developers who wish to use the *GMT* API may use the same
+FORTRAN 90 developers who wish to use the GMT API may use the same
 API functions as discussed in Chapter 2. As we do not have much (i.e., any) experience
 with modern Fortran we are not sure to what extent you are able to access
 the members of the various structures, such as the GMT_GRID structure. Thus,

@@ -11,7 +11,7 @@
     Alternatively, specify the name of an existing grid file and the
     **-R** settings (and grid spacing, if applicable) are copied from
     the grid. When **-R** is used without any further arguments, the
-    values from the last use of **-R** in a previous **GMT** command
+    values from the last use of **-R** in a previous GMT command
     will be used.
     For calendar time coordinates you may either give (a) relative time
     (relative to the selected :ref:`TIME_EPOCH <TIME_EPOCH>` and in the selected

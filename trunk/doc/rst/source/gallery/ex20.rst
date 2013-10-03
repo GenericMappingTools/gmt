@@ -5,7 +5,7 @@
 
 One is often required to make special maps that shows the distribution
 of certain features but one would prefer to use a custom symbol instead
-of the built-in circles, squares, triangles, etc. in the *GMT* plotting
+of the built-in circles, squares, triangles, etc. in the GMT plotting
 programs :doc:`psxy </psxy>` and
 :doc:`psxyz </psxyz>`. Here we demonstrate one approach
 that allows for a fair bit of flexibility in designing ones own symbols.
@@ -58,7 +58,7 @@ The following recipe is used when designing a new symbol.
    Without much further discussion we also make a definition file ``bullseye.def`` for a
    multi-colored bulls eye symbol. Note that the symbol can be created
    beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
-   limit in *GMT* to the size of the symbols. The center, however, will
+   limit in GMT to the size of the symbols. The center, however, will
    always be at (0,0). This is the point to which the coordinates in
    :doc:`psxy </psxy>` refers.
 
@@ -94,5 +94,5 @@ would make two symbols: one with just the cone and caldera and the other
 with the bubbles. These would be plotted consecutively using the desired
 colors. Alternatively, like in ``bullseye.def``, we may specify colors directly for the
 various segments. Note that the custom symbols (Appendix [app:N]),
-unlike the built-in symbols in *GMT*, can be used with the built-in
+unlike the built-in symbols in GMT, can be used with the built-in
 patterns (Appendix [app:E]). Other approaches are also possible, of course.
