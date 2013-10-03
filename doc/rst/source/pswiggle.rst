@@ -50,7 +50,7 @@ user may set a preferred positive anomaly plot direction, and if the
 positive normal is outside the plus/minus 90 degree window around the
 preferred direction, then 180 degrees are added to the direction. Either
 the positive or the negative wiggle may be shaded. The resulting
-*PostScript* code is written to standard output. 
+PostScript code is written to standard output. 
 
 Required Arguments
 ------------------

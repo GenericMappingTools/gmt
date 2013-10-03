@@ -10,5 +10,5 @@
     the image. For 1-bit rasters: use **P**\ *dpi/pattern* for inverse
     video, or append **:F**\ *color*\ [**B**\ [*color*\ ]] to specify
     fore- and background colors (use *color* = - for transparency). See
-    **GMT** Cookbook & Technical Reference Appendix E for information on
+    GMT Cookbook & Technical Reference Appendix E for information on
     individual patterns.

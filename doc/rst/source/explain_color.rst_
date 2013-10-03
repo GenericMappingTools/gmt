@@ -9,5 +9,5 @@
     (#rrggbb, as used in HTML). For PDF transparency, append
     @\ *transparency* in the 0-100 range [0 or opaque]. See the
     **gmtcolors** manpage for more information and a full list of color
-    names. See **GMT** Cookbook & Technical Reference Chapter 4 for more
+    names. See GMT Cookbook & Technical Reference Chapter 4 for more
     information.

@@ -55,7 +55,7 @@ specify fill of water-areas then the latter will be transparent (i.e.,
 earlier graphics drawn in those areas will not be overwritten).
 Likewise, if the water-areas are painted and no land fill is set then
 the land-areas will be transparent. A map projection must be supplied.
-The *PostScript* code is written to standard output. 
+The PostScript code is written to standard output. 
 
 Required Arguments
 ------------------
@@ -294,7 +294,7 @@ permanent sea ice. In addition to these time-varying ice-ocean
 boundaries, there are also ice grounding lines where ice goes from
 floating on the sea to sitting on land, and lines delimiting areas of
 rock outcrop. For consistency’s sake, we have used the World Vector
-Shoreline throughout the world in pscoast, as described in the **GMT**
+Shoreline throughout the world in pscoast, as described in the GMT
 Cookbook Appendix K. Users who need specific boundaries in Antarctica
 should get the Antarctic Digital Database, prepared by the British
 Antarctic Survey, Scott Polar Research Institute, World Conservation

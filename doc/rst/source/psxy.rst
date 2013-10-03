@@ -45,7 +45,7 @@ Description
 -----------
 
 **psxy** reads (*x*,\ *y*) pairs from *files* [or standard input] and
-generates *PostScript* code that will plot lines, polygons, or symbols
+generates PostScript code that will plot lines, polygons, or symbols
 at those locations on a map. If a symbol is selected and no symbol size
 given, then **psxy** will interpret the third column of the input data
 as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
@@ -55,7 +55,7 @@ data points will be drawn instead. To explicitly close polygons, use
 **-L**. Select a fill with **-G**. If **-G** is set, **-W** will control
 whether the polygon outline is drawn or not. If a symbol is selected,
 **-G** and **-W** determines the fill and outline/no outline,
-respectively. The *PostScript* code is written to standard output. 
+respectively. The PostScript code is written to standard output. 
 
 Required Arguments
 ------------------
@@ -150,7 +150,7 @@ Optional Arguments
     as specifying /dev/null (or NUL for Windows users) as input file.
     Use this to activate only the options that are not related to
     plotting of lines or symbols, such as **psxy** **-R** **-J** **-O**
-    **-T** to terminate a sequence of **GMT** plotting commands without
+    **-T** to terminate a sequence of GMT plotting commands without
     producing any plotting output. 
 
 .. include:: explain_-U.rst_

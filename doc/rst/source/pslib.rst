@@ -6,40 +6,40 @@ pslib
 
 .. only:: not man
 
-    PSL 5.0 - A *PostScript* based plotting library
+    PSL 5.0 - A PostScript based plotting library
 
 Description
 -----------
 
-**PSL** was created to make the generation of *PostScript* page
+PSL was created to make the generation of PostScript page
 description code easier. PS is a page description language developed by
 the Adobe for specifying how a printer should render a page of text or
 graphics. It uses a reverse Polish notation that puts and gets items
 from a stack to draws lines, text, and images and even performs
-calculations. **PSL** is a self-contained library that presents a series
+calculations. PSL is a self-contained library that presents a series
 of functions that can be used to create plots. The resulting
-*PostScript* code is ASCII text (with some exceptions for images if so
+PostScript code is ASCII text (with some exceptions for images if so
 desired) and can thus be edited using any text editor. Thus, it is
 possible to modify a plot file even after it has been created, e.g., to
 change text strings, set new gray shades or colors, experiment with
 various pen widths, etc. Furthermore, various tools exist that can parse
-*PostScript* and let you make such edits via a graphical user interface
-(e.g., Adobe Illustrator). **PSL** is written in C but includes FORTRAN
+PostScript and let you make such edits via a graphical user interface
+(e.g., Adobe Illustrator). PSL is written in C but includes FORTRAN
 bindings and can therefore be called from both C and FORTRAN programs.
-To use this library, you must link your plotting program with **PSL**.
-**PSL** is used by the **GMT** graphics programs to generate PS. **PSL**
-output is freeform *PostScript* that conforms to the Adobe *PostScript*
+To use this library, you must link your plotting program with PSL.
+PSL is used by the GMT graphics programs to generate PS. PSL
+output is freeform PostScript that conforms to the Adobe PostScript
 File Specification Version 3.0.
 
-Before any **PSL** calls can be issued, the plotting system must be
+Before any PSL calls can be issued, the plotting system must be
 initialized. This is done by calling **PSL_beginsession**, which
-initializes a new **PSL** session; then call **PSL_setdefaults** which
+initializes a new PSL session; then call **PSL_setdefaults** which
 sets internal variables and default settings, accepts settings for
 measurement units and character encoding, and returns a pointer to a
 struct PSL_CTRL which must be passed as first argument to all other
-**PSL** functions. The measure unit for sizes and positions can be set
+PSL functions. The measure unit for sizes and positions can be set
 to be centimeter (c), inch (i), meter (m), or points
-(p). A **PSL** session is terminated by calling
+(p). A PSL session is terminated by calling
 **PSL_endsession**. You may create one or more plots within the same
 session. A new plot is started by calling **PSL_beginplot**, which
 defines macros, sets up the plot-coordinate system, scales, and
@@ -47,16 +47,16 @@ defines macros, sets up the plot-coordinate system, scales, and
 Normally, the plot code is written to *stdout*. When all plotting to
 this file is done, you finalize the plot by calling **PSL_endplot**.
 
-A wide variety of output devices that support *PostScript* exist,
+A wide variety of output devices that support PostScript exist,
 including many printers and large-format plotters. Many tools exists to
-display *PostScript* on a computer screen. Open source tools such as
-ghostscript can be used to convert *PostScript* into PDF or raster
+display PostScript on a computer screen. Open source tools such as
+ghostscript can be used to convert PostScript into PDF or raster
 images (e.g., TIFF, JPEG) at a user-defined resolution (DPI). In
 particular, the GMT tool ps2raster is a front-end to ghostscript and
 pre-selects the optimal options for ghostscript that will render quality
 PDF and images.
 
-The **PSL** is fully 64-bit compliant. Integer parameters are here
+The PSL is fully 64-bit compliant. Integer parameters are here
 specified by the type **long** to distinguish them from the 32-bit
 **int**. Note that under standard 32-bit compilation they are
 equivalent. Users of this library under 64-bit mode must make sure they
@@ -66,7 +66,7 @@ under Windows 64.
 Units
 -----
 
-**PSL** can be instructed to use centimeters, inches, meters or points
+PSL can be instructed to use centimeters, inches, meters or points
 as input units for the coordinates and sizes of elements to be plotted.
 Any dimension that takes this setting as a unit is specified as *user
 units* or *plot units* in this manual. Excluded from this are line
@@ -81,13 +81,13 @@ remain in *user units*), nor line widths or font sizes (which remain in
 Color
 -----
 
-**PSL** uses the direct color model where red, green, and blue are given
+PSL uses the direct color model where red, green, and blue are given
 separately, each must be in the range from 0-1. If red = -1 then no fill
 operation takes place. If red = -3, then pattern fill will be used, and
 the green value will indicate the pattern to be used. Most plot-items
 can be plotted with or without outlines. If outline is desired (i.e.,
 set to 1), it will be drawn using the current line width and pattern.
-**PSL** uses highly optimized macro substitutions and scales the
+PSL uses highly optimized macro substitutions and scales the
 coordinates depending on the resolution of the hardcopy device so that
 the output file is kept as compact as possible.
 
@@ -118,9 +118,9 @@ PSL_ML, PSL_MC, PSL_MR, PSL_TL, PSL_TC and PSL_TR are available.
 Initialization
 --------------
 
-These functions initialize or terminate the **PSL** system. We use the
-term **PSL** session to indicate one instance of the **PSL** system (a
-complicated program could run many **PSL** sessions concurrently as each
+These functions initialize or terminate the PSL system. We use the
+term PSL session to indicate one instance of the PSL system (a
+complicated program could run many PSL sessions concurrently as each
 would operate via its own control structure). During a single session,
 one or more plots may be created. Here are the functions involved in
 initialization:
@@ -128,23 +128,23 @@ initialization:
 **struct PS_CTRL \*New_PSL_Ctrl** (**char** *\*session*)
 
     This is the first function that must be called as it creates a new
-    **PSL** session. Specifically, it will allocate a new **PSL**
+    PSL session. Specifically, it will allocate a new PSL
     control structure and initialize the session default parameters. The
-    pointer that is returned must be passed to all subsequent **PSL**
+    pointer that is returned must be passed to all subsequent PSL
     functions.
 
 **long \*PSL_beginsession** (**struct PS_CTRL** *\*PSL*, **long**
 *search*, **char** *\*sharedir*, **char** *\*userdir*)
 
     This is the second function that must be called as it initializes
-    the new **PSL** session. Here, *search* is an integer that is passed
+    the new PSL session. Here, *search* is an integer that is passed
     as 0 in GMT but should be 1 for other users. If so we will search
     for the environmental parameters PSL_SHAREDIR and PSL_USERDIR
     should the corresponding arguments *sharedir* and *userdir* be NULL.
 
 **long PSL_endsession** (**struct PS_CTRL** *\*PSL*)
 
-    This function terminates the active **PSL** session; it is the last
+    This function terminates the active PSL session; it is the last
     function you must call in your program. Specifically, this function
     will deallocate memory used and free up resources.
 
@@ -169,7 +169,7 @@ initialization:
 
 **void PSL_free** (**void** *\*ptr*)
 
-    This function frees up the memory allocated inside **PSL**.
+    This function frees up the memory allocated inside PSL.
     Programmers using C/C++ should now this is a macro and there is no
     need to cast the pointer to *void \** as this will be done by the
     macro. Fortran programmers should instead call
@@ -181,9 +181,9 @@ initialization:
 
     This function sets up the mapping that takes the users data
     coordinates and converts them to the positions on the plot in
-    *PostScript* units. This should be used when plotting data
+    PostScript units. This should be used when plotting data
     coordinates and is terminated with **PSL_endaxes**, which returns
-    **PSL** to the default measurement units and scaling. Here, *llx*
+    PSL to the default measurement units and scaling. Here, *llx*
     and *lly* sets the lower left position of the mapping region, while
     *width* and *height* sets the dimension of the plot area in user
     units. Finally, *x0*, *x1* and *y0*, *y1* indicate the range of the
@@ -195,7 +195,7 @@ initialization:
 **void PSL_endaxes** (**struct PS_CTRL** *\*PSL*)
 
     Terminates the map scalings initialized by **PSL_beginaxes** and
-    returns **PSL** to standard scaling in measurement units.
+    returns PSL to standard scaling in measurement units.
 
 **long PSL_beginplot** (**struct PSL_CTRL** *\*P*, **FILE** *\*fp*,
 **long** *orientation*, **long** *overlay*, **long** *color_mode*,
@@ -204,15 +204,15 @@ initialization:
 
     Controls the initiation (or continuation) of a particular plot
     within the current session. Pass file pointer *fp* where the
-    *PostScript* code will be written; if NULL then the output is
+    PostScript code will be written; if NULL then the output is
     written to *stdout*. The Fortran interface always sends to *stdout*.
     The *orientation* may be landscape (PSL_LANDSCAPE or 0) or portrait
     (PSL_PORTRAIT or 1). Set *overlay* to PSL_OVERLAY (0) if the
-    following *PostScript* code should be appended to an existing plot;
+    following PostScript code should be appended to an existing plot;
     otherwise pass PSL_INIT (1) to start a new plot.
     Let *colormode* be one of PSL_RGB (0), PSL_CMYK
     (1), PSL_HSV (2) or PSL_GRAY (3); this setting controls how colors
-    are presented in the *PostScript* code. The *origin* setting
+    are presented in the PostScript code. The *origin* setting
     determines for x and y separately the origin of the specified
     offsets (next argument). Each of the two characters are either ’r’
     for an offset relative to the current origin, ’a’ for a temporaty
@@ -224,16 +224,16 @@ initialization:
     *page_size* means the physical width and height of the plotting
     media in points (typically 612 by 792 for Letter or 595 by 842 for
     A4 format). The character string *title* can be used to specify the
-    **%%Title:** header in the *PostScript* file (or use NULL for the
+    **%%Title:** header in the PostScript file (or use NULL for the
     default). The array *font_no* specifies all fonts used in the plot
     (by number), or use NULL to leave out the
-    **%%DocumentNeededResources:** comment in the *PostScript* file.
+    **%%DocumentNeededResources:** comment in the PostScript file.
 
 **long PSL_endplot** (**struct PSL_CTRL** *\*P*, **long** *last_page*)
 
     Terminates the plotting sequence and closes plot file (if other than
     *stdout*). If *last_page* == PSL_FINALIZE
-    (1), then a *PostScript* *showpage* command
+    (1), then a PostScript *showpage* command
     is issued, which initiates the printing process on hardcopy devices.
     Otherwise, pass PSL_OVERLAY (0).
 
@@ -248,23 +248,23 @@ initialization:
 `Changing Settings <#toc6>`_
 ----------------------------
 
-The following functions are used to change various **PSL** settings and
+The following functions are used to change various PSL settings and
 affect the current state of parameters such as line and fill attributes.
 
 **long PSL_define_pen** (**struct PSL_CTRL** *\*P*, **char**
 *\*name*, **long** *width*, **char** *\*style*, **double** *offset*,
 **double** *rgb*\ [])
 
-    Stores the specified pen characteristics in a *PostScript* variable
+    Stores the specified pen characteristics in a PostScript variable
     called *name*. This can be used to place certain pen attributes in
-    the *PostScript* file and then retrieve them later with
+    the PostScript file and then retrieve them later with
     **PSL_load_pen**. This makes the stored pen the current pen.
 
 **long PSL_define_rgb** (**struct PSL_CTRL** *\*P*, **char**
 *\*name*, **double** *rgb*\ [])
 
-    Stores the specified color in a *PostScript* variable called *name*.
-    This can be used to place certain color values in the *PostScript*
+    Stores the specified color in a PostScript variable called *name*.
+    This can be used to place certain color values in the PostScript
     file and then retrieve them later with **PSL_load_rgb**. This
     makes the stored color the current color.
 
@@ -359,7 +359,7 @@ affect the current state of parameters such as line and fill attributes.
 
     Changes the current line width in points. Specifying 0 gives the
     thinnest line possible, but this is implementation-dependent (seems
-    to work fine on most *PostScript* printers).
+    to work fine on most PostScript printers).
 
 **long PSL_setlinecap** (**struct PSL_CTRL** *\*P*, **long** *cap*)
 
@@ -409,13 +409,13 @@ affect the current state of parameters such as line and fill attributes.
 **long PSL_defunits** (**struct PSL_CTRL** *\*P*, **char** *\*name*,
 **double** *value*)
 
-    Creates a *PostScript* variable called *name* and initializes it to
+    Creates a PostScript variable called *name* and initializes it to
     the equivalent of *value* user units.
 
 **long PSL_defpoints** (**struct PSL_CTRL** *\*P*, **char** *\*name*,
 **double** *fontsize*)
 
-    Creates a *PostScript* variable called *name* and initializes it to
+    Creates a PostScript variable called *name* and initializes it to
     the value that corresponds to the font size (in points) given by
     *fontsize*.
 
@@ -452,7 +452,7 @@ set prior to calling these functions; see CHANGING SETTINGS above.
     be PSL_MOVE + PSL_STROKE (3). The line is
     drawn using the current pen attributes. Add PSL_CLOSE
     (8) to *type* to close the first and last point
-    by the *PostScript* operators.
+    by the PostScript operators.
 
 **long PSL_plotpoint** (**struct PSL_CTRL** *\*P*, **double** *x*,
 **double** *y*, **long** *type*)
@@ -578,7 +578,7 @@ Here are functions used to read and plot various images.
     *b_rgb*. Alternatively, pass either color with the red component
     set to -1.0 and we will instead issue an image mask that is
     see-through for the specified fore- or background component. See the
-    Adobe Systems *PostScript* Reference Manual for more details.
+    Adobe Systems PostScript Reference Manual for more details.
 
 **long PSL_plotcolorimage** (**struct PSL_CTRL** *\*P*, **double**
 *x*, **double** *y*, **double** *xsize*, **double** *ysize*, **int**
@@ -591,7 +591,7 @@ Here are functions used to read and plot various images.
     given by *xsize* and *ysize* in user units. If one of these is
     specified as zero, the corresponding size is adjusted to the other
     such that the aspect ratio of the original image is retained. This
-    functions sets up a call to the *PostScript* colorimage or image
+    functions sets up a call to the PostScript colorimage or image
     operators. The pixel values are stored in *buffer*, an unsigned
     character array in scanline orientation with gray shade or r/g/b
     values (0-255). *buffer*\ [0] is the upper left corner. *depth* is
@@ -604,7 +604,7 @@ Here are functions used to read and plot various images.
     implementation dependent). If *-nx* is passed with 8- (or 24-) bit
     images then the first one (or three) bytes of *buffer* holds the
     gray (or r/g/b) color for pixels that are to be masked out using the
-    PS Level 3 Color Mask method. See the Adobe Systems *PostScript*
+    PS Level 3 Color Mask method. See the Adobe Systems PostScript
     Reference Manual for more details.
 
 **long PSL_plotepsimage** (**struct PSL_CTRL** *\*P*, **double** *x*,
@@ -612,14 +612,14 @@ Here are functions used to read and plot various images.
 *justify*, **unsigned char** *\*buffer*, **long** *size*, **long** *nx*,
 **long** *ny*, **long** *ox*, **long** *oy*)
 
-    Plots an Encapsulated *PostScript* (EPS) image at plot coordinates
+    Plots an Encapsulated PostScript (EPS) image at plot coordinates
     (*x*, *y*) justified as per the argument *justify* (see
     **JUSTIFICATION** for details). The target size of the image is
     given by *xsize* and *ysize* in user units. If one of these is
     specified as zero, the corresponding size is adjusted to the other
     such that the aspect ratio of the original image is retained. The
     EPS file is stored in *buffer* and has *size* bytes. This function
-    simply includes the image in the *PostScript* output stream within
+    simply includes the image in the PostScript output stream within
     an appropriate wrapper. Specify position of lower left corner and
     size of image. *nx*, *ny*, *ox*, *oy* refers to the width, height
     and origin (lower left corner) of the BoundingBox in points.
@@ -629,7 +629,7 @@ Here are functions used to read and plot various images.
 
     Reads the image contents of the EPS file or a raster image pointed
     to by the open file pointer *fp*. The routine can handle
-    Encapsulated *PostScript* files or 1-, 8-, 24-, or 32-bit raster
+    Encapsulated PostScript files or 1-, 8-, 24-, or 32-bit raster
     images in old, standard, run-length encoded, or RGB-style Sun
     format. Non-Sun rasters are automatically reformatted to Sun rasters
     via a system call to ImageMagick’s BD(convert), if installed. The
@@ -639,7 +639,7 @@ Plotting Text
 -------------
 
 Here are functions used to read and plot text strings and paragraphs.
-This can be somewhat complicated since we rely on the *PostScript*
+This can be somewhat complicated since we rely on the PostScript
 interpreter to determine the exact dimensions of text items given the
 font chosen. For perfect alignment you may have to resort to calculate
 offsets explicitly using **long PSL_deftextdim**, **PSL_set_height**
@@ -697,7 +697,7 @@ and others and issue calculations with **PSL_setcommand**.
 *offset*\ [], **long** *mode*)
 
     This function is called twice: First time we pass the text strings
-    and other parameters and use *PostScript* to compute clip paths so
+    and other parameters and use PostScript to compute clip paths so
     that no feature plotted after this call will be visible in areas
     where text will be plotted. The second call actually plots the texts
     in the predetermined locations (NULL may be passed for all arrays
@@ -720,11 +720,11 @@ and others and issue calculations with **PSL_setcommand**.
     args), 16 = construct rounded text boxes [Default is rectangular],
     128 = fill the text box (this requires you to first define the text
     box rgb color with **PSL_define_rgb** by setting a local
-    *PostScript* variable that must be called PSL_setboxrgb), and 256 =
+    PostScript variable that must be called PSL_setboxrgb), and 256 =
     draw the text box outlines (this requires you to first define the
     text box pen with **PSL_define_pen** by setting a local
-    *PostScript* variable that must be called PSL_setboxpen). For font
-    color you must use **PSL_define_rgb** and create a *PostScript*
+    PostScript variable that must be called PSL_setboxpen). For font
+    color you must use **PSL_define_rgb** and create a PostScript
     variable called PSL_settxtrgb. If not set we default to black.
 
 **long PSL_deftextdim** (**struct PSL_CTRL** *\*P*, **char**
@@ -732,15 +732,15 @@ and others and issue calculations with **PSL_setcommand**.
 
     Computes the dimensions (width and height) required by the selected
     *text* given the current font and its *fontsize* (in points). The
-    values are stored as *PostScript* variables called *prefix*\ \_w and
+    values are stored as PostScript variables called *prefix*\ \_w and
     *prefix*\ \_h, respectively. This function can be used to compute
     dimensions and, via BF(PSL_setcommand), calculate chances to
     position a particular item should be plotted. For instance, if you
     compute a position this way and wish to plot the text there, pass
     the coordinates to **PSL_plottext** as NaNs. If *prefix* is BF(-w),
-    BF(-h), BF(-d) or BF(-b), no *PostScript* variables will be
+    BF(-h), BF(-d) or BF(-b), no PostScript variables will be
     assigned, but the values of width, height, depth, or both width and
-    height will be left on the *PostScript* stack.
+    height will be left on the PostScript stack.
 
 **long PSL_setparagraph** (**struct PSL_CTRL** *\*P*, **double**
 *line_space*, **double** *par_width*, **long** *par_just*)
@@ -795,7 +795,7 @@ and others and issue calculations with **PSL_setcommand**.
 
         Please text along a curved path. This function is also called
         twice: First time we pass the text strings and locations and
-        *PostScript* will compute clip paths so that no features plotted
+        PostScript will compute clip paths so that no features plotted
         after this call will be visible in areas where text will be
         plotted. The second call actually plots the texts in the
         predetermined locations (NULL may be passed for all arrays for
@@ -822,13 +822,13 @@ and others and issue calculations with **PSL_setcommand**.
         called (if you are placing text several times), 64 = set the
         last time **PSL_plottextpath** is called, 128 = fill the text
         box (this requires you to first define the text box rgb color
-        with **PSL_define_rgb** by setting a local *PostScript*
+        with **PSL_define_rgb** by setting a local PostScript
         variable that must be called PSL_setboxrgb), and 256 = draw the
         text box outlines (this requires you to first define the text
         box pen with **PSL_define_pen** by setting a local
-        *PostScript* variable that must be called PSL_setboxpen). For
+        PostScript variable that must be called PSL_setboxpen). For
         font color you must use **PSL_define_rgb** and create a
-        *PostScript* variable called PSL_settxtrgb. If not set we
+        PostScript variable called PSL_settxtrgb. If not set we
         default to black.
 
 Clipping
@@ -862,18 +862,18 @@ Here are functions used to activate and deactivate clipping regions.
 `Miscellaneous Functions <#toc12>`_
 -----------------------------------
 
-Here are functions used to issue comments or to pass custom *PostScript*
-commands directly to the output *PostScript* file. In C these functions
+Here are functions used to issue comments or to pass custom PostScript
+commands directly to the output PostScript file. In C these functions
 are declared as macros and they can accept a variable number of
 arguments. However, from FORTRAN only a single text argument may be
 passed.
 
 **long PSL_setcommand** (**struct PSL_CTRL** *\*P*, **char** *\*text*)
-    Writes a raw *PostScript* command to the *PostScript* output file,
+    Writes a raw PostScript command to the PostScript output file,
     e.g., "1 setlinejoin0.
 
 **long PSL_comment** (**struct PSL_CTRL** *\*P*, **char** *\*text*)
-    Writes a comment (*text*) to the *PostScript* output file, e.g.,
+    Writes a comment (*text*) to the PostScript output file, e.g.,
     "Start of graph 20. The comment are prefixed with with %% .
 
 Authors
@@ -890,12 +890,12 @@ Bugs
 
 Caveat Emptor: The authors are **not** responsible for any disasters,
 suicide attempts, or ulcers caused by correct **or** incorrect use of
-**PSL**. If you find bugs, please report them to the authors by
+PSL. If you find bugs, please report them to the authors by
 electronic mail. Be sure to provide enough detail so that we can
 recreate the problem.
 
 References
 ----------
 
-Adobe Systems Inc., 1990, *PostScript* language reference manual, 2nd
+Adobe Systems Inc., 1990, PostScript language reference manual, 2nd
 edition, Addison-Wesley, (ISBN 0-201-18127-4).

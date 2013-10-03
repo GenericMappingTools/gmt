@@ -6,7 +6,7 @@
 Next, we show how to plot a data grid that is distributed in projected
 form. The gravity and predicted bathymetry grids produced by David
 Sandwell and Walter H. F. Smith are not geographical grids but instead
-given on a spherical Mercator grid. The *GMT* supplement imgsrc has
+given on a spherical Mercator grid. The GMT supplement imgsrc has
 tools to extract subsets of these large grids. If you need to make a
 non-Mercator map then you must extract a geographic grid using
 :doc:`img2grd </supplements/img/img2grd>` and then plot it using your

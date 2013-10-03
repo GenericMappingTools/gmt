@@ -45,20 +45,20 @@ Description
 -----------
 
 **gmt_shell_functions.sh** provides a set of functions to Bourne
-(again) shell scripts in support of **GMT**. The calling shell script
+(again) shell scripts in support of GMT. The calling shell script
 should include the following line, before the functions can be used:
 
 **. gmt_shell_functions.sh**
 
 Once included in a shell script, **gmt_shell_functions.sh** allows
-**GMT** users to do some scripting more easily than otherwise. The
+GMT users to do some scripting more easily than otherwise. The
 functions made available are:
 
 **gmt_init_tmpdir**
     Creates a temporary directory in **/tmp** or (when defined) in the
     directory specified by the environment variable **TMPDIR**. The name
     of the temporary directory is returned as environment variable
-    **GMT_TMPDIR**. This function also causes **GMT** to run in
+    **GMT_TMPDIR**. This function also causes GMT to run in
     'isolation mode', i.e., all temporary files will be created in
     **GMT_TMPDIR** and the :doc:`gmt.conf` file will not be adjusted.
 
@@ -104,7 +104,7 @@ functions made available are:
     returns the map height in the current measurement unit.
 
 **gmt_set_psfile**
-    Create the output *PostScript* file name based on the base name of a
+    Create the output PostScript file name based on the base name of a
     given file (usually the script name **$0**).
 
 **gmt_set_framename**
@@ -125,7 +125,7 @@ derivatives (like **ash**, **bash**, **ksh** and **zsh**). These
 functions do not work in the C shell (**csh**) or their derivatives
 (like **tcsh**), and cannot be used in DOS batch scripts either.
 
-2. **gmt_shell_functions.sh** were first introduced in **GMT** version
+2. **gmt_shell_functions.sh** were first introduced in GMT version
 4.2.2 and have since been regularly expanded with other practical
 scripting short-cuts. If you want to suggest other functions, please do
 so by mailing to the GMT mailing list: gmt-help@lists.hawaii.edu.

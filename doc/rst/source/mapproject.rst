@@ -245,7 +245,7 @@ from the central meridian, and (3) same for Cassini
 Ellipsoids And Spheroids
 ------------------------
 
-**GMT** will use ellipsoidal formulae if they are implemented and the
+GMT will use ellipsoidal formulae if they are implemented and the
 user have selected an ellipsoid as the reference shape (see
 **PROJ_ELLIPSOID** in :doc:`gmt.conf`). The user needs to be aware of a
 few potential pitfalls: (1) For some projections, such as Transverse
@@ -258,12 +258,12 @@ meridian, (b) Conic projections when longitudinal range is less than 90
 degrees, (c) Cassini projection when all points are within 4 degrees of
 central meridian. (2) When you are trying to match some historical data
 (e.g., coordinates obtained with a certain projection and a certain
-reference ellipsoid) you may find that **GMT** gives results that are
+reference ellipsoid) you may find that GMT gives results that are
 slightly different. One likely source of this mismatch is that older
 calculations often used less significant digits. For instance, Snyder's
 examples often use the Clarke 1866 ellipsoid (defined by him as having a
 flattening f = 1/294.98). From f we get the eccentricity squared to be
-0.00676862818 (this is what **GMT** uses), while Snyder rounds off and
+0.00676862818 (this is what GMT uses), while Snyder rounds off and
 uses 0.00676866. This difference can give discrepancies of several tens
 of cm. If you need to reproduce coordinates projected with this slightly
 different eccentricity, you should specify your own ellipsoid with the

@@ -6,7 +6,7 @@ gmtget
 
 .. only:: not man
 
-    gmtget - Get individual **GMT** default parameters
+    gmtget - Get individual GMT default parameters
 
 Synopsis
 --------
@@ -20,7 +20,7 @@ Synopsis
 Description
 -----------
 
-**gmtget** will list the value of one or more **GMT** default parameters.
+**gmtget** will list the value of one or more GMT default parameters.
 
 Required Arguments
 ------------------

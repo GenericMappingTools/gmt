@@ -44,7 +44,7 @@ Description
 
 **pstext** plots text strings of variable size, font type, and
 orientation. Various map projections are provided, with the option to
-draw and annotate the map boundaries. *PostScript* code is written to
+draw and annotate the map boundaries. PostScript code is written to
 standard output. Greek characters, subscript, superscript, and small
 caps are supported as follows: The sequence @~ toggles between the
 selected font and Greek (Symbol). @%\ *no*\ % sets the font to *no*; @%%
@@ -57,7 +57,7 @@ Composite characters (overstrike) may be indicated with the
 @!<char1><char2> sequence, which will print the two characters on top of
 each other. To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section 4.16 and
-Appendix F in the **GMT** Technical Reference and Cookbook. Note that
+Appendix F in the GMT Technical Reference and Cookbook. Note that
 **PS\_CHAR\_ENCODING** must be set to an extended character set in your
 :doc:`gmt.conf` file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted
@@ -271,7 +271,7 @@ sequences may lead to unfortunate word splitting. Also, if a font is
 requested with an outline pen it will not be used in paragraph mode.
 
 The **-N** option does not adjust the BoundingBox information so you may
-have to post-process the *PostScript* output with ps2raster to obtain a
+have to post-process the PostScript output with ps2raster to obtain a
 correct BoundingBox.
 
 See Also

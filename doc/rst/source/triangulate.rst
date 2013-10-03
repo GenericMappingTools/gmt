@@ -45,7 +45,7 @@ network. If **-G** **-I** are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
 the triangulations is either that of Watson [1982] [Default] or Shewchuk
 [1996] (if installed; type **triangulate -** to see which method is
-selected). This choice is made during the **GMT** installation. 
+selected). This choice is made during the GMT installation. 
 
 Required Arguments
 ------------------

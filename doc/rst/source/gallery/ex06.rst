@@ -3,7 +3,7 @@
 (6) Plotting of histograms
 --------------------------
 
-*GMT* provides two tools to render histograms:
+GMT provides two tools to render histograms:
 :doc:`pshistogram </pshistogram>` and :doc:`psrose </psrose>`. The former takes care of
 regular histograms whereas the latter deals with polar histograms (rose
 diagrams, sector diagrams, and wind rose diagrams). We will show an

@@ -18,7 +18,7 @@ projection is only implemented in
 :doc:`pscoast </pscoast>` and
 :doc:`grdimage </grdimage>`. We hope to refine this
 further and extend the availability of the full projection to all of the
-*GMT* mapping programs.
+GMT mapping programs.
 
 .. literalinclude:: /_verbatim/example_26.txt
    :language: bash

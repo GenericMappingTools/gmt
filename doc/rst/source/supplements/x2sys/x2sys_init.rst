@@ -67,7 +67,7 @@ Optional Arguments
 
     **g** Great circle distances [Default if **-G** is set].
 
-    **e** Geodesic distances on current **GMT** ellipsoid.
+    **e** Geodesic distances on current GMT ellipsoid.
 
 **-E**\ *suffix*
     Specifies the file extension (suffix) for these data files. If not
@@ -140,7 +140,7 @@ reading native binary files). Not used with netCDF files.
 periodicities in the *x*-coordinate (longitudes). Alternatively, use **-G**.
 
 **MULTISEG** means each track consists of multiple segments separated by
-a **GMT** segment header (alternatively, use **-m** when defining the
+a GMT segment header (alternatively, use **-m** when defining the
 system TAG). Not used with netCDF files.
 
 The column information consists of one line per column in the order the
@@ -172,7 +172,7 @@ use **d** as netCDF will automatically handle type-conversions during reading.
 
 *oformat* is a C-style format string used to print values from this column.
 
-If you give - as the *oformat* then **GMT**\ ' formatting machinery
+If you give - as the *oformat* then GMT's formatting machinery
 will be used instead (i.e., **FORMAT_FLOAT_OUT**,
 **FORMAT_GEO_MAP**, **FORMAT_DATE_MAP**, **FORMAT_CLOCK_MAP**).
 Some file formats already have definition files premade. These include

@@ -8,7 +8,7 @@ Creating GMT Graphics
 .. only:: latex
 
     In this section we will be giving numerous examples of typical usage of
-    *GMT* programs. In general, we will start with a raw data set,
+    GMT programs. In general, we will start with a raw data set,
     manipulate the numbers in various ways, then display the results in
     diagram or map view. The resulting plots will have in common that they
     are all made up of simpler plots that have been overlaid to create a
@@ -36,13 +36,13 @@ Creating GMT Graphics
     scripts are well suited for background execution.
 
     Note that we also end each script by cleaning up after ourselves.
-    Because there are several **AWK** implementations such as **gawk**
+    Because there are several AWK implementations such as **gawk**
     and **nawk**, which are not available everywhere, we refer to
-    **$AWK** in the scripts below. This variable must be set prior to
+    ``$AWK`` in the scripts below. This variable must be set prior to
     running the example scripts.
 
     Finally, be aware that for practical purposes the output
-    *PostScript* file name is stored as the variable ``ps``.
+    PostScript file name is stored as the variable ``ps``.
 
     The making of contour maps
     --------------------------
@@ -124,7 +124,7 @@ Creating GMT Graphics
     Spectral estimation and xy-plots
     --------------------------------
 
-    In this example we will show how to use the *GMT* programs
+    In this example we will show how to use the GMT programs
     :doc:`fitcircle`, :doc:`project`,
     :doc:`sample1d`, :doc:`spectrum1d`,
     :doc:`psxy`, and
@@ -144,7 +144,7 @@ Creating GMT Graphics
     to select the range of the projected distance coordinate they have in
     common. The script prompts you for that information after reporting the
     values. We decide to make a file of equidistant sampling points spaced 1
-    km apart from -1167 to +1169, and use the *UNIX* utility **awk** to
+    km apart from -1167 to +1169, and use the UNIX utility **awk** to
     accomplish this step. We can then resample the projected data, and carry
     out the cross-spectral calculations, assuming that the ship is the input
     and the satellite is the output data. There are several intermediate
@@ -240,7 +240,7 @@ Creating GMT Graphics
     Plotting of histograms
     ----------------------
 
-    *GMT* provides two tools to render histograms:
+    GMT provides two tools to render histograms:
     :doc:`pshistogram` and :doc:`psrose`. The former takes care of
     regular histograms whereas the latter deals with polar histograms (rose
     diagrams, sector diagrams, and wind rose diagrams). We will show an
@@ -410,7 +410,7 @@ Creating GMT Graphics
     -------------------------
 
     In many areas, such as fluid dynamics and elasticity, it is desirable to
-    plot vector fields of various kinds. *GMT* provides a way to illustrate
+    plot vector fields of various kinds. GMT provides a way to illustrate
     2-component vector fields using the
     :doc:`grdvector` utility. The two
     components of the field (Cartesian or polar components) are stored in
@@ -462,7 +462,7 @@ Creating GMT Graphics
     --------------------------------------------------------
 
     This example (Figure [fig:example:sub:`1`\ 5]) demonstrates some off the
-    different ways one can use to grid data in *GMT*, and how to deal with
+    different ways one can use to grid data in GMT, and how to deal with
     unconstrained areas. We first convert a large ASCII file to binary with
     :doc:`gmtconvert` since the binary file
     will read and process much faster. Our lower left plot illustrates the
@@ -534,7 +534,7 @@ Creating GMT Graphics
     :doc:`grdfilter`. Note that the filter has
     done some extrapolation beyond the convex hull of the original *x, y*
     values. The "best" smooth approximation of *z(x, y)* depends on
-    the errors in the data and the physical laws obeyed by *z*. *GMT* cannot
+    the errors in the data and the physical laws obeyed by *z*. GMT cannot
     always do the "best" thing but it offers great flexibility through its
     combinations of tools. We illustrate all four solutions using a CPT file
     that contains color fills, predefined patterns for interval (900,925)
@@ -589,10 +589,9 @@ Creating GMT Graphics
     Sandwell & Smith altimetric gravity field [26]_ for the northern Pacific
     and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
     and (2) are within 200 km of the Pratt seamount. We do this by dumping
-    the 50 mGal contours to disk, then making a simple **AWK** script ``center.awk`` that
-    returns the mean location of the points making up each closed polygon,
-    and then pass these locations to
-    :doc:`gmtselect` which retains only the
+    the 50 mGal contours to disk, then making a simple AWK script ``center.awk``
+    that returns the mean location of the points making up each closed polygon,
+    and then pass these locations to :doc:`gmtselect` which retains only the
     points within 200 km of Pratt. We then mask out all the data outside
     this radius and use :doc:`grdvolume` to
     determine the combined area and volumes of the chosen seamounts. Our
@@ -606,9 +605,9 @@ Creating GMT Graphics
     Color patterns on maps
     ----------------------
 
-    *GMT* 3.1 introduced color patterns and this examples give a few cases
+    GMT 3.1 introduced color patterns and this examples give a few cases
     of how to use this new feature. We make a phony poster that advertises
-    an international conference on *GMT*\ in Honolulu. We use
+    an international conference on GMT in Honolulu. We use
     :doc:`grdmath`,
     :doc:`makecpt`, and
     :doc:`grdimage` to draw pleasing color
@@ -619,7 +618,7 @@ Creating GMT Graphics
     pattern # 86 is drawn at 100 dpi but with the black and white pixels
     replaced with color combinations. At the same time the ocean is filled
     with a repeating image of a circuit board (provides in Sun raster
-    format). The text *GMT* in the center is an off-line *PostScript* file
+    format). The text GMT in the center is an off-line PostScript file
     that was overlaid using :doc:`psimage`. The
     final panel repeats the top panel except that the land and sea images
     have changed places (Figure [fig:example:sub:`1`\ 9]).
@@ -634,7 +633,7 @@ Creating GMT Graphics
 
     One is often required to make special maps that shows the distribution
     of certain features but one would prefer to use a custom symbol instead
-    of the built-in circles, squares, triangles, etc. in the *GMT* plotting
+    of the built-in circles, squares, triangles, etc. in the GMT plotting
     programs :doc:`psxy` and
     :doc:`psxyz`. Here we demonstrate one approach
     that allows for a fair bit of flexibility in designing ones own symbols.
@@ -687,7 +686,7 @@ Creating GMT Graphics
        Without much further discussion we also make a definition file ``bullseye.def`` for a
        multi-colored bulls eye symbol. Note that the symbol can be created
        beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
-       limit in *GMT* to the size of the symbols. The center, however, will
+       limit in GMT to the size of the symbols. The center, however, will
        always be at (0,0). This is the point to which the coordinates in
        :doc:`psxy` refers.
 
@@ -718,7 +717,7 @@ Creating GMT Graphics
     with the bubbles. These would be plotted consecutively using the desired
     colors. Alternatively, like in ``bullseye.def``, we may specify colors directly for the
     various segments. Note that the custom symbols (Appendix [app:N]),
-    unlike the built-in symbols in *GMT*, can be used with the built-in
+    unlike the built-in symbols in GMT, can be used with the built-in
     patterns (Appendix [app:E]). Other approaches are also possible, of
     course.
 
@@ -746,7 +745,7 @@ Creating GMT Graphics
     in the inset we label the time-axis in Finnish in honor of Linus
     Thorvalds. Because the time coordinates are Y2K-challenged and the order
     is backwards (big units of years come *after* smaller units like days)
-    we must change the default input/output formats used by *GMT*. Finally,
+    we must change the default input/output formats used by GMT. Finally,
     we want to prefix prices with the $ symbol to indicate the currency.
     Here is how it all comes out:
 
@@ -909,7 +908,7 @@ Creating GMT Graphics
     :doc:`pscoast` and
     :doc:`grdimage`. We hope to refine this
     further and extend the availability of the full projection to all of the
-    *GMT* mapping programs.
+    GMT mapping programs.
 
     .. literalinclude:: /_verbatim/example_26.txt
        :language: bash
@@ -922,7 +921,7 @@ Creating GMT Graphics
     Next, we show how to plot a data grid that is distributed in projected
     form. The gravity and predicted bathymetry grids produced by David
     Sandwell and Walter H. F. Smith are not geographical grids but instead
-    given on a spherical Mercator grid. The *GMT* supplement img has
+    given on a spherical Mercator grid. The GMT supplement img has
     tools to extract subsets of these large grids. If you need to make a
     non-Mercator map then you must extract a geographic grid using
     :doc:`supplements/img/img2grd <supplements/img/img2grd>` and then plot it using your
@@ -958,7 +957,7 @@ Creating GMT Graphics
     Next, we present a similar case: We wish to plot a data set given in UTM
     coordinates (meter) and want it to be properly registered with overlying
     geographic data, such as coastlines or data points. The mistake many
-    *GMT* rookies make is to specify the UTM projection with their UTM data.
+    GMT rookies make is to specify the UTM projection with their UTM data.
     However, that data have already been projected and is now in linear
     meters. The only sensible way to plot such data is with a linear
     projection, yielding a UTM map. In this step one can choose to annotate
@@ -1029,32 +1028,32 @@ Creating GMT Graphics
 
     .. figure:: /_images/example_30.*
 
-    Using non-default fonts in *PostScript*
+    Using non-default fonts in PostScript
     ---------------------------------------
 
     [sec:non-default-fonts-example]
 
-    This example illustrates several possibilities to create *GMT*\ plots
+    This example illustrates several possibilities to create GMT\ plots
     with non-default fonts. As these fonts are not part of the standard
-    *PostScript* font collection they have to be embedded in the PS- or
-    PDF-file with **Ghostscript**. See also
+    PostScript font collection they have to be embedded in the PS- or
+    PDF-file with Ghostscript. See also
     Appendix [sec:non-default-fonts] for further information. The script
     includes the following steps:
 
     -  create a ``CUSTOM_font_info.d`` file;
 
-    -  set the *GMT* parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
+    -  set the GMT parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
 
-    -  replace the default Helvetica font in the *GMT*-*PostScript*-File with sed;
+    -  replace the default Helvetica font in the GMT-PostScript-File with sed;
 
-    -  create a *PostScript*-File with outlined fonts (optional);
+    -  create a PostScript-File with outlined fonts (optional);
 
-    -  convert *GMT*\ 's *PostScript* output to PDF or any image format (optional).
+    -  convert GMT\ 's PostScript output to PDF or any image format (optional).
 
     The script produces the plot in Figure [fig:example\ :sub:`3`\ 1]. All
     standard fonts have been substituted by the free OpenType fonts Linux
     Libertine (title) and Linux Biolinum (annotations). Uncomment the
-    appropriate lines in the script to make a *PostScript*-file with
+    appropriate lines in the script to make a PostScript-file with
     outlined fonts or to convert to a PDF-file.
 
     .. literalinclude:: /_verbatim/example_31.txt
@@ -1092,7 +1091,7 @@ Creating GMT Graphics
     topography map of northwest continental Europe, with the flagged draped
     over it and with shading to show the little topography there is.
     :doc:`pscoast` is used in conjunction with
-    :doc:`grdtrack` and *GMT*\ psxyz to plot
+    :doc:`grdtrack` and GMT\ psxyz to plot
     borders "at altitude". Something similar is done at the end to plot some
     symbols and names for cities.
 
@@ -1240,10 +1239,10 @@ Creating GMT Animations
     Unlike the previous chapter, in this chapter we will explore what is
     involved in creating animations (i.e., movies). Of course, an animation
     is nothing more than a series of individual images played back in an
-    orderly fashion. Here, these images will have been created with *GMT*.
+    orderly fashion. Here, these images will have been created with GMT.
     To ensure a smooth transition from frame to frame we will be following
     some general guidelines when writing our scripts. Since there is no
-    "movie" mode in *GMT* we must take care of all the book-keeping in our
+    "movie" mode in GMT we must take care of all the book-keeping in our
     script. Thus, animations may require a bit of planning and may use more
     advanced scripting than the previous static examples. Note: This is a
     new chapter introduced with the 4.4.0 version and should be considered
@@ -1258,7 +1257,7 @@ Creating GMT Animations
        layers that are *independent* of your time variable.
 
     #. Have a frame-number loop where each frame is created as a
-       *PostScript* plot, then rasterized to a TIFF file of chosen dimension.
+       PostScript plot, then rasterized to a TIFF file of chosen dimension.
 
     #. Convert the individual frames to a single movie of suitable format.
 
@@ -1268,7 +1267,7 @@ Creating GMT Animations
 
     #. There are several coordinates that you need to consider when planning
        your movie. The first is the coordinates of your data, i.e., the
-       *user coordinates*. As with all *GMT* plots you will transform those
+       *user coordinates*. As with all GMT plots you will transform those
        to the second set of *plot coordinates* in inches (or cm) by applying
        a suitable region and map projection. As before, you normally do this
        with a particular paper size in mind. When printed you get a
@@ -1305,13 +1304,13 @@ Creating GMT Animations
        your frame counter equals the desired number of frames. You must use
        your frame counter to create a unique file name for each frame image
        so that the series of images can be lexically arranged. We recommend
-       using the *GMT* shell function **gmt_set_framename** to format
+       using the GMT shell function **gmt_set_framename** to format
        the frame counter with an adequate number of leading zeros; see our
        examples for details. The bulk of your main loop involves create the
-       single *PostScript* plot for this particular frame (time). This can
+       single PostScript plot for this particular frame (time). This can
        be trivial or a serious scripting exercise depending on what you want
        to show. We will give a few examples with increasing complexity. Once
-       the *PostScript* plot is created you need to rasterize it; we
+       the PostScript plot is created you need to rasterize it; we
        recommend you use :doc:`ps2raster` to
        generate a TIFF image at the agreed-upon resolution. We also
        recommend that you place all frame images in a sub-directory. You may
@@ -1364,7 +1363,7 @@ Creating GMT Animations
     this case we did some trial-and-error to determine the exact values to
     use for the map projection, the region, the spacing around the frame,
     etc. so that the final result gave a reasonable layout. Do this planning
-    on a single *PostScript* plot before running a lengthy animation script.
+    on a single PostScript plot before running a lengthy animation script.
 
     Examining DEMs using variable illumination
     ------------------------------------------

@@ -141,7 +141,7 @@ Optional Arguments
 Examples
 --------
 
-To make an overlay *PostScript* file that will set up a complex clip
+To make an overlay PostScript file that will set up a complex clip
 area to which subsequent plotting will be confined, run:
 
    ::

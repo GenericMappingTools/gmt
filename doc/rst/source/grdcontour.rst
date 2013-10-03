@@ -42,7 +42,7 @@ Description
 -----------
 
 **grdcontour** reads a 2-D grid file and produces a contour map by
-tracing each contour through the grid. *PostScript* code is generated
+tracing each contour through the grid. PostScript code is generated
 and sent to standard output. Various options that affect the plotting
 are available. Alternatively, the x/y/z positions of the contour lines
 may be saved to one or more output files (or stdout) and no plot is produced. 

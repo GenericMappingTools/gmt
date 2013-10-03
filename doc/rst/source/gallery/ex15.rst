@@ -4,7 +4,7 @@
 -------------------------------------------------------------
 
 This example demonstrates some off the
-different ways one can use to grid data in *GMT*, and how to deal with
+different ways one can use to grid data in GMT, and how to deal with
 unconstrained areas. We first convert a large ASCII file to binary with
 :doc:`gmtconvert </gmtconvert>` since the binary file
 will read and process much faster. Our lower left plot illustrates the

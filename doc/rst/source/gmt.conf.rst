@@ -6,13 +6,13 @@ gmt.conf
 
 .. only:: not man
 
-    gmt.conf - Configuration for **GMT**
+    gmt.conf - Configuration for GMT
 
 Description
 -----------
 
 The following is a list of the parameters that are user-definable in
-**GMT**. The parameter names are always given in UPPER CASE. The
+GMT. The parameter names are always given in UPPER CASE. The
 parameter values are case-insensitive unless otherwise noted. The system
 defaults are given in brackets [ for SI (and US) ]. Those marked **\***
 can be set on the command line as well (the corresponding option is
@@ -24,7 +24,7 @@ the unit used for distances and lengths by appending **c** (cm), **i**
 assumed to be in the unit set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`. Several
 parameters take only **true** or **false**. Finally, most of these
 parameters can be changed on-the-fly via the **-**\ **-PARAMETER**\ =\ *VALUE*
-option to any **GMT** program. However, a few are static and are only
+option to any GMT program. However, a few are static and are only
 read via the **gmt.conf** file; these are labeled (static).
 
 Common Specifications
@@ -188,7 +188,7 @@ fonts can be found in the :doc:`gmt` man page.
     smallest unit (e.g., seconds), append .xxx, where the number of x
     indicates the desired precision. If no floating point is indicated
     then the smallest specified unit will be rounded off to nearest
-    integer. For 12-hour clocks, append am, AM, a.m., or A.M. (**GMT**
+    integer. For 12-hour clocks, append am, AM, a.m., or A.M. (GMT
     will replace a\|A with p\|P for pm). If your template starts with a
     leading hyphen (-) then each integer item (y,m,d) will be printed
     without leading zeros (default uses fixed width formats). As
@@ -415,7 +415,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _GMT_VERBOSE:
 
 **GMT_VERBOSE**
-    (**-V**) Determines the level of verbosity used by **GMT**
+    (**-V**) Determines the level of verbosity used by GMT
     programs. Choose among 6 levels; each level adds to the verbosity of
     the lower levels: **q**\ uiet, **n**\ normal (errors and warnings),
     **c**\ ompatibility warnings, (v)erbose progress reports, (l)ong
@@ -427,7 +427,7 @@ fonts can be found in the :doc:`gmt` man page.
 
 **IO_COL_SEPARATOR**
     This setting determines what character will separate ASCII output
-    data columns written by **GMT**. Choose from tab, space, comma, and
+    data columns written by GMT. Choose from tab, space, comma, and
     none [tab].
 
 .. _IO_GRIDFILE_FORMAT:
@@ -450,7 +450,7 @@ fonts can be found in the :doc:`gmt` man page.
 
 **IO_GRIDFILE_SHORTHAND**
     If true, all grid file names are examined to see if they use the
-    file extension shorthand discussed in Section 4.17 of the **GMT**
+    file extension shorthand discussed in Section 4.17 of the GMT
     Technical Reference and Cookbook. If false, no filename expansion is
     done [false].
 
@@ -851,11 +851,11 @@ fonts can be found in the :doc:`gmt` man page.
 |     *Neptune*: Neptune (IAU2000) (2000)
 |     *Pluto*: Pluto (IAU2000) (2000)
 
-    Note that for some global projections, **GMT** may use a spherical
+    Note that for some global projections, GMT may use a spherical
     approximation of the ellipsoid chosen, setting the flattening to
     zero, and using a mean radius. A warning will be given when this
     happens. If a different ellipsoid name than those mentioned here is
-    given, **GMT** will attempt to parse the name to extract the
+    given, GMT will attempt to parse the name to extract the
     semi-major axis (*a* in m) and the flattening. Formats allowed are:
 
     *a* implies a zero flattening
@@ -876,8 +876,8 @@ fonts can be found in the :doc:`gmt` man page.
 
 **PROJ_LENGTH_UNIT**
     Sets the unit length. Choose between **c**\ m, **i**\ nch, or
-    **p**\ oint [c (or i)]. Note that, in **GMT**, one point is defined
-    as 1/72 inch (the *PostScript* definition), while it is often
+    **p**\ oint [c (or i)]. Note that, in GMT, one point is defined
+    as 1/72 inch (the PostScript definition), while it is often
     defined as 1/72.27 inch in the typesetting industry. There is no
     universal definition.
 
@@ -903,8 +903,8 @@ fonts can be found in the :doc:`gmt` man page.
 
 **PS_CHAR_ENCODING**
     (static) Names the eight bit character set being used for text in
-    files and in command line parameters. This allows **GMT** to ensure
-    that the *PostScript* output generates the correct characters on the
+    files and in command line parameters. This allows GMT to ensure
+    that the PostScript output generates the correct characters on the
     plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
     ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
     Appendix F for details [ISOLatin1+ (or Standard+)].
@@ -912,7 +912,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _PS_COLOR_MODEL:
 
 **PS_COLOR_MODEL**
-    Determines whether *PostScript* output should use RGB, HSV, CMYK, or
+    Determines whether PostScript output should use RGB, HSV, CMYK, or
     GRAY when specifying color [rgb]. Note if HSV is selected it does
     not apply to images which in that case uses RGB. When selecting
     GRAY, all colors will be converted to gray scale using YIQ
@@ -921,10 +921,10 @@ fonts can be found in the :doc:`gmt` man page.
 .. _PS_COMMENTS:
 
 **PS_COMMENTS**
-    (static) If true we will issue comments in the *PostScript* file
+    (static) If true we will issue comments in the PostScript file
     that explain the logic of operations. These are useful if you need
     to edit the file and make changes; otherwise you can set it to false
-    which yields a somewhat slimmer *PostScript* file [false].
+    which yields a somewhat slimmer PostScript file [false].
 
 .. _PS_COPIES:
 
@@ -934,7 +934,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _PS_IMAGE_COMPRESS:
 
 **PS_IMAGE_COMPRESS**
-    (static) Determines if *PostScript* images are compressed using the
+    (static) Determines if PostScript images are compressed using the
     Run-Length Encoding scheme (rle), Lempel-Ziv-Welch compression
     (lzw), or not at all (none) [lzw].
 
@@ -1013,7 +1013,7 @@ fonts can be found in the :doc:`gmt` man page.
     for mitered joins only. When the angle between joining line segments
     is smaller than the threshold the corner will be bevelled instead of
     mitered. The default threshold is 35 degrees. Setting the threshold
-    angle to 0 implies the *PostScript* default of about 11 degrees.
+    angle to 0 implies the PostScript default of about 11 degrees.
     Setting the threshold angle to 180 causes all joins to be beveled.
 
 .. _PS_PAGE_COLOR:
@@ -1123,7 +1123,7 @@ fonts can be found in the :doc:`gmt` man page.
 
     If your language is not supported, please examine the
     **$GMT_SHAREDIR**/time/us.d file and make a similar file. Please
-    submit it to the **GMT** Developers for official inclusion. Custom
+    submit it to the GMT Developers for official inclusion. Custom
     language files can be placed in directories **$GMT_SHAREDIR**/time
     or ~/.gmt. Note: Some of these languages may require you to also
     change the **PS_CHAR_ENCODING** setting.

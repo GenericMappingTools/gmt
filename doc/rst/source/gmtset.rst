@@ -6,7 +6,7 @@ gmtset
 
 .. only:: not man
 
-    gmtset - Change individual **GMT** default parameters
+    gmtset - Change individual GMT default parameters
 
 Synopsis
 --------
@@ -23,12 +23,12 @@ PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
 Description
 -----------
 
-**gmtset** will adjust individual **GMT** defaults settings in the
+**gmtset** will adjust individual GMT defaults settings in the
 current directory's :doc:`gmt.conf` file. If no such file exists one will
 be created. The main purpose of **gmtset** is temporarily to change
 certain parameters inside a shell script, e.g., set the dots-per-inch to
 72, run the script, and reset to 1200 dpi. Optionally, you can specify
-one or more temporary changes directly on any **GMT** command line with
+one or more temporary changes directly on any GMT command line with
 the syntax **--PARAMETER**\ =\ *VALUE*; such changes are only in effect
 for that command and do not permanently change the default settings on
 disk.
@@ -49,7 +49,7 @@ Optional Arguments
     used by GMT5. The original file is retained.
 
 **-D**\ [**s**\ \|\ **u**]
-    Modify the **GMT** defaults based on the system settings. Append
+    Modify the GMT defaults based on the system settings. Append
     **u** for US defaults or **s** for SI defaults. [**-D** alone gives
     the version selected at compile time]
 

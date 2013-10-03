@@ -151,7 +151,7 @@ Optional Arguments
 Examples
 --------
 
-To make an overlay *PostScript* file that will mask out the regions of a
+To make an overlay PostScript file that will mask out the regions of a
 contour map where there is no control data using clip polygons, use:
 
    ::

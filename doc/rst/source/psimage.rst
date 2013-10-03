@@ -33,7 +33,7 @@ Synopsis
 Description
 -----------
 
-**psimage** reads an Encapsulated *PostScript* file or a raster image
+**psimage** reads an Encapsulated PostScript file or a raster image
 file and plots it on a map. The image can be scaled arbitrarily, and
 1-bit raster images can be (1) inverted, i.e., black
 pixels (on) becomes white (off) and vice versa, or
@@ -45,14 +45,14 @@ YIQ-transformation. For raster files, the user can select which color to
 be made transparent. The user may also choose to replicate the image
 which, when preceded by appropriate clip paths, may allow larger
 custom-designed fill patterns to be implemented (the **-Gp** mechanism
-offered in most **GMT** programs is limited to rasters smaller than 146
+offered in most GMT programs is limited to rasters smaller than 146
 by 146). 
 
 Required Arguments
 ------------------
 
 *imagefile*
-    This must be an Encapsulated *PostScript* (EPS) file or a raster
+    This must be an Encapsulated PostScript (EPS) file or a raster
     image. An EPS file must contain an appropriate BoundingBox. A raster
     file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.
     If GDAL was not configured during GMT installation then only
@@ -64,7 +64,7 @@ Required Arguments
     (inches, cm, etc.). If *height* is not given, the original aspect
     ratio of the image is maintained. If *width* is negative we use the
     absolute value and interpolate image to the device resolution using
-    the *PostScript* image operator. Alternatively, use **-E**.
+    the PostScript image operator. Alternatively, use **-E**.
 
 Optional Arguments
 ------------------
@@ -112,7 +112,7 @@ Optional Arguments
 .. include:: explain_-c.rst_
 
 These options are for 1-bit images only. They have no effect when
-plotting other images or *PostScript* files.
+plotting other images or PostScript files.
 
 **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color*
     **-Gb**
@@ -126,7 +126,7 @@ plotting other images or *PostScript* files.
         use **-GP** in other GMT programs.
 
 These options are for 8-, 24-, and 32-bit raster images only. They have
-no effect when plotting 1-bit images or *PostScript* files.
+no effect when plotting 1-bit images or PostScript files.
 
 **-Gt**
     Assigns the color that is to be made transparent. Sun Raster files
@@ -158,7 +158,7 @@ accordingly), and outline with a thin, blue pen, use
 
     gmt psimage logo.jpg -W1i -Fthin,blue > image.ps
 
-To include an Encapsulated *PostScript* file tiger.eps with its upper
+To include an Encapsulated PostScript file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
 location, and have its width scaled to 3 inches, while keeping the
 aspect ratio, use

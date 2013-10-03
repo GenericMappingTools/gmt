@@ -4,7 +4,7 @@
 ------------------------------
 
 In many areas, such as fluid dynamics and elasticity, it is desirable to
-plot vector fields of various kinds. *GMT* provides a way to illustrate
+plot vector fields of various kinds. GMT provides a way to illustrate
 2-component vector fields using the
 :doc:`grdvector </grdvector>` utility. The two
 components of the field (Cartesian or polar components) are stored in

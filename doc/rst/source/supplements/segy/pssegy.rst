@@ -35,13 +35,13 @@ Description
 -----------
 
 **pssegy** reads a native (IEEE) format SEGY file and produces a
-*PostScript* image of the seismic data. The *imagemask* operator is used
+PostScript image of the seismic data. The *imagemask* operator is used
 so that the seismic data are plotted as a 1-bit deep bitmap in a single
 (user-specified) color or gray shade, with a transparent background. The
-bitmap resolution is taken from the current **GMT** defaults. The
+bitmap resolution is taken from the current GMT defaults. The
 seismic traces may be plotted at their true locations using information
 in the trace headers (in which case order of the traces in the file is
-not significant). Standard **GMT** geometry routines are used so that in
+not significant). Standard GMT geometry routines are used so that in
 principle any map projection may be used, however it is likely that the
 geographic projections will lead to unexpected results. Beware also that
 some parameters have non-standard meanings.

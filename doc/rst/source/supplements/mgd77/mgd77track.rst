@@ -37,9 +37,9 @@ Synopsis
 Description
 -----------
 
-**mgd77track** reads NGDC MGD77 cruises and creates *PostScript* code
+**mgd77track** reads NGDC MGD77 cruises and creates PostScript code
 that will plot one or more ship tracks on a map using the specified
-projection. The *PostScript* code is written to standard output.
+projection. The PostScript code is written to standard output.
 
 Required Arguments
 ------------------

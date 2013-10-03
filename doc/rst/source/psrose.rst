@@ -41,10 +41,10 @@ Description
 -----------
 
 **psrose** reads (length,azimuth) pairs from *file* [or standard input]
-and generates *PostScript* code that will plot a windrose diagram.
+and generates PostScript code that will plot a windrose diagram.
 Optionally (with **-A**), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
-*PostScript* code is written to standard output. The outline of the
+PostScript code is written to standard output. The outline of the
 windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**. 
 
 Required Arguments

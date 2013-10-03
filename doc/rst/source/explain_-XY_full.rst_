@@ -13,4 +13,4 @@
     relative to its current location. If **-O** is used then the default
     (*x-shift*,\ *y-shift*) is (r0), otherwise it is (r1i). When **-X**
     or **-Y** are used without any further arguments, the values from
-    the last use of that option in a previous **GMT** command will be used.
+    the last use of that option in a previous GMT command will be used.

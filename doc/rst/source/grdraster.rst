@@ -40,9 +40,9 @@ filtering or interpolating is done, however; the *x_inc* and *y_inc*
 of the grid must be multiples of the increments of the raster file and
 **grdraster** simply takes every n'th point. The output of **grdraster**
 is either grid or pixel registered depending on the registration of the
-raster used. It is up to the **GMT** system person to maintain the
+raster used. It is up to the GMT system person to maintain the
 *grdraster.info* file in accordance with the available rasters at each
-site. Raster data sets are not supplied with **GMT** but can be obtained
+site. Raster data sets are not supplied with GMT but can be obtained
 by anonymous ftp and on CD-ROM (see README page in dbase directory).
 **grdraster** will list the available files if no arguments are given.
 Finally, **grdraster** will write xyz-triplets to stdout if no output

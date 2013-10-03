@@ -27,7 +27,7 @@ Synopsis
 Description
 -----------
 
-**ps2raster** converts one or more *PostScript* files to other formats
+**ps2raster** converts one or more PostScript files to other formats
 (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF) using GhostScript. Input file
 names are read from the command line or from a file that lists them. The
 size of the resulting images is determined by the BoundingBox (or
@@ -40,7 +40,7 @@ Required Arguments
 ------------------
 
 *psfiles*
-    Names of *PostScript* files to be converted. The output files will
+    Names of PostScript files to be converted. The output files will
     have the same name (unless **-F** is used) but with the conventional
     extension name associated to the raster format (e.g., .jpg for the
     jpeg format). Use **-D** to redirect the output to a different
@@ -98,7 +98,7 @@ Optional Arguments
     **-G** is used) is the one of the 64 bits version, or gswin64c
 
 **-L**\ *listfile*
-    The *listfile* is an ASCII file with the names of the *PostScript*
+    The *listfile* is an ASCII file with the names of the PostScript
     files to be converted.
 
 **-N**
@@ -186,14 +186,14 @@ Optional Arguments
 
     Further notes on the creation of georeferenced rasters.
     **ps2raster** can create a georeferenced raster image with a world
-    file OR uses GDAL to convert the GMT *PostScript* file to geotiff.
+    file OR uses GDAL to convert the GMT PostScript file to geotiff.
     GDAL uses Proj.4 for it’s projection library. To provide with the
     information it needs to do the georeferencing, GMT 4.5 embeds a
-    comment near the start of the *PostScript* file defining the
-    projection using Proj.4 syntax. Users with pre-GMT v4.5 *PostScript*
+    comment near the start of the PostScript file defining the
+    projection using Proj.4 syntax. Users with pre-GMT v4.5 PostScript
     files, or even non-GMT ps files, can provide the information
     **ps2raster** requires by manually editing a line into the
-    *PostScript* file, prefixed with %%PROJ.
+    PostScript file, prefixed with %%PROJ.
 
     For example the command gmt pscoast -JM0/12c -R-10/-4/37/43
     -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
@@ -216,7 +216,7 @@ Notes
 
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently
 results in loss of details that are available in the original
-*PostScript* file. Choose a resolution that is large enough for the
+PostScript file. Choose a resolution that is large enough for the
 application that the image will be used for. For web pages, smaller dpi
 values suffice, for Word documents and PowerPoint presentations a higher
 dpi value is recommended. **ps2raster** uses the loss-less Flate
@@ -224,7 +224,7 @@ compression technique when creating JPEG, PNG and TIFF images.
 
 EPS is a vector, not a raster format. Therefore, the **-E** option has
 no effect on the creation of EPS files. Using the option **-Te** will
-remove PageSize commands from the *PostScript* file and will adjust the
+remove PageSize commands from the PostScript file and will adjust the
 BoundingBox when the **-A** option is used. Note the original and
 required BoundingBox is limited to integer points, hence Adobe added the
 optional HiResBoundingBox to add more precision in sizing. The **-A**
@@ -236,11 +236,11 @@ the resolution of pattern fills and fonts that are stored as bitmaps in
 the document. **ps2raster** therefore uses a larger default resolution
 when creating PDF files. In order to obtain high-quality PDF files, the
 */prepress* options are in effect, allowing only loss-less Flate
-compression of raster images embedded in the *PostScript* file.
+compression of raster images embedded in the PostScript file.
 
-Although **ps2raster** was developed as part of the **GMT**, it can be
-used to convert *PostScript* files created by nearly any graphics
-program. However, **-Au** is **GMT**-specific.
+Although **ps2raster** was developed as part of the GMT, it can be
+used to convert PostScript files created by nearly any graphics
+program. However, **-Au** is GMT-specific.
 
 See :ref:`include-gmt-graphics` of the **GMT Technical Reference and Cookbook** for more
 information on how **ps2raster** is used to produce graphics that can be
@@ -303,7 +303,7 @@ To create a simple KMZ file for use in Google Earth, try
 Binary Data
 -----------
 
-**GMT** programs can produce binary *PostScript* image data and this is
+GMT programs can produce binary PostScript image data and this is
 determined by the default setting PS_IMAGE_FORMAT. Because
 **ps2raster** needs to process the input files on a line-by-line basis
 you need to make sure the image format is set to *ascii* and not *bin*.
