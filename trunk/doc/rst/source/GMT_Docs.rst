@@ -1,4 +1,6 @@
-:tocdepth: 2
+.. TODO: set tocdepth=2 when this issue resolved https://bitbucket.org/birkenfeld/sphinx/issue/1251
+
+:tocdepth: 3
 
 **The Generic Mapping Tools**
 
