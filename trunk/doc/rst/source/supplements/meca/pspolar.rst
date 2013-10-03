@@ -195,5 +195,5 @@ Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 Authors
 -------
 
-Genevieve Patau Seismology Dept. Institut de Physique du Globe de Paris
-(patau@ipgp.jussieu.fr)
+Genevieve Patau, `Laboratory of Seismogenesis <http://www.ipgp.fr/rech/sismogenese/>`,
+Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France

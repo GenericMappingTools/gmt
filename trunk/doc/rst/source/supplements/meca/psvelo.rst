@@ -267,7 +267,8 @@ Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
 Authors
 -------
 
-Kurt Feigl CNRS UMR 5562 Toulouse, France (Kurt.Feigl@.cnes.fr)
+`Kurt L. Feigl <http://www.geology.wisc.edu/~feigl/>`_, Department of Geology and
+Geophysics at University of Wisconsin-Madison, Madison, Wisconsin, USA
 
-Genevieve Patau CNRS UMR 7580 Seismology Dept. Institut de Physique du
-Globe de Paris (patau@ipgp.jussieu.fr)
+Genevieve Patau, `Laboratory of Seismogenesis <http://www.ipgp.fr/rech/sismogenese/>`_,
+Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France
