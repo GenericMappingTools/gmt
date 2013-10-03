@@ -1,19 +1,19 @@
 .. index:: ! gmtsimplify
 
-*****
-gmtdp
-*****
+***********
+gmtsimplify
+***********
 
 .. only:: not man
 
-    gmtdp - Line reduction using the Douglas-Peucker algorithm
+    gmtsimplify - Line reduction using the Douglas-Peucker algorithm
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtdp** [ *table* ] **-T**\ *tolerance*\ [*unit*]
+**gmtsimplify** [ *table* ] **-T**\ *tolerance*\ [*unit*]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-f| ]
@@ -28,7 +28,7 @@ Synopsis
 Description
 -----------
 
-**gmtdp** reads one or more data files and apply the Douglas-Peucker
+**gmtsimplify** reads one or more data files and apply the Douglas-Peucker
 line simplification algorithm. The method recursively subdivides a
 polygon until a run of points can be replaced by a straight line
 segment, with no point in that run deviating from the straight line by
@@ -103,7 +103,7 @@ Specifically, it cannot be guaranteed that the reduced line does not
 cross itself. Depending on how many lines you are considering it is also
 possible that reduced lines may intersect other reduced lines. Finally,
 the current implementation only does Flat Earth calculations even if you
-specify spherical; **gmtdp** will issue a warning and reset the
+specify spherical; **gmtsimplify** will issue a warning and reset the
 calculation mode to Flat Earth.
 
 References
@@ -114,9 +114,9 @@ number of points required to represent a digitized line of its
 caricature, *Can. Cartogr.*, **10**, 112-122, 1973.
 
 This implementation of the algorithm has been kindly provided by Dr.
-Gary J. Robinson, Environmental Systems Science Centre, University of
-Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his subroutine forms
-the basis for this program.
+`Gary J. Robinson <http://www.met.reading.ac.uk/users/users/1327/>`_,
+Department of Meteorology, University of Reading, Reading, UK; his
+subroutine forms the basis for this program.
 
 See Also
 --------
