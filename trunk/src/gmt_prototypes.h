@@ -192,6 +192,7 @@ EXTERN_MSC void GMT_skip_xy_duplicates (struct GMT_CTRL *GMT, bool mode);
 EXTERN_MSC void GMT_duplicate_ogr_seg (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S_to, struct GMT_DATASEGMENT *S_from);
 EXTERN_MSC struct GMT_DATASEGMENT * GMT_duplicate_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *Sin);
 EXTERN_MSC void GMT_write_ogr_header (FILE *fp, struct GMT_OGR *G);
+EXTERN_MSC int GMT_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S);
 EXTERN_MSC char * GMT_trim_segheader (struct GMT_CTRL *GMT, char *line);
 EXTERN_MSC int GMT_alloc_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned int type, uint64_t n_rows);
 EXTERN_MSC bool gmt_byteswap_file (struct GMT_CTRL *GMT,

@@ -130,11 +130,11 @@ else (BUILD_SHARED_LIBS)
 	set (BUILD_MODE "static")
 endif (BUILD_SHARED_LIBS)
 
-if (PROTOSUPPLEMENTS)
-	set (PROTO ${PROTOSUPPLEMENTS})
-else (PROTOSUPPLEMENTS)
+if (EXTRA_BUILD_DIRS)
+	set (PROTO ${EXTRA_BUILD_DIRS})
+else (EXTRA_BUILD_DIRS)
 	set (PROTO "none")
-endif (PROTOSUPPLEMENTS)
+endif (EXTRA_BUILD_DIRS)
 
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file (

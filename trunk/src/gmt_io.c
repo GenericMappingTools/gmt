@@ -953,6 +953,21 @@ double gmt_convert_aspatial_value (struct GMT_CTRL *GMT, unsigned int type, char
 	return (value);
 }
 
+int GMT_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S)
+{
+	/* Appends one more metadata item to this OGR structure */
+	if (S == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_append_ogr_item: No GMT_OGR structure available\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	S->n_aspatial++;
+	S->name = GMT_memory (GMT, S->name, S->n_aspatial, char *);
+	S->name[S->n_aspatial-1] = strdup (name);
+	S->type = GMT_memory (GMT, S->type, S->n_aspatial, unsigned int);
+	S->type[S->n_aspatial-1] = type;
+	return (GMT_NOERROR);
+}
+
 unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record, struct GMT_OGR *S)
 {	/* Parse @D<vals> aspatial values; this is done once per feature (segment).  We store
  	 * both the text representation (value) and attempt to convert to double in dvalue.
