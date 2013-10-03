@@ -366,5 +366,5 @@ Recipes in C, Cambridge University press (routine jacobi)
 `Authors <#toc9>`_
 ------------------
 
-Genevieve Patau CNRS UMR 7580 Seismology Dept. Institut de Physique du
-Globe de Paris (patau@.ipgp.jussieu.fr)
+Genevieve Patau, `Laboratory of Seismogenesis <http://www.ipgp.fr/rech/sismogenese/>`,
+Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France

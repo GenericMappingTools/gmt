@@ -127,12 +127,12 @@ published, such as
    [:doc:`surface`]
 
 Finally, GMT includes some code supplied by others, in particular the
-Triangle code used for Delaunay triangulation. Its author, Jonathan
-Shewchuk, says
+Triangle code used for Delaunay triangulation. Its author, `Jonathan
+Shewchuk <http://www.cs.berkeley.edu/~jrs/>`_, says
 
     "If you use Triangle, and especially if you use it to accomplish
     real work, I would like very much to hear from you. A short letter
-    or email (to jrs@cs.cmu.edu) describing how you use Triangle will
+    or email describing how you use Triangle will
     mean a lot to me. The more people I know are using this program, the
     more easily I can justify spending time on improvements and on the
     three-dimensional successor to Triangle, which in turn will benefit
@@ -199,8 +199,9 @@ The success of GMT is to a large degree due to the input of the user
 community. In fact, most of the capabilities and options in
 GMT programs originated as user requests. We would like to hear from
 you should you have any suggestions for future enhancements and
-modification. Please send your comments to the GMT help list or create an
-issue in the bug tracker (see `<http://gmtrac.soest.hawaii.edu/>`_).
+modification. Please send your comments to the GMT help list or create
+an issue in the bug tracker
+(see `<http://gmt.soest.hawaii.edu/projects/gmt/issues/>`_).
 
 What is new in GMT 5.x?
 -----------------------
@@ -8900,8 +8901,9 @@ The identification of spatial feature types in GMT files generally
 follows the technical description, (which is largely consistent with the
 OGC SFS specification). This specification provides for non-topological
 point, line and polygon (area) features, as well as multipoint,
-multiline and multipolygon features, and was written by Brent Wood
-(b.wood@niwa.co.nz) based on input from Paul Wessel and others on the GMT list.
+multiline and multipolygon features, and was written by
+`Brent Wood <http://www.niwa.co.nz/key-contacts/brent-wood/>`_
+based on input from Paul Wessel and others on the GMT list.
 
 The OGR/GMT format
 ------------------
@@ -9391,7 +9393,8 @@ Finally we show an example of a polygon file:
    *Geophysics, 44*, 730--741.
 
 .. [38]
-   Timothy.J.Henstock@soc.soton.ac.uk
+   `Timothy J. Henstock <http://www.southampton.ac.uk/oes/research/staff/then.page>`_,
+   University of Southampton
 
 .. [41]
    If you chose SI units during the installation then the default
@@ -9402,7 +9405,7 @@ Finally we show an example of a polygon file:
    McGraw-Hill, London, 444 p., 1965.
 
 .. [43]
-   `<http://www.ngdc.noaa.gov/>`_
+   `National Geophysical Data Center, Boulder, Colorado <http://www.ngdc.noaa.gov/>`_
 
 .. [44]
    Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction
