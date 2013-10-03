@@ -43,7 +43,7 @@ foreach (_ps ${_examples})
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 			COMMAND
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
@@ -55,7 +55,7 @@ foreach (_ps ${_examples})
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
 	else (WIN32)
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
@@ -66,7 +66,7 @@ foreach (_ps ${_examples})
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 			COMMAND
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
@@ -76,7 +76,7 @@ foreach (_ps ${_examples})
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
 	endif (WIN32)
 endforeach (_ps ${_examples})
 
