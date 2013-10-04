@@ -1,0 +1,14 @@
+# $Id$
+# Macro for comet takes strike (geoangle) and label (string) from input file
+N:	2	as
+# First rotate so strike is horizontal
+$1	R
+# Draw the strike line
+-0.5	0	M
+0.5	0	D
+S
+# Draw the star
+0.5	0	0.1	a	-Gorange
+# Annotate the bar in blue
+T	-Gblue -W-
+0	0.02	0.1	$2	l+jBC

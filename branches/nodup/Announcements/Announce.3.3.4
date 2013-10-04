@@ -1,0 +1,38 @@
+Dear GMT user-
+
+We are pleased to announce the release of GMT 3.3.4.
+This version fixes numerous bugs.  For more details
+see the Release link on the GMT web page
+(http://www.soest.hawaii.edu/gmt) and the section
+on Installation.
+
+While mostly dealing with bugfixes, a few new options
+have been added to some programs in GMT 3.3.4.
+grdproject now takes -C and -A (correspond to options
+-C and -F in mapproject).  grdmask has new option -L
+to deal with geographic data. Both grdedit and grdinfo
+now support the verbose -V option.  grdimage -T,
+greview -Qs, and psscale understand patterns in cptfiles.
+psxy[z] have new option -Sw for pie wedges.  gmtmath
+and grdmath have new functions (RAND and NRAND) to make
+random numbers.  Finally, input data may contain map
+coordinates such as 12:30:15W and -15:45S, and -JP with
+the modifier a (-JPa) can take clockwise-oriented
+azimuths rather than the default counter-clockwise
+directions (-JP).
+
+The coastline files themselves have not changed since
+3.3.2 so you do not need to copy the full and high
+coastlines again.  If neccesary just move them to the
+3.3.4 share directory.
+
+We now also provide a full set of *.zip files for Win32.
+
+The latest files were updated on March 20, 2000.  As of
+today (21-MAR 16:30 GMT) all mirror sites except Australia
+are synced with the Hawaii server.
+
+Sincerely,
+
+Paul Wessel
+Walter H. F. Smith

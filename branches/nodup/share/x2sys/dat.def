@@ -1,0 +1,35 @@
+#	$Id$
+#
+# Define file for X2SYS processing of mgd77 tools "DAT" format
+#
+#ASCII         # File is ASCII
+#SKIP 24       # Skip 24 header records
+#GEO           # Data are geographic
+#name   type    NaN NaN-proxy   scale   offset  oformat
+rec     a       N   0           1       0       -
+TZ      a       N   0           1       0       -
+year    a       N   0           1       0       -
+month   a       N   0           1       0       -
+day     a       N   0           1       0       -
+hour    a       N   0           1       0       -
+min     a       N   0           1       0       -
+lat     a       N   0           1       0       -
+lon     a       N   0           1       0       -
+ptc     a       N   0           1       0       -
+twt     a       N   0           1       0       -
+depth   a       N   0           1       0       -
+bcc     a       N   0           1       0       -
+btc     a       N   0           1       0       -
+mtf1    a       N   0           1       0       -
+mtf2    a       N   0           1       0       -
+mag     a       N   0           1       0       -
+msens   a       N   0           1       0       -
+diur    a       N   0           1       0       -
+msd     a       N   0           1       0       -
+gobs    a       N   0           1       0       -
+eot     a       N   0           1       0       -
+faa     a       N   0           1       0       -
+nqc     a       N   0           1       0       -
+id      a       N   0           1       0       -
+sln     a       N   0           1       0       -
+sspn    a       N   0           1       0       -

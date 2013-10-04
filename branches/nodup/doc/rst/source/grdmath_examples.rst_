@@ -1,0 +1,7 @@
+.. _SDIST:
+
+To compute all distances to north pole: 
+
+    ::
+
+     gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc

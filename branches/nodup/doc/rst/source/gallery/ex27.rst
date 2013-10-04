@@ -1,0 +1,47 @@
+.. _example_27:
+
+(27) Plotting Sandwell/Smith Mercator img grids
+-----------------------------------------------
+
+Next, we show how to plot a data grid that is distributed in projected
+form. The gravity and predicted bathymetry grids produced by David
+Sandwell and Walter H. F. Smith are not geographical grids but instead
+given on a spherical Mercator grid. The GMT supplement imgsrc has
+tools to extract subsets of these large grids. If you need to make a
+non-Mercator map then you must extract a geographic grid using
+:doc:`img2grd </supplements/img/img2grd>` and then plot it using your
+desired map projection. However, if you want to make a Mercator map then
+you can save time and preserve data quality by avoiding to re-project
+the data set twice since it is already in a Mercator projection. This
+example shows how this is accomplished. We use the **-M** option in
+:doc:`img2grd </supplements/img/img2grd>`\  [1]_ to pull out the grid
+in Mercator units (i.e., do *not* invert the Mercator projection) and
+then simply plot the grid using a linear projection with a suitable
+scale (here 0.25 inches per degrees of longitude). To overlay basemaps
+and features that has geographic longitude/latitude coordinates we must
+remember two key issues:
+
+#. This is a *spherical* Mercator grid so we must use
+   --**PROJ_ELLIPSOID**\ =Sphere with all commands that involve
+   projections (or use :doc:`gmtset </gmtset>` to change the setting).
+
+#. Select Mercator projection and use the same scale that was used with
+   the linear projection.
+
+This map of the Tasman Sea shows the marine gravity anomalies with land
+painted black. A color scale bar was then added to complete the illustration.
+
+
+.. literalinclude:: /_verbatim/example_27.txt
+   :language: bash
+
+.. figure:: /_images/example_27.*
+   :width: 500 px
+   :align: center
+
+   Plotting Sandwell/Smith Mercator img grids.
+
+
+.. [1]
+   You could also use :doc:`img2grd </supplements/img/img2grd>`
+   directly - your only option under DOS
