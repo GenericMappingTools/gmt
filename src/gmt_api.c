@@ -271,7 +271,7 @@ static inline int API_exit_int (struct GMTAPI_CTRL *API, int code) {
 		exit (code);
 	return (code);
 }
-static inline int API_exit_voidptr (struct GMTAPI_CTRL *API, void *ptr) {
+static inline void * API_exit_voidptr (struct GMTAPI_CTRL *API, void *ptr) {
 	if (API == NULL || API->do_not_exit == false)
 		exit (EXIT_FAILURE);
 	return (ptr);
