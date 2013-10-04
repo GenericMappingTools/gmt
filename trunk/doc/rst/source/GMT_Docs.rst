@@ -1023,8 +1023,8 @@ between versions.
 Introduction
 ============
 
-Most scientists are familiar with the sequence: *raw data*
-:math:`\rightarrow` *processing* :math:`\rightarrow` *final illustration*.
+Most scientists are familiar with the sequence: *raw data* →
+*processing* → *final illustration*.
 In order to finalize papers for submission to scientific journals,
 prepare proposals, and create overheads and slides for various
 presentations, many scientists spend large amounts of time and money to
@@ -1076,8 +1076,8 @@ GMT is written in the highly portable ANSI C programming language
 1991], has no Year 2000 problems, and may be used with any hardware
 running some flavor of UNIX, possibly with minor modifications. In
 writing GMT, we have followed the modular design philosophy of UNIX:
-The *raw data* :math:`\rightarrow` *processing* :math:`\rightarrow` *final
-illustration* flow is broken down to a series of elementary steps; each
+The *raw data* → *processing* → *final illustration* flow is broken
+down to a series of elementary steps; each
 step is accomplished by a separate GMT or UNIX tool. This modular
 approach brings several benefits: (1) only a few programs are needed,
 (2) each program is small and easy to update and maintain, (3) each step
