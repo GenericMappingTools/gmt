@@ -1522,7 +1522,7 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file)
 		GMT_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
 	else
 		GMT_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
-	GMT_exit_int (GMT, EXIT_FAILURE);
+	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 }
 
 /* Functions dealing with the reading of the COE ascii database */
