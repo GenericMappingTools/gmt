@@ -474,7 +474,7 @@ void GMTAPI_free_sharedlibs (struct GMTAPI_CTRL *API)
 		if (API->lib[k].name) free (API->lib[k].name);
 		if (API->lib[k].path) free (API->lib[k].path);
 	}
-	GMT_free (API->GMT, API->lib);
+	if (API->lib) GMT_free (API->GMT, API->lib);
 	API->n_shared_libs = 0;
 }
 
