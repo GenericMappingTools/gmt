@@ -631,7 +631,7 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_pscontour_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_pscontour_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 int GMT_pscontour (void *V_API, int mode, void *args)
 {
@@ -661,7 +661,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	struct GMT_PALETTE *P = NULL;
 	struct SAVE *save = NULL;
 	struct PSCONTOUR_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -677,7 +677,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pscontour_parse (GMT, Ctrl, options))) Return (error);

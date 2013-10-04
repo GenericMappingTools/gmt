@@ -155,14 +155,14 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_psbasemap_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
+#define Return(code) {Free_psbasemap_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout(code);}
 
 int GMT_psbasemap (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psbasemap task */
 	int error;
 	
 	struct PSBASEMAP_CTRL *Ctrl = NULL;	/* Control structure specific to program */
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -177,7 +177,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psbasemap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psbasemap_parse (GMT, Ctrl, options))) Return (error);

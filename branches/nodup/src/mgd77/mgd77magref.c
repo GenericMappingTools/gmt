@@ -405,7 +405,7 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {free(Ctrl->CM4->CM4_M.path); free(Ctrl->CM4->CM4_D.path); free(Ctrl->CM4->CM4_I.path); \
-	Free_mgd77magref_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+	Free_mgd77magref_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 int GMT_mgd77magref (void *V_API, int mode, void *args)
 {
@@ -423,7 +423,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	struct MGD77MAGREF_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Din = NULL;
 	struct GMT_DATATABLE *T = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -438,7 +438,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */

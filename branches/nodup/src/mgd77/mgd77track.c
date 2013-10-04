@@ -540,7 +540,7 @@ int bad_coordinates (double lon, double lat) {
 extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_mgd77track_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_mgd77track_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 int GMT_mgd77track (void *V_API, int mode, void *args)
 {
@@ -564,7 +564,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	struct GMT_gcal calendar;
 	struct MGD77TRACK_ANNOT *info[2] = {NULL, NULL};
 	struct MGD77TRACK_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -575,7 +575,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	if (mode == GMT_MODULE_PURPOSE) return (GMT_mgd77track_usage (API, GMT_MODULE_PURPOSE, NULL));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (!options || options->option == GMT_OPT_USAGE) Return (GMT_mgd77track_usage (API, GMT_USAGE, Ctrl));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) Return (GMT_mgd77track_usage (API, GMT_SYNOPSIS, Ctrl));	/* Return the synopsis */

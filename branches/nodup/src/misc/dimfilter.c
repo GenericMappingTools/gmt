@@ -365,7 +365,7 @@ void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h,
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_dimfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_dimfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 int GMT_dimfilter (void *V_API, int mode, void *args)
 {
@@ -402,7 +402,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
 	struct DIMFILTER_INFO F;
 	struct DIMFILTER_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
         struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -417,7 +417,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);	/* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_dimfilter_parse (GMT, Ctrl, options))) Return (error);

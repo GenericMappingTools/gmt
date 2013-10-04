@@ -410,7 +410,7 @@ int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned i
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdtrack_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_grdtrack_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdtrack task */
@@ -427,7 +427,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	struct GRDTRACK_CTRL *Ctrl = NULL;
 	struct GRD_CONTAINER *GC = NULL;
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	
@@ -442,7 +442,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdtrack_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdtrack_parse (GMT, Ctrl, options))) Return (error);

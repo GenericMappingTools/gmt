@@ -358,7 +358,7 @@ int GMT_grd2rgb_parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct G
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grd2rgb_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_grd2rgb_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 int GMT_grd2rgb (void *V_API, int mode, void *args)
 {
@@ -379,7 +379,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 	struct GMT_PALETTE *P = NULL;
 	struct GRD2RGB_CTRL *Ctrl = NULL;
 	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -396,7 +396,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grd2rgb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2rgb_parse (GMT, Ctrl, options))) Return (error);

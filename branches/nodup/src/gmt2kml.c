@@ -646,7 +646,7 @@ bool crossed_dateline (double this_x, double last_x)
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmt2kml_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_gmt2kml_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 int GMT_gmt2kml (void *V_API, int mode, void *args)
 {
@@ -667,7 +667,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	struct GMT_TEXTSET *Din = NULL;
 	struct GMT_TEXTTABLE *T = NULL;
 	struct GMT2KML_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL;		/* General GMT interal parameters */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -681,7 +681,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmt2kml_parse (GMT, Ctrl, options))) Return (error);

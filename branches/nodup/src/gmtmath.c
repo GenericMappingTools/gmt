@@ -3243,8 +3243,8 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 #define Free_Store { for (i = 0; i < GMTMATH_STORE_SIZE; i++) { if (recall[i] && !recall[i]->stored.constant) { GMT_free_dataset (GMT, &recall[i]->stored.D); GMT_free (GMT, recall[i]); } } }
 #define Free_Misc {if (T_in) GMT_Destroy_Data (API, &T_in); GMT_Destroy_Data (API, &Template); GMT_Destroy_Data (API, &Time); if (read_stdin) GMT_Destroy_Data (API, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Stack; Free_Store; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
+#define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code); }
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Stack; Free_Store; Free_Misc;  GMT_end_module (GMT); bailout (code); }
 
 int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	unsigned int expect;
@@ -3349,7 +3349,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	struct GMTMATH_INFO info;
 	struct MATH_MACRO *M = NULL;
 	struct GMTMATH_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -3364,7 +3364,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return1 (API->error);
 	Ctrl = New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtmath_parse (GMT, Ctrl, options))) Return1 (error);

@@ -807,8 +807,8 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
-#define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
+#define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 int GMT_filter1d (void *V_API, int mode, void *args)
 {
@@ -822,7 +822,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 	struct GMT_DATASET *D = NULL;
 	struct FILTER1D_CTRL *Ctrl = NULL;
 
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -836,7 +836,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
 	Ctrl = New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_filter1d_parse (GMT, Ctrl, options))) Return (error, "Error parsing filter1d options\n");

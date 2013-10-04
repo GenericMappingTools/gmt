@@ -6074,6 +6074,15 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 	return (GMT_NOERROR);
 }
 
+void gmt_free_plot_array (struct GMT_CTRL *GMT) {
+	if (GMT->current.plot.n_alloc) {
+		GMT_free (GMT, GMT->current.plot.x);
+		GMT_free (GMT, GMT->current.plot.y);
+		GMT_free (GMT, GMT->current.plot.pen);
+	}
+	GMT->current.plot.n = GMT->current.plot.n_alloc = 0;
+}
+
 void Free_GMT_Ctrl (struct GMT_CTRL *GMT) {	/* Deallocate control structure */
 	if (!GMT) return;	/* Never was allocated */
 	free (GMT);
@@ -6121,168 +6130,10 @@ void GMT_end (struct GMT_CTRL *GMT)
 	}
 	for (i = 0; i < GMT_MAX_COLUMNS; i++)
 		if (GMT->current.io.o_format[i]) free (GMT->current.io.o_format[i]);
-	for (i = 0; i < GMT->common.a.n_aspatial; i++)
-		if (GMT->common.a.name[i]) free (GMT->common.a.name[i]);
-	if (GMT->common.h.title) free ((void *)GMT->common.h.title);
-	if (GMT->common.h.remark) free ((void *)GMT->common.h.remark);
-	if (GMT->common.h.colnames) free ((void *)GMT->common.h.colnames);
 		
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_freeshorthand (GMT);
 
 	fflush (GMT->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
-
-#if 0	/* Already done in GMT_end_module */
-	gmt_free_user_media (GMT);	/* Free any user-specified media formats */
-#endif
-	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
-	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
-
-	/* Terminate PSL machinery (if used) */
-	PSL_endsession (GMT->PSL);
-#ifdef MEMDEBUG
-	GMT_memtrack_report (GMT);
-	free (GMT->hidden.mem_keeper);
-#endif
-
-	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
-}
-
-struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy)
-{	/* All GMT modules (i.e. GMT_psxy, GMT_blockmean, ...) must call GMT_begin_module
-	 * as their first call and call GMT_end_module as their last call.  This
-	 * allows us to capture the GMT control structure so we can reset all
-	 * parameters to what they were before exiting the module. Note:
-	 * 1. Session items that remain unchanged are not replicated if allocated separately.
-	 * 2. Items that may grow through session are not replicated if allocated separately.
-	 */
-
-	unsigned int i;
-	struct GMT_CTRL *GMT = API->GMT, *Csave = NULL;
-
-	Csave = calloc (1U, sizeof (struct GMT_CTRL));
-
-	/* First memcpy over everything; this will include pointer addresses we will have to fix below */
-
-	GMT_memcpy (Csave, GMT, 1, struct GMT_CTRL);
-
-	/* Increment level uint64_t */
-	GMT->hidden.func_level++;		/* This lets us know how deeply we are nested when a GMT module is called */
-
-	/* Now fix things that were allocated separately from the main GMT structure.  These are usually text strings
-	 * that were allocated via strdup since the structure only have a pointer allocated. */
-
-	/* GMT_INIT */
-	if (GMT->session.n_user_media) {
-		Csave->session.n_user_media = GMT->session.n_user_media;
-		Csave->session.user_media = GMT_memory (GMT, NULL, GMT->session.n_user_media, struct GMT_MEDIA);
-		Csave->session.user_media_name = GMT_memory (GMT, NULL, GMT->session.n_user_media, char *);
-		for (i = 0; i < GMT->session.n_user_media; i++) Csave->session.user_media_name[i] = strdup (GMT->session.user_media_name[i]);
-	}
-
-	/* GMT_PLOT */
-	if (GMT->current.plot.n_alloc) {
-		Csave->current.plot.n_alloc = GMT->current.plot.n_alloc;
-		Csave->current.plot.x = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
-		Csave->current.plot.y = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
-		Csave->current.plot.pen = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, unsigned int);
-		GMT_memcpy (Csave->current.plot.x, GMT->current.plot.x, GMT->current.plot.n_alloc, double);
-		GMT_memcpy (Csave->current.plot.y, GMT->current.plot.y, GMT->current.plot.n_alloc, double);
-		GMT_memcpy (Csave->current.plot.pen, GMT->current.plot.pen, GMT->current.plot.n_alloc, unsigned int);
-	}
-
-	/* GMT_IO */
-	Csave->current.io.OGR = GMT_duplicate_ogr (GMT, GMT->current.io.OGR);	/* Duplicate OGR struct, if set */
-	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
-
-	/* GMT_COMMON */
-	if (GMT->common.U.label) Csave->common.U.label = strdup (GMT->common.U.label);
-
-	/* Reset all the common.?.active settings to false */
-
-	GMT->common.B.active[0] = GMT->common.B.active[1] = GMT->common.K.active = GMT->common.O.active = false;
-	GMT->common.P.active = GMT->common.U.active = GMT->common.V.active = false;
-	GMT->common.X.active = GMT->common.Y.active = false;
-	GMT->common.R.active = GMT->common.J.active = false;
-	GMT->common.a.active = GMT->common.b.active[GMT_IN] = GMT->common.b.active[GMT_OUT] = GMT->common.c.active = false;
-	GMT->common.f.active[GMT_IN] = GMT->common.f.active[GMT_OUT] = GMT->common.g.active = GMT->common.h.active = false;
-	GMT->common.p.active = GMT->common.s.active = GMT->common.t.active = GMT->common.colon.active = false;
-	GMT_memset (GMT->common.b.ncol, 2, int);
-
-	*Ccopy = Csave; /* Pass back out for safe-keeping by the module until GMT_end_module is called */
-
-	GMT->init.module_name = mod_name;
-	GMT->init.module_lib  = lib_name;
-#if 0
-	if (mod_name != NULL) {
-		/* mod_name should only be set for non-GMT modules. For internally
-		 * registered modules: mod_name == NULL */
-		//GMT->init.module_id = GMT_ID_NONE;
-		GMT->init.module_name = strdup (mod_name);
-	}
-	else
-		/* Remove pointer to module name referenced by Csave->init.module_name */
-		GMT->init.module_name = NULL;
-#endif
-	return (GMT);
-}
-
-void gmt_free_plot_array (struct GMT_CTRL *GMT) {
-	if (GMT->current.plot.n_alloc) {
-		GMT_free (GMT, GMT->current.plot.x);
-		GMT_free (GMT, GMT->current.plot.y);
-		GMT_free (GMT, GMT->current.plot.pen);
-	}
-	GMT->current.plot.n = GMT->current.plot.n_alloc = 0;
-}
-
-void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
-{
-	int i;
-	unsigned int V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
-	
-#if 0	/* I do not think we need the interstitial hist_cpy; just copy the pointers */
-	char *hist_cpy[GMT_N_UNIQUE];
-#endif
-
-	if (GMT->current.proj.n_geodesic_approx) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n", GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
-	}
-
-	GMT_Garbage_Collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
-
-	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
-
-	/* GMT_INIT */
-
-#if 0
-	if (GMT->init.module_name != NULL)
-		free (GMT->init.module_name); /* before GMT will be clobbered by Ccopy below */
-#endif
-
-	/* We treat the history explicitly since we accumulate the history regardless of nested level */
-#if 0
-	GMT_memset (hist_cpy, GMT_N_UNIQUE, char *);
-	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT->init.history[i]) {
-		hist_cpy[i] = strdup (GMT->init.history[i]);	/* Copy what we have so far */
-		free (GMT->init.history[i]);		/* Free pointers in local GMT structure */
-	}
-#else
-	for (i = 0; i < GMT_N_UNIQUE; i++) {
-		/*if (Ccopy->init.history[i] && Ccopy->init.history[i] != GMT->init.history[i])
-			free (Ccopy->init.history[i]);*/
-		Ccopy->init.history[i] = GMT->init.history[i];
-	}
-#endif
-
-	/* GMT_CURRENT */
-
-	Ccopy->current.ps.clip_level = GMT->current.ps.clip_level;
-	Ccopy->current.ps.layer = GMT->current.ps.layer;
-
-	/* GMT_COMMON */
-
-	if (Ccopy->common.U.label && Ccopy->common.U.label != GMT->common.U.label) free (Ccopy->common.U.label);
-	Ccopy->common.U.label = GMT->common.U.label;
 
 	/* GMT_PLOT */
 
@@ -6297,28 +6148,68 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 
 	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 
-	/* Overwrite GMT with what we saved in GMT_begin_module */
-	GMT_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
-	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
+	gmt_free_user_media (GMT);	/* Free any user-specified media formats */
+	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
+	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 
-	/* Now fix things that were allocated separately */
-
-	gmt_free_user_media (Ccopy);		/* Free user-specified media formats */
-#if 0
-	for (i = 0; i < GMT_N_UNIQUE; i++) if (hist_cpy[i]) {	/* Update the cumulative history list */
-		GMT->init.history[i] = strdup (hist_cpy[i]);
-		free (hist_cpy[i]);
-	}
-
-	/* GMT_COMMON */
-	if (GMT->common.U.label) free (GMT->common.U.label);
-	if (Ccopy->common.U.label) {
-		GMT->common.U.label = strdup (Ccopy->common.U.label);
-		free (Ccopy->common.U.label);
-	}
+	/* Terminate PSL machinery (if used) */
+	PSL_endsession (GMT->PSL);
+#ifdef MEMDEBUG
+	GMT_memtrack_report (GMT);
+	free (GMT->hidden.mem_keeper);
 #endif
 
-	free (Ccopy);	/* Good riddance */
+	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
+}
+
+struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name)
+{	/* All GMT modules (i.e. GMT_psxy, GMT_blockmean, ...) must call GMT_begin_module
+	 * as their first call and call GMT_end_module as their last call.  This
+	 * allows us to reset many/most(?) common options to defaults.
+	 */
+
+	struct GMT_CTRL *GMT = API->GMT;
+
+	/* Increment level uint64_t */
+	GMT->hidden.func_level++;		/* This lets us know how deeply we are nested when a GMT module is called */
+
+	/* Reset all the common.?.active settings to false */
+
+	GMT->common.B.active[0] = GMT->common.B.active[1] = GMT->common.K.active = GMT->common.O.active = false;
+	GMT->common.P.active = GMT->common.U.active = GMT->common.V.active = false;
+	GMT->common.X.active = GMT->common.Y.active = false;
+	GMT->common.R.active = GMT->common.J.active = false;
+	GMT->common.a.active = GMT->common.b.active[GMT_IN] = GMT->common.b.active[GMT_OUT] = GMT->common.c.active = false;
+	GMT->common.f.active[GMT_IN] = GMT->common.f.active[GMT_OUT] = GMT->common.g.active = GMT->common.h.active = false;
+	GMT->common.p.active = GMT->common.s.active = GMT->common.t.active = GMT->common.colon.active = false;
+	GMT_memset (GMT->common.b.ncol, 2, int);
+
+	GMT->init.module_name = mod_name;
+	GMT->init.module_lib  = lib_name;
+
+	return (GMT);
+}
+
+void GMT_end_module (struct GMT_CTRL *GMT)
+{
+	int i;
+	
+	if (GMT->current.proj.n_geodesic_approx) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n", GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
+	}
+
+	GMT_Garbage_Collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory of i/o resources for this module level */
+
+	/* Free -a and -h settings from this module */
+	
+	for (i = 0; i < GMT->common.a.n_aspatial; i++)
+		if (GMT->common.a.name[i]) free (GMT->common.a.name[i]);
+	if (GMT->common.h.title) free ((void *)GMT->common.h.title);
+	if (GMT->common.h.remark) free ((void *)GMT->common.h.remark);
+	if (GMT->common.h.colnames) free ((void *)GMT->common.h.colnames);
+	
+	/* Decrement level uint64_t */
+	GMT->hidden.func_level--;	/* Return to previous level */
 }
 
 int GMT_set_env (struct GMT_CTRL *GMT)

@@ -282,7 +282,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_pslegend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_pslegend_Ctrl (GMT, Ctrl); GMT_end_module (GMT); bailout (code);}
 
 #ifdef DEBUG
 /* Used to draw the current y-line for debug purposes only.  To use you would also
@@ -347,7 +347,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 	struct GMT_OPTION *r_ptr = NULL, *j_ptr = NULL;
@@ -372,7 +372,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pslegend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pslegend_parse (GMT, Ctrl, options))) Return (error);
