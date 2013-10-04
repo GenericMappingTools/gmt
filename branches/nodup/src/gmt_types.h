@@ -198,33 +198,18 @@ struct GMT_CTRL {
  * and is used to declare GMT_get_io_ptr in gmt_io.c and gmt_prototypes.h */
 typedef int (*p_to_io_func) (struct GMT_CTRL *, FILE *, uint64_t, double *);
 
-/* Various return|exit combinations.  For some environments (e.g., Matlab) we do not
+/* Exit or return:  For some environments (e.g., Matlab) we do not
    wish to call the system "Exit" as it brings down Matlab as well.  In those cases
    we instead call return and let Matlab client deal with any follow-up.  This
    decision is set in GMT_Create_Session via its flags.  While exit always returns
    an integer code, the return functions may have to return other types, hence we
-   have several flavors of GMT_exit_<type>.  All the non-int exit functions will
-   call exit with EXIT_FAILURE else return the item given. */
+   let GMT_exit possibly call exit, else it does nothing.  Thus, calls to GMT_exit
+   must be followed by return <type> so that we return where we said we would. */
 
-static inline int GMT_exit_int (struct GMT_CTRL *GMT, int code) {
+/* If GMT is not set or no_not_exit is false then we call system exit, else we move along */
+static inline void GMT_exit (struct GMT_CTRL *GMT, int code) {
 	if (GMT == NULL || GMT->parent == NULL || GMT->parent->do_not_exit == false)
 		exit (code);
-	return (code);
-}
-static inline double GMT_exit_double (struct GMT_CTRL *GMT, double value) {
-	if (GMT == NULL || GMT->parent == NULL || GMT->parent->do_not_exit == false)
-		exit (EXIT_FAILURE);
-	return (value);
-}
-static inline bool GMT_exit_bool (struct GMT_CTRL *GMT, bool TF) {
-	if (GMT == NULL || GMT->parent == NULL || GMT->parent->do_not_exit == false)
-		exit (EXIT_FAILURE);
-	return (TF);
-}
-static inline void * GMT_exit_voidptr (struct GMT_CTRL *GMT, void * ptr) {
-	if (GMT == NULL || GMT->parent == NULL || GMT->parent->do_not_exit == false)
-		exit (EXIT_FAILURE);
-	return (ptr);
 }
 
 #endif  /* _GMT_TYPES_H */

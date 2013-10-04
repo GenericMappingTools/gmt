@@ -2758,7 +2758,7 @@ int gmt_get_time_language (struct GMT_CTRL *GMT)
 		GMT_getsharepath (GMT, "time", "us", ".d", file);
 		if ((fp = fopen (file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find %s!\n", file);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		strcpy (GMT->current.setting.time_language, "us");
 	}
@@ -2790,7 +2790,7 @@ int gmt_get_time_language (struct GMT_CTRL *GMT)
 	fclose (fp);
 	if (! (nm == 78 && nw == 28 && nu == 1)) {	/* Sums of 1-12, 1-7, and 1, respectively */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Mismatch between expected and actual contents in %s!\n", file);
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	return (GMT_NOERROR);
 }
@@ -2831,7 +2831,7 @@ unsigned int gmt_load_user_media (struct GMT_CTRL *GMT) {	/* Load any user-speci
 
 		if (sscanf (line, "%s %lg %lg", media, &w, &h) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 
 		GMT_str_tolower (media);	/* Convert string to lower case */
@@ -2871,7 +2871,7 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 	GMT_getsharepath (GMT, "pslib", enc->name, ".ps", line);
 	if ((in = fopen (line, "r")) == NULL) {
 		perror (line);
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
 	while (fgets (line, GMT_LEN256, in))
@@ -5423,7 +5423,7 @@ int GMT_savedefaults (struct GMT_CTRL *GMT, char *file)
 		/* Not found in SHAREDIR, try USERDIR instead */
 		if (GMT_getuserpath (GMT, "conf/gmt.conf", line) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find system defaults file - Aborting.\n");
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
 	if ((fpi = fopen (line, "r")) == NULL) return (-1);
@@ -5700,7 +5700,7 @@ int GMT_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode, char **keys,
 		next = hashnode[entry].n_id;
 		if (next == GMT_HASH_MAXDEPTH) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s makes hash-depth exceed hard-wired limit of %d - increment GMT_HASH_MAXDEPTH in gmt_hash.h and recompile GMT\n", keys[i], GMT_HASH_MAXDEPTH);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		hashnode[entry].key[next] = keys[i];
 		hashnode[entry].id[next]  = i;
@@ -5759,7 +5759,7 @@ int GMT_get_ellipsoid (struct GMT_CTRL *GMT, char *name)
 				&pol_radius, &GMT->current.setting.ref_ellipsoid[i].flattening);
 			if (n != 5) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding user ellipsoid parameters (%s)\n", line);
-				GMT_exit_int (GMT, EXIT_FAILURE);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 
 			if (pol_radius == 0.0) {} /* Ignore semi-minor axis */
@@ -5874,7 +5874,7 @@ int gmt_setshorthand (struct GMT_CTRL *GMT) {
 			continue;
 		if (sscanf (line, "%s %s %s %s %s", a, b, c, d, e) != 5) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 
 		if (n == n_alloc)
@@ -5884,7 +5884,7 @@ int gmt_setshorthand (struct GMT_CTRL *GMT) {
 		if (GMT_grd_format_decoder (GMT, b, &id) != GMT_NOERROR) {
 			/* no valid type id */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown shorthand format [%s]\n", file, b);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		snprintf (line, GMT_BUFSIZ, "%s/%s/%s/%s", b, c, d, e); /* ff/scale/offset/invalid */
 		GMT->session.shorthand[n].format = strdup (line);
@@ -6255,7 +6255,7 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 				"Error: Could not locate share directory that matches the current GMT version %s.\n",
 				GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
 	DOS_path_fix (GMT->session.SHAREDIR);
@@ -6272,7 +6272,7 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 #endif
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine home directory!\n");
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	DOS_path_fix (GMT->session.HOMEDIR);
 
@@ -6659,10 +6659,12 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 	if (!GMT->current.map.frame.primary) flag = (char) toupper ((int)flag);
 	
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
-		if (GMT_verify_time_step (GMT, irint (val), unit)) GMT_exit_int (GMT, EXIT_FAILURE);
+		if (GMT_verify_time_step (GMT, irint (val), unit)) {
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		}
 		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Time step interval (%g) must be an integer\n", val);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
 
@@ -6710,7 +6712,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 			break;
 		default:	/* Bad flag should never get here */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad flag (%c) passed to gmt_set_titem\n", flag);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			break;
 	}
 
@@ -6726,7 +6728,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Unit %c not recognized.\n", unit);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
 	I->type = flag;
@@ -8668,21 +8670,21 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_parse_front (GMT, text_cp, p);	/* Parse new -Sf syntax */
 			if (p->f.f_sense == GMT_FRONT_CENTERED && p->f.f_symbol == GMT_FRONT_SLIP) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
-				GMT_exit_int (GMT, EXIT_FAILURE);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			if (GMT_IS_ZERO (p->f.f_gap) || GMT_IS_ZERO (p->f.f_len)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in Option -Sf: Neither <gap> nor <ticklength> can be zero!\n");
-				GMT_exit_int (GMT, EXIT_FAILURE);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			if (p->f.f_gap < 0.0) {	/* Gave -# of ticks desired */
 				k = irint (fabs (p->f.f_gap));
 				if (k == 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in Option -Sf: Number of front ticks cannot be zero!\n");
-					GMT_exit_int (GMT, EXIT_FAILURE);
+					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				if (!GMT_IS_ZERO (p->f.f_off)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in Option -Sf: +<offset> cannot be used when number of ticks is specified!\n");
-					GMT_exit_int (GMT, EXIT_FAILURE);
+					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 			}
 			check = false;
@@ -8993,7 +8995,7 @@ int GMT_init_scales (struct GMT_CTRL *GMT, unsigned int unit, double *fwd_scale,
 
 	if (unit >= GMT_N_UNITS) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT ERROR: Unit id must be 0-%d\n", GMT_N_UNITS-1);
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
 	/* These scales are used when 1:1 is not set to ensure that the
@@ -9072,7 +9074,7 @@ unsigned int GMT_check_scalingopt (struct GMT_CTRL *GMT, char option, char unit,
 
 	if ((smode = GMT_get_unit_number (GMT, unit)) == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT ERROR Option -%c: Only append one of %s|%s\n", option, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY);
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	mode = (unsigned int)smode;
 	switch (mode) {
@@ -9521,7 +9523,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT)
 	GMT_getsharepath (GMT, "pslib", "PS_font_info", ".d", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
 	GMT_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
@@ -9530,7 +9532,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT)
 		if (i == n_alloc) GMT->session.font = GMT_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &GMT->session.font[i].height) != 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Trouble decoding font info for font %d\n", i);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		GMT->session.font[i++].name = strdup (fullname);
 	}
@@ -9542,7 +9544,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT)
 	if (GMT_getsharepath (GMT, "pslib", "CUSTOM_font_info", ".d", fullname)) {	/* Decode Custom font file */
 		if ((in = fopen (fullname, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 
 		while (fgets (buf, GMT_BUFSIZ, in)) {
@@ -9550,7 +9552,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT)
 			if (i == n_alloc) GMT->session.font = GMT_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &GMT->session.font[i].height) != 2) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
-				GMT_exit_int (GMT, EXIT_FAILURE);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			GMT->session.font[i++].name = strdup (fullname);
 		}
@@ -9730,7 +9732,7 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 	 * performs a save/restore operation so that when the GMT module
 	 * returns the GMT structure is restored to its original values.
 	 *
-	 * Note: We do not call GMT_exit_int here since API is not given and
+	 * Note: We do not call GMT_exit here since API is not given and
 	 * API->do_not_exit have not been modified by external API yet.
 	 */
 

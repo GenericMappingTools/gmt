@@ -2686,7 +2686,7 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[XLO] <= 0.0 || GMT->common.R.wesn[XHI] <= 0.0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Jx option:  Limits must be positive for log10 option\n");
-				GMT_exit_bool (GMT, false);
+				GMT_exit (GMT, EXIT_FAILURE); return false;
 			}
 			xmin = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XLO]) : d_log10 (GMT, GMT->common.R.wesn[XHI]);
 			xmax = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XHI]) : d_log10 (GMT, GMT->common.R.wesn[XLO]);
@@ -2713,7 +2713,7 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[YLO] <= 0.0 || GMT->common.R.wesn[YHI] <= 0.0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Jx option:  Limits must be positive for log10 option\n");
-				GMT_exit_bool (GMT, false);
+				GMT_exit (GMT, EXIT_FAILURE); return false;
 			}
 			ymin = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YLO]) : d_log10 (GMT, GMT->common.R.wesn[YHI]);
 			ymax = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YHI]) : d_log10 (GMT, GMT->common.R.wesn[YLO]);
@@ -2785,7 +2785,7 @@ bool gmt_map_init_polar (struct GMT_CTRL *GMT)
 	if (GMT->current.proj.got_elevations) {	/* Requires s >= 0 and n <= 90 */
 		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > 90.0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -JP...r for elevation plots requires s >= 0 and n <= 90!\n");
-			GMT_exit_bool (GMT, false);
+			GMT_exit (GMT, EXIT_FAILURE); return false;
 		}
 		if (doubleAlmostEqual (GMT->common.R.wesn[YHI], 90.0))
 			GMT->current.proj.edge[2] = false;
@@ -2833,7 +2833,7 @@ bool gmt_map_init_merc (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -R option:  Cannot include south/north poles with Mercator projection!\n");
-		GMT_exit_bool (GMT, false);
+		GMT_exit (GMT, EXIT_FAILURE); return false;
 	}
 	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	GMT_vmerc (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
@@ -3108,14 +3108,14 @@ bool gmt_map_init_stereo (struct GMT_CTRL *GMT) {
 			if (GMT->current.proj.north_pole) {
 				if (GMT->common.R.wesn[YLO] <= -90.0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: South boundary cannot be -90.0 for north polar stereographic projection\n");
-					GMT_exit_bool (GMT, false);
+					GMT_exit (GMT, EXIT_FAILURE); return false;
 				}
 				if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 			}
 			else {
 				if (GMT->common.R.wesn[YHI] >= 90.0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: North boundary cannot be +90.0 for south polar stereographic projection\n");
-					GMT_exit_bool (GMT, false);
+					GMT_exit (GMT, EXIT_FAILURE); return false;
 				}
 				if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 			}
@@ -3762,14 +3762,14 @@ bool gmt_map_init_lambeq (struct GMT_CTRL *GMT) {
 			if (GMT->current.proj.north_pole) {
 				if (GMT->common.R.wesn[YLO] <= -90.0){
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: South boundary cannot be -90.0 for north polar Lambert azimuthal projection\n");
-					GMT_exit_bool (GMT, false);
+					GMT_exit (GMT, EXIT_FAILURE); return false;
 				}
 				if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 			}
 			else {
 				if (GMT->common.R.wesn[YHI] >= 90.0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: North boundary cannot be +90.0 for south polar Lambert azimuthal projection\n");
-					GMT_exit_bool (GMT, false);
+					GMT_exit (GMT, EXIT_FAILURE); return false;
 				}
 				if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 			}
@@ -4623,7 +4623,7 @@ bool gmt_map_init_cassini (struct GMT_CTRL *GMT) {
 	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if ((GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 90.0 || (GMT->common.R.wesn[XHI] - GMT->current.proj.pars[0]) > 90.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Max longitude extension away from central meridian is limited to +/- 90 degrees\n");
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return false;
 	}
 	too_big = gmt_quicktm (GMT, GMT->current.proj.pars[0], 4.0);
 	if (too_big) GMT_set_spherical (GMT, true);	/* Cannot use ellipsoidal series for this area */
@@ -4901,7 +4901,7 @@ int gmt_horizon_search (struct GMT_CTRL *GMT, double w, double e, double s, doub
 	if (beyond) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Rectangular region for azimuthal projection extends beyond the horizon\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Please select a region that is completely within the visible hemisphere\n");
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	return (GMT_NOERROR);
 }
@@ -6347,7 +6347,7 @@ int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_project_init: Necessary arguments not set\n");
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	header->registration = offset;
 
@@ -6392,7 +6392,7 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	/* Only input grid MUST have at least 2 rows/cols padding */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_grd_project: Input grid does not have sufficient (2) padding\n");
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
 	/* Precalculate grid coordinates */
@@ -6551,7 +6551,7 @@ int GMT_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	/* Only input image MUST have at least 2 rows/cols padding */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_img_project: Input image does not have sufficient (2) padding\n");
-		GMT_exit_int (GMT, EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
 	/* Precalculate grid coordinates */
@@ -7461,7 +7461,7 @@ int gmt_init_three_D (struct GMT_CTRL *GMT) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[ZLO] <= 0.0 || GMT->common.R.wesn[ZHI] <= 0.0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error for -Jz -JZ option: limits must be positive for log10 projection\n");
-				GMT_exit_int (GMT, EXIT_FAILURE);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZLO]) : d_log10 (GMT, GMT->common.R.wesn[ZHI]);
 			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZHI]) : d_log10 (GMT, GMT->common.R.wesn[ZLO]);
@@ -8104,7 +8104,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Distance units must be one of %s\n", GMT_LEN_UNITS_DISPLAY);
-			GMT_exit_int (GMT, EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			break;
 	}
 	

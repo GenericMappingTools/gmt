@@ -356,7 +356,7 @@ int GMT_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WA
 		case GMT_FFT_K_IS_KR: K->k_ptr = GMT_fft_kr; break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad mode selected (%u) - exit\n", mode);
-			GMT_exit_int (GMT, GMT_RUNTIME_ERROR);
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			break;
 	}
 	return GMT_OK;
@@ -844,7 +844,7 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned ny, unsigned nx, ff
 
 	if (plan == NULL) { /* There was a problem creating a plan */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not create FFTW plan.\n");
-		GMT_exit_voidptr (GMT, NULL);
+		GMT_exit (GMT, EXIT_FAILURE); return NULL;
 	}
 
 	return plan;
