@@ -8496,7 +8496,7 @@ unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double
 
 unsigned int GMT_pow_array (struct GMT_CTRL *GMT, double min, double max, double delta, unsigned int x_or_y_or_z, double **array)
 {
-	int i, n;
+	int i, n = 0;
 	double *val = NULL, v0, v1;
 
 	if (delta <= 0.0) return (0);
@@ -8615,7 +8615,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 
 unsigned int GMT_coordinate_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels)
 {
-	unsigned int n;
+	unsigned int n = 0;
 
 	if (!T->active) return (0);	/* Nothing to do */
 

@@ -2685,7 +2685,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 	 *      - append .mgd77 and see if we can find it in listed directories
 	 */
 	int has_suffix = MGD77_NOT_SET;
-	unsigned int id, fmt, f_start, f_stop;
+	unsigned int id, fmt, f_start = 0, f_stop = 0;
 	bool append = false, hard_path;
 	char geo_path[GMT_BUFSIZ] = {""};
 
