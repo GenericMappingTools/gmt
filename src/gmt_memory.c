@@ -431,7 +431,7 @@ void GMT_free_tmp_arrays (struct GMT_CTRL *GMT)
 		if (GMT->hidden.mem_coord[col]) GMT_free (GMT, GMT->hidden.mem_coord[col]);
 	}
 	if (GMT->hidden.mem_coord) GMT_free (GMT, GMT->hidden.mem_coord);
-	GMT->hidden.mem_rows = 0;
+	GMT->hidden.mem_rows = GMT->hidden.mem_cols = 0;
 }
 
 void GMT_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols)
