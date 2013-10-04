@@ -266,10 +266,15 @@ static inline struct GMT_FFT_WAVENUMBER * gmt_get_fftwave_ptr (struct GMT_FFT_WA
 
 static inline struct GMT_GRID    * gmt_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
 
-static inline int API_exit (struct GMTAPI_CTRL *API, int code) {
+static inline int API_exit_int (struct GMTAPI_CTRL *API, int code) {
 	if (API == NULL || API->do_not_exit == false)
 		exit (code);
 	return (code);
+}
+static inline int API_exit_voidptr (struct GMTAPI_CTRL *API, void *ptr) {
+	if (API == NULL || API->do_not_exit == false)
+		exit (EXIT_FAILURE);
+	return (ptr);
 }
 
 /* return_address is a convenience function that, given type, calls the correct converter */
@@ -381,7 +386,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 #ifdef BUILD_SHARED_LIBS
 	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
-		API_exit (API, EXIT_FAILURE);
+		API_exit_int (API, EXIT_FAILURE);
 	}
 	dlerror (); /* Clear any existing error */
 #endif
@@ -621,7 +626,7 @@ p_func_size_t GMTAPI_get_2D_to_index (struct GMTAPI_CTRL *API, enum GMT_enum_fmt
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_get_2D_to_index: Illegal mode passed - aborting\n");
-			API_exit (API, NULL);
+			API_exit_voidptr (API, NULL);
 	}
 	return (p);
 }
