@@ -4294,6 +4294,17 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 
 		/* DIR GROUP */
 
+		case GMTCASE_DIR_DATA:
+			if (*value) {
+				if (GMT->session.DATADIR) {
+					if ((strcmp (GMT->session.DATADIR, value) == 0))
+						break; /* stop here if string in place is equal */
+					free (GMT->session.DCWDIR);
+				}
+				/* Set session DATADIR dir */
+				GMT->session.DATADIR = strdup (value);
+			}
+			break;
 		case GMTCASE_DIR_DCW:
 			if (*value) {
 				if (GMT->session.DCWDIR) {
@@ -5313,6 +5324,10 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 
 		/* DIR GROUP */
 
+		case GMTCASE_DIR_DATA:
+			/* Force update of session.DATADIR before copying the string */
+			strncpy (value, (GMT->session.DATADIR) ? GMT->session.DATADIR : "", GMT_LEN256);
+			break;
 		case GMTCASE_DIR_DCW:
 			/* Force update of session.DCWDIR before copying the string */
 			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_LEN256);
@@ -6101,14 +6116,14 @@ void GMT_end (struct GMT_CTRL *GMT)
 	if (GMT->init.runtime_libdir) free (GMT->init.runtime_libdir);
 	free (GMT->session.SHAREDIR);
 	free (GMT->session.HOMEDIR);
+	if (GMT->session.DATADIR)
+		free (GMT->session.DATADIR);
 	if (GMT->session.DCWDIR)
 		free (GMT->session.DCWDIR);
 	if (GMT->session.GSHHGDIR)
 		free (GMT->session.GSHHGDIR);
 	if (GMT->session.USERDIR)
 		free (GMT->session.USERDIR);
-	if (GMT->session.DATADIR)
-		free (GMT->session.DATADIR);
 	if (GMT->session.TMPDIR)
 		free (GMT->session.TMPDIR);
 	if (GMT->session.CUSTOM_LIBS)

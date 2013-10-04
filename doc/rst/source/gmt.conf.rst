@@ -111,6 +111,14 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _DIR Parameters:
 
+.. _DIR_DATA:
+
+**DIR_DATA**
+    Replaces the session temp dir **$GMT_DATADIR** from the environment.
+
+**DIR_DCW**
+    Path to optional Digital Chart of the World polygon files.
+
 **DIR_GSHHG**
     Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
 
