@@ -110,7 +110,7 @@ int MGD77_nc_status (struct GMT_CTRL *GMT, int status)
 	 */
 	if (status != NC_NOERR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s\n", nc_strerror (status));
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 	return GMT_OK;
 }
@@ -1015,12 +1015,12 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 	if (F->format == MGD77_FORMAT_M77) {		/* Can compute # records from file size because format is fixed */
 		if (stat (F->path, &buf)) {	/* Inquiry about file failed somehow */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to stat file %s\n", F->path);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 		}
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
 		if (!fgets (line, GMT_BUFSIZ, F->fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading M77 record\n");
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 		}
 		rewind (F->fp);					/* Go back to beginning of file */
 		n_eols = line[MGD77_HEADER_LENGTH] == '\r' ? 2 : 1; 		/* CRLF vs. LF line termination */
@@ -1043,7 +1043,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 	if (F->format == MGD77_FORMAT_TBL) {		/* Skip the column header for tables */
 		if (!fgets (line, GMT_BUFSIZ, F->fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading TXT record\n");
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 		}
 	}
 
@@ -1075,13 +1075,13 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, stru
 
 	if (!fgets (line, BUFSIZ, F->fp)) {		/* Skip the column header  */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	MGD77_header = GMT_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
 	if (!fgets (MGD77_header, BUFSIZ, F->fp)) {			/* Read the entire header record  */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	for (i = 0; i < 2; i++) H->mgd77[i] = GMT_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
@@ -1699,7 +1699,7 @@ int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 	entry = MGD77_Info_from_Abbrev (GMT, "lon", &S->H, &t_set, &t_id);
 	if (entry == MGD77_NOT_SET) {	/* Not good */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Longitude not present!\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	/* Determine if there is a longitude jump and if so shift longitudes to avoid it.
@@ -2731,7 +2731,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 			break;
 		default:	/* Bad */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad file format specified given (%d)\n", F->format);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 			break;
 	}
 
@@ -3050,7 +3050,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 
 	if (!H->meta.verified) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: MGD77_Verify_Header called before MGD77_Verify_Prep\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	(void) time (&now);
@@ -3637,7 +3637,7 @@ int MGD77_Write_File (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F,
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format (%d)!\n", F->format);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 	return (err);
 }
@@ -3752,7 +3752,7 @@ int MGD77_Select_Format (struct GMT_CTRL *GMT, int format)
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Bad file format (%d) selected!\n", format);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 	return GMT_OK;
 }
@@ -3777,7 +3777,7 @@ int MGD77_Process_Ignore (struct GMT_CTRL *GMT, char code, char *format)
 				break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Option -%c Bad format (%c)!\n", code, format[i]);
-				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+				GMT_exit_int (GMT, EXIT_FAILURE);
 				break;
 		}
 	}
@@ -3992,7 +3992,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 			F->Bit_test[i].match = 0;
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Bit-test flag (%s) is not in +<col> or -<col> format.\n", p);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 		}
 		strncpy (F->Bit_test[i].name, &p[1], MGD77_COL_ABBREV_LEN);
 		i++;
@@ -4360,7 +4360,7 @@ int MGD77_Fatal_Error (struct GMT_CTRL *GMT, int error)
 			break;
 	}
 
-	GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+	GMT_exit_int (GMT, EXIT_FAILURE);
 }
 
 int MGD77_Remove_E77 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
@@ -5454,7 +5454,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 
 	if ((fp = GMT_fopen (GMT, tablefile, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table %s not found!\n", tablefile);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	list = GMT_memory (GMT, NULL, n_alloc, char *);
@@ -5477,13 +5477,13 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 				if (strchr ("CcSsEe", p[0])) p += 3;	/* Need cos, sin, or exp */
 				if (p[0] != '(') {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
-					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+					GMT_exit_int (GMT, EXIT_FAILURE);
 				}
 				p++;
 				while (p && *p != '(') p++;	/* Skip the opening parentheses */
 				if (p[0] != '(') {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 2nd opening parenthesis!\n", rec, arguments);
-					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+					GMT_exit_int (GMT, EXIT_FAILURE);
 				}
 				p++;
 				if (strchr (p, '-'))	/* Have (value-origin) */
@@ -5577,7 +5577,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 
 	if ((fp = GMT_fopen (GMT, tablefile, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table %s not found!\n", tablefile);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	sorted = (mode & 1);	/* true if we pass a sorted trackname list */
@@ -5628,14 +5628,14 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 					c->modifier = &MGD77_Copy;
 				if (p[0] != '(') {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
-					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+					GMT_exit_int (GMT, EXIT_FAILURE);
 				}
 				p++;
 				c->scale = (p[0] == '(') ? 1.0 : atof (p);
 				while (p && *p != '(') p++;	/* Skip the opening parentheses */
 				if (p[0] != '(') {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 2nd opening parenthesis!\n", rec, arguments);
-					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+					GMT_exit_int (GMT, EXIT_FAILURE);
 				}
 				p++;
 				if (strchr (p, '-')) {	/* Have (value-origin) */
@@ -5650,7 +5650,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check auxilliaries */
 					if (c->id == MGD77_NOT_SET) { /* Not an auxilliary column either */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column %s not found - requested by the correction table %s!\n", name, tablefile);
-						GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+						GMT_exit_int (GMT, EXIT_FAILURE);
 					}
 					c->id += MGD77_MAX_COLS;	/* To flag this is an aux column */
 				}

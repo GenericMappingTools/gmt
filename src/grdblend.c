@@ -312,7 +312,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
 				if ((status = GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
-					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+					GMT_exit_int (GMT, EXIT_FAILURE);
 				}
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
@@ -322,7 +322,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
 				if ((status = GMT_Call_Module (GMT->parent, "grdreformat", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
-					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+					GMT_exit_int (GMT, EXIT_FAILURE);
 				}
 			}
 			strncpy (B[n].file, buffer, GMT_LEN256);	/* Use the temporary file instead */
@@ -416,7 +416,7 @@ int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, uns
 
 		if (!B[k].open) {
 			if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
-				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+				GMT_exit_int (GMT, EXIT_FAILURE);
 			}
 			if (B[k].skip) fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR);	/* Position for native binary files */
 			B[k].RbR->start[0] += B[k].offset;					/* Start position for netCDF files */
