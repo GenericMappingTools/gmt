@@ -2,6 +2,10 @@
 
 :tocdepth: 3
 
+.. set default highlighting language for this document:
+
+.. highlight:: bash
+
 **The Generic Mapping Tools**
 
 **Technical Reference and Cookbook**

@@ -1,5 +1,9 @@
 :tocdepth: 2
 
+.. set default highlighting language for this document:
+
+.. highlight:: c
+
 **The Generic Mapping Tools**
 
 **C/C++ Application Programming Interface**
