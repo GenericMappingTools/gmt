@@ -2684,7 +2684,7 @@ int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file)
 	fclose (fp);
 	gmt_verify_encodings (GMT);
 
-	if (error) GMT_message (GMT, "Error: %d conversion errors in file %s!\n", error, file);
+	if (error) GMT_message (GMT, "Warning: %d conversion errors in file %s!\n", error, file);
 
 	return (GMT_NOERROR);
 }

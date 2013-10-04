@@ -531,7 +531,7 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 #elif defined(WIN32) || defined(USE_MEM_ALIGNED)
 			tmp = _aligned_malloc (nelem * size, 16U);
 #elif defined(HAVE_POSIX_MEMALIGN)
-			posix_memalign (&tmp, 16U, nelem * size);
+			(void)posix_memalign (&tmp, 16U, nelem * size);
 #elif defined(HAVE_MEMALIGN)
 			tmp = memalign (16U, nelem * size);
 #else
