@@ -34,7 +34,11 @@ size of the resulting images is determined by the BoundingBox (or
 HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
 may be computed first. As another option, it can compute ESRI type world
 files used to reference, for instance, tif files and make them be
-recognized as geotiff. 
+recognized as geotiff.  Note: If the PostScript file calls on any of
+the Adobe PDF transparency extensions *and* PDF is not the selected output
+format, then the file will first be converted to a temporary PDF file
+(for the transparency to take effect) before converting the PDF to the
+desired output format.
 
 Required Arguments
 ------------------
