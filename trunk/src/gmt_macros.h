@@ -106,8 +106,4 @@
 /* Macro to simplify assignment of one 3-vector to another */
 #define GMT_cpy3v(to,from) memcpy(to, from, 3*sizeof(double))
 
-/* Macro for exit since this may be return, e.g., when called from Matlab API */
-
-#define GMT_exit(do_not_exit,code) {if (do_not_exit) return (code); else exit (EXIT_FAILURE);}
-
 #endif  /* _GMT_MACROS_H */

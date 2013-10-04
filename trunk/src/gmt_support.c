@@ -672,7 +672,7 @@ int GMT_err_func (struct GMT_CTRL *GMT, int err, bool fail, char *file, const ch
 		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "%s\n", GMT_strerror(err));
 	/* Pass error code on or exit */
 	if (fail) {
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 	else
 		return (err);
@@ -722,7 +722,7 @@ bool GMT_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill)
 	double fb_rgb[4];
 	char f, word[GMT_LEN256] = {""};
 
-	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getfill\n"); GMT_exit (GMT->parent->do_not_exit, false); }
+	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getfill\n"); GMT_exit_bool (GMT, false); }
 
 	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
 	/* Note, <rgb> can be r/g/b, gray, or - for masks.  optionally, append @<transparency> [0] */
@@ -760,7 +760,7 @@ bool GMT_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill)
 					word[end - pos] = '\0';
 					if (GMT_getrgb (GMT, word, fb_rgb)) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Colorizing value %s not recognized!\n", word);
-						GMT_exit (GMT->parent->do_not_exit, false);
+						GMT_exit_bool (GMT, false);
 					}
 				}
 				if (f == 'f' || f == 'F')
@@ -769,7 +769,7 @@ bool GMT_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill)
 					GMT_rgb_copy (fill->b_rgb, fb_rgb);
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Colorizing argument %c not recognized!\n", f);
-					GMT_exit (GMT->parent->do_not_exit, false);
+					GMT_exit_bool (GMT, false);
 				}
 				while (line[pos] && !(line[pos] == 'F' || line[pos] == 'B')) pos++;
 			}
@@ -839,7 +839,7 @@ bool GMT_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[])
 
 	if (!line) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getrgb\n");
-		GMT_exit (GMT->parent->do_not_exit, false);
+		GMT_exit_bool (GMT, false);
 	}
 	if (!line[0]) return (false);	/* Nothing to do - accept default action */
 
@@ -927,7 +927,7 @@ bool gmt_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[])
 	double rgb[4], cmyk[5];
 	char buffer[GMT_LEN64] = {""}, *t = NULL;
 
-	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to gmt_gethsv\n"); GMT_exit (GMT->parent->do_not_exit, false); }
+	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to gmt_gethsv\n"); GMT_exit_int (GMT, false); }
 	if (!line[0]) return (false);	/* Nothing to do - accept default action */
 
 	rgb[3] = hsv[3] = cmyk[4] = 0.0;	/* Default is no transparency */
@@ -1131,7 +1131,7 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F)
 
 	if (!buffer) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getfont\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	strncpy (line, buffer, GMT_BUFSIZ);	/* Work on a copy of the arguments */
@@ -1273,7 +1273,7 @@ int gmt_getpenwidth (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	else {	/* Pen name was given - these refer to fixed widths in points */
 		if ((n = gmt_name2pen (line)) < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Pen name %s not recognized!\n", line);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 		}
 		P->width = GMT_penname[n].width;
 	}
@@ -1316,7 +1316,7 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 		string[strlen (string) - 1] = 0;
 		if (strlen (string) >= GMT_PEN_LEN) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Pen attributes too long!\n");
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 		}
 		strncpy (P->style, string, GMT_PEN_LEN);
 		P->offset *= GMT->session.u2u[unit][GMT_PT];
@@ -1502,7 +1502,7 @@ int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 
 	/* Deciphers dx/dy/dz/dw/du/dv/... increment strings with n items */
 
-	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getincn\n"); GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE); }
+	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getincn\n"); GMT_exit_int (GMT, EXIT_FAILURE); }
 
 	GMT_memset (inc, n, double);
 
@@ -1570,7 +1570,7 @@ int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 		}
 		if ((sscanf(p, "%lf", &inc[i])) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to decode %s as a floating point number\n", p);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 		}
 		inc[i] *= scale;
 		i++;	/* Goto next increment */
@@ -4489,11 +4489,11 @@ uint64_t gmt_smooth_contour (struct GMT_CTRL *GMT, double **x_in, double **y_in,
 
 	if (GMT_intpol (GMT, t_in, x, n, n_out, t_out, x_tmp, stype)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT internal error\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 	if (GMT_intpol (GMT, t_in, y, n, n_out, t_out, y_tmp, stype)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT internal error\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	/* Make sure interpolated function is bounded on each segment interval */
@@ -4927,7 +4927,7 @@ bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_labe
 
 		default:	/* Should not happen... */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT internal error\n");
-			GMT_exit (GMT->parent->do_not_exit, false);
+			GMT_exit_int (GMT, false);
 			break;
 	}
 
@@ -5377,7 +5377,7 @@ unsigned int GMT_non_zero_winding (struct GMT_CTRL *GMT, double xp, double yp, d
 
 	if (GMT_polygon_is_open (GMT, x, y, n_path)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "given non-closed polygon\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	above = false;
@@ -7263,7 +7263,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 	
 	if (!text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 	GMT_memset (B, 1, struct GMT_MAP_INSERT);
 	
@@ -7364,7 +7364,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 	if (!text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	GMT_memset (ms, 1, struct GMT_MAP_SCALE);
@@ -7516,7 +7516,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 
 	if (!text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	ms->type = 0;
@@ -7980,7 +7980,7 @@ int GMT_init_track (struct GMT_CTRL *GMT, double y[], uint64_t n, struct GMT_XSE
 
 	if (nl == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: nl = 0\n");
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	L = GMT_memory (GMT, NULL, nl, struct GMT_XSEGMENT);
@@ -8523,7 +8523,7 @@ unsigned int GMT_pow_array (struct GMT_CTRL *GMT, double min, double max, double
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Invalid side (%d) passed!\n", x_or_y_or_z);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	*array = val;
@@ -8639,7 +8639,7 @@ unsigned int GMT_coordinate_array (struct GMT_CTRL *GMT, double min, double max,
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Invalid projection type (%d) passed!\n", GMT->current.proj.xyz_projection[T->parent]);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 			break;
 	}
 	return (n);
@@ -8715,7 +8715,7 @@ int GMT_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLO
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Wrong type (%d) passed!\n", GMT->current.map.frame.axis[T->parent].type);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 			break;
 	}
 	return (GMT_OK);
@@ -9126,12 +9126,12 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 #ifdef PS_MACRO
 	if (stat (file, &buf)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 #endif
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 
 	head = GMT_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
@@ -9152,7 +9152,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 			if (nc == 2) {	/* Got optional types argument */
 				if (strlen (flags) != head->n_required) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", name);
-					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+					GMT_exit_int (GMT, EXIT_FAILURE);
 				}
 				for (k = 0; k < head->n_required; k++) {	/* Determine the argument types */
 					switch (flags[k]) {
@@ -9162,7 +9162,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 						case 's':	head->type[k] = GMT_IS_STRING; break;		/* A text string */
 						default:	
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has unrecognized <types> declaration in %s\n", name, flags);
-							GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+							GMT_exit_int (GMT, EXIT_FAILURE);
 							break;
 					}
 				}
@@ -9372,7 +9372,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 		if (error) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Failed to parse symbol commands in file %s\n", file);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Offending line: %s\n", buffer);
-			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+			GMT_exit_int (GMT, EXIT_FAILURE);
 		}
 
 		if (do_fill) {	/* Update current fill */
@@ -9381,7 +9381,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				s->fill->rgb[0] = -1;
 			else if (GMT_getfill (GMT, fill_p, s->fill)) {
 				GMT_fill_syntax (GMT, 'G', " ");
-				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+				GMT_exit_int (GMT, EXIT_FAILURE);
 			}
 		}
 		else
@@ -9392,7 +9392,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				s->pen->rgb[0] = -1;
 			else if (GMT_getpen (GMT, pen_p, s->pen)) {
 				GMT_pen_syntax (GMT, 'W', " ");
-				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+				GMT_exit_int (GMT, EXIT_FAILURE);
 			}
 		}
 		else

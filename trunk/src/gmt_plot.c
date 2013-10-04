@@ -2700,7 +2700,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	}
 	if ((unit = GMT_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
-		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+		GMT_exit_int (GMT, EXIT_FAILURE);
 	}
 	
 	bar_length = 0.001 * GMT->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
@@ -3141,7 +3141,7 @@ bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol macro operator (%d = '%c') passed to GMT_draw_custom_symbol\n", s->operator, (char)s->operator);
-			GMT_exit (GMT->parent->do_not_exit, false);
+			GMT_exit_bool (GMT, false);
 			break;
 		
 	}
@@ -3272,7 +3272,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			}
 			if (level == 10) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Symbol macro (%s) logical nesting too deep [> 10]\n", symbol->name);
-				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+				GMT_exit_int (GMT, EXIT_FAILURE);
 			}
 			if (s->conditional == 4) level--, found_elseif = false;	/* Simply reduce indent */
 			if (s->conditional == 6) {	/* else branch */
@@ -3367,7 +3367,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
-					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+					GMT_exit_int (GMT, EXIT_FAILURE);
 					break;
 				}
 			case GMT_SYMBOL_CROSS:
@@ -3453,7 +3453,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
-				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+				GMT_exit_int (GMT, EXIT_FAILURE);
 				break;
 		}
 
@@ -3924,7 +3924,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		}
 		if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
-			GMT_exit (GMT->parent->do_not_exit, NULL);
+			GMT_exit_voidptr (GMT, NULL);
 		}
 	}
 
