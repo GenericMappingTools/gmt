@@ -32,4 +32,4 @@ gmt grdimage v3.nc -Ivint.nc -JG -O -K -Bg -Ct.cpt -X-1.25i -Y1.9i >> %ps%
 echo 4 4.5 L = 180 | gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N >> %ps%
 echo 3.75 5.4 Venus Spherical Harmonic Model | gmt pstext -R0/6/0/6 -Jx1i -O -F+f24p+jCM -N >> %ps%
 REM Clean up
-del v*.nc t.cpt .gmtcommands
+del v*.nc t.cpt gmt.history

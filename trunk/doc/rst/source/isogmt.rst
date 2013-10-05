@@ -17,7 +17,7 @@ Description
 -----------
 
 **isogmt** runs a single GMT command or shell script in **isolation
-mode**. This means that the files *.gmtcommands* and *gmt.conf* will be
+mode**. This means that the files *gmt.history* and *gmt.conf* will be
 read from the usual locations (current directory, *~/.gmt*, or home
 directory), but changes will only be written in a temporary directory,
 which will be removed after execution. The name of the temporary

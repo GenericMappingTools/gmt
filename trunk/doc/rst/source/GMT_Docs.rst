@@ -3203,15 +3203,15 @@ basemap was created with an oblique Mercator projection, specified as
 then a subsequent :doc:`psxy` command to plot
 symbols only needs to state **-J**\ o in order to activate the same
 projection. In contrast, note that **-J** by itself will pick the most
-recently used projection. Previous commands are maintained in the file ``.gmtcommands``,
+recently used projection. Previous commands are maintained in the file ``gmt.history``,
 of which there will be one in each directory you run the programs from.
 This is handy if you create separate directories for separate projects
 since chances are that data manipulations and plotting for each project
 will share many of the same options. Note that an option spelled out on
-the command line will always override the last entry in the ``.gmtcommands`` file and, if
+the command line will always override the previous entry in the ``gmt.history`` file and, if
 execution is successful, will replace this entry as the previous option
-argument in the ``.gmtcommands`` file. If you call several GMT modules piped together
-then GMT cannot guarantee that the ``.gmtcommands`` file is processed in the intended
+argument in the ``gmt.history`` file. If you call several GMT modules piped together
+then GMT cannot guarantee that the ``gmt.history`` file is processed in the intended
 order from left to right. The only guarantee is that the file will not
 be clobbered since GMT uses advisory file locking. The uncertainty in
 processing order makes the use of shorthands in pipes unreliable. We
@@ -3554,7 +3554,7 @@ pattern:
     The *dpi* parameter sets the resolution of this image on the page;
     the area fill is thus made up of a series of these "tiles".
     Specifying *dpi* as 0 will result in highest resolution obtainable
-    given the present dpi setting in  ``.gmtcommands``. By specifying upper case **-GP**
+    given the present dpi setting in  ``gmt.history``. By specifying upper case **-GP**
     instead of **-Gp** the image will be bit-reversed, i.e., white and
     black areas will be interchanged (only applies to 1-bit images or
     predefined bit-image patterns). For these patterns and other 1-bit
@@ -4495,7 +4495,7 @@ $GMT_USERDIR
     the command line in both **$GMT_DATADIR** and **$GMT_USERDIR**.
 
 $GMT_TMPDIR
-    is where GMT will write its state parameters via the two files ``.gmtcommands`` and
+    is where GMT will write its state parameters via the two files ``gmt.history`` and
     ``gmt.conf``. If **$GMT_TMPDIR** is not set, these files are written to the
     current directory. See Appendix [app:P] for more on the use of
     **$GMT_TMPDIR**.
@@ -8818,18 +8818,18 @@ are:
        often necessary to revert to the original ``gmt.conf`` file. *Isolation mode*
        avoids that issue.
 
-    **.gmtcommands** This file is created to communicate the command line history from
+    **gmt.history** This file is created to communicate the command line history from
        one command to the next (Section `Command line history`_) so that
        shorthands like **-R** or **-J** can be used once it has been set in
        a previous GMT command. The existence of this file makes if
        impossible to run two GMT scripts simultaneously in the same
-       directory, since those ``.gmtcommands`` files may clash (contain different histories)
+       directory, since those ``gmt.history`` files may clash (contain different histories)
        and adversely affect the results of both scripts.
 
 A cure to all these woes is the *isolation mode* introduced in
 GMT version 4.2.2. This mode allows you to run a GMT script without
 leaving any traces other than the resulting PostScript  or data files,
-and not altering the ``gmt.conf`` or ``.gmtcommands`` files. Those files will be placed in a temporary
+and not altering the ``gmt.conf`` or ``gmt.history`` files. Those files will be placed in a temporary
 directory instead. And if properly set up, this temporary directory will
 only be used by a single script, even if another GMT script is running
 simultaneously. This also provides the opportunity to create any other
@@ -8844,7 +8844,7 @@ The example below shows how *isolation mode* works.
    Example created in isolation mode
 
 
-The files ``gmt.conf`` and ``.gmtcommands`` are automatically created in the temporary directory
+The files ``gmt.conf`` and ``gmt.history`` are automatically created in the temporary directory
 ``$GMT_TMPDIR``. The script is also adjusted such that the temporary grid file ``lat.nc`` and colormap
 ``lat.cpt`` are created in that directory as well. To make things even more easy,
 GMT now provides a set of handy shell functions in :doc:`gmt_shell_functions.sh`:

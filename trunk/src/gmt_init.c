@@ -34,7 +34,7 @@
  *	GMT_hash			Key - id lookup using hashing
  *	GMT_begin			Gets history and init parameters
  *	GMT_end				Cleans up and returns
- *	gmt_history			Read and update the .gmtcommands file
+ *	gmt_history			Read and update the gmt.history file
  *	GMT_putcolor			Encode color argument into textstring
  *	GMT_putrgb			Encode color argument into r/g/b textstring
  *	GMT_puthsv			Encode color argument into h-s-v textstring
@@ -115,7 +115,7 @@ static char *GMT_just_string[12] = {	/* Strings to specify justification */
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 
 enum history_mode {
-	/* whether to ignore/read/write history file .gmtcommands */
+	/* whether to ignore/read/write history file gmt.history */
 	k_history_off = 0,
 	k_history_read,
 	k_history_write
@@ -5957,31 +5957,32 @@ void gmt_file_unlock (struct GMT_CTRL *GMT, int fd, struct flock *lock)
 int gmt_get_history (struct GMT_CTRL *GMT)
 {
 	int id;
-	bool done = false;
+	size_t len = strlen ("BEGIN GMT " GMT_PACKAGE_VERSION);
+	bool done = false, process = false;
 	char line[GMT_BUFSIZ] = {""}, hfile[GMT_BUFSIZ] = {""}, cwd[GMT_BUFSIZ] = {""};
 	char option[GMT_LEN64] = {""}, value[GMT_BUFSIZ] = {""};
-	FILE *fp = NULL; /* For .gmtcommands file */
+	FILE *fp = NULL; /* For gmt.history file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
 #ifdef FLOCK
 	struct flock lock;
 #endif
 
 	if (!(GMT->current.setting.history & k_history_read))
-		return (GMT_NOERROR); /* .gmtcommands mechanism has been disabled */
+		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 
 	/* This is called once per GMT Session by GMT_Create_Session via GMT_begin and before any GMT_* module is called.
-	 * It loads in the known shorthands found in the .gmtcommands file
+	 * It loads in the known shorthands found in the gmt.history file
 	 */
 
 	/* If current directory is writable, use it; else use the home directory */
 
 	getcwd (cwd, GMT_BUFSIZ);
-	if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/.gmtcommands */
-		sprintf (hfile, "%s/.gmtcommands", GMT->session.TMPDIR);
+	if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
+		sprintf (hfile, "%s/gmt.history", GMT->session.TMPDIR);
 	else if (!access (cwd, W_OK))		/* Current directory is writable */
-		sprintf (hfile, ".gmtcommands");
+		sprintf (hfile, "gmt.history");
 	else	/* Try home directory instead */
-		sprintf (hfile, "%s/.gmtcommands", GMT->session.HOMEDIR);
+		sprintf (hfile, "%s/gmt.history", GMT->session.HOMEDIR);
 
 	if ((fp = fopen (hfile, "r")) == NULL) return (GMT_NOERROR);	/* OK to be unsuccessful in opening this file */
 
@@ -5991,21 +5992,26 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 #ifdef FLOCK
 	gmt_file_lock (GMT, fileno(fp), &lock);
 #endif
-	/* Format of GMT 5 .gmtcommands is as follow:
+	/* Format of GMT 5 gmt.history is as follow:
+	 * BEGIN GMT <version>		This is the start of parsable section
 	 * OPT ARG
 	 * where OPT is a 1- or 2-char code, e.g., R, X, JM, JQ, Js.  ARG is the argument.
 	 * Exception: if OPT = J then ARG is just the first character of the argument  (e.g., M).
-	 * File ends when we find EOF
+	 * File ends when we find
+	 * END				This is the end of parsable section
 	 */
 
 	while (!done && fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments lines */
 		GMT_chop (line);		/* Remove linefeed,CR */
 		if (line[0] == '\0') continue;	/* Skip blank lines */
-		if (!strncmp (line, "EOF", 3U)) {		/* Logical end of .gmtcommands file */
+		if (!strncmp (line, "BEGIN GMT " GMT_PACKAGE_VERSION, len))
+			process = true;	/* OK to parse gmt.history file compatible with this GMT version */
+		else if (!strncmp (line, "END", 3U)) {		/* Logical end of gmt.history file */
 			done = true;
-			continue;
+			process = false;
 		}
+		if (!process) continue;		/* Not inside the good stuff yet */
 		if (sscanf (line, "%s %[^\n]", option, value) != 2) continue;	/* Quietly skip malformed lines */
 		if (!value[0]) continue;	/* No argument found */
 		if (option[0] == 'C') {	/* Read clip level */
@@ -6036,16 +6042,16 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 	int id;
 	bool empty;
 	char hfile[GMT_BUFSIZ] = {""}, cwd[GMT_BUFSIZ] = {""};
-	FILE *fp = NULL; /* For .gmtcommands file */
+	FILE *fp = NULL; /* For gmt.history file */
 #ifdef FLOCK
 	struct flock lock;
 #endif
 
 	if (!(GMT->current.setting.history & k_history_write))
-		return (GMT_NOERROR); /* .gmtcommands mechanism has been disabled */
+		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 
 	/* This is called once per GMT Session by GMT_end via GMT_Destroy_Session.
-	 * It writes out the known shorthands to the .gmtcommands file
+	 * It writes out the known shorthands to the gmt.history file
 	 */
 
 	/* Do we even need to write? If empty, simply skip */
@@ -6057,12 +6063,12 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 	/* If current directory is writable, use it; else use the home directory */
 
 	getcwd (cwd, GMT_BUFSIZ);
-	if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/.gmtcommands */
-		sprintf (hfile, "%s/.gmtcommands", GMT->session.TMPDIR);
+	if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
+		sprintf (hfile, "%s/gmt.history", GMT->session.TMPDIR);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */
-		sprintf (hfile, ".gmtcommands");
+		sprintf (hfile, "gmt.history");
 	else	/* Try home directory instead */
-		sprintf (hfile, "%s/.gmtcommands", GMT->session.HOMEDIR);
+		sprintf (hfile, "%s/gmt.history", GMT->session.HOMEDIR);
 
 	if ((fp = fopen (hfile, "w")) == NULL) return (-1);	/* Not OK to be unsuccessful in creating this file */
 
@@ -6072,13 +6078,14 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 #endif
 
 	fprintf (fp, "# GMT 5 Session common arguments shelf\n");
+	fprintf (fp, "BEGIN GMT " GMT_PACKAGE_VERSION "\n");
 	for (id = 0; id < GMT_N_UNIQUE; id++) {
 		if (!GMT->init.history[id]) continue;	/* Not specified */
 		fprintf (fp, "%s\t%s\n", GMT_unique_option[id], GMT->init.history[id]);
 	}
 	if (GMT->current.ps.clip_level) fprintf (fp, "C\t%d\n", GMT->current.ps.clip_level); /* Write clip level */
 	if (GMT->current.ps.layer) fprintf (fp, "L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
-	fprintf (fp, "EOF\n");
+	fprintf (fp, "END\n");
 
 	/* Close the file */
 #ifdef FLOCK
