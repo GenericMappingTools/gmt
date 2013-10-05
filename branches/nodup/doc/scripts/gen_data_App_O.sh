@@ -34,4 +34,4 @@ dist=`gmt gmtconvert tt.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
 R=`gmt minmax -I1 tt.d`
 echo "# Geoid Extrema Separation is $dist km" > transect.d
 gmt grdtrack tt.d -Ggeoid.nc | gmt grdtrack -GGMT_App_O.nc >> transect.d
-rm -f tt.d .gmtcommands
+rm -f tt.d gmt.history

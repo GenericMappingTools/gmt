@@ -100,6 +100,6 @@ gmt pslegend -R -J -Dx7.9c/12.6c/8.0c/BL \
 #gmt ps2raster -P -A -Tf $ps
 #gmt ps2raster -P -A -Tg -E110 $ps
 # clean up
-rm -f .gmtcommands* gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
+rm -f gmt.history gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
 
 exit 0

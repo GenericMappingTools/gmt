@@ -402,7 +402,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   f means PDF.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   F means multi-page PDF (requires -F).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   g means PNG.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (with transparency).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (transparent where nothing is plotted).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   j means JPEG.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
@@ -622,6 +622,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	size_t len;
 	bool got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape, landscape_orig;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, BeginPageSetup_here = false;
+	bool transparency = false, look_for_transparency;
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -995,8 +996,16 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		/* ****************************************************************** */
 
 		rewind (fp);
+		
+		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
+		look_for_transparency = (Ctrl->T.device != GS_DEV_PDF);
+		transparency = false;
 		while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp) != NULL) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
+				if (look_for_transparency && line[0] == '{' && strstr (line, " PSL_transp")) {
+					transparency = true;		/* Yes, found transparency */
+					look_for_transparency = false;	/* No need to check anymore */
+				}
 				if (setup && strstr(line,"/PageSize") != NULL)
 					continue;
 				fprintf (fpo, "%s\n", line);
@@ -1220,9 +1229,20 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16];
+			int dest_device = Ctrl->T.device;
+			
 			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
 			GMT_str_toupper (tag);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Convert to %s...", tag);
+			
+			if (transparency && dest_device != GS_DEV_PDF) {
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "PS file with transparency must be convertef to PDF before creating %s\n", tag);
+				/* Temporarily change output device to PDF to get the PDF tmp file */
+				Ctrl->T.device = GS_DEV_PDF;
+				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Convert to PDF...");
+			}
+			else
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Convert to %s...", tag);
 
 			if (!Ctrl->F.active) {
 				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);		/* Use specified output directory */
@@ -1273,6 +1293,34 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					/* non-closed GMT input PS file */
 					GMT_Report (API, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n", ps_file, out_file);
 				/* else: Either a good closed GMT PS file or one of unknown origin */
+			}
+			if (transparency && dest_device != GS_DEV_PDF) {
+				char pdf_file[GMT_BUFSIZ] = {""};
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert PDF with transparency to %s...\n", tag);
+				Ctrl->T.device = dest_device;	/* Reset output device type */
+				strcpy (pdf_file, out_file);	/* Now the PDF is the infile */
+				*out_file = '\0'; /* truncate string to build new output file*/
+				if (!Ctrl->F.active) {
+					if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);		/* Use specified output directory */
+					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+				}
+				else
+					strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
+				strcat (out_file, ext[Ctrl->T.device]);
+				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
+				sprintf (cmd, "%s%s %s %s -dMaxBitmap=2147483647 -sDEVICE=%s -r%d -sOutputFile=%s %s",
+					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device], Ctrl->E.dpi, out_file, pdf_file);
+				if (Ctrl->S.active) {	/* Print 2nd GhostScript command */
+					API->print_func (stdout, cmd);
+					API->print_func (stdout, "\n");
+				}
+				/* Execute the 2nd GhostScript command */
+				sys_retval = system (cmd);
+				if (sys_retval) {
+					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+					Return (EXIT_FAILURE);
+				}
+				remove (pdf_file);	/* The temporary PDF file is no longer needed */
 			}
 
 		}

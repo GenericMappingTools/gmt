@@ -2,6 +2,10 @@
 
 :tocdepth: 3
 
+.. set default highlighting language for this document:
+
+.. highlight:: bash
+
 **The Generic Mapping Tools**
 
 **Technical Reference and Cookbook**
@@ -536,8 +540,8 @@ correctly with a warning under compatibility mode:
 #. GMT **default names**: We have
    organized the default parameters logically by group and renamed several to
    be easier to remember and to group. Old and new names can be found in
-   Tables :ref:`obsolete1 <tbl-obsoletedefs1>` and :ref:`obsolete2
-   <tbl-obsoletedefs2>`. In addition, a few defaults are no longer recognized,
+   Table :ref:`obsolete <tbl-obsoletedefs>`.
+   In addition, a few defaults are no longer recognized,
    such as N_COPIES, PS_COPIES, DOTS_PR_INCH, GMT_CPTDIR, PS_DPI, and PS_EPS,
    TRANSPARENCY. This also means the old common option **-c** for specifying
    PostScript copies is no longer available.
@@ -755,72 +759,48 @@ correctly with a warning under compatibility mode:
 #. :doc:`x2sys_datalist <supplements/x2sys/x2sys_datalist>`:
    The unit **m** is deprecated; use **M** for statute miles.
 
-.. _tbl-obsoletedefs1:
+.. _tbl-obsoletedefs:
 
 +---------------------------------+-----------------------------------------+
 | **Old Name**                    | **New Name**                            |
 +=================================+=========================================+
-| **INPUT_CLOCK_FORMAT**          | **FORMAT_CLOCK_IN**                     |
-+---------------------------------+-----------------------------------------+
-| **INPUT_DATE_FORMAT**           | **FORMAT_DATE_IN**                      |
-+---------------------------------+-----------------------------------------+
-| **OUTPUT_CLOCK_FORMAT**         | **FORMAT_CLOCK_OUT**                    |
-+---------------------------------+-----------------------------------------+
-| **OUTPUT_DATE_FORMAT**          | **FORMAT_DATE_OUT**                     |
-+---------------------------------+-----------------------------------------+
-| **OUTPUT_CLOCK_FORMAT**         | **FORMAT_CLOCK_OUT**                    |
-+---------------------------------+-----------------------------------------+
-| **OUTPUT_DEGREE_FORMAT**        | **FORMAT_GEO_OUT**                      |
-+---------------------------------+-----------------------------------------+
-| **PLOT_CLOCK_FORMAT**           | **FORMAT_CLOCK_MAP**                    |
-+---------------------------------+-----------------------------------------+
-| **PLOT_DATE_FORMAT**            | **FORMAT_DATE_MAP**                     |
-+---------------------------------+-----------------------------------------+
-| **PLOT_DEGREE_FORMAT**          | **FORMAT_GEO_MAP**                      |
-+---------------------------------+-----------------------------------------+
-| **TIME_FORMAT_PRIMARY**         | **FORMAT_TIME_PRIMARY_MAP**             |
-+---------------------------------+-----------------------------------------+
-| **TIME_FORMAT_SECONDARY**       | **FORMAT_TIME_SECONDARY_MAP**           |
-+---------------------------------+-----------------------------------------+
-| **D_FORMAT**                    | **FORMAT_FLOAT_OUT**                    |
-+---------------------------------+-----------------------------------------+
-| **UNIX_TIME_FORMAT**            | **FORMAT_TIME_STAMP**                   |
-+---------------------------------+-----------------------------------------+
 | **ANNOT_FONT_PRIMARY**          | **FONT_ANNOT_PRIMARY**                  |
 +---------------------------------+-----------------------------------------+
 | **ANNOT_FONT_SECONDARY**        | **FONT_ANNOT_SECONDARY**                |
-+---------------------------------+-----------------------------------------+
-| **HEADER_FONT**                 | **FONT_TITLE**                          |
-+---------------------------------+-----------------------------------------+
-| **LABEL_FONT**                  | **FONT_LABEL**                          |
 +---------------------------------+-----------------------------------------+
 | **ANNOT_FONT_SIZE_PRIMARY**     | **FONT_ANNOT_PRIMARY**                  |
 +---------------------------------+-----------------------------------------+
 | **ANNOT_FONT_SIZE_SECONDARY**   | **FONT_ANNOT_SECONDARY**                |
 +---------------------------------+-----------------------------------------+
-| **HEADER_FONT_SIZE**            | **FONT_TITLE**                          |
+| **ANNOT_MIN_ANGLE**             | **MAP_ANNOT_MIN_SPACING**               |
 +---------------------------------+-----------------------------------------+
 | **ANNOT_OFFSET_PRIMARY**        | **MAP_ANNOT_OFFSET_PRIMARY**            |
 +---------------------------------+-----------------------------------------+
 | **ANNOT_OFFSET_SECONDARY**      | **MAP_ANNOT_OFFSET_SECONDARY**          |
 +---------------------------------+-----------------------------------------+
-| **OBLIQUE_ANNOTATION**          | **MAP_ANNOT_OBLIQUE**                   |
-+---------------------------------+-----------------------------------------+
-| **ANNOT_MIN_ANGLE**             | **MAP_ANNOT_MIN_SPACING**               |
-+---------------------------------+-----------------------------------------+
-| **Y_AXIS_TYPE**                 | **MAP_ANNOT_ORTHO**                     |
-+---------------------------------+-----------------------------------------+
-| **DEGREE_SYMBOL**               | **MAP_DEGREE_SYMBOL**                   |
-+---------------------------------+-----------------------------------------+
 | **BASEMAP_AXES**                | **MAP_FRAME_AXES**                      |
 +---------------------------------+-----------------------------------------+
 | **BASEMAP_FRAME_RGB**           | **MAP_DEFAULT_PEN**                     |
 +---------------------------------+-----------------------------------------+
-| **FRAME_PEN**                   | **MAP_FRAME_PEN**                       |
-+---------------------------------+-----------------------------------------+
 | **BASEMAP_TYPE**                | **MAP_FRAME_TYPE**                      |
 +---------------------------------+-----------------------------------------+
+| **CHAR_ENCODING**               | **PS_CHAR_ENCODING**                    |
++---------------------------------+-----------------------------------------+
+| **D_FORMAT**                    | **FORMAT_FLOAT_OUT**                    |
++---------------------------------+-----------------------------------------+
+| **DEGREE_SYMBOL**               | **MAP_DEGREE_SYMBOL**                   |
++---------------------------------+-----------------------------------------+
+| **ELLIPSOID**                   | **PROJ_ELLIPSOID**                      |
++---------------------------------+-----------------------------------------+
+| **FIELD_DELIMITER**             | **IO_COL_SEPARATOR**                    |
++---------------------------------+-----------------------------------------+
+| **FRAME_PEN**                   | **MAP_FRAME_PEN**                       |
++---------------------------------+-----------------------------------------+
 | **FRAME_WIDTH**                 | **MAP_FRAME_WIDTH**                     |
++---------------------------------+-----------------------------------------+
+| **GLOBAL_Y_SCALE**              | **PS_SCALE_X**                          |
++---------------------------------+-----------------------------------------+
+| **GLOBAL\_X_SCALE**             | **PS_SCALE_X**                          |
 +---------------------------------+-----------------------------------------+
 | **GRID_CROSS_SIZE_PRIMARY**     | **MAP_GRID_CROSS_SIZE_PRIMARY**         |
 +---------------------------------+-----------------------------------------+
@@ -830,86 +810,104 @@ correctly with a warning under compatibility mode:
 +---------------------------------+-----------------------------------------+
 | **GRID_PEN_SECONDARY**          | **MAP_GRID_PEN_SECONDARY**              |
 +---------------------------------+-----------------------------------------+
+| **GRIDFILE_FORMAT**             | **IO_GRIDFILE_FORMAT**                  |
++---------------------------------+-----------------------------------------+
+| **GRIDFILE_SHORTHAND**          | **IO_GRIDFILE_SHORTHAND**               |
++---------------------------------+-----------------------------------------+
+| **HEADER_FONT_SIZE**            | **FONT_TITLE**                          |
++---------------------------------+-----------------------------------------+
+| **HEADER_FONT**                 | **FONT_TITLE**                          |
++---------------------------------+-----------------------------------------+
+| **HEADER_OFFSET**               | **MAP_TITLE_OFFSET**                    |
++---------------------------------+-----------------------------------------+
+| **HISTORY**                     | **GMT_HISTORY**                         |
++---------------------------------+-----------------------------------------+
+| **HSV_MAX_SATURATION**          | **COLOR_HSV_MAX_S**                     |
++---------------------------------+-----------------------------------------+
+| **HSV_MAX_VALUE**               | **COLOR_HSV_MAX_V**                     |
++---------------------------------+-----------------------------------------+
+| **HSV_MIN_SATURATION**          | **COLOR_HSV_MIN_S**                     |
++---------------------------------+-----------------------------------------+
+| **HSV_MIN_VALUE**               | **COLOR_HSV_MIN_V**                     |
++---------------------------------+-----------------------------------------+
+| **INPUT_CLOCK_FORMAT**          | **FORMAT_CLOCK_IN**                     |
++---------------------------------+-----------------------------------------+
+| **INPUT_DATE_FORMAT**           | **FORMAT_DATE_IN**                      |
++---------------------------------+-----------------------------------------+
+| **INTERPOLANT**                 | **GMT_INTERPOLANT**                     |
++---------------------------------+-----------------------------------------+
+| **INTERPOLANT**                 | **GMT_INTERPOLANT**                     |
++---------------------------------+-----------------------------------------+
+| **INTERPOLANT**                 | **GMT_INTERPOLANT**                     |
++---------------------------------+-----------------------------------------+
+| **LABEL_FONT**                  | **FONT_LABEL**                          |
++---------------------------------+-----------------------------------------+
 | **LABEL_OFFSET**                | **MAP_LABEL_OFFSET**                    |
 +---------------------------------+-----------------------------------------+
 | **LINE_STEP**                   | **MAP_LINE_STEP**                       |
 +---------------------------------+-----------------------------------------+
-| **UNIX_TIME**                   | **MAP_LOGO**                            |
+| **MAP_SCALE_FACTOR**            | **PROJ_SCALE_FACTOR**                   |
 +---------------------------------+-----------------------------------------+
-| **UNIX_TIME_POS**               | **MAP_LOGO_POS**                        |
+| **MEASURE_UNIT**                | **PROJ_LENGTH_UNIT**                    |
 +---------------------------------+-----------------------------------------+
-| **X_ORIGIN**                    | **MAP_ORIGIN_X**                        |
+| **NAN_RECORDS**                 | **IO_NAN_RECORDS**                      |
 +---------------------------------+-----------------------------------------+
-| **Y_ORIGIN**                    | **MAP_ORIGIN_Y**                        |
+| **OBLIQUE_ANNOTATION**          | **MAP_ANNOT_OBLIQUE**                   |
++---------------------------------+-----------------------------------------+
+| **OUTPUT_CLOCK_FORMAT**         | **FORMAT_CLOCK_OUT**                    |
++---------------------------------+-----------------------------------------+
+| **OUTPUT_CLOCK_FORMAT**         | **FORMAT_CLOCK_OUT**                    |
++---------------------------------+-----------------------------------------+
+| **OUTPUT_DATE_FORMAT**          | **FORMAT_DATE_OUT**                     |
++---------------------------------+-----------------------------------------+
+| **OUTPUT_DEGREE_FORMAT**        | **FORMAT_GEO_OUT**                      |
++---------------------------------+-----------------------------------------+
+| **PAGE_COLOR**                  | **PS_PAGE_COLOR**                       |
++---------------------------------+-----------------------------------------+
+| **PAGE_ORIENTATION**            | **PS_PAGE_ORIENTATION**                 |
++---------------------------------+-----------------------------------------+
+| **PAPER_MEDIA**                 | **PS_MEDIA**                            |
++---------------------------------+-----------------------------------------+
+| **PLOT_CLOCK_FORMAT**           | **FORMAT_CLOCK_MAP**                    |
++---------------------------------+-----------------------------------------+
+| **PLOT_DATE_FORMAT**            | **FORMAT_DATE_MAP**                     |
++---------------------------------+-----------------------------------------+
+| **PLOT_DEGREE_FORMAT**          | **FORMAT_GEO_MAP**                      |
 +---------------------------------+-----------------------------------------+
 | **POLAR_CAP**                   | **MAP_POLAR_CAP**                       |
++---------------------------------+-----------------------------------------+
+| **PS_COLOR**                    | **COLOR_HSV_MAX_V**                     |
 +---------------------------------+-----------------------------------------+
 | **TICK_LENGTH**                 | **MAP_TICK_LENGTH_PRIMARY\|SECONDARY**  |
 +---------------------------------+-----------------------------------------+
 | **TICK_PEN**                    | **MAP_TICK_PEN_PRIMARY\|SECONDARY**     |
 +---------------------------------+-----------------------------------------+
-
-.. _tbl-obsoletedefs2:
-
-+--------------------------+----------------------------+
-| **Old Name**             | **New Name**               |
-+==========================+============================+
-| **HEADER_OFFSET**        | **MAP_TITLE_OFFSET**       |
-+--------------------------+----------------------------+
-| **VECTOR_SHAPE**         | **MAP_VECTOR_SHAPE**       |
-+--------------------------+----------------------------+
-| **HSV_MIN_SATURATION**   | **COLOR_HSV_MIN_S**        |
-+--------------------------+----------------------------+
-| **HSV_MAX_SATURATION**   | **COLOR_HSV_MAX_S**        |
-+--------------------------+----------------------------+
-| **HSV_MIN_VALUE**        | **COLOR_HSV_MIN_V**        |
-+--------------------------+----------------------------+
-| **HSV_MAX_VALUE**        | **COLOR_HSV_MAX_V**        |
-+--------------------------+----------------------------+
-| **CHAR_ENCODING**        | **PS_CHAR_ENCODING**       |
-+--------------------------+----------------------------+
-| **PS_COLOR**             | **COLOR_HSV_MAX_V**        |
-+--------------------------+----------------------------+
-| **PAGE_COLOR**           | **PS_PAGE_COLOR**          |
-+--------------------------+----------------------------+
-| **PAGE_ORIENTATION**     | **PS_PAGE_ORIENTATION**    |
-+--------------------------+----------------------------+
-| **PAPER_MEDIA**          | **PS_MEDIA**               |
-+--------------------------+----------------------------+
-| **GLOBAL\_X_SCALE**      | **PS_SCALE_X**             |
-+--------------------------+----------------------------+
-| **GLOBAL_Y_SCALE**       | **PS_SCALE_X**             |
-+--------------------------+----------------------------+
-| **FIELD_DELIMITER**      | **IO_COL_SEPARATOR**       |
-+--------------------------+----------------------------+
-| **GRIDFILE_FORMAT**      | **IO_GRIDFILE_FORMAT**     |
-+--------------------------+----------------------------+
-| **GRIDFILE_SHORTHAND**   | **IO_GRIDFILE_SHORTHAND**  |
-+--------------------------+----------------------------+
-| **NAN_RECORDS**          | **IO_NAN_RECORDS**         |
-+--------------------------+----------------------------+
-| **XY_TOGGLE**            | **IO_LONLAT_TOGGLE**       |
-+--------------------------+----------------------------+
-| **ELLIPSOID**            | **PROJ_ELLIPSOID**         |
-+--------------------------+----------------------------+
-| **MEASURE_UNIT**         | **PROJ_LENGTH_UNIT**       |
-+--------------------------+----------------------------+
-| **MAP_SCALE_FACTOR**     | **PROJ_SCALE_FACTOR**      |
-+--------------------------+----------------------------+
-| **HISTORY**              | **GMT_HISTORY**            |
-+--------------------------+----------------------------+
-| **INTERPOLANT**          | **GMT_INTERPOLANT**        |
-+--------------------------+----------------------------+
-| **VERBOSE**              | **GMT_VERBOSE**            |
-+--------------------------+----------------------------+
-| **INTERPOLANT**          | **GMT_INTERPOLANT**        |
-+--------------------------+----------------------------+
-| **WANT_LEAP_SECONDS**    | **TIME_LEAP_SECONDS**      |
-+--------------------------+----------------------------+
-| **Y2K_OFFSET_YEAR**      | **TIME_Y2K_OFFSET_YEAR**   |
-+--------------------------+----------------------------+
-| **INTERPOLANT**          | **GMT_INTERPOLANT**        |
-+--------------------------+----------------------------+
+| **TIME_FORMAT_PRIMARY**         | **FORMAT_TIME_PRIMARY_MAP**             |
++---------------------------------+-----------------------------------------+
+| **TIME_FORMAT_SECONDARY**       | **FORMAT_TIME_SECONDARY_MAP**           |
++---------------------------------+-----------------------------------------+
+| **UNIX_TIME_FORMAT**            | **FORMAT_TIME_STAMP**                   |
++---------------------------------+-----------------------------------------+
+| **UNIX_TIME_POS**               | **MAP_LOGO_POS**                        |
++---------------------------------+-----------------------------------------+
+| **UNIX_TIME**                   | **MAP_LOGO**                            |
++---------------------------------+-----------------------------------------+
+| **VECTOR_SHAPE**                | **MAP_VECTOR_SHAPE**                    |
++---------------------------------+-----------------------------------------+
+| **VERBOSE**                     | **GMT_VERBOSE**                         |
++---------------------------------+-----------------------------------------+
+| **WANT_LEAP_SECONDS**           | **TIME_LEAP_SECONDS**                   |
++---------------------------------+-----------------------------------------+
+| **X_ORIGIN**                    | **MAP_ORIGIN_X**                        |
++---------------------------------+-----------------------------------------+
+| **XY_TOGGLE**                   | **IO_LONLAT_TOGGLE**                    |
++---------------------------------+-----------------------------------------+
+| **Y_AXIS_TYPE**                 | **MAP_ANNOT_ORTHO**                     |
++---------------------------------+-----------------------------------------+
+| **Y_ORIGIN**                    | **MAP_ORIGIN_Y**                        |
++---------------------------------+-----------------------------------------+
+| **Y2K_OFFSET_YEAR**             | **TIME_Y2K_OFFSET_YEAR**                |
++---------------------------------+-----------------------------------------+
 
 Note: While **TIME_LEAP_SECONDS** is a recognized keyword it is
 currently not implemented and has no effect.  We reserve the right
@@ -1029,8 +1027,8 @@ between versions.
 Introduction
 ============
 
-Most scientists are familiar with the sequence: *raw data*
-:math:`\rightarrow` *processing* :math:`\rightarrow` *final illustration*.
+Most scientists are familiar with the sequence: *raw data* →
+*processing* → *final illustration*.
 In order to finalize papers for submission to scientific journals,
 prepare proposals, and create overheads and slides for various
 presentations, many scientists spend large amounts of time and money to
@@ -1082,8 +1080,8 @@ GMT is written in the highly portable ANSI C programming language
 1991], has no Year 2000 problems, and may be used with any hardware
 running some flavor of UNIX, possibly with minor modifications. In
 writing GMT, we have followed the modular design philosophy of UNIX:
-The *raw data* :math:`\rightarrow` *processing* :math:`\rightarrow` *final
-illustration* flow is broken down to a series of elementary steps; each
+The *raw data* → *processing* → *final illustration* flow is broken
+down to a series of elementary steps; each
 step is accomplished by a separate GMT or UNIX tool. This modular
 approach brings several benefits: (1) only a few programs are needed,
 (2) each program is small and easy to update and maintain, (3) each step
@@ -1406,10 +1404,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdfilter`      | Filter 2-D gridded data sets in the space domain                    |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`grdcontour`     | Contouring of 2-D gridded data sets                                 |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdimage`       | Produce images from 2-D gridded data sets                           |
@@ -1446,10 +1442,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psxyz`          | Plot symbols, polygons, and lines in 3-D                            |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`greenspline`    | Interpolation using Green's functions for splines in 1--3 dimensions|
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`nearneighbor`   | Nearest-neighbor gridding scheme                                    |
@@ -1460,10 +1454,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`triangulate`    | Perform optimal Delauney triangulation and gridding                 |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtsimplify`    | Line reduction using the Douglas-Peucker algorithm                  |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdsample`      | Resample a 2-D gridded data set onto a new grid                     |
@@ -1472,20 +1464,16 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sample1d`       | Resampling of 1-D table data sets                                   |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`grdproject`     | Project gridded data sets onto a new coordinate system              |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`mapproject`     | Transformation of coordinate systems for table data                 |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`project`        | Project table data onto lines or great circles                      |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtdefaults`    | List the current default settings                                   |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtget`         | Retrieve selected parameters in current file                        |
@@ -1496,10 +1484,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`minmax`         | Report extreme values in table data files                           |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtmath`        | Mathematical operations on table data                               |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`makecpt`        | Make color palette tables                                           |
@@ -1514,10 +1500,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`triangulate`    | Perform optimal Delauney triangulation and gridding                 |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`gmt2kml`        | Like :doc:`psxy` but plots KML for use in Google Earth              |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtconnect`     | Connect segments into more complete lines or polygons               |
@@ -1548,10 +1532,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`xyz2grd`        | Convert an equidistant table *xyz* file to a 2-D grid file          |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`fitcircle`      | Finds the best-fitting great or small circle for a set of points    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdtrack`       | Sampling of 2-D gridded data set(s) along 1-D track                 |
@@ -1560,10 +1542,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`trend2d`        | Fits polynomial trends to :math:`z = f(x,y)` series                 |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2cpt`        | Make color palette table from a grid files                          |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdclip`        | Limit the *z*-range in gridded data sets                            |
@@ -1584,10 +1564,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdvolume`      | Calculate volumes under a surface within specified contour          |
 +-----------------------+---------------------------------------------------------------------+
-
-+-----------------------+---------------------------------------------------------------------+
 |                       |                                                                     |
-+=======================+=====================================================================+
++-----------------------+---------------------------------------------------------------------+
 | :doc:`ps2raster`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
 +-----------------------+---------------------------------------------------------------------+
 
@@ -3225,15 +3203,15 @@ basemap was created with an oblique Mercator projection, specified as
 then a subsequent :doc:`psxy` command to plot
 symbols only needs to state **-J**\ o in order to activate the same
 projection. In contrast, note that **-J** by itself will pick the most
-recently used projection. Previous commands are maintained in the file ``.gmtcommands``,
+recently used projection. Previous commands are maintained in the file ``gmt.history``,
 of which there will be one in each directory you run the programs from.
 This is handy if you create separate directories for separate projects
 since chances are that data manipulations and plotting for each project
 will share many of the same options. Note that an option spelled out on
-the command line will always override the last entry in the ``.gmtcommands`` file and, if
+the command line will always override the previous entry in the ``gmt.history`` file and, if
 execution is successful, will replace this entry as the previous option
-argument in the ``.gmtcommands`` file. If you call several GMT modules piped together
-then GMT cannot guarantee that the ``.gmtcommands`` file is processed in the intended
+argument in the ``gmt.history`` file. If you call several GMT modules piped together
+then GMT cannot guarantee that the ``gmt.history`` file is processed in the intended
 order from left to right. The only guarantee is that the file will not
 be clobbered since GMT uses advisory file locking. The uncertainty in
 processing order makes the use of shorthands in pipes unreliable. We
@@ -3576,7 +3554,7 @@ pattern:
     The *dpi* parameter sets the resolution of this image on the page;
     the area fill is thus made up of a series of these "tiles".
     Specifying *dpi* as 0 will result in highest resolution obtainable
-    given the present dpi setting in  ``.gmtcommands``. By specifying upper case **-GP**
+    given the present dpi setting in  ``gmt.history``. By specifying upper case **-GP**
     instead of **-Gp** the image will be bit-reversed, i.e., white and
     black areas will be interchanged (only applies to 1-bit images or
     predefined bit-image patterns). For these patterns and other 1-bit
@@ -4517,7 +4495,7 @@ $GMT_USERDIR
     the command line in both **$GMT_DATADIR** and **$GMT_USERDIR**.
 
 $GMT_TMPDIR
-    is where GMT will write its state parameters via the two files ``.gmtcommands`` and
+    is where GMT will write its state parameters via the two files ``gmt.history`` and
     ``gmt.conf``. If **$GMT_TMPDIR** is not set, these files are written to the
     current directory. See Appendix [app:P] for more on the use of
     **$GMT_TMPDIR**.
@@ -8840,18 +8818,18 @@ are:
        often necessary to revert to the original ``gmt.conf`` file. *Isolation mode*
        avoids that issue.
 
-    **.gmtcommands** This file is created to communicate the command line history from
+    **gmt.history** This file is created to communicate the command line history from
        one command to the next (Section `Command line history`_) so that
        shorthands like **-R** or **-J** can be used once it has been set in
        a previous GMT command. The existence of this file makes if
        impossible to run two GMT scripts simultaneously in the same
-       directory, since those ``.gmtcommands`` files may clash (contain different histories)
+       directory, since those ``gmt.history`` files may clash (contain different histories)
        and adversely affect the results of both scripts.
 
 A cure to all these woes is the *isolation mode* introduced in
 GMT version 4.2.2. This mode allows you to run a GMT script without
 leaving any traces other than the resulting PostScript  or data files,
-and not altering the ``gmt.conf`` or ``.gmtcommands`` files. Those files will be placed in a temporary
+and not altering the ``gmt.conf`` or ``gmt.history`` files. Those files will be placed in a temporary
 directory instead. And if properly set up, this temporary directory will
 only be used by a single script, even if another GMT script is running
 simultaneously. This also provides the opportunity to create any other
@@ -8866,7 +8844,7 @@ The example below shows how *isolation mode* works.
    Example created in isolation mode
 
 
-The files ``gmt.conf`` and ``.gmtcommands`` are automatically created in the temporary directory
+The files ``gmt.conf`` and ``gmt.history`` are automatically created in the temporary directory
 ``$GMT_TMPDIR``. The script is also adjusted such that the temporary grid file ``lat.nc`` and colormap
 ``lat.cpt`` are created in that directory as well. To make things even more easy,
 GMT now provides a set of handy shell functions in :doc:`gmt_shell_functions.sh`:

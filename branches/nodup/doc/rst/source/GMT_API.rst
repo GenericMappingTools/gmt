@@ -1,5 +1,9 @@
 :tocdepth: 2
 
+.. set default highlighting language for this document:
+
+.. highlight:: c
+
 **The Generic Mapping Tools**
 
 **C/C++ Application Programming Interface**
@@ -690,11 +694,11 @@ it returns FALSE (0).
 +------------------+-------+--------------------------------+
 | GMT_IS_TEXTSET   | 1     | A [multi-segment] text file    |
 +------------------+-------+--------------------------------+
-| GMT_IS_GRID      | 2     | A GMT grid file              |
+| GMT_IS_GRID      | 2     | A GMT grid file                |
 +------------------+-------+--------------------------------+
 | GMT_IS_CPT       | 3     | A CPT file                     |
 +------------------+-------+--------------------------------+
-| GMT_IS_IMAGE     | 4     | A GMT image                  |
+| GMT_IS_IMAGE     | 4     | A GMT image                    |
 +------------------+-------+--------------------------------+
 +------------------+-------+--------------------------------+
 

@@ -4058,7 +4058,7 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 	if (!GMT->common.K.active) {
 		if (GMT->current.ps.clip_level > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d external clip operations were not terminated!\n", GMT->current.ps.clip_level);
 		if (GMT->current.ps.clip_level < 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
-		GMT->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in .gmtcommands */
+		GMT->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in gmt.history */
 	}
 	for (i = 0; i < 3; i++) if (GMT->current.map.frame.axis[i].file_custom) free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !GMT->common.K.active);

@@ -111,6 +111,14 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _DIR Parameters:
 
+.. _DIR_DATA:
+
+**DIR_DATA**
+    Replaces the session temp dir **$GMT_DATADIR** from the environment.
+
+**DIR_DCW**
+    Path to optional Digital Chart of the World polygon files.
+
 **DIR_GSHHG**
     Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
 
@@ -392,10 +400,10 @@ fonts can be found in the :doc:`gmt` man page.
 .. _GMT_HISTORY:
 
 **GMT_HISTORY**
-    Passes the history of past common command options via the hidden
-    .gmtcommands file. The different values for this setting are:
+    Passes the history of past common command options via the
+    gmt.history file. The different values for this setting are:
     **true**, **readonly**, **false**, to either read and write to the
-    .gmtcommands file, only read, or not use the file at all [true].
+    gmt.history file, only read, or not use the file at all [true].
 
 .. _GMT_INTERPOLANT:
 
