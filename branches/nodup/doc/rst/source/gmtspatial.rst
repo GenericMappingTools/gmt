@@ -201,4 +201,7 @@ To determine the intersections between the polygons A.d and B.d, run
 See Also
 --------
 
-:doc:`gmt`
+:doc:`gmt`,
+:doc:`gmtconvert`,
+:doc:`gmtselect`,
+:doc:`gmtsimplify`

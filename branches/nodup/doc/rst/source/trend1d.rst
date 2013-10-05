@@ -165,8 +165,10 @@ interpolant are significant in fitting data.xy, use:
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmtmath`,
-:doc:`grdtrend`, :doc:`trend2d`
+:doc:`gmt`,
+:doc:`gmtmath`,
+:doc:`grdtrend`,
+:doc:`trend2d`
 
 References
 ----------

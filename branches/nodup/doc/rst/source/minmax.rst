@@ -167,4 +167,6 @@ the current setting of :ref:`TIME_UNIT <TIME_UNIT>`.
 See Also
 --------
 
-:doc:`gmt`
+:doc:`gmt`,
+:doc:`gmtconvert`
+

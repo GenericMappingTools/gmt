@@ -212,4 +212,6 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`grdedit`,
-:doc:`grdmath`, :doc:`grdproject`
+:doc:`grdfilter`,
+:doc:`grdmath`,
+:doc:`grdproject`

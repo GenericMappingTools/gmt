@@ -177,8 +177,10 @@ significant in fitting data.xyz, use:
 See Also
 --------
 
-:doc:`gmt`, :doc:`grdmath`,
-:doc:`grdtrend`, :doc:`trend1d`
+:doc:`gmt`,
+:doc:`grdmath`,
+:doc:`grdtrend`,
+:doc:`trend1d`
 
 References
 ----------
