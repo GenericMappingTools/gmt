@@ -186,5 +186,6 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf` 
 :doc:`grdhisteq`,
+:doc:`grdmath`,
 :doc:`grdimage`, :doc:`grdview`,
 :doc:`grdvector`

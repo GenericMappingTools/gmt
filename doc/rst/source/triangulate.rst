@@ -153,7 +153,9 @@ To instead plot the Voronoi cell outlines, try
 See Also
 --------
 
-:doc:`gmt`, :doc:`pscontour`
+:doc:`gmt`,
+:doc:`pscontour`,
+:doc:`sphtriangulate`
 
 References
 ----------

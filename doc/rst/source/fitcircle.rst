@@ -125,4 +125,8 @@ ship.xyg
 See Also
 --------
 
-:doc:`gmt`, :doc:`project`, :doc:`sample1d`
+:doc:`gmt`,
+:doc:`gmtvector`,
+:doc:`project`,
+:doc:`mapproject`,
+:doc:`sample1d`

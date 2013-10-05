@@ -278,7 +278,9 @@ results produced with other settings.
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmt.conf`, :doc:`project`
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtvector`,
+:doc:`project`
 
 References
 ----------

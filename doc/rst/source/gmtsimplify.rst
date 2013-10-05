@@ -121,4 +121,8 @@ subroutine forms the basis for this program.
 See Also
 --------
 
-:doc:`gmt`
+:doc:`gmt`,
+:doc:`gmt.conf`,
+:doc:`gmtconnect`,
+:doc:`gmtconvert`,
+:doc:`gmtselect`

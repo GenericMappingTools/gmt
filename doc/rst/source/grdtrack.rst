@@ -242,4 +242,7 @@ erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 See Also
 --------
 
-:doc:`gmt`, :doc:`surface`, :doc:`sample1d`
+:doc:`gmt`,
+:doc:`gmtconvert`,
+:doc:`sample1d`,
+:doc:`surface`

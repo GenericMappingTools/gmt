@@ -170,4 +170,7 @@ To obtain a rhumb line (loxodrome) sampled every 5 km instead, use
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmt.conf`, :doc:`filter1d`
+:doc:`gmt`,
+:doc:`gmt.conf`,
+:doc:`greenspline`,
+:doc:`filter1d`

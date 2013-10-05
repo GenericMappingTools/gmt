@@ -140,4 +140,7 @@ this information, run
 See Also
 --------
 
-:doc:`gmt`, :doc:`grd2xyz`, :doc:`xyz2grd`
+:doc:`gmt`,
+:doc:`grd2xyz`,
+:doc:`grdinfo`
+:doc:`xyz2grd`

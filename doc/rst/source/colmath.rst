@@ -147,4 +147,6 @@ the string "RIDGE AXIS", try
 See Also
 --------
 
-:doc:`gmt`, :doc:`minmax`
+:doc:`gmt`,
+:doc:`gmtmath`,
+:doc:`minmax`

@@ -61,4 +61,7 @@ MAP_GRID_CROSS_SIZE_PRIMARY and MAP_GRID_CROSS_SIZE_SECONDARY on one line, try
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmt.conf`, :doc:`gmtset`
+:doc:`gmt`,
+:doc:`gmt.conf`,
+:doc:`gmtdefaults`,
+:doc:`gmtset`

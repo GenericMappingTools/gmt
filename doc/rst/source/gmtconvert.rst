@@ -222,4 +222,6 @@ To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try
 See Also
 --------
 
-:doc:`gmt` , :doc:`minmax`
+:doc:`gmt`,
+:doc:`gmtselect`,
+:doc:`minmax`

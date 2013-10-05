@@ -144,5 +144,7 @@ See Also
 :doc:`blockmean`,
 :doc:`blockmedian`,
 :doc:`blockmode`, :doc:`gmt`,
+:doc:`greenspline`,
+:doc:`sphtriangulate`,
 :doc:`surface`,
 :doc:`triangulate`

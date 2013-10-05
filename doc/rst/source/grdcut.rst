@@ -108,5 +108,7 @@ distance of 500 km from the point 45,30 try
 `See Also <#toc10>`_
 --------------------
 
-:doc:`gmt`, :doc:`grdpaste`,
+:doc:`gmt`,
+:doc:`grdclip`,
+:doc:`grdpaste`,
 :doc:`grdinfo`
