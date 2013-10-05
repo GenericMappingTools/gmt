@@ -22,7 +22,7 @@ gmt gmtset FONT_ANNOT_PRIMARY 14p
 gmt grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc
 gmt makecpt -Crainbow -T-90/90/180 -Z > $GMT_TMPDIR/lat.cpt
 
-# The gmt grdimage command creates the history file $GMT_TMPDIR/.gmtcommands4
+# The gmt grdimage command creates the history file $GMT_TMPDIR/gmt.history
 gmt grdimage $GMT_TMPDIR/lat.nc -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K -nl > $ps
 gmt pscoast -R -J -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30 >> $ps
 

@@ -122,7 +122,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  gmt ps2raster -Tg -Qt4 -Qg4 -E300 -P mag.ps
  #
- rm -f base.nc points.d slice.nc slice_cut.nc.gmtcommands gmt.conf
+ rm -f base.nc points.d slice.nc slice_cut.nc gmt.history gmt.conf
 
 .. figure:: images/vertical_slice.png
    :width: 500 px

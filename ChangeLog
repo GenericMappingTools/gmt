@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-10-04	pwessel
+	* gmt.history:		This replaces the old .gmtcommands file name.
+
 2013-09-28	remko
 	* gmt_init.c:		Moved origin of JD by one day (24 Nov instead of 25 Nov).
 	* ConfigUserTemplate.cmake:	Added option GMT_DOCS_DEPEND_ON_GMT

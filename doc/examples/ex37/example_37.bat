@@ -48,4 +48,4 @@ gmt psxy -R2/160/0/1 -JX-6il/2.5i -Bxa2f3g3+u" km" -Byafg0.5+l"Coherency@+2@+" -
 gmt psxy -R -J cross.txt -O -K -i0,15,16 -Sc0.075i -Gred -W0.25p -Ey >> %ps%
 gmt psxy -R -J -O -T >> %ps%
 REM Clean up
-del cross.txt *_tmp.nc *_int.nc *.cpt bbox gmt.conf .gmtcommands
+del cross.txt *_tmp.nc *_int.nc *.cpt bbox gmt.conf gmt.history
