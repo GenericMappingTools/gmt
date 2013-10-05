@@ -381,5 +381,6 @@ See Also
 
 :doc:`gmt`, :doc:`gmtmath`,
 :doc:`nearneighbor`, :doc:`psxy`,
+:doc:`sphtriangulate`,
 :doc:`surface`,
 :doc:`triangulate`, :doc:`xyz2grd`

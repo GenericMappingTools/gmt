@@ -138,8 +138,9 @@ To generate the same grid in two steps using **sphtriangulate** separately, try
 See Also
 --------
 
-:doc:`gmt`, :doc:`sphinterpolate`,
-:doc:`sphtriangulate`, :doc:`triangulate`
+:doc:`gmt`,
+:doc:`sphtriangulate`,
+:doc:`triangulate`
 
 References
 ----------

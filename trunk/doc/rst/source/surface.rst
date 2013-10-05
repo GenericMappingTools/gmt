@@ -189,9 +189,12 @@ grid using :doc:`grdsample` **-T**.
 
 :doc:`blockmean`,
 :doc:`blockmedian`,
-:doc:`blockmode`, :doc:`gmt`,
+:doc:`blockmode`,
+:doc:`gmt`,
+:doc:`greenspline`,
 :doc:`nearneighbor`,
-:doc:`triangulate`
+:doc:`triangulate`,
+:doc:`sphtriangulate`
 
 References
 ----------

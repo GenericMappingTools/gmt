@@ -141,8 +141,8 @@ in the header record, try
 See Also
 --------
 
-:doc:`gmt`, :doc:`triangulate`,
-:doc:`sphinterpolate`,
+:doc:`gmt`,
+:doc:`triangulate`,
 :doc:`sphdistance`
 
 References

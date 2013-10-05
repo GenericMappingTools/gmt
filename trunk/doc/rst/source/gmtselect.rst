@@ -263,5 +263,10 @@ origin.d for a certain projection, try
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmt.conf`, :doc:`grdlandmask`,
+:doc:`gmt`,
+:doc:`gmt.conf`,
+:doc:`gmtconvert`,
+:doc:`gmtsimplify`,
+:doc:`gmtspatial`,
+:doc:`grdlandmask`,
 :doc:`pscoast`

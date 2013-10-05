@@ -134,6 +134,8 @@ See Also
 :doc:`blockmode`,
 :doc:`gmt`,
 :doc:`gmt.conf`,
+:doc:`greenspline`,
 :doc:`nearneighbor`,
+:doc:`sphtriangulate`,
 :doc:`surface`,
 :doc:`triangulate`

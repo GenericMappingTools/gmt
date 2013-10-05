@@ -128,9 +128,12 @@ degree grid with no tension, use
 See Also
 --------
 
-:doc:`gmt`, :doc:`greenspline`
-:doc:`sphdistance`
-:doc:`sphtriangulate`
+:doc:`gmt`,
+:doc:`greenspline`,
+:doc:`nearneighbor`,
+:doc:`sphdistance`,
+:doc:`sphtriangulate`,
+:doc:`surface`,
 :doc:`triangulate`
 
 `References <#toc10>`_

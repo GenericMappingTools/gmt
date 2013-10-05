@@ -159,6 +159,8 @@ See Also
 :doc:`blockmean`,
 :doc:`blockmedian`, :doc:`gmt`,
 :doc:`gmt.conf`,
+:doc:`greenspline`,
 :doc:`nearneighbor`,
+:doc:`sphtriangulate`,
 :doc:`surface`,
 :doc:`triangulate`

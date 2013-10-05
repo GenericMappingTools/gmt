@@ -156,6 +156,8 @@ See Also
 :doc:`blockmean`,
 :doc:`blockmode`, :doc:`gmt`,
 :doc:`gmt.conf`,
+:doc:`greenspline`,
 :doc:`nearneighbor`,
 :doc:`surface`,
+:doc:`sphtriangulate`,
 :doc:`triangulate`

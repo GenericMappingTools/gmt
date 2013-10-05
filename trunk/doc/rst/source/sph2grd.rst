@@ -115,4 +115,6 @@ degree and order normalized associated Legendre functions:
 See Also
 --------
 
-:doc:`gmt`, :doc:`grdfft`
+:doc:`gmt`,
+:doc:`grdfft`,
+:doc:`grdmath`

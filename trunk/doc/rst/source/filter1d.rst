@@ -172,4 +172,4 @@ v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 See Also
 --------
 
-:doc:`gmt` , :doc:`sample1d`
+:doc:`gmt` , :doc:`sample1d` , :doc:`splitxyz`

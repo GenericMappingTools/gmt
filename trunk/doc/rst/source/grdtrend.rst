@@ -111,4 +111,7 @@ and reporting the progress:
 See Also
 --------
 
-:doc:`gmt`, :doc:`grdfft`, :doc:`grdfilter`
+:doc:`gmt`,
+:doc:`grdfft`,
+:doc:`grdfilter`,
+:doc:`grdmath`

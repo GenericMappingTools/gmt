@@ -67,5 +67,7 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`grdblend`,
-:doc:`grdcut`, :doc:`grdinfo`,
+:doc:`grdclip`,
+:doc:`grdcut`,
+:doc:`grdinfo`,
 :doc:`grdsample`

@@ -175,5 +175,6 @@ See Also
 --------
 
 :doc:`gmt`,
+:doc:`filter1d`,
 :doc:`mgd77list <supplements/mgd77/mgd77list>`,
 :doc:`pswiggle`

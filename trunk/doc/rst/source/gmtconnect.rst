@@ -159,4 +159,8 @@ all close lines.
 See Also
 --------
 
-:doc:`gmt` , :doc:`mapproject`
+:doc:`gmt`,
+:doc:`gmt.conf`,
+:doc:`gmtsimplify`,
+:doc:`gmtspatial`,
+:doc:`mapproject`

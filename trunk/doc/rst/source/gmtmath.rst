@@ -636,4 +636,6 @@ Publishing Corp.
 See Also
 --------
 
-:doc:`gmt`, :doc:`grdmath`
+:doc:`colmath`,
+:doc:`gmt`,
+:doc:`grdmath`
