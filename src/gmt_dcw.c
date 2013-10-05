@@ -281,7 +281,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "Source : %s\n", source);
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "Version: %s\n", version);
 	}
-	if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout means setting col types */
+	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	}

@@ -3171,7 +3171,7 @@ int GMT_Destroy_Session (void *V_API)
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	
 	GMT_Garbage_Collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
-	GMTAPI_free_sharedlibs (API);			/* Free list of shared libraries */
+	GMTAPI_free_sharedlibs (API);			/* Close shared libraries and free list */
 	
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) GMTAPI_Unregister_IO (API, API->object[i]->ID, GMT_NOTSET);
