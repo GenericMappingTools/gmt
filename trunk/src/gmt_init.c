@@ -1486,6 +1486,14 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		if (!inv_project) {
 			GMT_memcpy (GMT->common.R.wesn, GMT->current.io.grd_info.grd.wesn, 4, double);
+			if (GMT->current.io.grd_info.grd.registration == GMT_GRID_NODE_REG && doubleAlmostEqualZero (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO] + GMT->current.io.grd_info.grd.inc[GMT_X], 360.0)) {
+				/* Geographic grid with gridline registration that does not contain the repeating column, but is still 360 range */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "-R<file> with gridline registration and non-repeating column detected; return 360 degree range for -R\n");
+				if (GMT_IS_ZERO (GMT->common.R.wesn[XLO]) || doubleAlmostEqualZero (GMT->common.R.wesn[XLO], -180.0))
+					GMT->common.R.wesn[XHI] = GMT->common.R.wesn[XLO] + 360.0;
+				else
+					GMT->common.R.wesn[XLO] = GMT->common.R.wesn[XHI] - 360.0;
+			}
 			GMT->common.R.wesn[ZLO] = GMT->current.io.grd_info.grd.z_min;	GMT->common.R.wesn[ZHI] = GMT->current.io.grd_info.grd.z_max;
 			GMT->current.io.grd_info.active = true;
 			return (GMT_NOERROR);

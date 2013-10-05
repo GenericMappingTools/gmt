@@ -6205,6 +6205,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 	GMT->common.f.active[GMT_IN] = GMT->common.f.active[GMT_OUT] = GMT->common.g.active = GMT->common.h.active = false;
 	GMT->common.p.active = GMT->common.s.active = GMT->common.t.active = GMT->common.colon.active = false;
 	GMT_memset (GMT->common.b.ncol, 2, int);
+	GMT_memset (GMT->common.b.ncol, 2, int);
 
 	GMT->init.module_name = mod_name;
 	GMT->init.module_lib  = lib_name;
@@ -6214,7 +6215,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 
 void GMT_end_module (struct GMT_CTRL *GMT)
 {
-	int i;
+	unsigned int i;
 	
 	if (GMT->current.proj.n_geodesic_approx) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n", GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
@@ -9677,6 +9678,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 
 	/* MAP settings */
 
+	GMT_memset (GMT->current.map.dist, 3, struct GMT_DIST);
 	GMT_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations in m */
 
 	GMT->current.map.n_lon_nodes = 360;
@@ -9724,6 +9726,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	GMT_make_fnan (GMT->session.f_NaN);
 	GMT_make_dnan (GMT->session.d_NaN);
 	for (i = 0; i < 3; i++) GMT->session.no_rgb[i] = -1.0;
+	GMT_memset (GMT->init.history, GMT_N_UNIQUE, char *);
 
 	return (GMT);
 }
