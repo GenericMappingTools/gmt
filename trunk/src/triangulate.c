@@ -457,7 +457,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if (Ctrl->M.active) {	/* Must find unique edges to output only once */
+	if (Ctrl->M.active || Ctrl->Q.active) {	/* Must find unique edges to output only once */
 		GMT_set_segmentheader (GMT, GMT_OUT, true);
 		if (Ctrl->Q.active) {	/* Voronoi edges */
 			for (i = j = 0; i < np; i++) {
