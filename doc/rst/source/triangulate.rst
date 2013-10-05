@@ -16,7 +16,7 @@ Synopsis
 **triangulate** [ *table* ] [ **-Dx**\ \|\ **y** ] [ **-E**\ *empty* ]
 [ **-G**\ *grdfile* ]
 [ |SYN_OPT-I| ]
-[ **-J**\ *parameters* ] [ **-M** ] [ **-Q** ]
+[ **-J**\ *parameters* ] [ **-M** ] [ **-N** ] [ **-Q** ]
 [ |SYN_OPT-R| ] [ **-S** ]
 [ |SYN_OPT-V| ] [ **-Z** ]
 [ |SYN_OPT-b| ]
@@ -80,6 +80,9 @@ Optional Arguments
 **-M**
     Output triangulation network as multiple line segments separated by
     a segment header record.
+**-N**
+    Used in conjunction with **-G** to also write the triplets of the
+    ids of all the Delaunay vertices [Default only writes the grid].
 **-Q**
     Output the edges of the Voronoi cells instead [Default is Delaunay
     triangle edges]. Requires **-R** and is only available if linked
@@ -154,8 +157,12 @@ See Also
 --------
 
 :doc:`gmt`,
+:doc:`greenspline`,
+:doc:`nearneighbor`,
 :doc:`pscontour`,
-:doc:`sphtriangulate`
+:doc:`sphinterpolate`,
+:doc:`sphtriangulate`,
+:doc:`surface`
 
 References
 ----------
