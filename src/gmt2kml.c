@@ -695,8 +695,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	}
 	
 	/* gmt2kml only applies to geographic data so we do a -fg implicitly here */
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_IN);
+	GMT_set_geographic (GMT, GMT_OUT);
 	extra[0] = '\0';
 	GMT_memset (out, 5, double);	/* Set to zero */
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;

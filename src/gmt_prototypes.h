@@ -128,6 +128,8 @@ EXTERN_MSC struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTI
 
 /* gmt_io.c: */
 
+EXTERN_MSC void GMT_set_geographic (struct GMT_CTRL *GMT, unsigned int dir);
+EXTERN_MSC void GMT_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir);
 EXTERN_MSC void GMT_set_xycolnames (struct GMT_CTRL *GMT, char *string);
 EXTERN_MSC p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *GMT, int direction, enum GMT_swap_direction swap, char type);
 EXTERN_MSC bool GMT_is_ascii_record (struct GMT_CTRL *GMT);

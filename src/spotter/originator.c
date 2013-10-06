@@ -447,10 +447,8 @@ int GMT_originator (void *V_API, int mode, void *args)
 	}
 	else
 		n_out = n_expected_fields;
-	if (n_out == 3) {
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT; /* NO lon/lat out */
-	}
+	if (n_out == 3)
+		GMT_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_out)) != GMT_OK) {
 		Return (error);
 	}

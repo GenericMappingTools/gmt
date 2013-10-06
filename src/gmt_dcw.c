@@ -282,8 +282,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "Version: %s\n", version);
 	}
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_OUT);
 	}
 	while (GMT_strtok (F->codes, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;

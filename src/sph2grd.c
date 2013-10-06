@@ -267,8 +267,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	/* But x and y are really lon,lat in the rest of the program */
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_IN);	/* But x and y are really lon,lat in the rest of the program */
 	
 	if (Ctrl->F.active && Ctrl->F.km) {	/* Convert cutoffs to harmonic degrees */
 		double scale = 360.0 * GMT->current.proj.DIST_KM_PR_DEG;

@@ -294,8 +294,8 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 						strncpy (GMT->common.n.BC, opt->arg, 4U);
 					}
 					else {
-						GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-						GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+						GMT_set_geographic (GMT, GMT_IN);
+						GMT_set_geographic (GMT, GMT_OUT);
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; please use -fg instead.\n");
 					}
 				}
@@ -736,7 +736,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 		GMT_memset (line, GMT_BUFSIZ, char);
 		if (Ctrl->Z.active) {
-			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;	/* Since we are outputting z all columns */
+			GMT_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z all columns */
 			n_out = Ctrl->G.n_grids;
 			if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
 		}
