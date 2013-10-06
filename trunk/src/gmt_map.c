@@ -6431,6 +6431,7 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	/* PART 1: Project input grid points and do a blockmean operation */
 
+	O->header->z_min = FLT_MAX; O->header->z_max = -FLT_MAX;	/* Min/max for out */
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int nx = O->header->nx, ny = O->header->ny;
 		nz = GMT_memory (GMT, NULL, O->header->size, short int);
@@ -6461,6 +6462,9 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 					O->data[ij_out] += I->data[ij_in];	/* Add up the z-sum inside this rect... */
 					nz[ij_out]++;				/* ..and how many points there were */
 				}
+				if (GMT_is_fnan (O->data[ij_out])) continue;
+				if (O->data[ij_out] < O->header->z_min) O->header->z_min = O->data[ij_out];
+				if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
 			}
 		}
 	}
@@ -6498,8 +6502,24 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 				inv_nz = 1.0 / nz[ij_out];
 				O->data[ij_out] = (float) ((O->data[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
 			}
+			if (O->data[ij_out] < O->header->z_min) O->header->z_min = O->data[ij_out];
+			if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
 		}
 	}
+	
+	if (O->header->z_min < I->header->z_min || O->header->z_max > I->header->z_max) {	/* Truncate output to input extrama */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_grd_project: Output grid extrema [%g/%g] exceed extrema or input grid [%g/%g]\n",
+			O->header->z_min, O->header->z_max, I->header->z_min, I->header->z_max);
+		if (GMT->common.n.truncate) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_grd_project: Output grid clipped to input grid extrema\n");
+			GMT_grd_loop (GMT, O, row_out, col_out, ij_out) {
+				if (O->data[ij_out] < I->header->z_min) O->data[ij_out] = I->header->z_min;
+				else if (O->data[ij_out] > I->header->z_max) O->data[ij_out] = I->header->z_max;
+			}
+			O->header->z_min = I->header->z_min;	O->header->z_max = I->header->z_max;
+		}
+	}
+	
 	/* Time to clean up our mess */
 
 	GMT_free (GMT, x_in);

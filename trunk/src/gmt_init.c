@@ -621,7 +621,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
-			GMT_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+t<threshold>] Determine the grid interpolation mode.\n");
+			GMT_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Determine the grid interpolation mode.\n");
 			GMT_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
 			GMT_message (GMT, "\t   Append +a switch off antialiasing (except for l) [Default: on].\n");
 			GMT_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
@@ -629,6 +629,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t   x for periodic boundary conditions on x,\n");
 			GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 			GMT_message (GMT, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
+			GMT_message (GMT, "\t   Append +c to clip interpolated grid to input z-min/max [Default may exceed limits].\n");
 			GMT_message (GMT, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
 			GMT_message (GMT, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
 			GMT_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
@@ -2485,6 +2486,9 @@ int gmt_parse_n_option (struct GMT_CTRL *GMT, char *item)
 							break;
 					}
 				}
+				break;
+			case 'c':	/* Turn on min/max clipping */
+				GMT->common.n.truncate = true;
 				break;
 			case 't':	/* Set interpolation threshold */
 				GMT->common.n.threshold = atof (&p[1]);

@@ -150,9 +150,10 @@ struct GMT_COMMON {
 		bool active;
 		uint64_t n_cols;
 	} i;
-	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+t<threshold>] */
+	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
 		bool active;
 		bool antialias;	/* Defaults to true, if supported */
+		bool truncate;	/* Defaults to false */
 		unsigned int interpolant;	/* Defaults to BCR_BICUBIC */
 		bool bc_set;	/* true if +b was parsed */
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
