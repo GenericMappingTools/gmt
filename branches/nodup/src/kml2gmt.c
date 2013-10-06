@@ -160,8 +160,8 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	/*---------------------------- This is the kml2gmt main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input KML data\n");
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_IN);
+	GMT_set_geographic (GMT, GMT_OUT);
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {

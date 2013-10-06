@@ -670,12 +670,12 @@ int GMT_project (void *V_API, int mode, void *args)
 	GMT_memset (e, 9, double);
 	P.first = true;
 	if (Ctrl->N.active) {	/* Must undo an optional -fg that was set before */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
+		GMT_set_cartesian (GMT, GMT_IN);
+		GMT_set_cartesian (GMT, GMT_OUT);
 	}
 	else {	/* Make sure we set -fg */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
+		GMT_set_geographic (GMT, GMT_OUT);
 	}
 
 	/* Convert user's -F choices to internal parameters */

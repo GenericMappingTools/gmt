@@ -470,8 +470,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	if (!GMT->common.R.active && Ctrl->N.active) {	/* If we use coastline data or used -fg but didnt give -R we implicitly set -Rg */
 		GMT->common.R.active = true;
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
 	}
 	if (GMT->common.R.active) {	/* -R was set directly or indirectly; hence must set -J if not supplied */
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
@@ -709,18 +708,15 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 			if (inside != Ctrl->I.pass[2]) { output_header = need_header; continue;}
 		}
 		if (Ctrl->F.active) {	/* Check if we are in/out-side polygons */
-			if (do_project) {	/* Projected lon/lat; temporary reset input type for GMT_inonout to do Cartesian mode */
-				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
-			}
+			if (do_project)	/* Projected lon/lat; temporary reset input type for GMT_inonout to do Cartesian mode */
+				GMT_set_cartesian (GMT, GMT_IN);
 			inside = 0;
 			for (seg = 0; seg < pol->n_segments && !inside; seg++) {	/* Check each polygon until we find that our point is inside */
 				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
 				inside = (GMT_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
 			}
-			if (do_project) {	/* Reset input type for GMT_inonout to do Cartesian mode */
-				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-				GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
-			}
+			if (do_project)	/* Reset input type for GMT_inonout to do Cartesian mode */
+				GMT_set_geographic (GMT, GMT_IN);
 			if (inside != Ctrl->I.pass[3]) { output_header = need_header; continue;}
 		}
 

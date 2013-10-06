@@ -236,8 +236,7 @@ unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n
 		GMT->common.R.oblique = false;
 		GMT->common.J.active = true;
 		GMT->current.setting.map_line_step = 1.0e7;	/* To avoid nlon/nlat being huge */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
 		GMT->current.proj.pars[0] = out[GMT_X];
 		GMT->current.proj.pars[1] = out[GMT_Y];
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) return (0);
@@ -1057,7 +1056,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			}
 		}
 		else {	/* Just output the NN analysis results */
-			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;	/* Since we are not writing coordinates */
+			GMT_set_cartesian (GMT, GMT_OUT);	/* Since we are not writing coordinates */
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_BUFSIZ];

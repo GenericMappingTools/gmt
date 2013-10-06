@@ -246,7 +246,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	/*---------------------------- This is the grdlandmask main code ----------------------------*/
 
 	/* We know coastline data are geographic so we hardwire this here: */
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_IN);
 
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -305,7 +305,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = GMT_grd_is_global (GMT, Grid->header);
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
-	GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_OUT);
 
 	/* Fill out gridnode coordinates and apply the implicit linear projection */
 

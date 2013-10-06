@@ -1734,8 +1734,7 @@ int GMT_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		GMT->current.proj.pars[1] = 0.0;
 		GMT->current.proj.pars[2] = 1.0;
 		GMT->current.proj.projection = GMT_MERCATOR;
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
 		GMT->common.J.active = true;
 
 		GMT_err_pass (GMT, GMT_map_setup (GMT, wesn_all), file);

@@ -649,8 +649,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 		GMT_fclose (GMT, custom_fp);
 	}
 
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_IN);
 
 	/* Use GMT time formatting */
 	GMT->current.io.col_type[GMT_OUT][MGD77_TIME] = GMT_IS_ABSTIME;

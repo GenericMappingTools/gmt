@@ -324,7 +324,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 	read_file = (Ctrl->E.active || (Ctrl->M.mode == RAW_HEADER));
 	
 	saved_range = GMT->current.io.geo.range;	/* We may have to reset thisso keep a copy */
-	GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 	GMT->current.io.col_type[GMT_OUT][GMT_Z] = M.time_format;	
 	if (Ctrl->E.active) fprintf (GMT->session.std[GMT_OUT], "#Cruise %sID      %sWest    %sEast    %sSouth   %sNorth   %sStartTime%s%sEndTime%s%s%sDist%snRec",
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator,

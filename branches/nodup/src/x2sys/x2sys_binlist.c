@@ -226,12 +226,11 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	}
 
 	if (s->geographic) {
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_OUT);
 		GMT->current.io.geo.range = s->geodetic;
 	}
 	else
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
+		GMT_set_cartesian (GMT, GMT_OUT);
 	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 	
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */

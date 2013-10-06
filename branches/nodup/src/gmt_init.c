@@ -621,7 +621,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
-			GMT_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+t<threshold>] Determine the grid interpolation mode.\n");
+			GMT_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Determine the grid interpolation mode.\n");
 			GMT_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
 			GMT_message (GMT, "\t   Append +a switch off antialiasing (except for l) [Default: on].\n");
 			GMT_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
@@ -629,6 +629,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t   x for periodic boundary conditions on x,\n");
 			GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 			GMT_message (GMT, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
+			GMT_message (GMT, "\t   Append +c to clip interpolated grid to input z-min/max [Default may exceed limits].\n");
 			GMT_message (GMT, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
 			GMT_message (GMT, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
 			GMT_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
@@ -1464,7 +1465,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		}
 		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
 	if (!GMT_access (GMT, item, R_OK)) {	/* Gave a readable file, presumably a grid */
@@ -1486,13 +1487,21 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		if (!inv_project) {
 			GMT_memcpy (GMT->common.R.wesn, GMT->current.io.grd_info.grd.wesn, 4, double);
+			if (GMT->current.io.grd_info.grd.registration == GMT_GRID_NODE_REG && doubleAlmostEqualZero (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO] + GMT->current.io.grd_info.grd.inc[GMT_X], 360.0)) {
+				/* Geographic grid with gridline registration that does not contain the repeating column, but is still 360 range */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "-R<file> with gridline registration and non-repeating column detected; return 360 degree range for -R\n");
+				if (GMT_IS_ZERO (GMT->common.R.wesn[XLO]) || doubleAlmostEqualZero (GMT->common.R.wesn[XLO], -180.0))
+					GMT->common.R.wesn[XHI] = GMT->common.R.wesn[XLO] + 360.0;
+				else
+					GMT->common.R.wesn[XLO] = GMT->common.R.wesn[XHI] - 360.0;
+			}
 			GMT->common.R.wesn[ZLO] = GMT->current.io.grd_info.grd.z_min;	GMT->common.R.wesn[ZHI] = GMT->current.io.grd_info.grd.z_max;
 			GMT->current.io.grd_info.active = true;
 			return (GMT_NOERROR);
 		}
 	}
 	else if ((item[0] == 'g' || item[0] == 'd') && n_slash == 3) {	/* Here we have a region appended to -Rd|g */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
 		strncpy (string, &item[1], GMT_BUFSIZ);
 		GMT->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
@@ -1667,8 +1676,8 @@ int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg)
 	}
 	if (s) s[0] = '+';	/* Restore the geometry part */
 	/* -a implies -fg */
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_IN);
+	GMT_set_geographic (GMT, GMT_OUT);
 	return (GMT_NOERROR);
 }
 
@@ -1878,8 +1887,8 @@ int gmt_parse_f_option (struct GMT_CTRL *GMT, char *arg)
 
 	if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
 		if (both_i_and_o) {
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+			GMT_set_geographic (GMT, GMT_IN);
+			GMT_set_geographic (GMT, GMT_OUT);
 		}
 		else {
 			col[GMT_X] = GMT_IS_LON;
@@ -2477,6 +2486,9 @@ int gmt_parse_n_option (struct GMT_CTRL *GMT, char *item)
 							break;
 					}
 				}
+				break;
+			case 'c':	/* Turn on min/max clipping */
+				GMT->common.n.truncate = true;
 				break;
 			case 't':	/* Set interpolation threshold */
 				GMT->common.n.threshold = atof (&p[1]);
@@ -6171,6 +6183,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 
 	gmt_free_user_media (GMT);	/* Free any user-specified media formats */
+
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 
@@ -7499,10 +7512,10 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 		/* Check to see if scale is specified in 1:xxxx */
 		for (j = (int)strlen (args), k = -1; j > 0 && k < 0 && args[j] != '/'; j--) if (args[j] == ':') k = j + 1;
 		GMT->current.proj.units_pr_degree = (k == -1) ? true : false;
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
+		GMT_set_cartesian (GMT, GMT_OUT);	/* This may be overridden by mapproject -I */
 		if (project != GMT_LINEAR) {
 			GMT->current.proj.gave_map_width = mod_flag;
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+			GMT_set_geographic (GMT, GMT_IN);
 		}
 	}
 

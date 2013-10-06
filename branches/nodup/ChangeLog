@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-10-05	pwessel
+	* greenspline.c:	Needed -f in order to select -f0T input, plus it made assumptions
+				about lon,lat despite not being selected.
+
 2013-10-04	pwessel
 	* gmt.history:		This replaces the old .gmtcommands file name.
 

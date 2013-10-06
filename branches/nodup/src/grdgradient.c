@@ -259,8 +259,8 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 					/* But since GMT_parse_f_option is private to gmt_init and all it does */
 					/* in this case are 2 lines bellow we code it here */
 					if (!strcmp (GMT->common.n.BC, "g")) {
-						GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-						GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+						GMT_set_geographic (GMT, GMT_IN);
+						GMT_set_geographic (GMT, GMT_OUT);
 					}
 				}
 				else

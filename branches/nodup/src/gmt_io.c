@@ -113,6 +113,20 @@ EXTERN_MSC int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int obje
 /* Macro to apply columns log/scale/offset conversion on the fly */
 #define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
 
+void GMT_set_geographic (struct GMT_CTRL *GMT, unsigned int dir)
+{
+	/* Eliminate lots of repeated statements to do this: */
+	GMT->current.io.col_type[dir][GMT_X] = GMT_IS_LON;
+	GMT->current.io.col_type[dir][GMT_Y] = GMT_IS_LAT;
+}
+
+void GMT_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir)
+{
+	/* Eliminate lots of repeated statements to do this: */
+	GMT->current.io.col_type[dir][GMT_X] = GMT_IS_FLOAT;
+	GMT->current.io.col_type[dir][GMT_Y] = GMT_IS_FLOAT;
+}
+
 static const char *GMT_type[GMT_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer", "integer", "integer", "double", "double", "string", "datetime"};
 
 /* This version of fgets will check for input record truncation, that is,

@@ -397,7 +397,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 				}
 				else
 					GMT->current.io.io_nan_col[0] = GMT_Y;	/* Since that is where z will go now */
-				GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
+				GMT_set_cartesian (GMT, GMT_OUT);
 			}
 
 			if (GMT->current.setting.io_header[GMT_OUT] && first) {

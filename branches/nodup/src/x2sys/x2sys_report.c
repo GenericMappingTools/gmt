@@ -395,7 +395,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 		FILE *fp = NULL;
 		struct COE_ADJLIST *adj = NULL;
 
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;	/* Since we will write (dist, COE) pairs */
+		GMT_set_cartesian (GMT, GMT_OUT);	/* Since we will write (dist, COE) pairs */
 		
 		adj = GMT_memory (GMT, NULL, n_tracks, struct COE_ADJLIST);
 		for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
