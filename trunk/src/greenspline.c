@@ -49,7 +49,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>Vbghiors" GMT_OPT("FH")
+#define GMT_PROG_OPTIONS "-:>Vbfghiors" GMT_OPT("FH")
 
 double GMT_geodesic_dist_cos (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE);
 double GMT_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
@@ -1320,31 +1320,30 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	if (Ctrl->S.mode == LINEAR_1D) Ctrl->S.mode += (dimension - 1);	
 	if (Ctrl->S.mode == MITASOVA_MITAS_1993_2D ) Ctrl->S.mode += (dimension - 2);	
 
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
-
 	way = GMT_IS_SPHERICAL (GMT) ? GMT_GREATCIRCLE : GMT_GEODESIC;
 	Ctrl->D.mode--;	/* Since I added 0 to be 1-D later so now it is -1 */
 	switch (Ctrl->D.mode) {	/* Set pointers to 2-D distance functions */
 		case -1:	/* Cartesian 1-D x data */
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;
-			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
 			normalize = 2;
 			break;
 		case 0:	/* Cartesian 2-D x,y data */
 			GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;
-			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
 			normalize = 2;
 			break;
 		case 1:	/* 2-D lon, lat data, but scale to Cartesian flat earth km */
+			GMT_set_geographic (GMT, GMT_IN);
+			GMT_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
 			normalize = 2;
 			break;
 		case 2:	/* 2-D lon, lat data, use spherical distances in km (geodesic if PROJ_ELLIPSOID is nor sphere) */
+			GMT_set_geographic (GMT, GMT_IN);
+			GMT_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
 			break;
 		case 3:	/* 2-D lon, lat data, and Green's function needs cosine of spherical or geodesic distance */
+			GMT_set_geographic (GMT, GMT_IN);
+			GMT_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'S', way, GMT_MAP_DIST);
 			break;
 		case 4:	/* 3-D Cartesian x,y,z data handled separately */

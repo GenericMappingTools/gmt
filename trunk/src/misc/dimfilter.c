@@ -973,7 +973,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* No coordinates here */
+		GMT_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
 
 		/* read depths from each column until EOF */
 		while (fscanf (ip, "%lf", &err_depth) != EOF) {

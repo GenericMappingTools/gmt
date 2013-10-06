@@ -235,12 +235,11 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 		
 	if (s->geographic) {	/* Meaning longitude, latitude */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_OUT);
 		GMT->current.io.geo.range = s->geodetic;
 	}
 	else	/* Cartesian data */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
+		GMT_set_cartesian (GMT, GMT_OUT);
 		
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region to match TAG region */
 

@@ -375,10 +375,9 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 		}
 		n_outputs++;
 	}
-	if (GMT_is_geographic (GMT, GMT_IN)) {
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-	}
+	if (GMT_is_geographic (GMT, GMT_IN))
+		GMT_set_geographic (GMT, GMT_OUT);
+
 	if (n_outputs == 0) {	/* Generate default -Q setting (all) */
 		n_outputs = 5 - Ctrl->Z.active;
 		for (i = 0; i < 2; i++) output_choice[i] = i;

@@ -1464,7 +1464,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		}
 		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
 	if (!GMT_access (GMT, item, R_OK)) {	/* Gave a readable file, presumably a grid */
@@ -1500,7 +1500,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 	}
 	else if ((item[0] == 'g' || item[0] == 'd') && n_slash == 3) {	/* Here we have a region appended to -Rd|g */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
 		strncpy (string, &item[1], GMT_BUFSIZ);
 		GMT->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
@@ -1675,8 +1675,8 @@ int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg)
 	}
 	if (s) s[0] = '+';	/* Restore the geometry part */
 	/* -a implies -fg */
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+	GMT_set_geographic (GMT, GMT_IN);
+	GMT_set_geographic (GMT, GMT_OUT);
 	return (GMT_NOERROR);
 }
 
@@ -1886,8 +1886,8 @@ int gmt_parse_f_option (struct GMT_CTRL *GMT, char *arg)
 
 	if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
 		if (both_i_and_o) {
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+			GMT_set_geographic (GMT, GMT_IN);
+			GMT_set_geographic (GMT, GMT_OUT);
 		}
 		else {
 			col[GMT_X] = GMT_IS_LON;
@@ -6161,9 +6161,6 @@ void GMT_end (struct GMT_CTRL *GMT)
 
 	fflush (GMT->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
 
-#if 0	/* Already done in GMT_end_module */
-	gmt_free_user_media (GMT);	/* Free any user-specified media formats */
-#endif
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 
@@ -6242,17 +6239,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 
 	GMT->init.module_name = mod_name;
 	GMT->init.module_lib  = lib_name;
-#if 0
-	if (mod_name != NULL) {
-		/* mod_name should only be set for non-GMT modules. For internally
-		 * registered modules: mod_name == NULL */
-		//GMT->init.module_id = GMT_ID_NONE;
-		GMT->init.module_name = strdup (mod_name);
-	}
-	else
-		/* Remove pointer to module name referenced by Csave->init.module_name */
-		GMT->init.module_name = NULL;
-#endif
+
 	return (GMT);
 }
 
@@ -6270,10 +6257,6 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 	int i;
 	unsigned int V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
 	
-#if 0	/* I do not think we need the interstitial hist_cpy; just copy the pointers */
-	char *hist_cpy[GMT_N_UNIQUE];
-#endif
-
 	if (GMT->current.proj.n_geodesic_approx) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n", GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
 	}
@@ -6284,25 +6267,10 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 
 	/* GMT_INIT */
 
-#if 0
-	if (GMT->init.module_name != NULL)
-		free (GMT->init.module_name); /* before GMT will be clobbered by Ccopy below */
-#endif
-
 	/* We treat the history explicitly since we accumulate the history regardless of nested level */
-#if 0
-	GMT_memset (hist_cpy, GMT_N_UNIQUE, char *);
-	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT->init.history[i]) {
-		hist_cpy[i] = strdup (GMT->init.history[i]);	/* Copy what we have so far */
-		free (GMT->init.history[i]);		/* Free pointers in local GMT structure */
-	}
-#else
-	for (i = 0; i < GMT_N_UNIQUE; i++) {
-		/*if (Ccopy->init.history[i] && Ccopy->init.history[i] != GMT->init.history[i])
-			free (Ccopy->init.history[i]);*/
+
+	for (i = 0; i < GMT_N_UNIQUE; i++)
 		Ccopy->init.history[i] = GMT->init.history[i];
-	}
-#endif
 
 	/* GMT_CURRENT */
 
@@ -6334,19 +6302,6 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 	/* Now fix things that were allocated separately */
 
 	gmt_free_user_media (Ccopy);		/* Free user-specified media formats */
-#if 0
-	for (i = 0; i < GMT_N_UNIQUE; i++) if (hist_cpy[i]) {	/* Update the cumulative history list */
-		GMT->init.history[i] = strdup (hist_cpy[i]);
-		free (hist_cpy[i]);
-	}
-
-	/* GMT_COMMON */
-	if (GMT->common.U.label) free (GMT->common.U.label);
-	if (Ccopy->common.U.label) {
-		GMT->common.U.label = strdup (Ccopy->common.U.label);
-		free (Ccopy->common.U.label);
-	}
-#endif
 
 	free (Ccopy);	/* Good riddance */
 }
@@ -7615,10 +7570,10 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 		/* Check to see if scale is specified in 1:xxxx */
 		for (j = (int)strlen (args), k = -1; j > 0 && k < 0 && args[j] != '/'; j--) if (args[j] == ':') k = j + 1;
 		GMT->current.proj.units_pr_degree = (k == -1) ? true : false;
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
+		GMT_set_cartesian (GMT, GMT_OUT);	/* This may be overridden by mapproject -I */
 		if (project != GMT_LINEAR) {
 			GMT->current.proj.gave_map_width = mod_flag;
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+			GMT_set_geographic (GMT, GMT_IN);
 		}
 	}
 

@@ -420,13 +420,11 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
-	if (Ctrl->M.active) {
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* Since output is no longer lon/lat */
-	}
-	else {
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON; GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;	/* Output lon/lat */
-	}
+	GMT_set_geographic (GMT, GMT_IN);
+	if (Ctrl->M.active)
+		GMT_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
+	else
+		GMT_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 	
 	/* Keep original -R for later */
 	

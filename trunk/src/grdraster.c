@@ -181,14 +181,10 @@ void reset_coltype (struct GMT_CTRL *GMT, char *Rarg) {
 		size_t last;
 	if (!Rarg || (last = strlen (Rarg) == 0)) return;	/* Unable to do anything */
 	last--;	/* Index of last character in Rarg */
-	if (strchr (Rarg, ':') || strchr ("WESN", Rarg[last])) {
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
-	}
-	else {	/* Treat as Cartesian */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
-	}
+	if (strchr (Rarg, ':') || strchr ("WESN", Rarg[last]))
+		GMT_set_geographic (GMT, GMT_IN);
+	else	/* Treat as Cartesian */
+		GMT_set_cartesian (GMT, GMT_IN);
 }
 
 unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
@@ -774,11 +770,6 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	
-	/* Hardwire a -fg setting since this is geographic data */
-	
-	API->GMT->current.io.col_type[GMT_IN][GMT_X] = API->GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-	API->GMT->current.io.col_type[GMT_IN][GMT_Y] = API->GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-
 	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdraster_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
@@ -788,6 +779,9 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	/* Hardwire a -fg setting since this is geographic data */
+	GMT_set_geographic (GMT, GMT_IN);
+	GMT_set_geographic (GMT, GMT_OUT);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdraster_parse (GMT, Ctrl, options))) Return (error);
@@ -865,8 +859,14 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 
 	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
 
-	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = (myras.geo) ? GMT_IS_LON : GMT_IS_FLOAT;
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = (myras.geo) ? GMT_IS_LAT : GMT_IS_FLOAT;
+	if (myras.geo) {
+		GMT_set_geographic (GMT, GMT_IN);
+		GMT_set_geographic (GMT, GMT_OUT);
+	}
+	else {
+		GMT_set_cartesian (GMT, GMT_IN);
+		GMT_set_cartesian (GMT, GMT_OUT);
+	}
 
 	/* Everything looks OK so far.  If (Ctrl->I.active) verify that it will work, else set it.  */
 	if (Ctrl->I.active) {

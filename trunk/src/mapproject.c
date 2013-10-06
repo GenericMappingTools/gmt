@@ -286,7 +286,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 						Ctrl->G.unit = (c == '-' || c == '+') ? d : c;
 						n_errors += GMT_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->G.unit), "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
 					}
-					if (Ctrl->G.unit == 'c') GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;	/* Cartesian */
+					if (Ctrl->G.unit == 'c') GMT_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->G.lon), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->G.lat), txt_b);
@@ -539,7 +539,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 
 	if (!GMT->common.J.active) {	/* Supply dummy linear proj */
 		if (Ctrl->G.active && Ctrl->G.unit == 'X') {
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+			GMT_set_cartesian (GMT, GMT_IN);
 			GMT_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear Cartesian projection */
 		}
 		else
@@ -551,8 +551,8 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	}
 	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
 	
-	if (Ctrl->G.unit == 'X') GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;	/* Cartesian */
-	if (Ctrl->L.unit == 'X') GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;	/* Cartesian */
+	if (Ctrl->G.unit == 'X') GMT_set_cartesian (GMT, GMT_IN);	/* Cartesian */
+	if (Ctrl->L.unit == 'X') GMT_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 
 	if (Ctrl->G.mode && proj_type != GMT_GEO2CART) {	/* Ensure we use the selected output coordinates */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = save[GMT_X];
@@ -636,12 +636,12 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 
 	x = (GMT->current.setting.io_lonlat_toggle[GMT_OUT]) ? 1 : 0;	y = 1 - x;		/* Set up which columns have x and y for output only*/
 	if ((GMT_is_geographic (GMT, GMT_IN) || Ctrl->E.active) && Ctrl->I.active) {
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;	/* Inverse projection expects x,y and gives lon, lat */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+		GMT_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
+		GMT_set_cartesian (GMT, GMT_IN);
 	}
 	if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+		GMT_set_geographic (GMT, GMT_IN);
+		GMT_set_geographic (GMT, GMT_OUT);
 		GMT->current.io.col_type[GMT_IN][GMT_Z] = GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 	}
 

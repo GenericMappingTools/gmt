@@ -537,7 +537,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 		if (Din->n_columns == 3) Ctrl->T.mode = DO_ROTVAR3D;	/* OK, it is 3D */
 	}
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
+		GMT_set_cartesian (GMT, GMT_OUT);
 
 	Dout = GMT_alloc_dataset (GMT, Din, 0, n_out + add_cols, GMT_ALLOC_NORMAL);
 	GMT_memset (out, 3, double);

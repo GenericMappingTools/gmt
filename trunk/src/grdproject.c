@@ -255,8 +255,8 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (Ctrl->I.active) {	/* Must flip the column types since in is Cartesian and out is geographic */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;	/* Inverse projection expects x,y and gives lon, lat */
-		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+		GMT_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
+		GMT_set_cartesian (GMT, GMT_IN);
 	}
 	
 	if (GMT->common.R.active)	/* Load the w/e/s/n from -R */
