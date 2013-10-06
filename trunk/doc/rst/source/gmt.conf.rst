@@ -111,10 +111,9 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _DIR Parameters:
 
-.. _DIR_DATA:
-
 **DIR_DATA**
-    Replaces the session temp dir **$GMT_DATADIR** from the environment.
+    Session data dir. Overrides the value of the environment variable **$GMT_DATADIR**
+    (see :ref:`Directory parameters` in the CookBook).
 
 **DIR_DCW**
     Path to optional Digital Chart of the World polygon files.
@@ -122,16 +121,14 @@ fonts can be found in the :doc:`gmt` man page.
 **DIR_GSHHG**
     Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
 
-.. _DIR_TMP:
-
 **DIR_TMP**
-    Replaces the session temp dir **$GMT_TMPDIR** from the environment.
-
-.. _DIR_USER:
+    Session temp dir. Overrides the value of the environment variable **$GMT_TMPDIR**
+    (see :ref:`Directory parameters` and :ref:`Isolation mode <Isolation mode>` in the
+    CookBook).
 
 **DIR_USER**
-    Replaces the session user dir **$GMT_USERDIR** from the
-    environment.
+    Session user dir. Overrides the value of the environment variable **$GMT_USERDIR**
+    (see :ref:`Directory parameters` in the CookBook).
 
 .. _FONT Parameters:
 

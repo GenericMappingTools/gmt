@@ -1889,7 +1889,7 @@ converts geodetic latitudes into one of several possible auxiliary
 latitudes that are better suited for the spherical approximation. While
 both settings have default values to best approximate geodesic distances
 (*authalic* mean radius and latitudes), expert users can choose from a
-range of options as detailed in the ``gmt.conf`` man page.
+range of options as detailed in the :doc:`gmt.conf` man page.
 
 Geodesic distances
 ^^^^^^^^^^^^^^^^^^
@@ -2462,7 +2462,7 @@ is shown in Figure :ref:`Geographic map border <basemap_border>`.
 
    Geographic map border using separate selections for annotation,
    frame, and grid intervals.  Formatting of the annotation is controlled by
-   the parameter :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>` in your gmt.conf.
+   the parameter :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>` in your :doc:`gmt.conf`.
 
 
 The machinery for primary and secondary annotations introduced for
@@ -3020,7 +3020,7 @@ that start with the character # are automatically considered header
 records and skipped. Thus, *n_recs* refers to general text lines that
 do *not* start with # and thus must specifically be skipped in order for
 the programs to function properly. The default number of such header
-records if **-h** is used is one of the many parameters in the ``gmt.conf`` file
+records if **-h** is used is one of the many parameters in the :doc:`gmt.conf` file
 (**IO_N_HEADER_RECS**, by default 0), but can be overridden by
 **-h**\ *n_header_recs*. Normally, programs that both read and write
 tables will output the header records that are found on input. Use
@@ -3341,7 +3341,7 @@ data like UTM coordinates.
 
 Because of the widespread use of incompatible and ambiguous formats, the
 processing of input date components is guided by the template
-:ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` in your ``gmt.conf`` file; it is by default set to *yyyy-mm-dd*.
+:ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` in your :doc:`gmt.conf` file; it is by default set to *yyyy-mm-dd*.
 Y2K-challenged input data such as 29/05/89 can be processed by setting
 :ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` to dd/mm/yy. A complete description of possible
 formats is given in the :doc:`gmt.conf` man
@@ -3698,7 +3698,7 @@ The *Fill* information follows the format given in Section `Specifying area fill
 While not always applicable to categorical data, the background color
 (for *key*-values < :math:`key_1`), foreground color (for
 *key*-values > :math:`key_{n}`), and not-a-number (NaN)
-color (for *key*-values = NaN) are all defined in the ``gmt.conf`` file, but can be
+color (for *key*-values = NaN) are all defined in the :doc:`gmt.conf` file, but can be
 overridden by the statements
 
 +-----+---------------------+
@@ -3744,7 +3744,7 @@ make :doc:`psscale`, when used with the
 As for categorical tables, the background color (for *z*-values
 < :math:`z_0`), foreground color (for *z*-values >
 :math:`z_{n-1}`), and not-a-number (NaN) color (for *z*-values =
-NaN) are all defined in the ``gmt.conf`` file, but can be overridden by the
+NaN) are all defined in the :doc:`gmt.conf` file, but can be overridden by the
 statements
 
 +-----+---------------------+
@@ -3756,7 +3756,7 @@ statements
 +-----+---------------------+
 
 which can be inserted into the beginning or end of the CPT file. If you
-prefer the HSV system, set the ``gmt.conf`` parameter accordingly and replace red,
+prefer the HSV system, set the :doc:`gmt.conf` parameter accordingly and replace red,
 green, blue with hue, saturation, value. Color palette tables that
 contain gray-shades only may replace the *r/g/b* triplets with a single
 gray-shade in the 0--255 range. For CMYK, give *c/m/y/k* values in the
@@ -4115,7 +4115,7 @@ a ``.gmt_io`` file:
 
 These suffices can be anything that makes sense to the user. To activate
 this mechanism, set parameter :ref:`IO_GRIDFILE_SHORTHAND <IO_GRIDFILE_SHORTHAND>` to TRUE in
-your ``gmt.conf`` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs///32767``, and the
+your :doc:`gmt.conf` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs///32767``, and the
 filename ``wet.mask`` means wet.mask=bm/1/0/0. For a file intended for masking, i.e.,
 the nodes are either 1 or NaN, the bit or mask format file may be as
 small as 1/32 the size of the corresponding grid float format file.
@@ -4438,7 +4438,7 @@ test if a floating point is a NaN. GMT uses these tests extensively to
 determine if a value is suitable for plotting or processing (if a NaN is
 used in a calculation the result would become NaN as well). Data points
 whose values equal NaN are not normally plotted (or plotted with the
-special NaN color given in ``gmt.conf``). Several tools such as
+special NaN color given in :doc:`gmt.conf`). Several tools such as
 :doc:`xyz2grd`, :doc:`gmtmath`, and
 :doc:`grdmath` can convert user data to NaN
 and vice versa, thus facilitating arbitrary masking and clipping of data
@@ -4459,49 +4459,56 @@ line into separate segments. The alternative setting (*bad*) makes no
 such interpretation and simply reports back how many bad records were
 skipped during reading; see Section `Data gap detection: The -g option`_ for details.
 
-GMT environment parameters
---------------------------
+.. _Directory parameters:
 
-GMT relies on several environment parameters, in particular to find
-data files and program settings.
+Directory parameters
+--------------------
 
-$GMT_SHAREDIR
-    points to the GMT share directory where all run-time support files
-    such as coastlines, custom symbols, PostScript macros, color
-    tables, and much more reside. If this parameter is not set it
-    defaults to the share sub-directory selected during the GMT
-    install process (see if installing from source), which normally is
-    the share directory under the GMT installation directory.
+GMT versions prior to GMT 5 relied on several environment variables
+($GMT_SHAREDIR, $GMT_DATADIR, $GMT_USERDIR, and $GMT_TMPDIR), pointing
+to folders with data files and program settings. Beginning with version
+5, these locations are configurable with the :doc:`gmtset` utility.
+The environment variables are still supported but are overridden by the
+:ref:`directory parameters <DIR Parameters>` DIR_DATA, DIR_USER, and
+DIR_TMP in :doc:`gmt.conf`.
 
-$GMT_DATADIR
-    points to one or more directories where large and/or widely used
-    data files can be placed. All GMT programs look in these
-    directories when a file is specified on the command line and it is
-    not present in the current directory. This allows maintainers to
-    consolidate large data files and to simplify scripting that use
-    these files since the absolute path need not be specified. Separate
-    multiple directories with colons (:); under Windows you use
-    semi-colons (;). Any directory name that ends in a trailing / will
-    be searched recursively (not under Windows).
+Variable $GMT_SHAREDIR
+    was sometimes required in previous GMT versions to locate the GMT
+    share directory where all run-time support files such as coastlines,
+    custom symbols, PostScript macros, color tables, and much more reside.
+    If this parameter is not set (default), GMT will make a reasonable
+    guess of the location of its share folder. Setting this variable is
+    usually not required and recommended only under special circumstances.
 
-$GMT_USERDIR
-    points to a directory where the user may place custom configuration
-    files (e.g., an alternate ``coastline.conf`` file, preferred default settings in  ``gmt.conf``,
-    custom symbols and color palettes, math macros for
-    :doc:`gmtmath` and
-    :doc:`grdmath`, and shorthands for
-    gridfile extensions via ``.gmt.io``). Users may also place their own data files
-    in this directory as GMT programs will search for files given on
-    the command line in both **$GMT_DATADIR** and **$GMT_USERDIR**.
+Variable $GMT_DATADIR and parameter DIR_DATA
+    may point to one or more directories where large and/or widely used
+    data files can be placed. All GMT programs look in these directories
+    when a file is specified on the command line and it is not present in
+    the current directory. This allows maintainers to consolidate large
+    data files and to simplify scripting that use these files since the
+    absolute path need not be specified. Separate multiple directories
+    with colons (:) -- under Windows use semi-colons (;). Any directory
+    name that ends in a trailing slash (/) will be searched recursively
+    (not under Windows).
 
-$GMT_TMPDIR
-    is where GMT will write its state parameters via the two files ``gmt.history`` and
-    ``gmt.conf``. If **$GMT_TMPDIR** is not set, these files are written to the
-    current directory. See Appendix [app:P] for more on the use of
-    **$GMT_TMPDIR**.
+Variable $GMT_USERDIR and parameter DIR_USER
+    may point to a directory where the user places custom configuration
+    files (e.g., an alternate ``coastline.conf`` file, preferred default
+    settings in ``gmt.conf``, custom symbols and color palettes, math
+    macros for :doc:`gmtmath` and :doc:`grdmath`, and shorthands for
+    gridfile extensions via ``gmt_io``). Users may also place their own
+    data files in this directory as GMT programs will search for files
+    given on the command line in both DIR_DATA and DIR_USER.
+
+Variable $GMT_TMPDIR and parameter DIR_TMP
+    may indicate the location, where GMT will write its state parameters
+    via the two files ``gmt.history`` and ``gmt.conf``. If DIR_TMP is not
+    set, these files are written to the current directory. See Section
+    `Isolation mode`_ for more information.
 
 Note that files whose full path is given will never be searched for in
 any of these directories.
+
 
 GMT Coordinate Transformations
 ==============================
@@ -6246,7 +6253,7 @@ The first data record may be preceded by one or more header records. Any
 records that begins with '#' is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
-**-h** option and set the parameter :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` in the ``gmt.conf`` file
+**-h** option and set the parameter :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` in the :doc:`gmt.conf` file
 (GMT default is one header record if **-h** is given; you may also use
 **-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, or commas. Each field can be an integer or floating-point
@@ -7041,7 +7048,7 @@ encoded fonts are shown in
 Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`Ft`\ ext]. Light red areas signify
 codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to Standard+ or ISOLatin1+ in your ``gmt.conf`` file [41]_.
+:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to Standard+ or ISOLatin1+ in your :doc:`gmt.conf` file [41]_.
 
 .. figure:: /_images/GMT_App_F_stand+_iso+.*
    :width: 500 px
@@ -7175,7 +7182,8 @@ Character encoding
 
 Since PostScript itself does not support Unicode fonts,
 Ghostscript will re-encode the fonts on the fly. You have to make
-sure to set the correct :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` with gmtset and save your
+sure to set the correct :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>`
+with :doc:`gmtset` and save your
 script file with the same character encoding. Alternatively, you can
 substitute all non ASCII characters with their corresponding octal
 codes, e.g., \\265 instead of μ. Note, that PostScript fonts support
@@ -7442,7 +7450,7 @@ necessary) and then darkened by moving (*sv*) toward
 if the intensity is negative, or lightened by sliding (*sv*) toward
 (:ref:`COLOR_HSV_MAX_SATURATION <COLOR_HSV_MAX_SATURATION>`, :ref:`COLOR_HSV_MAX_VALUE <COLOR_HSV_MAX_VALUE>`)
 if the illumination is positive. The extremes of the *s* and *v* are defined in the
-``gmt.conf`` file and are usually chosen so the corresponding points are nearly black
+:doc:`gmt.conf` file and are usually chosen so the corresponding points are nearly black
 (*s = 1*, *v = 0*) and white (*s = 0*, *v = 1*).
 The reason this works is that the HSV system allows movements in color
 space which correspond more closely to what we mean by "tint" and
@@ -7495,7 +7503,7 @@ thesis, for example, it might be worth trying to save and print all your
 color plots using the CMYK system. Letting GMT do the conversion to
 CMYK may avoid some nasty surprises when it comes down to printing. To
 specify the color space of your PostScript file, set
-:ref:`PS_COLOR_MODEL <PS_COLOR_MODEL>` in the ``gmt.conf`` file to RGB, HSV, or CMYK.
+:ref:`PS_COLOR_MODEL <PS_COLOR_MODEL>` in the :doc:`gmt.conf` file to RGB, HSV, or CMYK.
 
 I. Filtering of data in GMT
 ===========================
@@ -8798,6 +8806,7 @@ with the complete illustration presented as Figure :ref:`missing` [fig:GMT\ :sub
 O. Special Operations
 =====================
 
+.. _Isolation mode:
 
 Running GMT in *isolation mode*
 -------------------------------
