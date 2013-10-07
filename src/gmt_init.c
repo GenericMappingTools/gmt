@@ -6247,7 +6247,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 	/* GMT_COMMON */
 	if (GMT->common.U.label) Csave->common.U.label = strdup (GMT->common.U.label);
 	for (i = 0; i < GMT->common.a.n_aspatial; i++)
-		if (GMT->common.a.name[i]) Csave->common.a.name[i] = strlen (GMT->common.a.name[i]);
+		if (GMT->common.a.name[i]) Csave->common.a.name[i] = strdup (GMT->common.a.name[i]);
 
 	/* Reset all the common.?.active settings to false */
 
