@@ -1020,7 +1020,7 @@ int io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned d
 		count[yx_dim[1]] = width;
 		while ( start[yx_dim[0]] + count[yx_dim[0]] <= height && status == NC_NOERR) {
 #ifdef NC4_DEBUG
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "chunked row #%u start-y:%zu height:%zu\n",
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "chunked row #%u start-y:%" PRIuS " height:%" PRIuS "\n",
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
 			/* get/put chunked rows */
@@ -1042,7 +1042,7 @@ int io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned d
 			/* get/put last chunked row */
 			count[yx_dim[0]] = height - start[yx_dim[0]] + origin[0];
 #ifdef NC4_DEBUG
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "chunked row #%u start-y:%zu height:%zu\n",
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "chunked row #%u start-y:%" PRIuS " height:%" PRIuS "\n",
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
 			if (stride)
