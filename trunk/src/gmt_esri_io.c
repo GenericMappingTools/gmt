@@ -556,7 +556,7 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	GMT_fclose (GMT, fp);
 	GMT_free (GMT, actual_col);
-	GMT_free (GMT, tmp);
+	if (tmp) GMT_free (GMT, tmp);
 
 	if (n_left) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);
