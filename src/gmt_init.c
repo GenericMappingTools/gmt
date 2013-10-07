@@ -1110,13 +1110,20 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 			break;
 
 		case 'U':	/* Set time stamp option */
-			GMT_message (GMT, "\t-U[<just>/<dx>/<dy>/][c|<label>], c will plot command line.\n");
+			GMT_message (GMT, "\t%s\n", GMT_U_OPT);
+			GMT_message (GMT, "\t   Plot the time stamp and optional command line or text.\n");
 			break;
 
 		case 'X':
+			GMT_message (GMT, "\t%s\n", GMT_X_OPT);
+			GMT_message (GMT, "\tPrepend a for temporary adjustment, c for center of page reference,\n");
+			GMT_message (GMT, "\tf for lower left corner of page reference, r (or none) for relative to\n");
+			GMT_message (GMT, "\tcurrent position; u is unit (c, i, p).\n");
+			break;
+
 		case 'Y':
-			GMT_message (GMT, "\t-%c[a|c|f|r]<shift>[u]\n", option);
-			GMT_message (GMT, "\tPrepend a for temporaty adjustment, c for center of page reference,\n");
+			GMT_message (GMT, "\t%s\n", GMT_Y_OPT);
+			GMT_message (GMT, "\tPrepend a for temporary adjustment, c for center of page reference,\n");
 			GMT_message (GMT, "\tf for lower left corner of page reference, r (or none) for relative to\n");
 			GMT_message (GMT, "\tcurrent position; u is unit (c, i, p).\n");
 			break;
@@ -1127,19 +1134,28 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 			}
 			break;
 
+		case 'a':	/* -a option for aspatial field substitution into data columns */
+
+			GMT_message (GMT, "\t%s\n", GMT_a_OPT);
+			GMT_message (GMT, "\t  Specify the aspatial field information.\n");
+			break;
+
 		case 'b':	/* Binary i/o option  */
-			GMT_message (GMT, "\t-b[i|o][<n>][<t>][w][+L|B], i for input, o for output [Default is both].\n");
+			GMT_message (GMT, "\t%s\n", GMT_b_OPT);
+			GMT_message (GMT, "\t   Binary data, add i for input, o for output [Default is both].\n");
 			GMT_message (GMT, "\t   Here, t is c|u|h|H|i|I|l|L|f|d [Default is d (double)].\n");
 			GMT_message (GMT, "\t   Prepend the number of data columns (for input only).\n");
 			GMT_message (GMT, "\t   Append w to byte swap an item; append +L|B to fix endianness of file.\n");
 			break;
 
 		case 'c':	/* Set number of plot copies option */
-			GMT_message (GMT, "\t-c<copies>, copies is number of copies\n");
+			GMT_message (GMT, "\t%s\n", GMT_c_OPT);
+			GMT_message (GMT, "\t   Set the number of PS copies\n");
 			break;
 
 		case 'f':	/* Column information option  */
-			GMT_message (GMT, "\t-f[i|o]<colinfo>, i for input, o for output [Default is both].\n");
+			GMT_message (GMT, "\t%s\n", GMT_f_OPT);
+			GMT_message (GMT, "\t   Column information, add i for input, o for output [Default is both].\n");
 			GMT_message (GMT, "\t   <colinfo> is <colno>|<colrange>u, where column numbers start at 0\n");
 			GMT_message (GMT, "\t   a range is given as <first>-<last>, e.g., 2-5., u is type:\n");
 			GMT_message (GMT, "\t   t: relative time, T: absolute time, f: floating point,\n");
@@ -1152,7 +1168,46 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 			break;
 
 		case 'h':	/* Header */
-			GMT_message (GMT, "\t-h[n_items]\n");
+
+			GMT_message (GMT, "\t%s\n", GMT_h_OPT);
+			GMT_message (GMT, "\t   Specify if Input/output file has header record(s)\n");
+			GMT_message (GMT, "\t   Optionally, append i for input only and/or number of header records [0].\n");
+			GMT_message (GMT, "\t     -hi turns off the writing of all headers on output.\n");
+			GMT_message (GMT, "\t   Append +c to add header record with column information [none].\n");
+			GMT_message (GMT, "\t   Append +d to delete headers before adding new ones [Default will append headers].\n");
+			GMT_message (GMT, "\t   Append +r to add a <remark> comment to the output [none].\n");
+			GMT_message (GMT, "\t   Append +t to add a <title> comment to the output [none].\n");
+			GMT_message (GMT, "\t     (these strings may contain \\n to indicate line-breaks)\n");
+			GMT_message (GMT, "\t   For binary files, <n> is considered to mean number of bytes.\n");
+			break;
+
+		case 'i':	/* -i option for input column order */
+
+			GMT_message (GMT, "\t%s\n", GMT_i_OPT);
+			GMT_message (GMT, "\t   Sets alternate input column order and/or scaling [Default reads all columns in order].\n");
+			break;
+
+		case 'n':	/* -n option for grid resampling parameters in BCR */
+
+			GMT_message (GMT, "\t%s\n", GMT_n_OPT);
+			GMT_message (GMT, "\t   Determine the grid interpolation mode.\n");
+			GMT_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
+			GMT_message (GMT, "\t   Append +a switch off antialiasing (except for l) [Default: on].\n");
+			GMT_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
+			GMT_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
+			GMT_message (GMT, "\t   x for periodic boundary conditions on x,\n");
+			GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
+			GMT_message (GMT, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
+			GMT_message (GMT, "\t   Append +c to clip interpolated grid to input z-min/max [Default may exceed limits].\n");
+			GMT_message (GMT, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
+			GMT_message (GMT, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
+			GMT_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
+			break;
+
+		case 'o':	/* -o option for output column order */
+
+			GMT_message (GMT, "\t%s\n", GMT_o_OPT);
+			GMT_message (GMT, "\t   Sets alternate output column order and/or scaling [Default writes all columns in order].\n");
 			break;
 
 		case 'p':
@@ -1162,12 +1217,20 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 			break;
 
 		case 's':	/* Skip records with NaN as z */
-			GMT_message (GMT, "\t-s[<col>][a][r] to skip records whose <col> [2] output is NaN.\n");
+			GMT_message (GMT, "\t%s\n", GMT_s_OPT);
+			GMT_message (GMT, "\t   Skip records whose <col> [2] output is NaN.\n");
 			GMT_message (GMT, "\t   a skips if ANY columns is NaN, while r reverses the action.\n");
 			break;
 
+		case 't':	/* -t layer transparency option  */
+
+			GMT_message (GMT, "\t%s\n", GMT_t_OPT);
+			GMT_message (GMT, "\t   Set the layer PDF transparency from 0-100 [Default is 0; opaque].\n");
+			break;
+
 		case ':':	/* lon/lat vs lat/lon i/o option  */
-			GMT_message (GMT, "\t-:[i|o], i for input, o for output [Default is both].\n");
+			GMT_message (GMT, "\t%s\n", GMT_colon_OPT);
+			GMT_message (GMT, "\t   Interpret first two columns, add i for input, o for output [Default is both].\n");
 			GMT_message (GMT, "\t   Swap 1st and 2nd column on input and/or output.\n");
 			break;
 
