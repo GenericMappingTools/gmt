@@ -548,7 +548,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			if (strspn(GMT->session.grdformat[G->header->type], "nc") != 0) {
 				/* type is netCDF: report chunk size and deflation level */
 				if (G->header->is_netcdf4) {
-					sprintf (text, " chunk_size: %zu,%zu shuffle: %s deflation_level: %u",
+					sprintf (text, " chunk_size: %" PRIuS ",%" PRIuS " shuffle: %s deflation_level: %u",
 							G->header->z_chunksize[0], G->header->z_chunksize[1],
 							G->header->z_shuffle ? "on" : "off", G->header->z_deflate_level);
 				}

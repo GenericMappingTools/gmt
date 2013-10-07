@@ -1953,7 +1953,7 @@ int GMT_fft_2d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsi
 
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
         if ((work_size = brenner_worksize (GMT, nx, ny))) work = GMT_memory (GMT, NULL, work_size, float);
-        GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
+        GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %" PRIuS "\n", work_size);
         (void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
         if (work_size) GMT_free (GMT, work);
         return (GMT_OK);

@@ -316,9 +316,9 @@ static inline void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) 
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double size = gmt_memtrack_mem (GMT, x->size, &u);
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s (ID = %zu): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s (ID = %" PRIuS "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 	if (M->do_log)
-		fprintf (M->fp, "# Memory not freed first allocated in %s (ID = %zu): %.3f %s [%"
+		fprintf (M->fp, "# Memory not freed first allocated in %s (ID = %" PRIuS "): %.3f %s [%"
 						 PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 }
 
