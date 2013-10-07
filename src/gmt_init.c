@@ -2820,7 +2820,10 @@ void gmt_free_user_media (struct GMT_CTRL *GMT) {	/* Free any user-specified med
 
 	if (GMT->session.n_user_media == 0) return;	/* Nothing to free */
 	
-	for (i = 0; i < GMT->session.n_user_media; i++) free (GMT->session.user_media_name[i]);
+	for (i = 0; i < GMT->session.n_user_media; i++) {
+		free (GMT->session.user_media_name[i]);
+		GMT->session.user_media_name[i] = NULL;
+	}
 	GMT_free (GMT, GMT->session.user_media_name);
 	GMT_free (GMT, GMT->session.user_media);
 	GMT->session.n_user_media = 0;
@@ -5879,18 +5882,26 @@ int GMT_get_char_encoding (struct GMT_CTRL *GMT, char *name)
 }
 
 int gmt_setshorthand (struct GMT_CTRL *GMT) {
-	/* Read user's .gmt_io file and initialize shorthand notation */
+	/* Read user's gmt.io file and initialize shorthand notation */
 	unsigned int id, n = 0;
 	size_t n_alloc = 0;
 	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, a[GMT_LEN64] = {""}, b[GMT_LEN64] = {""};
 	char c[GMT_LEN64] = {""}, d[GMT_LEN64] = {""}, e[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 
-	GMT->session.n_shorthands = 0; /* By default there are no shorthands unless .gmt_io is found */
+	GMT->session.n_shorthands = 0; /* By default there are no shorthands unless gmt.io is found */
 
-	if (!GMT_getuserpath (GMT, ".gmt_io", file)) {
-		if (!GMT_getsharepath (GMT, "", "gmt_io", "", file)) /* try non-hidden file in ~/.gmt */
-			return GMT_OK;
+	if (!GMT_getuserpath (GMT, "gmt.io", file)) {
+		if (!GMT_getsharepath (GMT, "", "gmt.io", "", file)) {	/* try non-hidden file in ~/.gmt */
+			if (GMT_compat_check (GMT, 4)) {	/* Look for obsolete .gmt_io files */
+				if (!GMT_getuserpath (GMT, ".gmt_io", file)) {
+					if (!GMT_getsharepath (GMT, "", "gmt_io", "", file))	/* try non-hidden file in ~/.gmt */
+						return GMT_OK;
+				}
+			}
+			else
+				return GMT_OK;
+		}
 	}
 	if ((fp = fopen (file, "r")) == NULL)
 		return GMT_OK;
@@ -6122,7 +6133,10 @@ void GMT_end (struct GMT_CTRL *GMT)
 	gmt_put_history (GMT);
 
 	/* Remove font structures */
-	for (i = 0; i < GMT->session.n_fonts; i++) free (GMT->session.font[i].name);
+	for (i = 0; i < GMT->session.n_fonts; i++) {
+		free (GMT->session.font[i].name);
+		GMT->session.font[i].name = NULL;
+	}
 	GMT_free (GMT, GMT->session.font);
 #ifdef __FreeBSD__
 #ifdef _i386_
@@ -6131,35 +6145,36 @@ void GMT_end (struct GMT_CTRL *GMT)
 #endif
 #endif
 
-	if (GMT->init.runtime_bindir) free (GMT->init.runtime_bindir);
-	if (GMT->init.runtime_libdir) free (GMT->init.runtime_libdir);
-	free (GMT->session.SHAREDIR);
-	free (GMT->session.HOMEDIR);
-	if (GMT->session.DATADIR)
-		free (GMT->session.DATADIR);
-	if (GMT->session.DCWDIR)
-		free (GMT->session.DCWDIR);
-	if (GMT->session.GSHHGDIR)
-		free (GMT->session.GSHHGDIR);
-	if (GMT->session.USERDIR)
-		free (GMT->session.USERDIR);
-	if (GMT->session.TMPDIR)
-		free (GMT->session.TMPDIR);
-	if (GMT->session.CUSTOM_LIBS)
-		free (GMT->session.CUSTOM_LIBS);
-	for (i = 0; i < GMT_N_PROJ4; i++)
+	if (GMT->init.runtime_bindir) free (GMT->init.runtime_bindir), GMT->init.runtime_bindir = NULL;
+	if (GMT->init.runtime_libdir) free (GMT->init.runtime_libdir), GMT->init.runtime_libdir = NULL;
+	free (GMT->session.SHAREDIR), GMT->session.SHAREDIR = NULL;
+	free (GMT->session.HOMEDIR), GMT->session.HOMEDIR = NULL;
+	if (GMT->session.DATADIR) free (GMT->session.DATADIR), GMT->session.DATADIR = NULL;
+	if (GMT->session.DCWDIR) free (GMT->session.DCWDIR), GMT->session.DCWDIR = NULL;
+	if (GMT->session.GSHHGDIR) free (GMT->session.GSHHGDIR), GMT->session.GSHHGDIR = NULL;
+	if (GMT->session.USERDIR) free (GMT->session.USERDIR),  GMT->session.USERDIR = NULL;
+	if (GMT->session.TMPDIR) free (GMT->session.TMPDIR), GMT->session.TMPDIR = NULL;
+	if (GMT->session.CUSTOM_LIBS) free (GMT->session.CUSTOM_LIBS), GMT->session.CUSTOM_LIBS = NULL;
+	for (i = 0; i < GMT_N_PROJ4; i++) {
 		free (GMT->current.proj.proj4[i].name);
-	GMT_free (GMT, GMT->current.proj.proj4);
-	for (i = 0; i < GMT_N_UNIQUE; i++) {
-		if (GMT->init.history[i]) free ((void *) GMT->init.history[i]);
+		GMT->current.proj.proj4[i].name = NULL;
 	}
-	for (i = 0; i < GMT_MAX_COLUMNS; i++)
-		if (GMT->current.io.o_format[i]) free (GMT->current.io.o_format[i]);
-	for (i = 0; i < GMT->common.a.n_aspatial; i++)
-		if (GMT->common.a.name[i]) free (GMT->common.a.name[i]);
-	if (GMT->common.h.title) free ((void *)GMT->common.h.title);
-	if (GMT->common.h.remark) free ((void *)GMT->common.h.remark);
-	if (GMT->common.h.colnames) free ((void *)GMT->common.h.colnames);
+	GMT_free (GMT, GMT->current.proj.proj4);
+	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT->init.history[i]) {
+		free ((void *) GMT->init.history[i]);
+		GMT->init.history[i] = NULL;
+	}
+	for (i = 0; i < GMT_MAX_COLUMNS; i++) if (GMT->current.io.o_format[i]) {
+		free (GMT->current.io.o_format[i]);
+		GMT->current.io.o_format[i] = NULL;
+	}
+	for (i = 0; i < GMT->common.a.n_aspatial; i++) if (GMT->common.a.name[i]) {
+		free (GMT->common.a.name[i]);
+		GMT->common.a.name[i] = NULL;
+	}
+	if (GMT->common.h.title) free ((void *)GMT->common.h.title), GMT->common.h.title = NULL;
+	if (GMT->common.h.remark) free ((void *)GMT->common.h.remark), GMT->common.h.remark = NULL;
+	if (GMT->common.h.colnames) free ((void *)GMT->common.h.colnames), GMT->common.h.colnames = NULL;
 		
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_freeshorthand (GMT);
 
@@ -6225,8 +6240,14 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 	Csave->current.io.OGR = GMT_duplicate_ogr (GMT, GMT->current.io.OGR);	/* Duplicate OGR struct, if set */
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
 
+	GMT_memset (Csave->current.io.o_format, GMT_MAX_COLUMNS, char *);
+	for (i = 0; i < GMT_MAX_COLUMNS; i++)
+		if (GMT->current.io.o_format[i]) Csave->current.io.o_format[i] = strdup (GMT->current.io.o_format[i]);
+
 	/* GMT_COMMON */
 	if (GMT->common.U.label) Csave->common.U.label = strdup (GMT->common.U.label);
+	for (i = 0; i < GMT->common.a.n_aspatial; i++)
+		if (GMT->common.a.name[i]) Csave->common.a.name[i] = strlen (GMT->common.a.name[i]);
 
 	/* Reset all the common.?.active settings to false */
 
@@ -6258,7 +6279,7 @@ void gmt_free_plot_array (struct GMT_CTRL *GMT) {
 
 void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 {
-	int i;
+	unsigned int i;
 	unsigned int V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
 	
 	if (GMT->current.proj.n_geodesic_approx) {
@@ -6285,6 +6306,10 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 
 	if (Ccopy->common.U.label && Ccopy->common.U.label != GMT->common.U.label) free (Ccopy->common.U.label);
 	Ccopy->common.U.label = GMT->common.U.label;
+	for (i = 0; i < GMT->common.a.n_aspatial; i++) if (GMT->common.a.name[i]) {
+		free (GMT->common.a.name[i]);
+		GMT->common.a.name[i] = NULL;
+	}
 
 	/* GMT_PLOT */
 
@@ -6296,6 +6321,10 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
+	for (i = 0; i < GMT_MAX_COLUMNS; i++) if (GMT->current.io.o_format[i]) {
+		free (GMT->current.io.o_format[i]);
+		GMT->current.io.o_format[i] = NULL;
+	}
 
 	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 
@@ -9923,7 +9952,7 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 
 	gmt_get_history (GMT);	/* Process and store command shorthands passed to the application */
 
-	if (GMT->current.setting.io_gridfile_shorthand) gmt_setshorthand (GMT);	/* Load the short hand mechanism from .gmt_io */
+	if (GMT->current.setting.io_gridfile_shorthand) gmt_setshorthand (GMT);	/* Load the short hand mechanism from gmt.io */
 
 	GMT_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
 
