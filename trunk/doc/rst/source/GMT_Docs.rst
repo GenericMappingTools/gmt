@@ -4084,9 +4084,9 @@ grid files may actually use the "=" character as part of their name
 One can also define special file suffixes to imply a specific file
 format; this approach represents a more intuitive and user-friendly way
 to specify the various file formats. The user may create a file called
-``.gmt_io`` in the current directory or home directory, or a file ``gmt_io`` in the directory
+``gmt.io`` in the current directory or home directory, or in the directory
 ``~/.gmt`` and define any number of custom formats. The following is an example of
-a ``.gmt_io`` file:
+a ``gmt.io`` file:
 
 +---------------------------------------------------------------------------+
 | # suffix format_id scale offset NaNxxxComments # GMT i/o shorthand file   |
