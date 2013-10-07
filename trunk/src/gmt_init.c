@@ -1372,11 +1372,11 @@ int gmt_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 					GMT->common.h.add_colnames = true;
 					break;
 				case 'r':	/* Add specific text remark */
-					if (GMT->common.h.remark) free ((void *)GMT->common.h.remark);
+					if (GMT->common.h.remark) free (GMT->common.h.remark);
 					GMT->common.h.remark = strdup (&p[1]);
 					break;
 				case 't':	/* Add specific text title */
-					if (GMT->common.h.title) free ((void *)GMT->common.h.title);
+					if (GMT->common.h.title) free (GMT->common.h.title);
 					GMT->common.h.title = strdup (&p[1]);
 					break;
 				default:	/* Bad modifier */
@@ -6224,7 +6224,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 	}
 	GMT_free (GMT, GMT->current.proj.proj4);
 	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT->init.history[i]) {
-		free ((void *) GMT->init.history[i]);
+		free (GMT->init.history[i]);
 		GMT->init.history[i] = NULL;
 	}
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) if (GMT->current.io.o_format[i]) {
@@ -6235,9 +6235,9 @@ void GMT_end (struct GMT_CTRL *GMT)
 		free (GMT->common.a.name[i]);
 		GMT->common.a.name[i] = NULL;
 	}
-	if (GMT->common.h.title) free ((void *)GMT->common.h.title), GMT->common.h.title = NULL;
-	if (GMT->common.h.remark) free ((void *)GMT->common.h.remark), GMT->common.h.remark = NULL;
-	if (GMT->common.h.colnames) free ((void *)GMT->common.h.colnames), GMT->common.h.colnames = NULL;
+	if (GMT->common.h.title)    free (GMT->common.h.title),    GMT->common.h.title    = NULL;
+	if (GMT->common.h.remark)   free (GMT->common.h.remark),   GMT->common.h.remark   = NULL;
+	if (GMT->common.h.colnames) free (GMT->common.h.colnames), GMT->common.h.colnames = NULL;
 		
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_freeshorthand (GMT);
 
@@ -6311,6 +6311,9 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 	if (GMT->common.U.label) Csave->common.U.label = strdup (GMT->common.U.label);
 	for (i = 0; i < GMT->common.a.n_aspatial; i++)
 		if (GMT->common.a.name[i]) Csave->common.a.name[i] = strdup (GMT->common.a.name[i]);
+	if (GMT->common.h.title) Csave->common.h.title = strdup (GMT->common.h.title);
+	if (GMT->common.h.remark) Csave->common.h.remark = strdup (GMT->common.h.remark);
+	if (GMT->common.h.colnames) Csave->common.h.colnames = strdup (GMT->common.h.colnames);
 
 	/* Reset all the common.?.active settings to false */
 
@@ -6373,6 +6376,9 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 		free (GMT->common.a.name[i]);
 		GMT->common.a.name[i] = NULL;
 	}
+	if (GMT->common.h.title)    free (GMT->common.h.title),    GMT->common.h.title    = NULL;
+	if (GMT->common.h.remark)   free (GMT->common.h.remark),   GMT->common.h.remark   = NULL;
+	if (GMT->common.h.colnames) free (GMT->common.h.colnames), GMT->common.h.colnames = NULL;
 
 	/* GMT_PLOT */
 
@@ -6588,7 +6594,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				if (!GMT->init.history[B_id]) Return;
 				opt2 = opt;			/* Since we dont want to change the opt loop avove */
 				B_next = opt->next;		/* Pointer to option following the -B option */
-				if (opt2->arg) free ((void *)opt2->arg);	/* Free previous pointer to arg */
+				if (opt2->arg) free (opt2->arg);	/* Free previous pointer to arg */
 				GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
 				opt2->arg = strdup (p);		/* Update arg */
 				while (GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
@@ -6618,7 +6624,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			else {	/* Gave -J<code>, -R, -B etc. so we complete the option and continue */
 				if (!GMT->init.history[id]) Return;
-				if (opt->arg) free ((void *)opt->arg);	/* Free previous pointer to arg */
+				if (opt->arg) free (opt->arg);	/* Free previous pointer to arg */
 				opt->arg = strdup (GMT->init.history[id]);
 			}
 		}
