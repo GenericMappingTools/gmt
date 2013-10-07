@@ -250,6 +250,8 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 			header->ny = 3600;
 		}
 		header->registration = GMT_GRID_PIXEL_REG;
+		GMT_set_geographic (GMT, GMT_IN);
+		gmt_grd_set_units (GMT, header);
 		
 		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
 		if (strstr (header->name, ".DEM") || strstr (header->name, ".dem"))
@@ -257,7 +259,6 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 		else
 			header->nan_value = 9999.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
-		if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 		return (GMT_NOERROR);
 	}
 	else if (header->flags[0] == 'B' && header->flags[1] == '1') {	/* A SRTM3 or SRTM1 file */
@@ -280,7 +281,8 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 			header->inc[GMT_X] = header->inc[GMT_Y] = 3.0 * GMT_SEC2DEG;	/* 3 arc seconds */
 		else
 			header->inc[GMT_X] = header->inc[GMT_Y] = 1.0 * GMT_SEC2DEG;	/* 1 arc second  */
-		if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
+		GMT_set_geographic (GMT, GMT_IN);
+		gmt_grd_set_units (GMT, header);
 		return (GMT_NOERROR);
 	}
 	else if ((header->flags[0] == 'L' || header->flags[0] == 'B') && header->flags[1] == '2') {	/* A Arc/Info BINARY file */
