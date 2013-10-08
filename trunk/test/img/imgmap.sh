@@ -4,10 +4,14 @@
 
 ps=imgmap.ps
 IMG=topo.15.1.img
-OK=`gmt gmtwhich -C $IMG`
-if [ $OK = N ]; then
-	echo "File $IMG not available for testing imgmap.sh"
-	exit
+if [ -f /tmp/gmt/$IMG ]; then # use one placed/linked from /tmp
+	IMG=/tmp/gmt/topo.15.1.img
+else
+	OK=`gmt gmtwhich -C $IMG`
+	if [ $OK = N ]; then
+		echo "File $IMG not available for testing imgmap.sh"
+		exit
+	fi
 fi
 # Get merc grid
 gmt img2grd $IMG -R180/200/-5/5 -I1m -T1 -D -S1 -Gimg.nc -M

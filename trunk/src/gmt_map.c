@@ -7900,7 +7900,7 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 	GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 	GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
 
-	if (GMT->current.map.width > 400.0 && (!strncmp (GMT->init.module_name, "grdproject", 10U) || !strncmp (GMT->init.module_name, "mapproject", 10U))) {	/* ***project calling with true scale, probably  */
+	if (GMT->current.map.width > 400.0 && GMT_is_grdmapproject (GMT)) {	/* ***project calling with true scale, probably  */
 		search = false;	/* Safe-guard that prevents region search below for (map|grd)project and others (400 inch = ~> 10 meters) */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: GMT_map_setup perimeter search skipped when using true scale with grdproject or mapproject.\n");
 	}
