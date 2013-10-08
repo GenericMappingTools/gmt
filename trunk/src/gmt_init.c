@@ -7609,6 +7609,8 @@ int gmt_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width, double *valu
 	if (GMT->current.proj.units_pr_degree) {	/* Check if we got "1" and this is grd|map-project */
 		size_t k = strlen (scale_or_width);
 		if (k == 1 && scale_or_width[0] == '1' && GMT_is_grdmapproject (GMT)) {	/* OK, pretend we got 1:1 */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -J option: Your scale of 1 was interpreted to mean 1:1 since no plotting is involved.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "If a scale of 1 was intended, please append a unit from %s.\n", GMT_DIM_UNITS_DISPLAY);
 			gmt_scale_or_width (GMT, strcat(scale_or_width,":1"), value);
 			return (GMT_NOERROR);
 		}
