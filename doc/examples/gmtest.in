@@ -109,7 +109,7 @@ function cleanup()
   for log_file in gmt_memtrack_*.log; do
     test -f ${log_file} || continue
     n_err=$(perl -lne '$a++ if /(Memory not freed|^!)/; END {print $a+0}' ${log_file})
-    (( memtrack_err += n_err ))
+    (( memtrack_err += n_err )) || : # second assignment in case return code != 0
     test ${n_err} -eq 0 && rm -f ${log_file} # remove logs w/o errors
   done
   echo "memtrack errors: $memtrack_err"
@@ -120,7 +120,7 @@ function cleanup()
       test -f ${log_file} || continue
       n_err=$(perl -ne 'print $1 if /ERROR SUMMARY: ([0-9]+)/' ${log_file})
       n_err=${n_err:-1} # if valgrind crashes itself, there is no ERROR SUMMARY
-      (( valgrind_err += n_err ))
+      (( valgrind_err += n_err )) || : # second assignment in case return code != 0
       test ${n_err} -eq 0 && rm -f ${log_file} # remove logs w/o errors
     done
     echo "valgrind errors: $valgrind_err"
