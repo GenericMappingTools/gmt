@@ -148,13 +148,13 @@ struct PS2RASTER_CTRL {
 
 int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
 	/* Syntax: -A[u][<margins>][-][+r][+s<width>[u][/<height>[u]]] */
-	
+
 	bool error = false;
 	unsigned int pos = 0;
 	int j, k = 0;
 	char txt[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
-	
+
 	Ctrl->A.active = true;
 
 	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}
@@ -229,11 +229,11 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C)
 {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
-	
+
 	bool error = false;
 	unsigned int pos = 0;
 	char txt[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
-	
+
 	C->W.active = true;
 	strncpy (txt, arg, GMT_BUFSIZ);
 	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
@@ -467,7 +467,6 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 	unsigned int n_errors = 0, mode;
 	int j;
 	bool grayscale;
-	char text[GMT_LEN64] = {""}, *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -515,14 +514,10 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 				break;
 			case 'Q':	/* Anti-aliasing settings */
 				Ctrl->Q.active = true;
-				if (opt->arg[0] == 'g') {
+				if (opt->arg[0] == 'g')
 					mode = 0;
-					anti = "-dGraphicsAlphaBits=";
-				}
-				else if (opt->arg[0] == 't') {
+				else if (opt->arg[0] == 't')
 					mode = 1;
-					anti = "-dTextAlphaBits=";
-				}
 				else {
 					GMT_default_error (GMT, opt->option);
 					n_errors++;
@@ -531,8 +526,6 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 				}
 				Ctrl->Q.on[mode] = true;
 				Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
-				sprintf (text, "%s%d", anti, Ctrl->Q.bits[mode]);
-				add_to_list (Ctrl->C.arg, text);	/* Append to list of extra GS options */
 				break;
 			case 'S':	/* Write the GS command to STDOUT */
 				Ctrl->S.active = true;
@@ -565,7 +558,6 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 							break;
 						case 'G':	/* PNG (transparent) */
 							Ctrl->T.device = GS_DEV_TPNG;
-							add_to_list (Ctrl->C.arg, "-dMaxBitmap=100000000");	/* Add this as GS option to fix bug in GS */
 							break;
 						case 'm':	/* PPM */
 							Ctrl->T.device = GS_DEV_PPM;
@@ -614,6 +606,26 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_ps2raster_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+
+static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
+	/* return alpha bits which are valid for the selected driver */
+	static char alpha[48];
+	char *c = alpha;
+	*alpha = '\0'; /* reset string */
+	if (Ctrl->Q.on[0]) {
+		unsigned int bits;
+		if (Ctrl->T.device == GS_DEV_PDF || Ctrl->T.device == -GS_DEV_PDF)
+			/* Note: cannot set GraphicsAlphaBits > 1 with a vector device */
+			bits = 1;
+		else
+			bits = Ctrl->Q.bits[0];
+		sprintf (c, " -dGraphicsAlphaBits=%d", bits);
+		c = strrchr(c, '\0'); /* advance to end of string */
+	}
+	if (Ctrl->Q.on[1])
+		sprintf (c, " -dTextAlphaBits=%d", Ctrl->Q.bits[1]);
+	return alpha;
+}
 
 int GMT_ps2raster (void *V_API, int mode, void *args)
 {
@@ -691,6 +703,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 	gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dUseFlateCompression=true -dPDFSETTINGS=/prepress -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
 	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
+
+	add_to_list (Ctrl->C.arg, "-dMaxBitmap=2147483647");	/* Add this as GS option to fix bug in GS */
 
 	if (Ctrl->W.kml && !(Ctrl->T.device == GS_DEV_JPG ||
 	    Ctrl->T.device == GS_DEV_JPGG || Ctrl->T.device == GS_DEV_TIF ||
@@ -852,7 +866,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Find HiResBoundingBox ");
 			sprintf (BB_file, "%s/ps2raster_%" PRIu64 "c.bb", Ctrl->D.dir, (uint64_t)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
-			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
+			sprintf (cmd, "%s%s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, psfile_to_use, BB_file);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
@@ -879,8 +893,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g1x1 -r%d -sOutputFile=%s -f%s", 
-							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
+						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s -g1x1 -r%d -sOutputFile=%s -f%s",
+							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
 						if (Ctrl->S.active) {
@@ -996,9 +1010,9 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		/* ****************************************************************** */
 
 		rewind (fp);
-		
+
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
-		look_for_transparency = (Ctrl->T.device != GS_DEV_PDF);
+		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		transparency = false;
 		while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp) != NULL) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
@@ -1033,7 +1047,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 						west  = atof(xx1);		east  = atof(xx2);
 						south = atof(yy1);		north = atof(yy2);
 						/* One further test. +xy was found, but have we geog coords? Check that */
-						if (!strcmp (proj4_name,"xy") && 
+						if (!strcmp (proj4_name,"xy") &&
 								(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
 								(south >= -90) && (north <= 90) ) {
 							proj4_cmd = strdup ("latlon");
@@ -1043,12 +1057,12 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 						}
 						else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: requested an automatic geotiff generation, but "
-									"no recognized ps2raster option was used for the PS creation.\n"); 
+									"no recognized ps2raster option was used for the PS creation.\n");
 						}
 					}
 					else if (Ctrl->W.kml) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: To GE images must be in geographical coords. Very likely "
-									"this won't work as you wish inside GE.\n"); 
+									"this won't work as you wish inside GE.\n");
 					}
 				}
 			}
@@ -1104,14 +1118,14 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					GMT_fgets_chop (GMT, line_, 128, fp);   /* Read also next line which is to overwrite */
 					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
 					if (landscape_orig)
-						sscanf(line_, "%s %s %s %s %s %s %s %s",c1, t1, t2, dumb1, dumb2, dumb3, c2, c3); 
+						sscanf(line_, "%s %s %s %s %s %s %s %s",c1, t1, t2, dumb1, dumb2, dumb3, c2, c3);
 					else
-						sscanf(line_, "%s %s %s",c1, c2,c3); 
+						sscanf(line_, "%s %s %s",c1, c2,c3);
 					old_scale_x = atof (c2);		old_scale_y = atof (c3);
 				}
 				else if (BeginPageSetup_here) {
 					BeginPageSetup_here = false;
-					Ctrl->A.resize = false;       /* Need to reset so it doesn't keep checking inside this branch */ 
+					Ctrl->A.resize = false;       /* Need to reset so it doesn't keep checking inside this branch */
 					/* Now we must calculate the new scale */
 					if (Ctrl->A.rescale)          /* except if it was set as an option */
 						r_x = Ctrl->A.scale;
@@ -1154,7 +1168,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s\n", line);
 
-				/* Write a GeoPDF registration info */ 
+				/* Write a GeoPDF registration info */
 
 				/* Allocate new control structures */
 				to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
@@ -1193,9 +1207,9 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					fprintf (fpo, "\t\t\t/Type /Measure\n");
 					fprintf (fpo, "\t\t\t/Subtype /GEO\n");
 					fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
-					fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n", 
+					fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
 						south, west, north, west, north, east, south, east);
-					fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", 
+					fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n",
 						lptsX[0],lptsY[0], lptsX[1],lptsY[1], lptsX[2],lptsY[2], lptsX[3],lptsY[3]);
 					fprintf (fpo, "\t\t\t/GCS <<\n");
 					fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
@@ -1230,12 +1244,12 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16];
 			int dest_device = Ctrl->T.device;
-			
+
 			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
 			GMT_str_toupper (tag);
-			
-			if (transparency && dest_device != GS_DEV_PDF) {
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "PS file with transparency must be convertef to PDF before creating %s\n", tag);
+
+			if (transparency) {
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "PS file with transparency must be converted to PDF before creating %s\n", tag);
 				/* Temporarily change output device to PDF to get the PDF tmp file */
 				Ctrl->T.device = GS_DEV_PDF;
 				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
@@ -1261,8 +1275,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
 			}
 
-			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%dx%d -r%d -sOutputFile=%s -f%s",
-				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
+			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s -g%dx%d -r%d -sOutputFile=%s -f%s",
+				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
 
 			if (Ctrl->S.active) {	/* Print GhostScript command */
@@ -1294,7 +1308,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n", ps_file, out_file);
 				/* else: Either a good closed GMT PS file or one of unknown origin */
 			}
-			if (transparency && dest_device != GS_DEV_PDF) {
+			if (transparency) {
 				char pdf_file[GMT_BUFSIZ] = {""};
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert PDF with transparency to %s...\n", tag);
 				Ctrl->T.device = dest_device;	/* Reset output device type */
@@ -1308,8 +1322,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
 				strcat (out_file, ext[Ctrl->T.device]);
 				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
-				sprintf (cmd, "%s%s %s %s -dMaxBitmap=2147483647 -sDEVICE=%s -r%d -sOutputFile=%s %s",
-					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device], Ctrl->E.dpi, out_file, pdf_file);
+				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s -r%d -sOutputFile=%s %s",
+					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device], Ctrl->E.dpi, out_file, pdf_file);
 				if (Ctrl->S.active) {	/* Print 2nd GhostScript command */
 					API->print_func (stdout, cmd);
 					API->print_func (stdout, "\n");
@@ -1397,11 +1411,11 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					quiet = "";
 
 #ifdef WIN32
-				sprintf (cmd, "gdal_translate -a_srs \"%s\" -co COMPRESS=LZW -co TILED=YES %s %s %s", 
-						proj4_cmd, quiet, out_file, world_file); 
+				sprintf (cmd, "gdal_translate -a_srs \"%s\" -co COMPRESS=LZW -co TILED=YES %s %s %s",
+						proj4_cmd, quiet, out_file, world_file);
 #else
-				sprintf (cmd, "gdal_translate -a_srs '%s' -co COMPRESS=LZW -co TILED=YES %s %s %s", 
-						proj4_cmd, quiet, out_file, world_file); 
+				sprintf (cmd, "gdal_translate -a_srs '%s' -co COMPRESS=LZW -co TILED=YES %s %s %s",
+						proj4_cmd, quiet, out_file, world_file);
 #endif
 				free(proj4_cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
