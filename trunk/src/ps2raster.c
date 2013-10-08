@@ -394,7 +394,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   of sub-sampling box.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is no anti-aliasing, which is the same as specifying size 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the ghostscript command to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   standard output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   standard error.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   b means BMP.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e means EPS.\n");
@@ -527,7 +527,7 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 				Ctrl->Q.on[mode] = true;
 				Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
 				break;
-			case 'S':	/* Write the GS command to STDOUT */
+			case 'S':	/* Write the GS command to STDERR */
 				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Select output format (optionally also request EPS) */
@@ -587,10 +587,10 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
 
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
-		"Syntax error: Anti-aliasing for graphics requires sub-samplib box of 1,2, or 4\n");
+		"Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
 
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.on[1] && (Ctrl->Q.bits[1] < 1 || Ctrl->Q.bits[1] > 4),
-		"Syntax error: Anti-aliasing for text requires sub-samplib box of 1,2, or 4\n");
+		"Syntax error: Anti-aliasing for text requires sub-sampling box of 1,2, or 4\n");
 
 	n_errors += GMT_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
 		"Syntax error: Cannot handle both a file list and multiple ps files in input\n");
@@ -798,10 +798,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd2, sys_retval);
 			Return (EXIT_FAILURE);
 		}
-		if (Ctrl->S.active) {
-			API->print_func (stdout, cmd2);
-			API->print_func (stdout, "\n");
-		}
+		if (Ctrl->S.active)
+			GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd2);
 
 		GMT_free (GMT, all_names_in);
 		GMT_free (GMT, cmd2);
@@ -897,10 +895,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
-						if (Ctrl->S.active) {
-							API->print_func (stdout, cmd);
-							API->print_func (stdout, "\n");
-						}
+						if (Ctrl->S.active)
+							GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 						if (sys_retval) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							Return (EXIT_FAILURE);
@@ -1061,7 +1057,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 						}
 					}
 					else if (Ctrl->W.kml) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: To GE images must be in geographical coords. Very likely "
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: To GE images must be in geographical coordinates. Very likely "
 									"this won't work as you wish inside GE.\n");
 					}
 				}
@@ -1232,7 +1228,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		fseek (fp, (off_t)-7, SEEK_END);
 		/* Read until last line is encountered */
 		while ( GMT_fgets (GMT, line, BUFSIZ, fp) );
-		if ( strncmp (line, "%%EOF", 5) )
+		if ( strncmp (line, "%%EOF", 5U) )
 			/* Possibly a non-closed GMT PS file. To be confirmed later */
 			excessK = true;
 
@@ -1243,7 +1239,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16];
-			int dest_device = Ctrl->T.device;
+			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
 
 			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
 			GMT_str_toupper (tag);
@@ -1259,14 +1255,14 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Convert to %s...", tag);
 
 			if (!Ctrl->F.active) {
-				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);		/* Use specified output directory */
+				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 				strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			}
 			else
 				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
 			strcat (out_file, ext[Ctrl->T.device]);
 
-			if (Ctrl->A.new_dpi_x) {	/* We have a resize request (wsa Ctrl->A.resize = true;) */
+			if (Ctrl->A.new_dpi_x) {	/* We have a resize request (was Ctrl->A.resize = true;) */
 				pix_w = urint (ceil (w * Ctrl->A.new_dpi_x / 72.0));
 				pix_h = urint (ceil (h * Ctrl->A.new_dpi_y / 72.0));
 			}
@@ -1279,10 +1275,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
 
-			if (Ctrl->S.active) {	/* Print GhostScript command */
-				API->print_func (stdout, cmd);
-				API->print_func (stdout, "\n");
-			}
+			if (Ctrl->S.active)	/* Print GhostScript command */
+				GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 
 			/* Execute the GhostScript command */
 			sys_retval = system (cmd);
@@ -1308,14 +1302,14 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n", ps_file, out_file);
 				/* else: Either a good closed GMT PS file or one of unknown origin */
 			}
-			if (transparency) {
+			if (transparency) {	/* Now convert PDF to desired format */
 				char pdf_file[GMT_BUFSIZ] = {""};
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert PDF with transparency to %s...\n", tag);
 				Ctrl->T.device = dest_device;	/* Reset output device type */
 				strcpy (pdf_file, out_file);	/* Now the PDF is the infile */
-				*out_file = '\0'; /* truncate string to build new output file*/
+				*out_file = '\0'; /* truncate string to build new output file */
 				if (!Ctrl->F.active) {
-					if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);		/* Use specified output directory */
+					if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 				}
 				else
@@ -1324,10 +1318,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
 				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s -r%d -sOutputFile=%s %s",
 					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device], Ctrl->E.dpi, out_file, pdf_file);
-				if (Ctrl->S.active) {	/* Print 2nd GhostScript command */
-					API->print_func (stdout, cmd);
-					API->print_func (stdout, "\n");
-				}
+				if (Ctrl->S.active)	/* Print 2nd GhostScript command */
+					GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 				/* Execute the 2nd GhostScript command */
 				sys_retval = system (cmd);
 				if (sys_retval) {
