@@ -41,14 +41,13 @@ struct GRDFILTER_CTRL {
 		bool active;
 		char *file;
 	} In;
-#ifdef DEBUG
 	struct A {	/* -A<a|r|w|c>row/col */
 		bool active;
 		char mode;
 		unsigned int ROW, COL;
 		double x, y;
+		char *file;
 	} A;
-#endif
 	struct D {	/* -D<distflag> */
 		bool active;
 		int mode;	/* -1 to 5 */
@@ -80,12 +79,6 @@ struct GRDFILTER_CTRL {
 	struct T {	/* -T */
 		bool active;
 	} T;
-#ifdef DEBUG
-	struct W {	/* -W */
-		bool active;
-		char *file;
-	} W;
-#endif
 };
 
 /* Forward/Inverse Spherical Mercator coordinate transforms */
@@ -170,9 +163,7 @@ void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 	if (C->In.file) free (C->In.file);	
 	if (C->F.file) free (C->F.file);	
 	if (C->G.file) free (C->G.file);	
-#ifdef DEBUG
-	if (C->W.file) free (C->W.file);	
-#endif
+	if (C->A.file) free (C->A.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -327,13 +318,11 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 			A->data[ij] = (float)(row_weight * col_weight);
 		}
 	}
-#ifdef DEBUG
 	if (file) {	/* For debug purposes: Save the area weight grid */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Write area weight grid to file %s\n", file);
 		if (GMT_Set_Comment (GMT->parent, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Area weight grid for debugging purposes", A)) return (NULL);
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, A) != GMT_OK) return (NULL);
 	}
-#endif
 	return (A);
 }
 
@@ -385,7 +374,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, "\t-A DEBUG: Use -A<mode><lon/<lat> to instead save filter specifics at that point. Choose:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   mode as a (area weights), c (composite weight), r (radii), or w (filter weight).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W DEBUG: Save area weigths to <file> [no save]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A DEBUG: Save area weigths to <file> with -As<file> [no save]\n");
 #endif
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
@@ -427,12 +416,17 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 #ifdef DEBUG
-			case 'A':	/* Distance mode */
+			case 'A':	/* Debug mode options */
 				Ctrl->A.active = true;
-				Ctrl->A.mode = opt->arg[0];
-				sscanf (&opt->arg[1], "%[^/]/%s", a, b);
-				Ctrl->A.x = atof (a);
-				Ctrl->A.y = atof (b);
+				if (opt->arg[0] == 's') {
+					Ctrl->A.file = strdup (&opt->arg[1]);
+				}
+				else {
+					Ctrl->A.mode = opt->arg[0];
+					sscanf (&opt->arg[1], "%[^/]/%s", a, b);
+					Ctrl->A.x = atof (a);
+					Ctrl->A.y = atof (b);
+				}
 				break;
 #endif
 			case 'D':	/* Distance mode */
@@ -521,12 +515,6 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 			case 'T':	/* Toggle registration */
 				Ctrl->T.active = true;
 				break;
-#ifdef DEBUG
-			case 'W':	/* Area weight debug file */
-				Ctrl->W.active = true;
-				Ctrl->W.file = strdup (opt->arg);
-				break;
-#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -686,11 +674,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
 		nx_wrap = (int)GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_GRID_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
 	}	
-#ifdef DEBUG
-	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->W.file)) == NULL) Return (API->error);	/* Precalculate area weights, save debug grid */
-#else
-	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, NULL)) == NULL) Return (API->error);	/* Precalculate area weights */
-#endif
+	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->A.file)) == NULL) Return (API->error);	/* Precalculate area weights, optionally save debug grid */
 	GMT_memset (&F, 1, struct FILTER_INFO);
 
 	/* Set up the distance scalings for lon and lat, and assign pointer to distance function  */
@@ -972,7 +956,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 						if (Ctrl->A.active) {	/* Store selected debug info in Gin data */
 							if (Ctrl->A.mode == 'a') Gin->data[ij_in] = A->data[ij_in];
 							else if (Ctrl->A.mode == 'w') Gin->data[ij_in] = (float)weight[ij_wt];
-							else if (Ctrl->A.mode == 'r') Gin->data[ij_in] = (float)weight[ij_wt];
+							else if (Ctrl->A.mode == 'r') Gin->data[ij_in] = (float)weight[ij_wt];	/* holds r */
 							else if (Ctrl->A.mode == 'c') Gin->data[ij_in] = (float)w;
 						}
 #endif
