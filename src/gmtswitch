@@ -81,17 +81,31 @@ GMTSWITCH $Revision$
 
 gmtswitch helps you modify your environment to allow for the switching back and
 forth between several GMT versions, in particular GMT 5.x and previous GMT
-versions such as GMT 4.x.  First, we need to determine all the GMT versions
+versions such as GMT 4.x.  First, we try to determine all the GMT versions
 currently installed on this platform.  If you have not already installed the
-latest GMT 4.x please CTRL-C at the prompt and do that install first.
+latest GMT 4.x please enter q at the prompt and do that install first.
 Otherwise, hit RETURN and please be patient while we search your system.
+Note: Searching from / can take hours on systems with lots of slow network
+drives.  If that is your case, type q at the prompt to quit and instead
+manually create the file ~/.gmtversions from your knowledge of what versions
+are installed.  Each line in that file should be the full directory path to
+a top-level GMT directory (i.e., one that contains share, bin, lib). Or,
+you can type d and then be asked for what top level dir to start the search
+from, e.g., /home/mydir
 
 EOF
-  echon "==> Press RETURN to continue: " >&2
+  echon "==> Press RETURN to continue (or q RETURN to quit, or d RETURN to set top dir): " >&2
   read s
-
+  if [ "x$s" = "xq" ]; then
+	exit
+  elif [ "x$s" = "x" ]; then
+	top=/
+  else
+	  echon "==> Enter top dir: " >&2
+	  read top
+  fi
   echon "--> Searching..." >&2
-  ( find / -type d -name 'GMT[34].*' -print > $home/.gmtversions ) 2> /dev/null
+  ( find $top -type d -name 'GMT[345].*' -print > $home/.gmtversions ) 2> /dev/null
   n=`cat $home/.gmtversions | wc -l | awk '{print $1}'`
   cat << EOF >&2
 
