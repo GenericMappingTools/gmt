@@ -31,6 +31,8 @@
 
 #include "common_byteswap.h"
 
+EXTERN_MSC void gmt_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+
 int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an ESRI Interchange ASCII file */
 	FILE *fp = NULL;
