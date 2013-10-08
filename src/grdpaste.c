@@ -141,6 +141,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 {
 	int error = 0, way;
 	unsigned int one_or_zero;
+	bool common_y = false;
 
 	char format[GMT_BUFSIZ];
 
@@ -200,65 +201,41 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 	x_noise = GMT_SMALL * C->header->inc[GMT_X];
 	y_noise = GMT_SMALL * C->header->inc[GMT_Y];
 
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match */
+	common_y = (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise);
+	
+	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match since grids may differ by +/-360 in x */
 		double del;
-		del = A->header->wesn[XLO] - B->header->wesn[XHI];
-		if (fabs (del - 360.0) < GMT_CONV_LIMIT) {	/* A 360-degree offset between grids */
-			B->header->wesn[XLO] += 360.0;	B->header->wesn[XHI] += 360.0;
-		}
-		else if (fabs (del + 360.0) < GMT_CONV_LIMIT) {	/* A -360-degree offset between grids */
-			A->header->wesn[XLO] += 360.0;	A->header->wesn[XHI] += 360.0;
-		}
-		else {
-			del = A->header->wesn[XHI] - B->header->wesn[XLO];
-			if (fabs (del - 360.0) < GMT_CONV_LIMIT) {	/* A 360-degree offset between grids */
+		if (common_y) {	/* A and B are side-by-side, may differ by +-360 +- 1 pixel width */
+			del = A->header->wesn[XLO] - B->header->wesn[XHI];	/* Test if B left of A */
+			if (del < (360.0 + C->header->inc[GMT_X] + x_noise) && del > (360.0 - C->header->inc[GMT_X] - x_noise)) {
 				B->header->wesn[XLO] += 360.0;	B->header->wesn[XHI] += 360.0;
 			}
-			else if (fabs (del + 360.0) < GMT_CONV_LIMIT) {	/* A -360-degree offset between grids */
+			else if (del < (-360.0 + C->header->inc[GMT_X] + x_noise) && del > (-360.0 - C->header->inc[GMT_X] - x_noise)) {
 				A->header->wesn[XLO] += 360.0;	A->header->wesn[XHI] += 360.0;
 			}
+			else {	/* Neither, check if A is left of B */
+				del = B->header->wesn[XLO] - A->header->wesn[XHI];
+				if (del < (360.0 + C->header->inc[GMT_X] + x_noise) && del > (360.0 - C->header->inc[GMT_X] - x_noise)) {
+					A->header->wesn[XLO] += 360.0;	A->header->wesn[XHI] += 360.0;
+				}
+				else if (del < (-360.0 + C->header->inc[GMT_X] + x_noise) && del > (-360.0 - C->header->inc[GMT_X] - x_noise)) {
+					B->header->wesn[XLO] += 360.0;	B->header->wesn[XHI] += 360.0;
+				}
+			}
+		}
+		else {	/* A and B are on top of each other, may differ by +-360 */
+			del = A->header->wesn[XLO] - B->header->wesn[XLO];	/* Test if B left of A */
+			if (del < (360.0 + x_noise) && del > (360.0 - x_noise)) {
+				B->header->wesn[XLO] += 360.0;	B->header->wesn[XHI] += 360.0;
+			}
+			else if (del < (-360.0 + x_noise) && del > (-360.0 - x_noise)) {
+				A->header->wesn[XLO] += 360.0;	A->header->wesn[XHI] += 360.0;
+			}	
 		}
 	}
 
 	GMT_memcpy (C->header->wesn, A->header->wesn, 4, double);	/* Output region is set as the same as A... */
-	if (fabs (A->header->wesn[XLO] - B->header->wesn[XLO]) < x_noise && fabs (A->header->wesn[XHI] - B->header->wesn[XHI]) < x_noise) {
-
-		C->header->nx = A->header->nx;
-
-		if (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < y_noise) {			/* B is exactly on top of A */
-			way = 1;
-			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
-			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
-		}
-		else if (fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < y_noise) {	/* A is exactly on top of B */
-			way = 2;
-			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
-			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
-		}
-		else if ((fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < (C->header->inc[GMT_Y] + y_noise)) ) {
-			/* B is on top of A but their pixel|grid reg limits under|overlap by one cell */
-			if (one_or_zero)        /* Grid registration - underlap */
-				way = 10;
-			else                    /* Pixel registration - overlap */
-				way = 11;
-			C->header->ny = A->header->ny + B->header->ny - !one_or_zero;
-			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
-		}
-		else if ((fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < (C->header->inc[GMT_Y] + y_noise)) ) {
-			/* A is on top of B but their pixel|grid reg limits under|overlap by one cell */
-			if (one_or_zero)        /* Grid registration - underlap */
-				way = 21;
-			else                    /* Pixel registration - overlap */
-				way = 22;
-			C->header->ny = A->header->ny + B->header->ny - !one_or_zero;
-			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
-		}
-		else {
-			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
-			Return (EXIT_FAILURE);
-		}
-	}
-	else if (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise) {
+	if (common_y) {
 
 		C->header->ny = A->header->ny;
 
@@ -295,11 +272,48 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 	}
+	else if (fabs (A->header->wesn[XLO] - B->header->wesn[XLO]) < x_noise && fabs (A->header->wesn[XHI] - B->header->wesn[XHI]) < x_noise) {
+
+		C->header->nx = A->header->nx;
+
+		if (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < y_noise) {			/* B is exactly on top of A */
+			way = 1;
+			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
+			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
+		}
+		else if (fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < y_noise) {	/* A is exactly on top of B */
+			way = 2;
+			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
+			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
+		}
+		else if ((fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < (C->header->inc[GMT_Y] + y_noise)) ) {
+			/* B is on top of A but their pixel|grid reg limits under|overlap by one cell */
+			if (one_or_zero)        /* Grid registration - underlap */
+				way = 10;
+			else                    /* Pixel registration - overlap */
+				way = 11;
+			C->header->ny = A->header->ny + B->header->ny - !one_or_zero;
+			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
+		}
+		else if ((fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < (C->header->inc[GMT_Y] + y_noise)) ) {
+			/* A is on top of B but their pixel|grid reg limits under|overlap by one cell */
+			if (one_or_zero)        /* Grid registration - underlap */
+				way = 21;
+			else                    /* Pixel registration - overlap */
+				way = 22;
+			C->header->ny = A->header->ny + B->header->ny - !one_or_zero;
+			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
+		}
+		else {
+			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
+			Return (EXIT_FAILURE);
+		}
+	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
 		Return (EXIT_FAILURE);
 	}
-	if (GMT_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Must be careful in determining a match */
+	if (GMT_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Take out 360 */
 		C->header->wesn[XLO] -= 360.0;
 		C->header->wesn[XHI] -= 360.0;
 	}
