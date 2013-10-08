@@ -102,6 +102,7 @@ int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				/* Store the file name with all extensions removed.
 				 * We'll use this to create header from file name info */
 				strncpy (header->title, file, GMT_GRID_TITLE_LEN80);
+				strcpy  (header->remark, "Assumed to be a GTOPO30 or SRTM30 tile");
 			}
 			else if (name_len > 3 && !(strncmp (&header->name[name_len-4], ".hgt", 4) && strncmp (&header->name[name_len-4], ".HGT", 4))) {
 				/* Probably a SRTM1|3 file. In read_esri_info we'll check further if it is a 1 or 3 sec */
@@ -277,10 +278,14 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 		header->nan_value = -32768.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
 		stat (header->name, &F);	/* Must finally find out if it is a 1 or 3 arcseconds file */
-		if (F.st_size < 3e6)		/* Actually the true size is 2884802 */
+		if (F.st_size < 3e6) {		/* Actually the true size is 2884802 */
 			header->inc[GMT_X] = header->inc[GMT_Y] = 3.0 * GMT_SEC2DEG;	/* 3 arc seconds */
-		else
+			strcpy (header->remark, "Assumed to be a SRTM3 tile");
+		}
+		else {
 			header->inc[GMT_X] = header->inc[GMT_Y] = 1.0 * GMT_SEC2DEG;	/* 1 arc second  */
+			strcpy (header->remark, "Assumed to be a SRTM1 tile");
+		}
 		GMT_set_geographic (GMT, GMT_IN);
 		gmt_grd_set_units (GMT, header);
 		return (GMT_NOERROR);
