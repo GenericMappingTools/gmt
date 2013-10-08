@@ -121,7 +121,7 @@ Optional Arguments
     anti-aliasing (same as *bits* = 1).
 
 **-S**
-    Print to standard output the GhostScript command after it has been executed.
+    Print to standard error the GhostScript command after it has been executed.
 
 **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t**
     Sets the output format, where **b** means BMP, **e** means EPS,
