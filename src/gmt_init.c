@@ -5803,18 +5803,22 @@ int GMT_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode, char **keys,
 }
 
 int GMT_get_ellipsoid (struct GMT_CTRL *GMT, char *name)
-{
+{	/* Return ID of requested ellipsoid, or -1 if not found */
 	int i, n;
-	char line[GMT_BUFSIZ];
+	char line[GMT_BUFSIZ], ename[GMT_LEN64];
 	double pol_radius;
 
-	/* Try to get ellipsoid from the default list */
+	/* Try to get ellipsoid from the default list; use case-insensitive checking */
 
+	strcpy (ename, name);		/* Make a copy of name */
+	GMT_str_tolower (ename);	/* Convert to lower case */
 	for (i = 0; i < GMT_N_ELLIPSOIDS; i++) {
-		if (!strcmp(name, GMT->current.setting.ref_ellipsoid[i].name)) return (i);
+		strcpy (line, GMT->current.setting.ref_ellipsoid[i].name);
+		GMT_str_tolower (line);	/* Convert to lower case */
+		if (!strcmp (ename, line)) return (i);
 	}
 
-	i = GMT_N_ELLIPSOIDS - 1;
+	i = GMT_N_ELLIPSOIDS - 1;	/* Place any custom ellipsoid in this position in array */
 
 	/* Read ellipsoid information as <a>,<finv> */
 	n = sscanf (name, "%lf,%s", &GMT->current.setting.ref_ellipsoid[i].eq_radius, line);
@@ -5874,13 +5878,19 @@ int GMT_get_ellipsoid (struct GMT_CTRL *GMT, char *name)
 }
 
 int GMT_get_datum (struct GMT_CTRL *GMT, char *name)
-{
+{	/* Return ID of requested datum, or -1 if not found */
 	int i;
+	char dname[GMT_LEN64], current_name[GMT_LEN64];
 
-	if (!name[0]) return (-1);
-	for (i = 0; i < GMT_N_DATUMS && strcmp (name, GMT->current.setting.proj_datum[i].name); i++);
-	if (i == GMT_N_DATUMS) return (-1);	/* Error */
-	return (i);
+	if (!name[0]) return (-1);	/* Nothing given */
+	strcpy (dname, name);		/* Make a copy of desired datum name */
+	GMT_str_tolower (dname);	/* Convert it to lower case */
+	for (i = 0; i < GMT_N_DATUMS; i++) {
+		strcpy (current_name, GMT->current.setting.proj_datum[i].name);		/* Make a copy of this datum name */
+		GMT_str_tolower (current_name);	/* Convert it to lower case */
+		if (!strcmp (dname, current_name)) return (i);	/* Found a match */	
+	}
+	return (-1);	/* Not found */
 }
 
 bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYSTEM *time_system)
@@ -7591,12 +7601,14 @@ int gmt_project_type (char *args, int *pos, bool *width_given)
 
 int gmt_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width, double *value) {
 	/* Scans character that may contain a scale (1:xxxx or units per degree) or a width.
-	   Return 1 upon error */
-	int n;
-	GMT->current.proj.units_pr_degree = strncmp (scale_or_width, "1:", 2U);	/* false if scale given as 1:xxxx */
-	if (GMT->current.proj.units_pr_degree) {
-		size_t k = strlen(scale_or_width);
-		if (k == 1 && scale_or_width[0] == '1') {
+	   Return 1 upon error. Here we want to make an exception for users giving a scale
+	   of 1 in grdproject and mapproject as it is most likely meant to be 1:1. */
+	int n, answer;
+	answer = strncmp (scale_or_width, "1:", 2U);	/* 0 if scale given as 1:xxxx */
+	GMT->current.proj.units_pr_degree = (answer != 0);
+	if (GMT->current.proj.units_pr_degree) {	/* Check if we got "1" and this is grd|map-project */
+		size_t k = strlen (scale_or_width);
+		if (k == 1 && scale_or_width[0] == '1' && GMT_is_grdmapproject (GMT)) {	/* OK, pretend we got 1:1 */
 			gmt_scale_or_width (GMT, strcat(scale_or_width,":1"), value);
 			return (GMT_NOERROR);
 		}

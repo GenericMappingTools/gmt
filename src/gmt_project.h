@@ -133,6 +133,8 @@ enum GMT_enum_units {GMT_IS_METER = 0,
 #define GMT_IS_SPHERICAL(C) (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening < 1.0e-10)
 #define GMT_IS_FLATEARTH(C) (!strcmp (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].name, "FlatEarth"))
 
+#define GMT_is_grdmapproject(C) (!strncmp (C->init.module_name, "grdproject", 10U) || !strncmp (C->init.module_name, "mapproject", 10U))
+
 /* Return 0 for Flat Earth, 1 for Great-circles, 2 for geodesics, and 3 for loxodromes */
 #define GMT_sph_mode(C) (GMT_IS_FLATEARTH (C) ? 0 : (GMT_IS_SPHERICAL (C) ? 1 : (C->current.map.loxodrome ? 3 : 2)))
 

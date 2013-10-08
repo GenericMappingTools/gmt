@@ -254,11 +254,6 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 	unit = GMT_check_scalingopt (GMT, 'A', Ctrl->A.unit, scale_unit_name);
 	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
-	if (Ctrl->I.active) {	/* Must flip the column types since in is Cartesian and out is geographic */
-		GMT_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
-		GMT_set_cartesian (GMT, GMT_IN);
-	}
-	
 	if (GMT->common.R.active)	/* Load the w/e/s/n from -R */
 		GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
 	else {	/* If -R was not given we infer the option via the input grid */
@@ -340,6 +335,11 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
 
+	if (Ctrl->I.active) {	/* Must flip the column types since in is Cartesian and out is geographic */
+		GMT_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
+		GMT_set_cartesian (GMT, GMT_IN);
+	}
+	
 	xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
 	xmax = (Ctrl->C.active) ? GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XHI];
 	ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
