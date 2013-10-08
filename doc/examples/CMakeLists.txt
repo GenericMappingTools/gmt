@@ -50,7 +50,8 @@ foreach (_ps ${_examples})
 			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -E150 -P -Tg -Qt4
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster
+			-A -P -E150 -TG -Qg4 -Qt4 -C-dDOINTERPOLATE
 			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
@@ -71,7 +72,8 @@ foreach (_ps ${_examples})
 			COMMAND
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -E150 -P -Tg -Qt4
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster
+			-A -P -E150 -TG -Qg4 -Qt4 -C-dDOINTERPOLATE
 			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
