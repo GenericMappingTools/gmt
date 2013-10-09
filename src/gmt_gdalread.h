@@ -102,7 +102,7 @@ struct GDALREAD_CTRL {
 	} registration;
 	struct GD_hdr {	/* Some fields of the header structure */
 		int active;
-		unsigned int BB_mx, BB_my;
+		unsigned int mx, my;
 		char side[1];		/* If array is going to pasted (grdpaste), tell in what side 'lrtb' */
 		int offset;
 	} mini_hdr;
