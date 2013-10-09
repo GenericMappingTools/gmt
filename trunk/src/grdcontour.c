@@ -1027,7 +1027,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	/* OK, now we know we have contouring to do */
 
 	z_range = G->header->z_max - G->header->z_min;
-	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
+	if (Ctrl->C.interval == 0.0)
+		small = z_range * 1.0e-6;	/* Our float noise threshold */
+	else
+		small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
 	n_alloc = n_tmp = n_contours;
 	GMT_malloc2 (GMT, contour, cont_angle, 0U, &n_tmp, double);
 	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0U, &n_alloc, char);
