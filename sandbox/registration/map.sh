@@ -46,7 +46,7 @@ cp -f $map $ps
 grep -v '^#' GMT_old_unique_sites.d | psxy -R190/330/-90/90 -Ji0.028c -O -K -Sc0.05c -G255/220/0 >> $ps
 grep -v '^#' GMT_old_unique_sites.d | psxy -R-30/60/-90/90 -J -O -K -Sc0.05c -G255/220/0 -X3.92c >> $ps
 grep -v '^#' GMT_old_unique_sites.d | psxy -R60/190/-90/90 -J -O -K -Sc0.05c -G255/220/0 -X2.52c >> $ps
-date +"@#GMT5 cumulative downloads from initial release to %d %B %Y@#" | awk '{print 10, -85, $0}' | pstext -R-30/60/-90/90 -J -F+f10p,Helvetica+jCB -O -K -Gcornsilk -N -TO -W0.25p -X-2.52c >> $ps
+#date +"@#GMT5 cumulative downloads from initial release to %d %B %Y@#" | awk '{print 10, -85, $0}' | pstext -R-30/60/-90/90 -J -F+f10p,Helvetica+jCB -O -K -Gcornsilk -N -TO -W0.25p -X-2.52c >> $ps
 psxy -R -J -O -T >> $ps
 ps2raster -E150 -A -TG $ps
 #rm -f $ps
