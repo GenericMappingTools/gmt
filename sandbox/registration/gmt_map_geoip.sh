@@ -2,6 +2,8 @@
 #	$Id$
 #
 # This script creates a fresh map_geoip_all.png plot for the wiki page
+# The backgorund map is stored in svn in gmt5/sandbox but copied to
+# here for now.
 #
 
 renice 17 -p $$ > /dev/null # be nice
@@ -46,6 +48,7 @@ function add_locations()
 function plot_locations()
 {
   local ps=$1
+  background_ps=wiki_background_map.ps
   shift
   local files="$@"
 
@@ -53,8 +56,13 @@ function plot_locations()
   gmt set FONT_LABEL 7p,AvantGarde-BookOblique,black \
   FONT_ANNOT_PRIMARY 7p,AvantGarde-BookOblique,black \
   MAP_FRAME_PEN 1p
-  gmt pscoast -Rd -JN10c -Bg45 -A10000+l -Dc -Wthinnest -Givory -Saliceblue -K > ${ps}
-  gmt psxy -fg -R -J -Sc -Gpink -Wthinnest,black -O -K $files >> ${ps}
+  cp -f $background_ps $ps
+#  gmt pscoast -Rd -JN10c -Bg45 -A10000+l -Dc -Wthinnest -Givory -Saliceblue -K > ${ps}
+#  gmt psxy -fg -R -J -Sc -Gpink -Wthinnest,black -O -K $files >> ${ps}
+  gmt psxy -R190/330/-90/90 -Ji0.028c -Sc -Gpink -Wthinnest,black -O -K $files >> ${ps}
+  gmt psxy -R-30/60/-90/90  -Ji0.028c -Sc -Gpink -Wthinnest,black -O -K $files -X3.92c >> ${ps}
+  gmt psxy -R60/190/-90/90  -Ji0.028c -Sc -Gpink -Wthinnest,black -O -K $files -X2.52c >> ${ps}
+  gmt psxy -R -J -O -K -T -X-6.44c >> ${ps}
   gmt pslegend -Dx0.25c/-0.1c/9c/TL --MAP_FRAME_AXES="" -O << EOF >> ${ps}
 N 3
 S 0.07c c 0.14c orange    thinnest 0.25c HTTP downloads (${n_dl_red:-0})
