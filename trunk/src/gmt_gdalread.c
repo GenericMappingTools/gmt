@@ -383,7 +383,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 
 		if (prhs->mini_hdr.active) {
 			if (prhs->mini_hdr.side[0] == 'l' || prhs->mini_hdr.side[0] == 'r') {
-				nXSize_withPad = prhs->mini_hdr.BB_mx;
+				nXSize_withPad = prhs->mini_hdr.mx;
 				if (prhs->mini_hdr.side[0] == 'r')
 					startColPos += prhs->mini_hdr.offset;
 			}
