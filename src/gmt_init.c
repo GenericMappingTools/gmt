@@ -1809,7 +1809,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 		}
 		if (text[k+1] == 'w') GMT->common.b.swab[id] = (id == GMT_IN) ? k_swap_in : k_swap_out;	/* Default swab */
 	}
-	else if (!v4_parse) {
+	if (!v4_parse) {
 		for (i = k; text[i]; i++) {
 			c = text[i];
 			switch (c) {
@@ -1834,10 +1834,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 					if (text[i+1] == 'w')
 						swab = true;
 					set = true;
-					if (ncol == 0) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -b: Column count must be specified\n");
-						return (EXIT_FAILURE);
-					}
+					if (ncol == 0) ncol = 1;	/* Default number of columns */
 					swap_flag = (swab) ? id + 1 : 0;	/* 0 for no swap, 1 if swap input, 2 if swap output */
 					for (k = 0; k < ncol; k++, col++) {	/* Assign io function pointer and data type for each column */
 						GMT->current.io.fmt[id][col].io = GMT_get_io_ptr (GMT, id, swap_flag, c);
