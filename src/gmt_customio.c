@@ -1600,23 +1600,23 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		to_gdalread->mini_hdr.active = true;
 		if (pad[XLO] >= header->nx - 1) {	/* With -1 we account for both grid & pixel registration cases */
 			to_gdalread->mini_hdr.offset = pad[XLO];		to_gdalread->mini_hdr.side[0] = 'r';
-			to_gdalread->mini_hdr.BB_mx = header->BB_mx;
-			if (GMT_check_condition (GMT, !header->BB_mx, "Programming error, header.BB_mx not set\n")) return (EXIT_FAILURE);
+			to_gdalread->mini_hdr.BB_mx = header->mx;
+			if (GMT_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) return (EXIT_FAILURE);
 		}
 		else if (pad[XHI] >= header->nx - 1) {
 			to_gdalread->mini_hdr.offset = pad[XHI];		to_gdalread->mini_hdr.side[0] = 'l';
-			to_gdalread->mini_hdr.BB_mx = header->BB_mx;
-			if (GMT_check_condition (GMT, !header->BB_mx, "Programming error, header.BB_mx not set\n")) return (EXIT_FAILURE);
+			to_gdalread->mini_hdr.BB_mx = header->mx;
+			if (GMT_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) return (EXIT_FAILURE);
 		}
 		else if (pad[YLO] >= header->ny - 1) {
 			to_gdalread->mini_hdr.offset = pad[YLO];		to_gdalread->mini_hdr.side[0] = 't';
-			to_gdalread->mini_hdr.BB_my = header->BB_my;
-			if (GMT_check_condition (GMT, !header->BB_my, "Programming error, header.BB_my not set\n")) return (EXIT_FAILURE);
+			to_gdalread->mini_hdr.BB_my = header->my;
+			if (GMT_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) return (EXIT_FAILURE);
 		}
 		else if (pad[YHI] >= header->ny - 1) {
 			to_gdalread->mini_hdr.offset = pad[YHI];		to_gdalread->mini_hdr.side[0] = 'b';
-			to_gdalread->mini_hdr.BB_my = header->BB_my;
-			if (GMT_check_condition (GMT, !header->BB_my, "Programming error, header.BB_my not set\n")) return (EXIT_FAILURE);
+			to_gdalread->mini_hdr.BB_my = header->my;
+			if (GMT_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) return (EXIT_FAILURE);
 		}
 		else {
 			/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
