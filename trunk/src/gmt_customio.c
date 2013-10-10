@@ -1651,8 +1651,12 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	header->registration = (int)from_gdalread->hdr[6];	/* Confirm registration. It may not be the same as reported by read_grd_info */
 
 	if (from_gdalread->Float.active) {
-		if (!to_gdalread->f_ptr.active)		/* If the array was allocated inside _gdalread */
+		if (!to_gdalread->f_ptr.active)		/* If the float array was allocated inside _gdalread */
 			GMT_memcpy (grid, from_gdalread->Float.data, header->size, float);
+		else if (!to_gdalread->c_ptr.active && from_gdalread->UInt8.active) {		/* If the char array was allocated inside _gdalread */
+			for (j = 0; j < header->size; j++)
+				grid[j] = (float)from_gdalread->UInt8.data[j];
+		}
 	}
 	else {
 		/* Convert everything else do float */
