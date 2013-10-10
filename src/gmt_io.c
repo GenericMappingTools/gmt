@@ -601,11 +601,11 @@ int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction)
 {	/* Write verbose message about binary record i/o format */
 	static const char *gmt_direction[2] = {"Input", "Output"};
 	char message[GMT_LEN256] = {""}, skip[GMT_LEN64] = {""};
-	char *letter = "cuhHiIlLfditTn", s[2] = {0, 0};	/* letter order matches the type order in GMT_enum_type */
+	char *letter = "-cuhHiIlLfditTn", s[2] = {0, 0};	/* letter order matches the type order in GMT_enum_type */
 	uint64_t col;
 	uint64_t n_bytes;
 
-	if (GMT->current.setting.verbose < GMT_MSG_VERBOSE) return GMT_OK;	/* Not in verbose mode anyway */
+	//if (GMT->current.setting.verbose < GMT_MSG_VERBOSE) return GMT_OK;	/* Not in verbose mode anyway */
 	if (!GMT->common.b.active[direction]) return GMT_OK;	/* Not using binary i/o */
 	if (GMT->common.b.ncol[direction] == 0) {		/* Number of columns not set yet - delay message */
 		if (direction == GMT_OUT) GMT->common.b.o_delay = true;
@@ -624,6 +624,10 @@ int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction)
 			n_bytes = -GMT->current.io.fmt[direction][col].skip;
 			sprintf (skip, "%" PRIu64 "x", n_bytes);
 			strcat (message, skip);
+		}
+		if (GMT->current.io.fmt[direction][col].type == 0) {	/* Still not set, use the default type */
+			GMT->current.io.fmt[direction][col].type = GMT_get_io_type (GMT, GMT->common.b.type[direction]);
+			GMT->current.io.fmt[direction][col].io   = GMT_get_io_ptr (GMT, direction, GMT->common.b.swab[direction], GMT->common.b.type[direction]);
 		}
 		s[0] = letter[GMT->current.io.fmt[direction][col].type];	/* Get data type code... */
 		strcat (message, s);					/* ...and append to message */
@@ -3087,7 +3091,7 @@ int GMT_get_io_type (struct GMT_CTRL *GMT, char type)
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			break;
 	}
-	return (t);
+	return (t+1);	/* Since 0 means not set */
 }
 
 p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *GMT, int direction, enum GMT_swap_direction swap, char type)
