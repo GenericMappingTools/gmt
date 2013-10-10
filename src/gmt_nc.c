@@ -949,23 +949,23 @@ enum Netcdf_io_mode {
 
 /* Wrapper around nc_put_vara_float and nc_get_vara_float */
 static inline int io_nc_vara_float (int ncid, int varid, const size_t *startp,
-	 const size_t *countp, float *ip, unsigned io_mode) {
+	 const size_t *countp, float *fp, unsigned io_mode) {
 	if (io_mode == k_put_netcdf)
 		/* write netcdf */
-		return nc_put_vara_float (ncid, varid, startp, countp, ip);
+		return nc_put_vara_float (ncid, varid, startp, countp, fp);
 	/* read netcdf */
-	return nc_get_vara_float (ncid, varid, startp, countp, ip);
+	return nc_get_vara_float (ncid, varid, startp, countp, fp);
 }
 
 /* Wrapper around nc_put_varm_float and nc_get_varm_float */
 static inline int io_nc_varm_float (int ncid, int varid, const size_t *startp,
 	 const size_t *countp, const ptrdiff_t *stridep,
-	 const ptrdiff_t *imapp, float *ip, unsigned io_mode) {
+	 const ptrdiff_t *imapp, float *fp, unsigned io_mode) {
 	if (io_mode == k_put_netcdf)
 		/* write netcdf */
-		return nc_put_varm_float (ncid, varid, startp, countp, stridep, imapp, ip);
+		return nc_put_varm_float (ncid, varid, startp, countp, stridep, imapp, fp);
 	/* read netcdf */
-	return nc_get_varm_float (ncid, varid, startp, countp, stridep, imapp, ip);
+	return nc_get_varm_float (ncid, varid, startp, countp, stridep, imapp, fp);
 }
 
 /* Read and write classic or chunked netcdf files */
@@ -1120,16 +1120,16 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 
 		/* Get first and last row and column numbers */
 		first_col = urint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]);
-		last_col  = urint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) - 1 + is_gridline_reg;
+		last_col  = urint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) + is_gridline_reg - 1;
 		first_row = urint ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y]);
-		last_row  = urint ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) - 1 + is_gridline_reg;
+		last_row  = urint ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + is_gridline_reg - 1;
 
 		/* Adjust first_row */
 		if (header->row_order == k_nc_start_south)
 			first_row = header->ny - 1 - last_row;
 
 		/* Global grids: if -R + padding is equal or exceeds grid bounds */
-		if (is_global && last_col - first_col + 1 + is_global_repeat >= header->nx) {
+		if (is_global && 1 + is_global_repeat + last_col - first_col >= header->nx) {
 			/* Number of requested cols >= nx: read whole grid and shift */
 			*n_shift  = -first_col;
 			first_col = 0;
@@ -1139,7 +1139,7 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 			/* Subset of a global grid that wraps around east boundary. This means
 			 * we have to read the grid in two parts and stich them together. */
 			first_col2 = 0;
-			last_col2 = last_col - header->nx + is_global_repeat;
+			last_col2 = is_global_repeat + last_col - header->nx;
 			last_col = header->nx - 1;
 #ifdef NC4_DEBUG
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "col2: %u %u\n", first_col2, last_col2);
@@ -1148,7 +1148,8 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 			origin2[0] = first_row;
 			origin2[1] = first_col2;
 			dim2[0] = *height;
-			dim2[1] = last_col2 - first_col2 + 1;
+			assert (first_col2 <= 1 + last_col2); /* check for unsigned overflow */
+			dim2[1] = 1 + last_col2 - first_col2;
 		}
 		assert (last_col + 1 <= header->nx);
 	}
@@ -1160,7 +1161,8 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 	origin[0] = first_row;
 	origin[1] = first_col;
 	dim[0] = *height;
-	dim[1] = last_col - first_col + 1;
+	assert (first_col <= 1 + last_col); /* check for unsigned overflow */
+	dim[1] = 1 + last_col - first_col;
 
 #ifdef NC4_DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-> x-region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
