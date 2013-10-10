@@ -677,7 +677,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	else {
 		unsigned int w_mode;
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
-			sprintf (outtemp, "/tmp/grdblend_temp_%" PRIu64 ".nc", (uint64_t)getpid());	/* Get temporary file name */
+			sprintf (outtemp, "/tmp/grdblend_temp_%d.nc", (int)getpid());	/* Get temporary file name */
 			outfile = outtemp;
 		}
 		else
