@@ -1103,12 +1103,14 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 		GMT_err_pass (GMT, GMT_adjust_loose_wesn (GMT, wesn, header), header->name);
 
 		/* Global grids: ensure that wesn >= header->wesn (w+e only) */
-		if ( is_global ) {
+		if ( is_global ) {	/* Deal with wrapping issues */
+			while (wesn[XLO] > header->wesn[XHI]) {
+				wesn[XLO] -= 360;
+				wesn[XHI] -= 360;
+			}
 			while (wesn[XLO] < header->wesn[XLO]) {
-				//unsigned int diff = (unsigned int)(header->wesn[XHI] - header->wesn[XLO]);
-				unsigned int diff = 360;
-				wesn[XLO] += diff;
-				wesn[XHI] += diff;
+				wesn[XLO] += 360;
+				wesn[XHI] += 360;
 			}
 		}
 		else
