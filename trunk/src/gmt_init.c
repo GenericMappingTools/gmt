@@ -1144,7 +1144,7 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 			GMT_message (GMT, "\t%s\n", GMT_b_OPT);
 			GMT_message (GMT, "\t   Binary data, add i for input, o for output [Default is both].\n");
 			GMT_message (GMT, "\t   Here, t is c|u|h|H|i|I|l|L|f|d [Default is d (double)].\n");
-			GMT_message (GMT, "\t   Prepend the number of data columns (for input only).\n");
+			GMT_message (GMT, "\t   Prepend the number of data columns.\n");
 			GMT_message (GMT, "\t   Append w to byte swap an item; append +L|B to fix endianness of file.\n");
 			break;
 
@@ -1746,15 +1746,17 @@ int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg)
 
 int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 {
-	/* Syntax:	-b[i][cvar1/var2/...] or -b[i|o]<n><type>[,<n><type>]... */
+	/* GMT5 Syntax:	-b[i][cvar1/var2/...] or -b[i|o]<n><type>[,<n><type>]...
+	 * GMT4 Syntax:	-b[i][o][s|S][d|D][<n>][c[<var1>/<var2>/...]]
+	 * -b with no args means both in and out have double precision binary i/o, with #columns determined by module
+	 * -bi or -bo means the same for that direction only.
+	 * -bif or -bof or any other letter means that type instead of double.
+	 */
 
 	unsigned int i, col = 0, id = GMT_IN, swap_flag;
 	int k, ncol = 0;
 	bool endian_swab = false, swab = false, error = false, i_or_o = false, set = false, v4_parse = false;
 	char *p = NULL, c;
-
-	if (!text || !text[0])
-		return (GMT_PARSE_ERROR); /* -b requires at least one arg, e.g, -bo */
 
 	/* First determine if there is an endian modifer supplied */
 	if ((p = strchr (text, '+'))) {	/* Yes */
@@ -1776,7 +1778,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 		endian_swab = true;
 	}
 
-	/* Now deal with [i|o] modifier Note: If there is no i|o then id is GMT_IN */
+	/* Now deal with [i|o] modifier Note: If there is no i|o then id is GMT_IN below */
 	if (text[0] == 'i') { id = GMT_IN; i_or_o = true; }
 	if (text[0] == 'o') { id = GMT_OUT; i_or_o = true; }
 	GMT->common.b.active[id] = true;
@@ -1789,19 +1791,19 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 	if (GMT_compat_check (GMT, 4)) {	/* GMT4 */
 		if (text[k] == 'c' && !text[k+1]) {	/* Ambiguous case "-bic" which MAY mean netCDF */
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: -b[i]c now applies to character tables, not to netCDF\n");
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: If input is netCDF, just leave out -b[i]c\n");
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: If input file is netCDF, just leave out -b[i]c\n");
 			GMT->common.b.type[id] = 'c';
-			v4_parse = true;
+			v4_parse = true;	/* Yes, we parsed a GMT4-compatible option */
 		}
-		else if (text[k] == 'c' && text[k+1] != ',') {	/* netCDF */
+		else if (text[k] == 'c' && text[k+1] != ',') {	/* netCDF with list of variables */
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: -b[i]c<varlist> is deprecated. Use <file>?<varlist> instead.\n");
-			GMT->common.b.active[id] = false;
-			strncpy (GMT->common.b.varnames, &text[k+1], GMT_BUFSIZ);
-			v4_parse = true;
+			GMT->common.b.active[id] = false;	/* Binary is 'false' if netCDF is to be read */
+			strncpy (GMT->common.b.varnames, &text[k+1], GMT_BUFSIZ);	/* Copy the list of netCDF variable names */
+			v4_parse = true;	/* Yes, we parsed a GMT4-compatible option */
 		}
 	}
 	if (!v4_parse && text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (!text[k+1] || (text[k+1] == 'w' && !text[k+2] ))) {	/* Just save the type for the entire record */
-		GMT->common.b.type[id] = text[k];			/* Default column type */
+		GMT->common.b.type[id] = text[k];			/* Set the default column type to the first (and possibly only data type) listed */
 		if (GMT_compat_check (GMT, 4)) {	/* GMT4: Must switch s,S,D to f, f(with swab), and d (with swab) */
 			if (GMT->common.b.type[id] == 's') GMT->common.b.type[id] = 'f';
 			if (GMT->common.b.type[id] == 'S') { GMT->common.b.type[id] = 'f'; GMT->common.b.swab[id] = (id == GMT_IN) ? k_swap_in : k_swap_out;	}
@@ -1809,32 +1811,41 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 		}
 		if (text[k+1] == 'w') GMT->common.b.swab[id] = (id == GMT_IN) ? k_swap_in : k_swap_out;	/* Default swab */
 	}
-	if (!v4_parse) {
+	if (!v4_parse) {	/* Meaning we did not hit netcdf-like options above */
 		for (i = k; text[i]; i++) {
 			c = text[i];
 			switch (c) {
-				case 's': case 'S': case 'D':	/* GMT 4 syntax with single and double precision w/wo swapping */
+				case 's': case 'S': case 'D':	/* Obsolete GMT 4 syntax with single and double precision w/wo swapping */
 					if (GMT_compat_check (GMT, 4)) {
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -b option with type s, S, or D are deprecated; Use <n>f or <n>d, with w to indicate swab\n");
 						if (c == 'S' || c == 'D') swab = true;
 						if (c == 'S' || c == 's') c = 'f';
-						if (c == 'D') c = 'd';
-						if (ncol == 0) ncol = 1;	/* in order to make -bs work as before */
+						else if (c == 'D') c = 'd';
+						if (ncol == 0) ncol = 1;	/* In order to make -bs work as before */
 					}
 					else {
 						error = true;
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Malformed -b argument [%s]\n", text);
 						GMT_syntax (GMT, 'b');
 						break;
-					}
+					} /* Deliberate fall-through to these cases here */
 				case 'c': case 'u': /* int8_t, uint8_t */
 				case 'h': case 'H': /* int16_t, uint16_t */
 				case 'i': case 'I': /* int32_t, uint32_t */
 				case 'l': case 'L': /* int64_t, uint64_t */
 				case 'f': case 'd': /* float, double */
-					if (text[i+1] == 'w')
+					if (GMT_compat_check (GMT, 4) && c == 'd' && ncol == 0) {
+						ncol = 1;	/* In order to make -bd work as before */
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -b[o]d is deprecated; Use <n>d to indicate how many columns\n");
+					}
+					if (text[i+1] == 'w')	/* Want to swab the input or output first */
 						swab = true;
-					set = true;
-					if (ncol == 0) ncol = 1;	/* Default number of columns */
+					set = true;	/* Meaning we have set the data type */
+					if (ncol == 0) {	/* Just specifying type, no columns yet */
+						GMT->common.b.type[id] = c;	/* Set default to double */
+						//GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -b: Column count must be > 0\n");
+						//return (EXIT_FAILURE);
+					}
 					swap_flag = (swab) ? id + 1 : 0;	/* 0 for no swap, 1 if swap input, 2 if swap output */
 					for (k = 0; k < ncol; k++, col++) {	/* Assign io function pointer and data type for each column */
 						GMT->current.io.fmt[id][col].io = GMT_get_io_ptr (GMT, id, swap_flag, c);
@@ -1867,7 +1878,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 					break;
 				case ',':
 					break;	/* Comma between sequences are optional and just ignored */
-				case 'w':		/* Turn off the swap unless it set via +L|B */
+				case 'w':		/* Turn off the swap on a per-item basis unless it was set via +L|B */
 					if (!endian_swab)
 						swab = false;
 					break;
@@ -1899,12 +1910,11 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 		GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];
 		GMT->common.b.type[GMT_OUT] = GMT->common.b.type[GMT_IN];
 		if (GMT->common.b.swab[GMT_IN] == k_swap_in) GMT->common.b.swab[GMT_OUT] = k_swap_out;
-	//	GMT_memcpy (GMT->current.io.fmt[GMT_OUT], GMT->current.io.fmt[GMT_OUT], GMT->common.b.ncol[GMT_IN], struct GMT_COL_TYPE);
 	}
 
 	GMT_set_bin_io (GMT);	/* Make sure we point to binary i/o functions after processing -b option */
 
-	if (p) *p = '+';	/* Restore the + sign */
+	if (p) *p = '+';	/* Restore the + sign we gobbled up earlier */
 	return (error);
 }
 
@@ -4374,7 +4384,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				if (GMT->session.DATADIR) {
 					if ((strcmp (GMT->session.DATADIR, value) == 0))
 						break; /* stop here if string in place is equal */
-					free (GMT->session.DCWDIR);
+					free (GMT->session.DATADIR);
 				}
 				/* Set session DATADIR dir */
 				GMT->session.DATADIR = strdup (value);
@@ -6215,16 +6225,16 @@ void GMT_end (struct GMT_CTRL *GMT)
 #endif
 #endif
 
-	if (GMT->init.runtime_bindir) free (GMT->init.runtime_bindir), GMT->init.runtime_bindir = NULL;
-	if (GMT->init.runtime_libdir) free (GMT->init.runtime_libdir), GMT->init.runtime_libdir = NULL;
-	free (GMT->session.SHAREDIR), GMT->session.SHAREDIR = NULL;
-	free (GMT->session.HOMEDIR), GMT->session.HOMEDIR = NULL;
-	if (GMT->session.DATADIR) free (GMT->session.DATADIR), GMT->session.DATADIR = NULL;
-	if (GMT->session.DCWDIR) free (GMT->session.DCWDIR), GMT->session.DCWDIR = NULL;
-	if (GMT->session.GSHHGDIR) free (GMT->session.GSHHGDIR), GMT->session.GSHHGDIR = NULL;
-	if (GMT->session.USERDIR) free (GMT->session.USERDIR),  GMT->session.USERDIR = NULL;
-	if (GMT->session.TMPDIR) free (GMT->session.TMPDIR), GMT->session.TMPDIR = NULL;
-	if (GMT->session.CUSTOM_LIBS) free (GMT->session.CUSTOM_LIBS), GMT->session.CUSTOM_LIBS = NULL;
+	if (GMT->init.runtime_bindir) {free (GMT->init.runtime_bindir); GMT->init.runtime_bindir = NULL;}
+	if (GMT->init.runtime_libdir) {free (GMT->init.runtime_libdir); GMT->init.runtime_libdir = NULL;}
+	free (GMT->session.SHAREDIR); GMT->session.SHAREDIR = NULL;
+	free (GMT->session.HOMEDIR); GMT->session.HOMEDIR = NULL;
+	if (GMT->session.DATADIR) {free (GMT->session.DATADIR); GMT->session.DATADIR = NULL;}
+	if (GMT->session.DCWDIR) {free (GMT->session.DCWDIR); GMT->session.DCWDIR = NULL;}
+	if (GMT->session.GSHHGDIR) {free (GMT->session.GSHHGDIR); GMT->session.GSHHGDIR = NULL;}
+	if (GMT->session.USERDIR) {free (GMT->session.USERDIR);  GMT->session.USERDIR = NULL;}
+	if (GMT->session.TMPDIR) {free (GMT->session.TMPDIR); GMT->session.TMPDIR = NULL;}
+	if (GMT->session.CUSTOM_LIBS) {free (GMT->session.CUSTOM_LIBS); GMT->session.CUSTOM_LIBS = NULL;}
 	for (i = 0; i < GMT_N_PROJ4; i++) {
 		free (GMT->current.proj.proj4[i].name);
 		GMT->current.proj.proj4[i].name = NULL;
@@ -6242,9 +6252,9 @@ void GMT_end (struct GMT_CTRL *GMT)
 		free (GMT->common.a.name[i]);
 		GMT->common.a.name[i] = NULL;
 	}
-	if (GMT->common.h.title)    free (GMT->common.h.title),    GMT->common.h.title    = NULL;
-	if (GMT->common.h.remark)   free (GMT->common.h.remark),   GMT->common.h.remark   = NULL;
-	if (GMT->common.h.colnames) free (GMT->common.h.colnames), GMT->common.h.colnames = NULL;
+	if (GMT->common.h.title)    {free (GMT->common.h.title);    GMT->common.h.title    = NULL;}
+	if (GMT->common.h.remark)   {free (GMT->common.h.remark);   GMT->common.h.remark   = NULL;}
+	if (GMT->common.h.colnames) {free (GMT->common.h.colnames); GMT->common.h.colnames = NULL;}
 		
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_freeshorthand (GMT);
 

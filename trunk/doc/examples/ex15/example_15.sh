@@ -10,16 +10,16 @@
 ps=example_15.ps
 gmt gmtconvert ship.xyz -bo > ship.b
 #
-region=`gmt minmax ship.b -I1 -bi3`
-gmt nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi3
+region=`gmt minmax ship.b -I1 -bi3d`
+gmt nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi
 gmt grdcontour ship.nc -JM3i -P -B2 -BWSne -C250 -A1000 -Gd2i -K > $ps
 #
-gmt blockmedian $region -I10m ship.b -bi3 -bo > ship_10m.b
-gmt surface $region -I10m ship_10m.b -Gship.nc -bi3
-gmt psmask $region -I10m ship.b -J -O -K -T -Glightgray -bi3 -X3.6i >> $ps
+gmt blockmedian $region -I10m ship.b -b3d > ship_10m.b
+gmt surface $region -I10m ship_10m.b -Gship.nc -bi
+gmt psmask $region -I10m ship.b -J -O -K -T -Glightgray -bi3d -X3.6i >> $ps
 gmt grdcontour ship.nc -J -B -C250 -L-8000/0 -A1000 -Gd2i -O -K >> $ps
 #
-gmt psmask $region -I10m ship_10m.b -bi3 -J -B -O -K -X-3.6i -Y3.75i >> $ps
+gmt psmask $region -I10m ship_10m.b -bi3d -J -B -O -K -X-3.6i -Y3.75i >> $ps
 gmt grdcontour ship.nc -J -C250 -A1000 -L-8000/0 -Gd2i -O -K >> $ps
 gmt psmask -C -O -K >> $ps
 #
