@@ -785,16 +785,17 @@ void pad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 	assert (n_cols > 0 && n_rows > 0 && cell_size > 0);
 
 	/* Reshape matrix */
-	for (new_row = n_new_rows - n_pad[YLO] - 1; new_row + 1 > n_pad[YHI]; --new_row, --old_row) {
-		/* Copy original row to new row */
-		if ( n_pad[YHI] == 0 && n_pad[YLO] == 0 ) /* rows overlap! */
-			memmove(grid + (new_row * n_new_cols + n_pad[XLO]) * cell_size,
-							grid + old_row * n_cols * cell_size,
-							n_cols * cell_size);
-		else /* no overlap, memcpy is safe */
-			memcpy(grid + (new_row * n_new_cols + n_pad[XLO]) * cell_size,
-						 grid + old_row * n_cols * cell_size,
-						 n_cols * cell_size);
+	if (n_pad[XLO] + n_pad[XHI] + n_pad[YHI] != 0) {
+		/* When padding W, E, and N (not necessary when padding S only). */
+		for (new_row = n_new_rows - n_pad[YLO] - 1; new_row + 1 > n_pad[YHI]; --new_row, --old_row) {
+			/* Copy original row to new row, bottom upwards */
+			void *from = grid + old_row * n_cols * cell_size;
+			void *to   = grid + (new_row * n_new_cols + n_pad[XLO]) * cell_size;
+			if (n_pad[YHI] == 0) /* rows overlap! */
+				memmove (to, from, n_cols * cell_size);
+			else /* no overlap, memcpy is safe */
+				memcpy  (to, from, n_cols * cell_size);
+		}
 	}
 
 	/* Fill padded grid cells */
@@ -827,23 +828,21 @@ void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 	fprintf (stderr, "unpad grid w:%u e:%u s:%u n:%u\n",
 			n_pad[XLO], n_pad[XHI], n_pad[YLO], n_pad[YHI]);
 #endif
-	if (n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] == 0)
-		return; /* nothing to unpad */
+	if (n_pad[XLO] + n_pad[XHI] + n_pad[YHI] == 0)
+		return; /* nothing to unpad (we just ignore n_pad[YLO]) */
 
 	assert (n_cols > 0 && n_rows > 0 && cell_size > 0);
 
 	/* Reshape matrix */
 	for (row = 0; row < n_rows; ++row) {
 		unsigned old_row = row + n_pad[YHI];
+		void *from = grid + (old_row * n_old_cols + n_pad[XLO]) * cell_size;
+		void *to   = grid + row * n_cols * cell_size;
 		/* Copy original row to new row */
 		if (n_pad[YHI] == 0) /* rows overlap! */
-			memmove(grid + row * n_cols * cell_size,
-							grid + (old_row * n_old_cols + n_pad[XLO]) * cell_size,
-							n_cols * cell_size);
+			memmove (to, from, n_cols * cell_size);
 		else /* no overlap, memcpy is safe */
-			memcpy(grid + row * n_cols * cell_size,
-						 grid + (old_row * n_old_cols + n_pad[XLO]) * cell_size,
-						 n_cols * cell_size);
+			memcpy  (to, from, n_cols * cell_size);
 	}
 }
 
@@ -1064,9 +1063,10 @@ int io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned d
 }
 
 int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double wesn[4], unsigned int *width, unsigned int *height, int *n_shift, unsigned origin[2], unsigned dim[2], unsigned origin2[2], unsigned dim2[2]) {
-	/* Determines which rows and columns to extract to extract from a grid, based on w,e,s,n.
-	 * This routine first rounds the w,e,s,n boundaries to the nearest gridlines or pixels,
-	 * then determines the first and last columns and rows, and the width and height of the subset (in cells).
+	/* Determines which rows and columns to extract from a grid, based on
+	 * w,e,s,n.  This routine first rounds the w,e,s,n boundaries to the nearest
+	 * gridlines or pixels, then determines the first and last columns and rows,
+	 * and the width and height of the subset (in cells).
 	 */
 	bool is_gridline_reg, is_global, is_global_repeat;
 	unsigned last_row, first_col, last_col, first_row;
