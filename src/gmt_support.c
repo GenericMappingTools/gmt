@@ -95,6 +95,7 @@ struct CPT_Z_SCALE {	/* Internal struct used in the processing of CPT z-scaling 
 
 EXTERN_MSC double GMT_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, int id);
 EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for user file */
+EXTERN_MSC int64_t gmt_parse_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t *stop);
 
 /** @brief XYZ color of the D65 white point */
 #define WHITEPOINT_X	0.950456
@@ -10535,10 +10536,10 @@ struct GMT_SELECTION * GMT_set_selection (struct GMT_CTRL *GMT, char *item) {
 	 * We return a pointer to struct GMT_SELECTION, which holds the info.
 	 */
 	unsigned int error = 0, pos = 0, k = 0;
-	uint64_t i, max_value = 0, value = 0, start = 0, stop = 0, step = 1, n = 0;
-	int ns = 0;
+	uint64_t n = 0;
+	int64_t i, start = -1, stop = -1, step, max_value = 0, value = 0;
 	struct GMT_SELECTION *select = NULL;
-	char p[GMT_BUFSIZ] = {""}, *c = NULL;
+	char p[GMT_BUFSIZ] = {""};
 
 	if (!item || !item[0]) return (NULL);	/* Nothing to do */
 	if (item[0] == '~') k = 1;		/* We want the inverse selection */
@@ -10554,29 +10555,7 @@ struct GMT_SELECTION * GMT_set_selection (struct GMT_CTRL *GMT, char *item) {
 	/* Here we have user-supplied selection information */
 	pos = 0;	/* Reset since strtok changed it */
 	while (!error && (GMT_strtok (&item[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
-		step = 1;	/* Reset step to 1 */
-		if ((c = strchr (p, '-')))	/* Range of items given. e.g., 7-9 */
-			sscanf (p, "%" PRIu64 "-%" PRIu64, &start, &stop);
-		else if ((c = strchr (p, ':'))) {	/* Range generator given. e.g., 7:2:19 */
-			ns = sscanf (p, "%" PRIu64 ":%" PRIu64 ":%" PRIu64, &start, &step, &stop);
-			if (ns == 2) {	/* Assume we got just start:stop with implied step = 1 */
-				stop = step;
-				step = 1;
-			}
-			else if (ns != 3)
-				error++;	/* Got something odd */
-		}
-		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3 */
-			start = stop = atol (p);
-		else {	/* Unable to decode */
-			error++;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse %s for range selection\n", p);
-		}
-		if (stop < start) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad range: start-stop or start:step:stop must yield monotonically increasing selections\n");
-			error++;
-		}
-		if (error) break;	/* No point going further */
+		if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (NULL);
 		
 		/* Now set the item numbers for this sub-range */
 		assert (stop < max_value);	/* Somehow we allocated too little */
