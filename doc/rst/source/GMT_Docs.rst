@@ -210,14 +210,14 @@ an issue in the bug tracker
 What is new in GMT 5.x?
 -----------------------
 
-GMT 5 represents a new branch of GMT development that preserves the
+GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding new tricks to many of
 the tools. Furthermore, we have added system-wide capabilities for
 handling PDF transparency, dealing with GIS aspatial data, and
 eliminated the need for the **-m** option. Our PostScript library
 :doc:`PSL <pslib>` has seen a complete rewrite as well
 and produce shorter and more compact PostScript. However, the big news
-is for developers who wish to leverage GMT in their own applications.
+is aimed for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level
 GMT functionality is now accessible via GMT "modules". These are
 high-level functions named after their corresponding programs (.e.g.,
@@ -227,16 +227,14 @@ making progress on the Matlab interface modules as well and will soon
 start on the Python version. Developers should consult the GMT API
 Documentation for more details.
 
-Most of the GMT default parameters have changed named in order to
-group parameters into logical groups and to use more consistent naming.
-Some new default parameters have been added as well, such as
-:ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`, which controls whether axes annotations for
-Cartesian plots are horizontal or orthogonal to the individual axes.
+Most of the GMT default parameters have changed names in order to
+group parameters into logical groups and to use more consistent naming,
+and some new default parameters have been added as well.
 
 Because of the default name changes and other command-line changes (such
 as making **-m** obsolete), we recommend that users of GMT 4 consider
 learning the new rules and defaults. However, to ease the transition to
-GMT 5 you may use the enable-compat switch when running configure ,
+GMT 5 you may run it in compatibility mode,
 thus allowing the use of many obsolete default names and command
 switches (you will receive a warning instead).
 
@@ -244,50 +242,86 @@ Overview of 5.0.0 [Jul-1, 2013]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This version shares the same bug fixes applied to GMT 4.5.9, released
-Jan 1, 2013. Several new programs have been added; some have been
-promoted from earlier supplements:
+Jan 1, 2013. A few new programs have been added and some have been
+promoted (and possibly renamed) from earlier supplements:
 
 :doc:`gmt2kml`
-    A :doc:`psxy` -like tool to produce KML overlays for Google Earth.
+    A :doc:`psxy` -like tool to produce KML overlays for Google Earth. Previously
+    found in the misc supplement.
 
 :doc:`gmtsimplify`
-    A line-reduction tool for coastlines and similar lines.
+    A line-reduction tool for coastlines and similar lines. Previously found
+    in the misc supplement under the name gmtdp.
 
 :doc:`gmtconnect`
     Connect individual lines whose end points match within given tolerance.
     Previously known as gmtstitch in the misc supplement.
 
+:doc:`gmtget`
+    Return the values of the specified GMT defaults.  Previously only
+    implemented as a shell script and thus not available on all platforms.
+
 :doc:`gmtwhich`
     Return the full path to specified data files.
 
+:doc:`grdraster`
+    Extracts subsets from large global grids.  Previously
+    found in the dbase supplement.
+
 :doc:`kml2gmt`
-    Extract GMT data tables from Google Earth KML files.
+    Extract GMT data tables from Google Earth KML files.  Previously
+    found in the misc supplement.
 
 :doc:`gmtspatial`
-    Perform geospatial operations on lines and polygons.
+    Perform various geospatial operations on lines and polygons.
 
 :doc:`gmtvector`
     Perform basic vector manipulation in 2-D and 3-D.
 
-Below is a list of improvements that affect several
-GMT programs equally:
+:doc:`sph2grd`
+    Compute grid from list of spherical harmonic coefficients [We will add its
+    natural complement grd2sph at a later date].
 
-#. All programs now use consistent, standardized choices for plot
-   dimension units (**c**\ m, **i**\ nch, or **p**\ oint; we no longer
-   consider **m**\ eter a plot length unit), and actual distances
-   (choose spherical arc lengths in **d**\ egree, **m**\ inute, and
-   **s**\ econd [was **c**], or distances in m\ **e**\ ter [Default],
-   **f**\ oot [new], **k**\ m, **M**\ ile [was sometimes **i** or
-   **m**], **n**\ autical mile, and s\ **u**\ rvey foot [new]).
+:doc:`sphdistance`
+    Make grid of distances to nearest points on a sphere.  Previously
+    found in the sph supplement.
 
-#. Programs that read data tables can now process multi-segment tables
-   automatically. This means programs that did not have this capability
-   (e.g., :doc:`filter1d`) now can filter
-   segments separately; consequently, there is no longer a **-m**
-   option.
+:doc:`sphinterpolate`
+    Spherical gridding in tension of data on a sphere.  Previously
+    found in the sph supplement.
+
+:doc:`sphtriangulate`
+    Delaunay or Voronoi construction of spherical lon,lat data.  Previously
+    found in the sph supplement.
+
+We have also added a new supplement called potential that contains these five modules:
+
+:doc:`gmtgravmag3d <supplements/potential/gmtgravmag3d>`:
+    Compute the gravity/magnetic anomaly of a body by the method of Okabe.
+
+:doc:`gravfft <supplements/potential/gravfft>`:
+    Compute gravitational attraction of 3-D surfaces and a little more by the method of Parker.
+
+:doc:`grdgravmag3d <supplements/potential/grdgravmag3d>`:
+    Computes the gravity effect of one (or two) grids by the method of Okabe.
+
+:doc:`grdredpol <supplements/potential/grdredpol>`:
+    Compute the Continuous Reduction To the Pole, also known as differential RTP.
+
+:doc:`grdseamount <supplements/potential/grdseamount>`:
+    Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry.
+
+Finally, the spotter supplement has added one new module:
+
+:doc:`grdpmodeler <supplements/spotter/grdpmodeler>`:
+    Evaluate a plate model on a geographic grid.
+
+Below are lists of improvements that affect most
+GMT programs equally.  First we discuss changes that have been
+implemented by a series of new lower-case GMT common options:
 
 #. Programs that read data tables can now process the aspatial metadata
-   in OGR/GMT files with the new **-a** option. These are produced by
+   in OGR/GMT files with the new **-a** option. These can be produced by
    **ogr2ogr** (a GDAL tool) when selecting the -f "GMT" output
    format. See Appendix `P. The GMT Vector Data Format for OGR Compatibility`_
    for an explanation of the OGR/GMT file format.
@@ -296,12 +330,12 @@ GMT programs equally:
    skipped).
 
 #. Programs that read data tables can control which columns to read and
-   in what order with the new **-i** option.
+   in what order (and optionally supply scaling relations) with the new **-i** option
 
 #. Programs that write data tables can control which columns to write
-   and in what order with the new **-o** option.
+   and in what order (and optionally supply scaling relations) with the new **-o** option.
 
-#. Programs that write data tables can specify a custom binary format
+#. Programs that read or write data tables can specify a custom binary format
    using the enhanced **-b** option.
 
 #. Programs that read data tables can control how records with NaNs are
@@ -310,34 +344,23 @@ GMT programs equally:
 #. Programs that read grids can use new common option **-n** to control
    grid interpolation settings and boundary conditions.
 
-#. Programs that read grids can now handle Arc/Info float binary files
-   (GRIDFLOAT) and ESRI .hdr formats.
+#. All plot programs can take a new **-p** option for perspective view
+   from infinity. In GMT 4, only some programs could do this (e.g.,
+   :doc:`pscoast`) and it took a
+   program-specific option, typically **-E** and sometimes an option
+   **-Z** would be needed as well. This information is now all passed
+   via **-p** and applies across all GMT plotting programs.
 
-#. Programs that read grids now set boundary conditions to aid further
-   processing. If a subset then the boundary conditions are taken from
-   the surrounding grid values.
+#. All plot programs can take a new **-t** option to modify the PDF
+   transparency level for that layer. However, as PostScript has no provision for
+   transparency you can only see the effect if you convert it to PDF.
 
-#. There is new GMT  defaults
-   parameters that control which algorithms to use for Fourier
-   transforms (:ref:`GMT_FFT <GMT_FFT>`) and triangulation (:ref:`GMT_TRIANGULATE <GMT_TRIANGULATE>`).
+Some of the established GMT common options have seen significant
+improvements; these include:
 
-#. Great circle distance approximations can now be fine-tuned via new
-   GMT default parameters
-   :ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>` and :ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`. Geodesics are now even
-   more accurate by using the Vincenty [1975] algorithm instead of
-   Rudoe's method.
-
-#. New parameter EXTRAPOLATE_VAL controls what splines should do if
-   requested to extrapolate beyond the given data domain.
-
-#. GMT 5 only produces PostScript and no longer has a setting for
-   EPS. We made this decision since a) our EPS effort was always very
-   approximate (no consideration of font metrics. etc.) and often wrong,
-   and b) :doc:`ps2raster` handles it exactly.
-
-#. The **-B** option can now handle irregular and custom annotations
-   (see Section `Custom axes`_). It also has an automatic mode which
-   will select optimal intervals. The 3-D base maps can now have
+#. The completely revised **-B** option can now handle irregular and custom annotations
+   (see Section `Custom axes`_). It also has a new automatic mode which
+   will select optimal intervals given data range and plot size. The 3-D base maps can now have
    horizontal gridlines on xz and yz back walls.
 
 #. The **-R** option may now accept a leading unit which implies the
@@ -349,20 +372,82 @@ GMT programs equally:
 #. Introduced **-fp**\ [*unit*] which allows data input to be in
    projected values, e.g., UTM coordinates while **-Ju** is given.
 
-#. All plot programs can take a new **-p** option for perspective view
-   from infinity. In GMT 4, only some programs could do this (e.g.,
-   :doc:`pscoast`) and it took a
-   program-specific option, typically **-E** and sometimes an option
-   **-Z** would be needed as well. This information is now all passed
-   via **-p** and applies across all GMT plotting programs.
+While just giving - (the hyphen) as argument presents just the synopsis of the command
+line arguments, we now also support giving + which in addition will list
+the explanations for all options that are not among the GMT common set.
 
-#. All plot programs can take a new **-t** option to modify the PDF
-   transparency level. However, as PostScript has no provision for
-   transparency you can only see the effect if you convert it to PDF.
+Other changes of a similar far-ranging nature have been implemented by
+introducing new GMT default settings:
+
+#. :ref:`DIR_DCW <DIR_DCW>` specifies where to look for the optional
+   Digital Charts of the World database (for country coloring or selections).
+
+#. :ref:`DIR_GSHHG <DIR_GSHHG>` specifies where to look for the required
+   Global Self-consistent Hierarchical High-resolution geography database.
+
+#. :ref:`GMT_COMPATIBILITY <GMT_COMPATIBILITY>` can be set to 4 to allow
+   backwards compatibility with GMT 4 command-line syntax or 5 to impose
+   strict GMT5 syntax checking.
+
+#. :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>` controls whether axes annotations
+   for Cartesian plots are horizontal or orthogonal to the individual axes.
+
+#. :ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>` is used to set the default
+   chunk size for the **lat** and **lon** dimension of the **z** variable.
+   Requires netCDF version 4.
+
+#. :ref:`IO_NC4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>` is used to set
+   the compression level for netCDF4 files upon output.
+
+#. :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` can be used to change the
+   character that GMT uses to identify new segment header records [>].
+
+#. :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>` controls whether axes annotations
+   for Cartesian plots are horizontal or orthogonal to the individual axes.
+
+#. :ref:`GMT_FFT <GMT_FFT>` controls which algorithms to use for Fourier
+   transforms.
+
+#. :ref:`GMT_TRIANGULATE <GMT_TRIANGULATE>` controls which algorithm to use
+   for Delaunay triangulation.
+
+#. Great circle distance approximations can now be fine-tuned via new GMT default parameters
+   :ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>` and :ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`.
+   Geodesics are now even more accurate by using the Vincenty [1975] algorithm instead of
+   Rudoe's method.
+
+#. :ref:`GMT_EXTRAPOLATE_VAL <GMT_EXTRAPOLATE_VAL>` controls what splines should do if
+   requested to extrapolate beyond the given data domain.
+
+#. :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>` allows users to modify how transparency will be
+   processed when converted to PDF [Normal].
+
+Other wide-ranging changes have been implemented in different
+ways, such as
+
+#. All programs now use consistent, standardized choices for plot
+   dimension units (**c**\ m, **i**\ nch, or **p**\ oint; we no longer
+   consider **m**\ eter a plot length unit), and actual distances
+   (choose spherical arc lengths in **d**\ egree, **m**\ inute, and
+   **s**\ econd [was **c**], or distances in m\ **e**\ ter [Default],
+   **f**\ oot [new], **k**\ m, **M**\ ile [was sometimes **i** or
+   **m**], **n**\ autical mile, and s\ **u**\ rvey foot [new]).
+
+#. Programs that read data tables can now process multi-segment tables
+   automatically. This means programs that did not have this capability
+   (e.g., :doc:`filter1d`) can now all operate on the
+   segments separately; consequently, there is no longer a **-m**
+   option.
+
+#. Programs that read grids can now directly handle Arc/Info float binary
+   files (GRIDFLOAT) and ESRI .hdr formats.
+
+#. Programs that read grids now set boundary conditions to aid further
+   processing. If a subset then the boundary conditions are taken from
+   the surrounding grid values.
 
 #. All text can now optionally be filled with patterns and/or drawn with
-   outline pens. In the past, only
-   :doc:`pstext` could plot outline fonts via
+   outline pens. In the past, only :doc:`pstext` could plot outline fonts via
    **-S**\ *pen*. Now, any text can be an outline text by manipulating
    the corresponding FONT defaults (e.g., :ref:`FONT_TITLE <FONT_TITLE>`).
 
@@ -370,7 +455,12 @@ GMT programs equally:
    change the PDF transparency level for that item. See **-t** for
    limitations on how to visualize this transparency.
 
-Here is a list of recent enhancements to specific programs:
+#. GMT now ships with 36 standard color palette tables (CPT), up from 24.
+
+Finally, here is a list of numerous enhancements to individual programs:
+
+#. :doc:`blockmean` added **-Ep**\ for error propagation and
+   **-Sn** to report the number of data points per block.
 
 #. :doc:`blockmedian` added **-Er**\ [-]
    to return as last column the record number that gave the median
@@ -382,15 +472,50 @@ Here is a list of recent enhancements to specific programs:
    for modal value. Added **-Es** to read and output source id for modal
    value.
 
-#. :doc:`gmtconvert` now has optional PCRE
-   (regular expression) support.
+#. :doc:`gmtconvert` now has optional PCRE (regular expression) support,
+   as well as a new option to select a subset of segments (**-Q**) and
+   an improved option to extract a subset of records (**-E**).
 
 #. :doc:`gmtmath` with **-N**\ *ncol* and input
-   files will add extra blank columns, if needed.
+   files will add extra blank columns, if needed.  A new option **-E**
+   sets the minimum eigenvalue used by operators LSQFIT and SVDFIT.
+   Option **-L** applies operators on a per-segment basis instead of
+   accumulating operations across the entire file.  Many new
+   operators have been added (BITAND, BITLEFT, BITNOT, BITOR, BITRIGHT,
+   BITTEST, BITXOR, DIFF, IFELSE, ISFINITE, SVDFIT, TAPER).  Finally,
+   we have implemented user macros for long or commonly used expressions,
+   as well as ability to store and recall using named variables.
 
-#. :doc:`grdblend` can take list of grids on
-   the command line and blend, and now has more blend choices. Grids no
+#. :doc:`gmtselect` Takes **-E** to indicate if points exactly on a polygon
+   boundary are inside or outside, and **-Z** can now be extended to apply
+   to other columns than the third.
+
+#. :doc:`grd2cpt` takes **-F** to specify output color model and **-G** to
+   truncate incoming CPT to be limited to a given range.
+
+#. :doc:`grd2xyz` takes **-C** to write row, col instead of x,y.  Append **f**
+   to start at 1, else start at 0.  Alternatively, use **Ci** to write just
+   the two columns *index* and *z*, where *index*
+   is the 1-D indexing that GMT uses when referring to grid nodes.
+
+#. :doc:`grdblend` can now take list of grids on
+   the command line and blend, and now has more blend choices (see **-C**). Grids no
    longer have to have same registration or spacing.
+
+#. :doc:`grdclip` has new option **-Si** to set all data >= low and <= high
+    to the *between* value, and **-Sr** to set all data == old to the *new* value.
+
+#. :doc:`grdcontour` can specify a single contour with **-C+**\ *contour* and
+   *-A+**\ *contour* .
+
+#. :doc:`grdcut` can use **-S** to specify an origin and radius and cut the
+   corresponding rectangular area, and **-N** to extend the region if the new
+   **-R** domain exceeds existing boundaries.
+
+#. :doc:`grdfft` can now accept two grids and let **-E** compute the cross-spectra.
+   The **-N** option allows for many new and special settings, including ability
+   to control data mirroring, detrending, tapering, and output of intermediate
+   results.
 
 #. :doc:`grdfilter` can now do spherical
    filtering (with wrap around longitudes and over poles) for non-global
@@ -404,8 +529,17 @@ Here is a list of recent enhancements to specific programs:
    is zero (hence we do not sum and divide the convolution by the weight
    sum).
 
+#. :doc:`grdgradient` now has **-Em** that gives results close to ESRI's
+   "hillshade"'" (but faster).
+
 #. :doc:`grdinfo` now has modifier
-   **-Ts**\ *dz* which returns a symmetrical range about zero.
+   **-Ts**\ *dz* which returns a symmetrical range about zero.  Also,
+   if **-Ib** is given then the grid's bounding box polygon is written.
+
+#. :doc:`grdimage` with GDAL support can write a raster image directly to
+   a raster file (**-A**) and may plot raster images as well (**-Dr**).
+   It also automatically assigns a color table if none is given and can use
+   any of the 36 GMT color tables and scale them to fit the grid range.
 
 #. :doc:`grdmask` has new option
    **-Ni**\ \|\ I\ \|\ p\ \|\ P to set inside of
@@ -415,17 +549,32 @@ Here is a list of recent enhancements to specific programs:
    Added z as possible radius value in **-S** which means read radii
    from 3rd input column.
 
-#. :doc:`grdmath` added operator SUM which
-   adds up all non-NaN entries and returns a grid with all nodes set to
-   the sum constant.
+#. :doc:`grdmath` added many new operators such as BITAND, BITLEFT, BITNOT, BITOR, BITRIGHT,
+   BITTEST, BITXOR, DEG2KM, IFELSE, ISFINITE, KM2DEG, and TAPER.  Finally,
+   we have implemented user macros for long or commonly used expressions,
+   as well as ability to store and recall using named variables.
 
-#. :doc:`grdtrack` has a new **-C**, **-D**
-   options to automatically create an equidistant set of cross-sectional
+#. :doc:`grdtrack` has many new options.  The **-A** option controls how the
+   input track is resampled when **-C** is selected, the new **-C**, **-D**
+   options automatically create an equidistant set of cross-sectional
    profiles given input line segments; one or more grids can then be
-   sampled at these locations. Also added **-S** which stack
+   sampled at these locations.  The **-E** option allows users to quickly specify
+   tracks for sampling without needed input tracks.  Also added **-S** which stack
    cross-profiles generated with **-C**. Finally, **-N** will not skip
    points that are outside the grid domain but return NaN as sampled
    value.
+
+#. :doc:`grdvector` can now take **-Si**\ *scale* to give the reciprocal scale,
+   i.e., cm/ unit or km/unit.  Also, the vector heads in GMT have completely been overhauled
+   and includes geo-vector heads that follow great or small circles.
+
+#. :doc:`grdview` will automatically assigns a color table if none is given and can use
+   any of the 36 GMT color tables and scale them to fit the grid range.
+
+#. :doc:`greenspline` has an improved **-C** option to control how many eigenvalues are used
+   in the fitting, and **Sl** adds a linear (or bilinear) spline.
+
+#. :doc:`grdvolume` can let **-S** accept more distance units than just km.
 
 #. :doc:`mapproject` has a new **-N**
    option to do geodetic/geocentric conversions; it combines with **-I**
@@ -452,28 +601,58 @@ Here is a list of recent enhancements to specific programs:
    now **-T**\ [**c**\ \|\ **h**] for ORS estimates based on max
    curvature or height.
 
+#. :doc:`makecpt` takes **-F** to specify output color model and **-G** to
+   truncate incoming CPT to be limited to a given range.  It also adds **Di**
+   to match the bottom/top values in the input cpt file.
+
+#. :doc:`mapproject` adds **-N** for conversion between geodetic to auxiliary latitudes.
+    In **-G**, prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.
+
+#. :doc:`minmax` adds **-A** to report on a per dataset, file, or segment level.
+    Also, use **-If** to report an extended region optimized for fastest results in FFTs.
+    and **-Is** to report an extended region optimized for fastest results in :doc:`surface`.
+
 #. :doc:`project` has added **-G**...[+] so
    if + is appended we get a segment header with information about the
-   pole for the circle.
+   pole for the circle. Optionally, append /<colat> in **-G** for a small circle path.
 
-#. :doc:`ps2raster` has added a **-TF** option to create multi-page PDF files.
+#. :doc:`ps2raster` has added a **-TF** option to create multi-page PDF files. There is
+   also modification to **-A** to add user-specified margins, and it automatically detects
+   if transparent elements have been included (and a detour via PDF might be needed).
 
 #. :doc:`psbasemap` has added a **-D** option to place a map-insert box.
 
-#. :doc:`pscontour` now similar to
-   :doc:`grdcontour` in the options it
+#. :doc:`psclip` has added an extended **-C** option to close different types of clip paths.
+
+#. :doc:`pscoast` has added a new option **-F** which lets users specify one or more countries
+   to paint, fill, extract, or use as plot domain (requires DCW to be installed).
+
+#. :doc:`pscontour` is now similar to :doc:`grdcontour` in the options it
    takes, e.g., **-C** in particular. In GMT 4, the program could only
    read a CPT file and not take a specific contour interval.
 
+#. :doc:`pshistogram` now takes **-D** to place histogram count labels on top of each bar
+   and **-N** to draw the equivalent normal distributions.
+
+#. :doc:`pslegend` no longer uses system calls to do the plotting.  The modified **-D**
+   allows for minor offsets, while **-F** offers more control over the frame and fill.
+
 #. :doc:`psrose` has added **-Wv**\ *pen* to
-   specify pen for vector (in **-C**). Added **-Zu** to set all radii to
+   specify pen for vector (specified in **-C**). Added **-Zu** to set all radii to
    unity (i.e., for analysis of angles only).
 
 #. :doc:`psscale` has a new option **-T** that paints a rectangle behind the color bar.
+   The **+n** modifier to **-E** draws a rectangle with NaN color and adds a label.
+   The **-G** option will truncate incoming CPT to be limited to the specified z-range.
+   Modification **-Np** indicates a preference to use polygons to draw the color bar.
 
-#. :doc:`pstext` has enhanced **-DJ** option
+#. :doc:`pstext` can take simplified input
+   via new option **-F** to set fixed font (including size), angle, and
+   justification. If these parameters are fixed for all the text strings
+   then the input can simply be *x y text*.  It also has enhanced **-DJ** option
    to shorten diagonal offsets by :math:`\sqrt{2}` to maintain the same
-   distance from point to annotation.
+   radial distance from point to annotation. Change all text to upper or
+   lower case with **-Q**.
 
 #. :doc:`psxy` and :doc:`psxyz` can take symbol modifier
    **+s**\ *scale*\ [*unit*][/\ *origin*][\ **l**] in **-S** to adjust
@@ -484,55 +663,61 @@ Here is a list of recent enhancements to specific programs:
    languages has been expanded considerably to allow for complicated,
    multi-parameter symbols; see Appendix `M. Custom Plot Symbols`_
    for details. Finally, allow the base for bars and columns optionally to be
-   read from data file by using not specifying the base value.
+   read from data file by not specifying the base value.
 
-#. :doc:`pstext` can take simplified input
-   via new option **-F** to set fixed font (including size), angle, and
-   justification. If these parameters are fixed for all the text strings
-   then the input can simply be *x y text*.
+#. :doc:`sample1d` offers **-A** to control resampling of spatial curves (with **-I**).
+
+#. :doc:`spectrum1d` has added **-L** to control removal of trend, mean value or mid value.
+
+#. :doc:`surface` has added **-r** to create pixel-registered grids and knows about
+   periodicity in longitude (given **-fg**).  There is also **-D** to supply a "sort" break line.
 
 #. :doc:`triangulate` now offers **-S**
    to write triangle polygons and can handle 2-column input if **-Z** is given.
+   Can also write triangle edges as line with **-M**.
 
-#. :doc:`xyz2grd` now also offers **-Am** (mean, the default) and **-Ar** (rms).
+#. :doc:`xyz2grd` now also offers **-Af** (first value encountered),
+    **-Am** (mean, the default), **-Ar** (rms), and **-As** (last value encountered).
 
-Several supplements have new feature as well:
+Several supplements have new features as well:
+
+#. :doc:`img2grd <supplements/img/img2grd>`
+   This used to be a shell script but is now a C program and can be used on all platforms.
 
 #. :doc:`mgd77convert <supplements/mgd77/mgd77convert>`
    added **-C** option to assemble \*.mgd77 files from \*.h77/\*.a77 pairs.
 
-#. The spotter programs can now read GPlates rotations directly as well
-   as write this format. Now,
+#. The spotter programs can now read GPlates rotation files directly as well
+   as write this format. Also,
    :doc:`rotconverter <supplements/spotter/rotconverter>` can extract plate
    circuit rotations on-the-fly from the GPlates rotation file.
+
+Note: GMT 5 only produces PostScript and no longer has a setting for
+Encapsulated PostScript (EPS). We made this decision since (a) our EPS determination
+was always very approximate (no consideration of font metrics, etc.) and quite often wrong,
+and (b) :doc:`ps2raster` handles it exactly.  Hence, users who need EPS plots should
+simply process their PostScript files via :doc:`ps2raster`.
 
 Incompatibilities between GMT 5.x and GMT 4.x
 ---------------------------------------------
 
 As features are added and bugs are discovered, it is occasionally
-necessary to break the established syntax of a
-GMT program option, such as when
+necessary to break the established syntax of a GMT program option, such as when
 the intent of the option is non-unique due to a modifier key being the
 same as a distance unit indicator. Other times we see a greatly improved
 commonality across similar options by making minor adjustments. However,
 we are aware that such changes may cause grief and trouble with
-established scripts and the habits of many
-GMT users. To alleviate this
-situation we have introduced a configuration that allows
-GMT to tolerate and process
+established scripts and the habits of many GMT users. To alleviate this
+situation we have introduced a configuration that allows GMT to tolerate and process
 obsolete program syntax (to the extent possible). To activate you must
-make sure **GMT_COMPAT** is not set to "no"in your ``ConfigUser.cmake`` file. When not
+make sure **GMT_COMPATIBILITY** is set to 4 in your gmt.conf file. When not
 running in compatibility mode any obsolete syntax will be considered as
-errors. We recommend that users with prior
-GMT 4 experience run
-GMT 5 in compatibility mode, heed
-the warnings about obsolete syntax, and correct their scripts or habits
-accordingly. When this transition has been successfully navigated it is
-better to turn compatibility mode off and leave the past behind.
-Occasionally, users will supply an ancient
-GMT 3 syntax which may have worked
-in GMT 4 but is not tolerated in
-GMT 5.
+errors. We recommend that users with prior GMT 4 experience run
+GMT 5 in compatibility mode, heed the warnings about obsolete syntax, and
+correct their scripts or habits accordingly. When this transition has been
+successfully navigated it is better to turn compatibility mode off and leave
+the past behind. Occasionally, users will supply an ancient
+GMT 3 syntax which may have worked in GMT 4 but is not honored in GMT 5.
 
 Here are a list of known incompatibilities that are correctly processed
 correctly with a warning under compatibility mode:
@@ -707,9 +892,8 @@ correctly with a warning under compatibility mode:
    Also, **-A** (no arguments) is deprecated; use **-Az** instead.
 
 #. :doc:`grdraster`: Now in the main GMT core.  The
-   H\ *skip* field in ``grdraster.info`` is no longer expected as we automatically
-   determine if a raster has a
-   GMT header. Also, to output
+   **H**\ *skip* field in ``grdraster.info`` is no longer expected as we automatically
+   determine if a raster has a GMT header. Also, to output
    *x,y,z* triplets instead of writing a grid now requires **-T**.
 
 #. :doc:`img2grd <supplements/img/img2grd>`: **-m**\ *inc* is
