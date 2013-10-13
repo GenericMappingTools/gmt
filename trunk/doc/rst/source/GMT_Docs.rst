@@ -7933,7 +7933,6 @@ regional hemisphere map centered near Papua New Guinea and zoom in on a
 specified point. The map regions will be specified in projected km from
 the projection center, e.g., we may want the map to go from km to km in
 the longitudinal and the latitudinal direction.
-
 Also, as we zoom in on the projection center we want to draw the outline
 of the next map region on the plot. To do that we use the **-D** option
 in :doc:`psbasemap`.

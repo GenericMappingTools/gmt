@@ -270,7 +270,6 @@ configure_file (gmt_config.h.in gmt_config.h)
 configure_file (gmt_version.h.in gmt_version.h)
 configure_file (isogmt.in isogmt${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt-config.in gmt-config${GMT_INSTALL_NAME_SUFFIX} @ONLY)
-configure_file (gmt5syntax.in gmt5syntax @ONLY)
 
 # gmtprogram
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
@@ -545,12 +544,6 @@ if (WIN32)
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 endif (WIN32)
-
-install (PROGRAMS
-	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
-	ncdeflate.sh
-	DESTINATION ${GMT_DATADIR}/tools
-	COMPONENT Runtime)
 
 # this prints out the final version of the compiler/linker flags
 string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)

@@ -16,22 +16,16 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
-# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+# share/tools/CMakeLists.txt
 #
 
-# source files
-set (SUPPL_LIB_SRCS gmt_imgsubs.h gmt_imgsubs.c)
-set (SUPPL_PROGS_SRCS img2grd.c)
+configure_file (gmt5syntax.in gmt5syntax @ONLY)
 
-# lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
-
-# create build targets
-string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
-install_module_symlink (${_gmt_modules})
-
-# install shell script
-install (PROGRAMS img2google
+install (PROGRAMS
+	gmt_functions.sh
+	gmt_aliases.csh
+	ncdeflate
+	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
 	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
 
