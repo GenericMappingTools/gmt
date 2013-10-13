@@ -153,8 +153,8 @@ struct GD_CTRL {
 	double	hdr[9];
 	double	GeoTransform[6];
 	double	nodata;
-	const char	*ProjectionRefPROJ4;
-	const char	*ProjectionRefWKT;
+	char	*ProjectionRefPROJ4;
+	char	*ProjectionRefWKT;
 	const char	*DriverShortName;
 	const char	*DriverLongName;
 	const char	*ColorInterp;
