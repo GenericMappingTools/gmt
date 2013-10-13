@@ -1,10 +1,13 @@
-#!/bin/sh
-#	$Id$
+#!/bin/bash
+#
+# $Id$
+#
+# Copyright (c) 2009 by David Sandwell and Paul Wessel
+# Credit to Joaquim Luis for adding KML output from ps2raster
+#
 # Shell script that will generate a Google Earth png tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
-# David Sandwell and Paul Wessel, March 2009
-# Credit to Joaquim Luis for adding KML output from ps2raster
 
 # Change these only if you know what you are doing!  Note this script
 # is hardwired to do bathymetry.  You must change many things to have
@@ -18,10 +21,10 @@ DPI=240
 if [ $# -eq 0 ]; then
 cat << EOF >&2
 	img2google - Create Google Earth KML tiles from the $TOPO bathymetry grid
-	
+
 	Usage: img2google -Rwest/east/south/north [imgfile] [-A<mode>[<altitude>]] [-C] [-F<fademin/fademax>]
-	 	[-Gprefix] [-L<LODmin/LODmax] [-N<name] [-T<title>] [U<url>] [-V] [-Z[+]]
-	
+	[-Gprefix] [-L<LODmin/LODmax] [-N<name] [-T<title>] [U<url>] [-V] [-Z[+]]
+
 		-R Specify the region of interest
 	OPTIONAL ARGUMENTS:
 		imgfile is the 1x1 min topo img to use [topo.11.1.img]
