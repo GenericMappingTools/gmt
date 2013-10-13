@@ -19,7 +19,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ **-D**\ *dx*/*dy*\ [/*dz*] ] [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
 [ **-K** ] [ **-L** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q** ] 
-[ **-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scale*\ [**u**][/*origin*][**l**]][/*size_y*] ] 
+[ **-S**\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ] 
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**-**\ \|\ **+**][*pen*] ] 

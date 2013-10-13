@@ -156,8 +156,6 @@ struct GMT_SYMBOL {
 	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
 	unsigned int nondim_col[6];	/* Which columns has angles or km for this symbol */
-	unsigned int convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
-	double scale, origin;	/* Used to convert size = (given_size - origin) * scale */
 
 	/* These apply to bar|column symbols */
 

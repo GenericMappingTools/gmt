@@ -1,21 +1,17 @@
-**-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scale*\ [**u**][/*origin*][**l**]][/*size_y*]
+**-S**\ [*symbol*][\ *size*\ [**u**]][/*size_y*]
     Plot symbols. If present, *size* is symbol size in the unit set in
     :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
-    the input data; this cannot be used in conjunction with
-    **-bi**\ [*ncols*\ ][*type*]. Optionally, append **c**, **i**, or
+    the input data; this cannot be used in conjunction with binary input.
+    Optionally, append **c**, **i**, or
     **p** to indicate that the size information in the input data is in
     units of cm, inch, or point, respectively [Default is
-    **PROJ\_LENGTH\_UNIT**]. Note: if you give both size and symbol via the
+    **PROJ\_LENGTH\_UNIT**]. Note: if you give *both* size and symbol via the
     input file you must use **PROJ\_LENGTH\_UNIT** to indicate the units
     used for the symbol size or append the units to the size in the file.
-    Some 2-dimensional symbols optionally take the second size via *size_y*.
-    If the symbol size is expected via the fourth
-    data column then you may convert those values to symbol sizes by
-    appending **+s**\ *scale*\ [/*origin*][**l**] which will compute size
-    = (data - *origin*) \* *scale*, where *origin* defaults to 0. If **l**
-    is appended we take log10 of data and *origin* first [*origin* then
-    defaults to 1].
+    Some 2-dimensional symbols optionally take a second size via *size_y*.
+    If symbol sizes are expected via the fourth data column then you may convert
+    those values to suitable symbol sizes via the **-i** mechanism.
 
     The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
     **S**, **T** are normalized to have the same area as a circle with

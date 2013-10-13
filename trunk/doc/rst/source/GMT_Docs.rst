@@ -329,20 +329,17 @@ implemented by a series of new lower-case GMT common options:
    files can also be used in GMT 4 (the GIS metadata is simply
    skipped).
 
-*  Programs that read data tables can control which columns to read and
-   in what order (and optionally supply scaling relations) with the new **-i** option
-
-*  Programs that write data tables can control which columns to write
-   and in what order (and optionally supply scaling relations) with the new **-o** option.
-
 *  Programs that read or write data tables can specify a custom binary format
    using the enhanced **-b** option.
 
-*  Programs that read data tables can control how records with NaNs are
-   handled with the new **-s** option.
+*  Programs that read data tables can control which columns to read and
+   in what order (and optionally supply scaling relations) with the new **-i** option
 
 *  Programs that read grids can use new common option **-n** to control
    grid interpolation settings and boundary conditions.
+
+*  Programs that write data tables can control which columns to write
+   and in what order (and optionally supply scaling relations) with the new **-o** option.
 
 *  All plot programs can take a new **-p** option for perspective view
    from infinity. In GMT 4, only some programs could do this (e.g.,
@@ -350,6 +347,9 @@ implemented by a series of new lower-case GMT common options:
    program-specific option, typically **-E** and sometimes an option
    **-Z** would be needed as well. This information is now all passed
    via **-p** and applies across all GMT plotting programs.
+
+*  Programs that read data tables can control how records with NaNs are
+   handled with the new **-s** option.
 
 *  All plot programs can take a new **-t** option to modify the PDF
    transparency level for that layer. However, as PostScript has no provision for
@@ -383,14 +383,11 @@ introducing new GMT default settings:
    Digital Charts of the World database (for country coloring or selections).
 
 *  :ref:`DIR_GSHHG <DIR_GSHHG>` specifies where to look for the required
-   Global Self-consistent Hierarchical High-resolution geography database.
+   Global Self-consistent Hierarchical High-resolution Geography database.
 
 *  :ref:`GMT_COMPATIBILITY <GMT_COMPATIBILITY>` can be set to 4 to allow
    backwards compatibility with GMT 4 command-line syntax or 5 to impose
    strict GMT5 syntax checking.
-
-*  :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>` controls whether axes annotations
-   for Cartesian plots are horizontal or orthogonal to the individual axes.
 
 *  :ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>` is used to set the default
    chunk size for the **lat** and **lon** dimension of the **z** variable.
@@ -439,6 +436,19 @@ ways, such as
    segments separately; consequently, there is no longer a **-m**
    option.
 
+*  While we support the scaling of z-values in grids via the filename convention
+   name[=\ *ID*\ [/*scale*/*offset*\ [/*nan*]]] mechanism, there are times
+   when we wish to scale the x,y domain as well. Users can now
+   append **+u**\ *unit* to their gridfile names, where *unit* is one of non-arc units listed
+   in Table :ref:`distunits <tbl-distunits>`.  This will convert your Cartesian
+   x and y coordinates *from* the given unit *to* meters.  We also support the inverse
+   option **+U**\ *unit*, which can be used to convert your grid
+   coordinates *from* meters *to* the specified unit.
+
+*  CPT files also support the **+u**\ |\ **U**\ *unit* mechanism.  Here, the scaling
+   applies to the z values.  By appending these modifiers to your CPT filenames you
+   can avoid having two CPT files (one for meter and one for km) since only one is needed.
+
 *  Programs that read grids can now directly handle Arc/Info float binary
    files (GRIDFLOAT) and ESRI .hdr formats.
 
@@ -459,7 +469,7 @@ ways, such as
 
 Finally, here is a list of numerous enhancements to individual programs:
 
-*  :doc:`blockmean` added **-Ep**\ for error propagation and
+*  :doc:`blockmean` added **-Ep** for error propagation and
    **-Sn** to report the number of data points per block.
 
 *  :doc:`blockmedian` added **-Er**\ [-]
@@ -494,7 +504,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    truncate incoming CPT to be limited to a given range.
 
 *  :doc:`grd2xyz` takes **-C** to write row, col instead of x,y.  Append **f**
-   to start at 1, else start at 0.  Alternatively, use **Ci** to write just
+   to start at 1, else start at 0.  Alternatively, use **-Ci** to write just
    the two columns *index* and *z*, where *index*
    is the 1-D indexing that GMT uses when referring to grid nodes.
 
@@ -506,7 +516,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    to the *between* value, and **-Sr** to set all data == old to the *new* value.
 
 *  :doc:`grdcontour` can specify a single contour with **-C+**\ *contour* and
-   *-A+**\ *contour* .
+   **-A+**\ *contour*.
 
 *  :doc:`grdcut` can use **-S** to specify an origin and radius and cut the
    corresponding rectangular area, and **-N** to extend the region if the new
@@ -571,50 +581,33 @@ Finally, here is a list of numerous enhancements to individual programs:
 *  :doc:`grdview` will automatically assigns a color table if none is given and can use
    any of the 36 GMT color tables and scale them to fit the grid range.
 
-*  :doc:`greenspline` has an improved **-C** option to control how many eigenvalues are used
-   in the fitting, and **Sl** adds a linear (or bilinear) spline.
+*  :doc:`grdvolume` can let **-S** accept more distance units than just km.  It also
+   has a modified **-T**\ [**c**\ \|\ **h**] for ORS estimates based on max
+   curvature or height.
 
-*  :doc:`grdvolume` can let **-S** accept more distance units than just km.
+*  :doc:`greenspline` has an improved **-C** option to control how many eigenvalues are used
+   in the fitting, and **--Sl** adds a linear (or bilinear) spline.
+
+*  :doc:`makecpt` has a new **-F** option to
+   specify output color representation, e.g., to output the CPT table in
+   h-s-v format despite originally being given in r/g/b, and **-G** to
+   truncate incoming CPT to be limited to a given range.  It also adds **Di**
+   to match the bottom/top values in the input cpt file.
 
 *  :doc:`mapproject` has a new **-N**
    option to do geodetic/geocentric conversions; it combines with **-I**
    for inverse conversions. Also, we have extended **-A** to accept
    **-A**\ **o**\ \| \ **O** to compute line orientations (-90/90).
-
-*  :doc:`makecpt` and :doc:`grd2cpt` has a new **-F** option to
-   specify output color representation, e.g., to output the CPT table in
-   h-s-v format despite originally being given in r/g/b.
+   In **-G**, prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.
 
 *  :doc:`minmax` has new option **-A** to
    select what group to report on (all input, per file, or per segment).
-
-*  :doc:`gmtconvert` has new option **-Q**
-   to select a particular segment number.
-
-*  :doc:`gmtmath` and
-   :doc:`grdmath` now support simple
-   replacement macros via user files ``.grdmath`` and ``.gmtmath``. This mechanism works by
-   replacing the macro name with the equivalent arguments in the program
-   argument lists.
-
-*  :doc:`grdvolume` has enhanced **-T**,
-   now **-T**\ [**c**\ \|\ **h**] for ORS estimates based on max
-   curvature or height.
-
-*  :doc:`makecpt` takes **-F** to specify output color model and **-G** to
-   truncate incoming CPT to be limited to a given range.  It also adds **Di**
-   to match the bottom/top values in the input cpt file.
-
-*  :doc:`mapproject` adds **-N** for conversion between geodetic to auxiliary latitudes.
-   In **-G**, prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.
-
-*  :doc:`minmax` adds **-A** to report on a per dataset, file, or segment level.
    Also, use **-If** to report an extended region optimized for fastest results in FFTs.
    and **-Is** to report an extended region optimized for fastest results in :doc:`surface`.
 
 *  :doc:`project` has added **-G**...[+] so
    if + is appended we get a segment header with information about the
-   pole for the circle. Optionally, append /<colat> in **-G** for a small circle path.
+   pole for the circle. Optionally, append /*colat* in **-G** for a small circle path.
 
 *  :doc:`ps2raster` has added a **-TF** option to create multi-page PDF files. There is
    also modification to **-A** to add user-specified margins, and it automatically detects
@@ -654,15 +647,10 @@ Finally, here is a list of numerous enhancements to individual programs:
    radial distance from point to annotation. Change all text to upper or
    lower case with **-Q**.
 
-*  :doc:`psxy` and :doc:`psxyz` can take symbol modifier
-   **+s**\ *scale*\ [*unit*][/\ *origin*][\ **l**] in **-S** to adjust
-   scales read from files. This is used when you have data in the third
-   column that should be used for symbol size but they need to be offset
-   (by *origin*) and scaled by (*scale*) first; **l** means take the
-   logarithm of the data column first. Also, the custom symbol macro
-   languages has been expanded considerably to allow for complicated,
+*  :doc:`psxy` and :doc:`psxyz` both support the revised custom symbol macro
+   language which has been expanded considerably to allow for complicated,
    multi-parameter symbols; see Appendix `M. Custom Plot Symbols`_
-   for details. Finally, allow the base for bars and columns optionally to be
+   for details. Finally, we allow the base for bars and columns optionally to be
    read from data file by not specifying the base value.
 
 *  :doc:`sample1d` offers **-A** to control resampling of spatial curves (with **-I**).
@@ -682,7 +670,7 @@ Finally, here is a list of numerous enhancements to individual programs:
 Several supplements have new features as well:
 
 *  :doc:`img2grd <supplements/img/img2grd>`
-   This used to be a shell script but is now a C program and can be used on all platforms.
+   used to be a shell script but is now a C program and can be used on all platforms.
 
 *  :doc:`mgd77convert <supplements/mgd77/mgd77convert>`
    added **-C** option to assemble \*.mgd77 files from \*.h77/\*.a77 pairs.
@@ -3854,7 +3842,11 @@ Color palette tables (CPT) comes in two flavors: (1) Those designed to
 work with categorical data (e.g., data where interpolation of values is
 undefined) and (2) those designed for regular, continuously-varying
 data. In both cases the *fill* information follows the format given in
-Section `Specifying area fill attributes`_.
+Section `Specifying area fill attributes`_. The z-values in CPT files can
+be scaled by using the **+u**\ |\ **U**\ *unit* mechanism.  Append these
+modifiers to your CPT filenames when used in GMT commands.  The **+u**\ *unit*
+modifier will scale z *from unit to* meters, while **+U**\ *unit* does
+the inverse (scale z *from meters to unit*).
 
 Categorical CPT files
 ~~~~~~~~~~~~~~~~~~~~~

@@ -8554,6 +8554,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		degenerate = true;
 		text[1] = 0;
 	}
+#if 0
+	/* This is now removed since -i can do exactly the same thing */
 	if (!strchr (GMT_VECTOR_CODES "fq", text[0]) && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
 		k = (int)strlen (text) - 1;	/* Last character position */
 		s[0] = '\0';		/* Temporarily separate this modifer from the rest of the symbol option (restored at end of function) */
@@ -8567,6 +8569,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		p->origin *= p->scale;		/* So now size = (given_size | log10(given_size)) * p->scale - p->origin */
 		if (p->convert_size == 2) text[k] = 'l';	/* Replace the l we removed */
 	}
+#endif
 	if (!text[0]) {	/* No symbol or size given */
 		p->size_x = p->size_y = 0.0;
 		symbol_type = '*';
@@ -9180,7 +9183,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	else if (p->symbol == GMT_SYMBOL_COLUMN)
 		p->base = (GMT->current.proj.xyz_projection[GMT_Z] == GMT_LOG10) ? 1.0 : 0.0;
 
-	if (p->convert_size) s[0] = '+';	/* Restore what we temporarily removed */
+	// if (p->convert_size) s[0] = '+';	/* Restore what we temporarily removed */
 
 	return (decode_error);
 }

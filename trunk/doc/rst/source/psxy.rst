@@ -22,7 +22,7 @@ Synopsis
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N** ] 
 [ **-O** ] [ **-P** ] 
-[ **-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scale*\ [**u**][/*origin*][**l**]] ] 
+[ **-S**\ [*symbol*][\ *size*\ [**u**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**-**\ \|\ **+**][*pen*] ]
