@@ -86,6 +86,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\t<grid> is one or more grid files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ci to write grid index instead of (x,y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Replace z-values that equal NaN with this value [Default writes NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ni to do the inverse: If grid contains <nodata> values, replace them with NaN.\n");
 	GMT_Option (API, "R,V");
