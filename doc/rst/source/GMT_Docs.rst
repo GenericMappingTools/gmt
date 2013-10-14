@@ -445,7 +445,7 @@ ways, such as
    option **+U**\ *unit*, which can be used to convert your grid
    coordinates *from* meters *to* the specified unit.
 
-*  CPT files also support the **+u**\ |\ **U**\ *unit* mechanism.  Here, the scaling
+*  CPT files also support the **+u**\ \|\ **U**\ *unit* mechanism.  Here, the scaling
    applies to the z values.  By appending these modifiers to your CPT filenames you
    can avoid having two CPT files (one for meter and one for km) since only one is needed.
 
@@ -1148,7 +1148,7 @@ works when a gmt application is in the search PATH as it would shadow the real
 command. This method can easily be applied on the command line or in scripts
 when the recommended ``gmt <module>``-syntax is used. Shell scripts using
 old-style GMT commands would have to be converted first. The syntax conversion
-can be accomplished with the :doc:`gmt5syntax` utility. A suitable wrapper
+can be accomplished with the :doc:`gmt5syntax` utility. A suitable bash wrapper
 function for GMT-5.x would look like this:
 
 .. code-block:: bash
@@ -1747,15 +1747,14 @@ common option. There are two conventions you may use: (a) GMT-style
 syntax and (b) **Proj4**\ -style syntax. The projection codes for the
 GMT-style are tabulated below.
 
-.. TODO
-   | **-JA**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *width*   | Lambert azimuthal equal area                           |
-   |lon0| replace:: lon\ :sub:`0`
-   |lat0| replace:: lat\ :sub:`0`
-   |lon1| replace:: lon\ :sub:`1`
-   |lat1| replace:: lat\ :sub:`1`
-   |lat2| replace:: lat\ :sub:`2`
-   |lonp| replace:: lon\ :sub:`p`
-   |latp| replace:: lat\ :sub:`p`
+.. Substitution definitions:
+.. |lon0| replace:: lon\ :sub:`0`
+.. |lat0| replace:: lat\ :sub:`0`
+.. |lon1| replace:: lon\ :sub:`1`
+.. |lat1| replace:: lat\ :sub:`1`
+.. |lat2| replace:: lat\ :sub:`2`
+.. |lonp| replace:: lon\ :sub:`p`
+.. |latp| replace:: lat\ :sub:`p`
 
 +----------------------------------------------------------+--------------------------------------------------------+
 |         **WITH GMT PROJECTION CODES**                                                                             |
@@ -3843,7 +3842,7 @@ work with categorical data (e.g., data where interpolation of values is
 undefined) and (2) those designed for regular, continuously-varying
 data. In both cases the *fill* information follows the format given in
 Section `Specifying area fill attributes`_. The z-values in CPT files can
-be scaled by using the **+u**\ |\ **U**\ *unit* mechanism.  Append these
+be scaled by using the **+u**\ \|\ **U**\ *unit* mechanism.  Append these
 modifiers to your CPT filenames when used in GMT commands.  The **+u**\ *unit*
 modifier will scale z *from unit to* meters, while **+U**\ *unit* does
 the inverse (scale z *from meters to unit*).
