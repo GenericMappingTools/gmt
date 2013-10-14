@@ -167,6 +167,8 @@ Optional Arguments
 
 .. include:: explain_grd_inout.rst_
 
+.. include:: explain_grdresample.rst_
+
 Examples
 --------
 
