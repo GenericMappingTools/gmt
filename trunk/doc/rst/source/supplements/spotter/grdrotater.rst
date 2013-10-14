@@ -110,6 +110,7 @@ Optional Arguments
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-n.rst_
 .. include:: ../../explain_help.rst_
+.. include:: ../../explain_grdresample2.rst_
 
 Examples
 --------

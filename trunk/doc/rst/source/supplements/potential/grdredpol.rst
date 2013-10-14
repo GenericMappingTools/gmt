@@ -20,6 +20,7 @@ Synopsis
 [ **-T<year>** ]
 [ **-Z<filter>** ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-n| ]
 
 |No-spaces|
 
@@ -89,6 +90,8 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+.. include:: ../../explain_-n.rst_
+.. include:: ../../explain_grdresample2.rst_
 
 Examples
 --------
