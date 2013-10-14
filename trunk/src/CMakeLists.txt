@@ -451,6 +451,10 @@ if (HAVE_DLADDR AND HAVE_LIBDL)
 	target_link_libraries (gmtlib dl)
 endif (HAVE_DLADDR AND HAVE_LIBDL)
 
+if (MSVC AND FFTW3_FOUND)
+	target_link_libraries(gmtlib ws2_32)
+endif (MSVC AND FFTW3_FOUND)
+
 # build targets for standalone gmt target and demos
 string (REPLACE ".c" "" _gmt_progs "gmt.c;${GMT_DEMOS_SRCS}")
 foreach (_gmt_prog ${_gmt_progs})
