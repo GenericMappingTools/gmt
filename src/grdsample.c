@@ -306,19 +306,11 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max) {	/* Reporot and possibly truncate output to input extrama */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g]\n",
+	if (!GMT->common.n.truncate && (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max)) {	/* Report and possibly truncate output to input extrama */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
 			Gout->header->z_min, Gout->header->z_max, Gin->header->z_min, Gin->header->z_max);
-		if (GMT->common.n.truncate) {	/* Clip to limits */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid clipped to input grid extrema\n");
-			GMT_grd_loop (GMT, Gout, row, col, ij) {
-				if (Gout->data[ij] < Gin->header->z_min) Gout->data[ij] = Gin->header->z_min;
-				else if (Gout->data[ij] > Gin->header->z_max) Gout->data[ij] = Gin->header->z_max;
-			}
-			Gout->header->z_min = Gin->header->z_min;	Gout->header->z_max = Gin->header->z_max;
-		}
 	}
-	
+
 	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);

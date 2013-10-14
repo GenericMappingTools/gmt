@@ -240,7 +240,15 @@ double GMT_get_bcr_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 		}
 		ij += G->header->mx;
 	}
-	return ( ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) ? retval / wsum : GMT->session.d_NaN);
+	if ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) {
+		retval /= wsum;
+		if (GMT->common.n.truncate) {
+			if (retval < G->header->z_min) retval = G->header->z_min;
+			else if (retval > G->header->z_max) retval = G->header->z_max;
+		}
+		return (retval);
+	}
+	return (GMT->session.d_NaN);
 }
 
 int GMT_get_bcr_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z)
