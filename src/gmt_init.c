@@ -121,6 +121,10 @@ enum history_mode {
 	k_history_write
 };
 
+#ifdef DEBUG
+#include "gmt_register.c"
+#endif
+
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value);
@@ -9932,6 +9936,9 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	GMT_make_dnan (GMT->session.d_NaN);
 	for (i = 0; i < 3; i++) GMT->session.no_rgb[i] = -1.0;
 
+#ifdef DEBUG
+	GMT_first_time_registration (GMT);
+#endif
 	return (GMT);
 }
 
