@@ -288,8 +288,9 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			lon[col] += Gin->header->inc[GMT_X] * Gin->header->nxp;
 	}
 
-	/* Loop over input point and estinate output values */
+	/* Loop over input point and estimate output values */
 	
+	Gout->header->z_min = FLT_MAX; Gout->header->z_max = -FLT_MAX;	/* Min/max for out */
 	GMT_row_loop (GMT, Gout, row) {
 		lat = GMT_grd_row_to_y (GMT, row, Gout->header);
 		if (!Gin->header->nyp)
@@ -298,9 +299,26 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			lat -= Gin->header->inc[GMT_Y] * Gin->header->nyp;
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * Gin->header->nyp;
-		GMT_col_loop (GMT, Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
+		GMT_col_loop (GMT, Gout, row, col, ij) {
+			Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
+			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];
+			if (Gout->data[ij] > Gout->header->z_max) Gout->header->z_max = Gout->data[ij];
+		}
 	}
 
+	if (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max) {	/* Reporot and possibly truncate output to input extrama */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g]\n",
+			Gout->header->z_min, Gout->header->z_max, Gin->header->z_min, Gin->header->z_max);
+		if (GMT->common.n.truncate) {	/* Clip to limits */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid clipped to input grid extrema\n");
+			GMT_grd_loop (GMT, Gout, row, col, ij) {
+				if (Gout->data[ij] < Gin->header->z_min) Gout->data[ij] = Gin->header->z_min;
+				else if (Gout->data[ij] > Gin->header->z_max) Gout->data[ij] = Gin->header->z_max;
+			}
+			Gout->header->z_min = Gin->header->z_min;	Gout->header->z_max = Gin->header->z_max;
+		}
+	}
+	
 	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);

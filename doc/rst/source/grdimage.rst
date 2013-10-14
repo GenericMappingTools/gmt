@@ -192,6 +192,8 @@ must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
 linear projection, or (b) use :doc:`grdview` **-Ts** instead.
 
+.. include:: explain_grdresample.rst_
+
 Examples
 --------
 
