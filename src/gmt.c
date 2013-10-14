@@ -135,12 +135,13 @@ int main (int argc, char *argv[]) {
 		 *
 		 * gmt.c is itself not a module and hence can use fprintf (stderr, ...). Any API needing a
 		 * gmt-like application will write one separately [see mex API] */
-		fprintf (stderr, "\nGMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
-		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
+		fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
+		fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
+		fprintf (stderr, "Supported in part by the US National Science Foundation (www.nsf.gov)\nand volunteers from around the world.\n\n");
 
 		fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
 		fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
-		fprintf (stderr, "GNU Lesser General Public License.\n");
+		fprintf (stderr, "GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html).\n");
 		fprintf (stderr, "For more information about these matters, see the file named LICENSE.TXT.\n\n");
 		fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 		fprintf (stderr, "       %s <module name> [<module options>]\n\n", PROGRAM_NAME);

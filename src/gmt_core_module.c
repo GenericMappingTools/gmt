@@ -210,6 +210,10 @@ void gmt_core_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
 	char message[256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	GMT_Message (V_API, GMT_TIME_NONE, "\n\tGMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
+	GMT_Message (V_API, GMT_TIME_NONE, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
+	GMT_Message (V_API, GMT_TIME_NONE, "Supported in part by the US National Science Foundation and volunteers from around the world.\n");
+	GMT_Message (V_API, GMT_TIME_NONE, "Released under the Lesser GNU Public License (http://www.gnu.org/licenses/lgpl.html).\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\n=== " "GMT core: The main section of the Generic Mapping Tools" " ===\n");
 	while (g_core_module[module_id].name != NULL) {
 		if (module_id == 0 || strcmp (g_core_module[module_id-1].component, g_core_module[module_id].component)) {
