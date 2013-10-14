@@ -72,16 +72,7 @@ Optional Arguments
 
 .. include:: explain_grd_inout.rst_
 
-Consequences of grid resampling
--------------------------------
-
-grdsample will use various algorithms (see **-n**) that may lead
-to possible distortions or unexpected results in the resampled grid.
-One expected effect of resampling with splines is the tendency for the new
-resampled grid to slightly exceed the global min/max limits of the original
-grid.  If this is unacceptable, you can impose clipping of the resampled grid
-values so they do not exceed the input min/max values by adding **+c** to
-your **-n** option.
+.. include:: explain_grdresample2.rst_
 
 Hints
 -----

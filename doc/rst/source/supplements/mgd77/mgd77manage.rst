@@ -206,6 +206,8 @@ Optional Arguments
 
 .. include:: ../../explain_distunits.rst_
 
+.. include:: ../../explain_grdresample2.rst_
+
 Examples
 --------
 

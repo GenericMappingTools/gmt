@@ -264,6 +264,8 @@ Optional Arguments
 
 .. include:: ../../explain_help.rst_
 
+.. include:: ../../explain_grdresample2.rst_
+
 Mgd77 Field Info
 ----------------
 
