@@ -186,10 +186,6 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate if points exactly on a polygon boundary are inside or outside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to consider such points to be outside the feature [inside].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
-		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse the tests, i.e., pass locations outside the region.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Supply a combination of cflrz where each flag means:\n");
@@ -201,6 +197,10 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   z will pass locations outside the range given in -Z.\n");
 	GMT_Option (API, "J");
 	GMT_dist_syntax (API->GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to let feature boundary be considered outside [Default is inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information with s or k using 1 of 2 formats:\n");
