@@ -146,6 +146,12 @@
 ## Section 4: Advanced tweaking
 ##
 
+# On Windows and when building with VS2012
+# MSVC11 (Visual C++ 2012) needs _ALLOW_KEYWORD_MACROS to build
+#if(MSVC11)
+#	add_definitions(/D_ALLOW_KEYWORD_MACROS)
+#endif(MSVC11)
+
 #
 # Testing and development
 #
