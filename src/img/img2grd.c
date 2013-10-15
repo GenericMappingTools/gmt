@@ -490,6 +490,10 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 			wesn[XHI] -= 360.0;
 			wesn[XLO] -= 360.0;
 		}
+		else if (west < 0.0 && east < 0.0 && west >= -180.0 && wesn[XLO] > 0.0) {	/* Gave reasonable negative region, honor that for -C */
+			wesn[XHI] -= 360.0;
+			wesn[XLO] -= 360.0;
+		}
 	}
 	else {
 		wesn[XLO] = 0.0;
