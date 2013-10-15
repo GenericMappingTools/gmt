@@ -422,7 +422,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 			
 	/* Now put the data to the registered destination */
 	
-	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_ADD_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_ADD_EXISTING, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Put_Data (API, out_ID, 0, In) != GMT_OK) {
