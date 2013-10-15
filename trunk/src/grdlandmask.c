@@ -59,7 +59,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 		bool active;
 		double inc[2];
 	} I;
-	struct N {	/* -N<maskvalues>[o] */
+	struct N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		double mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
