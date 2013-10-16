@@ -8532,7 +8532,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len;
 	bool check = true, degenerate = false;
 	unsigned int ju;
-	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, *c = NULL, *s = NULL;
+	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, *c = NULL;
 	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
@@ -8546,15 +8546,16 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	p->user_unit[GMT_X] = p->user_unit[GMT_Y] = p->u_set = false;
 	p->font = GMT->current.setting.font_annot[0];
 	if (p->read_size)  p->given_size_x = p->given_size_y = p->size_x = p->size_y = 0.0;
-	
+
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
-	
+
 	if (!strcmp (text, "E-") || !strcmp (text, "e-")) {	/* Special degenerate ellipse symbol, remove the - to avoid parsing issues */
 		degenerate = true;
 		text[1] = 0;
 	}
 #if 0
+	char *s = NULL;
 	/* This is now removed since -i can do exactly the same thing */
 	if (!strchr (GMT_VECTOR_CODES "fq", text[0]) && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
 		k = (int)strlen (text) - 1;	/* Last character position */
