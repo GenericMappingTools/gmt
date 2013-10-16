@@ -516,10 +516,11 @@ fonts can be found in the :doc:`gmt` man page.
     Sets the compression level for netCDF4 files upon output. This
     produces netCDF version 4 files which can only be read with the
     netCDF 4 library. Values allowed are integers between 0 (no
-    compression) to 9 (maximum compression). Enabling compression level
-    1 can dramatically improve performance and reduce the size of
-    certain data. While higher compression levels further reduce the
-    data size, they do so at the cost of extra processing time. [0]
+    compression) to 9 (maximum compression). Enabling a low
+    compression level can dramatically improve performance and reduce
+    the size of certain data. While higher compression levels further
+    reduce the data size, they do so at the cost of extra processing
+    time. [3]
 
 .. _IO_SEGMENT_MARKER:
 
