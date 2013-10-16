@@ -2101,7 +2101,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg)
 
 		for (i = start; i <= stop; i += inc, k++) {
 			GMT->current.io.col_skip[i] = false;	/* Do not skip these */
-			GMT->current.io.col[GMT_IN][k].col = i;		/* Requested order of columns */
+			GMT->current.io.col[GMT_IN][k].col = (uint64_t)i;	/* Requested order of columns */
 			GMT->current.io.col[GMT_IN][k].order = k;		/* Requested order of columns */
 			GMT->current.io.col[GMT_IN][k].convert = convert;
 			GMT->current.io.col[GMT_IN][k].scale = scale;
@@ -2118,7 +2118,8 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 	/* Routine will decode the -o<col>|<colrange>,... arguments */
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
-	unsigned int k = 0, pos = 0;
+	unsigned int pos = 0;
+	uint64_t k = 0;
 	int64_t i, start = -1, stop = -1, inc;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -o requires an argument */
@@ -2131,8 +2132,8 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 		/* Now set the code for these columns */
 
 		for (i = start; i <= stop; i += inc, k++) {
-			GMT->current.io.col[GMT_OUT][k].col = i;		/* Requested order of columns */
-			GMT->current.io.col[GMT_OUT][k].order = k;	/* Requested order of columns */
+			GMT->current.io.col[GMT_OUT][k].col = (uint64_t)i;	/* Requested order of columns */
+			GMT->current.io.col[GMT_OUT][k].order = k;		/* Requested order of columns */
 		}
 	}
 	GMT->common.o.n_cols = k;
@@ -2688,7 +2689,7 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 		for (i = start; i <= stop; i += inc) tmp[i] = true;
 	}
 	/* Count and set array of NaN-columns */
-	for (i = n = 0; i < GMT_MAX_COLUMNS; i++) if (tmp[i] != -1) GMT->current.io.io_nan_col[n++] = i;
+	for (i = n = 0; i < GMT_MAX_COLUMNS; i++) if (tmp[i] != -1) GMT->current.io.io_nan_col[n++] = (uint64_t)i;
 	if (error || n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -s option: Unable to decode columns from %s\n", item);
 		return true;

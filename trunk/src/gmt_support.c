@@ -10633,33 +10633,36 @@ void GMT_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **
 	/* Free the selection structure */
 	if (*S == NULL) return;	/* Nothing to free */
 	if ((*S)->pattern) gmt_free_list (GMT, (*S)->pattern, (*S)->n);
+	if ((*S)->regexp) GMT_free (GMT, (*S)->regexp);
+	if ((*S)->caseless) GMT_free (GMT, (*S)->caseless);
 	GMT_free (GMT, *S);
 }
 
 bool GMT_get_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match) {
-	/* Return true if the pattern was found */
+	/* Return true if the pattern was found; see at end for what to check for in calling program */
 	bool match;
-	if (S == NULL) return (true);	/* No selection criteria given, so can only return true */
-	if (last_match && GMT_polygon_is_hole (T))
-		match = true;	/* Extend a true match on a perimeter to the trailing holes */
+	if (S == NULL || S->n == 0) return (true);	/* No selection criteria given, so can only return true */
+	if (last_match && GMT_polygon_is_hole (T))	/* Check if current polygon is a hole */
+		match = true;	/* Extend a true match on a perimeter to its trailing holes */
 	else if (S->ogr_match)	/* Compare to single aspatial value */
 		match = (T->ogr && strstr (T->ogr->tvalue[S->ogr_item], S->pattern[0]) != NULL);		/* true if we matched */
-#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
-	else if (S->regexp)	/* Compare to single ERE */
-		match = (T->header && gmt_regexp_match (GMT, T->header, S->pattern[0], S->caseless));		/* true if we matched */
-#endif
-	else if (T->header) {	/* Could be on or n patterns to check */
+	else if (T->header) {	/* Could be one or n patterns to check */
 		uint64_t k = 0;
 		match = false;
 		while (!match && k < S->n) {
-			match = (strstr (T->header, S->pattern[k]) != NULL);
+#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
+			if (S->regexp[k])
+			 	match = gmt_regexp_match (GMT, T->header, S->pattern[k], S->caseless[k]);	/* true if we matched */
+			else
+#endif
+				match = (strstr (T->header, S->pattern[k]) != NULL);
 			k++;
 		}
 	}
 	else	/* No segment header, cannot match */
 		match = false;
 	return (match);	/* Returns true if found */
-	/* (Ctrl->S.inverse != match); Calling function will need to perform this test to see if we are to keep it */
+	/* (Ctrl->S.inverse == match); Calling function will need to perform this test to see if we are to skip it */
 }
 
 struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *arg) {
@@ -10667,49 +10670,58 @@ struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *
 	 * where <pattern> can be
 	 * a) A single "string" [e.g., "my pattern"]
 	 * b) a name=value for OGR matches [e.g., name="Billy"]
-	 * c) +f<file> a file with a list of patterns (not regexp).
-	 * d) A single regex term /regexp/[i] [/tr.t/]; append i for caseless comparison
-	 * If ~ is given we return the inverse selection.  Escape ~ in pattern with \\~
-	 * We return a pointer to struct GMT_TEXT_SELECTION, which holds the info.
+	 * c) A single regex term /regexp/[i] [/tr.t/]; append i for caseless comparison
+	 * d) +f<file> a file with a list of the above patterns.
+	 * If the leading ~ is given we return the inverse selection (segments that did not match).
+	 * Escape ~ or +f at start of an actual pattern with \\~ to bypass their special meanings.
+	 * We return a pointer to struct GMT_TEXT_SELECTION, which holds the information.
+	 * Programs should call GMT_get_text_selection on a segment to determine a match,
+	 * and GMT_free_text_selection to free memory when done.
 	 */
-	unsigned int error = 0;
 	uint64_t k = 0, n = 0, n_items, arg_length;
-	bool invert = false, caseless = false, regexp = false;
+	bool invert = false;
 	struct GMT_TEXT_SELECTION *select = NULL;
 	char **list = NULL, *item = NULL;
 
 	if (!arg || !arg[0]) return (NULL);	/* Nothing to do */
 	item = strdup (arg);
-	arg_length = strlen (item);
-	k = (item[0] == '\\' && arg_length > 3 && item[1] == '~') ? 1 : 0;	/* Special escape if pattern starts with ~ */
 	if (item[0] == '~') {k = 1, invert = true;}	/* We want the inverse selection, then skip the first char */
-	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave +f<file> with list of patterns */
+	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave [~]+f<file> with list of patterns, one per record */
 		if ((n_items = gmt_read_list (GMT, &item[k+2], &list)) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not find/open file: %s\n", &item[k+2]);
 			free (item);
 			return (NULL);
 		}
 	}
-	else {	/* Make a list of 1 item */
+	else {	/* Make a list of one item */
 		list = GMT_memory (GMT, NULL, 1, char *);
-		if (item[invert] == '/' && item[arg_length-2]  == '/'  && item[arg_length-1]  == 'i' ) {
-			regexp = caseless = true;
-			item[arg_length-2] = '\0'; /* remove trailing '/i' from pattern string */
-		}
-		else if (item[invert] == '/' && item[arg_length-1]  == '/' ) {
-			regexp = true;
-			item[arg_length-1] = '\0'; /* remove trailing '/' */
-		}
-		list[0] = strdup (&item[k+regexp]);
+		list[0] = strdup (&arg[k]);	/* This skips any leading ~ for inverse indicator */
 		n_items = 1;
 	}
-	/* Here we got something to return */
 	select = GMT_memory (GMT, NULL, 1, struct GMT_TEXT_SELECTION);	/* Allocate the selection structure */
-	select->n = n_items;						/* Total number of items */
-	select->pattern = list;						/* Pass the text list */
+	select->regexp = GMT_memory (GMT, NULL, n_items, bool);		/* Allocate the regexp bool array */
+	select->caseless = GMT_memory (GMT, NULL, n_items, bool);	/* Allocate the caseless bool array */
 	select->invert = invert;
-	select->regexp = regexp;
-	select->caseless = caseless;
+	select->n = n_items;						/* Total number of items */
+	for (n = 0; n < n_items; n++) {	/* Processes all the patterns */
+		arg_length = strlen (list[n]);
+		/* Special case 1: If we start with \~ it means ~ is part of the actual search string, so we must skip the \ */
+		/* Special case 2: If we start with \+f it means +f is part of the actual search string and not a file option, so we must skip the \ */
+		k = (list[n][0] == '\\' && arg_length > 3 && (list[n][1] == '~' || (list[n][1] == '+' && list[n][2] == 'f'))) ? 1 : 0;
+		if (list[n][k] == '/' && list[n][arg_length-2]  == '/'  && list[n][arg_length-1]  == 'i' ) {	/* Case-less regexp string */
+			select->regexp[n] = select->caseless[n] = true;
+			list[n][arg_length-2] = '\0';	/* remove trailing '/i' from pattern string */
+			GMT_strlshift (list[n], 1U);	/* Shift string left to loose the starting '/' */
+		}
+		else if (list[n][0] == '/' && list[n][arg_length-1]  == '/' ) {	/* Case-honoring regexp string */
+			select->regexp[n] = true;
+			list[n][arg_length-1] = '\0';	/* remove trailing '/' */
+			GMT_strlshift (list[n], 1U);	/* Shift string left to loose the starting '/' */
+		}
+		/* else we have a fixed pattern string with nothing special to process */
+	}
+	/* Here we got something to return */
+	select->pattern = list;						/* Pass the text list */
 	
 	free (item);
 	return (select);
