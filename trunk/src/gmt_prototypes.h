@@ -232,9 +232,12 @@ EXTERN_MSC int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 EXTERN_MSC int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction);
 EXTERN_MSC void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols);
 EXTERN_MSC struct GMT_PALETTE * GMT_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high);
-EXTERN_MSC void GMT_free_selection (struct GMT_CTRL *GMT, struct GMT_SELECTION **S);
-EXTERN_MSC struct GMT_SELECTION * GMT_set_selection (struct GMT_CTRL *GMT, char *item);
-EXTERN_MSC bool GMT_get_selection (struct GMT_CTRL *GMT, struct GMT_SELECTION *S, uint64_t this);
+EXTERN_MSC void GMT_free_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION **S);
+EXTERN_MSC struct GMT_INT_SELECTION * GMT_set_int_selection (struct GMT_CTRL *GMT, char *item);
+EXTERN_MSC bool GMT_get_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION *S, uint64_t this);
+EXTERN_MSC void GMT_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **S);
+EXTERN_MSC bool GMT_get_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match);
+EXTERN_MSC struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *arg);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int GMT_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);

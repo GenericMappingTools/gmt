@@ -73,14 +73,11 @@ struct GMTCONVERT_CTRL {
 	} N;
 	struct Q {	/* -Q<selections> */
 		bool active;
-		struct GMT_SELECTION *select;
+		struct GMT_INT_SELECTION *select;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
 		bool active;
-		bool inverse;
-		bool regexp;
-		bool caseless;
-		char *pattern;
+		struct GMT_TEXT_SELECTION *select;
 	} S;
 	struct T {	/* -T */
 		bool active;
@@ -101,8 +98,8 @@ void Free_gmtconvert_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/*
 	if (!C) return;
 	if (C->Out.file) free (C->Out.file);	
 	if (C->D.name) free (C->D.name);	
-	if (C->S.pattern) free (C->S.pattern);	
-	if (C->Q.active) GMT_free_selection (GMT, &C->Q.select);	
+	if (C->S.active) GMT_free_text_selection (GMT, &C->S.select);	
+	if (C->Q.active) GMT_free_int_selection (GMT, &C->Q.select);	
 	GMT_free (GMT, C);	
 }
 
@@ -140,13 +137,15 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Skip records where all fields == NaN [Write all records].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only output specificed segment numbers in <selection> [All].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <selection> syntax is [~]<range>[,<range>,...] where each <range> of items is\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   either a single number, start-stop (for range), or start:step:stop (for stepped range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   either a single number, start-stop (for range), start:step:stop (for stepped range),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or +f<file> for a file list with one <range> per line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A leading ~ will invert the selection and write all segments but the ones listed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Only output segments whose headers contain the pattern \"string\".\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If your pattern begins with ~, escape it with \\~.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To match OGR aspatial values, use name=value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To match against extended regular expressions use -S[~]/regexp/[i].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give +f<file> for a file list with one pattern per line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Prevent the writing of segment headers.\n");
 	GMT_Option (API, "V,a,bi,bo,f,g,h,i,o,s,:,.");
 	
@@ -161,7 +160,6 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	size_t arg_length;
 	unsigned int n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -229,24 +227,11 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 				break;
 			case 'Q':	/* Only report for specified segment numbers */
 				Ctrl->Q.active = true;
-				Ctrl->Q.select = GMT_set_selection (GMT, opt->arg);
+				Ctrl->Q.select = GMT_set_int_selection (GMT, opt->arg);
 				break;
 			case 'S':	/* Segment header pattern search */
 				Ctrl->S.active = true;
-				arg_length = strlen (opt->arg);
-				k = (opt->arg[0] == '\\' && arg_length > 3 && opt->arg[1] == '~') ? 1 : 0;	/* Special escape if pattern starts with ~ */
-				if (opt->arg[0] == '~') Ctrl->S.inverse = true;
-				Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse]);
-				if (opt->arg[Ctrl->S.inverse] == '/' && opt->arg[arg_length-2]  == '/'  && opt->arg[arg_length-1]  == 'i' ) {
-					Ctrl->S.regexp = true;
-					Ctrl->S.caseless = true;
-					opt->arg[arg_length-2] = '\0'; /* remove trailing '/i' from pattern string */
-				}
-				else if (opt->arg[Ctrl->S.inverse] == '/' && opt->arg[arg_length-1]  == '/' ) {
-					Ctrl->S.regexp = true;
-					opt->arg[arg_length-1] = '\0'; /* remove trailing '/' */
-				}
-				Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse+Ctrl->S.regexp]); /* remove any '/', '\', and '~' from beginning of pattern */
+				Ctrl->S.select = GMT_set_text_selection (GMT, opt->arg);
 				break;
 			case 'T':	/* Do not write segment headers */
 				Ctrl->T.active = true;
@@ -273,8 +258,8 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 
 int GMT_gmtconvert (void *V_API, int mode, void *args)
 {
-	bool match = false, ogr_match = false;
-	int error = 0, ogr_item = 0;
+	bool match = false;
+	int error = 0;
 	uint64_t out_col, col, n_cols_in, n_cols_out, tbl;
 	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
@@ -356,12 +341,12 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		Return (error);
 	}
 	
-	if (Ctrl->S.active && GMT->current.io.ogr == GMT_OGR_TRUE && (p = strchr (Ctrl->S.pattern, '=')) != NULL) {	/* Want to search for an aspatial value */
+	if (Ctrl->S.active && GMT->current.io.ogr == GMT_OGR_TRUE && (p = strchr (Ctrl->S.select->pattern[0], '=')) != NULL) {	/* Want to search for an aspatial value */
 		*p = 0;	/* Skip the = sign */
-		if ((ogr_item = gmt_get_ogr_id (GMT->current.io.OGR, Ctrl->S.pattern)) != GMT_NOTSET) {
-			ogr_match = true;
+		if ((Ctrl->S.select->ogr_item = gmt_get_ogr_id (GMT->current.io.OGR, Ctrl->S.select->pattern[0])) != GMT_NOTSET) {
+			Ctrl->S.select->ogr_match = true;
 			p++;
-			strcpy (Ctrl->S.pattern, p);	/* Move the value over to the start */
+			strcpy (Ctrl->S.select->pattern[0], p);	/* Move the value over to the start */
 		}
 	}
 	
@@ -378,18 +363,10 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		for (seg = 0; seg < D[GMT_IN]->table[tbl_ver]->n_segments; seg++) {	/* For each segment in the tables */
 			if (Ctrl->L.active) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_HEADER;	/* Only write segment header */
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
-				if (match && GMT_polygon_is_hole (D[GMT_IN]->table[tbl_ver]->segment[seg])) match = true;	/* Extend a true match on a perimeter to the trailing holes */
-				else if (ogr_match)	/* Compare to aspatial value */
-					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr->tvalue[ogr_item], Ctrl->S.pattern) != NULL);		/* true if we matched */
-#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
-				else if (Ctrl->S.regexp)	/* Compare to ERE */
-					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && gmt_regexp_match(GMT, D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern, Ctrl->S.caseless));		/* true if we matched */
-#endif
-				else
-					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* true if we matched */
-				if (Ctrl->S.inverse == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
+				match = GMT_get_text_selection (GMT, Ctrl->S.select, D[GMT_IN]->table[tbl_ver]->segment[seg], match);
+				if (Ctrl->S.select->invert == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
-			if (Ctrl->Q.active && !GMT_get_selection (GMT, Ctrl->Q.select, seg)) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
+			if (Ctrl->Q.active && !GMT_get_int_selection (GMT, Ctrl->Q.select, seg)) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			if (D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode) continue;	/* No point copying values given segment content will be skipped */
 			n_out_seg++;	/* Number of segments that passed the test */
 			last_row = D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows - 1;
