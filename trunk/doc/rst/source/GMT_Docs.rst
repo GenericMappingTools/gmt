@@ -207,8 +207,8 @@ modification. Please send your comments to the GMT help list or create
 an issue in the bug tracker
 (see `<http://gmt.soest.hawaii.edu/projects/gmt/issues/>`_).
 
-What is new in GMT 5.x?
------------------------
+New Features in GMT 5
+=====================
 
 GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding new tricks to many of
@@ -238,11 +238,12 @@ GMT 5 you may run it in compatibility mode,
 thus allowing the use of many obsolete default names and command
 switches (you will receive a warning instead).
 
-Overview of 5.0.0 [Jul-1, 2013]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Below are areas of improvements in GMT 5.
 
-This version shares the same bug fixes applied to GMT 4.5.9, released
-Jan 1, 2013. A few new programs have been added and some have been
+New programs
+------------
+
+First, a few new programs have been added and some have been
 promoted (and possibly renamed) from earlier supplements:
 
 :doc:`gmt2kml`
@@ -316,8 +317,10 @@ Finally, the spotter supplement has added one new module:
 :doc:`grdpmodeler <supplements/spotter/grdpmodeler>`:
     Evaluate a plate model on a geographic grid.
 
-Below are lists of improvements that affect most
-GMT programs equally.  First we discuss changes that have been
+New common options
+------------------
+
+First we discuss changes that have been
 implemented by a series of new lower-case GMT common options:
 
 *  Programs that read data tables can now process the aspatial metadata
@@ -355,6 +358,9 @@ implemented by a series of new lower-case GMT common options:
    transparency level for that layer. However, as PostScript has no provision for
    transparency you can only see the effect if you convert it to PDF.
 
+Updated common options
+----------------------
+
 Some of the established GMT common options have seen significant
 improvements; these include:
 
@@ -375,6 +381,9 @@ improvements; these include:
 While just giving - (the hyphen) as argument presents just the synopsis of the command
 line arguments, we now also support giving + which in addition will list
 the explanations for all options that are not among the GMT common set.
+
+New default parameters
+----------------------
 
 Other changes of a similar far-ranging nature have been implemented by
 introducing new GMT default settings:
@@ -418,6 +427,9 @@ introducing new GMT default settings:
 
 *  :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>` allows users to modify how transparency will be
    processed when converted to PDF [Normal].
+
+General improvements
+--------------------
 
 Other wide-ranging changes have been implemented in different
 ways, such as
@@ -466,6 +478,9 @@ ways, such as
    limitations on how to visualize this transparency.
 
 *  GMT now ships with 36 standard color palette tables (CPT), up from 24.
+
+Program-specific improvements
+-----------------------------
 
 Finally, here is a list of numerous enhancements to individual programs:
 
@@ -1087,7 +1102,7 @@ to enable this feature in the future.
 
 
 Switching between different GMT versions
-----------------------------------------
+========================================
 
 We encourage all GMT users to start using version 5 immediately; it
 has been tested extensively by the GMT team and has benefitted from
@@ -1113,7 +1128,7 @@ ways, two of which will be addressed here:
    **Con:** different syntax required.
 
 Setup of gmtswitch
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Run :doc:`gmtswitch` after you have finished installing all
 GMT versions of interest. The first time you run :doc:`gmtswitch` it
@@ -1141,7 +1156,7 @@ If you use **bash**, **tcsh**, or **csh** you may have to type ``hash -r`` or
 [Joaquim, please elaborate].
 
 Version selection with helper function
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------
 
 A shell function can be used as a wrapper around the gmt executable. This even
 works when a gmt application is in the search PATH as it would shadow the real
@@ -1386,7 +1401,7 @@ References
    data-independent management of multidimensional data, *EOS Trans.
    AGU*, 68(28), 633--635, 1987. `doi:10.1029/EO068i028p00633 <http://dx.doi.org/10.1029/EO068i028p00633>`_.
 
-GMT overview and quick reference
+GMT Overview and Quick Reference
 ================================
 
 GMT summary
@@ -1954,7 +1969,7 @@ Finally, the rest of the GMT common options are given below:
 | **-:**\ [**i**\ \| \ **o**]                                | Expect *y*/*x* input rather than *x*/*y*               |
 +------------------------------------------------------------+--------------------------------------------------------+
 
-General features
+General Features
 ================
 
 This section explains features common to all the programs in GMT and
@@ -6264,7 +6279,7 @@ Centered on the Dateline, the example below was created by this command:
 .. include:: examples_chapter.rst_
 
 
-A. GMT supplemental packages
+A. GMT Supplemental Packages
 ============================
 
 These packages are for the most part written and supported by us, but
@@ -6405,7 +6420,7 @@ and replaces the old **x_system** package. The package is maintained by
 Paul Wessel.
 
 
-B. GMT file formats
+B. GMT File Formats
 ===================
 
 Table data
@@ -6838,7 +6853,7 @@ translated into the right raster format.
 
 .. _include-gmt-graphics:
 
-C. Including GMT graphics into your documents
+C. Including GMT Graphics into your Documents
 =============================================
 
 
@@ -7197,7 +7212,7 @@ above; they only represent our limited experience with adding
 PostScript to various types of documents. For other solutions and
 further help, please post messages to.
 
-E. Predefined bit and hachure patterns in GMT
+E. Predefined Bit and Hachure Patterns in GMT
 =============================================
 
 
@@ -7212,7 +7227,7 @@ below at 300 dpi using the default black and white shades.
    :align: center
 
 
-F. Chart of octal codes for characters
+F. Chart of Octal Codes for Characters
 ======================================
 
 The characters and their octal codes in the Standard and ISOLatin1
@@ -7244,7 +7259,7 @@ firmware will not know about the euro).
    Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts.
 
 
-G. PostScript fonts used by GMT
+G. PostScript Fonts Used by GMT
 =================================
 
 GMT uses the standard 35 fonts that come with most
@@ -7362,7 +7377,7 @@ codes, e.g., \\265 instead of μ. Note, that PostScript fonts support
 only a small range of glyphs and you may have to switch the
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
 
-H. Color Space: The final frontier
+H. Color Space: The Final Frontier
 ==================================
 
 
@@ -7677,7 +7692,7 @@ CMYK may avoid some nasty surprises when it comes down to printing. To
 specify the color space of your PostScript file, set
 :ref:`PS_COLOR_MODEL <PS_COLOR_MODEL>` in the :doc:`gmt.conf` file to RGB, HSV, or CMYK.
 
-I. Filtering of data in GMT
+I. Filtering of Data in GMT
 ===========================
 
 The GMT programs :doc:`filter1d` (for
@@ -8073,7 +8088,7 @@ reproduced by the single command:
 We hope you will study these examples to enable you to make efficient
 and wise use of this vast data set.
 
-K. GMT on non-\ UNIX platforms
+K. GMT on non-\ UNIX Platforms
 ================================
 
 
@@ -8153,7 +8168,7 @@ the msys bash shell. As simple as that. Furthermore, GMT programs launch
 faster here than on Cygwin so this is the recommended way of running
 GMT on Windows.
 
-L. Of colors and color legends
+L. Of Colors and Color Legends
 ==============================
 
 
