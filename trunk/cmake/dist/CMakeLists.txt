@@ -34,43 +34,46 @@ if (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 endif (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 set (CPACK_PACKAGE_DESCRIPTION_FILE
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpack_package_description.txt")
-set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED")
 
+if (GMT_BUNDLE_ACCEPT_BUTTON)
+	# A license with an accept button will only be displayed if
+	# GMT_BUNDLE_ACCEPT_BUTTON is set.
+	set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED")
 
-# Read GPL and LGPL license files
-file(READ ${COPYING_GPL} _license_gpl)
-file(READ ${COPYING_LGPL} _license_lgpl)
+	# Read GPL and LGPL license files
+	file(READ ${COPYING_GPL} _license_gpl)
+	file(READ ${COPYING_LGPL} _license_lgpl)
 
-set (_license_extra)
-if (NOT LICENSE_RESTRICTED)
-	# Read extra license files
-	foreach (_license_file ${GMT_EXTRA_LICENSE_FILES})
-		file(READ ${_license_file} _license_string)
-		set (_license_extra
-			"${_license_extra}\n---------------------------------------------------------------------------\n\n${_license_string}")
-	endforeach (_license_file ${GMT_EXTRA_LICENSE_FILES})
+	set (_license_extra)
+	if (NOT LICENSE_RESTRICTED)
+		# Read extra license files
+		foreach (_license_file ${GMT_EXTRA_LICENSE_FILES})
+			file(READ ${_license_file} _license_string)
+			set (_license_extra
+				"${_license_extra}\n---------------------------------------------------------------------------\n\n${_license_string}")
+		endforeach (_license_file ${GMT_EXTRA_LICENSE_FILES})
 
-	# Copy combined license template
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy
-		${CMAKE_CURRENT_SOURCE_DIR}/COPYING.RESTRICTED.template
-		${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
-else (NOT LICENSE_RESTRICTED)
-	# Clear contents of license file if it exists
-	execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f
-		${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
-endif (NOT LICENSE_RESTRICTED)
+		# Copy combined license template
+		execute_process(COMMAND ${CMAKE_COMMAND} -E copy
+			${CMAKE_CURRENT_SOURCE_DIR}/COPYING.RESTRICTED.template
+			${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
+	else (NOT LICENSE_RESTRICTED)
+		# Clear contents of license file if it exists
+		execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f
+			${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
+	endif (NOT LICENSE_RESTRICTED)
 
-# Append GPL, LGPL, and licenses from GMT_EXTRA_LICENSE_FILES
-set (_license_combined "${_license_gpl}")
-if (NOT LICENSE_RESTRICTED STREQUAL GPL)
-	set (_license_combined
-		"${_license_combined}\n---------------------------------------------------------------------------\n\n${_license_lgpl}")
-endif (NOT LICENSE_RESTRICTED STREQUAL GPL)
-set (_license_combined "${_license_combined}\n${_license_extra}")
+	# Append GPL, LGPL, and licenses from GMT_EXTRA_LICENSE_FILES
+	set (_license_combined "${_license_gpl}")
+	if (NOT LICENSE_RESTRICTED STREQUAL GPL)
+		set (_license_combined
+			"${_license_combined}\n---------------------------------------------------------------------------\n\n${_license_lgpl}")
+	endif (NOT LICENSE_RESTRICTED STREQUAL GPL)
+	set (_license_combined "${_license_combined}\n${_license_extra}")
 
-# Append to COPYING.COMBINED or create new combined license file
-file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED "${_license_combined}")
-
+	# Append to COPYING.COMBINED or create new combined license file
+	file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED "${_license_combined}")
+endif (GMT_BUNDLE_ACCEPT_BUTTON)
 
 # Install components:
 set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG)
@@ -99,15 +102,15 @@ set (CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 # Debian:
 set (CPACK_DEBIAN_PACKAGE_MAINTAINER "GMT Team <gmt-help@lists.hawaii.edu>")
 set (CPACK_DEBIAN_PACKAGE_SECTION science)
-#set (CPACK_PACKAGE_DESCRIPTION_SUMMARY ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
-#set (CPACK_PACKAGE_DESCRIPTION "GMT is an open source collection of ~65 tools
-#for manipulating geographic and Cartesian data sets (including filtering,
-#trend fitting, gridding, projecting, etc.) and producing Encapsulated
-#PostScript File (EPS) illustrations ranging from simple x-y plots via contour
-#maps to artificially illuminated surfaces and 3-D perspective views; the GMT
-#supplements add another ~70 more specialized tools. GMT supports over 30 map
-#projections and transformations and comes with support data such as GSHHG
-#coastlines, rivers, and political boundaries.")
+# set (CPACK_PACKAGE_DESCRIPTION_SUMMARY ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
+# set (CPACK_PACKAGE_DESCRIPTION "GMT is an open source collection of ~80
+# command-line tools for manipulating geographic and Cartesian data sets
+# (including filtering, trend fitting, gridding, projecting, etc.) and
+# producing PostScript illustrations ranging from simple x-y plots via contour
+# maps to artificially illuminated surfaces and 3D perspective views; the GMT
+# supplements add another ~40 more specialized tools. GMT supports over 30 map
+# projections and transformations and comes with support data such as GSHHG
+# coastlines, rivers, and political boundaries.")
 
 #set (CPACK_MONOLITHIC_INSTALL TRUE)
 set (CPACK_RPM_COMPONENT_INSTALL ON)

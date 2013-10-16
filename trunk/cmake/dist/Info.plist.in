@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>GMT-@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@</string>
 	<key>CFBundleGetInfoString</key>
-	<string>GMT is an open source collection of ~65 tools for manipulating geographic and cartesian data sets.</string>
+	<string>GMT is an open source collection of ~80 command-line tools for manipulating geographic and Cartesian data sets.</string>
 	<key>CFBundleIconFile</key>
 	<string>GMT-@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -29,7 +29,7 @@
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
-    <string>Copyright (c) 1991-@GMT_VERSION_YEAR@ by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+    <string>Copyright © 1991-@GMT_VERSION_YEAR@ by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; version 3 or any later version.</string>
 </dict>
 </plist>
