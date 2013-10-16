@@ -121,7 +121,8 @@ Optional Arguments
     associated polygon holes will also be matched. For matching segment
     headers against extended regular expressions enclose the expression
     in slashes. Append **i** for caseless matching.
-    For a list of patterns, give **+f**\ *file* with one pattern per line.
+    For a list of such patterns, give **+f**\ *file* with one pattern per line.
+    To give a single pattern starting with +f, escape it with a backslash.
 
 **-T**
     Suppress the writing of segment headers on output. 
