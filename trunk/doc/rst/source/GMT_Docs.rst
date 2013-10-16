@@ -713,8 +713,8 @@ we are aware that such changes may cause grief and trouble with
 established scripts and the habits of many GMT users. To alleviate this
 situation we have introduced a configuration that allows GMT to tolerate and process
 obsolete program syntax (to the extent possible). To activate you must
-make sure **GMT_COMPATIBILITY** is set to 4 in your gmt.conf file. When not
-running in compatibility mode any obsolete syntax will be considered as
+make sure :ref:`GMT_COMPATIBILITY <GMT_COMPATIBILITY>` is set to 4 in your gmt.conf file.
+When not running in compatibility mode any obsolete syntax will be considered as
 errors. We recommend that users with prior GMT 4 experience run
 GMT 5 in compatibility mode, heed the warnings about obsolete syntax, and
 correct their scripts or habits accordingly. When this transition has been
