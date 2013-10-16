@@ -224,7 +224,7 @@ high-level functions named after their corresponding programs (.e.g.,
 ``GMT_grdimage``) that contains all of the functionality of that program
 within the function. While currently callable from C/C++ only, we are
 making progress on the Matlab interface modules as well and will soon
-start on the Python version. Developers should consult the GMT API
+start on the Python version. Developers should consult the `GMT API <GMT_API.html>`_
 Documentation for more details.
 
 Most of the GMT default parameters have changed names in order to
