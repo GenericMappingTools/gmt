@@ -103,7 +103,9 @@ Optional Arguments
     *range*[,*range*,...] where each *range* of items is either a single
     segment *number*, a range of segment numbers *start-stop*, or a range with
     stepped increments given via *start:step:stop*.   A leading **~** will
-    invert the selection and write all segments but the ones listed.
+    invert the selection and write all segments but the ones listed.  Instead
+    of a list of ranges, use **+f**\ *file* to supply a file list with one
+    *range* per line.
 
 **-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
     Only output those segments whose header record contains the
@@ -119,6 +121,7 @@ Optional Arguments
     associated polygon holes will also be matched. For matching segment
     headers against extended regular expressions enclose the expression
     in slashes. Append **i** for caseless matching.
+    For a list of patterns, give **+f**\ *file* with one pattern per line.
 
 **-T**
     Suppress the writing of segment headers on output. 

@@ -10510,14 +10510,51 @@ int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int i
 	return (retval);
 }
 
-void GMT_free_selection (struct GMT_CTRL *GMT, struct GMT_SELECTION **S) {
+uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list)
+{
+	uint64_t n = 0;
+	size_t n_alloc = GMT_CHUNK;
+	char **p = NULL, line[GMT_BUFSIZ] = {""};
+	FILE *fp = NULL;
+
+	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) {
+  		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find/open list file %s\n", file);
+		return (0);
+	}
+
+	p = GMT_memory (GMT, NULL, n_alloc, char *);
+
+	while (fgets (line, GMT_BUFSIZ, fp)) {
+		GMT_chop (line);	/* Remove trailing CR or LF */
+		p[n++] = strdup (line);
+		if (n == n_alloc) p = GMT_memory (GMT, p, n_alloc <<= 1, char *);
+	}
+	GMT_fclose (GMT, fp);
+	if (n > 0)
+		*list = GMT_memory (GMT, p, n, char *);
+	else {
+		GMT_free (GMT, p);
+		*list = NULL;
+	}
+
+	return (n);
+}
+
+void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n)
+{	/* Properly free memory allocated by gmt_read_list */
+	uint64_t i;
+	for (i = 0; i < n; i++) free (list[i]);
+	if (list) GMT_free (GMT, list);
+}
+
+void GMT_free_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION **S) {
 	/* Free the selection structure */
 	if (*S == NULL) return;	/* Nothing to free */
 	if ((*S)->item) GMT_free (GMT, (*S)->item);
 	GMT_free (GMT, *S);
 }
 
-bool GMT_get_selection (struct GMT_CTRL *GMT, struct GMT_SELECTION *S, uint64_t this) {
+bool GMT_get_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION *S, uint64_t this) {
 	/* Return true if this item should be used */
 	if (S == NULL) return (false);	/* No selection criteria given, so can only return false */
 	while (S->current < S->n && S->item[S->current] < this) S->current++;	/* Advance internal counter */
@@ -10526,44 +10563,62 @@ bool GMT_get_selection (struct GMT_CTRL *GMT, struct GMT_SELECTION *S, uint64_t 
 	else return (S->invert);	/* Not found, return initial setting */
 }
 
-struct GMT_SELECTION * GMT_set_selection (struct GMT_CTRL *GMT, char *item) {
+struct GMT_INT_SELECTION * GMT_set_int_selection (struct GMT_CTRL *GMT, char *item) {
 	/* item is of the form [~]<range>[,<range>, <range>]
 	 * where each <range> can be
 	 * a) A single number [e.g., 8]
 	 * b) a range of numbers given as start-stop [e.g., 6-11]
 	 * c) A range generator start:step:stop [e.g., 13:2:19]
+	 * d) +f<file> a file with a list of range items.
 	 * If ~ is given we return the inverse selection.
-	 * We return a pointer to struct GMT_SELECTION, which holds the info.
+	 * We return a pointer to struct GMT_INT_SELECTION, which holds the info.
 	 */
-	unsigned int error = 0, pos = 0, k = 0;
-	uint64_t n = 0;
+	unsigned int error = 0, pos = 0;
+	uint64_t k = 0, n = 0, n_items;
 	int64_t i, start = -1, stop = -1, step, max_value = 0, value = 0;
-	struct GMT_SELECTION *select = NULL;
-	char p[GMT_BUFSIZ] = {""};
+	struct GMT_INT_SELECTION *select = NULL;
+	char p[GMT_BUFSIZ] = {""}, **list = NULL;
 
 	if (!item || !item[0]) return (NULL);	/* Nothing to do */
 	if (item[0] == '~') k = 1;		/* We want the inverse selection */
+	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave +f<file> with segment numbers */
+		if ((n_items = gmt_read_list (GMT, &item[k+2], &list)) == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not find/open file: %s\n", &item[k+2]);
+			return (NULL);
+		}
+	}
+	else {	/* Make a list of 1 item */
+		list = GMT_memory (GMT, NULL, 1, char *);
+		list[0] = strdup (&item[k]);
+		n_items = 1;
+	}
 	/* Determine the largest item given or implied; use that for initial array allocation */
-	while ((GMT_strtok (&item[k], ",-:", &pos, p))) {	/* While it is not empty, process it */
-		value = atol (p);
-		if (value > max_value) max_value = value;
+	for (n = 0; n < n_items; n++) {
+		pos = 0;	/* Reset since GMT_strtok changed it */
+		while ((GMT_strtok (list[n], ",-:", &pos, p))) {	/* While it is not empty, process it */
+			value = atol (p);
+			if (value > max_value) max_value = value;
+		}
 	}
 	max_value++;	/* Since we start at 0, n is the n+1'th item in array */
-	select = GMT_memory (GMT, NULL, 1, struct GMT_SELECTION);	/* Allocate the selection structure */
+	select = GMT_memory (GMT, NULL, 1, struct GMT_INT_SELECTION);	/* Allocate the selection structure */
 	select->item = GMT_memory (GMT, NULL, max_value, uint64_t);	/* Allocate the sized array */
 	if (k) select->invert = true;		/* Save that we want the inverse selection */
 	/* Here we have user-supplied selection information */
-	pos = 0;	/* Reset since strtok changed it */
-	while (!error && (GMT_strtok (&item[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
-		if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (NULL);
+	for (k = 0; k < n_items; k++) {
+		pos = 0;	/* Reset since GMT_strtok changed it */
+		while (!error && (GMT_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
+			if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (NULL);
 		
-		/* Now set the item numbers for this sub-range */
-		assert (stop < max_value);	/* Somehow we allocated too little */
+			/* Now set the item numbers for this sub-range */
+			assert (stop < max_value);	/* Somehow we allocated too little */
 			
-		for (i = start; i <= stop; i += step, n++) select->item[n] = i;
+			for (i = start; i <= stop; i += step, n++) select->item[n] = i;
+		}
 	}
+	gmt_free_list (GMT, list, n_items);	/* Done with the list */
 	if (error) {	/* Parsing error(s) */
-		GMT_free_selection (GMT, &select);
+		GMT_free_int_selection (GMT, &select);
 		return (NULL);
 	}
 	/* Here we got something to return */
@@ -10571,5 +10626,91 @@ struct GMT_SELECTION * GMT_set_selection (struct GMT_CTRL *GMT, char *item) {
 	select->item = GMT_memory (GMT, select->item, n, uint64_t);	/* Trim back array size */
 	GMT_sort_array (GMT, select->item, n, GMT_ULONG);		/* Sort the selection */
 	
+	return (select);
+}
+
+void GMT_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **S) {
+	/* Free the selection structure */
+	if (*S == NULL) return;	/* Nothing to free */
+	if ((*S)->pattern) gmt_free_list (GMT, (*S)->pattern, (*S)->n);
+	GMT_free (GMT, *S);
+}
+
+bool GMT_get_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match) {
+	/* Return true if the pattern was found */
+	bool match;
+	if (S == NULL) return (true);	/* No selection criteria given, so can only return true */
+	if (last_match && GMT_polygon_is_hole (T))
+		match = true;	/* Extend a true match on a perimeter to the trailing holes */
+	else if (S->ogr_match)	/* Compare to single aspatial value */
+		match = (T->ogr && strstr (T->ogr->tvalue[S->ogr_item], S->pattern[0]) != NULL);		/* true if we matched */
+#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
+	else if (S->regexp)	/* Compare to single ERE */
+		match = (T->header && gmt_regexp_match (GMT, T->header, S->pattern[0], S->caseless));		/* true if we matched */
+#endif
+	else if (T->header) {	/* Could be on or n patterns to check */
+		uint64_t k = 0;
+		match = false;
+		while (!match && k < S->n) {
+			match = (strstr (T->header, S->pattern[k]) != NULL);
+			k++;
+		}
+	}
+	else	/* No segment header, cannot match */
+		match = false;
+	return (match);	/* Returns true if found */
+	/* (Ctrl->S.inverse != match); Calling function will need to perform this test to see if we are to keep it */
+}
+
+struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *arg) {
+	/* item is of the form [~]<pattern>]
+	 * where <pattern> can be
+	 * a) A single "string" [e.g., "my pattern"]
+	 * b) a name=value for OGR matches [e.g., name="Billy"]
+	 * c) +f<file> a file with a list of patterns (not regexp).
+	 * d) A single regex term /regexp/[i] [/tr.t/]; append i for caseless comparison
+	 * If ~ is given we return the inverse selection.  Escape ~ in pattern with \\~
+	 * We return a pointer to struct GMT_TEXT_SELECTION, which holds the info.
+	 */
+	unsigned int error = 0;
+	uint64_t k = 0, n = 0, n_items, arg_length;
+	bool invert = false, caseless = false, regexp = false;
+	struct GMT_TEXT_SELECTION *select = NULL;
+	char **list = NULL, *item = NULL;
+
+	if (!arg || !arg[0]) return (NULL);	/* Nothing to do */
+	item = strdup (arg);
+	arg_length = strlen (item);
+	k = (item[0] == '\\' && arg_length > 3 && item[1] == '~') ? 1 : 0;	/* Special escape if pattern starts with ~ */
+	if (item[0] == '~') {k = 1, invert = true;}	/* We want the inverse selection, then skip the first char */
+	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave +f<file> with list of patterns */
+		if ((n_items = gmt_read_list (GMT, &item[k+2], &list)) == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not find/open file: %s\n", &item[k+2]);
+			free (item);
+			return (NULL);
+		}
+	}
+	else {	/* Make a list of 1 item */
+		list = GMT_memory (GMT, NULL, 1, char *);
+		if (item[invert] == '/' && item[arg_length-2]  == '/'  && item[arg_length-1]  == 'i' ) {
+			regexp = caseless = true;
+			item[arg_length-2] = '\0'; /* remove trailing '/i' from pattern string */
+		}
+		else if (item[invert] == '/' && item[arg_length-1]  == '/' ) {
+			regexp = true;
+			item[arg_length-1] = '\0'; /* remove trailing '/' */
+		}
+		list[0] = strdup (&item[k+regexp]);
+		n_items = 1;
+	}
+	/* Here we got something to return */
+	select = GMT_memory (GMT, NULL, 1, struct GMT_TEXT_SELECTION);	/* Allocate the selection structure */
+	select->n = n_items;						/* Total number of items */
+	select->pattern = list;						/* Pass the text list */
+	select->invert = invert;
+	select->regexp = regexp;
+	select->caseless = caseless;
+	
+	free (item);
 	return (select);
 }
