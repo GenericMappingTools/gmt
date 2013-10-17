@@ -73,10 +73,10 @@ color images in PostScript; Kurt Schwehr maintains the packages; Wayne
 Wilson implemented the full general perspective projection; and William
 Yip helped translate GMT to POSIX ANSI C and incorporate netCDF 3. The
 SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
-valuable help on Linux, web, and CGI script issues.
+valuable help on Linux and web server support.
 
-Honolulu, HI, Silver Spring, MD, Cornish, NH, Faro, Portugal, and
-Bremerhaven, Germany July 2013
+Honolulu, HI, Silver Spring, MD, Faro, Portugal, Darmstadt and
+Bremerhaven, Germany, October 2013
 
 
 A Reminder
@@ -399,8 +399,8 @@ introducing new GMT default settings:
    strict GMT5 syntax checking.
 
 *  :ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>` is used to set the default
-   chunk size for the **lat** and **lon** dimension of the **z** variable.
-   Requires netCDF version 4.
+   chunk size for the **lat** and **lon** dimension of the **z** variable of
+   netCDF version 4 files.
 
 *  :ref:`IO_NC4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>` is used to set
    the compression level for netCDF4 files upon output.
@@ -3434,47 +3434,42 @@ next character as an instruction; if an argument begins without a
 hyphen, it tries to open this argument as a filename). This feature
 allows you to connect programs with pipes if you like. If your input is
 ASCII and has one or more header records that do not begin with #, you
-must use the **-h** option (see Section `Header data records: The -h option`_). ASCII files may
-in many cases also contain segment-headers separating data segments.
-These are called "multi-segment files". For binary table data the **-h**
-option may specify how many bytes should be skipped before the data
-section is reached. Binary files may also contain segment-headers
-separating data segments. These segment-headers are simply data records
-whose fields are all set to NaN; see Appendix [app:B] for complete documentation.
+must use the **-h** option (see Section `Header data records: The -h
+option`_). ASCII files may in many cases also contain segment-headers
+separating data segments. These are called "multi-segment files". For
+binary table data the **-h** option may specify how many bytes should be
+skipped before the data section is reached. Binary files may also
+contain segment-headers separating data segments. These segment-headers
+are simply data records whose fields are all set to NaN; see Appendix
+[app:B] for complete documentation.
 
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
-will look in two other directories pointed to by environmental
-parameters (if set). These are **GMT_USERDIR** and **GMT_DATADIR**,
-and they may be set by the user to point to directories that contain
-data sets of general use. Normally, the **GMT_DATADIR** directory (or
-directories: add multiple paths by separating them with colons
-(semi-colons under Windows)) will hold data sets of a general nature
-(tables, grids), although a particular use is to make available large
-grids accessible via
-:doc:`grdraster` or the supplemental program
-:doc:`img2grd <supplements/img/img2grd>`; see Appendix [app:A] for
-information about these supplemental programs. The **GMT_USERDIR**
-directory may hold miscellaneous data sets more specific to the user;
-this directory also stores GMT defaults and other configuration files.
-Any directory that ends in a trailing slash (/) will be searched
-recursively. Data sets that the user finds are often needed may be
-placed in these directories, thus eliminating the need to specify a full
-path to the file. Program output is always written to the current
-directory unless a full path has been specified.
+will look in two other directories pointed to by the
+:ref:`directory parameters <DIR Parameters>` **DIR_DATA** and
+**DIR_USER** or by the environmental parameters **GMT_USERDIR** and
+**GMT_DATADIR** (if set). They may be set by the user to point to
+directories that contain data sets of general use, thus eliminating the
+need to specify a full path to these files. Usually, the **DIR_DATA**
+directory will hold data sets of a general nature (tables, grids),
+whereas the **DIR_USER** directory may hold miscellaneous data sets more
+specific to the user; this directory also stores GMT defaults and other
+configuration files. See :ref:`directory parameters <DIR Parameters>`
+for details. Program output is always written to the current directory
+unless a full path has been specified.
 
 Verbose operation
 -----------------
 
 Most of the programs take an optional **-V** argument which will run the
-program in the "verbose" mode (see Section `Verbose feedback: The -V option`_). Verbose will
-write to standard error information about the progress of the operation
-you are running. Verbose reports things such as counts of points read,
-names of data files processed, convergence of iterative solutions, and
-the like. Since these messages are written to *stderr*, the verbose talk
-remains separate from your data output. You may optionally choose among
-five models of *verbosity*; each mode adds more messages with an
-increasing level of details. The modes are
+program in the "verbose" mode (see Section `Verbose feedback: The -V
+option`_). Verbose will write to standard error information about the
+progress of the operation you are running. Verbose reports things such
+as counts of points read, names of data files processed, convergence of
+iterative solutions, and the like. Since these messages are written to
+*stderr*, the verbose talk remains separate from your data output. You
+may optionally choose among five models of *verbosity*; each mode adds
+more messages with an increasing level of details. The modes are
 
   **q** Complete silence, not even fatal error messages.
 

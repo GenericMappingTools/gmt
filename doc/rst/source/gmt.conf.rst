@@ -500,27 +500,27 @@ fonts can be found in the :doc:`gmt` man page.
 
 **IO_NC4_CHUNK_SIZE**
     Sets the default chunk size for the **lat** and **lon** dimension of
-    the **z** variable. This produces netCDF version 4 files which can
-    only be read with the netCDF 4 library. Very large chunk sizes and
-    sizes smaller than 128 should be avoided because they can lead to
-    unexpectedly bad performance. Note that a chunk of a single
-    precision floating point variable of size 2896x2896 completely fills
-    the chunk cache of 32MiB. Specify the chunk size for each dimension
-    separated by a comma, or **a**\ uto for optimally chosen chunk sizes
-    in the range [128,256). Set IO_NC4_CHUNK_SIZE to **c**\ lassic
-    for classic netCDF. [auto]
+    the **z** variable. Very large chunk sizes and sizes smaller than
+    128 should be avoided because they can lead to unexpectedly bad
+    performance. Note that a chunk of a single precision floating point
+    variable of size 2896x2896 completely fills the chunk cache of
+    32MiB. Specify the chunk size for each dimension separated by a
+    comma, or **a**\ uto for optimally chosen chunk sizes in the range
+    [128,256). Setting IO_NC4_CHUNK_SIZE will produce netCDF version 4
+    files, which can only be read with the netCDF 4 library, unless all
+    dimensions are less than 128 or **c**\ lassic is specified for
+    classic netCDF. [auto]
 
 .. _IO_NC4_DEFLATION_LEVEL:
 
 **IO_NC4_DEFLATION_LEVEL**
-    Sets the compression level for netCDF4 files upon output. This
-    produces netCDF version 4 files which can only be read with the
-    netCDF 4 library. Values allowed are integers between 0 (no
-    compression) to 9 (maximum compression). Enabling a low
-    compression level can dramatically improve performance and reduce
-    the size of certain data. While higher compression levels further
-    reduce the data size, they do so at the cost of extra processing
-    time. [3]
+    Sets the compression level for netCDF4 files upon output. Values
+    allowed are integers from 0 (no compression) to 9 (maximum
+    compression). Enabling a low compression level can dramatically
+    improve performance and reduce the size of certain data. While
+    higher compression levels further reduce the data size, they do so
+    at the cost of extra processing time. This parameter does not
+    apply to classic netCDF files. [3]
 
 .. _IO_SEGMENT_MARKER:
 
