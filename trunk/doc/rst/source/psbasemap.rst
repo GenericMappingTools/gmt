@@ -67,7 +67,7 @@ Optional Arguments
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
     of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
-    (c) Give [**u**]\ *width*[/*height*] of bounding rectangle and use **+c** to set
+    (c) Give [**u**]\ *width*\ [/*height*] of bounding rectangle and use **+c** to set
     box center. Append any combination of the following modifiers to draw the insert box:
     **+c**\ *lon/lat* to specify box center.
     **+g**\ *fill* to paint a insert [no fill].
