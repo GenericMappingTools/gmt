@@ -20,7 +20,6 @@
 
 # tag_from_current_source_dir (TAG [PREFIX])
 # add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
-# add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 # add_file_to_cached_list (LIST [ FILE [ FILE ... ]])
 # get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
 # get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
@@ -49,17 +48,6 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		endif(NOT TARGET ${_TARGET})
 		add_dependencies(${_TARGET} ${ARGN})
 	endmacro (ADD_DEPEND_TO_TARGET)
-
-	# add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
-	# example: add_depend_to_spotless (custom_target)
-	macro (ADD_DEPEND_TO_SPOTLESS)
-		if(NOT TARGET spotless)
-			add_custom_target (spotless
-				COMMAND make clean
-				WORKING_DIRECTORY ${GMT_BINARY_DIR})
-		endif(NOT TARGET spotless)
-		add_dependencies(spotless ${ARGV})
-	endmacro (ADD_DEPEND_TO_SPOTLESS)
 
 	# add_file_to_cached_list (LIST [ FILE [ FILE ... ]])
 	# if FILE is omitted then the list is cleared
