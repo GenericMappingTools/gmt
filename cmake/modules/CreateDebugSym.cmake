@@ -72,7 +72,7 @@ if (APPLE AND DEBUG_BUILD)
 			endforeach (target)
 
 			# register with spotless target
-			add_depend_to_spotless (dsym_clean${_tag})
+			add_depend_to_target (spotless dsym_clean${_tag})
 
 		endif (DSYMUTIL AND "${CMAKE_GENERATOR}" MATCHES "Make")
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
@@ -101,7 +101,7 @@ elseif (MSVC AND DEBUG_BUILD)
 		endforeach (target)
 
 		# register with spotless target
-		add_depend_to_spotless (pdb_clean${_tag})
+		add_depend_to_target (spotless pdb_clean${_tag})
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
 
 else (APPLE AND DEBUG_BUILD)

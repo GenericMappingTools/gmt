@@ -53,7 +53,7 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/man
 		COMMENT "Removing rst tree")
 	# register with spotless target
-	add_depend_to_spotless (_rst_clean)
+	add_depend_to_target (spotless _rst_clean)
 
 	# HTML build target
 	add_custom_target (docs_html
