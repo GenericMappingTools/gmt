@@ -16,10 +16,10 @@ gmt gmtconvert -V0 << EOF > numbers.txt
 EOF
 
 # read big endian file
-gmt gmtconvert -bi1u1c1H1h1I1i1f1L1l1d+B "${src}"/binary.be > numbers_from_be.txt
+gmt gmtconvert -bi1u1c1H1h1I1i1f1L1l1d+B "${src:-.}"/binary.be > numbers_from_be.txt
 
 # read little endian file
-gmt gmtconvert -bi1u1c1H1h1I1i1f1L1l1d+L "${src}"/binary.le > numbers_from_le.txt
+gmt gmtconvert -bi1u1c1H1h1I1i1f1L1l1d+L "${src:-.}"/binary.le > numbers_from_le.txt
 
 # compare result with text file
 diff -q numbers.txt numbers_from_be.txt
@@ -32,5 +32,5 @@ gmt gmtconvert -bo1u1c1H1h1I1i1f1L1l1d+B numbers_from_be.txt > bin_from_num.be
 gmt gmtconvert -bo1u1c1H1h1I1i1f1L1l1d+L numbers_from_le.txt > bin_from_num.le
 
 # compare binary output with original binary files
-diff -q "${src}"/binary.be bin_from_num.be
-diff -q "${src}"/binary.le bin_from_num.le
+diff -q "${src:-.}"/binary.be bin_from_num.be
+diff -q "${src:-.}"/binary.le bin_from_num.le

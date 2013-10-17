@@ -38,5 +38,5 @@ gmt blockmean -R0/5/0/5 -I1 -r ascii_i.txt -i3-5 -o2,0 > ascii_o.txt
 gmt blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -i3-5 -o2,0 -bo2d | gmt gmtconvert -bi2d > bin_o.txt
 gmt gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = >> io_answer.txt
 
-diff io_answer.txt  "$src"/io_answer.txt --strip-trailing-cr > fail
+diff io_answer.txt  "${src:-.}"/io_answer.txt --strip-trailing-cr > fail
 rm -f ascii_i.txt ascii_o.txt bin_o.txt bin_i.b

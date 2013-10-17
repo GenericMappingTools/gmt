@@ -42,10 +42,10 @@ EOF
 gmt blockmean -R0/5/0/5 -I1 -C grid.d > grid_ij.d
 gmt blockmean -R0/5/0/5 -I1 grid.d > grid_xy.d
 
-diff pixel_xy.d "${src:=.}"/pixel_xy.d --strip-trailing-cr  > fail
-diff pixel_ij.d "$src"/pixel_ij.d --strip-trailing-cr >> fail
-diff grid_xy.d  "$src"/grid_xy.d --strip-trailing-cr  >> fail
-diff grid_ij.d  "$src"/grid_ij.d --strip-trailing-cr  >> fail
+diff pixel_xy.d "${src:-.}"/pixel_xy.d --strip-trailing-cr  > fail
+diff pixel_ij.d "${src:-.}"/pixel_ij.d --strip-trailing-cr >> fail
+diff grid_xy.d  "${src:-.}"/grid_xy.d --strip-trailing-cr  >> fail
+diff grid_ij.d  "${src:-.}"/grid_ij.d --strip-trailing-cr  >> fail
 
 # Connect the original point and the corresponding tile center
 paste pixel_xy.d pixel_ij.d | $AWK '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \

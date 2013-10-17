@@ -8,7 +8,7 @@
 #gmt gmtmath -T0/9/1 -o1 0 100 RAND = z
 #paste x y z > points.txt
 ps=nn.ps
-DATA="${src:=.}"/points.txt
+DATA="${src:-.}"/points.txt
 # NN analysis
 gmt gmtspatial -Aa0k -fg $DATA > results.txt
 gmt gmtset MAP_FRAME_TYPE plain

@@ -5,7 +5,7 @@ ps=east_map_7.ps
 
 EARTH_MODEL=e
 DEBUG=
-COLORMAP="${src:=.}"/topo.cpt 
+COLORMAP="${src:-.}"/topo.cpt 
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
