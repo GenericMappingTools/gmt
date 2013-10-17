@@ -10,7 +10,7 @@ ps=icelandbox.ps
 popt=-p130/30
 
 ### Colormap
-cpt="${src:=.}"/resid.cpt   
+cpt="${src:-.}"/resid.cpt   
 
 ### Pivotal points
 a="-24.4130658 63.0225642"
