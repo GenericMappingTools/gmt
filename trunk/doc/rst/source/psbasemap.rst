@@ -16,7 +16,7 @@ Synopsis
 **psbasemap** **-J**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*[/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
+[ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
 [ **-K** ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
 **-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**] ] ]
 [ **-O** ] [ **-P** ]
@@ -61,7 +61,7 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 
-[**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*[/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
+[**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
     Draw a simple map insert box on the map.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
