@@ -32,9 +32,11 @@ LANG=C
 
 # Define variables that are needed *within* test scripts
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
-EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 src="@GMT_SOURCE_DIR@/doc/examples/${script_dir}"
+
+# Font lookup path for Ghostscript (invoked from gm compare and ps2raster)
+export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
 unset GMT5_SHAREDIR
@@ -69,7 +71,7 @@ function make_pdf()
 {
   pdf="${ps%.ps}.pdf"
   test -f "$ps" || return 1
-  gmt ps2raster -Tf -A -P -C-sFONTPATH=${EXTRA_FONTS_DIR} "$ps" || ((++ERROR))
+  gmt ps2raster -Tf -A -P "$ps" || ((++ERROR))
   test -f "$pdf" || ((++ERROR))
 }
 
@@ -153,14 +155,16 @@ function on_err()
 trap 'on_err "${BASH_SOURCE}" "${LINENO}"' ERR SIGSEGV SIGTRAP SIGBUS
 
 # Create a temporary directory exec_dir in the build dir
-# Then copy all of its contents (except *.ps files)
+# Then copy all of its contents (except files excluded by GLOBIGNORE)
 # Run remainder of this GMT script there
 exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_dir}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
-GLOBIGNORE="*.ps:*.sh" # fonts
-ln -fs "$src"/* .
+GLOBIGNORE="*.bat:*.ps:*.sh"
+for file in "$src"/* ; do
+  test -f "$file" && ln -s "$file" .
+done
 unset GLOBIGNORE
 
 # Start with proper GMT defaults
