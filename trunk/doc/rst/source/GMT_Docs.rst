@@ -220,12 +220,12 @@ and produce shorter and more compact PostScript. However, the big news
 is aimed for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level
 GMT functionality is now accessible via GMT "modules". These are
-high-level functions named after their corresponding programs (.e.g.,
+high-level functions named after their corresponding programs (e.g.,
 ``GMT_grdimage``) that contains all of the functionality of that program
 within the function. While currently callable from C/C++ only, we are
 making progress on the Matlab interface modules as well and will soon
-start on the Python version. Developers should consult the `GMT API <GMT_API.html>`_
-Documentation for more details.
+start on the Python version. Developers should consult the
+:doc:`GMT API <GMT_API>` Documentation for more details.
 
 Most of the GMT default parameters have changed names in order to
 group parameters into logical groups and to use more consistent naming,
@@ -388,10 +388,10 @@ New default parameters
 Other changes of a similar far-ranging nature have been implemented by
 introducing new GMT default settings:
 
-*  :ref:`DIR_DCW <DIR_DCW>` specifies where to look for the optional
+*  :ref:`DIR_DCW <DIR Parameters>` specifies where to look for the optional
    Digital Charts of the World database (for country coloring or selections).
 
-*  :ref:`DIR_GSHHG <DIR_GSHHG>` specifies where to look for the required
+*  :ref:`DIR_GSHHG <DIR Parameters>` specifies where to look for the required
    Global Self-consistent Hierarchical High-resolution Geography database.
 
 *  :ref:`GMT_COMPATIBILITY <GMT_COMPATIBILITY>` can be set to 4 to allow
