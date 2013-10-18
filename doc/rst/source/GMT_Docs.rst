@@ -698,8 +698,8 @@ was always very approximate (no consideration of font metrics, etc.) and quite o
 and (b) :doc:`ps2raster` handles it exactly.  Hence, users who need EPS plots should
 simply process their PostScript files via :doc:`ps2raster`.
 
-Incompatibilities between GMT 5.x and GMT 4.x
----------------------------------------------
+Incompatibilities between GMT 5 and GMT 4
+-----------------------------------------
 
 As features are added and bugs are discovered, it is occasionally
 necessary to break the established syntax of a GMT program option, such as when
@@ -1104,9 +1104,9 @@ Switching between different GMT versions
 We encourage all GMT users to start using version 5 immediately; it
 has been tested extensively by the GMT team and has benefitted from
 bug reports for the 4.5.x versions. Users who still worry about the new
-version breaking things may install GMT 4.5.x and 5.x side by side.
+version breaking things may install GMT 4.5.x and 5 side by side.
 
-Because GMT 5.x is backwards compatible with the 4.5.x series
+Because GMT 5 is backwards compatible with the 4.5.x series
 (provided you configured it that way) yet maintains its parameters and
 history in separate files (e.g. ``.gmtdefaults4``, versus ``gmt.conf``)
 it is possible to install and use both versions on the same workstation.
@@ -1161,7 +1161,7 @@ command. This method can easily be applied on the command line or in scripts
 when the recommended ``gmt <module>``-syntax is used. Shell scripts using
 old-style GMT commands would have to be converted first. The syntax conversion
 can be accomplished with the :doc:`gmt5syntax` utility. A suitable bash wrapper
-function for GMT-5.x would look like this:
+function for GMT 5 would look like this:
 
 .. code-block:: bash
 
@@ -1173,7 +1173,7 @@ scripts. This wrapper function can be either set in your working shell or
 inside a GMT shell script. The latter is useful to switch to a certain GMT
 version on a per-script basis.
 
-For GMT releases prior to GMT-5.x which only provide the module commands,
+For GMT releases prior to GMT 5 which only provide the module commands,
 we need a slightly modified version of the wrapper script:
 
 .. code-block:: bash
@@ -9467,7 +9467,7 @@ Finally we show an example of a polygon file:
    GMT share directory.
 
 .. [10]
-   To remain backwards compatible with GMT 4.x we will also look for
+   To remain backwards compatible with GMT 4 we will also look for
    but only if cannot be found.
 
 .. [11]

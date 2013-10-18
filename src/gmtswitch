@@ -80,10 +80,10 @@ if [ ! -f $home/.gmtversions ]; then	# No .gmtversions exists yet, first do that
 GMTSWITCH $Revision$
 
 gmtswitch helps you modify your environment to allow for the switching back and
-forth between several GMT versions, in particular GMT 5.x and previous GMT
-versions such as GMT 4.x.  First, we try to determine all the GMT versions
+forth between several GMT versions, in particular GMT 5 and previous GMT
+versions such as GMT 4.  First, we try to determine all the GMT versions
 currently installed on this platform.  If you have not already installed the
-latest GMT 4.x please enter q at the prompt and do that install first.
+latest GMT 4 please enter q at the prompt and do that install first.
 Otherwise, hit RETURN and please be patient while we search your system.
 Note: Searching from / can take hours on systems with lots of slow network
 drives.  If that is your case, type q at the prompt to quit and instead

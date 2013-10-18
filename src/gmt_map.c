@@ -142,7 +142,7 @@
  * The choice was based on the readily available C code versus having to reimplement Karney in C.
  */
 
-#define USE_VINCENTY 1	/* New GMT-5 behavior */
+#define USE_VINCENTY 1	/* New GMT 5 behavior */
 
 double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
