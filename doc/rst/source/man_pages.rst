@@ -12,7 +12,6 @@ Core modules
    blockmean
    blockmedian
    blockmode
-   colmath
    filter1d
    fitcircle
    gmt_shell_functions.sh

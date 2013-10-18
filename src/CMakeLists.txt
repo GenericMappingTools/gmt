@@ -136,7 +136,7 @@ else (NOT LICENSE_RESTRICTED) # on
 endif (NOT LICENSE_RESTRICTED)
 
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
-	colmath.c filter1d.c fitcircle.c gmt2kml.c
+	filter1d.c fitcircle.c gmt2kml.c
 	gmtconvert.c gmtmath.c gmtselect.c gmtsimplify.c
 	gmtspatial.c gmtconnect.c gmtvector.c gmtwhich.c
 	grd2cpt.c grd2rgb.c grd2xyz.c grdblend.c
