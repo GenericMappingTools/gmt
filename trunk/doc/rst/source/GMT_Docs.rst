@@ -239,17 +239,29 @@ New programs
 First, a few new programs have been added and some have been
 promoted (and possibly renamed) from earlier supplements:
 
+:doc:`gmt`
+    This is the **only** program executable that is distributed with GMT 5. To avoid
+    problems with namespace conflicts (e.g., there are other, non-GMT programs
+    with generic names like triangulate, surface, etc.) all GMT 5 modules are
+    launched from the gmt executable via "gmt module" calls (e.g, gmt pscoast).
+    For backwards compatibility (see below) we also offer symbolic links with
+    the old executable names that simply point to the gmt program, which then
+    can start the correct module.  Any module whose name starts with "gmt" can
+    be abbreviated, e.g., "gmt gmtconvert" may be called as "gmt convert".
+
 :doc:`gmt2kml`
     A :doc:`psxy` -like tool to produce KML overlays for Google Earth. Previously
     found in the misc supplement.
 
 :doc:`gmtsimplify`
     A line-reduction tool for coastlines and similar lines. Previously found
-    in the misc supplement under the name gmtdp.
+    in the misc supplement under the name gmtdp (this name is recognized when
+    GMT is running in compatibility mode).
 
 :doc:`gmtconnect`
     Connect individual lines whose end points match within given tolerance.
-    Previously known as gmtstitch in the misc supplement.
+    Previously known as gmtstitch in the misc supplement (this name is recognized
+    when GMT is running in compatibility mode).
 
 :doc:`gmtget`
     Return the values of the specified GMT defaults.  Previously only
