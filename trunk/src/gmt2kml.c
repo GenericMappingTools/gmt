@@ -223,7 +223,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Issue Region tag.  Append w/e/s/n to set a particular region or append a to use the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   actual domain of the data (single file only) [no region specified].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Scale for (c)ircle icon size or (n)ame label [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Append KML document title name [GMT Data Document].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Append KML document title name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<foldername> to name folder when used with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -O and -K to organize features into groups.\n");
 	GMT_Option (API, "V");
@@ -725,7 +725,6 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	if (Ctrl->F.mode == EVENT || Ctrl->F.mode == SPAN) GMT->current.io.col_type[GMT_IN][t1_col] = GMT->current.io.col_type[GMT_OUT][t1_col] = GMT_IS_ABSTIME;
 	if (Ctrl->F.mode == SPAN)  GMT->current.io.col_type[GMT_IN][t2_col] = GMT->current.io.col_type[GMT_OUT][t2_col] = GMT_IS_ABSTIME;
 
-	if (!Ctrl->T.title) Ctrl->T.title = strdup ("GMT Data Document");
 	if (!Ctrl->T.folder) {
 		sprintf (buffer, "%s Features", name[Ctrl->F.mode]);
 		Ctrl->T.folder = strdup (buffer);
@@ -741,7 +740,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		printf ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		printf ("<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 		tabs (N++); printf ("<%s>\n", Document[KML_DOCUMENT]);
-		tabs (N); printf ("<name>%s</name>\n", Ctrl->T.title);
+		if (Ctrl->T.title != NULL && *Ctrl->T.title != '\0')
+			tabs (N), printf ("<name>%s</name>\n", Ctrl->T.title);
 		if (Ctrl->Z.invisible) tabs (N), printf ("<visibility>0</visibility>\n");
 		if (Ctrl->Z.open) tabs (N), printf ("<open>1</open>\n");
 		if (use_folder) {
@@ -749,7 +749,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 			tabs (N); printf ("<name>%s</name>\n", Ctrl->T.folder);
 		}
 	}
-		
+
 	tabs (N++); printf ("<Style id=\"GMT%d\">\n", index);	/* Default style unless -C is used */
 
 	/* Set icon style (applies to symbols only */

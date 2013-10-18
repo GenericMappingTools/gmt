@@ -160,11 +160,11 @@ Optional Arguments
     icon, whereas **-Sn** sets a scale for the name labels [1 for both].
 
 **-T**\ *title*\ [/*foldername*]
-    Sets the document title [GMT Data Document]. Optionally, append
+    Sets the document title [default is unset]. Optionally, append
     /*FolderName*; this allows you, with **-O**, **-K**, to group
     features into folders within the KML document. [The default folder
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
-    Line, or Polygon]. 
+    Line, or Polygon].
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
