@@ -1418,8 +1418,6 @@ listing sorted by program purpose, see Section `GMT quick reference`_.
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`colmath`        | Do mathematics on columns from data tables                          |
-+-----------------------+---------------------------------------------------------------------+
 | :doc:`filter1d`       | Filter 1-D table data sets (time series)                            |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`fitcircle`      | Finds the best-fitting great or small circle for a set of points    |
@@ -1671,8 +1669,6 @@ summary of the standard command line options and a breakdown of the
 | :doc:`minmax`         | Report extreme values in table data files                           |
 +-----------------------+---------------------------------------------------------------------+
 |                       | *Mathematical Operations on Tables or Grids*                        |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`colmath`        | Do mathematics on columns from data tables                          |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtmath`        | Mathematical operations on table data                               |
 +-----------------------+---------------------------------------------------------------------+
