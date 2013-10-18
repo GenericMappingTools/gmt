@@ -18,7 +18,7 @@ Introduction
 
 **gmtswitch** helps you modify your environment to allow for the
 switching back and forth between several installed GMT versions, in
-particular GMT 5 beta and versions from the GMT 4.x series. It works by
+particular GMT 5 and versions from the GMT 4 series. It works by
 maintaining a list of directories to GMT installations in a file in your
 home directory, then manipulates a symbolic link to point to the GMT
 directory whose executables we wish to use [The Windows version works a
