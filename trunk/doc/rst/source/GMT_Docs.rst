@@ -211,10 +211,8 @@ New Features in GMT 5
 =====================
 
 GMT 5 represents a new branch of GMT development that mostly preserves the
-capabilities of the previous versions while adding new tricks to many of
-the tools. Furthermore, we have added system-wide capabilities for
-handling PDF transparency, dealing with GIS aspatial data, and
-eliminated the need for the **-m** option. Our PostScript library
+capabilities of the previous versions while adding over 200 new features
+to an already extensive bag of tricks.  Our PostScript library
 :doc:`PSL <pslib>` has seen a complete rewrite as well
 and produce shorter and more compact PostScript. However, the big news
 is aimed for developers who wish to leverage GMT in their own applications.
@@ -222,23 +220,18 @@ We have completely revamped the code base so that high-level
 GMT functionality is now accessible via GMT "modules". These are
 high-level functions named after their corresponding programs (e.g.,
 ``GMT_grdimage``) that contains all of the functionality of that program
-within the function. While currently callable from C/C++ only, we are
-making progress on the Matlab interface modules as well and will soon
-start on the Python version. Developers should consult the
-:doc:`GMT API <GMT_API>` Documentation for more details.
+within the function. While currently callable from C/C++ only (with some
+support for F77), we are making progress on the Matlab interface as well
+and there are plans to start on the Python version. Developers should
+consult the :doc:`GMT API <GMT_API>` documentation for more details.
 
-Most of the GMT default parameters have changed names in order to
-group parameters into logical groups and to use more consistent naming,
-and some new default parameters have been added as well.
-
-Because of the default name changes and other command-line changes (such
-as making **-m** obsolete), we recommend that users of GMT 4 consider
-learning the new rules and defaults. However, to ease the transition to
-GMT 5 you may run it in compatibility mode,
+We recommend that users of GMT 4 consider learning the new rules and defaults
+since eventually (in some years) GMT 4 will be obsolete.
+To ease the transition to GMT 5 you may run it in compatibility mode,
 thus allowing the use of many obsolete default names and command
-switches (you will receive a warning instead).
+switches (you will receive a warning instead).  This is discussed below.
 
-Below are areas of improvements in GMT 5.
+Below are six key areas of improvements in GMT 5.
 
 New programs
 ------------
@@ -385,8 +378,10 @@ the explanations for all options that are not among the GMT common set.
 New default parameters
 ----------------------
 
-Other changes of a similar far-ranging nature have been implemented by
-introducing new GMT default settings:
+Most of the GMT default parameters have changed names in order to
+group parameters into logical groups and to use more consistent naming.
+However, under compatibility mode (see below) the old names are still recognized.
+New capabilities have been implemented by introducing new GMT default settings:
 
 *  :ref:`DIR_DCW <DIR Parameters>` specifies where to look for the optional
    Digital Charts of the World database (for country coloring or selections).
@@ -498,8 +493,10 @@ Finally, here is a list of numerous enhancements to individual programs:
    value.
 
 *  :doc:`gmtconvert` now has optional PCRE (regular expression) support,
-   as well as a new option to select a subset of segments (**-Q**) and
-   an improved option to extract a subset of records (**-E**).
+   as well as a new option to select a subset of segments specified by
+   segment running numbers (**-Q**) and improved options to extract a
+   subset of records (**-E**) and support for a list of search strings
+   via **-S+f**\ *patternfile*.
 
 *  :doc:`gmtmath` with **-N**\ *ncol* and input
    files will add extra blank columns, if needed.  A new option **-E**
