@@ -355,7 +355,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	double max = 0.0, radius, az, x_origin, y_origin, tmp, one_or_two = 1.0, s, c;
 	double angle1, angle2, angle, x, y, mean_theta, mean_radius, xr = 0.0, yr = 0.0;
 	double x1, x2, y1, y2, total = 0.0, total_arc, off, max_radius, az_offset, start_angle;
-	double asize, lsize, this_az, half_bin_width, diameter, wesn[4];
+	double asize, lsize, this_az, half_bin_width, diameter, wesn[4], mean_vector, mean_resultant;
 	double *xx = NULL, *yy = NULL, *in = NULL, *sum = NULL, *azimuth = NULL;
 	double *length = NULL, *mode_direction = NULL, *mode_length = NULL, dim[7];
 
@@ -524,7 +524,8 @@ int GMT_psrose (void *V_API, int mode, void *args)
 
 	mean_theta = d_atan2d (yr, xr) / one_or_two;
 	if (mean_theta < 0.0) mean_theta += 360.0;
-	mean_radius = hypot (xr, yr) / total;
+	mean_vector = hypot (xr, yr) / n;
+	mean_resultant = mean_radius = hypot (xr, yr) / total;
 	if (!Ctrl->S.normalize) mean_radius *= max_radius;
 
 	if (Ctrl->A.inc > 0.0) {	/* Find max of the bins */
@@ -543,8 +544,10 @@ int GMT_psrose (void *V_API, int mode, void *args)
 
 	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->In.file) strncpy (text, Ctrl->In.file, GMT_BUFSIZ); else strcpy (text, "<stdin>");
-		sprintf (format, "Info for %%s: n = %% " PRIu64 " rmax = %s mean r/az = (%s/%s) totlength = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_NORMAL, format, text, n, max, mean_radius, mean_theta, total);
+		sprintf (format, "Info for %%s: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max r = %s scaled mean r = %s linear length sum = %s\n",
+			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (API, GMT_MSG_NORMAL, format, text, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
 		if (Ctrl->I.active) {
 			GMT_free (GMT, sum);
 			GMT_free (GMT, xx);
