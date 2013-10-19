@@ -543,10 +543,11 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		char *kind[2] = {"r", "bin sum"};
 		if (Ctrl->In.file) strncpy (text, Ctrl->In.file, GMT_BUFSIZ); else strcpy (text, "<stdin>");
-		sprintf (format, "Info for %%s: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max r = %s scaled mean r = %s linear length sum = %s\n",
-			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "Info for %%s: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s\n",
+			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
+			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_NORMAL, format, text, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
 		if (Ctrl->I.active) {
 			GMT_free (GMT, sum);
