@@ -41,6 +41,11 @@ gmt_nrecords() {
 	cat $* | wc -l | awk '{print $1}'
 }
 
+#	Return integer total number of data records in the file(s)
+gmt_ndatarecords() {
+	cat $* | egrep -v '^>|^#' | wc -l | awk '{print $1}'
+}
+
 #	Returns the number of fields or arguments
 gmt_nfields() {
 	echo $* | awk '{print NF}'
