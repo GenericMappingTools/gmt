@@ -366,6 +366,10 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 				S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
 			}
 			GMT_free (GMT, index);
+			if (np_out == 2 && S[GMT_OUT]->coord[GMT_X][0] == S[GMT_OUT]->coord[GMT_X][1] && S[GMT_OUT]->coord[GMT_Y][0] == S[GMT_OUT]->coord[GMT_Y][1]) {
+				S[GMT_OUT]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped since nothing was returned */
+				np_out = 0;	/* Say nothing was returned */
+			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, np_out);
 		}
 	}
