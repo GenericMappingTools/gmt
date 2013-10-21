@@ -11,8 +11,8 @@ diff --strip-trailing-cr coast.kml "${src:-.}"/coast.kml > fail
 # test -C option
 makecpt -Ccategorical > categories.cpt
 
-gmt gmt2kml pointsets.txt -Ccategories.cpt > pointsets.kml
+gmt gmt2kml "${src:-.}"/pointsets.txt -Ccategories.cpt > pointsets.kml
 #todo: diff --strip-trailing-cr pointsets.kml "${src:-.}"/pointsets.kml > fail
 
-gmt gmt2kml lines.txt -Fl -Ccategories.cpt > lines.kml
+gmt gmt2kml "${src:-.}"/lines.txt -Fl -Ccategories.cpt > lines.kml
 #todo: diff --strip-trailing-cr lines.kml "${src:-.}"/lines.kml > fail
