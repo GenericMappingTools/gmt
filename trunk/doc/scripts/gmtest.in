@@ -10,7 +10,7 @@ test -z "$1" && exit 1
 script_name="$1"
 script="@GMT_SOURCE_DIR@/doc/scripts/${script_name}"
 if ! [ -x "${script}" ]; then
-  echo "error: cannot execute script ${script}." 1>&2
+  echo "error: cannot execute script ${script}." >&2
   exit 1
 fi
 
@@ -108,7 +108,7 @@ function cleanup()
     (( memtrack_err += n_err )) || : # second assignment in case return code != 0
     test ${n_err} -eq 0 && rm -f ${log_file} # remove logs w/o errors
   done
-  echo "memtrack errors: $memtrack_err"
+  echo "memtrack errors: $memtrack_err" >&2
 
   valgrind_err=0
   if [ -n "${VALGRIND_ARGS}" ]; then
@@ -119,12 +119,12 @@ function cleanup()
       (( valgrind_err += n_err )) || : # second assignment in case return code != 0
       test ${n_err} -eq 0 && rm -f ${log_file} # remove logs w/o errors
     done
-    echo "valgrind errors: $valgrind_err"
+    echo "valgrind errors: $valgrind_err" >&2
   fi
 
   cd "@CMAKE_CURRENT_BINARY_DIR@" # get out of exec_dir before removing it
   test "$ERROR" -eq 0 -a "$memtrack_err" -eq 0 -a "$valgrind_err" -eq 0 && rm -rf "$exec_dir"
-  echo "exit status: $ERROR"
+  echo "exit status: $ERROR" >&2
   exit $ERROR
 }
 
