@@ -25,7 +25,7 @@
  * Brief synopsis: gmt2kml reads GMT tables and plots symbols, lines,
  * and polygons as KML files for Google Earth.
  */
- 
+
 #define THIS_MODULE_NAME	"gmt2kml"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert GMT data tables to KML files for Google Earth"
@@ -241,7 +241,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   +v turns off visibility [feature is visible].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +o open document or folder when loaded [closed].\n");
 	GMT_Option (API, "a,bi2,f,g,h,i,:,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -512,7 +512,7 @@ void tabs (int ntabs)
 void print_altmode (int extrude, int fmode, int altmode, int ntabs)
 {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
-	if (extrude) tabs (ntabs), printf ("<extrude>1</extrude>\n"); 
+	if (extrude) tabs (ntabs), printf ("<extrude>1</extrude>\n");
 	if (fmode) tabs (ntabs), printf ("<tessellate>1</tessellate>\n");
 	if (altmode == KML_GROUND_REL || altmode == KML_ABSOLUTE) tabs (ntabs), printf ("<altitudeMode>%s</altitudeMode>\n", RefLevel[altmode]);
 	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) tabs (ntabs), printf ("<gx:altitudeMode>%s</gx:altitudeMode>\n", RefLevel[altmode]);
@@ -652,11 +652,11 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 {
 	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act;
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
-	
+
 	uint64_t row, seg;
-	int set_nr = 0, index = -4, N = 1, error = 0;
-	
-	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""}, C[5][GMT_LEN64];
+	int set_nr = 0, index = 0, N = 1, error = 0;
+
+	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""}, C[5][GMT_LEN64] = {"","","","",""};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};
 	char *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
 
@@ -693,14 +693,14 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		GMT_Message (API, GMT_TIME_NONE, "Cannot yet use binary data files; pipe in via gmtconvert for now\n");
 		Return (EXIT_FAILURE);
 	}
-	
+
 	/* gmt2kml only applies to geographic data so we do a -fg implicitly here */
 	GMT_set_geographic (GMT, GMT_IN);
 	GMT_set_geographic (GMT, GMT_OUT);
 	extra[0] = '\0';
 	GMT_memset (out, 5, double);	/* Set to zero */
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
-	
+
 	if (Ctrl->C.active) {	/* Process CPT file */
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
@@ -750,7 +750,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		}
 	}
 
-	tabs (N++); printf ("<Style id=\"GMT%d\">\n", index);	/* Default style unless -C is used */
+	tabs (N++); printf ("<Style id=\"st%d\">\n", index);	/* Default style unless -C is used */
 
 	/* Set icon style (applies to symbols only */
 	set_iconstyle (Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
@@ -768,7 +768,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 
 	for (index = -3; Ctrl->C.active && index < (int)P->n_colors; index++) {	/* Place styles for each color in CPT file */
 		get_rgb_lookup (GMT, P, index, rgb);
-		tabs (N++); printf ("<Style id=\"GMT%d\">\n", index);
+		tabs (N++); printf ("<Style id=\"st%d\">\n", index + 4); /* +4 to make index a positive integer */
 		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */
 			set_iconstyle (Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 		else if (Ctrl->F.mode == LINE)	/* Line style only */
@@ -812,7 +812,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	   Or open as GMT_IS_DATASET if binary and TEXTSET otherwise, then handle the differenes below
 	   by setting n_tables = (binary) ? D->n_tables : T->n_tables; same for nsegments, then
 	   final ifs on parsing text record or using coord as is. */
-	
+
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
@@ -834,7 +834,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		T = Din->table[tbl];	/* Current table */
 		if (T->file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
 			tabs (N++); printf ("<Folder>\n");
-			tabs (N); 
+			tabs (N);
 			if (!strcmp (T->file[GMT_IN], "<stdin>"))
 				printf ("<name>stdin</name>\n");
 			else
@@ -842,7 +842,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		}
 		for (seg = 0; seg < T->n_segments; seg++) {	/* Process each segment in this table */
 			pnt_nr = 0;
-			
+
 			/* Only point sets will be organized in folders as lines/polygons are single entities */
 			if (Ctrl->F.mode < LINE) {	/* Meaning point-types, not lines or polygons */
 				tabs (N++); printf ("<Folder>\n");
@@ -875,7 +875,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 					tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], set_nr);
 				description[0] = 0;
 				do_description = false;
-				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) { 
+				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) {
 					do_description = true;
 					strcat (description, buffer);
 				}
@@ -889,7 +889,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 					do_description = true;
 				}
 				if (do_description) { tabs (N); printf ("<description>%s</description>\n", description); }
-				tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
+				tabs (N); printf ("<styleUrl>#st%d</styleUrl>\n", index + 4); /* +4 to make index a positive integer */
 				tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
 				print_altmode (Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
 				if (Ctrl->F.mode == POLYGON) {
@@ -957,10 +957,10 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 					tabs (N++); printf ("<Placemark>\n");
 					if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 					else if (Ctrl->N.mode == GET_COL_LABEL) {
-						GMT_strtok (extra, " \t,", &pos, item);	
+						GMT_strtok (extra, " \t,", &pos, item);
 						tabs (N), printf ("<name>%s</name>\n", item);
 					}
-					else if (Ctrl->N.mode == GET_LABEL) 
+					else if (Ctrl->N.mode == GET_LABEL)
 						tabs (N), printf ("<name>%s</name>\n", extra);
 					else if (Ctrl->N.mode == FMT_LABEL) {
 						tabs (N); printf ("<name>"); printf (Ctrl->N.fmt, pnt_nr); printf ("</name>\n");
@@ -976,7 +976,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 						for (col = 0; col < Ctrl->L.n_cols; col++) {
 							tabs (N); printf ("<Data name = \"%s\">\n", Ctrl->L.name[col]);
 							tabs (++N); printf ("<value>");
-							GMT_strtok (extra, " \t,", &pos, item);	
+							GMT_strtok (extra, " \t,", &pos, item);
 							printf ("%s", item);
 							printf ("</value>\n");
 							tabs (--N); printf ("</Data>\n");
@@ -1004,7 +1004,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 						printf ("</when>\n");
 						tabs (--N); printf ("</TimeStamp>\n");
 					}
-					tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
+					tabs (N); printf ("<styleUrl>#st%d</styleUrl>\n", index + 4); /* +4 to make index a positive integer */
 					tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
 					print_altmode (Ctrl->E.active, false, Ctrl->A.mode, N);
 					tabs (N); printf ("<coordinates>");
