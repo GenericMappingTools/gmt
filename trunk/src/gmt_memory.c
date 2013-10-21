@@ -287,17 +287,18 @@ static inline void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, vo
 	M->root = entry; /* Update root pointer */
 }
 
-static inline void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, void *ptr) {
+static inline bool gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, void *ptr) {
 	/* Called from GMT_free to remove memory pointer */
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 	struct MEMORY_ITEM *entry = gmt_treefind (&M->root, ptr);
 
 	M->n_freed++; /* Increment first to also count multiple frees on same address */
-	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
+	if (!entry) {
+		/* Error, trying to free something not allocated by GMT_memory_func */
 		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
 		if (M->do_log)
 			fprintf (M->fp, "!!!: 0x%zx ---------- %7.0lf %s @%s\n", (size_t)ptr, M->current / 1024.0, GMT->init.module_name, where);
-		return;
+		return false; /* Notify calling function that something went wrong */
 	}
 	if (entry->size > M->current) {
 		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Memory tracker reports < 0 bytes allocated!\n");
@@ -309,6 +310,7 @@ static inline void gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, vo
 		fprintf (M->fp, "DEL: 0x%zx %10" PRIuS " %7.0lf %s %s\n", (size_t)entry->ptr, entry->size, M->current / 1024.0, GMT->init.module_name, entry->name);
 	M->root = gmt_treedelete (entry, entry->ptr);
 	M->n_ptr--;
+	return true;
 }
 
 static inline void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) {
@@ -565,8 +567,11 @@ void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 #endif
 
 #ifdef MEMDEBUG
-	if (GMT->hidden.mem_keeper->active)
-		gmt_memtrack_sub (GMT, where, addr);
+	if (GMT->hidden.mem_keeper->active) {
+		bool is_safe_to_free = gmt_memtrack_sub (GMT, where, addr);
+		if (is_safe_to_free == false)
+			return; /* Address addr was not allocated by GMT_memory_func before */
+	}
 #endif
 
 #if defined(WIN32) && !defined(USE_MEM_ALIGNED)
