@@ -2329,14 +2329,19 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	}
 
 	for (i = annot = 0, gap = lap = false; i < X->n_colors - 1; i++) {
-		if (X->range[i].z_high < X->range[i+1].z_low) gap = true;
-		if (X->range[i].z_high > X->range[i+1].z_low) lap = true;
+		if (X->range[i].z_high < X->range[i+1].z_low) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has a gap between slices %d and %d!\n", cpt_file, i, i+1);
+			gap = true;
+		}
+		else if (X->range[i].z_high > X->range[i+1].z_low) {
+			lap = true;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has an overlap between slices %d and %d\n", cpt_file, i, i+1);
+		}
 		annot += X->range[i].annot;
 	}
 	annot += X->range[i].annot;
-	if (gap) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has gap(s) - aborts!\n", cpt_file);
-	if (lap) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has overlap(s) - aborts!\n", cpt_file);
 	if (gap || lap) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Must abort due to above errors in %s\n", cpt_file);
 		for (i = 0; i < X->n_colors; i++) {
 			if (X->range[i].fill) GMT_free (GMT, X->range[i].fill);
 			if (X->range[i].label) GMT_free (GMT, X->range[i].label);
