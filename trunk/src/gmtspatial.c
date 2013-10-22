@@ -37,11 +37,11 @@
 
 #define GMT_W	3
 
-#define POL_UNION		0
-#define POL_INTERSECTION	1
-#define POL_CLIP		2
-#define POL_SPLIT		3
-#define POL_JOIN		4
+#define POL_UNION		1
+#define POL_INTERSECTION	2
+#define POL_CLIP		3
+#define POL_SPLIT		4
+#define POL_JOIN		5
 
 #define PW_TESTING
 #define MIN_AREA_DIFF		0.01;	/* If two polygons have areas that differ more than 1 % of each other then they are not the same feature */
