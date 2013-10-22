@@ -1974,7 +1974,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 
 	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model, n_master = 0;
 	size_t k;
-	bool gap, error = false, close_file = false, check_headers = true, master = false;
+	bool gap, lap, error = false, close_file = false, check_headers = true, master = false;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
 	double dz;
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
@@ -2328,15 +2328,25 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 		}
 	}
 
-	for (i = annot = 0, gap = false; i < X->n_colors - 1; i++) {
-		if (X->range[i].z_high != X->range[i+1].z_low) gap = true;
+	for (i = annot = 0, gap = lap = false; i < X->n_colors - 1; i++) {
+		if (X->range[i].z_high < X->range[i+1].z_low) gap = true;
+		if (X->range[i].z_high > X->range[i+1].z_low) lap = true;
 		annot += X->range[i].annot;
 	}
 	annot += X->range[i].annot;
-	if (gap) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has gaps - aborts!\n", cpt_file);
+	if (gap) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has gap(s) - aborts!\n", cpt_file);
+	if (lap) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has overlap(s) - aborts!\n", cpt_file);
+	if (gap || lap) {
+		for (i = 0; i < X->n_colors; i++) {
+			if (X->range[i].fill) GMT_free (GMT, X->range[i].fill);
+			if (X->range[i].label) GMT_free (GMT, X->range[i].label);
+		}
+		GMT_free (GMT, X->range);
+		GMT_free (GMT, X);
+		if (Z) GMT_free (GMT, Z);
 		return (NULL);
 	}
+
 	if (!annot) {	/* Must set default annotation flags */
 		for (i = 0; i < X->n_colors; i++) X->range[i].annot = 1;
 		X->range[i-1].annot = 3;
