@@ -37,6 +37,17 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
+int GMT_minmax (void *V_API, int mode, void *args)
+{	/* This was the GMT4 name */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (GMT_compat_check (API->GMT, 4)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module minmax is deprecated; use gmtinfo.\n");
+		return (GMT_gmtinfo (V_API, mode, args));
+	}
+	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: minmax\n");
+	return (GMT_NOT_A_VALID_MODULE);
+}
+
 int GMT_gmtstitch (void *V_API, int mode, void *args)
 {	/* This was the GMT4 name */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */

@@ -40,7 +40,6 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm"},
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)"},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation"},
-	{"colmath", "core", "Do mathematics on columns from data tables"},
 	{"filter1d", "core", "Do time domain filtering of 1-D data tables"},
 	{"fitcircle", "core", "Find mean position and best-fitting great- or small-circle to points on sphere"},
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth"},
@@ -48,6 +47,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtconvert", "core", "Convert, paste, or extract columns from data tables"},
 	{"gmtdefaults", "core", "List current GMT default parameters"},
 	{"gmtget", "core", "Get individual GMT default parameters"},
+	{"gmtinfo", "core", "Get information about data tables"},
 	{"gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables"},
 	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria"},
 	{"gmtset", "core", "Change individual GMT default parameters"},
@@ -86,7 +86,6 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"kml2gmt", "core", "Extract GMT table data from Google Earth KML files"},
 	{"makecpt", "core", "Make GMT color palette tables"},
 	{"mapproject", "core", "Do forward and inverse map transformations, datum conversions and geodesy"},
-	{"minmax", "core", "Find extreme values in data tables"},
 	{"nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm"},
 	{"project", "core", "Project table data onto lines or great circles, generate tracks, or translate coordinates"},
 	{"ps2raster", "core", "Convert [E]PS file(s) to other formats using GhostScript"},
@@ -123,7 +122,6 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", &GMT_blockmean},
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", &GMT_blockmedian},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", &GMT_blockmode},
-	{"colmath", "core", "Do mathematics on columns from data tables", &GMT_colmath},
 	{"filter1d", "core", "Do time domain filtering of 1-D data tables", &GMT_filter1d},
 	{"fitcircle", "core", "Find mean position and best-fitting great- or small-circle to points on sphere", &GMT_fitcircle},
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", &GMT_gmt2kml},
@@ -131,6 +129,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtconvert", "core", "Convert, paste, or extract columns from data tables", &GMT_gmtconvert},
 	{"gmtdefaults", "core", "List current GMT default parameters", &GMT_gmtdefaults},
 	{"gmtget", "core", "Get individual GMT default parameters", &GMT_gmtget},
+	{"gmtinfo", "core", "Get information about data tables", &GMT_gmtinfo},
 	{"gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", &GMT_gmtmath},
 	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria", &GMT_gmtselect},
 	{"gmtset", "core", "Change individual GMT default parameters", &GMT_gmtset},
@@ -169,7 +168,6 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"kml2gmt", "core", "Extract GMT table data from Google Earth KML files", &GMT_kml2gmt},
 	{"makecpt", "core", "Make GMT color palette tables", &GMT_makecpt},
 	{"mapproject", "core", "Do forward and inverse map transformations, datum conversions and geodesy", &GMT_mapproject},
-	{"minmax", "core", "Find extreme values in data tables", &GMT_minmax},
 	{"nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", &GMT_nearneighbor},
 	{"project", "core", "Project table data onto lines or great circles, generate tracks, or translate coordinates", &GMT_project},
 	{"ps2raster", "core", "Convert [E]PS file(s) to other formats using GhostScript", &GMT_ps2raster},
@@ -210,10 +208,6 @@ void gmt_core_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
 	char message[256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-	GMT_Message (V_API, GMT_TIME_NONE, "\n\tGMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
-	GMT_Message (V_API, GMT_TIME_NONE, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
-	GMT_Message (V_API, GMT_TIME_NONE, "Supported in part by the US National Science Foundation and volunteers from around the world.\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "Released under the Lesser GNU Public License (http://www.gnu.org/licenses/lgpl.html).\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\n=== " "GMT core: The main section of the Generic Mapping Tools" " ===\n");
 	while (g_core_module[module_id].name != NULL) {
 		if (module_id == 0 || strcmp (g_core_module[module_id-1].component, g_core_module[module_id].component)) {

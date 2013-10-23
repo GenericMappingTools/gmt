@@ -3,14 +3,14 @@
 #		$Id$
 #
 # Purpose:	Gridding and clipping when data are missing
-# GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax
+# GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, gmtinfo
 # GMT progs:	nearneighbor, pscoast, psmask, pstext, surface
 # Unix progs:	echo, rm
 #
 ps=example_15.ps
 gmt gmtconvert ship.xyz -bo > ship.b
 #
-region=`gmt minmax ship.b -I1 -bi3d`
+region=`gmt info ship.b -I1 -bi3d`
 gmt nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi
 gmt grdcontour ship.nc -JM3i -P -B2 -BWSne -C250 -A1000 -Gd2i -K > $ps
 #

@@ -9639,6 +9639,42 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 	GMT_free (GMT, (*M));
 }
 
+struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile)
+{
+	unsigned int n_macros, kk;
+	int k;
+	struct MATH_MACRO *M = NULL;
+	struct GMT_OPTION *opt = NULL, *ptr = NULL, *list = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
+	
+	n_macros = gmt_load_macros (GMT, mfile, &M);	/* Load in any macros */
+	if (n_macros) GMT_Report (API, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
+	
+	/* Internally replace the = [file] sequence with a single output option ->file */
+
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == GMT_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMT_NOTSET) {
+			/* Add in the replacement commands from the macro */
+			for (kk = 0; kk < M[k].n_arg; kk++) {
+				ptr = GMT_Make_Option (API, GMT_OPT_INFILE, M[k].arg[kk]);
+				if ((list = GMT_Append_Option (API, ptr, list)) == NULL) return (NULL);
+				if (ptr->arg[0] == '-' && (isalpha (ptr->arg[1]) || ptr->arg[1] == '-')) {
+					ptr->option = ptr->arg[1];	/* Change from "file" to an option */
+					GMT_strlshift (ptr->arg, 2U);	/* Remove the leading -? part */
+				}
+			}
+			continue;
+		}
+		else
+			ptr = GMT_Make_Option (API, opt->option, opt->arg);
+
+		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) return (NULL);
+	}
+	gmt_free_macros (GMT, n_macros, &M);
+
+	return (list);
+}
+
 void gmt_init_rot_matrix (double R[3][3], double E[])
 {	/* This starts setting up the matrix without knowing the angle of rotation
 	 * Call set_rot_angle with R, and omega to complete the matrix

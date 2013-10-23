@@ -134,4 +134,4 @@ See Also
 --------
 
 :doc:`gmt` , :doc:`gmt.conf` ,
-:doc:`minmax` , :doc:`grdinfo`
+:doc:`gmtinfo` , :doc:`grdinfo`

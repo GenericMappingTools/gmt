@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: minmax.c will read ascii or binary tables and report the
+ * Brief synopsis: gmtinfo.c will read ascii or binary tables and report the
  * extreme values for all columns
  *
  * Author:	Paul Wessel
@@ -24,9 +24,9 @@
  * Version:	 API
  */
 
-#define THIS_MODULE_NAME	"minmax"
+#define THIS_MODULE_NAME	"gmtinfo"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Find extreme values in data tables"
+#define THIS_MODULE_PURPOSE	"Get information about data tables"
 
 #include "gmt_dev.h"
 
@@ -52,6 +52,12 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	struct C {	/* -C */
 		bool active;
 	} C;
+	struct D {	/* -D[dx[/dy[/<dz>..]]] */
+		bool active;
+		unsigned int ncol;
+		unsigned int mode;	/* 0 means center, 1 means use dx granularity */
+		double inc[GMT_MAX_COLUMNS];
+	} D;
 	struct E {	/* -E<L|l|H|h><col> */
 		bool active;
 		bool abs;
@@ -85,7 +91,7 @@ int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col
 	return (k);	/* This is the position in text that we should start reporting from */
 }
 
-void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+void *New_gmtinfo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MINMAX_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct MINMAX_CTRL);
@@ -95,16 +101,16 @@ void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-void Free_minmax_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
+void Free_gmtinfo_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free (GMT, C);
 }
 
-int GMT_minmax_usage (struct GMTAPI_CTRL *API, int level)
+int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtinfo [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -114,6 +120,8 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Select reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format the min and max into separate columns; -o may be used to limit output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Modifies results obtained by -I by shifting the region to better align with\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the data center.  Optionally, append granularity for this shift [exact].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   means we operate instead on the absolute values of the data.\n");
@@ -138,9 +146,9 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options)
 {
-	/* This parses the options provided to minmax and sets parameters in CTRL.
+	/* This parses the options provided to gmtinfo and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
@@ -180,6 +188,14 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Column output */
 				Ctrl->C.active = true;
+				break;
+			case 'D':	/* Region adjustment Granularity */
+				Ctrl->D.active = true;
+				if (opt->arg[0]) {
+					Ctrl->D.ncol = GMT_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS);
+					Ctrl->D.mode = 1;
+					GMT_check_lattice (GMT, Ctrl->D.inc, NULL, &Ctrl->D.active);
+				}
 				break;
 			case 'E':	/* Extrema reporting */
 				Ctrl->E.active = true;
@@ -243,6 +259,11 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 		Ctrl->I.inc[GMT_Y] = Ctrl->I.inc[GMT_X];
 		Ctrl->I.ncol = 2;
 	}
+	if (Ctrl->D.active && Ctrl->D.ncol == 1) {		/* Special case of dy = dx if not given */
+		Ctrl->D.inc[GMT_Y] = Ctrl->D.inc[GMT_X];
+		Ctrl->D.ncol = 2;
+	}
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->I.active, "Syntax error: -D requires -I\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.active && Ctrl->I.ncol < 2, "Syntax error: -Ip requires -C\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->T.active, "Syntax error: Only one of -I and -T can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 , "Syntax error -T option: Must specify a positive increment\n");
@@ -254,9 +275,9 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_minmax_Ctrl (GMT, Ctrl); if (xyzmin) GMT_free (GMT, xyzmin); if (xyzmax) GMT_free (GMT, xyzmax); if (Q) GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_gmtinfo_Ctrl (GMT, Ctrl); if (xyzmin) GMT_free (GMT, xyzmin); if (xyzmax) GMT_free (GMT, xyzmax); if (Q) GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_minmax (void *V_API, int mode, void *args)
+int GMT_gmtinfo (void *V_API, int mode, void *args)
 {
 	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, save_range, done;
@@ -278,20 +299,20 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_minmax_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtinfo_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (options && options->option == GMT_OPT_USAGE) bailout (GMT_minmax_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options && options->option == GMT_OPT_SYNOPSIS) bailout (GMT_minmax_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (options && options->option == GMT_OPT_USAGE) bailout (GMT_gmtinfo_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options && options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtinfo_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_minmax_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_minmax_parse (GMT, Ctrl, options))) Return (error);
+	Ctrl = New_gmtinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_gmtinfo_parse (GMT, Ctrl, options))) Return (error);
 
-	/*---------------------------- This is the minmax main code ----------------------------*/
+	/*---------------------------- This is the gmtinfo main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	give_r_string = (Ctrl->I.active && !Ctrl->C.active);
@@ -376,13 +397,25 @@ int GMT_minmax (void *V_API, int mode, void *args)
 					west  = xyzmin[GMT_X];	east  = xyzmax[GMT_X];
 					south = xyzmin[GMT_Y];	north = xyzmax[GMT_Y];
 				}
-				else {
+				else { /* Round off to nearest inc */
 					west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
 					east  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
 					south = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
 					north = (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					if (Ctrl->D.active) {	/* Center the selected region * better */
+						double off = 0.5 * (xyzmin[GMT_X] + xyzmax[GMT_X] - west - east);
+						if (Ctrl->D.inc[GMT_X] > 0.0) off = rint (off / Ctrl->D.inc[GMT_X]) * Ctrl->D.inc[GMT_X];
+						west += off;	east += off;
+						off = 0.5 * (xyzmin[GMT_Y] + xyzmax[GMT_Y] - south - north);
+						if (Ctrl->D.inc[GMT_Y] > 0.0) off = rint (off / Ctrl->D.inc[GMT_Y]) * Ctrl->D.inc[GMT_Y];
+						south += off;	north += off;
+					}
 				}
-				if (east < west) east += 360.0;
+				if (GMT_is_geographic (GMT, GMT_IN)) {
+					if (east < west) east += 360.0;
+					if (south < -90.0) south = -90.0;
+					if (north > +90.0) north = +90.0;
+				}
 				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting nx/ny */
 					unsigned int sub, add, in_dim[2], out_dim[2];
 					double ww, ee, ss, nn;

@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
-# GMT progs:	filter1d, fitcircle, minmax, project, sample1d
+# GMT progs:	filter1d, fitcircle, gmtinfo, project, sample1d
 # GMT progs:	spectrum1d, trend1d, pshistogram, psxy, pstext
 # Unix progs:	$AWK, cat, echo, head, paste, rm, tail
 #
@@ -38,11 +38,11 @@ pposy=`grep "L2 N Hemisphere" report | cut -f2`
 gmt project  sat.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > sat.pg
 gmt project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
 #
-# The gmt minmax utility will report the minimum and maximum values for all columns. 
+# The gmtinfo utility will report the minimum and maximum values for all columns. 
 # We use this information first with a large -I value to find the appropriate -R
 # to use to plot the .pg data. 
 #
-R=`cat sat.pg ship.pg | gmt minmax -I100/25`
+R=`cat sat.pg ship.pg | gmt info -I100/25`
 gmt psxy $R -UL/-1.75i/-1.25i/"Example 3a in Cookbook" -BWeSn \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
 	-JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > example_03a.ps
@@ -143,7 +143,7 @@ gmt trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
 gmt psxy $R -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
 	-BWeSn -UL/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > example_03d.ps
-R=`gmt minmax samp_ship.xw -I100/1.1`
+R=`gmt info samp_ship.xw -I100/1.1`
 gmt psxy $R -JX8i/1.1i -O -Y4.25i -Bxf100 -Bya0.5f0.1+l"Weight" -BWesn -Sp0.03i \
 	samp_ship.xw >> example_03d.ps
 #
@@ -157,7 +157,7 @@ gmt trend1d -Fxrw -N2r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
 #
 # We plot these to see how they look:
 #
-R=`cat samp2_sat.pg samp2_ship.pg | gmt minmax -I100/25`
+R=`cat samp2_sat.pg samp2_ship.pg | gmt info -I100/25`
 gmt psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick \
 	-Bxa500f100+l"Distance along great circle" -Bya50f25+l"Gravity anomaly (mGal)" \
 	-BWeSn -UL/-1.75i/-1.25i/"Example 3e in Cookbook" samp2_sat.pg > example_03e.ps

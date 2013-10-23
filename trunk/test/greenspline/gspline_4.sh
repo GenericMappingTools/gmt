@@ -30,7 +30,7 @@ while [ $k -lt 22 ]; do
 	gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp300/39:FgrayB- -Wthin >> $ps
 	k=`expr $k + 1`
 done
-#gmt minmax -M total_dump
+#gmt info -M total_dump
 echo "12 6 Volume exceeding 10% UO@-2@- concentration" | gmt pstext -R$R2D/$Z -JX -JZ -p$view -F+jLT+f16p -O -K -Z10 -Dj0.1i/0.1i >> $ps
 gmt psxyz -R -JX -JZ -p$view -O -Wthin << EOF >> $ps
 >

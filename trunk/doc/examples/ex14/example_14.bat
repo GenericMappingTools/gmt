@@ -3,7 +3,7 @@ REM
 REM		$Id$
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
-REM GMT progs:	gmtset, blockmean, grdcontour, grdtrack, grdtrend, minmax, project, pstext
+REM GMT progs:	gmtset, blockmean, grdcontour, grdtrack, grdtrend, gmtinfo, project, pstext
 REM GMT progs:	psbasemap, psxy, surface
 REM DOS calls:	del
 REM
@@ -30,8 +30,8 @@ gmt psxy -R -J track -Wthick,. -O -K >> %ps%
 REM Sample along diagonal
 gmt grdtrack track -Gdata.nc -o2,3 > data.d
 gmt grdtrack track -Gtrend.nc -o2,3 > trend.d
-REM gmt minmax data.d trend.d -I0.5/25
-REM Use result of gmt minmax manually in -R below:
+REM gmt info data.d trend.d -I0.5/25
+REM Use result of gmtinfo manually in -R below:
 gmt psxy -R0/10/775/1050 -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i -Y-1.9i -Bx1 -By50 -BWSne >> %ps%
 gmt psxy -R -J trend.d -Wthinner,- -O >> %ps%
 del mean.xyz

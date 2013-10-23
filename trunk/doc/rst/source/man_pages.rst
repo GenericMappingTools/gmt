@@ -24,6 +24,7 @@ Core modules
    gmtconvert
    gmtdefaults
    gmtget
+   gmtinfo
    gmtlogo
    gmtmath
    gmtselect
@@ -65,7 +66,6 @@ Core modules
    kml2gmt
    makecpt
    mapproject
-   minmax
    nearneighbor
    project
    ps2raster

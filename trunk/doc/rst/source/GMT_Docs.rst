@@ -253,11 +253,6 @@ promoted (and possibly renamed) from earlier supplements:
     A :doc:`psxy` -like tool to produce KML overlays for Google Earth. Previously
     found in the misc supplement.
 
-:doc:`gmtsimplify`
-    A line-reduction tool for coastlines and similar lines. Previously found
-    in the misc supplement under the name gmtdp (this name is recognized when
-    GMT is running in compatibility mode).
-
 :doc:`gmtconnect`
     Connect individual lines whose end points match within given tolerance.
     Previously known as gmtstitch in the misc supplement (this name is recognized
@@ -266,6 +261,21 @@ promoted (and possibly renamed) from earlier supplements:
 :doc:`gmtget`
     Return the values of the specified GMT defaults.  Previously only
     implemented as a shell script and thus not available on all platforms.
+
+:doc:`gmtinfo`
+    Report information about data tables. Previously known by the name minmax
+    (this name is still recognized when GMT is running in compatibility mode).
+ 
+:doc:`gmtsimplify`
+    A line-reduction tool for coastlines and similar lines. Previously found
+    in the misc supplement under the name gmtdp (this name is recognized when
+    GMT is running in compatibility mode).
+
+:doc:`gmtspatial`
+    Perform various geospatial operations on lines and polygons.
+
+:doc:`gmtvector`
+    Perform basic vector manipulation in 2-D and 3-D.
 
 :doc:`gmtwhich`
     Return the full path to specified data files.
@@ -277,12 +287,6 @@ promoted (and possibly renamed) from earlier supplements:
 :doc:`kml2gmt`
     Extract GMT data tables from Google Earth KML files.  Previously
     found in the misc supplement.
-
-:doc:`gmtspatial`
-    Perform various geospatial operations on lines and polygons.
-
-:doc:`gmtvector`
-    Perform basic vector manipulation in 2-D and 3-D.
 
 :doc:`sph2grd`
     Compute grid from list of spherical harmonic coefficients [We will add its
@@ -510,6 +514,13 @@ Finally, here is a list of numerous enhancements to individual programs:
    subset of records (**-E**) and support for a list of search strings
    via **-S+f**\ *patternfile*.
 
+*  :doc:`gmtinfo` has new option **-A** to
+   select what group to report on (all input, per file, or per segment).
+   Also, use **-If** to report an extended region optimized for fastest results in FFTs.
+   and **-Is** to report an extended region optimized for fastest results in :doc:`surface`.
+   Finally, new option **-D**\ [*inc*] to align regions found via **-I** with the center
+   of the data.
+
 *  :doc:`gmtmath` with **-N**\ *ncol* and input
    files will add extra blank columns, if needed.  A new option **-E**
    sets the minimum eigenvalue used by operators LSQFIT and SVDFIT.
@@ -623,11 +634,6 @@ Finally, here is a list of numerous enhancements to individual programs:
    for inverse conversions. Also, we have extended **-A** to accept
    **-A**\ **o**\ \| \ **O** to compute line orientations (-90/90).
    In **-G**, prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.
-
-*  :doc:`minmax` has new option **-A** to
-   select what group to report on (all input, per file, or per segment).
-   Also, use **-If** to report an extended region optimized for fastest results in FFTs.
-   and **-Is** to report an extended region optimized for fastest results in :doc:`surface`.
 
 *  :doc:`project` has added **-G**...[+] so
    if + is appended we get a segment header with information about the
@@ -1480,6 +1486,8 @@ listing sorted by program purpose, see Section `GMT quick reference`_.
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtget`         | Retrieve selected parameters in current ``gmt.conf`` file           |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtinfo`        | Get information about table data files                              |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtmath`        | Mathematical operations on table data                               |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtselect`      | Select subsets of table data based on multiple spatial criteria     |
@@ -1553,8 +1561,6 @@ listing sorted by program purpose, see Section `GMT quick reference`_.
 | :doc:`makecpt`        | Make color palette tables                                           |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`mapproject`     | Transformation of coordinate systems for table data                 |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`minmax`         | Report extreme values in table data files                           |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`nearneighbor`   | Nearest-neighbor gridding scheme                                    |
 +-----------------------+---------------------------------------------------------------------+
@@ -1710,11 +1716,11 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtget`         | Retrieve selected parameters in current file                        |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtinfo`        | Get information about table data files                              |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtset`         | Change selected parameters in current file                          |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdinfo`        | Get information about grid files                                    |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`minmax`         | Report extreme values in table data files                           |
 +-----------------------+---------------------------------------------------------------------+
 |                       | *Mathematical Operations on Tables or Grids*                        |
 +-----------------------+---------------------------------------------------------------------+

@@ -77,6 +77,7 @@
 
 extern int gmt_geo_C_format (struct GMT_CTRL *GMT);
 extern void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
+unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value);
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -122,8 +123,6 @@ enum history_mode {
 };
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-
-unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value);
 
 void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 {
@@ -695,7 +694,11 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 		 	GMT_message (GMT, "\t-A Place limits on coastline features from the GSHHG data base.\n");
 			GMT_message (GMT, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
 			GMT_message (GMT, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
-			GMT_message (GMT, "\t   Append +a to exclude Antarctica (data south of %dS) [use all].\n", abs(GSHHS_ANTARCTICA_LIMIT));
+			GMT_message (GMT, "\t   Append +as to skip Antarctica (all data south of %dS) [use all].\n", abs(GSHHS_ANTARCTICA_LIMIT));
+#ifdef NEW_GSHHG
+			GMT_message (GMT, "\t   Append +ag to use ice grounding line for Antarctica coastline [Default].\n");
+			GMT_message (GMT, "\t   Append +ai to use ice/water front for Antarctica coastline.\n");
+#endif
 			GMT_message (GMT, "\t   Append +r to only get riverlakes from level 2, or +l to only get lakes [both].\n");
 			GMT_message (GMT, "\t   Append +p<percent> to exclude features whose size is < <percent>%% of the full-resolution feature [use all].\n");
 			break;
@@ -2141,7 +2144,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 	return (GMT_NOERROR);
 }
 
-int gmt_parse_dash_option (struct GMT_CTRL *GMT, char *text)
+int GMT_parse_dash_option (struct GMT_CTRL *GMT, char *text)
 {	/* parse any --PARAM[=value] arguments */
 	int n;
 	char *this_c = NULL, message[GMT_LEN128] = {""};
@@ -9607,7 +9610,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case '-':
-			error += gmt_parse_dash_option (GMT, item);
+			error += GMT_parse_dash_option (GMT, item);
 			break;
 
 		case '>':	/* Registered output file; nothing to do here */

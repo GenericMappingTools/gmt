@@ -34,9 +34,10 @@
 
 #define GMT_PROG_OPTIONS "-:RVbfghinrs" GMT_OPT("F")
 
-int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
-int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
-void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);	
+EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
+EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
+EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);	
+EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile);
 
 #define GRDMATH_ARG_IS_OPERATOR		 0
 #define GRDMATH_ARG_IS_FILE		-1
@@ -3005,7 +3006,7 @@ void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	start = strip + info->G->header->wesn[YLO];
 	stop  = strip - info->G->header->wesn[YHI];
 
-	GMT_row_padloop (GMT, info->G, row, (unsigned int)node) {
+	GMT_row_padloop (GMT, info->G, row, node) {
 		from_start = start - info->d_grd_y[row];
 		if (stack[last]->factor == 0.0) w_y = 1.0;	/* No taper in y-range */
 		else if (from_start > 0.0) w_y = 0.5 * (1.0 + cos (from_start * scale));
@@ -3345,7 +3346,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 int GMT_grdmath (void *V_API, int mode, void *args)
 {
 	int k, op = 0, new_stack = -1, rowx, colx, status, start, error = 0;
-	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack, n_macros;
+	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack;
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	bool subset;
 	char *in_file = NULL, *label = NULL;
@@ -3365,7 +3366,6 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 	struct GMT_HASH localhashnode[GRDMATH_N_OPERATORS];
 	struct GRDMATH_INFO info;
-	struct MATH_MACRO *M = NULL;
 	struct GRDMATH_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *opt = NULL, *list = NULL, *ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -3384,6 +3384,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (EXIT_FAILURE);
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return1 (API->error);
 	if ((error = GMT_grdmath_parse (GMT, Ctrl, options))) Return1 (error);
@@ -3395,12 +3396,12 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	GMT_memset (recall, GRDMATH_STORE_SIZE, struct GRDMATH_STORE *);
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STACK);
-	n_macros = gmt_load_macros (GMT, "grdmath.macros", &M);	/* Load in any macros */
-	if (n_macros) GMT_Report (API, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
 	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	
-	/* Internally replace the = [file] sequence with an output option */
+	/* Internally replace the = file sequence with an output option ->file*/
 
+	GMT_Destroy_Options (API, &options);
+	options = list;	list = NULL;
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
 			if (opt->next) {
@@ -3412,20 +3413,11 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				Return (EXIT_FAILURE);
 			}
 		}
-		else if (opt->option == GMT_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMT_NOTSET) {
-			/* Add in the replacement commands from the macro */
-			for (kk = 0; kk < M[k].n_arg; kk++) {
-				ptr = GMT_Make_Option (API, GMT_OPT_INFILE, M[k].arg[kk]);
-				if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return (API->error);
-			}
-			continue;
-		}
 		else
 		 	ptr = GMT_Make_Option (API, opt->option, opt->arg);
 
 		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return (API->error);
 	}
-	gmt_free_macros (GMT, n_macros, &M);
 
 	GMT_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS);
 

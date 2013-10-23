@@ -66,7 +66,7 @@
 /* Control structure for pscoast */
 
 struct PSCOAST_CTRL {
-	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
+	struct A {	/* -A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>] */
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;

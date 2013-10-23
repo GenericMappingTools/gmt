@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Plot a time-series
-# GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
+# GMT progs:	gmtset, gmtconvert, gmtinfo, psbasemap, psxy 
 # Unix progs:	cut, echo
 #
 ps=example_21.ps
@@ -15,7 +15,7 @@ gmt gmtset FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
 
 # Pull out a suitable region string in yyy-mm-dd format
 
-gmt minmax -fT -I50 -C RHAT_price.csv > RHAT.info
+gmt info -fT -I50 -C RHAT_price.csv > RHAT.info
 w=`cut -f1 RHAT.info`
 e=`cut -f2 RHAT.info`
 s=`cut -f3 RHAT.info`
@@ -36,7 +36,7 @@ gmt psxy -R -J -Gyellow -O -K RHAT.env >> $ps
 gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K >> $ps
 
 # Draw P Wessel's purchase price as line and label it.  Note we temporary switch
-# back to default yyyy-mm-dd format since that is what gmt minmax gave us.
+# back to default yyyy-mm-dd format since that is what gmt info gave us.
 
 echo "05-May-00	0" > RHAT.pw
 echo "05-May-00	300" >> RHAT.pw

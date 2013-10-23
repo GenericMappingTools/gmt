@@ -1,20 +1,20 @@
-.. index:: ! minmax
+.. index:: ! gmtinfo
 
-******
-minmax
-******
+*******
+gmtinfo
+*******
 
 .. only:: not man
 
-    minmax - Find extreme values in data tables
+    gmtinfo - Get information about data tables
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**minmax** [ *table* ] [ **-A**\ **a**\ \|\ **f**\ \|\ **s** ] [ **-C** ]
-[ **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
+**gmtinfo** [ *table* ] [ **-A**\ **a**\ \|\ **f**\ \|\ **s** ] [ **-C** ]
+[ **-D**\ [*dx*\ [/*dy*\ ]] ] [ **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
 [ **-I**\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
 [ **-S**\ [**x**\ ][**y**] ] [ **-T**\ *dz*\ [/*col*] ]
 [ |SYN_OPT-V| ]
@@ -32,10 +32,10 @@ Synopsis
 Description
 -----------
 
-**minmax** reads its standard input [or from files] and finds the
+**gmtinfo** reads its standard input [or from files] and finds the
 extreme values in each of the columns. It recognizes NaNs and will print
 warnings if the number of columns vary from record to record. As an
-option, **minmax** will find the extent of the first *n* columns rounded
+option, **gmtinfo** will find the extent of the first *n* columns rounded
 up and down to the nearest multiple of the supplied increments. By
 default, this output will be in the form **-R**\ *w/e/s/n* which can be
 used directly in the command line for other programs (hence only *dx*
@@ -63,6 +63,10 @@ Optional Arguments
     Report the min/max values per column in separate columns [Default
     uses <min/max> format]. When used, users may also use **-o** to
     limit which output columns should be reported [all].
+**-D**
+    Modifies results obtained by **-I** by shifting the region to better
+    align with the center of the data.  Optionally, append granularity
+    for this shift [Default performs an exact shift].
 **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col*
     Returns the record whose column *col* contains the minimum
     (**l**) or maximum (**h**) value. Upper case
@@ -133,7 +137,7 @@ To find the extreme values in the file ship\_gravity.xygd:
 
   ::
 
-    minmax ship_gravity.xygd
+    gmt info ship_gravity.xygd
 
 Output should look like
 
@@ -142,11 +146,12 @@ Output should look like
     ship_gravity.xygd: N = 6992 <326.125/334.684> <-28.0711/-8.6837> <-47.7/177.6> <0.6/3544.9>
 
 To find the extreme values in the file track.xy to the nearest 5 units
-and use this region to draw a line using psxy, run
+but shifted to within 1 unit of the data center, and use this region to
+draw a line using psxy, run
 
   ::
 
-    gmt psxy `minmax -I5 track.xy` track.xy -Jx1 -B5 -P > track.ps
+    gmt psxy `gmt info -I5 -D1 track.xy` track.xy -Jx1 -B5 -P > track.ps
 
 To find the min and max values for each of the first 4 columns, but
 rounded to integers, and return the result individually for each data
@@ -154,7 +159,7 @@ file, use
 
   ::
 
-    gmt minmax profile_*.txt -C -I1/1/1/1
+    gmt info profile_*.txt -C -I1/1/1/1
 
 Bugs
 ----

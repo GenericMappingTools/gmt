@@ -227,5 +227,5 @@ See Also
 --------
 
 :doc:`gmt`,
-:doc:`gmtselect`,
-:doc:`minmax`
+:doc:`gmtinfo`,
+:doc:`gmtselect`
