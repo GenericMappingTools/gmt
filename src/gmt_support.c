@@ -1815,10 +1815,14 @@ void GMT_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P)
 	for (i = 0; i < P->n_colors; i++) {
 		GMT_free_range (GMT, &P->range[i]);
 	}
-	for (i = 0; i < 3; i++) if (P->patch[i].fill) GMT_free (GMT, P->patch[i].fill);
+	for (i = 0; i < 3; i++)
+		if (P->patch[i].fill)
+			GMT_free (GMT, P->patch[i].fill);
 	if (P->range) GMT_free (GMT, P->range);
 	/* Use free() to free the headers since they were allocated with strdup */
-	for (i = 0; i < P->n_headers; i++) if (P->header[i]) free (P->header[i]);
+	for (i = 0; i < P->n_headers; i++)
+		if (P->header[i])
+			free (P->header[i]);
 	P->n_headers = P->n_colors = 0;
 	if (P->header) GMT_free (GMT, P->header);
 }
