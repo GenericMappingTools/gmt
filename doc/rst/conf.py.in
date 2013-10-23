@@ -229,7 +229,6 @@ man_pages = [
 ('blockmean', 'blockmean', 'Block average (x, y, z) data tables by L2 norm', '', 1),
 ('blockmedian', 'blockmedian', 'Block average (x, y, z) data tables by L1 norm', '', 1),
 ('blockmode', 'blockmode', 'Block average (x, y, z) data tables by mode estimation', '', 1),
-('colmath', 'colmath', 'Do mathematics on columns from data tables', '', 1),
 ('filter1d', 'filter1d', 'Do time domain filtering of 1-D data tables', '', 1),
 ('fitcircle', 'fitcircle', 'find mean position and pole of best-fit great [or small] circle to points on a sphere.', '', 1),
 ('gmt_shell_functions.sh', 'gmt_shell_functions.sh', 'Practical functions to be used in GMT bourne shell scripts', '', 1),
