@@ -1172,13 +1172,13 @@ alternative modes.
 
 #. Temporary mode 
 
-The permanent mode makes use of the free executable program :doc:`EditPath
-<http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml>`
+The permanent mode makes use of the free executable program `EditPath
+<http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml>`_
 to change the user path in the registry. It's called permanent because the changes
 remains until ... next change.
 Off course the editpath.exe binary must be in your system's path as well.
 WARNING: The path change will not be visible on the shell cmd where it was executed.
-    For the change to be active you will need to open a new cmd window.
+For the change to be active you will need to open a new cmd window.
 
 The second mode is temporary because the path to the selected GMT binary dir is
 prepended to previous path via a shell command line. This modification disappears
@@ -1190,7 +1190,7 @@ For further details the user should read the entire help section at the header o
 The ``gmtswitch.bat`` solution, however, has the drawback that the batch file must be located
 elsewhere and in a directory that is on the user's PATH, otherwise it wont be located after
 first use unless the other GMT bin directory has a similar batch file. A better solution is to install the 
-:doc:`Windows console enhancement <http://sourceforge.net/projects/console>`
+`Windows console enhancement <http://sourceforge.net/projects/console>`_
 that includes multiple tabs and configure the different tabs to start the different GMT versions.
 All it takes is in the Tab setting to call a batch that modifies the PATH locally. That PATH
 modifying batch will have a single line with something like:
