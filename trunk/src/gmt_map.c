@@ -6513,8 +6513,8 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 		if (GMT->common.n.truncate) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_grd_project: Output grid clipped to input grid extrema\n");
 			GMT_grd_loop (GMT, O, row_out, col_out, ij_out) {
-				if (O->data[ij_out] < I->header->z_min) O->data[ij_out] = I->header->z_min;
-				else if (O->data[ij_out] > I->header->z_max) O->data[ij_out] = I->header->z_max;
+				if (O->data[ij_out] < I->header->z_min) O->data[ij_out] = (float)I->header->z_min;
+				else if (O->data[ij_out] > I->header->z_max) O->data[ij_out] = (float)I->header->z_max;
 			}
 			O->header->z_min = I->header->z_min;	O->header->z_max = I->header->z_max;
 		}
