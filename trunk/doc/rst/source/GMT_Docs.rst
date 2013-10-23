@@ -1161,8 +1161,44 @@ numerical menu and prompt you to choose one, whereas :doc:`gmtswitch`
 *version* will immediately switch to that version (*version* must be a
 piece of unique text making up the full path to a version, e.g., 4.5.9).
 If you use **bash**, **tcsh**, or **csh** you may have to type ``hash -r`` or
-``rehash`` to initiate the path changes. On Windows, the process is similar
-[Joaquim, please elaborate].
+``rehash`` to initiate the path changes.
+
+On Windows, the process is somewhat similar. The GMT bin directory has one batch file
+``gmtswitch.bat`` that works by changing the Windows PATH variable so that the BIN
+directory of the preferred version always comes first. To do that the batch works in two
+alternative modes.
+
+#. Permanent mode
+
+#. Temporary mode 
+
+The permanent mode makes use of the free executable program :doc:`EditPath
+<http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml>`
+to change the user path in the registry. It's called permanent because the changes
+remains until ... next change.
+Off course the editpath.exe binary must be in your system's path as well.
+WARNING: The path change will not be visible on the shell cmd where it was executed.
+    For the change to be active you will need to open a new cmd window.
+
+The second mode is temporary because the path to the selected GMT binary dir is
+prepended to previous path via a shell command line. This modification disappears
+when the shell cmd window where it was executes is deleted.
+
+For further details the user should read the entire help section at the header of the
+``gmtswitch.bat``.
+
+The ``gmtswitch.bat`` solution, however, has the drawback that the batch file must be located
+elsewhere and in a directory that is on the user's PATH, otherwise it wont be located after
+first use unless the other GMT bin directory has a similar batch file. A better solution is to install the 
+:doc:`Windows console enhancement <http://sourceforge.net/projects/console>`
+that includes multiple tabs and configure the different tabs to start the different GMT versions.
+All it takes is in the Tab setting to call a batch that modifies the PATH locally. That PATH
+modifying batch will have a single line with something like:
+
+   ::
+
+    set path=C:\programs\gmt5\bin;%PATH%
+
 
 Version selection with helper function
 --------------------------------------
