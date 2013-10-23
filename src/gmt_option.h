@@ -62,10 +62,11 @@
 
 #define GMT_FFT_OPT "[f|q|s|<nx>/<ny>][+a|d|l][+e|m|n][+t<width>][+w<suffix>][+z[p]]"
 
-/* These are the 4 named option codes */
+/* These are the 5 named option codes */
 enum GMT_enum_opt {
 	GMT_OPT_USAGE =		'?',	/* Command-line option for full usage */
 	GMT_OPT_SYNOPSIS = 	'^',	/* Command-line option for synopsis */
+	GMT_OPT_PARAMETER = 	'-',	/* Command-line option for GMT defaults parameter */
 	GMT_OPT_INFILE = 	'<',	/* Command-line option for input file */
 	GMT_OPT_OUTFILE = 	'>'};	/* Command-line option for output file */
 

@@ -2,6 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-10-23	pwessel
+	* gmtinfo.c:		The new name of minmax.c, the latter will be honored
+				when GMT compatibility mode is 4.
+
+2013-10-22	pwessel
+	* minmax.c:		Added -D to adjust region found with -I
+	* makecpt.c:		Better reporting of gaps or overlaps in CPTs
+
 2013-10-05	pwessel
 	* greenspline.c:	Needed -f in order to select -f0T input, plus it made assumptions
 				about lon,lat despite not being selected.

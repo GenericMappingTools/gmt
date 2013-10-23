@@ -5112,7 +5112,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	struct GMTAPI_DATA_OBJECT O;
 
 	/* When this functions is called we have already registered the output destination.  This will normally
-	 * prevent us from register the data set separately in order to call GMT_minmax.  We must temporarily
+	 * prevent us from register the data set separately in order to call GMT_gmtinfo.  We must temporarily
 	 * unregister the output, do our thing, then reregister again. */
 
 	n_reg = GMTAPI_count_objects (GMT->parent, GMT_IS_DATASET, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
@@ -5122,7 +5122,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		GMTAPI_Unregister_IO (GMT->parent, object_ID, GMT_OUT);
 	}
 
-	/* Determine w/e/s/n via GMT_minmax */
+	/* Determine w/e/s/n via GMT_gmtinfo */
 
 	/* Create option list, register D as input source via ref */
 	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D)) == GMT_NOTSET) {
@@ -5138,7 +5138,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
-	if (GMT_Call_Module (GMT->parent, "minmax", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Get the extent via minmax */
+	if (GMT_Call_Module (GMT->parent, "gmtinfo", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Get the extent via gmtinfo */
 		return (GMT->parent->error);
 	}
 	if ((M = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {

@@ -17,5 +17,5 @@ gmt grdreformat lixo.bi=bi lixo.nc
 gmt grdmath lixo.nc lixo.bi=bi SUB = lixo_dif.nc
 gmt grd2xyz lixo_dif.nc -ZTLa >> $log
 
-res=`gmt minmax -C $log`
+res=`gmt info -C $log`
 echo ${res[0]} ${res[1]} | $AWK '{if($1 != 0 || $2 != 0) print 1}' > fail

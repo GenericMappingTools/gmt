@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring
-# GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
+# GMT progs:	makecpt, gmtinfo, pscontour, pstext, psxy, triangulate
 # Unix progs:	$AWK, echo, rm
 #
 # First draw network and label the nodes
@@ -20,10 +20,10 @@ gmt psxy -R -J -B2f1 -BeSNw net.xy -Wthinner -O -K -X3.25i >> $ps
 gmt psxy -R -J -O -K table_5.11 -Sc0.03i -Gblack >> $ps
 gmt pstext table_5.11 -R -J -F+f6p+jLM -O -K -Gwhite -W -C0.01i -D0.08i/0i -N >> $ps
 #
-# Then contour the data and draw triangles using dashed pen; use "gmt minmax" and "gmt makecpt" to make a
+# Then contour the data and draw triangles using dashed pen; use "gmt gmtinfo" and "gmt makecpt" to make a
 # color palette (.cpt) file
 #
-T=`gmt minmax -T25/2 table_5.11`
+T=`gmt info -T25/2 table_5.11`
 gmt makecpt -Cjet $T > topo.cpt
 gmt pscontour -R -J table_5.11 -B2f1 -BWSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i \
 	-O -K >> $ps

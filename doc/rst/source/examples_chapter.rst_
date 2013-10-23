@@ -139,7 +139,7 @@ Creating GMT Graphics
     and choose the L\ :math:`_2` estimates of best pole. We project the data
     using :doc:`project` to find out what their
     ranges are in the projected coordinate. The
-    :doc:`minmax` utility will report the minimum
+    :doc:`gmtinfo` utility will report the minimum
     and maximum values for multi-column ASCII tables. Use this information
     to select the range of the projected distance coordinate they have in
     common. The script prompts you for that information after reporting the
@@ -398,7 +398,7 @@ Creating GMT Graphics
     contour map and image directly from the raw data. Thus, in this example
     we do not actually make grid files but still are able to contour and
     image the data. We use a color palette table ``topo.cpt`` (created via
-    :doc:`minmax` and
+    :doc:`gmtinfo` and
     :doc:`makecpt`). The script becomes:
 
     .. literalinclude:: /_verbatim/example_12.txt

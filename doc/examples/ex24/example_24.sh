@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Extract subsets of data based on geospatial criteria
-# GMT progs:	gmtselect, pscoast, psxy, minmax
+# GMT progs:	gmtselect, pscoast, psxy, gmtinfo
 # Unix progs:	echo, cat, awk
 #
 # Highlight oceanic earthquakes within 3000 km of Hobart and > 1000 km from dateline
@@ -14,7 +14,7 @@ cat << END > dateline.d
 180	0
 180	-90
 END
-R=`gmt minmax -I10 oz_quakes.d`
+R=`gmt info -I10 oz_quakes.d`
 gmt pscoast $R -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn > $ps
 gmt psxy -R -J -O -K oz_quakes.d -Sc0.05i -Gred >> $ps
 gmt gmtselect oz_quakes.d -L1000k/dateline.d -Nk/s -C3000k/point.d -fg -R -Il \

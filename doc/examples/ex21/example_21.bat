@@ -5,7 +5,7 @@ REM             $Id$
 REM
 REM Purpose:    Plot a time-series
 REM
-REM GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
+REM GMT progs:	gmtset, gmtconvert, gmtinfo, psbasemap, psxy 
 REM DOS calls:  del
 REM
 echo GMT EXAMPLE 21
@@ -34,7 +34,7 @@ gmt psxy -R -J -Gyellow -O -K RHAT.env >> %ps%
 gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K >> %ps%
 
 REM Draw P Wessel's purchase price as line and label it.  Note we temporary switch
-REM back to default yyyy-mm-dd format since that is what gmt minmax gave us.
+REM back to default yyyy-mm-dd format since that is what gmt info gave us.
 
 echo 05-May-00 0 > RHAT.pw
 echo 05-May-00 300 >> RHAT.pw

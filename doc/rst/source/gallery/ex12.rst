@@ -13,7 +13,7 @@ values, and call :doc:`pscontour </pscontour>` to make a
 contour map and image directly from the raw data. Thus, in this example
 we do not actually make grid files but still are able to contour and
 image the data. We use a color palette table ``topo.cpt`` (created via
-:doc:`minmax </minmax>` and :doc:`makecpt </makecpt>`). The script becomes:
+:doc:`gmtinfo </gmtinfo>` and :doc:`makecpt </makecpt>`). The script becomes:
 
 .. literalinclude:: /_verbatim/example_12.txt
    :language: bash

@@ -3,7 +3,7 @@ REM
 REM		$Id$
 REM
 REM Purpose:	Gridding and clipping when data are missing
-REM GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax
+REM GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo
 REM GMT progs:	nearneighbor, pscoast, psmask, pstext, surface
 REM DOS calls:	echo, del
 REM

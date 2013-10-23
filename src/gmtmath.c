@@ -40,6 +40,7 @@
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
 EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);
+EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile);
 	
 #define GMTMATH_ARG_IS_OPERATOR	 0
 #define GMTMATH_ARG_IS_FILE	-1
@@ -478,16 +479,17 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (opt->arg[0] == '=' && opt->arg[1] == 0) {
+				if (opt->arg[0] == '=' && opt->arg[1] == 0) {	/* No it was an = [outfile] sequence */
 					missing_equal = false;
+					opt->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
 					if (opt->next && opt->next->option == GMT_OPT_INFILE) {
 						Ctrl->Out.active = true;
 						if (opt->next->arg) Ctrl->Out.file = strdup (opt->next->arg);
+						opt->next->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
 					}
 				}
 				n_files++;
 				break;
-
 			case '#':	/* Skip numbers */
 				break;
 				
@@ -3328,7 +3330,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false;
 	bool read_stdin = false, t_check_required = true, touched_t_col = false, done;
 	uint64_t use_t_col = 0, row, n_records, n_rows = 0, n_columns = 0, seg;
-	unsigned int n_macros;
 	
 	uint64_t dim[4] = {1, 1, 0, 0};
 
@@ -3345,9 +3346,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	struct GMT_DATASET *T_in = NULL, *Template = NULL, *Time = NULL, *R = NULL;
 	struct GMT_DATATABLE *rhs = NULL, *D = NULL, *I = NULL;
 	struct GMT_HASH localhashnode[GMTMATH_N_OPERATORS];
-	struct GMT_OPTION *opt = NULL, *list = NULL, *ptr = NULL;
+	struct GMT_OPTION *opt = NULL, *list = NULL;
 	struct GMTMATH_INFO info;
-	struct MATH_MACRO *M = NULL;
 	struct GMTMATH_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -3365,54 +3365,20 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return1 (API->error);
+	if ((list = gmt_substitute_macros (GMT, options, "gmtmath.macros")) == NULL) Return1 (EXIT_FAILURE);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, list)) Return1 (API->error);
 	Ctrl = New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtmath_parse (GMT, Ctrl, options))) Return1 (error);
+	if ((error = GMT_gmtmath_parse (GMT, Ctrl, list))) Return1 (error);
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Perform reverse Polish notation calculations on data tables\n");
 
-	n_macros = gmt_load_macros (GMT, "gmtmath.macros", &M);	/* Load in any macros */
-	if (n_macros) GMT_Report (API, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
-	
 	if (Ctrl->Q.active || Ctrl->S.active) {	/* Turn off table and segment headers in calculator or one-record mode */
 		GMT_set_tableheader (GMT, GMT_OUT, false);
 		GMT_set_segmentheader (GMT, GMT_OUT, false);
 	}
 
-	/* Internally replace the = [file] sequence with a single output option ->file */
-
-	for (i = 0, opt = options; opt; opt = opt->next) {
-		if (opt->option == GMT_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
-			if (opt->next) {	/* opt->next->arg may be NULL if stdout is implied */
-				ptr = GMT_Make_Option (API, GMT_OPT_OUTFILE, opt->next->arg);
-				opt = opt->next;	/* Now we must skip that option */
-			}
-			else	/* Standard output */
-				ptr = GMT_Make_Option (API, GMT_OPT_OUTFILE, NULL);
-		}
-		else if (opt->option == GMT_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMT_NOTSET) {
-			/* Add in the replacement commands from the macro */
-			for (kk = 0; kk < M[k].n_arg; kk++) {
-				ptr = GMT_Make_Option (API, GMT_OPT_INFILE, M[k].arg[kk]);
-				if ((list = GMT_Append_Option (API, ptr, list)) == NULL) Return1 (EXIT_FAILURE);
-			}
-			continue;
-		}
-		else
-			ptr = GMT_Make_Option (API, opt->option, opt->arg);
-
-		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return1 (EXIT_FAILURE);
-		if (ptr->option == GMT_OPT_OUTFILE) i++;
-	}
-	gmt_free_macros (GMT, n_macros, &M);
-
-	if (i != 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: No output destination specified or implied\n");
-		Return1 (EXIT_FAILURE);
-	}
-	
 	GMT_memset (&info, 1, struct GMTMATH_INFO);
 	GMT_memset (recall, GMTMATH_STORE_SIZE, struct GMTMATH_STORED *);
 

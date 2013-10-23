@@ -19,8 +19,8 @@ IGRF=`echo $lon $lat $alt $data | gmt mgd77magref -Fxyz/0`
 tail -n +27 $dia | $AWK '{print $1"T"$2, sqrt($4*$4+$5*$5+$6*$6)}' > zz1.dat
 $AWK -v x=$lon -v y=$lat -v z=$alt '{print x, y, z, $1}' zz1.dat | gmt mgd77magref -Frt/923456 | awk '{print $4, $5}' > zz2.dat 
 # Compute data & model min/max
-m1=(`gmt minmax zz1.dat -C -f0T`)
-m2=(`gmt minmax zz2.dat -C -f0T`)
+m1=(`gmt info zz1.dat -C -f0T`)
+m2=(`gmt info zz2.dat -C -f0T`)
 
 # Compute limits such that both Y axes have the same scale
 max_Y=`echo ${m1[2]} ${m1[3]} ${m2[2]} ${m2[3]} | $AWK '{if (($2-$1) > ($4-$3)) print($2-$1); else print($4-$3)}'`

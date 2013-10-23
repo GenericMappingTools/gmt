@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
-# GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project
+# GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, gmtinfo, project
 # GMT progs:	gmtset, pstext, psbasemap, psxy, surface
 # Unix progs:	rm
 #
@@ -41,7 +41,7 @@ gmt psxy -R -J track -Wthick,. -O -K >> $ps
 
 gmt grdtrack track -Gdata.nc -o2,3 > data.d
 gmt grdtrack track -Gtrend.nc -o2,3 > trend.d
-gmt psxy `gmt minmax data.d trend.d -I0.5/25` -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i -Y-1.9i \
+gmt psxy `gmt info data.d trend.d -I0.5/25` -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i -Y-1.9i \
 	-Bx1 -By50 -BWSne >> $ps
 gmt psxy -R -J trend.d -Wthinner,- -O >> $ps
 

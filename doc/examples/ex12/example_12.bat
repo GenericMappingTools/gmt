@@ -3,7 +3,7 @@ REM
 REM		$Id$
 REM
 REM Purpose:	Illustrates Delaunay triangulation of points, and contouring
-REM GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
+REM GMT progs:	makecpt, gmtinfo, pscontour, pstext, psxy, triangulate
 REM DOS:	echo, del, gawk
 REM Remark:	Differs from UNIX version in that makecpt uses hardwired limits
 REM
@@ -22,7 +22,7 @@ gmt psxy -R -J -B2f1 -BeSNw net.xy -Wthinner -O -K -X3.25i >> %ps%
 gmt psxy -R -J -O -K table_5.11 -Sc0.03i -Gblack >> %ps%
 gmt pstext table_5.11 -R -J -O -K -Gwhite -F+f6p+jLM -W -C0.01i -D0.08i/0i -N >> %ps%
 REM
-REM Then contour the data and draw triangles using dashed pen; use "gmt minmax" and "gmt makecpt" to make a color palette (.cpt) file
+REM Then contour the data and draw triangles using dashed pen; use "gmt gmtinfo" and "gmt makecpt" to make a color palette (.cpt) file
 REM
 gmt makecpt -Cjet -T675/975/25 > topo.cpt
 gmt pscontour -R -J table_5.11 -B2f1 -BWSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i -O -K >> %ps%

@@ -333,7 +333,7 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 {	/* Decode GMT's -A option for coastline levels */
 	int n;
 	char *p = NULL;
-	if (strstr (info, "+a"))  I->antarctica = 1;	/* Skip Antarctica data south of 60S */
+	if (strstr (info, "+a"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP;	/* Skip Antarctica data south of 60S */
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
@@ -483,7 +483,7 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
 		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));
 		if (this_south < is || this_south >= in) continue;
-		if (info->antarctica && this_south < GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
+		if (info->antarctica_mode == GSHHS_ANTARCTICA_SKIP && this_south < GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
 		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;

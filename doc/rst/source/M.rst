@@ -7,4 +7,3 @@ M
 
    makecpt
    mapproject
-   minmax

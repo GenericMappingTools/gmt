@@ -14,6 +14,7 @@ GM
    gmtconvert
    gmtdefaults
    gmtget
+   gmtinfo
    gmtlogo
    gmtmath
    gmtselect
