@@ -1892,7 +1892,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 	 * Note: Memory is allocated for the Dataset except for GMT_IS_REFERENCE.
 	 */
 	
-	int item, first_item = 0, last_item;
+	int item, first_item = 0, last_item, this_item = GMT_NOTSET;
 	bool update = false, allocate = false;
 	size_t n_alloc;
 	uint64_t row, seg;
@@ -1930,6 +1930,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 			if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
 			if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
 		}
+		if (this_item == GMT_NOTSET) this_item = item;	/* First item that worked */
 		switch (S_obj->method) {	/* File, array, stream etc ? */
 			case GMT_IS_FILE:	/* Import all the segments, then count total number of records */
 #ifdef SET_IO_MODE
@@ -2018,8 +2019,8 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 	else {	/* Found one or more tables */
 		if (allocate && T_obj->n_tables < n_alloc) T_obj->table = GMT_memory (API->GMT, T_obj->table, T_obj->n_tables, struct GMT_TEXTTABLE *);
 	}
-	T_obj->geometry = API->object[first_item]->geometry;
-	API->object[first_item]->data = T_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
+	T_obj->geometry = API->object[this_item]->geometry;
+	API->object[this_item]->data = T_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 
 	return (T_obj);		
 }
