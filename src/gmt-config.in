@@ -20,89 +20,86 @@
 # to developers that need to include/link GMT5 resources.
 #--------------------------------------------------------------------*/
 #
-GMT_EXEDIR=`dirname $0`
-CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/include/gmt"
+GMT_EXEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
 CONFIG_DATA=$($GMT_EXEDIR/gmt --show-datadir)
 CONFIG_DEP_LIBS="@NETCDF_LIBRARIES@ @GMT_OPTIONAL_LIBRARIES@"
 CONFIG_GSHHG=$($GMT_EXEDIR/gmt gmtget DIR_GSHHG)
 CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
 CONFIG_PREFIX="@CMAKE_INSTALL_PREFIX@"
-CONFIG_VERSION="@GMT_PACKAGE_VERSION@"
+CONFIG_VERSION="@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
 SIZEOF_VOID_P=@CMAKE_SIZEOF_VOID_P@
 
 if [ -n "@GDAL_LIBRARY@" ]; then
-	CONFIG_GDAL_ENABLED=yes
+  CONFIG_GDAL_ENABLED=yes
 else
-	CONFIG_GDAL_ENABLED=no
+  CONFIG_GDAL_ENABLED=no
 fi
 
 if [ "$SIZEOF_VOID_P" -eq 8 ]; then
-	CONFIG_BITS=64
+  CONFIG_BITS=64
 else
-	CONFIG_BITS=32
+  CONFIG_BITS=32
 fi
 
 usage()
 {
-	cat <<EOF
-Usage: gmt-config [OPTIONS]
-Options:
-	[--bits]
-	[--prefix]
-	[--libs]
-	[--dep-libs]
-	[--cflags]
-	[--datadir]
-	[--gshhg]
-	[--version]
-	[--gdal-enabled]
+  cat <<EOF
+  Usage: gmt-config [OPTIONS]
+  Options:
+  [--bits]
+  [--prefix]
+  [--libs]
+  [--dep-libs]
+  [--cflags]
+  [--datadir]
+  [--gshhg]
+  [--version]
+  [--gdal-enabled]
 EOF
-	exit $1
+  exit $1
 }
 
-if test $# -eq 0; then
-	usage 1 1>&2
-fi
-
-case $1 in
-  --bits)
+for arg in "$@"; do
+  case $arg in
+    --bits)
     echo $CONFIG_BITS
     ;;
 
-  --libs)
+    --libs)
     echo $CONFIG_LIBS
     ;;
 
-  --dep-libs)
+    --dep-libs)
     echo ${CONFIG_DEP_LIBS//;/ }
     ;;
 
-  --cflags)
+    --cflags)
     echo $CONFIG_CFLAGS
     ;;
 
-  --datadir)
+    --datadir)
     echo $CONFIG_DATA
     ;;
 
-  --gshhg)
+    --gshhg)
     echo $CONFIG_GSHHG
     ;;
 
-  --prefix)
+    --prefix)
     echo $CONFIG_PREFIX
     ;;
 
-  --version)
+    --version)
     echo $CONFIG_VERSION
     ;;
 
-  --gdal-enabled)
+    --gdal-enabled)
     echo $CONFIG_GDAL_ENABLED
     ;;
 
-  *)
+    *)
     usage 1 1>&2
     ;;
-
-esac
+  esac
+done
