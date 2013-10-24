@@ -41,8 +41,8 @@ if (GSHHG_PATH AND COPY_GSHHG)
 	install (DIRECTORY ${GSHHG_PATH}/
 		DESTINATION ${GMT_DATADIR}/coast
 		COMPONENT GSHHG)
-	# set installed location
-	set (GSHHG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_DATADIR}/coast)
+	# location must be blank in share/conf/gmt.conf
+	set (GSHHG_INSTALL_PATH)
 	# create coastline.conf which is needed for in-build-dir ctest
 	configure_file (coastline.conf.in coastline.conf @ONLY)
 else (GSHHG_PATH AND COPY_GSHHG)
@@ -55,8 +55,8 @@ if (DCW_PATH AND COPY_DCW)
 	install (DIRECTORY ${DCW_PATH}/
 		DESTINATION ${GMT_DATADIR}/dcw
 		COMPONENT DCW)
-	# set installed location
-	set (DCW_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_DATADIR}/dcw)
+	# location must be blank in share/conf/gmt.conf
+	set (DCW_INSTALL_PATH)
 else (DCW_PATH AND COPY_DCW)
 	# set installed location
 	set (DCW_INSTALL_PATH ${DCW_PATH})
