@@ -874,10 +874,10 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	
 	z = GMT_memory (GMT, NULL, info->size, float);
 	cx = GMT_memory (GMT, NULL, info->G->header->ny, double);
-	GMT_row_loop (GMT, info->G, row) cx[row] = +0.5 / (info->dx[row] * info->dx[row]);
+	GMT_row_loop (GMT, info->G, row) cx[row] = 1.0 / (info->dx[row] * info->dx[row]);
 
 	mx = info->G->header->mx;
-	cy = -0.5 / (info->dy * info->dy);	/* Because the loop over rows below goes from ymax to ymin we compensate with a minus sign here */
+	cy = 1.0 / (info->dy * info->dy);
 
 	GMT_grd_loop (GMT, info->G, row, col, node) {
 		z[node] = (float)(cx[row] * (stack[last]->G->data[node+1] - 2.0 * stack[last]->G->data[node] + stack[last]->G->data[node-1]) + \
@@ -948,10 +948,10 @@ void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		ij = GMT_IJP (info->G->header, info->G->header->ny-1, col);	/* Last row for this column */
 		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA) 
 			stack[last]->G->data[ij+mx] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx]);	/* Set bottom node via BC curv = 0 */
-		GMT_row_loop (GMT, info->G, row) {
+		GMT_row_loop (GMT, info->G, row) { /* Cannot use node inside here and must get ij separately */
 			ij = GMT_IJP (info->G->header, row, col);	/* current node in this column */
 			bottom = next_bottom;
-			next_bottom = stack[last]->G->data[node];
+			next_bottom = stack[last]->G->data[ij];
 			stack[last]->G->data[ij] = (float)(c * (stack[last]->G->data[ij+mx] - 2.0 * stack[last]->G->data[ij] + bottom));
 		}
 	}

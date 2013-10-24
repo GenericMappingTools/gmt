@@ -5,6 +5,7 @@
 2013-10-23	pwessel
 	* gmtinfo.c:		The new name of minmax.c, the latter will be honored
 				when GMT compatibility mode is 4.
+	* grdmath.c:		Fixed porting bugs for CURV and D2DY2; added test ops.sh
 
 2013-10-22	pwessel
 	* minmax.c:		Added -D to adjust region found with -I
