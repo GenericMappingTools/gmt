@@ -1,12 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: gmtlogo 11591 2013-05-26 16:20:00Z pwessel $
+# $Id$
 #
 # usage: gmtlogo dx dy scale [-Gbackground] [-Wboxpen] >> t.ps
 #
-#	Logo is 2" wide and 1" high and origin is lower left
-#	It has not header or trailer
-#
+# Logo is 2" wide and 1" high and origin is lower left
+# It has no header nor trailer
 
 if [ $# -eq 0 ]; then
 	echo "gmtlogo - Adding a GMT graphics logo overlay to an illustration" >&2
