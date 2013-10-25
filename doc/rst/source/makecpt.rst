@@ -30,7 +30,8 @@ Description
 your own z-table, and create a new cpt file based on an existing master
 cpt file. The resulting cpt file can be reversed relative to the master
 cpt, and can be made continuous or discrete.  For color tables beyond the
-standard GMT offerings, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city.
+standard GMT offerings, visit cpt-city:
+http://soliton.vm.bytemark.co.uk/pub/cpt-city/.
 
 The color palette includes three additional colors beyond the range of
 z-values. These are the background color (B) assigned to values lower
@@ -47,7 +48,7 @@ behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master cpt file. When
-there is no :ref:` <>`**COLOR_MODEL** entry in the master cpt file, the
+there is no :ref:`COLOR_MODEL <COLOR_MODEL>` entry in the master cpt file, the
 :ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
 line will be used. 
 
