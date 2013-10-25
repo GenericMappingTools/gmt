@@ -1888,7 +1888,7 @@ int GMT_list_cpt (struct GMT_CTRL *GMT, char option)
 	GMT_message (GMT, "\t   -----------------------------------------------------------------\n");
 	while (fgets (buffer, GMT_BUFSIZ, fpc)) if (!(buffer[0] == '#' || buffer[0] == 0)) GMT_message (GMT, "\t   %s", buffer);
 	GMT_message (GMT, "\t   -----------------------------------------------------------------\n");
-	GMT_message (GMT, "\t   [For more, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city]\n");
+	GMT_message (GMT, "\t   [For more, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city/]\n");
 	fclose (fpc);
 
 	return (GMT_NOERROR);

@@ -8269,8 +8269,9 @@ and how to switch the color bar around (by using a negative length).
    :width: 600 px
    :align: center
 
+For additional color tables, visit
+`cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
-For additional color tables, visit `CPT-CITY <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
 M. Custom Plot Symbols
 ======================
