@@ -1,5 +1,5 @@
-`Grid Values Precision <#toc8>`_
---------------------------------
+Grid Values Precision
+---------------------
 
 Regardless of the precision of the input data, GMT programs that create
 grid files will internally hold the grids in 4-byte floating point
