@@ -106,19 +106,7 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-.. include:: explain_ascii_precision.rst_
-
-Grid Values Precision
----------------------
-
-Regardless of the precision of the input data, GMT programs that create
-grid files will internally hold the grids in 4-byte floating point
-arrays. This is done to conserve memory and furthermore most if not all
-real data can be stored using 4-byte floating point values. Data with
-higher precision (i.e., double precision values) will lose that
-precision once GMT operates on the grid or writes out new grids. To
-limit loss of precision when processing data you should always consider
-normalizing the data prior to processing.
+.. include:: explain_precision.rst_
 
 Examples
 --------
