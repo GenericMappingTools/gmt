@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ] 
-[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
+[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
 [ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
 [ |SYN_OPT-V| ]
 [ **-Z**\ [*flags*\ ] ]
@@ -71,14 +71,14 @@ Optional Arguments
     RMS value at each node, respectively. Append **n** to simply count
     the number of data points that were assigned to each node. Append
     **z** to sum multiple values that belong to the same node.
-**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark*
+**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark*
     Give values for *xname*, *yname*, *zname*, *scale*, *offset*,
-    *title*, and *remark*. To leave some of these values untouched,
-    specify = as the value. Alternatively, to allow "/" to be part of
-    one of the values, use any non-alphanumeric character (and not the
-    equal sign) as separator by both starting and ending with it. For
-    example:
-    **-D**:*xname*:*yname*:*zname*:*scale*:*offset*:*title*:*remark*:
+    *invalid*, *title*, and *remark*. To leave some of these values untouched,
+    leave field blank. Empty fields in the end may be skipped. Alternatively,
+    to allow "/" to be part of one of the values, use any non-alphanumeric
+    character (and not the equal sign) as separator by both starting and ending
+    with it. For example:
+    **-D**:*xname*:*yname*:*zname*:*scale*:*offset*:*invalid*:*title*:*remark*:
 **-N**\ *nodata*
     No data. Set nodes with no input xyz triplet to this value [Default
     is NaN]. For z-tables, this option is used to replace z-values that
@@ -180,20 +180,20 @@ Examples
 
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
-    gmt xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used" \
+    gmt xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0//"Hawaiian Gravity"/"GRS-80 Ellipsoid used" \
                 -Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
 
 To create a grid file from the raw binary (3-column, single-precision
 scanline-oriented data raw.b, use
 
-    gmt xyz2grd raw.b -Dm/m/m/1/0/=/= -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
+    gmt xyz2grd raw.b -Dm/m/m/1/0 -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 
 To make a grid file from the raw binary USGS DEM (short integer
 scanline-oriented data topo30. on the NGDC global relief Data CD-ROM,
 with values of -9999 indicate missing data, one must on some machine
 reverse the byte-order. On such machines (like Sun, use
 
-    gmt xyz2grd topo30. -Dm/m/m/1/0/=/= -Gustopo.nc -R234/294/24/50 -I30s -N-9999 -B -ZTLhw
+    gmt xyz2grd topo30. -Dm/m/m/1/0 -Gustopo.nc -R234/294/24/50 -I30s -N-9999 -B -ZTLhw
 
 Say you have received a binary file with 4-byte floating points that
 were written on a machine of different byte-order than yours. You can
