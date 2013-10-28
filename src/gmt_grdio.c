@@ -1216,12 +1216,12 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 		 last character of the input string is the same AND that character
 		 is non-alpha-numeric, use the first character as a separator. This
 		 is to allow "/" as part of the fields.
-		 If a field has an equals sign, skip it.
+		 If a field is blank or has an equals sign, skip it.
 		 This routine is usually called if -D<input> was given by user,
 		 and after GMT_grd_init() has been called. */
 
-	char ptr[GMT_BUFSIZ] = {""}, sep[] = "/";
-	unsigned int entry = 0, pos = 0;
+	char *ptr, *stringp = input, sep[] = "/";
+	unsigned int entry = 0;
 
 	if (input[0] != input[strlen(input)-1]) {}
 	else if (input[0] == '=') {}
@@ -1230,11 +1230,11 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 	else if (input[0] >= '0' && input[0] <= '9') {}
 	else {
 		sep[0] = input[0];
-		pos = 1;
+		++stringp; /* advance past first field separator */
 	}
 
-	while ((GMT_strtok (input, sep, &pos, ptr))) {
-		if (ptr[0] != '=') {
+	while ((ptr = strsep (&stringp, sep)) != NULL) { /* using strsep because of possible empty fields */
+		if (*ptr != '\0' || strcmp (ptr, "=") == 0) { /* entry is not blank or "=" */
 			switch (entry) {
 				case 0:
 					GMT_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);

@@ -69,9 +69,9 @@ struct GRDEDIT_CTRL {
 
 void *New_grdedit_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDEDIT_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GRDEDIT_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
@@ -98,7 +98,7 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is file to be modified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information.  Specify '=' to get default value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information; leave field blank to get default value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Tranpose the entire grid (this will exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
 	GMT_Option (API, "R");
