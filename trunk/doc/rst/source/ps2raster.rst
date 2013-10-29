@@ -223,8 +223,9 @@ results in loss of details that are available in the original
 PostScript file. Choose a resolution that is large enough for the
 application that the image will be used for. For web pages, smaller dpi
 values suffice, for Word documents and PowerPoint presentations a higher
-dpi value is recommended. **ps2raster** uses the loss-less Flate
-compression technique when creating JPEG, PNG and TIFF images.
+dpi value is recommended. **ps2raster** uses the loss-less DEFLATE
+compression technique when creating PDF and PNG files and LZW compression
+for TIFF images.
 
 EPS is a vector, not a raster format. Therefore, the **-E** option has
 no effect on the creation of EPS files. Using the option **-Te** will
@@ -239,7 +240,7 @@ Although PDF is also a vector format, the **-E** option has an effect on
 the resolution of pattern fills and fonts that are stored as bitmaps in
 the document. **ps2raster** therefore uses a larger default resolution
 when creating PDF files. In order to obtain high-quality PDF files, the
-*/prepress* options are in effect, allowing only loss-less Flate
+*/prepress* options are in effect, allowing only loss-less DEFLATE
 compression of raster images embedded in the PostScript file.
 
 Although **ps2raster** was developed as part of the GMT, it can be

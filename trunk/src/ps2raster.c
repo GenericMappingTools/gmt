@@ -650,6 +650,20 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
+	char *device_options[N_GS_DEVICES] = {
+		/* extra options to pass to individual drivers */
+		"",
+		"", /* pdfwrite */
+		"-dJPEGQ=90", /* jpeg */
+		"", /* png16m */
+		"", /* ppmraw */
+		"-sCompression=lzw", /* tiff24nc */
+		"", /* bmp16m */
+		"", /* pngalpha */
+		"-dJPEGQ=90", /* jpeggray */
+		"", /* pnggray */
+		"-sCompression=lzw", /* tiffgray */
+		""}; /* bmpgray */
 	char *ext[N_GS_DEVICES] = {".eps", ".pdf", ".jpg", ".png", ".ppm", ".tif", ".bmp", ".png", ".jpg", ".png", ".tif", ".bmp"};
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 #ifdef WIN32
@@ -891,8 +905,9 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s -g1x1 -r%d -sOutputFile=%s -f%s",
+						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%d -sOutputFile=%s -f%s",
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
+							device_options[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
 						if (Ctrl->S.active)
@@ -1271,8 +1286,9 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
 			}
 
-			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s -g%dx%d -r%d -sOutputFile=%s -f%s",
+			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g%dx%d -r%d -sOutputFile=%s -f%s",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
+				device_options[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
 
 			if (Ctrl->S.active)	/* Print GhostScript command */
@@ -1316,8 +1332,10 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
 				strcat (out_file, ext[Ctrl->T.device]);
 				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
-				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s -r%d -sOutputFile=%s %s",
-					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device], Ctrl->E.dpi, out_file, pdf_file);
+				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -r%d -sOutputFile=%s %s",
+					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
+					device_options[Ctrl->T.device],
+					Ctrl->E.dpi, out_file, pdf_file);
 				if (Ctrl->S.active)	/* Print 2nd GhostScript command */
 					GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 				/* Execute the 2nd GhostScript command */
