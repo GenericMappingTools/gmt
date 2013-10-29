@@ -3888,6 +3888,19 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->PSL->internal.compress = PSL_RLE;
 			else if (!strcmp (lower_value, "lzw"))
 				GMT->PSL->internal.compress = PSL_LZW;
+			else if (!strncmp (lower_value, "deflate", 7)) {
+#ifdef HAVE_ZLIB
+				GMT->PSL->internal.compress = PSL_DEFLATE;
+				if ((sscanf (value + 7, " , %u", &GMT->PSL->internal.deflate_level) != 1)
+						|| GMT->PSL->internal.deflate_level > 9)
+					/* Compression level out of range or not provided, using default */
+					GMT->PSL->internal.deflate_level = 0;
+#else
+				/* Silently fall back to LZW compression when ZLIB not available */
+				GMT->PSL->internal.compress = PSL_LZW;
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "warning: PS_IMAGE_COMPRESS = DEFLATE not available, falling back to LZW.\n");
+#endif
+			}
 			else
 				error = true;
 			break;
@@ -5045,6 +5058,12 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				strcpy (value, "rle");
 			else if (GMT->PSL->internal.compress == PSL_LZW)
 				strcpy (value, "lzw");
+			else if (GMT->PSL->internal.compress == PSL_DEFLATE) {
+				if (GMT->PSL->internal.deflate_level != 0)
+					sprintf (value, "deflate,%u", GMT->PSL->internal.deflate_level);
+				else
+					strcpy (value, "deflate");
+			}
 			else
 				strcpy (value, "undefined");
 			break;
