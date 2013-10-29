@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77convert** *NGDC-ids* **-Fa**\ \|\ **c**\ \|\ **t**
-**-T**\ [**+**\ ]\ **a**\ \|\ **b**\ \|\ **t**
+**mgd77convert** *NGDC-ids* **-Fa**\ \|\ **c**\ \|\ **m** \|\ **t**
+**-T**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
 [ **-C** ]
 [ **-D** ]
 [ **-L**\ [**w**][**e**][**+**] ]
@@ -34,17 +34,19 @@ Required Arguments
 
 .. include:: explain_ncid.rst_
 
-**-Fa**\ \|\ **c**\ \|\ **t**
+**-Fa**\ \|\ **c**\ \|\ **m** \|\ **t**
     Specifies the format of the input (From) files. Choose from **a**
     for standard MGD77 ASCII table (with extension .mgd77), **c** for
-    the new MGD77+ netCDF format (with extension .nc), and **t** for a
+    the new MGD77+ netCDF format (with extension .nc), **m** for the
+    new MGD77 t format (extension .m77t) and **t** for a
     plain ASCII tab-separated table dump (with extension .dat). Use
     **-FC** to recover the original MGD77 setting from the MGD77+ file
     [Default will apply any E77 corrections encoded in the file].
-**-T**\ [**+**\ ]\ **a**\ \|\ **b**\ \|\ **t**
+**-T**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
     Specifies the format of the output (To) files. Choose from **a** for
     standard MGD77 ASCII table (with extension .mgd77), **c** for the
-    new MGD77+ netCDF format (with extension .nc), and **t** for a plain
+    new MGD77+ netCDF format (with extension .nc), **m** for the
+    new MGD77 t format (extension .m77t) and **t** for a plain
     ASCII tab-separated table dump (with extension .dat). We will refuse
     to create the file(s) if they already exist in the current
     directory. Prepend **+** to override this policy.
