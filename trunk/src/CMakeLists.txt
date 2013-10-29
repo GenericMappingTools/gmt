@@ -376,9 +376,6 @@ if (BUILD_SUPPLEMENTS)
 
 	# No SOVERSION & VERSION for a MODULE, only for SHARED libs
 	target_link_libraries (supplib
-		${NETCDF_LIBRARIES}
-		${GMT_OPTIONAL_LIBRARIES}
-		${CMAKE_THREAD_LIBS_INIT}
 		gmtlib
 		pslib)
 

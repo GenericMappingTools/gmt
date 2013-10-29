@@ -214,7 +214,7 @@ if (APPLE)
 		endfunction(gp_item_default_embedded_path_override)
 
 		include (BundleUtilities)
-		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
+		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}/plugins/supplements.so\" \"\")
 	endif ()
 	" COMPONENT Runtime)
 
