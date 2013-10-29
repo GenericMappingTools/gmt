@@ -78,6 +78,12 @@ if (FFTW3_FOUND)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${FFTW3F_LIBRARIES})
 endif (FFTW3_FOUND)
 
+find_package (ZLIB)
+if (ZLIB_FOUND)
+	set (HAVE_ZLIB TRUE CACHE INTERNAL "System has ZLIB")
+	include_directories (${ZLIB_INCLUDE_DIRS})
+endif (ZLIB_FOUND)
+
 if (APPLE)
 	# Accelerate framework
 	find_library (ACCELERATE_FRAMEWORK Accelerate)
@@ -301,6 +307,11 @@ if (HAVE_M_LIBRARY)
 	# link the math library
 	target_link_libraries (pslib m)
 endif (HAVE_M_LIBRARY)
+
+if (HAVE_ZLIB)
+	# for DEFLATE encoding
+  target_link_libraries (pslib ${ZLIB_LIBRARIES})
+endif (HAVE_ZLIB)
 
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (pslib

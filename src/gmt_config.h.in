@@ -51,6 +51,9 @@
 #cmakedefine HAVE_FFTW3F
 #cmakedefine HAVE_FFTW3F_THREADS
 
+/* compile with ZLIB support <zlib.h> */
+#cmakedefine HAVE_ZLIB
+
 /* file locking */
 #cmakedefine FLOCK
 

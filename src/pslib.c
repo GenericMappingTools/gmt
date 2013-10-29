@@ -117,6 +117,10 @@
 #include "common_byteswap.h"
 #include "pslib.h"
 
+#ifdef HAVE_ZLIB
+#	include <zlib.h>
+#endif
+
 #if ! defined PATH_MAX && defined _MAX_PATH
 #	define PATH_MAX _MAX_PATH
 #endif
@@ -245,6 +249,7 @@ unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char
 unsigned char *psl_rle_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 psl_byte_stream_t psl_lzw_putcode (psl_byte_stream_t stream, short int incode);
+unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int depth, int compress, int encode, int mask);
 void psl_a85_encode (struct PSL_CTRL *PSL, unsigned char quad[], int nbytes);
 int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy);
@@ -315,7 +320,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	 * unit:	The unit used for lengths (0 = cm, 1 = inch, 2 = m, 3 = points).
 	 * verbose:	The PS verbosity level (0 = silence, 1 = fatal errors, 2 = warnings and progress, 3 = extensive progress reports, 4 = debugging)
 	 * comments:	Whether PS comments should be written (1) or not (0).
-	 * compression:	Compression level (0 = none, 1 = RLE, 2 = LZW)
+	 * compression:	Compression level (0 = none, 1 = RLE, 2 = LZW, 3 = DEFLATE)
 	 * encoding:	The character encoding used
 	 * If sharedir, userdir are NULL and search == 1 then we look for environmental parameters
 	 * 		PSL_SHAREDIR and PSL_USERDIR; otherwise we assign then from the args (even if NULL).
@@ -338,7 +343,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	/* Determine SHAREDIR (directory containing PSL and pattern subdirectories)
 	 * but only if not passed via argument list */
 	if ((this_c = sharedir) == NULL) {
-	 	if (search && (this_c = getenv ("PSL_SHAREDIR")) == NULL) {
+		if (search && (this_c = getenv ("PSL_SHAREDIR")) == NULL) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not locate PSL_SHAREDIR.\n");
 			PSL_exit (EXIT_FAILURE);
 		}
@@ -349,7 +354,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 		PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
 		PSL_exit (EXIT_FAILURE);
 	}
-	
+
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
 
 	if ((this_c = userdir) == NULL && search) this_c = getenv ("PSL_USERDIR");
@@ -3596,14 +3601,14 @@ void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int n
 	 * buffer	= stream of bytes
 	 * nx, ny	= image dimensions in pixels
 	 * nbits	= depth of image pixels in bits
-	 * compress	= no (0), rle (1) or lzw (2) compression
+	 * compress	= no (0), rle (1), lzw (2), or deflate (3) compression
 	 * encode	= ascii85 (0) or hex (1)
 	 * mask		= image (0), imagemask (1), or neither (2)
 	 */
 	int nbytes, i;
 	unsigned char *buffer1 = NULL, *buffer2 = NULL;
-	const char *kind_compress[3] = {"", "/RunLengthDecode filter", "/LZWDecode filter"};
-	const char *kind_mask[2] = {"image", "imagemask"};
+	const char *kind_compress[] = {"", "/RunLengthDecode filter", "/LZWDecode filter", "/FlateDecode filter"};
+	const char *kind_mask[] = {"image", "imagemask"};
 
 	nx = abs (nx);
 	nbytes = ((int)nbits * (int)nx + 7) / (int)8 * (int)ny;
@@ -3622,6 +3627,8 @@ void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int n
 		buffer2 = psl_rle_encode (PSL, &nbytes, buffer1);
 	else if (compress == PSL_LZW)
 		buffer2 = psl_lzw_encode (PSL, &nbytes, buffer1);
+	else if (compress == PSL_DEFLATE)
+		buffer2 = psl_deflate_encode (PSL, &nbytes, buffer1);
 	else
 		buffer2 = NULL;
 
@@ -3829,7 +3836,7 @@ unsigned char *psl_rle_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char 
 	}
 
 	/* Return number of output bytes and output buffer */
-	PSL_message (PSL, PSL_MSG_NORMAL, "RLE compressed %d to %d bytes\n", in, out);
+	PSL_message (PSL, PSL_MSG_NORMAL, "RLE compressed %d to %d bytes (%.1f%%)\n", in, out, 100.0f*out/in);
 	*nbytes = out;
 	return (output);
 }
@@ -3896,7 +3903,7 @@ unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char 
 	}
 
 	/* Return number of output bytes and output buffer; release code table */
-	PSL_message (PSL, PSL_MSG_NORMAL, "LZW compressed %d to %d bytes\n", in, output->nbytes);
+	PSL_message (PSL, PSL_MSG_NORMAL, "LZW compressed %d to %d bytes (%.1f%%)\n", in, output->nbytes, 100.0f*output->nbytes/in);
 	*nbytes = output->nbytes;
 	buffer = output->buffer;
 	PSL_free (code);
@@ -3926,6 +3933,56 @@ psl_byte_stream_t psl_lzw_putcode (psl_byte_stream_t stream, short int incode)
 		bit_count = 0;
 	}
 	return (stream);
+}
+
+unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input)
+{
+	/* DEFLATE a buffer of nbytes using ZLIB. */
+#ifdef HAVE_ZLIB
+	const unsigned int ilen = *nbytes;
+	unsigned int olen = *nbytes - 1; /* Output buffer is 1 smaller than input */
+	unsigned char *output;
+	int level = PSL->internal.deflate_level == 0 ? Z_DEFAULT_COMPRESSION : PSL->internal.deflate_level; /* Compression level */
+	int zstatus;
+	z_stream strm;
+
+	/* Initialize zlib for compression */
+	strm.zalloc = Z_NULL;
+	strm.zfree = Z_NULL;
+	strm.opaque = Z_NULL;
+	if (deflateInit (&strm, level) != Z_OK) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "DEFLATE: cannot initialize ZLIB stream: %s", strm.msg);
+		return NULL;
+	}
+
+	output = PSL_memory (PSL, NULL, olen, unsigned char); /* Allocate output buffer */
+
+	strm.avail_in  = ilen;   /* number of bytes in input buffer */
+	strm.next_in   = input;  /* input buffer */
+	strm.avail_out = olen;   /* number of bytes available in output buffer */
+	strm.next_out  = output; /* output buffer */
+
+	zstatus = deflate (&strm, Z_FINISH); /* deflate whole chunk */
+	deflateEnd (&strm);                  /* deallocate zlib memory */
+
+	if (zstatus != Z_STREAM_END) {
+		/* "compressed" size is larger or other failure */
+		PSL_message (PSL, PSL_MSG_NORMAL, "DEFLATE: no compression done.\n");
+		PSL_free (output);
+		return NULL;
+	}
+
+	/* Return number of output bytes and output buffer */
+	olen = olen - strm.avail_out; /* initial size - size left */
+	PSL_message (PSL, PSL_MSG_NORMAL, "DEFLATE compressed %u to %u bytes (%.1f%% at compression level %d)\n", ilen, olen, 100.0f*olen/ilen, level == Z_DEFAULT_COMPRESSION ? 6 : level);
+	*nbytes = olen;
+	return output;
+
+#else /* HAVE_ZLIB */
+	/* ZLIB not available */
+	PSL_message (PSL, PSL_MSG_NORMAL, "Cannot DEFLATE because ZLIB is not available.\n");
+	return NULL;
+#endif /* HAVE_ZLIB */
 }
 
 int psl_bitimage_cmap (struct PSL_CTRL *PSL, double f_rgb[], double b_rgb[])
