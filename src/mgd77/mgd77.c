@@ -1303,6 +1303,8 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTR
 	strcpy (r_date, "5"); set_a_val (r_date, MGD77_RECTYPE);	/* Since it is not part of the MGD77T record per se */
 	for (k = 1; k <= MGD77_SSPN; k++) {	/* Process all 26 items even if strsep will return NULL */
 		p = strsep (&stringp, "\t");
+		if (p == NULL)
+			break;
 		switch (k) {	/* The cases are 1-26 as per MGD77T docs */
 			case  1: strncpy (MGD77Record->word[0], p, 10U);	set_present (p, MGD77_ID);	break;
 			case  2: set_a_val (p, MGD77_TZ);		break;
