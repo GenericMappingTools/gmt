@@ -521,6 +521,7 @@ int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

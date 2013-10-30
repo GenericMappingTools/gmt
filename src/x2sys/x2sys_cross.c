@@ -155,13 +155,16 @@ int GMT_x2sys_cross_parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, 
 			/* Common parameters */
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 			
 			case 'A':	/* Get list of approved filepair combinations to check */
-				Ctrl->A.active = true;
-				Ctrl->A.file = strdup (opt->arg);
+				if ((Ctrl->A.active = GMT_check_filearg (GMT, 'A', opt->arg, GMT_IN)))
+					Ctrl->A.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'C':
 				Ctrl->C.active = true;

@@ -131,7 +131,10 @@ int GMT_grdinfo_parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct G
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				n_files++;
+				if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+					n_files++;
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -139,7 +142,7 @@ int GMT_grdinfo_parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct G
 			case 'C':	/* Column format */
 				Ctrl->C.active = true;
 				break;
-			case 'F':	/* Wolrd mapping format */
+			case 'F':	/* World mapping format */
 				Ctrl->F.active = true;
 				break;
 			case 'I':	/* Increment rounding */

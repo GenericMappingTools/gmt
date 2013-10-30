@@ -157,7 +157,7 @@ void gmtmggpath_init (struct GMT_CTRL *GMT) {
 	char line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
-	GMT_getsharepath (GMT, "mgg", "gmtfile_paths", "", line);
+	GMT_getsharepath (GMT, "mgg", "gmtfile_paths", "", line, R_OK);
 
 	n_gmtmgg_paths = 0;
 

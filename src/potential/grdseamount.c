@@ -135,7 +135,7 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -155,8 +155,10 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 				Ctrl->E.active = true;
 				break;
 			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':
 				Ctrl->I.active = true;

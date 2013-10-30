@@ -2847,10 +2847,10 @@ int gmt_get_time_language (struct GMT_CTRL *GMT)
 
 	GMT_memset (months, 12, char *);
 
-	GMT_getsharepath (GMT, "time", GMT->current.setting.time_language, ".d", file);
+	GMT_getsharepath (GMT, "time", GMT->current.setting.time_language, ".d", file, R_OK);
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Could not load time language %s - revert to us (English)!\n", GMT->current.setting.time_language);
-		GMT_getsharepath (GMT, "time", "us", ".d", file);
+		GMT_getsharepath (GMT, "time", "us", ".d", file, R_OK);
 		if ((fp = fopen (file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find %s!\n", file);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -2919,7 +2919,7 @@ unsigned int gmt_load_user_media (struct GMT_CTRL *GMT) {	/* Load any user-speci
 	char line[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, media[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 
-	GMT_getsharepath (GMT, "conf", "gmt_custom_media", ".conf", file);
+	GMT_getsharepath (GMT, "conf", "gmt_custom_media", ".conf", file, R_OK);
 	if ((fp = fopen (file, "r")) == NULL) return (0);
 
 	gmt_free_user_media (GMT);	/* Free any previously allocated user-specified media formats */
@@ -2966,7 +2966,7 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 	FILE *in = NULL;
 	struct gmt_encoding *enc = &GMT->current.setting.ps_encoding;
 
-	GMT_getsharepath (GMT, "pslib", enc->name, ".ps", line);
+	GMT_getsharepath (GMT, "pslib", enc->name, ".ps", line, R_OK);
 	if ((in = fopen (line, "r")) == NULL) {
 		perror (line);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -5884,7 +5884,7 @@ int GMT_get_ellipsoid (struct GMT_CTRL *GMT, char *name)
 		/* Try to open as file first in (1) current dir, then in (2) $GMT->session.SHAREDIR */
 
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Assigning PROJ_ELLIPSOID a file name is deprecated, use <a>,<inv_f> instead");
-		GMT_getsharepath (GMT, NULL, name, "", path);
+		GMT_getsharepath (GMT, NULL, name, "", path, R_OK);
 
 		if ((fp = fopen (name, "r")) != NULL || (fp = fopen (path, "r")) != NULL) {
 			/* Found file, now get parameters */
@@ -6004,10 +6004,10 @@ int gmt_setshorthand (struct GMT_CTRL *GMT) {
 	GMT->session.n_shorthands = 0; /* By default there are no shorthands unless gmt.io is found */
 
 	if (!GMT_getuserpath (GMT, "gmt.io", file)) {
-		if (!GMT_getsharepath (GMT, "", "gmt.io", "", file)) {	/* try non-hidden file in ~/.gmt */
+		if (!GMT_getsharepath (GMT, "", "gmt.io", "", file, R_OK)) {	/* try non-hidden file in ~/.gmt */
 			if (GMT_compat_check (GMT, 4)) {	/* Look for obsolete .gmt_io files */
 				if (!GMT_getuserpath (GMT, ".gmt_io", file)) {
-					if (!GMT_getsharepath (GMT, "", "gmt_io", "", file))	/* try non-hidden file in ~/.gmt */
+					if (!GMT_getsharepath (GMT, "", "gmt_io", "", file, R_OK))	/* try non-hidden file in ~/.gmt */
 						return GMT_OK;
 				}
 			}
@@ -9773,7 +9773,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT)
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-	GMT_getsharepath (GMT, "pslib", "PS_font_info", ".d", fullname);
+	GMT_getsharepath (GMT, "pslib", "PS_font_info", ".d", fullname, R_OK);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -9794,7 +9794,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT)
 
 	/* Then any custom fonts */
 
-	if (GMT_getsharepath (GMT, "pslib", "CUSTOM_font_info", ".d", fullname)) {	/* Decode Custom font file */
+	if (GMT_getsharepath (GMT, "pslib", "CUSTOM_font_info", ".d", fullname, R_OK)) {	/* Decode Custom font file */
 		if ((in = fopen (fullname, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -10085,6 +10085,33 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 	gmt_set_today (GMT);	/* Determine today's rata die value */
 
 	return (GMT);
+}
+
+bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction)
+{	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
+	 * exists and is readable. Otherwise wre return false. */
+	char message[GMT_LEN16] = {""};
+	if (option == GMT_OPT_INFILE)
+		sprintf (message, "for input file");
+	else if (option == GMT_OPT_OUTFILE)
+		sprintf (message, "for output file");
+	else
+		sprintf (message, "option -%c", option);
+	
+	if (!file || file[0] == '\0') {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No filename provided\n", message);
+		return false;	/* No file given */
+	}
+	if (direction == GMT_OUT) return true;		/* Cannot check any further */
+	if (GMT_access (GMT, file, F_OK)) {	/* Cannot find the file anywhere GMT looks */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, file);
+		return false;	/* Could not find this file */
+	}
+	if (GMT_access (GMT, file, R_OK)) {	/* Cannot read this file (permissions?) */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, file);
+		return false;	/* Could not find this file */
+	}
+	return true;	/* Seems OK */
 }
 
 #ifdef SET_IO_MODE

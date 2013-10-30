@@ -306,7 +306,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Prepare CPT file via the master file %s\n", Ctrl->C.file);
-	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file), "Error: Cannot find colortable %s\n", Ctrl->C.file);
+	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file, R_OK), "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	/* OK, we can now do the resampling */

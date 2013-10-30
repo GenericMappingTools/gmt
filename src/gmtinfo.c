@@ -164,6 +164,7 @@ int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

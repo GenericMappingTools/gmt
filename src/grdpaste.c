@@ -95,9 +95,9 @@ int GMT_grdpaste_parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_in == 0)
+				if (n_in == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
-				else if (n_in == 1)
+				else if (n_in == 1 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
@@ -108,8 +108,10 @@ int GMT_grdpaste_parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
  			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			default:	/* Report bad options */

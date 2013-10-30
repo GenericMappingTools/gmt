@@ -150,7 +150,10 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

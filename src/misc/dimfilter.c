@@ -174,8 +174,11 @@ int GMT_dimfilter_parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, stru
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -219,8 +222,10 @@ int GMT_dimfilter_parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, stru
 				Ctrl->F.width = atof (&opt->arg[1]);
 				break;
 			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':
 				Ctrl->I.active = true;

@@ -1877,7 +1877,7 @@ int GMT_list_cpt (struct GMT_CTRL *GMT, char option)
 	FILE *fpc = NULL;
 	char buffer[GMT_BUFSIZ];
 
-	GMT_getsharepath (GMT, "conf", "gmt_cpt", ".conf", buffer);
+	GMT_getsharepath (GMT, "conf", "gmt_cpt", ".conf", buffer, R_OK);
 	if ((fpc = fopen (buffer, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", buffer);
 		return (EXIT_FAILURE);
@@ -7923,7 +7923,7 @@ void GMT_list_custom_symbols (struct GMT_CTRL *GMT)
 
 	/* Open the list in $GMT->session.SHAREDIR */
 
-	GMT_getsharepath (GMT, "conf", "gmt_custom_symbols", ".conf", list);
+	GMT_getsharepath (GMT, "conf", "gmt_custom_symbols", ".conf", list, R_OK);
 	if ((fp = fopen (list, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", list);
 		return;
@@ -9142,7 +9142,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	else	/* Use as is */
 		strcpy (name, in_name);
 
-	GMT_getsharepath (GMT, "custom", name, ".def", file);
+	GMT_getsharepath (GMT, "custom", name, ".def", file, R_OK);
 #ifdef PS_MACRO
 	if (stat (file, &buf)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);

@@ -129,8 +129,11 @@ int GMT_grdedit_parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct G
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -146,8 +149,10 @@ int GMT_grdedit_parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct G
 				Ctrl->E.active = true;
 				break;
 			case 'N':	/* Replace nodes */
-				Ctrl->N.active = true;
-				Ctrl->N.file = strdup (opt->arg);
+				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN)))
+					Ctrl->N.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'S':	/* Rotate global grid */
 				Ctrl->S.active = true;
@@ -173,7 +178,6 @@ int GMT_grdedit_parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct G
 					"Syntax error -S option: -R longitudes must span exactly 360 degrees\n");
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	if (Ctrl->N.active) {
-		n_errors += GMT_check_condition (GMT, !Ctrl->N.file, "Syntax error -N option: Must specify name of xyz file\n");
 		n_errors += GMT_check_binary_io (GMT, 3);
 	}
 

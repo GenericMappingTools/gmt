@@ -473,6 +473,7 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				Ctrl->In.n_files++;
 				break;
 
@@ -485,29 +486,39 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
-				Ctrl->D.active = true;
-				Ctrl->D.dir = strdup (opt->arg);
+				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT)))
+					Ctrl->D.dir = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'E':	/* Set output dpi */
 				Ctrl->E.active = true;
 				Ctrl->E.dpi = atoi (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
-				Ctrl->F.active = true;
-				Ctrl->F.file = strdup (opt->arg);
-				GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_OUT))) {
+					Ctrl->F.file = strdup (opt->arg);
+					GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
+				}
+				else
+					n_errors++;
 				break;
 			case 'G':	/* Set GS path */
-				Ctrl->G.active = true;
-				free (Ctrl->G.file);
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN))) {
+					free (Ctrl->G.file);
+					Ctrl->G.file = strdup (opt->arg);
+				}
+				else
+					n_errors++;
 				break;
 			case 'I':	/* Do not use the ICC profile when converting gray shades */
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Give list of files to convert */
-				Ctrl->L.active = true;
-				Ctrl->L.file = strdup (opt->arg);
+				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN)))
+					Ctrl->L.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'P':	/* Force Portrait mode */
 				Ctrl->P.active = true;

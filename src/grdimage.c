@@ -176,8 +176,11 @@ int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct
 		switch (opt->option) {
 			case '<':	/* Input file (only one or three is accepted) */
 				Ctrl->In.active = true;
-				if (n_files < 3) Ctrl->In.file[n_files] = strdup (opt->arg);
-				n_files++;
+				if (n_files >= 3) break;
+				if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+					Ctrl->In.file[n_files++] = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

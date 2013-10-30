@@ -462,6 +462,7 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

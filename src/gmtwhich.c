@@ -34,6 +34,9 @@
 
 struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
+	struct A {	/* -A */
+		bool active;
+	} A;
 	struct C {	/* -C */
 		bool active;
 	} C;
@@ -61,10 +64,11 @@ int GMT_gmtwhich_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwhich [files] [-C] [-D] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwhich [files] [-A] [-C] [-D] [%s]\n", GMT_V_OPT);
      
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Only consider files you have permission to read [all files].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
 	GMT_Option (API, "V,.");
@@ -92,7 +96,10 @@ int GMT_gmtwhich_parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
-			case 'C':	/* Want Yes/No response instead */
+			case 'A':	/* Only consider readable files */
+				Ctrl->A.active = true;
+				break;
+			case 'C':	/* Print Y or N instead of names */
 				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Want directory instead */
@@ -116,7 +123,7 @@ int GMT_gmtwhich_parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct
 
 int GMT_gmtwhich (void *V_API, int mode, void *args)
 {
-	int error = 0;
+	int error = 0, fmode;
 	
 	char path[GMT_BUFSIZ] = {""}, *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ] = {""}, *p = NULL;
 	
@@ -152,12 +159,13 @@ int GMT_gmtwhich (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->D.active) getcwd (cwd, GMT_BUFSIZ);	/* Get full path, even for current dir */
+	fmode = (Ctrl->A.active) ? R_OK : F_OK;	/* Either readable or existing files */
 		
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
-		if (GMT_getdatapath (GMT, opt->arg, path)) {	/* Found the file */
+		if (GMT_getdatapath (GMT, opt->arg, path, fmode)) {	/* Found the file */
 			if (Ctrl->D.active) {
 				p = strstr (path, opt->arg);	/* Start of filename */
 				if (!strcmp (p, path)) /* Current directory */

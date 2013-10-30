@@ -1554,6 +1554,7 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -1567,12 +1568,16 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 				Ctrl->C.value = atof (opt->arg);
 				break;
 			case 'D':
-				Ctrl->D.active = true;
-				Ctrl->D.file = strdup (opt->arg);
+				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_IN)))
+					Ctrl->D.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -1587,7 +1592,7 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 					case 'l':	/* Lower limit  */
 						n_errors += GMT_check_condition (GMT, opt->arg[1] == 0, "Syntax error -Ll option: No argument given\n");
 						Ctrl->L.low = strdup (&opt->arg[1]);
-						if (!GMT_access (GMT, Ctrl->L.low, R_OK))	/* file exists */
+						if (!GMT_access (GMT, Ctrl->L.low, F_OK))	/* file exists */
 							Ctrl->L.lmode = 3;
 						else if (Ctrl->L.low[0] == 'd')		/* Use data minimum */
 							Ctrl->L.lmode = 1;
@@ -1599,7 +1604,7 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 					case 'u':	/* Upper limit  */
 						n_errors += GMT_check_condition (GMT, opt->arg[1] == 0, "Syntax error -Lu option: No argument given\n");
 						Ctrl->L.high = strdup (&opt->arg[1]);
-						if (!GMT_access (GMT, Ctrl->L.high, R_OK))	/* file exists */
+						if (!GMT_access (GMT, Ctrl->L.high, F_OK))	/* file exists */
 							Ctrl->L.hmode = 3;
 						else if (Ctrl->L.high[0] == 'd')	/* Use data maximum */
 							Ctrl->L.hmode = 1;
@@ -1675,7 +1680,6 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && GMT_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D: Cannot read file %s!\n", Ctrl->D.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option: Max iterations must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.value < 1.0 || Ctrl->Z.value > 2.0, "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");

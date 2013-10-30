@@ -81,7 +81,7 @@ bool gmt_get_dcw_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *pat
 			GMT->session.DCWDIR = NULL;
 		}
 	}
-	if (!found && GMT_getsharepath (GMT, "dcw", name, suffix, path)) found = true;	/* Found it in share or user somewhere */
+	if (!found && GMT_getsharepath (GMT, "dcw", name, suffix, path, R_OK)) found = true;	/* Found it in share or user somewhere */
 	if (!found) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find or open the Digital Chart of the World for GMT\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Perhaps you did not install this file in DIR_DCW, the shared dir, or the user dir?\n");

@@ -114,8 +114,10 @@ int GMT_gmtset_parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT
 				Ctrl->D.mode = opt->arg[0];
 				break;
 			case 'G':	/* Optional defaults file on input and output */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			default:	/* Report bad options */
@@ -177,7 +179,7 @@ int GMT_gmtset (void *V_API, int mode, void *args)
 				break;
 		}
 
-		if (! GMT_getsharepath (GMT, "conf", "", gmtconf_file, path))
+		if (! GMT_getsharepath (GMT, "conf", "", gmtconf_file, path, R_OK))
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
 		GMT_getdefaults (GMT, path);
 	}

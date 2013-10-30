@@ -176,8 +176,11 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -248,8 +251,10 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 				}
 				break;
 			case 'G':	/* Output grid */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'L':	/* GMT4 BCs */
 				if (GMT_compat_check (GMT, 4)) {
@@ -291,8 +296,10 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 				}
 				break;
 			case 'S':	/* Slope grid */
-				Ctrl->S.active = true;
-				Ctrl->S.file = strdup (opt->arg);
+				if ((Ctrl->S.active = GMT_check_filearg (GMT, 'S', opt->arg, GMT_OUT)))
+					Ctrl->S.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			default:	/* Report bad options */

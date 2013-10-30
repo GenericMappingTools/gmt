@@ -409,8 +409,11 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -451,12 +454,12 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 						}
 					}
 					if (Ctrl->F.filter == 'f' || Ctrl->F.filter == 'o') {
-						if (GMT_access (GMT, &opt->arg[1], R_OK)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -F%c: Cannot access filter weight grid %s\n", Ctrl->F.filter, &opt->arg[1]);
-							n_errors++;
-						}
-						else
+						if (GMT_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN))
 							Ctrl->F.file = strdup (&opt->arg[1]);
+						else {
+								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -F%c: Cannot access filter weight grid %s\n", Ctrl->F.filter, &opt->arg[1]);
+								n_errors++;
+							}
 						Ctrl->F.width = 1.0;	/* To avoid error checking below */
 						Ctrl->F.custom = true;
 						Ctrl->F.operator = (Ctrl->F.filter == 'o');	/* Means weightsum is zero so no normalization, please */
@@ -483,8 +486,10 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 				}
 				break;
 			case 'G':	/* Output file */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':	/* New grid spacings */
 				Ctrl->I.active = true;
@@ -523,7 +528,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 	
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.active, "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Choose from p or 0-5\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.mode < GRDFILTER_XY_PIXEL || Ctrl->D.mode > GRDFILTER_GEO_MERCATOR), "Syntax error -D option: Choose from p or 0-5\n");

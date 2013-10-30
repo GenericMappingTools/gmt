@@ -266,15 +266,20 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Supplemental parameters */
 
 			case 'A':
-				Ctrl->A.active = true;
-				Ctrl->A.file = strdup (opt->arg);
+				if ((Ctrl->A.active = GMT_check_filearg (GMT, 'A', opt->arg, GMT_IN)))
+					Ctrl->A.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'C':	/* Now done automatically in spotter_init */
 				if (GMT_compat_check (GMT, 4))
@@ -285,21 +290,30 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 			case 'E':
 				Ctrl->E.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
-				Ctrl->E.file  = strdup (&opt->arg[k]);
+				if (GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN))
+					Ctrl->E.file  = strdup (&opt->arg[k]);
+				else
+					n_errors++;
 				break;
 			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'D':
 				switch (opt->arg[0]) {
 					case 'i':
-						Ctrl->D.active = true;
-						Ctrl->D.file = strdup (&opt->arg[1]);
+						if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', &opt->arg[1], GMT_OUT)))
+							Ctrl->D.file = strdup (&opt->arg[1]);
+						else
+							n_errors++;
 						break;
 					case 'p':
-						Ctrl->PA.active = true;
-						Ctrl->PA.file = strdup (&opt->arg[1]);
+						if ((Ctrl->PA.active = GMT_check_filearg (GMT, 'D', &opt->arg[1], GMT_OUT)))
+							Ctrl->PA.file = strdup (&opt->arg[1]);
+						else
+							n_errors++;
 						break;
 					default:
 						n_errors++;
@@ -314,8 +328,10 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 				}
 				break;
 			case 'L':
-				Ctrl->L.active = true;
-				Ctrl->L.file = strdup (opt->arg);
+				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN)))
+					Ctrl->L.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 's':	/* Sampling interval */
 				Ctrl->S2.active = true;

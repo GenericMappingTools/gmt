@@ -128,6 +128,7 @@ int GMT_x2sys_get_parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, stru
 			/* Common parameters */
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -138,7 +139,7 @@ int GMT_x2sys_get_parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, stru
 			case 'D':
 				Ctrl->D.active = true;
 				break;
-			case 'E':	/* Just accept and ignore (it was an option in GMT4 but the dedault in 5) */
+			case 'E':	/* Just accept and ignore (it was an option in GMT4 but the default in 5) */
 				break;
 			case 'F':
 				Ctrl->F.active = true;

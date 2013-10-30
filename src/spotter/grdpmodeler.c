@@ -141,23 +141,32 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Supplemental parameters */
 			
 			case 'E':	/* File with stage poles */
-				Ctrl->E.active = true;
-				Ctrl->E.file  = strdup (opt->arg);
+				if ((Ctrl->E.active = GMT_check_filearg (GMT, 'E', opt->arg, GMT_IN)))
+					Ctrl->E.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'F':
-				Ctrl->F.active = true;
-				Ctrl->F.file = strdup (opt->arg);
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN)))
+					Ctrl->F.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':
 				Ctrl->I.active = true;

@@ -195,7 +195,7 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 
 int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	/* This parses the options provided to redpol and sets parameters in Ctrl.
+	/* This parses the options provided to gmtgravmag3d and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -211,6 +211,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				n_files++;
 				break;
 

@@ -154,9 +154,11 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 				Ctrl->E.active = true;
 				Ctrl->E.inside = GMT_INSIDE;
 				break;
-			case 'G':	/* OUtput filename */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+			case 'G':	/* Output filename */
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {

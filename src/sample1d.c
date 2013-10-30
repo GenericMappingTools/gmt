@@ -155,9 +155,13 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0) Ctrl->Out.file = strdup (opt->arg);
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT))
+					Ctrl->Out.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -202,8 +206,10 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 				if (Ctrl->I.mode == INT_2D_CART) *c = 'c';	/* Restore the c */
 				break;
 			case 'N':
-				Ctrl->N.file = strdup (opt->arg);
-				Ctrl->N.active = true;
+				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN)))
+					Ctrl->N.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'S':
 				Ctrl->S.active = true;

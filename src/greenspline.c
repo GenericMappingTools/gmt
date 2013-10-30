@@ -282,6 +282,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			case 'R':	/* Normally processed internally but must be handled separately since it can take 1,2,3 dimensions */
@@ -380,8 +381,10 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Output locations */
-				Ctrl->N.active = true;
-				Ctrl->N.file = strdup (opt->arg);
+				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN)))
+					Ctrl->N.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'Q':	/* Directional derivative */
 				Ctrl->Q.active = true;
@@ -472,8 +475,10 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 				}
 				break;
 			case 'T':	/* Input mask grid */
-				Ctrl->T.active = true;
-				Ctrl->T.file = strdup (opt->arg);
+				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_IN)))
+					Ctrl->T.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'W':	/* Expect data weights in last column */
 				Ctrl->W.active = true;

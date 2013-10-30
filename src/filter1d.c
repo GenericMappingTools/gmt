@@ -244,6 +244,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

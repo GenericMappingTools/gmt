@@ -142,15 +142,20 @@ int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output filename */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (&opt->arg[0]);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'S':	/* Set limits */
 				Ctrl->S.active = true;
@@ -251,7 +256,6 @@ int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct G
 	}
 	
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.mode, "Syntax error -S option: Must specify at least one of -Sa, -Sb, -Si, -Sr\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

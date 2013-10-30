@@ -239,7 +239,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 
 	if (!GMT_access (GMT, file, R_OK))	/* Found in current directory */
 		ptr = file;
-	else if (GMT_getdatapath (GMT, file, path) || GMT_getsharepath (GMT, "dbase", file, "", path))
+	else if (GMT_getdatapath (GMT, file, path, F_OK) || GMT_getsharepath (GMT, "dbase", file, "", path, F_OK))
 		ptr = path;	/* Found it in the data or share path/dbase directory */
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: Unable to find file %s.\n", file);
@@ -585,7 +585,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 					expected_size = lrint ((ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
 				else
 					expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
-				if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
+				if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path, F_OK) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path, F_OK)) {
 					strncpy (rasinfo[nfound].h.remark, path, GMT_GRID_REMARK_LEN160);
 					stat (path, &F);
 				}
