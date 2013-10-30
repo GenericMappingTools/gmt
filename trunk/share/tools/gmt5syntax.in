@@ -18,8 +18,8 @@ use warnings;
 my $progname = 'gmt@GMT_INSTALL_NAME_SUFFIX@';
 
 # words to prepend with $progname
-my @modulenames = qw( backtracker blockmean blockmedian blockmode colmath
-dimfilter filter1d fitcircle gmt2kml gmtconvert gmtdefaults gmtget gmtgravmag3d
+my @modulenames = qw( backtracker blockmean blockmedian blockmode dimfilter
+filter1d fitcircle gmt2kml gmtconvert gmtdefaults gmtget gmtgravmag3d gmtinfo
 gmtmath gmtselect gmtset gmtsimplify gmtspatial gmtstitch gmtvector gmtwhich
 gravfft grd2cpt grd2rgb grd2xyz grdblend grdclip grdcontour grdcut grdedit
 grdfft grdfilter grdgradient grdgravmag3d grdhisteq grdimage grdinfo
