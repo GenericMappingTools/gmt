@@ -184,8 +184,10 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (n_files == 0) Ctrl->In.file = strdup (opt->arg);
-				n_files++;
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -208,8 +210,10 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 				Ctrl->E.active = true;
 				break;
 			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'm':
 				if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
@@ -342,7 +346,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		imgrange.maxlat = Ctrl->D.max;
 	}
 
-	if (!GMT_getdatapath (GMT, Ctrl->In.file, infile)) {
+	if (!GMT_getdatapath (GMT, Ctrl->In.file, infile, R_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "img file %s not found\n", Ctrl->In.file);
 		Return (GMT_GRDIO_FILE_NOT_FOUND);
 	}

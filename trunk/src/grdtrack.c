@@ -209,9 +209,13 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 			case '>':	/* Specified output file */
-				if (n_files++ == 0) Ctrl->Out.file = strdup (opt->arg);
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT))
+					Ctrl->Out.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -275,15 +279,20 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
 							n_errors++;
 						}
-						else
+						else if (GMT_check_filearg (GMT, '<', line, GMT_IN))
 							Ctrl->G.file[ng] = strdup (line);
+						else
+							n_errors++;
 						Ctrl->G.type[ng] = 1;
 						n_errors += GMT_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Syntax error -G: mode must be in 0-3 range\n");
 						n_errors += GMT_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
 					}
-					else
-						Ctrl->G.file[ng] = strdup (opt->arg);
-					n_errors += GMT_check_condition (GMT, !Ctrl->G.file[ng], "Syntax error -G: Must specify input file\n");
+					else {	/* Regular grid file */
+						if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+							Ctrl->G.file[ng] = strdup (opt->arg);
+						else
+							n_errors++;
+					}
 					ng++;
 				}
 				break;

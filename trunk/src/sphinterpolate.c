@@ -26,7 +26,7 @@
  *     data on the Surface of a Sphere with a surface under tension, AMC
  *     Trans. Math. Software, 23 (3), 435-442.
  * We translated to C using f2c -r8 and and manually edited the code
- * so that f2c libs were not needed.
+ * so that f2c libs were not needed.  For any translation errors, blame me.
  *
  * Author:	Paul Wessel
  * Date:	1-AUG-2011
@@ -147,13 +147,16 @@ int GMT_sphinterpolate_parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':
 				Ctrl->I.active = true;

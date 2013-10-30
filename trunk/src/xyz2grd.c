@@ -176,7 +176,11 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -213,8 +217,10 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 					n_errors += GMT_default_error (GMT, opt->option);
 				break;
 			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':
 				Ctrl->I.active = true;

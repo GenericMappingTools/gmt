@@ -212,6 +212,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 		switch (opt->option) {
 
 			case '<':	/* Input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Supplemental parameters */
@@ -262,7 +263,10 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 			case 'E':	/* File with stage poles */
 				Ctrl->E.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
-				Ctrl->E.file  = strdup (&opt->arg[k]);
+				if (GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN))
+					Ctrl->E.file  = strdup (&opt->arg[k]);
+				else
+					n_errors++;
 				break;
 
 			case 'e':	/* Apply a fixed total reconstruction rotation to all input points  */
@@ -273,8 +277,10 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 				break;
 
 			case 'F':	/* File with hotspot motion history */
-				Ctrl->F.active = true;
-				Ctrl->F.file  = strdup (opt->arg);
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN)))
+					Ctrl->F.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			case 'L':	/* Specify what kind of track to project */

@@ -254,7 +254,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 
 	/* 2. First check for coastline.conf */
 
-	if (GMT_getsharepath (GMT, "conf", "coastline", ".conf", path) || GMT_getsharepath (GMT, "coast", "coastline", ".conf", path)) {
+	if (GMT_getsharepath (GMT, "conf", "coastline", ".conf", path, R_OK) || GMT_getsharepath (GMT, "coast", "coastline", ".conf", path, R_OK)) {
 
 		/* We get here if coastline.conf exists - search among its directories for the named file */
 
@@ -276,7 +276,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 
 	/* 3. Then check for the named file itself */
 
-	if (GMT_getsharepath (GMT, "coast", stem, GSHHG_EXT, path)) {
+	if (GMT_getsharepath (GMT, "coast", stem, GSHHG_EXT, path, R_OK)) {
 		if ( gshhg_require_min_version (path, version) ) {
 			/* update invalid GMT->session.GSHHGDIR */
 			sprintf (dir, "%s/%s", GMT->session.SHAREDIR, "coast");

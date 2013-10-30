@@ -198,7 +198,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "J");
 	GMT_dist_syntax (API->GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, or points [%s].\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
@@ -238,6 +238,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -285,8 +286,10 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				}
 				break;
 			case 'F':	/* Inside/outside polygon test */
-				Ctrl->F.active = true;
-				Ctrl->F.file = strdup (opt->arg);
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN)))
+					Ctrl->F.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':	/* Invert these tests */
 				Ctrl->I.active = true;
@@ -306,24 +309,25 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				}
 				break;
 			case 'L':	/* Near a line test */
-				if (opt->arg[0]) {	/* Set line options */
-					Ctrl->L.active = true;
-					k = 0;
-					if (opt->arg[k] == 'p') {	/* Disallow points beyond endpoints */
-						Ctrl->L.end_mode = 10;
-						k++;
-					}
-					for (j = k; opt->arg[j] && opt->arg[j] != '/'; j++);
-					if (!opt->arg[j]) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
-						n_errors++;
-					}
-					else {
+				Ctrl->L.active = true;
+				k = 0;
+				if (opt->arg[k] == 'p') {	/* Disallow points beyond endpoints */
+					Ctrl->L.end_mode = 10;
+					k++;
+				}
+				for (j = k; opt->arg[j] && opt->arg[j] != '/'; j++);	/* Find the first slash */
+				if (!opt->arg[j]) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+					n_errors++;
+				}
+				else {
+					if (GMT_check_filearg (GMT, 'L', &opt->arg[j+1], GMT_IN))
 						Ctrl->L.file = strdup (&opt->arg[j+1]);
-						opt->arg[j] = '\0';	/* Chop off the /filename part */
-						Ctrl->L.mode = GMT_get_distance (GMT, &opt->arg[k], &(Ctrl->L.dist), &(Ctrl->L.unit));
-						opt->arg[j] = '/';	/* Restore the /filename part */
-					}
+					else
+						n_errors++;
+					opt->arg[j] = '\0';	/* Chop off the /filename part */
+					Ctrl->L.mode = GMT_get_distance (GMT, &opt->arg[k], &(Ctrl->L.dist), &(Ctrl->L.unit));
+					opt->arg[j] = '/';	/* Restore the /filename part */
 				}
 				break;
 			case 'N':	/* Inside/outside GSHHS land */

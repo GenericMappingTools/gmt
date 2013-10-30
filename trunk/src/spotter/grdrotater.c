@@ -132,7 +132,7 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n, n_files = 0;
+	unsigned int n_errors = 0, k, n_files = 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -141,8 +141,11 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Supplemental parameters */
@@ -158,13 +161,40 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* File with stage poles */
-				Ctrl->E.active = true;	n = 0;
-				if (opt->arg[0] == '+') { Ctrl->E.mode = true; n = 1;}
-				Ctrl->E.file  = strdup (&opt->arg[n]);
+				Ctrl->E.active = true;	k = 0;
+				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
+				if (GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN))
+					Ctrl->E.file  = strdup (&opt->arg[k]);
+				else
+					n_errors++;
+				break;
+			case 'e':
+				Ctrl->e.active  = true;
+				sscanf (opt->arg, "%[^/]/%[^/]/%lg", txt_a, txt_b, &Ctrl->e.w);
+				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->e.lon), txt_a);
+				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->e.lat), txt_b);
+				break;
+			case 'F':
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN)))
+					Ctrl->F.file = strdup (opt->arg);
+				else
+					n_errors++;
+				break;
+			case 'G':
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
+				break;
+			case 'N':
+				Ctrl->N.active = true;
+				break;
+			case 'S':
+				Ctrl->S.active = true;
 				break;
 			case 'T':	/* New: -Tage; compat mode: -Tlon/lat/angle Finite rotation parameters */
-				n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				if (n == 3) {	/* Gave -Tlon/lat/angle */
+				k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+				if (k == 3) {	/* Gave -Tlon/lat/angle */
 					if (GMT_compat_check (GMT, 4)) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -e<lon>/<lat>/<angle> instead.\n");
 						Ctrl->e.active  = true;
@@ -181,26 +211,6 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 					Ctrl->T.active = true;
 					Ctrl->T.value = atof (txt_a);
 				}
-				break;
-			case 'e':
-				Ctrl->e.active  = true;
-				sscanf (opt->arg, "%[^/]/%[^/]/%lg", txt_a, txt_b, &Ctrl->e.w);
-				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->e.lon), txt_a);
-				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->e.lat), txt_b);
-				break;
-			case 'F':
-				Ctrl->F.active = true;
-				Ctrl->F.file = strdup (opt->arg);
-				break;
-			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
-				break;
-			case 'N':
-				Ctrl->N.active = true;
-				break;
-			case 'S':
-				Ctrl->S.active = true;
 				break;
 				
 			default:	/* Report bad options */

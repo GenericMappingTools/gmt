@@ -168,7 +168,7 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	int n;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -176,8 +176,8 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input files */
-				n_files++;
+			case '<':	/* Input file(s) */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -192,8 +192,10 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 				}
 				break;
 			case 'G':	/* Output file */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
@@ -243,7 +245,6 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.sectors <= 0, "Syntax error -N option: Must specify a positive number of sectors\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");

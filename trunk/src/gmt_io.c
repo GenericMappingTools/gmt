@@ -446,7 +446,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 		"%[^?]?%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]",
 		file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
 		varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]) - 1;
-	if (nc_open (GMT_getdatapath (GMT, file, path), NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
+	if (nc_open (GMT_getdatapath (GMT, file, path, R_OK), NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
 	if (GMT_compat_check (GMT, 4)) {
 		if (nvars <= 0) nvars = sscanf (GMT->common.b.varnames,
 			"%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]",
@@ -572,7 +572,7 @@ FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
 	if (mode[0] != 'r')	/* Open file for writing (so cannot be netCDF) */
 		return (fopen (filename, mode));
 	else if (GMT->common.b.active[GMT_IN])	/* Definitely not netCDF */
-		return (fopen (GMT_getdatapath(GMT, filename, path), mode));
+		return (fopen (GMT_getdatapath(GMT, filename, path, R_OK), mode));
 	else if (GMT_compat_check (GMT, 4) && GMT->common.b.varnames[0])	/* Definitely netCDF */
 		return (gmt_nc_fopen (GMT, filename, mode));
 	else if (strchr (filename, '?'))	/* Definitely netCDF */
@@ -583,13 +583,13 @@ FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
 	else if (!strcmp (filename, "/dev/null"))	/* The Unix null device; catch here to avoid gmt_nc_fopen */
 #endif
 	{
-		return (fopen (GMT_getdatapath(GMT, filename, path), mode));
+		return (fopen (GMT_getdatapath(GMT, filename, path, R_OK), mode));
 	}
 	else {	/* Maybe netCDF */
 		fd = gmt_nc_fopen (GMT, filename, mode);
 		if (!fd) {
 			char *c;
-			if ((c = GMT_getdatapath(GMT, filename, path)) != NULL) fd = fopen(c, mode);
+			if ((c = GMT_getdatapath(GMT, filename, path, R_OK)) != NULL) fd = fopen(c, mode);
 		}
 		return (fd);
 	}
@@ -761,7 +761,7 @@ char *GMT_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path)
 	return (NULL);	/* No file found, give up */
 }
 
-char *GMT_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path)
+char *GMT_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int mode)
 {
 	/* stem is the name of the file, e.g., grid.img
 	 * path is the full path to the file in question
@@ -783,7 +783,7 @@ char *GMT_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path)
 	/* First look in the current working directory */
 
 	if (!access (stem, F_OK)) {	/* Yes, found it */
-		if (gmt_file_is_readable (GMT, (char *)stem)) {	/* Yes, can read it */
+		if (mode == F_OK || gmt_file_is_readable (GMT, (char *)stem)) {	/* Yes, found it or can read it */
 			strcpy (path, stem);
 			return (path);
 		}
@@ -838,7 +838,7 @@ bool gmt_file_is_readable (struct GMT_CTRL *GMT, char *path)
 {	/* Returns true if readable, otherwise give error and return false */
 	if (!access (path, R_OK)) return (true);	/* Readable */
 	/* Get here when found, but not readable */
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to read %s (permissions?)\n", path);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to read %s (permissions?)\n", path);
 	return (false);	/* Cannot read, give up */
 }
 
@@ -875,7 +875,7 @@ bool gmt_traverse_dir (const char *file, char *path) {
 }
 #endif /* HAVE_DIRENT_H_ */
 
-char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path)
+char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path, int mode)
 {
 	/* stem is the prefix of the file, e.g., gmt_cpt for gmt_cpt.conf
 	 * subdir is an optional subdirectory name in the $GMT_SHAREDIR directory.
@@ -888,7 +888,7 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	/* First look in the current working directory */
 
 	sprintf (path, "%s%s", stem, suffix);
-	if (!access (path, R_OK)) return (path);	/* Yes, found it in current directory */
+	if (!access (path, mode)) return (path);	/* Yes, found it in current directory */
 
 	/* Do not continue when full pathname is given */
 
@@ -902,10 +902,10 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	if (GMT->session.USERDIR) {
 		/* Try to get file from $GMT_USERDIR */
 		sprintf (path, "%s/%s%s", GMT->session.USERDIR, stem, suffix);
-		if (!access (path, R_OK)) return (path);
+		if (!access (path, mode)) return (path);
 		/* Try to get file from $GMT_USERDIR/subdir */
 		sprintf (path, "%s/%s/%s%s", GMT->session.USERDIR, subdir, stem, suffix);
-		if (!access (path, R_OK)) return (path);
+		if (!access (path, mode)) return (path);
 	}
 
 	/* Try to get file from $GMT_SHAREDIR/subdir */
@@ -935,7 +935,7 @@ int GMT_access (struct GMT_CTRL *GMT, const char* filename, int mode)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */
 		char path[GMT_BUFSIZ];
-		return (GMT_getdatapath (GMT, file, path) ? 0 : -1);
+		return (GMT_getdatapath (GMT, file, path, mode) ? 0 : -1);
 	}
 	/* If we get here then mode is bad (X_OK)? */
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad mode (%d) passed to GMT_access\n", mode);

@@ -186,12 +186,14 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 
 			case '<':	/* Input file */
 				Ctrl->In.active = true;
-				if (Ctrl->In.n_grids < 2) 
-					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
-				else {
+				if (Ctrl->In.n_grids >= 2) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: A maximum of two input grids may be processed\n");
 				}
+				else if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'A':	/* Add const to ingrid1 */
 				Ctrl->A.active = true;

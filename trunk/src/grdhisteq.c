@@ -125,8 +125,11 @@ int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, stru
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -142,8 +145,10 @@ int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, stru
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'G':	/* Output file for equalized grid */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'N':	/* Get normalized scores */
 				Ctrl->N.active = true;
@@ -161,7 +166,7 @@ int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, stru
 
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->G.file, "Syntax error -N option: Must also specify output grid file with -G\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Must also specify output grid file with -G\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Syntax error -C option: n_cells must be positive\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Syntax error: Either -D or -G is required for output\n");
 	n_errors += GMT_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");

@@ -503,10 +503,13 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Skip input files */
+			case '<':	/* Collect input files */
 				Ctrl->In.active = true;
 				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = GMT_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
-				Ctrl->In.file[Ctrl->In.n++] = strdup (opt->arg);
+				if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+					Ctrl->In.file[Ctrl->In.n++] = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -525,8 +528,10 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 				}
 				break;
 			case 'G':	/* Output filename */
-				Ctrl->G.file = strdup (opt->arg);
-				Ctrl->G.active = true;
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
@@ -565,7 +570,6 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error -R option: Must specify region\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive dx, dy\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -162,9 +162,13 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0) Ctrl->Out.file = strdup (opt->arg);
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT))
+					Ctrl->Out.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

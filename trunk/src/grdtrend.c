@@ -168,27 +168,26 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 
 	unsigned int n_errors = 0, n_files = 0, j;
 	struct GMT_OPTION *opt = NULL;
-	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		switch (opt->option) {
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':
-				Ctrl->D.active = true;
-				if (opt->arg[0])
+				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT)))
 					Ctrl->D.file = strdup (opt->arg);
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: Must specify file name\n");
+				else
 					n_errors++;
-				}
 				break;
 			case 'N':
 				/* Must check for both -N[r]<n_model> and -N<n_model>[r] due to confusion */
@@ -198,23 +197,18 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 				if (opt->arg[j]) Ctrl->N.value = atoi(&opt->arg[j]);
 				break;
 			case 'T':
-				Ctrl->T.active = true;
-				if (opt->arg[0])
+				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_OUT)))
 					Ctrl->T.file = strdup (opt->arg);
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must specify file name\n");
+				else
 					n_errors++;
-				}
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				if (opt->arg[0])
+				/* OK if this file doesn't exist; we always write to that file on output */
+				if (GMT_check_filearg (GMT, 'W', opt->arg, GMT_IN) || GMT_check_filearg (GMT, 'W', opt->arg, GMT_OUT)) 
 					Ctrl->W.file = strdup (opt->arg);
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -W option: Must specify file name\n");
+				else
 					n_errors++;
-				}
-				/* OK if this file doesn't exist */
 				break;
 
 			default:	/* Report bad options */

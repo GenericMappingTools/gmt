@@ -195,6 +195,7 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 			case '<':	/* Input files */
 				Ctrl->In.active = true;
 				n_files[GMT_IN]++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files[GMT_OUT]++ == 0) Ctrl->Out.file = strdup (opt->arg);
@@ -375,7 +376,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file), "Error: Cannot find colortable %s\n", Ctrl->C.file);
+	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file, R_OK), "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */

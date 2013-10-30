@@ -265,6 +265,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				n_files++;
 				break;
 

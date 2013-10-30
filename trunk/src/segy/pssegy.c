@@ -191,7 +191,11 @@ int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

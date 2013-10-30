@@ -22,7 +22,7 @@
  *  and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
  *  Software, 23 (3), 416-434.
  * We translated to C using f2c -r8 and and manually edited the code
- * so that f2c libs were not needed.
+ * so that f2c libs were not needed.  For any translation errors, blame me.
  *
  * Author:      Paul Wessel
  * Date:	1-AUG-2011
@@ -440,6 +440,7 @@ int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

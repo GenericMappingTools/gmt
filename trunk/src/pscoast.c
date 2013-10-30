@@ -258,7 +258,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k;
+	unsigned int n_errors = 0, n_files = 0, k;
 	int ks;
 	bool clipping;
 	struct GMT_OPTION *opt = NULL;
@@ -269,6 +269,10 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
+
+			case '<':	/* Input files */
+				n_files++;
+				break;
 
 			/* Processes program-specific parameters */
 
@@ -500,6 +504,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
 		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "Syntax error -W option: Pen thickness for feature %d cannot be negative\n", k);
 	}
+	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping, "Syntax error: Cannot combine -C, -G, -S while clipping\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Syntax error: Must choose between clipping land OR water\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active), "Syntax error: Must choose between dumping and clipping/plotting\n");

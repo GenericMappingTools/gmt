@@ -148,7 +148,7 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args)
 	/*---------------------------- This is the gmtdefaults main code ----------------------------*/
 
 	if (Ctrl->D.active) {
-		GMT_getsharepath (GMT, "conf", "gmt", (Ctrl->D.mode == 's') ? "_SI" : (Ctrl->D.mode == 'u') ? "_US" : ".conf", path);
+		GMT_getsharepath (GMT, "conf", "gmt", (Ctrl->D.mode == 's') ? "_SI" : (Ctrl->D.mode == 'u') ? "_US" : ".conf", path, R_OK);
 		GMT_loaddefaults (GMT, path);
 	}
 

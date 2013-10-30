@@ -129,6 +129,7 @@ int GMT_x2sys_datalist_parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *
 			/* Common parameters */
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -144,12 +145,16 @@ int GMT_x2sys_datalist_parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = true;
-				Ctrl->I.file = strdup (opt->arg);
+				if ((Ctrl->I.active = GMT_check_filearg (GMT, 'I', opt->arg, GMT_IN)))
+					Ctrl->I.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
-				Ctrl->L.active = true;
-				Ctrl->L.file = strdup (opt->arg);
+				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN)))
+					Ctrl->L.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'S':
 				Ctrl->S.active = true;

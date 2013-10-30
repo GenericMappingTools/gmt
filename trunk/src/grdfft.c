@@ -673,12 +673,14 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 		switch (opt->option) {
 			case '<':	/* Input file (only 1 or 2 are accepted) */
 				Ctrl->In.active = true;
-				if (Ctrl->In.n_grids < 2) 
-					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
-				else {
+				if (Ctrl->In.n_grids >= 2) {
 					n_errors++;
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: A maximum of two input grids may be processed\n");
 				}
+				else if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

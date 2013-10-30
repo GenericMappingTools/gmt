@@ -105,6 +105,7 @@ int GMT_x2sys_binlist_parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ct
 			/* Common parameters */
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

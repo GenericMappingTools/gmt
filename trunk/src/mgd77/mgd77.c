@@ -4423,7 +4423,7 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C)
 
 	/* Read the correction table */
 
-	GMT_getsharepath (GMT, "mgg", "carter", ".d", buffer);
+	GMT_getsharepath (GMT, "mgg", "carter", ".d", buffer, R_OK);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
  		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Cannot open r %s\n", buffer);
                 return (-1);
@@ -5833,11 +5833,11 @@ void MGD77_CM4_init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77
 	MGD77_Set_Home (GMT, F);
 
 	GMT_memset (CM4, 1, struct MGD77_CM4);	/* All is set to 0/false */
-	GMT_getsharepath (GMT, "mgd77", "umdl", ".CM4", file);
+	GMT_getsharepath (GMT, "mgd77", "umdl", ".CM4", file, R_OK);
 	CM4->CM4_M.path = strdup (file);
-	GMT_getsharepath (GMT, "mgd77", "Dst_all", ".wdc", file);
+	GMT_getsharepath (GMT, "mgd77", "Dst_all", ".wdc", file, R_OK);
 	CM4->CM4_D.path = strdup (file);
-	GMT_getsharepath (GMT, "mgd77", "F107_mon", ".plt", file);
+	GMT_getsharepath (GMT, "mgd77", "F107_mon", ".plt", file, R_OK);
 	CM4->CM4_I.path = strdup (file);
 	CM4->CM4_D.index = true;
 	CM4->CM4_D.load = true;

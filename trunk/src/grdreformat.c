@@ -108,9 +108,9 @@ int GMT_grdreformat_parse (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *Ctrl, 
 		switch (opt->option) {
 
 			case '<':	/* Input and Output files */
-				if (n_in == 0)
+				if (n_in == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
 					Ctrl->IO.file[n_in++] = strdup (opt->arg);
-				else if (n_in == 1)
+				else if (n_in == 1 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT))
 					Ctrl->IO.file[n_in++] = strdup (opt->arg);
 				else {
 					n_in++;
@@ -118,7 +118,10 @@ int GMT_grdreformat_parse (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *Ctrl, 
 				}
 				break;
 			case '>':	/* Output file */
-				Ctrl->IO.file[GMT_OUT] = strdup (opt->arg);
+				if (GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT))
+					Ctrl->IO.file[GMT_OUT] = strdup (opt->arg);
+				else
+					n_errors++;
 				n_in++;
 				break;
 

@@ -129,15 +129,20 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 			
  			case 'G':	/* Output file */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'N':
 				Ctrl->N.active = true;

@@ -139,6 +139,7 @@ int GMT_grdmask_parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -154,8 +155,10 @@ int GMT_grdmask_parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'G':	/* Output filename */
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;

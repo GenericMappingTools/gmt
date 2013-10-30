@@ -148,8 +148,8 @@ EXTERN_MSC char * GMT_fgets_chop (struct GMT_CTRL *GMT, char *str, int size, FIL
 EXTERN_MSC int GMT_fclose (struct GMT_CTRL *GMT, FILE *stream);
 EXTERN_MSC int GMT_access (struct GMT_CTRL *GMT, const char *filename, int mode);		/* access wrapper */
 EXTERN_MSC FILE * GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode);
-EXTERN_MSC char * GMT_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for data file */
-EXTERN_MSC char * GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path);	/* Look for shared file */
+EXTERN_MSC char * GMT_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int mode);	/* Look for data file */
+EXTERN_MSC char * GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path, int mode);	/* Look for shared file */
 EXTERN_MSC void GMT_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt);
 EXTERN_MSC void GMT_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols);		/* Write segment header back out */
 EXTERN_MSC void GMT_write_textrecord (struct GMT_CTRL *GMT, FILE *fp, char *txt);

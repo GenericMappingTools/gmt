@@ -40,10 +40,6 @@
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct In {
-		bool active;
-		char *file;
-	} In;
 	struct A {	/* -A<sector_angle>[r] */
 		bool active;
 		bool rose;
@@ -114,7 +110,6 @@ void *New_psrose_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_psrose_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
 	if (C->C.file) free (C->C.file);	
 	if (C->L.w) free (C->L.w);	
 	if (C->L.e) free (C->L.e);	
@@ -189,7 +184,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 	 */
 
 	int n;
-	unsigned int n_errors = 0, n_files = 0, k;
+	unsigned int n_errors = 0, k;
 	double range;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -200,8 +195,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -212,7 +206,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 				k = (opt->arg[0] == 'r') ? 1 : 0;
 				Ctrl->A.inc = atof (&opt->arg[k]);
 				break;
-			case 'C':	/* Read mode file and plot directions */
+			case 'C':	/* Read mode file and plot mean directions */
 				Ctrl->C.active = true;
 				if (Ctrl->C.file) free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
@@ -544,11 +538,10 @@ int GMT_psrose (void *V_API, int mode, void *args)
 
 	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char *kind[2] = {"r", "bin sum"};
-		if (Ctrl->In.file) strncpy (text, Ctrl->In.file, GMT_BUFSIZ); else strcpy (text, "<stdin>");
-		sprintf (format, "Info for %%s: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s\n",
+		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s\n",
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_NORMAL, format, text, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
+		GMT_Report (API, GMT_MSG_NORMAL, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
 		if (Ctrl->I.active) {
 			GMT_free (GMT, sum);
 			GMT_free (GMT, xx);

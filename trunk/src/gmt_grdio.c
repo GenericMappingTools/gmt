@@ -576,7 +576,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
 			if (header->type != GMT_GRID_IS_GD || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
-				if (!GMT_getdatapath (GMT, tmp, header->name))
+				if (!GMT_getdatapath (GMT, tmp, header->name, R_OK))
 					return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
@@ -592,7 +592,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 				return (GMT_NOERROR);
 		}
 #endif
-		if (!GMT_getdatapath (GMT, tmp, header->name))
+		if (!GMT_getdatapath (GMT, tmp, header->name, R_OK))
 			return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((val = GMT_is_nc_grid (GMT, header)) == GMT_NOERROR)
@@ -1686,7 +1686,7 @@ int GMT_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	FILE *fp = NULL;
 	double wesn[4], wesn_all[4];
 
-	if (!GMT_getdatapath (GMT, imgfile, file)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	if (!GMT_getdatapath (GMT, imgfile, file, R_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
 	if (stat (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
 	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72, ~80, or ~85 */

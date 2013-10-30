@@ -730,11 +730,12 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->Q.unit = 'k';	/* Default geographic distance unit is km */
-	
+
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
 				n_files[GMT_IN]++;
 				break;
 			case '>':	/* Got named output file */
@@ -795,7 +796,10 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 							Ctrl->D.I.inside = 1;
 							break;
 						case 'f':	/* Gave a file name */
-							Ctrl->D.file = strdup (&p[1]);
+							if (GMT_check_filearg (GMT, 'D', &p[1], GMT_IN))
+								Ctrl->D.file = strdup (&p[1]);
+							else
+								n_errors++;
 							break;
 					}
 				}

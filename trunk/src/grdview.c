@@ -399,8 +399,11 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 		switch (opt->option) {
 			/* Common parameters */
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files++ > 0) break;
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+					Ctrl->In.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -416,13 +419,25 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				if (n_commas == 2) {	/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
-					Ctrl->G.file[0] = strdup (A);
-					Ctrl->G.file[1] = strdup (B);
-					Ctrl->G.file[2] = strdup (C);
+					if (GMT_check_filearg (GMT, '<', A, GMT_IN))
+						Ctrl->G.file[0] = strdup (A);
+					else
+						n_errors++;
+					if (GMT_check_filearg (GMT, '<', B, GMT_IN))
+						Ctrl->G.file[1] = strdup (B);
+					else
+						n_errors++;
+					if (GMT_check_filearg (GMT, '<', C, GMT_IN))
+						Ctrl->G.file[2] = strdup (C);
+					else
+						n_errors++;
 					Ctrl->G.image = true;
 				}
-				else if (n_commas == 0) {
-					Ctrl->G.file[0] = strdup (opt->arg);
+				else if (n_commas == 0) {	/* Just got a single drape file */
+					if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+						Ctrl->G.file[0] = strdup (opt->arg);
+					else
+						n_errors++;
 				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -G: Usage is -G<z.grd> | -G<r.grd>,<g.grd>,<b.grd>\n");
