@@ -83,6 +83,8 @@ set (CPACK_COMPONENT_RUNTIME_DESCRIPTION
 	"GMT programs, libraries and shared files.")
 set (CPACK_COMPONENT_DOCUMENTATION_DESCRIPTION
 	"Documentation and example files.")
+set (CPACK_COMPONENT_DCW_DESCRIPTION
+	"Digital Chart of the World files.")
 set (CPACK_COMPONENT_GSHHG_DESCRIPTION
 	"Shoreline database files.")
 
