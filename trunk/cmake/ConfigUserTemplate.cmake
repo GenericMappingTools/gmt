@@ -170,7 +170,7 @@
 #set (EXTRA_BUILD_DIRS apidemo)
 
 # Directory in which to install the release sources per default
-# [${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src]:
+# [${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION}]:
 #set (GMT_RELEASE_PREFIX "release-src-prefix")
 
 # If set to false, image conversion from PS images to PNG and PDF does
