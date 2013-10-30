@@ -10,8 +10,9 @@
 # specified deflation level.
 
 function usage () {
-  echo "usage: $(basename $0) [-d n] [-s] file [file ...]"  >&2
+  echo "usage: $(basename $0) [-d n] [-o dir] [-s] file [file ...]"  >&2
   echo "  [-d n]    set compression level (0=min, 9=max, default=3)" >&2
+  echo "  [-o dir]  output directory" >&2
   echo "  [-s]      add shuffle option to deflation compression" >&2
   echo "  [-v]      be verbose" >&2
   echo "  [-x s]    add suffix \"s\" to output filename" >&2
@@ -23,6 +24,7 @@ NC_DEFLATE=3
 NC_SHUFFLE=
 NC_SUFFIX=""
 NC_VERBOSE=0
+OUTDIR=""
 
 # handle filenames with spaces
 IFS=$'\n'
@@ -64,10 +66,13 @@ function file1_greater_file2 () {
 }
 
 # parse command line args
-while getopts ":d:svx:" opt; do
+while getopts ":d:o:svx:" opt; do
   case $opt in
     d)
     NC_DEFLATE="$OPTARG"
+    ;;
+    o)
+    OUTDIR="$OPTARG"
     ;;
     s)
     NC_SHUFFLE="-s"
@@ -121,7 +126,11 @@ for file in $@; do
   if [ "$NC_DEFLATE" -eq 0 ] || file1_greater_file2 "$file" "${file}.$$.tmp" ; then
     # if no compression or if compressed file is smaller than original file:
     # replace original file with compressed/decompressed file
-    mv -f "${file}.$$.tmp" "${file}${NC_SUFFIX}"
+    if [ "${OUTDIR}" ]; then
+      mv -f "${file}.$$.tmp" "${OUTDIR}/$(basename ${file})${NC_SUFFIX}"
+    else
+      mv -f "${file}.$$.tmp" "${file}${NC_SUFFIX}"
+    fi
 
     if [ "$NC_VERBOSE" = "TRUE" ]; then
       if [ "$NC_DEFLATE" -eq 0 ]; then
@@ -133,6 +142,10 @@ for file in $@; do
   else
     # keep original file and remove compressed file
     rm -f "${file}.$$.tmp"
+    # copy original file
+    if [ "${OUTDIR}" ]; then
+      cp -f "${file}" "${OUTDIR}/$(basename ${file})${NC_SUFFIX}"
+   fi
 
     if [ "$NC_VERBOSE" = "TRUE" ]; then
       echo "could not reduce file size. already compressed?" >&2
