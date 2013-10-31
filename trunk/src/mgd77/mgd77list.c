@@ -1031,13 +1031,13 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 			c  = M.order[kk].set;
 			id = M.order[kk].item;
 			if (c == MGD77_M77_SET && id == time_column)	{/* Special time formatting */
-				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? M.time_format : GMT_IS_FLOAT;
+				GMT->current.io.col_type[GMT_OUT][pos] = M.time_format;
 			}
 			else if (c == MGD77_M77_SET && id == lon_column)	/* Special lon formatting */
-				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? GMT_IS_LON : GMT_IS_FLOAT;
+				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_LON ;
 			else if (c == MGD77_M77_SET && id == lat_column)	/* Special lat formatting */
-				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? GMT_IS_LAT : GMT_IS_FLOAT;
-			else 		/* Everything else is float (not true for the 3 strings though) */
+				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_LAT;
+			else 		/* Everything else is float (not true for the 3 strings though but dealt with separately) */
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
 		}
 		

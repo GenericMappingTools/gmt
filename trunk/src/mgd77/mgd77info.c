@@ -556,6 +556,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 		
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
+	MGD77_end (GMT, &Out);
 
 	Return (GMT_OK);
 }
