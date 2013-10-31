@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-11-01	remko
+	* example_10.sh:	Changed input to number of languages; multi-color columns
+
 2013-10-23	pwessel
 	* gmtinfo.c:		The new name of minmax.c, the latter will be honored
 				when GMT compatibility mode is 4.

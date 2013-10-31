@@ -3,7 +3,7 @@ REM
 REM		$Id$
 REM
 REM Purpose:	Make 3-D bar graph on top of perspective map
-REM GMT progs:	pscoast, pstext, psxyz
+REM GMT progs:	pscoast, pstext, psxyz, pslegend
 REM DOS calls:	echo, del, gawk
 REM
 echo GMT EXAMPLE 10
