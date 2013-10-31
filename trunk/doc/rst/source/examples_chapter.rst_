@@ -342,6 +342,12 @@ Creating GMT Graphics
     centered on each continent with a height that is proportional to the
     languages used. We choose a plain
     linear projection for the basemap and add the columns and text on top.
+    Eventually we make it a bit more fancy by splitting the columns up in different colors
+    indicating how commonly the languages are used, from institutional languages to
+    languages threatened by extinction.
+    The script also shows how to effectively use transparency of the boxes around the numbers
+    and in the shade surrounding the legend.
+
     Our script that produces Figure ex_10 reads:
 
     .. literalinclude:: /_verbatim/example_10.txt
