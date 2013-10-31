@@ -1,71 +1,50 @@
-Package: gmt5
-Version: 5.0.1b
-Revision: 0
-Source: ftp://ftp.soest.hawaii.edu/gmt5/GMT-%v_r12227M-src.tar.bz2
-Source-MD5: bf8b6fbb2bf84bad136755047561e05b
-Conflicts: gmt
-BuildDepends: cmake, netcdf-c7, libpcre1, gdal
-Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), libpcre1-shlibs, gdal-shlibs, gshhg, dcw-gmt
+Package: gmt
+Version: 4.5.9
+Revision: 1
+Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v.tar.bz2
+Source2: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-non-gpl.tar.bz2
+Source-MD5: 9f241e97774eadd1fe79f4d7022fcaed
+Source2-MD5: d61a34a83dc630b464d472c6f0bdfc3a
+
+SourceDirectory: GMT%v
+BuildDepends: netcdf-c7
+Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), gshhg (>= 2.2.2)
 Recommends: %n-doc
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true
+UseMaxBuildJobs: false
 
 # don't build xgrid to avoid x11 dependency.
 # don't build mex (won't work unless matlab or octave is installed).
-
-CompileScript: <<
-  #!/bin/sh -ev
-  mkdir build
-  cd build
-  cmake \
-	-DCMAKE_C_FLAGS_RELEASE="-O3 -DNDEBUG -fstrict-aliasing" \
-	-DCMAKE_INSTALL_PREFIX=%p \
-	-DNETCDF_ROOT=%p \
-	-DGSHHG_ROOT=%p \
-	-DDCW_ROOT=%p \
-	-DFFTW3_ROOT=off \
-	-DGDAL_ROOT=off \
-	-DPCRE_ROOT=off \
-	-DXGRID=off \
-	-DFLOCK=on \
-	-DGMT_INSTALL_MONOLITHIC=off \
-	-DGMT_INSTALL_NAME_SUFFIX=5 \
-	-DGMT_SOURCE_CODE_CONTROL_VERSION_STRING=%v-%r \
-	-DLICENSE_RESTRICTED=LGPL \
-	-DCMAKE_OSX_DEPLOYMENT_TARGET="" \
-        -DCMAKE_OSX_SYSROOT=/ \
-	..
-  make
-<<
+ConfigureParams: --datadir='${prefix}/share/%n' --enable-netcdf=%p --with-gshhg-dir=%p/share/gshhg-gmt-nc4 --enable-shared --enable-triangle --disable-xgrid --disable-mex
 InstallScript: <<
-  #!/bin/sh -ev
-  cd build
-  cmake -DCMAKE_INSTALL_PREFIX=%i -P cmake_install.cmake
+ #!/bin/sh -ev
+ make install-all prefix=%i
 <<
 SplitOff: <<
   Package: %N-doc
-  Conflicts: gmt-doc
   BuildDependsOnly: True
-  Files: share/doc/gmt5
+  Files: share/doc/gmt
   DocFiles: LICENSE.TXT
 <<
 SplitOff2: <<
   Package: %N-shlibs
-  Conflicts: gmt-shlibs
-  Files: lib/*.%v.dylib
+  Files: lib/*.4.dylib
   Shlibs: <<
-    %p/lib/libgmt.%v.dylib 5.1.0 %n (>= 5.1.0-0)
-    %p/lib/libpsl.%v.dylib 5.1.0 %n (>= 5.1.0-0)
-    %p/lib/gmt/plugins/supplements.so 5.1.0 %n (>= 5.1.0-0)
+    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.9-1)
+    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.9-1)
+    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.9-1)
+    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.9-1)
+    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.9-1)
+    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.9-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
 SplitOff3: <<
   Package: %N-dev
-  Conflicts: gmt-dev
   BuildDependsOnly: True
-  Files: include lib/*.dylib
-  DocFiles: ChangeLog LICENSE.TXT README* src/README.TRIANGLE src/TRIANGLE.HOWTO
+  Files: include lib/*.a lib/*.dylib
+  DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
 Description: Generic Mapping Tools
 DescDetail: <<
