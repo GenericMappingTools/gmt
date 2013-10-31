@@ -10090,6 +10090,7 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction)
 {	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
 	 * exists and is readable. Otherwise wre return false. */
+	unsigned int k = 0;
 	char message[GMT_LEN16] = {""};
 	if (option == GMT_OPT_INFILE)
 		sprintf (message, "for input file");
@@ -10103,12 +10104,13 @@ bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 		return false;	/* No file given */
 	}
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
-	if (GMT_access (GMT, file, F_OK)) {	/* Cannot find the file anywhere GMT looks */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, file);
+	if (file[0] == '=') k = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
+	if (GMT_access (GMT, &file[k], F_OK)) {	/* Cannot find the file anywhere GMT looks */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, &file[k]);
 		return false;	/* Could not find this file */
 	}
-	if (GMT_access (GMT, file, R_OK)) {	/* Cannot read this file (permissions?) */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, file);
+	if (GMT_access (GMT, &file[k], R_OK)) {	/* Cannot read this file (permissions?) */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, &file[k]);
 		return false;	/* Could not find this file */
 	}
 	return true;	/* Seems OK */
