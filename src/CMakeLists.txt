@@ -495,7 +495,7 @@ target_link_libraries (gshhg_version ${NETCDF_LIBRARIES})
 
 if (BUILD_SUPPLEMENTS)
 	# Tests depend on GMT progs and supplements:
-	add_dependencies (check ${_gmt_progs} psldemo gmt_suppl)
+	add_dependencies (check ${_gmt_progs} psldemo supplib)
 else (BUILD_SUPPLEMENTS)
 	# Tests depend on GMT progs and supplements:
 	add_dependencies (check ${_gmt_progs} psldemo)
