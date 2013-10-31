@@ -3,8 +3,8 @@
 #		$Id$
 #
 # Purpose:	Make 3-D bar graph on top of perspective map
-# GMT progs:	pscoast, pstext, psxyz
-# Unix progs:	$AWK, rm
+# GMT progs:	pscoast, pstext, psxyz, pslegend
+# Unix progs:	$AWK
 #
 ps=example_10.ps
 gmt pscoast -Rd -JX8id/5id -Dc -Sazure2 -Gwheat -Wfaint -A5000 -p200/40 -K > $ps
