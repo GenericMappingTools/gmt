@@ -1,0 +1,9 @@
+# $Id$
+# Number of languages per continent
+# Source: ethnologue.com
+-100    42      602     NA      North America
+-60     -20     458     SA      South America
+20      10      2146    AF      Africa
+100      30     2304    AS      Asia
+10      50      284     EU      Europe
+140     -30     1311    PA      Pacific
