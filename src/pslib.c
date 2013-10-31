@@ -3836,7 +3836,7 @@ unsigned char *psl_rle_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char 
 	}
 
 	/* Return number of output bytes and output buffer */
-	PSL_message (PSL, PSL_MSG_NORMAL, "RLE compressed %d to %d bytes (%.1f%%)\n", in, out, 100.0f*out/in);
+	PSL_message (PSL, PSL_MSG_NORMAL, "RLE compressed %d to %d bytes (%.1f%% savings)\n", in, out, 100.0f*(1.0f-(float)out/in));
 	*nbytes = out;
 	return (output);
 }
@@ -3903,7 +3903,7 @@ unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char 
 	}
 
 	/* Return number of output bytes and output buffer; release code table */
-	PSL_message (PSL, PSL_MSG_NORMAL, "LZW compressed %d to %d bytes (%.1f%%)\n", in, output->nbytes, 100.0f*output->nbytes/in);
+	PSL_message (PSL, PSL_MSG_NORMAL, "LZW compressed %d to %d bytes (%.1f%% savings)\n", in, output->nbytes, 100.0f*(1.0f-(float)output->nbytes/in));
 	*nbytes = output->nbytes;
 	buffer = output->buffer;
 	PSL_free (code);
@@ -3974,7 +3974,7 @@ unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned c
 
 	/* Return number of output bytes and output buffer */
 	olen = olen - strm.avail_out; /* initial size - size left */
-	PSL_message (PSL, PSL_MSG_NORMAL, "DEFLATE compressed %u to %u bytes (%.1f%% at compression level %d)\n", ilen, olen, 100.0f*olen/ilen, level == Z_DEFAULT_COMPRESSION ? 6 : level);
+	PSL_message (PSL, PSL_MSG_NORMAL, "DEFLATE compressed %u to %u bytes (%.1f%% savings at compression level %d)\n", ilen, olen, 100.0f*(1.0f-(float)olen/ilen), level == Z_DEFAULT_COMPRESSION ? 6 : level);
 	*nbytes = olen;
 	return output;
 
