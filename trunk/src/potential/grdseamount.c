@@ -18,10 +18,6 @@
 #define GMT_PROG_OPTIONS "-:RVbfhir" GMT_OPT("FH")
 
 struct GRDSEAMOUNT_CTRL {
-	struct In {
-		bool active;
-		char *file;
-	} In;
 	struct A {	/* -A[<out>/<in>] */
 		bool active;
 		float value[2];	/* Inside and outside value for mask */
