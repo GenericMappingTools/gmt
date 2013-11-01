@@ -93,7 +93,10 @@ Optional Arguments
     Select painting or dumping country polygons from the Digital Chart of the World.
     Append one or more comma-separated countries using the 2-character
     ISO 3166-1 alpha-2 convention.  To select a state of a country
-    (if available), append .state, e.g, US.TX for Texas.  Append **+l** to
+    (if available), append .state, e.g, US.TX for Texas.  To specify a
+    whole continent, prepend = to any of the continent codes AF (Africa),
+    AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+    NA (North America), or SA (South America).  Append **+l** to
     just list the countries and their codes [no data extraction or plotting takes place].
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, and the US.
     Use **+r** to obtain the bounding box coordinates from the polygon(s).
