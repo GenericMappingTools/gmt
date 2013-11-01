@@ -213,13 +213,13 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	int64_t first, last;
 	size_t np, max_np = 0U;
 	uint64_t k, seg, n_segments;
-	unsigned int n_items = 1, pos = 0, kk, tbl = 0;
+	unsigned int n_items = 0, pos = 0, kk, tbl = 0;
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
-	bool done, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
+	bool done, want_state, continent = false, outline = (F->mode & 4), fill = (F->mode & 8);
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
-	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[GMT_BUFSIZ] = {""};
+	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[GMT_BUFSIZ] = {""}, list[GMT_BUFSIZ] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
@@ -229,14 +229,32 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if (!F->codes || F->codes[0] == '\0') return NULL;	/* No countries requested */
 	if (mode != GMT_DCW_REGION && F->region && (mode & 12) == 0) return NULL;	/* No plotting/dumping requested, just -R */
 
-	for (k = 0; k < strlen (F->codes); k++) if (F->codes[k] == ',') n_items++;	/* Determine how many items we specified */
-
 	if (gmt_load_dcw_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies)) return NULL;	/* Something went wrong */
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 
 	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), gmt_dcw_comp_countries);	/* Sort on country code */
  
+	while (GMT_strtok (F->codes, ",", &pos, code)) {	/* Loop over items */
+		if (code[0] == '=') {	/* Must expand a continent into all member countries */
+			continent = true;
+			for (k = 0; k < GMT_DCW_COUNTRIES; k++) {
+				if (strncmp (GMT_DCW_country[k].continent, &code[1], 2)) continue;	/* Not this one */
+				if (n_items) strcat (list, ",");
+				strcat (list, GMT_DCW_country[k].code);
+				n_items++;
+			}
+		}
+		else {/* Just append this one */
+			if (n_items) strcat (list, ",");
+			strcat (list, code);
+			n_items++;
+		}
+	}
+	if (continent) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Country codes expanded from %s to %s [%d countries]\n", F->codes, list, n_items);
+	
+	//for (k = 0; k < strlen (F->codes); k++) if (F->codes[k] == ',') n_items++;	/* Determine how many items we specified */
+
 	if (mode & GMT_DCW_REGION) {	/* Wish to determine region from polygons */
 		if (wesn == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must pass wesn array if mode == 0\n");
@@ -284,7 +302,8 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		GMT_set_geographic (GMT, GMT_OUT);
 	}
-	while (GMT_strtok (F->codes, ",", &pos, code)) {	/* Loop over countries */
+	pos = 0;
+	while (GMT_strtok (list, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;
 		if (code[2] == '.') {	/* Requesting a state */
 			GMT_memset (state, GMT_LEN16, char);
@@ -325,9 +344,10 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		retval = nc_inq_dimlen (ncid, id, &np);
 
 		if (mode > GMT_DCW_REGION && np > max_np) {
-			GMT_malloc2 (GMT, lon, lat, np, NULL, double);
-			GMT_malloc2 (GMT, dx, dy, np, NULL, unsigned short int);
-			max_np = np;
+			size_t tmp_size = max_np;
+			GMT_malloc2 (GMT, lon, lat, np, &tmp_size, double);
+			GMT_malloc2 (GMT, dx, dy, np, &max_np, unsigned short int);
+			//max_np = np;
 		}
 
 	        /* Get the varid of the lon and lat variables, based on their names, and get the data */
@@ -402,7 +422,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				GMT_memcpy (S->coord[GMT_Y], lat, S->n_rows, double);
 				seg++;
 			}
-			else {	/* mdoe & GMT_DCW_PLOT: Plot this piece */
+			else {	/* mode & GMT_DCW_PLOT: Plot this piece */
 				if (fill) {	/* Plot filled polygon, w/ or w/o outline */
 					if (!strncmp (TAG, "AQ", 2U)) GMT_set_seg_polar (GMT, P);
 					GMT_geo_polygons (GMT, P);
@@ -494,6 +514,7 @@ void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append comma-separated list of ISO 3166 codes for countries to plot, i.e.,\n", action[plot]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <code1>,<code2>,... etc., using the 2-character country codes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no %sing takes place].\n", action[plot]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/terretories for Australia, Brazil, Canada, and the US.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +r to obtain -Rw/e/s/n from polygon(s). Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
