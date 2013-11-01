@@ -120,6 +120,9 @@
 # header file) [auto]:
 #set (FFTW3_ROOT "fftw_install_prefix")
 
+# Set location of ZLIB (can be root directory or path to header file) [auto]:
+#set (ZLIB_ROOT "zlib_install_prefix")
+
 ##
 ## Section 3: GMT features
 ##
