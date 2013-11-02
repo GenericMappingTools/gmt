@@ -75,7 +75,6 @@ void *New_grdseamount_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_grdseamount_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
 	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }

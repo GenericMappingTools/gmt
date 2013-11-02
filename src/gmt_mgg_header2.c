@@ -14,10 +14,7 @@
 
 #include "gmt_mgg_header2.h"
 
-#define MIN_PER_DEG		60.0
-#define SEC_PER_MIN		60.0
-#define SEC_PER_DEG		(SEC_PER_MIN * MIN_PER_DEG)
-#define BYTE_SIZE
+#define MGG_BYTE_SIZE
 
 static void gmt_swap_word (void* ptr)
 {
@@ -77,8 +74,8 @@ static double gmt_dms2degrees (int deg, int min, int sec)
 {
 	double decDeg = (double)deg;
 
-	decDeg += (double)min / MIN_PER_DEG;
-	decDeg += (double)sec / SEC_PER_DEG;
+	decDeg += (double)min * GMT_MIN2DEG;
+	decDeg += (double)sec * GMT_SEC2DEG;
 
     return decDeg;
 }
@@ -86,16 +83,16 @@ static double gmt_dms2degrees (int deg, int min, int sec)
 static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec)
 {
 	/* Round off to the nearest half second */
-	if (degrees < 0) degrees -= (0.5 / SEC_PER_DEG);
+	if (degrees < 0) degrees -= (0.5 * GMT_SEC2DEG);
 
 	*deg = (int)degrees;
 	degrees -= *deg;
 
-	degrees *= MIN_PER_DEG;
+	degrees *= GMT_DEG2MIN_F;
 	*min = (int)(degrees);
 	degrees -= *min;
 
-	*sec = (int)(degrees * SEC_PER_MIN);
+	*sec = (int)(degrees * GMT_MIN2SEC_F);
 }
 
 int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
@@ -109,14 +106,14 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 
 	mgg->cellRegistration = gmt->registration;
 	mgg->lonNumCells = gmt->nx;
-	f  = gmt->inc[GMT_X] * SEC_PER_DEG;
+	f  = gmt->inc[GMT_X] * GMT_DEG2SEC_F;
 	mgg->lonSpacing  = irint(f);
 	if (fabs (f - (double)mgg->lonSpacing) > GMT_CONV_LIMIT) return (GMT_GRDIO_GRD98_XINC);
 	gmt_degrees2dms(gmt->wesn[XLO], &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
 
 	mgg->latNumCells = gmt->ny;
-	f  = gmt->inc[GMT_Y] * SEC_PER_DEG;
-	mgg->latSpacing  = irint(gmt->inc[GMT_Y] * SEC_PER_DEG);
+	f  = gmt->inc[GMT_Y] * GMT_DEG2SEC_F;
+	mgg->latSpacing  = irint(gmt->inc[GMT_Y] * GMT_DEG2SEC_F);
 	if (fabs (f - (double)mgg->latSpacing) > GMT_CONV_LIMIT) return (GMT_GRDIO_GRD98_YINC);
 	gmt_degrees2dms(gmt->wesn[YHI], &mgg->latDeg, &mgg->latMin, &mgg->latSec);
 
@@ -133,7 +130,7 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 		mgg->numType = sizeof (short);
 		mgg->nanValue = (short)SHRT_MIN;
 	}
-#ifdef BYTE_SIZE
+#ifdef MGG_BYTE_SIZE
 	/* Data fits in one byte boundry */
 	if ((gmt->z_min >= 0) && (gmt->z_max <= 127)) {
 		mgg->numType   = sizeof (char);
