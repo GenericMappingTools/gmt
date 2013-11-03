@@ -439,7 +439,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 	
 	uint64_t ij;
 
-	double take_out, dv, da, cval = 0.0, cellsize, fact, dist_pr_deg, sum, out[4];
+	double take_out, dv, da, cval = 0.0, cellsize, fact, dist_pr_deg, sum, z_range, out[4];
 	double *area = NULL, *vol = NULL, *height = NULL, this_base, small, wesn[4];
 
 	struct GRDVOLUME_CTRL *Ctrl = NULL;
@@ -511,7 +511,11 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 	}
 
 	this_base = (Ctrl->L.active) ? Ctrl->L.value : 0.0;
-	small = Ctrl->C.inc * 1.0e-6;
+	z_range = Work->header->z_max - Work->header->z_min;
+	if (n_contours == 1 || Ctrl->C.inc == 0.0)
+		small = z_range * 1.0e-6;	/* Our float noise threshold */
+	else
+		small = MIN (Ctrl->C.inc, z_range) * 1.0e-6;	/* Our float noise threshold */
 
 	for (c = 0; Ctrl->C.active && c < n_contours; c++) {	/* Trace contour, only count volumes inside contours */
 
