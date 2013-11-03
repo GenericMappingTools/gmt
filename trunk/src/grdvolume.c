@@ -515,7 +515,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 	if (n_contours == 1 || Ctrl->C.inc == 0.0)
 		small = z_range * 1.0e-6;	/* Our float noise threshold */
 	else
-		small = MIN (Ctrl->C.inc, z_range) * 1.0e-6;	/* Our float noise threshold */
+		small = MIN (fabs (Ctrl->C.inc), z_range) * 1.0e-6;	/* Our float noise threshold */
 
 	for (c = 0; Ctrl->C.active && c < n_contours; c++) {	/* Trace contour, only count volumes inside contours */
 
