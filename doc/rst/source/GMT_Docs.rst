@@ -619,9 +619,10 @@ Finally, here is a list of numerous enhancements to individual programs:
 *  :doc:`grdview` will automatically assigns a color table if none is given and can use
    any of the 36 GMT color tables and scale them to fit the grid range.
 
-*  :doc:`grdvolume` can let **-S** accept more distance units than just km.  It also
+*  :doc:`grdvolume` can let **-S** accept more distance units than just km. It also
    has a modified **-T**\ [**c**\ \|\ **h**] for ORS estimates based on max
-   curvature or height.
+   curvature or height. **-Cr** to compute the *outside* volume between two contours
+   (for instances, the volume of water from a bathymetry grid).
 
 *  :doc:`greenspline` has an improved **-C** option to control how many eigenvalues are used
    in the fitting, and **--Sl** adds a linear (or bilinear) spline.
