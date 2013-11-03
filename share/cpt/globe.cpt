@@ -3,7 +3,7 @@
 # Color table using in global relief maps
 # Bathymetry colours manually redefined for blue-shade effect and
 # new topography colour scheme for use with Generic Mapping Tools.
-# Designed by Lester M. Anderson (CASP, UK) lester.anderson@casp.cam.ac.uk
+# Designed by Designed by Lester M. Anderson ( arctica1963@gmail.com )
 #
 -10000	153/0/255	-9500	153/0/255
 -9500	153/0/255	-9000	153/0/255
