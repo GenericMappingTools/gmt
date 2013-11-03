@@ -597,7 +597,7 @@ correctly first. The **-A** option will facilitate this. Suppose you
 have a 2-column file ty.d with *t* and *b(t)* and you would like to fit
 a the model y(t) = a + b\*t + c\*H(t-t0), where H is the Heaviside step
 function for a given t0 = 1.55. Then, you need a 4-column augmented
-table loaded with t in column 0 and your observed y(t) in column 3. The
+table loaded with t in column 1 and your observed y(t) in column 3. The
 calculation becomes
 
    ::
