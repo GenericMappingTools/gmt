@@ -1,11 +1,11 @@
 Package: gmt5
 Version: 5.0.1b
 Revision: 0
-Source: ftp://ftp.soest.hawaii.edu/gmt5/GMT-%v_r12227M-src.tar.bz2
-Source-MD5: bf8b6fbb2bf84bad136755047561e05b
+Source: ftp://ftp.soest.hawaii.edu/gmt5/GMT-%v_r12404-src.tar.bz2
+Source-MD5: ad03e1ad676e8aacc5dac0ba3070d6bb
 Conflicts: gmt
 BuildDepends: cmake, netcdf-c7, libpcre1, gdal
-Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), libpcre1-shlibs, gdal-shlibs, gshhg, dcw-gmt
+Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), libpcre1-shlibs, gdal-shlibs, gshhg (>= 2.2.4), dcw-gmt
 Recommends: %n-doc
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true

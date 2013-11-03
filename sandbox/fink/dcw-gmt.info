@@ -1,0 +1,27 @@
+Package: dcw-gmt
+Version: 1.0.21
+Revision: 2
+Source: ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-%v.tar.gz
+Source-MD5: da404bdb05a56801209cb6b5b9c2a165
+Recommends: gmt
+CompileScript: echo "Moving files..."
+InstallScript: <<
+	mkdir -p %i/share/dcw-gmt
+	mv *.nc %i/share/dcw-gmt
+<<
+Description: Digital Chart of the World for GMT
+DescDetail: <<
+	In GMT, the Digital Chart of the World (DCW) is provided as a single netCDF
+	version 4 file and used in pscoast to highlight individual countries or
+	states.
+
+	The Digital Chart of the World is a comprehensive 1:1,000,000 scale
+	vector basemap of the world. The charts were designed to meet the needs
+	of pilots and air crews in medium-and low-altitude en route navigation
+	and to support military operational planning, intelligence briefings,
+	and other needs.
+<<
+License: GPL
+DocFiles: LICENSE.TXT README.TXT
+Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
+Homepage: http://gmt.soest.hawaii.edu

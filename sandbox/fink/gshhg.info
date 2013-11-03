@@ -2,8 +2,8 @@ Package: gshhg
 Version: 2.2.4
 Revision: 1
 Source: ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-nc4-%v.tar.gz
-Source-MD5: fe659e00946573e2fba5880264e1c854
-Recommends: gmt
+Source-MD5: 4132b4911f568102353dec169ea0c84a
+Recommends: gmt5
 Replaces: gshhs
 CompileScript: echo "Moving files..."
 InstallScript: <<
