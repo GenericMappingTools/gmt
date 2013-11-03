@@ -608,9 +608,10 @@ Finally, here is a list of numerous enhancements to individual programs:
    profiles given input line segments; one or more grids can then be
    sampled at these locations.  The **-E** option allows users to quickly specify
    tracks for sampling without needed input tracks.  Also added **-S** which stack
-   cross-profiles generated with **-C**. Finally, **-N** will not skip
+   cross-profiles generated with **-C**. The **-N** will not skip
    points that are outside the grid domain but return NaN as sampled
-   value.
+   value.  Finally, **-T** will return the nearest non-NaN node if the initial
+   location only finds a NaN value.
 
 *  :doc:`grdvector` can now take **-Si**\ *scale* to give the reciprocal scale,
    i.e., cm/ unit or km/unit.  Also, the vector heads in GMT have completely been overhauled
