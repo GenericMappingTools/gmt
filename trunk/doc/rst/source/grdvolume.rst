@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdvolume** *grdfile* [ **-C**\ *cval* or **-C**\ *low/high/delta* ]
+**grdvolume** *grdfile* [ **-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* ]
 [ **-L**\ *base* ]
 [ |SYN_OPT-R| ]
 [ **-S**\ [*unit*\ ] ] [ **-T**\ [**c**\ \|\ **h**] ]
@@ -47,11 +47,16 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-C**\ *cval* or **-C**\ *low/high/delta*
+**-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* 
     find area, volume and mean height (volume/area) inside the *cval*
     contour. Alternatively, search using all contours from *low* to
     *high* in steps of *delta*. [Default returns area, volume and mean
     height of the entire grid]. The area is measured in the plane of the contour.
+    The **Cr** form on the other hand computes volume between the grid
+    surface and the plans defined by *low* and *high*. Note that this is an
+    *outside* volume whilst the other forms compute an *inside* (bellow the surface)
+    area volume. Use this form to compute for example the volume of water
+    between two contours.
 **-L**\ *base*
     Also add in the volume from the level of the contour down to *base*
     [Default base is contour].
@@ -88,8 +93,7 @@ Optional Arguments
 Examples
 --------
 
-To determine the volume in km^3 under the surface hawaii\_topo.nc
-(height in km), use
+To determine the volume in km^3 under the surface hawaii_topo.nc (height in km), use
 
    ::
 
@@ -113,6 +117,12 @@ To see the areas and volumes for all the contours in the previous example, use
    ::
 
     gmt grdvolume peaks.nc -Sk -C100/300/10 > results.d
+
+To find the volume of water in a lake with its free surface at 0 and max depth of 300 meters, use
+
+   ::
+
+    gmt grdvolume lake.nc -Cr-300/0
 
 Notes
 -----
