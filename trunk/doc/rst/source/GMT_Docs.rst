@@ -76,7 +76,7 @@ SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
 Honolulu, HI, Silver Spring, MD, Faro, Portugal, Darmstadt and
-Bremerhaven, Germany, October 2013
+Bremerhaven, Germany, November 2013
 
 
 A Reminder
@@ -89,7 +89,7 @@ The EOS articles on GMT are
 
 -  Wessel, P., W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe,
    Generic Mapping Tools: Improved Version Released, *EOS Trans. AGU*, 94(45),
-   p. xxx, 2013. `doi:10.1029/98EO00426 <http://dx.doi.org/10.1029/98EO00426>`_.
+   p. 409-410, 2013. `doi:10.1002/2013EO450001 <http://dx.doi.org/10.1002/2013EO450001>`_.
 
 -  Wessel, P., and W. H. F. Smith, New, improved version of Generic
    Mapping Tools released, *EOS Trans. AGU*, 79(47),
