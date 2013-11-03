@@ -19,7 +19,8 @@ Synopsis
 [ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**] ]
 [ **-N** ] 
 [ |SYN_OPT-R| ]
-[ **-S**\ *method*/*modifiers* ][ **-V**\ [*level*] ] [ **-Z** ]
+[ **-S**\ *method*/*modifiers* ] [ **-T**\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
+[ **-V**\ [*level*] ] [ **-Z** ]
 [ **-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**] ]
 [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 [ |SYN_OPT-g| ] 
@@ -155,7 +156,17 @@ Optional Arguments
     row for all cross-profiles. The order is always stacked value
     (**+a**), followed by deviations (**+d**) and residuals (**+r**).
     When more than one grid is sampled this sequence of 1-3 columns are
-    repeated for each grid. 
+    repeated for each grid.
+
+**-T**\ [*radius*\ [**u**]][**+e**\ \|\ **p**]
+   To be used with normal grid sampling, and limited to a single, non-IMG grid.
+   If the nearest node to the input point is NaN, search outwards until we find
+   the nearest non-NaN node and report that value instead.  Optionally specify
+   a search radius which limits the consideration to points within this distance
+   from the input point.  To report the location of the nearest node and its
+   distance from the input point, append **+e**. To instead replace the input
+   point with the coordinates of the nearest node, append **+p**.
+
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
