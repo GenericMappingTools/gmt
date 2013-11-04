@@ -141,27 +141,23 @@ else (NOT LICENSE_RESTRICTED) # on
 	set (GMT_TRIANGULATE "Watson" PARENT_SCOPE)
 endif (NOT LICENSE_RESTRICTED)
 
-set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
-	filter1d.c fitcircle.c gmt2kml.c
-	gmtconvert.c gmtmath.c gmtselect.c gmtsimplify.c
-	gmtspatial.c gmtconnect.c gmtvector.c gmtwhich.c
-	grd2cpt.c grd2rgb.c grd2xyz.c grdblend.c
-	grdclip.c grdcut.c grdedit.c grdfft.c
-	grdfilter.c grdgradient.c grdhisteq.c grdinfo.c
-	grdlandmask.c grdmask.c grdmath.c grdpaste.c
-	grdproject.c grdraster.c grdsample.c grdreformat.c grdtrack.c
-	grdtrend.c grdvolume.c greenspline.c kml2gmt.c
-	makecpt.c mapproject.c gmtinfo.c nearneighbor.c
-	project.c ps2raster.c sample1d.c spectrum1d.c
-	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c
-	splitxyz.c surface.c trend1d.c trend2d.c
-	triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
-	gmtset.c
-	grdcontour.c grdimage.c grdvector.c grdview.c
-	psbasemap.c psclip.c pscoast.c pscontour.c
-	pshistogram.c psimage.c psmask.c psrose.c
-	psscale.c pstext.c pswiggle.c psxy.c psxyz.c
-	pslegend.c)
+set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c
+	fitcircle.c gmt2kml.c gmtconvert.c gmtmath.c gmtselect.c gmtsimplify.c
+	gmtspatial.c gmtconnect.c gmtvector.c gmtwhich.c grd2cpt.c grd2rgb.c
+	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfilter.c
+	grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c grdmath.c
+	grdpaste.c grdproject.c grdraster.c grdsample.c grdreformat.c grdtrack.c
+	grdtrend.c grdvolume.c greenspline.c kml2gmt.c makecpt.c mapproject.c
+	gmtinfo.c nearneighbor.c project.c ps2raster.c sample1d.c spectrum1d.c
+	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c
+	surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
+	gmtset.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c
+	pscoast.c pscontour.c pshistogram.c psimage.c psmask.c psrose.c psscale.c
+	pstext.c pswiggle.c psxy.c psxyz.c pslegend.c)
+
+# Legacy modules for which to install compatibility links via
+# install_module_symlink
+set (GMT_COMPAT_MODULES minmax)
 
 # libpslib
 set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
@@ -511,7 +507,7 @@ install (TARGETS gmtlib pslib gmt
 	COMPONENT Runtime)
 
 string (REPLACE ".c" "" _gmt_modules "${GMT_PROGS_SRCS}")
-install_module_symlink (${_gmt_modules})
+install_module_symlink (${_gmt_modules} ${GMT_COMPAT_MODULES})
 
 # Install public headers
 install (FILES gmt.h gmt_define.h gmt_option.h gmt_resources.h declspec.h

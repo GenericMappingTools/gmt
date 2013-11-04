@@ -23,7 +23,7 @@
  * Date:	24-JUN-2013
  * Version:	5.x
  */
- 
+
 #include "gmt_dev.h"
 
 int GMT_gmtdp (void *V_API, int mode, void *args)
