@@ -16,9 +16,9 @@ Also, see the new documentation on http://gmt.soest.hawaii.edu.
 Please note that bug reports and feature requests should now be
 posted via our website and not via email to all GMT users.
 
-Despite extensive testing, GMT 5 is likely to be less stable than
-GMT 4, at least initially, hence we recommend that GMT users install
-both versions and switch between them using gmtswitch as needed.
+Note that users may choose to install both GMT versions and use
+gmtswitch to switch between them as needed.  GMT 5 is backwards
+compatible with GMT 4 via the GMT_COMPATIBILITY=4 default setting.
 
 
 Sincerely,
