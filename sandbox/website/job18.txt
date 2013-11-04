@@ -1,6 +1,0 @@
-$Id$
-Example 18.  This more complicated script illustrates various
-search operations in GMT based on geospatial relationships.
-We seek to find all large seamounts within 200 km of Pratt
-seamount.  We also want to evaluate the combined volume and
-area of these seamounts.

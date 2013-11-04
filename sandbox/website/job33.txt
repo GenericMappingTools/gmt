@@ -1,2 +1,0 @@
-$Id$
-Example 33.  Sampling a grid along collinear lines and stacking them.

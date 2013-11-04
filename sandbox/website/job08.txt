@@ -1,4 +1,0 @@
-$Id$
-Example 8.   GMT contains a variety of plot options.  Here, we see a 3-D column
-plot where each data value (x,y,z) is represented by a column of height z.  The
-plotting is accomplished with programs psxyz and pstext.

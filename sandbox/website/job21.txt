@@ -1,4 +1,0 @@
-$Id$
-Example 21.  To exercise the time-series annotation capabilities in GMT
-we plot the price of RedHat stock, with an insert for a shorter time
-period.  Some annotations are done in Finnish.

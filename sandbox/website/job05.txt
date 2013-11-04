@@ -1,4 +1,0 @@
-$Id$
-Example 5.   Shaded relief of a simple mathematical function (an axisymmetrical, damped cosine).
-The data were created with an awk-script and piped through xyz2grd to make a gridded file.
-Shading intensities were calculated using grdgradient, and the image plotted using grdview.
