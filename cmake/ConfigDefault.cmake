@@ -54,7 +54,7 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 #set (GMT_VERSION_YEAR "2013")
 
 # The GMT wiki location
-set (GMT_TRAC_WIKI "http://gmtrac.soest.hawaii.edu/projects/gmt/wiki/")
+set (GMT_TRAC_WIKI "http://gmt.soest.hawaii.edu/")
 
 # Use SI units per default
 if (NOT UNITS)

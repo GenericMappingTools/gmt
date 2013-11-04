@@ -10,7 +10,7 @@ Contact info: gmt.soest.hawaii.edu
 CMake User Guide
 ================
 
-Note: This guide is also available at http://gmtrac.soest.hawaii.edu/
+Note: This guide is also available at http://gmt.soest.hawaii.edu/
 
 Build and runtime prerequisites
 -------------------------------
