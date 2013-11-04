@@ -5,13 +5,16 @@
 
 Our next and perhaps most business-like example presents a
 three-dimensional bar graph plot showing the geographic distribution of
-the membership in the American Geophysical Union (AGU). The input data
-was taken from the January 2008 AGU member directory and added up to
-give total members per continent. We decide to plot a 3-D column
+all the languages of the world. The input data
+was taken from `Ethnologue <http://www.ethnologue.com/>`_. We decide to plot a 3-D column
 centered on each continent with a height that is proportional to the
-logarithm of the membership. A log\ :math:`_{10}`-scale is used since
-the memberships vary by almost 3 orders of magnitude. We choose a plain
+languages used. We choose a plain
 linear projection for the basemap and add the columns and text on top.
+Eventually we make it a bit more fancy by splitting the columns up in different colors
+indicating how commonly the languages are used, from institutional languages to
+languages threatened by extinction.
+The script also shows how to effectively use transparency of the boxes around the numbers
+and in the shade surrounding the legend.
 Our script that produces Figure ex_10 reads:
 
 .. literalinclude:: /_verbatim/example_10.txt
