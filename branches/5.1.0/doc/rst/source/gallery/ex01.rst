@@ -1,0 +1,34 @@
+.. _example_01:
+
+(1) Contour maps
+----------------
+
+We want to create two contour maps of the low order geoid using the
+Hammer equal area projection. Our gridded data file is called ``osu91a1f_16.nc`` and
+contains a global 1 by 1 gridded geoid (we will see how to make gridded
+files later). We would like to show one map centered on Greenwich and
+one centered on the dateline. Positive contours should be drawn with a
+solid pen and negative contours with a dashed pen. Annotations should
+occur for every 50 m contour level, and both contour maps should show
+the continents in light brown in the background. Finally, we want a
+rectangular frame surrounding the two maps. This is how it is done:
+
+.. literalinclude:: /_verbatim/example_01.txt
+   :language: bash
+
+The first command draws a box surrounding the maps. This is followed by
+two sequences of :doc:`pscoast </pscoast>`, :doc:`grdcontour </grdcontour>`,
+:doc:`grdcontour </grdcontour>`. They differ in that the
+first is centered on Greenwich; the second on the dateline. We use the
+limit option (**-L**) in :doc:`grdcontour </grdcontour>`
+to select negative contours only and plot those with a dashed pen, then
+positive contours only and draw with a solid pen [Default]. The **-T**
+option causes tick marks pointing in the downhill direction to be drawn
+on the innermost, closed contours. For the upper panel we also added -
+and + to the local lows and highs. You can find this illustration as
+
+.. figure:: /_images/example_01.*
+   :width: 500 px
+   :align: center
+
+   Contour maps of gridded data.

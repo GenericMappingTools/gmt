@@ -1,0 +1,12 @@
+#	$Id$
+#
+#	Definition file for meca symbol.  Use in psxy
+#	as -Skmeca/size.  Shows a focal mechanism beachball
+#	Color will be taken from commandline -G
+#
+0	0	1.0	c	-G255
+0	0	M
+0	0.5	D
+0	0	1.0	90	180	A
+0.5	0	D
+0	0	1.0	0	-90	A

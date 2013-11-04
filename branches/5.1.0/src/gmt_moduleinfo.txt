@@ -1,0 +1,6 @@
+#	$Id$
+#
+# Give one entry per shared library that is part of GMT.  Make sure the
+# library tag is part of the preamble before the colon.
+LIB_STRING	="GMT core: The main section of the Generic Mapping Tools"
+LIB_STRING	="GMT suppl: The official supplements to the Generic Mapping Tools"
