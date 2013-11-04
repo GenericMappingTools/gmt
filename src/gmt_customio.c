@@ -1360,9 +1360,10 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
 			if (grid[kk] >= header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
-			/* Update z_min, z_max */
-			header->z_min = MIN (header->z_min, (double)grid[kk]);
-			header->z_max = MAX (header->z_max, (double)grid[kk]);
+			else {	/* Update z_min, z_max */
+				header->z_min = MIN (header->z_min, (double)grid[kk]);
+				header->z_max = MAX (header->z_max, (double)grid[kk]);
+			}
 		}
 	}
 	if (piping) {	/* Skip remaining data by reading it */
