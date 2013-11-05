@@ -1,7 +1,0 @@
-.. _-P_full:
-
-**-P**
-    Select "Portrait" plot orientation [Default is "Landscape"; see
-    **gmt.conf** or **gmtset** to change the **PS\_PAGE\_ORIENTATION**
-    parameter, or supply --PS\_PAGE\_ORIENTATION=\ *orientation* on the
-    command line].
