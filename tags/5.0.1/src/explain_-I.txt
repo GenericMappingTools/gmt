@@ -1,0 +1,17 @@
+.TP
+GMT_I_OPT
+IT(x_inc) [and optionally IT(y_inc)] is the grid spacing. Optionally, append a suffix
+modifier.  BD(Geographical (degrees) coordinates): Append BD(m) to
+indicate arc minutes or BD(s) to indicate arc seconds.  If one of the units BD(e), BD(f), BD(k), BD(M),
+or BD(n) is appended instead, the increment is assumed to be given in meter, feet, km, Miles, or
+nautical miles, respectively, and will be converted to the equivalent degrees longitude at
+the middle latitude of the region (the conversion depends on BD(PROJ_ELLIPSOID)).  If /IT(y_inc) is given but set to 0 it will be reset equal to
+IT(x_inc); otherwise it will be converted to degrees latitude.  
+BD(All coordinates): If BD(=) is appended then
+the corresponding max IT(x) (IT(east)) or IT(y) (IT(north)) may be slightly adjusted to fit exactly the given increment
+[by default the increment may be adjusted slightly to fit the given domain].  Finally, instead
+of giving an increment you may specify the IT(number of nodes) desired by appending BD(+) to
+the supplied integer argument; the increment is then recalculated from the number of nodes and the domain.
+The resulting increment value depends on whether you have selected a gridline-registered
+or pixel-registered grid; see Appendix B for details.  Note: if OPT(R)IT(grdfile) is used then
+the grid spacing has already been initialized; use OPT(I) to override the values.

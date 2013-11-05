@@ -1,0 +1,28 @@
+%------------------------------------------
+%	$Id$
+%
+%	The GMT Documentation Project
+%	Copyright 1998-2008.
+%	Paul Wessel and Walter H. F. Smith
+%------------------------------------------
+%
+\def\@makechapterhead#1{%
+%  \vspace*{10\p@}%
+  {\parindent \z@ \raggedright \normalfont
+%    \ifnum \c@secnumdepth >\m@ne
+%        \huge\bfseries \@chapapp\space \thechapter
+%        \par\nobreak
+%        \vskip 10\p@
+%    \fi
+    \interlinepenalty\@M
+    \LARGE \bfseries \underline {\thechapter.\space #1}\par\nobreak
+    \vskip 20\p@
+  }}
+\def\@makeschapterhead#1{%
+%  \vspace*{10\p@}%
+  {\parindent \z@ \raggedright
+    \normalfont
+    \interlinepenalty\@M
+    \LARGE \bfseries #1\par\nobreak
+    \vskip 20\p@
+  }}

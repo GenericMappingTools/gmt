@@ -1,0 +1,92 @@
+#include "common_options.txt"
+.TH GRDROTATER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
+.SH NAME
+grdrotater \- Finite rotation reconstruction of geographic grid
+.SH SYNOPSIS
+BD(grdrotate) IT(ingrdfile) OPT(E)IT(rotfile) | OPT(e)IT(lon)/IT(lat)/IT(angle) 
+OPT(G)IT(outgrdfile) [ OPT(F)IT(polygonfile) ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ OPT(S) ]
+[ OPT(T)IT(age) ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(grdrotater) reads a geographical grid and reconstructs it given
+a total reconstruction rotation.  Optionally, the user may supply a clipping polygon
+in multiple-segment format; then, only the part of the grid inside the polygon is used
+to determine the return grid region.  The outline of the projected region is returned
+on stdout provided the rotated region is not the entire globe.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(ingrdfile)
+Name of a grid file in geographical (lon, lat) coordinates.
+#include "euler.txt"
+.TP
+OPT(e)IT(lon)/IT(lat)/IT(angle)
+Alternatively, specify the longitude, latitude, and opening angle (all in degrees
+and separated by /) for a single total reconstruction.
+.TP
+OPT(G)IT(outgrdfile)
+Name of output grid.  This is the grid with the data reconstructed according to the specified
+rotation.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(F)IT(polygonfile)
+Specify a multisegment closed polygon file that describes the inside area of the grid
+that should be projected [Default projects entire grid].
+.TP
+OPT(N)
+Do Not output the rotated polygon outline [Default will write it to stdout].
+#include "explain_-Rgeo.txt"
+.TP
+OPT(S)
+Skip the rotation of the grid, just rotate the polygon outline (requires OPT(F)).
+.TP
+OPT(T)IT(age)
+Sets the desired age of reconstruction when OPT(E) is given.
+#include "explain_-V.txt"
+.TP
+OPT(:)
+Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [Default is (longitude,latitude)].
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-n.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To rotate the data defined by grid topo.nc and the polygon outline clip_path.d, using a total reconstruction rotation
+with pole at (135.5, -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation, try
+.br
+.sp
+BD(grdrotater) topo.nc OPT(e)135.5/-33/37.3 OPT(V) OPT(F)clip_path.d OPT(G)rot_topo.nc > rot_clip_path.d
+.br
+.sp
+To rotate the entire grid faa.nc back to 32 Ma using the rotation file IT(rotations.txt)
+and a bilinear interpolation, try
+.br
+.sp
+BD(grdrotater) faa.nc OPT(E)rotations.txt OPT(T)32 OPT(V) OPT(G)rot_faa.nc OPT(nl) > rot_faa_path.d
+.br
+.sp
+To just see how the outline of the grid large.nc will plot after the same rotation, try
+.br
+.sp
+BD(grdrotater) large.nc OPT(E)rotations.txt OPT(T)32 OPT(V) OPT(S) | psxy OPT(Rg) OPT(JH)180/6i OPT(B)30 OPT(m) OPT(W)0.5BD(p) | gv -
+.br
+.sp
+Let say you have rotated gridA.nc and gridB.nc, restricting each rotation to nodes inside polygons polyA.d and polyB.d, respectively,
+using rotation A = (123W,22S,16,4) and rotation B = (108W, 16S, -14.5), yielding rotated grids rot_gridA.nc and rot_gridB.nc.
+To determine the region of overlap between the rotated grids, we use grdmath:
+.br
+.sp
+grdmath 1 rot_gridA.nc ISNAN SUB 1 rot_gridB.nc ISNAN SUB 2 EQ = overlap.nc
+.br
+.sp
+The grid overlap.nc now has 1s in the regions of overlap and 0 elsewhere.  You can use it as a mask
+or use grdcontour OPT(D) to extract a polygon (contour).
+.SH "SEE ALSO"
+.IR backtracker (1),
+.IR grdspotter (1),
+.IR hotspotter (1),
+.IR originator (1)
+.IR rotconverter (1)

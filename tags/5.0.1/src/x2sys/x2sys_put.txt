@@ -1,0 +1,48 @@
+#include "common_options.txt"
+.TH X2SYS_PUT 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
+.SH NAME
+x2sys_put \- Update track index database from track bin file
+.SH SYNOPSIS
+BD(x2sys_put) [ IT(info.tbf) ] OPT(T)IT(TAG) [ OPT(D) ] [ OPT(F) ] [ GMT_V_OPT ]
+.SH DESCRIPTION
+BD(x2sys_put) accepts a track bin-index file created by BD(x2sys_binlist) and
+adds this information about the data tracks to the relevant data base.  You may
+chose to overwrite existing data with new information for older tracks (OPT(F)) and
+even completely remove information for certain tracks (OPT(D)).
+The x2sys IT(TAG) must match the tag encoded in the IT(info.tbf) file.  To
+inquire about tracks in the data base, use BD(x2sys_get).
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(info.tbf)
+Name of a single track bin file.  If not given, IT(stdin) will be read.
+#include "explain_tag.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(D)
+Delete all tracks found in the track bin file [Default will try to add them
+as new track entries].
+.TP
+OPT(F)
+Replace any existing
+database information for these tracks with the new information in the track bin file
+[Default refuses to process tracks already in the database].
+#include "explain_-V.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To add the information stored in the track bin-index file latest.tbf to the track data bases
+associated with the tag MGD77, and replace any exiting information for these tracks, try
+.br
+.sp
+BD(x2sys_put) latest.tbf OPT(F) OPT(V) OPT(T)MGD77 
+.SH X2SYS DATABASES
+The BD(x2sys_put) utility adds new information to the x2sys data bases.  These consists of
+two files: The first file contains a listing of all the tracks that have been added to the system;
+it is named IT(TAG)_tracks.d and is in ASCII format.  The second file is named IT(TAG)_index.b
+and is in native binary format.  It contains information on which tracks cross each of the bins,
+and what data sets were observed while crossing the bin.  The bins are defined by the OPT(R) and
+OPT(I) options passed to BD(x2sys_init) when the IT(TAG) was first initiated.  Both data base
+files are stored in the BD($X2SYS_HOME)/IT(TAG) directory.  Do not attempt to edit these files by hand.
+.SH "SEE ALSO"
+.IR x2sys_binlist (1),
+.IR x2sys_get (1)

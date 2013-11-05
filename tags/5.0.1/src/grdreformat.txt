@@ -1,0 +1,131 @@
+#include "common_options.txt"
+.TH GRDREFORMAT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdreformat \- Convert between different grid formats
+.SH SYNOPSIS
+BD(grdreformat) IT(ingrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]] 
+IT(outgrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]] 
+[ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_f_OPT ] [ GMT_V_OPT ]
+.SH DESCRIPTION
+BD(grdreformat) reads a grid file in one format and writes it out using another format.  As an option the
+user may select a subset of the data to be written and to specify scaling, translation, and NaN-value.
+#include "explain_commonitems.txt"
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(ingrdfile)
+The grid file to be read.  Append format =IT(id) code if not a standard COARDS-compliant netCDF grid file.
+If =IT(id) is set (see below), you may optionally append IT(scale) and IT(offset).
+These options will scale the data and then offset them with the specified amounts after reading.
+.br
+If IT(scale) and IT(offset)
+are supplied you may also append a value that represents 'Not-a-Number' (for floating-point grids this
+is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
+.TP
+IT(outgrdfile)
+The grid file to be written.  Append format =IT(id) code if not a standard COARDS-compliant netCDF
+grid file.
+If =IT(id) is set (see below), you may optionally append IT(scale) and IT(offset).
+These options are particularly 
+practical when storing the data as integers, first removing an offset and then scaling down the values.
+Since the scale and offset are applied in reverse order when reading, this does not affect the data
+values (except for round-offs).
+.br
+If IT(scale) and IT(offset)
+are supplied you may also append a value that represents 'Not-a-Number' (for floating-point grids this
+is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(N)
+Suppress the writing of the BD(GMT) header structure.  This is useful when you want to write a native grid to
+be used by BD(grdraster).  It only applies to native grids and is ignored for netCDF output.
+#include "explain_-R.txt"
+#include "explain_-V.txt"
+#include "explain_-f.txt"
+#include "explain_help.txt"
+.SH FORMAT IDENTIFIER
+By default, grids will be written as floating point data stored in binary files using the netCDF format and
+meta-data structure. This format is conform the COARDS conventions. BD(GMT) versions prior to 4.1 produced
+netCDF files that did not conform to these conventions. Although these files are still supported, their use is
+deprecated. To write other than floating point COARDS-compliant netCDF files, append the =IT(id) suffix
+to the filename IT(outgrdfile).
+.br
+When reading files, BD(grdreformat) and other BD(GMT) programs will automatically recognize any type
+of netCDF grid file. These can be in either COARDS-compliant or pre-4.1 format, and contain floating-point or
+integer data. To read other types of grid files, append the =IT(id) suffix to the filename IT(ingrdfile).
+.br
+#include "grdreformat_man.i"
+.SH GMT STANDARD NETCDF FILES
+The standard format used for grdfiles is based on netCDF and conforms to the COARDS conventions. Files written
+in this format can be read by numerous third-party programs and are platform-independent. Some disk-space
+can be saved by storing the data as bytes or shorts in stead of integers. Use the IT(scale) and IT(offset)
+parameters to make this work without loss of data range or significance. For more details, see Appendix B.
+.PP
+BD(Multi-variable grid files)
+.br
+By default, BD(GMT) programs will read the first 2-dimensional grid contained in a COARDS-compliant netCDF file.
+Alternatively, use IT(ingrdfile)BD(?)IT(varname) (ahead of any optional suffix BD(=)IT(id))
+to specify the requested variable IT(varname).
+Since BD(?) has special meaning as a wildcard, escape this meaning by placing the full filename and suffix
+between quotes.
+.PP
+BD(Multi-dimensional grids)
+.br
+To extract one IT(layer) or IT(level) from a 3-dimensional grid stored in a COARDS-compliant netCDF file,
+append both the name of the variable and the index associated with the layer (starting at zero) in the form:
+IT(ingrdfile)BD(?)IT(varname)BD([)IT(layer)BD(]).
+Alternatively, specify the value associated with that layer using parentheses in stead of brackets:
+IT(ingridfile)BD(?)IT(varname)\fB(\fP\fIlevel\fP\fB)\fP.
+.br
+In a similar way layers can be extracted from 4- or even 5-dimensional grids. For example, if a grid has the
+dimensions (parameter, time, depth, latitude, longitude), a map can be selected by using:
+IT(ingridfile)BD(?)IT(varname)\fB(\fP\fIparameter\fP,IT(time),IT(depth)\fB)\fP.
+.br
+Since question marks, brackets and parentheses have special meanings on the command line, escape these meanings
+by placing the full filename and suffix between quotes.
+.SH NATIVE BINARY FILES
+For binary native BD(GMT) files the size of the BD(GMT) grdheader block is IT(hsize) = 892 bytes, and the total size of the file
+is IT(hsize) + IT(nx) * IT(ny) * IT(item_size), where IT(item_size) is the size in bytes of each element (1, 2, 4).  Bit grids
+are stored using 4-byte integers, each holding 32 bits, so for these files the size equation is modified by
+using ceil (IT(nx) / 32) * 4 instead of IT(nx).
+Note that these files are platform-dependent. Files written on Little Endian machines (e.g. PCs) can not be
+read on Big Endian machines (e.g. most workstations).  Also note that it is not possible for BD(GMT) to determine uniquely
+if a 4-byte grid is float or int; in such cases it is best to use the IT(=ID) mechanism to specify the file format.
+In all cases a native grid is considered to be signed (i.e., there are no provision for unsigned short ints or unsigned bytes).
+For header and grid details, see Appendix B.
+#include "explain_float.txt"
+.SH EXAMPLES
+To extract the second layer from a 3-dimensional grid named temp from a COARDS-compliant netCDF file
+climate.nc:
+.br
+.sp
+grdreformat climate.nc?temp[1] temp.nc -V
+.br
+.sp
+To create a 4-byte native floating point grid from the COARDS-compliant netCDF file data.nc:
+.br
+.sp
+grdreformat data.nc ras_data.b4=bf -V
+.br
+.sp
+To make a 2-byte short integer file, scale it by 10, subtract 32000, setting
+NaNs to -9999, do
+.br
+.sp
+grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
+.br
+.sp
+To create a Sun standard 8-bit rasterfile for a subset of the data file image.nc,
+assuming the range in image.nc is 0-1 and we need 0-255, run
+.br
+.sp
+grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
+.br
+.sp
+To convert etopo2.nc to etopo2.i2 that can be used by BD(grdraster), try
+.br
+.sp
+grdreformat etopo2.nc etopo2.i2=bs -N -V
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdmath (1)

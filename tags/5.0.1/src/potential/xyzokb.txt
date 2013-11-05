@@ -1,0 +1,69 @@
+#include "common_options.txt"
+.TH XYZOKB 1 MANDATE GMT_STRING "Generic Mapping Tools [potential supplement]"
+.SH NAME
+xyzokb \- Compute the gravity/magnetic effect of a body by the method of Okabe
+.SH SYNOPSIS
+BD(xyzokb) [ OPT(C)IT(density) ]
+[ OPT(D) ] [ OPT(E)IT(thickness) ] [ OPT(F)IT(xy_file) ] [ OPT(G)IT(outputgrid.nc) ] 
+[ OPT(H)IT(f_dec)/IT(f_dip)/IT(m_int)/IT(m_dec)/IT(m_dip) ] [ OPT(L)IT(z_observation) ] 
+[ OPT(M) ] GMT_Rgeo_OPT [ OPT(S)IT(radius) ] 
+[ OPT(T)[[IT(d)]IT(xyz_file)/IT(vert_file)[IT(/m)]]|[IT(r|s)]IT(raw_file) ] 
+[ OPT(Z)IT(level) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+.SH DESCRIPTION
+BD(xyzokb) will compute the gravity or magnetic anomaly of a body described by a set of triangles. 
+The output can either be along a given set of xy locations or on a grid. This method is not particularly fast 
+but allows computing the anomaly of arbitrarily complex shapes.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(C)IT(density) Sets body density in SI. This option is mutually exclusive with OPT(H).
+.TP
+OPT(H)IT(f_dec)/IT(f_dip)/IT(m_int)/IT(m_dec)/IT(m_dip)
+Sets parameters for computing a magnetic anomally. Use IT(f_dec)/IT(f_dip) to set the geomagnetic
+declination/inclination in degrees. IT(m_int)/IT(m_dec)/IT(m_dip) are the body magnetic intensity 
+declination and inclination. 
+.TP
+OPT(F)IT(xy_file) Provide locations where the anomaly will be computed. Note this option is mutually 
+exlusive with OPT(G).
+.TP
+OPT(G)IT(outgrid.nc)
+Output the gravity or magnetic anomaly at nodes of this grid file.
+#include "explain_-R.txt"
+.SH OPTIONAL ARGUMENTS
+#include "explain_-V.txt"
+.TP
+OPT(E) give layer thickness in m [Default = 0 m]. Use this option only when the triangles describe a
+non-closed surface and you want the anomaly of a constant thickness layer.
+.TP
+OPT(L) sets level of observation [Default = 0]. That is the height (z) at which anomalies are computed. 
+.TP
+OPT(M) Map units TRUE; x,y in degrees, dist units in m. [Default dist unit = x,y unit] 
+.TP
+OPT(S) search radius in km. Triangle centroids that are further away than IT(radius) from current output point will not be taken into account. Use this option to speed up computation at expenses of a less accurate result.
+.TP
+OPT(T) Give either names of xyz[m] and IT(vertex) files or of a IT(raw) or IT(stl) file defining a close surface. 
+In the first case append a IT(d) imediatly after OPT(T) and optionaly a IT(/m) after the vertex file name.
+In the second case append a IT(r) or a IT(s) imediatly after OPT(T) and before the file name.
+A IT(vertex) file is a file with N rows (one per triangle) and 3 columns with integers defining the order by 
+which the points in the IT(xyz) file are to be connected to form a triangle. The output of the program 
+triangulate comes in this format. The optional IT(/m) instructs the program that the xyzm file has four
+columns and that the fourth column contains the magnetization intensity (plus signal), which needs not to be constant.
+In this case the third argument of the OPT(H) option is ignored.
+A IT(raw) format (selected by the 'r' flag is a file with N rows (one per triangle) and 9 columns corresponding 
+to the x,y,x coordinates of each of the three vertex of each triangle. Alternatively, the 's' flag indicates that the
+surface file is in the ascii STL (Stereo Lithographic) format. These two type of files are used to provide a 
+closed surface.
+.TP
+OPT(Z) level of reference plane [Default = 0]. Use this option when the triangles describe a non-closed surface and the volume is deffined from each triangle and this reference level. An example will be the whater depth to compute a Bouguer anomaly.
+#include "explain_-f.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+Suppose you ...
+.sp
+BD(xyzokb) 
+.SH "SEE ALSO"
+.IR GMT (1)
+
+.SH REFERENCE
+Okabe, M., Analytical expressions for gravity anomalies due to polyhedral bodies and translation into 
+magnetic anomalies, \fIGeophysics\fP, 44, (1979), p 730-741.

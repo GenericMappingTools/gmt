@@ -1,0 +1,21 @@
+# Crude representation of a closed polygon containing North America
+# $Id$
+280	5
+284	12
+273	23
+281	24
+281	30
+309	45
+310	54
+300	70
+284	75
+216	75
+188	69
+191	65
+191	54
+199	53
+220	58
+235	39
+243	29
+251	18
+280	5

@@ -1,0 +1,323 @@
+#include "common_options.txt"
+.TH X2SYS_INIT 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
+.SH NAME
+x2sys_init \- Initialize a new x2sys track database
+.SH SYNOPSIS
+BD(x2sys_init) IT(TAG) OPT(D)IT(deffile) [ OPT(Cc)|BD(f)|BD(g)|BD(e) ] [ OPT(E)IT(suffix) ] 
+[ OPT(F) ] [ OPT(Gd)|BD(g) ] [ OPT(I)IT(dx)[/IT(dy)] ] [ OPT(Nd)|BD(s)IT(unit) ] 
+[ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Wt)|BD(d)IT(gap) ]
+.SH DESCRIPTION
+BD(x2sys_init) is the starting point for anyone wishing to use x2sys; it initializes
+a set of data bases that are particular to one kind of track data.  These data,
+their associated data bases, and key parameters are given a short-hand
+notation called an x2sys TAG.   The TAG keeps track of settings such as file format,
+whether the data are geographic or not, and the binning resolution for track indices.
+Running BD(x2sys_init) is a prerequisite to running any of the other x2sys programs,
+such as BD(x2sys_binlist), which will
+create a crude representation of where each data track go within the domain
+and which observations are available; this information serves as input to
+BD(x2sys_put) which updates the track data base. Then, BD(x2sys_get) can
+be used to find which tracks and data are available inside a given region.
+With that list of tracks you can use BD(x2sys_cross) to calculate track
+crossovers, use BD(x2sys_report) to report crossover statistics or
+BD(x2sys_list) to pull out selected crossover information
+that BD(x2sys_solve) can use to determine track-specific systematic corrections.  These
+corrections may be used with BD(x2sys_datalist) to extract corrected
+data values for use in subsequent work.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(TAG)
+The unique name of this data type x2sys TAG.
+.TP
+OPT(D)IT(deffile)
+Definition file prefix for this data set [See DEFINITION FILES below for more information].
+Specify full path if the file is not in the current directory.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(Cc)|BD(f)|BD(g)|BD(e)
+Select procedure for along-track distance calculation when needed by other programs:
+.br
+BD(c) Cartesian distances [Default, unless OPT(G) is set].
+.br
+BD(f) Flat Earth distances.
+.br
+BD(g) Great circle distances [Default if OPT(G) is set].
+.br
+BD(e) Geodesic distances on current BD(GMT) ellipsoid.
+.TP
+OPT(E)IT(suffix)
+Specifies the file extension (suffix) for these data files.  If not given we use the
+definition file prefix as the suffix (see OPT(D)).
+.TP
+OPT(F)
+Force creating new files if old ones are present [Default will abort if old TAG files are found].
+.TP
+OPT(Gd)|BD(g)
+Selects geographical coordinates.  Append BD(d) for discontinuity at the
+Dateline (makes longitude go from -180 to + 180) or BD(g) for discontinuity
+at Greenwich (makes longitude go from 0 to 360 [Default]).  If not given we
+assume the data are Cartesian.
+.TP
+OPT(I)IT(dx)[/IT(dy)]
+IT(x_inc) [and optionally IT(y_inc)] is the grid spacing. Append BD(m) to
+indicate minutes or BD(c) to indicate seconds for geographic data.  These
+spacings refer to the binning used in the track bin-index data base.
+.TP
+OPT(Nd)|BD(s)IT(unit)
+Sets the units used for distance and speed when requested by other programs.
+Append BD(d) for distance or BD(s) for speed, then give the desired IT(unit) as
+BD(c) (Cartesian userdist or userdist/usertime), BD(e) (meter or m/s), BD(k) (km or km/hr), BD(m) (miles or miles/hr), or
+BD(n) (nautical miles or knots).  [Default is OPT(Ndk) OPT(Nse) (km and m/s) if OPT(G) is set
+and OPT(Ndc) and OPT(Nsc) otherwise (Cartesian units)].
+#include "explain_-Rgeo.txt"
+For Cartesian data just give IT(xin/xmax/ymin/ymax).  This sets the complete domain
+for the relevant track data set.
+#include "explain_-V.txt"
+.TP
+OPT(Wt)|BD(d)IT(gap)
+Give BD(t) or BD(d) and append the corresponding
+maximum time gap (in user units; this is typically seconds [Infinity]), or distance
+(for units, see OPT(N)) gap [Infinity]) allowed between
+the two data points immediately on either side of a crossover.  If these limits are
+exceeded then a data gap is assumed and no COE will be determined.
+#include "explain_help.txt"
+.SH DEFINITION FILES
+These *.def files contain information about the data file format and
+have two sections: (1) header information and (2) column information.  All
+header information starts with the character # in the first column, immediately
+followed by an upper-case directive.  If the directive takes an argument it is
+separated by white-space.  You may append a trailing # comments.
+Five directives are recognized:
+.br
+.sp
+BD(ASCII) states that the data files are in ASCII format.
+.br
+BD(BINARY) states that the data files are native binary files.
+.br
+BD(NETCDF) states that the data files are COARDS-compliant 1-D netCDF files.
+.br
+BD(SKIP) takes an integer argument which is either the number of lines to
+skip (when reading ASCII files) or the number of bytes to skip (when reading
+native binary files). Not used with netCDF files.
+.br
+BD(GEO) indicates that these files are geographic data sets, with periodicities in
+the IT(x)-coordinate (longitudes).  Alternatively, use OPT(G).
+.br
+BD(MULTISEG) means each track consists of multiple segments separated
+by a BD(GMT) segment header (alternatively, use OPT(m) when defining
+the system TAG). Not used with netCDF files.
+.br
+.sp
+The column information consists of one line per column in the order the
+columns appear in the data file.  For each column you must provide  seven
+attributes:
+.sp
+.br
+IT(name type NaN NaN-proxy scale offset oformat)
+.br
+.sp
+IT(name) is the name of the column variable.  It is expected that you will use
+the special names IT(lon) (or IT(x) if Cartesian) and IT(lat) (or IT(y))
+for the two required coordinate columns, and IT(time) when optional time data
+are present.
+.br
+IT(type) is always BD(a) for ASCII representations of numbers, whereas for
+binary files you may choose among
+BD(c) for signed 1-byte character (-127,+128), BD(u) for unsigned
+byte (0-255), BD(h) for signed 2-byte integers (-32768,+32767),
+BD(i) for  signed 4-byte integers (-2,147,483,648,+2,147,483,647),
+BD(f) for 4-byte floating points and BD(d) for 8-byte double
+precision floating points.  For netCDF, simply use BD(d) as netCDF
+will automatically handle type-conversions during reading.
+.br
+IT(NaN) is Y if certain values (e.g, -9999) are to be replaced by NAN, and N otherwise.
+.br
+IT(NaN-proxy) is that special value (e.g., -9999).
+.br
+IT(scale) is used to multiply the data after reading.
+.br
+IT(offset) is used to add to the scaled data.
+.br
+IT(oformat) is a C-style format string used to print values from this column.
+.br
+.sp
+If you give - as the IT(oformat) then BD(GMT)'s formatting machinery will be used\"'
+instead (i.e., BD(FORMAT_FLOAT_OUT), BD(FORMAT_GEO_MAP), BD(FORMAT_DATE_MAP), BD(FORMAT_CLOCK_MAP)).
+Some file formats already have definition files premade.  These include
+mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
+netCDF files), gmt (for old mgg supplement binary files), xy (for plain ASCII
+x, y tables), xyz (same, with one z-column), geo (for plain ASCII longitude,
+latitude files), and geoz (same, with one z-column).
+.SH EXAMPLES
+If you have a large set of track data files you can organize them using the
+x2sys tools.  Here we will outline the steps.  Let us assume that your track
+data file format consist of 2 header records with text information followed
+by any number of identically formatted data records with 6 columns (lat,
+lon, time, obs1, obs2, obs3) and that files are called *.trk. We will call
+this the "line" format.  First, we create the line.def file:
+.br
+.sp
+BD()# Define file for the line format
+.br
+BD()#ASCII		# File is ASCII
+.br
+BD()#SKIP 2		# Skip 2 header records
+.br
+BD()#GEO		# Data are geographic
+.br
+BD()#name	type 	NaN	NaN-proxy	scale offset oformat
+.br
+lat	a	N	0	1	0	%9.5f
+.br
+lon	a	N	0	1	0	%10.5f
+.br
+time	a	N	0	1	0	%7.1f
+.br
+obs1	a	N	0	1	0	%7.2f
+.br
+obs2	a	N	0	1	0	%7.2f
+.br
+obs3	a	N	0	1	0	%7.2f
+.br
+.sp
+.br
+Next we create the TAG and the TAG directory with the databases for these line track files.
+Assuming these contain geographic data and that we want to keep track of the
+data distribution at a 1 x 1 degree resolution, with distances in km calculated
+along geodesics and with speeds given in knots, we may run
+.br
+.sp
+BD(x2sys_init) LINE OPT(V) OPT(G) OPT(D)line OPT(Rg) OPT(Ce) OPT(Ndk) OPT(NsN) OPT(I)1/1 OPT(E)trk
+.br
+.sp
+where we have selected LINE to be our x2sys tag.  When x2sys tools try to read your
+line data files they will first look in the current directory and second look
+in the file IT(TAG)_paths.txt for a list of additional directories to examine.
+Therefore, create such a file (here LINE_paths.txt) and stick the full paths to
+your data directories there.  All TAG-related files (definition files, tag files,
+and track data bases created) will be expected to be in the directory pointed to
+by BD($X2SYS_HOME)/IT(TAG) (in our case BD($X2SYS_HOME)/LINE).  Note that
+the argument to OPT(D) must contain the full path if the *.def file is not in
+the current directory.  BD(x2sys_init) will copy this file to the BD($X2SYS_HOME)/IT(TAG)
+directory where all other x2sys tools will expect to find it.
+.br
+.TP
+.B Create tbf file(s):
+Once the (empty) TAG databases have been initialized we go through a
+two-step process to populate them.  First we run BD(x2sys_binlist) on
+all our track files to create one (or more) multisegment track bin-index
+files (tbf).  These contain information on which 1 x 1 degree bins (or any
+other blocksize; see OPT(I)) each
+track has visited and which observations (in your case obs1, obs2, obs3)
+were actually observed (not all tracks may have all three kinds of
+observations everywhere).  For instance, if your tracks are listed in
+the file tracks.lis we may run this command:
+.br
+.sp
+BD(x2sys_binlist) OPT(V) OPT(T)LINE :tracks.lis > tracks.tbf
+.TP
+.B Update index data base:
+Next, the track bin-index files are fed to BD(x2sys_put)
+which will insert the information into the TAG databases:
+.br
+.sp
+BD(x2sys_put) OPT(V) OPT(T)LINE tracks.tbf
+.TP
+.B Search for data:
+You may now use BD(x2sys_get) to find all the tracks within a certain
+sub-region, and optionally limit the search to those tracks that have
+a particular combination of observables.  E.g., to find all the tracks
+which has both obs1 and obs3 inside the specified region, run
+.br
+.sp
+BD(x2sys_get) OPT(V) OPT(T)LINE OPT(R)20/40/-40/-20 OPT(F)obs1,obs3 > tracks.tbf
+.TP
+.B MGD77[+] or GMT:
+Definition files already exist for MGD77 files (both standard ASCII and
+enhanced netCDF-based MGD77+ files) and the old *.gmt files manipulated by the
+mgg supplements; for these data sets the OPT(C) and OPT(N) will default to
+great circle distance calculation in km and speed in m/s.  There are also
+definition files for plain x,y[,z] and lon,lat[,z] tracks.
+To initiate new track databases to be used with MGD77 data from NGDC, try
+.br
+.sp
+BD(x2sys_init) MGD77 OPT(V) OPT(D)mgd77 OPT(E)mgd77 OPT(Rd) OPT(Gd) OPT(Nsn) OPT(I)1/1 OPT(Wt)900  OPT(Wd)5
+.br
+.sp
+where we have chosen a 15 minute (900 sec) or 5 km threshold to indicate a data gap
+and selected knots as the speed; the other steps are similar.
+.TP
+.B Binary files:
+Let us pretend that your line files actually are binary files with a
+128-byte header structure (to be skipped) followed by the data records
+and where IT(lon), IT(lat), IT(time) are double precision numbers while the three
+observations are 2-byte integers which must be multiplied by 0.1.
+Finally, the first two observations may be -32768 which means there is
+no data available.
+All that is needed is a different line.def file:
+.br
+.sp
+BD()# Define file for the binary line format
+.br
+BD()#BINARY	# File is now binary
+.br
+BD()#SKIP 128	# Skip 128 bytes
+.br
+BD()#GEO		# Data are geographic
+.br
+BD()#name	type	 NaN?	NaN-proxy	scale offset oformat
+.br
+lon	d	N	0	1	0	%10.5f
+.br
+lat	d	N	0	1	0	%9.5f
+.br
+time	d	N	0	1	0	%7.1f
+.br
+obs1	h	Y	-32768	0.1	0	%6.1f
+.br
+obs2	h	Y	-32768	0.1	0	%6.1f
+.br
+obs3	h	N	0	0.1	0	%6.1f
+.br
+.sp
+The rest of the steps are identical.  
+.TP
+.B COARDS 1-D netCDF files:
+Finally, suppose that your line files actually are netCDF files that
+conform to the COARDS convention, with data columns named
+IT(lon), IT(lat), IT(time), IT(obs1), IT(obs2), and IT(obs3).
+All that is needed is a different line.def file:
+.br
+.sp
+BD()# Define file for the netCDF COARDS line format
+.br
+BD()#NETCDF	# File is now netCDF
+.br
+BD()#GEO		# Data are geographic
+.br
+BD()#name	type	 NaN?	NaN-proxy	scale offset oformat
+.br
+lon	d	N	0	1	0	%10.5f
+.br
+lat	d	N	0	1	0	%9.5f
+.br
+time	d	N	0	1	0	%7.1f
+.br
+obs1	d	N	0	1	0	%6.1f
+.br
+obs2	d	N	0	1	0	%6.1f
+.br
+obs3	d	N	0	1	0	%6.1f
+.br
+.sp
+Note we use no scaling or NAN proxies since those issues are usually
+handled internally in the netCDF format description.
+.SH "SEE ALSO"
+.IR x2sys_binlist (1),
+.IR x2sys_datalist (1),
+.IR x2sys_get (1),
+.IR x2sys_list (1),
+.IR x2sys_put (1),
+.IR x2sys_report (1),
+.IR x2sys_solve (1)

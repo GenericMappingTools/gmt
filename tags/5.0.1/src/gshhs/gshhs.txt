@@ -1,0 +1,120 @@
+#include "common_options.txt"
+.TH GSHHS 1 MANDATE GMT_STRING "Generic Mapping Tools [gshhs supplement]"
+.SH NAME
+gshhs \- Extract data tables from binary GSHHS or WDBII data files
+.SH SYNOPSIS
+BD(gshhs) IT(binaryfile.b) [ OPT(A)IT(min) ] [ OPT(G) ] [ OPT(I)IT(id) ] [ OPT(L) ] [ OPT(N)\fIlevel\fP ] 
+[ OPT(Qe)|BD(i) ] [ GMT_bo_OPT ] [ GMT_o_OPT ] > IT(asciifile.txt)
+.SH DESCRIPTION
+BD(gshhs) reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
+extracts an ASCII listing.  It automatically handles byte-swabbing between different
+architectures.  Optionally, only segment header info can be displayed.  The header info has
+the format IT(ID npoints  hierarchical-level source area f_area west east south north container ancestor),
+where hierarchical levels for coastline polygons go from 1 (shoreline) to 4 (lake inside
+island inside lake inside land).  Source is either W (World Vector Shoreline) or C (CIA World
+Data Bank II); lower case is used if a lake is a river-lake. The IT(west east south north) is
+the enclosing rectangle, IT(area) is the polygon area in km^2 while IT(f_area) is the actual area of the
+ancestor polygon, IT(container) is the ID of the polygon that contains this polygon (-1 if none),
+and IT(ancestor) is the ID of the polygon in the full resolution set that was reduced to yield this
+polygon (-1 if full resolution since there is no ancestor).
+For line data the header is simply
+IT(ID npoints  hierarchical-level source west east south north).  
+For more information about the file formats, see TECHNICAL INFORMATION below.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(binaryfile.b)
+GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  Any of the
+5 standard resolutions (full, high, intermediate, low, crude) can be used.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)IT(min)
+Only output information for the polygon if its area equals or exceeds IT(min) [Default outputs all polygons].
+.TP
+OPT(G)
+Write output that can be imported into GNU Octave or Matlab by ending segments with a NaN-record.
+.TP
+OPT(I)IT(id)
+Only output information for the polygon that matches IT(id).
+Use OPT(Ic) to get all the continents only [Default outputs all polygons].
+.TP
+OPT(L)
+Only output a listing of polygon or line segment headers [Default outputs headers and data records].
+.TP
+OPT(N)
+Only output features whose level matches the given IT(level) [Default will output all levels].
+.TP
+OPT(Qe)|BD(i)
+Control what to do with river-lakes (river sections large enough to be stored as closed polygons).
+Use OPT(Qe) to exclude them and OPT(Qi) to exclude everything else instead [Default outputs all polygons].
+
+#include "explain_-bo.txt"
+#include "explain_-ocols.txt"
+.SH EXAMPLES
+.sp
+To convert the entire intermediate GSHHS binary data to ASCII files for Octave/Mathlab, run
+.sp
+gshhs gshhs_i.b --IO_SEGMENT_MARKER=N > gshhs_i.txt
+.sp
+To only get a listing of the headers for the river data set at full resolution, try
+.sp
+gshhs wdb_rivers_f.b -L > riverlisting.txt
+.br
+.sp
+To only extract lakes, excluding river-lakes, from the high resolution file, try
+.br
+.sp
+gshhs gshhs_h.b -Ee -N2 > all_lakes.txt
+.SH TECHNICAL INFORMATION
+Users who wish to access the GSHHS or WDBII data directly from their custom programs should
+consult the gshhs.c and gshhs.h source code and familiarize themselves with the data format and
+how various information flags are packed into a single 4-byte integer.  While we do not maintain
+any Octave/Matlab code to read these files we are aware that both Mathworks and IDL have made
+such tools available to their users.  However, they tend not to update their code and our file
+structure has evolved considerably over time, breaking their code.  Here, some general technical
+comments on the binary data files are given.
+.br
+BD(BGSHHS): These files contain completely closed polygons of continents and islands (level 1),
+lakes (level 2), islands-in-lakes (level 3) and ponds-in-islands-in-lakes (level 4); a particular
+level can be extracted using the OPT(N) option.  Continents are identified as the first 6 polygons
+and can be extracted via the OPT(Ic) option.  The IDs for the continents are Eurasia (0),
+Africa (1), North America (2), South America (3), Antarctica (4), and Australia (5).
+Files are sorted on area from large to small.  There are two sub-groups for level 2: Regular lakes and the
+so-called "river-lakes", the latter being sections of a river that are so wide to warrant a polygon
+representation.  These river-lakes are flagged in the header (also see OPT(Q)).  All five resolutions
+are free of self-intersections.  Areas of all features have been computed using a Lambert azimuthal
+equal-area projection centered on the polygon centroids, using WGS-84 as the ellipsoid.  GMT use the
+GSHHS as a starting point but then partition the polygons into pieces using a resolution-dependent
+binning system; parts of the world are then rebuilt into closed polygons on the fly as needed.
+For more information on GSHHS processing, see Wessel and Smith (1996).
+.br
+BD(WDBII).  These files contain sets of line segments not necessarily in any particular order.  Thus,
+it is not possible to extract information pertaining to just one river or one country.  Furthermore,
+the 4 lower resolutions derive directly from the full resolution by application of the Douglas-Peucker
+algorithm (see gshhs_dp), hence self-intersections are increasingly likely as the resolution is
+degraded.  Note that the river-lakes included in GSHHS are also duplicated in the WDBII river files
+so that each data set can be a stand-alone representation.  Users who wish to access both data sets
+can recognize the river-lakes features by examining the header structure (see the source code for
+details); they are also the only closed polygons in the WDBII river file.  There are many levels (classes) in the
+river file: River-lakes (0), Permanent major rivers (1), Additional major rivers (2), Additional rivers (3),
+Minor rivers (4), Intermittent rivers -- major (6), Intermittent rivers -- additional (7),
+Intermittent rivers -- minor (8), Major canals (10), Canals of lesser importance (11), and
+Canals -- irrigation type (12).  For the border file there are three levels: National boundaries (1),
+Internal domestic boundaries (2), and international maritime boundaries (3).  Individual levels or classes
+may be extracted via OPT(N).
+.SH REFERENCES
+Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction
+of the number of points required to represent a digitized line
+of its caricature, \fICan. Cartogr., 10\fP, 112-122.
+.br
+Gorny, A. J., 1977, \fIWorld Data Bank II General User GuideRep. PB 271869\fP, 10pp,
+Central Intelligence Agency, Washington, DC.
+.br
+Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, \fIInt. Hydrograph. Rev., LXVII(1)\fP, 27-35.
+.br
+Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent, hierarchical, high-resolution
+shoreline database, \fIJ. Geophys. Res., 101(B4)\fP, 8741-8743.
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR gshhs_dp (1)
+.IR gshhstograss (1)

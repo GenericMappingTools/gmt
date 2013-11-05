@@ -1,0 +1,106 @@
+#include "common_options.txt"
+.TH GRD2XYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grd2xyz \- Convert grid file to data table
+.SH SYNOPSIS
+BD(grd2xyz) IT(grid) [ GMT_Rgeo_OPT ] 
+[ GMT_V_OPT ] [ OPT(W)[IT(weight)] ] [ OPT(Z)[IT(flags)] ] 
+[ GMT_bo_OPT ] [ GMT_fo_OPT ] [ GMT_ho_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ]
+.SH DESCRIPTION
+BD(grd2xyz) reads one or more binary 2-D grid files and writes out xyz-triplets in
+ASCII [or binary] format to standard output.  Modify the precision of the ASCII
+output format by editing the BD(FORMAT_FLOAT_OUT) parameter in your BD(gmt.conf) file or
+use PAR(D_FORMAT,format) on the command line, or choose binary output
+using single or double precision storage.  As an option you may output z-values
+without the (x,y) coordinates; see OPT(Z) below.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(grid)
+Names of 2-D binary grid files to be converted.
+(See GRID FILE FORMATS below.)
+.SH OPTIONAL ARGUMENTS
+.TP
+#include "explain_-R.txt" 
+Using the OPT(R) option will select a subsection of the grid. If this subsection exceeds the
+boundaries of the grid, only the common region will be output.
+#include "explain_-V.txt" 
+.TP
+OPT(W)[IT(weight)]
+Write out x,y,z,w, where w is the supplied IT(weight) (or 1 if not supplied) [Default writes x,y,z only].
+.TP
+OPT(Z)[IT(flags)]
+Write a 1-column ASCII [or binary] table.  Output will be organized according to the specified ordering convention contained in IT(flags).
+If data should be written by rows, make IT(flags) start with BD(T)(op) if first row is y = ymax
+or BD(B)(ottom) if first row is y = ymin.  Then, append BD(L) or BD(R) to indicate that first element should start at left
+or right end of row.  Likewise for column formats: start with BD(L) or BD(R) to position first column,
+and then append BD(T) or BD(B) to position first element in a row.  
+For gridline registered grids:  If grid is periodic in x but the
+outcoming data should not contain the (redundant) column at x = xmax, append BD(x).  For grid periodic in y,
+skip writing the redundant row at y = ymax by appending BD(y).  If the byte-order needs to be swapped, append BD(w).  Select
+one of several data types (all binary except BD(a)):
+.br
+.sp
+	BD(a)  ASCII representation of a single item per record
+.br
+	BD(c)  signed 1-byte character
+.br
+	BD(u)  unsigned 1-byte character
+.br
+	BD(h)  short 2-byte integer
+.br
+	BD(H)  unsigned short 2-byte integer
+.br
+	BD(i)  4-byte integer
+.br
+	BD(I)  unsigned 4-byte integer
+.br
+	BD(l)  long (8-byte) integer [requires 64-bit mode]
+.br
+	BD(L)  unsigned long (8-byte) integer [requires 64-bit mode]
+.br
+	BD(f)  4-byte floating point single precision
+.br
+	BD(d)  8-byte floating point double precision
+.br
+.sp
+Default format is scanline orientation of ASCII numbers: OPT(ZTLa).
+Note that OPT(Z) only applies to 1-column output.
+#include "explain_-bo.txt"
+[Default is 3].
+This option only applies to xyz output; see OPT(Z) for z table output.
+#include "explain_-f.txt"
+See also BD(TIME COORDINATES) below.
+OPT(h)
+Output 1 header record based on information in the first grid file header.
+Ignored if binary output is selected.  [Default is no header].
+#include "explain_-ocols.txt" 
+#include "explain_-s.txt" 
+#include "explain_help.txt"
+#include "explain_precision.txt"
+#include "explain_grd_input.txt"
+.SH TIME COORDINATES
+Time coordinates in netCDF grids, be it the x, y, or z coordinate, will be recognized as such.
+The variable's BD(unit) attribute is parsed to determine the unit and epoch of the time coordinate in the grid.
+Values are then converted to the internal time system specified by BD(TIME_UNIT) and BD(TIME_EPOCH) in the BD(gmt.conf)
+file or on the command line.
+The default output is relative time in that time system, or absolute time when using the option OPT(f0T), OPT(f1T), or
+OPT(f2T) for x, y, or z coordinate, respectively.
+.SH EXAMPLES
+To edit individual values in the 5' by 5' hawaii_grv.nc file, dump the .nc
+to ASCII:
+.br
+.sp
+grd2xyz hawaii_grv.nc > hawaii_grv.xyz
+.br
+.sp
+To write a single precision binary file without the x,y positions from the file raw_data.nc file, using scanline orientation, run
+.br
+.sp
+grd2xyz raw_data.nc -ZTLf > hawaii_grv.b
+.SH "SEE ALSO"
+.IR gmt.conf (5),
+.IR gmt (1),
+.IR grdedit (1),
+.IR grdreformat (1),
+.IR xyz2grd (1)

@@ -1,0 +1,65 @@
+#include "common_options.txt"
+.TH GRDLANDMASK 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdlandmask \- Create a "wet-dry" mask grid from shoreline data base
+.SH SYNOPSIS
+BD(grdlandmask) OPT(G)IT(mask_grd_file)] GMT_I_OPT GMT_Rgeo_OPT [ GMT_A_OPT ] 
+[ OPT(D)IT(resolution)[BD(+)] ] [ OPT(N)IT(maskvalues)[BD(o)] ] 
+[ GMT_V_OPT ] [ GMT_r_OPT ]
+.SH DESCRIPTION
+BD(grdlandmask) reads the selected shoreline database and uses that information to decide which
+nodes in the specified grid are over land or over water.  The nodes defined by
+the selected region and lattice spacing will be set according to one of two criteria:
+(1) land vs water, or (2) the more detailed (hierarchical) ocean vs land vs lake vs island vs pond.  The
+resulting mask may be used in subsequent operations involving BD(grdmath) to mask out
+data from land [or water] areas.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(G)IT(mask_grd_file)]
+Name of resulting output mask grid file.
+(See GRID FILE FORMATS below).
+#include "explain_-I.txt"
+#include "explain_-Rgeo.txt"
+.SH OPTIONAL ARGUMENTS
+#include "explain_-A.txt"
+.TP
+OPT(D)IT(resolution)[BD(+)]
+Selects the resolution of the data set to use ((BD(f))ull, (BD(h))igh, (BD(i))ntermediate, (BD(l))ow, or (BD(c))rude).  The
+resolution drops off by ~80% between data sets. [Default is BD(l)].    Append BD(+) to automatically select a lower resolution should
+the one requested not be available [abort if not found].  Note that because the coastlines differ in details a
+node in a mask file using one resolution is not guaranteed to remain inside [or outside] when a different resolution is selected.
+.TP
+OPT(N)IT(maskvalues)[BD(o)]
+Sets the values that will be assigned to nodes.  Values can be any number, including the
+textstring NaN.  Append BD(o) to let nodes exactly on feature boundaries be considered outside [Default is inside].
+Specify this information using 1 of 2 formats:
+.br
+	OPT(N)IT(wet/dry).
+.br
+	OPT(N)IT(ocean/land/lake/island/pond).
+.br
+[Default is 0/1/0/1/0 (i.e., 0/1)].
+#include "explain_-V.txt"
+#include "explain_nodereg.txt"
+#include "explain_help.txt"
+#include "explain_grd_output.txt"
+.SH EXAMPLES
+To set all nodes on land to NaN, and nodes over water to 1, using the high resolution data set, do
+.br
+.sp
+grdlandmask -R-60/-40/-40/-30 -Dh -I5m -N1/NaN -Gland_mask.nc -V
+.br
+.sp
+To make a 1x1 degree global grid with the hierarchical levels of the nodes based on the low resolution data:
+.br
+.sp
+grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
+#include "explain_gshhs.txt"
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdmath (1),
+.IR grdclip (1),
+.IR psmask (1),
+.IR psclip (1),
+.IR pscoast (1)

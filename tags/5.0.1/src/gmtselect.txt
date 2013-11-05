@@ -1,0 +1,166 @@
+#include "common_options.txt"
+.TH GMTSELECT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtselect \- Select data table subsets based on multiple spatial criteria 
+.SH SYNOPSIS
+BD(gmtselect) [ IT(table) ] [ GMT_A_OPT ] 
+[ OPT(C)IT(dist)[IT(unit)]/IT(ptfile) ] [ OPT(D)IT(resolution)[BD(+)] ] [ OPT(E)[BD(fn)] ] [ OPT(F)IT(polygonfile) ] 
+[ OPT(I)[BD(cflrsz)] ] [ GMT_J_OPT ] [ OPT(L)[BD(p)]IT(dist)[IT(unit)]/IT(linefile) ] 
+[ OPT(N)IT(maskvalues) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z)IT(min/max)] ] 
+[ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(gmtselect) is a filter that reads (longitude, latitude) positions from the first 2 columns of
+IT(infiles) [or standard input] and uses a combination of 1-6 criteria to pass or reject the records.
+Records can be selected based on whether or not they are 1) inside a rectangular region (OPT(R)
+[and OPT(J)]), 2) within IT(dist) km of any point in IT(ptfile), 3) within IT(dist) km of
+any line in IT(linefile), 4) inside one of the polygons in the IT(polygonfile), 5) inside
+geographical features (based on coastlines), or 6) has z-values within a given range.
+The sense of the tests can be reversed for each of these 6 criteria by using the OPT(I) option.
+See option OPT(:) on how to read (latitude,longitude) files.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+None
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+#include "explain_-A.txt"
+Ignored unless OPT(N) is set.
+.TP
+OPT(C)IT(dist)[IT(unit)]/IT(ptfile)
+Pass all records whose location is within IT(dist) of any of the points in the ASCII file IT(ptfile).
+If IT(dist) is zero then the 3rd column of IT(ptfile) must have each point's individual radius of influence.\"'
+Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances and
+append a distance unit (see UNITS).
+Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
+(in cm, inch, or points, as determined by BD(PROJ_LENGTH_UNIT)) before Cartesian distances are compared to IT(dist).
+.TP
+OPT(D)IT(resolution)[BD(+)]
+Ignored unless OPT(N) is set.  Selects the resolution of the coastline data set to use ((BD(f))ull, (BD(h))igh,
+(BD(i))ntermediate, (BD(l))ow, or (BD(c))rude).  The resolution drops off by ~80% between data sets.
+[Default is BD(l)].  Append )+) to automatically select a lower resolution should
+the one requested not be available [abort if not found].  Note that because the coastlines differ in
+details it is not guaranteed that a point will remain inside [or outside] when a different resolution is selected.
+.TP
+OPT(E)[BD(fn)]
+Specify how points exactly on a polygon boundary should be considered.  By default, such points are
+considered to be inside the polygon.  Append BD(n) and/or BD(f) to change this behavior for the OPT(F)
+and OPT(N) options, respectively, so that boundary points are considered to be outside.
+.TP
+OPT(F)IT(polygonfile)
+Pass all records whose location is within one of the closed polygons in the multiple-segment
+file IT(polygonfile).  For spherical polygons (lon, lat), make sure no consecutive points
+are separated by 180 degrees or more in longitude.  Note that IT(polygonfile) must be in ASCII regardless
+of whether GMT_bi_OPT is used.
+.TP
+OPT(I)[BD(cflrsz)]
+Reverses the sense of the test for each of the criteria specified:
+.br
+	BD(c)  select records NOT inside any point's circle of influence.\"'
+.br
+	BD(f)  select records NOT inside any of the polygons.
+.br
+	BD(l)  select records NOT within the specified distance of any line.
+.br
+	BD(r)  select records NOT inside the specified rectangular region.
+.br
+	BD(s)  select records NOT considered inside as specified by OPT(N) (and OPT(A), OPT(D)).
+.br
+	BD(z)  select records NOT within the range specified by OPT(Z).
+#include "explain_-J.txt"
+.TP
+OPT(L)[BD(p)]IT(dist)[IT(unit)]/IT(linefile)
+Pass all records whose location is within IT(dist) of any of the line segments in the ASCII multiple-segment
+file IT(linefile).  If IT(dist) is zero then we will scan each
+sub-header in the IT(ptfile) for an embedded OPT(D)IT(dist) setting that sets each line's individual distance value.\"'
+Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances append a distance unit (see UNITS).
+Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
+(in cm, inch, m, or points, as determined by BD(PROJ_LENGTH_UNIT)) before Cartesian distances are compared to IT(dist).
+Use OPT(Lp) to ensure only points whose orthogonal projections onto the nearest line-segment
+fall within the segments endpoints [Default considers points "beyond" the line's endpoints.\"'
+.TP
+OPT(N)IT(maskvalues)
+Pass all records whose location is inside specified geographical features.
+Specify if records should be skipped (s) or kept (k) using 1 of 2 formats:
+.br
+	OPT(N)IT(wet/dry).
+.br
+	OPT(N)IT(ocean/land/lake/island/pond).
+.br
+[Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
+#include "explain_-R.txt"
+If no map projection is supplied we implicitly set OPT(Jx)1.
+#include "explain_-V.txt"
+.TP
+OPT(Z)IT(min/max)]
+Pass all records whose 3rd column (z) lies within the given range.  Input file must have at least
+three columns.  To indicate no limit on min or max, specify a hyphen (-).  If your 3rd column
+is absolute time then remember to supply OPT(f)2T.
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_-s.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_distunits.txt"
+#include "explain_precision.txt"
+.br
+This note applies to ASCII output only in combination with binary or netCDF input or the OPT(:) option.
+See also the note below.
+.SH NOTE ON PROCESSING ASCII INPUT RECORDS
+Unless you are using the OPT(:) option, selected ASCII input records are copied verbatim to output.
+That means that options like OPT(foT) and settings like BD(FORMAT_FLOAT_OUT) and BD(FORMAT_GEO_OUT)
+will not have any effect on the output.
+On the other hand, it allows selecting records with diverse content, including character strings, quoted
+or not, comments, and other non-numerical content.
+.SH NOTE ON DISTANCES
+If options OPT(C) or OPT(L) are selected then distances are Cartesian and in user units;
+use OPT(fg) to imply spherical distances in km and geographical (lon, lat) coordinates.
+Alternatively, specify OPT(R) and OPT(J) to measure projected Cartesian distances in map units
+(cm, inch, or points, as determined by BD(PROJ_LENGTH_UNIT)).
+.br
+This program has evolved over the years.  Originally, the OPT(R) and OPT(J) were mandatory in order
+to handle geographic data, but now there is full support for spherical calculations.  Thus, OPT(J)
+should only be used if you want the tests to be applied on projected data and not the original
+coordinates.  If OPT(J) is used the distances given via OPT(C) and OPT(L) are projected distances.
+.SH NOTE ON SEGMENTS
+Segment headers in the input files are copied to output if one or more records from a segment passes
+the test.  Selection is always done point by point, not by segment.
+.SH EXAMPLES
+To extract the subset of data set that is within 300 km of any of the points in pts.d but more than
+100 km away from the lines in lines.d, run
+.br
+.sp
+gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
+.br
+.sp
+Here, you must specify OPT(fg) so the program knows you are processing geographical data.
+.br
+.sp
+To keep all points in data.d within the specified region, except the points on land (as determined by the high-resolution
+coastlines), use
+.br
+.sp
+gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
+.br
+.sp
+To return all points in quakes.d that are inside or on the spherical polygon lonlatpath.d, try
+.br
+.sp
+gmtselect quakes.d -Flonlatpath.d -fg > subset1
+.br
+.sp
+To return all points in stations.d that are within 5 cm of the point in origin.d for a certain projection, try
+.br
+.sp
+gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2
+#include "explain_gshhs.txt"
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf(5),
+.IR grdlandmask (1),
+.IR pscoast (1)

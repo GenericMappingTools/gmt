@@ -1,0 +1,61 @@
+#include "common_options.txt"
+.TH GMTCOLORS 5 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtcolors \- Explanation of color codes in BD(GMT)
+.SH DESCRIPTION
+Colors can be specified in BD(GMT) as arguments to commands, generally as part of the OPT(G) or OPT(W) options
+to select polygon fill or outline pen. Colors are also used in color pallette tables (cpt files) that help convert
+numerical values to colors.
+.br
+BD(GMT) allows several ways to represent a color:
+.TP
+.B Colorname
+Specify one of the named colors below. All names are case-insensitive.
+.TP
+.B R/G/B
+Specify BD(R)ed, BD(G)reen, and BD(B)lue levels. Each value is separated by a slash and is in the range from 0 (dark) to 255 (light).
+This representation is used to color monitors.
+.TP
+.B #RRGGBB
+Specify BD(R)ed, BD(G)reen, and BD(B)lue levels in the way that it is done in HTML. Use two characters for
+each color channel, ranging from 00 (dark) to FF (light). Upper and lower case are allowed.
+.TP
+.B Graylevel
+For shades of gray, R = G = B, and only one number needs to be used.
+This representation is popular with black and white printers.
+.TP
+.B H-S-V
+Specify BD(H)ue in the range 0 to 360 (degrees), BD(S) saturation between 0 (not saturated) and 1 (fully saturated), and
+value BD(V) between 0 (dark) and 1 (light). Number are separated by hyphens.
+This representation can be helpful when hue varies a lot.
+.TP
+.B C/M/Y/K
+Specify BD(C)yan, BD(M)agenta, BD(Y)ellow, and blacBD(K). Each number is in the range from 0 (no paint) to 1 (maximum paint).
+This representation is used by most color printers.
+.SH "LIST OF COLORS"
+The following list contains the named colors that can be used in BD(GMT) and their equivalent color codes.
+.sp
+BD(R	G	B	Name)
+.br
+#include "Colors.i"
+.SH "FURTHER INFORMATION"
+For more information on the use of color, read Appendix I of the BD(GMT TECHNICAL REFERENCE AND COOKBOOK).
+.SH "SEE ALSO"
+.IR gmt.conf (5),
+.IR gmtlogo (1),
+.IR grdcontour (1),
+.IR grdvector (1),
+.IR grdview (1),
+.IR psbasemap (1),
+.IR pscoast (1),
+.IR pscontour (1),
+.IR pshistogram (1),
+.IR psimage (1),
+.IR pslegend (1),
+.IR psmask (1),
+.IR psrose (1),
+.IR pstext (1),
+.IR pswiggle (1),
+.IR psxy (1),
+.IR psxyz (1)
+

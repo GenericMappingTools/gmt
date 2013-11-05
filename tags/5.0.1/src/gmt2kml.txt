@@ -1,0 +1,263 @@
+#include "common_options.txt"
+.TH GMT2KML 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmt2kml \- Convert GMT data tables to KML files for Google Earth 
+.SH SYNOPSIS
+BD(gmt2kml) [ IT(table) ] [ OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)] ]
+[ OPT(C)IT(cpt) ]
+[ OPT(D)IT(descriptfile) ] [ OPT(E)[IT(altitude)] ] [ OPT(F)BD(e)|BD(s)|BD(t)|BD(l)|BD(p) ] 
+[ OPT(G)BD(f|n)BD(-)|IT(fill) ] [ OPT(I)IT(icon) ] [ GMT_K_OPT]
+[ OPT(L)IT(col1:name1),IT(col2:name2),... ] 
+[ OPT(N)[+|IT(name_template)|IT(name)] ] [ GMT_O_OPT] [ OPT(Ra)|IT(w/e/s/n) ] 
+[ OPT(S)BD(c)|BD(n)IT(scale)] ] [ OPT(T)IT(title)[/IT(foldername)] ] [ GMT_V_OPT ] 
+[ OPT(W)[BD(-)|BD(+)]IT(pen) ] [ OPT(Z)IT(args) ] [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_f_OPT ] 
+[ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ] [ > IT(output.kml) ]
+.SH DESCRIPTION
+BD(gmt2kml) reads one or more GMT table file and converts them to a single output file
+using Google Earth's KML format.
+Data may represent points, lines, or polygons, and you may specify additional
+attributes such as title, altitude mode, colors, pen widths, transparency, regions, and data descriptions.
+You may also extend the feature down to ground level (assuming it is above it) and use
+custom icons for point symbols.
+.br
+The input files should contain the following columns:
+.br
+IT(lon) IT(lat) [ IT(alt) ] [ IT(timestart) [ IT(timestop) ] ]
+.br
+where IT(lon) and IT(lat) are required for all features, IT(alt) is optional for all features (see
+also OPT(A) and OPT(C)), and IT(timestart) and IT(timestop) apply to events and timespan features.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)]
+Select one of three altitude modes recognized by Google Earth that determines the altitude (in m) of the
+feature:
+BD(a) absolute altitude,
+BD(g) altitude relative to sea surface or ground,
+BD(s) altitude relative to seafloor or ground.
+To plot the features at a fixed altitude, append an altitude IT(alt) (in m). Use 0 to clamp the features to the chosen reference
+surface.
+Append BD(x)IT(scale) to scale the altitude from the input file by that factor.
+If no value is appended, the altitude (in m) is read from the 3rd column of the input file.
+[By default the features are clamped to the sea surface or ground].
+.TP
+OPT(C)IT(cpt)
+Use color palette for assigning colors to the symbol, event, or timespan icons, based on the value in the 3rd column
+of the input file. For lines or polygons we examine the segment header for -Z<value> statements and obtain the
+color via the cpt lookup. Note only discrete colors are possible.
+.TP
+OPT(D)IT(descriptfile)
+File with HTML snippets that will be included as part of the main description content for the KML file [no description].
+See SEGMENT INFORMATION below for feature-specific descriptions.
+.TP
+OPT(E)[IT(altitude)]
+Extrude feature down to ground level [no extrusion].
+.TP
+OPT(F)BD(e)|BD(s)|BD(t)|BD(l)|BD(p)
+Sets the feature type.  Choose from points (BD(e)vent, BD(s)ymbol, or BD(t)imespan), BD(l)ine, or BD(p)olygon [symbol].
+The first two columns of the input file should contain (IT(lon), IT(lat)).
+When altitude or value is required (i.e., no IT(altitude) value was given with OPT(A), or OPT(C) is set), the third column needs to contain
+the IT(altitude) (in m) or IT(value).
+The event (OPT(Fe)) is a symbol that should only be active at a particular IT(time), given in the next column.
+Timespan (OPT(Ft)) is a symbol that should only be active during a particular time period indicated by the next
+two columns (IT(timestart), IT(timestop)).  Use NaN to indicate unbounded time limits.
+If used, times should be in ISO format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format (see OPT(f)).
+.TP
+OPT(G)BD(f|n)IT(fill)
+Set fill color for symbols, extrusions and polygons (OPT(Gf)) [Default is light orange at 75% transparency] or text labels (OPT(Gn)) [Default is white].
+Optionally, use OPT(Gf-) to turn off polygon fill, and OPT(Gn-) to disable labels.
+.TP
+OPT(I)IT(icon)
+Specify the URL to an alternative icon that should be used for the symbol [Default is a Google Earth circle].
+If the URL starts with + then we will prepend http://maps.google.com/mapfiles/kml/ to the name.
+To turn off icons entirely (e.g., when just wanting a text label), use OPT(I)-.
+[Default is a local icon with no directory path].
+.TP
+OPT(K)
+Allow more KML code to be appended to the output later [finalize the KML file].
+.TP
+OPT(L)IT(col1:name1),IT(col2:name2),...
+Extended data given.  Append one or more strings of the form IT(col):IT(name) separated by commas.
+We will expect the listed data columns to exist in the input and they will be encoded in the KML file as
+Extended Data sets, whose attributes will be available in the Google Earth balloon when the item is selected.
+.TP
+OPT(N)[+|IT(name_template)|IT(name)]
+By default, if segment headers contain a OPT(L)"label string" then we use that for the name of
+the KML feature (polygon, line segment or set of symbols). Default names for these segments are "Line %d" and
+"Point Set %d", depending on the feature, where %d is a sequence number of line segments within a file.
+Each point within a line segment will be named after the line segment plus a sequence number. Default is simply 
+"Point %d".
+.br
+Alternatively, select one of these options:
+(1) append BD(+) to supply individual symbol labels directly at the end of the data record,
+(2) append a string that may include %d or a similar integer format to assign unique name IDs for each feature,
+with the segment number (for lines and polygons) or point number (symbols) appearing where %d is placed,
+(3) give no arguments to turn symbol labeling off; line segments will still be named.
+.TP
+OPT(O)
+Appended KML code to an existing KML file [initialize a new KML file].
+.TP
+OPT(Ra)|IT(w/e/s/n)
+Issue a single Region tag.  Append IT(w/e/s/n) to set a particular region (will ignore points outside
+the region), or append BD(a) to determine and use the actual domain of the data (single file only) [no region tags issued].
+.TP
+OPT(S)BD(c)|BD(n)IT(scale)]
+Scale icons or labels.  Here, OPT(Sc) sets a scale for the symbol icon, whereas OPT(Sn) sets a scale for the name labels [1 for both].
+.TP
+OPT(T)IT(title)[/IT(foldername)]
+Sets the document title [GMT Data Document].  Optionally, append /IT(FolderName);
+this allows you, with OPT(O), OPT(K), to group features into folders within the KML document.
+[The default folder name is "\fIName\fP Features", where IT(Name) is Point, Event, Timespan, Line, or Polygon].
+#include "explain_-V.txt"
+.TP
+OPT(W)[BD(-)|BD(+)]IT(pen)
+Set pen attributes for lines or polygon outlines.  Append pen attributes to use
+[Defaults: width = default, color = black, style = solid].  If OPT(C) is given you may
+optionally use OPT(W-) to apply the cpt color to the polygon outline only (fill
+determined by OPT(G)) or OPT(W+) to use the cpt color for both polygon fill and
+outline.  Note that for KML the pen width is given as integer pixel
+widths so you must specify pen width as IT(n)BD(p), where IT(n) is an integer.
+.TP
+OPT(Z)IT(args)
+Set one or more attributes of the Document and Region tags.
+Append BD(+a)IT(alt_min/alt_max) to specify limits on visibility based on altitude.
+Append BD(+l)IT(lod_min/lod_max) to specify limits on visibility based on Level Of Detail,
+where IT(lod_max) == -1 means it is visible to infinite size.
+Append BD(+f)IT(fade_min/fade_max) to fade in and out over a ramp [abrupt].
+Append BD(+v) to make a feature IT(not) visible when loaded [visible].
+Append BD(+o) to open a folder or document in the sidebar when loaded [closed].
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+.SH "EXAMPLES"
+To convert a file with point locations (lon, lat) into a KML file with red circle symbols, try
+.br
+.sp
+gmt2kml mypoints.txt -Gfred -Fs > mypoints.kml
+.br
+.sp
+To convert a multisegment file with lines (lon, lat) separated by segment headers that contain
+a OPT(L)labelstring with the feature name, selecting a thick white pen, and title the document, try
+.br
+.sp
+gmt2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
+.br
+.sp
+To convert a multisegment file with polygons (lon, lat) separated by segment headers that contain
+a OPT(L)labelstring with the feature name, selecting a thick black pen and semi-transparent yellow fill,
+giving a title to the document, and prescribing a particular region limit, try
+.br
+.sp
+gmt2kml mypolygons.txt -Gfyellow+t0.5 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
+.br
+.sp
+To convert a file with point locations (lon, lat, time) into a KML file with green circle symbols that
+will go active at the specified time and stay active going forward, try
+.br
+.sp
+awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt2kml -Gfgreen -Ft > mytimepoints.kml
+.br
+.sp
+To extract contours and labels every 10 units from the grid temp.nc and plot them in KML,
+using red lines at 75% transparency and red labels (no transparency), try
+.br
+.sp
+grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
+.br
+gmt2kml contours.txt -Fl -W1p,red@75 -K > contours.kml
+.br
+gmt2kml -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
+.br
+.sp
+To instead plot the contours as lines with colors taken from the cpt file contours.cpt, try
+.br
+.sp
+gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
+.SH "LIMITATIONS"
+Google Earth has trouble displaying filled polygons across the Dateline.  For now you must manually break
+any polygon crossing the dateline into a west and east polygon and plot them separately.
+.SH "MAKING KMZ FILES"
+Using the KMZ format is preferred as it takes less space.  KMZ is simply a KML file and any data files, icons, or images
+referenced by the KML, contained in a zip archive.  One way to organize large data sets is to split them into groups
+called Folders.  A Document can contain any number of folders.  Using scripts you can create a composite KML file
+using the OPT(K), OPT(O) options just like you do with GMT plots.  See OPT(T) for switching between folders and
+documents.
+.SH "KML HIERARCHY"
+BD(GMT) stores the different features in hierarchical folders
+by feature type (when using OPT(O), OPT(K) or OPT(T/)IT(foldername)),
+by input file (if not standard input), and
+by line segment (using the name from the segment header, or OPT(N)).
+This makes it more easy in Google Earth to switch on or
+off parts of the contents of the Document. The following is a crude example:
+.sp
+[ KML header information; not present if OPT(O) was used ]
+.br
+<Document><name>GMT Data Document</name>
+.br
+    <Folder><name>Point Features</name>
+.br
+        <!--This level of folder is inserted only when using -O, -K>
+.br
+        <Folder><name>file1.dat</name>
+.br
+            <!--One folder for each input file (not when standard input)>
+.br
+            <Folder><name>Point Set 0</name>
+.br
+            <!--One folder per line segment>
+.br
+            <!--Points from the first line segment in file file1.dat go here>
+.br
+            <Folder><name>Point Set 1</name>
+.br
+            <!--Points from the second line segment in file file1.dat go here>
+.br
+        </Folder>
+.br
+    </Folder>
+.br
+    <Folder><name>Line Features</name>
+.br
+        <Folder><name>file1.dat</name>
+.br
+            <!--One folder for each input file (not when standard input)>
+.br
+            <Placemark><name>Line 0</name>
+.br
+                <!--Here goes the first line segment>
+.br
+            </Placemark>
+.br
+            <Placemark><name>Line 1</name>
+.br
+                <!--Here goes the second line segment>
+.br
+            </Placemark>
+.br
+        </Folder>
+.br
+    <Folder>
+.br
+</Document>
+.br
+[ KML trailer information; not present if OPT(K) was used ]
+.SH "SEGMENT INFORMATION"
+BD(gmt2kml) will scan the segment headers for substrings of the form
+OPT(L)"\fIsome label\fP" [also see OPT(N) discussion] and
+OPT(T)"\fIsome text description\fP".  If present, these are parsed to supply
+name and description tags, respectively, for the current feature.
+.br
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR img2google (1),
+.IR kml2gmt (1),
+.IR ps2raster (1)

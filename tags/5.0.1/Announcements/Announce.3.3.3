@@ -1,0 +1,44 @@
+Dear GMT user-
+
+We are pleased to announce the release of GMT 3.3.3.
+This version fixes numerous bugs (some discussed in
+the GMT 3.3.2 Errata page) and will for the first time
+use GNU configure script to do the install.  A top-
+level Makefile has also been added, which runs the
+actual installation (from install_gmt or manually). The
+installation has been simplified by providing a web-
+based form where you can indicate your preferences
+and have a customized install parameter file returned
+to be used with the new install_gmt script.  This allows
+you to do the install in the background.  You may also
+run it interactively as in the past.  With these
+changes, we hope GMT 3.3.3 will be our most stable release
+to date.  For more details see the Release link on the
+GMT web page (http://www.soest.hawaii.edu/gmt) and the
+new section on Installation.
+
+While mostly dealing with bugfixes, a few new options
+have been added to some programs in GMT 3.3.3.
+grdimage and grdview takes -T to plot an image without
+any interpolation, and psxy can use -C with polygon
+files and -M to give polygons colers via cpt lookup.
+
+Finally, the practice of using lib as the directory
+for common data files and coastlines has come to an
+end.  From now on this directory is referred to as
+share.  Since the coastline files themselves have not
+changed you do not need to copy the full and high
+coastlines again, just move then to the new share
+directory.
+
+While this release comes very close to the Fall AGU
+meeting, we feel it is worth your effort to upgrade.
+However, from experience we know that it is possible
+to introduce a new problem by fixing two bugs; hence
+we recommend AGU participants to keep their earlier
+version intact until the meeting is over.
+
+Sincerely,
+
+Paul Wessel
+Walter H. F. Smith

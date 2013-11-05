@@ -1,0 +1,15 @@
+.TP
+GMT_g_OPT
+Examine the spacing between consecutive data points in order to impose breaks in the line.
+Append BD(x)|BD(X) or BD(y)|BD(Y) to define a gap when there is a large enough change in the x or y coordinates, respectively,
+or BD(d)|BD(D) for distance gaps; use upper case to calculate gaps from projected coordinates.  For gap-testing on other columns
+use [IT(col)]BD(z); if IT(col) is not prepended the it defaults to 2 (i.e., 3rd column).
+Append [+|-]IT(gap) and optionally a unit BD(u).  Regarding optional signs: -ve means previous minus current column value must exceed
+IT(gap) to be a gap, +ve means current minus previous column value must exceed IT(gap), and no sign means the absolute value of the
+difference must exceed IT(gap).
+For geographic data (BD(x)|BD(y)|BD(d)), the unit BD(u) may be arc BD(d)egree, BD(m)inute, or BD(s)econd, or m\fBe\fPter [Default],
+BD(f)eet, BD(k)ilometer, BD(M)iles, or BD(n)autical miles.
+For projected data (BD(X)|BD(Y)|BD(D)), choose from BD(i)nch, BD(c)entimeter, or BD(p)oints [Default unit set by BD(PROJ_LENGTH_UNIT)].
+Note: For BD(x)|BD(y)|BD(z) with time data the unit is instead controlled by BD(TIME_UNIT).
+Repeat the option to specify multiple criteria, of which any can be met to produce a line break.
+Issue an additional OPT(ga) to indicate that all criteria must be met instead.

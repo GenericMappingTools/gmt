@@ -1,0 +1,17 @@
+# Crude representation of a closed polygon contained by Africa
+# $Id$
+20	-33
+27	-33
+33	-20
+39	-14
+37	-3
+50	10
+42	10
+29	30
+20	28
+4	35
+-8	32
+-15	17
+-11	9
+11	9
+20	-33

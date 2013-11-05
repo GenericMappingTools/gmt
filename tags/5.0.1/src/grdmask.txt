@@ -1,0 +1,89 @@
+#include "common_options.txt"
+.TH GRDMASK 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdmask \- Create mask grid from polygons or point coverage
+.SH SYNOPSIS
+BD(grdmask) IT(pathfiles) OPT(G)IT(mask_grd_file)] GMT_I_OPT 
+GMT_Rgeo_OPT [ OPT(A)[BD(m)|BD(p)] ] 
+[ OPT(N)[BD(i)|BD(I)|BD(p)|BD(P)]IT(values) ] [ OPT(S)IT(search_radius)[IT(unit)] ] 
+[ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] 
+[ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(grdmask) can operate in two different modes. 1. It reads one or more xy-files that each define a closed polygon.
+The nodes defined by the specified region and lattice spacing will be set equal to one of three possible values
+depending on whether the node is outside, on the polygon perimeter, or inside the polygon.  The
+resulting mask may be used in subsequent operations involving BD(grdmath) to mask out
+data from polygonal areas. 2. The xy-files simply represent data point locations and the mask is set to the
+inside or outside value depending on whether a node is within a maximum distance from the nearest data point.
+If the distance specified is zero then only the nodes nearest each data point are considered "inside".
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(pathfiles)
+The name of 1 or more ASCII [or binary, see GMT_bi_OPT] files holding the polygon(s) or data points.
+.TP
+OPT(G)IT(mask_grd_file)]
+Name of resulting output mask grid file.
+(See GRID FILE FORMATS below).
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)[BD(m)|BD(p)]
+If the input data are geographic (as indicated by OPT(fi)) then the sides in the polygons will be
+approximated by great circle arcs.  When using the OPT(A) sides will be regarded as straight lines.
+Alternatively, append BD(m) to have sides first follow meridians, then parallels. Or append BD(p)
+to first follow parallels, then meridians.
+.TP
+OPT(N)[BD(i)|BD(I)|BD(p)|BD(P)]IT(values)
+Sets the IT(out/edge/in) that will be assigned to nodes that are IT(out)side the polygons,
+on the IT(edge), or IT(in)side.  Values can be any number, including the
+textstring NaN  [Default is 0/0/1].  Optionally, use BD(Ni) to set polygon insides to the
+polygon ID obtained from the data (either segment header OPT(L)IT(header) or via OPT(a));
+use OPT(NI) to consider the polygon boundary as part of the inside. Alternatively, use
+OPT(Np) to use a running number as polygon ID; optionally append start of the sequence [0].
+Here, OPT(NP) includes the polygon perimeter as inside.
+.TP
+OPT(S)IT(search_radius)[IT(unit)]
+Set nodes depending on their distance from the nearest data point.  Nodes within IT(radius) [0] from
+a data point are considered inside; append a distance unit (see UNITS).
+If OPT(S) is not set then we consider the input data to define closed polygon(s) instead.
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_nodereg.txt"
+#include "explain_help.txt"
+#include "explain_distunits.txt"
+#include "explain_grd_output.txt"
+#include "explain_grd_coord.txt"
+.SH EXAMPLES
+To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
+to 1, do
+.sp
+grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc -V
+.br
+.sp
+To set nodes within 50 km of data points to 1 and other nodes to NaN, do
+.sp
+grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc -V
+.br
+.sp
+To assign polygon IDs to the gridnodes using the insides of the polygons in plates.gmt, do
+.sp
+grdmask plates.gmt -R-40/40/-40/40 -I2m -Ni -Gplate_IDs.nc -V
+.br
+.sp
+Same exercise, but instead compute running polygon IDs starting at 100, do
+.sp
+grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc -V
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdlandmask (1),
+.IR grdmath (1),
+.IR grdclip (1),
+.IR psmask (1),
+.IR psclip (1)

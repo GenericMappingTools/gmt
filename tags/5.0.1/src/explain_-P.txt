@@ -1,0 +1,3 @@
+.TP
+OPT(P) (*)
+Select "Portrait" plot orientation.

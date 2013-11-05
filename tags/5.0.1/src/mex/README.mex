@@ -1,0 +1,77 @@
+	$Id$
+
+Distributed under the GNU Public License (see file ../LICENSE.TXT)
+
+GMT 5 Release introduced a full set of Matlab interface functions
+for all GMT modules.
+
+---------------------------------------------------------------
+Date:	1-JAN-95
+
+grdinfo.c
+grdread.c
+grdwrite.c
+imgread.m
+
+These C routines can be used from within Matlab and Octave
+to read and write GMT's grdfile format; the imgread Matlab
+script can be used to read Sandwell/SMith *.img Mercator
+grids.  To install the C mex programs, you must first
+edit the makefile and set the directories, then make all
+or make install.  The latter probably requires you to be root.
+The routines were originally written by David Sandwell and
+later rewritten by Paul Wessel.  They are distributed freely
+with the GMT supplemental package.
+
+The *.c file provides the computational routines; the *.m files
+are only used when you say, e.g., help grdwrite.
+
+The read/write functions also does an implicit flipud on the
+resulting matrix so that the matrix is in the right orientation
+for plotting (i.e., y-axis increases upwards).
+
+Modified:	P Wessel 4-JUN-96
+
+grdread can now as an option return [x,y,z]
+grewrite may now be given [x,y,z,file,title,[pix]].
+Old style calling is kept for backwards compatibility.
+
+Date:	P. Sharfstein 15-SEP-97
+
+modified original source to Matlab 5 API. Also,  created
+grdinput.c to create X and Y matricies. The Makefile is currently
+set up to run from the gmt/src/mex directory.
+
+Modified:	P Wessel 6-OCT-98
+
+Upgraded all to use GMT 3.1 internal functions.
+New option in grdread to return x,y,z, and d.
+
+Modified:	P Wessel 12-NOV-98
+
+grd*.c needed to call GMT_begin to initialize needed parameters,
+otherwise a nasty SEGV occurs...
+
+Modified:	P Wessel 03-JUL-00
+
+Create makefile from makefile.in and configure.  Pls let me know
+if the configure script fails for your system.
+configure looks for the environmental variable MATLAB to determine
+where matlab lives on your system.  If not set it defaults to
+/usr/local/matlab.
+
+Modified:	R Scharroo 15-SEP-07
+
+Configuring now done by configure in main directory.
+grdinfo2.c renamed back to grdinfo.c.
+
+Modified:	P Wessel 22-APR-08
+
+The main GMT configure now prepare either a Matlab-GMT interface
+installation or a Matlab-octave interface installation.  See
+configure --help for details.
+
+Modified:	P. Wessel, 5-SEP-08
+
+Now includes a plain Matlab script to read Sandwell/Smith *.img grids.
+

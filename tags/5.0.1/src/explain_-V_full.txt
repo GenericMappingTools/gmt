@@ -1,0 +1,14 @@
+.TP
+GMT_V_OPT
+Select verbose mode, which will send progress reports to IT(stderr).
+Choose among 5 levels of verbosity; each level adds mode messages:
+.br
+BD(0) - Complete silence, not even fatal error messages are produced.
+.br
+BD(1) - Produce only fatal error messages (same as when OPT(V) is omitted).
+.br
+BD(2) - Produce also warnings and progress messages (same as OPT(V) only).
+.br
+BD(3) - Produce also detailed progress messages.
+.br
+BD(4) - Produce also debugging messages.

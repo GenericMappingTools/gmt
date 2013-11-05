@@ -1,0 +1,187 @@
+#include "common_options.txt"
+.TH PSTEXT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+pstext \- Plot or typeset text on maps
+.SH SYNOPSIS
+BD(pstext) [ IT(textfiles) ] GMT_J_OPT GMT_Rgeoz_OPT 
+[ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)IT(dx/dy) ]  
+[ OPT(D)[BD(j)|BD(J)]IT(dx)[/IT(dy)][BD(v)[IT(pen)]] ] [ OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]] ] 
+[ OPT(G)IT(color) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)BD(l)|BD(u) ] 
+[ OPT(T)BD(o)|BD(O)|BD(c)|BD(C) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] 
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_a_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
+[ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(pstext) plots text strings of variable size, font type, and orientation.
+Various map projections are provided, with the option to draw and annotate the
+map boundaries. IT(PostScript) code is written to standard output.  Greek
+characters, subscript, superscript, and small caps are supported as follows:
+The sequence @~ toggles between the selected font and Greek (Symbol).
+@%IT(no)% sets the font to IT(no); @%% resets the font to the starting font,
+@- toggles subscripts on/off, @+ toggles superscript on/off, @# toggles small
+caps on/off,  @;IT(color); changes the font color (@;; resets it), @:IT(size):
+changes the font size (@:: resets it), and @_ toggles underline on/off.
+@@ prints the @ sign.  @e, @o, @a, @E, @O, @A give the accented
+Scandinavian characters.  Composite characters (overstrike) may be indicated with
+the @!<char1><char2> sequence, which will print the two characters on top of
+each other.  To learn the octal codes for symbols not available on the keyboard
+and some accented European characters, see Section 4.16 and Appendix F in the
+BD(GMT) Technical Reference and Cookbook.  Note that BD(PS_CHAR_ENCODING) must be
+set to an extended character set in your BD(gmt.conf) file in order to use the accented characters.
+Using the OPT(G) or OPT(W) options, a rectangle underlying the text may
+be plotted (does not work for strings with sub/super scripts, symbols, or composite
+characters, except in paragraph mode (OPT(M))).
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_-J.txt"
+#include "explain_-R.txt"
+#include "explain_-Rz.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+IT(textfiles)
+This is one or more files containing 1 or more records with (IT(x), IT(y)[, IT(font), IT(angle), IT(justify)], IT(text)).
+The attributes in brackets can alternatively be set directly via OPT(F).
+If no files are given, BD(pstext) will read standard input.
+IT(font) is a font specification with format [IT(size),][IT(font),][IT(color)] where IT(size) is
+text size in points, IT(font) is the font to use, and IT(color) sets the font color.  To draw outline
+fonts you append =IT(pen) to the filo.  The IT(angle)
+is measured in degrees counter-clockwise from horizontal, and IT(justify) sets the alignment. 
+If IT(font) is not an integer, then it is taken to be a text string with the desired fontname (see
+OPT(L) for available fonts).  The alignment refers to the
+part of the text string that will be mapped onto the (IT(x),IT(y)) point.  Choose a 2 character combination
+of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.
+.TP
+OPT(A)
+Angles are given as azimuths; convert them to directions using the current projection.
+#include "explain_-B.txt"
+.TP
+OPT(C)IT(dx/dy)
+Sets the clearance between the text and the surrounding box [15%].
+Only used if OPT(W) or OPT(G) are specified.  Append the unit you want (BD(c)m, BD(i)nch,
+or BD(p)oint; if not given we consult BD(PROJ_LENGTH_UNIT)) or % for a percentage of the font size.
+.TP
+OPT(D)[BD(j)|BD(J)]IT(dx)[/IT(dy)][BD(v)[IT(pen)]]
+Offsets the text from the projected (IT(x),IT(y)) point by IT(dx),IT(dy) [0/0].  If IT(dy) is not
+specified then it is set equal to IT(dx).
+Use BD(-Dj) to offset the text away from the point instead (i.e., the text justification
+will determine the direction of the shift).  Using OPT(DJ) will shorten diagonal offsets at corners
+by sqrt(2).  Optionally, append BD(v) which will draw a line
+from the original point to the shifted point; append a IT(pen) to change the attributes for this line.
+.TP
+OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]]
+By default, text will be placed horizontally, using the primary annotation font attributes (BD(FONT_ANNOT_PRIMARY)), and
+centered on the data point.  Use this option to override these defaults by
+specifying up to three text attributes (font, angle, and justification) directly on the command line.
+Use BD(+f) to set the font (size,fontname,color); if no font info is given then the input file must
+have this information in one of its columns.
+Use BD(+a) to set the angle; if no angle is given then the input file must have this as a column.
+Use BD(+j) to set the justification; if no justification is given then the input file must have this as a column.
+Items read from the data file should be in the same order as specified with the OPT(F) option.
+Example: OPT(F)BD(+f)12p,Helvetica-Bold,red\fB+j+a\fP selects a 12p red Helvetica-Bold font and expects to read
+the justification and angle from the file, in that order, after IT(x), IT(y) and before IT(text).
+.TP
+OPT(G)IT(color)
+Sets the shade or color used for filling the text box [Default is no fill].
+Alternatively, use OPT(Gc) to use text (and OPT(C)) to build clip paths and turn
+clipping on.  This clipping can then be turned off later and the text may be finally plotted using
+psclip OPT(Ct) (provided only one pstext call was issued).
+#include "explain_-Jz.txt"
+#include "explain_-K.txt"
+.TP
+OPT(L)
+Lists the font-numbers and font-names available, then exits.
+.TP
+OPT(M)
+Paragraph mode.  Files must be multiple segment files.  Segments are separated by
+a special record whose first character must be IT(flag) [Default is '>'].
+Starting in the 3rd column, we expect to find information pertaining to the
+typesetting of a text paragraph (the remaining lines until next segment header).
+The information expected is (IT(x y) [IT(font angle justify)] IT(linespace parwidth parjust)),
+where IT(x y font angle justify) are defined above (IT(font), IT(angle), and IT(justify) can be set via OPT(F)), while IT(linespace)
+and IT(parwidth) are the linespacing and paragraph width, respectively.  The justification
+of the text paragraph is governed by IT(parjust) which may be BD(l)(eft), BD(c)(enter),
+BD(r)(ight), or BD(j)(ustified).  The segment header is followed by one or more lines
+with paragraph text.  Text may contain the escape sequences discussed above.
+Separate paragraphs with a blank line.
+.TP
+OPT(N)
+Do NOT clip text at map boundaries [Default will clip].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+OPT(Q)
+Change all text to either BD(l)ower or BD(u)pper case [Default leaves all text as is].
+.TP
+OPT(T)
+Specify the shape of the textbox when using OPT(G) and/or OPT(W).
+Choose lower case BD(o) to get a straight rectangle [Default].
+Choose upper case BD(O) to get a rounded rectangle.
+Choose lower case BD(c) to get a concave rectangle (only in paragraph mode).
+Choose upper case BD(C) to get a convex rectangle (only in paragraph mode).
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+OPT(W)IT(pen)
+Sets the pen used to draw a rectangle around the text string (see OPT(T)) [Default is width = default, color = black, style = solid].
+#include "explain_-XY.txt"
+.TP
+OPT(Z)
+For 3-D projections: expect each item
+to have its own level given in the 3rd column, and OPT(N) is implicitly set.
+(Not implemented for paragraph mode).
+#include "explain_-aspatial.txt"
+#include "explain_-c.txt"
+#include "explain_-f.txt"
+#include "explain_-h.txt"
+#include "explain_colon.txt"
+#include "explain_perspective.txt"
+(Not implemented for paragraph mode).
+#include "explain_-t.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To plot just the red outlines of the (lon at text strings) stored in the file text.d on a Mercator plot with
+the given specifications, use
+.br
+.sp
+pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 > plot.ps
+.br
+.sp
+To add a typeset figure caption for a 3-inch wide illustration, use
+.br
+.sp
+pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
+.br
+This is an optional header record
+.br
+> 0 -0.5 12 0 4 LT 13p 3i j
+.br
+@%5%Figure 1.@%%  This illustration shows nothing useful, but it still needs
+.br
+a figure caption.  Highlighted in @;255/0/0;red@;; you can see the locations
+.br
+of cities where it is @_impossible@_ to get any good Thai food; these are to
+be avoided.
+.br
+EOF
+.br
+.SH WINDOWS REMARKS
+Note that under Windows, the percent sign (%) is a variable indicator (like $ under Unix).
+To indicate a plain percentage sign in a batch script you need to repeat it (%%);
+hence the font switching mechanism (@%IT(font)% and @%%) may require twice the
+number of percent signs.  This only applies to text inside a script or that otherwise
+is processed by DOS.  Data files that are opened and read by BD(pstext) do not need such duplication.
+.SH LIMITATIONS
+In paragraph mode, the presence of composite
+characters and other escape sequences may lead to unfortunate word splitting. Also, if a font
+is requested with an outline pen it will not be used in paragraph mode.
+.br
+The OPT(N) option does not adjust the BoundingBox information so you may
+have to post-process the IT(PostScript) output with ps2raster to obtain
+a correct BoundingBox.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR gmtcolors (5),
+.IR ps2raster (1),
+.IR psbasemap (1),
+.IR pslegend (1),
+.IR psxy (1)

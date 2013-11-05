@@ -1,0 +1,109 @@
+#include "common_options.txt"
+.TH TRIANGULATE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define LEN 15
+#define SCALE OPT(JM)15BD(c)
+.SH NAME
+triangulate \- Do optimal (Delaunay) triangulation and gridding of Cartesian table data [method]
+.SH SYNOPSIS
+BD(triangulate) [ IT(table) ] [ OPT(Dx)|BD(y) ] [ OPT(E)IT(empty) ] 
+[ OPT(G)IT(grdfile) ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ OPT(M) ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] [ OPT(S) ] 
+[ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(triangulate) reads one or more ASCII [or binary] files (or standard input) containing x,y[,z] and
+performs Delaunay triangulation, i.e., it find how the points should be connected to give
+the most equilateral triangulation possible.  If a map projection (give OPT(R) and OPT(J)) is chosen then it is applied before
+the triangulation is calculated.  By default, the output is triplets of point id numbers
+that make up each triangle and is written to standard output.
+The id numbers refer to the points position (line number, starting at 0 for the first line) in the input file.
+As an option, you may choose to create a multiple segment file that can be piped through
+BD(psxy) to draw the triangulation network.  If OPT(G) OPT(I) are set a grid will be calculated based
+on the surface defined by the planar triangles.  The actual algorithm used
+in the triangulations is either that of Watson [1982] [Default] or Shewchuk [1996] (if installed; type
+BD(triangulate \-) to see which method is selected).
+This choice is made during the BD(GMT) installation.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(Dx)|BD(y)
+Take either the IT(x)- or IT(y)-derivatives of surface represented
+by the planar facets (only used when OPT(G) is set).
+.TP
+OPT(E)IT(empty)
+Set the value assigned to empty nodes when OPT(G) is set [NaN].
+.TP
+OPT(G)IT(grdfile)
+Use triangulation to grid the data onto an even grid (specified with OPT(R) OPT(I)).  Append
+the name of the output grid file.  The interpolation is performed in the
+original coordinates, so if your triangles are close to the poles you are
+better off projecting all data to a local coordinate system before using
+BD(triangulate) (this is true of all gridding routines).
+.TP
+OPT(I)
+IT(x_inc) [and optionally IT(y_inc)] sets the grid  size for optional grid output (see OPT(G)).
+Append BD(m) to indicate arc minutes or BD(s) to indicate arc seconds.
+#include "explain_-J.txt"
+.TP
+OPT(M)
+Output triangulation network as multiple line segments separated by a segment header record.
+.TP
+OPT(Q)
+Output the edges of the Voronoi cells instead [Default is Delaunay triangle edges].  Requires
+OPT(R) and is only available if linked with the Shewchuk [1996] library.  Note that OPT(Z) is
+ignored on output.
+#include "explain_-R.txt"
+.TP
+OPT(S)
+Output triangles as polygon segments separated by a segment header record.  Requires Delaunay triangulation.
+#include "explain_-V.txt"
+.TP
+OPT(Z)
+Controls whether we read (x,y) or (x,y,z) data and if z should be output when OPT(M) or OPT(S)
+are used [Read (x,y) only].
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-bo.txt"
+[Default is same as input].
+Node ids are stored as double triplets.
+#include "explain_-f.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_nodereg.txt"
+Only valid with OPT(G)).
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_precision.txt"
+#include "explain_float.txt"
+.SH EXAMPLES
+To triangulate the points in the file samples.xyz, store the triangle information in a binary file, and
+make a grid for the given area and spacing, use
+.br
+.sp
+triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
+.br
+.sp
+To draw the optimal Delaunay triangulation network based on the same file using a
+LEN-cm-wide Mercator map, use
+.br
+.sp
+triangulate samples.xyz -M -R-100/-90/30/34 SCALE | psxy -R-100/-90/30/34 SCALE
+-W0.5p -B1 > network.ps
+.br
+.sp
+To instead plot the Voronoi cell outlines, try
+.br
+triangulate samples.xyz -M -Q -R-100/-90/30/34 SCALE | psxy -R-100/-90/30/34 SCALE
+-W0.5p -B1 > cells.ps
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR pscontour (1)
+.SH REFERENCES
+Watson, D. F., 1982, Acord: Automatic contouring of raw data, IT(Comp. & Geosci.), BD(8), 97\-101.
+.br
+Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+and Delaunay Triangulator, First Workshop on Applied Computational Geometry
+(Philadelphia, PA), 124-133, ACM, May 1996.
+.br
+www.cs.cmu.edu/~quake/triangle.html

@@ -1,0 +1,155 @@
+#include "common_options.txt"
+.TH GRDIMAGE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define LEN_L   1.5
+#define SCALE1	OPT(Jl)18/24/1.5BD(c)
+#define LEN_X   10
+#define SCALE2	OPT(Jx)10BD(i)
+.SH NAME
+grdimage \- Project grids or images and plot them on maps
+.SH SYNOPSIS
+BD(grdimage) IT(grd_z) | IT(grd_r grd_g grd_b) [ OPT(A)IT(out_img)BD(=)IT(driver) ]  OPT(C)IT(cptfile) [ OPT(D)[BD(r)] ] GMT_J_OPT 
+[ GMT_B_OPT ] [ OPT(Ei)[|IT(dpi)] ] [ OPT(G)[BD(f)|BD(b)]IT(color) ] [ OPT(I)IT(intensfile) ] 
+[ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
+[ GMT_Rgeoz_OPT ] [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
+[ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_n_OPT ] [ GMT_p_OPT ] [ OPT(tr) ]
+.SH DESCRIPTION
+BD(grdimage) reads one 2-D grid file and produces a gray-shaded (or colored) map by plotting
+rectangles centered on each grid node and assigning them a gray-shade (or color) based on the z-value.
+Alternatively, BD(grdimage) reads three 2-D grid files with the red, green, and blue components
+directly (all must be in the 0-255 range). Optionally, illumination may be added by providing
+a file with intensities in the (-1,+1) range.  Values outside this range will be clipped.
+Such intensity files can be created from the
+grid using BD(grdgradient) and, optionally, modified by BD(grdmath) or BD(grdhisteq).
+Yet as a third alternative available when GMT is build with GDAL support the grd_z file can be an 
+image referenced or not (than see OPT(Dr)). In this case the images can be illuminated with the file 
+provided via the OPT(I) option. Here if image has no coordinates those of the intensity file will be used.
+.br
+When using map projections, the grid is first resampled on a new rectangular grid with the same
+dimensions. Higher resolution images can be obtained by using the OPT(E) option.
+To obtain the resampled value (and hence shade or color) of each map pixel, its location
+is inversely projected back onto the input grid after which a value is interpolated between the
+surrounding input grid values. By default bi-cubic interpolation is used.
+Aliasing is avoided by also forward projecting the input grid nodes. If two or more nodes are
+projected onto the same pixel, their average will dominate in the calculation of the pixel
+value. Interpolation and aliasing is controlled with the OPT(n) option.
+.br
+The OPT(R) option can be used to select a map region larger or smaller than that
+implied by the extent of the grid.
+.br
+A (color) IT(PostScript) file is output.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(grd_z) | IT(grd_r grd_g grd_b)
+2-D gridded data set (or red, green, blue grids) to be imaged
+(See GRID FILE FORMATS below.)
+.TP
+OPT(C)IT(cptfile)
+name of the color palette table (for IT(grd_z) only).
+#include "explain_-J.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)IT(out_img)BD(=)IT(driver)
+With GDAL aware versions: save image in a raster format instead of IT(PostScript). Append IT(out_img)BD(=)IT(driver) to select the
+file name and image format. The IT(driver) is the driver code name used by GDAL. For example, OPT(A)img.tif=GTiff will write a GeoTiff
+image if the subset of GMT syntax projections that is currently possible to translate into the PROJ4 syntax allows it,
+or a plain tiff file otherwise. Note: any vector elements are lost. 
+#include "explain_-B.txt"
+.TP
+OPT(D)[BD(r)]
+Specifies that the grid supplied is an image file to be read via GDAL. Obviously this option will work only with BD(GMT)
+versions built with GDAL support. The image can be indexed or true color (RGB) and can
+be an URL of a remotely located file. That is OPT(D) http://www.somewhere.com/image.jpg is a valid file syntax.
+Note, however, that to use it this way you must not be blocked by a proxy. If you are, chances 
+are good that it can work by setting the environmental variable http_proxy with the value 'your_proxy:port'
+Append BD(r) to use the region specified by OPT(R) to apply to the image.
+For example, if you have used OPT(Rd) then the image will be assigned the limits of a global
+domain. The interest of this mode is that you can project a raw image (an image without 
+referencing coordinates).
+.TP
+OPT(Ei)[|IT(dpi)]
+Sets the resolution of the projected grid that will be created if
+a map projection other than Linear or Mercator was selected [100].  By default,
+the projected grid will be of the same size (rows and columns) as the
+input file.  Specify BD(i) to use the IT(PostScript)
+image operator to interpolate the image at the device resolution.
+.TP
+OPT(G)[BD(f)|BD(b)]IT(color)
+This option only applies when the resulting image otherwise would consist
+of only two colors: black (0) and white (255).  If so, this option will
+instead use the image as a transparent mask and paint the mask (or its
+inverse, with OPT(Gb)) with the given color combination.
+.TP
+OPT(I)IT(intensfile)
+Gives the name of a grid file with intensities in the (-1,+1) range. [Default is no illumination].
+#include "explain_-Jz.txt"
+#include "explain_-K.txt"
+.TP
+OPT(M)
+Force conversion to monochrome image using the (television) YIQ transformation.
+Cannot be used with OPT(Q).
+.TP
+OPT(N)
+Do not clip the image at the map boundary (only relevant for non-rectangular maps).
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+OPT(Q)
+Make grid nodes with z = NaN transparent, using the colormasking feature in IT(PostScript) Level 3
+(the PS device must support PS Level 3).
+#include "explain_-R.txt"
+#include "explain_-Rz.txt"
+You may ask for a larger IT(w/e/s/n) region to have more room between the image and the axes.
+A smaller region than specified in the grid file will result in a subset of the grid
+[Default is the region given by the grid file].
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+#include "explain_-c.txt"
+#include "explain_-f.txt"
+#include "explain_-n.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
+#include "explain_grd_input.txt"
+.SH IMAGING GRIDS WITH NANS
+Be aware that if your input grid contains patches of NaNs, these patches can become larger
+as a consequence of the resampling that must take place with most map projections.  Because
+BD(grdimage) uses the IT(PostScript) colorimage operator, for most non-linear projections
+we must resample your grid onto an equidistant rectangular lattice.  If you find that the NaN
+areas are not treated adequately, consider (a) use a linear projection, or (b) use
+BD(grdview) OPT(Ts) instead.
+.SH EXAMPLES
+To gray-shade the file hawaii_grav.nc with shades given in shades.cpt on a Lambert map
+at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:
+.br
+.sp
+grdimage hawaii_grav.nc SCALE1 -Cshades.cpt -B1 > hawaii_grav_image.ps
+.br
+.sp
+To create an illuminated color IT(PostScript) plot of the gridded data set image.nc, using the
+intensities provided by the file intens.nc, and color
+levels in the file colors.cpt, with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
+.br
+.sp
+grdimage image.nc SCALE2 -Ccolors.cpt -Iintens.nc -B5 > image.ps
+.br
+.sp
+To create an false color IT(PostScript) plot from the three grid files red.nc, green.nc, and blue.nc,
+with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
+.br
+.sp
+grdimage red.nc green.nc blue.nc SCALE2 -B5 > rgbimage.ps
+.br
+.sp
+When GDAL support is built in: To create a sinusoidal projection of a remotely located Jessica Rabbit
+.br
+.sp
+grdimage -JI15c -Rd -Dr http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -P > jess.ps
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grd2rgb (1),
+.IR grdcontour (1),
+.IR grdview (1),
+.IR grdgradient (1),
+.IR grdhisteq (1)

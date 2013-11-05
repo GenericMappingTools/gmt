@@ -1,0 +1,86 @@
+#include "common_options.txt"
+.TH NEARNEIGHBOR 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+nearneighbor \- Grid table data using a "Nearest neighbor" algorithm
+.SH SYNOPSIS
+BD(nearneighbor) [ IT(table) ] OPT(G)IT(out_grdfile) GMT_I_OPT  
+OPT(N)IT(sectors)[/IT(min_sectors)] GMT_Rgeo_OPT OPT(S)IT(search_radius)[IT(unit)] 
+[ OPT(E)IT(empty) ] [ GMT_V_OPT ] [ OPT(W) ] 
+[ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ OPT(n)[BD(+b)IT(BC)] ] [ GMT_r_OPT ] [ GMT_colon_OPT ] 
+.SH DESCRIPTION
+BD(nearneighbor) reads arbitrarily located (x,y,z[,w]) triples [quadruplets]
+from standard input [or IT(table)] and uses a nearest neighbor algorithm to assign 
+an average value to each node that have one or more points within a radius centered on the node.
+The average value is computed as a weighted mean of the nearest point from each sector inside the search radius.  The
+weighting function used is w(r) = 1 / (1 + d ^ 2), where d = 3 * r / search_radius and r is
+distance from the node.  This weight is modulated by the observation points' weights [if supplied].\"'
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(G)IT(out_grdfile)
+Give the name of the output grid file.
+#include "explain_-I.txt"
+.TP
+OPT(N)IT(sectors)[/IT(min_sectors)]
+The circular area centered on each node is divided into IT(sectors) sectors.  Average values
+will only be computed if there is at least one value inside at least IT(min_sectors) of the sectors for a
+given node.  Nodes that fail this test are assigned the value NaN (but see OPT(E)).
+If IT(min_sectors) is omitted, each sector needs to have at least one
+value inside it.
+[Default is quadrant search with 50% coverage, i.e., IT(sectors) = 4 and IT(min_sectors) = 2].
+Note that only the nearest value per sector enters into the averaging, not all values inside the circle.
+#include "explain_-R.txt"
+.TP
+OPT(S)IT(search_radius)[IT(unit)]
+Sets the IT(search_radius) that determines which data points are considered close to a node.
+Append the distance unit (see UNITS).
+.SH OPTIONAL ARGUMENTS
+.TP
+IT(table)
+3 [or 4, see OPT(W)] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (x,y,z[,w]) data values.  If no file is specified, BD(nearneighbor)
+will read from standard input.
+.TP
+OPT(E)IT(empty)
+Set the value assigned to empty nodes [NaN].
+#include "explain_-V.txt"
+.TP
+OPT(W)
+Input data have a 4th column containing observation point weights.  These are multiplied
+with the geometrical weight factor to determine the actual weights used in the calculations.
+#include "explain_-bi.txt"
+[Default is 3 (or 4 if OPT(W) is set) columns].
+#include "explain_-f.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+.TP
+GMT_n_OPT
+Append BD(+b)IT(BC) to set any boundary conditions to be used, adding
+BD(g) for geographic, BD(p) for periodic, or BD(n) for natural boundary conditions.
+For the latter two you may append BD(x) or BD(y) to specify just one direction,
+otherwise both are assumed.  [Default is geographic if grid is geographic].
+#include "explain_nodereg.txt"
+Not used with binary data.
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_distunits.txt"
+#include "explain_float.txt"
+.SH EXAMPLES
+To create a gridded data set from the file seaMARCII_bathy.lon_lat_z using a 0.5 min grid,
+a 5 km search radius, using an octant search, and set empty nodes to -9999:
+.sp
+nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m -E-9999 -Gbathymetry.nc
+OPT(S)5BD(k) OPT(N)8
+.br
+.sp
+To make a global grid file from the data in geoid.xyz using a 1 degree grid,
+a 200 km search radius, spherical distances, using an quadrant search, and set nodes to NaN
+only when fewer than two quadrants contain at least one value:
+.sp
+nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4/2
+.SH "SEE ALSO"
+.IR blockmean (1),
+.IR blockmedian (1),
+.IR blockmode (1),
+.IR gmt (1),
+.IR surface (1),
+.IR triangulate (1)

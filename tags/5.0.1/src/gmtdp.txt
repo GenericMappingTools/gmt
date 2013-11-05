@@ -1,0 +1,68 @@
+#include "common_options.txt"
+.TH GMTDP 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtdp \- Line reduction using the Douglas-Peucker algorithm
+.SH SYNOPSIS
+BD(gmtdp) [ IT(table) ] OPT(T)IT(tolerance)[IT(unit)] 
+[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ]  [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(gmtdp) reads one or more data files
+and apply the Douglas-Peucker line simplification algorithm. The method recursively 
+subdivides a polygon until a run of points can be replaced by a straight line segment, 
+with no point in that run deviating from the straight line by more than the tolerance. 
+Have a look at this site to get a visual insight on how the algorithm works
+(http://geometryalgorithms.com/Archive/algorithm_0205/algorithm_0205.htm)
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(T)IT(tolerance)[IT(unit)]
+Specifies the maximum mismatch tolerance in the user units.  If the data is
+not Cartesian then append the distance unit (see UNITS).
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_distunits.txt"
+#include "explain_precision.txt"
+.SH EXAMPLES
+.sp
+To reduce the geographic line segment.d using a tolerance of 2 km, run 
+.br
+.sp
+gmtdp segment.d -T2k > new_segment.d
+.br
+.sp
+To reduce the Cartesian lines xylines.d using a tolerance of 0.45
+and write the reduced lines to file new_xylines.d, run 
+.br
+.sp
+gmtdp xylines.d -T0.45 > new_xylines.d
+.SH BUGS
+One known issue with the Douglas-Peucker has to do with crossovers.
+Specifically, it cannot be guaranteed that the reduced line does
+not cross itself.  Depending on how many lines you are considering
+it is also possible that reduced lines may intersect other reduced lines.
+Finally, the current implementation only does Flat Earth calculations even if
+you specify spherical; BD(gmtdp) will issue a warning and reset the
+calculation mode to Flat Earth.
+.SH REFERENCES
+Douglas, D. H., and T. K. Peucker, Algorithms for the reduction
+of the number of points required to represent a digitized line
+of its caricature, IT(Can. Cartogr.), BD(10), 112-122, 1973.
+.br
+This implementation of the algorithm has been kindly provided by
+Dr. Gary J. Robinson, Environmental Systems Science Centre,
+University of Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his
+subroutine forms the basis for this program.
+.SH "SEE ALSO"
+.IR gmt (1)

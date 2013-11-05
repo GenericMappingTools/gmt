@@ -1,0 +1,55 @@
+#include "common_options.txt"
+.TH TESTAPI 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+testapi \- Test API i/o methods for any data type
+.SH SYNOPSIS
+BD(testapi) OPT(I)BD(c)|BD(d)|BD(f)|BD(r)|BD(s)[/BD(m)|BD(v)] OPT(T)BD(c)|BD(d)|BD(g)|GD(i)|GD(t) 
+OPT(W)BD(c)|BD(d)|BD(f)|BD(r)|BD(s)[/BD(m)|BD(v)] [ GMT_V_OPT ]
+.SH DESCRIPTION
+BD(testapi) will test the API for all i/o combinations. In general,
+data types (DATASET, TEXTSET, CPT, GRID, and IMAGE) can be read from
+or written to 5 different ways (file, stream, file descriptor, copy from
+memory, reference from memory).  We use this tool to check the various
+possibilities, for each data type.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(I)BD(c)|BD(d)|BD(f)|BD(r)|BD(s)[/BD(m)|BD(v)]
+Set input method; choose from BD(c)opy from memory, file BD(d)escriptor, BD(f)ile,
+memory BD(r)eference, or BD(s)tream.  For methods BD(c)|BD(r), optionally append /BD(m)|BD(v).
+Then, we obtain the values for the input dataset or grid via either a user matrix (BD(m)) or a set
+of user vectors (BD(v)).  We simulate this internally by filling out a matrix or vectors
+and pass that as the source instead of a data file. OPT(Td) may take either BD(m)|BD(v) while
+OPT(Tg) can only take the BD(m) modifier.
+.TP
+OPT(T)BD(c)|BD(d)|BD(g)|GD(i)|GD(t) 
+Specify data type; choose from BD(c)pt, BD(d)ataset, BD(g)rid, BD(i)mage, or BD(t)extset.
+.TP
+OPT(W)BD(c)|BD(d)|BD(f)|BD(r)|BD(s)[/BD(m)|BD(v)]
+Set output method; choose from BD(c)opy to memory, file BD(d)escriptor, BD(f)ile,
+memory BD(r)eference, or BD(s)tream.  For methods BD(c)|BD(r), optionally append /BD(m)|BD(v).
+Then, we first write the values of the output dataset or grid via either a user matrix (BD(m)) or a set
+of user vectors (BD(v)).  Finally, the matrix or vectors are written out to file.
+OPT(Td) may take either BD(m)|BD(v) while OPT(Tg) can only take the BD(m) modifier.
+.SH OPTIONAL ARGUMENTS
+#include "explain_-V.txt"
+.SH EXAMPLES
+To check if reading and writing the test dataset file yields an identical copy, try
+.br
+.sp
+testapi -Td -If -Wf -V
+.br
+.sp
+To check if reading the test grid from memory and writing it to file yields an identical copy, try
+.br
+.sp
+testapi -Tg -Ic -Wf -V
+.br
+.sp
+To read the test grid via user matrix memory and writing it via another user matrix before
+saving to a grid file, try
+.br
+.sp
+testapi -Tg -Ic/m -Wf/m -V
+.SH "SEE ALSO"
+.IR gmt (1),
