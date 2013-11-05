@@ -1,0 +1,12 @@
+# $Id$
+# Legend for example 10
+C red
+L - - L dying
+C yellow
+L - - L in trouble
+C darkgreen
+L - - L vigorous
+C blue
+L - - L developing
+C purple
+L - - L institutional

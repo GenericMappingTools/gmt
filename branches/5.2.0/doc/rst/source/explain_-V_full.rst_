@@ -1,0 +1,11 @@
+.. _-V_full:
+
+**-V**\ [*level*\ ]
+    Select verbose mode, which will send progress reports to *stderr*.
+    Choose among 6 levels of verbosity; each level adds mode messages:
+    **q** - Complete silence, not even fatal error messages are produced.
+    **n** - Normal verbosity: produce only fatal error messages.
+    **c** - Produce also compatibility warnings (same as when **-V** is omitted).
+    **v** - Produce also warnings and progress messages (same as **-V** only).
+    **l** - Produce also detailed progress messages.
+    **d** - Produce also debugging messages.

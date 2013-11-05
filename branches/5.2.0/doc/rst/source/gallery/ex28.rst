@@ -1,0 +1,36 @@
+.. _example_28:
+
+(28) Mixing UTM and geographic data sets
+----------------------------------------
+
+Next, we present a similar case: We wish to plot a data set given in UTM
+coordinates (meter) and want it to be properly registered with overlying
+geographic data, such as coastlines or data points. The mistake many
+GMT rookies make is to specify the UTM projection with their UTM data.
+However, that data have already been projected and is now in linear
+meters. The only sensible way to plot such data is with a linear
+projection, yielding a UTM map. In this step one can choose to annotate
+or tick the map in UTM meters as well. To plot geographic (lon/lat) data
+on the same map you simply have to specify the region using the UTM
+meters but supply the actual UTM projection parameters. Make sure you
+use the same scale with both the linear and UTM projection.
+
+Our script illustrates how we would plot a UTM grid (with coordinates in
+meters) of elevations near Kilauea volcano on the Big Island of Hawaii
+and overlay geographical information (with longitude, latitude
+coordinates). We first lay down the UTM grid using the linear
+projection. Then, given we are in UTM zone 5Q, we use the UTM domain and
+the UTM projection when overlaying the coastline and light blue ocean.
+We do some trickery by converting the UTM domain to km so that we can
+add custom annotations to the map. Finally, we place a scale bar and
+label Kilauea crater to complete the figure.
+
+.. literalinclude:: /_verbatim/example_28.txt
+   :language: bash
+
+.. figure:: /_images/example_28.*
+   :width: 500 px
+   :align: center
+
+   Mixing UTM and geographic data sets requires knowledge of the map region domain in
+   both UTM and lon/lat coordinates and consistent use of the same map scale.

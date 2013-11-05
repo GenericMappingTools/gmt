@@ -1,0 +1,319 @@
+/*
+ * $Id$
+ *
+ *  Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo,
+ *  F. Wobbe, and J. Luis
+ * See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; version 3 or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------
+ *
+ * This include file contains ifdefs that tell us if this system has
+ * some of the several functions that are not part of POSIX but are
+ * often distributed anyway as part of ANSI C.  The set of defines
+ * below is automatically assigned by CMake and determines if the
+ * required functions are present or not.  These macros are then used
+ * to choose between a function prototype (if found), an alternative
+ * GMT function, or simply a macro.  The purpose is to take advantage
+ * of the built-in functions if they exist and provide alternative
+ * definitions otherwise.
+ *
+ * HAVE_<func> is undefined or defined as 1 depending on
+ * whether or not <func> is available on this system.
+ *
+ * Version: @GMT_VERSION_STRING@
+ */
+
+#pragma once
+#ifndef _GMT_CONFIG_H
+#define _GMT_CONFIG_H
+
+#include "../config.h"
+
+
+/* which regex library <pcre.h>, <regex.h> */
+#cmakedefine HAVE_PCRE
+#cmakedefine HAVE_POSIX_ERE
+
+/* compile with GDAL support <gdal.h> */
+#cmakedefine HAVE_GDAL
+
+/* compile with FFTW3 support <fftw3.h> */
+#cmakedefine HAVE_FFTW3F
+#cmakedefine HAVE_FFTW3F_THREADS
+
+/* compile with ZLIB support <zlib.h> */
+#cmakedefine HAVE_ZLIB
+
+/* file locking */
+#cmakedefine FLOCK
+
+/* shared library */
+#cmakedefine BUILD_SHARED_LIBS
+
+/* set license restrictions */
+#cmakedefine LICENSE_RESTRICTED @LICENSE_RESTRICTED@
+#ifndef LICENSE_RESTRICTED
+	/* enable Shewchuk's triangle routine */
+#	define TRIANGLE_D
+#endif
+
+/* applies only #ifdef _WIN32 */
+#cmakedefine USE_MEM_ALIGNED
+
+/* if NetCDF is static; applies only #ifdef _WIN32 */
+#cmakedefine NETCDF_STATIC
+
+/* system specific headers */
+
+#cmakedefine HAVE_ASSERT_H_
+#cmakedefine HAVE_DIRENT_H_
+#cmakedefine HAVE_ERRNO_H_
+#cmakedefine HAVE_EXECINFO_H_
+#cmakedefine HAVE_FCNTL_H_
+#cmakedefine HAVE_STAT_H_
+#cmakedefine HAVE_SYS_DIR_H_
+#cmakedefine HAVE_UNISTD_H_
+
+/* system specific functions */
+
+#cmakedefine HAVE_ACCESS
+#cmakedefine HAVE__ACCESS
+#cmakedefine HAVE_BASENAME
+#cmakedefine HAVE_DLADDR
+#cmakedefine HAVE_FILENO
+#cmakedefine HAVE__FILENO
+#cmakedefine HAVE_FSEEKO
+#cmakedefine HAVE_FTELLO
+#cmakedefine HAVE__FSEEKI64
+#cmakedefine HAVE__FTELLI64
+#cmakedefine HAVE___FUNC__
+#cmakedefine HAVE___FUNCTION__
+#cmakedefine HAVE__GETCWD
+#cmakedefine HAVE_GETPID
+#cmakedefine HAVE__GETPID
+#cmakedefine HAVE_GETPWUID
+#cmakedefine HAVE_LLABS
+#cmakedefine HAVE_MEMALIGN
+#cmakedefine HAVE__MKDIR
+#cmakedefine HAVE_PCLOSE
+#cmakedefine HAVE__PCLOSE
+#cmakedefine HAVE_POPEN
+#cmakedefine HAVE__POPEN
+#cmakedefine HAVE_POSIX_MEMALIGN
+#cmakedefine HAVE_QSORT_R_GLIBC
+#cmakedefine HAVE__SETMODE
+#cmakedefine HAVE_SNPRINTF_
+#cmakedefine HAVE__SNPRINTF_
+#cmakedefine HAVE_VSNPRINTF_
+#cmakedefine HAVE__VSNPRINTF_
+#cmakedefine HAVE__STAT
+#cmakedefine HAVE__STATI64
+#cmakedefine HAVE_STRCASECMP
+#cmakedefine HAVE_STRNCASECMP
+#cmakedefine HAVE_STRICMP
+#cmakedefine HAVE_STRNICMP
+#cmakedefine HAVE_STRDUP
+#cmakedefine HAVE_STRSEP
+#cmakedefine HAVE_STRTOD
+#cmakedefine HAVE_STRTOF_
+#cmakedefine HAVE_STRTOK_R
+#cmakedefine HAVE_STRTOK_S
+#cmakedefine DECLARED_STRDUP
+#cmakedefine DECLARED_STRSEP
+
+/* support for inline functions */
+#cmakedefine HAVE_C_inline
+#cmakedefine HAVE_C___inline
+#cmakedefine HAVE_C___inline__
+#ifndef HAVE_C_inline
+#	if defined(HAVE_C___inline)
+#		define inline __inline
+#	elif defined(HAVE_C___inline__)
+#		define inline __inline__
+#	else
+#		define inline /* not supported */
+#	endif
+#endif /* !HAVE_C_inline */
+
+/* windows specific */
+
+#cmakedefine HAVE_DIRECT_H_
+#cmakedefine HAVE_IO_H_
+#cmakedefine HAVE_PROCESS_H_
+
+/* C types; C99 exact-width integer types <inttypes.h>, <stdint.h>; etc */
+
+#cmakedefine HAVE_CTYPE_H_
+#cmakedefine HAVE_STDDEF_H_
+#cmakedefine HAVE_SYS_TYPES_H_
+
+#cmakedefine HAVE_INTTYPES_H_
+#ifdef HAVE_INTTYPES_H_
+	/* avoid redefining msinttypes for VC++ */
+#	define _MSC_INTTYPES_H_
+#endif
+#cmakedefine HAVE_STDINT_H_
+#ifdef HAVE_STDINT_H_
+	/* avoid redefining msinttypes for VC++ */
+#	define _MSC_STDINT_H_
+#endif
+
+/* We prefer to use extensions (e.g., strdup, sincos) when available */
+#ifdef __GNUC__
+#	define _GNU_SOURCE
+#endif
+#if defined(__sun) || defined(__sun__)
+#	define __EXTENSIONS__
+#endif
+
+/* Math headers */
+
+#cmakedefine HAVE_FLOATINGPOINT_H_
+#cmakedefine HAVE_IEEEFP_H_
+
+/* Math related */
+
+#cmakedefine HAVE_ACOSF
+#cmakedefine HAVE_ACOSH
+#cmakedefine HAVE_ACOSHF
+#cmakedefine HAVE_ASINF
+#cmakedefine HAVE_ASINH
+#cmakedefine HAVE_ASINHF
+#cmakedefine HAVE_ATANF
+#cmakedefine HAVE_ATANH
+#cmakedefine HAVE_ATANHF
+#cmakedefine HAVE_ATAN2F
+#cmakedefine HAVE_COPYSIGNF
+#cmakedefine HAVE_COPYSIGN
+#cmakedefine HAVE__COPYSIGN
+#cmakedefine HAVE_CEILF
+#cmakedefine HAVE_COSF
+#cmakedefine HAVE_COSHF
+#cmakedefine HAVE_ERF
+#cmakedefine HAVE_ERFF
+#cmakedefine HAVE_ERFC
+#cmakedefine HAVE_ERFCF
+#cmakedefine HAVE_EXPF
+#cmakedefine HAVE_FABSF
+#cmakedefine HAVE_FLOORF
+#cmakedefine HAVE_FMODF
+#cmakedefine HAVE__FINITE
+#cmakedefine HAVE__FPCLASS
+#cmakedefine HAVE_HYPOT
+#cmakedefine HAVE_HYPOTF
+#cmakedefine HAVE_ISFINITE
+#cmakedefine HAVE_ISINF
+#cmakedefine HAVE_ISNAN
+#cmakedefine HAVE_ISNAND
+#cmakedefine HAVE_ISNANF
+#cmakedefine HAVE__ISNAN
+#cmakedefine HAVE_ISNORMAL
+#cmakedefine HAVE_J0
+#cmakedefine HAVE_J1
+#cmakedefine HAVE_JN
+#cmakedefine HAVE_LRINT
+#cmakedefine HAVE_LRINTF
+#cmakedefine HAVE_LOGF
+#cmakedefine HAVE_LOG10F
+#cmakedefine HAVE_LOG1P
+#cmakedefine HAVE_LOG1PF
+#cmakedefine HAVE_LOG2
+#cmakedefine HAVE_LOG2F
+#cmakedefine HAVE_POWF
+#cmakedefine HAVE_RINT
+#cmakedefine HAVE_RINTF
+#cmakedefine HAVE_SINF
+#cmakedefine HAVE_SINHF
+#cmakedefine HAVE_SINCOS
+#cmakedefine HAVE_SQRTF
+#cmakedefine HAVE_TANF
+#cmakedefine HAVE_TANHF
+#cmakedefine HAVE_Y0
+#cmakedefine HAVE_Y1
+#cmakedefine HAVE_YN
+
+/* Sizes */
+#cmakedefine SIZEOF__BOOL       @SIZEOF__BOOL@
+#cmakedefine SIZEOF_BOOL        @SIZEOF_BOOL@
+#cmakedefine SIZEOF_INT         @SIZEOF_INT@
+#cmakedefine SIZEOF_GREG_T      @SIZEOF_GREG_T@
+#cmakedefine SIZEOF_LONG        @SIZEOF_LONG@
+#cmakedefine SIZEOF_LONG_LONG   @SIZEOF_LONG_LONG@
+#cmakedefine SIZEOF_LONG_DOUBLE @SIZEOF_LONG_DOUBLE@
+#cmakedefine SIZEOF_MODE_T      @SIZEOF_MODE_T@
+#cmakedefine SIZEOF_OFF_T       @SIZEOF_OFF_T@
+#cmakedefine SIZEOF_SIZE_T      @SIZEOF_SIZE_T@
+#cmakedefine SIZEOF_WCHAR_T     @SIZEOF_WCHAR_T@
+#cmakedefine SIZEOF_VOID_P      @SIZEOF_VOID_P@
+#cmakedefine WORDS_BIGENDIAN
+
+/* Must redefine some sizes manually to allow for universal builds on OSX */
+#ifdef __APPLE__
+#	undef SIZEOF_LONG
+#	undef SIZEOF_SIZE_T
+#	undef SIZEOF_VOID_P
+#	ifdef __LP64__
+#		define SIZEOF_LONG      8
+#		define SIZEOF_SIZE_T    8
+#		define SIZEOF_VOID_P    8
+#	else /* !__LP64__ */
+#		define SIZEOF_LONG      4
+#		define SIZEOF_SIZE_T    4
+#		define SIZEOF_VOID_P    4
+#	endif /* __LP64__ */
+#endif /* __APPLE__ */
+
+/* Byte swapping functions */
+#cmakedefine HAVE___BUILTIN_BSWAP16
+#cmakedefine HAVE___BUILTIN_BSWAP32
+#cmakedefine HAVE___BUILTIN_BSWAP64
+#cmakedefine HAVE__BYTESWAP_USHORT /* for 16 bit */
+#cmakedefine HAVE__BYTESWAP_ULONG /* for 32 bit */
+#cmakedefine HAVE__BYTESWAP_UINT64 /* for 64 bit */
+
+/* Architecture type (32/64 bits) */
+#if !defined(__x86_64__) && !defined(__i386__) && SIZEOF_VOID_P == 4 /* on i386 */
+#	define __i386__ 1
+#elif !defined(__x86_64__) && !defined(__i386__) && SIZEOF_VOID_P == 8 /* on x86_64 */
+#	define __x86_64__ 1
+#endif
+
+#if !(defined(__LP64__) || defined(__LLP64__)) && defined(__x86_64__) && \
+		defined(SIZEOF_LONG_LONG) && defined(SIZEOF_LONG) && defined(SIZEOF_INT)
+#	if SIZEOF_LONG == 8 && SIZEOF_INT == 4 /* 64 bit longs and pointers (most UNIX) */
+#		ifndef __LP64__
+#			define __LP64__ 1
+#		endif
+#	elif SIZEOF_LONG_LONG == 8 && SIZEOF_LONG == 4 /* Win X64/IA-64 */
+#		ifndef __LLP64__
+#			define __LLP64__ 1
+#		endif
+#	endif
+#endif /* !(defined(__LP64__) || defined(__LLP64__)) && defined(__x86_64__) &&
+		defined(SIZEOF_LONG_LONG) && defined(SIZEOF_LONG) && defined(SIZEOF_INT) */
+
+/* Enable 32 bit systems to use files of sizes beyond the usual limit of 2GB */
+#if defined(__i386__) && !defined _WIN32 /* on i386 with LFS support */
+#	ifdef _LARGEFILE_SOURCE
+#		undef _LARGEFILE_SOURCE
+#	endif
+#	define _LARGEFILE_SOURCE
+#	ifdef _FILE_OFFSET_BITS
+#		undef _FILE_OFFSET_BITS
+#	endif
+#	define _FILE_OFFSET_BITS 64
+#endif
+
+#endif /* !_GMT_CONFIG_H */
+
+/* vim: set ft=c: */

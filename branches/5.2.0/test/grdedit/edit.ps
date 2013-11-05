@@ -1,0 +1,5203 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 0 0 612 792
+%%HiResBoundingBox: 0 0 612 792
+%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psxy
+%%Creator: GMT
+%%For: remko
+%%DocumentNeededResources: font Helvetica
+%%CreationDate: Thu Jun 23 12:58:30 2011
+%%LanguageLevel: 2
+%%DocumentData: Clean7Bit
+%%Orientation: Portrait
+%%Pages: 1
+%%EndComments
+
+%%BeginProlog
+250 dict begin
+/! {bind def} bind def
+/# {load def}!
+/A /setgray #
+/B /setdash #
+/C /setrgbcolor #
+/D /rlineto #
+/E {dup stringwidth pop}!
+/F /fill #
+/G /rmoveto #
+/H /sethsbcolor #
+/I /setpattern #
+/K /setcmykcolor #
+/L /lineto #
+/M /moveto #
+/N /newpath #
+/P /closepath #
+/R /rotate #
+/S /stroke #
+/T /translate #
+/U /grestore #
+/V /gsave #
+/W /setlinewidth #
+/Y {findfont exch scalefont setfont}!
+/Z /show #
+/FP {true charpath flattenpath}!
+/MU {matrix setmatrix}!
+/MS {/SMat matrix currentmatrix def}!
+/MR {SMat setmatrix}!
+/edef {exch def}!
+/FS {/fc edef /fs {V fc F U} def}!
+/FQ {/fs {} def}!
+/O0 {/os {N} def}!
+/O1 {/os {P S} def}!
+/FO {fs os}!
+/Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR FO}!
+/Sb {M dup 0 D exch 0 exch D neg 0 D FO}!
+/SB {MS T /BoxR edef /BoxW edef /BoxH edef BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+/Sc {N 3 -1 roll 0 360 arc FO}!
+/Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D FO}!
+/Se {N MS T R scale 0 0 1 0 360 arc MR FO}!
+/Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR FO}!
+/Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR FO}!
+/Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
+/Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
+/Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
+/Sp {N 3 -1 roll 0 360 arc F}!
+/SP {M {D} repeat FO}!
+/Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+/Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
+/St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
+/SV {0 exch M 0 D D D D D 0 D FO}!
+/Sv {0 0 M D D 0 D D D D D 0 D D FO}!
+/Sw {2 copy M 5 2 roll arc FO}!
+/Sx {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
+/Sy {M dup 0 exch G dup -2 mul dup 0 exch D S}!
+/S+ {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
+/S- {M dup 0 G dup -2 mul dup 0 D S}!
+/sw {stringwidth pop}!
+/sh {V MU 0 0 M FP pathbbox N 4 1 roll pop pop pop U}!
+/sd {V MU 0 0 M FP pathbbox N pop pop exch pop U}!
+/sH {V MU 0 0 M FP pathbbox N exch pop exch sub exch pop U}!
+/sb {E exch sh}!
+/bl {}!
+/bc {E -2 div 0 G}!
+/br {E neg 0 G}!
+/ml {dup 0 exch sh -2 div G}!
+/mc {dup E -2 div exch sh -2 div G}!
+/mr {dup E neg exch sh -2 div G}!
+/tl {dup 0 exch sh neg G}!
+/tc {dup E -2 div exch sh neg G}!
+/tr {dup E neg exch sh neg G}!
+/mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
+/PSL_reencode {findfont dup length dict begin
+  {1 index /FID ne {def}{pop pop} ifelse} forall
+  exch /Encoding edef currentdict end definefont pop
+}!
+/PSL_eps_begin {
+  /PSL_eps_state save def
+  /PSL_dict_count countdictstack def
+  /PSL_op_count count 1 sub def
+  userdict begin
+  /showpage {} def
+  0 setgray 0 setlinecap 1 setlinewidth
+  0 setlinejoin 10 setmiterlimit [] 0 setdash newpath
+  /languagelevel where
+  {pop languagelevel 1 ne {false setstrokeadjust false setoverprint} if} if
+}!
+/PSL_eps_end {
+  count PSL_op_count sub {pop} repeat
+  countdictstack PSL_dict_count sub {end} repeat
+  PSL_eps_state restore
+}!
+/Standard+_Encoding [
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/threequarters	/threesuperior	/trademark	/twosuperior	/yacute		/ydieresis	/zcaron
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash
+/zero		/one		/two		/three		/four		/five		/six		/seven
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question
+/at		/A		/B		/C		/D		/E		/F		/G
+/H		/I		/J		/K		/L		/M		/N		/O
+/P		/Q		/R		/S		/T		/U		/V		/W
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore
+/quoteleft	/a		/b		/c		/d		/e		/f		/g
+/h		/i		/j		/k		/l		/m		/n		/o
+/p		/q		/r		/s		/t		/u		/v		/w
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/florin
+/Atilde		/Ccedilla	/Eth		/Lslash		/Ntilde		/Otilde		/Scaron		/Thorn
+/Yacute		/Ydieresis	/Zcaron		/atilde		/brokenbar	/ccedilla	/copyright	/degree
+/divide		/eth		/logicalnot	/lslash		/minus		/mu		/multiply	/ntilde
+/onehalf	/onequarter	/onesuperior	/otilde		/plusminus	/registered	/scaron		/thorn
+/.notdef	/exclamdown	/cent		/sterling	/fraction	/yen		/florin		/section
+/currency	/quotesingle	/quotedblleft	/guillemotleft	/guilsinglleft	/guilsinglright	/fi		/fl
+/Aacute		/endash		/dagger		/daggerdbl	/periodcentered	/Acircumflex	/paragraph	/bullet
+/quotesinglbase	/quotedblbase	/quotedblright	/guillemotright	/ellipsis	/perthousand	/Adieresis	/questiondown
+/Agrave		/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
+/dieresis	/Eacute		/ring		/cedilla	/Ecircumflex	/hungarumlaut	/ogonek		/caron
+/emdash		/Edieresis	/Egrave		/Iacute		/Icircumflex	/Idieresis	/Igrave		/Oacute
+/Ocircumflex	/Odieresis	/Ograve		/Uacute		/Ucircumflex	/Udieresis	/Ugrave		/aacute
+/acircumflex	/AE		/adieresis	/ordfeminine	/agrave		/eacute		/ecircumflex	/edieresis
+/egrave		/Oslash		/OE		/ordmasculine	/iacute		/icircumflex	/idieresis	/igrave
+/oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
+/udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
+] def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/F0 {/Helvetica Y}!
+/F1 {/Helvetica-Bold Y}!
+/F2 {/Helvetica-Oblique Y}!
+/F3 {/Helvetica-BoldOblique Y}!
+/F4 {/Times-Roman Y}!
+/F5 {/Times-Bold Y}!
+/F6 {/Times-Italic Y}!
+/F7 {/Times-BoldItalic Y}!
+/F8 {/Courier Y}!
+/F9 {/Courier-Bold Y}!
+/F10 {/Courier-Oblique Y}!
+/F11 {/Courier-BoldOblique Y}!
+/F12 {/Symbol Y}!
+/F13 {/AvantGarde-Book Y}!
+/F14 {/AvantGarde-BookOblique Y}!
+/F15 {/AvantGarde-Demi Y}!
+/F16 {/AvantGarde-DemiOblique Y}!
+/F17 {/Bookman-Demi Y}!
+/F18 {/Bookman-DemiItalic Y}!
+/F19 {/Bookman-Light Y}!
+/F20 {/Bookman-LightItalic Y}!
+/F21 {/Helvetica-Narrow Y}!
+/F22 {/Helvetica-Narrow-Bold Y}!
+/F23 {/Helvetica-Narrow-Oblique Y}!
+/F24 {/Helvetica-Narrow-BoldOblique Y}!
+/F25 {/NewCenturySchlbk-Roman Y}!
+/F26 {/NewCenturySchlbk-Italic Y}!
+/F27 {/NewCenturySchlbk-Bold Y}!
+/F28 {/NewCenturySchlbk-BoldItalic Y}!
+/F29 {/Palatino-Roman Y}!
+/F30 {/Palatino-Italic Y}!
+/F31 {/Palatino-Bold Y}!
+/F32 {/Palatino-BoldItalic Y}!
+/F33 {/ZapfChancery-MediumItalic Y}!
+/F34 {/ZapfDingbats Y}!
+/F35 {/Ryumin-Light-EUC-H Y}!
+/F36 {/Ryumin-Light-EUC-V Y}!
+/F37 {/GothicBBB-Medium-EUC-H Y}!
+/F38 {/GothicBBB-Medium-EUC-V Y}!
+/PSL_pathtextdict 26 dict def
+/PSL_pathtext
+  {PSL_pathtextdict begin
+    /textheight exch def
+    /just exch def
+    /offset exch def
+    /str exch def
+    /pathdist 0 def
+    /setdist offset def
+    /charcount 0 def
+    /justy just 4 idiv textheight mul 2 div neg def
+    V flattenpath
+	{movetoproc} {linetoproc}
+	{curvetoproc} {closepathproc}
+	pathforall
+    U N
+    end
+  } def
+PSL_pathtextdict begin
+/movetoproc
+  { /newy exch def /newx exch def
+    /firstx newx def /firsty newy def
+    /ovr 0 def
+    newx newy transform
+    /cpy exch def /cpx exch def
+  } def
+/linetoproc
+  { /oldx newx def /oldy newy def
+    /newy exch def /newx exch def
+    /dx newx oldx sub def
+    /dy newy oldy sub def
+    /dist dx dup mul dy dup mul add sqrt def
+    dist 0 ne
+    { /dsx dx dist div ovr mul def
+      /dsy dy dist div ovr mul def
+      oldx dsx add oldy dsy add transform
+      /cpy exch def /cpx exch def
+      /pathdist pathdist dist add def
+      {setdist pathdist le
+	  {charcount str length lt
+	      {setchar} {exit} ifelse}
+	  { /ovr setdist pathdist sub def
+	    exit}
+	  ifelse
+      } loop
+    } if
+  } def
+/curvetoproc
+  { (ERROR: No curveto's after flattenpath!)
+    print
+  } def
+/closepathproc
+  {firstx firsty linetoproc
+    firstx firsty movetoproc
+  } def
+/setchar
+  { /char str charcount 1 getinterval def
+    /charcount charcount 1 add def
+    /charwidth char stringwidth pop def
+    V cpx cpy itransform T
+      dy dx atan R
+      0 justy M
+      char show
+      0 justy neg G
+      currentpoint transform
+      /cpy exch def /cpx exch def
+    U /setdist setdist charwidth add def
+  } def
+end
+/PSL_curved_text_labels
+{ /bits exch def
+  /PSL_clippath bits 1 and 1 eq def
+  /PSL_placetext bits 2 and 0 eq def
+  /PSL_strokeline bits 4 and 4 eq def
+  /PSL_firstcall bits 32 and 32 eq def
+  /PSL_lastcall bits 64 and 64 eq def
+  /PSL_fillbox bits 128 and 128 eq def
+  /PSL_drawbox bits 256 and 256 eq def
+  /PSL_n1 PSL_n 1 sub def
+  /PSL_m1 PSL_m 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_CT_calcstringwidth
+  PSL_CT_calclinedist
+  PSL_CT_addcutpoints
+  PSL_clippath PSL_firstcall and
+  {clipsave N clippath} if
+  PSL_setlinepen
+  /PSL_nn1 PSL_nn 1 sub def
+  /n 0 def
+  /k 0 def
+  /j 0 def
+  /PSL_seg 0 def
+  /PSL_xp PSL_nn array def
+  /PSL_yp PSL_nn array def
+  PSL_xp 0 PSL_xx 0 get put
+  PSL_yp 0 PSL_yy 0 get put
+  1 1 PSL_nn1
+  { /i exch def
+    /node_type PSL_kind i get def
+    /j j 1 add def
+    PSL_xp j PSL_xx i get put
+    PSL_yp j PSL_yy i get put
+    node_type 1 eq
+    {n 0 eq
+      {PSL_CT_drawline}
+      {	PSL_CT_reversepath
+	PSL_CT_textline} ifelse
+      /j 0 def
+      PSL_xp j PSL_xx i get put
+      PSL_yp j PSL_yy i get put
+    } if
+  } for
+  n 0 eq {PSL_CT_drawline} if
+  PSL_lastcall
+  {PSL_clippath
+    {PSL_clip} if N
+  } if
+} def
+/PSL_CT_textline
+{PSL_placetext
+  {PSL_clippath
+    {PSL_CT_clippath} {PSL_CT_placelabel} ifelse
+  } if
+  /n 0 def /k k 1 add def PSL_setlinepen
+} def
+/PSL_CT_calcstringwidth
+{ /PSL_width PSL_m array def
+  0 1 PSL_m1
+  { /i exch def
+    PSL_width i PSL_str i get stringwidth pop put
+  } for
+} def
+/PSL_CT_calclinedist
+{ /PSL_newx PSL_x 0 get def
+  /PSL_newy PSL_y 0 get def
+  /dist 0.0 def
+  /PSL_dist PSL_n array def
+  PSL_dist 0 0.0 put
+  1 1 PSL_n1
+  { /i exch def
+    /PSL_oldx PSL_newx def
+    /PSL_oldy PSL_newy def
+    /PSL_newx PSL_x i get def
+    /PSL_newy PSL_y i get def
+    /dx PSL_newx PSL_oldx sub def
+    /dy PSL_newy PSL_oldy sub def
+    /dist dist dx dx mul dy dy mul add sqrt add def
+    PSL_dist i dist put
+  } for
+} def
+/PSL_CT_addcutpoints
+{ /k 0 def
+  /PSL_nc PSL_m 2 mul 1 add def
+  /PSL_cuts PSL_nc array def
+  /PSL_nc1 PSL_nc 1 sub def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node i get get def
+    /halfwidth PSL_width i get 2 div PSL_gap_x add def
+    PSL_cuts k dist halfwidth sub put
+    /k k 1 add def
+    PSL_cuts k dist halfwidth add put
+    /k k 1 add def
+  } for
+  PSL_cuts k 100000.0 put
+  /PSL_nn PSL_n PSL_m 2 mul add def
+  /PSL_xx PSL_nn array def
+  /PSL_yy PSL_nn array def
+  /PSL_kind PSL_nn array def
+  /j 0 def
+  /k 0 def
+  /dist 0.0 def
+  0 1 PSL_n1
+  { /i exch def
+    /last_dist dist def
+    /dist PSL_dist i get def
+    k 1 PSL_nc1
+    { /kk exch def
+      /this_cut PSL_cuts kk get def
+      dist this_cut gt
+      { /ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
+	/i1 i 0 eq {0} {i 1 sub} ifelse def
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
+      } if
+    } for
+    dist PSL_cuts k get le
+    {PSL_xx j PSL_x i get put PSL_yy j PSL_y i get put
+      PSL_kind j 0 put
+      /j j 1 add def
+    } if
+  } for
+} def
+/PSL_CT_reversepath
+{PSL_xp j get PSL_xp 0 get lt
+  {0 1 j 2 idiv
+    { /left exch def
+      /right j left sub def
+      /tmp PSL_xp left get def
+      PSL_xp left PSL_xp right get put
+      PSL_xp right tmp put
+      /tmp PSL_yp left get def
+      PSL_yp left PSL_yp right get put
+      PSL_yp right tmp put
+    } for
+  } if
+} def
+/PSL_CT_placelabel
+{
+  PSL_usebox
+  {PSL_CT_clippath
+    PSL_fillbox
+    {V PSL_setboxrgb fill U} if
+    PSL_drawbox
+    {PSL_setboxpen S} if N
+  } if
+  PSL_settxtrgb PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+} def
+/PSL_CT_clippath
+{
+  /H PSL_height 2 div PSL_gap_y add def
+  /xoff j 1 add array def
+  /yoff j 1 add array def
+  /angle 0 def
+  0 1 j {
+    /ii exch def
+    /x PSL_xp ii get def
+    /y PSL_yp ii get def
+    ii 0 eq {
+      /x1 PSL_xp 1 get def
+      /y1 PSL_yp 1 get def
+      /dx x1 x sub def
+      /dy y1 y sub def
+    }
+    { /i1 ii 1 sub def
+      /x1 PSL_xp i1 get def
+      /y1 PSL_yp i1 get def
+      /dx x x1 sub def
+      /dy y y1 sub def
+    } ifelse
+    dx 0.0 ne dy 0.0 ne and
+    { /angle dy dx atan 90 add def} if
+    /sina angle sin def
+    /cosa angle cos def
+    xoff ii H cosa mul put
+    yoff ii H sina mul put
+  } for
+  PSL_xp 0 get xoff 0 get add PSL_yp 0 get yoff 0 get add M
+  1 1 j {
+    /ii exch def
+    PSL_xp ii get xoff ii get add PSL_yp ii get yoff ii get add L
+  } for
+  j -1 0 {
+    /ii exch def
+    PSL_xp ii get xoff ii get sub PSL_yp ii get yoff ii get sub L
+  } for P
+} def
+/PSL_CT_drawline
+{
+  /str 20 string def
+  PSL_strokeline
+  {PSL_CT_placeline PSL_setlinepen S} if
+  /PSL_seg PSL_seg 1 add def
+  /n 1 def
+} def
+/PSL_CT_placeline
+{PSL_xp 0 get PSL_yp 0 get M
+  1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
+} def
+/PSL_straight_text_labels
+{
+  /bits exch def
+  /PSL_clippath bits 1 and 0 eq def
+  /PSL_rounded bits 16 and 16 eq def
+  /PSL_fillbox bits 128 and 128 eq def
+  /PSL_drawbox bits 256 and 256 eq def
+  /PSL_m1 PSL_m 1 sub def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
+  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_clippath
+  {PSL_ST_clippath}
+  {PSL_usebox {PSL_ST_clippath} if
+    PSL_ST_placelabel
+  } ifelse
+} def
+/PSL_ST_placelabel
+{PSL_settxtrgb
+  0 1 PSL_m1
+  { /k exch def
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def
+    V PSL_txt_x k get PSL_txt_y k get T
+    PSL_angle k get R
+    /BoxW PSL_str k get stringwidth pop def
+    BoxW PSL_justx mul PSL_justy M
+    PSL_str k get show
+    U
+  } for
+} def
+/PSL_ST_clippath
+{N
+  PSL_usebox not {clipsave clippath} if
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+  PSL_usebox
+  {PSL_fillbox
+    {V PSL_setboxrgb fill U} if
+    PSL_drawbox
+    {PSL_setboxpen S} if N
+  }
+  {PSL_clip
+  } ifelse
+  N
+} def
+/PSL_ST_clippath_rect
+{
+  /BoxH PSL_height PSL_gap_y 2 mul add def
+  /DelY BoxH BoxH 0 3 array astore def
+  0 1 PSL_m1
+  { /k exch def
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def
+    /MAT PSL_angle k get matrix R def
+    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
+    /x0 0 BoxW PSL_justx mul add def
+    /y0 0 PSL_justy add PSL_gap_y sub def
+    /DelX 0 BoxW BoxW 3 array astore def
+    x0 y0 MAT transform
+    /dy exch def /dx exch def
+    xp dx add yp dy add M
+    0 1 2
+    {
+      /ii exch def
+      x0 DelX ii get add y0 DelY ii get add MAT transform
+      /dy exch def /dx exch def
+      xp dx add yp dy add L
+    } for P
+  } for
+} def
+/PSL_ST_clippath_round
+{
+  /PSL_justy2 PSL_just 4 idiv 2 div neg def
+  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
+  /BoxH PSL_height PSL_gap_y 2 mul add def
+  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
+  0 1 PSL_m1
+  { /k exch def
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def
+    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
+    /x0 BoxW PSL_justx mul def
+    xp yp T PSL_angle k get R x0 y0 T
+    BoxR 0 M
+    BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct P
+    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
+  } for
+} def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
+%%EndProlog
+
+%%BeginSetup
+/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
+%%EndSetup
+
+%%Page: 1 1
+
+%%BeginPageSetup
+V 0.06 0.06 scale
+%%EndPageSetup
+
+/PSL_page_xsize 10200 def
+/PSL_page_ysize 13200 def
+0 A
+FQ
+O0
+-2400 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
+
+% PostScript produced by:
+%%GMT:  psxy -R-21/21/-21/21 -JX4i -Ss0.2c -Ct.cpt -P -K -B10f5WSne -Xc -Y1i
+%%PROJ: xy -21.00000000 21.00000000 -21.00000000 21.00000000 -21.000 21.000 -21.000 21.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+4800 0 D
+0 4800 D
+-4800 0 D
+PSL_eoclip N
+4 W
+{1 0.156 0 C} FS
+47 114 4686 Ss
+47 229 4686 Ss
+47 343 4686 Ss
+47 457 4686 Ss
+47 571 4686 Ss
+47 686 4686 Ss
+{1 0.469 0 C} FS
+47 800 4686 Ss
+47 914 4686 Ss
+47 1029 4686 Ss
+47 1143 4686 Ss
+47 1257 4686 Ss
+47 1371 4686 Ss
+47 1486 4686 Ss
+{1 0.781 0 C} FS
+47 1600 4686 Ss
+47 1714 4686 Ss
+47 1829 4686 Ss
+47 1943 4686 Ss
+47 2057 4686 Ss
+47 2171 4686 Ss
+47 2286 4686 Ss
+47 2400 4686 Ss
+47 2514 4686 Ss
+47 2629 4686 Ss
+47 2743 4686 Ss
+47 2857 4686 Ss
+47 2971 4686 Ss
+47 3086 4686 Ss
+47 3200 4686 Ss
+{1 0.469 0 C} FS
+47 3314 4686 Ss
+47 3429 4686 Ss
+47 3543 4686 Ss
+47 3657 4686 Ss
+47 3771 4686 Ss
+47 3886 4686 Ss
+47 4000 4686 Ss
+{1 0.156 0 C} FS
+47 4114 4686 Ss
+47 4229 4686 Ss
+47 4343 4686 Ss
+47 4457 4686 Ss
+47 4571 4686 Ss
+47 4686 4686 Ss
+47 114 4571 Ss
+47 229 4571 Ss
+47 343 4571 Ss
+47 457 4571 Ss
+47 571 4571 Ss
+{1 0.469 0 C} FS
+47 686 4571 Ss
+47 800 4571 Ss
+47 914 4571 Ss
+47 1029 4571 Ss
+47 1143 4571 Ss
+47 1257 4571 Ss
+{1 0.781 0 C} FS
+47 1371 4571 Ss
+47 1486 4571 Ss
+47 1600 4571 Ss
+47 1714 4571 Ss
+47 1829 4571 Ss
+47 1943 4571 Ss
+47 2057 4571 Ss
+47 2171 4571 Ss
+47 2286 4571 Ss
+47 2400 4571 Ss
+47 2514 4571 Ss
+47 2629 4571 Ss
+47 2743 4571 Ss
+47 2857 4571 Ss
+47 2971 4571 Ss
+47 3086 4571 Ss
+47 3200 4571 Ss
+47 3314 4571 Ss
+47 3429 4571 Ss
+{1 0.469 0 C} FS
+47 3543 4571 Ss
+47 3657 4571 Ss
+47 3771 4571 Ss
+47 3886 4571 Ss
+47 4000 4571 Ss
+47 4114 4571 Ss
+{1 0.156 0 C} FS
+47 4229 4571 Ss
+47 4343 4571 Ss
+47 4457 4571 Ss
+47 4571 4571 Ss
+47 4686 4571 Ss
+47 114 4457 Ss
+47 229 4457 Ss
+47 343 4457 Ss
+47 457 4457 Ss
+{1 0.469 0 C} FS
+47 571 4457 Ss
+47 686 4457 Ss
+47 800 4457 Ss
+47 914 4457 Ss
+47 1029 4457 Ss
+{1 0.781 0 C} FS
+47 1143 4457 Ss
+47 1257 4457 Ss
+47 1371 4457 Ss
+47 1486 4457 Ss
+47 1600 4457 Ss
+47 1714 4457 Ss
+47 1829 4457 Ss
+{0.906 1 0 C} FS
+47 1943 4457 Ss
+47 2057 4457 Ss
+47 2171 4457 Ss
+47 2286 4457 Ss
+47 2400 4457 Ss
+47 2514 4457 Ss
+47 2629 4457 Ss
+47 2743 4457 Ss
+47 2857 4457 Ss
+{1 0.781 0 C} FS
+47 2971 4457 Ss
+47 3086 4457 Ss
+47 3200 4457 Ss
+47 3314 4457 Ss
+47 3429 4457 Ss
+47 3543 4457 Ss
+47 3657 4457 Ss
+{1 0.469 0 C} FS
+47 3771 4457 Ss
+47 3886 4457 Ss
+47 4000 4457 Ss
+47 4114 4457 Ss
+47 4229 4457 Ss
+{1 0.156 0 C} FS
+47 4343 4457 Ss
+47 4457 4457 Ss
+47 4571 4457 Ss
+47 4686 4457 Ss
+47 114 4343 Ss
+47 229 4343 Ss
+47 343 4343 Ss
+{1 0.469 0 C} FS
+47 457 4343 Ss
+47 571 4343 Ss
+47 686 4343 Ss
+47 800 4343 Ss
+{1 0.781 0 C} FS
+47 914 4343 Ss
+47 1029 4343 Ss
+47 1143 4343 Ss
+47 1257 4343 Ss
+47 1371 4343 Ss
+47 1486 4343 Ss
+{0.906 1 0 C} FS
+47 1600 4343 Ss
+47 1714 4343 Ss
+47 1829 4343 Ss
+47 1943 4343 Ss
+47 2057 4343 Ss
+47 2171 4343 Ss
+47 2286 4343 Ss
+47 2400 4343 Ss
+47 2514 4343 Ss
+47 2629 4343 Ss
+47 2743 4343 Ss
+47 2857 4343 Ss
+47 2971 4343 Ss
+47 3086 4343 Ss
+47 3200 4343 Ss
+{1 0.781 0 C} FS
+47 3314 4343 Ss
+47 3429 4343 Ss
+47 3543 4343 Ss
+47 3657 4343 Ss
+47 3771 4343 Ss
+47 3886 4343 Ss
+{1 0.469 0 C} FS
+47 4000 4343 Ss
+47 4114 4343 Ss
+47 4229 4343 Ss
+47 4343 4343 Ss
+{1 0.156 0 C} FS
+47 4457 4343 Ss
+47 4571 4343 Ss
+47 4686 4343 Ss
+47 114 4229 Ss
+47 229 4229 Ss
+{1 0.469 0 C} FS
+47 343 4229 Ss
+47 457 4229 Ss
+47 571 4229 Ss
+47 686 4229 Ss
+{1 0.781 0 C} FS
+47 800 4229 Ss
+47 914 4229 Ss
+47 1029 4229 Ss
+47 1143 4229 Ss
+47 1257 4229 Ss
+{0.906 1 0 C} FS
+47 1371 4229 Ss
+47 1486 4229 Ss
+47 1600 4229 Ss
+47 1714 4229 Ss
+47 1829 4229 Ss
+47 1943 4229 Ss
+47 2057 4229 Ss
+47 2171 4229 Ss
+{0.594 1 0 C} FS
+47 2286 4229 Ss
+47 2400 4229 Ss
+47 2514 4229 Ss
+{0.906 1 0 C} FS
+47 2629 4229 Ss
+47 2743 4229 Ss
+47 2857 4229 Ss
+47 2971 4229 Ss
+47 3086 4229 Ss
+47 3200 4229 Ss
+47 3314 4229 Ss
+47 3429 4229 Ss
+{1 0.781 0 C} FS
+47 3543 4229 Ss
+47 3657 4229 Ss
+47 3771 4229 Ss
+47 3886 4229 Ss
+47 4000 4229 Ss
+{1 0.469 0 C} FS
+47 4114 4229 Ss
+47 4229 4229 Ss
+47 4343 4229 Ss
+47 4457 4229 Ss
+{1 0.156 0 C} FS
+47 4571 4229 Ss
+47 4686 4229 Ss
+47 114 4114 Ss
+{1 0.469 0 C} FS
+47 229 4114 Ss
+47 343 4114 Ss
+47 457 4114 Ss
+47 571 4114 Ss
+{1 0.781 0 C} FS
+47 686 4114 Ss
+47 800 4114 Ss
+47 914 4114 Ss
+47 1029 4114 Ss
+{0.906 1 0 C} FS
+47 1143 4114 Ss
+47 1257 4114 Ss
+47 1371 4114 Ss
+47 1486 4114 Ss
+47 1600 4114 Ss
+47 1714 4114 Ss
+{0.594 1 0 C} FS
+47 1829 4114 Ss
+47 1943 4114 Ss
+47 2057 4114 Ss
+47 2171 4114 Ss
+47 2286 4114 Ss
+47 2400 4114 Ss
+47 2514 4114 Ss
+47 2629 4114 Ss
+47 2743 4114 Ss
+47 2857 4114 Ss
+47 2971 4114 Ss
+{0.906 1 0 C} FS
+47 3086 4114 Ss
+47 3200 4114 Ss
+47 3314 4114 Ss
+47 3429 4114 Ss
+47 3543 4114 Ss
+47 3657 4114 Ss
+{1 0.781 0 C} FS
+47 3771 4114 Ss
+47 3886 4114 Ss
+47 4000 4114 Ss
+47 4114 4114 Ss
+{1 0.469 0 C} FS
+47 4229 4114 Ss
+47 4343 4114 Ss
+47 4457 4114 Ss
+47 4571 4114 Ss
+{1 0.156 0 C} FS
+47 4686 4114 Ss
+{1 0.469 0 C} FS
+47 114 4000 Ss
+47 229 4000 Ss
+47 343 4000 Ss
+47 457 4000 Ss
+{1 0.781 0 C} FS
+47 571 4000 Ss
+47 686 4000 Ss
+47 800 4000 Ss
+47 914 4000 Ss
+{0.906 1 0 C} FS
+47 1029 4000 Ss
+47 1143 4000 Ss
+47 1257 4000 Ss
+47 1371 4000 Ss
+47 1486 4000 Ss
+{0.594 1 0 C} FS
+47 1600 4000 Ss
+47 1714 4000 Ss
+47 1829 4000 Ss
+47 1943 4000 Ss
+47 2057 4000 Ss
+47 2171 4000 Ss
+47 2286 4000 Ss
+47 2400 4000 Ss
+47 2514 4000 Ss
+47 2629 4000 Ss
+47 2743 4000 Ss
+47 2857 4000 Ss
+47 2971 4000 Ss
+47 3086 4000 Ss
+47 3200 4000 Ss
+{0.906 1 0 C} FS
+47 3314 4000 Ss
+47 3429 4000 Ss
+47 3543 4000 Ss
+47 3657 4000 Ss
+47 3771 4000 Ss
+{1 0.781 0 C} FS
+47 3886 4000 Ss
+47 4000 4000 Ss
+47 4114 4000 Ss
+47 4229 4000 Ss
+{1 0.469 0 C} FS
+47 4343 4000 Ss
+47 4457 4000 Ss
+47 4571 4000 Ss
+47 4686 4000 Ss
+47 114 3886 Ss
+47 229 3886 Ss
+47 343 3886 Ss
+{1 0.781 0 C} FS
+47 457 3886 Ss
+47 571 3886 Ss
+47 686 3886 Ss
+47 800 3886 Ss
+{0.906 1 0 C} FS
+47 914 3886 Ss
+47 1029 3886 Ss
+47 1143 3886 Ss
+47 1257 3886 Ss
+{0.594 1 0 C} FS
+47 1371 3886 Ss
+47 1486 3886 Ss
+47 1600 3886 Ss
+47 1714 3886 Ss
+47 1829 3886 Ss
+{0.281 1 0 C} FS
+47 1943 3886 Ss
+47 2057 3886 Ss
+47 2171 3886 Ss
+47 2286 3886 Ss
+47 2400 3886 Ss
+47 2514 3886 Ss
+47 2629 3886 Ss
+47 2743 3886 Ss
+47 2857 3886 Ss
+{0.594 1 0 C} FS
+47 2971 3886 Ss
+47 3086 3886 Ss
+47 3200 3886 Ss
+47 3314 3886 Ss
+47 3429 3886 Ss
+{0.906 1 0 C} FS
+47 3543 3886 Ss
+47 3657 3886 Ss
+47 3771 3886 Ss
+47 3886 3886 Ss
+{1 0.781 0 C} FS
+47 4000 3886 Ss
+47 4114 3886 Ss
+47 4229 3886 Ss
+47 4343 3886 Ss
+{1 0.469 0 C} FS
+47 4457 3886 Ss
+47 4571 3886 Ss
+47 4686 3886 Ss
+47 114 3771 Ss
+47 229 3771 Ss
+47 343 3771 Ss
+{1 0.781 0 C} FS
+47 457 3771 Ss
+47 571 3771 Ss
+47 686 3771 Ss
+{0.906 1 0 C} FS
+47 800 3771 Ss
+47 914 3771 Ss
+47 1029 3771 Ss
+47 1143 3771 Ss
+{0.594 1 0 C} FS
+47 1257 3771 Ss
+47 1371 3771 Ss
+47 1486 3771 Ss
+47 1600 3771 Ss
+{0.281 1 0 C} FS
+47 1714 3771 Ss
+47 1829 3771 Ss
+47 1943 3771 Ss
+47 2057 3771 Ss
+47 2171 3771 Ss
+47 2286 3771 Ss
+47 2400 3771 Ss
+47 2514 3771 Ss
+47 2629 3771 Ss
+47 2743 3771 Ss
+47 2857 3771 Ss
+47 2971 3771 Ss
+47 3086 3771 Ss
+{0.594 1 0 C} FS
+47 3200 3771 Ss
+47 3314 3771 Ss
+47 3429 3771 Ss
+47 3543 3771 Ss
+{0.906 1 0 C} FS
+47 3657 3771 Ss
+47 3771 3771 Ss
+47 3886 3771 Ss
+47 4000 3771 Ss
+{1 0.781 0 C} FS
+47 4114 3771 Ss
+47 4229 3771 Ss
+47 4343 3771 Ss
+{1 0.469 0 C} FS
+47 4457 3771 Ss
+47 4571 3771 Ss
+47 4686 3771 Ss
+47 114 3657 Ss
+47 229 3657 Ss
+{1 0.781 0 C} FS
+47 343 3657 Ss
+47 457 3657 Ss
+47 571 3657 Ss
+{0.906 1 0 C} FS
+47 686 3657 Ss
+47 800 3657 Ss
+47 914 3657 Ss
+47 1029 3657 Ss
+{0.594 1 0 C} FS
+47 1143 3657 Ss
+47 1257 3657 Ss
+47 1371 3657 Ss
+{0.281 1 0 C} FS
+47 1486 3657 Ss
+47 1600 3657 Ss
+47 1714 3657 Ss
+47 1829 3657 Ss
+47 1943 3657 Ss
+{0 1 0.0313 C} FS
+47 2057 3657 Ss
+47 2171 3657 Ss
+47 2286 3657 Ss
+47 2400 3657 Ss
+47 2514 3657 Ss
+47 2629 3657 Ss
+47 2743 3657 Ss
+{0.281 1 0 C} FS
+47 2857 3657 Ss
+47 2971 3657 Ss
+47 3086 3657 Ss
+47 3200 3657 Ss
+47 3314 3657 Ss
+{0.594 1 0 C} FS
+47 3429 3657 Ss
+47 3543 3657 Ss
+47 3657 3657 Ss
+{0.906 1 0 C} FS
+47 3771 3657 Ss
+47 3886 3657 Ss
+47 4000 3657 Ss
+47 4114 3657 Ss
+{1 0.781 0 C} FS
+47 4229 3657 Ss
+47 4343 3657 Ss
+47 4457 3657 Ss
+{1 0.469 0 C} FS
+47 4571 3657 Ss
+47 4686 3657 Ss
+47 114 3543 Ss
+47 229 3543 Ss
+{1 0.781 0 C} FS
+47 343 3543 Ss
+47 457 3543 Ss
+47 571 3543 Ss
+{0.906 1 0 C} FS
+47 686 3543 Ss
+47 800 3543 Ss
+47 914 3543 Ss
+{0.594 1 0 C} FS
+47 1029 3543 Ss
+47 1143 3543 Ss
+47 1257 3543 Ss
+{0.281 1 0 C} FS
+47 1371 3543 Ss
+47 1486 3543 Ss
+47 1600 3543 Ss
+{0 1 0.0313 C} FS
+47 1714 3543 Ss
+47 1829 3543 Ss
+47 1943 3543 Ss
+47 2057 3543 Ss
+47 2171 3543 Ss
+47 2286 3543 Ss
+47 2400 3543 Ss
+47 2514 3543 Ss
+47 2629 3543 Ss
+47 2743 3543 Ss
+47 2857 3543 Ss
+47 2971 3543 Ss
+47 3086 3543 Ss
+{0.281 1 0 C} FS
+47 3200 3543 Ss
+47 3314 3543 Ss
+47 3429 3543 Ss
+{0.594 1 0 C} FS
+47 3543 3543 Ss
+47 3657 3543 Ss
+47 3771 3543 Ss
+{0.906 1 0 C} FS
+47 3886 3543 Ss
+47 4000 3543 Ss
+47 4114 3543 Ss
+{1 0.781 0 C} FS
+47 4229 3543 Ss
+47 4343 3543 Ss
+47 4457 3543 Ss
+{1 0.469 0 C} FS
+47 4571 3543 Ss
+47 4686 3543 Ss
+47 114 3429 Ss
+{1 0.781 0 C} FS
+47 229 3429 Ss
+47 343 3429 Ss
+47 457 3429 Ss
+{0.906 1 0 C} FS
+47 571 3429 Ss
+47 686 3429 Ss
+47 800 3429 Ss
+{0.594 1 0 C} FS
+47 914 3429 Ss
+47 1029 3429 Ss
+47 1143 3429 Ss
+{0.281 1 0 C} FS
+47 1257 3429 Ss
+47 1371 3429 Ss
+47 1486 3429 Ss
+{0 1 0.0313 C} FS
+47 1600 3429 Ss
+47 1714 3429 Ss
+47 1829 3429 Ss
+47 1943 3429 Ss
+{0 1 0.344 C} FS
+47 2057 3429 Ss
+47 2171 3429 Ss
+47 2286 3429 Ss
+47 2400 3429 Ss
+47 2514 3429 Ss
+47 2629 3429 Ss
+47 2743 3429 Ss
+{0 1 0.0313 C} FS
+47 2857 3429 Ss
+47 2971 3429 Ss
+47 3086 3429 Ss
+47 3200 3429 Ss
+{0.281 1 0 C} FS
+47 3314 3429 Ss
+47 3429 3429 Ss
+47 3543 3429 Ss
+{0.594 1 0 C} FS
+47 3657 3429 Ss
+47 3771 3429 Ss
+47 3886 3429 Ss
+{0.906 1 0 C} FS
+47 4000 3429 Ss
+47 4114 3429 Ss
+47 4229 3429 Ss
+{1 0.781 0 C} FS
+47 4343 3429 Ss
+47 4457 3429 Ss
+47 4571 3429 Ss
+{1 0.469 0 C} FS
+47 4686 3429 Ss
+47 114 3314 Ss
+{1 0.781 0 C} FS
+47 229 3314 Ss
+47 343 3314 Ss
+47 457 3314 Ss
+{0.906 1 0 C} FS
+47 571 3314 Ss
+47 686 3314 Ss
+47 800 3314 Ss
+{0.594 1 0 C} FS
+47 914 3314 Ss
+47 1029 3314 Ss
+{0.281 1 0 C} FS
+47 1143 3314 Ss
+47 1257 3314 Ss
+47 1371 3314 Ss
+{0 1 0.0313 C} FS
+47 1486 3314 Ss
+47 1600 3314 Ss
+47 1714 3314 Ss
+{0 1 0.344 C} FS
+47 1829 3314 Ss
+47 1943 3314 Ss
+47 2057 3314 Ss
+47 2171 3314 Ss
+47 2286 3314 Ss
+47 2400 3314 Ss
+47 2514 3314 Ss
+47 2629 3314 Ss
+47 2743 3314 Ss
+47 2857 3314 Ss
+47 2971 3314 Ss
+{0 1 0.0313 C} FS
+47 3086 3314 Ss
+47 3200 3314 Ss
+47 3314 3314 Ss
+{0.281 1 0 C} FS
+47 3429 3314 Ss
+47 3543 3314 Ss
+47 3657 3314 Ss
+{0.594 1 0 C} FS
+47 3771 3314 Ss
+47 3886 3314 Ss
+{0.906 1 0 C} FS
+47 4000 3314 Ss
+47 4114 3314 Ss
+47 4229 3314 Ss
+{1 0.781 0 C} FS
+47 4343 3314 Ss
+47 4457 3314 Ss
+47 4571 3314 Ss
+{1 0.469 0 C} FS
+47 4686 3314 Ss
+{1 0.781 0 C} FS
+47 114 3200 Ss
+47 229 3200 Ss
+47 343 3200 Ss
+{0.906 1 0 C} FS
+47 457 3200 Ss
+47 571 3200 Ss
+47 686 3200 Ss
+{0.594 1 0 C} FS
+47 800 3200 Ss
+47 914 3200 Ss
+47 1029 3200 Ss
+{0.281 1 0 C} FS
+47 1143 3200 Ss
+47 1257 3200 Ss
+{0 1 0.0313 C} FS
+47 1371 3200 Ss
+47 1486 3200 Ss
+47 1600 3200 Ss
+{0 1 0.344 C} FS
+47 1714 3200 Ss
+47 1829 3200 Ss
+47 1943 3200 Ss
+{0 1 0.656 C} FS
+47 2057 3200 Ss
+47 2171 3200 Ss
+47 2286 3200 Ss
+47 2400 3200 Ss
+47 2514 3200 Ss
+47 2629 3200 Ss
+47 2743 3200 Ss
+{0 1 0.344 C} FS
+47 2857 3200 Ss
+47 2971 3200 Ss
+47 3086 3200 Ss
+{0 1 0.0313 C} FS
+47 3200 3200 Ss
+47 3314 3200 Ss
+47 3429 3200 Ss
+{0.281 1 0 C} FS
+47 3543 3200 Ss
+47 3657 3200 Ss
+{0.594 1 0 C} FS
+47 3771 3200 Ss
+47 3886 3200 Ss
+47 4000 3200 Ss
+{0.906 1 0 C} FS
+47 4114 3200 Ss
+47 4229 3200 Ss
+47 4343 3200 Ss
+{1 0.781 0 C} FS
+47 4457 3200 Ss
+47 4571 3200 Ss
+47 4686 3200 Ss
+47 114 3086 Ss
+47 229 3086 Ss
+47 343 3086 Ss
+{0.906 1 0 C} FS
+47 457 3086 Ss
+47 571 3086 Ss
+47 686 3086 Ss
+{0.594 1 0 C} FS
+47 800 3086 Ss
+47 914 3086 Ss
+{0.281 1 0 C} FS
+47 1029 3086 Ss
+47 1143 3086 Ss
+{0 1 0.0313 C} FS
+47 1257 3086 Ss
+47 1371 3086 Ss
+47 1486 3086 Ss
+{0 1 0.344 C} FS
+47 1600 3086 Ss
+47 1714 3086 Ss
+{0 1 0.656 C} FS
+47 1829 3086 Ss
+47 1943 3086 Ss
+47 2057 3086 Ss
+47 2171 3086 Ss
+{0 1 0.969 C} FS
+47 2286 3086 Ss
+47 2400 3086 Ss
+47 2514 3086 Ss
+{0 1 0.656 C} FS
+47 2629 3086 Ss
+47 2743 3086 Ss
+47 2857 3086 Ss
+47 2971 3086 Ss
+{0 1 0.344 C} FS
+47 3086 3086 Ss
+47 3200 3086 Ss
+{0 1 0.0313 C} FS
+47 3314 3086 Ss
+47 3429 3086 Ss
+47 3543 3086 Ss
+{0.281 1 0 C} FS
+47 3657 3086 Ss
+47 3771 3086 Ss
+{0.594 1 0 C} FS
+47 3886 3086 Ss
+47 4000 3086 Ss
+{0.906 1 0 C} FS
+47 4114 3086 Ss
+47 4229 3086 Ss
+47 4343 3086 Ss
+{1 0.781 0 C} FS
+47 4457 3086 Ss
+47 4571 3086 Ss
+47 4686 3086 Ss
+47 114 2971 Ss
+47 229 2971 Ss
+47 343 2971 Ss
+{0.906 1 0 C} FS
+47 457 2971 Ss
+47 571 2971 Ss
+{0.594 1 0 C} FS
+47 686 2971 Ss
+47 800 2971 Ss
+47 914 2971 Ss
+{0.281 1 0 C} FS
+47 1029 2971 Ss
+47 1143 2971 Ss
+{0 1 0.0313 C} FS
+47 1257 2971 Ss
+47 1371 2971 Ss
+{0 1 0.344 C} FS
+47 1486 2971 Ss
+47 1600 2971 Ss
+{0 1 0.656 C} FS
+47 1714 2971 Ss
+47 1829 2971 Ss
+47 1943 2971 Ss
+{0 1 0.969 C} FS
+47 2057 2971 Ss
+47 2171 2971 Ss
+47 2286 2971 Ss
+47 2400 2971 Ss
+47 2514 2971 Ss
+47 2629 2971 Ss
+47 2743 2971 Ss
+{0 1 0.656 C} FS
+47 2857 2971 Ss
+47 2971 2971 Ss
+47 3086 2971 Ss
+{0 1 0.344 C} FS
+47 3200 2971 Ss
+47 3314 2971 Ss
+{0 1 0.0313 C} FS
+47 3429 2971 Ss
+47 3543 2971 Ss
+{0.281 1 0 C} FS
+47 3657 2971 Ss
+47 3771 2971 Ss
+{0.594 1 0 C} FS
+47 3886 2971 Ss
+47 4000 2971 Ss
+47 4114 2971 Ss
+{0.906 1 0 C} FS
+47 4229 2971 Ss
+47 4343 2971 Ss
+{1 0.781 0 C} FS
+47 4457 2971 Ss
+47 4571 2971 Ss
+47 4686 2971 Ss
+47 114 2857 Ss
+47 229 2857 Ss
+{0.906 1 0 C} FS
+47 343 2857 Ss
+47 457 2857 Ss
+47 571 2857 Ss
+{0.594 1 0 C} FS
+47 686 2857 Ss
+47 800 2857 Ss
+{0.281 1 0 C} FS
+47 914 2857 Ss
+47 1029 2857 Ss
+47 1143 2857 Ss
+{0 1 0.0313 C} FS
+47 1257 2857 Ss
+47 1371 2857 Ss
+{0 1 0.344 C} FS
+47 1486 2857 Ss
+47 1600 2857 Ss
+{0 1 0.656 C} FS
+47 1714 2857 Ss
+47 1829 2857 Ss
+{0 1 0.969 C} FS
+47 1943 2857 Ss
+47 2057 2857 Ss
+{0 0.719 1 C} FS
+47 2171 2857 Ss
+47 2286 2857 Ss
+47 2400 2857 Ss
+47 2514 2857 Ss
+47 2629 2857 Ss
+{0 1 0.969 C} FS
+47 2743 2857 Ss
+47 2857 2857 Ss
+{0 1 0.656 C} FS
+47 2971 2857 Ss
+47 3086 2857 Ss
+{0 1 0.344 C} FS
+47 3200 2857 Ss
+47 3314 2857 Ss
+{0 1 0.0313 C} FS
+47 3429 2857 Ss
+47 3543 2857 Ss
+{0.281 1 0 C} FS
+47 3657 2857 Ss
+47 3771 2857 Ss
+47 3886 2857 Ss
+{0.594 1 0 C} FS
+47 4000 2857 Ss
+47 4114 2857 Ss
+{0.906 1 0 C} FS
+47 4229 2857 Ss
+47 4343 2857 Ss
+47 4457 2857 Ss
+{1 0.781 0 C} FS
+47 4571 2857 Ss
+47 4686 2857 Ss
+47 114 2743 Ss
+47 229 2743 Ss
+{0.906 1 0 C} FS
+47 343 2743 Ss
+47 457 2743 Ss
+47 571 2743 Ss
+{0.594 1 0 C} FS
+47 686 2743 Ss
+47 800 2743 Ss
+{0.281 1 0 C} FS
+47 914 2743 Ss
+47 1029 2743 Ss
+{0 1 0.0313 C} FS
+47 1143 2743 Ss
+47 1257 2743 Ss
+{0 1 0.344 C} FS
+47 1371 2743 Ss
+47 1486 2743 Ss
+{0 1 0.656 C} FS
+47 1600 2743 Ss
+47 1714 2743 Ss
+{0 1 0.969 C} FS
+47 1829 2743 Ss
+47 1943 2743 Ss
+{0 0.719 1 C} FS
+47 2057 2743 Ss
+47 2171 2743 Ss
+{0 0.406 1 C} FS
+47 2286 2743 Ss
+47 2400 2743 Ss
+47 2514 2743 Ss
+{0 0.719 1 C} FS
+47 2629 2743 Ss
+47 2743 2743 Ss
+{0 1 0.969 C} FS
+47 2857 2743 Ss
+47 2971 2743 Ss
+{0 1 0.656 C} FS
+47 3086 2743 Ss
+47 3200 2743 Ss
+{0 1 0.344 C} FS
+47 3314 2743 Ss
+47 3429 2743 Ss
+{0 1 0.0313 C} FS
+47 3543 2743 Ss
+47 3657 2743 Ss
+{0.281 1 0 C} FS
+47 3771 2743 Ss
+47 3886 2743 Ss
+{0.594 1 0 C} FS
+47 4000 2743 Ss
+47 4114 2743 Ss
+{0.906 1 0 C} FS
+47 4229 2743 Ss
+47 4343 2743 Ss
+47 4457 2743 Ss
+{1 0.781 0 C} FS
+47 4571 2743 Ss
+47 4686 2743 Ss
+47 114 2629 Ss
+47 229 2629 Ss
+{0.906 1 0 C} FS
+47 343 2629 Ss
+47 457 2629 Ss
+47 571 2629 Ss
+{0.594 1 0 C} FS
+47 686 2629 Ss
+47 800 2629 Ss
+{0.281 1 0 C} FS
+47 914 2629 Ss
+47 1029 2629 Ss
+{0 1 0.0313 C} FS
+47 1143 2629 Ss
+47 1257 2629 Ss
+{0 1 0.344 C} FS
+47 1371 2629 Ss
+47 1486 2629 Ss
+{0 1 0.656 C} FS
+47 1600 2629 Ss
+47 1714 2629 Ss
+{0 1 0.969 C} FS
+47 1829 2629 Ss
+{0 0.719 1 C} FS
+47 1943 2629 Ss
+47 2057 2629 Ss
+{0 0.406 1 C} FS
+47 2171 2629 Ss
+47 2286 2629 Ss
+47 2400 2629 Ss
+47 2514 2629 Ss
+47 2629 2629 Ss
+{0 0.719 1 C} FS
+47 2743 2629 Ss
+47 2857 2629 Ss
+{0 1 0.969 C} FS
+47 2971 2629 Ss
+{0 1 0.656 C} FS
+47 3086 2629 Ss
+47 3200 2629 Ss
+{0 1 0.344 C} FS
+47 3314 2629 Ss
+47 3429 2629 Ss
+{0 1 0.0313 C} FS
+47 3543 2629 Ss
+47 3657 2629 Ss
+{0.281 1 0 C} FS
+47 3771 2629 Ss
+47 3886 2629 Ss
+{0.594 1 0 C} FS
+47 4000 2629 Ss
+47 4114 2629 Ss
+{0.906 1 0 C} FS
+47 4229 2629 Ss
+47 4343 2629 Ss
+47 4457 2629 Ss
+{1 0.781 0 C} FS
+47 4571 2629 Ss
+47 4686 2629 Ss
+47 114 2514 Ss
+47 229 2514 Ss
+{0.906 1 0 C} FS
+47 343 2514 Ss
+47 457 2514 Ss
+{0.594 1 0 C} FS
+47 571 2514 Ss
+47 686 2514 Ss
+47 800 2514 Ss
+{0.281 1 0 C} FS
+47 914 2514 Ss
+47 1029 2514 Ss
+{0 1 0.0313 C} FS
+47 1143 2514 Ss
+47 1257 2514 Ss
+{0 1 0.344 C} FS
+47 1371 2514 Ss
+47 1486 2514 Ss
+{0 1 0.656 C} FS
+47 1600 2514 Ss
+{0 1 0.969 C} FS
+47 1714 2514 Ss
+47 1829 2514 Ss
+{0 0.719 1 C} FS
+47 1943 2514 Ss
+{0 0.406 1 C} FS
+47 2057 2514 Ss
+47 2171 2514 Ss
+{0 0.0937 1 C} FS
+47 2286 2514 Ss
+47 2400 2514 Ss
+47 2514 2514 Ss
+{0 0.406 1 C} FS
+47 2629 2514 Ss
+47 2743 2514 Ss
+{0 0.719 1 C} FS
+47 2857 2514 Ss
+{0 1 0.969 C} FS
+47 2971 2514 Ss
+47 3086 2514 Ss
+{0 1 0.656 C} FS
+47 3200 2514 Ss
+{0 1 0.344 C} FS
+47 3314 2514 Ss
+47 3429 2514 Ss
+{0 1 0.0313 C} FS
+47 3543 2514 Ss
+47 3657 2514 Ss
+{0.281 1 0 C} FS
+47 3771 2514 Ss
+47 3886 2514 Ss
+{0.594 1 0 C} FS
+47 4000 2514 Ss
+47 4114 2514 Ss
+47 4229 2514 Ss
+{0.906 1 0 C} FS
+47 4343 2514 Ss
+47 4457 2514 Ss
+{1 0.781 0 C} FS
+47 4571 2514 Ss
+47 4686 2514 Ss
+47 114 2400 Ss
+47 229 2400 Ss
+{0.906 1 0 C} FS
+47 343 2400 Ss
+47 457 2400 Ss
+{0.594 1 0 C} FS
+47 571 2400 Ss
+47 686 2400 Ss
+47 800 2400 Ss
+{0.281 1 0 C} FS
+47 914 2400 Ss
+47 1029 2400 Ss
+{0 1 0.0313 C} FS
+47 1143 2400 Ss
+47 1257 2400 Ss
+{0 1 0.344 C} FS
+47 1371 2400 Ss
+47 1486 2400 Ss
+{0 1 0.656 C} FS
+47 1600 2400 Ss
+{0 1 0.969 C} FS
+47 1714 2400 Ss
+47 1829 2400 Ss
+{0 0.719 1 C} FS
+47 1943 2400 Ss
+{0 0.406 1 C} FS
+47 2057 2400 Ss
+47 2171 2400 Ss
+{0 0.0937 1 C} FS
+47 2286 2400 Ss
+{0.531 0 1 C} FS
+47 2400 2400 Ss
+{0 0.0937 1 C} FS
+47 2514 2400 Ss
+{0 0.406 1 C} FS
+47 2629 2400 Ss
+47 2743 2400 Ss
+{0 0.719 1 C} FS
+47 2857 2400 Ss
+{0 1 0.969 C} FS
+47 2971 2400 Ss
+47 3086 2400 Ss
+{0 1 0.656 C} FS
+47 3200 2400 Ss
+{0 1 0.344 C} FS
+47 3314 2400 Ss
+47 3429 2400 Ss
+{0 1 0.0313 C} FS
+47 3543 2400 Ss
+47 3657 2400 Ss
+{0.281 1 0 C} FS
+47 3771 2400 Ss
+47 3886 2400 Ss
+{0.594 1 0 C} FS
+47 4000 2400 Ss
+47 4114 2400 Ss
+47 4229 2400 Ss
+{0.906 1 0 C} FS
+47 4343 2400 Ss
+47 4457 2400 Ss
+{1 0.781 0 C} FS
+47 4571 2400 Ss
+47 4686 2400 Ss
+47 114 2286 Ss
+47 229 2286 Ss
+{0.906 1 0 C} FS
+47 343 2286 Ss
+47 457 2286 Ss
+{0.594 1 0 C} FS
+47 571 2286 Ss
+47 686 2286 Ss
+47 800 2286 Ss
+{0.281 1 0 C} FS
+47 914 2286 Ss
+47 1029 2286 Ss
+{0 1 0.0313 C} FS
+47 1143 2286 Ss
+47 1257 2286 Ss
+{0 1 0.344 C} FS
+47 1371 2286 Ss
+47 1486 2286 Ss
+{0 1 0.656 C} FS
+47 1600 2286 Ss
+{0 1 0.969 C} FS
+47 1714 2286 Ss
+47 1829 2286 Ss
+{0 0.719 1 C} FS
+47 1943 2286 Ss
+{0 0.406 1 C} FS
+47 2057 2286 Ss
+47 2171 2286 Ss
+{0 0.0937 1 C} FS
+47 2286 2286 Ss
+47 2400 2286 Ss
+47 2514 2286 Ss
+{0 0.406 1 C} FS
+47 2629 2286 Ss
+47 2743 2286 Ss
+{0 0.719 1 C} FS
+47 2857 2286 Ss
+{0 1 0.969 C} FS
+47 2971 2286 Ss
+47 3086 2286 Ss
+{0 1 0.656 C} FS
+47 3200 2286 Ss
+{0 1 0.344 C} FS
+47 3314 2286 Ss
+47 3429 2286 Ss
+{0 1 0.0313 C} FS
+47 3543 2286 Ss
+47 3657 2286 Ss
+{0.281 1 0 C} FS
+47 3771 2286 Ss
+47 3886 2286 Ss
+{0.594 1 0 C} FS
+47 4000 2286 Ss
+47 4114 2286 Ss
+47 4229 2286 Ss
+{0.906 1 0 C} FS
+47 4343 2286 Ss
+47 4457 2286 Ss
+{1 0.781 0 C} FS
+47 4571 2286 Ss
+47 4686 2286 Ss
+47 114 2171 Ss
+47 229 2171 Ss
+{0.906 1 0 C} FS
+47 343 2171 Ss
+47 457 2171 Ss
+47 571 2171 Ss
+{0.594 1 0 C} FS
+47 686 2171 Ss
+47 800 2171 Ss
+{0.281 1 0 C} FS
+47 914 2171 Ss
+47 1029 2171 Ss
+{0 1 0.0313 C} FS
+47 1143 2171 Ss
+47 1257 2171 Ss
+{0 1 0.344 C} FS
+47 1371 2171 Ss
+47 1486 2171 Ss
+{0 1 0.656 C} FS
+47 1600 2171 Ss
+47 1714 2171 Ss
+{0 1 0.969 C} FS
+47 1829 2171 Ss
+{0 0.719 1 C} FS
+47 1943 2171 Ss
+47 2057 2171 Ss
+{0 0.406 1 C} FS
+47 2171 2171 Ss
+47 2286 2171 Ss
+47 2400 2171 Ss
+47 2514 2171 Ss
+47 2629 2171 Ss
+{0 0.719 1 C} FS
+47 2743 2171 Ss
+47 2857 2171 Ss
+{0 1 0.969 C} FS
+47 2971 2171 Ss
+{0 1 0.656 C} FS
+47 3086 2171 Ss
+47 3200 2171 Ss
+{0 1 0.344 C} FS
+47 3314 2171 Ss
+47 3429 2171 Ss
+{0 1 0.0313 C} FS
+47 3543 2171 Ss
+47 3657 2171 Ss
+{0.281 1 0 C} FS
+47 3771 2171 Ss
+47 3886 2171 Ss
+{0.594 1 0 C} FS
+47 4000 2171 Ss
+47 4114 2171 Ss
+{0.906 1 0 C} FS
+47 4229 2171 Ss
+47 4343 2171 Ss
+47 4457 2171 Ss
+{1 0.781 0 C} FS
+47 4571 2171 Ss
+47 4686 2171 Ss
+47 114 2057 Ss
+47 229 2057 Ss
+{0.906 1 0 C} FS
+47 343 2057 Ss
+47 457 2057 Ss
+47 571 2057 Ss
+{0.594 1 0 C} FS
+47 686 2057 Ss
+47 800 2057 Ss
+{0.281 1 0 C} FS
+47 914 2057 Ss
+47 1029 2057 Ss
+{0 1 0.0313 C} FS
+47 1143 2057 Ss
+47 1257 2057 Ss
+{0 1 0.344 C} FS
+47 1371 2057 Ss
+47 1486 2057 Ss
+{0 1 0.656 C} FS
+47 1600 2057 Ss
+47 1714 2057 Ss
+{0 1 0.969 C} FS
+47 1829 2057 Ss
+47 1943 2057 Ss
+{0 0.719 1 C} FS
+47 2057 2057 Ss
+47 2171 2057 Ss
+{0 0.406 1 C} FS
+47 2286 2057 Ss
+47 2400 2057 Ss
+47 2514 2057 Ss
+{0 0.719 1 C} FS
+47 2629 2057 Ss
+47 2743 2057 Ss
+{0 1 0.969 C} FS
+47 2857 2057 Ss
+47 2971 2057 Ss
+{0 1 0.656 C} FS
+47 3086 2057 Ss
+47 3200 2057 Ss
+{0 1 0.344 C} FS
+47 3314 2057 Ss
+47 3429 2057 Ss
+{0 1 0.0313 C} FS
+47 3543 2057 Ss
+47 3657 2057 Ss
+{0.281 1 0 C} FS
+47 3771 2057 Ss
+47 3886 2057 Ss
+{0.594 1 0 C} FS
+47 4000 2057 Ss
+47 4114 2057 Ss
+{0.906 1 0 C} FS
+47 4229 2057 Ss
+47 4343 2057 Ss
+47 4457 2057 Ss
+{1 0.781 0 C} FS
+47 4571 2057 Ss
+47 4686 2057 Ss
+47 114 1943 Ss
+47 229 1943 Ss
+{0.906 1 0 C} FS
+47 343 1943 Ss
+47 457 1943 Ss
+47 571 1943 Ss
+{0.594 1 0 C} FS
+47 686 1943 Ss
+47 800 1943 Ss
+{0.281 1 0 C} FS
+47 914 1943 Ss
+47 1029 1943 Ss
+47 1143 1943 Ss
+{0 1 0.0313 C} FS
+47 1257 1943 Ss
+47 1371 1943 Ss
+{0 1 0.344 C} FS
+47 1486 1943 Ss
+47 1600 1943 Ss
+{0 1 0.656 C} FS
+47 1714 1943 Ss
+47 1829 1943 Ss
+{0 1 0.969 C} FS
+47 1943 1943 Ss
+47 2057 1943 Ss
+{0 0.719 1 C} FS
+47 2171 1943 Ss
+47 2286 1943 Ss
+47 2400 1943 Ss
+47 2514 1943 Ss
+47 2629 1943 Ss
+{0 1 0.969 C} FS
+47 2743 1943 Ss
+47 2857 1943 Ss
+{0 1 0.656 C} FS
+47 2971 1943 Ss
+47 3086 1943 Ss
+{0 1 0.344 C} FS
+47 3200 1943 Ss
+47 3314 1943 Ss
+{0 1 0.0313 C} FS
+47 3429 1943 Ss
+47 3543 1943 Ss
+{0.281 1 0 C} FS
+47 3657 1943 Ss
+47 3771 1943 Ss
+47 3886 1943 Ss
+{0.594 1 0 C} FS
+47 4000 1943 Ss
+47 4114 1943 Ss
+{0.906 1 0 C} FS
+47 4229 1943 Ss
+47 4343 1943 Ss
+47 4457 1943 Ss
+{1 0.781 0 C} FS
+47 4571 1943 Ss
+47 4686 1943 Ss
+47 114 1829 Ss
+47 229 1829 Ss
+47 343 1829 Ss
+{0.906 1 0 C} FS
+47 457 1829 Ss
+47 571 1829 Ss
+{0.594 1 0 C} FS
+47 686 1829 Ss
+47 800 1829 Ss
+47 914 1829 Ss
+{0.281 1 0 C} FS
+47 1029 1829 Ss
+47 1143 1829 Ss
+{0 1 0.0313 C} FS
+47 1257 1829 Ss
+47 1371 1829 Ss
+{0 1 0.344 C} FS
+47 1486 1829 Ss
+47 1600 1829 Ss
+{0 1 0.656 C} FS
+47 1714 1829 Ss
+47 1829 1829 Ss
+47 1943 1829 Ss
+{0 1 0.969 C} FS
+47 2057 1829 Ss
+47 2171 1829 Ss
+47 2286 1829 Ss
+47 2400 1829 Ss
+47 2514 1829 Ss
+47 2629 1829 Ss
+47 2743 1829 Ss
+{0 1 0.656 C} FS
+47 2857 1829 Ss
+47 2971 1829 Ss
+47 3086 1829 Ss
+{0 1 0.344 C} FS
+47 3200 1829 Ss
+47 3314 1829 Ss
+{0 1 0.0313 C} FS
+47 3429 1829 Ss
+47 3543 1829 Ss
+{0.281 1 0 C} FS
+47 3657 1829 Ss
+47 3771 1829 Ss
+{0.594 1 0 C} FS
+47 3886 1829 Ss
+47 4000 1829 Ss
+47 4114 1829 Ss
+{0.906 1 0 C} FS
+47 4229 1829 Ss
+47 4343 1829 Ss
+{1 0.781 0 C} FS
+47 4457 1829 Ss
+47 4571 1829 Ss
+47 4686 1829 Ss
+47 114 1714 Ss
+47 229 1714 Ss
+47 343 1714 Ss
+{0.906 1 0 C} FS
+47 457 1714 Ss
+47 571 1714 Ss
+47 686 1714 Ss
+{0.594 1 0 C} FS
+47 800 1714 Ss
+47 914 1714 Ss
+{0.281 1 0 C} FS
+47 1029 1714 Ss
+47 1143 1714 Ss
+{0 1 0.0313 C} FS
+47 1257 1714 Ss
+47 1371 1714 Ss
+47 1486 1714 Ss
+{0 1 0.344 C} FS
+47 1600 1714 Ss
+47 1714 1714 Ss
+{0 1 0.656 C} FS
+47 1829 1714 Ss
+47 1943 1714 Ss
+47 2057 1714 Ss
+47 2171 1714 Ss
+{0 1 0.969 C} FS
+47 2286 1714 Ss
+47 2400 1714 Ss
+47 2514 1714 Ss
+{0 1 0.656 C} FS
+47 2629 1714 Ss
+47 2743 1714 Ss
+47 2857 1714 Ss
+47 2971 1714 Ss
+{0 1 0.344 C} FS
+47 3086 1714 Ss
+47 3200 1714 Ss
+{0 1 0.0313 C} FS
+47 3314 1714 Ss
+47 3429 1714 Ss
+47 3543 1714 Ss
+{0.281 1 0 C} FS
+47 3657 1714 Ss
+47 3771 1714 Ss
+{0.594 1 0 C} FS
+47 3886 1714 Ss
+47 4000 1714 Ss
+{0.906 1 0 C} FS
+47 4114 1714 Ss
+47 4229 1714 Ss
+47 4343 1714 Ss
+{1 0.781 0 C} FS
+47 4457 1714 Ss
+47 4571 1714 Ss
+47 4686 1714 Ss
+47 114 1600 Ss
+47 229 1600 Ss
+47 343 1600 Ss
+{0.906 1 0 C} FS
+47 457 1600 Ss
+47 571 1600 Ss
+47 686 1600 Ss
+{0.594 1 0 C} FS
+47 800 1600 Ss
+47 914 1600 Ss
+47 1029 1600 Ss
+{0.281 1 0 C} FS
+47 1143 1600 Ss
+47 1257 1600 Ss
+{0 1 0.0313 C} FS
+47 1371 1600 Ss
+47 1486 1600 Ss
+47 1600 1600 Ss
+{0 1 0.344 C} FS
+47 1714 1600 Ss
+47 1829 1600 Ss
+47 1943 1600 Ss
+{0 1 0.656 C} FS
+47 2057 1600 Ss
+47 2171 1600 Ss
+47 2286 1600 Ss
+47 2400 1600 Ss
+47 2514 1600 Ss
+47 2629 1600 Ss
+47 2743 1600 Ss
+{0 1 0.344 C} FS
+47 2857 1600 Ss
+47 2971 1600 Ss
+47 3086 1600 Ss
+{0 1 0.0313 C} FS
+47 3200 1600 Ss
+47 3314 1600 Ss
+47 3429 1600 Ss
+{0.281 1 0 C} FS
+47 3543 1600 Ss
+47 3657 1600 Ss
+{0.594 1 0 C} FS
+47 3771 1600 Ss
+47 3886 1600 Ss
+47 4000 1600 Ss
+{0.906 1 0 C} FS
+47 4114 1600 Ss
+47 4229 1600 Ss
+47 4343 1600 Ss
+{1 0.781 0 C} FS
+47 4457 1600 Ss
+47 4571 1600 Ss
+47 4686 1600 Ss
+{1 0.469 0 C} FS
+47 114 1486 Ss
+{1 0.781 0 C} FS
+47 229 1486 Ss
+47 343 1486 Ss
+47 457 1486 Ss
+{0.906 1 0 C} FS
+47 571 1486 Ss
+47 686 1486 Ss
+47 800 1486 Ss
+{0.594 1 0 C} FS
+47 914 1486 Ss
+47 1029 1486 Ss
+{0.281 1 0 C} FS
+47 1143 1486 Ss
+47 1257 1486 Ss
+47 1371 1486 Ss
+{0 1 0.0313 C} FS
+47 1486 1486 Ss
+47 1600 1486 Ss
+47 1714 1486 Ss
+{0 1 0.344 C} FS
+47 1829 1486 Ss
+47 1943 1486 Ss
+47 2057 1486 Ss
+47 2171 1486 Ss
+47 2286 1486 Ss
+47 2400 1486 Ss
+47 2514 1486 Ss
+47 2629 1486 Ss
+47 2743 1486 Ss
+47 2857 1486 Ss
+47 2971 1486 Ss
+{0 1 0.0313 C} FS
+47 3086 1486 Ss
+47 3200 1486 Ss
+47 3314 1486 Ss
+{0.281 1 0 C} FS
+47 3429 1486 Ss
+47 3543 1486 Ss
+47 3657 1486 Ss
+{0.594 1 0 C} FS
+47 3771 1486 Ss
+47 3886 1486 Ss
+{0.906 1 0 C} FS
+47 4000 1486 Ss
+47 4114 1486 Ss
+47 4229 1486 Ss
+{1 0.781 0 C} FS
+47 4343 1486 Ss
+47 4457 1486 Ss
+47 4571 1486 Ss
+{1 0.469 0 C} FS
+47 4686 1486 Ss
+47 114 1371 Ss
+{1 0.781 0 C} FS
+47 229 1371 Ss
+47 343 1371 Ss
+47 457 1371 Ss
+{0.906 1 0 C} FS
+47 571 1371 Ss
+47 686 1371 Ss
+47 800 1371 Ss
+{0.594 1 0 C} FS
+47 914 1371 Ss
+47 1029 1371 Ss
+47 1143 1371 Ss
+{0.281 1 0 C} FS
+47 1257 1371 Ss
+47 1371 1371 Ss
+47 1486 1371 Ss
+{0 1 0.0313 C} FS
+47 1600 1371 Ss
+47 1714 1371 Ss
+47 1829 1371 Ss
+47 1943 1371 Ss
+{0 1 0.344 C} FS
+47 2057 1371 Ss
+47 2171 1371 Ss
+47 2286 1371 Ss
+47 2400 1371 Ss
+47 2514 1371 Ss
+47 2629 1371 Ss
+47 2743 1371 Ss
+{0 1 0.0313 C} FS
+47 2857 1371 Ss
+47 2971 1371 Ss
+47 3086 1371 Ss
+47 3200 1371 Ss
+{0.281 1 0 C} FS
+47 3314 1371 Ss
+47 3429 1371 Ss
+47 3543 1371 Ss
+{0.594 1 0 C} FS
+47 3657 1371 Ss
+47 3771 1371 Ss
+47 3886 1371 Ss
+{0.906 1 0 C} FS
+47 4000 1371 Ss
+47 4114 1371 Ss
+47 4229 1371 Ss
+{1 0.781 0 C} FS
+47 4343 1371 Ss
+47 4457 1371 Ss
+47 4571 1371 Ss
+{1 0.469 0 C} FS
+47 4686 1371 Ss
+47 114 1257 Ss
+47 229 1257 Ss
+{1 0.781 0 C} FS
+47 343 1257 Ss
+47 457 1257 Ss
+47 571 1257 Ss
+{0.906 1 0 C} FS
+47 686 1257 Ss
+47 800 1257 Ss
+47 914 1257 Ss
+{0.594 1 0 C} FS
+47 1029 1257 Ss
+47 1143 1257 Ss
+47 1257 1257 Ss
+{0.281 1 0 C} FS
+47 1371 1257 Ss
+47 1486 1257 Ss
+47 1600 1257 Ss
+{0 1 0.0313 C} FS
+47 1714 1257 Ss
+47 1829 1257 Ss
+47 1943 1257 Ss
+47 2057 1257 Ss
+47 2171 1257 Ss
+47 2286 1257 Ss
+47 2400 1257 Ss
+47 2514 1257 Ss
+47 2629 1257 Ss
+47 2743 1257 Ss
+47 2857 1257 Ss
+47 2971 1257 Ss
+47 3086 1257 Ss
+{0.281 1 0 C} FS
+47 3200 1257 Ss
+47 3314 1257 Ss
+47 3429 1257 Ss
+{0.594 1 0 C} FS
+47 3543 1257 Ss
+47 3657 1257 Ss
+47 3771 1257 Ss
+{0.906 1 0 C} FS
+47 3886 1257 Ss
+47 4000 1257 Ss
+47 4114 1257 Ss
+{1 0.781 0 C} FS
+47 4229 1257 Ss
+47 4343 1257 Ss
+47 4457 1257 Ss
+{1 0.469 0 C} FS
+47 4571 1257 Ss
+47 4686 1257 Ss
+47 114 1143 Ss
+47 229 1143 Ss
+{1 0.781 0 C} FS
+47 343 1143 Ss
+47 457 1143 Ss
+47 571 1143 Ss
+{0.906 1 0 C} FS
+47 686 1143 Ss
+47 800 1143 Ss
+47 914 1143 Ss
+47 1029 1143 Ss
+{0.594 1 0 C} FS
+47 1143 1143 Ss
+47 1257 1143 Ss
+47 1371 1143 Ss
+{0.281 1 0 C} FS
+47 1486 1143 Ss
+47 1600 1143 Ss
+47 1714 1143 Ss
+47 1829 1143 Ss
+47 1943 1143 Ss
+{0 1 0.0313 C} FS
+47 2057 1143 Ss
+47 2171 1143 Ss
+47 2286 1143 Ss
+47 2400 1143 Ss
+47 2514 1143 Ss
+47 2629 1143 Ss
+47 2743 1143 Ss
+{0.281 1 0 C} FS
+47 2857 1143 Ss
+47 2971 1143 Ss
+47 3086 1143 Ss
+47 3200 1143 Ss
+47 3314 1143 Ss
+{0.594 1 0 C} FS
+47 3429 1143 Ss
+47 3543 1143 Ss
+47 3657 1143 Ss
+{0.906 1 0 C} FS
+47 3771 1143 Ss
+47 3886 1143 Ss
+47 4000 1143 Ss
+47 4114 1143 Ss
+{1 0.781 0 C} FS
+47 4229 1143 Ss
+47 4343 1143 Ss
+47 4457 1143 Ss
+{1 0.469 0 C} FS
+47 4571 1143 Ss
+47 4686 1143 Ss
+47 114 1029 Ss
+47 229 1029 Ss
+47 343 1029 Ss
+{1 0.781 0 C} FS
+47 457 1029 Ss
+47 571 1029 Ss
+47 686 1029 Ss
+{0.906 1 0 C} FS
+47 800 1029 Ss
+47 914 1029 Ss
+47 1029 1029 Ss
+47 1143 1029 Ss
+{0.594 1 0 C} FS
+47 1257 1029 Ss
+47 1371 1029 Ss
+47 1486 1029 Ss
+47 1600 1029 Ss
+{0.281 1 0 C} FS
+47 1714 1029 Ss
+47 1829 1029 Ss
+47 1943 1029 Ss
+47 2057 1029 Ss
+47 2171 1029 Ss
+47 2286 1029 Ss
+47 2400 1029 Ss
+47 2514 1029 Ss
+47 2629 1029 Ss
+47 2743 1029 Ss
+47 2857 1029 Ss
+47 2971 1029 Ss
+47 3086 1029 Ss
+{0.594 1 0 C} FS
+47 3200 1029 Ss
+47 3314 1029 Ss
+47 3429 1029 Ss
+47 3543 1029 Ss
+{0.906 1 0 C} FS
+47 3657 1029 Ss
+47 3771 1029 Ss
+47 3886 1029 Ss
+47 4000 1029 Ss
+{1 0.781 0 C} FS
+47 4114 1029 Ss
+47 4229 1029 Ss
+47 4343 1029 Ss
+{1 0.469 0 C} FS
+47 4457 1029 Ss
+47 4571 1029 Ss
+47 4686 1029 Ss
+47 114 914 Ss
+47 229 914 Ss
+47 343 914 Ss
+{1 0.781 0 C} FS
+47 457 914 Ss
+47 571 914 Ss
+47 686 914 Ss
+47 800 914 Ss
+{0.906 1 0 C} FS
+47 914 914 Ss
+47 1029 914 Ss
+47 1143 914 Ss
+47 1257 914 Ss
+{0.594 1 0 C} FS
+47 1371 914 Ss
+47 1486 914 Ss
+47 1600 914 Ss
+47 1714 914 Ss
+47 1829 914 Ss
+{0.281 1 0 C} FS
+47 1943 914 Ss
+47 2057 914 Ss
+47 2171 914 Ss
+47 2286 914 Ss
+47 2400 914 Ss
+47 2514 914 Ss
+47 2629 914 Ss
+47 2743 914 Ss
+47 2857 914 Ss
+{0.594 1 0 C} FS
+47 2971 914 Ss
+47 3086 914 Ss
+47 3200 914 Ss
+47 3314 914 Ss
+47 3429 914 Ss
+{0.906 1 0 C} FS
+47 3543 914 Ss
+47 3657 914 Ss
+47 3771 914 Ss
+47 3886 914 Ss
+{1 0.781 0 C} FS
+47 4000 914 Ss
+47 4114 914 Ss
+47 4229 914 Ss
+47 4343 914 Ss
+{1 0.469 0 C} FS
+47 4457 914 Ss
+47 4571 914 Ss
+47 4686 914 Ss
+47 114 800 Ss
+47 229 800 Ss
+47 343 800 Ss
+47 457 800 Ss
+{1 0.781 0 C} FS
+47 571 800 Ss
+47 686 800 Ss
+47 800 800 Ss
+47 914 800 Ss
+{0.906 1 0 C} FS
+47 1029 800 Ss
+47 1143 800 Ss
+47 1257 800 Ss
+47 1371 800 Ss
+47 1486 800 Ss
+{0.594 1 0 C} FS
+47 1600 800 Ss
+47 1714 800 Ss
+47 1829 800 Ss
+47 1943 800 Ss
+47 2057 800 Ss
+47 2171 800 Ss
+47 2286 800 Ss
+47 2400 800 Ss
+47 2514 800 Ss
+47 2629 800 Ss
+47 2743 800 Ss
+47 2857 800 Ss
+47 2971 800 Ss
+47 3086 800 Ss
+47 3200 800 Ss
+{0.906 1 0 C} FS
+47 3314 800 Ss
+47 3429 800 Ss
+47 3543 800 Ss
+47 3657 800 Ss
+47 3771 800 Ss
+{1 0.781 0 C} FS
+47 3886 800 Ss
+47 4000 800 Ss
+47 4114 800 Ss
+47 4229 800 Ss
+{1 0.469 0 C} FS
+47 4343 800 Ss
+47 4457 800 Ss
+47 4571 800 Ss
+47 4686 800 Ss
+{1 0.156 0 C} FS
+47 114 686 Ss
+{1 0.469 0 C} FS
+47 229 686 Ss
+47 343 686 Ss
+47 457 686 Ss
+47 571 686 Ss
+{1 0.781 0 C} FS
+47 686 686 Ss
+47 800 686 Ss
+47 914 686 Ss
+47 1029 686 Ss
+{0.906 1 0 C} FS
+47 1143 686 Ss
+47 1257 686 Ss
+47 1371 686 Ss
+47 1486 686 Ss
+47 1600 686 Ss
+47 1714 686 Ss
+{0.594 1 0 C} FS
+47 1829 686 Ss
+47 1943 686 Ss
+47 2057 686 Ss
+47 2171 686 Ss
+47 2286 686 Ss
+47 2400 686 Ss
+47 2514 686 Ss
+47 2629 686 Ss
+47 2743 686 Ss
+47 2857 686 Ss
+47 2971 686 Ss
+{0.906 1 0 C} FS
+47 3086 686 Ss
+47 3200 686 Ss
+47 3314 686 Ss
+47 3429 686 Ss
+47 3543 686 Ss
+47 3657 686 Ss
+{1 0.781 0 C} FS
+47 3771 686 Ss
+47 3886 686 Ss
+47 4000 686 Ss
+47 4114 686 Ss
+{1 0.469 0 C} FS
+47 4229 686 Ss
+47 4343 686 Ss
+47 4457 686 Ss
+47 4571 686 Ss
+{1 0.156 0 C} FS
+47 4686 686 Ss
+47 114 571 Ss
+47 229 571 Ss
+{1 0.469 0 C} FS
+47 343 571 Ss
+47 457 571 Ss
+47 571 571 Ss
+47 686 571 Ss
+{1 0.781 0 C} FS
+47 800 571 Ss
+47 914 571 Ss
+47 1029 571 Ss
+47 1143 571 Ss
+47 1257 571 Ss
+{0.906 1 0 C} FS
+47 1371 571 Ss
+47 1486 571 Ss
+47 1600 571 Ss
+47 1714 571 Ss
+47 1829 571 Ss
+47 1943 571 Ss
+47 2057 571 Ss
+47 2171 571 Ss
+{0.594 1 0 C} FS
+47 2286 571 Ss
+47 2400 571 Ss
+47 2514 571 Ss
+{0.906 1 0 C} FS
+47 2629 571 Ss
+47 2743 571 Ss
+47 2857 571 Ss
+47 2971 571 Ss
+47 3086 571 Ss
+47 3200 571 Ss
+47 3314 571 Ss
+47 3429 571 Ss
+{1 0.781 0 C} FS
+47 3543 571 Ss
+47 3657 571 Ss
+47 3771 571 Ss
+47 3886 571 Ss
+47 4000 571 Ss
+{1 0.469 0 C} FS
+47 4114 571 Ss
+47 4229 571 Ss
+47 4343 571 Ss
+47 4457 571 Ss
+{1 0.156 0 C} FS
+47 4571 571 Ss
+47 4686 571 Ss
+47 114 457 Ss
+47 229 457 Ss
+47 343 457 Ss
+{1 0.469 0 C} FS
+47 457 457 Ss
+47 571 457 Ss
+47 686 457 Ss
+47 800 457 Ss
+{1 0.781 0 C} FS
+47 914 457 Ss
+47 1029 457 Ss
+47 1143 457 Ss
+47 1257 457 Ss
+47 1371 457 Ss
+47 1486 457 Ss
+{0.906 1 0 C} FS
+47 1600 457 Ss
+47 1714 457 Ss
+47 1829 457 Ss
+47 1943 457 Ss
+47 2057 457 Ss
+47 2171 457 Ss
+47 2286 457 Ss
+47 2400 457 Ss
+47 2514 457 Ss
+47 2629 457 Ss
+47 2743 457 Ss
+47 2857 457 Ss
+47 2971 457 Ss
+47 3086 457 Ss
+47 3200 457 Ss
+{1 0.781 0 C} FS
+47 3314 457 Ss
+47 3429 457 Ss
+47 3543 457 Ss
+47 3657 457 Ss
+47 3771 457 Ss
+47 3886 457 Ss
+{1 0.469 0 C} FS
+47 4000 457 Ss
+47 4114 457 Ss
+47 4229 457 Ss
+47 4343 457 Ss
+{1 0.156 0 C} FS
+47 4457 457 Ss
+47 4571 457 Ss
+47 4686 457 Ss
+47 114 343 Ss
+47 229 343 Ss
+47 343 343 Ss
+47 457 343 Ss
+{1 0.469 0 C} FS
+47 571 343 Ss
+47 686 343 Ss
+47 800 343 Ss
+47 914 343 Ss
+47 1029 343 Ss
+{1 0.781 0 C} FS
+47 1143 343 Ss
+47 1257 343 Ss
+47 1371 343 Ss
+47 1486 343 Ss
+47 1600 343 Ss
+47 1714 343 Ss
+47 1829 343 Ss
+{0.906 1 0 C} FS
+47 1943 343 Ss
+47 2057 343 Ss
+47 2171 343 Ss
+47 2286 343 Ss
+47 2400 343 Ss
+47 2514 343 Ss
+47 2629 343 Ss
+47 2743 343 Ss
+47 2857 343 Ss
+{1 0.781 0 C} FS
+47 2971 343 Ss
+47 3086 343 Ss
+47 3200 343 Ss
+47 3314 343 Ss
+47 3429 343 Ss
+47 3543 343 Ss
+47 3657 343 Ss
+{1 0.469 0 C} FS
+47 3771 343 Ss
+47 3886 343 Ss
+47 4000 343 Ss
+47 4114 343 Ss
+47 4229 343 Ss
+{1 0.156 0 C} FS
+47 4343 343 Ss
+47 4457 343 Ss
+47 4571 343 Ss
+47 4686 343 Ss
+47 114 229 Ss
+47 229 229 Ss
+47 343 229 Ss
+47 457 229 Ss
+47 571 229 Ss
+{1 0.469 0 C} FS
+47 686 229 Ss
+47 800 229 Ss
+47 914 229 Ss
+47 1029 229 Ss
+47 1143 229 Ss
+47 1257 229 Ss
+{1 0.781 0 C} FS
+47 1371 229 Ss
+47 1486 229 Ss
+47 1600 229 Ss
+47 1714 229 Ss
+47 1829 229 Ss
+47 1943 229 Ss
+47 2057 229 Ss
+47 2171 229 Ss
+47 2286 229 Ss
+47 2400 229 Ss
+47 2514 229 Ss
+47 2629 229 Ss
+47 2743 229 Ss
+47 2857 229 Ss
+47 2971 229 Ss
+47 3086 229 Ss
+47 3200 229 Ss
+47 3314 229 Ss
+47 3429 229 Ss
+{1 0.469 0 C} FS
+47 3543 229 Ss
+47 3657 229 Ss
+47 3771 229 Ss
+47 3886 229 Ss
+47 4000 229 Ss
+47 4114 229 Ss
+{1 0.156 0 C} FS
+47 4229 229 Ss
+47 4343 229 Ss
+47 4457 229 Ss
+47 4571 229 Ss
+47 4686 229 Ss
+47 114 114 Ss
+47 229 114 Ss
+47 343 114 Ss
+47 457 114 Ss
+47 571 114 Ss
+47 686 114 Ss
+{1 0.469 0 C} FS
+47 800 114 Ss
+47 914 114 Ss
+47 1029 114 Ss
+47 1143 114 Ss
+47 1257 114 Ss
+47 1371 114 Ss
+47 1486 114 Ss
+{1 0.781 0 C} FS
+47 1600 114 Ss
+47 1714 114 Ss
+47 1829 114 Ss
+47 1943 114 Ss
+47 2057 114 Ss
+47 2171 114 Ss
+47 2286 114 Ss
+47 2400 114 Ss
+47 2514 114 Ss
+47 2629 114 Ss
+47 2743 114 Ss
+47 2857 114 Ss
+47 2971 114 Ss
+47 3086 114 Ss
+47 3200 114 Ss
+{1 0.469 0 C} FS
+47 3314 114 Ss
+47 3429 114 Ss
+47 3543 114 Ss
+47 3657 114 Ss
+47 3771 114 Ss
+47 3886 114 Ss
+47 4000 114 Ss
+{1 0.156 0 C} FS
+47 4114 114 Ss
+47 4229 114 Ss
+47 4343 114 Ss
+47 4457 114 Ss
+47 4571 114 Ss
+47 4686 114 Ss
+PSL_cliprestore
+2 setlinecap
+/MM {neg exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 4800 M 0 -4800 D S
+8 W
+0 114 M -83 0 D S
+0 1257 M -83 0 D S
+0 2400 M -83 0 D S
+0 3543 M -83 0 D S
+0 4686 M -83 0 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(-20) sw mx
+(-10) sw mx
+(0) sw mx
+(10) sw mx
+(20) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+114 PSL_A0_y MM
+(-20) mr Z
+1257 PSL_A0_y MM
+(-10) mr Z
+2400 PSL_A0_y MM
+(0) mr Z
+3543 PSL_A0_y MM
+(10) mr Z
+4686 PSL_A0_y MM
+(20) mr Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+0 686 M -42 0 D S
+0 1829 M -42 0 D S
+0 2971 M -42 0 D S
+0 4114 M -42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+4800 0 T
+/MM {exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 4800 M 0 -4800 D S
+8 W
+0 114 M 83 0 D S
+0 1257 M 83 0 D S
+0 2400 M 83 0 D S
+0 3543 M 83 0 D S
+0 4686 M 83 0 D S
+0 686 M 42 0 D S
+0 1829 M 42 0 D S
+0 2971 M 42 0 D S
+0 4114 M 42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-4800 0 T
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 4800 0 D S
+8 W
+114 0 M 0 -83 D S
+1257 0 M 0 -83 D S
+2400 0 M 0 -83 D S
+3543 0 M 0 -83 D S
+4686 0 M 0 -83 D S
+/PSL_AH0 0
+(-20) sh mx
+(-10) sh mx
+(0) sh mx
+(10) sh mx
+(20) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+114 PSL_A0_y MM
+(-20) bc Z
+1257 PSL_A0_y MM
+(-10) bc Z
+2400 PSL_A0_y MM
+(0) bc Z
+3543 PSL_A0_y MM
+(10) bc Z
+4686 PSL_A0_y MM
+(20) bc Z
+686 0 M 0 -42 D S
+1829 0 M 0 -42 D S
+2971 0 M 0 -42 D S
+4114 0 M 0 -42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 4800 T
+/MM {M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 4800 0 D S
+8 W
+114 0 M 0 83 D S
+1257 0 M 0 83 D S
+2400 0 M 0 83 D S
+3543 0 M 0 83 D S
+4686 0 M 0 83 D S
+686 0 M 0 42 D S
+1829 0 M 0 42 D S
+2971 0 M 0 42 D S
+4114 0 M 0 42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -4800 T
+0 setlinecap
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psscale -D4.5i/4.25i/6i/0.15i -O -K -Ct.cpt -E
+%%PROJ: xy -6.00000000 10.00000000 0.00000000 0.15000000 -6.000 10.000 0.000 0.150 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+5400 1500 T
+25 W
+180 0 T
+90 R
+V N 0 0 T 7200 180 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 16 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [16 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+>> image
+J2P+QoK3P%!rrNIhucA!D[V'.i+dKS@Km)`6IPA44@,#14@$jc#RC~>
+U
+{0 A} FS
+93 -94 -93 -94 2 -4 184 SP
+-4 184 M
+-93 -94 D
+93 -94 D
+S
+{1 A} FS
+-93 -94 93 -94 2 7204 184 SP
+7204 184 M
+93 -94 D
+-93 -94 D
+S
+2 setlinecap
+0 0 M 7200 0 D S
+0 180 M 7200 0 D S
+0 0 M 0 180 D S
+7200 0 M 0 180 D S
+4 W
+0 0 M 0 180 D S
+450 0 M 0 180 D S
+900 0 M 0 180 D S
+1350 0 M 0 180 D S
+1800 0 M 0 180 D S
+2250 0 M 0 180 D S
+2700 0 M 0 180 D S
+3150 0 M 0 180 D S
+3600 0 M 0 180 D S
+4050 0 M 0 180 D S
+4500 0 M 0 180 D S
+4950 0 M 0 180 D S
+5400 0 M 0 180 D S
+5850 0 M 0 180 D S
+6300 0 M 0 180 D S
+6750 0 M 0 180 D S
+7200 0 M 0 180 D S
+8 W
+0 0 M
+0 -83 D S
+0 -383 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+V -90 R (-6) mr Z U
+450 0 M
+0 -83 D S
+450 -383 M V -90 R (-5) mr Z U
+900 0 M
+0 -83 D S
+900 -383 M V -90 R (-4) mr Z U
+1350 0 M
+0 -83 D S
+1350 -383 M V -90 R (-3) mr Z U
+1800 0 M
+0 -83 D S
+1800 -383 M V -90 R (-2) mr Z U
+2250 0 M
+0 -83 D S
+2250 -383 M V -90 R (-1) mr Z U
+2700 0 M
+0 -83 D S
+2700 -383 M V -90 R (0) mr Z U
+3150 0 M
+0 -83 D S
+3150 -383 M V -90 R (1) mr Z U
+3600 0 M
+0 -83 D S
+3600 -383 M V -90 R (2) mr Z U
+4050 0 M
+0 -83 D S
+4050 -383 M V -90 R (3) mr Z U
+4500 0 M
+0 -83 D S
+4500 -383 M V -90 R (4) mr Z U
+4950 0 M
+0 -83 D S
+4950 -383 M V -90 R (5) mr Z U
+5400 0 M
+0 -83 D S
+5400 -383 M V -90 R (6) mr Z U
+5850 0 M
+0 -83 D S
+5850 -383 M V -90 R (7) mr Z U
+6300 0 M
+0 -83 D S
+6300 -383 M V -90 R (8) mr Z U
+6750 0 M
+0 -83 D S
+6750 -383 M V -90 R (9) mr Z U
+7200 0 M
+0 -83 D S
+7200 -383 M V -90 R (10) mr Z U
+-90 R
+-180 0 T
+0 setlinecap
+-5400 -1500 T
+0 A
+FQ
+O0
+0 5400 TM
+
+% PostScript produced by:
+%%GMT:  psxy -R-1/41/-1/41 -JX4i -Ss0.2c -Ct.cpt -O -K -B10f5WSne -Y4.5i
+%%PROJ: xy -1.00000000 41.00000000 -1.00000000 41.00000000 -1.000 41.000 -1.000 41.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+4800 0 D
+0 4800 D
+-4800 0 D
+PSL_eoclip N
+4 W
+{1 0.156 0 C} FS
+47 114 4686 Ss
+47 229 4686 Ss
+47 343 4686 Ss
+47 457 4686 Ss
+47 571 4686 Ss
+47 686 4686 Ss
+{1 0.469 0 C} FS
+47 800 4686 Ss
+47 914 4686 Ss
+47 1029 4686 Ss
+47 1143 4686 Ss
+47 1257 4686 Ss
+47 1371 4686 Ss
+47 1486 4686 Ss
+{1 0.781 0 C} FS
+47 1600 4686 Ss
+47 1714 4686 Ss
+47 1829 4686 Ss
+47 1943 4686 Ss
+47 2057 4686 Ss
+47 2171 4686 Ss
+47 2286 4686 Ss
+47 2400 4686 Ss
+47 2514 4686 Ss
+47 2629 4686 Ss
+47 2743 4686 Ss
+47 2857 4686 Ss
+47 2971 4686 Ss
+47 3086 4686 Ss
+47 3200 4686 Ss
+{1 0.469 0 C} FS
+47 3314 4686 Ss
+47 3429 4686 Ss
+47 3543 4686 Ss
+47 3657 4686 Ss
+47 3771 4686 Ss
+47 3886 4686 Ss
+47 4000 4686 Ss
+{1 0.156 0 C} FS
+47 4114 4686 Ss
+47 4229 4686 Ss
+47 4343 4686 Ss
+47 4457 4686 Ss
+47 4571 4686 Ss
+47 4686 4686 Ss
+47 114 4571 Ss
+47 229 4571 Ss
+47 343 4571 Ss
+47 457 4571 Ss
+47 571 4571 Ss
+{1 0.469 0 C} FS
+47 686 4571 Ss
+47 800 4571 Ss
+47 914 4571 Ss
+47 1029 4571 Ss
+47 1143 4571 Ss
+47 1257 4571 Ss
+{1 0.781 0 C} FS
+47 1371 4571 Ss
+47 1486 4571 Ss
+47 1600 4571 Ss
+47 1714 4571 Ss
+47 1829 4571 Ss
+47 1943 4571 Ss
+47 2057 4571 Ss
+47 2171 4571 Ss
+47 2286 4571 Ss
+47 2400 4571 Ss
+47 2514 4571 Ss
+47 2629 4571 Ss
+47 2743 4571 Ss
+47 2857 4571 Ss
+47 2971 4571 Ss
+47 3086 4571 Ss
+47 3200 4571 Ss
+47 3314 4571 Ss
+47 3429 4571 Ss
+{1 0.469 0 C} FS
+47 3543 4571 Ss
+47 3657 4571 Ss
+47 3771 4571 Ss
+47 3886 4571 Ss
+47 4000 4571 Ss
+47 4114 4571 Ss
+{1 0.156 0 C} FS
+47 4229 4571 Ss
+47 4343 4571 Ss
+47 4457 4571 Ss
+47 4571 4571 Ss
+47 4686 4571 Ss
+47 114 4457 Ss
+47 229 4457 Ss
+47 343 4457 Ss
+47 457 4457 Ss
+{1 0.469 0 C} FS
+47 571 4457 Ss
+47 686 4457 Ss
+47 800 4457 Ss
+47 914 4457 Ss
+47 1029 4457 Ss
+{1 0.781 0 C} FS
+47 1143 4457 Ss
+47 1257 4457 Ss
+47 1371 4457 Ss
+47 1486 4457 Ss
+47 1600 4457 Ss
+47 1714 4457 Ss
+47 1829 4457 Ss
+{0.906 1 0 C} FS
+47 1943 4457 Ss
+47 2057 4457 Ss
+47 2171 4457 Ss
+47 2286 4457 Ss
+47 2400 4457 Ss
+47 2514 4457 Ss
+47 2629 4457 Ss
+47 2743 4457 Ss
+47 2857 4457 Ss
+{1 0.781 0 C} FS
+47 2971 4457 Ss
+47 3086 4457 Ss
+47 3200 4457 Ss
+47 3314 4457 Ss
+47 3429 4457 Ss
+47 3543 4457 Ss
+47 3657 4457 Ss
+{1 0.469 0 C} FS
+47 3771 4457 Ss
+47 3886 4457 Ss
+47 4000 4457 Ss
+47 4114 4457 Ss
+47 4229 4457 Ss
+{1 0.156 0 C} FS
+47 4343 4457 Ss
+47 4457 4457 Ss
+47 4571 4457 Ss
+47 4686 4457 Ss
+47 114 4343 Ss
+47 229 4343 Ss
+47 343 4343 Ss
+{1 0.469 0 C} FS
+47 457 4343 Ss
+47 571 4343 Ss
+47 686 4343 Ss
+47 800 4343 Ss
+{1 0.781 0 C} FS
+47 914 4343 Ss
+47 1029 4343 Ss
+47 1143 4343 Ss
+47 1257 4343 Ss
+47 1371 4343 Ss
+47 1486 4343 Ss
+{0.906 1 0 C} FS
+47 1600 4343 Ss
+47 1714 4343 Ss
+47 1829 4343 Ss
+47 1943 4343 Ss
+47 2057 4343 Ss
+47 2171 4343 Ss
+47 2286 4343 Ss
+47 2400 4343 Ss
+47 2514 4343 Ss
+47 2629 4343 Ss
+47 2743 4343 Ss
+47 2857 4343 Ss
+47 2971 4343 Ss
+47 3086 4343 Ss
+47 3200 4343 Ss
+{1 0.781 0 C} FS
+47 3314 4343 Ss
+47 3429 4343 Ss
+47 3543 4343 Ss
+47 3657 4343 Ss
+47 3771 4343 Ss
+47 3886 4343 Ss
+{1 0.469 0 C} FS
+47 4000 4343 Ss
+47 4114 4343 Ss
+47 4229 4343 Ss
+47 4343 4343 Ss
+{1 0.156 0 C} FS
+47 4457 4343 Ss
+47 4571 4343 Ss
+47 4686 4343 Ss
+47 114 4229 Ss
+47 229 4229 Ss
+{1 0.469 0 C} FS
+47 343 4229 Ss
+47 457 4229 Ss
+47 571 4229 Ss
+47 686 4229 Ss
+{1 0.781 0 C} FS
+47 800 4229 Ss
+47 914 4229 Ss
+47 1029 4229 Ss
+47 1143 4229 Ss
+47 1257 4229 Ss
+{0.906 1 0 C} FS
+47 1371 4229 Ss
+47 1486 4229 Ss
+47 1600 4229 Ss
+47 1714 4229 Ss
+47 1829 4229 Ss
+47 1943 4229 Ss
+47 2057 4229 Ss
+47 2171 4229 Ss
+{0.594 1 0 C} FS
+47 2286 4229 Ss
+47 2400 4229 Ss
+47 2514 4229 Ss
+{0.906 1 0 C} FS
+47 2629 4229 Ss
+47 2743 4229 Ss
+47 2857 4229 Ss
+47 2971 4229 Ss
+47 3086 4229 Ss
+47 3200 4229 Ss
+47 3314 4229 Ss
+47 3429 4229 Ss
+{1 0.781 0 C} FS
+47 3543 4229 Ss
+47 3657 4229 Ss
+47 3771 4229 Ss
+47 3886 4229 Ss
+47 4000 4229 Ss
+{1 0.469 0 C} FS
+47 4114 4229 Ss
+47 4229 4229 Ss
+47 4343 4229 Ss
+47 4457 4229 Ss
+{1 0.156 0 C} FS
+47 4571 4229 Ss
+47 4686 4229 Ss
+47 114 4114 Ss
+{1 0.469 0 C} FS
+47 229 4114 Ss
+47 343 4114 Ss
+47 457 4114 Ss
+47 571 4114 Ss
+{1 0.781 0 C} FS
+47 686 4114 Ss
+47 800 4114 Ss
+47 914 4114 Ss
+47 1029 4114 Ss
+{0.906 1 0 C} FS
+47 1143 4114 Ss
+47 1257 4114 Ss
+47 1371 4114 Ss
+47 1486 4114 Ss
+47 1600 4114 Ss
+47 1714 4114 Ss
+{0.594 1 0 C} FS
+47 1829 4114 Ss
+47 1943 4114 Ss
+47 2057 4114 Ss
+47 2171 4114 Ss
+47 2286 4114 Ss
+47 2400 4114 Ss
+47 2514 4114 Ss
+47 2629 4114 Ss
+47 2743 4114 Ss
+47 2857 4114 Ss
+47 2971 4114 Ss
+{0.906 1 0 C} FS
+47 3086 4114 Ss
+47 3200 4114 Ss
+47 3314 4114 Ss
+47 3429 4114 Ss
+47 3543 4114 Ss
+47 3657 4114 Ss
+{1 0.781 0 C} FS
+47 3771 4114 Ss
+47 3886 4114 Ss
+47 4000 4114 Ss
+47 4114 4114 Ss
+{1 0.469 0 C} FS
+47 4229 4114 Ss
+47 4343 4114 Ss
+47 4457 4114 Ss
+47 4571 4114 Ss
+{1 0.156 0 C} FS
+47 4686 4114 Ss
+{1 0.469 0 C} FS
+47 114 4000 Ss
+47 229 4000 Ss
+47 343 4000 Ss
+47 457 4000 Ss
+{1 0.781 0 C} FS
+47 571 4000 Ss
+47 686 4000 Ss
+47 800 4000 Ss
+47 914 4000 Ss
+{0.906 1 0 C} FS
+47 1029 4000 Ss
+47 1143 4000 Ss
+47 1257 4000 Ss
+47 1371 4000 Ss
+47 1486 4000 Ss
+{0.594 1 0 C} FS
+47 1600 4000 Ss
+47 1714 4000 Ss
+47 1829 4000 Ss
+47 1943 4000 Ss
+47 2057 4000 Ss
+47 2171 4000 Ss
+47 2286 4000 Ss
+47 2400 4000 Ss
+47 2514 4000 Ss
+47 2629 4000 Ss
+47 2743 4000 Ss
+47 2857 4000 Ss
+47 2971 4000 Ss
+47 3086 4000 Ss
+47 3200 4000 Ss
+{0.906 1 0 C} FS
+47 3314 4000 Ss
+47 3429 4000 Ss
+47 3543 4000 Ss
+47 3657 4000 Ss
+47 3771 4000 Ss
+{1 0.781 0 C} FS
+47 3886 4000 Ss
+47 4000 4000 Ss
+47 4114 4000 Ss
+47 4229 4000 Ss
+{1 0.469 0 C} FS
+47 4343 4000 Ss
+47 4457 4000 Ss
+47 4571 4000 Ss
+47 4686 4000 Ss
+47 114 3886 Ss
+47 229 3886 Ss
+47 343 3886 Ss
+{1 0.781 0 C} FS
+47 457 3886 Ss
+47 571 3886 Ss
+47 686 3886 Ss
+47 800 3886 Ss
+{0.906 1 0 C} FS
+47 914 3886 Ss
+47 1029 3886 Ss
+47 1143 3886 Ss
+47 1257 3886 Ss
+{0.594 1 0 C} FS
+47 1371 3886 Ss
+47 1486 3886 Ss
+47 1600 3886 Ss
+47 1714 3886 Ss
+47 1829 3886 Ss
+{0.281 1 0 C} FS
+47 1943 3886 Ss
+47 2057 3886 Ss
+47 2171 3886 Ss
+47 2286 3886 Ss
+47 2400 3886 Ss
+47 2514 3886 Ss
+47 2629 3886 Ss
+47 2743 3886 Ss
+47 2857 3886 Ss
+{0.594 1 0 C} FS
+47 2971 3886 Ss
+47 3086 3886 Ss
+47 3200 3886 Ss
+47 3314 3886 Ss
+47 3429 3886 Ss
+{0.906 1 0 C} FS
+47 3543 3886 Ss
+47 3657 3886 Ss
+47 3771 3886 Ss
+47 3886 3886 Ss
+{1 0.781 0 C} FS
+47 4000 3886 Ss
+47 4114 3886 Ss
+47 4229 3886 Ss
+47 4343 3886 Ss
+{1 0.469 0 C} FS
+47 4457 3886 Ss
+47 4571 3886 Ss
+47 4686 3886 Ss
+47 114 3771 Ss
+47 229 3771 Ss
+47 343 3771 Ss
+{1 0.781 0 C} FS
+47 457 3771 Ss
+47 571 3771 Ss
+47 686 3771 Ss
+{0.906 1 0 C} FS
+47 800 3771 Ss
+47 914 3771 Ss
+47 1029 3771 Ss
+47 1143 3771 Ss
+{0.594 1 0 C} FS
+47 1257 3771 Ss
+47 1371 3771 Ss
+47 1486 3771 Ss
+47 1600 3771 Ss
+{0.281 1 0 C} FS
+47 1714 3771 Ss
+47 1829 3771 Ss
+47 1943 3771 Ss
+47 2057 3771 Ss
+47 2171 3771 Ss
+47 2286 3771 Ss
+47 2400 3771 Ss
+47 2514 3771 Ss
+47 2629 3771 Ss
+47 2743 3771 Ss
+47 2857 3771 Ss
+47 2971 3771 Ss
+47 3086 3771 Ss
+{0.594 1 0 C} FS
+47 3200 3771 Ss
+47 3314 3771 Ss
+47 3429 3771 Ss
+47 3543 3771 Ss
+{0.906 1 0 C} FS
+47 3657 3771 Ss
+47 3771 3771 Ss
+47 3886 3771 Ss
+47 4000 3771 Ss
+{1 0.781 0 C} FS
+47 4114 3771 Ss
+47 4229 3771 Ss
+47 4343 3771 Ss
+{1 0.469 0 C} FS
+47 4457 3771 Ss
+47 4571 3771 Ss
+47 4686 3771 Ss
+47 114 3657 Ss
+47 229 3657 Ss
+{1 0.781 0 C} FS
+47 343 3657 Ss
+47 457 3657 Ss
+47 571 3657 Ss
+{0.906 1 0 C} FS
+47 686 3657 Ss
+47 800 3657 Ss
+47 914 3657 Ss
+47 1029 3657 Ss
+{0.594 1 0 C} FS
+47 1143 3657 Ss
+47 1257 3657 Ss
+47 1371 3657 Ss
+{0.281 1 0 C} FS
+47 1486 3657 Ss
+47 1600 3657 Ss
+47 1714 3657 Ss
+47 1829 3657 Ss
+47 1943 3657 Ss
+{0 1 0.0313 C} FS
+47 2057 3657 Ss
+47 2171 3657 Ss
+47 2286 3657 Ss
+47 2400 3657 Ss
+47 2514 3657 Ss
+47 2629 3657 Ss
+47 2743 3657 Ss
+{0.281 1 0 C} FS
+47 2857 3657 Ss
+47 2971 3657 Ss
+47 3086 3657 Ss
+47 3200 3657 Ss
+47 3314 3657 Ss
+{0.594 1 0 C} FS
+47 3429 3657 Ss
+47 3543 3657 Ss
+47 3657 3657 Ss
+{0.906 1 0 C} FS
+47 3771 3657 Ss
+47 3886 3657 Ss
+47 4000 3657 Ss
+47 4114 3657 Ss
+{1 0.781 0 C} FS
+47 4229 3657 Ss
+47 4343 3657 Ss
+47 4457 3657 Ss
+{1 0.469 0 C} FS
+47 4571 3657 Ss
+47 4686 3657 Ss
+47 114 3543 Ss
+47 229 3543 Ss
+{1 0.781 0 C} FS
+47 343 3543 Ss
+47 457 3543 Ss
+47 571 3543 Ss
+{0.906 1 0 C} FS
+47 686 3543 Ss
+47 800 3543 Ss
+47 914 3543 Ss
+{0.594 1 0 C} FS
+47 1029 3543 Ss
+47 1143 3543 Ss
+47 1257 3543 Ss
+{0.281 1 0 C} FS
+47 1371 3543 Ss
+47 1486 3543 Ss
+47 1600 3543 Ss
+{0 1 0.0313 C} FS
+47 1714 3543 Ss
+47 1829 3543 Ss
+47 1943 3543 Ss
+47 2057 3543 Ss
+47 2171 3543 Ss
+47 2286 3543 Ss
+47 2400 3543 Ss
+47 2514 3543 Ss
+47 2629 3543 Ss
+47 2743 3543 Ss
+47 2857 3543 Ss
+47 2971 3543 Ss
+47 3086 3543 Ss
+{0.281 1 0 C} FS
+47 3200 3543 Ss
+47 3314 3543 Ss
+47 3429 3543 Ss
+{0.594 1 0 C} FS
+47 3543 3543 Ss
+47 3657 3543 Ss
+47 3771 3543 Ss
+{0.906 1 0 C} FS
+47 3886 3543 Ss
+47 4000 3543 Ss
+47 4114 3543 Ss
+{1 0.781 0 C} FS
+47 4229 3543 Ss
+47 4343 3543 Ss
+47 4457 3543 Ss
+{1 0.469 0 C} FS
+47 4571 3543 Ss
+47 4686 3543 Ss
+47 114 3429 Ss
+{1 0.781 0 C} FS
+47 229 3429 Ss
+47 343 3429 Ss
+47 457 3429 Ss
+{0.906 1 0 C} FS
+47 571 3429 Ss
+47 686 3429 Ss
+47 800 3429 Ss
+{0.594 1 0 C} FS
+47 914 3429 Ss
+47 1029 3429 Ss
+47 1143 3429 Ss
+{0.281 1 0 C} FS
+47 1257 3429 Ss
+47 1371 3429 Ss
+47 1486 3429 Ss
+{0 1 0.0313 C} FS
+47 1600 3429 Ss
+47 1714 3429 Ss
+47 1829 3429 Ss
+47 1943 3429 Ss
+{0 1 0.344 C} FS
+47 2057 3429 Ss
+47 2171 3429 Ss
+47 2286 3429 Ss
+47 2400 3429 Ss
+47 2514 3429 Ss
+47 2629 3429 Ss
+47 2743 3429 Ss
+{0 1 0.0313 C} FS
+47 2857 3429 Ss
+47 2971 3429 Ss
+47 3086 3429 Ss
+47 3200 3429 Ss
+{0.281 1 0 C} FS
+47 3314 3429 Ss
+47 3429 3429 Ss
+47 3543 3429 Ss
+{0.594 1 0 C} FS
+47 3657 3429 Ss
+47 3771 3429 Ss
+47 3886 3429 Ss
+{0.906 1 0 C} FS
+47 4000 3429 Ss
+47 4114 3429 Ss
+47 4229 3429 Ss
+{1 0.781 0 C} FS
+47 4343 3429 Ss
+47 4457 3429 Ss
+47 4571 3429 Ss
+{1 0.469 0 C} FS
+47 4686 3429 Ss
+47 114 3314 Ss
+{1 0.781 0 C} FS
+47 229 3314 Ss
+47 343 3314 Ss
+47 457 3314 Ss
+{0.906 1 0 C} FS
+47 571 3314 Ss
+47 686 3314 Ss
+47 800 3314 Ss
+{0.594 1 0 C} FS
+47 914 3314 Ss
+47 1029 3314 Ss
+{0.281 1 0 C} FS
+47 1143 3314 Ss
+47 1257 3314 Ss
+47 1371 3314 Ss
+{0 1 0.0313 C} FS
+47 1486 3314 Ss
+47 1600 3314 Ss
+47 1714 3314 Ss
+{0 1 0.344 C} FS
+47 1829 3314 Ss
+47 1943 3314 Ss
+47 2057 3314 Ss
+47 2171 3314 Ss
+47 2286 3314 Ss
+47 2400 3314 Ss
+47 2514 3314 Ss
+47 2629 3314 Ss
+47 2743 3314 Ss
+47 2857 3314 Ss
+47 2971 3314 Ss
+{0 1 0.0313 C} FS
+47 3086 3314 Ss
+47 3200 3314 Ss
+47 3314 3314 Ss
+{0.281 1 0 C} FS
+47 3429 3314 Ss
+47 3543 3314 Ss
+47 3657 3314 Ss
+{0.594 1 0 C} FS
+47 3771 3314 Ss
+47 3886 3314 Ss
+{0.906 1 0 C} FS
+47 4000 3314 Ss
+47 4114 3314 Ss
+47 4229 3314 Ss
+{1 0.781 0 C} FS
+47 4343 3314 Ss
+47 4457 3314 Ss
+47 4571 3314 Ss
+{1 0.469 0 C} FS
+47 4686 3314 Ss
+{1 0.781 0 C} FS
+47 114 3200 Ss
+47 229 3200 Ss
+47 343 3200 Ss
+{0.906 1 0 C} FS
+47 457 3200 Ss
+47 571 3200 Ss
+47 686 3200 Ss
+{0.594 1 0 C} FS
+47 800 3200 Ss
+47 914 3200 Ss
+47 1029 3200 Ss
+{0.281 1 0 C} FS
+47 1143 3200 Ss
+47 1257 3200 Ss
+{0 1 0.0313 C} FS
+47 1371 3200 Ss
+47 1486 3200 Ss
+47 1600 3200 Ss
+{0 1 0.344 C} FS
+47 1714 3200 Ss
+47 1829 3200 Ss
+47 1943 3200 Ss
+{0 1 0.656 C} FS
+47 2057 3200 Ss
+47 2171 3200 Ss
+47 2286 3200 Ss
+47 2400 3200 Ss
+47 2514 3200 Ss
+47 2629 3200 Ss
+47 2743 3200 Ss
+{0 1 0.344 C} FS
+47 2857 3200 Ss
+47 2971 3200 Ss
+47 3086 3200 Ss
+{0 1 0.0313 C} FS
+47 3200 3200 Ss
+47 3314 3200 Ss
+47 3429 3200 Ss
+{0.281 1 0 C} FS
+47 3543 3200 Ss
+47 3657 3200 Ss
+{0.594 1 0 C} FS
+47 3771 3200 Ss
+47 3886 3200 Ss
+47 4000 3200 Ss
+{0.906 1 0 C} FS
+47 4114 3200 Ss
+47 4229 3200 Ss
+47 4343 3200 Ss
+{1 0.781 0 C} FS
+47 4457 3200 Ss
+47 4571 3200 Ss
+47 4686 3200 Ss
+47 114 3086 Ss
+47 229 3086 Ss
+47 343 3086 Ss
+{0.906 1 0 C} FS
+47 457 3086 Ss
+47 571 3086 Ss
+47 686 3086 Ss
+{0.594 1 0 C} FS
+47 800 3086 Ss
+47 914 3086 Ss
+{0.281 1 0 C} FS
+47 1029 3086 Ss
+47 1143 3086 Ss
+{0 1 0.0313 C} FS
+47 1257 3086 Ss
+47 1371 3086 Ss
+47 1486 3086 Ss
+{0 1 0.344 C} FS
+47 1600 3086 Ss
+47 1714 3086 Ss
+{0 1 0.656 C} FS
+47 1829 3086 Ss
+47 1943 3086 Ss
+47 2057 3086 Ss
+47 2171 3086 Ss
+{0 1 0.969 C} FS
+47 2286 3086 Ss
+47 2400 3086 Ss
+47 2514 3086 Ss
+{0 1 0.656 C} FS
+47 2629 3086 Ss
+47 2743 3086 Ss
+47 2857 3086 Ss
+47 2971 3086 Ss
+{0 1 0.344 C} FS
+47 3086 3086 Ss
+47 3200 3086 Ss
+{0 1 0.0313 C} FS
+47 3314 3086 Ss
+47 3429 3086 Ss
+47 3543 3086 Ss
+{0.281 1 0 C} FS
+47 3657 3086 Ss
+47 3771 3086 Ss
+{0.594 1 0 C} FS
+47 3886 3086 Ss
+47 4000 3086 Ss
+{0.906 1 0 C} FS
+47 4114 3086 Ss
+47 4229 3086 Ss
+47 4343 3086 Ss
+{1 0.781 0 C} FS
+47 4457 3086 Ss
+47 4571 3086 Ss
+47 4686 3086 Ss
+47 114 2971 Ss
+47 229 2971 Ss
+47 343 2971 Ss
+{0.906 1 0 C} FS
+47 457 2971 Ss
+47 571 2971 Ss
+{0.594 1 0 C} FS
+47 686 2971 Ss
+47 800 2971 Ss
+47 914 2971 Ss
+{0.281 1 0 C} FS
+47 1029 2971 Ss
+47 1143 2971 Ss
+{0 1 0.0313 C} FS
+47 1257 2971 Ss
+47 1371 2971 Ss
+{0 1 0.344 C} FS
+47 1486 2971 Ss
+47 1600 2971 Ss
+{0 1 0.656 C} FS
+47 1714 2971 Ss
+47 1829 2971 Ss
+47 1943 2971 Ss
+{0 1 0.969 C} FS
+47 2057 2971 Ss
+47 2171 2971 Ss
+47 2286 2971 Ss
+47 2400 2971 Ss
+47 2514 2971 Ss
+47 2629 2971 Ss
+47 2743 2971 Ss
+{0 1 0.656 C} FS
+47 2857 2971 Ss
+47 2971 2971 Ss
+47 3086 2971 Ss
+{0 1 0.344 C} FS
+47 3200 2971 Ss
+47 3314 2971 Ss
+{0 1 0.0313 C} FS
+47 3429 2971 Ss
+47 3543 2971 Ss
+{0.281 1 0 C} FS
+47 3657 2971 Ss
+47 3771 2971 Ss
+{0.594 1 0 C} FS
+47 3886 2971 Ss
+47 4000 2971 Ss
+47 4114 2971 Ss
+{0.906 1 0 C} FS
+47 4229 2971 Ss
+47 4343 2971 Ss
+{1 0.781 0 C} FS
+47 4457 2971 Ss
+47 4571 2971 Ss
+47 4686 2971 Ss
+47 114 2857 Ss
+47 229 2857 Ss
+{0.906 1 0 C} FS
+47 343 2857 Ss
+47 457 2857 Ss
+47 571 2857 Ss
+{0.594 1 0 C} FS
+47 686 2857 Ss
+47 800 2857 Ss
+{0.281 1 0 C} FS
+47 914 2857 Ss
+47 1029 2857 Ss
+47 1143 2857 Ss
+{0 1 0.0313 C} FS
+47 1257 2857 Ss
+47 1371 2857 Ss
+{0 1 0.344 C} FS
+47 1486 2857 Ss
+47 1600 2857 Ss
+{0 1 0.656 C} FS
+47 1714 2857 Ss
+47 1829 2857 Ss
+{0 1 0.969 C} FS
+47 1943 2857 Ss
+47 2057 2857 Ss
+{0 0.719 1 C} FS
+47 2171 2857 Ss
+47 2286 2857 Ss
+47 2400 2857 Ss
+47 2514 2857 Ss
+47 2629 2857 Ss
+{0 1 0.969 C} FS
+47 2743 2857 Ss
+47 2857 2857 Ss
+{0 1 0.656 C} FS
+47 2971 2857 Ss
+47 3086 2857 Ss
+{0 1 0.344 C} FS
+47 3200 2857 Ss
+47 3314 2857 Ss
+{0 1 0.0313 C} FS
+47 3429 2857 Ss
+47 3543 2857 Ss
+{0.281 1 0 C} FS
+47 3657 2857 Ss
+47 3771 2857 Ss
+47 3886 2857 Ss
+{0.594 1 0 C} FS
+47 4000 2857 Ss
+47 4114 2857 Ss
+{0.906 1 0 C} FS
+47 4229 2857 Ss
+47 4343 2857 Ss
+47 4457 2857 Ss
+{1 0.781 0 C} FS
+47 4571 2857 Ss
+47 4686 2857 Ss
+47 114 2743 Ss
+47 229 2743 Ss
+{0.906 1 0 C} FS
+47 343 2743 Ss
+47 457 2743 Ss
+47 571 2743 Ss
+{0.594 1 0 C} FS
+47 686 2743 Ss
+47 800 2743 Ss
+{0.281 1 0 C} FS
+47 914 2743 Ss
+47 1029 2743 Ss
+{0 1 0.0313 C} FS
+47 1143 2743 Ss
+47 1257 2743 Ss
+{0 1 0.344 C} FS
+47 1371 2743 Ss
+47 1486 2743 Ss
+{0 1 0.656 C} FS
+47 1600 2743 Ss
+47 1714 2743 Ss
+{0 1 0.969 C} FS
+47 1829 2743 Ss
+47 1943 2743 Ss
+{0 0.719 1 C} FS
+47 2057 2743 Ss
+47 2171 2743 Ss
+{0 0.406 1 C} FS
+47 2286 2743 Ss
+47 2400 2743 Ss
+47 2514 2743 Ss
+{0 0.719 1 C} FS
+47 2629 2743 Ss
+47 2743 2743 Ss
+{0 1 0.969 C} FS
+47 2857 2743 Ss
+47 2971 2743 Ss
+{0 1 0.656 C} FS
+47 3086 2743 Ss
+47 3200 2743 Ss
+{0 1 0.344 C} FS
+47 3314 2743 Ss
+47 3429 2743 Ss
+{0 1 0.0313 C} FS
+47 3543 2743 Ss
+47 3657 2743 Ss
+{0.281 1 0 C} FS
+47 3771 2743 Ss
+47 3886 2743 Ss
+{0.594 1 0 C} FS
+47 4000 2743 Ss
+47 4114 2743 Ss
+{0.906 1 0 C} FS
+47 4229 2743 Ss
+47 4343 2743 Ss
+47 4457 2743 Ss
+{1 0.781 0 C} FS
+47 4571 2743 Ss
+47 4686 2743 Ss
+47 114 2629 Ss
+47 229 2629 Ss
+{0.906 1 0 C} FS
+47 343 2629 Ss
+47 457 2629 Ss
+47 571 2629 Ss
+{0.594 1 0 C} FS
+47 686 2629 Ss
+47 800 2629 Ss
+{0.281 1 0 C} FS
+47 914 2629 Ss
+47 1029 2629 Ss
+{0 1 0.0313 C} FS
+47 1143 2629 Ss
+47 1257 2629 Ss
+{0 1 0.344 C} FS
+47 1371 2629 Ss
+47 1486 2629 Ss
+{0 1 0.656 C} FS
+47 1600 2629 Ss
+47 1714 2629 Ss
+{0 1 0.969 C} FS
+47 1829 2629 Ss
+{0 0.719 1 C} FS
+47 1943 2629 Ss
+47 2057 2629 Ss
+{0 0.406 1 C} FS
+47 2171 2629 Ss
+47 2286 2629 Ss
+47 2400 2629 Ss
+47 2514 2629 Ss
+47 2629 2629 Ss
+{0 0.719 1 C} FS
+47 2743 2629 Ss
+47 2857 2629 Ss
+{0 1 0.969 C} FS
+47 2971 2629 Ss
+{0 1 0.656 C} FS
+47 3086 2629 Ss
+47 3200 2629 Ss
+{0 1 0.344 C} FS
+47 3314 2629 Ss
+47 3429 2629 Ss
+{0 1 0.0313 C} FS
+47 3543 2629 Ss
+47 3657 2629 Ss
+{0.281 1 0 C} FS
+47 3771 2629 Ss
+47 3886 2629 Ss
+{0.594 1 0 C} FS
+47 4000 2629 Ss
+47 4114 2629 Ss
+{0.906 1 0 C} FS
+47 4229 2629 Ss
+47 4343 2629 Ss
+47 4457 2629 Ss
+{1 0.781 0 C} FS
+47 4571 2629 Ss
+47 4686 2629 Ss
+47 114 2514 Ss
+47 229 2514 Ss
+{0.906 1 0 C} FS
+47 343 2514 Ss
+47 457 2514 Ss
+{0.594 1 0 C} FS
+47 571 2514 Ss
+47 686 2514 Ss
+47 800 2514 Ss
+{0.281 1 0 C} FS
+47 914 2514 Ss
+47 1029 2514 Ss
+{0 1 0.0313 C} FS
+47 1143 2514 Ss
+47 1257 2514 Ss
+{0 1 0.344 C} FS
+47 1371 2514 Ss
+47 1486 2514 Ss
+{0 1 0.656 C} FS
+47 1600 2514 Ss
+{0 1 0.969 C} FS
+47 1714 2514 Ss
+47 1829 2514 Ss
+{0 0.719 1 C} FS
+47 1943 2514 Ss
+{0 0.406 1 C} FS
+47 2057 2514 Ss
+47 2171 2514 Ss
+{0 0.0937 1 C} FS
+47 2286 2514 Ss
+47 2400 2514 Ss
+47 2514 2514 Ss
+{0 0.406 1 C} FS
+47 2629 2514 Ss
+47 2743 2514 Ss
+{0 0.719 1 C} FS
+47 2857 2514 Ss
+{0 1 0.969 C} FS
+47 2971 2514 Ss
+47 3086 2514 Ss
+{0 1 0.656 C} FS
+47 3200 2514 Ss
+{0 1 0.344 C} FS
+47 3314 2514 Ss
+47 3429 2514 Ss
+{0 1 0.0313 C} FS
+47 3543 2514 Ss
+47 3657 2514 Ss
+{0.281 1 0 C} FS
+47 3771 2514 Ss
+47 3886 2514 Ss
+{0.594 1 0 C} FS
+47 4000 2514 Ss
+47 4114 2514 Ss
+47 4229 2514 Ss
+{0.906 1 0 C} FS
+47 4343 2514 Ss
+47 4457 2514 Ss
+{1 0.781 0 C} FS
+47 4571 2514 Ss
+47 4686 2514 Ss
+47 114 2400 Ss
+47 229 2400 Ss
+{0.906 1 0 C} FS
+47 343 2400 Ss
+47 457 2400 Ss
+{0.594 1 0 C} FS
+47 571 2400 Ss
+47 686 2400 Ss
+47 800 2400 Ss
+{0.281 1 0 C} FS
+47 914 2400 Ss
+47 1029 2400 Ss
+{0 1 0.0313 C} FS
+47 1143 2400 Ss
+{1 0.156 0 C} FS
+47 1257 2400 Ss
+47 1371 2400 Ss
+47 1486 2400 Ss
+47 1600 2400 Ss
+47 1714 2400 Ss
+47 1829 2400 Ss
+47 1943 2400 Ss
+47 2057 2400 Ss
+47 2171 2400 Ss
+47 2286 2400 Ss
+47 2400 2400 Ss
+{0 0.0937 1 C} FS
+47 2514 2400 Ss
+{0 0.406 1 C} FS
+47 2629 2400 Ss
+47 2743 2400 Ss
+{0 0.719 1 C} FS
+47 2857 2400 Ss
+{0 1 0.969 C} FS
+47 2971 2400 Ss
+47 3086 2400 Ss
+{0 1 0.656 C} FS
+47 3200 2400 Ss
+{0 1 0.344 C} FS
+47 3314 2400 Ss
+47 3429 2400 Ss
+{0 1 0.0313 C} FS
+47 3543 2400 Ss
+47 3657 2400 Ss
+{0.281 1 0 C} FS
+47 3771 2400 Ss
+47 3886 2400 Ss
+{0.594 1 0 C} FS
+47 4000 2400 Ss
+47 4114 2400 Ss
+47 4229 2400 Ss
+{0.906 1 0 C} FS
+47 4343 2400 Ss
+47 4457 2400 Ss
+{1 0.781 0 C} FS
+47 4571 2400 Ss
+47 4686 2400 Ss
+47 114 2286 Ss
+47 229 2286 Ss
+{0.906 1 0 C} FS
+47 343 2286 Ss
+47 457 2286 Ss
+{0.594 1 0 C} FS
+47 571 2286 Ss
+47 686 2286 Ss
+47 800 2286 Ss
+{0.281 1 0 C} FS
+47 914 2286 Ss
+47 1029 2286 Ss
+{0 1 0.0313 C} FS
+47 1143 2286 Ss
+{1 0.156 0 C} FS
+47 1257 2286 Ss
+47 1371 2286 Ss
+47 1486 2286 Ss
+47 1600 2286 Ss
+47 1714 2286 Ss
+47 1829 2286 Ss
+47 1943 2286 Ss
+47 2057 2286 Ss
+47 2171 2286 Ss
+47 2286 2286 Ss
+47 2400 2286 Ss
+{0 0.0937 1 C} FS
+47 2514 2286 Ss
+{0 0.406 1 C} FS
+47 2629 2286 Ss
+47 2743 2286 Ss
+{0 0.719 1 C} FS
+47 2857 2286 Ss
+{0 1 0.969 C} FS
+47 2971 2286 Ss
+47 3086 2286 Ss
+{0 1 0.656 C} FS
+47 3200 2286 Ss
+{0 1 0.344 C} FS
+47 3314 2286 Ss
+47 3429 2286 Ss
+{0 1 0.0313 C} FS
+47 3543 2286 Ss
+47 3657 2286 Ss
+{0.281 1 0 C} FS
+47 3771 2286 Ss
+47 3886 2286 Ss
+{0.594 1 0 C} FS
+47 4000 2286 Ss
+47 4114 2286 Ss
+47 4229 2286 Ss
+{0.906 1 0 C} FS
+47 4343 2286 Ss
+47 4457 2286 Ss
+{1 0.781 0 C} FS
+47 4571 2286 Ss
+47 4686 2286 Ss
+47 114 2171 Ss
+47 229 2171 Ss
+{0.906 1 0 C} FS
+47 343 2171 Ss
+47 457 2171 Ss
+47 571 2171 Ss
+{0.594 1 0 C} FS
+47 686 2171 Ss
+47 800 2171 Ss
+{0.281 1 0 C} FS
+47 914 2171 Ss
+47 1029 2171 Ss
+{0 1 0.0313 C} FS
+47 1143 2171 Ss
+{1 0.156 0 C} FS
+47 1257 2171 Ss
+47 1371 2171 Ss
+47 1486 2171 Ss
+47 1600 2171 Ss
+47 1714 2171 Ss
+47 1829 2171 Ss
+47 1943 2171 Ss
+47 2057 2171 Ss
+47 2171 2171 Ss
+47 2286 2171 Ss
+47 2400 2171 Ss
+{0 0.406 1 C} FS
+47 2514 2171 Ss
+47 2629 2171 Ss
+{0 0.719 1 C} FS
+47 2743 2171 Ss
+47 2857 2171 Ss
+{0 1 0.969 C} FS
+47 2971 2171 Ss
+{0 1 0.656 C} FS
+47 3086 2171 Ss
+47 3200 2171 Ss
+{0 1 0.344 C} FS
+47 3314 2171 Ss
+47 3429 2171 Ss
+{0 1 0.0313 C} FS
+47 3543 2171 Ss
+47 3657 2171 Ss
+{0.281 1 0 C} FS
+47 3771 2171 Ss
+47 3886 2171 Ss
+{0.594 1 0 C} FS
+47 4000 2171 Ss
+47 4114 2171 Ss
+{0.906 1 0 C} FS
+47 4229 2171 Ss
+47 4343 2171 Ss
+47 4457 2171 Ss
+{1 0.781 0 C} FS
+47 4571 2171 Ss
+47 4686 2171 Ss
+47 114 2057 Ss
+47 229 2057 Ss
+{0.906 1 0 C} FS
+47 343 2057 Ss
+47 457 2057 Ss
+47 571 2057 Ss
+{0.594 1 0 C} FS
+47 686 2057 Ss
+47 800 2057 Ss
+{0.281 1 0 C} FS
+47 914 2057 Ss
+47 1029 2057 Ss
+{0 1 0.0313 C} FS
+47 1143 2057 Ss
+{1 0.156 0 C} FS
+47 1257 2057 Ss
+47 1371 2057 Ss
+47 1486 2057 Ss
+47 1600 2057 Ss
+47 1714 2057 Ss
+47 1829 2057 Ss
+47 1943 2057 Ss
+47 2057 2057 Ss
+47 2171 2057 Ss
+47 2286 2057 Ss
+47 2400 2057 Ss
+{0 0.406 1 C} FS
+47 2514 2057 Ss
+{0 0.719 1 C} FS
+47 2629 2057 Ss
+47 2743 2057 Ss
+{0 1 0.969 C} FS
+47 2857 2057 Ss
+47 2971 2057 Ss
+{0 1 0.656 C} FS
+47 3086 2057 Ss
+47 3200 2057 Ss
+{0 1 0.344 C} FS
+47 3314 2057 Ss
+47 3429 2057 Ss
+{0 1 0.0313 C} FS
+47 3543 2057 Ss
+47 3657 2057 Ss
+{0.281 1 0 C} FS
+47 3771 2057 Ss
+47 3886 2057 Ss
+{0.594 1 0 C} FS
+47 4000 2057 Ss
+47 4114 2057 Ss
+{0.906 1 0 C} FS
+47 4229 2057 Ss
+47 4343 2057 Ss
+47 4457 2057 Ss
+{1 0.781 0 C} FS
+47 4571 2057 Ss
+47 4686 2057 Ss
+47 114 1943 Ss
+47 229 1943 Ss
+{0.906 1 0 C} FS
+47 343 1943 Ss
+47 457 1943 Ss
+47 571 1943 Ss
+{0.594 1 0 C} FS
+47 686 1943 Ss
+47 800 1943 Ss
+{0.281 1 0 C} FS
+47 914 1943 Ss
+47 1029 1943 Ss
+47 1143 1943 Ss
+{1 0.156 0 C} FS
+47 1257 1943 Ss
+47 1371 1943 Ss
+47 1486 1943 Ss
+47 1600 1943 Ss
+47 1714 1943 Ss
+47 1829 1943 Ss
+47 1943 1943 Ss
+47 2057 1943 Ss
+47 2171 1943 Ss
+47 2286 1943 Ss
+47 2400 1943 Ss
+{0 0.719 1 C} FS
+47 2514 1943 Ss
+47 2629 1943 Ss
+{0 1 0.969 C} FS
+47 2743 1943 Ss
+47 2857 1943 Ss
+{0 1 0.656 C} FS
+47 2971 1943 Ss
+47 3086 1943 Ss
+{0 1 0.344 C} FS
+47 3200 1943 Ss
+47 3314 1943 Ss
+{0 1 0.0313 C} FS
+47 3429 1943 Ss
+47 3543 1943 Ss
+{0.281 1 0 C} FS
+47 3657 1943 Ss
+47 3771 1943 Ss
+47 3886 1943 Ss
+{0.594 1 0 C} FS
+47 4000 1943 Ss
+47 4114 1943 Ss
+{0.906 1 0 C} FS
+47 4229 1943 Ss
+47 4343 1943 Ss
+47 4457 1943 Ss
+{1 0.781 0 C} FS
+47 4571 1943 Ss
+47 4686 1943 Ss
+47 114 1829 Ss
+47 229 1829 Ss
+47 343 1829 Ss
+{0.906 1 0 C} FS
+47 457 1829 Ss
+47 571 1829 Ss
+{0.594 1 0 C} FS
+47 686 1829 Ss
+47 800 1829 Ss
+47 914 1829 Ss
+{0.281 1 0 C} FS
+47 1029 1829 Ss
+47 1143 1829 Ss
+{1 0.156 0 C} FS
+47 1257 1829 Ss
+47 1371 1829 Ss
+47 1486 1829 Ss
+47 1600 1829 Ss
+47 1714 1829 Ss
+47 1829 1829 Ss
+47 1943 1829 Ss
+47 2057 1829 Ss
+47 2171 1829 Ss
+47 2286 1829 Ss
+47 2400 1829 Ss
+{0 1 0.969 C} FS
+47 2514 1829 Ss
+47 2629 1829 Ss
+47 2743 1829 Ss
+{0 1 0.656 C} FS
+47 2857 1829 Ss
+47 2971 1829 Ss
+47 3086 1829 Ss
+{0 1 0.344 C} FS
+47 3200 1829 Ss
+47 3314 1829 Ss
+{0 1 0.0313 C} FS
+47 3429 1829 Ss
+47 3543 1829 Ss
+{0.281 1 0 C} FS
+47 3657 1829 Ss
+47 3771 1829 Ss
+{0.594 1 0 C} FS
+47 3886 1829 Ss
+47 4000 1829 Ss
+47 4114 1829 Ss
+{0.906 1 0 C} FS
+47 4229 1829 Ss
+47 4343 1829 Ss
+{1 0.781 0 C} FS
+47 4457 1829 Ss
+47 4571 1829 Ss
+47 4686 1829 Ss
+47 114 1714 Ss
+47 229 1714 Ss
+47 343 1714 Ss
+{0.906 1 0 C} FS
+47 457 1714 Ss
+47 571 1714 Ss
+47 686 1714 Ss
+{0.594 1 0 C} FS
+47 800 1714 Ss
+47 914 1714 Ss
+{0.281 1 0 C} FS
+47 1029 1714 Ss
+47 1143 1714 Ss
+{1 0.156 0 C} FS
+47 1257 1714 Ss
+47 1371 1714 Ss
+47 1486 1714 Ss
+47 1600 1714 Ss
+47 1714 1714 Ss
+47 1829 1714 Ss
+47 1943 1714 Ss
+47 2057 1714 Ss
+47 2171 1714 Ss
+47 2286 1714 Ss
+47 2400 1714 Ss
+{0 1 0.969 C} FS
+47 2514 1714 Ss
+{0 1 0.656 C} FS
+47 2629 1714 Ss
+47 2743 1714 Ss
+47 2857 1714 Ss
+47 2971 1714 Ss
+{0 1 0.344 C} FS
+47 3086 1714 Ss
+47 3200 1714 Ss
+{0 1 0.0313 C} FS
+47 3314 1714 Ss
+47 3429 1714 Ss
+47 3543 1714 Ss
+{0.281 1 0 C} FS
+47 3657 1714 Ss
+47 3771 1714 Ss
+{0.594 1 0 C} FS
+47 3886 1714 Ss
+47 4000 1714 Ss
+{0.906 1 0 C} FS
+47 4114 1714 Ss
+47 4229 1714 Ss
+47 4343 1714 Ss
+{1 0.781 0 C} FS
+47 4457 1714 Ss
+47 4571 1714 Ss
+47 4686 1714 Ss
+47 114 1600 Ss
+47 229 1600 Ss
+47 343 1600 Ss
+{0.906 1 0 C} FS
+47 457 1600 Ss
+47 571 1600 Ss
+47 686 1600 Ss
+{0.594 1 0 C} FS
+47 800 1600 Ss
+47 914 1600 Ss
+47 1029 1600 Ss
+{0.281 1 0 C} FS
+47 1143 1600 Ss
+{1 0.156 0 C} FS
+47 1257 1600 Ss
+47 1371 1600 Ss
+47 1486 1600 Ss
+47 1600 1600 Ss
+47 1714 1600 Ss
+47 1829 1600 Ss
+47 1943 1600 Ss
+47 2057 1600 Ss
+47 2171 1600 Ss
+47 2286 1600 Ss
+47 2400 1600 Ss
+{0 1 0.656 C} FS
+47 2514 1600 Ss
+47 2629 1600 Ss
+47 2743 1600 Ss
+{0 1 0.344 C} FS
+47 2857 1600 Ss
+47 2971 1600 Ss
+47 3086 1600 Ss
+{0 1 0.0313 C} FS
+47 3200 1600 Ss
+47 3314 1600 Ss
+47 3429 1600 Ss
+{0.281 1 0 C} FS
+47 3543 1600 Ss
+47 3657 1600 Ss
+{0.594 1 0 C} FS
+47 3771 1600 Ss
+47 3886 1600 Ss
+47 4000 1600 Ss
+{0.906 1 0 C} FS
+47 4114 1600 Ss
+47 4229 1600 Ss
+47 4343 1600 Ss
+{1 0.781 0 C} FS
+47 4457 1600 Ss
+47 4571 1600 Ss
+47 4686 1600 Ss
+{1 0.469 0 C} FS
+47 114 1486 Ss
+{1 0.781 0 C} FS
+47 229 1486 Ss
+47 343 1486 Ss
+47 457 1486 Ss
+{0.906 1 0 C} FS
+47 571 1486 Ss
+47 686 1486 Ss
+47 800 1486 Ss
+{0.594 1 0 C} FS
+47 914 1486 Ss
+47 1029 1486 Ss
+{0.281 1 0 C} FS
+47 1143 1486 Ss
+{1 0.156 0 C} FS
+47 1257 1486 Ss
+47 1371 1486 Ss
+47 1486 1486 Ss
+47 1600 1486 Ss
+47 1714 1486 Ss
+47 1829 1486 Ss
+47 1943 1486 Ss
+47 2057 1486 Ss
+47 2171 1486 Ss
+47 2286 1486 Ss
+47 2400 1486 Ss
+{0 1 0.344 C} FS
+47 2514 1486 Ss
+47 2629 1486 Ss
+47 2743 1486 Ss
+47 2857 1486 Ss
+47 2971 1486 Ss
+{0 1 0.0313 C} FS
+47 3086 1486 Ss
+47 3200 1486 Ss
+47 3314 1486 Ss
+{0.281 1 0 C} FS
+47 3429 1486 Ss
+47 3543 1486 Ss
+47 3657 1486 Ss
+{0.594 1 0 C} FS
+47 3771 1486 Ss
+47 3886 1486 Ss
+{0.906 1 0 C} FS
+47 4000 1486 Ss
+47 4114 1486 Ss
+47 4229 1486 Ss
+{1 0.781 0 C} FS
+47 4343 1486 Ss
+47 4457 1486 Ss
+47 4571 1486 Ss
+{1 0.469 0 C} FS
+47 4686 1486 Ss
+47 114 1371 Ss
+{1 0.781 0 C} FS
+47 229 1371 Ss
+47 343 1371 Ss
+47 457 1371 Ss
+{0.906 1 0 C} FS
+47 571 1371 Ss
+47 686 1371 Ss
+47 800 1371 Ss
+{0.594 1 0 C} FS
+47 914 1371 Ss
+47 1029 1371 Ss
+47 1143 1371 Ss
+{1 0.156 0 C} FS
+47 1257 1371 Ss
+47 1371 1371 Ss
+47 1486 1371 Ss
+47 1600 1371 Ss
+47 1714 1371 Ss
+47 1829 1371 Ss
+47 1943 1371 Ss
+47 2057 1371 Ss
+47 2171 1371 Ss
+47 2286 1371 Ss
+47 2400 1371 Ss
+{0 1 0.344 C} FS
+47 2514 1371 Ss
+47 2629 1371 Ss
+47 2743 1371 Ss
+{0 1 0.0313 C} FS
+47 2857 1371 Ss
+47 2971 1371 Ss
+47 3086 1371 Ss
+47 3200 1371 Ss
+{0.281 1 0 C} FS
+47 3314 1371 Ss
+47 3429 1371 Ss
+47 3543 1371 Ss
+{0.594 1 0 C} FS
+47 3657 1371 Ss
+47 3771 1371 Ss
+47 3886 1371 Ss
+{0.906 1 0 C} FS
+47 4000 1371 Ss
+47 4114 1371 Ss
+47 4229 1371 Ss
+{1 0.781 0 C} FS
+47 4343 1371 Ss
+47 4457 1371 Ss
+47 4571 1371 Ss
+{1 0.469 0 C} FS
+47 4686 1371 Ss
+47 114 1257 Ss
+47 229 1257 Ss
+{1 0.781 0 C} FS
+47 343 1257 Ss
+47 457 1257 Ss
+47 571 1257 Ss
+{0.906 1 0 C} FS
+47 686 1257 Ss
+47 800 1257 Ss
+47 914 1257 Ss
+{0.594 1 0 C} FS
+47 1029 1257 Ss
+47 1143 1257 Ss
+{1 0.156 0 C} FS
+47 1257 1257 Ss
+47 1371 1257 Ss
+47 1486 1257 Ss
+47 1600 1257 Ss
+47 1714 1257 Ss
+47 1829 1257 Ss
+47 1943 1257 Ss
+47 2057 1257 Ss
+47 2171 1257 Ss
+47 2286 1257 Ss
+47 2400 1257 Ss
+{0 1 0.0313 C} FS
+47 2514 1257 Ss
+47 2629 1257 Ss
+47 2743 1257 Ss
+47 2857 1257 Ss
+47 2971 1257 Ss
+47 3086 1257 Ss
+{0.281 1 0 C} FS
+47 3200 1257 Ss
+47 3314 1257 Ss
+47 3429 1257 Ss
+{0.594 1 0 C} FS
+47 3543 1257 Ss
+47 3657 1257 Ss
+47 3771 1257 Ss
+{0.906 1 0 C} FS
+47 3886 1257 Ss
+47 4000 1257 Ss
+47 4114 1257 Ss
+{1 0.781 0 C} FS
+47 4229 1257 Ss
+47 4343 1257 Ss
+47 4457 1257 Ss
+{1 0.469 0 C} FS
+47 4571 1257 Ss
+47 4686 1257 Ss
+47 114 1143 Ss
+47 229 1143 Ss
+{1 0.781 0 C} FS
+47 343 1143 Ss
+47 457 1143 Ss
+47 571 1143 Ss
+{0.906 1 0 C} FS
+47 686 1143 Ss
+47 800 1143 Ss
+47 914 1143 Ss
+47 1029 1143 Ss
+{0.594 1 0 C} FS
+47 1143 1143 Ss
+47 1257 1143 Ss
+47 1371 1143 Ss
+{0.281 1 0 C} FS
+47 1486 1143 Ss
+47 1600 1143 Ss
+47 1714 1143 Ss
+47 1829 1143 Ss
+47 1943 1143 Ss
+{0 1 0.0313 C} FS
+47 2057 1143 Ss
+47 2171 1143 Ss
+47 2286 1143 Ss
+47 2400 1143 Ss
+47 2514 1143 Ss
+47 2629 1143 Ss
+47 2743 1143 Ss
+{0.281 1 0 C} FS
+47 2857 1143 Ss
+47 2971 1143 Ss
+47 3086 1143 Ss
+47 3200 1143 Ss
+47 3314 1143 Ss
+{0.594 1 0 C} FS
+47 3429 1143 Ss
+47 3543 1143 Ss
+47 3657 1143 Ss
+{0.906 1 0 C} FS
+47 3771 1143 Ss
+47 3886 1143 Ss
+47 4000 1143 Ss
+47 4114 1143 Ss
+{1 0.781 0 C} FS
+47 4229 1143 Ss
+47 4343 1143 Ss
+47 4457 1143 Ss
+{1 0.469 0 C} FS
+47 4571 1143 Ss
+47 4686 1143 Ss
+47 114 1029 Ss
+47 229 1029 Ss
+47 343 1029 Ss
+{1 0.781 0 C} FS
+47 457 1029 Ss
+47 571 1029 Ss
+47 686 1029 Ss
+{0.906 1 0 C} FS
+47 800 1029 Ss
+47 914 1029 Ss
+47 1029 1029 Ss
+47 1143 1029 Ss
+{0.594 1 0 C} FS
+47 1257 1029 Ss
+47 1371 1029 Ss
+47 1486 1029 Ss
+47 1600 1029 Ss
+{0.281 1 0 C} FS
+47 1714 1029 Ss
+47 1829 1029 Ss
+47 1943 1029 Ss
+47 2057 1029 Ss
+47 2171 1029 Ss
+47 2286 1029 Ss
+47 2400 1029 Ss
+47 2514 1029 Ss
+47 2629 1029 Ss
+47 2743 1029 Ss
+47 2857 1029 Ss
+47 2971 1029 Ss
+47 3086 1029 Ss
+{0.594 1 0 C} FS
+47 3200 1029 Ss
+47 3314 1029 Ss
+47 3429 1029 Ss
+47 3543 1029 Ss
+{0.906 1 0 C} FS
+47 3657 1029 Ss
+47 3771 1029 Ss
+47 3886 1029 Ss
+47 4000 1029 Ss
+{1 0.781 0 C} FS
+47 4114 1029 Ss
+47 4229 1029 Ss
+47 4343 1029 Ss
+{1 0.469 0 C} FS
+47 4457 1029 Ss
+47 4571 1029 Ss
+47 4686 1029 Ss
+47 114 914 Ss
+47 229 914 Ss
+47 343 914 Ss
+{1 0.781 0 C} FS
+47 457 914 Ss
+47 571 914 Ss
+47 686 914 Ss
+47 800 914 Ss
+{0.906 1 0 C} FS
+47 914 914 Ss
+47 1029 914 Ss
+47 1143 914 Ss
+47 1257 914 Ss
+{0.594 1 0 C} FS
+47 1371 914 Ss
+47 1486 914 Ss
+47 1600 914 Ss
+47 1714 914 Ss
+47 1829 914 Ss
+{0.281 1 0 C} FS
+47 1943 914 Ss
+47 2057 914 Ss
+47 2171 914 Ss
+47 2286 914 Ss
+47 2400 914 Ss
+47 2514 914 Ss
+47 2629 914 Ss
+47 2743 914 Ss
+47 2857 914 Ss
+{0.594 1 0 C} FS
+47 2971 914 Ss
+47 3086 914 Ss
+47 3200 914 Ss
+47 3314 914 Ss
+47 3429 914 Ss
+{0.906 1 0 C} FS
+47 3543 914 Ss
+47 3657 914 Ss
+47 3771 914 Ss
+47 3886 914 Ss
+{1 0.781 0 C} FS
+47 4000 914 Ss
+47 4114 914 Ss
+47 4229 914 Ss
+47 4343 914 Ss
+{1 0.469 0 C} FS
+47 4457 914 Ss
+47 4571 914 Ss
+47 4686 914 Ss
+47 114 800 Ss
+47 229 800 Ss
+47 343 800 Ss
+47 457 800 Ss
+{1 0.781 0 C} FS
+47 571 800 Ss
+47 686 800 Ss
+47 800 800 Ss
+47 914 800 Ss
+{0.906 1 0 C} FS
+47 1029 800 Ss
+47 1143 800 Ss
+47 1257 800 Ss
+47 1371 800 Ss
+47 1486 800 Ss
+{0.594 1 0 C} FS
+47 1600 800 Ss
+47 1714 800 Ss
+47 1829 800 Ss
+47 1943 800 Ss
+47 2057 800 Ss
+47 2171 800 Ss
+47 2286 800 Ss
+47 2400 800 Ss
+47 2514 800 Ss
+47 2629 800 Ss
+47 2743 800 Ss
+47 2857 800 Ss
+47 2971 800 Ss
+47 3086 800 Ss
+47 3200 800 Ss
+{0.906 1 0 C} FS
+47 3314 800 Ss
+47 3429 800 Ss
+47 3543 800 Ss
+47 3657 800 Ss
+47 3771 800 Ss
+{1 0.781 0 C} FS
+47 3886 800 Ss
+47 4000 800 Ss
+47 4114 800 Ss
+47 4229 800 Ss
+{1 0.469 0 C} FS
+47 4343 800 Ss
+47 4457 800 Ss
+47 4571 800 Ss
+47 4686 800 Ss
+{1 0.156 0 C} FS
+47 114 686 Ss
+{1 0.469 0 C} FS
+47 229 686 Ss
+47 343 686 Ss
+47 457 686 Ss
+47 571 686 Ss
+{1 0.781 0 C} FS
+47 686 686 Ss
+47 800 686 Ss
+47 914 686 Ss
+47 1029 686 Ss
+{0.906 1 0 C} FS
+47 1143 686 Ss
+47 1257 686 Ss
+47 1371 686 Ss
+47 1486 686 Ss
+47 1600 686 Ss
+47 1714 686 Ss
+{0.594 1 0 C} FS
+47 1829 686 Ss
+47 1943 686 Ss
+47 2057 686 Ss
+47 2171 686 Ss
+47 2286 686 Ss
+47 2400 686 Ss
+47 2514 686 Ss
+47 2629 686 Ss
+47 2743 686 Ss
+47 2857 686 Ss
+47 2971 686 Ss
+{0.906 1 0 C} FS
+47 3086 686 Ss
+47 3200 686 Ss
+47 3314 686 Ss
+47 3429 686 Ss
+47 3543 686 Ss
+47 3657 686 Ss
+{1 0.781 0 C} FS
+47 3771 686 Ss
+47 3886 686 Ss
+47 4000 686 Ss
+47 4114 686 Ss
+{1 0.469 0 C} FS
+47 4229 686 Ss
+47 4343 686 Ss
+47 4457 686 Ss
+47 4571 686 Ss
+{1 0.156 0 C} FS
+47 4686 686 Ss
+47 114 571 Ss
+47 229 571 Ss
+{1 0.469 0 C} FS
+47 343 571 Ss
+47 457 571 Ss
+47 571 571 Ss
+47 686 571 Ss
+{1 0.781 0 C} FS
+47 800 571 Ss
+47 914 571 Ss
+47 1029 571 Ss
+47 1143 571 Ss
+47 1257 571 Ss
+{0.906 1 0 C} FS
+47 1371 571 Ss
+47 1486 571 Ss
+47 1600 571 Ss
+47 1714 571 Ss
+47 1829 571 Ss
+47 1943 571 Ss
+47 2057 571 Ss
+47 2171 571 Ss
+{0.594 1 0 C} FS
+47 2286 571 Ss
+47 2400 571 Ss
+47 2514 571 Ss
+{0.906 1 0 C} FS
+47 2629 571 Ss
+47 2743 571 Ss
+47 2857 571 Ss
+47 2971 571 Ss
+47 3086 571 Ss
+47 3200 571 Ss
+47 3314 571 Ss
+47 3429 571 Ss
+{1 0.781 0 C} FS
+47 3543 571 Ss
+47 3657 571 Ss
+47 3771 571 Ss
+47 3886 571 Ss
+47 4000 571 Ss
+{1 0.469 0 C} FS
+47 4114 571 Ss
+47 4229 571 Ss
+47 4343 571 Ss
+47 4457 571 Ss
+{1 0.156 0 C} FS
+47 4571 571 Ss
+47 4686 571 Ss
+47 114 457 Ss
+47 229 457 Ss
+47 343 457 Ss
+{1 0.469 0 C} FS
+47 457 457 Ss
+47 571 457 Ss
+47 686 457 Ss
+47 800 457 Ss
+{1 0.781 0 C} FS
+47 914 457 Ss
+47 1029 457 Ss
+47 1143 457 Ss
+47 1257 457 Ss
+47 1371 457 Ss
+47 1486 457 Ss
+{0.906 1 0 C} FS
+47 1600 457 Ss
+47 1714 457 Ss
+47 1829 457 Ss
+47 1943 457 Ss
+47 2057 457 Ss
+47 2171 457 Ss
+47 2286 457 Ss
+47 2400 457 Ss
+47 2514 457 Ss
+47 2629 457 Ss
+47 2743 457 Ss
+47 2857 457 Ss
+47 2971 457 Ss
+47 3086 457 Ss
+47 3200 457 Ss
+{1 0.781 0 C} FS
+47 3314 457 Ss
+47 3429 457 Ss
+47 3543 457 Ss
+47 3657 457 Ss
+47 3771 457 Ss
+47 3886 457 Ss
+{1 0.469 0 C} FS
+47 4000 457 Ss
+47 4114 457 Ss
+47 4229 457 Ss
+47 4343 457 Ss
+{1 0.156 0 C} FS
+47 4457 457 Ss
+47 4571 457 Ss
+47 4686 457 Ss
+47 114 343 Ss
+47 229 343 Ss
+47 343 343 Ss
+47 457 343 Ss
+{1 0.469 0 C} FS
+47 571 343 Ss
+47 686 343 Ss
+47 800 343 Ss
+47 914 343 Ss
+47 1029 343 Ss
+{1 0.781 0 C} FS
+47 1143 343 Ss
+47 1257 343 Ss
+47 1371 343 Ss
+47 1486 343 Ss
+47 1600 343 Ss
+47 1714 343 Ss
+47 1829 343 Ss
+{0.906 1 0 C} FS
+47 1943 343 Ss
+47 2057 343 Ss
+47 2171 343 Ss
+47 2286 343 Ss
+47 2400 343 Ss
+47 2514 343 Ss
+47 2629 343 Ss
+47 2743 343 Ss
+47 2857 343 Ss
+{1 0.781 0 C} FS
+47 2971 343 Ss
+47 3086 343 Ss
+47 3200 343 Ss
+47 3314 343 Ss
+47 3429 343 Ss
+47 3543 343 Ss
+47 3657 343 Ss
+{1 0.469 0 C} FS
+47 3771 343 Ss
+47 3886 343 Ss
+47 4000 343 Ss
+47 4114 343 Ss
+47 4229 343 Ss
+{1 0.156 0 C} FS
+47 4343 343 Ss
+47 4457 343 Ss
+47 4571 343 Ss
+47 4686 343 Ss
+47 114 229 Ss
+47 229 229 Ss
+47 343 229 Ss
+47 457 229 Ss
+47 571 229 Ss
+{1 0.469 0 C} FS
+47 686 229 Ss
+47 800 229 Ss
+47 914 229 Ss
+47 1029 229 Ss
+47 1143 229 Ss
+47 1257 229 Ss
+{1 0.781 0 C} FS
+47 1371 229 Ss
+47 1486 229 Ss
+47 1600 229 Ss
+47 1714 229 Ss
+47 1829 229 Ss
+47 1943 229 Ss
+47 2057 229 Ss
+47 2171 229 Ss
+47 2286 229 Ss
+47 2400 229 Ss
+47 2514 229 Ss
+47 2629 229 Ss
+47 2743 229 Ss
+47 2857 229 Ss
+47 2971 229 Ss
+47 3086 229 Ss
+47 3200 229 Ss
+47 3314 229 Ss
+47 3429 229 Ss
+{1 0.469 0 C} FS
+47 3543 229 Ss
+47 3657 229 Ss
+47 3771 229 Ss
+47 3886 229 Ss
+47 4000 229 Ss
+47 4114 229 Ss
+{1 0.156 0 C} FS
+47 4229 229 Ss
+47 4343 229 Ss
+47 4457 229 Ss
+47 4571 229 Ss
+47 4686 229 Ss
+47 114 114 Ss
+47 229 114 Ss
+47 343 114 Ss
+47 457 114 Ss
+47 571 114 Ss
+47 686 114 Ss
+{1 0.469 0 C} FS
+47 800 114 Ss
+47 914 114 Ss
+47 1029 114 Ss
+47 1143 114 Ss
+47 1257 114 Ss
+47 1371 114 Ss
+47 1486 114 Ss
+{1 0.781 0 C} FS
+47 1600 114 Ss
+47 1714 114 Ss
+47 1829 114 Ss
+47 1943 114 Ss
+47 2057 114 Ss
+47 2171 114 Ss
+47 2286 114 Ss
+47 2400 114 Ss
+47 2514 114 Ss
+47 2629 114 Ss
+47 2743 114 Ss
+47 2857 114 Ss
+47 2971 114 Ss
+47 3086 114 Ss
+47 3200 114 Ss
+{1 0.469 0 C} FS
+47 3314 114 Ss
+47 3429 114 Ss
+47 3543 114 Ss
+47 3657 114 Ss
+47 3771 114 Ss
+47 3886 114 Ss
+47 4000 114 Ss
+{1 0.156 0 C} FS
+47 4114 114 Ss
+47 4229 114 Ss
+47 4343 114 Ss
+47 4457 114 Ss
+47 4571 114 Ss
+47 4686 114 Ss
+PSL_cliprestore
+2 setlinecap
+/MM {neg exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 4800 M 0 -4800 D S
+8 W
+0 114 M -83 0 D S
+0 1257 M -83 0 D S
+0 2400 M -83 0 D S
+0 3543 M -83 0 D S
+0 4686 M -83 0 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0) sw mx
+(10) sw mx
+(20) sw mx
+(30) sw mx
+(40) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+114 PSL_A0_y MM
+(0) mr Z
+1257 PSL_A0_y MM
+(10) mr Z
+2400 PSL_A0_y MM
+(20) mr Z
+3543 PSL_A0_y MM
+(30) mr Z
+4686 PSL_A0_y MM
+(40) mr Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+0 686 M -42 0 D S
+0 1829 M -42 0 D S
+0 2971 M -42 0 D S
+0 4114 M -42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+4800 0 T
+/MM {exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 4800 M 0 -4800 D S
+8 W
+0 114 M 83 0 D S
+0 1257 M 83 0 D S
+0 2400 M 83 0 D S
+0 3543 M 83 0 D S
+0 4686 M 83 0 D S
+0 686 M 42 0 D S
+0 1829 M 42 0 D S
+0 2971 M 42 0 D S
+0 4114 M 42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-4800 0 T
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 4800 0 D S
+8 W
+114 0 M 0 -83 D S
+1257 0 M 0 -83 D S
+2400 0 M 0 -83 D S
+3543 0 M 0 -83 D S
+4686 0 M 0 -83 D S
+/PSL_AH0 0
+(0) sh mx
+(10) sh mx
+(20) sh mx
+(30) sh mx
+(40) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+114 PSL_A0_y MM
+(0) bc Z
+1257 PSL_A0_y MM
+(10) bc Z
+2400 PSL_A0_y MM
+(20) bc Z
+3543 PSL_A0_y MM
+(30) bc Z
+4686 PSL_A0_y MM
+(40) bc Z
+686 0 M 0 -42 D S
+1829 0 M 0 -42 D S
+2971 0 M 0 -42 D S
+4114 0 M 0 -42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 4800 T
+/MM {M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 4800 0 D S
+8 W
+114 0 M 0 83 D S
+1257 0 M 0 83 D S
+2400 0 M 0 83 D S
+3543 0 M 0 83 D S
+4686 0 M 0 83 D S
+686 0 M 0 42 D S
+1829 0 M 0 42 D S
+2971 0 M 0 42 D S
+4114 0 M 0 42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -4800 T
+0 setlinecap
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psxy -R-1/41/-1/41 -JX4i -O -T
+%%PROJ: xy -1.00000000 41.00000000 -1.00000000 41.00000000 -1.000 41.000 -1.000 41.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+%%PageTrailer
+U
+showpage
+
+%%Trailer
+
+end
+%%EOF

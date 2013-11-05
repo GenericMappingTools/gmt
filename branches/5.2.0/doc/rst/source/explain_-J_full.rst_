@@ -1,0 +1,250 @@
+.. _-J_full:
+
+**-J**\ *parameters*
+
+Select map projection. The following character determines the
+projection. If the character is upper case then the argument(s) supplied
+as scale(s) is interpreted to be the map width (or axis lengths), else
+the scale argument(s) is the map scale (see its definition for each
+projection). UNIT is cm, inch, or point, depending on the
+:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting in **gmt.conf**, but this can be
+overridden on the command line by appending **c**, **i**, or **p** to
+the *scale* or *width* values. Append **h**, **+**, or **-** to the
+given *width* if you instead want to set map height, the maximum
+dimension, or the minimum dimension, respectively [Default is **w** for width].
+In case the central meridian is an optional parameter and it is being
+omitted, then the center of the longitude range given by the **-R**
+option is used. The default standard parallel is the equator.
+The ellipsoid used in the map projections is user-definable by editing
+the **gmt.conf** file in your home directory. 73 commonly used
+ellipsoids and spheroids are currently supported, and users may also
+specify their own custum ellipsoid parameters [Default is WGS-84].
+Several GMT parameters can affect the projection: :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`,
+:ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>`, :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`, and
+:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`; see the :doc:`gmt.conf` man page for details.
+Choose one of the following projections (The **E** or **C** after
+projection names stands for Equal-Area and Conformal, respectively):
+
+    **CYLINDRICAL PROJECTIONS:**
+
+    **-Jc**\ *lon0/lat0/scale* or **-JC**\ *lon0/lat0/width* (Cassini).
+
+        Give projection center *lon0/lat0* and *scale* (**1:**\ *xxxx* or UNIT/degree).
+
+    **-Jcyl_stere**/[*lon0/*\ [*lat0/*\ ]]\ *scale* or
+    **-JCyl_stere**/[*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Stereographic).
+
+        Give central meridian *lon0* (optional), standard parallel *lat0*
+        (optional), and *scale* along parallel (**1:**\ *xxxx* or
+        UNIT/degree). The standard parallel is typically one of these (but
+        can be any value):
+
+          * 66.159467 - Miller's modified Gall
+          * 55 - Kamenetskiy's First
+          * 45 - Gall's Stereographic
+          * 30 - Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second
+          * 0 - Braun's Cylindrical
+
+    **-Jj**\ [*lon0/*\ ]\ *scale* or **-JJ**\ [*lon0/*\ ]\ *width* (Miller Cylindrical Projection).
+
+        Give the central meridian *lon0* (optional) and *scale*
+        (**1:**\ *xxxx* or UNIT/degree).
+
+    **-Jm**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JM**\ [*lon0/*\ [*lat0/*\ ]]\ *width*
+
+        Give central meridian *lon0* (optional), standard parallel *lat0*
+        (optional), and *scale* along parallel (**1:**\ *xxxx* or UNIT/degree).
+
+    **-Jo**\ *parameters* (Oblique Mercator **[C]**).
+
+        Typically used with **-R**\ *LLx/LLy/URx/URy*\ **r** or with projected coordinates.  Specify one of:
+
+        **-Jo**\ [**a**\ ]\ *lon0/lat0/azimuth/scale* or **-JO**\ [**a**\ ]\ *lon0/lat0/azimuth/width*
+            Set projection center *lon0/lat0*, *azimuth* of oblique equator, and *scale*.
+        **-Jo**\ [**b**\ ]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\ ]\ *lon0/lat0/lon1/lat1/scale*
+            Set projection center *lon0/lat0*, another point on the oblique
+            equator *lon1/lat1*, and *scale*.
+        **-Joc**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\ *lon0/lat0/lonp/latp/scale*
+            Set projection center *lon0/lat0*, pole of oblique projection
+            *lonp/latp*, and *scale*.
+            Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
+
+    **-Jq**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or
+    **-JQ**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Equidistant).
+
+        Give the central meridian *lon0* (optional), standard parallel
+        *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
+        standard parallel is typically one of these (but can be any value):
+
+          * 61.7 - Grafarend and Niermann, minimum linear distortion
+          * 50.5 - Ronald Miller Equirectangular
+          * 43.5 - Ronald Miller, minimum continental distortion
+          * 42 - Grafarend and Niermann
+          * 37.5 - Ronald Miller, minimum overall distortion
+          * 0 - Plate Carree, Simple Cylindrical, Plain/Plane Chart
+
+    **-Jt**\ *lon0/*\ [*lat0/*\ ]\ *scale* or
+    **-JT**\ *lon0/*\ [*lat0/*\ ]\ *width*
+
+        Give the central meridian *lon0*, central parallel *lat0*
+        (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree).
+
+    **-Ju**\ *zone/scale* or **-JU**\ *zone/width* (UTM - Universal Transverse Mercator **[C]**).
+
+        Give the UTM zone (A,B,1-60[C-X],Y,Z)) and *scale* (**1:**\ *xxxx* or UNIT/degree).
+        Zones: If C-X not given, prepend - or + to enforce southern or
+        northern hemisphere conventions [northern if south > 0].
+
+    **-Jy**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JY**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Equal-Area **[E]**).
+
+        Give the central meridian *lon0* (optional), standard parallel
+        *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
+        standard parallel is typically one of these (but can be any value):
+
+          * 50 - Balthasart
+          * 45 - Gall-Peters
+          * 37.0666 - Caster
+          * 37.4 - Trystan Edwards
+          * 37.5 - Hobo-Dyer
+          * 30 - Behrman
+          * 0 - Lambert (default)
+
+    **CONIC PROJECTIONS:**
+
+    **-Jb**\ *lon0/lat0/lat1/lat2/scale* or **-JB**\ *lon0/lat0/lat1/lat2/width* (Albers **[E]**).
+        Give projection center *lon0/lat0*, two standard parallels
+        *lat1/lat2*, and *scale* (**1:**\ *xxxx* or UNIT/degree).
+    **-Jd**\ *lon0/lat0/lat1/lat2/scale* or **-JD**\ *lon0/lat0/lat1/lat2/width* (Conic Equidistant)
+        Give projection center *lon0/lat0*, two standard parallels
+        *lat1/lat2*, and *scale* (**1:**\ *xxxx* or UNIT/degree).
+    **-Jl**\ *lon0/lat0/lat1/lat2/scale* or **-JL**\ *lon0/lat0/lat1/lat2/width* (Lambert **[C]**)
+        Give origin *lon0/lat0*, two standard parallels *lat1/lat2*, and
+        *scale* along these (**1:**\ *xxxx* or UNIT/degree).
+    **-Jpoly**/[*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JPoly**/[*lon0/*\ [*lat0/*\ ]]\ *width* ((American) Polyconic).
+        Give the central meridian *lon0* (optional), reference parallel
+        *lat0* (optional, default = equator), and *scale* along central
+        meridian (**1:**\ *xxxx* or UNIT/degree).
+
+    **AZIMUTHAL PROJECTIONS:**
+
+    Except for polar aspects, **-R**\ w/e/s/n will be reset to **-Rg**.
+    Use **-R**\ <...>\ **r** for smaller regions.
+
+    **-Ja**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JA**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (Lambert **[E]**).
+        *lon0/lat0* specifies the projection center. *horizon* specifies
+        the max distance from projection center (in degrees, <= 180,
+        default 90). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
+        where *radius* is distance in UNIT from origin to the oblique
+        latitude *lat*.
+    **-Je**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JE**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (Azimuthal Equidistant).
+        *lon0/lat0* specifies the projection center. *horizon* specifies
+        the max distance from projection center (in degrees, <= 180,
+        default 180). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
+        where *radius* is distance in UNIT from origin to the oblique
+        latitude *lat*.
+    **-Jf**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JF**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (Gnomonic).
+        *lon0/lat0* specifies the projection center. *horizon* specifies
+        the max distance from projection center (in degrees, < 90,
+        default 60). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
+        where *radius* is distance in UNIT from origin to the oblique
+        latitude *lat*.
+    **-Jg**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JG**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (Orthographic).
+        *lon0/lat0* specifies the projection center. *horizon* specifies
+        the max distance from projection center (in degrees, <= 90,
+        default 90). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
+        where *radius* is distance in UNIT from origin to the oblique
+        latitude *lat*.
+    **-Jg**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale* or **-JG**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/width* (General Perspective).
+        *lon0/lat0* specifies the projection center. *altitude* is the
+        height (in km) of the viewpoint above local sea level. If
+        *altitude* is less than 10, then it is the distance from the
+        center of the earth to the viewpoint in earth radii. If
+        *altitude* has a suffix **r** then it is the radius from the
+        center of the earth in kilometers. *azimuth* is measured to the
+        east of north of view. *tilt* is the upward tilt of the plane of
+        projection. If *tilt* is negative, then the viewpoint is
+        centered on the horizon. Further, specify the clockwise *twist*,
+        *Width*, and *Height* of the viewpoint in degrees. Give *scale*
+        as **1:**\ *xxxx* or *radius/lat*, where *radius* is distance in
+        UNIT from origin to the oblique latitude *lat*.
+    **-Js**\ *lon0/lat0*\ [*/horizon*\ ]\ */scale* or **-JS**\ *lon0/lat0*\ [*/horizon*\ ]\ */width* (General Stereographic **[C]**).
+        *lon0/lat0* specifies the projection center. *horizon* specifies
+        the max distance from projection center (in degrees, < 180,
+        default 90). Give *scale* as **1:**\ *xxxx* (true at pole) or
+        *lat0*/**1:**\ *xxxx* (true at standard parallel *lat*) or
+        *radius/lat* (*radius* in UNIT from origin to the oblique
+        latitude *lat*). Note if **1:**\ *xxxx* is used then to specify
+        *horizon* you must also specify the *lat* as +-90 to avoid
+        ambiguity.
+
+    **MISCELLANEOUS PROJECTIONS:**
+
+    **-Jh**\ [*lon0/*\ ]\ *scale* or **-JH**\ [*lon0/*\ ]\ *width* (Hammer **[E]**).
+        Give the central meridian *lon0* (optional) and *scale* along
+        equator (**1:**\ *xxxx* or UNIT/degree).
+    **-Ji**\ [*lon0/*\ ]\ *scale* or **-JI**\ [*lon0/*\ ]\ *width* (Sinusoidal **[E]**).
+        Give the central meridian *lon0* (optional) and *scale* along
+        equator (**1:**\ *xxxx* or UNIT/degree).
+    **-Jkf**\ [*lon0/*\ ]\ *scale* or **-JKf**\ [*lon0/*\ ]\ *width* (Eckert IV) **[E]**).
+        Give the central meridian *lon0* (optional) and *scale* along
+        equator (**1:**\ *xxxx* or UNIT/degree).
+    **-Jk**\ [**s**\ ][*lon0/*\ ]\ *scale* or **-JK**\ [**s**\ ][*lon0/*\ ]\ *width* (Eckert VI) **[E]**).
+        Give the central meridian *lon0* (optional) and *scale* along
+        equator (**1:**\ *xxxx* or UNIT/degree).
+    **-Jn**\ [*lon0/*\ ]\ *scale* or **-JN**\ [*lon0/*\ ]\ *width* (Robinson).
+        Give the central meridian *lon0* (optional) and *scale* along
+        equator (**1:**\ *xxxx* or UNIT/degree).
+    **-Jr**\ [*lon0/*\ ]\ *scale* **-JR**\ [*lon0/*\ ]\ *width* (Winkel Tripel).
+        Give the central meridian *lon0* (optional) and *scale* along
+        equator (**1:**\ *xxxx* or UNIT/degree).
+    **-Jv**\ [*lon0/*\ ]\ *scale* or **-JV**\ [*lon0/*\ ]\ *width* (Van der Grinten).
+        Give the central meridian *lon0* (optional) and *scale* along
+        equator (**1:**\ *xxxx* or UNIT/degree).
+    **-Jw**\ [*lon0/*\ ]\ *scale* or **-JW**\ [*lon0/*\ ]\ *width* (Mollweide **[E]**).
+        Give the central meridian *lon0* (optional) and *scale* along
+        equator (**1:**\ *xxxx* or UNIT/degree).
+
+    **NON-GEOGRAPHICAL PROJECTIONS:**
+
+    **-Jp**\ [**a**\ ]\ *scale*\ [*/origin*\ ][\ **r**\ \|\ **z**] or **-JP**\ [**a**\ ]\ *width*\ [*/origin*\ ][\ **r**\ \|\ **z**]
+    (Polar coordinates (theta,r))
+
+    Optionally insert **a** after **-Jp** [ or **-JP**] for azimuths CW
+    from North instead of directions CCW from East [Default]. Optionally
+    append /*origin* in degrees to indicate an angular offset [0]).
+    Finally, append **r** if r is elevations in degrees (requires s >= 0
+    and n <= 90) or **z** if you want to annotate depth rather than
+    radius [Default]. Give *scale* in UNIT/r-unit.
+
+    **-Jx**\ *x-scale*\ [*/y-scale*\ ] or **-JX**\ *width*\ [*/height*\ ] (Linear, log, and power scaling)
+
+    Give *x-scale* (**1:**\ *xxxx* or UNIT/x-unit) and/or *y-scale*
+    (**1:**\ *xxxx* or UNIT/y-unit); or specify *width* and/or *height*
+    in UNIT. *y-scale*\ =\ *x-scale* if not specified separately and
+    using **1:**\ *xxxx* implies that x-unit and y-unit are in meters.
+    Use negative scale(s) to reverse the direction of an axis (e.g., to
+    have y be positive down). Set *height* or *width* to 0 to have it
+    recomputed based on the implied scale of the other axis. Optionally,
+    append to *x-scale*, *y-scale*, *width* or *height* one of the
+    following:
+
+        **d**
+           Data are geographical coordinates (in degrees).
+        **l**
+           Take log10 of values before scaling.
+        **p**\ *power*
+           Raise values to *power* before scaling.
+        **t**
+           Input coordinates are time relative to :ref:`TIME_EPOCH <TIME_EPOCH>`.
+        **T**
+           Input coordinates are absolute time.
+
+        Default axis lengths (see **gmt.conf**) can be invoked using
+        **-JXh** (for landscape); **-JXv** (for portrait) will swap the
+        x- and y-axis lengths. The default unit for this installation is
+        either cm or inch, as defined in the file **share/gmt.conf**.
+        However, you may change this by editing your **gmt.conf** file(s).
+
+When **-J** is used without any further arguments, or just with the
+projection type, the arguments of the last used **-J**, or the last used
+**-J** with that projection type, will be used.

@@ -1,0 +1,22 @@
+.. _example_33:
+
+(33) Stacking automatically generated cross-profiles
+----------------------------------------------------
+
+The script produces the plot in Figure. Here
+we demonstrate how :doc:`grdtrack </grdtrack>` can be
+used to automatically create a suite of crossing profiles of uniform
+spacing and length and then sample one or more grids along these
+profiles; we also use the median stacking option to create a stacked
+profile, showed above the map, with the gray area representing the
+variations about the stacked median profile.
+
+
+.. literalinclude:: /_verbatim/example_33.txt
+   :language: bash
+
+.. figure:: /_images/example_33.*
+   :width: 500 px
+   :align: center
+
+   Stacking automatically generated cross-profiles.
