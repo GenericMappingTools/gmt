@@ -153,15 +153,14 @@ Download from http://nsis.sourceforge.net/
 
 Finally we are ready to compile GMT5.
 
-- Get GMT from svn://gmtserver.soest.hawaii.edu/gmt5/tunk
-- Get GSHHG (Shoreline Database) from ftp://ftp.soest.hawaii.edu/pwessel/gshhs/
+- Get GMT and GSHHG (Shoreline Database) from http://gmt.soest.hawaii.edu/
 
 - In the source tree copy cmake/ConfigUserTemplate.cmake to
   cmake/ConfigUser.cmake and edit the file according to your demands. This is
   an example:
 
   set (CMAKE_INSTALL_PREFIX z:/software/gmt5msc)
-  set (GSHHG_ROOT z:/software/src/coast)
+  set (GSHHG_ROOT z:/software/src/gshhg-gmt-nc4)
   set (NETCDF_ROOT z:/software)
   set (GDAL_ROOT z:/software)
   set (PCRE_ROOT z:/software)
@@ -201,9 +200,9 @@ building GMT run:
 This will create both a ZIP archive and NSIS installer. If there are no issues
 then you will obtain three files, e.g.:
 
-GMT-5.0.0-win64-Documentation.zip
-GMT-5.0.0-win64-Runtime.zip
-GMT-5.0.0-win64.exe
+GMT-5.x.x-win64-Documentation.zip
+GMT-5.x.x-win64-Runtime.zip
+GMT-5.x.x-win64.exe
 
 Dependency walking takes a long time so be patient. You can save some time if
 you are only interested in one of the two package options. Invoke CPack
