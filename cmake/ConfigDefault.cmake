@@ -37,14 +37,14 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR "5")
-set (GMT_PACKAGE_VERSION_MINOR "0")
-set (GMT_PACKAGE_VERSION_PATCH "1b")
+set (GMT_PACKAGE_VERSION_MINOR "1")
+set (GMT_PACKAGE_VERSION_PATCH "0")
 
 # The subversion revision of the GMT source code.
 # This is manually set when making GMT *public* releases.
 # However, when making internal releases or just an ordinary developer build, leave it
 # empty; if it is empty, the revision number is automatically populated for you on build.
-#set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "9047")
+#set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "12452")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
@@ -54,7 +54,7 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 #set (GMT_VERSION_YEAR "2013")
 
 # The GMT wiki location
-set (GMT_TRAC_WIKI "http://gmtrac.soest.hawaii.edu/projects/gmt/wiki/")
+set (GMT_TRAC_WIKI "http://gmt.soest.hawaii.edu/")
 
 # Use SI units per default
 if (NOT UNITS)

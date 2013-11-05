@@ -21,9 +21,9 @@ other platforms.
 
 Note there are three GMT tar archives available (#3 is optional):
 
-1. gmt-5.0.0.tar.bz2:          The GMT 5 distribution
-2. gshhg-gmt-nc4-2.2.4.tar.gz: All five resolutions of GSHHG coastline data
-3. dcw-gmt-1.0.20.tar.bz2:      Digital Chart of the World polygon data
+1. gmt-5.x.x.tar.bz2:          The GMT 5 distribution
+2. gshhg-gmt-nc4-2.x.x.tar.gz: All five resolutions of GSHHG coastline data
+3. dcw-gmt-1.x.x.tar.bz2:      Digital Chart of the World polygon data
 
 The archives are available in bzip2 (*.bz2) and gzip (*.gz) formats.
 If you do not have bzip2 installed you can obtain source or executables
@@ -64,19 +64,18 @@ systems.
 Install support data
 --------------------
 
-You can obtain GMT from gmt.soest.hawaii.edu. Alternatively you may ftp GMT
-from pub/gmt on any of the following sites. Try the site that is closest to
+You can obtain GMT from http://gmt.soest.hawaii.edu/. Alternatively you may
+get GMT from any of the following FTP sites. Try the site that is closest to
 you to minimize transmission times:
 
 Site                                    FTP address
 --------------------------------------------------------------
-SOEST, U. of Hawaii                     gmt.soest.hawaii.edu
+SOEST, U. of Hawaii                     ftp.soest.hawaii.edu
 Lab for Satellite Altimetry, NOAA       ibis.grdl.noaa.gov
 IRIS, Washington, US                    ftp.iris.washington.edu
 IAG-USP, U. of Sao Paulo, BRAZIL        ftp.iag.usp.br
 Dep. Geology, U. in Oslo, NORWAY        ftp.geologi.uio.no
 ISV, Hokkaido U, Sapporo, JAPAN         ftp.eos.hokudai.ac.jp
-U of Sydney, Sydney, AUSTRALIA          mirror.geosci.usyd.edu.au
 GDS, Vienna U. of Technology, AUSTRIA   gd.tuwien.ac.at
 TENET, Tertiary Education & Research Networks, SOUTH AFRICA
                                         gmt.mirror.ac.za
@@ -228,39 +227,38 @@ Before running programs, there are a few things you should do/know:
 A reminder
 ----------
 
-   If you think it is appropriate, you may consider paying us back
-by including our latest EOS article (Wessel, P. and W. H. F. Smith,
-New, improved version of the Generic Mapping Tools released, EOS Trans.
-AGU, 79, 579, 1998, and our Geophysics article on the gridding algorithm
-in surface (Smith, W. H. F. and P. Wessel, Gridding with continuous
-curvature splines in tension, Geophysics, 55, 293-305, 1990) in the
-reference list of your future publications that will benefit from the
-availability of GMT.
+If you think it is appropriate, you may consider paying us back by including
+our latest EOS article (Wessel, P. and W. H. F. Smith, New, improved version
+of the Generic Mapping Tools released, EOS Trans.  AGU, 79, 579, 1998, and our
+Geophysics article on the gridding algorithm in surface (Smith, W. H. F. and
+P. Wessel, Gridding with continuous curvature splines in tension, Geophysics,
+55, 293-305, 1990) in the reference list of your future publications that will
+benefit from the availability of GMT.
 
 
 Software support
 ----------------
 
-   You haven't bought anything so you cannot expect full service.
-However, if you find a bug in any of the programs, please report
-it to us (gmtrac.soest.hawaii.edu) rather than trying to fix it yourself
-so that we, and through us, other users may benefit from your find.
-Make sure you provide us with enough information so that we can recreate
-the problem.
-	Please register via the GMT web page (gmt.soest.hawaii.edu).
-Two mailing lists of interest to GMT users are available:  gmt-group@lists.hawaii.edu
-allows us to notify registered users in the event of bugfixes
-and/or new releases.  A separate mailing list (gmt-help@lists.hawaii.edu) exists
-for GMT users who have questions about GMT installation and usage.  If you want
-to subscribe to one or both of these mailinglists, send a message to
-listproc@hawaii.edu that contains one or both of the commands
+You haven't bought anything so you cannot expect full service.  However, if
+you find a bug in any of the programs, please report it to us
+(http://gmt.soest.hawaii.edu/) rather than trying to fix it yourself so that
+we, and through us, other users may benefit from your find.  Make sure you
+provide us with enough information so that we can recreate the problem.
+
+Two mailing lists of interest to GMT users are available:
+gmt-group@lists.hawaii.edu allows us to notify registered users in the event
+of bugfixes and/or new releases.  A separate mailing list
+(gmt-help@lists.hawaii.edu) exists for GMT users who have questions about GMT
+installation and usage.  If you want to subscribe to one or both of these
+mailinglists, send a message to listproc@hawaii.edu that contains one or both
+of the commands
 
 subscribe gmt-help <yourname, not email address>
 subscribe gmt-group <yourname, not email address>
 
-You may post messages to gmt-help while gmt-group is more of a one-way street
-for us to inform users of bug fixes and upgrades.  The online registration
-also lets you subscribe to the two mailinglists.
+or register at https://listserv.hawaii.edu/.  You may post messages to
+gmt-help while gmt-group is more of a one-way street for us to inform users of
+bug fixes and upgrades.
 
 
 Ordering the GMT package on CD/DVD-Rs
@@ -269,7 +267,7 @@ Ordering the GMT package on CD/DVD-Rs
 Should you or someone you know without net-access need to obtain GMT:
 Geoware makes and distributes CD/DVD-Rs with the GMT package and many
 useful data sets.  For more details and a full description of the data
-sets (up to 60 Gb of data!) visit www.geoware-online.com
+sets (up to 60 Gb of data!) visit http://www.geoware-online.com/.
 
 
 Good luck!
