@@ -1,0 +1,18 @@
+#       $Id$
+#
+# Colour scheme for the International Bathymetric Chart of 
+# the Southern Ocean (http://www.ibcso.org/), converted from
+# IBCSO_ver1_white.txt to the cpt format by J.J.Green 2013
+#
+# COLOR_MODEL = RGB
+-12000	31/40/79	-7000	31/40/79
+-7000	38/60/106	-6000	38/60/106
+-6000	46/80/133	-5000	46/80/133
+-5000	53/99/160	-4000	53/99/160
+-4000	60/119/188	-3000	60/119/188
+-3000	72/151/211	-2000	72/151/211
+-2000	90/185/233	-1000	90/185/233
+-1000	95/198/242	-500	95/198/242
+-500	114/202/238	-250	114/202/238
+-250	141/210/239	0	141/210/239
+F	white

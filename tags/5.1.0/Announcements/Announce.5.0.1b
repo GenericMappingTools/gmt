@@ -1,0 +1,18 @@
+Dear GMT user-
+
+We are pleased to announce a new beta release GMT 5.0.1b. One of
+the new changes this release features is a completely different
+build system. We switched from the aging GNU autotool build chain
+(autoconf, configure, automake, libtool, aclocal, ...) to CMake.
+
+Since GMT5, all builds on all platforms are now performed using
+CMake. This is an important step to clean up and simplify the GMT
+build system. The support for GNU autotools has now been removed
+completely because maintaining two separate build systems simply
+is too much of a burden. The description of the source build
+process in the reference manual has also been updated to reflect
+this change.
+
+Sincerely,
+
+The GMT Team

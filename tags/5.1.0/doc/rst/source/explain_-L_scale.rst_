@@ -1,0 +1,15 @@
+**-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**] ]
+    Draws a simple map scale centered on *lon0/lat0*. Use **-Lx** to
+    specify x/y position instead. Scale is calculated at latitude *slat*
+    (optionally supply longitude *slon* for oblique projections [Default
+    is central meridian]), *length* is in km, or append unit from
+    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**. Use
+    **-Lf** to get a "fancy" scale [Default is plain]. Append **+l** to
+    select the default label which equals the distance unit (meter,
+    foot, km, mile, nautical mile, US survey foot) and is justified on
+    top of the scale [t]. Change this by giving your own label (append
+    **+l**\ *label*). Change label justification with
+    **+j**\ *justification* (choose among l(eft), r(ight), t(op), and b(ottom)). Apply
+    **+u** to append the unit to all distance annotations along the
+    scale. If you want to place a rectangle behind the scale, specify
+    suitable **+p**\ *pen* and/or **+g**\ *fill* parameters.

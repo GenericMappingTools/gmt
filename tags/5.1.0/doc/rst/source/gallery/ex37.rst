@@ -1,0 +1,21 @@
+.. _example_37:
+
+(37) Spectral coherence between gravity and bathymetry grids
+------------------------------------------------------------
+
+The next script produces the plot in Figure.
+We demonstrate how :doc:`grdfft </grdfft>` is used to compute the
+spectral coherence between two data sets, here multibeam bathymetry
+and satellite-derived gravity.  The grids are detrended and tapered
+before the Fourier transform is computed; the intermediate plots show
+the grids being extended and padded to a suitable dimension.
+
+.. literalinclude:: /_verbatim/example_37.txt
+   :language: bash
+
+.. figure:: /_images/example_37.*
+   :width: 500 px
+   :align: center
+
+   Spectral coherence between gravity and bathymetry grids.
+

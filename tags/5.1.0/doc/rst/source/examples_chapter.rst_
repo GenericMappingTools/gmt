@@ -1,0 +1,1423 @@
+Creating GMT Graphics
+=====================
+
+.. only:: not latex
+
+    See PDF documentation.
+
+.. only:: latex
+
+    In this section we will be giving numerous examples of typical usage of
+    GMT programs. In general, we will start with a raw data set,
+    manipulate the numbers in various ways, then display the results in
+    diagram or map view. The resulting plots will have in common that they
+    are all made up of simpler plots that have been overlaid to create a
+    complex illustration. We will mostly follow the following format:
+
+    #. We explain what we want to achieve in plain language.
+
+    #. We present an annotated Bourne shell script that contains all
+       commands used to generate the illustration.
+
+    #. We explain the rationale behind the commands.
+
+    #. We present the illustration, 50% reduced in size, and without the timestamp (**-U**).
+
+    A detailed discussion of each command is not given; we refer you to the
+    manual pages for command line syntax, etc. We encourage you to run these
+    scripts for yourself. See Appendix [app:D] if you would like an
+    electronic version of all the shell-scripts (both **sh** and **csh**
+    scripts are available, as or DOS batch files; only the **sh**-scripts
+    are discussed here) and support data used below. Note that all examples
+    explicitly specifies the measurement units, so although we use inches
+    you should be able to run these scripts and get the same plots even if
+    you have cm as the default measure unit. The examples are all written to
+    be "quiet", that is no information is echoed to the screen. Thus, these
+    scripts are well suited for background execution.
+
+    Note that we also end each script by cleaning up after ourselves.
+    Because there are several AWK implementations such as **gawk**
+    and **nawk**, which are not available everywhere, we refer to
+    ``$AWK`` in the scripts below. This variable must be set prior to
+    running the example scripts.
+
+    Finally, be aware that for practical purposes the output
+    PostScript file name is stored as the variable ``ps``.
+
+    The making of contour maps
+    --------------------------
+
+    We want to create two contour maps of the low order geoid using the
+    Hammer equal area projection. Our gridded data file is called ``osu91a1f_16.nc`` and
+    contains a global 1 by 1 gridded geoid (we will see how to make gridded
+    files later). We would like to show one map centered on Greenwich and
+    one centered on the dateline. Positive contours should be drawn with a
+    solid pen and negative contours with a dashed pen. Annotations should
+    occur for every 50 m contour level, and both contour maps should show
+    the continents in light brown in the background. Finally, we want a
+    rectangular frame surrounding the two maps. This is how it is done:
+
+    .. literalinclude:: /_verbatim/example_01.txt
+       :language: bash
+
+    The first command draws a box surrounding the maps. This is followed by
+    two sequences of :doc:`pscoast`, :doc:`grdcontour`,
+    :doc:`grdcontour`. They differ in that the
+    first is centered on Greenwich; the second on the dateline. We use the
+    limit option (**-L**) in :doc:`grdcontour`
+    to select negative contours only and plot those with a dashed pen, then
+    positive contours only and draw with a solid pen [Default]. The **-T**
+    option causes tick marks pointing in the downhill direction to be drawn
+    on the innermost, closed contours. For the upper panel we also added -
+    and + to the local lows and highs. You can find this illustration as
+
+    .. figure:: /_images/example_01.*
+
+    Image presentations
+    -------------------
+
+    As our second example we will demonstrate how to make color images from
+    gridded data sets (again, we will defer the actual making of grid files
+    to later examples). We will use :doc:`grdraster` to extract 2-D grid files
+    of bathymetry and Geosat geoid heights and put the two images on the
+    same page. The region of interest is the Hawaiian islands, and due to
+    the oblique trend of the island chain we prefer to rotate our
+    geographical data sets using an oblique Mercator projection defined by
+    the hotspot pole at (68W, 69N). We choose the point (190, 25.5) to be
+    the center of our projection (e.g., the local origin), and we want to
+    image a rectangular region defined by the longitudes and latitudes of
+    the lower left and upper right corner of region. In our case we choose
+    (160, 20) and (220, 30) as the corners. We use
+    :doc:`grdimage` to make the illustration:
+
+    .. literalinclude:: /_verbatim/example_02.txt
+       :language: bash
+
+    The first step extracts the 2-D data sets from the local data base using
+    :doc:`grdraster` that may be adapted to reflect
+    the nature of your data base format. It automatically figures out the
+    required extent of the region given the two corners points and the
+    projection. The extreme meridians and parallels enclosing the oblique
+    region is **-R**\ 159:50/220:10/3:10/47:35. This is the area extracted
+    by :doc:`grdraster`. For your convenience
+    we have commented out those lines and provided the two extracted files
+    so you do not need :doc:`grdraster` to try
+    this example. By using the embedded grid file format mechanism we saved
+    the topography using kilometers as the data unit. We now have two grid
+    files with bathymetry and geoid heights, respectively. We use
+    :doc:`makecpt` to generate a linear color
+    palette file ``geoid.cpt`` for the geoid and use
+    :doc:`grd2cpt` to get a histogram-equalized
+    cpt file ``topo.cpt`` for the topography data. To emphasize the structures in the
+    data we calculate the slopes in the north-south direction using
+    :doc:`grdgradient`; these will be used to
+    modulate the color image. Next we run
+    :doc:`grdimage` to create a color-code image
+    of the Geosat geoid heights, and draw a color legend to the right of the
+    image with :doc:`psscale`. Similarly, we run
+    :doc:`grdimage` but specify **-Y**\ 4.5i to
+    plot above the previous image. Adding scale and label the two plots a)
+    and b) completes the illustration.
+
+    .. figure:: /_images/example_02.*
+
+    Spectral estimation and xy-plots
+    --------------------------------
+
+    In this example we will show how to use the GMT programs
+    :doc:`fitcircle`, :doc:`project`,
+    :doc:`sample1d`, :doc:`spectrum1d`,
+    :doc:`psxy`, and
+    :doc:`pstext`. Suppose you have (lon, lat,
+    gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
+    gravity) along a ship track in a file called ``ship.xyg``. You want to make a
+    cross-spectral analysis of these data. First, you will have to get the
+    two data sets into equidistantly sampled time-series form. To do this,
+    it will be convenient to project these along the great circle that best
+    fits the sat track. We must use
+    :doc:`fitcircle` to find this great circle
+    and choose the L\ :math:`_2` estimates of best pole. We project the data
+    using :doc:`project` to find out what their
+    ranges are in the projected coordinate. The
+    :doc:`gmtinfo` utility will report the minimum
+    and maximum values for multi-column ASCII tables. Use this information
+    to select the range of the projected distance coordinate they have in
+    common. The script prompts you for that information after reporting the
+    values. We decide to make a file of equidistant sampling points spaced 1
+    km apart from -1167 to +1169, and use the UNIX utility **awk** to
+    accomplish this step. We can then resample the projected data, and carry
+    out the cross-spectral calculations, assuming that the ship is the input
+    and the satellite is the output data. There are several intermediate
+    steps that produce helpful plots showing the effect of the various
+    processing steps (``example_03[a-f].ps``), while the final plot ``example_03.ps`` shows the ship and sat power
+    in one diagram and the coherency on another diagram, both on the same
+    page. Note the extended use of :doc:`pstext`
+    and :doc:`psxy` to put labels and legends
+    directly on the plots. For that purpose we often use **-Jx**\ 1i and
+    specify positions in inches directly. Thus, the complete automated script reads:
+
+    .. literalinclude:: /_verbatim/example_03.txt
+       :language: bash
+
+    The final illustration (Figure [fig:example:sub:`0`\ 3]) shows that the
+    ship gravity anomalies have more power than altimetry derived gravity
+    for short wavelengths and that the coherency between the two signals
+    improves dramatically for wavelengths > 20 km.
+
+    .. figure:: /_images/example_03.*
+
+    A 3-D perspective mesh plot
+    ---------------------------
+
+    This example will illustrate how to make a fairly complicated composite
+    figure. We need a subset of the ETOPO5 bathymetry [24]_ and Geosat geoid
+    data sets which we will extract from the local data bases using
+    :doc:`grdraster`. We would like to show a
+    2-layer perspective plot where layer one shows a contour map of the
+    marine geoid with the location of the Hawaiian islands superposed, and a
+    second layer showing the 3-D mesh plot of the topography. We also add an
+    arrow pointing north and some text. The first part of this script shows
+    how to do it:
+
+    .. literalinclude:: /_verbatim/example_04.txt
+       :language: bash
+
+    The purpose of the color palette file ``zero.cpt`` is to have the positive topography
+    mesh painted light gray (the remainder is white). The left side of
+    Figure shows the complete illustration.
+
+    .. figure:: /_images/example_04.*
+
+    The second part of the script shows how to make the color version of
+    this figure that was printed in our first article in *EOS Trans. AGU* (8
+    October 1991). Using :doc:`grdview` one can
+    choose to either plot a mesh surface (left) or a color-coded surface
+    (right). We have also added artificial illumination from a light-source
+    due north, which is simulated by computing the gradient of the surface
+    grid in that direction though the
+    :doc:`grdgradient` program. We choose to
+    use the **-Qc** option in :doc:`grdview` to
+    achieve a high degree of smoothness. Here, we select 100 dpi since that
+    will be the resolution of our final raster (The EOS raster was 300 dpi).
+    Note that the size of the resulting output file is directly dependent on
+    the square of the dpi chosen for the scanline conversion and how well
+    the resulting image compresses. A higher value for dpi in **-Qc** would
+    have resulted in a much larger output file. The CPT files were taken
+    from Section [sec:example\ :sub:`0`\ 2].
+
+    A 3-D illuminated surface in black and white
+    --------------------------------------------
+
+    Instead of a mesh plot we may choose to show 3-D surfaces using
+    artificial illumination. For this example we will use
+    :doc:`grdmath` to make a grid file that
+    contains the surface given by the function
+    :math:`z(x, y) = \cos (2\pi r/8)\cdot e^{-r/10}`, where
+    :math:`r^2 = (x^2 + y^2)`. The illumination is obtained by passing two
+    grid files to :doc:`grdview`: One with the
+    *z*-values (the surface) and another with intensity values (which should
+    be in the 1 range). We use
+    :doc:`grdgradient` to compute the
+    horizontal gradients in the direction of the artificial light source.
+    The ``gray.cpt`` file only has one line that states that all *z* values should have
+    the gray level 128. Thus, variations in shade are entirely due to
+    variations in gradients, or illuminations. We choose to illuminate from
+    the SW and view the surface from SE:
+
+    .. literalinclude:: /_verbatim/example_05.txt
+       :language: bash
+
+    The variations in intensity could be made more dramatic by using
+    :doc:`grdmath` to scale the intensity file
+    before running :doc:`grdview`. For very rough
+    data sets one may improve the smoothness of the intensities by passing
+    the output of :doc:`grdgradient` to
+    :doc:`grdhisteq`. The shell-script above
+    will result in a plot like the one in Figure [fig:example\ :sub:`0`\ 5].
+
+    .. figure:: /_images/example_05.*
+
+    Plotting of histograms
+    ----------------------
+
+    GMT provides two tools to render histograms:
+    :doc:`pshistogram` and :doc:`psrose`. The former takes care of
+    regular histograms whereas the latter deals with polar histograms (rose
+    diagrams, sector diagrams, and wind rose diagrams). We will show an
+    example that involves both programs. The file ``fractures.yx`` contains a compilation of
+    fracture lengths and directions as digitized from geological maps. The
+    file ``v3206.t`` contains all the bathymetry measurements from *Vema* cruise 3206.
+    Our complete figure (Figure [fig:example:sub:`0`\ 6]) was made running
+    this script:
+
+    .. literalinclude:: /_verbatim/example_06.txt
+       :language: bash
+
+    .. figure:: /_images/example_06.*
+
+    A simple location map
+    ---------------------
+
+    Many scientific papers start out by showing a location map of the region
+    of interest. This map will typically also contain certain features and
+    labels. This example will present a location map for the equatorial
+    Atlantic ocean, where fracture zones and mid-ocean ridge segments have
+    been plotted. We also would like to plot earthquake locations and
+    available isochrons. We have obtained one file, ``quakes.xym``, which contains the
+    position and magnitude of available earthquakes in the region. We choose
+    to use magnitude/100 for the symbol-size in inches. The digital fracture
+    zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as ``isochrons.xy``) were
+    digitized from available maps [24]_. We create the final location map
+    (Figure [fig:example:sub:`0`\ 7]) with the following script:
+
+    .. literalinclude:: /_verbatim/example_07.txt
+       :language: bash
+
+    .. figure:: /_images/example_07.*
+
+    The same figure could equally well be made in color, which could be
+    rasterized and made into a slide for a meeting presentation. The script
+    is similar to the one outlined above, except we would choose a color for
+    land and oceans, and select colored symbols and pens rather than black
+    and white.
+
+    A 3-D histogram
+    ---------------
+
+    The program :doc:`psxyz` allows us to plot
+    three-dimensional symbols, including columnar plots. As a simple
+    demonstration, we will convert a gridded netCDF of bathymetry into an
+    ASCII *xyz* table and use the height information to draw a 2-D
+    histogram in a 3-D perspective view. Our gridded bathymetry file is
+    called ``guinea_bay.nc`` and covers the region from 0 to 5 E and 0 to 5 N. Depth ranges
+    from -5000 meter to sea-level. We produce the
+    Figure [fig:example\ :sub:`0`\ 8] by running this script:
+
+    .. literalinclude:: /_verbatim/example_08.txt
+       :language: bash
+
+    .. figure:: /_images/example_08.*
+
+    Plotting time-series along tracks
+    ---------------------------------
+
+    A common application in many scientific disciplines involves plotting
+    one or several time-series as as "wiggles" along tracks. Marine
+    geophysicists often display magnetic anomalies in this manner, and
+    seismologists use the technique when plotting individual seismic traces.
+    In our example we will show how a set of Geosat sea surface slope
+    profiles from the south Pacific can be plotted as "wiggles" using the
+    :doc:`pswiggle` program. We will embellish
+    the plot with track numbers, the location of the Pacific-Antarctic
+    Ridge, recognized fracture zones in the area, and a "wiggle" scale. The
+    Geosat tracks are stored in the file ``tracks.txt``, the ridge in ``ridge.xy``, and all the
+    fracture zones are stored in the multiple segment file ``fz.xy``. The
+    profile id is contained in the segment headers and we wish to use the
+    last data point in each of the track segments to construct an input file
+    for :doc:`pstext` that will label each profile
+    with the track number. We know the profiles trend approximately N40E so
+    we want the labels to have that same orientation (i.e., the angle with
+    the baseline must be 50). We do this by extracting the last record from
+    each track and select segment header as textstring when running
+    the output through :doc:`pstext`. Note we
+    offset the positions by -0.05 inch with **-D** in order to have a small
+    gap between the profile and the label:
+
+    .. literalinclude:: /_verbatim/example_09.txt
+       :language: bash
+
+    The output shows the sea-surface slopes along 42 descending Geosat
+    tracks in the Eltanin and Udintsev fracture zone region in a Mercator
+    projection.
+
+    .. figure:: /_images/example_09.*
+
+    A geographical bar graph plot
+    -----------------------------
+
+    Our next and perhaps most business-like example presents a
+    three-dimensional bar graph plot showing the geographic distribution of
+    all the languages of the world. The input data
+    was taken from `Ethnologue <http://www.ethnologue.com/>`_. We decide to plot a 3-D column
+    centered on each continent with a height that is proportional to the
+    languages used. We choose a plain
+    linear projection for the basemap and add the columns and text on top.
+    Eventually we make it a bit more fancy by splitting the columns up in different colors
+    indicating how commonly the languages are used, from institutional languages to
+    languages threatened by extinction.
+    The script also shows how to effectively use transparency of the boxes around the numbers
+    and in the shade surrounding the legend.
+
+    Our script that produces Figure ex_10 reads:
+
+    .. literalinclude:: /_verbatim/example_10.txt
+       :language: bash
+
+    .. figure:: /_images/example_10.*
+
+    Making a 3-D RGB color cube
+    ---------------------------
+
+    In this example we generate a series of 6 color images, arranged so that
+    they can be cut out and assembled into a 3-D color cube. The six faces
+    of the cube represent the outside of the R-G-B color space. On each face
+    one of the color components is fixed at either 0 or 255 and the other
+    two components vary smoothly across the face from 0 to 255. The cube is
+    configured as a right-handed coordinate system with *x-y-z* mapping
+    R-G-B. Hence, the 8 corners of the cube represent the primaries red,
+    green, and blue, plus the secondaries cyan, magenta and yellow, plus
+    black and white.
+
+    The 6 color faces are generated by feeding
+    :doc:`grdimage` three grids, one for each
+    color component (R, G, and B). In some cases the X or Y axes of a face
+    are reversed by specifying a negative width or height in order to change
+    the variation of the color value in that direction from ascending to
+    descending, or vice versa.
+
+    A number of rays emanating from the white and black corners indicate the
+    Hue value (ranging from 0 to 360). The dashed and dotted lines near the
+    white corner reflect saturation levels, running from 0 to 1 (in black
+    font). On these 3 faces the brightness is a constant value of 1. On the
+    other 3 faces of the cube, around the black corner, the white decimal
+    numbers indicate brightnesses between 0 and 1, with saturation fixed at 1.
+
+    Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`1`\ 1]:
+
+    .. literalinclude:: /_verbatim/example_11.txt
+       :language: bash
+
+    .. figure:: /_images/example_11.*
+
+    Optimal triangulation of data
+    -----------------------------
+
+    Our next example (Figure [fig:example:sub:`1`\ 2]) operates on a data
+    set of topographic readings non-uniformly distributed in the plane
+    (Table 5.11 in Davis: *Statistics and Data Analysis in Geology*, J.
+    Wiley). We use :doc:`triangulate` to
+    perform the optimal Delaunay triangulation, then use the output to draw
+    the resulting network. We label the node numbers as well as the node
+    values, and call :doc:`pscontour` to make a
+    contour map and image directly from the raw data. Thus, in this example
+    we do not actually make grid files but still are able to contour and
+    image the data. We use a color palette table ``topo.cpt`` (created via
+    :doc:`gmtinfo` and
+    :doc:`makecpt`). The script becomes:
+
+    .. literalinclude:: /_verbatim/example_12.txt
+       :language: bash
+
+    .. figure:: /_images/example_12.*
+
+    Plotting of vector fields
+    -------------------------
+
+    In many areas, such as fluid dynamics and elasticity, it is desirable to
+    plot vector fields of various kinds. GMT provides a way to illustrate
+    2-component vector fields using the
+    :doc:`grdvector` utility. The two
+    components of the field (Cartesian or polar components) are stored in
+    separate grid files. In this example we use
+    :doc:`grdmath` to generate a surface
+    :math:`z(x, y) = x \cdot \exp(-x^2 -y^2)` and to calculate
+    :math:`\nabla z` by returning the *x*- and *y*-derivatives separately.
+    We superpose the gradient vector field and the surface *z* and also plot
+    the components of the gradient in separate windows. A
+    :doc:`pstext` call to place a header finishes
+    the plot (Figure [fig:example:sub:`1`\ 3]:
+
+    .. literalinclude:: /_verbatim/example_13.txt
+       :language: bash
+
+    .. figure:: /_images/example_13.*
+
+    Gridding of data and trend surfaces
+    -----------------------------------
+
+    This example shows how one goes from randomly spaced data points to an
+    evenly sampled surface. First we plot the distribution and values of our
+    raw data set (same as in Section [sec:example\ :sub:`1`\ 2]). We choose an equidistant grid and run
+    :doc:`blockmean` which preprocesses the
+    data to avoid aliasing. The dashed lines indicate the logical blocks
+    used by :doc:`blockmean`; all points inside
+    a given bin will be averaged. The logical blocks are drawn from a
+    temporary file we make on the fly within the shell script. The processed
+    data is then gridded with the :doc:`surface`
+    program and contoured every 25 units. A most important point here is
+    that :doc:`blockmean`, :doc:`blockmedian`, or
+    :doc:`blockmode` should always be run prior
+    to running :doc:`surface`, and both of these
+    steps must use the same grid interval. We use
+    :doc:`grdtrend` to fit a bicubic trend
+    surface to the gridded data, contour it as well, and sample both grid
+    files along a diagonal transect using
+    :doc:`grdtrack`. The bottom panel compares
+    the gridded (solid line) and bicubic trend (dashed line) along the
+    transect using :doc:`psxy`
+    (Figure [fig:example:sub:`1`\ 4]):
+
+    .. literalinclude:: /_verbatim/example_14.txt
+       :language: bash
+
+    .. figure:: /_images/example_14.*
+
+    Gridding, contouring, and masking of unconstrained areas
+    --------------------------------------------------------
+
+    This example (Figure [fig:example:sub:`1`\ 5]) demonstrates some off the
+    different ways one can use to grid data in GMT, and how to deal with
+    unconstrained areas. We first convert a large ASCII file to binary with
+    :doc:`gmtconvert` since the binary file
+    will read and process much faster. Our lower left plot illustrates the
+    results of gridding using a nearest neighbor technique
+    (:doc:`nearneighbor`) which is a local
+    method: No output is given where there are no data. Next (lower right),
+    we use a minimum curvature technique
+    (:doc:`surface`) which is a global method.
+    Hence, the contours cover the entire map although the data are only
+    available for portions of the area (indicated by the gray areas plotted
+    using :doc:`psmask`). The top left scenario
+    illustrates how we can create a clip path (using
+    :doc:`psmask`) based on the data coverage to
+    eliminate contours outside the constrained area. Finally (top right) we
+    simply employ :doc:`pscoast` to overlay gray
+    land masses to cover up the unwanted contours, and end by plotting a
+    star at the deepest point on the map with
+    :doc:`psxy`. This point was extracted from the
+    grid files using :doc:`grdinfo`.
+
+    .. literalinclude:: /_verbatim/example_15.txt
+       :language: bash
+
+    .. figure:: /_images/example_15.*
+
+    Gridding of data, continued
+    ---------------------------
+
+    :doc:`pscontour` (for contouring) and
+    :doc:`triangulate` (for gridding) use the
+    simplest method of interpolating data: a Delaunay triangulation (see
+    Section [sec:example\ :sub:`1`\ 2]) which forms *z(x, y)* as a
+    union of planar triangular facets. One advantage of this method is that
+    it will not extrapolate *z(x, y)* beyond the convex hull of the
+    input (*x, y*) data. Another is that it will not estimate a *z* value
+    above or below the local bounds on any triangle. A disadvantage is that
+    the *z(x, y)* surface is not differentiable, but has sharp kinks
+    at triangle edges and thus also along contours. This may not look
+    physically reasonable, but it can be filtered later (last panel below).
+    :doc:`surface` can be used to generate a
+    higher-order (smooth and differentiable) interpolation of
+    *z(x, y)* onto a grid, after which the grid may be illustrated
+    (:doc:`grdcontour`, :doc:`grdimage`,
+    :doc:`grdview`).
+    :doc:`surface` will interpolate to all (*x,
+    y*) points in a rectangular region, and thus will extrapolate beyond the
+    convex hull of the data. However, this can be masked out in various ways
+    (see Section [sec:example\ :sub:`1`\ 5]).
+
+    A more serious objection is that :doc:`surface` may estimate *z* values
+    outside the local range of the data (note area near *x* = 0.8, *y* =
+    5.3). This commonly happens when the default tension value of zero is
+    used to create a "minimum curvature" (most smooth) interpolant.
+    :doc:`surface` can be used with non-zero
+    tension to partially overcome this problem. The limiting value
+    *tension = 1* should approximate the triangulation, while a value
+    between 0 and 1 may yield a good compromise between the above two cases.
+    A value of 0.5 is shown here (Figure [fig:example:sub:`1`\ 6]). A side
+    effect of the tension is that it tends to make the contours turn near
+    the edges of the domain so that they approach the edge from a
+    perpendicular direction. A solution is to use
+    :doc:`surface` in a larger area and then use
+    :doc:`grdcut` to cut out the desired smaller
+    area. Another way to achieve a compromise is to interpolate the data to
+    a grid and then filter the grid using :doc:`grdfft` or
+    :doc:`grdfilter`. The latter can handle
+    grids containing "NaN" values and it can do median and mode filters as
+    well as convolutions. Shown here is :doc:`triangulate` followed by
+    :doc:`grdfilter`. Note that the filter has
+    done some extrapolation beyond the convex hull of the original *x, y*
+    values. The "best" smooth approximation of *z(x, y)* depends on
+    the errors in the data and the physical laws obeyed by *z*. GMT cannot
+    always do the "best" thing but it offers great flexibility through its
+    combinations of tools. We illustrate all four solutions using a CPT file
+    that contains color fills, predefined patterns for interval (900,925)
+    and NaN, an image pattern for interval (875,900), and a "skip slice"
+    request for interval (700,725).
+
+    .. literalinclude:: /_verbatim/example_16.txt
+       :language: bash
+
+    .. figure:: /_images/example_16.*
+
+    Images clipped by coastlines
+    ----------------------------
+
+    This example demonstrates how :doc:`pscoast`
+    can be used to set up clip paths based on coastlines. This approach is
+    well suited when different gridded data sets are to be merged on a plot
+    using different color palette files. Merging the files themselves may
+    not be doable since they may represent different data sets, as we show
+    in this example. Here, we lay down a color map of the geoid field near
+    India with :doc:`grdimage`, use
+    :doc:`pscoast` to set up land clip paths, and
+    then overlay topography from the ETOPO5 data set with another call to
+    :doc:`grdimage`. We finally undo the
+    clippath with a second call to :doc:`pscoast`
+    with the option **-Q** (Figure [fig:example:sub:`1`\ 7]):
+
+    We also plot a color legend on top of the land. So here we basically
+    have three layers of "paint" stacked on top of each other: the
+    underlaying geoid map, the land mask, and finally the color legend. This
+    legend makes clear how :doc:`grd2cpt`
+    distributed the colors over the range: they are not of equal length put
+    are associated with equal amounts of area in the plot. Since the high
+    amounts (in red) are not very prevalent, that color spans a long range.
+
+    For this image it is appropriate to use the **-I** option in
+    :doc:`psscale` so the legend gets shaded,
+    similar to the geoid grid. See Appendix [app:M] to learn more about
+    color palettes and ways to draw color legends.
+
+    .. literalinclude:: /_verbatim/example_17.txt
+       :language: bash
+
+    .. figure:: /_images/example_17.*
+
+    Volumes and Spatial Selections
+    ------------------------------
+
+    To demonstrate potential usage of the new programs
+    :doc:`grdvolume` and
+    :doc:`gmtselect` we extract a subset of the
+    Sandwell & Smith altimetric gravity field [26]_ for the northern Pacific
+    and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
+    and (2) are within 200 km of the Pratt seamount. We do this by dumping
+    the 50 mGal contours to disk, then making a simple AWK script ``center.awk``
+    that returns the mean location of the points making up each closed polygon,
+    and then pass these locations to :doc:`gmtselect` which retains only the
+    points within 200 km of Pratt. We then mask out all the data outside
+    this radius and use :doc:`grdvolume` to
+    determine the combined area and volumes of the chosen seamounts. Our
+    illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
+
+    .. literalinclude:: /_verbatim/example_18.txt
+       :language: bash
+
+    .. figure:: /_images/example_18.*
+
+    Color patterns on maps
+    ----------------------
+
+    GMT 3.1 introduced color patterns and this examples give a few cases
+    of how to use this new feature. We make a phony poster that advertises
+    an international conference on GMT in Honolulu. We use
+    :doc:`grdmath`,
+    :doc:`makecpt`, and
+    :doc:`grdimage` to draw pleasing color
+    backgrounds on maps, and overlay
+    :doc:`pscoast` clip paths to have the
+    patterns change at the coastlines. The middle panel demonstrates a
+    simple :doc:`pscoast` call where the built-in
+    pattern # 86 is drawn at 100 dpi but with the black and white pixels
+    replaced with color combinations. At the same time the ocean is filled
+    with a repeating image of a circuit board (provides in Sun raster
+    format). The text GMT in the center is an off-line PostScript file
+    that was overlaid using :doc:`psimage`. The
+    final panel repeats the top panel except that the land and sea images
+    have changed places (Figure [fig:example:sub:`1`\ 9]).
+
+    .. literalinclude:: /_verbatim/example_19.txt
+       :language: bash
+
+    .. figure:: /_images/example_19.*
+
+    Custom plot symbols
+    -------------------
+
+    One is often required to make special maps that shows the distribution
+    of certain features but one would prefer to use a custom symbol instead
+    of the built-in circles, squares, triangles, etc. in the GMT plotting
+    programs :doc:`psxy` and
+    :doc:`psxyz`. Here we demonstrate one approach
+    that allows for a fair bit of flexibility in designing ones own symbols.
+    The following recipe is used when designing a new symbol.
+
+    #. Use :doc:`psbasemap` (or engineering
+       paper!) to set up an empty grid that goes from -0.5 to +0.5 in both
+       *x* and *y*. Use ruler and compass to draw your new symbol using
+       straight lines, arcs of circles, and stand-alone geometrical objects
+       (see :doc:`psxy` man page for a full
+       description of symbol design). In this Section we will create two new
+       symbols: a volcano and a bulls eye.
+
+    .. figure:: /_images/GMT_volcano.*
+       :width: 500 px
+       :align: center
+
+
+    #. After designing the symbol we will encode it using a simple set of
+       rules. In our case we describe our volcano and bulls eye using these
+       three freeform polygon generators:
+
+       :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
+       **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` **M** [ **-G**\ *fill* ]
+       [ **-W**\ *pen* ] Start new element at :math:`x_0`, :math:`y_0`
+
+       :math:`x_1` :math:`y_1` **D** Draw straight line from current point
+       to :math:`x_1`, :math:`y_1` around (:math:`x_0`, :math:`y_0`)
+
+       :math:`x_0` :math:`y_0` *r* :math:`\alpha_1` :math:`\alpha_2`
+       **A** Draw arc segment of radius *r* from angle
+       :math:`\alpha_1` to :math:`\alpha_2`
+
+       We also add a few stand-alone circles (for other symbols, see
+       :doc:`psxy` man page):
+
+       :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
+       **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` *r* **c** [
+       **-G**\ *fill* ] [ **-W**\ *pen* ] Draw single circle of radius
+       *r* around :math:`x_0`, :math:`y_0`
+
+       The optional **-G** and **-W** can be used to hardwire the color fill
+       and pen for segments (use **-** to disallow fill or line for any
+       specific feature). By default the segments are painted based on the
+       values of the command line settings.
+
+       Manually applying these rules to our volcano symbol results in a
+       definition file ``volcano.def``:
+
+       Without much further discussion we also make a definition file ``bullseye.def`` for a
+       multi-colored bulls eye symbol. Note that the symbol can be created
+       beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
+       limit in GMT to the size of the symbols. The center, however, will
+       always be at (0,0). This is the point to which the coordinates in
+       :doc:`psxy` refers.
+
+       The values refer to positions and dimensions illustrated in the
+       Figure above.
+
+    #. Given proper definition files we may now use them with
+       :doc:`psxy` or :doc:`psxyz`.
+
+    We are now ready to give it a try. Based on the hotspot locations in the
+    file ``hotspots.d`` (with a 3rd column giving the desired symbol sizes in inches) we
+    lay down a world map and overlay red volcano symbols using our
+    custom-built volcano symbol and :doc:`psxy`. We
+    do something similar with the bulls eye symbols. Without the **-G**
+    option, however, they get the colors defined in ``bullseye.def``.
+
+    Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
+
+    .. literalinclude:: /_verbatim/example_20.txt
+       :language: bash
+
+    .. figure:: /_images/example_20.*
+
+    Given these guidelines you can easily make your own symbols. Symbols
+    with more than one color can be obtained by making several symbol
+    components. E.g., to have yellow smoke coming out of red volcanoes we
+    would make two symbols: one with just the cone and caldera and the other
+    with the bubbles. These would be plotted consecutively using the desired
+    colors. Alternatively, like in ``bullseye.def``, we may specify colors directly for the
+    various segments. Note that the custom symbols (Appendix [app:N]),
+    unlike the built-in symbols in GMT, can be used with the built-in
+    patterns (Appendix [app:E]). Other approaches are also possible, of
+    course.
+
+    Time-series of RedHat stock price
+    ---------------------------------
+
+    As discussed in Section [sec:timeaxis], the annotation of time-series is
+    generally more complicated due to the extra degrees of freedom afforded
+    by the dual annotation system. In this example we will display the trend
+    of the stock price of RedHat (RHAT) from their initial public offering
+    until late 2006. The data file is a comma-separated table and the
+    records look like this:
+
+    ::
+
+        Date,Open,High,Low,Close,Volume,Adj.Close*
+        12-Mar-04,17.74,18.49,17.67,18.02,4827500,18.02
+        11-Mar-04,17.60,18.90,17.37,18.09,7700400,18.09
+
+    Hence, we have a single header record and various prices in USD for each
+    day of business. We will plot the trend of the opening price as a red
+    line superimposed on a yellow envelope representing the low-to-high
+    fluctuation during each day. We also indicate when and at what cost Paul
+    Wessel bought a few shares, and zoom in on the developments since 2004;
+    in the inset we label the time-axis in Finnish in honor of Linus
+    Thorvalds. Because the time coordinates are Y2K-challenged and the order
+    is backwards (big units of years come *after* smaller units like days)
+    we must change the default input/output formats used by GMT. Finally,
+    we want to prefix prices with the $ symbol to indicate the currency.
+    Here is how it all comes out:
+
+    .. literalinclude:: /_verbatim/example_21.txt
+       :language: bash
+
+    which produces the plot in Figure [fig:example\ :sub:`2`\ 1], suggesting
+    Wessel has missed a few trains if he had hoped to cash in on the
+    Internet bubble...
+
+    .. figure:: /_images/example_21.*
+
+    World-wide seismicity the last 7 days
+    -------------------------------------
+
+    The next example uses the command-line tool **wget** to obtain a data
+    file from a specified URL. In the example script this line is
+    commented out so the example will run even if you do not have **wget**
+    (we use the supplied ``neic_quakes.d`` which normally would be created by **wget**);
+    remove the comment to get the actual current seismicity plot using the
+    live data. The main purpose of this script is not to show how to plot a
+    map background and a few circles, but rather demonstrate how a map
+    legend may be composed using the new tool
+    :doc:`pslegend`. Some scripting is used to
+    pull out information from the data file that is later used in the
+    legend. The legend will normally have the email address of the script
+    owner; here that command is commented out and the user is hardwired to
+    "GMT guru". The USGS logo, taken from their web page and converted to a
+    Sun raster file, is used to spice up the legend.
+
+    The script produces the plot in Figure [fig:example\ :sub:`2`\ 2],
+    giving the URL where these and similar data can be obtained.
+
+    .. literalinclude:: /_verbatim/example_22.txt
+       :language: bash
+
+    .. figure:: /_images/example_22.*
+
+    All great-circle paths lead to Rome
+    -----------------------------------
+
+    While motorists recently have started to question the old saying "all
+    roads lead to Rome", aircraft pilots have known from the start that only
+    one great-circle path connects the points of departure and
+    arrival [28]_. This provides the inspiration for our next example which
+    uses :doc:`grdmath` to calculate distances
+    from Rome to anywhere on Earth and
+    :doc:`grdcontour` to contour these
+    distances. We pick five cities that we connect to Rome with great circle
+    arcs, and label these cities with their names and distances (in km) from
+    Rome, all laid down on top of a beautiful world map. Note that we
+    specify that contour labels only be placed along the straight map-line
+    connecting Rome to its antipode, and request curved labels that follows
+    the shape of the contours.
+
+    The script produces the plot in Figure [fig:example\ :sub:`2`\ 3]; note
+    how interesting the path to Seattle appears in this particular
+    projection (Hammer). We also note that Rome's antipode lies somewhere
+    near the Chatham plateau (antipodes will be revisited in
+    Section [sec:example\ :sub:`2`\ 5]).
+
+    .. literalinclude:: /_verbatim/example_23.txt
+       :language: bash
+
+    .. figure:: /_images/example_23.*
+
+    Data selection based on geospatial criteria
+    -------------------------------------------
+
+    Although we are not seismologists, we have yet another example involving
+    seismicity. We use seismicity data for the Australia/New Zealand region
+    to demonstrate how we can extract subsets of data using geospatial
+    criteria. In particular, we wish to plot the epicenters given in the
+    file ``oz_quakes.d`` as red or green circles. Green circles should only be used for
+    epicenters that satisfy the following three criteria:
+
+    #. They are located in the ocean and not on land
+
+    #. They are within 3000 km of Hobart
+
+    #. They are more than 1000 km away from the International Dateline
+
+    All remaining earthquakes should be plotted in red. Rather that doing
+    the selection process twice we simply plot all quakes as red circles and
+    then replot those that pass our criteria. Most of the work here is done
+    by :doc:`gmtselect`; the rest is carried
+    out by the usual :doc:`pscoast` and
+    :doc:`psxy` workhorses. Note for our purposes
+    the Dateline is just a line along the 180 meridian.
+
+    The script produces the plot in Figure [fig:example\ :sub:`2`\ 4]. Note
+    that the horizontal distance from the dateline seems to increase as we
+    go south; however that is just the projected distance (Mercator
+    distortion) and not the actual distance which remains constant at 1000 km.
+
+    .. literalinclude:: /_verbatim/example_24.txt
+       :language: bash
+
+    .. figure:: /_images/example_24.*
+
+    Global distribution of antipodes
+    --------------------------------
+
+    As promised in Section [sec:example\ :sub:`2`\ 3], we will study
+    antipodes. The antipode of a point at :math:`(\phi, \lambda)` is the
+    point at :math:`(-\phi, \lambda + 180)`. We seek an answer to the
+    question that has plagued so many for so long: Given the distribution of
+    land and ocean, how often is the antipode of a point on land also on
+    land? And what about marine antipodes? We use :doc:`grdlandmask` and
+    :doc:`grdmath` to map these distributions and
+    calculate the area of the Earth (in percent) that goes with each of the
+    three possibilities. To make sense of our
+    :doc:`grdmath` equations below, note that we
+    first calculate a grid that is +1 when a point and its antipode is on
+    land, -1 if both are in the ocean, and 0 elsewhere. We then seek to
+    calculate the area distribution of dry antipodes by only pulling out the
+    nodes that equal +1. As each point represent an area approximated by
+    :math:`\Delta \phi \times \Delta \lambda` where the
+    :math:`\Delta \lambda` term's actual dimension depends on
+    :math:`\cos (\phi)`, we need to allow for that shrinkage, normalize our
+    sum to that of the whole area of the Earth, and finally convert that
+    ratio to percent. Since the :math:`\Delta \lambda`, :math:`\Delta \phi`
+    terms appear twice in these expressions they cancel out, leaving the
+    somewhat intractable expressions below where the sum of
+    :math:`\cos (\phi)` for all :math:`\phi` is known to equal :math:`2N_y / \pi`:
+
+    In the end we obtain a funny-looking map depicting the antipodal
+    distribution as well as displaying in legend form the requested
+    percentages (Figure [fig:example:sub:`2`\ 5]). Note that the script is
+    set to evaluate a global 30 minute grid for expediency (*D = 30*),
+    hence several smaller land masses that do have terrestrial antipodes do
+    not show up. If you want a more accurate map you can set the parameter
+    *D* to a smaller increment (try 5 and wait a few minutes).
+
+    The call to :doc:`grdimage` includes the
+    ``-Sn`` to suspend interpolation and only return the value of the
+    nearest neighbor. This option is particularly practical for plotting
+    categorical data, like these, that should not be interpolated.
+
+    .. literalinclude:: /_verbatim/example_25.txt
+       :language: bash
+
+    .. figure:: /_images/example_25.*
+
+    General vertical perspective projection
+    ---------------------------------------
+
+    Next, we present a recent extension to the **-JG** projection option
+    which allows the user to specify a particular altitude (this was always
+    at infinity before), as well as several further parameters to limit the
+    view from the chosen vantage point. In this example we show a view of
+    the eastern continental US from a height of 160 km. Below we add a view
+    with a specific tilt of 55 and azimuth 210; here we have chosen a
+    boresight twist of 45. We view the land from New York towards
+    Washington, D.C.
+
+    At this point the full projection has not been properly optimized and
+    the map annotations will need additional work. Also, note that the
+    projection is only implemented in
+    :doc:`pscoast` and
+    :doc:`grdimage`. We hope to refine this
+    further and extend the availability of the full projection to all of the
+    GMT mapping programs.
+
+    .. literalinclude:: /_verbatim/example_26.txt
+       :language: bash
+
+    .. figure:: /_images/example_26.*
+
+    Plotting Sandwell/Smith Mercator img grids
+    ------------------------------------------
+
+    Next, we show how to plot a data grid that is distributed in projected
+    form. The gravity and predicted bathymetry grids produced by David
+    Sandwell and Walter H. F. Smith are not geographical grids but instead
+    given on a spherical Mercator grid. The GMT supplement img has
+    tools to extract subsets of these large grids. If you need to make a
+    non-Mercator map then you must extract a geographic grid using
+    :doc:`supplements/img/img2grd <supplements/img/img2grd>` and then plot it using your
+    desired map projection. However, if you want to make a Mercator map then
+    you can save time and preserve data quality by avoiding to re-project
+    the data set twice since it is already in a Mercator projection. This
+    example shows how this is accomplished. We use the **-M** option in
+    :doc:`supplements/img/img2grd <supplements/img/img2grd>` to pull out the grid
+    in Mercator units (i.e., do *not* invert the Mercator projection) and
+    then simply plot the grid using a linear projection with a suitable
+    scale (here 0.25 inches per degrees of longitude). To overlay basemaps
+    and features that has geographic longitude/latitude coordinates we must
+    remember two key issues:
+
+    #. This is a *spherical* Mercator grid so we must use
+       --**PROJ_ELLIPSOID**\ =Sphere with all commands that involve
+       projections (or use :doc:`gmtset` to change the setting).
+
+    #. Select Mercator projection and use the same scale that was used with
+       the linear projection.
+
+    This map of the Tasman Sea shows the marine gravity anomalies with land
+    painted black. A color scale bar was then added to complete the illustration.
+
+    .. literalinclude:: /_verbatim/example_27.txt
+       :language: bash
+
+    .. figure:: /_images/example_27.*
+
+    Mixing UTM and geographic data sets
+    -----------------------------------
+
+    Next, we present a similar case: We wish to plot a data set given in UTM
+    coordinates (meter) and want it to be properly registered with overlying
+    geographic data, such as coastlines or data points. The mistake many
+    GMT rookies make is to specify the UTM projection with their UTM data.
+    However, that data have already been projected and is now in linear
+    meters. The only sensible way to plot such data is with a linear
+    projection, yielding a UTM map. In this step one can choose to annotate
+    or tick the map in UTM meters as well. To plot geographic (lon/lat) data
+    on the same map you simply have to specify the region using the UTM
+    meters but supply the actual UTM projection parameters. Make sure you
+    use the same scale with both the linear and UTM projection.
+
+    Our script illustrates how we would plot a UTM grid (with coordinates in
+    meters) of elevations near Kilauea volcano on the Big Island of Hawaii
+    and overlay geographical information (with longitude, latitude
+    coordinates). We first lay down the UTM grid using the linear
+    projection. Then, given we are in UTM zone 5Q, we use the UTM domain and
+    the UTM projection when overlaying the coastline and light blue ocean.
+    We do some trickery by converting the UTM domain to km so that we can
+    add custom annotations to the map. Finally, we place a scale bar and
+    label Kilauea crater to complete the figure.
+
+    .. literalinclude:: /_verbatim/example_28.txt
+       :language: bash
+
+    .. figure:: /_images/example_28.*
+
+    Gridding spherical surface data using splines
+    ---------------------------------------------
+
+    Finally, we demonstrate how gridding on a spherical surface can be
+    accomplished using Green's functions of surface splines, with or without
+    tension. Global gridding does not work particularly well in Cartesian
+    coordinates hence the chosen approach. We use
+    :doc:`greenspline` to produce a crude
+    topography grid for Mars based on radii estimates from the Mariner 9 and
+    Viking Orbiter spacecrafts. This data comes from *Smith and Zuber*
+    [Science, 1996] and is used here as a small (*N* = 370) data set we can
+    use to demonstrate spherical surface gridding. Since
+    :doc:`greenspline` must solve a *N* by
+    *N* matrix system your system memory may impose limits on how large data
+    sets you can handle; also note that the spherical surface spline in
+    tension is particularly slow to compute.
+
+    Our script must first estimate the ellipsoidal shape of Mars from the
+    parameters given by *Smith and Zuber* so that we can remove this
+    reference surface from the gridded radii. We run the gridding twice:
+    First with no tension using *Parker*\ 's [1990] method and then with
+    tension using the *Wessel and Becker* [2008] method. The grids are then
+    imaged with :doc:`grdimage` and
+    :doc:`grdcontour` and a color scale is placed between them.
+
+    .. literalinclude:: /_verbatim/example_29.txt
+       :language: bash
+
+    .. figure:: /_images/example_29.*
+
+    Trigonometric functions plotted in graph mode
+    ---------------------------------------------
+
+    Finally, we end with a simple mathematical illustration of sine and
+    cosine, highlighting the *graph* mode for linear projections and the new
+    curved vectors for angles.
+
+    The script simply draws a graph basemap, computes sine and cosine and
+    plots them as lines, then indicates on a circle that these quantities
+    are simply the projections of an unit vector on the x- and y-axis, at
+    the given angle.
+
+    .. literalinclude:: /_verbatim/example_30.txt
+       :language: bash
+
+    .. figure:: /_images/example_30.*
+
+    Using non-default fonts in PostScript
+    ---------------------------------------
+
+    [sec:non-default-fonts-example]
+
+    This example illustrates several possibilities to create GMT\ plots
+    with non-default fonts. As these fonts are not part of the standard
+    PostScript font collection they have to be embedded in the PS- or
+    PDF-file with Ghostscript. See also
+    Appendix [sec:non-default-fonts] for further information. The script
+    includes the following steps:
+
+    -  create a ``CUSTOM_font_info.d`` file;
+
+    -  set the GMT parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
+
+    -  replace the default Helvetica font in the GMT-PostScript-File with sed;
+
+    -  create a PostScript-File with outlined fonts (optional);
+
+    -  convert GMT\ 's PostScript output to PDF or any image format (optional).
+
+    The script produces the plot in Figure [fig:example\ :sub:`3`\ 1]. All
+    standard fonts have been substituted by the free OpenType fonts Linux
+    Libertine (title) and Linux Biolinum (annotations). Uncomment the
+    appropriate lines in the script to make a PostScript-file with
+    outlined fonts or to convert to a PDF-file.
+
+    .. literalinclude:: /_verbatim/example_31.txt
+       :language: bash
+
+    .. figure:: /_images/example_31.*
+        
+    Draping an image over topography
+    --------------------------------
+
+    In some cases, it is nice to "drape" an arbitrary image over a
+    topographic map. We have already seen how to use
+    :doc:`psimage` to plot an image anywhere in
+    out plot. But here are aim is different, we want to manipulate an image
+    to shade it and plot it in 3-D over topography. This example was
+    originally created by Stephan Eickschen for a flyer emphasizing the
+    historical economical and cultural bond between Brussels, Maastricht and
+    Bonn. Obviously, the flag of the European Union came to mind as a good
+    "background".
+
+    To avoid adding large files to this example, some steps have been
+    already done. First we get the EU flag directly from the web and convert
+    it to a grid with values ranging from 0 to 255, where the higher values
+    will become yellow and the lower values blue. This use of
+    :doc:`grdreformat` requires GDAL support.
+    :doc:`grdedit` then adds the right grid dimension.
+
+    The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
+    well and then subsample it at the same pixels as the EU flag. We then
+    illuminate the topography grid so we can use it later to emphasize the
+    topography. The colors that we will use are those of the proper flag.
+    Lower values will become blue and the upper values yellow.
+
+    The call the :doc:`grdview` plots a
+    topography map of northwest continental Europe, with the flagged draped
+    over it and with shading to show the little topography there is.
+    :doc:`pscoast` is used in conjunction with
+    :doc:`grdtrack` and GMT\ psxyz to plot
+    borders "at altitude". Something similar is done at the end to plot some
+    symbols and names for cities.
+
+    The script produces the plot in Figure [fig:example\ :sub:`3`\ 2]. Note
+    that the PNG image of the flag can be downloaded directly in the call
+    the :doc:`grdreformat`, but we have
+    commented that out in the example because it requires compilation with
+    GDAL support. You will also see the
+    :doc:`grdcut` command commented out because we
+    did not want to store the 58 MB DEM file, whose location is mentioned in the script.
+
+    .. literalinclude:: /_verbatim/example_32.txt
+       :language: bash
+
+    .. figure:: /_images/example_32.*
+
+    Stacking automatically generated cross-profiles
+    -----------------------------------------------
+
+    The script produces the plot in Figure [fig:example\ :sub:`3`\ 3]. Here
+    we demonstrate how :doc:`grdtrack` can be
+    used to automatically create a suite of crossing profiles of uniform
+    spacing and length and then sample one or more grids along these
+    profiles; we also use the median stacking option to create a stacked
+    profile, showed above the map, with the gray area representing the
+    variations about the stacked median profile.
+
+    .. literalinclude:: /_verbatim/example_33.txt
+       :language: bash
+
+    .. figure:: /_images/example_33.*
+
+    Using country polygons for plotting and shading
+    -----------------------------------------------
+
+    The script produces the plot in Figure [fig:example\ :sub:`3`\ 4]. Here
+    we demonstrate how :doc:`pscoast` can be used to extract
+    and plot country polygons.  We show two panels; one in which we do
+    a basic basemap and another where we lay down a color topography
+    image and then place a transparent layer identifying the future
+    Franco-Italian Union whose untimely breakup in 2045 the historians
+    will continue to debate for some time.
+
+    .. literalinclude:: /_verbatim/example_34.txt
+       :language: bash
+
+    .. figure:: /_images/example_34.*
+
+    Spherical triangulation and distance calculations
+    -------------------------------------------------
+
+    The script produces the plot in Figure [fig:example\ :sub:`3`\ 5]. Here
+    we demonstrate how :doc:`sphtriangulate` and
+    :doc:`sphdistance` are used to compute the Delauney and
+    Voronoi information on a sphere, using a decimated GSHHG crude coastline.
+    We show a color image of the distances, highlighted with 500-km contours,
+    and overlay the Voronoi polygons in green.  Finally, the continents are
+    placed on top.
+
+    .. literalinclude:: /_verbatim/example_35.txt
+       :language: bash
+
+    .. figure:: /_images/example_35.*
+
+    Spherical gridding using Renka's algorithms
+    -------------------------------------------
+
+    The next script produces the plot in Figure [fig:example\ :sub:`3`\ 6]. Here
+    we demonstrate how :doc:`sphinterpolate` can be used
+    to perform spherical gridding.  Our example uses early measurements of
+    the radius of Mars from Mariner 9 and Viking Orbiter spacecrafts.  The
+    middle panels shows the data distribution while the top and bottom panel
+    are images of the interpolation using a piecewise linear interpolation
+    and a smoothed spline interpolation, respectively.  For spherical gridding
+    with large volumes of data we recommend :doc:`sphinterpolate`
+    while for small data sets (such as this one, actually) you have more flexibility
+    with :doc:`greenspline`.
+
+    .. literalinclude:: /_verbatim/example_36.txt
+       :language: bash
+
+    .. figure:: /_images/example_36.*
+
+    Spectral coherence between gravity and bathymetry grids
+    -------------------------------------------------------
+
+    The next script produces the plot in Figure [fig:example\ :sub:`3`\ 7].
+    We demonstrate how :doc:`grdfft` is used to compute the
+    spectral coherence between two data sets, here multibeam bathymetry
+    and satellite-derived gravity.  The grids are detrended and tapered
+    before the Fourier transform is computed; the intermediate plots show
+    the grids being extended and padded to a suitable dimension.
+
+    .. literalinclude:: /_verbatim/example_37.txt
+       :language: bash
+
+    .. figure:: /_images/example_37.*
+
+    Histogram equalization of bathymetry grids
+    ------------------------------------------
+
+    The next script produces the plot in Figure [fig:example\ :sub:`3`\ 8].
+    This example shows how to use histogram equalization to enhance various
+    ranges of a grid depending on its frequency distribution.  The key tool
+    used here is :doc:`grdhisteq`.
+
+    .. literalinclude:: /_verbatim/example_38.txt
+       :language: bash
+
+    .. figure:: /_images/example_38.*
+
+    Evaluation of spherical harmonics coefficients
+    ----------------------------------------------
+
+    The next script produces the plot in Figure [fig:example\ :sub:`3`\ 9].
+    We use a spherical harmonic model for the topography of Venus and evaluate
+    the resulting global grid for three sets of upper order/degrees, here 30,
+    90, and 180; the original file (see below) goes to order and degree 720.
+    We use the coefficients to evaluate the grids and make perspective globes
+    of the different resolutions.  The key tool
+    used here is :doc:`sph2grd`.
+
+    .. literalinclude:: /_verbatim/example_39.txt
+       :language: bash
+
+    .. figure:: /_images/example_39.*
+
+    line simplification and area calculations
+    ----------------------------------------------
+
+    .. literalinclude:: /_verbatim/example_40.txt
+       :language: bash
+
+    .. figure:: /_images/example_40.*
+
+Creating GMT Animations
+=======================
+
+.. only:: not latex
+
+    See PDF documentation.
+
+.. only:: latex
+
+    Unlike the previous chapter, in this chapter we will explore what is
+    involved in creating animations (i.e., movies). Of course, an animation
+    is nothing more than a series of individual images played back in an
+    orderly fashion. Here, these images will have been created with GMT.
+    To ensure a smooth transition from frame to frame we will be following
+    some general guidelines when writing our scripts. Since there is no
+    "movie" mode in GMT we must take care of all the book-keeping in our
+    script. Thus, animations may require a bit of planning and may use more
+    advanced scripting than the previous static examples. Note: This is a
+    new chapter introduced with the 4.4.0 version and should be considered
+    work in progress.
+
+    Most, if not all, animation scripts must deal with several specific
+    phases of movie making:
+
+    #. Define parameters that determine the dimension of the final movie.
+
+    #. Pre-calculate all variables, data tables, grids, or background map
+       layers that are *independent* of your time variable.
+
+    #. Have a frame-number loop where each frame is created as a
+       PostScript plot, then rasterized to a TIFF file of chosen dimension.
+
+    #. Convert the individual frames to a single movie of suitable format.
+
+    #. Clean up temporary files and eventually the individual frames.
+
+    We will discuss these phases in more detail before showing our first example.
+
+    #. There are several coordinates that you need to consider when planning
+       your movie. The first is the coordinates of your data, i.e., the
+       *user coordinates*. As with all GMT plots you will transform those
+       to the second set of *plot coordinates* in inches (or cm) by applying
+       a suitable region and map projection. As before, you normally do this
+       with a particular paper size in mind. When printed you get a
+       high-resolution plot in monochrome or color. However, movies are not
+       device-independent and you must finally consider the third set of
+       *pixel coordinates* which specifies the resolution of the final
+       movie. We control the frame size by selecting a suitable *dpi*
+       setting that will scale your physical dimensions to the desired frame
+       size in pixels. If you decide up front on a particular resolution
+       (e.g., 480 by 320 pixels) then you should specify a paper size and
+       *dpi* so that their product yields the desired pixel dimensions. For
+       instance, here it might make sense to plan your plotting on a 4.8 by
+       3.2 inch "paper" and use 100 *dpi* to convert it to pixels, but you
+       are free to use any combination that multiplies to the desired
+       dimensions. After deciding on frame size you need to consider how
+       many frames your movie should have. This depends on lots of things
+       such as how patient you are, how many frames per second you need and
+       the time range of your animation. We recommend you use variables to
+       specify the items that go into computing the number of frames so that
+       you can easily test your script with a few frames before changing
+       settings and running the full Hollywood production overnight.
+
+    #. Depending on what you want to display, there are usually many
+       elements that do not change between frames. Examples include a
+       coastline base map for background, an overlay of text legends,
+       perhaps some variables that hold information that will be used during
+       the movie, and possibly subsets of larger data sets. Since
+       movie-making can take a long time if you are ambitious, it is best to
+       compute or plot all the elements that can be done outside your main
+       frame-loop rather than waste time doing the same thing over and over
+       again. You are then ready for the main loop.
+
+    #. Initialize a frame counter to 0 and have a loop that continues until
+       your frame counter equals the desired number of frames. You must use
+       your frame counter to create a unique file name for each frame image
+       so that the series of images can be lexically arranged. We recommend
+       using the GMT shell function **gmt_set_framename** to format
+       the frame counter with an adequate number of leading zeros; see our
+       examples for details. The bulk of your main loop involves create the
+       single PostScript plot for this particular frame (time). This can
+       be trivial or a serious scripting exercise depending on what you want
+       to show. We will give a few examples with increasing complexity. Once
+       the PostScript plot is created you need to rasterize it; we
+       recommend you use :doc:`ps2raster` to
+       generate a TIFF image at the agreed-upon resolution. We also
+       recommend that you place all frame images in a sub-directory. You may
+       increment your frame counter using **gmt_set_framenext**.
+
+    #. Once you have all your frames you are ready to combine them into an
+       animation. There are two general approaches. (a) If your image
+       sequence is not too long then you can convert the images into a
+       single animated GIF file. This file can be included in PowerPoint
+       presentations or placed on a web page and will play back as a movie
+       by pausing the specified amount between frames, optionally repeating
+       the entire sequence one or more times. (b) For more elaborate
+       projects you will need to convert the frames into a proper movie
+       format such as Quicktime, AVI, MPEG-2, MPEG-4, etc., etc. There are
+       both free and commercial tools that can help with this conversion and
+       they tend to be platform-specific. Most movie tools such as iMovie or
+       MovieMaker can ingest still images and let you specify the frame
+       duration. Under OS X we prefer to use Quicktime. [30]_ Free tools
+       exist to call the Quicktime library functions from the command line
+       as we prefer to do in our scripts. Another choice is to use the free
+       `mencoder <http://www.mplayerhq.hu/>`_.
+       You will find yourself
+       experimenting with compression settings and movie formats so that the
+       final movie has the resolution and portability you require.
+
+    #. Finally, when all is done you should delete any temporary files
+       created. However, since creating the frames may take a lot of time it
+       is best to not automatically delete the frame sub directory. That way
+       you can redo the frames-to-movie conversion with different settings
+       until you are satisfied.
+
+    Animation of the sine function
+    ------------------------------
+
+    Our first animation is not very ambitious: We wish to plot the sine
+    function from 0-360 and take snap shots every 20. To get a smooth curve
+    we must sample the function much more frequently; we settle on 10 times
+    more frequently than the frame spacing. We place a bright red circle at
+    the leading edge of the curve, and as we move forward in time (here,
+    angles) we dim the older circles to a dark red color. We add a label
+    that indicates the current angle value. Once the 18 frames are completed
+    we convert them to a single animated GIF file and write a plain HTML
+    wrapper with a simple legend. Opening the HTML page in ``anim01.html`` the browser will
+    display the animation.
+
+    .. literalinclude:: /_verbatim/anim_01.txt
+       :language: bash
+
+    Make sure you understand the purpose of all the steps in our script. In
+    this case we did some trial-and-error to determine the exact values to
+    use for the map projection, the region, the spacing around the frame,
+    etc. so that the final result gave a reasonable layout. Do this planning
+    on a single PostScript plot before running a lengthy animation script.
+
+    Examining DEMs using variable illumination
+    ------------------------------------------
+
+    Our next animation uses a gridded topography for parts of Colorado (US);
+    the file is distributed with the tutorial examples. Here, we want to use
+    :doc:`grdimage` to generate a shaded-relief
+    image sequence in which we sweep the illumination azimuth around the
+    entire horizon. The resulting animation illustrates how changing the
+    illumination azimuth can bring out subtle features (or artifacts) in the
+    gridded data. The red arrow points in the direction of the illumination.
+
+    .. literalinclude:: /_verbatim/anim_02.txt
+       :language: bash
+
+    As you can see, these sorts of animations are not terribly difficult to
+    put together, especially since our vantage point is fixed. In the next
+    example we will move the "camera" around and must therefore deal with
+    how to frame perspective views.
+
+    Orbiting a static map
+    ---------------------
+
+    Our third animation keeps a fixed gridded data set but moves the camera
+    angle around the full 360. We use
+    :doc:`grdview` to generate a shaded-relief
+    image sequence using the new enhanced **-E** option. No additional
+    information is plotted on the image. As before we produce an animated
+    GIF image and a simple HTML wrapper for it.
+
+    .. literalinclude:: /_verbatim/anim_03.txt
+       :language: bash
+
+    Flying over topography
+    ----------------------
+
+    Our next animation simulates what an imaginary satellite might see as it
+    passes in a great circle from New York to Miami at an altitude of 160
+    km. We use the general perspective view projection with
+    :doc:`grdimage` and use
+    :doc:`project` to create a great circle path
+    between the two cities, sampled every 5 km. The main part of the script
+    will make the DVD-quality frames from different view points, draw the
+    path on the ground, and add frame numbers to each frame. As this
+    animation generates 355 frames we can use 3rd party tools to turn the
+    image sequence into a MPEG-4 movie [31]_. Note: At the moment,
+    :doc:`grdview` cannot use general perspective
+    view projection to allow "fly-through" animations like Fledermaus; we
+    expect to add this functionality in a future version.
+
+    .. literalinclude:: /_verbatim/anim_04.txt
+       :language: bash
+
