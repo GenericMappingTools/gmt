@@ -35,10 +35,14 @@ set (GMT_PACKAGE_NAME "GMT")
 # a short description of the gmt project (only a few words).
 set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
+# GMT_VERSION_YEAR is set to current date in
+# cmake/modules/ConfigCMake.cmake if not specified here:
+#set (GMT_VERSION_YEAR "2013")
+
 # The GMT package version.
-set (GMT_PACKAGE_VERSION_MAJOR "5")
-set (GMT_PACKAGE_VERSION_MINOR "1")
-set (GMT_PACKAGE_VERSION_PATCH "1")
+set (GMT_PACKAGE_VERSION_MAJOR 5)
+set (GMT_PACKAGE_VERSION_MINOR 1)
+set (GMT_PACKAGE_VERSION_PATCH 1)
 
 # The subversion revision of the GMT source code.
 # This is manually set when making GMT *public* releases.
@@ -49,9 +53,13 @@ set (GMT_PACKAGE_VERSION_PATCH "1")
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
-# GMT_VERSION_YEAR set to current date in cmake/modules/ConfigCMake.cmake
-# if not specified here:
-#set (GMT_VERSION_YEAR "2013")
+# The API version (SOVERSION) of the GMT libraries.
+# Increment this when more or fewer functions are included in the
+# library, the function prototype changes, or data type changes.
+set (GMT_LIB_SOVERSION 5)
+
+# The build version (VERSION) of the GMT libraries.
+set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
 # The GMT wiki location
 set (GMT_TRAC_WIKI "http://gmt.soest.hawaii.edu/")
