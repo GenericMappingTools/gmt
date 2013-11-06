@@ -1,8 +1,10 @@
 Package: gmt5
 Version: 5.1.0
-Revision: 1
+Revision: 2
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source-MD5: da741319c883a3dbaf27ec7eaf66c166
+PatchFile: %n.patch
+PatchFile-MD5: 4c45f216587cbc100898114c5345d784
 SourceDirectory: gmt-%v
 
 Conflicts: gmt
@@ -12,13 +14,6 @@ Recommends: %n-doc
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true
 
-# don't build xgrid to avoid x11 dependency.
-# don't build mex (won't work unless matlab or octave is installed).
-
-PatchScript: <<
-  perl -pi -e 's|\@executable_path/\${_rpath}|%p/\${GMT_LIBDIR}|' cmake/modules/ConfigCMake.cmake
-  perl -pi -e 's|\@executable_path/../lib|%p/\${GMT_LIBDIR}|' cmake/dist/CMakeLists.txt
-<<
 CompileScript: <<
   #!/bin/sh -ev
   mkdir build
@@ -35,7 +30,7 @@ CompileScript: <<
 	-DPCRE_ROOT=off \
 	-DFLOCK=on \
 	-DGMT_INSTALL_NAME_SUFFIX=5 \
-	-DGMT_SOURCE_CODE_CONTROL_VERSION_STRING=%v-%r \
+	-DGMT_INSTALL_RELOCATABLE=off \
 	-DLICENSE_RESTRICTED=LGPL \
 	-DCMAKE_OSX_DEPLOYMENT_TARGET="" \
         -DCMAKE_OSX_SYSROOT=/ \
@@ -61,7 +56,6 @@ SplitOff2: <<
   Shlibs: <<
     %p/lib/libgmt.5.dylib 5.0.0 %n (>= 5.1.0-1)
     %p/lib/libpsl.5.dylib 5.0.0 %n (>= 5.1.0-1)
-    %p/lib/gmt5/plugins/supplements.so 5.0.0 %n (>= 5.1.0-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
@@ -74,18 +68,15 @@ SplitOff3: <<
 <<
 Description: Generic Mapping Tools
 DescDetail: <<
- GMT is an open source collection of ~60 tools for manipulating
- geographic and Cartesian data sets (including filtering, trend
- fitting, gridding, projecting, etc.) and producing Encapsulated
- PostScript File (EPS) illustrations ranging from simple x-y plots
- via contour maps to artificially illuminated surfaces and 3-D
- perspective views. GMT supports ~30 map projections and transformations
- and comes with support data such as coastlines, rivers, and political
- boundaries.
-<<
-DescPort: <<
- Removed xgrid supplementary package so X11 is not required.
- Removed mex support so that neither matlab or octave are required.
+  GMT is an open source collection of about 80 command-line tools
+  for manipulating geographic and Cartesian data sets (including
+  filtering, trend fitting, gridding, projecting, etc.) and
+  producing PostScript illustrations ranging from simple x-y
+  plots via contour maps to artificially illuminated surfaces and
+  3D perspective views; the GMT supplements add another 40 more
+  specialized and discipline-specific tools. GMT supports over 30
+  map projections and transformations and comes with support data
+  such as GSHHG coastlines, rivers, and political boundaries.
 <<
 License: GPL, Restrictive/Distributable
 DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
