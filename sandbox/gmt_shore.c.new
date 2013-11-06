@@ -17,6 +17,19 @@
  *--------------------------------------------------------------------*/
 
 /* NOTE: THIS IS PROTOTYPE NEW VERSION FOR DUAL ANTARCTICA POLYGONS. NOT WORKING YET */
+ * The general idea of GSHHG 2.3.x is that there are two sets of Antarctica continent and
+ * island polygons, and only one can be active. The two candidates are
+ * Source ID = 2: Antarctica ice-line [this is similar to old GSHHG 2.2.x lines but more accurate]
+ * Source ID = 3: Antarctica grounding line
+ * By default we use GSHHS_ANTARCTICA_GROUND [0] but users may select -A..+ai to pick the ice line
+ * or even -A..+as to skip Antarctica entirely (to make it easier to plot custom shorelines).
+ * Because the groundline line polygons are always entirely inside a ice-line polygon, we have given
+ * the ice-line polygons a level of 1.5, i.e., half-way between land and lake.  Of course, when
+ * these are used their levels are reset to 1.  The node corners of the underlying grid are usually
+ * set to their land,ocean levels but for the patch of area outside the grounding line but inside
+ * the ice-line these nodes are set to GSHHS_ANTARCTICA_LIMBO [7].  When bins are read these nodes
+ * are reset to either be land or ocean depending on the selection Antarctica coastline in effect.
+ */
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
@@ -52,8 +65,8 @@
 #define get_entry(arg) (((arg) >> 3) & 7)	/* Extract entry (0-4) from bits 4-6 */
 #define get_level(arg) (((arg) >> 6) & 7)	/* Extract level (0-4) from bits 7-9 */
 #define get_source(arg) (((arg) >> 9) & 7)	/* Extract source (0-7) from bits 10-12 */
-#define get_oldnp(arg) ((arg) >> 9)		/* Extract number of points from bits 10-64 */
-#define get_np(arg) ((arg) >> 12)		/* Extract number of points from bits 13-64 */
+#define get_oldnp(arg) ((arg) >> 9)		/* Extract number of points from bits 10-64 (pre 2.3.0 version) */
+#define get_np(arg) ((arg) >> 12)		/* Extract number of points from bits 13-64 (2.3.0 and newer) */
 
 /* ---------- LOWER LEVEL FUNCTIONS CALLED BY THE ABOVE ------------ */
 
@@ -403,7 +416,7 @@ char GMT_shore_adjust_res (struct GMT_CTRL *GMT, char res) {	/* Returns the high
 
 int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *info) {	/* res: Resolution (f, h, i, l, c */
 	/* Opens the netcdf file and reads in all top-level attributes, IDs, and variables for all bins overlapping with wesn */
-	int i, nb, idiv, iw, ie, is, in, this_south, this_west, err;
+	int i, nb, idiv, iw, ie, is, in, i_ant, this_south, this_west, err;
 	bool int_areas = false, has_source = false;
 	short *stmp = NULL;
 	int *itmp = NULL;
@@ -494,12 +507,13 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	ie = irint (ceil (wesn[XHI] / c->bsize) * c->bsize);
 	is = 90 - irint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
 	in = 90 - irint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
+	i_ant = 90 - irint (floor ((90.0 - GSHHS_ANTARCTICA_LIMIT) / c->bsize) * c->bsize);
 	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
-		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));
+		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));	/* South limit of this bin */
 		if (this_south < is || this_south >= in) continue;
-		if (info->antarctica_mode == GSHHS_ANTARCTICA_SKIP && this_south < GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
+		if (info->antarctica_mode == GSHHS_ANTARCTICA_SKIP && this_south < i_ant) continue;	/* Does not want Antarctica in output */
 		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
@@ -621,10 +635,13 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		if (c->GSHHS_area_fraction[seg_ID[i]] < c->fraction) continue;	/* Area of this feature is too small relative to its original size */
 		if (fabs (c->GSHHS_area[seg_ID[i]]) < c->min_area) continue;	/* Too small. NOTE: Use fabs() since double-lined-river lakes have negative area */
 		level = get_level (seg_info[i]);
-		if (c->has_source) {	/* Can apply any -A+ag|i check based on Antarctica source */
+		if (c->has_source) {	/* Can apply any -A+ag|i check based on Antarctica source. Note if -A+as was used we may have already skipped this bin but it depends on resolution chosen */
 			source = get_source (seg_info[i]);
-			if (source == GSHHS_ANTARCTICA_GROUND_SRC && c->ant_mode == GSHHS_ANTARCTICA_ICE) continue;
-			if (source == GSHHS_ANTARCTICA_ICE_SRC && c->ant_mode == GSHHS_ANTARCTICA_GROUND) continue;
+			if (source == GSHHS_ANTARCTICA_GROUND_SRC || source == GSHHS_ANTARCTICA_ICE_SRC) {	/* Need more specific checking */
+				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) continue;
+				else if (source == GSHHS_ANTARCTICA_GROUND_SRC && c->ant_mode == GSHHS_ANTARCTICA_ICE) continue;
+				else if (source == GSHHS_ANTARCTICA_ICE_SRC && c->ant_mode == GSHHS_ANTARCTICA_GROUND) continue;
+			}
 		}
 		if (level < c->min_level) continue;
 		if (level > c->max_level) continue;
@@ -683,7 +700,7 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 
 	for (s = 0; s < c->ns; s++) {
 		c->seg[s].level = get_level (seg_info[s]);
-		if (c->has_source) /* New file has seg src */
+		if (c->has_source) /* New file has segment src so move a few bits over */
 			c->seg[s].n = (short)get_np (seg_info[s]);
 		else	/* Old file */
 			c->seg[s].n = (short)get_oldnp (seg_info[s]);
