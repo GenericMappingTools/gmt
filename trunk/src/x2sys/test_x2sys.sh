@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #	$Id$
 #
 # Test script that exercise the various options in x2sys.
