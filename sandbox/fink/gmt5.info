@@ -1,6 +1,6 @@
 Package: gmt5
 Version: 5.1.0
-Revision: 2
+Revision: 3
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source-MD5: da741319c883a3dbaf27ec7eaf66c166
 PatchFile: %n.patch
@@ -8,6 +8,7 @@ PatchFile-MD5: 4c45f216587cbc100898114c5345d784
 SourceDirectory: gmt-%v
 
 Conflicts: gmt
+Replaces: gmt
 BuildDepends: cmake, netcdf-c7, libpcre1, gdal (>= 1.10.1)
 Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), libpcre1-shlibs, gdal-shlibs (>= 1.10.1), gshhg (>= 2.2.4), dcw-gmt (>= 1.1.0)
 Recommends: %n-doc
@@ -31,6 +32,7 @@ CompileScript: <<
 	-DFLOCK=on \
 	-DGMT_INSTALL_NAME_SUFFIX=5 \
 	-DGMT_INSTALL_RELOCATABLE=off \
+	-DINSTALL_MODULE_LINKS=on \
 	-DLICENSE_RESTRICTED=LGPL \
 	-DCMAKE_OSX_DEPLOYMENT_TARGET="" \
         -DCMAKE_OSX_SYSROOT=/ \
@@ -45,6 +47,7 @@ InstallScript: <<
 SplitOff: <<
   Package: %N-doc
   Conflicts: gmt-doc
+  Replaces: gmt-doc
   BuildDependsOnly: True
   Files: share/doc/gmt
   DocFiles: LICENSE.TXT
@@ -52,6 +55,7 @@ SplitOff: <<
 SplitOff2: <<
   Package: %N-shlibs
   Conflicts: gmt-shlibs
+  Replaces: gmt-shlibs
   Files: lib/*.5.*dylib lib/gmt5
   Shlibs: <<
     %p/lib/libgmt.5.dylib 5.0.0 %n (>= 5.1.0-1)
@@ -62,6 +66,7 @@ SplitOff2: <<
 SplitOff3: <<
   Package: %N-dev
   Conflicts: gmt-dev
+  Replaces: gmt-dev
   BuildDependsOnly: True
   Files: include lib/*.dylib
   DocFiles: ChangeLog LICENSE.TXT README* src/README.TRIANGLE src/TRIANGLE.HOWTO
