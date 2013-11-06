@@ -1,8 +1,8 @@
 Package: dcw-gmt
-Version: 1.0.21
-Revision: 2
-Source: ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-%v.tar.gz
-Source-MD5: da404bdb05a56801209cb6b5b9c2a165
+Version: 1.1.0
+Revision: 1
+Source: ftp://ftp.soest.hawaii.edu/gmt/dcw-gmt-%v.tar.gz
+Source-MD5: 87c050c1d6462f2c872ea0f23f920427
 Recommends: gmt
 CompileScript: echo "Moving files..."
 InstallScript: <<

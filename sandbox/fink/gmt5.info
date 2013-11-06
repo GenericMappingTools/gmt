@@ -1,11 +1,13 @@
 Package: gmt5
-Version: 5.0.1b
-Revision: 0
-Source: ftp://ftp.soest.hawaii.edu/gmt5/GMT-%v_r12404-src.tar.bz2
-Source-MD5: ad03e1ad676e8aacc5dac0ba3070d6bb
+Version: 5.1.0
+Revision: 1
+Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
+Source-MD5: da741319c883a3dbaf27ec7eaf66c166
+SourceDirectory: gmt-%v
+
 Conflicts: gmt
-BuildDepends: cmake, netcdf-c7, libpcre1, gdal
-Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), libpcre1-shlibs, gdal-shlibs, gshhg (>= 2.2.4), dcw-gmt
+BuildDepends: cmake, netcdf-c7, libpcre1, gdal (>= 1.10.1)
+Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), libpcre1-shlibs, gdal-shlibs (>= 1.10.1), gshhg (>= 2.2.4), dcw-gmt (>= 1.1.0)
 Recommends: %n-doc
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true
@@ -26,9 +28,7 @@ CompileScript: <<
 	-DFFTW3_ROOT=off \
 	-DGDAL_ROOT=off \
 	-DPCRE_ROOT=off \
-	-DXGRID=off \
 	-DFLOCK=on \
-	-DGMT_INSTALL_MONOLITHIC=off \
 	-DGMT_INSTALL_NAME_SUFFIX=5 \
 	-DGMT_SOURCE_CODE_CONTROL_VERSION_STRING=%v-%r \
 	-DLICENSE_RESTRICTED=LGPL \
@@ -36,11 +36,14 @@ CompileScript: <<
         -DCMAKE_OSX_SYSROOT=/ \
 	..
   make
+#	-DCMAKE_PREFIX_PATH=%p \
+#	-DCMAKE_INSTALL_NAME_DIR=%p/lib \
 <<
 InstallScript: <<
   #!/bin/sh -ev
   cd build
-  cmake -DCMAKE_INSTALL_PREFIX=%i -P cmake_install.cmake
+#  make install
+  cmake -DCMAKE_INSTALL_PREFIX=%i -P cmake/dist/cmake_install.cmake
 <<
 SplitOff: <<
   Package: %N-doc
@@ -54,9 +57,9 @@ SplitOff2: <<
   Conflicts: gmt-shlibs
   Files: lib/*.%v.dylib
   Shlibs: <<
-    %p/lib/libgmt.%v.dylib 5.1.0 %n (>= 5.1.0-0)
-    %p/lib/libpsl.%v.dylib 5.1.0 %n (>= 5.1.0-0)
-    %p/lib/gmt/plugins/supplements.so 5.1.0 %n (>= 5.1.0-0)
+    %p/lib/libgmt.%v.dylib 5.1.0 %n (>= 5.1.0-1)
+    %p/lib/libpsl.%v.dylib 5.1.0 %n (>= 5.1.0-1)
+    %p/lib/gmt/plugins/supplements.so 5.1.0 %n (>= 5.1.0-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<

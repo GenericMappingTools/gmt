@@ -3,12 +3,12 @@ Version: 4.5.10
 Revision: 1
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-non-gpl-src.tar.bz2
-Source-MD5: 6ad0320c0985446606d30f62a8dca221
+Source-MD5: ff1977aa340377da6f3abd35c2855795
 Source2-MD5: 4965044c14b713caee317d9a2809eae0
-
 SourceDirectory: gmt-%v
-BuildDepends: netcdf-c7
-Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), gshhg (>= 2.2.4)
+
+BuildDepends: netcdf-c7, gdal-dev (>= 1.10.1)
+Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), gshhg (>= 2.2.4), gdal-shlibs (>= 1.10.1)
 Recommends: %n-doc
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true
@@ -16,7 +16,7 @@ UseMaxBuildJobs: false
 
 # don't build xgrid to avoid x11 dependency.
 # don't build mex (won't work unless matlab or octave is installed).
-ConfigureParams: --datadir='${prefix}/share/%n' --enable-netcdf=%p --with-gshhg-dir=%p/share/gshhg-gmt-nc4 --enable-shared --enable-triangle --disable-xgrid --disable-mex
+ConfigureParams: --datadir='${prefix}/share/%n' --enable-netcdf=%p --with-gshhg-dir=%p/share/gshhg-gmt-nc4 --enable-gdal --enable-shared --enable-triangle --disable-xgrid --disable-mex
 InstallScript: <<
  #!/bin/sh -ev
  make install-all prefix=%i
