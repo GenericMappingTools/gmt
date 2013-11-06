@@ -1,10 +1,10 @@
 Package: gmt
-Version: 4.5.10
+Version: 4.5.11
 Revision: 1
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-non-gpl-src.tar.bz2
-Source-MD5: ff1977aa340377da6f3abd35c2855795
-Source2-MD5: 4965044c14b713caee317d9a2809eae0
+Source-MD5: e51a8827d9b0ce3f36cfe6be01f24931
+Source2-MD5: fd4abdbbc5cb48087a12a4c762b87123
 SourceDirectory: gmt-%v
 
 BuildDepends: netcdf-c7, gdal-dev (>= 1.10.1)

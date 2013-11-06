@@ -15,6 +15,10 @@ NoSetLDFLAGS: true
 # don't build xgrid to avoid x11 dependency.
 # don't build mex (won't work unless matlab or octave is installed).
 
+PatchScript: <<
+  perl -pi -e 's|\@executable_path/\${_rpath}|%p/\${GMT_LIBDIR}|' cmake/modules/ConfigCMake.cmake
+  perl -pi -e 's|\@executable_path/../lib|%p/\${GMT_LIBDIR}|' cmake/dist/CMakeLists.txt
+<<
 CompileScript: <<
   #!/bin/sh -ev
   mkdir build
@@ -22,6 +26,7 @@ CompileScript: <<
   cmake \
 	-DCMAKE_C_FLAGS_RELEASE="-O3 -DNDEBUG -fstrict-aliasing" \
 	-DCMAKE_INSTALL_PREFIX=%p \
+	-DGMT_DOCDIR=%i/share/doc/gmt \
 	-DNETCDF_ROOT=%p \
 	-DGSHHG_ROOT=%p \
 	-DDCW_ROOT=%p \
@@ -36,30 +41,27 @@ CompileScript: <<
         -DCMAKE_OSX_SYSROOT=/ \
 	..
   make
-#	-DCMAKE_PREFIX_PATH=%p \
-#	-DCMAKE_INSTALL_NAME_DIR=%p/lib \
 <<
 InstallScript: <<
   #!/bin/sh -ev
   cd build
-#  make install
-  cmake -DCMAKE_INSTALL_PREFIX=%i -P cmake/dist/cmake_install.cmake
+  cmake -DCMAKE_INSTALL_PREFIX=%i -P cmake_install.cmake
 <<
 SplitOff: <<
   Package: %N-doc
   Conflicts: gmt-doc
   BuildDependsOnly: True
-  Files: share/doc/gmt5
+  Files: share/doc/gmt
   DocFiles: LICENSE.TXT
 <<
 SplitOff2: <<
   Package: %N-shlibs
   Conflicts: gmt-shlibs
-  Files: lib/*.%v.dylib
+  Files: lib/*.5.*dylib lib/gmt5
   Shlibs: <<
-    %p/lib/libgmt.%v.dylib 5.1.0 %n (>= 5.1.0-1)
-    %p/lib/libpsl.%v.dylib 5.1.0 %n (>= 5.1.0-1)
-    %p/lib/gmt/plugins/supplements.so 5.1.0 %n (>= 5.1.0-1)
+    %p/lib/libgmt.5.dylib 5.0.0 %n (>= 5.1.0-1)
+    %p/lib/libpsl.5.dylib 5.0.0 %n (>= 5.1.0-1)
+    %p/lib/gmt5/plugins/supplements.so 5.0.0 %n (>= 5.1.0-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
