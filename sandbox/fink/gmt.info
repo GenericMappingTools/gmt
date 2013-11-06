@@ -1,14 +1,14 @@
 Package: gmt
 Version: 4.5.11
-Revision: 2
+Revision: 3
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-non-gpl-src.tar.bz2
 Source-MD5: e51a8827d9b0ce3f36cfe6be01f24931
 Source2-MD5: fd4abdbbc5cb48087a12a4c762b87123
 SourceDirectory: gmt-%v
 
-BuildDepends: netcdf-c7, gdal-dev (>= 1.10.1)
-Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), gshhg (>= 2.2.4), gdal-shlibs (>= 1.10.1)
+BuildDepends: netcdf-c7
+Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), gshhg (>= 2.2.4)
 Conflicts: gmt5
 Replaces: gmt5
 Recommends: %n-doc
@@ -18,7 +18,7 @@ UseMaxBuildJobs: false
 
 # don't build xgrid to avoid x11 dependency.
 # don't build mex (won't work unless matlab or octave is installed).
-ConfigureParams: --datadir='${prefix}/share/%n' --enable-netcdf=%p --with-gshhg-dir=%p/share/gshhg-gmt-nc4 --enable-gdal --enable-shared --enable-triangle --disable-xgrid --disable-mex
+ConfigureParams: --datadir='${prefix}/share/%n' --enable-netcdf=%p --with-gshhg-dir=%p/share/gshhg-gmt-nc4 --disable-gdal --enable-shared --enable-triangle --disable-xgrid --disable-mex
 InstallScript: <<
  #!/bin/sh -ev
  make install-all prefix=%i
@@ -66,6 +66,7 @@ DescDetail: <<
 DescPort: <<
  Removed xgrid supplementary package so X11 is not required.
  Removed mex support so that neither matlab or octave are required.
+ Removed gdal: need to deal with linkage problems first.
 <<
 License: GPL, Restrictive/Distributable
 DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
