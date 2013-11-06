@@ -33,8 +33,6 @@ SplitOff: <<
 <<
 SplitOff2: <<
   Package: %N-shlibs
-  Conflicts: gmt5-shlibs
-  Replaces: gmt5-shlibs
   Files: lib/*.4.dylib
   Shlibs: <<
     %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.10-1)
