@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #	$Id$
 # Test program for new rectangular clipping.  We create N random points
 # in the x/y plane with mean 0 and sigma = 3.  Then, sort these points
@@ -34,7 +34,7 @@ int main (int argc, char **argv) {
 	int n = N, m, j, i, nx = 0;
 	double xin[N], yin[N], x, y, *xout, *yout;
 	FILE *fp;
-	
+
 	argc = GMT_begin (argc, argv);
 	for (i = 0; i < N; i++) {	/* Create N random points */
 		P[i].x = 3.0 * GMT_nrand ();
