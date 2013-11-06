@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #	$Id$
 #
 # These functions can be used from any sh/bash script by specifying
@@ -60,7 +60,7 @@ gmt_get_field() {
 #	Return w/e/s/n from given table file(s)
 #	May also add -Idx/dy to round off answer
 gmt_get_region() {
-	printf "%s/%s/%s/%s\n" `gmt minmax -C $* | cut -d'	' -f1-4`
+	printf "%s/%s/%s/%s\n" `gmt gmtinfo -C $* | cut -d'	' -f1-4`
 }
 
 #	Return the w/e/s/n from the header in grd file
@@ -93,5 +93,5 @@ gmt_set_framename() {
 # For animations: Increment frame counter by one
 
 gmt_set_framenext() {
-	gmt math -Q $1 1 ADD =
+	echo $(($1 + 1))
 }
