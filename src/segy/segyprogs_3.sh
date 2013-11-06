@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #	$Id$
 
 # script to plot mendo wa1 combined data

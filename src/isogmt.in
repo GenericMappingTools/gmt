@@ -1,4 +1,4 @@
-#!/bin/sh -f
+#!/bin/bash
 #--------------------------------------------------------------------
 #	$Id$
 #
@@ -31,6 +31,6 @@ END
 fi
 
 export GMT_TMPDIR=`mktemp -d ${TMPDIR:-/tmp}/gmt.XXXXXX`
-$*
+gmt "$@"
 rm -rf $GMT_TMPDIR
 unset GMT_TMPDIR
