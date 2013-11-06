@@ -52,6 +52,9 @@
 # gmt program and access modules as "gmt modulename options" [TRUE]:
 #set (GMT_INSTALL_MODULE_LINKS FALSE)
 
+# Make executables relocatable on supported platforms (relative RPATH) [TRUE]:
+#set (GMT_INSTALL_RELOCATABLE FALSE)
+
 # ============================================================================
 # Advanced configuration begins here.  Usually it is not necessary to edit any
 # settings below.  You should know what you are doing if you do though.  Note:
