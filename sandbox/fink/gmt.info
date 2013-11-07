@@ -1,14 +1,14 @@
 Package: gmt
 Version: 4.5.11
-Revision: 3
+Revision: 4
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-non-gpl-src.tar.bz2
 Source-MD5: e51a8827d9b0ce3f36cfe6be01f24931
 Source2-MD5: fd4abdbbc5cb48087a12a4c762b87123
 SourceDirectory: gmt-%v
 
-BuildDepends: netcdf-c7
-Depends: netcdf-c7-shlibs, %n-shlibs (= %v-%r), gshhg (>= 2.2.4)
+BuildDepends: fink (>= 0.32), netcdf-c7, gdal-dev (>= 1.10.1)
+Depends: %n-shlibs (= %v-%r)
 Conflicts: gmt5
 Replaces: gmt5
 Recommends: %n-doc
@@ -33,14 +33,16 @@ SplitOff: <<
 <<
 SplitOff2: <<
   Package: %N-shlibs
+  Depends: netcdf-c7-shlibs, gdal-shlibs (>= 1.10.1), gshhg (>= 2.2.4)
+  RuntimeDepends: ghostscript
   Files: lib/*.4.dylib
   Shlibs: <<
-    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.10-1)
-    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.10-1)
-    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.10-1)
-    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.10-1)
-    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.10-1)
-    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.10-1)
+    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.11-1)
+    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.11-1)
+    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.11-1)
+    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.11-1)
+    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.11-1)
+    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.11-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
