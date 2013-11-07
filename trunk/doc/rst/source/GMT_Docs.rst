@@ -2570,8 +2570,8 @@ The Axes settings are specified by
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
--  **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**]\ *intervals*
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
 The first optional flag following **-B** selects **p** (rimary) [Default] or
 **s** (econdary) axes information (which is mostly used for time axes
