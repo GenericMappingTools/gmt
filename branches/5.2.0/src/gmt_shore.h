@@ -50,6 +50,7 @@ enum GMT_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a uns
 	GSHHS_ANTARCTICA_GROUND		= 0,	/* Use Antarctica igrounding line as coastline [Default] */
 	GSHHS_ANTARCTICA_ICE		= 1,	/* Use Antarctica ice boundary as coastline */
 	GSHHS_ANTARCTICA_SKIP		= 2,	/* Skip Antarctica coastline */
+	GSHHS_ANTARCTICA_ICE_ID		= 4,	/* The GSHHG ID of the Antarctica ice-coastline polygon */
 	GSHHS_ANTARCTICA_LIMIT		= -60};	/* Data below 60S is Antarctica */
 
 struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
@@ -158,6 +159,7 @@ struct GMT_SHORE_SEGMENT {
 	unsigned char exit;	/* Side (0-3) the segment ends on, or 4 for closed segments */
 	unsigned char fid;	/* Fill id (same as level expect for riverlakes which is 5) */
 	unsigned short n;	/* Number of points in segment */
+	unsigned short src;	/* src of segment [-1 if not available] */
 	short int *dx;		/* Array of scaled longitudes relative to SW corner */
 	short int *dy;		/* Array of scaled latitudes relative to SW corner */
 };
@@ -232,7 +234,8 @@ struct GMT_GSHHS_POL {
 	int n;
 	int interior;	/* true if polygon is inside bin */
 	int level;
-	int fid;		/* Fill id; same as level but 5 if riverlake */
+	int fid;	/* Fill id; same as level but 5 if riverlake */
+	int src;	/* Source ID */
 	double *lon;
 	double *lat;
 };

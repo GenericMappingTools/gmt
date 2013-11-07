@@ -182,7 +182,8 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Option (API, "J-Z,G");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "A,B-");
+	GMT_GSHHG_syntax (API->GMT, 'A');
+	GMT_Option (API, "B-");
 	GMT_fill_syntax (API->GMT, 'C', "Set separate color for lakes and riverlakes [Default is same as ocean].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set custom fills below.  Repeat the -C option as needed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      l = Lakes.\n");
@@ -919,7 +920,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d, Source %d", bin, p[i].level, p[i].src);
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];

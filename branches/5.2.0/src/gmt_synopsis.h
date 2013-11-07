@@ -62,11 +62,7 @@
 #define GMT_CONTT	"-T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:[<labels>]]"
 
 /* Options for coastline extraction  */
-#ifdef NEW_GSHHG
 #define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>]"
-#else
-#define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+as][+r|l][+p<percent>]"
-#endif
 
 /* Used in tools that sets grdheader information via a -D option */
 
