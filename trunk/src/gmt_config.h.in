@@ -80,8 +80,12 @@
 #cmakedefine HAVE_ERRNO_H_
 #cmakedefine HAVE_EXECINFO_H_
 #cmakedefine HAVE_FCNTL_H_
-#cmakedefine HAVE_STAT_H_
+#cmakedefine HAVE_SIGNAL_H_
 #cmakedefine HAVE_SYS_DIR_H_
+#cmakedefine HAVE_SYS_RESOURCE_H_
+#cmakedefine HAVE_SYS_STAT_H_
+#cmakedefine HAVE_SYS_TIME_H_
+#cmakedefine HAVE_SYS_UCONTEXT_H_
 #cmakedefine HAVE_UNISTD_H_
 
 /* system specific functions */
@@ -312,6 +316,12 @@
 #		undef _FILE_OFFSET_BITS
 #	endif
 #	define _FILE_OFFSET_BITS 64
+#endif
+
+/* Check whether conditions for sighandler are met */
+#if !(defined(HAVE_SIGNAL_H_) && defined(HAVE_SYS_RESOURCE_H_) && \
+			defined(HAVE_SYS_TIME_H_) && defined(HAVE_SYS_UCONTEXT_H_))
+#	define NO_SIGHANDLER
 #endif
 
 #endif /* !_GMT_CONFIG_H */
