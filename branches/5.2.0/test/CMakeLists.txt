@@ -24,7 +24,7 @@ if (DO_TESTS)
 		gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour grdcut
 		grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdlandmask
 		grdmask grdmath grdpaste grdproject grdreformat grdsample grdtrack
-		grdtrend grdvector grdview grdvolume greenspline kml mapproject ogr
+		grdtrend grdvector grdview grdvolume greenspline gshhg kml mapproject ogr
 		project psbasemap pscoast pscontour pshistogram psimage pslegend pslib
 		psrose psscale pstext psxy psxyz sample1d spectrum1d sph sph2grd splitxyz
 		surface time trend2d triangulate img meca mgd77 potential spotter x2sys)
