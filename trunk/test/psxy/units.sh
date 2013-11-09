@@ -12,4 +12,4 @@ echo "-2 -2 1" | gmt psxy -J -R -O -K -Sc -Ggray --PROJ_LENGTH_UNIT=cm >> $ps
 echo "2 -2 1c" | gmt psxy -J -R -O -K -Sc -Ggray --PROJ_LENGTH_UNIT=inch >> $ps
 # No unit in data, but unit specified by -S; PROJ_LENGTH_UNIT from gmt.conf should be ignored
 echo "0 0 1" | gmt psxy -J -R -O -K -Sci -Gblack >> $ps
-psxy -R -J -O -T >> $ps
+gmt psxy -R -J -O -T >> $ps
