@@ -4622,7 +4622,7 @@ void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 	/* When only one side of a vector head is requested (side = -1/+1) there are complications that leads to some
 	 * extra work: Since we are clipping the head polygon, the head outline pen is effectively half that of the
 	 * vector.  Thus, there will be an offset of 1/2 penwidth at the end of the vector line and the start of the
-	 * back-end of the half vector head.  We adjust this changing the colatitude form the pole by the equivalent
+	 * back-end of the half vector head.  We adjust this changing the colatitude from the pole by the equivalent
 	 * distance of 1/2 pen width away from the side with the half arrowhead.  This makes the outline of the head
 	 * align with the vector line. */
 	perspective = GMT_IS_PERSPECTIVE (GMT);
