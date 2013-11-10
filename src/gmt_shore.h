@@ -49,7 +49,8 @@ enum GMT_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a uns
 	GSHHS_ANTARCTICA_GROUND_SRC	= 3,	/* Source ID for Antarctica grounding line */
 	GSHHS_ANTARCTICA_GROUND		= 0,	/* Use Antarctica igrounding line as coastline [Default] */
 	GSHHS_ANTARCTICA_ICE		= 1,	/* Use Antarctica ice boundary as coastline */
-	GSHHS_ANTARCTICA_SKIP		= 2,	/* Skip Antarctica coastline */
+	GSHHS_ANTARCTICA_SKIP		= 2,	/* Skip Antarctica coastlines */
+	GSHHS_ANTARCTICA_SKIP_INV	= 3,	/* Skip everything BUT Antarctica coastlines */
 	GSHHS_ANTARCTICA_ICE_ID		= 4,	/* The GSHHG ID of the Antarctica ice-coastline polygon */
 	GSHHS_ANTARCTICA_LIMIT		= -60};	/* Data below 60S is Antarctica */
 
