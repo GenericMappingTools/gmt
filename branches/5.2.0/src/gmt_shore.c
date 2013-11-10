@@ -20,7 +20,7 @@
  * The general idea of GSHHG 2.3.x is that there are two sets of Antarctica continent and
  * island polygons, and only one can be active. The two candidates are
  * Source ID = 2: Antarctica ice-line [this is similar to old GSHHG 2.2.x lines but more accurate]
- * Source ID = 3: Antarctica grounding line
+ * Source ID = 3: Antarctica shelf ice grounding line
  * By default we use GSHHS_ANTARCTICA_GROUND [0] but users may select -A..+ai to pick the ice line
  * or even -A..+as to skip Antarctica entirely (to make it easier to plot custom shorelines).
  * Because the groundline line polygons are always entirely inside a ice-line polygon, we have given
@@ -357,7 +357,7 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	if (strstr (info, "+as"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP;		/* Skip Antarctica data south of 60S */
 	else if (strstr (info, "+aS"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP_INV;		/* Skip everything BUT Antarctica data south of 60S */
 	else if (strstr (info, "+ai"))  I->antarctica_mode = GSHHS_ANTARCTICA_ICE;		/* Use Antarctica ice boundary as coastline */
-	else if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica grounding line as coastline */
+	else if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica shelf ice grounding line as coastline */
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
