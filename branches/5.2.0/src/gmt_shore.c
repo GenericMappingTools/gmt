@@ -40,6 +40,7 @@
  *
  * The PUBLIC functions are:
  *
+ * int GMT_set_levels :	Modifies what items to extract from GSHHG database
  * GMT_init_shore :		Opens selected shoreline database and initializes structures
  * GMT_get_shore_bin :		Returns all selected shore data for this bin
  * GMT_init_br :		Opens selected border/river database and initializes structures
@@ -354,8 +355,9 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	int n;
 	char *p = NULL;
 	if (strstr (info, "+as"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP;		/* Skip Antarctica data south of 60S */
-	if (strstr (info, "+ai"))  I->antarctica_mode = GSHHS_ANTARCTICA_ICE;		/* Use Antarctica ice boundary as coastline */
-	if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica grounding line as coastline */
+	else if (strstr (info, "+aS"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP_INV;		/* Skip everything BUT Antarctica data south of 60S */
+	else if (strstr (info, "+ai"))  I->antarctica_mode = GSHHS_ANTARCTICA_ICE;		/* Use Antarctica ice boundary as coastline */
+	else if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica grounding line as coastline */
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
@@ -514,6 +516,7 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));	/* South limit of this bin */
 		if (this_south < is || this_south >= in) continue;
 		if (info->antarctica_mode == GSHHS_ANTARCTICA_SKIP && this_south < i_ant) continue;	/* Does not want Antarctica in output */
+		else if (info->antarctica_mode == GSHHS_ANTARCTICA_SKIP_INV && this_south > i_ant) continue;	/* Does not want anything but Antarctica in output */
 		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
@@ -642,6 +645,7 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 				else if (source == GSHHS_ANTARCTICA_GROUND_SRC && c->ant_mode == GSHHS_ANTARCTICA_ICE) continue;
 				else if (source == GSHHS_ANTARCTICA_ICE_SRC && c->ant_mode == GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;
 			}
+			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) continue;	/* Wants nothing but Antarctica */
 		}
 		if (level < c->min_level) continue;
 		if (level > c->max_level) continue;
