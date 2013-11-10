@@ -8725,7 +8725,13 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		j = 0;
-		if (text[1] && (j = gmt_get_unit (GMT, text[1])) < 0) decode_error = true; else { p->u = j; p->u_set = true;}
+		if (text[1]) {	/* Gave unit information */
+			if ((j = gmt_get_unit (GMT, text[1])) < 0)
+				decode_error = true;
+			else {
+				p->u = j; p->u_set = true;
+			}
+		}
 		col_off++;
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1])) {	/* Symbol, but no size given (size assumed given on command line) */

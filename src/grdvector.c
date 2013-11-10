@@ -129,13 +129,13 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, prepend l to indicate a fixed length for all vectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors, set scale in data units per km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e., %s/ unit or km/unit\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scles differ [Leave alone].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e., %s/unit or km/unit\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", GMT_putpen(API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z The angles provided are azimuths rather than direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z The angles provided are azimuths rather than direction (requires -A).\n");
 	GMT_Option (API, "c,f,p,t,.");
 	
 	return (EXIT_FAILURE);
@@ -287,7 +287,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Syntax error -S option: Scale must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option: Length must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0, "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active, "Syntax error -Z option: Azimuths not valid input for Cartesian data\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active, "Syntax error -Z option: Azimuth adjustment not valid input for Cartesian data\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active), "Syntax error: Must specify at least one of -G, -W, -C\n");
 	n_errors += GMT_check_condition (GMT, n_files != 2, "Syntax error: Must specify two input grid files\n");
 
@@ -406,7 +406,15 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	Geographic = (GMT_is_geographic (GMT, GMT_IN));
 	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
 
-	if (!Geographic) {
+	if (Geographic) {
+		if (Ctrl->T.active) {
+			Ctrl->T.active = false;
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T does not apply to geographic data - ignored\n");
+		}
+		GMT_Report (API, GMT_MSG_DEBUG, "Great-circle geo-vectors will be drawn\n");
+	}
+	else {
+		GMT_Report (API, GMT_MSG_DEBUG, "Cartesian straight vectors will be drawn\n");
 		switch (Ctrl->S.unit) {	/* Adjust for possible unit selection */
 			case 'c':
 				Ctrl->S.factor *= GMT->session.u2u[GMT_CM][GMT_INCH];
@@ -438,14 +446,8 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
-	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval */
-		struct GMT_GRID_HEADER tmp_h;
-		double val;
-		GMT_memcpy (&tmp_h, Grid[0]->header, 1, struct GMT_GRID_HEADER);
-		GMT_memcpy (tmp_h.inc, Ctrl->I.inc, 2, double);
-		GMT_RI_prepare (GMT, &tmp_h);	/* Convert to make sure we have correct increments */
-		GMT_memcpy (Ctrl->I.inc, tmp_h.inc, 2, double);
-		val = Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y];
+	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval. The new -Idx/dy must be integer multiples of the grid dx/dy */
+		double val = Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y];
 		d_row = urint (val);
 		if (d_row == 0 || !doubleAlmostEqualZero (d_row, val)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: New y grid spacing (%g) is not a multiple of actual grid spacing (%g)\n", Ctrl->I.inc[GMT_Y], Grid[0]->header->inc[GMT_Y]);
@@ -457,6 +459,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: New x grid spacing (%g) is not a multiple of actual grid spacing (%g)\n", Ctrl->I.inc[GMT_X], Grid[0]->header->inc[GMT_X]);
 			Return (EXIT_FAILURE);
 		}
+		/* Determine starting row/col for straddled access */
 		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= Ctrl->I.inc[GMT_Y];
 		row_0 = urint ((Grid[0]->header->wesn[YHI] - tmp) * Grid[0]->header->r_inc[GMT_Y]);
@@ -480,21 +483,21 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 
 			if (Ctrl->A.active) {	/* Got polar grids */
 				vec_length = Grid[0]->data[ij];
-				vec_azim = Grid[1]->data[ij];
+				vec_azim   = Grid[1]->data[ij];
 				if (vec_length < 0.0) {	/* Flip negative lengths as 180-degrees off */
 					vec_length = -vec_length;
 					vec_azim += 180.0;
 				}
 				else if (vec_length == 0.0) continue;	/* No length = no plotting */
 			}
-			else {	/* Cartesian grids: Compute length and direction */
+			else {	/* Cartesian grids: Convert to polar form of length and direction */
 				vec_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
-				if (vec_length == 0.0) continue;
+				if (vec_length == 0.0) continue;	/* No length = no plotting */
 				vec_azim = atan2d (Grid[GMT_Y]->data[ij], Grid[GMT_X]->data[ij]);
 			}
 
 			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);
-			if (!Ctrl->N.active) {
+			if (!Ctrl->N.active) {	/* Throw out vectors whose node is outside */
 				GMT_map_outside (GMT, x, y);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 			}
@@ -510,6 +513,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
 			
 			if (Geographic) {	/* Draw great-circle geo-vectors */
+				if (!Ctrl->A.active) vec_azim = 90.0 - vec_azim;	/* We got direction components; convert to azimuth */
 				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
 					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
 					Ctrl->Q.S.v.v_width *= (float)f;	Ctrl->Q.S.v.h_length *= (float)f;
@@ -527,8 +531,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 					if (!Ctrl->Z.active) vec_azim = 90.0 - vec_azim;
 					vec_azim = GMT_azim_to_angle (GMT, x, y, 0.1, vec_azim);
 				}
-				vec_azim *= D2R;
-				/* vec_azim is now in radians */
+				vec_azim *= D2R;	/* vec_azim is now in radians */
 				sincos (vec_azim, &s, &c);
 				x2 = plot_x + scaled_vec_length * c;
 				y2 = plot_y + scaled_vec_length * s;
