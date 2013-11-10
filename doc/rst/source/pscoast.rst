@@ -293,10 +293,10 @@ time this occurs.
 Some users of **pscoast** will not be satisfied with what they find for
 the Antarctic shoreline. In Antarctica, the boundary between ice and
 ocean varies seasonally and inter-annually. There are some areas of
-permanent sea ice. In addition to these time-varying ice-ocean
-boundaries, there are also ice grounding lines where ice goes from
+permanent shelf ice. In addition to these time-varying ice-ocean
+boundaries, there are also shelf ice grounding lines where ice goes from
 floating on the sea to sitting on land, and lines delimiting areas of
-rock outcrop. For consistency’s sake, we have used the World Vector
+rock outcrop. For consistency's sake, we have used the World Vector
 Shoreline throughout the world in pscoast, as described in the GMT
 Cookbook Appendix K. Users who need specific boundaries in Antarctica
 should get the Antarctic Digital Database, prepared by the British
