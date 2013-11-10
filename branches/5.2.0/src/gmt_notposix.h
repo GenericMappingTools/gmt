@@ -79,7 +79,7 @@
 #	include <fcntl.h>
 #endif
 
-#ifdef HAVE_STAT_H_
+#ifdef HAVE_SYS_STAT_H_
 #	include <sys/stat.h>
 #endif
 
