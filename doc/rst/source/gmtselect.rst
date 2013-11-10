@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmtselect** [ *table* ]
-[ **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+a**\ ][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+as**\ ][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
 [ **-C**\ *dist*\ [*unit*]/\ *ptfile* ]
 [ **-D**\ *resolution*\ [**+**] ] [ **-E**\ [**fn**] ]
 [ **-F**\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]

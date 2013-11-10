@@ -16,7 +16,7 @@ Synopsis
 **grdlandmask** **-G**\ *mask\_grd\_file*]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
-**-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+a**\ ][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
+**-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+as**\ ][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
 ] [ **-D**\ *resolution*\ [**+**\ ] ] [ **-N**\ *maskvalues*\ [**o**\ ]
 ] [ **-V**\ [*level*\ ] ] [ **-r** ]
 
