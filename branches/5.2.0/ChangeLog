@@ -2,6 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-11-09	pwessel
+	* gmt_shore.c:		Extended -A option with modifiers to handle various
+				Antarctica options available via GSHHG 2.3.0
+-----------------------------------------------------------------------------------------
+2013-11-05	pwessel
+	GMT 5.1.0 finalized and released.
+-----------------------------------------------------------------------------------------
+
 2013-11-01	remko
 	* example_10.sh:	Changed input to number of languages; multi-color columns
 
