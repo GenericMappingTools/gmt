@@ -6606,15 +6606,17 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	remember = (GMT->hidden.func_level == 1);	/* Only update the history for top level function */
 
-	for (opt = options; opt; opt = opt->next) if (opt->option == 'B') {	/* Do some initial counting of home many -B options and determine if there is just one with no args */
+	for (opt = options; opt; opt = opt->next) if (opt->option == 'B') {	/* Do some initial counting of how many -B options and determine if there is just one with no args */
 		if (n_B > 0 || opt->arg[0]) B_replace = 0;
 		n_B++;
 	}
-	for (k = 0, B_id = -1; k < GMT_N_UNIQUE && B_id == -1; k++) if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id = 0 but just in case this changes we do this anyway */
+	for (k = 0, B_id = -1; k < GMT_N_UNIQUE && B_id == -1; k++) if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
 
 	for (opt = options; opt; opt = opt->next) {
 		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
 		update = false;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "History: Process -%c%s.\n", opt->option, opt->arg);
+		
 		str[0] = opt->option; str[1] = str[2] = '\0';
 		if (opt->option == 'J') {	/* -J is special since it can be -J or -J<code> */
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
@@ -6654,24 +6656,24 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				opt2->next = B_next;	/* Hook back onto main option list */
 				B_replace = 2;	/* Flag to let us know we are done with -B */
 			}
-			else {	/* One of possibly several -B<arg> options; concatenate */
-				strcat (B_string, B_delim);
+			else {	/* One of possibly several -B<arg> options; concatenate and separate by RS */
+				if (B_string[0]) strcat (B_string, B_delim);	/* Add RS separator between args */
 				strcat (B_string, opt->arg);
 			}
 		}
-		else {	/* Gave -R[<args>], -B[<args>] etc. so we either use or update history and continue */
-			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++) if (!strcmp (GMT_unique_option[k], str)) id = k;
-			if (id < 0) Return;
-			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -B<args> etc. so we we want to update history and continue */
+		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
+			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++) if (!strcmp (GMT_unique_option[k], str)) id = k;	/* Find entry in history array */
+			if (id < 0) Return;	/* Error: user gave shorthand option but there is no record in the history */
+			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -V<args> etc. so we we want to update history and continue */
 		}
-		if (opt->option != 'B') {	/* Do -B separately after the loop */
-			if (update) {	/* Gave -J<code><args>, -R<args>, -B<args> etc. so we update history and continue */
+		if (opt->option != 'B') {	/* Do -B separately again after the loop so skip it here */
+			if (update) {	/* Gave -J<code><args>, -R<args>, -V<args> etc. so we update history and continue */
 				if (remember) {
 					if (GMT->init.history[id]) free (GMT->init.history[id]);
 					GMT->init.history[id] = strdup (opt->arg);
 				}
 			}
-			else {	/* Gave -J<code>, -R, -B etc. so we complete the option and continue */
+			else {	/* Gave -J<code>, -R, -J etc. so we complete the option and continue */
 				if (!GMT->init.history[id]) Return;
 				if (opt->arg) free (opt->arg);	/* Free previous pointer to arg */
 				opt->arg = strdup (GMT->init.history[id]);
@@ -6679,7 +6681,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		}
 	}
 
-	if (B_string[0]) {	/* Got a concatenated string with one or more -B args */
+	if (B_string[0]) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ascii 30) */
 		if (GMT->init.history[B_id]) free (GMT->init.history[B_id]);
 		GMT->init.history[B_id] = strdup (B_string);
 	}
