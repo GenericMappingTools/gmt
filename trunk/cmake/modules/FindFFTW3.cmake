@@ -51,26 +51,31 @@ find_library (FFTW3F_LIBRARY
 
 get_filename_component (_fftw3_libpath ${FFTW3F_LIBRARY} PATH)
 
+# threaded single precision
+find_library (FFTW3F_THREADS_LIBRARY
+  NAMES fftw3f_threads
+  HINTS ${_fftw3_libpath})
+
 if (FFTW3F_LIBRARY)
   # test if FFTW >= 3.3
   include (CMakePushCheckState)
   cmake_push_check_state() # save state of CMAKE_REQUIRED_*
   set (CMAKE_REQUIRED_INCLUDES ${FFTW3_INCLUDE_DIR})
   set (CMAKE_REQUIRED_LIBRARIES ${FFTW3F_LIBRARY})
-  include (CheckSymbolExists)
+	if (HAVE_M_LIBRARY)
+		set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} -lm)
+	endif (HAVE_M_LIBRARY)
+	include (CheckSymbolExists)
   check_symbol_exists (fftwf_import_wisdom_from_filename fftw3.h FFTW3F_VERSION_RECENT)
   cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
 
   # old version warning
   if (NOT FFTW3F_VERSION_RECENT)
     message (WARNING "FFTW library found, but it is too old (<3.3).")
-  endif (NOT FFTW3F_VERSION_RECENT)
+		set (FFTW3F_LIBRARY)
+		set (FFTW3F_THREADS_LIBRARY)
+	endif (NOT FFTW3F_VERSION_RECENT)
 endif (FFTW3F_LIBRARY)
-
-# threaded single precision
-find_library (FFTW3F_THREADS_LIBRARY
-  NAMES fftw3f_threads
-  HINTS ${_fftw3_libpath})
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (FFTW3 DEFAULT_MSG FFTW3F_LIBRARY FFTW3_INCLUDE_DIR FFTW3F_VERSION_RECENT)
