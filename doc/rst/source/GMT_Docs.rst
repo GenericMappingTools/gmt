@@ -1473,7 +1473,7 @@ listing sorted by program purpose, see Section `GMT quick reference`_.
 +=======================+=====================================================================+
 | :doc:`blockmean`      | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`blockmean`      | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| :doc:`blockmedian`    | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
@@ -1639,7 +1639,7 @@ summary of the standard command line options and a breakdown of the
 +=======================+=====================================================================+
 | :doc:`blockmean`      | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`blockmean`      | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| :doc:`blockmedian`    | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
