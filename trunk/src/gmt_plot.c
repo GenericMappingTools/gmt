@@ -2673,7 +2673,7 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 	if (B->boxfill) GMT_setfill (GMT, &B->fill, B->boxdraw);
 	if (B->boxdraw) GMT_setpen (GMT, &B->pen);
 	GMT_geo_polygons (GMT, S);
-	GMT_free_segment (GMT, S);
+	GMT_free_segment (GMT, &S, GMT_ALLOCATED_BY_GMT);
 }
 
 int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
@@ -4327,7 +4327,7 @@ void GMT_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	px[GMT_ELLIPSE_APPROX] = px[0], py[GMT_ELLIPSE_APPROX] = py[0];
 	GMT_geo_polygons (GMT, S);
 
-	GMT_free_segment (GMT, S);
+	GMT_free_segment (GMT, &S, GMT_ALLOCATED_BY_GMT);
 }
 
 float gmt_inch_to_degree_scale (struct GMT_CTRL *GMT)
@@ -4455,7 +4455,7 @@ void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B, bool longw
 	GMT_geo_polygons (GMT, L);	/* "Draw" the line */
 	PSL_command (GMT->PSL, "U\n");
 	
-	GMT_free_segment (GMT, L);
+	GMT_free_segment (GMT, &L, GMT_ALLOCATED_BY_GMT);
 }
 
 void gmt_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C)

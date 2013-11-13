@@ -716,7 +716,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
-			GMT_free_table (GMT, Dout->table[tbl]);	/* Free it, then allocate separately */
+			GMT_free_table (GMT, Dout->table[tbl], Dout->alloc_mode);	/* Free it, then allocate separately */
 			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, C.n_spec, 3, false);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
