@@ -78,7 +78,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int min_level;	/* Lowest level to include [0] */
 	int max_level;	/* Highest level to include [4] */
 	int flag;		/* If riverlakes or lakes are to be excluded */
-	int has_source;		/* 1 if this GSHHG file contains feature source (0 for older files) */
+	int two_Antarcticas;	/* 1 if this GSHHG file contains two Antarctica solutions [v 2.2.x has one] */
 	int fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
 	double min_area;	/* Smallest feature to include in km^2 */
 	double scale;		/* Multiplier to convert dx, dy back to dlon, dlat in degrees */
@@ -139,9 +139,11 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int n_node_id;		/* Id for variable n_nodes */
 	int bin_firstseg_id;	/* Id for variable bin_firstseg */
 	int bin_info_id;	/* Id for variable bin_info */
+	int bin_info_id_ANT;	/* Id for variable bin_info */
 	int bin_nseg_id;	/* Id for variable bin_nseg */
 	
 	int seg_info_id;	/* Id for variable seg_info */
+	int seg_info_id_ANT;	/* Id for variable seg_info for Antarctica */
 	int seg_start_id;	/* Id for variable seg_start */
 	int seg_GSHHS_ID_id;	/* Id for variable seg_GSHHS_ID */
 	
@@ -160,7 +162,6 @@ struct GMT_SHORE_SEGMENT {
 	unsigned char exit;	/* Side (0-3) the segment ends on, or 4 for closed segments */
 	unsigned char fid;	/* Fill id (same as level expect for riverlakes which is 5) */
 	unsigned short n;	/* Number of points in segment */
-	unsigned short src;	/* src of segment [-1 if not available] */
 	short int *dx;		/* Array of scaled longitudes relative to SW corner */
 	short int *dy;		/* Array of scaled latitudes relative to SW corner */
 };
@@ -236,7 +237,6 @@ struct GMT_GSHHS_POL {
 	int interior;	/* true if polygon is inside bin */
 	int level;
 	int fid;	/* Fill id; same as level but 5 if riverlake */
-	int src;	/* Source ID */
 	double *lon;
 	double *lat;
 };
