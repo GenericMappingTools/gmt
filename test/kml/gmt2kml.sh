@@ -9,7 +9,7 @@ sed -i -e 's/e-0\([0-9][0-9]\)/e-\1/g' coast.kml
 diff --strip-trailing-cr coast.kml "${src:-.}"/coast.kml > fail
 
 # test -C option
-makecpt -Ccategorical > categories.cpt
+gmt makecpt -Ccategorical > categories.cpt
 
 gmt gmt2kml "${src:-.}"/pointsets.txt -Ccategories.cpt > pointsets.kml
 #todo: diff --strip-trailing-cr pointsets.kml "${src:-.}"/pointsets.kml > fail
