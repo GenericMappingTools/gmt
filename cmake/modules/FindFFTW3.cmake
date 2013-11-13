@@ -70,8 +70,11 @@ if (FFTW3F_LIBRARY)
 	# old version warning
 	if (NOT FFTW3F_VERSION_RECENT)
 		message (WARNING "FFTW library found, but it is either too old (<3.3) or statically-linked.")
-		set (FFTW3F_LIBRARY)
-		set (FFTW3F_THREADS_LIBRARY)
+		unset (FFTW3F_LIBRARY CACHE)
+		unset (FFTW3F_THREADS_LIBRARY CACHE)
+		unset (FFTW3_INCLUDE_DIR CACHE)
+		unset (FFTW3F_VERSION_RECENT CACHE)
+		return()
 	endif (NOT FFTW3F_VERSION_RECENT)
 endif (FFTW3F_LIBRARY)
 
