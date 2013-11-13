@@ -16,9 +16,11 @@
 find_path (DCW_PATH dcw-gmt.nc
 	HINTS ${DCW_ROOT} $ENV{DCW_ROOT}
 	PATH_SUFFIXES
+	gmt-dcw
 	dcw-gmt
+	share/gmt/dcw
+	share/gmt-dcw
 	share/dcw-gmt
-	share/gmt/dcw-gmt
 	PATHS
 	${CMAKE_SOURCE_DIR}
 	/sw # Fink

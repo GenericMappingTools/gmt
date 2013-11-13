@@ -21,12 +21,12 @@ find_path (GSHHG_PATH
 	NAMES binned_GSHHS_c.nc binned_GSHHS_c.cdf
 	HINTS ${GSHHG_ROOT} $ENV{GSHHG_ROOT}
 	PATH_SUFFIXES
+	gmt-gshhg
 	gshhg-gmt-nc4
-	share/gshhg-gmt-nc4
+	share/gmt/gshhs
+	share/gmt-gshhs
 	share/gshhs
-	coast
-	share/coast
-	share/gmt/coast
+	share/gshhg-gmt-nc4
 	PATHS
 	${CMAKE_SOURCE_DIR}
 	/sw # Fink
