@@ -471,9 +471,10 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
 	}
-	if (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin_ANT", &c->bin_info_id_ANT)) {	/* New file with two Antarcticas */
+	if (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin_ANT", &c->bin_info_id_ANT) == NC_NOERR) {	/* New file with two Antarcticas */
 		GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_ANT_flag", &c->seg_info_id_ANT));
 		two_Antarcticas = true;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GSHHG with two Antarcticas, read in extra ANT flgs.\n");
 	}
 
 	/* Get attributes */
