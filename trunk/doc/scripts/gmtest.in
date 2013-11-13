@@ -38,6 +38,7 @@ unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export GMT_DATADIR="@GMT_SOURCE_DIR@/doc/scripts"
+export PATH="@GMT_SOURCE_DIR@/src:$PATH" # for gmt_shell_functions.sh
 
 # Reset error count
 ERROR=0
