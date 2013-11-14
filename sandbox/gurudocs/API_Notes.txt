@@ -9,13 +9,13 @@ GMT from an external program without the current process:
 facilitate exchange between user native data and GMT.  So any vectors or matrix
 created with KNOWN dimensions are therefore input (GMT_IN) and can automatically
 set alloc_mode = GMT_ALLOCATED_EXTERNALLY instead of the default GMT_ALLOCATED_BY_GMT.
-This is now the behavior in the API.
+This is now the behavior in the APIin 5.2.0.
 
-(2) can be dealt with by recognizing that for output we do not know a priori the
+(2) was dealt with by recognizing that for output we do not know a priori the
 complete dimensions of the results.  Hence when vectors/matrices are created without
 specifying row-lengths then we KNOW these are for output and we can automatically
-supply the GMT_VIA_OUTPUT setting (or some internal equivalent) without forcing
-the user to set extra flags.  I am working on this right now.
+set direction to GMT_OUT without forcing the user to set extra flags.
+This is now the behavior in the API in 5.2.0.
 
 =================================================================================
 
