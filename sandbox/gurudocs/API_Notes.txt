@@ -107,7 +107,7 @@ called sgrid, a float array.  Here is how:
 a) Create a GMT_MATRIX structure for receiving the data:
    uint64_t dim[2] = {0, 0};	/* Unknown dimensions */
    /* Giving unknown dimensions tells GMT that this is for output */
-   M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL);
+   M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL);
 b) Assign your data type:
    M->type = GMT_FLOAT;
 c) Register the matrix as an output resource:
