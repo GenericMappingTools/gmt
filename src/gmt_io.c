@@ -6568,7 +6568,7 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns)
 	V->data = GMT_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
 	V->type = GMT_memory (GMT, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
-	V->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	V->alloc_mode = GMT_ALLOCATED_EXTERNALLY;	/* Since C->data[] arrays will be assigned to external (user) vectors. */
 	V->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	V->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 
@@ -6673,7 +6673,7 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
 	M = GMT_memory (GMT, NULL, 1, struct GMT_MATRIX);
-	M->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	M->alloc_mode = GMT_ALLOCATED_EXTERNALLY;	/* M->data is expected to be assigned to an external (user) matrix. */
 	M->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	M->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;		/* Default to 1 if not set */
