@@ -943,7 +943,9 @@ space for the array. In that second call you pass the pointer returned
 by the first call as ``data`` and specify the family; all other
 arguments should be NULL or 0. Normally, resources created by this
 function are considered to be input (i.e., have a direction that is GMT_IN).
-You can change that to GMT_OUT by adding in the bit flag GMT_VIA_OUTPUT.
+The exception to this is for vectors and matrices which will have a direction
+set to GMT_OUT when the dimensions specified are not complete (i.e., the
+row dimension of vectors is 0 and both dimensions are zero for matrices).
 The function returns a pointer to the
 data container. In case of an error we return a NULL pointer and pass an
 error code via ``API->error``.

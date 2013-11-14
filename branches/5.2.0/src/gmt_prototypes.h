@@ -182,9 +182,9 @@ EXTERN_MSC void GMT_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P);
 EXTERN_MSC struct GMT_IMAGE * GMT_create_image (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image);
 #endif
-EXTERN_MSC struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t n_layers);
+EXTERN_MSC struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t n_layers, unsigned int direction);
 EXTERN_MSC void GMT_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix);
-EXTERN_MSC struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns);
+EXTERN_MSC struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction);
 EXTERN_MSC void GMT_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vector);
 EXTERN_MSC int GMT_load_aspatial_string (struct GMT_CTRL *GMT, struct GMT_OGR *G, uint64_t col, char out[GMT_BUFSIZ]);
 EXTERN_MSC double GMT_get_aspatial_value (struct GMT_CTRL *GMT, uint64_t col, struct GMT_DATASEGMENT *S);

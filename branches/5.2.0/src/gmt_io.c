@@ -6556,7 +6556,7 @@ void GMT_null_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned 
 	}
 }
 
-struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns)
+struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction)
 {	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
 	struct GMT_VECTOR *V = NULL;
 
@@ -6564,8 +6564,9 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns)
 	V->data = GMT_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
 	V->type = GMT_memory (GMT, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
-	V->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
-	V->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	/* We expect external memory for input and GMT-allocated memory on output */
+	V->alloc_mode = (direction == GMT_IN) ? GMT_ALLOCATED_EXTERNALLY : GMT_ALLOCATED_BY_GMT;
+	V->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level */
 	V->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 
 	return (V);
@@ -6665,11 +6666,12 @@ struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VECTO
 	return (V);
 }
 
-struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers)
+struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers, unsigned int direction)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
 	M = GMT_memory (GMT, NULL, 1, struct GMT_MATRIX);
-	M->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	/* We expect external memory for input and GMT-allocated memory on output */
+	M->alloc_mode = (direction == GMT_IN) ? GMT_ALLOCATED_EXTERNALLY : GMT_ALLOCATED_BY_GMT;
 	M->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	M->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;		/* Default to 1 if not set */
