@@ -23,9 +23,9 @@ find_path (GSHHG_PATH
 	PATH_SUFFIXES
 	gmt-gshhg
 	gshhg-gmt-nc4
-	share/gmt/gshhs
-	share/gmt-gshhs
-	share/gshhs
+	share/gmt/gshhg
+	share/gmt-gshhg
+	share/gshhg
 	share/gshhg-gmt-nc4
 	PATHS
 	${CMAKE_SOURCE_DIR}
