@@ -1,28 +1,32 @@
 Package: gshhg
 Version: 2.2.4
-Revision: 1
+Revision: 2
 Source: ftp://ftp.soest.hawaii.edu/gmt/gshhg-gmt-nc4-%v.tar.gz
 Source-MD5: 4132b4911f568102353dec169ea0c84a
 Recommends: gmt5
 Replaces: gshhs
 CompileScript: echo "Moving files..."
 InstallScript: <<
- mkdir -p %i/share/gshhg-gmt-nc4
- mv *.nc %i/share/gshhg-gmt-nc4
+	mkdir -p %i/share/gmt/gshhg
+	mv *.nc %i/share/gmt/gshhg
 <<
 Description: Global dataset of shorelines, rivers, borders
 DescDetail: <<
- This package provides five different resolution versions of the GSHHG
- (Global Self-consistent Hierarchical High-resolution Geography)
- data base: course, low, intermediate, high, and full resolution.
- GSHHG combines the World Vector Shoreline and World Data Base II
- products into a single quality-checked hierarchical data base at
- 5 resolutions.
+	This package provides five different resolution versions of the GSHHG
+	(Global Self-consistent Hierarchical High-resolution Geography)
+	data base: course, low, intermediate, high, and full resolution.
+	GSHHG combines the World Vector Shoreline and World Data Base II
+	products into a single quality-checked hierarchical data base at
+	5 resolutions.
 
- Although these shorelines are distributed as part of the Generic Mapping
- Tools (GMT), they can be used stand-alone or with other applications
- that can read NetCDF files. This version required at least netCDF
- version 4.
+	Although these shorelines are distributed as part of the Generic Mapping
+	Tools (GMT), they can be used stand-alone or with other applications
+	that can read NetCDF files. This version required at least netCDF
+	version 4.
+<<
+DescPort: <<
+	This version includes moving the files to %i/share/gmt/gshhg as recently recommended
+	at http://gmt.soest.hawaii.edu/projects/gmt/wiki/PackagingGMT/
 <<
 License: GPL
 DocFiles: LICENSE.TXT README.TXT

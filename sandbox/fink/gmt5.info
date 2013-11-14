@@ -1,6 +1,6 @@
 Package: gmt5
 Version: 5.1.0
-Revision: 4
+Revision: 5
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source-MD5: da741319c883a3dbaf27ec7eaf66c166
 PatchFile: %n.patch
@@ -9,7 +9,7 @@ SourceDirectory: gmt-%v
 
 Conflicts: gmt
 Replaces: gmt
-BuildDepends: fink (>= 0.32), cmake, netcdf-c7, libpcre1, gdal-dev (>= 1.10.1)
+BuildDepends: fink (>= 0.32), cmake, netcdf-c7, libpcre1, gdal-dev (>= 1.10.1), fftw3 (>= 3.3.3)
 Depends: %n-shlibs (= %v-%r)
 Recommends: %n-doc
 NoSetCPPFLAGS: true
@@ -20,20 +20,19 @@ CompileScript: <<
   mkdir build
   cd build
   cmake \
-	-DCMAKE_C_FLAGS_RELEASE="-O3 -DNDEBUG -fstrict-aliasing" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_C_FLAGS=-fstrict-aliasing \
 	-DCMAKE_INSTALL_PREFIX=%p \
 	-DGMT_DOCDIR=%i/share/doc/gmt \
+	-DDCW_ROOT=%p/share/gmt/dcw \
+	-DGSHHG_ROOT=%p/share/gmt/gshhg \
 	-DNETCDF_ROOT=%p \
-	-DGSHHG_ROOT=%p \
-	-DDCW_ROOT=%p \
-	-DFFTW3_ROOT=off \
-	-DGDAL_ROOT=off \
-	-DPCRE_ROOT=off \
+	-DFFTW3_ROOT=%p \
+	-DGDAL_ROOT=%p \
+	-DPCRE_ROOT=%p \
 	-DFLOCK=on \
 	-DGMT_INSTALL_NAME_SUFFIX=5 \
 	-DGMT_INSTALL_RELOCATABLE=off \
-	-DINSTALL_MODULE_LINKS=on \
-	-DLICENSE_RESTRICTED=LGPL \
 	-DCMAKE_OSX_DEPLOYMENT_TARGET="" \
         -DCMAKE_OSX_SYSROOT=/ \
 	..
@@ -55,7 +54,7 @@ SplitOff: <<
 SplitOff2: <<
   Package: %N-shlibs
   Files: lib/*.5.*dylib lib/gmt5
-  Depends: netcdf-c7-shlibs, libpcre1-shlibs, gdal-shlibs (>= 1.10.1), gshhg (>= 2.2.4), dcw-gmt (>= 1.1.0)
+  Depends: netcdf-c7-shlibs, libpcre1-shlibs, gdal-shlibs (>= 1.10.1), fftw3-shlibs (>= 3.3.3), gshhg (>= 2.2.4-2), dcw-gmt (>= 1.1.0-2)
   RuntimeDepends: ghostscript
   Shlibs: <<
     %p/lib/libgmt.5.dylib 5.0.0 %n (>= 5.1.0-1)
