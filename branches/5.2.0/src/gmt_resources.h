@@ -44,10 +44,14 @@
 
 enum GMT_enum_method {
 	GMT_IS_FILE = 0,	/* Entity is a filename */
-	GMT_IS_STREAM,		/* Entity is an open stream */
-	GMT_IS_FDESC,		/* Entity is an open file descriptor */
-	GMT_IS_DUPLICATE,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE};	/* Entity is a memory location and we just pass the ref (no copying) */
+	GMT_IS_STREAM = 1,	/* Entity is an open stream */
+	GMT_IS_FDESC = 2,	/* Entity is an open file descriptor */
+	GMT_IS_DUPLICATE = 3,	/* Entity is a memory location that should be duplicated */
+	GMT_IS_REFERENCE = 4,	/* Entity is a memory location and we just pass the ref (no copying) */
+	GMT_IS_DUPLICATE_VIA_VECTOR = 103,	/* Entity is a memory location that should be duplicated via a vector intermediary */
+	GMT_IS_REFERENCE_VIA_VECTOR = 104,	/* Entity is a memory location and we just pass the ref (no copying) via a vector intermediary */
+	GMT_IS_DUPLICATE_VIA_MATRIX = 203,	/* Entity is a memory location that should be duplicated via a matrix intermediary */
+	GMT_IS_REFERENCE_VIA_MATRIX = 204};	/* Entity is a memory location and we just pass the ref (no copying) via a matrix intermediary */
 
 /* A Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 

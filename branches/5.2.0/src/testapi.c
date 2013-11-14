@@ -38,12 +38,12 @@ struct TESTAPI_CTRL {
 	struct I {	/* -I sets input method */
 		bool active;
 		unsigned int mode;
-		unsigned int via;
+		enum GMT_enum_via via;
 	} I;
 	struct W {	/* -W sets output method */
 		bool active;
 		unsigned int mode;
-		unsigned int via;
+		enum GMT_enum_via via;
 	} W;
 };
 
