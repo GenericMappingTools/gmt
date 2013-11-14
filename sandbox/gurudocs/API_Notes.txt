@@ -1,11 +1,21 @@
 This file is a draft - final version with be in rst and go into the API docs.
 However, some of the details here are more proposals rather than full reality.
 Specifically, I am trying to simplify the process of getting data in and out of
-GMT from an external program without (1) manually dealing with allocation modes
-and (2) manually telling GMT what is output via GMT_VIA_OUTPUT.  Also should
-things like
-GMT_IS_REFERENCE+GMT_VIA_MATRIX etc become
-GMT_IS_{REFERENCE,DUPLICATE}_VIA_{MATRIX,VECTOR enums?
+GMT from an external program without the current process:
+(1) manually/explicitly dealing with allocation modes
+(2) manually telling GMT what is external output via GMT_VIA_OUTPUT.
+
+(1) was easily solved because the only purpose of GMT_VECTOR and GMT_MATRIX is to
+facilitate exchange between user native data and GMT.  So any vectors or matrix
+created with KNOWN dimensions are therefore input (GMT_IN) and can automatically
+set alloc_mode = GMT_ALLOCATED_EXTERNALLY instead of the default GMT_ALLOCATED_BY_GMT.
+This is now the behavior in the API.
+
+(2) can be dealt with by recognizing that for output we do not know a priori the
+complete dimensions of the results.  Hence when vectors/matrices are created without
+specifying row-lengths then we KNOW these are for output and we can automatically
+supply the GMT_VIA_OUTPUT setting (or some internal equivalent) without forcing
+the user to set extra flags.  I am working on this right now.
 
 =================================================================================
 
@@ -33,7 +43,7 @@ b) Assign your data points to the vector and specify data types:
    V->data[GMT_Y] = lon;	V->type[GMT_Y] = GMT_FLOAT;
    V->data[GMT_Z] = z;		V->type[GMT_Y] = GMT_INT;
 c) Register the vector as an input resource:
-   ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE+GMT_VIA_VECTOR, GMT_IS_POINT,
+   ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT,
 	GMT_IN, NULL, V);
 d) Obtain the internal "filename" to this resource:
    char ID_name[GMT_LEN16];
@@ -56,7 +66,7 @@ a) Create a GMT_MATRIX structure for passing the data:
 b) Assign your data grid to the matrix and specify data type:
    M->data = grid;	M->type = GMT_SHORT;
 c) Register the matrix as an input resource:
-   ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE+GMT_VIA_MATRIX, GMT_IS_SURFACE,
+   ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE_VIA_MATRIX, GMT_IS_SURFACE,
 	GMT_IN, NULL, M);
 d) Obtain the internal "filename" to this resource:
    char ID_name[GMT_LEN16];
@@ -85,7 +95,7 @@ a) Create a GMT_VECTOR structure for receiving the data:
 b) Assign your data types:
    V->type[GMT_X] = V->type[GMT_Y] = V->type[GMT_Y] = GMT_FLOAT;
 c) Register the vector as an output resource:
-   ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE+GMT_VIA_VECTOR, GMT_IS_POINT,
+   ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT,
 	GMT_OUT, NULL, V);
 d) Obtain the internal "filename" to this resource:
    char ID_name[GMT_LEN16];
@@ -111,7 +121,7 @@ a) Create a GMT_MATRIX structure for receiving the data:
 b) Assign your data type:
    M->type = GMT_FLOAT;
 c) Register the matrix as an output resource:
-   ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE+GMT_VIA_MATRIX, GMT_IS_SURFACE,
+   ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE_VIA_MATRIX, GMT_IS_SURFACE,
 	GMT_OUT, NULL, M);
 d) Obtain the internal "filename" to this resource:
    char ID_name[GMT_LEN16];
