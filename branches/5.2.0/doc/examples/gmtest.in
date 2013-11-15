@@ -42,6 +42,7 @@ export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
+export PATH="@GMT_SOURCE_DIR@/src:$PATH" # for gmt_shell_functions.sh
 
 # Reset error count
 ERROR=0

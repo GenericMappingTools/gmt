@@ -1473,7 +1473,7 @@ listing sorted by program purpose, see Section `GMT quick reference`_.
 +=======================+=====================================================================+
 | :doc:`blockmean`      | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`blockmean`      | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| :doc:`blockmedian`    | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
@@ -1639,7 +1639,7 @@ summary of the standard command line options and a breakdown of the
 +=======================+=====================================================================+
 | :doc:`blockmean`      | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`blockmean`      | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| :doc:`blockmedian`    | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
@@ -2179,13 +2179,13 @@ default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
 font sizes used for annotations and labels, color of the pens,
 dots-per-inch resolution of the hardcopy device, what type of spline
-interpolant to use, and many other choices (A complete list of all the
+interpolant to use, and many other choices A complete list of all the
 parameters and their default values can be found in the
-:doc:`gmt.conf` manual pages). Figures
-[fig:GMT:sub:`D`\ efaults\ :sub:`1`\ a],
-[fig:GMT:sub:`D`\ efaults\ :sub:`1`\ b], and
-[fig:GMT:sub:`D`\ efaults\ :sub:`1`\ c] show the parameters that affect
-plots). You may create your own ``gmt.conf`` files by running
+:doc:`gmt.conf` manual pages. Figures
+:ref:`GMT Parameters a <gmt_defaults_a>`,
+:ref:`b <gmt_defaults_b>`, and
+:ref:`c <gmt_defaults_c>` show the parameters that affect
+plots. You may create your own ``gmt.conf`` files by running
 :doc:`gmtdefaults` and then modify those
 parameters you want to change. If you want to use the parameter settings
 in another file you can do so by specifying ``+<defaultfile>`` on the
@@ -2197,12 +2197,15 @@ command line (see below) will take precedent over the default values.
 E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
 **-X**\ 1.5\ **i** option will override the default and set the offset to 1.5 inches.
 
+.. _gmt_defaults_a:
+
 .. figure:: /_images/GMT_Defaults_1a.*
    :width: 500 px
    :align: center
 
    Some GMT parameters that affect plot appearance.
 
+.. _gmt_defaults_b:
 
 .. figure:: /_images/GMT_Defaults_1b.*
    :width: 500 px
@@ -2210,6 +2213,7 @@ E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
 
    More GMT parameters that affect plot appearance.
 
+.. _gmt_defaults_c:
 
 .. figure:: /_images/GMT_Defaults_1c.*
    :width: 500 px
@@ -2368,7 +2372,8 @@ Data domain or map region: The **-R** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-R** option defines the map region or data domain of interest. It
-may be specified in one of three ways (Figure :ref:`missing`):
+may be specified in one of three ways, two of which are shown in Figure
+:ref:`Map region <gmt_region>`:
 
 #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*. This is the standard way to
    specify Cartesian data domains and geographical regions when using
@@ -2386,6 +2391,8 @@ may be specified in one of three ways (Figure :ref:`missing`):
    calling program, this mechanism will also set grid spacing and
    possibly the grid registration (see
    Section `Grid registration: The -r option`_).
+
+.. _gmt_region:
 
 .. figure:: /_images/GMT_-R.*
    :width: 500 px
@@ -2736,7 +2743,9 @@ how many decimal points should be used by inspecting the *stride*
 settings. If :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` is set to another format it will be
 used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
-each annotation (see Figure :ref:`missing`).
+each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
+
+.. _axis_label_basemap:
 
 .. figure:: /_images/GMT_-B_linear.*
    :width: 500 px
@@ -2744,7 +2753,7 @@ each annotation (see Figure :ref:`missing`).
 
    Linear Cartesian projection axis.  Long tickmarks accompany
    annotations, shorter ticks indicate frame interval. The axis label is
-   optional. For this example we used -R0/12/0/1 -JX3i/0.4i -Ba4f2g1:Frequency:
+   optional. For this example we used ``-R0/12/0/0.95 -JX3i/0.3i -Ba4f2g1+lFrequency+u" %" -BS``
 
 Cartesian log\ :sub:`10` axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2820,17 +2829,17 @@ Our first example shows a time period of almost two months in Spring
      gmt set FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
      gmt psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -P > GMT_-B_time1.ps
 
-These commands result in Figure :ref:`Cartesian time axis <cartesian_axis>`.
+These commands result in Figure :ref:`Cartesian time axis <cartesian_axis1>`.
 Note the leading hyphen in the :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`
 removes leading zeros from calendar items (e.g., 02 becomes 2).
 
-.. _cartesian_axis:
+.. _cartesian_axis1:
 
 .. figure:: /_images/GMT_-B_time1.*
    :width: 500 px
    :align: center
 
-   Cartesian time axis, example 1.
+   Cartesian time axis, example 1
 
 The next example shows two different ways to annotate an axis portraying 2 days in July 1969:
 
@@ -2840,19 +2849,22 @@ The next example shows two different ways to annotate an axis portraying 2 days 
      gmt psbasemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS -P -K > GMT_-B_time2.ps
      gmt psbasemap -R -J -Bpa6Hf1h -Bsa1D -BS -O -Y0.65i >> GMT_-B_time2.ps
 
-The lower example (Figure :ref:`missing`) chooses to annotate the weekdays (by
+The lower example (Figure :ref:`cartesian_axis2`) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
 specifying **a**\ 1\ **D**). Note how the clock format only selects
 hours and minutes (no seconds) and the date format selects a month name,
 followed by one space and a two-digit day-of-month number.
 
+.. _cartesian_axis2:
+
 .. figure:: /_images/GMT_-B_time2.*
    :width: 500 px
    :align: center
 
-   Cartesian time axis, example 2.
+   Cartesian time axis, example 2
 
-The third example presents two years, annotating both the years and every 3rd month.
+The third example (Figure :ref:`cartesian_axise`) presents two years, annotating
+both the years and every 3rd month.
 
    ::
 
@@ -2866,13 +2878,15 @@ only and :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>` selects the 1-
 case abbreviation of month names using the current language (selected by
 :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`).
 
+.. _cartesian_axis3:
+
 .. figure:: /_images/GMT_-B_time3.*
    :width: 500 px
    :align: center
 
-   Cartesian time axis, example 3.
+   Cartesian time axis, example 3
 
-The fourth example (Figure :ref:`missing`) only shows a few hours of a day, using
+The fourth example (Figure :ref:`cartesian_axis4`) only shows a few hours of a day, using
 relative time by specifying **t** in the **-R** option while the
 :ref:`TIME_UNIT <TIME_UNIT>` is **d** (for days). We select both primary and secondary
 annotations, ask for a 12-hour clock, and let time go from right to left:
@@ -2882,13 +2896,15 @@ annotations, ask for a 12-hour clock, and let time go from right to left:
      gmt set FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p
      gmt psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps
 
+.. _cartesian_axis4:
+
 .. figure:: /_images/GMT_-B_time4.*
    :width: 500 px
    :align: center
 
-   Cartesian time axis, example 4.
+   Cartesian time axis, example 4
 
-The fifth example shows a few weeks of time (Figure :ref:`missing`). The lower axis
+The fifth example shows a few weeks of time (Figure :ref:`cartesian_axis5`). The lower axis
 shows ISO weeks with week numbers and abbreviated names of the weekdays.
 The upper uses Gregorian weeks (which start at the day chosen by
 :ref:`TIME_WEEK_START <TIME_WEEK_START>`); they do not have numbers.
@@ -2901,31 +2917,35 @@ The upper uses Gregorian weeks (which start at the day chosen by
     gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
     gmt psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps
 
+.. _cartesian_axis5:
+
 .. figure:: /_images/GMT_-B_time5.*
    :width: 500 px
    :align: center
 
-   Cartesian time axis, example 5.
+   Cartesian time axis, example 5
 
-Our sixth example shows the first five months of 1996, and we have
-annotated each month with an abbreviated, upper case name and 2-digit
-year. Only the primary axes information is specified.
+Our sixth example (Figure :ref:`cartesian_axis6`) shows the first five months of
+1996, and we have annotated each month with an abbreviated, upper case name and
+2-digit year. Only the primary axes information is specified.
 
    ::
 
     gmt set FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
     gmt psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps
 
+.. _cartesian_axis6:
+
 .. figure:: /_images/GMT_-B_time6.*
    :width: 500 px
    :align: center
 
-   Cartesian time axis, example 6.
+   Cartesian time axis, example 6
 
-Our seventh and final example illustrates annotation of year-days.
-Unless we specify the formatting with a leading hyphen in
-:ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` we get 3-digit integer days. Note that in order to
-have the two years annotated we need to allow for the annotation of
+Our seventh and final example (Figure :ref:`cartesian_axis7`) illustrates
+annotation of year-days. Unless we specify the formatting with a leading hyphen
+in :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` we get 3-digit integer days. Note that
+in order to have the two years annotated we need to allow for the annotation of
 small fractional intervals; normally such truncated interval must be at
 least half of a full interval.
 
@@ -2934,11 +2954,13 @@ least half of a full interval.
     gmt set FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
     gmt psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
 
+.. _cartesian_axis7:
+
 .. figure:: /_images/GMT_-B_time7.*
    :width: 500 px
    :align: center
 
-   Cartesian time axis, example 7.
+   Cartesian time axis, example 7
 
 Custom axes
 ^^^^^^^^^^^

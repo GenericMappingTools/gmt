@@ -5242,7 +5242,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 				n_split = GMT_split_line_at_dateline (GMT, T->segment[seg], &L);
 			}
 			T->segment = GMT_memory (GMT, T->segment, n_segs + n_split - 1, struct GMT_DATASEGMENT *);	/* Allow more space for new segments */
-			GMT_free_segment (GMT, T->segment[seg]);	/* Delete the old one */
+			GMT_free_segment (GMT, &(T->segment[seg]), D->alloc_mode);	/* Delete the old one */
 			T->segment[seg] = L[0];			/* Hook in the first replacement */
 			for (k = 1; k < n_split; k++) T->segment[n_segs++] = L[k];	/* Add the remaining segments to the end */
 			GMT_free (GMT, L);
@@ -6224,13 +6224,13 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
 
 	if (first_seg) {	/* Never saw any segment or data records */
-		GMT_free_table (GMT, T);
+		GMT_free_table (GMT, T, GMT_ALLOCATED_BY_GMT);
 		return (NULL);
 	}
 	if (T->segment[seg]->n_rows == 0) {	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		GMT_free (GMT, T->segment[seg]);
 		if (seg == 0) {	/* Happens when we just read 1 segment header with no data */
-			GMT_free_table (GMT, T);
+			GMT_free_table (GMT, T, GMT_ALLOCATED_BY_GMT);
 			return (NULL);
 		}
 	}
@@ -6376,14 +6376,17 @@ void gmt_free_ogr_seg (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 	GMT_free (GMT, S->ogr);
 }
 
-void GMT_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *segment)
+void GMT_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S, enum GMT_enum_alloc alloc_mode)
 {
 	/* Free memory allocated by GMT_read_table */
 
 	unsigned int k;
 	uint64_t col;
+	struct GMT_DATASEGMENT *segment = *S;
 	if (!segment) return;	/* Do not try to free NULL pointer */
-	for (col = 0; col < segment->n_columns; col++) if (segment->coord[col]) GMT_free (GMT, segment->coord[col]);
+	if (alloc_mode == GMT_ALLOCATED_BY_GMT) {	/* Free data GMT allocated */
+		for (col = 0; col < segment->n_columns; col++) if (segment->coord[col]) GMT_free (GMT, segment->coord[col]);
+	}
 	if (segment->coord) GMT_free (GMT, segment->coord);
 	if (segment->min) GMT_free (GMT, segment->min);
 	if (segment->max) GMT_free (GMT, segment->max);
@@ -6392,9 +6395,10 @@ void GMT_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *segment)
 	for (k = 0; k < 2; k++) if (segment->file[k]) free (segment->file[k]);
 	if (segment->ogr) gmt_free_ogr_seg (GMT, segment);	/* OGR metadata */
 	GMT_free (GMT, segment);
+	*S = NULL;
 }
 
-void GMT_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table)
+void GMT_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum GMT_enum_alloc alloc_mode)
 {
 	unsigned int k;
 	if (!table) return;		/* Do not try to free NULL pointer */
@@ -6406,7 +6410,7 @@ void GMT_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table)
 	GMT_free_ogr (GMT, &(table->ogr), 1);
 	if (table->segment) {	/* Free segments */
 		uint64_t seg;
-		for (seg = 0; seg < table->n_segments; seg++) GMT_free_segment (GMT, table->segment[seg]);
+		for (seg = 0; seg < table->n_segments; seg++) GMT_free_segment (GMT, &(table->segment[seg]), alloc_mode);
 		GMT_free (GMT, table->segment);
 	}
 	GMT_free (GMT, table);
@@ -6418,7 +6422,7 @@ void GMT_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data)
 	if (!data) return;	/* Do not try to free NULL pointer */
 	if (!data->table) return;	/* Do not try to free NULL pointer of tables */
 	for (tbl = 0; tbl < data->n_tables; tbl++) {
-		GMT_free_table (GMT, data->table[tbl]);
+		GMT_free_table (GMT, data->table[tbl], data->alloc_mode);
 	}
 	if (data->min) GMT_free (GMT, data->min);
 	if (data->max) GMT_free (GMT, data->max);
