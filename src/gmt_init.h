@@ -86,7 +86,7 @@ EXTERN_MSC char * GMT_putparameter (struct GMT_CTRL *GMT, char *keyword);
 EXTERN_MSC void GMT_set_pad (struct GMT_CTRL *GMT, unsigned int npad);
 EXTERN_MSC int GMT_get_ellipsoid (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set, bool outline, struct GMT_PEN *pen, bool do_fill, struct GMT_FILL *fill);
-EXTERN_MSC int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S);
+EXTERN_MSC int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_SYMBOL *S);
 EXTERN_MSC bool GMT_check_region (struct GMT_CTRL *GMT, double wesn[]);
 EXTERN_MSC int GMT_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *options);
 EXTERN_MSC unsigned int GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options);

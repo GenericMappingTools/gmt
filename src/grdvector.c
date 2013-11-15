@@ -153,10 +153,12 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 	unsigned int n_errors = 0, n_files = 0;
 	int j;
 	size_t len;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
+	symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+	
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
@@ -232,13 +234,13 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
 						Ctrl->Q.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
-						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->Q.S);
+						n_errors += GMT_parse_vector (GMT, symbol, opt->arg, &Ctrl->Q.S);
 					}
 					else {	/* Size, plus possible attributes */
 						j = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (j == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 						Ctrl->Q.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
-						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->Q.S);
+						n_errors += GMT_parse_vector (GMT, symbol, txt_b, &Ctrl->Q.S);
 					}
 				}
 				break;
@@ -299,7 +301,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 
 int GMT_grdvector (void *V_API, int mode, void *args)
 {
-	unsigned int row, col, col_0, row_0, d_col, d_row, k;
+	unsigned int row, col, col_0, row_0, d_col, d_row, k, n_warn[3] = {0, 0, 0}, warn;
 	int error = 0;
 	bool justify, Geographic;
 	
@@ -480,7 +482,11 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 
 			ij = GMT_IJP (Grid[0]->header, row, col);
 			if (GMT_is_fnan (Grid[0]->data[ij]) || GMT_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
+			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);
 
+			if (y == 45.0 && x == 345.0) {
+				vec_length = 0.0;
+			}
 			if (Ctrl->A.active) {	/* Got polar grids */
 				vec_length = Grid[0]->data[ij];
 				vec_azim   = Grid[1]->data[ij];
@@ -496,7 +502,6 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 				vec_azim = atan2d (Grid[GMT_Y]->data[ij], Grid[GMT_X]->data[ij]);
 			}
 
-			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);
 			if (!Ctrl->N.active) {	/* Throw out vectors whose node is outside */
 				GMT_map_outside (GMT, x, y);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
@@ -514,16 +519,8 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			
 			if (Geographic) {	/* Draw great-circle geo-vectors */
 				if (!Ctrl->A.active) vec_azim = 90.0 - vec_azim;	/* We got direction components; convert to azimuth */
-				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
-					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
-					Ctrl->Q.S.v.v_width *= (float)f;	Ctrl->Q.S.v.h_length *= (float)f;
-					Ctrl->Q.S.v.h_width *= (float)f;
-				}
-				GMT_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->W.pen, &Ctrl->Q.S);
-				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Reset arrow attributes */
-					Ctrl->Q.S.v.v_width = (float)v_width;	Ctrl->Q.S.v.h_length = (float)h_length;
-					Ctrl->Q.S.v.h_width = (float)h_width;
-				}
+				warn = GMT_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->W.pen, &Ctrl->Q.S);
+				n_warn[warn]++;
 			}
 			else {	/* Draw straight Cartesian vectors */
 				GMT_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
@@ -542,7 +539,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 					plot_x -= x_off;	plot_y -= y_off;
 					x2 -= x_off;		y2 -= y_off;
 				}
-
+				n_warn[0]++;
 				if (!Ctrl->Q.active) {	/* Just a line segment */
 					PSL_plotsegment (PSL, plot_x, plot_y, x2, y2);
 					continue;
@@ -568,6 +565,11 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 
 	GMT_plotend (GMT);
+	
+	GMT_Report (API, GMT_MSG_VERBOSE, "%d vectors plotted successfully\n", n_warn[0]);
+	if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -Q\n", n_warn[1]);
+	if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changin the +n<norm> modifier to -Q\n", n_warn[2]);
+	
 
 	Return (EXIT_SUCCESS);
 }
