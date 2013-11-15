@@ -660,7 +660,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		double xyz[2][3];
 		
 		if ((Din = GMT_create_dataset (GMT, 1, 0, 0, 3, GMT_IS_LINE, true)) == NULL) Return (API->error);
-		GMT_free_table (GMT, Din->table[0]);	/* Since we will add our own below */
+		GMT_free_table (GMT, Din->table[0], Din->alloc_mode);	/* Since we will add our own below */
 		
 		//if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		if (Ctrl->E.unit == 0) {	/* Was not set via -E; default to Cartesian or km (great circle dist) */

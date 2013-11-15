@@ -4201,7 +4201,7 @@ void GMT_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 		GMT_free (GMT, L);
 	}
 	GMT_free (GMT, G->segment);
-	GMT_free_table (GMT, G->xp);
+	GMT_free_table (GMT, G->xp, GMT_ALLOCATED_BY_GMT);
 	if (G->f_n) {	/* Array for fixed points */
 		GMT_free (GMT, G->f_xy[GMT_X]);
 		GMT_free (GMT, G->f_xy[GMT_Y]);
@@ -10265,7 +10265,7 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	Sx->n_rows = row;	/* Number of points in extended feature with explicit crossings */
 	if (n_split == 0) {	/* No crossings, should not have been called in the first place */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No straddling detected (bug?)\n");
-		GMT_free_segment (GMT, Sx);
+		GMT_free_segment (GMT, &Sx, GMT_ALLOCATED_BY_GMT);
 		GMT_free (GMT, pos);
 		return 0;
 	}
@@ -10287,7 +10287,7 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 		if (S->ogr) GMT_duplicate_ogr_seg (GMT, L[seg], S);
 		start = pos[seg];
 	}
-	GMT_free_segment (GMT, Sx);
+	GMT_free_segment (GMT, &Sx, GMT_ALLOCATED_BY_GMT);
 	GMT_free (GMT, pos);
 	
 	*Lout = L;		/* Pass pointer to the array of segments */

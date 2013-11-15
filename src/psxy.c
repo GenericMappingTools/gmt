@@ -1061,6 +1061,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	}
 	else {	/* Line/polygon part */
 		uint64_t seg;
+		bool duplicate;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
@@ -1087,6 +1088,10 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 				if (P && P->skip) continue;	/* Chosen cpt file indicates skip for this z */
 
+				duplicate = (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY && ((polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
+				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
+					L = GMT_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
+				
 				if (L->header && L->header[0]) {
 					PSL_comment (PSL, "Segment header: %s\n", L->header);
 					if (GMT_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S, which only can apply to front or quoted line */
@@ -1145,6 +1150,8 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					GMT_setfill (GMT, &current_fill, outline_active);
 					GMT_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
 				}
+				if (duplicate)	/* Free duplicate segment */
+					GMT_free_segment (GMT, &L, GMT_ALLOCATED_BY_GMT);
 			}
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
