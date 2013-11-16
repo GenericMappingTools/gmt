@@ -136,3 +136,29 @@ g) When no longer needed you can free all the allocated data via
 For instance, Matlab can use the above to access results from GMT.  Given Matlab users
 are likely to mess with the results it is best to duplicate the results from GMT and
 then destroy the GMT container.  This avoids painful memory leaks and odd crashes.
+
+HOWTO HANDLE A MIX OF INPUTS, e.g., REGISTERED AND ACTUAL FILES TOGETHER
+
+Currently this does or cannot work.
+
+Some concerns/issues/notes:
+
+1. Multiple regular file input works fine.
+2. If two or more @GMTAPI@-###### are given then there is trouble.
+   The case GMT_REFERENCE_VIA_VECTOR will assume only one item is read
+   and register a new resource for this transitional item. But we would
+   end up registering several resources all pointing to D_obj. Maybe we
+   must limit this, i.e., cannot use some GMT_REFERENCE and some GMT_FILE
+   together in combined input?  Clearly, we need to remove such limitations
+   over time.  But certainly giving two GMTAPI references ought to work?
+   Or maybe this is only issue for the VIA constructs.  Perhaps only one
+   VIA should be allowed at the time, but several regular points to GMT
+   types can be done.  Maybe must convert the VIA to a real GMT type of
+   wish to mix with other regular GMT types.
+   Perhaps another way to deal with the via stuff is to have a second
+   handle in the API->object[] struct so that S_obj->data_via could hold
+   the new pointer we got by reading in data while S_obj->data would hold
+   the original vector?
+
+
+   
