@@ -1545,6 +1545,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 			GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Import_Dataset: Skipped empty object (item = %d)\n", item);
 			continue;
 		}
+		if (!S_obj->selected) continue;			/* Registered, but not selected */
 		if (S_obj->direction == GMT_OUT) continue;	/* We're doing reading here, so skip output objects */
 		if (S_obj->family != GMT_IS_DATASET) continue;	/* We're doing datasets here, so skip other data types */
 		if (S_obj->status != GMT_IS_UNUSED) { 	/* Already read this resource before; are we allowed to re-read? */
@@ -1937,6 +1938,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 			GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Import_Textset: Skipped empty object (item = %d)\n", item);
 			continue;
 		}
+		if (!S_obj->selected) continue;			/* Registered, but not selected */
 		if (S_obj->direction == GMT_OUT) continue;	/* We're doing reading here, so bugger off! */
 		if (S_obj->family != GMT_IS_TEXTSET) continue;	/* We're doing textsets here, so skip other things */
 		if (S_obj->status != GMT_IS_UNUSED) {	/* Already read this resource before; are we allowed to re-read? */
