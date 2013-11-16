@@ -13,11 +13,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-F**\ *xy_file* ]
-[ **-G**\ *outputgrid.nc* ] [ **-L**\ *z_observation* ] [ **-M** ]
-|SYN_OPT-V|
-[ **-Z**\ *level* ]
+**grdgravmag3d** *grdfile_top* [*grdfile_bot*] [ **-C**\ *density* ]
+[ **-D** ] [ **-F**\ *xy_file* ]
+[ **-G**\ *outgrid* ]
+|SYN_OPT-I|
+[ **-L**\ *z_obs* ]
+[ **-Q**\ [\ **n**\ *n_pad*]\ \|\ [*pad_dist*]\ \|\ [<w/e/s/n>] ]
 [ |SYN_OPT-V| ]
+[ **-Z**\ *level* ]
 [ **-fg** ]
 
 |No-spaces|
@@ -33,14 +36,20 @@ allows computing the anomaly of arbitrarily complex shapes.
 Required Arguments
 ------------------
 
+*grdfile_top* [*grdfile_bot*]
+   Grid file whose gravity efect is going to be computed. If two grids are
+   provided then the gravity/magnetic efect of the volume between them is computed. 
+
 **-C**\ *density*
     Sets body density in SI. This option is mutually exclusive with
     **-H**.
 **-F**\ *xy\_file*
     Provide locations where the anomaly will be computed. Note this
     option is mutually exlusive with **-G**.
-**-G**\ *outgrid.nc*
+**-G**\ *outgrid*
     Output the gravity anomaly at nodes of this grid file.
+
+.. include:: ../../explain_-I.rst_
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
@@ -48,13 +57,23 @@ Required Arguments
 Optional Arguments
 ------------------
 
+**-L**\ *z_obs* 
+    sets level of observation [Default = 0]. That is the height (z) at
+    which anomalies are computed.
+
+**-Q**\ [\ **n**\ *n_pad*]\ \|\ [\ *pad_dist*]\ \|\ [<w/e/s/n>]
+    Extend the domain of computation with respect to output **-R** region. 
+      **-Qn**\ *n_pad* artifficially extends the width of the outer rim of
+      cells to have a fake width of *n_pad* * dx[/dy].
+
+      **-Q**\ *pad_dist* extend the region by west-pad, east+pad, etc.
+
+      **-Q**\ *region* Same sintax as **-R**.
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-L**
-    sets level of observation [Default = 0]. That is the height (z) at
-    which anomalies are computed.
-**-Z**
+**-Z**\ *level*
     level of reference plane [Default = 0]. Use this option when the
     triangles describe a non-closed surface and the volume is deffined
     from each triangle and this reference level. An example will be the
