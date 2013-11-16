@@ -3933,6 +3933,12 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	}
 	
 	/* OK, try to do the importing */
+	if (in_ID != GMT_NOTSET) {	/* Make sure we select the item we just registered */
+		if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, in_ID, GMT_NOTSET)) == GMT_NOTSET) {
+				return_null (API, API->error);
+		}
+		API->object[item]->selected = true;	/* Make sure the item we want is now selected */
+	}
 	if ((new_obj = GMT_Get_Data (API, in_ID, mode, data)) == NULL) return_null (API, API->error);
 
 	return (new_obj);		/* Return pointer to the data container */
