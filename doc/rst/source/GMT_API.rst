@@ -1,4 +1,4 @@
-:tocdepth: 2
+:tocdepth: 3
 
 .. set default highlighting language for this document:
 
@@ -1710,7 +1710,7 @@ interface offers all you need.
 Set program options via text command
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If ``mode`` == 0 then ``args`` will be examined to see if it contains
+If ``mode ==`` 0 then ``args`` will be examined to see if it contains
 several options within a single command string. If so we will break
 these into separate options. This is useful if you wish to pass a single
 string such as "-R120:30/134:45/8S/3N -JM6i mydata.txt -Sc0.2c". We call
