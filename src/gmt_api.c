@@ -1018,23 +1018,23 @@ enum GMT_enum_method GMTAPI_split_via_method (struct GMTAPI_CTRL *API, enum GMT_
 	switch (method) {
 		case GMT_IS_DUPLICATE_VIA_VECTOR:
 			m = GMT_IS_DUPLICATE;
-			*via = 0;
+			if (via) *via = 0;
 			break;
 		case GMT_IS_REFERENCE_VIA_VECTOR:
 			m = GMT_IS_REFERENCE;
-			*via = 0;
+			if (via) *via = 0;
 			break;
 		case GMT_IS_DUPLICATE_VIA_MATRIX:
 			m = GMT_IS_DUPLICATE;
-			*via = 1;
+			if (via) *via = 1;
 			break;
 		case GMT_IS_REFERENCE_VIA_MATRIX:
 			m = GMT_IS_REFERENCE;
-			*via = 1;
+			if (via) *via = 1;
 			break;
 		default:	/* Nothing to break up */
 			m = method;
-			*via = 0;
+			if (via) *via = 0;
 			break;
 	}
 	return (m);
@@ -3091,6 +3091,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	
 	unsigned int i, j, n_free = 0, u_level = 0;
 	int error = GMT_NOERROR;
+	enum GMT_enum_method m;
 	void *address = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	
@@ -3126,8 +3127,9 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 			i++;	continue;
 		}
 		/* Here we will try to free the memory pointed to by S_obj->resource */
+		m = GMTAPI_split_via_method (API, S_obj->method, NULL);
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
-			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[S_obj->method], GMT_status[S_obj->status], (size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
+			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status], (size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
 		address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
 		error = GMTAPI_destroy_data_ptr (API, S_obj->family, API->object[i]->data);	/* Do the dirty deed */
 
@@ -3680,7 +3682,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 		S_obj = API->object[API->current_item[GMT_OUT]];	/* Shorthand for the data source we are working on */
 		if (S_obj) {	/* Dealt with file i/o */
 			S_obj->status = GMT_IS_USED;	/* Done writing to this destination */
-			method = GMTAPI_split_via_method (API, S_obj->method, &via);
+			method = GMTAPI_split_via_method (API, S_obj->method, NULL);
 			if ((method == GMT_IS_DUPLICATE || method == GMT_IS_REFERENCE) && API->io_mode[GMT_OUT] == GMT_BY_REC) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
 				if (S_obj->actual_family == GMT_IS_DATASET) {	/* Dataset type */
 					struct GMT_DATASET *D_obj = S_obj->resource;
