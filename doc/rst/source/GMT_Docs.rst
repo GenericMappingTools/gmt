@@ -2179,7 +2179,7 @@ default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
 font sizes used for annotations and labels, color of the pens,
 dots-per-inch resolution of the hardcopy device, what type of spline
-interpolant to use, and many other choices A complete list of all the
+interpolant to use, and many other choices. A complete list of all the
 parameters and their default values can be found in the
 :doc:`gmt.conf` manual pages. Figures
 :ref:`GMT Parameters a <gmt_defaults_a>`,
@@ -2863,7 +2863,7 @@ followed by one space and a two-digit day-of-month number.
 
    Cartesian time axis, example 2
 
-The third example (Figure :ref:`cartesian_axise`) presents two years, annotating
+The third example (Figure :ref:`cartesian_axis3`) presents two years, annotating
 both the years and every 3rd month.
 
    ::
@@ -2981,7 +2981,8 @@ grid-line, whereas *type* is a string composed of letters from **a**
 gridline. You must use either **a** or **i** within one file; no mixing
 is allowed. The coordinates should be arranged in increasing order. If
 *label* is given it replaces the normal annotation based on the *coord*
-value. Our last example shows such a custom basemap with an interval
+value. Our last example (Figure :ref:`Custom and irregular annotations
+<Custom_annotations>`) shows such a custom basemap with an interval
 annotations on the *x*-axis and irregular annotations on the *y*-axis.
 
    ::
@@ -3010,6 +3011,8 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
                   --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
     rm -f [xy]annots.txt
 
+.. _Custom_annotations:
+
 .. figure:: /_images/GMT_-B_custom.*
    :width: 500 px
    :align: center
@@ -3032,7 +3035,9 @@ Landscape orientation is obtained by translating the origin in the
 rotating the coordinate system counterclockwise by 90. By default the
 :ref:`PS_MEDIA <PS_MEDIA>` is set to Letter (or A4 if SI is chosen); this value must
 be changed when using different media, such as 11" x 17" or large format
-plotters (Figure :ref:`missing`).
+plotters (Figure :ref:`Plot orientation <_P_option>`).
+
+.. _P_option:
 
 .. figure:: /_images/GMT_-P.*
    :width: 500 px
