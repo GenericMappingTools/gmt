@@ -118,6 +118,8 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 #define GMT_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
 #define GMT_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */
 #define GMT_vec_side(status) ((status&3) ? 2*(status&3)-3 : 0)	/* Return side selection as 0,-1,+1 */
+#define GMT_vec_outline(status) ((status&GMT_VEC_OUTLINE) || (status&GMT_VEC_OUTLINE2))	/* Return true if outline is currently selected */
+#define GMT_vec_fill(status) ((status&GMT_VEC_FILL) || (status&GMT_VEC_FILL2))		/* Return true if fill is currently selected */
 
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
