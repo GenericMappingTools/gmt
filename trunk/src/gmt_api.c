@@ -1619,7 +1619,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				}
 				GMTAPI_increment_D (D_obj, M_obj->n_rows, M_obj->n_columns);	/* Update counters for D_obj */
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
-				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 				API->object[new_item]->data = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -1647,7 +1647,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				}
 				GMTAPI_increment_D (D_obj, V_obj->n_rows, V_obj->n_columns);	/* Update counters for D_obj */
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
-				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 				API->object[new_item]->data = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -1668,7 +1668,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				GMTAPI_increment_D (D_obj, V_obj->n_rows, V_obj->n_columns);	/* Update counters for D_obj */
 				D_obj->alloc_mode = GMT_ALLOCATED_EXTERNALLY;	/* Since we just hooked on the arrays */
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
-				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 				API->object[new_item]->data = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -2000,7 +2000,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 				T_obj->table[T_obj->n_tables]->n_records += M_obj->n_rows;
 				T_obj->table[T_obj->n_tables]->n_segments = 1;
 				new_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_DUPLICATE, S_obj->geometry, GMT_IN, NULL, T_obj);	/* Register a new resource to hold T_obj */
-				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 				API->object[new_item]->data = T_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 				T_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -2281,7 +2281,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 				I_obj->data[ij] = (char)GMTAPI_get_val (API, &(M_obj->data), ij_orig, M_obj->type);
 			}
 			new_ID = GMT_Register_IO (API, GMT_IS_IMAGE, GMT_IS_DUPLICATE, S_obj->geometry, GMT_IN, NULL, I_obj);	/* Register a new resource to hold I_obj */
-			if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_IMAGE, new_ID, GMT_IN)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+			if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_IMAGE, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 			API->object[new_item]->data = I_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			I_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -2308,7 +2308,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			/* Here we extend I_obj->data to allow for padding, then rearrange rows */
 			/*GMT_grd_pad_on (API->GMT, I, API->GMT->current.io.pad);*/
 			new_ID = GMT_Register_IO (API, GMT_IS_IMAGE, GMT_IS_REFERENCE, S_obj->geometry, GMT_IN, NULL, I_obj);	/* Register a new resource to hold I_obj */
-			if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_IMAGE, new_ID, GMT_IN)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+			if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_IMAGE, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 			API->object[new_item]->data = I_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			I_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -2499,7 +2499,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_obj, GMT_IN), "Grid memory")) return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			new_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_DUPLICATE, S_obj->geometry, GMT_IN, NULL, G_obj);	/* Register a new resource to hold G_obj */
-			if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_GRID, new_ID, GMT_IN)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+			if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_GRID, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 			API->object[new_item]->data = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			G_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -2528,7 +2528,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			/* Here we extend G_obj->data to allow for padding, then rearrange rows */
 			GMT_grd_pad_on (API->GMT, G_obj, API->GMT->current.io.pad);
 			new_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, S_obj->geometry, GMT_IN, NULL, G_obj);	/* Register a new resource to hold G_obj */
-			if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_GRID, new_ID, GMT_IN)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+			if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_GRID, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 			API->object[new_item]->data = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			G_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
