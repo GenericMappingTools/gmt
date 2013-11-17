@@ -170,7 +170,7 @@ Creating GMT Graphics
     ---------------------------
 
     This example will illustrate how to make a fairly complicated composite
-    figure. We need a subset of the ETOPO5 bathymetry [24]_ and Geosat geoid
+    figure. We need a subset of the ETOPO5 bathymetry [23]_ and Geosat geoid
     data sets which we will extract from the local data bases using
     :doc:`grdraster`. We would like to show a
     2-layer perspective plot where layer one shows a contour map of the
@@ -267,7 +267,7 @@ Creating GMT Graphics
     position and magnitude of available earthquakes in the region. We choose
     to use magnitude/100 for the symbol-size in inches. The digital fracture
     zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as ``isochrons.xy``) were
-    digitized from available maps [24]_. We create the final location map
+    digitized from available maps [23]_. We create the final location map
     (Figure [fig:example:sub:`0`\ 7]) with the following script:
 
     .. literalinclude:: /_verbatim/example_07.txt
@@ -590,7 +590,7 @@ Creating GMT Graphics
     To demonstrate potential usage of the new programs
     :doc:`grdvolume` and
     :doc:`gmtselect` we extract a subset of the
-    Sandwell & Smith altimetric gravity field [26]_ for the northern Pacific
+    Sandwell & Smith altimetric gravity field [24]_ for the northern Pacific
     and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
     and (2) are within 200 km of the Pratt seamount. We do this by dumping
     the 50 mGal contours to disk, then making a simple AWK script ``center.awk``
@@ -794,9 +794,8 @@ Creating GMT Graphics
     While motorists recently have started to question the old saying "all
     roads lead to Rome", aircraft pilots have known from the start that only
     one great-circle path connects the points of departure and
-    arrival [28]_. This provides the inspiration for our next example which
-    uses :doc:`grdmath` to calculate distances
-    from Rome to anywhere on Earth and
+    arrival [25]_. This provides the inspiration for our next example which
+    uses :doc:`grdmath` to calculate distances from Rome to anywhere on Earth and
     :doc:`grdcontour` to contour these
     distances. We pick five cities that we connect to Rome with great circle
     arcs, and label these cities with their names and distances (in km) from
@@ -1332,7 +1331,7 @@ Creating GMT Animations
        both free and commercial tools that can help with this conversion and
        they tend to be platform-specific. Most movie tools such as iMovie or
        MovieMaker can ingest still images and let you specify the frame
-       duration. Under OS X we prefer to use Quicktime. [30]_ Free tools
+       duration. Under OS X we prefer to use Quicktime. [26]_ Free tools
        exist to call the Quicktime library functions from the command line
        as we prefer to do in our scripts. Another choice is to use the free
        `mencoder <http://www.mplayerhq.hu/>`_.
@@ -1407,13 +1406,12 @@ Creating GMT Animations
     Our next animation simulates what an imaginary satellite might see as it
     passes in a great circle from New York to Miami at an altitude of 160
     km. We use the general perspective view projection with
-    :doc:`grdimage` and use
-    :doc:`project` to create a great circle path
+    :doc:`grdimage` and use :doc:`project` to create a great circle path
     between the two cities, sampled every 5 km. The main part of the script
     will make the DVD-quality frames from different view points, draw the
     path on the ground, and add frame numbers to each frame. As this
     animation generates 355 frames we can use 3rd party tools to turn the
-    image sequence into a MPEG-4 movie [31]_. Note: At the moment,
+    image sequence into a MPEG-4 movie [27]_. Note: At the moment,
     :doc:`grdview` cannot use general perspective
     view projection to allow "fly-through" animations like Fledermaus; we
     expect to add this functionality in a future version.
