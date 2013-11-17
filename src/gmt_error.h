@@ -34,6 +34,7 @@ EXTERN_MSC const char* g_error_string[];
 
 enum Gmt_error_code {
 	GMT_NOERROR_UNUSED=0,	/* The real GMT_NOERROR is declared in gmt_resources.h and is part of API */
+	GMT_GRDIO_NONUNIQUE_FORMAT,
 	GMT_GRDIO_UNKNOWN_FORMAT,
 	GMT_GRDIO_UNKNOWN_TYPE,
 	GMT_GRDIO_UNKNOWN_ID,
