@@ -3860,7 +3860,8 @@ void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 	if (!was_enabled && GMTAPI_Begin_IO (API, GMT_IN) != GMT_OK) {	/* Enables data input if not already set and sets access mode */
 		return_null (API, API->error);
 	}
-
+	API->object[item]->selected = true;	/* Make sure it the requested data set is selected */
+	
 	/* OK, try to do the importing */
 	if ((new_obj = GMTAPI_Import_Data (API, API->object[item]->family, object_ID, mode, data)) == NULL) {
 		return_null (API, API->error);
