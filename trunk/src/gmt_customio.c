@@ -541,10 +541,9 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			break;
 		case 4:	/* 4-byte elements - could be int or float */
 			/* See if we can decide it is a float grid */
-			if ((t_head.z_scale_factor == 1.0 && t_head.z_add_offset == 0.0) || fabs((t_head.z_min/t_head.z_scale_factor) - rint(t_head.z_min/t_head.z_scale_factor)) > GMT_CONV_LIMIT || fabs((t_head.z_max/t_head.z_scale_factor) - rint(t_head.z_max/t_head.z_scale_factor)) > GMT_CONV_LIMIT)
-				header->type = GMT_GRID_IS_BF;
-			else
-				header->type = GMT_GRID_IS_BI;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Cannot determine if a native 4-byte grid is float or int without more information.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: You must append =bf (float) or =bi (integer) to avoid this situation.\n");
+			return (GMT_GRDIO_NONUNIQUE_FORMAT);
 			break;
 		case 8:	/* 8-byte elements */
 			header->type = GMT_GRID_IS_BD;
