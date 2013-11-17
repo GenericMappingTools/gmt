@@ -501,7 +501,6 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 				if (vec_length == 0.0) continue;	/* No length = no plotting */
 				vec_azim = atan2d (Grid[GMT_Y]->data[ij], Grid[GMT_X]->data[ij]);
 			}
-
 			if (!Ctrl->N.active) {	/* Throw out vectors whose node is outside */
 				GMT_map_outside (GMT, x, y);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
@@ -568,7 +567,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "%d vectors plotted successfully\n", n_warn[0]);
 	if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -Q\n", n_warn[1]);
-	if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changin the +n<norm> modifier to -Q\n", n_warn[2]);
+	if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -Q\n", n_warn[2]);
 	
 
 	Return (EXIT_SUCCESS);

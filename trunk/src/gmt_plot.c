@@ -4129,7 +4129,9 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 
 		/* Check if there are any boundary jumps in the data as evidenced by pen up [PSL_MOVE] */
 
-		for (first = 1, jump = false; first < n && !jump; first++) jump = (GMT->current.plot.pen[first] != PSL_DRAW);
+		//for (first = 1, jump = false; first < n && !jump; first++) jump = (GMT->current.plot.pen[first] != PSL_DRAW);
+		jump = (*GMT->current.map.will_it_wrap) (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &first);	/* Polygon does indeed wrap */
+		
 		if (!jump) {	/* We happened to avoid the periodic boundary - just paint and return */
 			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);
 			return;
@@ -4417,14 +4419,13 @@ void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B, bool longw
 {	/* Given vectors A and B, return a small circle polygon path sampled every step that approximates a pen of given width
  	 * drawn on the map.  Use small circle pole and its opening rot */
 	uint64_t k, n, n2;
-	double Ai[3], Ao[3], Px[3], X[3], R[3][3], R0[3][3], w, step, pw = pen->width;
+	double Ai[3], Ao[3], Px[3], X[3], R[3][3], R0[3][3], w, step;
 	struct GMT_DATASEGMENT *L = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 	
 	GMT_cross3v (GMT, A, C->P, Px);	/* Px is Pole to plane through A and P  */
 	GMT_normalize3v (GMT, Px);			/* Rotation pole unit vector */
 	/* Rotate A back/fore by rotation angle of +/- pen halfwidth about Px */
-	pen->width *= scale;	/* Possibly shrink the pen width down */
-	w = 0.5 * pen->width * GMT->session.u2u[GMT_PT][GMT_INCH] * S->v.scale;		/* Half-width of pen in degrees */
+	w = 0.5 * scale * pen->width * GMT->session.u2u[GMT_PT][GMT_INCH] * S->v.scale;		/* Half-width of pen in degrees */
 	GMT_make_rot_matrix2 (GMT, Px, +w, R);		/* Rotation of rot_v degrees about pole P */
 	GMT_matrix_vect_mult (GMT, 3U, R, A, Ai);	/* Get Ai = R * A */
 	GMT_make_rot_matrix2 (GMT, Px, -w, R);		/* Rotation of rot_v degrees about pole P */
@@ -4455,7 +4456,6 @@ void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B, bool longw
 	PSL_setfill (GMT->PSL, pen->rgb, 0);	/* Fill, no outline */
 	GMT_geo_polygons (GMT, L);	/* "Draw" the line */
 	PSL_command (GMT->PSL, "U\n");
-	pen->width = pw;
 	
 	GMT_free_segment (GMT, &L, GMT_ALLOCATED_BY_GMT);
 }
@@ -4589,6 +4589,73 @@ double GMT_smallcircle_az (struct GMT_CTRL *GMT, double lon0, double lat0, doubl
 	return (az);
 }
 
+void gmt_plot_vector_head (struct GMT_CTRL *GMT, double *xp, double *yp, uint64_t n, struct GMT_SYMBOL *S)
+{	/* PW: Plots the polygon that makes up a vector head.  Because sometimes these head stick
+	 * across a periodic boundary we must check if that is the case and plot the two parts separately.
+	 * When that is the case we cannot draw the outline of the two new polygons since we wish to show
+	 * the heads as "clipped" by the boundary; hence all the rigamorole below. */
+	uint64_t start = 0, nin;
+	unsigned int n_use, *pin = NULL;	/* Copy of the pen moves */
+	unsigned int cap = GMT->PSL->internal.line_cap;
+	double *xin = NULL, *yin = NULL;	/* Temp vector with possibly clipped x,y line returned by GMT_geo_to_xy_line */
+	if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, xp, yp, n)) == 0) return;	/* All outside, or use plot.x|y array */
+	PSL_setlinecap (GMT->PSL, PSL_SQUARE_CAP);	/* In case there are clipped heads and we want to do the best we can with the lines */
+	n = GMT->current.plot.n;	/* Possibly fewer points */
+	if (GMT_vec_outline (S->v.status)) {
+		bool close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n);
+		nin = n;
+		PSL_command (GMT->PSL, "O0\n");	/* Temporary turn off outline; must draw outline separately when head is split */
+		if (close) nin++;
+		xin = GMT_memory (GMT, NULL, nin, double);
+		yin = GMT_memory (GMT, NULL, nin, double);
+		pin = GMT_memory (GMT, NULL, nin, unsigned int);
+		GMT_memcpy (xin, GMT->current.plot.x, n, double);
+		GMT_memcpy (yin, GMT->current.plot.y, n, double);
+		GMT_memcpy (pin, GMT->current.plot.pen, n, unsigned int);
+		if (close) {	/* Explicitly close the polygon outline */
+			xin[n] = xin[0];
+			yin[n] = yin[0];
+		}
+	}
+	
+	if ((*GMT->current.map.will_it_wrap) (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &start)) {	/* Polygon does indeed wrap */
+		double *xtmp = NULL, *ytmp = NULL;	/* Temp vector for map truncating */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector head polygon will wrap at periodic boundary and will be split into two sections\n");
+		xtmp = GMT_memory (GMT, NULL, n, double);
+		ytmp = GMT_memory (GMT, NULL, n, double);
+		GMT_memcpy (xtmp, GMT->current.plot.x, n, double);
+		GMT_memcpy (ytmp, GMT->current.plot.y, n, double);
+		/* First truncate against left border */
+		GMT->current.plot.n = GMT_map_truncate (GMT, xtmp, ytmp, n, start, -1);
+		n_use = (unsigned int)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+		PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use, GMT->session.no_rgb, 3);
+		PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use);
+		if (GMT_vec_outline (S->v.status)) GMT_plot_line (GMT, xin, yin, pin, nin);
+		PSL_endclipping (GMT->PSL, 1);
+		/* Then truncate against right border */
+		GMT->current.plot.n = GMT_map_truncate (GMT, xtmp, ytmp, n, start, +1);
+		n_use = (unsigned int)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+		PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use, GMT->session.no_rgb, 3);
+		PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use);
+		if (GMT_vec_outline (S->v.status)) GMT_plot_line (GMT, xin, yin, pin, nin);
+		PSL_endclipping (GMT->PSL, 1);
+		GMT_free (GMT, xtmp);		GMT_free (GMT, ytmp);
+	}
+	else {	/* No wrapping but may be clipped */
+		PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n, GMT->session.no_rgb, 3);
+		PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+		if (GMT_vec_outline (S->v.status)) GMT_plot_line (GMT, xin, yin, pin, nin);
+		PSL_endclipping (GMT->PSL, 1);
+	}
+	PSL_setlinecap (GMT->PSL, cap);
+	if (GMT_vec_outline (S->v.status)) {	/* Turn on outline again and free temp memory */
+		PSL_command (GMT->PSL, "O1\n");
+		GMT_free (GMT, xin);
+		GMT_free (GMT, yin);
+		GMT_free (GMT, pin);
+	}
+}
+
 unsigned int  gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *ppen, struct GMT_SYMBOL *S)
 {
 	/* Draws a small-circle vector with our without heads etc. There are some complications to consider:
@@ -4674,7 +4741,7 @@ unsigned int  gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, dou
 		else {
 			dr[0] /= sind (C.colat);	/* Scale dr[0] to opening angle degrees given colatitude */
 			/* Determine mid-back point of arrow head by rotating A back by chosen fraction rot of dr[0] */
-			rot_v[0] = 0.5 * dr[0] * (2.0 - GMT->current.setting.map_vector_shape);
+			rot_v[0] = 0.5 * dr[0] * (1.95 - GMT->current.setting.map_vector_shape);	/* 1.95 instead of 2 to allow for slop */
 			GMT_make_rot_matrix2 (GMT, C.P, rot_v[0], R);	/* Rotation of rot_v[0] degrees about pole P */
 			GMT_matrix_vect_mult (GMT, 3U, R, C.A, Ax);	/* Get Ax = R * A*/
 			C.rot -= rot_v[0];	/* Shorten full arc by the same amount */
@@ -4696,7 +4763,7 @@ unsigned int  gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, dou
 		else {
 			dr[1] /= sind (C.colat);	/* Scale dr[1] to opening angle degrees given colatitude */
 			/* Determine mid-back point of arrow head by rotating B back by chosen fraction rot of dr[1] */
-			rot_v[1] = 0.5 * dr[1] * (2.0 - GMT->current.setting.map_vector_shape);
+			rot_v[1] = 0.5 * dr[1] * (1.95 - GMT->current.setting.map_vector_shape);	/* 1.95 instead of 2 to allow for slop */
 			GMT_make_rot_matrix2 (GMT, C.P, -rot_v[1], R);	/* Rotation of -rot_v[1] degrees about pole P */
 			GMT_matrix_vect_mult (GMT, 3U, R, C.B, Bx);	/* Get Bx = R * B*/
 			C.rot -= rot_v[1];	/* Shorten full arc by the same amount */
@@ -4782,11 +4849,7 @@ unsigned int  gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, dou
 		if (add) {	/* Mid point of arrow */
 			GMT_cart_to_geo (GMT, &yp[n-1], &xp[n-1], Ax, true);	/* Add geo coordinates of this new back mid point for arc */
 		}
-		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, xp, yp, n))) {
-			PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n, GMT->session.no_rgb, 3);
-			PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
-			PSL_endclipping (GMT->PSL, 1);
-		}
+		gmt_plot_vector_head (GMT, xp, yp, n, S);
 		GMT_free (GMT, xp);	GMT_free (GMT, yp);
 		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
 	}
@@ -4827,11 +4890,7 @@ unsigned int  gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, dou
 		if (add) {	/* Mid point of arrow */
 			GMT_cart_to_geo (GMT, &yp[n-1], &xp[n-1], Bx, true);	/* Add geo coordinates of this new back-mid point for arc */
 		}
-		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, xp, yp, n))) {
-			PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n, GMT->session.no_rgb, 3);
-			PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
-			PSL_endclipping (GMT->PSL, 1);
-		}
+		gmt_plot_vector_head (GMT, xp, yp, n, S);
 		GMT_free (GMT, xp);	GMT_free (GMT, yp);
 		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
 	}
@@ -4918,7 +4977,7 @@ unsigned int gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, doub
 			warn = 1;
 		}
 		else {
-			GMT_get_point_from_r_az (GMT, C.lon[0], C.lat[0], 0.5*dr[0]*(2.0 - GMT->current.setting.map_vector_shape), az[0], &tlon, &tlat);	/* Back mid-point of arrow */
+			GMT_get_point_from_r_az (GMT, C.lon[0], C.lat[0], 0.5*dr[0]*(1.95 - GMT->current.setting.map_vector_shape), az[0], &tlon, &tlat);	/* Back mid-point of arrow */
 			GMT_geo_to_cart (GMT, tlat, tlon, Ax, true);	/* Get Cartesian coordinates of this new start point for arc */
 			dr[0] = scl[0] * head_length;	/* This is arrow head length in degrees, approximately, without any pen-width compensation */
 		}
@@ -4936,7 +4995,7 @@ unsigned int gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, doub
 			warn = 1;
 		}
 		else {
-			GMT_get_point_from_r_az (GMT, C.lon[1], C.lat[1], 0.5*dr[1]*(2.0 - GMT->current.setting.map_vector_shape), az[1], &tlon, &tlat);	/* Back mid-point of arrow */
+			GMT_get_point_from_r_az (GMT, C.lon[1], C.lat[1], 0.5*dr[1]*(1.95 - GMT->current.setting.map_vector_shape), az[1], &tlon, &tlat);	/* Back mid-point of arrow */
 			GMT_geo_to_cart (GMT, tlat, tlon, Bx, true);	/* Get Cartesian coordinates of this new end point for arc */
 			dr[1] = scl[1] * head_length;	/* This is arrow head length in degrees, approximately, without any pen-width compensation */
 		}
@@ -5000,11 +5059,7 @@ unsigned int gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, doub
 		if (add) {	/* Mid point of arrow */
 			xp[n-1] = mlon;	yp[n-1] = mlat;
 		}
-		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, xp, yp, n))) {
-			PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n, GMT->session.no_rgb, 3);
-			PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
-			PSL_endclipping (GMT->PSL, 1);
-		}
+		gmt_plot_vector_head (GMT, xp, yp, n, S);
 		GMT_free (GMT, xp);	GMT_free (GMT, yp);
 		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
 	}
@@ -5043,11 +5098,7 @@ unsigned int gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, doub
 		if (add) {	/* Mid point of arrow */
 			xp[n-1] = mlon;	yp[n-1] = mlat;
 		}
-		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, xp, yp, n))) {
-			PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n, GMT->session.no_rgb, 3);
-			PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
-			PSL_endclipping (GMT->PSL, 1);
-		}
+		gmt_plot_vector_head (GMT, xp, yp, n, S);
 		GMT_free (GMT, xp);	GMT_free (GMT, yp);
 		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
 	}
