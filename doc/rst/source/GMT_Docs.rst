@@ -2760,7 +2760,8 @@ Cartesian log\ :sub:`10` axes
 
 Due to the logarithmic nature of annotation spacings, the *stride*
 parameter takes on specific meanings. The following concerns are
-specific to log axes:
+specific to log axes (see Figure :ref:`Logarithmic projection axis
+<Log_projection>`):
 
 *  *stride* must be 1, 2, 3, or a negative integer -n.
    Annotations/ticks will then occur at 1, 1-2-5, or 1,2,3,4,...,9,
@@ -2774,6 +2775,8 @@ specific to log axes:
 *  Append **p** to *stride*. Then, annotations appear as 10 raised to
    log\ :sub:`10` of the value (e.g., 10\ :sup:`-5`).
 
+.. _Log_projection:
+
 .. figure:: /_images/GMT_-B_log.*
    :width: 500 px
    :align: center
@@ -2782,10 +2785,10 @@ specific to log axes:
    frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
    values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
    powers of 10, and 3 means every 0.1 times powers of 10.  We used
-   -R1/1000/0/1 -JX3il/0.4i -Ba1f2g3. (middle) Here, we have chosen to
-   annotate log :math:`_10` of the actual values, with -Ba1f2g3l.
-   (bottom) We annotate every power of 10 using log :math:`_10` of the actual values
-   as exponents, with -Ba1f2g3p.
+   -R1/1000/0/1 -JX3il/0.25i -Ba1f2g3. (middle) Here, we have chosen to
+   annotate :math:`\log_{10}` of the actual values, with -Ba1f2g3l.
+   (bottom) We annotate every power of 10 using :math:`\log_{10}` of the actual
+   values as exponents, with -Ba1f2g3p.
 
 Cartesian exponential axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2795,17 +2798,20 @@ unit) annotations or ticks, but because of the exponential nature of the
 axis, such annotations may converge on each other at one end of the
 axis. To avoid this problem, you can append **p** to *stride*, and the
 annotation interval is expected to be in transformed units, yet the
-annotation itself will be plotted as un-transformed units. E.g., if
+annotation itself will be plotted as un-transformed units (see Figure
+:ref:`Power projection axis <Pow_projection>`). E.g., if
 *stride* = 1 and power = 0.5 (i.e., sqrt), then equidistant annotations
 labeled 1, 4, 9, ... will appear.
+
+.. _Pow_projection:
 
 .. figure:: /_images/GMT_-B_pow.*
    :width: 500 px
    :align: center
 
    Exponential or power projection axis. (top) Using an exponent of 0.5
-   yields a :math:`sqrt(x)` axis.  Here, intervals refer to actual data values, in
-   -R0/100/0/1 -JX3ip0.5/0.4i -Ba20f10g5.
+   yields a :math:`sqrt(x)` axis.  Here, intervals refer to actual data values,
+   in -R0/100/0/0.9 -JX3ip0.5/0.25i -Ba20f10g5.
    (bottom) Here, intervals refer to projected values, although the annotation
    uses the corresponding unprojected values, as in -Ba3f2g1p.
 
@@ -3035,7 +3041,7 @@ Landscape orientation is obtained by translating the origin in the
 rotating the coordinate system counterclockwise by 90. By default the
 :ref:`PS_MEDIA <PS_MEDIA>` is set to Letter (or A4 if SI is chosen); this value must
 be changed when using different media, such as 11" x 17" or large format
-plotters (Figure :ref:`Plot orientation <_P_option>`).
+plotters (Figure :ref:`Plot orientation <P_option>`).
 
 .. _P_option:
 
@@ -3052,7 +3058,8 @@ Plot overlays: The **-K** **-O** options
 The **-K** and **-O** options control the generation of
 PostScript code for multiple overlay plots. All PostScript files
 must have a header (for initializations), a body (drawing the figure),
-and a trailer (printing it out) (see Figure :ref:`missing`). Thus, when overlaying
+and a trailer (printing it out) (see Figure :ref:`Multiple overlay plots
+<OK_options>`). Thus, when overlaying
 several GMT plots we must make sure that the first plot call omits the
 trailer, that all intermediate calls omit both header and trailer, and
 that the final overlay omits the header. The **-K** omits the trailer
@@ -3063,6 +3070,8 @@ system]. Most unexpected results for multiple overlay plots can be
 traced to the incorrect use of these options. If you run only one plot
 program, ignore both the **-O** and **-K** options; they are only used
 when stacking plots.
+
+.. _OK_options:
 
 .. figure:: /_images/GMT_-OK.*
    :width: 500 px
@@ -3076,7 +3085,10 @@ Timestamps on plots: The **-U** option
 
 The **-U** option draws UNIX System time stamp. Optionally, append an
 arbitrary text string (surrounded by double quotes), or the code **c**,
-which will plot the current command string (Figure :ref:`missing`).
+which will plot the current command string (Figure
+:ref:`Time stamp <U_option>`).
+
+.. _U_option:
 
 .. figure:: /_images/GMT_-U.*
    :width: 500 px
@@ -3105,7 +3117,8 @@ Plot positioning and layout: The **-X** **-Y** options
 The **-X** and **-Y** options shift origin of plot by (*xoff*,\ *yoff*)
 inches (Default is (:ref:`MAP_ORIGIN_X <MAP_ORIGIN_X>`, :ref:`MAP_ORIGIN_Y <MAP_ORIGIN_Y>`) for new
 plots [15]_ and (0,0) for overlays (**-O**)). By default, all
-translations are relative to the previous origin (see Figure :ref:`missing`). Supply
+translations are relative to the previous origin (see Figure
+:ref:`Plot positioning <XY_options>`). Supply
 offset as **c** to center the plot in that direction relative to the
 page margin. Absolute translations (i.e., relative to a fixed point
 (0,0) at the lower left corner of the paper) can be achieve by
@@ -3114,6 +3127,8 @@ with the previous plot unless the origin is shifted using these options.
 The offsets are measured in the current coordinates system (which can be
 rotated using the initial **-P** option; subsequent **-P** options for
 overlays are ignored).
+
+.. _XY_options:
 
 .. figure:: /_images/GMT_-XY.*
    :width: 300 px
@@ -3386,8 +3401,9 @@ Gridline registration
 In this registration, the nodes are centered on the grid line
 intersections and the data points represent the average value in a cell
 of dimensions (:math:`x_{inc} \cdot y_{inc}`) centered on each node
-(Figure :ref:`missing` [fig:GMT:sub:`r`\ egistration]). In the case of grid line
-registration the number of nodes are related to region and grid spacing by
+(left side of Figure :ref:`Grid registration <Grid_registration>`).
+In the case of grid line registration the number of nodes are related
+to region and grid spacing by
 
 .. math::
 
@@ -3396,17 +3412,20 @@ registration the number of nodes are related to region and grid spacing by
    ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
    \end{array}
 
-which for the example in Figure :ref:`missing` [fig:GMT\ :sub:`r`\ egistration] yields
-nx = ny = 4.
+which for the example in left side of Figure :ref:`Gridline registration
+<Grid_registration>` yields nx = ny = 4.
 
 Pixel registration
 ^^^^^^^^^^^^^^^^^^
 
 Here, the nodes are centered in the grid cells, i.e., the areas
 between grid lines, and the data points represent the average values
-within each cell (Figure :ref:`missing` [fig:GMT:sub:`r`\ egistration]). In the case of
+within each cell (right side of Figure :ref:`Grid registration
+<Grid_registration>`). In the case of
 pixel registration the number of nodes are related to region and grid
 spacing by
+
+.. _Grid_registration:
 
 .. figure:: /_images/GMT_registration.*
    :width: 500 px
@@ -3780,8 +3799,10 @@ a segment length of zero will appear as a circle. This can be used to
 created circular dotted lines, and by manipulating the phase shift in
 the *style* attribute and plotting the same line twice one can even
 alternate the color of adjacent items.
-Figure :ref:`missing` [fig:GMT\ :sub:`l`\ inecap] shows various lines made in this
+Figure :ref:`Line appearance <Line_appearance>` shows various lines made in this
 fashion. See the :doc:`gmt.conf` man page for more information.
+
+.. _Line_appearance:
 
 .. figure:: /_images/GMT_linecap.*
    :width: 500 px
@@ -4834,6 +4855,11 @@ will show examples of all of these projections using dummy data sets
 created with :doc:`gmtmath`, a "Reverse
 Polish Notation" (RPN) calculator that operates on or creates table data:
 
+   ::
+
+      gmt gmtmath -T0/100/1  T SQRT = sqrt.d
+      gmt gmtmath -T0/100/10 T SQRT = sqrt.d10
+
 Cartesian linear transformation (**-Jx** **-JX**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -4866,7 +4892,9 @@ If the *y*-scale or *y*-axis length is different from that of the
 *x*-axis (which is most often the case), separate the two scales (or
 lengths) by a slash, e.g., **-Jx**\ 0.1i/0.5i or **-JX**\ 8i/5i. Thus,
 our :math:`y = \sqrt{x}` data sets will plot as shown in
-Figure :ref:`missing` [fig:GMT\ :sub:`l`\ inear].
+Figure :ref:`Linear transformation of Cartesian coordinates <GMT_linear>`.
+
+.. _GMT_linear:
 
 .. figure:: /_images/GMT_linear.*
    :width: 400 px
@@ -4896,6 +4924,8 @@ do this, simply specify the length to be recomputed as 0.
 Geographic coordinates
 ^^^^^^^^^^^^^^^^^^^^^^
 
+.. _GMT_linear_d:
+
 .. figure:: /_images/GMT_linear_d.*
    :width: 500 px
    :align: center
@@ -4921,10 +4951,12 @@ option. As an example, we want to plot a crude world map centered on
             -P -Slightblue > GMT_linear_d.ps
 
 with the result reproduced in
-Figure :ref:`missing` [fig:GMT\ :sub:`l`\ inear\ :sub:`d`].
+Figure :ref:`Linear transformation of map coordinates <GMT_Linear_d>`.
 
 Calendar time coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _GMT_linear_cal:
 
 .. figure:: /_images/GMT_linear_cal.*
    :width: 400 px
@@ -4949,7 +4981,7 @@ relative time is simply given as the units of time since the epoch
 followed by **t** (see :ref:`TIME_UNIT <TIME_UNIT>` and :ref:`TIME_EPOCH <TIME_EPOCH>` for
 information on specifying the time unit and the epoch). As a simple
 example, we will make a plot of a school week calendar
-(Figure :ref:`missing` [fig:GMT:sub:`l`\ inear\ :sub:`c`\ al]).
+(Figure :ref:`Linear transformation of calendar coordinates <GMT_linear_cal>`).
 
 When the coordinate ranges provided by the **-R** option and the
 projection type given by **-JX** (including the optional **d**, **g**,
@@ -4966,6 +4998,8 @@ general, the options provided with **-JX** will prevail.
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. _GMT_log:
+
 .. figure:: /_images/GMT_log.*
    :width: 400 px
    :align: center
@@ -4973,11 +5007,12 @@ Cartesian logarithmic projection
    Logarithmic transformation of x--coordinates.
 
 
-The log\ :math:`_{10}` transformation is simply
+The :math:`\log_{10}` transformation is simply
 :math:`u' = a \log_{10}(u) + b` and is selected by appending an **l**
 (lower case L) immediately following the scale (or axis length) value.
 Hence, to produce a plot in which the *x*-axis is logarithmic (the
-*y*-axis remains linear, i.e., a semi-log plot), try
+*y*-axis remains linear, i.e., a semi-log plot), try (Figure :ref:`Logarithmic
+transformation <GMT_log>`)
 
    ::
 
@@ -4986,12 +5021,14 @@ Hence, to produce a plot in which the *x*-axis is logarithmic (the
     gmt psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt.d10 >> GMT_log.ps
 
 Note that if *x*- and *y*-scaling are different and a
-log\ :math:`_{10}`-log:math:`_{10}` plot is desired, the **l** must be
+:math:`\log_{10}-\log_{10}` plot is desired, the **l** must be
 appended twice: Once after the *x*-scale (before the /) and once after
 the *y*-scale.
 
 Cartesian power projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _GMT_pow:
 
 .. figure:: /_images/GMT_pow.*
    :width: 400 px
@@ -5007,7 +5044,8 @@ While *p* and *q* can be any values, we will select *p
 :math:`\sqrt{x}`. We indicate this scaling by appending a **p** (lower
 case P) followed by the desired exponent, in our case 0.5. Since
 *q = 1* we do not need to specify **p**\ 1 since it is identical
-to the linear transformation. Thus our command becomes
+to the linear transformation. Thus our command becomes (Figure :ref:`Power
+transformation <GMT_pow>`)
 
    ::
 
@@ -5017,6 +5055,8 @@ to the linear transformation. Thus our command becomes
 
 Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
 -------------------------------------------------------------------------------
+
+.. _GMT_polar:
 
 .. figure:: /_images/GMT_polar.*
    :width: 400 px
@@ -5067,14 +5107,13 @@ operates on or creates grid files.
 
    ::
 
-    gmt grdmath -R0/360/2/4 -I6/0.1 X 4 MUL PI MUL 180 DIV COS Y 2 POW MUL = $$.nc
-    gmt grdcontour $$.nc -JP3i -B30 -BNs+ghoneydew -P -C2 -S4 --FORMAT_GEO_MAP=+ddd > GMT_polar.ps
-    rm -f $$.nc
+    gmt grdmath -R0/360/2/4 -I6/0.1 X 4 MUL PI MUL 180 DIV COS Y 2 POW MUL = tt.nc
+    gmt grdcontour tt.nc -JP3i -B30 -BNs+ghoneydew -P -C2 -S4 --FORMAT_GEO_MAP=+ddd > GMT_polar.ps
 
 We used :doc:`grdcontour` to make a
 contour map of this data. Because the data file only contains values
 with :math:`2 \leq r \leq 4`, a donut shaped plot appears in
-Figure :ref:`missing` [fig:GMT_polar].
+Figure :ref:`Polar transformation <GMT_polar>`.
 
 GMT Map Projections
 ===================
@@ -5358,6 +5397,8 @@ plotting fold axes, fault planes, and the like. An *equal-angle* (Wulff)
 stereonet can be obtained by using the stereographic projection
 (discussed later). The stereonets produced by these two projections appear below.
 
+.. _GMT_stereonets:
+
 .. figure:: /_images/GMT_stereonets.*
    :width: 500 px
    :align: center
@@ -5418,13 +5459,15 @@ use rectangular boundaries rather than the wedge-shape typically
 associated with polar projections. This choice is defined by selecting
 two points as corners in the rectangle and appending an "r" to the
 **-R** option. This command produces a map as presented in
-Figure :ref:`missing` [fig:GMT_stereographic_rect]:
+Figure :ref:`Polar stereographic <GMT_stereographic_rect>`:
 
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 30
     gmt pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest \
                 -Slightgray -P > GMT_stereographic_rect.ps
+
+.. _GMT_stereographic_rect:
 
 .. figure:: /_images/GMT_stereographic_rect.*
    :width: 500 px
@@ -5454,9 +5497,9 @@ hemispheric maps. Our example shows Australia using a projection pole at
    General stereographic conformal projection with rectangular borders.
 
 
-By choosing 0/0as the pole, we obtain the conformal stereonet presented
+By choosing 0/0 as the pole, we obtain the conformal stereonet presented
 next to its equal-area cousin in the Section `Lambert Azimuthal Equal-Area (-Ja -JA)`_ on the Lambert
-azimuthal equal-area projection (Figure :ref:`missing` [fig:GMT_stereonets]).
+azimuthal equal-area projection (Figure :ref:`Stereonets <GMT_stereonets>`).
 
 Perspective projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5465,7 +5508,7 @@ The perspective projection imitates in 2 dimensions the 3-dimensional
 view of the earth from space. The implementation in GMT is very
 flexible, and thus requires many input variables. Those are listed and
 explained below, with the values used in
-Figure :ref:`missing` [fig:GMT_perspective] between brackets.
+Figure :ref:`Perspective projection <GMT_perspective>` between brackets.
 
 -  Longitude and latitude of the projection center (4E/52N).
 
@@ -5502,6 +5545,8 @@ looking due east is thus accomplished by the following
 
     gmt pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown \
                 -Wthinnest -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
+
+.. _GMT_perspective:
 
 .. figure:: /_images/GMT_perspective.*
    :width: 500 px
@@ -5740,7 +5785,8 @@ equivalent of the 360 Mercator map. Using the command
     gmt pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 \
                 -Slightblue -G0 -P > GMT_TM.ps
 
-we made the map illustrated in Figure :ref:`missing` [fig:GMT_TM]. Note that
+we made the map illustrated in Figure :ref:`Global transverse Mercator
+<GMT_TM>`. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
 arguments are interpreted to mean oblique degrees, i.e., the 360 range
 is understood to mean the extent of the plot along the central meridian,
@@ -5748,6 +5794,8 @@ while the "south" and "north" values represent how far from the central
 longitude we want the plot to extend. These values correspond to
 latitudes in the regular Mercator projection and must therefore be less
 than 90.
+
+.. _GMT_TM:
 
 .. figure:: /_images/GMT_TM.*
    :width: 450 px
@@ -5765,8 +5813,10 @@ large-scale military maps. Here, the globe is divided into 60 zones
 between 84S and 84N, most of which are 6 wide. Each of these UTM zones
 have their unique central meridian. Furthermore, each zone is divided
 into latitude bands but these are not needed to specify the projection
-for most cases. See Figure :ref:`missing` [fig:GMT_utm_zones] for
-all zone designations.
+for most cases. See Figure :ref:`Universal Transverse Mercator
+<GMT_utm_zones>` for all zone designations.
+
+.. _GMT_utm_zones:
 
 .. figure:: /_images/GMT_utm_zones.*
    :width: 700 px
@@ -5984,13 +6034,15 @@ that result in known (or named) projections. These are listed in Table :ref:`JY 
 +-------------------+---------------------+
 
 For instance, a world map centered on the 35E meridian using the Behrman
-projection (Figure :ref:`missing` [fig:GMT_general_cyl]) can be
-obtained by running the command:
+projection (Figure :ref:`Behrman cylindrical projection <GMT_general_cyl>`)
+can be obtained by running the command:
 
    ::
 
     gmt pscoast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue \
                 -Wthinnest -P > GMT_general_cyl.ps
+
+.. _GMT_general_cyl:
 
 .. figure:: /_images/GMT_general_cyl.*
    :width: 600 px
@@ -6019,13 +6071,15 @@ this projection. Specify the projection by:
 -  Scale in inch/degree or as 1:xxxxx (**-Jj**), or map width (**-JJ**).
 
 For instance, a world map centered on the 90E meridian at a map scale of
-1:400,000,000 (Figure :ref:`missing` [fig:GMT_miller]) can be obtained as
+1:400,000,000 (Figure :ref:`Miller projection <GMT_miller>`) can be obtained as
 follows:
 
    ::
 
     gmt pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 \
                 -Gkhaki -Wthinnest -P -Sazure > GMT_miller.ps
+
+.. _GMT_miller:
 
 .. figure:: /_images/GMT_miller.*
    :width: 500 px
@@ -6075,13 +6129,16 @@ cartographer or publication that popularized the projection
 
 A map of the world, centered on the Greenwich meridian, using the Gall's
 stereographic projection (standard parallel is 45,
-Figure :ref:`missing` [fig:GMT_gall_stereo]), is obtained as follows:
+Figure :ref:`Gall's stereographic projection <GMT_gall_stereo>`),
+is obtained as follows:
 
    ::
 
     gmt set FORMAT_GEO_MAP dddA
     gmt pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 \
                 -Wblack -Gseashell4 -Santiquewhite1 -P > GMT_gall_stereo.ps
+
+.. _GMT_gall_stereo:
 
 .. figure:: /_images/GMT_gall_stereo.*
    :width: 500 px
@@ -6183,12 +6240,14 @@ use it you must enter
 
 -  Scale along equator in inch/degree or 1:xxxxx (**-Jr**), or map width (**-JR**).
 
-Centered on Greenwich, the example in Figure :ref:`missing` [fig:GMT_winkel]
-was created by this command:
+Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection
+<GMT_winkel>` was created by this command:
 
    ::
 
     gmt pscoast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -P > GMT_winkel.ps
+
+.. _GMT_winkel:
 
 .. figure:: /_images/GMT_winkel.*
    :width: 500 px
@@ -7228,6 +7287,8 @@ will rotate the image 90 clockwise and scale it such that its width
 GMT graphics in **PowerPoint**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. _Rendering:
+
 .. figure:: /_images/rendering.png
    :height: 540 px
    :width: 720 px
@@ -7237,6 +7298,8 @@ GMT graphics in **PowerPoint**
    Examples of rendered images in a PowerPoint presentation
 
 
+.. _PowerPoint_dialogue:
+
 .. figure:: /_images/formatpicture.png
    :height: 516 px
    :width: 545 px
@@ -7245,14 +7308,14 @@ GMT graphics in **PowerPoint**
 
    PowerPoint's Format Picture dialogue to set scale and rotation.
 
-In Figure :ref:`missing` C.1 we have attempted to include
-Figure :ref:`missing` [fig:example_20] into a PowerPoint presentation.
+In Figure :ref:`Rendered images <Rendering>` we have attempted to include
+Figure :ref:`Example 20 <Fig_example_20>` into a PowerPoint presentation.
 First the PostScript file was converted to PDF (using
 :doc:`ps2raster`), then loaded into
 PowerPoint and the white background color was made transparent
 using the formatting toolbar (shown on the left side of
-Figure :ref:`missing` C.1). Clearly, when we let PowerPoint do the
-rendering, we do not get the best result:
+Figure :ref:`Rendered images <Rendering>`). Clearly, when we let PowerPoint
+do the rendering, we do not get the best result:
 
 *  The anti-aliasing causes the tiles that make up the land to stand
    out. This is because the anti-aliasing algorithm blurs all edges,
@@ -7262,7 +7325,8 @@ rendering, we do not get the best result:
    "smoothed" using gray shades. Instead, shades of blue which would be
    appropriate for the background we are using.
 
-On the central column of Figure :ref:`missing` C.1 we have included PNG
+On the central column of Figure :ref:`Rendered images <Rendering>` we have
+included PNG
 versions of a portion of the same example. This shows the workings of
 anti-aliasing and different resolutions. All samples were obtained with
 **convert**. The one on the top uses all default settings, resulting
@@ -7275,10 +7339,12 @@ between the tiles, but without anti-aliasing the image becomes very
 blocky. The solution is to render the image at a higher resolution
 (e.g., 300 dpi) without anti-aliasing and then shrink the image to the
 appropriate size (bottom of the central column in
-Figure :ref:`missing` C.1). The scaling, rotation as well as the selection
+Figure :ref:`Rendered images <Rendering>`). The scaling, rotation as well as
+the selection
 of the transparent color can be accomplished through the "Formatting"
 tool bar and the "Format Picture" dialogue box of PowerPoint
-(Figure :ref:`missing` C.2), which can be found by double clicking the
+(Figure :ref:`PowerPoint dialogue box <PowerPoint_dialogue>`), which can be
+found by double clicking the
 included image (or selecting and right-clicking or control-clicking on a
 one-button mouse).
 
