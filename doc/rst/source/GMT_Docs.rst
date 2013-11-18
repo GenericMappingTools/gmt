@@ -7376,10 +7376,12 @@ F. Chart of Octal Codes for Characters
 
 The characters and their octal codes in the Standard and ISOLatin1
 encoded fonts are shown in
-Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`Ft`\ ext]. Light red areas signify
+Figure :ref:`Octal codes for Standard and ISO <Octal_codes_stand_iso>`. Light red areas signify
 codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to Standard+ or ISOLatin1+ in your :doc:`gmt.conf` file [32]_.
+
+.. _Octal_codes_stand_iso:
 
 .. figure:: /_images/GMT_App_F_stand+_iso+.*
    :width: 500 px
@@ -7389,12 +7391,14 @@ characters (shown in the light green boxes) you need to set
 
 The chart for the Symbol character set (GMT font number 12) and Pifont
 ZapfDingbats character set (font number 34) are presented in
-Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`Fs`\ ymbol] below. The octal code
+Figure :ref:`Octal codes for Symbol and ZapfDingbats <Octal_codes_symbol_zap>` below. The octal code
 is obtained by appending the column value to the \\??
 value, e.g., :math:`\partial` is \\266 in the Symbol
 font. The euro currency symbol is \\240 in the Symbol
 font and will print if your printer supports it (older printer's
 firmware will not know about the euro).
+
+.. _Octal_codes_symbol_zap:
 
 .. figure:: /_images/GMT_App_F_symbol_dingbats.*
    :width: 500 px
@@ -7548,9 +7552,12 @@ imaginable. In GMT each color can be represented by the triplet
 green, and no blue) creates a color called chartreuse. The color sliders
 in the graphics program GIMP are an excellent way to experiment
 with colors, since they show you in advance how moving one of the color
-sliders will change the color. As Figure :ref:`missing` [fig:gimp]\ *a* shows: increase
+sliders will change the color. As Figure :ref:`Chartreuse in GIMP <GIMP>`\ *a*
+shows: increase
 the red and you will get a more yellow color, while lowering the blue
 level will turn it into brown.
+
+.. _GIMP:
 
 .. figure:: /_images/gimp-sliders.png
    :height: 209 px
@@ -7572,7 +7579,7 @@ level will turn it into brown.
 
 
 Is chocolate your favorite color, but you do not know the RGB equivalent
-values? Then look them up in Figure :ref:`missing` [fig:RGBchart] or type
+values? Then look them up in Figure :ref:`RGB chart <RGBchart>` or type
 ``man gmtcolors`` for a full list. It's 210/105/30. But GMT makes it easy
 on you: you can specify pen, fill, and palette colors by any of the more
 than 500 unique colors found in that file.
@@ -7582,6 +7589,8 @@ they are used in HTML? Even that is allowed in GMT. Just start with a
 hash mark (``#``) and follow with the 2 hexadecimal characters for red,
 green, and blue. For example, you can use ``#79ff00`` for chartreuse,
 ``#D2691E`` for chocolate.
+
+.. _RGBchart:
 
 .. figure:: /_images/GMT_RGBchart_a4.*
    :width: 700 px
@@ -7601,7 +7610,7 @@ saturated or more gray. It would involve changing three sliders. To make
 it easier to manipulate colors in terms of lightness and saturation,
 another coordinate system was invented: HSV (hue, saturation, value).
 Those terms can be made clear best by looking at the color sliders in
-Figure :ref:`missing` [fig:gimp]\ *a*. Hue (running from 0 to 360) gives you the full
+Figure :ref:`Chartreuse in GIMP <GIMP>`\ *a*. Hue (running from 0 to 360) gives you the full
 spectrum of saturated colors. Saturation (from 0 to 1, or 100%) tells
 you how ‘full' your color is: reduce it to zero and you only have gray
 scales. Value (from 0 to 1, or 100%) will bring you from black to a
@@ -7618,7 +7627,7 @@ The color cube
 
 We are going to try to give you a geometric picture of color mixing in
 RGB and HSV by means of a tour of the RGB cube depicted in
-Figure :ref:`missing` [fig:example\ :sub:`1`\ 1]. The geometric picture is most
+Figure :ref:`Example 11 <Fig_example_11>`. The geometric picture is most
 helpful, we think, since HSV are not orthogonal coordinates and not
 found from RGB by a simple algebraic transformation. So here goes: Look
 at the cube face with black, red, magenta, and blue corners. This is the
@@ -7718,7 +7727,9 @@ that *v* measures distance away from the black point, because
 *v* is not equal to :math:`\sqrt{r^2 + g^2 + b^2}/255`.
 
 Another representation of the HSV space is the color cone illustrated in
-Figure :ref:`missing` I.1.
+Figure :ref:`hsv_cone`.
+
+.. _hsv_cone:
 
 .. figure:: /_images/hsv-cone.png
    :height: 508 px
@@ -7751,11 +7762,13 @@ representation as HSV values, but also interpolate colors in the HSV
 system. That means that H, S, and V values are interpolated linearly
 between two colors, instead of their respective R, G, and B values.
 
-The top row in Figure :ref:`missing` [fig:GMT\ :sub:`c`\ olor\ :sub:`i`\ nterpolate]
+The top row in Figure :ref:`Interpolating colors <color_interpolate>`
 illustrates two examples: a blue-white-red scale (the palette in
 Appendix [app:M]) interpolated in RGB and the palette interpolated in
 HSV. The bottom row of the Figure demonstrates how things can go
 terribly wrong when you do the interpolation in the other system.
+
+.. _color_interpolate:
 
 .. figure:: /_images/GMT_color_interpolate.*
    :width: 500 px
@@ -7799,7 +7812,7 @@ saying, "Orange must be between red and yellow, so its hue is about
 *h = 30*; a less vivid orange has a lesser *s*, a darker
 orange has a lesser *v*". On the other hand, the HSV system is a
 peculiar geometric construction, more like a cone
-(Figure :ref:`missing` [fig:hsv-cone]). It is not an orthogonal coordinate system, and
+(Figure :ref:`hsv_cone`). It is not an orthogonal coordinate system, and
 it is not found by a matrix transformation of RGB; these make it
 difficult in some cases too. Note that a move toward black or a move
 toward white will change both *s* and *v*, in the general
@@ -7866,7 +7879,9 @@ values in the center of the window have been fixed equal to 1 for ease
 of plotting. In this way the same graph can serve to illustrate both the
 1-D and 2-D impulse responses; in the 2-D case this plot is a
 diametrical cross-section through the filter weights
-(Figure :ref:`missing` [fig:GMT:sub:`A`\ pp\ :sub:`J1`]).
+(Figure :ref:`Impulse responses <Impulse_responses>`).
+
+.. _Impulse_responses:
 
 .. figure:: /_images/GMT_App_J_1.*
    :width: 500 px
@@ -7878,9 +7893,10 @@ diametrical cross-section through the filter weights
 Although the impulse responses look the same in 1-D and 2-D, this is not
 true of the transfer functions; in 1-D the transfer function is the
 Fourier transform of the impulse response, while in 2-D it is the Hankel
-transform of the impulse response. These are shown in
-Figures [fig:GMT\ :sub:`A`\ pp\ :sub:`J2`] and
-[fig:GMT:sub:`A`\ pp\ :sub:`J3`], respectively. Note that in 1-D the
+transform of the impulse response. These are shown in Figures
+:ref:`Transfer functions for 1D <GMT_1D_filters>` and
+:ref:`2D <GMT_2D_filters>`,
+respectively. Note that in 1-D the
 boxcar transfer function has its first zero crossing at *f = 1*,
 while in 2-D it is around :math:`f \sim 1.2`. The 1-D cosine transfer
 function has its first zero crossing at *f = 2*; so a cosine
@@ -7890,6 +7906,8 @@ filters are "better" in the sense that they do not have the "side lobes"
 (large-amplitude oscillations in the transfer function) that the boxcar
 filter has. However, they are correspondingly "worse" in the sense that
 they require more work (doubling the width to achieve the same cut-off wavelength).
+
+.. _GMT_1D_filters:
 
 .. figure:: /_images/GMT_App_J_2.*
    :width: 500 px
@@ -7907,6 +7925,8 @@ response proportional to :math:`\exp[-0.5(t/\sigma)^2)`. With this
 definition, the transfer function is :math:`\exp[-2(\pi\sigma f)^2]` and
 the wavelength at which the transfer function equals 0.5 is about 5.34
 :math:`\sigma`, or about 0.89 of the filter width.
+
+.. _GMT_2D_filters:
 
 .. figure:: /_images/GMT_App_J_3.*
    :width: 500 px
@@ -8319,8 +8339,8 @@ L. Of Colors and Color Legends
 Built-in color palette tables
 -----------------------------
 
-Figures :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`M1a`] and
-:ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`M1b`] show the 36 built-in
+Figures :ref:`CPT files a <CPT_files_a>` and
+:ref:`b <CPT_files_b>` show the 36 built-in
 color palettes, stored in so-called CPT tables [38]_. The programs
 :doc:`makecpt` and
 :doc:`grd2cpt` are used to access these
@@ -8331,11 +8351,15 @@ some (like **globe**) are a mix of the two. The bottom half the color
 bar are built by using :doc:`makecpt`
 **-T**-1/1/0.25, thus splitting the color scale into 8 discrete colors.
 
+.. _CPT_files_a:
+
 .. figure:: /_images/GMT_App_M_1a.*
    :width: 500 px
    :align: center
 
    The first 18 of the standard 36 CPT files supported by GMT
+
+.. _CPT_files_b:
 
 .. figure:: /_images/GMT_App_M_1b.*
    :width: 500 px
@@ -8384,7 +8408,9 @@ symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
 selection, where *symbolname* refers to a special symbol definition file
 called ``symbolname.def`` that must be available via the standard GMT user paths. Several
 custom symbols comes pre-configured with GMT\ (see
-Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`N1`])
+Figure :ref:`Custom symbols <Custom_symbols>`)
+
+.. _Custom_symbols:
 
 .. figure:: /_images/GMT_App_N_1.*
    :width: 500 px
@@ -8950,10 +8976,12 @@ Our first example uses the default placement algorithm. Because of the
 size of the map we request contour labels every 1.5 inches along the
 lines:
 
-As seen in Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O1`], the contours are
+As seen in Figure :ref:`Contour label 1 <Contour_label_1>`, the contours are
 placed rather arbitrary. The string of contours for -40 to
 60 align well but that is a fortuitous consequence of reaching
 the 1.5 inch distance from the start at the bottom of the map.
+
+.. _Contour_label_1:
 
 .. figure:: /_images/GMT_App_O_1.*
    :width: 500 px
@@ -8971,7 +8999,9 @@ contour line should have:
 
 By selecting only one label per contour and requiring that labels only
 be placed on contour lines whose length exceed 1 inch, we achieve the
-effect shown in Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O2`].
+effect shown in Figure :ref:`Contour label 2 <Contour_label_2>`.
+
+.. _Contour_label_2:
 
 .. figure:: /_images/GMT_App_O_2.*
    :width: 500 px
@@ -8990,9 +9020,11 @@ contour closest to our fixed points and within the given maximum
 distance will host the label.
 
 The angle of the label is evaluated from the contour line geometry, and
-the final result is shown in Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O3`].
+the final result is shown in Figure :ref:`Contour label 3 <Contour_label_3>`.
 To aid in understanding the algorithm we chose to specify "debug" mode
 (**+d**) which placed a small circle at each of the fixed points.
+
+.. _Contour_label_3:
 
 .. figure:: /_images/GMT_App_O_3.*
    :width: 500 px
@@ -9012,6 +9044,8 @@ between the contour lines and a well-placed straight line segment. The
 The obvious choice in this example is to specify a great circle between
 the high and the low, thus placing all labels between these extrema.
 
+.. _Contour_label_4:
+
 .. figure:: /_images/GMT_App_O_4.*
    :width: 500 px
    :align: center
@@ -9019,7 +9053,7 @@ the high and the low, thus placing all labels between these extrema.
    Labels are placed at the intersections between contours and the great circle specified in the **-GL** option.
 
 
-The thin debug line in Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O4`] shows
+The thin debug line in Figure :ref:`Contour label 4 <Contour_label_4>` shows
 the great circle and the intersections where labels are plotted. Note
 that any number of such lines could be specified; here we are content
 with just one.
@@ -9033,6 +9067,8 @@ on the command line, or (2) we have another data set or lines whose
 intersections we wish to use, the general crossing algorithm makes more
 sense:
 
+.. _Contour_label_5:
+
 .. figure:: /_images/GMT_App_O_5.*
    :width: 500 px
    :align: center
@@ -9043,7 +9079,7 @@ sense:
 
 In this case, we have created three strands of lines whose intersections
 with the contours define the label placements, presented in
-Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O5`].
+Figure :ref:`Contour label 5 <Contour_label_5>`.
 
 Examples of Label Attributes
 ----------------------------
@@ -9063,6 +9099,8 @@ so that the label is more readable. We choose the place the labels every
 1000 km along the line and use that distance as the label. The labels
 are placed normal to the line:
 
+.. _Contour_label_6:
+
 .. figure:: /_images/GMT_App_O_6.*
    :width: 500 px
    :align: center
@@ -9070,7 +9108,7 @@ are placed normal to the line:
    Labels attributes are controlled with the arguments to the **-Sq** option.
 
 
-The composite illustration in Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O6`]
+The composite illustration in Figure :ref:`Contour label 6 <Contour_label_6>`
 shows the new effects. Note that the line connecting the extrema does
 not end exactly at the ‘-' and ‘+' symbols. This is because the
 placements of those symbols are based on the mean coordinates of the
@@ -9084,7 +9122,9 @@ line, use spherical degrees for placement, append the degree symbol as a
 unit for the labels, choose a rounded rectangular text box, and
 inverse-video the label:
 
-The output is presented as Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O7`].
+The output is presented as Figure :ref:`Contour label 7 <Contour_label_7>`.
+
+.. _Contour_label_7:
 
 .. figure:: /_images/GMT_App_O_7.*
    :width: 500 px
@@ -9103,7 +9143,9 @@ those records whose distances are multiples of 1500 km and create a
 "fixed points" file that can be used to place labels and specify the
 labels. This is done with **awk**.
 
-The output is presented as Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O8`].
+The output is presented as Figure :ref:`Contour label 8 <Contour_label_8>`.
+
+.. _Contour_label_8:
 
 .. figure:: /_images/GMT_App_O_8.*
    :width: 500 px
@@ -9123,7 +9165,10 @@ Islands [40]_. We lay down a color map based on the travel times and the
 shape of the seafloor, and travel time contours with curved labels as
 well as a few quoted lines. The final script is
 
-with the complete illustration presented as Figure :ref:`missing` [fig:GMT\ :sub:`A`\ pp\ :sub:`O9`].
+with the complete illustration presented as Figure
+:ref:`Contour label 9 <Contour_label_9>`.
+
+.. _Contour_label_9:
 
 .. figure:: /_images/GMT_App_O_9.*
    :width: 500 px
