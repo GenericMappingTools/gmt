@@ -37,7 +37,7 @@ boundary conditions (see **-L**).
 Required Arguments
 ------------------
 
-*in\_grdfile*
+*in_grdfile*
     2-D grid file from which to compute directional derivative. (See
     GRID FILE FORMATS below).
 **-G**\ *out\_grdfile*
@@ -55,7 +55,7 @@ Optional Arguments
     dz/dy\*cos(\ *azim*)], is found; negation yields positive values
     when the slope of z(x,y) is downhill in the *azim* direction, the
     correct sense for shading the illumination of an image (see
-    **grdimage** and **grdview**) by a light source above the x,y plane
+    :doc:`grdimage` and :doc:`grdview`) by a light source above the x,y plane
     shining from the *azim* direction. Optionally, supply two azimuths,
     **-A**\ *azim*/*azim2*, in which case the gradients in each of these
     directions are calculated and the one larger in magnitude is
@@ -71,14 +71,14 @@ Optional Arguments
     Append **n** to add 90 degrees to all angles (e.g., to give
     orientation of lineated features).
 **-E**\ [**s\|p**]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]
-    Compute Lambertian radiance appropriate to use with **grdimage** and
-    **grdview**. The Lambertian Reflection assumes an ideal surface that
+    Compute Lambertian radiance appropriate to use with :doc:`grdimage` and :doc:`grdview`.
+    The Lambertian Reflection assumes an ideal surface that
     reflects all the light that strikes it and the surface appears
     equally bright from all viewing directions. *azim* and *elev* are
     the azimuth and elevation of light vector. Optionally, supply
     *ambient* *diffuse* *specular* *shine* which are parameters that
     control the reflectance properties of the surface. Default values
-    are: *0.55*/ *0.6*/*0.4*/*10* To leave some of the values untouched,
+    are: *0.55*/*0.6*/*0.4*/*10* To leave some of the values untouched,
     specify = as the new value. For example **-E**\ *60*/*30*/*=*/*0.5*
     sets the *azim* *elev* and *diffuse* to 60, 30 and 0.5 and leaves
     the other reflectance parameters untouched. Append **s** to use a
@@ -139,11 +139,11 @@ Hints
 -----
 
 If you don't know what **-N** options to use to make an intensity file
-for **grdimage** or **grdview**, a good first try is **-Ne**\ 0.6.
+for :doc:`grdimage` or :doc:`grdview`, a good first try is **-Ne**\ 0.6.
 
 Usually 255 shades are more than enough for visualization purposes. You
 can save 75% disk space by appending =nb/a to the output filename
-*out\_grdfile*.
+*out_grdfile*.
 
 If you want to make several illuminated maps of subregions of a large
 data set, and you need the illumination effects to be consistent across
@@ -152,8 +152,7 @@ and *offset* to **grdgradient** for each map. A good guess is *offset* =
 0 and *sigma* found by **grdinfo** **-L2** or **-L1** applied to an
 unnormalized gradient grd.
 
-If you simply need the *x*- or *y*-derivatives of the grid, use
-**grdmath**. 
+If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
 
 .. include:: explain_grd_inout.rst_
 
