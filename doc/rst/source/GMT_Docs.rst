@@ -8111,12 +8111,12 @@ The crude resolution (**-Dc**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We begin with an azimuthal equidistant map of the hemisphere centered on
-13021'E, 012'S, which is slightly west of New Guinea, near the Strait of
+130\ |degree|\ 21'E, 0\ |degree|\ 12'S, which is slightly west of New Guinea, near the Strait of
 Dampier. The edges of the map are all 9000 km true distance from the
 projection center. At this scale (and for global maps) the crude
 resolution data will usually be adequate to capture the main geographic
 features. To avoid cluttering the map with insignificant detail we only
-plot features (i.e., polygons) that exceed 500 km\ :math:`^2` in area.
+plot features (i.e., polygons) that exceed 500 km^2 in area.
 Smaller features would only occupy a few pixels on the plot and make the
 map look "dirty". We also add national borders to the plot. The crude
 database is heavily decimated and simplified by the DP-routine: The
@@ -9796,5 +9796,7 @@ Finally we show an example of a polygon file:
 .. [40]
    Travel times were calculated using Geoware's travel time calculator,
    **ttt**; see `<http://www.geoware-online.com/>`_.
+
+.. |degree| unicode:: U+02DA .. degree sign
 
 .. vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
