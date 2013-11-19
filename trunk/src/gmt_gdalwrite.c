@@ -178,6 +178,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 	if (hDstDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 		GDALDestroyDriverManager();
+		if (papszOptions != NULL) CSLDestroy (papszOptions);
 		return(-1);
 	}
 	GDALSetGeoTransform( hDstDS, adfGeoTransform ); 
