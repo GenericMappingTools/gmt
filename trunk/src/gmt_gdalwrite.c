@@ -160,6 +160,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "  %s: %s\n", 
 					GDALGetDriverShortName( hDriver ), GDALGetDriverLongName( hDriver ) );
 		}
+		GDALDestroyDriverManager();
 		return(-1);
 	}
 
@@ -176,6 +177,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 
 	if (hDstDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+		GDALDestroyDriverManager();
 		return(-1);
 	}
 	GDALSetGeoTransform( hDstDS, adfGeoTransform ); 
@@ -249,7 +251,9 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 	if ( hOutDS != NULL ) GDALClose( hOutDS );
 
 	GDALClose( hDstDS );
+	GDALDestroyDriverManager();
 	if (outByte) GMT_free(GMT, outByte);
+	if (papszOptions != NULL) CSLDestroy (papszOptions);
 
 	if (GMT_strlcmp(pszFormat,"netCDF")) {
 		/* Change some attributes written by GDAL (not finished) */
