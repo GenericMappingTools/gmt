@@ -13,8 +13,8 @@ gmt makecpt -Crainbow -T-1/1/0.1 > tmp.cpt
 gmt grdimage -Rd -Ctmp.cpt tmp.nc -JX4i/2i -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -P -K -Y8.25i -Xc > $ps
 gmt grdimage -R-165/195/-90/90 -Ctmp.cpt tmp.nc -J -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -O -K -Y-2.5i >> $ps
 # Read native binary grid
-gmt grdimage -Rd -Ctmp.cpt tmp.b -J -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -O -K -Y-2.5i >> $ps
-gmt grdimage -R-165/195/-90/90 -Ctmp.cpt tmp.b -J -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -O -K -Y-2.5i >> $ps
+gmt grdimage -Rd -Ctmp.cpt tmp.b=bf -J -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -O -K -Y-2.5i >> $ps
+gmt grdimage -R-165/195/-90/90 -Ctmp.cpt tmp.b=bf -J -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -O -K -Y-2.5i >> $ps
 gmt psscale -Ctmp.cpt -D4.5i/4.5i/8i/0.2i -O -K >> $ps
 gmt pstext -R0/9/0/9 -Jx1 -O -N -F+f18p+jCM << EOF >> $ps
 -1.2 7.25 NetCDF
