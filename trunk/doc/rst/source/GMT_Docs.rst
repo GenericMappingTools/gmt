@@ -9797,6 +9797,6 @@ Finally we show an example of a polygon file:
    Travel times were calculated using Geoware's travel time calculator,
    **ttt**; see `<http://www.geoware-online.com/>`_.
 
-.. |degree| unicode:: U+02DA .. degree sign
+.. |degree| unicode:: U+00B0 .. degree sign
 
 .. vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
