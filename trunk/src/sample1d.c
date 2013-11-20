@@ -343,7 +343,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 		}
 	}
 
-	Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */
+	if ((Dout = GMT_create_dataset (GMT, 0, 0, 0, Din->n_columns, GMT_IS_LINE, true)) == NULL) Return (API->error);
 	Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
 	Dout->n_tables = Din->n_tables;
 
