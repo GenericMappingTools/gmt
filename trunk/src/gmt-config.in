@@ -25,6 +25,7 @@ CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
 CONFIG_DATA=$($GMT_EXEDIR/gmt --show-datadir)
 CONFIG_DEP_LIBS="@NETCDF_LIBRARIES@ @GMT_OPTIONAL_LIBRARIES@"
 CONFIG_GSHHG=$($GMT_EXEDIR/gmt gmtget DIR_GSHHG)
+CONFIG_DCW=$($GMT_EXEDIR/gmt gmtget DIR_DCW)
 CONFIG_INCLUDEDIR="@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
 CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
 CONFIG_PREFIX="@CMAKE_INSTALL_PREFIX@"
@@ -65,6 +66,7 @@ Available values for OPTION include:
   --bits        whether library is build 32-bit or 64-bit
   --cflags      pre-processor and compiler flags
   --datadir     GMT's data directory
+  --dcw         location of used DCW
   --dep-libs    dependent libraries
   --gshhg       location of used GSHHG
   --has-fftw    whether FFTW is used in build
@@ -92,6 +94,10 @@ for arg in "$@"; do
 
     --datadir)
     echo $CONFIG_DATA
+    ;;
+
+    --dcw)
+    echo $CONFIG_DCW
     ;;
 
     --dep-libs)
