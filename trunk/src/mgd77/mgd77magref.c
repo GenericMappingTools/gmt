@@ -452,6 +452,8 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 
 	n_in = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);
 
+	if (Ctrl->A.fixed_alt) t_col = 2;	/* Since we are missing the altitude column */
+
 	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;	/* By default, time is in 4th input column */
 
