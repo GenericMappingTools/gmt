@@ -1789,6 +1789,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		to_GDALW->data = &grid[2 * header->mx + (header->pad[XLO] + first_col)+imag_offset];
 		to_GDALW->type = strdup("float32");
 		GMT_gdalwrite(GMT, header->name, to_GDALW);
+		free (to_GDALW->driver);
+		free (to_GDALW->type);
 		GMT_free (GMT, to_GDALW);
 		GMT_free (GMT, k);
 		return (GMT_NOERROR);
@@ -1847,8 +1849,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	GMT_free (GMT, k);
 	GMT_free (GMT, to_GDALW->data);
-	free(to_GDALW->driver);
-	free(to_GDALW->type);
+	free (to_GDALW->driver);
+	free (to_GDALW->type);
 	GMT_free (GMT, to_GDALW);
 	return (GMT_NOERROR);
 }
