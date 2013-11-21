@@ -1612,6 +1612,8 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		to_gdalread->registration.x_inc = header->inc[GMT_X];
 		to_gdalread->registration.y_inc = header->inc[GMT_Y];
 	}
+
+	/* This code chunk fixed #173 (r10638) grdpaste of via-GDAL grids but later caused #403 */
 	if (pad[XLO] > 0 || pad[XHI] > 0 || pad[YLO] > 0 || pad[YHI] > 0) {
 		to_gdalread->mini_hdr.active = true;
 		if (pad[XLO] >= header->nx - 1) {	/* With -1 we account for both grid & pixel registration cases */
@@ -1637,6 +1639,14 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		else {
 			/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
 			to_gdalread->mini_hdr.active = false;	/* Undo above setting */
+			to_gdalread->p.active = true;
+			to_gdalread->p.pad = (int)pad[XLO];
+		}
+
+		/* OK, now test if we are under the condition of #403 (very small grids).
+		   If yes, undo the mini_hdr solution ... and hope no more troubles arise. */
+		if (to_gdalread->mini_hdr.active && (header->nx <= 4 || header->ny <= 4)) {
+			to_gdalread->mini_hdr.active = false;
 			to_gdalread->p.active = true;
 			to_gdalread->p.pad = (int)pad[XLO];
 		}
