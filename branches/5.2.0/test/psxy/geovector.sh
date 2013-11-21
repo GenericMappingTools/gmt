@@ -15,7 +15,7 @@ gmt psxy -R -J -O -K -Sc0.05i -Gred t.txt >> $ps
 # Centered double-head vector
 cat << EOF > t.txt
 -120 0 45 10000
-60 -50 20 5000
+60 -50 20 6000
 EOF
 gmt psxy -R -J -W0.5p,blue -S=0.4i+jc+b+e -Gblue --MAP_VECTOR_SHAPE=1 t.txt -O -K >> $ps
 gmt psxy -R -J -Sc0.05i -Gblue t.txt -O -K >> $ps

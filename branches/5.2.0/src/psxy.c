@@ -740,6 +740,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	}
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
+		unsigned int n_warn[3] = {0, 0, 0}, warn;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
@@ -1012,7 +1013,8 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &current_pen, &S);
+					warn = GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &current_pen, &S);
+					n_warn[warn]++;
 					break;
 				case GMT_SYMBOL_MARC:
 					GMT_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
@@ -1054,6 +1056,8 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			}
 		} while (true);
 		PSL_command (GMT->PSL, "U\n");
+		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
+		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 		
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);

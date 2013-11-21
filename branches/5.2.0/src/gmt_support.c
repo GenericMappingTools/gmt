@@ -4800,7 +4800,7 @@ uint64_t GMT_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int sm
 	return (0);
 }
 
-struct GMT_DATASEGMENT * GMT_dump_contour (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double z)
+struct GMT_DATASEGMENT * GMT_prepare_contour (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double z)
 {	/* Returns a segment with this contour */
 	unsigned int n_cols;
 	char header[GMT_BUFSIZ];
