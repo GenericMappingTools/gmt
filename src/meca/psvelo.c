@@ -171,8 +171,10 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 	unsigned int n_errors = 0;
 	int n;
 	bool no_size_needed, n_set, got_A = false;
-	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol;
 	struct GMT_OPTION *opt = NULL;
+
+	symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -197,13 +199,13 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 				}
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
-						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->A.S);
+						n_errors += GMT_parse_vector (GMT, symbol, opt->arg, &Ctrl->A.S);
 					}
 					else {	/* Size, plus possible attributes */
 						n = sscanf (opt->arg, "%[^+]%s", txt, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 						Ctrl->A.S.size_x = GMT_to_inch (GMT, txt);	/* Length of vector */
-						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->A.S);
+						n_errors += GMT_parse_vector (GMT, symbol, txt_b, &Ctrl->A.S);
 					}
 				}
 				break;

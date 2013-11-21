@@ -616,11 +616,11 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify a region with the -R option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && 
 			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
 			"Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active && !(Ctrl->W.active || Ctrl->I.active), "Syntax error: Must specify one of -W or -I\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->D.active && !Ctrl->Q.active && !(Ctrl->W.active || Ctrl->I.active), "Syntax error: Must specify one of -W or -I\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active), "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option: Must specify a color palette table via -C\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !Ctrl->Q.file, "Syntax error -Q option: Must specify an index file\n");
@@ -637,7 +637,7 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 int GMT_pscontour (void *V_API, int mode, void *args)
 {
 	int add, error = 0;
-	bool two_only = false, make_plot, skip = false, is_closed, skip_points, skip_triangles;
+	bool two_only = false, make_plot, skip = false, convert, get_contours, is_closed, skip_points, skip_triangles;
 	
 	unsigned int pscontour_sum, m, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
 	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped, n_out;
@@ -709,6 +709,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		}
 	}
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
+	convert = (make_plot || (GMT->common.R.active && GMT->common.J.active));
+	get_contours = (Ctrl->D.active || Ctrl->W.active);
 
 	if (make_plot && GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
@@ -780,7 +782,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	/* Map transform */
 
-	for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
+	if (convert) for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
 		uint64_t seg, row, col;
@@ -955,8 +957,10 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.active) {
 		uint64_t dim[4] = {0, 0, 0, 3};
-		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
+		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%')) {	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_SET;
+			n_tables = 1;
+		}
 		else {	/* Must determine the kind of output organization */
 			i = 0;
 			while (Ctrl->D.file[i]) {
@@ -1020,7 +1024,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	/* Get PSCONTOUR structs */
 
-	if (Ctrl->W.active) {
+	if (get_contours) {
 		for (i = 0; i < n_contours; i++) {
 			cont[i].n_alloc = GMT_SMALL_CHUNK;
 			cont[i].L = GMT_memory (GMT, NULL, GMT_SMALL_CHUNK, struct PSCONTOUR_LINE);
@@ -1152,7 +1156,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 			}
 		}
 
-		if (Ctrl->W.active && nx > 0) {	/* Save contour line segments L for later */
+		if (get_contours && nx > 0) {	/* Save contour line segments L for later */
 			for (k = k2 = 0; k < nx; k++) {
 				c = cind[k];
 				m = cont[c].nl;
@@ -1178,9 +1182,9 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		}
 	}
 	
-	/* Draw contours */
+	/* Draw or dump contours */
 
-	if (Ctrl->W.active) {
+	if (get_contours) {
 
 		struct PSCONTOUR_CHAIN *head_c = NULL, *last_c = NULL, *this_c = NULL;
 		struct PSCONTOUR_PT *p = NULL, *q = NULL;
@@ -1314,12 +1318,17 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				if (Ctrl->D.active) {
 					size_t count;
 					unsigned int closed;
-					double *xtmp = NULL, *ytmp = NULL;
-					/* Must first apply inverse map transform */
-					xtmp = GMT_memory (GMT, NULL, m, double);
-					ytmp = GMT_memory (GMT, NULL, m, double);
-					for (count = 0; count < m; count++) GMT_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
-					S = GMT_dump_contour (GMT, xtmp, ytmp, m, cont[c].val);
+					if (convert) {	/* Must first apply inverse map transform */
+						double *xtmp = NULL, *ytmp = NULL;
+						xtmp = GMT_memory (GMT, NULL, m, double);
+						ytmp = GMT_memory (GMT, NULL, m, double);
+						for (count = 0; count < m; count++) GMT_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
+						S = GMT_prepare_contour (GMT, xtmp, ytmp, m, cont[c].val);
+						GMT_free (GMT, xtmp);
+						GMT_free (GMT, ytmp);
+					}
+					else
+						S = GMT_prepare_contour (GMT, xp, yp, m, cont[c].val);
 					/* Select which table this segment should be added to */
 					closed = (is_closed) ? 1 : 0;
 					tbl = (io_mode == GMT_WRITE_TABLE) ? ((two_only) ? closed : tbl_scl * c) : 0;
@@ -1336,8 +1345,6 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENT)
 						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
-					GMT_free (GMT, xtmp);
-					GMT_free (GMT, ytmp);
 				}
 
 				if (make_plot) {

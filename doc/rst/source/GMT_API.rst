@@ -1,4 +1,4 @@
-:tocdepth: 2
+:tocdepth: 3
 
 .. set default highlighting language for this document:
 
@@ -361,41 +361,41 @@ and Table :ref:`types <tbl-types>`.
 
 .. _tbl-enums:
 
-+---------------------------+-------+----------------------------------------------------------------+
-| constant                  | value | description                                                    |
-+===========================+=======+================================================================+
-| GMT_ALLOCATED_EXTERNALLY  | 0     | Item was *not* allocated by GMT so do not reallocate or free   |
-+---------------------------+-------+----------------------------------------------------------------+
-| GMT_ALLOCATED_BY_GMT      | 1     | GMT allocated the memory; reallocate and free as needed        |
-+---------------------------+-------+----------------------------------------------------------------+
-+---------------------------+-------+----------------------------------------------------------------+
++---------------------------+----------------------------------------------------------------+
+| constant                  | description                                                    |
++===========================+================================================================+
+| GMT_ALLOCATED_EXTERNALLY  | Item was *not* allocated by GMT so do not reallocate or free   |
++---------------------------+----------------------------------------------------------------+
+| GMT_ALLOCATED_BY_GMT      | GMT allocated the memory; reallocate and free as needed        |
++---------------------------+----------------------------------------------------------------+
++---------------------------+----------------------------------------------------------------+
 
 .. _tbl-types:
 
-+--------------+-------+------------------------------------------+
-| constant     | value | description                              |
-+==============+=======+==========================================+
-| GMT_CHAR     | 0     | int8_t, 1-byte signed integer type       |
-+--------------+-------+------------------------------------------+
-| GMT_UCHAR    | 1     | int8_t, 1-byte unsigned integer type     |
-+--------------+-------+------------------------------------------+
-| GMT_SHORT    | 2     | int16_t, 2-byte signed integer type      |
-+--------------+-------+------------------------------------------+
-| GMT_USHORT   | 3     | uint16_t, 2-byte unsigned integer type   |
-+--------------+-------+------------------------------------------+
-| GMT_INT      | 4     | int32_t, 4-byte signed integer type      |
-+--------------+-------+------------------------------------------+
-| GMT_UINT     | 5     | uint32_t, 4-byte unsigned integer type   |
-+--------------+-------+------------------------------------------+
-| GMT_LONG     | 6     | int64_t, 8-byte signed integer type      |
-+--------------+-------+------------------------------------------+
-| GMT_ULONG    | 7     | uint64_t, 8-byte unsigned integer type   |
-+--------------+-------+------------------------------------------+
-| GMT_FLOAT    | 8     | 4-byte data float type                   |
-+--------------+-------+------------------------------------------+
-| GMT_DOUBLE   | 9     | 8-byte data float type                   |
-+--------------+-------+------------------------------------------+
-+--------------+-------+------------------------------------------+
++--------------+------------------------------------------+
+| constant     | description                              |
++==============+==========================================+
+| GMT_CHAR     | int8_t, 1-byte signed integer type       |
++--------------+------------------------------------------+
+| GMT_UCHAR    | int8_t, 1-byte unsigned integer type     |
++--------------+------------------------------------------+
+| GMT_SHORT    | int16_t, 2-byte signed integer type      |
++--------------+------------------------------------------+
+| GMT_USHORT   | uint16_t, 2-byte unsigned integer type   |
++--------------+------------------------------------------+
+| GMT_INT      | int32_t, 4-byte signed integer type      |
++--------------+------------------------------------------+
+| GMT_UINT     | uint32_t, 4-byte unsigned integer type   |
++--------------+------------------------------------------+
+| GMT_LONG     | int64_t, 8-byte signed integer type      |
++--------------+------------------------------------------+
+| GMT_ULONG    | uint64_t, 8-byte unsigned integer type   |
++--------------+------------------------------------------+
+| GMT_FLOAT    | 4-byte data float type                   |
++--------------+------------------------------------------+
+| GMT_DOUBLE   | 8-byte data float type                   |
++--------------+------------------------------------------+
++--------------+------------------------------------------+
 
 
 Overview of the GMT C Application Program Interface
@@ -662,8 +662,8 @@ can use GMT_Retrieve_Data_ to assign a pointer to the memory location
 resources you may request to obtain a subset via the :ref:`wesn <tbl-wesn>` array (see
 Table :ref:`wesn <tbl-wesn>` for information); otherwise, pass NULL to obtain the
 entire grid (or image). The ``direction`` indicates input or output and
-is either GMT_IN (0) or GMT_OUT (1). Finally, the function returns a
-unique resource ID, or GMT_NOTSET (-1) if there was an error.
+is either GMT_IN or GMT_OUT. Finally, the function returns a
+unique resource ID, or GMT_NOTSET if there was an error.
 
 Object ID encoding
 ~~~~~~~~~~~~~~~~~~
@@ -681,26 +681,26 @@ using the function
 
 which accepts the unique ``ID`` and writes the corresponding
 ``filename``. The variable ``filename`` must have enough space to hold
-16 bytes. The function returns TRUE (1) if there is an error; otherwise
-it returns FALSE (0).
+16 bytes. The function returns 1 if there is an error; otherwise
+it returns 0.
 
 
 .. _tbl-family:
 
-+------------------+-------+--------------------------------+
-| family           | value | source popints to              |
-+==================+=======+================================+
-| GMT_IS_DATASET   | 0     | A [multi-segment] table file   |
-+------------------+-------+--------------------------------+
-| GMT_IS_TEXTSET   | 1     | A [multi-segment] text file    |
-+------------------+-------+--------------------------------+
-| GMT_IS_GRID      | 2     | A GMT grid file                |
-+------------------+-------+--------------------------------+
-| GMT_IS_CPT       | 3     | A CPT file                     |
-+------------------+-------+--------------------------------+
-| GMT_IS_IMAGE     | 4     | A GMT image                    |
-+------------------+-------+--------------------------------+
-+------------------+-------+--------------------------------+
++------------------+--------------------------------+
+| family           | source points to               |
++==================+================================+
+| GMT_IS_DATASET   | A [multi-segment] table file   |
++------------------+--------------------------------+
+| GMT_IS_TEXTSET   | A [multi-segment] text file    |
++------------------+--------------------------------+
+| GMT_IS_GRID      | A GMT grid file                |
++------------------+--------------------------------+
+| GMT_IS_CPT       | A CPT file                     |
++------------------+--------------------------------+
+| GMT_IS_IMAGE     | A GMT image                    |
++------------------+--------------------------------+
++------------------+--------------------------------+
 
 
 .. _tbl-methods:
@@ -732,52 +732,52 @@ it returns FALSE (0).
 
 .. _tbl-via:
 
-+------------------+-------+--------------------------------------------------------------+
-| approach         | value | how method is modified                                       |
-+==================+=======+==============================================================+
-| GMT_VIA_VECTOR   | 100   | User's data columns are accessed via a GMT_VECTOR structure  |
-+------------------+-------+--------------------------------------------------------------+
-| GMT_VIA_MATRIX   | 200   | User's matrix is accessed via a GMT_MATRIX structure         |
-+------------------+-------+--------------------------------------------------------------+
-+------------------+-------+--------------------------------------------------------------+
++------------------+--------------------------------------------------------------+
+| approach         | how method is modified                                       |
++==================+==============================================================+
+| GMT_VIA_VECTOR   | User's data columns are accessed via a GMT_VECTOR structure  |
++------------------+--------------------------------------------------------------+
+| GMT_VIA_MATRIX   | User's matrix is accessed via a GMT_MATRIX structure         |
++------------------+--------------------------------------------------------------+
++------------------+--------------------------------------------------------------+
 
 
 
 .. _tbl-geometry:
 
-+------------------+---------+-------------------------------------------+
-| geometry         |  value  |  description                              |
-+==================+=========+===========================================+
-| GMT_IS_TEXT      | 0       | Not a geographic item                     |
-+------------------+---------+-------------------------------------------+
-| GMT_IS_POINT     | 1       | Multi-dimensional point data              |
-+------------------+---------+-------------------------------------------+
-| GMT_IS_LINE      | 2       | Geographic or Cartesian line segments     |
-+------------------+---------+-------------------------------------------+
-| GMT_IS_POLYGON   | 3       | Geographic or Cartesian closed polygons   |
-+------------------+---------+-------------------------------------------+
-| GMT_IS_SURFACE   | 4       | 2-D gridded surface                       |
-+------------------+---------+-------------------------------------------+
-+------------------+---------+-------------------------------------------+
++------------------+-------------------------------------------+
+| geometry         |  description                              |
++==================+===========================================+
+| GMT_IS_TEXT      | Not a geographic item                     |
++------------------+-------------------------------------------+
+| GMT_IS_POINT     | Multi-dimensional point data              |
++------------------+-------------------------------------------+
+| GMT_IS_LINE      | Geographic or Cartesian line segments     |
++------------------+-------------------------------------------+
+| GMT_IS_POLYGON   | Geographic or Cartesian closed polygons   |
++------------------+-------------------------------------------+
+| GMT_IS_SURFACE   | 2-D gridded surface                       |
++------------------+-------------------------------------------+
++------------------+-------------------------------------------+
 
 
 .. _tbl-wesn:
 
-+---------+---------+-------------------------------------------------+
-|  Index  |         |   Content                                       |
-+=========+=========+=================================================+
-| 0       | GMT_XLO |  x_min (west) boundary of grid subset           |
-+---------+---------+-------------------------------------------------+
-| 1       | GMT_XHI |  x_max (east) boundary of grid subset           |
-+---------+---------+-------------------------------------------------+
-| 2       | GMT_YLO |  y_min (south) boundary of grid subset          |
-+---------+---------+-------------------------------------------------+
-| 3       | GMT_YHI |  y_max (north) boundary of grid subset          |
-+---------+---------+-------------------------------------------------+
-| 4       | GMT_ZLO |  z_min (bottom) boundary of 3-D matrix subset   |
-+---------+---------+-------------------------------------------------+
-| 5       | GMT_ZHI |  z_max (top) boundary of 3-D matrix subset      |
-+---------+---------+-------------------------------------------------+
++---------+-------------------------------------------------+
+| index   |   description                                   |
++=========+=================================================+
+| GMT_XLO |  x_min (west) boundary of grid subset           |
++---------+-------------------------------------------------+
+| GMT_XHI |  x_max (east) boundary of grid subset           |
++---------+-------------------------------------------------+
+| GMT_YLO |  y_min (south) boundary of grid subset          |
++---------+-------------------------------------------------+
+| GMT_YHI |  y_max (north) boundary of grid subset          |
++---------+-------------------------------------------------+
+| GMT_ZLO |  z_min (bottom) boundary of 3-D matrix subset   |
++---------+-------------------------------------------------+
+| GMT_ZHI |  z_max (top) boundary of 3-D matrix subset      |
++---------+-------------------------------------------------+
 
 
 Resource initialization
@@ -811,20 +811,20 @@ where ``family`` specifies what kind of resource is to be registered,
 ``GMT_IN`` or ``GMT_OUT``, and ``mode`` is a bit flag that determines
 what we do if no resources have been registered. The choices are
 
-    **1** (or GMT_ADD_FILES_IF_NONE) means "add command line (option)
+    **GMT_ADD_FILES_IF_NONE** means "add command line (option)
     files if none have been registered already"
 
-    **2** (or GMT_ADD_FILES_ALWAYS) means "always add any command line files"
+    **GMT_ADD_FILES_ALWAYS** means "always add any command line files"
 
-    **4** (or GMT_ADD_STDIO_IF_NONE) means "add std\* if no other
+    **GMT_ADD_STDIO_IF_NONE** means "add std\* if no other
     input/output have been specified"
 
-    **8** (or GMT_ADD_STDIO_ALWAYS) means "always add std\* even if
+    **GMT_ADD_STDIO_ALWAYS** means "always add std\* even if
     resources have been registered".
 
-    **16** (or GMT_ADD_EXISTING) means "only use already registered resources".
+    **GMT_ADD_EXISTING** means "only use already registered resources".
 
-The standard behavior is 5 (or GMT_REG_DEFAULT). Next, ``n_args`` is 0
+The standard behavior is GMT_REG_DEFAULT. Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in Section [sec:func]); otherwise ``args`` is an array of ``n_args``
 strings (i.e., the int argc, char \*argv[] model)
@@ -834,7 +834,7 @@ GMT function (say, a filtered grid) should be returned, but may then
 wish to use that variable as an *input* resource in a subsequent module
 call. This is accomplished by re-registering the resource as an *input*
 source, thereby changing the *direction* of the data set. The function
-returns TRUE (1) if there is an error; otherwise it returns FALSE (0).
+returns 1 if there is an error; otherwise it returns 0.
 
 Dimension parameters for user 1-D column vectors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -846,7 +846,7 @@ possibly increasing memory requirements. If the type is GMT_DOUBLE then
 GMT will be able to use the column directly by reference. The
 ``n_columns`` and ``n_rows`` parameters indicate the number of vectors
 and their common length. If these are not yet known you may pass 0 for
-these values and set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will
+these values and set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT; this will
 make sure GMT will allocate the necessary memory to the variable you
 specify.
 
@@ -860,7 +860,7 @@ possibly increasing memory requirements. If the type is GMT_FLOAT then
 GMT may be able to use the matrix directly by reference. The
 ``n_rows`` and ``n_columns`` parameters indicate the dimensions of the
 matrix. If these are not yet known you may pass 0 for these values and
-set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will make sure GMT will
+set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT; this will make sure GMT will
 allocate the necessary memory at the location you specify. Fortran users
 will instead have to specify a size large enough to hold the anticipated
 output data. The ``registration`` and ``range`` gives the grid
@@ -901,7 +901,7 @@ two ways:
 
 #. Physical distances and increments of each dimension.
 
-For method (1), pass the ``par`` array, as indicated below:
+For the first case, pass the ``par`` array, as indicated below:
 
 **GMT_IS_GRID**
     An empty GMT_GRID structure with a header is allocated; the data
@@ -930,7 +930,7 @@ For method (1), pass the ``par`` array, as indicated below:
     An empty GMT_MATRIX structure is allocated. ``par[3]`` indicates
     the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
 
-In this case, pass ``wesn``, ``inc`` as NULL. For method (2), you
+In this case, pass ``wesn``, ``inc`` as NULL. For the second approach, you
 instead pass ``wesn``, ``inc``, and ``registration`` and leave as NULL.
 For grids and images you may pass ``pad`` to set the padding, or -1 to
 accept the GMT default. The ``mode`` determines what is actually
@@ -995,7 +995,7 @@ are performed by
 which returns the ID number of the allocated resource. Specify which
 ``family`` and select ``direction`` from ``GMT_IN`` or ``GMT_OUT``.
 The ``data`` is a pointer to the resource you whose ID you need. In case
-of an error we return GMT_NOTSET (-1) and pass an error code via
+of an error we return GMT_NOTSET and pass an error code via
 ``API->error``.
 
 Import Data
@@ -1059,9 +1059,9 @@ will discuss GMT_End_IO_ once we are done with the data import. The
 information (``GMT_HEADER_ON``) or not (``GMT_HEADER_OFF``). This is
 usually on unless you are writing messages and other non-data. The final
 ``header`` argument determines if the common header-block should be
-written during initialization; choose between ``GMT_HEADER_ON`` (1) and
-``GMT_HEADER_OFF`` (0). The function returns TRUE (1) if there is an
-error; otherwise it returns FALSE (0).
+written during initialization; choose between ``GMT_HEADER_ON`` and
+``GMT_HEADER_OFF``. The function returns 1 if there is an
+error; otherwise it returns 0.
 
 Import a data set
 ~~~~~~~~~~~~~~~~~
@@ -1224,12 +1224,12 @@ identify segment headers we return a NULL pointer. The ``nfields``
 pointer will return the number of fields returned; pass NULL if your
 program should ignore this information.
 
-Normally (``mode`` == GMT_READ_DOUBLE or 0), we return a pointer to
+Normally (``mode`` == GMT_READ_DOUBLE), we return a pointer to
 the double array. To read text records, supply instead ``mode`` ==
-GMT_READ_TEXT (or 1) and we instead return a pointer to the text
+GMT_READ_TEXT and we instead return a pointer to the text
 record. However, if you have input records that mixes organized
 floating-point columns with text items you could pass ``mode`` ==
-GMT_READ_MIXED (2). Then, GMT will attempt to extract the
+GMT_READ_MIXED. Then, GMT will attempt to extract the
 floating-point values; you can still access the record string, as
 discussed below. Finally, if your application needs to be notified when
 GMT closes one file and opens the next, add GMT_FILE_BREAK to
@@ -1266,7 +1266,7 @@ say, ``blockmean.c`` or ``pstext.c``, to see examples of working code.
 .. _tbl-iostatus:
 
 +-----------------------------+----------------------------------------------------------+
-| mode                        | description                                              |
+| mode                        | description and return value                             |
 +=============================+==========================================================+
 |   GMT_IO_DATA_RECORD        | 1 if we read a data record                               |
 +-----------------------------+----------------------------------------------------------+
@@ -1327,8 +1327,8 @@ function disables further record-by-record data import; its prototype is
 
 and we specify ``direction`` = GMT_IN. At the moment, ``mode`` is not
 used. This call will also reallocate any arrays obtained into their
-proper lengths. The function returns TRUE (1) if there is an error
-(which is passed back with ``API->error``), otherwise it returns FALSE (0).
+proper lengths. The function returns 1 if there is an error
+(which is passed back with ``API->error``), otherwise it returns 0.
 
 Manipulate data
 ---------------
@@ -1487,21 +1487,21 @@ lower or equal to the **-V**\ *level* will be printed.
 
 .. _tbl-verbosity:
 
-+-------------------------+-------+--------------------------------------------------+
-| constant                | value | description                                      |
-+=========================+=======+==================================================+
-| GMT_MSG_QUIET           | 0     | No messages whatsoever                           |
-+-------------------------+-------+--------------------------------------------------+
-| GMT_MSG_NORMAL          | 1     | Default output, e.g., warnings and errors only   |
-+-------------------------+-------+--------------------------------------------------+
-| GMT_MSG_COMPAT          | 2     | Compatibility warnings                           |
-+-------------------------+-------+--------------------------------------------------+
-| GMT_MSG_VERBOSE         | 3     | Verbose level                                    |
-+-------------------------+-------+--------------------------------------------------+
-| GMT_MSG_LONG_VERBOSE    | 4     | Longer verbose                                   |
-+-------------------------+-------+--------------------------------------------------+
-| GMT_MSG_DEBUG           | 5     | Debug messages for developers mostly             |
-+-------------------------+-------+--------------------------------------------------+
++-------------------------+--------------------------------------------------+
+| constant                | description                                      |
++=========================+==================================================+
+| GMT_MSG_QUIET           | No messages whatsoever                           |
++-------------------------+--------------------------------------------------+
+| GMT_MSG_NORMAL          | Default output, e.g., warnings and errors only   |
++-------------------------+--------------------------------------------------+
+| GMT_MSG_COMPAT          | Compatibility warnings                           |
++-------------------------+--------------------------------------------------+
+| GMT_MSG_VERBOSE         | Verbose level                                    |
++-------------------------+--------------------------------------------------+
+| GMT_MSG_LONG_VERBOSE    | Longer verbose                                   |
++-------------------------+--------------------------------------------------+
+| GMT_MSG_DEBUG           | Debug messages for developers mostly             |
++-------------------------+--------------------------------------------------+
 
 
 .. _GMT_Message:
@@ -1518,17 +1518,17 @@ Table :ref:`timemodes <tbl-timemodes>` for the various modes.
 
 .. _tbl-timemodes:
 
-+--------------------+-------+-----------------------------------------+
-| constant           | value | description                             |
-+====================+=======+=========================================+
-| GMT_TIME_NONE      | 0     | Display no time information             |
-+--------------------+-------+-----------------------------------------+
-| GMT_TIME_CLOCK     | 1     | Display current local time              |
-+--------------------+-------+-----------------------------------------+
-| GMT_TIME_ELAPSED   | 2     | Display elapsed time since last reset   |
-+--------------------+-------+-----------------------------------------+
-| GMT_TIME_RESET     | 3     | Reset the elapsed time to 0             |
-+--------------------+-------+-----------------------------------------+
++--------------------+-----------------------------------------+
+| constant           | description                             |
++====================+=========================================+
+| GMT_TIME_NONE      | Display no time information             |
++--------------------+-----------------------------------------+
+| GMT_TIME_CLOCK     | Display current local time              |
++--------------------+-----------------------------------------+
+| GMT_TIME_ELAPSED   | Display elapsed time since last reset   |
++--------------------+-----------------------------------------+
+| GMT_TIME_RESET     | Reset the elapsed time to 0             |
++--------------------+-----------------------------------------+
 
 
 Presenting and accessing GMT options
@@ -1683,19 +1683,19 @@ Here, ``module`` can be any of the GMT modules, such as
 three sets of ``args`` depending on ``mode``. The three modes differ in
 how the options are passed to the module:
 
-    *mode* == GMT_MODULE_EXIST [-3]
+    *mode* == GMT_MODULE_EXIST
         Just print a brief one-line summary of the module; args should be NULL.
 	If ``module`` equals NULL then we list summaries for all the modules.
 
-    *mode* == GMT_MODULE_PURPOSE [-2]
+    *mode* == GMT_MODULE_PURPOSE
         Just prints the purpose of the module; args should be NULL.
 
-    *mode* == GMT_MODULE_OPT [-1]
+    *mode* == GMT_MODULE_OPT
         Expects ``args`` to be a pointer to a doubly-linked list of objects with individual
         options for the current program. We will see
         how API functions can help prepare such lists.
 
-    *mode* == GMT_MODULE_CMD [0]
+    *mode* == GMT_MODULE_CMD
         Expects ``args`` to be a single text string with all required options.
 
     *mode > 0*
@@ -1720,7 +1720,7 @@ interface offers all you need.
 Set program options via text command
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If ``mode`` == 0 then ``args`` will be examined to see if it contains
+If ``mode ==`` 0 then ``args`` will be examined to see if it contains
 several options within a single command string. If so we will break
 these into separate options. This is useful if you wish to pass a single
 string such as "-R120:30/134:45/8S/3N -JM6i mydata.txt -Sc0.2c". We call
@@ -1784,8 +1784,8 @@ multiple options (in lieu of an array of text strings), then pass
 
     int GMT_Destroy_Options (void *API, struct GMT_OPTION **list);
 
-The function returns TRUE (1) if there is an error (which is passed back
-with ``API->error``), otherwise it returns FALSE (0).
+The function returns 1 if there is an error (which is passed back
+with ``API->error``), otherwise it returns 0.
 
 The inverse function prototype is
 
@@ -1809,9 +1809,9 @@ any use for the text array, call
 
     int GMT_Destroy_Args (void *API, int argc, char **argv[]);
 
-to deallocate the space used. This function returns TRUE (1) if there is
+to deallocate the space used. This function returns 1 if there is
 an error (which is passed back with ``API->error``), otherwise it
-returns FALSE (0).
+returns 0.
 
 Finally, to convert the linked list of option structures to a single
 text string command, use
@@ -1834,9 +1834,9 @@ any use for the text string, call
 
     int _GMT_Destroy_Cmd (void *API, char **argv);
 
-to deallocate the space used. This function returns TRUE (1) if there is
+to deallocate the space used. This function returns 1 if there is
 an error (which is passed back with ``API->error``), otherwise it
-returns FALSE (0).
+returns 0.
 
 Manage the linked list of options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1922,7 +1922,7 @@ list. The prototype is
     int GMT_Update_Option (void *API, struct GMT_OPTION *current, char *arg);
 
 An error will be reported if (a) ``current`` is NULL or (b) ``arg`` is
-NULL. The function returns TRUE (1) if there is an error, otherwise it returns FALSE (0).
+NULL. The function returns 1 if there is an error, otherwise it returns 0.
 
 Delete an existing option in the linked list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1997,29 +1997,29 @@ you call GMT_Begin_IO_
 
 .. _tbl-comments:
 
-+---------------------------+-------+------------------------------------------------------+
-| constant                  | value | description                                          |
-+===========================+=======+======================================================+
-| GMT_COMMENT_IS_TEXT       | 0     | Comment is a text string                             |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_OPTION     | 1     | Comment is a linked list of GMT_OPTION structures    |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_COMMAND    | 2     | Comment is the command                               |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_REMARK     | 4     | Comment is the remark                                |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_TITLE      | 4     | Comment is the title                                 |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME_X     | 4     | Comment is the x variable name (grids only)          |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME_Y     | 4     | Comment is the y variable name (grids only)          |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME_Z     | 4     | Comment is the z variable name (grids only)          |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_COLNAMES   | 4     | Comment is the column names header                   |
-+---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_RESET      | 8     | Comment replaces existing information                |
-+---------------------------+-------+------------------------------------------------------+
++---------------------------+------------------------------------------------------+
+| constant                  | description                                          |
++===========================+======================================================+
+| GMT_COMMENT_IS_TEXT       | Comment is a text string                             |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_OPTION     | Comment is a linked list of GMT_OPTION structures    |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_COMMAND    | Comment is the command                               |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_REMARK     | Comment is the remark                                |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_TITLE      | Comment is the title                                 |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_NAME_X     | Comment is the x variable name (grids only)          |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_NAME_Y     | Comment is the y variable name (grids only)          |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_NAME_Z     | Comment is the z variable name (grids only)          |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_COLNAMES   | Comment is the column names header                   |
++---------------------------+------------------------------------------------------+
+| GMT_COMMENT_IS_RESET      | Comment replaces existing information                |
++---------------------------+------------------------------------------------------+
 
 
 The named modes (*command*, *remark*, *title*, *name_x,y,z* and
@@ -2134,14 +2134,14 @@ previously. Again, the ``mode`` parameter is specific to each data type:
 **GMT grid**
     Here, ``mode`` may be GMT_GRID_HEADER_ONLY to only update a
     file's header structure, but normally it is simply GMT_GRID_ALL
-    (0) so the entire grid and its header will be exported (a subset is
+    so the entire grid and its header will be exported (a subset is
     not allowed during export). However, in the event your data array
     holds both the real and imaginary parts of a complex data set you
-    must add either GMT_GRID_IS_COMPLEX_REAL (4) or
-    GMT_GRID_IS_COMPLEX_IMAG (16) to ``mode`` so as to export the
+    must add either GMT_GRID_IS_COMPLEX_REAL or
+    GMT_GRID_IS_COMPLEX_IMAG to ``mode`` so as to export the
     corresponding grid values correctly. Finally, for native binary
     grids you may skip writing the grid header by adding
-    GMT_GRID_NO_HEADER (16); this setting is ignored for other grid
+    GMT_GRID_NO_HEADER; this setting is ignored for other grid
     formats. If your output grid is huge and you are building it
     row-by-row, set ``mode`` to GMT_GRID_HEADER_ONLY \|
     GMT_GRID_ROW_BY_ROW. You can then write the grid row-by-row
@@ -2149,8 +2149,8 @@ previously. Again, the ``mode`` parameter is specific to each data type:
     processed in order. To completely specify which row to be written,
     use GMT_GRID_ROW_BY_ROW_MANUAL instead.
 
-If successful the function returns FALSE (0); otherwise we return TRUE
-(1) and set ``API->error`` to reflect to cause.  Note: If ``method`` is
+If successful the function returns 0; otherwise we return 1
+and set ``API->error`` to reflect to cause.  Note: If ``method`` is
 GMT_IS_FILE, ``family`` is GMT_IS_GRID, and the filename implies a change
 from NaN to another value then the grid is modified accordingly.  If you
 continue to use that grid after writing please be aware that the changes
@@ -2172,7 +2172,7 @@ where ``ID`` is the unique ID of the registered destination, ``mode`` is
 specific to each data type (and controls aspects of the output
 structuring), and ``data`` is a pointer to any of the four structures
 discussed previously. For more detail, see ``GMT_Write_Data`` above. If
-successful the function returns FALSE (0); otherwise we return TRUE (1)
+successful the function returns 0; otherwise we return 1
 and set ``API->error`` to reflect to cause.
 
 Exporting a data record
@@ -2201,27 +2201,27 @@ GMT_DATASET structure directly. As mentioned, ``mode`` affects what is
 actually written:
 
 **GMT_WRITE_DOUBLE**
-    Normal operation that builds the current output record from the values in ``rec`` [0].
+    Normal operation that builds the current output record from the values in ``rec``.
 
 **GMT_WRITE_TEXT**
     For ASCII output mode we write the text string ``rec``. If ``rec``
     is NULL then we use the current (last imported) text record. If
-    binary output mode we quietly skip writing this record [1].
+    binary output mode we quietly skip writing this record.
 
 **GMT_WRITE_TABLE_HEADER**
     For ASCII output mode we write the text string ``rec``. If ``rec``
     is NULL then we write the last read header record (and ensures it
-    starts with #). If binary output mode we quietly skip writing this record [2].
+    starts with #). If binary output mode we quietly skip writing this record.
 
 **GMT_WRITE_SEGMENT_HEADER**
     For ASCII output mode we use the text string ``rec`` as the
     segment header. If ``rec`` is NULL then we use the current (last
     read) segment header record. If binary output mode instead we write
-    a record composed of NaNs [1].
+    a record composed of NaNs.
 
-The function returns TRUE (1) if there was an error associated with the
+The function returns 1 if there was an error associated with the
 writing (which is passed back with ``API->error``), otherwise it returns
-FALSE (0).
+0.
 
 Exporting a grid row
 ~~~~~~~~~~~~~~~~~~~~
@@ -2269,9 +2269,9 @@ when each module completes it will automatically free memory created by
 the API; similarly, when the session is destroyed we also automatically
 free up memory. Thus, ``GMT_Destroy_Data`` is therefore generally only
 needed when you wish to directly free up memory to avoid running out of
-it. The function returns TRUE (1) if there is an error when trying to
+it. The function returns 1 if there is an error when trying to
 free the memory (the error code is passed back with ``API->error``),
-otherwise it returns FALSE (0).
+otherwise it returns 0.
 
 Terminate a GMT session
 -----------------------
@@ -2291,9 +2291,9 @@ memory used by the GMT API book-keeping. It also unregisters any
 remaining resources previously registered with the session. The
 GMT API will only close files that it was responsible for opening in
 the first place. Finally, the API structure itself is freed so your main
-program does not need to do so. The function returns TRUE (1) if there
+program does not need to do so. The function returns 1 if there
 is an error when trying to free the memory (the error code is passed
-back with ``API->error``), otherwise it returns FALSE (0).
+back with ``API->error``), otherwise it returns 0.
 
 The GMT FFT Interface
 =====================
@@ -2421,7 +2421,8 @@ A lower-level 2-D FFT is also available via
 
   ::
 
-    int GMT_FFT_2D (void *API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
+    int GMT_FFT_2D (void *API, float *data, unsigned int nx, unsigned int ny,
+		   int direction, unsigned int mode);
 
 which takes as ``direction`` either GMT_FFT_FWD or GMT_FFT_INV. The
 mode is used to specify if we pass a real (GMT_FFT_REAL) or complex

@@ -159,10 +159,12 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_03.txt
        :language: bash
 
-    The final illustration (Figure [fig:example:sub:`0`\ 3]) shows that the
-    ship gravity anomalies have more power than altimetry derived gravity
+    The final illustration (Figure :ref:`Example 03 <Fig_example_03>`) shows that
+    the ship gravity anomalies have more power than altimetry derived gravity
     for short wavelengths and that the coherency between the two signals
     improves dramatically for wavelengths > 20 km.
+
+    .. _Fig_example_03:
 
     .. figure:: /_images/example_03.*
 
@@ -170,7 +172,7 @@ Creating GMT Graphics
     ---------------------------
 
     This example will illustrate how to make a fairly complicated composite
-    figure. We need a subset of the ETOPO5 bathymetry [24]_ and Geosat geoid
+    figure. We need a subset of the ETOPO5 bathymetry [23]_ and Geosat geoid
     data sets which we will extract from the local data bases using
     :doc:`grdraster`. We would like to show a
     2-layer perspective plot where layer one shows a contour map of the
@@ -233,7 +235,9 @@ Creating GMT Graphics
     data sets one may improve the smoothness of the intensities by passing
     the output of :doc:`grdgradient` to
     :doc:`grdhisteq`. The shell-script above
-    will result in a plot like the one in Figure [fig:example\ :sub:`0`\ 5].
+    will result in a plot like the one in Figure :ref:`Example 05 <Fig_example_05>`.
+
+    .. _Fig_example_05:
 
     .. figure:: /_images/example_05.*
 
@@ -247,11 +251,13 @@ Creating GMT Graphics
     example that involves both programs. The file ``fractures.yx`` contains a compilation of
     fracture lengths and directions as digitized from geological maps. The
     file ``v3206.t`` contains all the bathymetry measurements from *Vema* cruise 3206.
-    Our complete figure (Figure [fig:example:sub:`0`\ 6]) was made running
+    Our complete figure (Figure :ref:`Example 06 <Fig_example_06>`) was made running
     this script:
 
     .. literalinclude:: /_verbatim/example_06.txt
        :language: bash
+
+    .. _Fig_example_06:
 
     .. figure:: /_images/example_06.*
 
@@ -267,11 +273,13 @@ Creating GMT Graphics
     position and magnitude of available earthquakes in the region. We choose
     to use magnitude/100 for the symbol-size in inches. The digital fracture
     zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as ``isochrons.xy``) were
-    digitized from available maps [24]_. We create the final location map
-    (Figure [fig:example:sub:`0`\ 7]) with the following script:
+    digitized from available maps [23]_. We create the final location map
+    (Figure :ref:`Example 07 <Fig_example_07>`) with the following script:
 
     .. literalinclude:: /_verbatim/example_07.txt
        :language: bash
+
+    .. _Fig_example_07:
 
     .. figure:: /_images/example_07.*
 
@@ -291,10 +299,12 @@ Creating GMT Graphics
     histogram in a 3-D perspective view. Our gridded bathymetry file is
     called ``guinea_bay.nc`` and covers the region from 0 to 5 E and 0 to 5 N. Depth ranges
     from -5000 meter to sea-level. We produce the
-    Figure [fig:example\ :sub:`0`\ 8] by running this script:
+    Figure :ref:`Example 08 <Fig_example_08>` by running this script:
 
     .. literalinclude:: /_verbatim/example_08.txt
        :language: bash
+
+    .. _Fig_example_08:
 
     .. figure:: /_images/example_08.*
 
@@ -348,10 +358,12 @@ Creating GMT Graphics
     The script also shows how to effectively use transparency of the boxes around the numbers
     and in the shade surrounding the legend.
 
-    Our script that produces Figure ex_10 reads:
+    Our script that produces Figure :ref:`Example 10 <Fig_example_10>` reads:
 
     .. literalinclude:: /_verbatim/example_10.txt
        :language: bash
+
+    .. _Fig_example_10:
 
     .. figure:: /_images/example_10.*
 
@@ -382,17 +394,20 @@ Creating GMT Graphics
     other 3 faces of the cube, around the black corner, the white decimal
     numbers indicate brightnesses between 0 and 1, with saturation fixed at 1.
 
-    Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`1`\ 1]:
+    Here is the shell script to generate the RGB cube in Figure
+    :ref:`Example 11 <Fig_example_11>`:
 
     .. literalinclude:: /_verbatim/example_11.txt
        :language: bash
+
+    .. _Fig_example_11:
 
     .. figure:: /_images/example_11.*
 
     Optimal triangulation of data
     -----------------------------
 
-    Our next example (Figure [fig:example:sub:`1`\ 2]) operates on a data
+    Our next example (Figure :ref:`Example 12 <Fig_example_12>`) operates on a data
     set of topographic readings non-uniformly distributed in the plane
     (Table 5.11 in Davis: *Statistics and Data Analysis in Geology*, J.
     Wiley). We use :doc:`triangulate` to
@@ -407,6 +422,8 @@ Creating GMT Graphics
 
     .. literalinclude:: /_verbatim/example_12.txt
        :language: bash
+
+    .. _Fig_example_12:
 
     .. figure:: /_images/example_12.*
 
@@ -425,10 +442,12 @@ Creating GMT Graphics
     We superpose the gradient vector field and the surface *z* and also plot
     the components of the gradient in separate windows. A
     :doc:`pstext` call to place a header finishes
-    the plot (Figure [fig:example:sub:`1`\ 3]:
+    the plot Figure :ref:`Example 13 <Fig_example_13>`:
 
     .. literalinclude:: /_verbatim/example_13.txt
        :language: bash
+
+    .. _Fig_example_13:
 
     .. figure:: /_images/example_13.*
 
@@ -455,17 +474,19 @@ Creating GMT Graphics
     :doc:`grdtrack`. The bottom panel compares
     the gridded (solid line) and bicubic trend (dashed line) along the
     transect using :doc:`psxy`
-    (Figure [fig:example:sub:`1`\ 4]):
+    (Figure :ref:`Example 14 <Fig_example_14>`):
 
     .. literalinclude:: /_verbatim/example_14.txt
        :language: bash
+
+    .. _Fig_example_14:
 
     .. figure:: /_images/example_14.*
 
     Gridding, contouring, and masking of unconstrained areas
     --------------------------------------------------------
 
-    This example (Figure [fig:example:sub:`1`\ 5]) demonstrates some off the
+    This example (Figure :ref:`Example 15 <Fig_example_15>`) demonstrates some off the
     different ways one can use to grid data in GMT, and how to deal with
     unconstrained areas. We first convert a large ASCII file to binary with
     :doc:`gmtconvert` since the binary file
@@ -489,6 +510,8 @@ Creating GMT Graphics
 
     .. literalinclude:: /_verbatim/example_15.txt
        :language: bash
+
+    .. _Fig_example_15:
 
     .. figure:: /_images/example_15.*
 
@@ -524,7 +547,7 @@ Creating GMT Graphics
     tension to partially overcome this problem. The limiting value
     *tension = 1* should approximate the triangulation, while a value
     between 0 and 1 may yield a good compromise between the above two cases.
-    A value of 0.5 is shown here (Figure [fig:example:sub:`1`\ 6]). A side
+    A value of 0.5 is shown here (Figure :ref:`Example 16 <Fig_example_16>`). A side
     effect of the tension is that it tends to make the contours turn near
     the edges of the domain so that they approach the edge from a
     perpendicular direction. A solution is to use
@@ -548,6 +571,8 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_16.txt
        :language: bash
 
+    .. _Fig_example_16:
+
     .. figure:: /_images/example_16.*
 
     Images clipped by coastlines
@@ -564,7 +589,7 @@ Creating GMT Graphics
     then overlay topography from the ETOPO5 data set with another call to
     :doc:`grdimage`. We finally undo the
     clippath with a second call to :doc:`pscoast`
-    with the option **-Q** (Figure [fig:example:sub:`1`\ 7]):
+    with the option **-Q** (Figure :ref:`Example 17 <Fig_example_17>`):
 
     We also plot a color legend on top of the land. So here we basically
     have three layers of "paint" stacked on top of each other: the
@@ -582,6 +607,8 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_17.txt
        :language: bash
 
+    .. _Fig_example_17:
+
     .. figure:: /_images/example_17.*
 
     Volumes and Spatial Selections
@@ -590,7 +617,7 @@ Creating GMT Graphics
     To demonstrate potential usage of the new programs
     :doc:`grdvolume` and
     :doc:`gmtselect` we extract a subset of the
-    Sandwell & Smith altimetric gravity field [26]_ for the northern Pacific
+    Sandwell & Smith altimetric gravity field [24]_ for the northern Pacific
     and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
     and (2) are within 200 km of the Pratt seamount. We do this by dumping
     the 50 mGal contours to disk, then making a simple AWK script ``center.awk``
@@ -599,10 +626,12 @@ Creating GMT Graphics
     points within 200 km of Pratt. We then mask out all the data outside
     this radius and use :doc:`grdvolume` to
     determine the combined area and volumes of the chosen seamounts. Our
-    illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
+    illustration is presented in Figure :ref:`Example 18 <Fig_example_18>`.
 
     .. literalinclude:: /_verbatim/example_18.txt
        :language: bash
+
+    .. _Fig_example_18:
 
     .. figure:: /_images/example_18.*
 
@@ -625,10 +654,12 @@ Creating GMT Graphics
     format). The text GMT in the center is an off-line PostScript file
     that was overlaid using :doc:`psimage`. The
     final panel repeats the top panel except that the land and sea images
-    have changed places (Figure [fig:example:sub:`1`\ 9]).
+    have changed places (Figure :ref:`Example 19 <Fig_example_19>`).
 
     .. literalinclude:: /_verbatim/example_19.txt
        :language: bash
+
+    .. _Fig_example_19:
 
     .. figure:: /_images/example_19.*
 
@@ -707,10 +738,13 @@ Creating GMT Graphics
     do something similar with the bulls eye symbols. Without the **-G**
     option, however, they get the colors defined in ``bullseye.def``.
 
-    Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
+    Here is our final map script that produces Figure
+    :ref:`Example 20 <Fig_example_20>`:
 
     .. literalinclude:: /_verbatim/example_20.txt
        :language: bash
+
+    .. _Fig_example_20:
 
     .. figure:: /_images/example_20.*
 
@@ -756,9 +790,11 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_21.txt
        :language: bash
 
-    which produces the plot in Figure [fig:example\ :sub:`2`\ 1], suggesting
+    which produces the plot in Figure :ref:`Example 21 <Fig_example_21>`, suggesting
     Wessel has missed a few trains if he had hoped to cash in on the
     Internet bubble...
+
+    .. _Fig_example_21:
 
     .. figure:: /_images/example_21.*
 
@@ -780,11 +816,13 @@ Creating GMT Graphics
     "GMT guru". The USGS logo, taken from their web page and converted to a
     Sun raster file, is used to spice up the legend.
 
-    The script produces the plot in Figure [fig:example\ :sub:`2`\ 2],
+    The script produces the plot in Figure :ref:`Example 22 <Fig_example_22>`,
     giving the URL where these and similar data can be obtained.
 
     .. literalinclude:: /_verbatim/example_22.txt
        :language: bash
+
+    .. _Fig_example_22:
 
     .. figure:: /_images/example_22.*
 
@@ -794,9 +832,8 @@ Creating GMT Graphics
     While motorists recently have started to question the old saying "all
     roads lead to Rome", aircraft pilots have known from the start that only
     one great-circle path connects the points of departure and
-    arrival [28]_. This provides the inspiration for our next example which
-    uses :doc:`grdmath` to calculate distances
-    from Rome to anywhere on Earth and
+    arrival [25]_. This provides the inspiration for our next example which
+    uses :doc:`grdmath` to calculate distances from Rome to anywhere on Earth and
     :doc:`grdcontour` to contour these
     distances. We pick five cities that we connect to Rome with great circle
     arcs, and label these cities with their names and distances (in km) from
@@ -805,7 +842,7 @@ Creating GMT Graphics
     connecting Rome to its antipode, and request curved labels that follows
     the shape of the contours.
 
-    The script produces the plot in Figure [fig:example\ :sub:`2`\ 3]; note
+    The script produces the plot in Figure :ref:`Example 23 <Fig_example_23>`; note
     how interesting the path to Seattle appears in this particular
     projection (Hammer). We also note that Rome's antipode lies somewhere
     near the Chatham plateau (antipodes will be revisited in
@@ -813,6 +850,8 @@ Creating GMT Graphics
 
     .. literalinclude:: /_verbatim/example_23.txt
        :language: bash
+
+    .. _Fig_example_23:
 
     .. figure:: /_images/example_23.*
 
@@ -840,13 +879,15 @@ Creating GMT Graphics
     :doc:`psxy` workhorses. Note for our purposes
     the Dateline is just a line along the 180 meridian.
 
-    The script produces the plot in Figure [fig:example\ :sub:`2`\ 4]. Note
+    The script produces the plot in Figure :ref:`Example 24 <Fig_example_24>`. Note
     that the horizontal distance from the dateline seems to increase as we
     go south; however that is just the projected distance (Mercator
     distortion) and not the actual distance which remains constant at 1000 km.
 
     .. literalinclude:: /_verbatim/example_24.txt
        :language: bash
+
+    .. _Fig_example_24:
 
     .. figure:: /_images/example_24.*
 
@@ -878,7 +919,7 @@ Creating GMT Graphics
 
     In the end we obtain a funny-looking map depicting the antipodal
     distribution as well as displaying in legend form the requested
-    percentages (Figure [fig:example:sub:`2`\ 5]). Note that the script is
+    percentages (Figure :ref:`Example 25 <Fig_example_25>`). Note that the script is
     set to evaluate a global 30 minute grid for expediency (*D = 30*),
     hence several smaller land masses that do have terrestrial antipodes do
     not show up. If you want a more accurate map you can set the parameter
@@ -891,6 +932,8 @@ Creating GMT Graphics
 
     .. literalinclude:: /_verbatim/example_25.txt
        :language: bash
+
+    .. _Fig_example_25:
 
     .. figure:: /_images/example_25.*
 
@@ -1054,7 +1097,7 @@ Creating GMT Graphics
 
     -  convert GMT\ 's PostScript output to PDF or any image format (optional).
 
-    The script produces the plot in Figure [fig:example\ :sub:`3`\ 1]. All
+    The script produces the plot in Figure :ref:`Example 31 <Fig_example_31>`. All
     standard fonts have been substituted by the free OpenType fonts Linux
     Libertine (title) and Linux Biolinum (annotations). Uncomment the
     appropriate lines in the script to make a PostScript-file with
@@ -1062,6 +1105,8 @@ Creating GMT Graphics
 
     .. literalinclude:: /_verbatim/example_31.txt
        :language: bash
+
+    .. _Fig_example_31:
 
     .. figure:: /_images/example_31.*
         
@@ -1099,7 +1144,7 @@ Creating GMT Graphics
     borders "at altitude". Something similar is done at the end to plot some
     symbols and names for cities.
 
-    The script produces the plot in Figure [fig:example\ :sub:`3`\ 2]. Note
+    The script produces the plot in Figure :ref:`Example 32 <Fig_example_32>`. Note
     that the PNG image of the flag can be downloaded directly in the call
     the :doc:`grdreformat`, but we have
     commented that out in the example because it requires compilation with
@@ -1110,12 +1155,14 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_32.txt
        :language: bash
 
+    .. _Fig_example_32:
+
     .. figure:: /_images/example_32.*
 
     Stacking automatically generated cross-profiles
     -----------------------------------------------
 
-    The script produces the plot in Figure [fig:example\ :sub:`3`\ 3]. Here
+    The script produces the plot in Figure :ref:`Example 33 <Fig_example_33>`. Here
     we demonstrate how :doc:`grdtrack` can be
     used to automatically create a suite of crossing profiles of uniform
     spacing and length and then sample one or more grids along these
@@ -1126,12 +1173,14 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_33.txt
        :language: bash
 
+    .. _Fig_example_33:
+
     .. figure:: /_images/example_33.*
 
     Using country polygons for plotting and shading
     -----------------------------------------------
 
-    The script produces the plot in Figure [fig:example\ :sub:`3`\ 4]. Here
+    The script produces the plot in Figure :ref:`Example 34 <Fig_example_34>`. Here
     we demonstrate how :doc:`pscoast` can be used to extract
     and plot country polygons.  We show two panels; one in which we do
     a basic basemap and another where we lay down a color topography
@@ -1142,12 +1191,14 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_34.txt
        :language: bash
 
+    .. _Fig_example_34:
+
     .. figure:: /_images/example_34.*
 
     Spherical triangulation and distance calculations
     -------------------------------------------------
 
-    The script produces the plot in Figure [fig:example\ :sub:`3`\ 5]. Here
+    The script produces the plot in Figure :ref:`Example 35 <Fig_example_35>`. Here
     we demonstrate how :doc:`sphtriangulate` and
     :doc:`sphdistance` are used to compute the Delauney and
     Voronoi information on a sphere, using a decimated GSHHG crude coastline.
@@ -1158,13 +1209,15 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_35.txt
        :language: bash
 
+    .. _Fig_example_35:
+
     .. figure:: /_images/example_35.*
 
     Spherical gridding using Renka's algorithms
     -------------------------------------------
 
-    The next script produces the plot in Figure [fig:example\ :sub:`3`\ 6]. Here
-    we demonstrate how :doc:`sphinterpolate` can be used
+    The next script produces the plot in Figure :ref:`Example 36 <Fig_example_36>`.
+    Here we demonstrate how :doc:`sphinterpolate` can be used
     to perform spherical gridding.  Our example uses early measurements of
     the radius of Mars from Mariner 9 and Viking Orbiter spacecrafts.  The
     middle panels shows the data distribution while the top and bottom panel
@@ -1177,12 +1230,14 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_36.txt
        :language: bash
 
+    .. _Fig_example_36:
+
     .. figure:: /_images/example_36.*
 
     Spectral coherence between gravity and bathymetry grids
     -------------------------------------------------------
 
-    The next script produces the plot in Figure [fig:example\ :sub:`3`\ 7].
+    The next script produces the plot in Figure :ref:`Example 37 <Fig_example_37>`.
     We demonstrate how :doc:`grdfft` is used to compute the
     spectral coherence between two data sets, here multibeam bathymetry
     and satellite-derived gravity.  The grids are detrended and tapered
@@ -1192,12 +1247,14 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_37.txt
        :language: bash
 
+    .. _Fig_example_37:
+
     .. figure:: /_images/example_37.*
 
     Histogram equalization of bathymetry grids
     ------------------------------------------
 
-    The next script produces the plot in Figure [fig:example\ :sub:`3`\ 8].
+    The next script produces the plot in Figure :ref:`Example 38 <Fig_example_38>`.
     This example shows how to use histogram equalization to enhance various
     ranges of a grid depending on its frequency distribution.  The key tool
     used here is :doc:`grdhisteq`.
@@ -1205,12 +1262,14 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_38.txt
        :language: bash
 
+    .. _Fig_example_38:
+
     .. figure:: /_images/example_38.*
 
     Evaluation of spherical harmonics coefficients
     ----------------------------------------------
 
-    The next script produces the plot in Figure [fig:example\ :sub:`3`\ 9].
+    The next script produces the plot in Figure :ref:`Example 39 <Fig_example_39>`.
     We use a spherical harmonic model for the topography of Venus and evaluate
     the resulting global grid for three sets of upper order/degrees, here 30,
     90, and 180; the original file (see below) goes to order and degree 720.
@@ -1220,6 +1279,8 @@ Creating GMT Graphics
 
     .. literalinclude:: /_verbatim/example_39.txt
        :language: bash
+
+    .. _Fig_example_39:
 
     .. figure:: /_images/example_39.*
 
@@ -1332,7 +1393,7 @@ Creating GMT Animations
        both free and commercial tools that can help with this conversion and
        they tend to be platform-specific. Most movie tools such as iMovie or
        MovieMaker can ingest still images and let you specify the frame
-       duration. Under OS X we prefer to use Quicktime. [30]_ Free tools
+       duration. Under OS X we prefer to use Quicktime. [26]_ Free tools
        exist to call the Quicktime library functions from the command line
        as we prefer to do in our scripts. Another choice is to use the free
        `mencoder <http://www.mplayerhq.hu/>`_.
@@ -1407,13 +1468,12 @@ Creating GMT Animations
     Our next animation simulates what an imaginary satellite might see as it
     passes in a great circle from New York to Miami at an altitude of 160
     km. We use the general perspective view projection with
-    :doc:`grdimage` and use
-    :doc:`project` to create a great circle path
+    :doc:`grdimage` and use :doc:`project` to create a great circle path
     between the two cities, sampled every 5 km. The main part of the script
     will make the DVD-quality frames from different view points, draw the
     path on the ground, and add frame numbers to each frame. As this
     animation generates 355 frames we can use 3rd party tools to turn the
-    image sequence into a MPEG-4 movie [31]_. Note: At the moment,
+    image sequence into a MPEG-4 movie [27]_. Note: At the moment,
     :doc:`grdview` cannot use general perspective
     view projection to allow "fly-through" animations like Fledermaus; we
     expect to add this functionality in a future version.

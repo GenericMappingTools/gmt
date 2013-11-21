@@ -54,7 +54,7 @@ struct SPHINTERPOLATE_CTRL {
 	struct Q {	/* -Q<interpolation> */
 		bool active;
 		unsigned int mode;
-		double value[2];
+		double value[3];
 	} Q;
 	struct T {	/* -T for variable tension */
 		bool active;

@@ -8338,7 +8338,7 @@ int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 	return 0;
 }
 
-int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
+int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_SYMBOL *S)
 {
 	/* Parser for -Sv|V, -S=, and -Sm */
 	
@@ -8352,7 +8352,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 	S->v.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	S->v.status = 0;	/* Start with no flags turned on */
-	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;
+	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;	S->v.v_stem = 0.1;
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 	
@@ -8366,7 +8366,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 			case 'r': S->v.status |= GMT_VEC_RIGHT;		break;	/* Vector head on right half only */
 			case 's': S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
 			case 'j':	/* Vector justification */
-				if (text[0] == 'm') {
+				if (symbol == 'm') {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sm does not accept +j<just> modifiers.\n");
 					error++;
 				}
@@ -8384,10 +8384,10 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 				break;
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
-				j = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (GMT, p[len]) : -1;	/* Only -Sv|V takes unit */
+				j = (symbol == 'v' || symbol == 'V') ? gmt_get_unit (GMT, p[len]) : -1;	/* Only -Sv|V takes unit */
 				if (j >= 0) { S->u = j; S->u_set = true; }
 				S->v.v_norm = (float)atof (&p[1]);
-				if (text[0] == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
+				if (symbol == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
 				break;
 			case 'g':	/* Vector head fill +g[-|<fill>]*/
 				g_opt = true;	/* Marks that +g was used */
@@ -8983,7 +8983,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'm':
 			p->symbol = GMT_SYMBOL_MARC;
 			p->n_required = 3;	/* Need radius, angle1 and angle2 */
-			if (GMT_parse_vector (GMT, text, p)) {
+			if (GMT_parse_vector (GMT, symbol_type, text, p)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
 				decode_error++;
 			}
@@ -9070,7 +9070,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'v':
 			p->symbol = GMT_SYMBOL_VECTOR;
 			if (!GMT_compat_check (GMT, 4) || (strchr (text, '+') || !p->v.parsed_v4)) {	/* Check if new syntax before decoding */
-				if (GMT_parse_vector (GMT, text, p)) {	/* Error decoding new vector syntax */
+				if (GMT_parse_vector (GMT, symbol_type, text, p)) {	/* Error decoding new vector syntax */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
 					decode_error++;
 				}
@@ -9175,7 +9175,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = GMT_SYMBOL_GEOVECTOR;
 			p->convert_angles = 1;
 			p->n_required = 2;
-			if (GMT_parse_vector (GMT, text, p)) {
+			if (GMT_parse_vector (GMT, symbol_type, text, p)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S= option\n");
 				decode_error++;
 			}

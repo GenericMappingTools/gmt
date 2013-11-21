@@ -583,6 +583,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 			strncpy (header->name, tmp, GMT_LEN256);
 	} /* if (header->name[i]) */
 	else if (magic) {	/* Reading: determine file format automatically based on grid content */
+		int choice = 0;
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 #ifdef HAVE_GDAL
 		/* Check if file is an URL */
@@ -601,8 +602,10 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED)
 			return (val);
 		/* Then check for native binary GMT grid */
-		if (GMT_is_native_grid (GMT, header) == GMT_NOERROR)
+		if ((choice = GMT_is_native_grid (GMT, header)) == GMT_NOERROR)
 			return (GMT_NOERROR);
+		else if (choice == GMT_GRDIO_NONUNIQUE_FORMAT)
+			return (GMT_GRDIO_NONUNIQUE_FORMAT);
 		/* Next check for Sun raster grid */
 		if (GMT_is_ras_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
@@ -2019,7 +2022,10 @@ unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool f
 	}
 	if (G->extra) gmt_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	//if (G->header && G->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (GMT, G->header);
-	if (G->header) GMT_free (GMT, G->header);
+	if (G->header) {	/* Free the header structure and anything allocated by it */
+		if (G->header->pocket) free (G->header->pocket);
+		GMT_free (GMT, G->header);
+	}
 	return (G->alloc_mode);
 }
 

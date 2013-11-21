@@ -97,6 +97,7 @@ int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pat
 
 	/* Matching failed: handle error cases */
 	
+	pcre_free(re);	/* Release memory used for the compiled pattern */
 	if (rc < 0) {
 		switch(rc) {
 			case PCRE_ERROR_NOMATCH: break;
@@ -106,7 +107,6 @@ int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pat
 				 GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				 break;
 		}
-		pcre_free(re);	/* Release memory used for the compiled pattern */
 		return (0);	/* Match failed */
 	}
 	

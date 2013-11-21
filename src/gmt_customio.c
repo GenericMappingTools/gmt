@@ -541,10 +541,20 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			break;
 		case 4:	/* 4-byte elements - could be int or float */
 			/* See if we can decide it is a float grid */
-			if ((t_head.z_scale_factor == 1.0 && t_head.z_add_offset == 0.0) || fabs((t_head.z_min/t_head.z_scale_factor) - rint(t_head.z_min/t_head.z_scale_factor)) > GMT_CONV_LIMIT || fabs((t_head.z_max/t_head.z_scale_factor) - rint(t_head.z_max/t_head.z_scale_factor)) > GMT_CONV_LIMIT)
-				header->type = GMT_GRID_IS_BF;
-			else
-				header->type = GMT_GRID_IS_BI;
+			if (GMT_compat_check (GMT, 4)) {
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Will try to determine if a native 4-byte grid is float or int but may be wrong.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Please append =bf (float) or =bi (integer) to avoid this situation.\n");
+				/* Naive test to see if we can decide it is a float grid */
+				if ((t_head.z_scale_factor == 1.0 && t_head.z_add_offset == 0.0) || fabs((t_head.z_min/t_head.z_scale_factor) - rint(t_head.z_min/t_head.z_scale_factor)) > GMT_CONV_LIMIT || fabs((t_head.z_max/t_head.z_scale_factor) - rint(t_head.z_max/t_head.z_scale_factor)) > GMT_CONV_LIMIT)
+					header->type = GMT_GRID_IS_BF;
+				else
+					header->type = GMT_GRID_IS_BI;
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Cannot determine if a native 4-byte grid is float or int without more information.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: You must append =bf (float) or =bi (integer) to avoid this situation.\n");
+				return (GMT_GRDIO_NONUNIQUE_FORMAT);
+			}
 			break;
 		case 8:	/* 8-byte elements */
 			header->type = GMT_GRID_IS_BD;
@@ -1779,6 +1789,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		to_GDALW->data = &grid[2 * header->mx + (header->pad[XLO] + first_col)+imag_offset];
 		to_GDALW->type = strdup("float32");
 		GMT_gdalwrite(GMT, header->name, to_GDALW);
+		free (to_GDALW->driver);
+		free (to_GDALW->type);
 		GMT_free (GMT, to_GDALW);
 		GMT_free (GMT, k);
 		return (GMT_NOERROR);
@@ -1837,8 +1849,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	GMT_free (GMT, k);
 	GMT_free (GMT, to_GDALW->data);
-	free(to_GDALW->driver);
-	free(to_GDALW->type);
+	free (to_GDALW->driver);
+	free (to_GDALW->type);
 	GMT_free (GMT, to_GDALW);
 	return (GMT_NOERROR);
 }

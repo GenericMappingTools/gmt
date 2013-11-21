@@ -5989,7 +5989,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables
 	}
 	D->n_columns = n_columns;
 	D->geometry = geometry;
-	D->table = GMT_memory (GMT, NULL, n_tables, struct GMT_DATATABLE *);
+	if (n_tables) D->table = GMT_memory (GMT, NULL, n_tables, struct GMT_DATATABLE *);
 	D->n_alloc = D->n_tables = n_tables;
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
@@ -6343,6 +6343,9 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 			D->table[tbl] = gmt_alloc_table (GMT, Din->table[tbl], D->n_columns, n_rows);
 		}
 	}
+	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	D->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* So GMT_* modules can free this memory. */
+	D->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	return (D);
 }
 

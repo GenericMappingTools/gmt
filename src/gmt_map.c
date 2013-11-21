@@ -6285,7 +6285,7 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 
 uint64_t GMT_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, int pen_flag, int *pen)
 {	/* true if pen movements is present */
-	/* GMT_compact_line will remove unnecessary points in paths */
+	/* GMT_compact_line will remove unnecessary points in paths, but does not reallocate to the shorter size */
 	uint64_t i, j;
 	double old_slope, new_slope, dx;
 	char *flag = NULL;
