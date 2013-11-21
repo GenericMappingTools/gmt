@@ -1134,7 +1134,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
 			if (closed == cont_is_not_closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria for closed contours */
 				if (Ctrl->D.active && n > 2) {	/* Save the contour as output data */
-					S = GMT_dump_contour (GMT, x, y, n, cval);
+					S = GMT_prepare_contour (GMT, x, y, n, cval);
 					/* Select which table this segment should be added to */
 					tbl = (io_mode == GMT_WRITE_TABLE) ? ((two_only) ? is_closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {

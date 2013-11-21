@@ -384,7 +384,7 @@ EXTERN_MSC unsigned int GMT_non_zero_winding (struct GMT_CTRL *GMT, double xp, d
 EXTERN_MSC unsigned int GMT_getmodopt (struct GMT_CTRL *GMT, const char *string, const char *sep, unsigned int *pos, char *token);
 EXTERN_MSC unsigned int GMT_verify_expectations (struct GMT_CTRL *GMT, unsigned int wanted, unsigned int got, char *item);
 EXTERN_MSC void GMT_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
-EXTERN_MSC struct GMT_DATASEGMENT * GMT_dump_contour (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double z);
+EXTERN_MSC struct GMT_DATASEGMENT * GMT_prepare_contour (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double z);
 EXTERN_MSC void GMT_get_plot_array (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_illuminate (struct GMT_CTRL *GMT, double intensity, double *rgb);
 EXTERN_MSC void GMT_init_fill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, double r, double g, double b);
