@@ -146,6 +146,7 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 
 	if (sig_num == SIGINT) {
 		/* catch ctrl-c */
+		int c;
 		struct sigaction act, oldact;
 		sigemptyset (&act.sa_mask);
 		act.sa_flags = 0;
@@ -155,7 +156,7 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 		backtrace_symbols_fd (array, 1, STDERR_FILENO); /* print interrupted function */
 		process_info();
 		fprintf (stderr, "Press return to continue, ctrl-c to quit.");
-		while ( getchar() != '\n' );
+		while (( c = getchar() != '\n' && c != EOF ));
 		sigaction (SIGINT, &oldact, NULL); /* restore old action */
 		return;
 	}
