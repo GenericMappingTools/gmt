@@ -16,7 +16,7 @@ Synopsis
 **ps2raster** *psfile(s)*
 [ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
 [ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ]
-[ **-G**\ *ghost_path* ] [ **-L**\ *listfile* ] [ **-P** ]
+[ **-G**\ *ghost_path* ] [ **-I** ] [ **-L**\ *listfile* ] [ **-P** ]
 [ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
 [ **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t** ]
 [ |SYN_OPT-V| ]
@@ -64,7 +64,7 @@ Optional Arguments
     Use the **-A+s**\ *new_width* to resize the output image to exactly *new_width* units.
     The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`
     but you can append a new unit and/or impose different width and height. What happens
-    here is that ghostscript will do the re-interpolation work and the final image will
+    here is that GhostScript will do the re-interpolation work and the final image will
     retain the DPI resolution set by **-E**.
     Alternatively use **-A+S**\ *scale* to scale the image by a constant factor.
 
@@ -92,14 +92,23 @@ Optional Arguments
 
 **-G**\ *ghost_path*
     Full path to your GhostScript executable. NOTE: For Unix systems
-    this is generally not necessary. Under Windows, the ghostscript path
+    this is generally not necessary. Under Windows, the GhostScript path
     is now fetched from the registry. If this fails you can still add
     the GS path to system's path or give the full path here. (e.g.,
     **-G**\ c:\\programs\\gs\\gs9.02\\bin\\gswin64c). WARNING: because
     of the poor decision of embedding the bits on the gs exe name we
-    cannot satisfy both the 32 and 64 bits ghostscript executable names.
+    cannot satisfy both the 32 and 64 bits GhostScript executable names.
     So in case of ’get from registry’ failure the default name (when no
     **-G** is used) is the one of the 64 bits version, or gswin64c
+
+**-I**
+    Enforce gray-shades by using ICC profiles.  GhostScript versions
+    >= 9.00 change gray-shades by using ICC profiles.  GhostScript 9.05
+    and above provide the '-dUseFastColor=true' option to prevent that
+    and that is what ps2raster does by default, unless option **-I** is
+    set.  Note that for GhostScript >= 9.00 and < 9.05 the gray-shade
+    shifting is applied to all but PDF format.  We have no solution to
+    offer other than upgrade GhostScript.
 
 **-L**\ *listfile*
     The *listfile* is an ASCII file with the names of the PostScript
@@ -313,7 +322,7 @@ determined by the default setting PS_IMAGE_FORMAT. Because
 **ps2raster** needs to process the input files on a line-by-line basis
 you need to make sure the image format is set to *ascii* and not *bin*.
 
-Ghostscript Options
+GhostScript Options
 -------------------
 
 Most of the conversions done in **ps2raster** are handled by
