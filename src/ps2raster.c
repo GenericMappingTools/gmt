@@ -382,7 +382,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and that is what ps2raster do by default, unless option -I is set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and that is what ps2raster does by default, unless option -I is set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to all but PDF format. We have no solution to offer other than ... upgrade GS\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
@@ -695,6 +695,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct { int major, minor; } gsVersion = {0, 0};
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -713,6 +714,24 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	if ((error = GMT_ps2raster_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the ps2raster main code ----------------------------*/
+
+	/* Test if GhostScript can be executed (version query) */
+	sprintf(cmd, "%s --version", Ctrl->G.file);
+	if ((fp = popen(cmd, "r")) != NULL) {
+		int n;
+		n = fscanf(fp, "%d.%d", &gsVersion.major, &gsVersion.minor);
+		if (pclose(fp) == -1)
+			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript version query.\n");
+		if (n != 2) {
+			/* command execution failed or cannot parse response */
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query.\n");
+			Return (EXIT_FAILURE);
+		}
+	}
+	else { /* failed to open pipe */
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript (%s).\n", Ctrl->G.file);
+		Return (EXIT_FAILURE);
+	}
 
 	if (Ctrl->F.active && (Ctrl->L.active || Ctrl->D.active)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
@@ -777,27 +796,9 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	}
 
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
-	if (!Ctrl->I.active) {
-		struct { int major, minor; } gsVersion;
-		int n;
-		char str[GMT_BUFSIZ];
-		FILE *fpp;
-
-		sprintf(str, "%s --version", Ctrl->G.file);
-		if ((fpp = popen(str, "r")) != NULL) {
-			n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
-			if (pclose(fpp) == -1)
-				GMT_Report (API, GMT_MSG_NORMAL, "Error closing GS version query.\n");
-			if (n != 2)
-				GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GS version query.\n");
-		}
-		else {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error GS version query.\n");
-		}
-
-		if ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9)
-			add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
-	}
+	if (!Ctrl->I.active &&
+			((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
+		add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
 
 
 	/* --------------------------------------------------------------------------------------------- */
