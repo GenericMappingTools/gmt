@@ -733,6 +733,7 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	GMT_free (GMT, seg_info);
 	GMT_free (GMT, seg_start);
 	GMT_free (GMT, seg_ID);
+	if (c->two_Antarcticas) GMT_free (GMT, seg_info_ANT);
 
 	return (GMT_NOERROR);
 }
