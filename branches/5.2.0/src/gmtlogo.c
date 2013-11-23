@@ -98,7 +98,6 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -146,12 +145,14 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 #define c_gmt_shadow	"92/102/132"
 #define NP		86
 
+#if 0
 double gmt_x[] = {
 #include "x.h"
 };
 double gmt_y[] = {
 #include "y.h"
 };
+#endif
 
 int GMT_gmtlogo (void *V_API, int mode, void *args)
 {	/* High-level function that implements the gmtlogo task */

@@ -3669,7 +3669,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 	 * Returns:	false if successfull, true if error.
 	 */
 	int error = 0;
-	unsigned int item, via = 0;
+	unsigned int item;
 	enum GMT_enum_method method;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;

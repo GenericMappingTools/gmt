@@ -586,7 +586,7 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 {
 	size_t start[1], count[1];
 	int *seg_info = NULL, *seg_start = NULL, *seg_ID = NULL;
-	int s, i, k, err, level, source, inc[4], ll_node, node, ID, *seg_skip = NULL;
+	int s, i, k, err, level, inc[4], ll_node, node, ID, *seg_skip = NULL;
 	unsigned short corner[4], bitshift[4] = {9, 6, 3, 0};
 	signed char *seg_info_ANT = NULL;
 	double w, e, dx;
