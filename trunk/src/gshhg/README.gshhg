@@ -7,6 +7,11 @@ Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory. It was formerly called
 GSHHS (... Shorelines instead of Geography).
 
+Version Nov 1, 2013
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.2.4
+
 Version Jul 1, 2013
 
 We have removed gshhg_dp.c and gshhgtograss.c from gshhg in GMT5.
