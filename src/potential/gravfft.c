@@ -309,8 +309,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				Ctrl->T.rho_mc = Ctrl->T.rhom - Ctrl->T.rhol;
 				Ctrl->T.rho_mw = Ctrl->T.rhom - Ctrl->T.rhow;
 				if (Ctrl->T.te > 1e10) { /* Given flexural rigidity, compute Te */
-					Ctrl->T.te = pow ((12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO)) * Ctrl->T.te
-					     / YOUNGS_MODULUS, 1./3.);
+					Ctrl->T.te = pow ((12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO)) * Ctrl->T.te / YOUNGS_MODULUS, 1./3.);
 				}
 				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Fragile. Needs further testing */
 					Ctrl->T.moho = true;
@@ -339,6 +338,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 		if (!n_errors && Ctrl->N.info->trend_mode == 0)		/* No explict detrending mode, so apply default */
 			Ctrl->N.info->trend_mode = override_mode;
 	}
+
 	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
@@ -494,7 +494,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		delta_pt = 2 * M_PI / (Ctrl->C.n_pt * Ctrl->C.theor_inc);	/* Times 2PI because frequency will be used later */
 		compute_only_admitts (GMT, Ctrl, K, z_top_or_bot, delta_pt);
 		sprintf (format, "%s%s%s\n", GMT->current.setting.format_float_out, 
-				GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
+                 GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 		delta_pt /= (2.0 * M_PI);			/* Write out frequency, not wavenumber  */
 		if (Ctrl->misc.give_wavelength && Ctrl->misc.give_km) delta_pt *= 1000.0;	/* Wanted wavelength in km */
 
@@ -548,7 +548,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
 		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
-		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)        /* Get data only */
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+                                      GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
 		(void) GMT_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
@@ -564,11 +565,11 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 					Grid[0]->data[GMT_IJP(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
 		}
 
-		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
 	}
-	
+
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
-	
+
 	Ctrl->misc.z_level = fabs (FFT_info[0]->coeff[0]);	/* Need absolute value or level removed for uppward continuation */
 
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
@@ -608,11 +609,13 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		if (!Ctrl->T.moho) {
 			GMT_grd_detrend (GMT, Grid[0], Ctrl->N.info->trend_mode, coeff);
 			Ctrl->misc.z_level = fabs (coeff[0]);	/* Need absolute value or level removed for uppward continuation */
-    			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
+			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 
 			/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0]))
+				Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+                                GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 				Return (API->error);
 			}
 			GMT_free (GMT, K);
@@ -694,7 +697,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_free (GMT, raised);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+                        GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 		Return (API->error);
 	}
 
