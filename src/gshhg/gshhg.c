@@ -30,9 +30,10 @@
  *				 Also added -A and -G as suggested by José Luis García Pallero,
  *				 as well as -Qe|i to control river-lake output, and -N to
  *				 get a particular level.
-*		1.14 15-APR-2012:  	Data version is now 2.2.1. [no change to format]
-*		1.15 1-JAN-2013:   	Data version is now 2.2.2. [no change to format]
-*		1.16 1-JUL-2013:   	Data version is now 2.2.3. [no change to format]
+ *		1.14 15-APR-2012:  	Data version is now 2.2.1. [no change to format]
+ *		1.15 1-JAN-2013:   	Data version is now 2.2.2. [no change to format]
+ *		1.16 1-JUL-2013:   	Data version is now 2.2.3. [no change to format]
+ *		1-NOV-2013.   PW: Data version is now 2.2.4. [no change to format]
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by

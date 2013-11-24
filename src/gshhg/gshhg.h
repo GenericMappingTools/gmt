@@ -37,6 +37,7 @@
  *	15-APR-2012.  PW: Data version is now 2.2.1. [no change to format]
  *	1-JAN-2013.   PW: Data version is now 2.2.2. [no change to format]
  *	1-JUL-2013.   PW: Data version is now 2.2.3. [no change to format]
+ *	1-NOV-2013.   PW: Data version is now 2.2.4. [no change to format]
  */
 
 #ifndef _GSHHG
