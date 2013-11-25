@@ -26,7 +26,7 @@
  *				Updated to deal with latest GSHHG database (2.0)
  *		1.12 24-MAY-2010: Deal with 2.1 format.
  *		1.13 15-JUL-2011: Now contains improved area information (2.2.0),
- *				 and revised greenwhich flags (now 2-bit; see gshhg.h).
+ *				 and revised greenwich flags (now 2-bit; see gshhg.h).
  *				 Also added -A and -G as suggested by José Luis García Pallero,
  *				 as well as -Qe|i to control river-lake output, and -N to
  *				 get a particular level.
