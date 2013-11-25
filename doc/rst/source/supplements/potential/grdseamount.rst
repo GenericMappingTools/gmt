@@ -16,7 +16,7 @@ Synopsis
 **grdseamount** [ *intable* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [*out/in*\ ] ] [ **-C** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
+[ **-A**\ [*out/in*\ ] ] [ **-C** ] [ **-E** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
 [ **-N**\ *norm* ] [ **-S**\ *scale* ] [ **-T**\ [*flattening*] ] [ **-Z**\ *level* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -55,6 +55,10 @@ Optional Arguments
 
 **-C**
     Cone model [Default is Gaussian].
+
+**-E**
+    Elliptical data format [Default is Circular]. Read lon, lat, azimuth,
+    major, minor, height (m) for each seamount.
 
 **-G**\ *outgrid*
     Sets name of output gridfile. 
