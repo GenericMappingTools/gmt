@@ -388,7 +388,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 		}
 
 		if (!used_polygons) {	/* Lack of polygons or clipping etc resulted in no polygons after all, must deal with background */
-
+			double lon_w, lon_e;
 			k = INT_MAX;	/* Initialize to outside range of levels (4 is highest) */
 			/* Visit each of the 4 nodes, test if it is inside -R, and if so update lowest level found so far */
 
@@ -405,12 +405,21 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 
 			row_min = MAX (0, irint (ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off)));
 			row_max = MIN (ny1, irint (floor ((Grid->header->wesn[YHI] - c.lat_sw) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off)));
-			col_min = irint (ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
-			col_max = irint (floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
+			lon_w = c.lon_sw - Grid->header->wesn[XLO];	lon_e = c.lon_sw + c.bsize - Grid->header->wesn[XLO];
 			if (wrap) {	/* Handle jumps */
+				col_min = irint (ceil (lon_w * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
+				col_max = irint (floor (lon_e * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
 				if (col_max < col_min) col_max += Grid->header->nx;
 			}
 			else {	/* Make sure we are inside our grid */
+				if (lon_w < Grid->header->wesn[XLO] && (lon_w+360.0) < Grid->header->wesn[XHI]) {
+					lon_w += 360.0;	lon_e += 360.0;
+				}
+				else if (lon_e > Grid->header->wesn[XHI] && (lon_e-360.0) > Grid->header->wesn[XLO]) {
+					lon_w -= 360.0;	lon_e -= 360.0;
+				}
+				col_min = irint (ceil (lon_w * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
+				col_max = irint (floor (lon_e * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
 				if (col_min < 0) col_min = 0;
 				if (col_max > nx1) col_max = nx1;
 			}
