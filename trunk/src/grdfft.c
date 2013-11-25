@@ -798,7 +798,7 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
-	if (GMT_compat_check (GMT, 4) && Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_LEAVE_TREND;
+	if (GMT_compat_check (GMT, 4) && Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;
 
 	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");

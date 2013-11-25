@@ -2182,7 +2182,7 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 
 void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode, double *coeff)
 {
-	/* mode = 0 (GMT_FFT_LEAVE_TREND):  Do nothing.
+	/* mode = 0 (GMT_FFT_REMOVE_NOTHING):  Do nothing.
 	 * mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via a[0])
 	 * mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via a[0])
 	 * mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting plane by least squares (returned via a[0-2])
@@ -2201,11 +2201,15 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	
 	GMT_memset (coeff, 3, double);
 	
-	if (mode == GMT_FFT_LEAVE_TREND) {	/* Do nothing */
+	if (Grid->header->trendmode != GMT_FFT_REMOVE_NOTHING) {	/* Already removed the trend */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Grid has already been detrending - no action taken\n");
+		return;
+	}
+	if (mode == GMT_FFT_REMOVE_NOTHING) {	/* Do nothing */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No detrending selected\n");
 		return;
 	}
-	
+	Grid->header->trendmode = mode;	/* Update grid header */	
 	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before detrending can take place.\n");
 		GMT_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
