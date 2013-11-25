@@ -9734,12 +9734,12 @@ void GMT_dataset_detrend (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned 
 	double sumt, sumt2, sumx, sumtx, xmin, xmax, t, t_factor;
 	struct GMT_DATASEGMENT *S = NULL;
 	
-	/* mode = 0 (GMT_FFT_LEAVE_TREND):  Do nothing.
+	/* mode = 0 (GMT_FFT_REMOVE_NOTHING):  Do nothing.
 	   mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via coeff[0], coeff[2])
 	   mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via coeff[0], coeff[2])
 	   mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting line by least squares (returned via coeff[0-4])
 	*/
-	if (mode == GMT_FFT_LEAVE_TREND) {	/* Do nothing */
+	if (mode == GMT_FFT_REMOVE_NOTHING) {	/* Do nothing */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No detrending selected\n");
 		return;
 	}
@@ -9779,12 +9779,12 @@ void GMT_cols_detrend (struct GMT_CTRL *GMT, double *t, double *x, double *y, ui
 	double sumt, sumt2, sumx, sumtx, xmin, xmax, t, t_factor, *C[2] = {NULL, NULL};
 	struct GMT_DATASEGMENT *S = NULL;
 	
-	/* mode = 0 (GMT_FFT_LEAVE_TREND):  Do nothing.
+	/* mode = 0 (GMT_FFT_REMOVE_NOTHING):  Do nothing.
 	   mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via coeff[0], coeff[2])
 	   mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via coeff[0], coeff[2])
 	   mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting line by least squares (returned via coeff[0-4])
 	*/
-	if (mode == GMT_FFT_LEAVE_TREND) {	/* Do nothing */
+	if (mode == GMT_FFT_REMOVE_NOTHING) {	/* Do nothing */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No detrending selected\n");
 		return;
 	}

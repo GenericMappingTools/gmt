@@ -5357,6 +5357,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, char *args)
 	info = GMT_memory (API->GMT, NULL, 1, struct GMT_FFT_INFO);
 	info->taper_width = -1.0;				/* Not set yet */
 	info->taper_mode = GMT_FFT_EXTEND_NOT_SET;		/* Not set yet */
+	info->trend_mode = GMT_FFT_REMOVE_NOT_SET;		/* Not set yet */
 	
 	if ((c = strchr (args, '+'))) {	/* Handle modifiers */
 		while ((GMT_strtok (c, "+", &pos, p))) {
@@ -5365,7 +5366,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, char *args)
 				case 'a':  info->trend_mode = GMT_FFT_REMOVE_MEAN;  break;
 				case 'd':  info->trend_mode = GMT_FFT_REMOVE_TREND; break;
 				case 'h':  info->trend_mode = GMT_FFT_REMOVE_MID;   break;
-				case 'l':  info->trend_mode = GMT_FFT_LEAVE_TREND;  break;
+				case 'l':  info->trend_mode = GMT_FFT_REMOVE_NOTHING;  break;
 				/* Taper modifiers */
 				case 'e':  info->taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY; break;
 				case 'n':  info->taper_mode = GMT_FFT_EXTEND_NONE; break;
@@ -5572,6 +5573,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 		return (NULL);
 	}
 	
+	if (F->trend_mode == GMT_FFT_REMOVE_NOT_SET) F->trend_mode = GMT_FFT_REMOVE_NOTHING;	/* Delayed default */
 	GMT_grd_detrend (GMT, G, F->trend_mode, K->coeff);	/* Detrend data, if requested */
 	//grd_dump (GMT, G->header, G->data, false, "After detrend");
 	gmt_fft_taper (GMT, G, F);				/* Taper data, if requested */
