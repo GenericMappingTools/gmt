@@ -36,7 +36,7 @@ gmt psxy -R -J -O -K -W5p,white smt.trk >> $ps
 gmt psxy -R -J -O -K -W1p smt.trk >> $ps
 echo "-100 100 BATHYMETRY" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
 # 2. Compute the VGG anomaly
-gmt gravfft smt.nc+uk -D1670 -Nf -Fv -E$order -Gvgg.nc
+gmt gravfft smt.nc+uk -D1670 -Nf+a -Fv -E$order -Gvgg.nc
 # BR plot the VGG anomaly
 gmt makecpt -Crainbow -T-50/250/25 -Z > t.cpt
 gmt grdimage vgg.nc -R-100/100/-100/100 -JX3i -O -Bag -BwSne -Ct.cpt -K -X3.5i >> $ps
@@ -45,7 +45,7 @@ gmt psxy -R -J -O -K -W5p,white vgg.trk >> $ps
 gmt psxy -R -J -O -K -W1p,blue vgg.trk >> $ps
 echo "-100 100 VGG" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
 # 3. Compute the FAA anomaly
-gmt gravfft smt.nc+uk -D1670 -Nf -Ff -E$order -Gfaa.nc
+gmt gravfft smt.nc+uk -D1670 -Nf+a -Ff -E$order -Gfaa.nc
 # Compute the exact analytical result for peak amplitude at center
 r0=10000
 z0=`gmt gmtmath -Q 5084 3751 SUB =`
@@ -66,7 +66,7 @@ gmt psxy -R -J -O -K -W5p,white faa.trk >> $ps
 gmt psxy -R -J -O -K -W1p,red faa.trk >> $ps
 echo "-100 100 FAA" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
 # 4. Compute the geoid anomaly
-gmt gravfft smt.nc+uk -D1670 -Nf -Fg -E$order -Ggeoid.nc
+gmt gravfft smt.nc+uk -D1670 -Nf+a -Fg -E$order -Ggeoid.nc
 # MR plot the VGG anomaly
 gmt makecpt -Crainbow -T0/5/0.25 -Z > t.cpt
 gmt grdimage geoid.nc -R-100/100/-100/100 -JX3i -O -Bag -Bwsne -Ct.cpt -K -X3.5i >> $ps
