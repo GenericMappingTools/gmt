@@ -114,7 +114,7 @@ Optional Arguments
     minimum and maximum locations in the grid (only available if only
     one grid is given). Instead of two coordinates you can specify an
     origin and one of **+a**, **+o**, or **+r**. You may append 
-    **+i**\ *inc*[**u**] to set the sampling interval (append appropriate
+    **+i**\ *inc*\ [**u**] to set the sampling interval (append appropriate
     unit); if not given then we default to half the minimum grid interval,
     and if geographic we select great circle distances in km as the default
     unit and method. The **+a** sets the azimuth of a profile of given
@@ -123,7 +123,7 @@ Optional Arguments
     **+r** to define a circle of given radius centered on the origin;
     this option requires either **+n** or **+i**.  The **+n**\ *np* sets
     the desired number of points, while **+l**\ *length* gives the
-    total length of the profile.  Note: No track file will be read.
+    total length of the profile. Note: No track file will be read.
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
@@ -218,7 +218,7 @@ If an interpolation point is not on a node of the input grid, then a NaN
 at any node in the neighborhood surrounding the point will yield an
 interpolated NaN. Bicubic interpolation [default] yields continuous
 first derivatives but requires a neighborhood of 4 nodes by 4 nodes.
-Bilinear interpolation [**-n**\ ] uses only a 2 by 2 neighborhood, but
+Bilinear interpolation [**-n**] uses only a 2 by 2 neighborhood, but
 yields only zeroth-order continuity. Use bicubic when smoothness is
 important. Use bilinear to minimize the propagation of NaNs, or lower
 *threshold*.
@@ -226,7 +226,7 @@ important. Use bilinear to minimize the propagation of NaNs, or lower
 Examples
 --------
 
-To sample the file hawaii\_topo.nc along the SEASAT track track\_4.xyg
+To sample the file hawaii_topo.nc along the SEASAT track track_4.xyg
 (An ASCII table containing longitude, latitude, and SEASAT-derived
 gravity, preceded by one header record):
 
