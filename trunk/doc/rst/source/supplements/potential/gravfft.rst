@@ -71,19 +71,22 @@ Optional Arguments
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-N+a**
+    do not use **-T**. It also implicitly sets **-N+h**
 **-E**\ *n\_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 1]
 **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
-|
-|       **f** = Free-air anomalies (mGal) [Default].
-|       **g** = Geoid anomalies (m).
-|       **v** = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).
-|       **e** = East deflections of the vertical (micro-radian).
-|       **n** = North deflections of the vertical (micro-radian).
+       **f** = Free-air anomalies (mGal) [Default].
+
+       **g** = Geoid anomalies (m).
+
+       **v** = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).
+
+       **e** = East deflections of the vertical (micro-radian).
+
+       **n** = North deflections of the vertical (micro-radian).
 
 **-I**\ *<wbctk>*
     Use <ingrid2> and <topo_grd> to estimate admittance\|coherence and
@@ -104,12 +107,12 @@ Optional Arguments
     Writes out a grid with the flexural topography (with z positive up)
     whose average was set by **-Z**\ *zm* and model parameters by **-T**
     (and output by **-G**). That is the "gravimetric Moho". **-Q**
-    implicitly sets **-N+a**
+    implicitly sets **-N+h**
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
     necessary parameters are set within **-T** and **-Z** options. The
-    number of powers in Parker expansion is restricted to 1 (default's).
+    number of powers in Parker expansion is restricted to 1.
     See an example further down.
 **-T**\ *<te/rl/rm/rw>[+m]*
     Compute the isostatic compensation from the topography load (input grid file) on
@@ -118,7 +121,7 @@ Optional Arguments
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionaly, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
-    If *te* = 0 then the Airy response is returned. **-T** implicitly sets **-N+a**
+    If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
 **-Z**\ *<zm>[/<zl>]*
     Moho [and swell] average compensation depths. For the “load from
     top” model you only have to provide *zm*, but for the “loading from
@@ -205,24 +208,24 @@ of 9 km
 
 If you add now the sea-bottom and Moho’s effects, you’ll get the full
 gravity response of your isostatic model. We will use here only the
-first term in Parker expansion (default).
+first term in Parker expansion.
 
    ::
 
-    gmt gravfft bat.grd -D1665 -Gwater_g.grd
-    gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
+    gmt gravfft bat.grd -D1665 -Gwater_g.grd -E1
+    gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000 -E1
     gmt grdmath water_g.grd elastic.grd ADD = model.grd
 
 The same result can be obtained directly by the next command. However,
 PAY ATTENTION to the following. I don't yet know if it's because of a
 bug or due to some limitation, but the fact is that the following and
-the previous commands only give the same result if **-E**\ 1 (the
-default) is used. For higher powers of bathymetry in Parker expansion,
+the previous commands only give the same result if **-E**\ 1 is used.
+For higher powers of bathymetry in Parker expansion,
 only the above example seams to give the correct result.
 
    ::
 
-    gmt gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000
+    gmt gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -E1
 
 And what would be the geoid anomaly produced by a load at 50 km depth,
 below the a region whose bathymetry is given by bat.grd, a Moho at 9 km
@@ -230,7 +233,7 @@ depth and the same densities as before?
 
    ::
 
-    gmt gravfft topo.grd -Gswell_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S
+    gmt gravfft topo.grd -Gswell_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S -E1
 
 To compute the admittance between the topo.grd bathymetry and faa.grd
 free-air anomaly grid using the elastic plate model of a crust of 6 km
