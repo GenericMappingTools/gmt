@@ -74,7 +74,7 @@ Optional Arguments
     do not use **-T**. It also implicitly sets **-N+h**
 **-E**\ *n\_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
-    terms depending on n will blow out the program) [Default = 1]
+    terms depending on n will blow out the program) [Default = 3]
 **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
@@ -152,7 +152,7 @@ netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
 meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
-using **grdproject**.
+using :doc:`grdproject </grdproject>`.
 
 Examples
 --------
