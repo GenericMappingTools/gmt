@@ -3006,7 +3006,7 @@ void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	start = strip + info->G->header->wesn[YLO];
 	stop  = strip - info->G->header->wesn[YHI];
 
-	GMT_row_padloop (GMT, info->G, row, (int)node) {
+	GMT_row_padloop (GMT, info->G, row, node) {
 		from_start = start - info->d_grd_y[row];
 		if (stack[last]->factor == 0.0) w_y = 1.0;	/* No taper in y-range */
 		else if (from_start > 0.0) w_y = 0.5 * (1.0 + cos (from_start * scale));
