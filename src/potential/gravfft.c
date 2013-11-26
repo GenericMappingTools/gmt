@@ -136,7 +136,7 @@ void *New_gravfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->E.n_terms = 1;
+	C->E.n_terms = 3;
 	return (C);
 }
 
@@ -167,7 +167,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0;
 
-	int n, override_mode = GMT_FFT_REMOVE_MEAN;
+	int n, override_mode = GMT_FFT_REMOVE_MID;
 	struct GMT_OPTION *opt = NULL,  *popt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char   ptr[GMT_BUFSIZ] = {""}, t_or_b[4] = {""}, argument[GMT_LEN16] = {""}, combined[GMT_BUFSIZ] = {""};
@@ -227,7 +227,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				}
 				Ctrl->D.active = true;
 				Ctrl->misc.rho = atof (opt->arg);
-				override_mode = GMT_FFT_REMOVE_MEAN;	/* Leave trend alone and remove mean */
+				override_mode = GMT_FFT_REMOVE_MID;		/* Leave trend alone and remove mid value */
 				break;
 			case 'E':
 				Ctrl->E.n_terms = atoi (opt->arg);
@@ -297,7 +297,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
-				override_mode = GMT_FFT_REMOVE_MEAN;	/* Leave trend alone and remove mean */
+				override_mode = GMT_FFT_REMOVE_MID	;	/* Leave trend alone and remove mid value */
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -313,7 +313,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				}
 				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Fragile. Needs further testing */
 					Ctrl->T.moho = true;
-					override_mode = GMT_FFT_REMOVE_MEAN;	/* Leave trend alone and remove mean */
+					override_mode = GMT_FFT_REMOVE_MID;		/* Leave trend alone and remove mid value */
 				}
 				break;
 			case 'Z':
@@ -335,7 +335,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 			else
 				Ctrl->N.info->trend_mode = override_mode;
 		}
-		if (!n_errors && Ctrl->N.info->trend_mode == 0)		/* No explict detrending mode, so apply default */
+		if (!n_errors && Ctrl->N.info->trend_mode == GMT_FFT_REMOVE_NOT_SET)		/* No explict detrending mode, so apply default */
 			Ctrl->N.info->trend_mode = override_mode;
 	}
 
@@ -416,7 +416,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t       theoretical admittance.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t     t writes a forth column with \"elastic plate\" \n");
 	GMT_Message (API, GMT_TIME_NONE,"\t       theoretical admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-E number of terms used in Parker's expansion [Default = 1].\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t-E number of terms used in Parker's expansion [Default = 3].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-F Specify desired geopotential field:\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   f = Free-air anomalies (mGal) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   g = Geoid anomalies (m).\n");
@@ -607,9 +607,13 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 		if (!Ctrl->T.moho) {
-			GMT_grd_detrend (GMT, Grid[0], Ctrl->N.info->trend_mode, coeff);
-			Ctrl->misc.z_level = fabs (coeff[0]);	/* Need absolute value or level removed for uppward continuation */
-			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
+
+			if (false && Ctrl->N.info->trend_mode != GMT_FFT_REMOVE_MEAN) { /* Account also for the difference between detrend level and true mean  */
+				GMT_grd_detrend (GMT, Grid[0], GMT_FFT_REMOVE_MEAN, coeff);
+				GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
+			}
+			else
+				GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 
 			/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0]))
