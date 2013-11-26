@@ -8,8 +8,8 @@ pstext
 
     pstext - Plot or typeset text on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -17,7 +17,7 @@ pstext
 |SYN_OPT-Rz|
 [ **-A** ]
 |SYN_OPT-B|
-[ **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]] ]
+[ **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*]] ]
 [ **-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+h**][\ **+j**\ [*justify*]][\ **+l**] ] 
 [ **-G**\ *color* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
 [ **-L** ] [ **-M** ] [ **-N** ] [ **-O** ] [ **-P** ] [
@@ -58,7 +58,7 @@ Composite characters (overstrike) may be indicated with the
 each other. To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section 4.16 and
 Appendix F in the GMT Technical Reference and Cookbook. Note that
-**PS\_CHAR\_ENCODING** must be set to an extended character set in your
+:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` must be set to an extended character set in your
 :doc:`gmt.conf` file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
@@ -104,7 +104,7 @@ Optional Arguments
     Sets the clearance between the text and the surrounding box [15%].
     Only used if **-W** or **-G** are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
-    **PROJ\_LENGTH\_UNIT**) or % for a percentage of the font size.
+    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) or % for a percentage of the font size.
 
 **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]]
     Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
@@ -116,9 +116,9 @@ Optional Arguments
     a line from the original point to the shifted point; append a *pen*
     to change the attributes for this line.
 
-**-F**\ [**+a**\ [*angle*\ ]][\ **+c**\ [*justify*]][\ **+f**\ [*font*\ ]][\ **+h**][\ **+j**\ [*justify*\ ]][\ **+l**] 
+**-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+h**][\ **+j**\ [*justify*]][\ **+l**] 
     By default, text will be placed horizontally, using the primary
-    annotation font attributes (**FONT_ANNOT_PRIMARY**), and centered
+    annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
     on the data point. Use this option to override these defaults by
     specifying up to three text attributes (font, angle, and
     justification) directly on the command line. Use **+f** to set the
