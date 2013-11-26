@@ -1586,7 +1586,7 @@ bool GMT_is_a_blank_line (char *line) {
 	/* Returns true if we should skip this line (because it is blank) */
 	unsigned int i = 0;
 	while (line[i] && (line[i] == ' ' || line[i] == '\t')) i++;	/* Wind past leading whitespace or tabs */
-	if (line[i] == '\n' || line[i] == '\r') return (true);
+	if (line[i] == '\n' || line[i] == '\r' || line[i] == '\0') return (true);
 	return (false);
 }
 
