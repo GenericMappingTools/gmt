@@ -6556,6 +6556,7 @@ data of any format. This package represents a new generation of tools
 and replaces the old **x_system** package. The package is maintained by
 Paul Wessel.
 
+.. _App-file-formats:
 
 B. GMT File Formats
 ===================
