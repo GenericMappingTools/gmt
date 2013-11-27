@@ -4,9 +4,9 @@
     *max\_level* will not be plotted [Default is 0/0/4 (all features)].
     Level 2 (lakes) contains regular lakes and wide river bodies which
     we normally include as lakes; append **+r** to just get river-lakes
-    or **+l** to just get regular lakes.  By default we select the ice shelf
-    grounding line as coastline for Antarctica; append **+ai** to instead
-    select the the ice boundary as coastline.  For expert users who wish to
+    or **+l** to just get regular lakes.  By default (**+ai**) we select the ice shelf
+    boundary as the coastline for Antarctica; append **+ag** to instead
+    select the ice grounding line as coastline.  For expert users who wish to
     print their own Antarctica coastline and islands via `psxy` you can
     use **+as** to skip all GSHHG features below 60S or **+AS** to instead
     skip all features north of 60S.  Finally, append

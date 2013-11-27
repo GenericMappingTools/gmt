@@ -16,19 +16,20 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-/* NOTE: THIS IS PROTOTYPE NEW VERSION FOR DUAL ANTARCTICA POLYGONS. NOT WORKING YET
+/* NOTE: This is a new version for dual Antarctica polygons.
  * The general idea of GSHHG 2.3.x is that there are two sets of Antarctica continent and
- * island polygons, and only one can be active. The two candidates are
+ * island polygons, and only one can be active at any given time. The two candidates are
  * Source ID = 2: Antarctica ice-line [this is similar to old GSHHG 2.2.x lines but more accurate]
  * Source ID = 3: Antarctica shelf ice grounding line
- * By default we use GSHHS_ANTARCTICA_GROUND [0] but users may select -A..+ai to pick the ice line
- * or even -A..+as to skip Antarctica entirely (to make it easier to plot custom shorelines).
- * Because the groundline line polygons are always entirely inside a ice-line polygon, we have given
- * the ice-line polygons a level of 1.5, i.e., half-way between land and lake.  Of course, when
- * these are used their levels are reset to 1.  The node corners of the underlying grid are usually
- * set to their land,ocean levels but for the patch of area outside the grounding line but inside
- * the ice-line these nodes are set to GSHHS_ANTARCTICA_LIMBO [7].  When bins are read these nodes
- * are reset to either be land or ocean depending on the selection Antarctica coastline in effect.
+ * By default we use GSHHS_ANTARCTICA_ICE but users may select -A..+ag to pick the grounding line
+ * [GSHHS_ANTARCTICA_GROUND] or even -A..+as to skip Antarctica entirely (to make it easier to plot
+ * custom shorelines via psxy).
+ * Because the grounding line line polygons are always entirely inside a ice-shelf polygon, we have
+ * given the grounding-line polygons a level of 6.  Of course, when these are used their levels are
+ * reset to 1 and all the ice-shelf polygons are skipped.  The node corners of the underlying grid
+ * are suitable for the ice-shelp line but if grounding line is selected a different array of node
+ * corner values is used.  This means the GSHHG file is backwards compatible with earlier GMT versions
+ * since the grounding-line related information is stored separately.
  */
 
 #include "gmt_dev.h"
@@ -40,7 +41,7 @@
  *
  * The PUBLIC functions are:
  *
- * int GMT_set_levels :	Modifies what items to extract from GSHHG database
+ * int GMT_set_levels :		Modifies what items to extract from GSHHG database
  * GMT_init_shore :		Opens selected shoreline database and initializes structures
  * GMT_get_shore_bin :		Returns all selected shore data for this bin
  * GMT_init_br :		Opens selected border/river database and initializes structures
@@ -55,13 +56,13 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5.x
+ * Version:	5.2.x
  *
  */
 
 #define GSHHG_SITE "ftp://ftp.soest.hawaii.edu/pwessel/gshhs/"
 
-#define RIVERLAKE	5			/* Fill array id for riverlakes */
+#define RIVERLAKE		5	/* Fill array id for riverlakes */
 #define ANT_LEVEL_ICE		5
 #define ANT_LEVEL_GROUND	6
 
@@ -357,13 +358,13 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	int n;
 	char *p = NULL;
 	if (strstr (info, "+as"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP;		/* Skip Antarctica data south of 60S */
-	else if (strstr (info, "+aS"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP_INV;		/* Skip everything BUT Antarctica data south of 60S */
-	else if (strstr (info, "+ai"))  I->antarctica_mode = GSHHS_ANTARCTICA_ICE;		/* Use Antarctica ice boundary as coastline */
+	else if (strstr (info, "+aS"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP_INV;	/* Skip everything BUT Antarctica data south of 60S */
+	else if (strstr (info, "+ai"))  I->antarctica_mode = GSHHS_ANTARCTICA_ICE;	/* Use Antarctica ice boundary as coastline */
 	else if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica shelf ice grounding line as coastline */
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
-		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
+		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert percent to integer microfraction */
 	}
 	if (info[0] == '+') return (GMT_OK);	/* No area, etc, just modifiers that we just processed */
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
@@ -508,8 +509,8 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	/* Round off area to nearest multiple of block-dimension */
 
 	iw = irint (floor (wesn[XLO] / c->bsize) * c->bsize);
-	ie = irint (ceil (wesn[XHI] / c->bsize) * c->bsize);
-	is = 90 - irint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
+	ie = irint (ceil  (wesn[XHI] / c->bsize) * c->bsize);
+	is = 90 - irint ( ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
 	in = 90 - irint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
 	i_ant = 90 - irint (floor ((90.0 - GSHHS_ANTARCTICA_LIMIT) / c->bsize) * c->bsize);
 	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
@@ -656,15 +657,15 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 				else if (level == ANT_LEVEL_ICE && c->ant_mode == GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;	/* Use grounding line so skip ice-shelf Antractica continent */
 			}
 			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) continue;	/* Wants nothing but Antarctica */
-			level = 1;	/* Reset level to land */
+			level = 1;	/* Reset either shelf-ice or groundlin line polygon level to land */
 		}
-		if (level < c->min_level) continue;
+		if (level < c->min_level) continue;	/* Test if level range was set */
 		if (level > c->max_level) continue;
 		if (level == 2 && c->GSHHS_area[seg_ID[i]] < 0 && c->flag == GSHHS_NO_RIVERLAKES) continue;
 		if (level == 2 && c->GSHHS_area[seg_ID[i]] > 0 && c->flag == GSHHS_NO_LAKES) continue;
 		seg_skip[i] = false;	/* OK, so this was needed after all */
 	}
-	if (c->skip_feature) {	/* Must ensure that we skip all features inside a skipped riverlake/lake */
+	if (c->skip_feature) {	/* Must ensure that we skip all features contained by a skipped riverlake/lake */
 		int j, feature;
 		if (c->flag == GSHHS_NO_LAKES && c->node_level[0] == c->node_level[1] && c->node_level[2] == c->node_level[3] && c->node_level[0] == c->node_level[3] && c->node_level[0] == 2) {	/* Bin is entirely inside a lake */
 			for (i = 0; i < c->bin_nseg[b]; i++) seg_skip[i] = true;	/* Must skip all segments in the lake */
@@ -805,8 +806,8 @@ int GMT_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	/* Round off area to nearest multiple of block-dimension */
 
 	iw = irint (floor (wesn[XLO] / c->bsize) * c->bsize);
-	ie = irint (ceil (wesn[XHI] / c->bsize) * c->bsize);
-	is = 90 - irint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
+	ie = irint (ceil  (wesn[XHI] / c->bsize) * c->bsize);
+	is = 90 - irint ( ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
 	in = 90 - irint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
 	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
