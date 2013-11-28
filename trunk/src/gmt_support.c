@@ -3768,6 +3768,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	 * in that case the special Z+, Z- coordinate shorthands are unavailable).
 	 * If resample is true then we sample the track between the end points.
 	 * If project is true then we convert to plot units.
+	 * If get_distances is true then add a column with distances. We also do this if +d is added to args.
 	 */
 	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	enum GMT_profmode p_mode;
@@ -3781,6 +3782,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 	
+	if (strstr (args, "+d")) get_distances = true;	/* Want to add distances to the output */
 	T = GMT_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 	T->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 	n_cols = (get_distances) ? 3 :2;
@@ -3789,7 +3791,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 		GMT_alloc_segment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
-			if ((p[k] == '+') && (p[k+1] && strchr ("ailnor", p[k+1]))) s = k;
+			if ((p[k] == '+') && (p[k+1] && strchr ("adilnor", p[k+1]))) s = k;
 			k++;
 		}
 		if (s) {
@@ -3802,6 +3804,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 					case 'n':	np = atoi (&p2[1]);	p_mode |= GMT_GOT_NP;		break;
 					case 'o':	az = atof (&p2[1]);	p_mode |= GMT_GOT_ORIENT;	break;
 					case 'r':	r = atof (&p2[1]);	p_mode |= GMT_GOT_RADIUS;	break;
+					case 'd':	/* ALready processed up front to set n_cols*/		break;
 					default:	error++;	break;
 				}
 			}

@@ -31,7 +31,7 @@ echo "0	0	25	3751" | gmt grdseamount -R-256/256/-256/256 -I$dx -r -C -Gsmt.nc -T
 # BL Plot the bathymetry
 gmt makecpt -Crainbow -T-5100/-1000/200 -Z > t.cpt
 gmt grdimage smt.nc -R-100/100/-100/100 -JX3i -P -Bag -BWSne -Ct.cpt -K > $ps
-gmt grdtrack -Gsmt.nc -ELM/RM > smt.trk
+gmt grdtrack -Gsmt.nc -ELM/RM+d > smt.trk
 gmt psxy -R -J -O -K -W5p,white smt.trk >> $ps
 gmt psxy -R -J -O -K -W1p smt.trk >> $ps
 echo "-100 100 BATHYMETRY" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
@@ -40,7 +40,7 @@ gmt gravfft smt.nc+uk -D1670 -Nf+a -Fv -E$order -Gvgg.nc
 # BR plot the VGG anomaly
 gmt makecpt -Crainbow -T-50/250/25 -Z > t.cpt
 gmt grdimage vgg.nc -R-100/100/-100/100 -JX3i -O -Bag -BwSne -Ct.cpt -K -X3.5i >> $ps
-gmt grdtrack -Gvgg.nc -ELM/RM > vgg.trk
+gmt grdtrack -Gvgg.nc -ELM/RM+d > vgg.trk
 gmt psxy -R -J -O -K -W5p,white vgg.trk >> $ps
 gmt psxy -R -J -O -K -W1p,blue vgg.trk >> $ps
 echo "-100 100 VGG" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
@@ -61,7 +61,7 @@ echo "Max FAA should be $gmax mGal"
 # ML plot the FAA anomaly
 gmt makecpt -Crainbow -T-50/250/25 -Z > t.cpt
 gmt grdimage faa.nc -R-100/100/-100/100 -JX3i -O -Bag -BWsne -Ct.cpt -K -X-3.5i -Y3.25i >> $ps
-gmt grdtrack -Gfaa.nc -ELM/RM > faa.trk
+gmt grdtrack -Gfaa.nc -ELM/RM+d > faa.trk
 gmt psxy -R -J -O -K -W5p,white faa.trk >> $ps
 gmt psxy -R -J -O -K -W1p,red faa.trk >> $ps
 echo "-100 100 FAA" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
@@ -70,7 +70,7 @@ gmt gravfft smt.nc+uk -D1670 -Nf+a -Fg -E$order -Ggeoid.nc
 # MR plot the VGG anomaly
 gmt makecpt -Crainbow -T0/5/0.25 -Z > t.cpt
 gmt grdimage geoid.nc -R-100/100/-100/100 -JX3i -O -Bag -Bwsne -Ct.cpt -K -X3.5i >> $ps
-gmt grdtrack -Ggeoid.nc -ELM/RM > geoid.trk
+gmt grdtrack -Ggeoid.nc -ELM/RM+d > geoid.trk
 gmt psxy -R -J -O -K -W5p,white geoid.trk >> $ps
 gmt psxy -R -J -O -K -W1p,orange geoid.trk >> $ps
 echo "-100 100 GEOID" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
