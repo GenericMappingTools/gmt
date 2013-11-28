@@ -16,7 +16,7 @@ Synopsis
 **grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ...
 [ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ **-C**\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**] ] [**-D**\ *dfile* ]
-[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**] ]
+[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**] ]
 [ **-N** ] 
 [ |SYN_OPT-R| ]
 [ **-S**\ *method*/*modifiers* ] [ **-T**\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
@@ -104,7 +104,7 @@ Optional Arguments
     lines to the file *dfile* [Default only saves the cross-profiles].
     The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
     (sampled value for each grid)
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**]
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**]
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
@@ -123,7 +123,8 @@ Optional Arguments
     **+r** to define a circle of given radius centered on the origin;
     this option requires either **+n** or **+i**.  The **+n**\ *np* sets
     the desired number of points, while **+l**\ *length* gives the
-    total length of the profile. Note: No track file will be read.
+    total length of the profile. Use **+d** to output the along-track
+    distances after the coordinates.  Note: No track file will be read.
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
