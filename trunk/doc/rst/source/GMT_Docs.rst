@@ -8396,6 +8396,8 @@ For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
 
+.. _App-custom_symbols:
+
 M. Custom Plot Symbols
 ======================
 
