@@ -1014,10 +1014,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			GMT_plane_perspective (GMT, -1, 0.0);
 			GMT_plotend (GMT);
 		}
-		GMT_free (GMT, contour);
-		GMT_free (GMT, cont_type);
-		GMT_free (GMT, cont_angle);
-		GMT_free (GMT, cont_do_tick);
+		if (contour) GMT_free (GMT, contour);
+		if (cont_type) GMT_free (GMT, cont_type);
+		if (cont_angle) GMT_free (GMT, cont_angle);
+		if (cont_do_tick) GMT_free (GMT, cont_do_tick);
 		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
 		}

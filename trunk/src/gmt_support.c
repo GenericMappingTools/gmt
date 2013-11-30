@@ -3783,9 +3783,11 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 	
 	if (strstr (args, "+d")) get_distances = true;	/* Want to add distances to the output */
+	if (get_distances) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_make_profile: Return distances along track\n");
 	T = GMT_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 	T->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 	n_cols = (get_distances) ? 3 :2;
+	T->n_columns = n_cols;
 	while (!error && (GMT_strtok (args, ",", &pos, p))) {
 		S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		GMT_alloc_segment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
