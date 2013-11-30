@@ -656,7 +656,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
-		// uint64_t dim[4] = {1, 0, 0, 3};
 		double xyz[2][3];
 		
 		if ((Din = GMT_create_dataset (GMT, 1, 0, 0, 3, GMT_IS_LINE, true)) == NULL) Return (API->error);
@@ -677,6 +676,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		else
 			Din->table[0] = GMT_make_profile (GMT, 'Q', Ctrl->E.lines, true, false, false, Ctrl->E.step, GMT_TRACK_FILL, NULL);
+		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */
 	}
 	
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
@@ -866,7 +866,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < Din->table[0]->n_segments; seg++) {	/* For each segment to resample */
 			Sin  = Din->table[0]->segment[seg];	/* Shorthand */
 			Sout = Dout->table[0]->segment[seg];	/* Shorthand */
-			for (col = 0; col < 3; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
+			for (col = 0; col < Din->n_columns; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
 			for (row = 0; row < Sin->n_rows; row++) {	/* For each row  */
 				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], value);
 				if (status < 0) some_outside = true;
