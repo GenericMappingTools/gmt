@@ -6556,6 +6556,7 @@ data of any format. This package represents a new generation of tools
 and replaces the old **x_system** package. The package is maintained by
 Paul Wessel.
 
+.. _App-file-formats:
 
 B. GMT File Formats
 ===================
@@ -8394,6 +8395,8 @@ and how to switch the color bar around (by using a negative length).
 For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
+
+.. _App-custom_symbols:
 
 M. Custom Plot Symbols
 ======================

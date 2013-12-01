@@ -278,6 +278,7 @@ struct GMT_GRID_HEADER {
 	size_t nm;                       /* Number of data items in this grid (nx * ny) [padding is excluded] */
 	size_t size;                     /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
 	size_t n_alloc;                  /* Bytes allcoated for this grid */
+	unsigned int trendmode;          /* Holds status for detrending of grids.  0 if not detrended, 1 if mean, 2 if mid-value, and 3 if LS plane removed */
 	unsigned int arrangement;        /* Holds status for complex grid as how the read/imag is placed in the grid (interleaved, R only, etc.) */
 	unsigned int n_bands;            /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
 	unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */

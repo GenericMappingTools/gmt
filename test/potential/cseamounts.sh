@@ -18,7 +18,7 @@ cat << EOF > cart_circ.txt
 EOF
 gmt grdseamount -C cart_circ.txt -R-100/100/-100/100 -I1 -T -Z-3000 -r -Gcart_circ.nc
 gmt grdimage cart_circ.nc -JX3i -P -Baf -BWSne -Ct.cpt -K -X1.1i -Y1.25i > $ps
-gmt grdtrack -Gcart_circ.nc -ELT/RB > cart_circ.trk
+gmt grdtrack -Gcart_circ.nc -ELT/RB+d > cart_circ.trk
 gmt psxy -R -J -O -K -W1p cart_circ.trk >> $ps
 gmt psscale -Ct.cpt -D3.25i/-0.4i/5i/0.1ih -B200f100 -O -K >> $ps
 # LR. Input file for Geographic circular
@@ -28,7 +28,7 @@ cat << EOF > geo_circ.txt
 EOF
 gmt grdseamount -C geo_circ.txt -R-1/1/-1/1 -I0.01 -T -Z-3000 -r -Ggeo_circ.nc -fg
 gmt grdimage geo_circ.nc -JX3id -P -Ba1f0.5 -BwESn -Ct.cpt -O -K -X3.5i >> $ps
-gmt grdtrack -Ggeo_circ.nc -ELT/RB > geo_circ.trk
+gmt grdtrack -Ggeo_circ.nc -ELT/RB+d > geo_circ.trk
 gmt psxy -R -J -O -K -W1p cart_circ.trk >> $ps
 # UL. Input file for Cartesian elliptical
 cat << EOF > cart_ellipse.txt
@@ -37,7 +37,7 @@ cat << EOF > cart_ellipse.txt
 EOF
 gmt grdseamount -C cart_ellipse.txt -R-100/100/-100/100 -I1 -E -T -Z-3000 -r -Gcart_ellipse.nc
 gmt grdimage cart_ellipse.nc -JX3i -P -Baf -BWsne -Ct.cpt -O -K  -X-3.5i -Y3.2i >> $ps
-gmt grdtrack -Gcart_ellipse.nc -ELT/RB > cart_ellipse.trk
+gmt grdtrack -Gcart_ellipse.nc -ELT/RB+d > cart_ellipse.trk
 gmt psxy -R -J -O -K -W1p,- cart_ellipse.trk >> $ps
 # UR. Input file for Geographic elliptical
 cat << EOF > geo_ellipse.txt
@@ -46,7 +46,7 @@ cat << EOF > geo_ellipse.txt
 EOF
 gmt grdseamount -C geo_ellipse.txt -R-1/1/-1/1 -I0.01 -E -T -Z-3000 -r -Ggeo_ellipse.nc -fg
 gmt grdimage geo_ellipse.nc -JX3id -P -Ba1f0.5 -BwEsn -Ct.cpt -O -K -X3.5i >> $ps
-gmt grdtrack -Ggeo_ellipse.nc -ELT/RB > geo_ellipse.trk
+gmt grdtrack -Ggeo_ellipse.nc -ELT/RB+d > geo_ellipse.trk
 gmt psxy -R -J -O -K -W1p,- geo_ellipse.trk >> $ps
 # Add Cartesian crossections
 gmt psxy -R0/282/-3100/-1900 -JX3i/2.5i -O -K -W1p -i2,3 cart_circ.trk -Bafg1000 -BWsNe -X-3.5i -Y3.2i >> $ps

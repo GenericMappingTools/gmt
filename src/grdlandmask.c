@@ -64,6 +64,12 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		double mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
+#ifdef DEBUG
+	struct DBG {	/* -+<bin> */
+		bool active;
+		unsigned int bin;
+	} debug;
+#endif
 };
 
 void *New_grdlandmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -94,6 +100,9 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdlandmask -G<outgrid> %s\n\t%s\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
+#ifdef DEBUG
+	GMT_Message (API, GMT_TIME_NONE, "\t[-+<bin>]\n");
+#endif
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -115,6 +124,9 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
 	GMT_Option (API, "V,r,.");
+#ifdef DEBUG
+	GMT_Message (API, GMT_TIME_NONE, "\t-+ Print only a single bin (debug option).\n");
+#endif
 	
 	return (EXIT_FAILURE);
 }
@@ -187,7 +199,12 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 				}
 				Ctrl->N.mode = (j == 2);
 				break;
-
+#ifdef DEBUG
+			case '+':
+				Ctrl->debug.active = true;
+				Ctrl->debug.bin = atoi (opt->arg);
+				break;
+#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -321,6 +338,9 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		bin = c.bins[ind];
+#ifdef DEBUG
+		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+#endif
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on block # %5ld\r", bin);
 
 		if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
@@ -388,7 +408,6 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 		}
 
 		if (!used_polygons) {	/* Lack of polygons or clipping etc resulted in no polygons after all, must deal with background */
-
 			k = INT_MAX;	/* Initialize to outside range of levels (4 is highest) */
 			/* Visit each of the 4 nodes, test if it is inside -R, and if so update lowest level found so far */
 
@@ -405,12 +424,22 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 
 			row_min = MAX (0, irint (ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off)));
 			row_max = MIN (ny1, irint (floor ((Grid->header->wesn[YHI] - c.lat_sw) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off)));
-			col_min = irint (ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
-			col_max = irint (floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
 			if (wrap) {	/* Handle jumps */
+				col_min = irint (ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
+				col_max = irint (floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
 				if (col_max < col_min) col_max += Grid->header->nx;
 			}
 			else {	/* Make sure we are inside our grid */
+				double lon_w, lon_e;
+				lon_w = c.lon_sw - Grid->header->wesn[XLO];	lon_e = c.lon_sw + c.bsize - Grid->header->wesn[XLO];
+				if (lon_w < Grid->header->wesn[XLO] && (lon_w+360.0) < Grid->header->wesn[XHI]) {
+					lon_w += 360.0;	lon_e += 360.0;
+				}
+				else if (lon_e > Grid->header->wesn[XHI] && (lon_e-360.0) > Grid->header->wesn[XLO]) {
+					lon_w -= 360.0;	lon_e -= 360.0;
+				}
+				col_min = irint (ceil (lon_w * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
+				col_max = irint (floor (lon_e * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
 				if (col_min < 0) col_min = 0;
 				if (col_max > nx1) col_max = nx1;
 			}

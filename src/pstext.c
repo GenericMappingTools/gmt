@@ -209,43 +209,44 @@ void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 	T->block_justify = C->F.justify;
 }
 
-bool get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
+int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
 {
 	/* Try to determine if input is the old GMT4-style format.
-	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
+	 * mode = 0 means normal textrec, mode = 1 means paragraph mode.
+	 * Return 4 if GMT 4, 5 if GMT 5, -1 if nothing can be done */
 	
 	int n, k;
 	char size[GMT_LEN256] = {""}, angle[GMT_LEN256] = {""}, font[GMT_LEN256] = {""}, just[GMT_LEN256] = {""}, txt[GMT_BUFSIZ] = {""};
 	char spacing[GMT_LEN256] = {""}, width[GMT_LEN256] = {""}, pjust[GMT_LEN256] = {""};
 	
-	if (!buffer || !buffer[0]) return (false);	/* Nothing to work with */
+	if (!buffer || !buffer[0]) return (-1);	/* Nothing to work with */
 	
 	if (mode) {	/* Paragraph control record */
 		n = sscanf (buffer, "%s %s %s %s %s %s %s\n", size, angle, font, just, spacing, width, pjust);
-		if (n < 7) return (false);	/* Clearly not the old format since missing items */
+		if (n < 7) return (5);	/* Clearly not the old format since missing items */
 	}
 	else {		/* Regular text record */
 		n = sscanf (buffer, "%s %s %s %s %[^\n]", size, angle, font, just, txt);
-		if (n < 5) return (false);	/* Clearly not the old format since missing items */
+		if (n < 5) return (5);	/* Clearly not the old format since missing items */
 	}
-	if (GMT_not_numeric (GMT, angle)) return (false);	/* Since angle is not a number */
+	if (GMT_not_numeric (GMT, angle)) return (5);	/* Since angle is not a number */
 	k = (int)strlen (size) - 1;
 	if (size[k] == 'c' || size[k] == 'i' || size[k] == 'm' || size[k] == 'p') size[k] = '\0';	/* Chop of unit */
-	if (GMT_not_numeric (GMT, size)) return (false);	/* Since size is not a number */
-	if (GMT_just_decode (GMT, just, 12) == -99) return (false);	/* Since justify not in correct format */
+	if (GMT_not_numeric (GMT, size)) return (5);	/* Since size is not a number */
+	if (GMT_just_decode (GMT, just, 12) == -99) return (5);	/* Since justify not in correct format */
 	if (mode) {	/* A few more checks for paragraph mode */
 		k = (int)strlen (spacing) - 1;
 		if (spacing[k] == 'c' || spacing[k] == 'i' || spacing[k] == 'm' || spacing[k] == 'p') spacing[k] = '\0';	/* Chop of unit */
-		if (GMT_not_numeric (GMT, spacing)) return (false);	/* Since spacing is not a number */
+		if (GMT_not_numeric (GMT, spacing)) return (5);	/* Since spacing is not a number */
 		k = (int)strlen (width) - 1;
 		if (width[k] == 'c' || width[k] == 'i' || width[k] == 'm' || width[k] == 'p') width[k] = '\0';	/* Chop of unit */
-		if (GMT_not_numeric (GMT, width)) return (false);		/* Since width is not a number */
-		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (GMT, pjust, 0) == -99) return (false);
+		if (GMT_not_numeric (GMT, width)) return (5);		/* Since width is not a number */
+		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (GMT, pjust, 0) == -99) return (5);
 	}
 
 	/* Well, seems like the old format so far */
 	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: use of old style pstext input is deprecated.\n");
-	return (true);
+	return (4);
 }
 
 int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)

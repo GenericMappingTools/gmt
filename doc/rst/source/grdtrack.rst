@@ -16,7 +16,7 @@ Synopsis
 **grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ...
 [ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ **-C**\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**] ] [**-D**\ *dfile* ]
-[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**] ]
+[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**] ]
 [ **-N** ] 
 [ |SYN_OPT-R| ]
 [ **-S**\ *method*/*modifiers* ] [ **-T**\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
@@ -104,7 +104,7 @@ Optional Arguments
     lines to the file *dfile* [Default only saves the cross-profiles].
     The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
     (sampled value for each grid)
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**]
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**]
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
@@ -114,7 +114,7 @@ Optional Arguments
     minimum and maximum locations in the grid (only available if only
     one grid is given). Instead of two coordinates you can specify an
     origin and one of **+a**, **+o**, or **+r**. You may append 
-    **+i**\ *inc*[**u**] to set the sampling interval (append appropriate
+    **+i**\ *inc*\ [**u**] to set the sampling interval (append appropriate
     unit); if not given then we default to half the minimum grid interval,
     and if geographic we select great circle distances in km as the default
     unit and method. The **+a** sets the azimuth of a profile of given
@@ -123,7 +123,8 @@ Optional Arguments
     **+r** to define a circle of given radius centered on the origin;
     this option requires either **+n** or **+i**.  The **+n**\ *np* sets
     the desired number of points, while **+l**\ *length* gives the
-    total length of the profile.  Note: No track file will be read.
+    total length of the profile. Use **+d** to output the along-track
+    distances after the coordinates.  Note: No track file will be read.
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
@@ -218,7 +219,7 @@ If an interpolation point is not on a node of the input grid, then a NaN
 at any node in the neighborhood surrounding the point will yield an
 interpolated NaN. Bicubic interpolation [default] yields continuous
 first derivatives but requires a neighborhood of 4 nodes by 4 nodes.
-Bilinear interpolation [**-n**\ ] uses only a 2 by 2 neighborhood, but
+Bilinear interpolation [**-n**] uses only a 2 by 2 neighborhood, but
 yields only zeroth-order continuity. Use bicubic when smoothness is
 important. Use bilinear to minimize the propagation of NaNs, or lower
 *threshold*.
@@ -226,7 +227,7 @@ important. Use bilinear to minimize the propagation of NaNs, or lower
 Examples
 --------
 
-To sample the file hawaii\_topo.nc along the SEASAT track track\_4.xyg
+To sample the file hawaii_topo.nc along the SEASAT track track_4.xyg
 (An ASCII table containing longitude, latitude, and SEASAT-derived
 gravity, preceded by one header record):
 

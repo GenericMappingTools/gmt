@@ -6,6 +6,60 @@
 	* gmt_shore.c:		Extended -A option with modifiers to handle various
 				Antarctica options available via GSHHG 2.3.0
 -----------------------------------------------------------------------------------------
+201x-yy-zz	pwessel
+	GMT 5.1.1 finalized and released.
+-----------------------------------------------------------------------------------------
+2013-11-26	pwessel
+	* gmt_io.c:		GMT would crash on a blank line with no newline at end at all.
+	* pstext.c:		pstext did not process GMT4-style input properly.
+
+2013-11-26	jluis
+	* potential/gravfft.c:	Let -E options default to 3.
+				Let users select the -N+l (leave trend alone). That is, do not overwrite with default mode.
+				Let the default detrend be remove MID point.
+				Explicitly set -N+a in gravfft command to avoid failures due to coming changes in gravfft.
+2013-11-25	pwessel
+	* grdlandmask.c:	Failed to fill partial bins with no coastlines when the region
+				crossed Greenwich [issue #451].
+
+2013-11-21	pwessel
+	* pscontour.c:		Let pscontour output contours to file [issue #448].
+	* pscoast.c:		Prevent users from not giving proper projection [issue #449].
+
+2013-11-19	jluis
+	* mgd77/mgd77magref.c:	Needed to reset the t_col variable when constant altitude [issue #446].
+
+2013-11-19	pwessel
+	* gmt_sph.c:		Fix invalid read in ssrfpack_grid due to par array being of length 2 rather than 3.
+
+2013-11-18	pwessel
+	* gmt_grdio.c:		Place the old auto-detect of 4-byte binary float vs int under compatibility mode for backwardness.
+
+2013-11-16	pwessel
+	* grdvector.c:		Address shortcomings of geovectors when wrapped and clipped.
+
+2013-11-15	pwessel
+	* geovectors.c:		Fix geovector when shrinking is selected.
+
+2013-11-13	pwessel
+	* gmt_api.c:		Fix API issues pointed out by Ian.
+
+2013-11-13	fwobbe
+	* GMT.app:		Inherit user shell in GMT.app.
+
+2013-11-12	pwessel
+	* gmt_init.c:		grdmath could corrupt the gmt.history file [issue # 438].
+ 	
+2013-11-10	pwessel
+	* gmt_support.c:	Fix symbol-size issue in psxy -Sc [issue #435].
+	
+2013-11-09	pwessel
+	* grdvector.c:		Did not convert direction to azimuths for geo vectors.
+
+2013-11-08	pwessel
+	* grdvector.c:		Fix grdvector -I problem [issue #434].
+	* ps2raster.c:		Under Mavericks, strcpy would exit if the to and from pointers
+-----------------------------------------------------------------------------------------
 2013-11-05	pwessel
 	GMT 5.1.0 finalized and released.
 -----------------------------------------------------------------------------------------

@@ -17,15 +17,15 @@ gmt grdimage z.nc -Cz.cpt -JX3i -P -Ba -BWSne -K -Y0.75i > $ps
 gmt makecpt -Crainbow -T-50/250/10 -Z > g.cpt
 
 # Compute flexure and overlay on bathymetry
-gmt gravfft z.nc+uk -T12000/2800/3300/1000 -Q -Z12000 -N1024/1024+w -Gmoho_flex.nc
+gmt gravfft z.nc+uk -T12000/2800/3300/1000 -Q -Z12000 -N1024/1024+w+a -Gmoho_flex.nc
 gmt grdcontour moho_flex.nc -J -O -K -C100 -A500 >> $ps
 
 # 3. LR Map: Gravity from flexure of Moho only
-gmt gravfft moho_flex.nc+uk -Ff -E$order -D500 -Gfaa_flex.nc
+gmt gravfft moho_flex.nc+uk -Ff -E$order -D500 -N+a -Gfaa_flex.nc
 gmt grdimage faa_flex.nc -Cg.cpt -J -O -K -Ba -BWSne -X3.5i >> $ps
 
 # 4. ML Map: Gravity from seamounts only
-gmt gravfft z.nc+uk -Ff -E$order -D1800 -Gfaa_z.nc
+gmt gravfft z.nc+uk -Ff -E$order -D1800 -N+a -Gfaa_z.nc
 gmt grdimage faa_z.nc -Cg.cpt -J -O -K -Ba -BWsne -X-3.5i -Y3.25i >> $ps
 
 # 5. MR Map: Total gravity model + 0.5 mGal noise

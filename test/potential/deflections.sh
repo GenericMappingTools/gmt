@@ -12,34 +12,34 @@ echo "0	0	25	3751" | gmt grdseamount -R-256/256/-256/256 -I1 -r -C -Gsmt.nc -T0.
 # BL Plot the bathymetry
 gmt makecpt -Crainbow -T-5100/-1000/200 -Z > t.cpt
 gmt grdimage smt.nc -R-100/100/-100/100 -JX3i -P -Bag -BWSne -Ct.cpt -K > $ps
-gmt grdtrack -Gsmt.nc -ELM/RM > smt.trk
+gmt grdtrack -Gsmt.nc -ELM/RM+d > smt.trk
 gmt psxy -R -J -O -K -W5p,white smt.trk >> $ps
 gmt psxy -R -J -O -K -W1p smt.trk >> $ps
 echo "-100 100 BATHYMETRY" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
 # 2. Compute the E-W deflection anomaly
-gmt gravfft smt.nc+uk -D1670 -Nf -Fe -E$order -Gdef_e.nc
+gmt gravfft smt.nc+uk -D1670 -Nf+a -Fe -E$order -Gdef_e.nc
 # ML plot the E-W deflection anomaly
 gmt makecpt -Cpolar -T-120/120/20 -Z > t.cpt
 gmt grdimage def_e.nc -R-100/100/-100/100 -JX3i -O -Bag -BWSne -Ct.cpt -K -X3.5i >> $ps
-gmt grdtrack -Gdef_e.nc -ELM/RM > def_e.trk
+gmt grdtrack -Gdef_e.nc -ELM/RM+d > def_e.trk
 gmt psxy -R -J -O -K -W5p,white def_e.trk >> $ps
 gmt psxy -R -J -O -K -W1p,blue def_e.trk >> $ps
 echo "-100 100 @~h@~" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
 # 3. Compute the VGG anomaly
-gmt gravfft smt.nc+uk -D1670 -Nf -Fv -E$order -Gvgg.nc
+gmt gravfft smt.nc+uk -D1670 -Nf+a -Fv -E$order -Gvgg.nc
 # BR plot the VGG anomaly
 gmt makecpt -Crainbow -T-50/250/25 -Z > t.cpt
 gmt grdimage vgg.nc -R-100/100/-100/100 -JX3i -O -Bag -BWsne -Ct.cpt -K -X-3.5i -Y3.25i >> $ps
-gmt grdtrack -Gvgg.nc -ELM/RM > vgg.trk
+gmt grdtrack -Gvgg.nc -ELM/RM+d > vgg.trk
 gmt psxy -R -J -O -K -W5p,white vgg.trk >> $ps
 gmt psxy -R -J -O -K -W1p,red vgg.trk >> $ps
 echo "-100 100 VGG" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
 # 4. Compute the N-S deflection anomaly anomaly
-gmt gravfft smt.nc+uk -D1670 -Nf -Fn -E$order -Gdef_n.nc
+gmt gravfft smt.nc+uk -D1670 -Nf+a -Fn -E$order -Gdef_n.nc
 # MR plot the N-S deflection anomaly
 gmt makecpt -Cpolar -T-120/120/20 -Z > t.cpt
 gmt grdimage def_n.nc -R-100/100/-100/100 -JX3i -O -Bag -BWsne -Ct.cpt -K -X3.5i >> $ps
-gmt grdtrack -Gdef_n.nc -EBL/TR > def_n.trk
+gmt grdtrack -Gdef_n.nc -EBL/TR+d > def_n.trk
 gmt psxy -R -J -O -K -W5p,white def_n.trk >> $ps
 gmt psxy -R -J -O -K -W1p,orange def_n.trk >> $ps
 echo "-100 100 @~x@~" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
