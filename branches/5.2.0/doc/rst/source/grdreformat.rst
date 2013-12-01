@@ -171,7 +171,7 @@ numerous third-party programs and are platform-independent. Some
 disk-space can be saved by storing the data as bytes or shorts in stead
 of integers. Use the *scale* and *offset* parameters to make this work
 without loss of data range or significance. For more details, see
-Appendix B.
+:ref:`App-file-formats`.
 
 **Multi-variable grid files**
 
@@ -216,7 +216,7 @@ note that it is not possible for GMT to determine uniquely if a
 4-byte grid is float or int; in such cases it is best to use the *=ID*
 mechanism to specify the file format. In all cases a native grid is
 considered to be signed (i.e., there are no provision for unsigned short
-ints or unsigned bytes). For header and grid details, see Appendix B. 
+ints or unsigned bytes). For header and grid details, see :ref:`App-file-formats`. 
 
 .. include:: explain_float.rst_
 

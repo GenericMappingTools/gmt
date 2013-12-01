@@ -1,7 +1,7 @@
 #!/bin/bash
 # $Id$
 # Test wrapping of geovector's head across periodic boundary
-ps=new.ps
+ps=wrapped.ps
 L=6000
 echo 345	15	60 3000 > t.txt
 echo 185	15	45	3000 >> t.txt

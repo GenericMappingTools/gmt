@@ -246,8 +246,8 @@ Segment header records may contain one of more of the following options:
 **-W**\ *pen*
     Use the new *pen* and turn outline on
 **-W**
-    Revert to default pen **MAP\_DEFAULT\_PEN** (if not set on command
-    line)
+    Revert to default pen :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
+    (if not set on command line)
 **-W-**
     Turn outline off
 **-Z**\ *zval*
@@ -267,11 +267,11 @@ by specifying **-Sk**\ *tsunami/size*. The definition file can contain
 any number of plot code records, as well as blank lines and comment
 lines (starting with #). **psxy** will look for the definition files in
 (1) the current directory, (2) the ~/.gmt directory, and
-(3) the **$GMT\_SHAREDIR**/custom directory, in that order.
+(3) the **$GMT_SHAREDIR**/custom directory, in that order.
 Freeform polygons (made up of straight line segments and arcs of
 circles) can be designed - these polygons can be painted and filled with
-a pattern. Other standard geometric symbols can also be used. See
-Appendix N for macro definitions.
+a pattern. Other standard geometric symbols can also be used. See Appendix
+:ref:`App-custom_symbols` for macro definitions.
 
 See Also
 --------

@@ -16,7 +16,7 @@ Synopsis
 **grdseamount** [ *intable* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [*out/in*\ ] ] [ **-C** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
+[ **-A**\ [*out/in*\ ] ] [ **-C** ] [ **-E** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
 [ **-N**\ *norm* ] [ **-S**\ *scale* ] [ **-T**\ [*flattening*] ] [ **-Z**\ *level* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -35,7 +35,7 @@ Gaussian or conical shapes, which may be circular or elliptical, and optionally 
 Various scaling options are available to modify the result, including an option to add in
 a background depth.  The input must contain *lon, lat, radius, height* for each seamount.
 For elliptical features (**-E**) we expect *lon, lat, azimuth, semi-major, semi-minor,
-radius, height* instead.  If flattening is specified (**TT**) then a final column with
+radius, height* instead. If flattening is specified (**-T**) then a final column with
 flattening is expected.
 
 Required Arguments
@@ -49,12 +49,16 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [*out/in*\ ]
+**-A**\ [*out/in*]
     Build a mask grid, append outside/inside values [1/NaN].
     Here, height is ignored and **-L**, **-N** and **-Z** are disallowed
 
 **-C**
     Cone model [Default is Gaussian].
+
+**-E**
+    Elliptical data format [Default is Circular]. Read lon, lat, azimuth,
+    major, minor, height (m) for each seamount.
 
 **-G**\ *outgrid*
     Sets name of output gridfile. 

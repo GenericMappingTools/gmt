@@ -1610,20 +1610,20 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		dx = fabs (wesn[XLO] - val);
 		if (GMT_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
-			wesn[XLO] = val;
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: (w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
-			sprintf (format, "Warning: w reset to %s\n", GMT->current.setting.format_float_out);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[XLO]);
+			sprintf (format, "Warning: w reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[XLO], val);
+			wesn[XLO] = val;
 		}
 
 		val = header->wesn[XLO] + lrint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XHI] - val);
 		if (GMT_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
-			wesn[XHI] = val;
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: (e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
-			sprintf (format, "Warning: e reset to %s\n", GMT->current.setting.format_float_out);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[XHI]);
+			sprintf (format, "Warning: e reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[XHI], val);
+			wesn[XHI] = val;
 		}
 	}
 
@@ -1632,18 +1632,18 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 
 	val = header->wesn[YLO] + lrint ((wesn[YLO] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
-		wesn[YLO] = val;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
-		sprintf (format, "Warning: s reset to %s\n", GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[YLO]);
+		sprintf (format, "Warning: s reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[YLO], val);
+		wesn[YLO] = val;
 	}
 
 	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
-		wesn[YHI] = val;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
-		sprintf (format, "Warning: n reset to %s\n", GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[YHI]);
+		sprintf (format, "Warning: n reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[YHI], val);
+		wesn[YHI] = val;
 	}
 	return (GMT_NOERROR);
 }
@@ -2181,7 +2181,7 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 
 void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode, double *coeff)
 {
-	/* mode = 0 (GMT_FFT_LEAVE_TREND):  Do nothing.
+	/* mode = 0 (GMT_FFT_REMOVE_NOTHING):  Do nothing.
 	 * mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via a[0])
 	 * mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via a[0])
 	 * mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting plane by least squares (returned via a[0-2])
@@ -2200,11 +2200,15 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	
 	GMT_memset (coeff, 3, double);
 	
-	if (mode == GMT_FFT_LEAVE_TREND) {	/* Do nothing */
+	if (Grid->header->trendmode != GMT_FFT_REMOVE_NOTHING) {	/* Already removed the trend */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Grid has already been detrending - no action taken\n");
+		return;
+	}
+	if (mode == GMT_FFT_REMOVE_NOTHING) {	/* Do nothing */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No detrending selected\n");
 		return;
 	}
-	
+	Grid->header->trendmode = mode;	/* Update grid header */	
 	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before detrending can take place.\n");
 		GMT_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);

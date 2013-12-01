@@ -325,7 +325,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 				lat -= G->header->inc[GMT_Y];
 				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
-			wesn_new[YLO] = lat + G->header->inc[GMT_Y];	/* Go one back since last row was outside */
+			wesn_new[YLO] = lat + (1.0 - G->header->xy_off) * G->header->inc[GMT_Y];	/* Go one back since last row was outside */
 			if (wesn_new[YLO] <= G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO];
 		}
 		wesn_new[YHI] += radius;	/* Approximate north limit in degrees */
@@ -340,7 +340,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 				lat += G->header->inc[GMT_Y];
 				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
-			wesn_new[YHI] = lat - G->header->inc[GMT_Y];	/* Go one back since last row was outside */
+			wesn_new[YHI] = lat - (1.0 - G->header->xy_off) * G->header->inc[GMT_Y];	/* Go one back since last row was outside */
 			if (wesn_new[YHI] >= G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI];
 		}
 		if (doubleAlmostEqual (wesn_new[YLO], -90.0) || doubleAlmostEqual (wesn_new[YHI], 90.0)) {	/* Need all longitudes when a pole is included */
@@ -362,7 +362,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 					lon -= G->header->inc[GMT_X];
 					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				}
-				wesn_new[XLO] = lon + G->header->inc[GMT_X];	/* Go one back since last col was outside */
+				wesn_new[XLO] = lon + (1.0 - G->header->xy_off) * G->header->inc[GMT_X];	/* Go one back since last col was outside */
 			}
 			wesn_new[XHI] += radius;					/* Approximate east limit in degrees */
 			if (!wrap && wesn_new[XHI] > G->header->wesn[XHI]) {		/* Outside grid range */
@@ -376,7 +376,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 					lon += G->header->inc[GMT_X];
 					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				}
-				wesn_new[XHI] = lon - G->header->inc[GMT_X];	/* Go one back since last col was outside */
+				wesn_new[XHI] = lon - (1.0 - G->header->xy_off) * G->header->inc[GMT_X];	/* Go one back since last col was outside */
 			}
 			if (wesn_new[XHI] > 360.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
 			if (wesn_new[XHI] < 0.0)   wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;

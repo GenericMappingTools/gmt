@@ -870,7 +870,7 @@ dimension. Note: For GMT_IS_TEXTSET the user matrix is expected to be
 a 2-D character array with a fixed row length of ``dim`` but we only
 consider the first ``n_columns`` characters. For data grids you will
 also need to specify the ``registration`` (see the GMT Cookbook and
-Reference, Appendix B for description of the two forms of registration)
+Reference, :ref:`App-file-formats` for description of the two forms of registration)
 and data domain ``range``.
 
 Create empty resources

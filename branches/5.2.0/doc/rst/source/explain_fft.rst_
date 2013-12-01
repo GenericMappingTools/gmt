@@ -16,7 +16,7 @@
 
         **+d**: Detrend data, i.e. remove best-fitting linear trend [Default].
 
-        **+a**: Only remove mean value, i.e. 0.5 * (max + min).
+        **+a**: Only remove mean value.
 
         **+h**: Only remove mid value, i.e. 0.5 * (max + min).
 
