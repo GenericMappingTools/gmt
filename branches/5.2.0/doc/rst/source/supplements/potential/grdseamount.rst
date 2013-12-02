@@ -6,7 +6,7 @@ grdseamount
 
 .. only:: not man
 
-    grdseamount - Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
+    grdseamount - Compute synthetic seamount (Gaussian, parabolic, cone, disc, circular or elliptical) bathymetry
 
 Synopsis
 --------
@@ -31,7 +31,7 @@ Description
 
 **grdseamount** will compute the bathymetry for synthetic seamounts given their shape
 parameters.  We read a list with seamount locations and sizes and can evaluate either
-Gaussian, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
+Gaussian, parabolic, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
 Various scaling options are available to modify the result, including an option to add in
 a background depth.  The input must contain *lon, lat, radius, height* for each seamount.
 For elliptical features (**-E**) we expect *lon, lat, azimuth, semi-major, semi-minor,
@@ -54,8 +54,8 @@ Optional Arguments
     Here, height is ignored and **-L**, **-N** and **-Z** are disallowed
 
 **-C**
-    Select shape model; choose among **c* (cone), **d** (disc), **g** (Gaussian)
-    and **p** (parabolic) models [Default is Gaussian].
+    Select shape function: choose among **c* (cone), **d** (disc), **g** (Gaussian)
+    and **p** (parabolic) shapes [Default is Gaussian].
 
 **-E**
     Elliptical data format [Default is Circular]. Read lon, lat, azimuth,
@@ -66,7 +66,7 @@ Optional Arguments
 
 **-L**\ [*cut*]
     List area, volume, and mean height for each seamount; NO grid is created.
-    Optionally, append the noise-floor cutoff level [0].
+    Optionally, append the noise-floor cutoff level below which we ignore area and volume [0].
 
 **-N**\ *norm*
     Normalize grid so maximum grid height equals *norm*.
@@ -75,8 +75,8 @@ Optional Arguments
     Sets optional scale factor for radii [1].
 
 **-T**\ [*flattening*]
-    Seamounts are to be truncated.  Append *flattening*, otherwise we expect
-    it in last input column [no truncation].  Cannot be used with **-Cd**.
+    Seamounts are to be truncated to guyots.  Append *flattening*, otherwise we expect
+    to find it in last input column [no truncation].  Ignored if used with **-Cd**.
 
 **-Z**\ *level*
     Add in background depth [0].

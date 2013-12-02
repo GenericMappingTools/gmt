@@ -11,7 +11,7 @@
 
 #define THIS_MODULE_NAME	"grdseamount"
 #define THIS_MODULE_LIB		"potential"
-#define THIS_MODULE_PURPOSE	"Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry"
+#define THIS_MODULE_PURPOSE	"Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry"
 
 #include "gmt_dev.h"
 
@@ -212,20 +212,21 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	}
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
-	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->T.active, "Syntax error -Cd: Cannot specify -T for discs\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->T.active, "Warning: Cannot specify -T for discs; ignored\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active), "Syntax error -A option: Cannot use -L, -N or -Z with -A\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file\n");
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->T.mode == 1) ? 1 : 0);
 	n_errors += GMT_check_binary_io (GMT, n_expected_fields);
+	if (Ctrl->C.mode == SHAPE_DISC && Ctrl->T.active) {Ctrl->T.active = false; Ctrl->T.mode = 0; Ctrl->T.value = 0.0}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
 {
-	/* Compute area and volume of circular or elliptical disc "seamounts".
+	/* Compute area and volume of circular or elliptical disc "seamounts" (more like plateaus).
 	 * Here, f is not used. */
 
 	double r2;
@@ -239,13 +240,12 @@ void disc_area_volume_height (double a, double b, double h, double hc, double f,
 void para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
 {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
-	/* Not implemented yet */
 	double e, r2, rc2, hx;
 
 	r2 = a * b;
 	e = 1.0 - f*f;
 	hx = h / e;	/* Height at origin if not truncated */
-	rc2 = r2 * (1.0 - hc / hx);	/* a*b where h = hc */
+	rc2 = r2 * (1.0 - hc / hx);	/* product of a*b where h = hc */
 	*A = M_PI * rc2;
 	*V = 0.5 * (*A) * (pow (hx - hc, 2.0) / hx - f*f * (hx - h));
 	*z = (*V) / (*A);
