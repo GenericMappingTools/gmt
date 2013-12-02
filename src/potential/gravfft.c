@@ -23,6 +23,7 @@
  *         	13-SEP-2002
  * GMT5ed   17-MAR-2012
  *          14-Feb-2013		Big rework by PW
+ *          1-Dec-2013		Added -T with infill density approximation
  *
  *
  * For details, see Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the Azores Plateau:
@@ -95,9 +96,9 @@ struct GRAVFFT_CTRL {
 	struct GRVF_S {	/* -S<scale> */
 		bool active;
 	} S;
-	struct GRVF_T {	/* -T<te/rl/rm/rw/ri> */
-		bool active, moho;
-		double te, rhol, rhom, rhow;
+	struct GRVF_T {	/* -T<te/rl/rm/rw[/ri>][+m] */
+		bool active, moho, approx;
+		double te, rhol, rhom, rhow, rhoi;
 		double rho_cw;		/* crust-water density contrast */
 		double rho_mc;		/* mantle-crust density contrast */
 		double rho_mw;		/* mantle-water density contrast */
@@ -304,14 +305,16 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				break;
 			case 'T':
 				Ctrl->T.active = true;
-				sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->T.te, &Ctrl->T.rhol, &Ctrl->T.rhom, &Ctrl->T.rhow);
+				n = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &Ctrl->T.te, &Ctrl->T.rhol, &Ctrl->T.rhom, &Ctrl->T.rhow, &Ctrl->T.rhoi);
 				Ctrl->T.rho_cw = Ctrl->T.rhol - Ctrl->T.rhow;
 				Ctrl->T.rho_mc = Ctrl->T.rhom - Ctrl->T.rhol;
 				Ctrl->T.rho_mw = Ctrl->T.rhom - Ctrl->T.rhow;
+				if (n < 5) Ctrl->T.rhoi = Ctrl->T.rhol;
+				if (n == 5 && Ctrl->T.rhoi != Ctrl->T.rhol) Ctrl->T.approx = true;	/* Calculate approximate flexure */
 				if (Ctrl->T.te > 1e10) { /* Given flexural rigidity, compute Te */
 					Ctrl->T.te = pow ((12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO)) * Ctrl->T.te / YOUNGS_MODULUS, 1./3.);
 				}
-				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Fragile. Needs further testing */
+				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Fragile. Needs further testing unless -Q is used */
 					Ctrl->T.moho = true;
 					override_mode = GMT_FFT_REMOVE_MID;		/* Leave trend alone and remove mid value */
 				}
@@ -387,7 +390,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid>[-A<z_offset>] [-C<n/wavelength/mean_depth/tbw>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
-	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[+m]] [%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -435,6 +438,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t   water, all in SI units. Give average mantle depth via -Z\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   If the elastic thickness is > 1e10 it will be interpreted as the\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   flexural rigidity (by default it is computed from Te and Young modulus).\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t   If an optional infill density <ri> != <rl> is appended we find an approximate solution.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   Optionaly, append +m to write a grid with the Moho's geopotential effect\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   (see -F) from model selected by -T.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-Z Specify Moho [and swell] average compensation depths.\n");
@@ -722,17 +726,27 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 	rw, the water density, is used to set the Airy ratio and the restoring
 	force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air (ri changed to rl).  */
 	uint64_t k;
-	double  airy_ratio, rigidity_d, d_over_restoring_force, mk, k2, k4, transfer_fn;
+	double  A = 1.0, rho_load, airy_ratio, rigidity_d, d_over_restoring_force, mk, k2, k4, transfer_fn;
 	float *datac = Grid->data;
 
 	/*   te	 Elastic thickness, SI units (m)  */
 	/*   rl	 Load density, SI units  */
 	/*   rm	 Mantle density, SI units  */
 	/*   rw	 Water density, SI units  */
+	/*   [ri Infill density, SI units]  */
+	/* If infill density was specified then Ctrl->T.approx will be true, in which case we will do the
+	 * approximate FFT solution of Wessel [2001, JGR]: Use rhoi instead of rhol to determine flexural wavelength
+	 * and and amplitudes but scale airy_ratio by A to compensate for the lower load weight */
 	
+	rho_load = Ctrl->T.rhol;
+	if (Ctrl->T.approx) {	/* Do approximate calculation when both rhol and rhoi were set */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Approximate FFT-solution to flexure since rho_i (%g) != rho_l (%g)\n", Ctrl->T.rhol, Ctrl->T.rhoi);
+		rho_load = Ctrl->T.rhoi;
+		A = sqrt ((Ctrl->T.rhom - Ctrl->T.rhoi)/(Ctrl->T.rhom - Ctrl->T.rhol));
+	}
 	rigidity_d = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	d_over_restoring_force = rigidity_d / ( (Ctrl->T.rhom - Ctrl->T.rhol) * NORMAL_GRAVITY);
-	airy_ratio = -(Ctrl->T.rhol - Ctrl->T.rhow)/(Ctrl->T.rhom - Ctrl->T.rhol);
+	d_over_restoring_force = rigidity_d / ( (Ctrl->T.rhom - rho_load) * NORMAL_GRAVITY);
+	airy_ratio = -A * (rho_load - Ctrl->T.rhow)/(Ctrl->T.rhom - rho_load);
  
 	if (Ctrl->T.te == 0.0) {      /* Airy isostasy; scale global variable scale_out and return */
 		scale_out *= airy_ratio;
