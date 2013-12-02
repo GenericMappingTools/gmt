@@ -104,6 +104,7 @@ struct GRAVFFT_CTRL {
 		double rho_mw;		/* mantle-water density contrast */
 	} T;
 	struct GRVF_Z {
+		bool active;
 		double zm;		/* mean Moho depth (given by user) */
 		double zl;		/* mean depth of swell compensation (user given) */		
 	} Z;
@@ -320,6 +321,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'Z':
+				Ctrl->Z.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.zm, &Ctrl->Z.zl);
 				break;
 			default:
@@ -359,8 +361,6 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 					"Syntax error -G option: Must specify output file\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !Ctrl->T.active, "Error: -Q implies also -T\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->T.active, "Error: -S implies also -T\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !Ctrl->Z.zm, 
-					"Error: for creating the flex_file I need to know it's average depth (see -Z<zm>)\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->T.moho && !Ctrl->Z.zm, 
 					"Error: for computing the Moho's effect I need to know it's average depth (see -Z<zm>)\n");
 		n_errors += GMT_check_condition (GMT, !(Ctrl->D.active || Ctrl->T.active || Ctrl->S.active || 
@@ -740,10 +740,12 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 	
 	rho_load = Ctrl->T.rhol;
 	if (Ctrl->T.approx) {	/* Do approximate calculation when both rhol and rhoi were set */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Approximate FFT-solution to flexure since rho_i (%g) != rho_l (%g)\n", Ctrl->T.rhol, Ctrl->T.rhoi);
+		char way = (Ctrl->T.rhoi < Ctrl->T.rhol) ? '<' : '>';
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->T.rhol, way, Ctrl->T.rhoi);
 		rho_load = Ctrl->T.rhoi;
 		A = sqrt ((Ctrl->T.rhom - Ctrl->T.rhoi)/(Ctrl->T.rhom - Ctrl->T.rhol));
 	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Using effective load density rho_l = %g and Airy boost factor A = %g\n", rho_load, A);
 	rigidity_d = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
 	d_over_restoring_force = rigidity_d / ( (Ctrl->T.rhom - rho_load) * NORMAL_GRAVITY);
 	airy_ratio = -A * (rho_load - Ctrl->T.rhow)/(Ctrl->T.rhom - rho_load);

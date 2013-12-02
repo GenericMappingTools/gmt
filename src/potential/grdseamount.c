@@ -2,8 +2,8 @@
  * $Id$
  *
  * grdseamount.c will create a grid made up from elliptical or circular
- * seamounts that can be Gaussian or Conical, with or without truncated
- * tops.
+ * seamounts that can be Gaussian, Conical or Disc, with or without truncated
+ * tops (not for dics, obviously, as already truncated).
  *
  * Author: Paul Wessel
  * Date: 3-MAR-2031
@@ -17,6 +17,11 @@
 
 #define GMT_PROG_OPTIONS "-:RVbfhir" GMT_OPT("FH")
 
+#define SHAPE_GAUS	0
+#define SHAPE_PARA	1
+#define SHAPE_CONE	2
+#define SHAPE_DISC	3
+
 struct GRDSEAMOUNT_CTRL {
 	struct A {	/* -A[<out>/<in>] */
 		bool active;
@@ -24,6 +29,7 @@ struct GRDSEAMOUNT_CTRL {
 	} A;
 	struct C {	/* -C */
 		bool active;
+		unsigned int mode;	/* 0 = Gaussian, 1 = parabola, 2 = cone, 3 = disc */
 	} C;
 	struct E {	/* -E */
 		bool active;
@@ -83,7 +89,7 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-C] [-E] [-L[<hcut>]] [-N<norm>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-E] [-L[<hcut>]] [-N<norm>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<r_scale>] [-T[<flat>]] [-Z<base>] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n",
 		GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
@@ -94,7 +100,8 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T (no argument) is given a final column with flattening is expected.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Build a mAsk grid, append outside/inside values [1/NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Here, height is ignored and -L, -N and -Z are disallowed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Cone model [Default is Gaussian]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Choose between c(one), d(isc), p(arabola) or g(aussian) model [cone].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is not given the we default to Gaussian features.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Elliptical data format [Default is Circular].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Read lon, lat, azimuth, major, minor, height (m) for each seamount\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of output grdfile\n");
@@ -145,6 +152,13 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 				break;
 			case 'C':
 				Ctrl->C.active = true;
+				switch (opt->arg[0]) {
+					case 'c': Ctrl->C.mode = SHAPE_CONE; break;
+					case 'd': Ctrl->C.mode = SHAPE_DISC; break;
+					case 'p': Ctrl->C.mode = SHAPE_PARA; break;
+					case 'g': Ctrl->C.mode = SHAPE_GAUS; break;
+					default:  Ctrl->C.mode = SHAPE_CONE; break;
+				}
 				break;
 			case 'E':
 				Ctrl->E.active = true;
@@ -198,6 +212,7 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	}
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->T.active, "Syntax error -Cd: Cannot specify -T for discs\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active), "Syntax error -A option: Cannot use -L, -N or -Z with -A\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
@@ -206,6 +221,32 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	n_errors += GMT_check_binary_io (GMT, n_expected_fields);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+}
+
+void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
+{
+	/* Compute area and volume of circular or elliptical disc "seamounts".
+	 * Here, f and hc are not used. */
+
+	double r2;
+
+	r2 = a * b;
+	*A = M_PI * r2;
+	*V = *A * h;
+	*z = h;
+}
+
+void para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
+{
+	/* Compute area and volume of circular or elliptical parabolic seamounts. */
+	/* Not implemented yet */
+	double e, r2;
+
+	r2 = a * b;
+	e = 1.0 - f;
+	*A = M_PI * r2 * (1.0 - e * hc / h);
+	*V = (M_PI / (3 * e)) * r2 * h * (pow (e, 3.0) * ((1.0 / e) - (hc / h)) - pow (f, 3.0));
+	*z = (*V) / (*A);
 }
 
 void cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
@@ -316,7 +357,12 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
-		shape_func = (Ctrl->C.active) ? cone_area_volume_height : gaussian_area_volume_height;
+		switch (Ctrl->C.mode) {
+			case SHAPE_CONE:  shape_func = cone_area_volume_height; break;
+			case SHAPE_DISC:  shape_func = disc_area_volume_height; break;
+			case SHAPE_PARA:  shape_func = para_area_volume_height; break;
+			case SHAPE_GAUS:  shape_func = gaussian_area_volume_height; break;
+		}
 	}
 	else {	/* Set up and allocate output grid */
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -394,7 +440,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			r_km = r_in * Ctrl->S.value;	/* Scaled up by user scale */
 			r = r_km;			/* Copy of r_km */
 			if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-			f = (Ctrl->C.active) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
+			f = (Ctrl->C.mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
 			amplitude = in[3];		/* Seamount max height from base */
 			if (Ctrl->T.mode == 1) Ctrl->T.value = in[4];	/* Flattening given by input file */
 		}
@@ -414,8 +460,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			continue;	/* Skip the grid part */
 		}
 		
-		h_scale = 1.0 / ((Ctrl->C.active) ? (1.0 - Ctrl->T.value) : exp (-4.5 * Ctrl->T.value * Ctrl->T.value));	/* So h is 1 at r_top */
-		if (!Ctrl->C.active) h_scale *= h_scl;
+		h_scale = 1.0 / ((Ctrl->C.mode == SHAPE_CONE) ? (1.0 - Ctrl->T.value) : exp (-4.5 * Ctrl->T.value * Ctrl->T.value));	/* So h is 1 at r_top */
+		if (Ctrl->C.mode != SHAPE_CONE) h_scale *= h_scl;
 
 		/* Initialize local search machinery */
 		if (d_col) GMT_free (GMT, d_col);
@@ -439,26 +485,34 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 				x = GMT_grd_col_to_x (GMT, col, Grid->header);
 				this_r = GMT_distance (GMT, in[GMT_X], in[GMT_Y], x, y);	/* In Cartesian units or km (if map is true) */
 				if (this_r > r_km) continue;	/* Beyond the base of the seamount */
-				if (Ctrl->E.active) {	/* Here we must deal with direction etc */
+				if (Ctrl->E.active) {	/* For Gaussian we must deal with direction etc */
 					dx = (map) ? (x - in[GMT_X]) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - in[GMT_X]);
 					dy = (map) ? (y - in[GMT_Y]) * GMT->current.proj.DIST_KM_PR_DEG : (y - in[GMT_Y]);
 					this_r = A * dx * dx + 2.0 * B * dx * dy + C * dy * dy;
 					/* this_r is now r^2 in the 0 to -4.5 range expected for the Gaussian case */
 					rr = sqrt (-this_r/4.5);	/* Convert this r^2 to a normalized radius 0-1 inside cone */
 					if (Ctrl->A.active && rr > 1.0) continue;	/* Beyond the seamount base so nothing to do for a mask */
-					if (Ctrl->C.active) {	/* Elliptical cone case */
+					if (Ctrl->C.mode == SHAPE_CONE) {	/* Elliptical cone case */
 						if (rr < 1.0)	/* Since in minor direction rr may exceed 1 and is outside ellipse */
 							add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr) * h_scale;
 						else
 							add = 0.0;
 					}
+					else if (Ctrl->C.mode == SHAPE_DISC)	/* Elliptical disc/plateau case */
+						add = (rr < Ctrl->T.value) ? 1.0 : 0.0;
+					else if (Ctrl->C.mode == SHAPE_PARA)	/* Elliptical parabolic case */
+						add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr*rr) * h_scale - noise;
 					else	/* Elliptical Gaussian case */
 						add = (rr < Ctrl->T.value) ? 1.0 : exp (this_r) * h_scale - noise;
 				}
 				else {	/* Circular features */
 					rr = this_r / r_km;	/* Now in 0-1 range */
-					if (Ctrl->C.active)	/* Circular cone case */
+					if (Ctrl->C.mode == SHAPE_CONE)	/* Circular cone case */
 						add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr) * h_scale;
+					else if (Ctrl->C.mode == SHAPE_DISC)	/* Circular disc/plateau case */
+						add = (rr < Ctrl->T.value) ? 1.0 : 0.0;
+					else if (Ctrl->C.mode == SHAPE_PARA)	/* Circular parabolic case */
+						add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr*rr) * h_scale - noise;
 					else	/* Circular Gaussian case */
 						add = (rr < Ctrl->T.value) ? 1.0 : exp (f * this_r * this_r) * h_scale - noise;
 				}

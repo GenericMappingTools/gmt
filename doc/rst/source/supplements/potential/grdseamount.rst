@@ -16,7 +16,7 @@ Synopsis
 **grdseamount** [ *intable* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [*out/in*\ ] ] [ **-C** ] [ **-E** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
+[ **-A**\ [*out/in*\ ] ] [ **-Cc**\|**d**\|**g**\|**p** ] [ **-E** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
 [ **-N**\ *norm* ] [ **-S**\ *scale* ] [ **-T**\ [*flattening*] ] [ **-Z**\ *level* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -31,12 +31,12 @@ Description
 
 **grdseamount** will compute the bathymetry for synthetic seamounts given their shape
 parameters.  We read a list with seamount locations and sizes and can evaluate either
-Gaussian or conical shapes, which may be circular or elliptical, and optionally truncated.
+Gaussian, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
 Various scaling options are available to modify the result, including an option to add in
 a background depth.  The input must contain *lon, lat, radius, height* for each seamount.
 For elliptical features (**-E**) we expect *lon, lat, azimuth, semi-major, semi-minor,
 radius, height* instead. If flattening is specified (**-T**) then a final column with
-flattening is expected.
+flattening is expected (cannot be used for plateaus).
 
 Required Arguments
 ------------------
@@ -54,7 +54,8 @@ Optional Arguments
     Here, height is ignored and **-L**, **-N** and **-Z** are disallowed
 
 **-C**
-    Cone model [Default is Gaussian].
+    Select shape model; choose among **c* (cone), **d** (disc), **g** (Gaussian)
+    and **p** (parabolic) models [Default is Gaussian].
 
 **-E**
     Elliptical data format [Default is Circular]. Read lon, lat, azimuth,
@@ -75,7 +76,7 @@ Optional Arguments
 
 **-T**\ [*flattening*]
     Seamounts are to be truncated.  Append *flattening*, otherwise we expect
-    it in last input column [no truncation].
+    it in last input column [no truncation].  Cannot be used with **-Cd**.
 
 **-Z**\ *level*
     Add in background depth [0].
