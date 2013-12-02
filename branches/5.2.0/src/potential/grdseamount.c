@@ -226,26 +226,28 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
 {
 	/* Compute area and volume of circular or elliptical disc "seamounts".
-	 * Here, f and hc are not used. */
+	 * Here, f is not used. */
 
 	double r2;
 
 	r2 = a * b;
 	*A = M_PI * r2;
-	*V = *A * h;
-	*z = h;
+	*z = h - hc;
+	*V = *A * (*z);
 }
 
 void para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
 {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
 	/* Not implemented yet */
-	double e, r2;
+	double e, r2, rc2, hx;
 
 	r2 = a * b;
-	e = 1.0 - f;
-	*A = M_PI * r2 * (1.0 - e * hc / h);
-	*V = (M_PI / (3 * e)) * r2 * h * (pow (e, 3.0) * ((1.0 / e) - (hc / h)) - pow (f, 3.0));
+	e = 1.0 - f*f;
+	hx = h / e;	/* Height at origin if not truncated */
+	rc2 = r2 * (1.0 - hc / hx);	/* a*b where h = hc */
+	*A = M_PI * rc2;
+	*V = 0.5 * (*A) * (pow (hx - hc, 2.0) / hx - f*f * (hx - h));
 	*z = (*V) / (*A);
 }
 
@@ -376,9 +378,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
 	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
 	DEG_PR_KM = 1.0 / GMT->current.proj.DIST_KM_PR_DEG;
-	noise = exp (-4.5);		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
-	h_scl = 1.0 / (1.0 - noise);	/* Compensation scale to make the peak amplitude = 1 given our adjustment for noise above */
-
+	if (Ctrl->C.mode == SHAPE_GAUS) {
+		noise = exp (-4.5);		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
+		h_scl = 1.0 / (1.0 - noise);	/* Compensation scale to make the peak amplitude = 1 given our adjustment for noise above */
+	}
 	if (map) d_mode = 2, unit = 'k';	/* Select km and great-circle distances */
 	GMT_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);
 
@@ -460,8 +463,13 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			continue;	/* Skip the grid part */
 		}
 		
-		h_scale = 1.0 / ((Ctrl->C.mode == SHAPE_CONE) ? (1.0 - Ctrl->T.value) : exp (-4.5 * Ctrl->T.value * Ctrl->T.value));	/* So h is 1 at r_top */
-		if (Ctrl->C.mode != SHAPE_CONE) h_scale *= h_scl;
+		switch (Ctrl->C.mode) {
+			case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->T.value); break;
+			case SHAPE_DISC:  h_scale = 1.0; break;
+			case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->T.value * Ctrl->T.value); break;
+			case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->T.value * Ctrl->T.value); break;
+		}
+		if (Ctrl->C.mode == SHAPE_GAUS) h_scale *= h_scl;
 
 		/* Initialize local search machinery */
 		if (d_col) GMT_free (GMT, d_col);
@@ -499,9 +507,9 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 							add = 0.0;
 					}
 					else if (Ctrl->C.mode == SHAPE_DISC)	/* Elliptical disc/plateau case */
-						add = (rr < Ctrl->T.value) ? 1.0 : 0.0;
+						add = (rr <= 1.0) ? 1.0 : 0.0;
 					else if (Ctrl->C.mode == SHAPE_PARA)	/* Elliptical parabolic case */
-						add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr*rr) * h_scale - noise;
+						add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
 					else	/* Elliptical Gaussian case */
 						add = (rr < Ctrl->T.value) ? 1.0 : exp (this_r) * h_scale - noise;
 				}
@@ -510,9 +518,9 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 					if (Ctrl->C.mode == SHAPE_CONE)	/* Circular cone case */
 						add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr) * h_scale;
 					else if (Ctrl->C.mode == SHAPE_DISC)	/* Circular disc/plateau case */
-						add = (rr < Ctrl->T.value) ? 1.0 : 0.0;
+						add = (rr <= 1.0) ? 1.0 : 0.0;
 					else if (Ctrl->C.mode == SHAPE_PARA)	/* Circular parabolic case */
-						add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr*rr) * h_scale - noise;
+						add = (rr < Ctrl->T.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
 					else	/* Circular Gaussian case */
 						add = (rr < Ctrl->T.value) ? 1.0 : exp (f * this_r * this_r) * h_scale - noise;
 				}

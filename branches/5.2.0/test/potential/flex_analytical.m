@@ -110,3 +110,16 @@ w = zeros (size (x));				% Get array for results
 
 w(in) = -h * airy * (1.0 + a * ber (x(in)) + b * bei (x(in)));	% inside solution
 w(out) = -h * airy * (c * ker (x(out)) + d * kei (x(out)));	% outside solution
+
+function k = flex3dk (te, delrho)
+% flex3dk calculates the flexural wavenumber for a
+% 3-D plate on elastic foundation.
+% k = flex3dk (te, delrho)
+%     te	- the elastic thickness[es] in m
+%     delrho	- density contrast in kg/m^3
+%
+%     the wavenumber is returned in 1/meters
+
+	E = 7.0e10;
+	v = 0.25;
+	k = (((12.0 * delrho * 9.806199203 * (1.0 - v * v)) / E) ^ 0.25) * (te .^ (-0.75));
