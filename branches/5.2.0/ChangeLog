@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-12-01	pwessel
+	* potential/gravfft.c:	Added approximate flex solution when rhoi != rhol
+	* potential/grdseamount.c:	Added shapes parabola and disc
+
 2013-11-09	pwessel
 	* gmt_shore.c:		Extended -A option with modifiers to handle various
 				Antarctica options available via GSHHG 2.3.0
