@@ -219,7 +219,7 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file\n");
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->T.mode == 1) ? 1 : 0);
 	n_errors += GMT_check_binary_io (GMT, n_expected_fields);
-	if (Ctrl->C.mode == SHAPE_DISC && Ctrl->T.active) {Ctrl->T.active = false; Ctrl->T.mode = 0; Ctrl->T.value = 0.0}
+	if (Ctrl->C.mode == SHAPE_DISC && Ctrl->T.active) {Ctrl->T.active = false; Ctrl->T.mode = 0; Ctrl->T.value = 0.0;}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
