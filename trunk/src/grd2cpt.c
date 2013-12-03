@@ -239,7 +239,8 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 				n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += GMT_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high), "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				n_errors += GMT_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high),
+								"Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'I':	/* Reverse scale */
 				Ctrl->I.active = true;
@@ -310,13 +311,19 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 	}
 
 	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max, "Syntax error -L option: min_limit must be less than max_limit.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0 && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0), "Syntax error -S option: Bad arguments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0  && Ctrl->S.n_levels == 0, "Syntax error -S option: Bad arguments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active), "Syntax error -S option: Cannot be combined with -E nor -T option.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
+					"Syntax error: -W and -Z cannot be used simultaneously\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max,
+					"Syntax error -L option: min_limit must be less than max_limit.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0 && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0),
+					"Syntax error -S option: Bad arguments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 1  && Ctrl->S.n_levels == 0,
+					"Syntax error -S option: Bad arguments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active),
+					"Syntax error -S option: Cannot be combined with -E nor -T option.\n");
 	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
+					"Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
