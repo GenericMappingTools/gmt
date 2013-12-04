@@ -94,6 +94,9 @@ function testgrdio()
 # export function definitions to subshells
 export -f gmt gmtlogo psldemo valgrind_wrapper
 
+# invalidate module calls without "gmt" prefix, which would bypass gmt from build dir
+. @GMT_SOURCE_DIR@/test/invalidate_modules.sh
+
 # Convert PS to PDF
 function make_pdf()
 {
