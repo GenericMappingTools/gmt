@@ -17,7 +17,7 @@ Synopsis
 [ **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
 [ **-E**\ **+**\ \|\ **-** ] [ **-I**\ [**e**\ \|\ **i**] ]
 [ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
-[ **-Q**\ [**+**\ [*unit*\ ]] ]
+[ **-Q**\ [**+h**\ ][**+l**\ ][**+p**\ ][*unit*\ ]] ]
 [ |SYN_OPT-R| ]
 [ **-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
 [ **-T**\ [*clippolygon*] ]
@@ -116,15 +116,18 @@ Optional Arguments
     polygon are not written out. If more than one polygon contains the
     same segment we skip the second (and further) scenario.
 
-**-Q**\ [**+**\ [*unit*]]
+**-Q**\ [**+h**\ ][**+l**\ ][**+p**\ ][*unit*\ ]]
     Measure the area of all polygons or length of line segments. Use
-    **-Q+** to append the area to each polygons segment header [Default
+    **-Q+h** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
     used (see UNITS). Note that the area will depend on the current
     setting of PROJ_ELLIPSOID; this should be a recent ellipsoid to get
-    accurate results. 
+    accurate results. By default, we consider open polygons as lines.
+    Append **+p** to close open polygons and thus consider all input
+    as polygons, or append **+l** to consider all input as lines, even
+    if closed.
 
 .. |Add_-Rgeo| replace:: Clips polygons to the map
     region, including map boundary to the polygon as needed. The result

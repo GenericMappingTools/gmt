@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-12-06	pwessel
+	* gmtspatial.c:		Enhanced -Q to force interpretation of lines or polygons, plus
+				changed the single + to +h [but backwards compatible].
+
 2013-12-01	pwessel
 	* potential/gravfft.c:	Added approximate flex solution when rhoi != rhol
 	* potential/grdseamount.c:	Added shapes parabola and disc
