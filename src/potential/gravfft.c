@@ -299,7 +299,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
-				override_mode = GMT_FFT_REMOVE_MID	;	/* Leave trend alone and remove mid value */
+				override_mode = GMT_FFT_REMOVE_MID;	/* Leave trend alone and remove mid value */
 				break;
 			case 'S':
 				Ctrl->S.active = true;
