@@ -1183,6 +1183,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
 			mode = GMT_IS_LINE;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which is not good for lines */
+			GMT->current.io.multi_segments[GMT_OUT] = true;	/* To ensure we can write headers */
 		}
 		else {
 			mode = GMT_IS_POINT;

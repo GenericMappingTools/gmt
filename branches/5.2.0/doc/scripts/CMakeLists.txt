@@ -70,6 +70,7 @@ foreach (_fig ${_scripts_ps})
 	string (REPLACE ".ps" ".png" _png_fig ${_fig})
 	list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
 	list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
+	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
 	if (WIN32)
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
@@ -120,6 +121,7 @@ endforeach (_fig ${_scripts_ps})
 foreach (_script ${_scr_nostrip})
 	string (REPLACE ".sh" ".txt" _txt ${_script})
 	list (APPEND _scripts_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
+	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_verbatim)
 	# Add command that triggers generator macro when output does not exist
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
 		COMMAND ${CMAKE_COMMAND}
@@ -134,6 +136,7 @@ endforeach (_script)
 foreach (_script ${_scr_strip})
 	string (REPLACE ".sh" ".txt" _txt ${_script})
 	list (APPEND _scripts_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
+	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_verbatim)
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
 		COMMAND ${CMAKE_COMMAND}
 		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
