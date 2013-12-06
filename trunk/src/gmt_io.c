@@ -1882,6 +1882,7 @@ void GMT_io_init (struct GMT_CTRL *GMT)
 
 	GMT->current.io.give_report = true;
 	GMT->current.io.seg_no = GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;	/* These gets incremented so 1 means 1st record */
+	GMT->current.io.warn_geo_as_cartesion = true;	/* Not yet read geographic data while in Cartesian mode so we want to warn if we find it */
 	GMT->current.setting.io_seg_marker[GMT_IN] = GMT->current.setting.io_seg_marker[GMT_OUT] = '>';
 	strcpy (GMT->current.io.r_mode, "r");
 	strcpy (GMT->current.io.w_mode, "w");
@@ -4509,7 +4510,13 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 
 	else if (expectation & GMT_IS_UNKNOWN) {
 		/* True if we dont know but must try both geographic or float formats  */
-		return (gmt_scanf_geo (s, val));
+		int type = gmt_scanf_geo (s, val);
+		if ((type == GMT_IS_LON) && GMT->current.io.warn_geo_as_cartesion) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Longitude input data detected and successfully converted but will be considered Cartesian coordinates.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: If you need longitudes to be processed as periodic in 360 degrees then you must use -fg.\n");
+			GMT->current.io.warn_geo_as_cartesion = false;	/* OK, done with the warning */
+		}
+		return (type);
 	}
 
 	else {

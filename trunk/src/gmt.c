@@ -169,7 +169,6 @@ int main (int argc, char *argv[]) {
 	} /* status == GMT_NOT_A_VALID_MODULE */
 
 	/* Here we have found a recognized GMT module and the API has been initialized. */
-
 	if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL)	/* Just want to know if module exists */
 		status = GMT_OK;
 	else {	/* Now run the specified GMT module: */
