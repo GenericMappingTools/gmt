@@ -1341,7 +1341,7 @@ int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int d
 	/* OK, now it is safe to remove the object; item >= 0 */
 
 	item = s_item;
-	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Unregistering object no %d\n", API->object[item]->ID);
+	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Unregistering object no %d [n_objects = %d]\n", API->object[item]->ID, API->n_objects-1);
  	if (API->object[item]->data) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Object no %d has non-NULL data pointer\n", API->object[item]->ID);
  	if (API->object[item]->resource) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Object no %d has non-NULL resource pointer\n", API->object[item]->ID);
 
@@ -1535,6 +1535,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	D_obj = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASET);
 	D_obj->table = GMT_memory (API->GMT, NULL, n_alloc, struct GMT_DATATABLE *);
 	D_obj->alloc_mode = GMT_ALLOCATED_BY_GMT;	/* So GMT_* modules can free this memory (may override below) */
+	D_obj->alloc_level = API->GMT->hidden.func_level;	/* So GMT_* modules can free this memory (may override below) */
 	use_GMT_io = !(mode & GMT_IO_ASCII);		/* false if we insist on ASCII reading */
 	API->GMT->current.io.seg_no = API->GMT->current.io.rec_no = API->GMT->current.io.rec_in_tbl_no = 0;	/* Reset for each new dataset */
 	if (API->GMT->common.R.active && API->GMT->common.R.wesn[XLO] < -180.0 && API->GMT->common.R.wesn[XHI] > -180.0) greenwich = false;
@@ -1931,6 +1932,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 	}
 	T_obj->table = GMT_memory (API->GMT, NULL, n_alloc, struct GMT_TEXTTABLE *);
 	T_obj->alloc_mode = GMT_ALLOCATED_BY_GMT;	/* So GMT_* modules can free this memory (may override below) */
+	T_obj->alloc_level = API->GMT->hidden.func_level;	/* So GMT_* modules can free this memory (may override below) */
 	
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
 		S_obj = API->object[item];	/* Current object */
@@ -2785,7 +2787,7 @@ bool GMTAPI_Not_Used (struct GMTAPI_CTRL *API, char *name)
 	unsigned int item = 0;
 	bool not_used = true;
 	while (item < API->n_objects && not_used) {
-		if (API->object[item] && API->object[item]->status != GMT_IS_UNUSED && API->object[item]->filename && !strcmp (API->object[item]->filename, name))
+		if (API->object[item] && API->object[item]->direction == GMT_IN && API->object[item]->status != GMT_IS_UNUSED && API->object[item]->filename && !strcmp (API->object[item]->filename, name))
 			/* Used resource with same name */
 			not_used = false;	/* Got item with same name, but used */
 		else
@@ -3447,7 +3449,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			if (strlen (resource)) S_obj->filename = strdup (resource);
-			sprintf (message, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], S_obj->filename, GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
+			sprintf (message, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], S_obj->filename, GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
 			break;
 
 		case GMT_IS_STREAM:	/* Methods that indirectly involve a file */
@@ -3459,7 +3461,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			S_obj->fp = resource;	/* Pass the stream of fdesc onward */
-			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
+			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
 			break;
 
 		case GMT_IS_DUPLICATE:
@@ -3475,7 +3477,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			if ((S_obj = GMTAPI_Make_DataObject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
-			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
+			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
 			break;
 
 		 case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* Here, a data grid is passed via a GMT_MATRIX structure */
@@ -3493,7 +3495,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			API->GMT->common.b.active[direction] = true;
-			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
+			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
 			break;
 		 case GMT_IS_DUPLICATE + GMT_VIA_VECTOR:	/* Here, some data vectors are passed via a GMT_VECTOR structure */
 		 case GMT_IS_REFERENCE + GMT_VIA_VECTOR:
@@ -3510,13 +3512,13 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			API->GMT->common.b.active[direction] = true;
-			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
+			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[gmtry(geometry)]);
 			break;
 		case GMT_IS_COORD:	/* Internal registration of coordinate arrays so that GMT_Destroy_Data can free them */
 			if ((S_obj = GMTAPI_Make_DataObject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
-			sprintf (message, "Object ID %%d : Registered double array %" PRIxS " as an %s resource\n", (size_t)resource, GMT_direction[direction]);
+			sprintf (message, "Object ID %%d : Registered double array %" PRIxS " as an %s resource [n_objects = %%d]\n", (size_t)resource, GMT_direction[direction]);
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "Error in GMT_Register_IO (%s): Unrecognized method %d\n", GMT_direction[direction], method);
@@ -3535,7 +3537,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	
 	if (method != GMT_IS_COORD) API->registered[direction] = true;	/* We have at least registered one item */
 	object_ID = GMTAPI_Add_Data_Object (API, S_obj);
-	GMT_Report (API, GMT_MSG_DEBUG, message, object_ID);
+	GMT_Report (API, GMT_MSG_DEBUG, message, object_ID, API->n_objects);
 	return_value (API, API->error, object_ID);
 }
 
@@ -3675,6 +3677,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 						if (p[GMT_SEG] < T_obj->n_alloc) T_obj->segment = GMT_memory (API->GMT, T_obj->segment, T_obj->n_segments, struct GMT_DATASEGMENT *);
 						D_obj->n_segments = T_obj->n_segments;
 						GMT_set_tbl_minmax (API->GMT, T_obj);
+						GMT_set_dataset_minmax (API->GMT, D_obj);
 					}
 				}
 				else if (S_obj->actual_family == GMT_IS_MATRIX) {	/* Matrix type */
@@ -4033,7 +4036,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	 * Return: false if all is well, true if there was an error (and set API->error).
 	 */
 	unsigned int n_reg;
-	int out_ID;
+	int out_ID, error;
 	struct GMTAPI_CTRL *API = NULL;
 	
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -4058,7 +4061,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Write_Data: Writing %s to memory object %d from object %d which transfers ownership\n", GMT_family[family], out_ID, in_ID);
 				API->object[in_item]->no_longer_owner = true;	/* Since we have passed the content onto an output object */
 			}
-		}	/* else it is a regular file and we jsut register it and get the new out_ID needed below */
+		}	/* else it is a regular file and we just register it and get the new out_ID needed below */
 		else if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMT_NOTSET) return_error (API, API->error);
 	}
 	else if (output == NULL && geometry) {	/* Case 2: Save to stdout.  Register stdout first. */
@@ -4619,7 +4622,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 					GMT_write_newheaders (API->GMT, S_obj->fp, S_obj->n_columns);	error = 1;	/* Write one item */
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode %u\n", mode);
 					return_error (API, GMT_NOT_A_VALID_IO_MODE);	
 					break;
 			}
@@ -4644,20 +4647,24 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 						/* Hook into table header list [NOT DONE YET] */
 						break;
 					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
+						if (p[GMT_SEG] > 0) {	/* Must firstcopy over records for the previous segments; last segment done by GMT_End_IO */
+							GMT_assign_segment (API->GMT, T_obj->segment[p[GMT_SEG]-1], p[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into segment */
+							p[GMT_SEG]++, p[GMT_ROW] = 0;	/* Go to next segment */
+							T_obj->n_segments++;
+						}
 						if (p[GMT_SEG] == T_obj->n_alloc) T_obj->segment = GMT_malloc (API->GMT, T_obj->segment, p[GMT_SEG], &T_obj->n_alloc, struct GMT_DATASEGMENT *);	
 						T_obj->segment[p[GMT_SEG]] = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
-						GMT_assign_segment (API->GMT, T_obj->segment[p[GMT_SEG]], p[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into segment */
 						if (record) T_obj->segment[p[GMT_SEG]]->header = strdup (record);		/* Default to last segment record if NULL */
-						p[GMT_SEG]++, p[GMT_ROW] = 0;	/* Go to next segment */
-						T_obj->n_segments++;
 						break;
 					case GMT_WRITE_DOUBLE:		/* Export a segment row */
 						GMT_prep_tmp_arrays (API->GMT, p[GMT_ROW], T_obj->n_columns);	/* Init or reallocate tmp read vectors */
 						for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) API->GMT->hidden.mem_coord[col][p[GMT_ROW]] = ((double *)record)[col];
 						p[GMT_ROW]++;	/* Increment rows in this segment */
 						break;
+					case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
+						break;	/* Ignore for this method */
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record (double) called with illegal mode\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode %u\n", mode);
 						return_error (API, GMT_NOT_A_VALID_IO_MODE);	
 						break;
 				}
