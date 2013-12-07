@@ -6319,6 +6319,8 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 
 	Csave = calloc (1U, sizeof (struct GMT_CTRL));
 
+	GMT_free_tmp_arrays (GMT);			/* Free temp memory for vector io or processing */
+
 	/* First memcpy over everything; this will include pointer addresses we will have to fix below */
 
 	GMT_memcpy (Csave, GMT, 1, struct GMT_CTRL);

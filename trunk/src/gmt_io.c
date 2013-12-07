@@ -4754,6 +4754,28 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T)
 	}
 }
 
+void GMT_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D)
+{
+	uint64_t tbl, col;
+	struct GMT_DATATABLE *T = NULL;
+	if (!D) return;	/* No dataset given */
+	if (!D->n_columns) return;	/* No columns given */
+	if (!D->min) D->min = GMT_memory (GMT, NULL, D->n_columns, double);
+	if (!D->max) D->max = GMT_memory (GMT, NULL, D->n_columns, double);
+	for (col = 0; col < D->n_columns; col++) {	/* Initialize */
+		D->min[col] = DBL_MAX;
+		D->max[col] = -DBL_MAX;
+	}
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		T = D->table[tbl];
+		for (col = 0; col < D->n_columns; col++) {
+			if (T->min[col] < D->min[col]) D->min[col] = T->min[col];
+			if (T->max[col] > D->max[col]) D->max[col] = T->max[col];
+		}
+	}
+	
+}
+
 int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PALETTE *P, bool *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  bool *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, unsigned int def_outline, struct GMT_OGR_SEG *G)
 {
 	/* Scan header for occurrences of valid GMT options.
