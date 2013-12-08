@@ -6,6 +6,9 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2013-12-08	remko
+	* psimage.c:		Now properly plots transparent images and makes -Gt work.
+
 2013-11-26	pwessel
 	* gmt_io.c:		GMT would crash on a blank line with no newline at end at all.
 	* pstext.c:		pstext did not process GMT4-style input properly.
