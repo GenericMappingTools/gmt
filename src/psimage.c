@@ -179,7 +179,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 				break;
 			case 'G':	/* Background/foreground color for 1-bit images */
 				Ctrl->G.active = true;
-				letter = (GMT_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case F|f|B|b switching below */
+				letter = (GMT_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case f|b|t switching below */
 				switch (letter) {
 					case 'f':
 						/* Set color for foreground pixels */
@@ -415,7 +415,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		j = header.depth / 8;
 		n = j * (header.width * header.height + 1);
 		buffer = GMT_memory (GMT, NULL, n, unsigned char);
-		for (i = 0; i < j; i++) buffer[i] = (unsigned char)Ctrl->G.t_rgb[i];
+		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.t_rgb[i]);
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
 #ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_OK) {	/* If I is NULL then nothing is done */
