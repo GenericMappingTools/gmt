@@ -28,8 +28,8 @@ Description
 
 **grdcut** will produce a new *outgrid* file which is a subregion of
 *ingrid*. The subregion is specified with **-R** as in other programs;
-the specified range must not exceed the range of *ingrid*. If in doubt,
-run **grdinfo** to check range. Alternatively, define the subregion
+the specified range must not exceed the range of *ingrid* (but see **-N**).
+If in doubt, run **grdinfo** to check range. Alternatively, define the subregion
 indirectly via a range check on the node values or via distances from a
 given point. Complementary to **grdcut** there is **grdpaste**, which
 will join together two grid files along a common edge. 
@@ -92,7 +92,7 @@ the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, 
     gmt grdcut grav_148_162_8_32.nc -Ggrav_150_160_10_30.nc -R150/160/10/30 -V
 
 To return the subregion of a grid such that any boundary strips where
-all values are entirely above 0, try
+all values are entirely above 0 are excluded, try
 
    ::
 
