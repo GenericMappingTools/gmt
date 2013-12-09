@@ -4036,7 +4036,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	 * Return: false if all is well, true if there was an error (and set API->error).
 	 */
 	unsigned int n_reg;
-	int out_ID, error;
+	int out_ID;
 	struct GMTAPI_CTRL *API = NULL;
 	
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
