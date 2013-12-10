@@ -343,6 +343,34 @@ void gmt_lab_to_rgb (struct GMT_CTRL *GMT, double rgb[], double lab[])
 
 #define gmt_is_fill(GMT,word) (!strcmp(word,"-") || gmt_is_pattern (word) || gmt_is_color (GMT, word))
 
+void GMT_flip_angle_f (struct GMT_CTRL *GMT, float *angle)
+{
+	if (GMT->current.proj.projection == GMT_LINEAR) {	/* Must check if negative scales were used */
+		if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
+			if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
+				*angle += 180.0f;
+			else
+				*angle = 180.0f - (*angle);
+		}
+		else if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale only */
+			*angle = -*angle;
+	}
+}
+
+void GMT_flip_angle_d (struct GMT_CTRL *GMT, double *angle)
+{
+	if (GMT->current.proj.projection == GMT_LINEAR) {	/* Must check if negative scales were used */
+		if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
+			if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
+				*angle += 180.0;
+			else
+				*angle = 180.0 - (*angle);
+		}
+		else if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale only */
+			*angle = -*angle;
+	}
+}
+
 unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned int *f)
 {
 	/* Fills the integer array f with the prime factors of n.
