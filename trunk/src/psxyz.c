@@ -704,11 +704,13 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 						data[n].dim[0] = p_in[ex1];	/* direction */
 						data[n].dim[1] = p_in[ex2];
 						data[n].dim[2] = p_in[ex3];
+						GMT_flip_angle_f (GMT, &data[n].dim[0]);
 					}
 					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						data[n].dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
 						data[n].dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
 						data[n].dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
+						GMT_flip_angle_f (GMT, &data[n].dim[0]);
 					}
 					else {				/* Got axis in km */
 						data[n].dim[0] = p_in[ex1];	/* Azimuth will be forwarded to GMT_geo_rectangle/ellipse */
@@ -748,6 +750,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 						data[n].dim[1] = hypot (data[n].x - x_2, data[n].y - y_2);	/* Compute vector length in case of shrinking */
 					}
 					else {
+						GMT_flip_angle_f (GMT, &data[n].dim[0]);
 						sincosd (data[n].dim[0], &s, &c);
 						x_2 = data[n].x + data[n].dim[1] * c;
 						y_2 = data[n].y + data[n].dim[1] * s;

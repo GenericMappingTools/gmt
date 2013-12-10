@@ -6,6 +6,11 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2013-12-10	pwessel
+	* grdvector.c:		Vector direction did not adjust when negative scales were
+				used in -JX or -Jx.
+	* psxy[z].c		---"---
+
 2013-12-08	remko
 	* psimage.c:		Now properly plots transparent images and makes -Gt work.
 
