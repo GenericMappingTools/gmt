@@ -195,8 +195,7 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the rotation file to be used (see man page for format).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if you want to invert the rotations prior to use.\n");
+	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output CVA grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid interval(s); Append m [or c] to <dx> and/or <dy> for minutes [or seconds].\n");
 	GMT_Option (API, "Rg");

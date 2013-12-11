@@ -127,7 +127,9 @@ int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to extract that rotation from the GPlates rotation database (if installed)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Or, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All rotation poles are assumed to be in geocentric coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rotations will be added/subtracted in the order given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
