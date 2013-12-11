@@ -343,6 +343,11 @@ void gmt_lab_to_rgb (struct GMT_CTRL *GMT, double rgb[], double lab[])
 
 #define gmt_is_fill(GMT,word) (!strcmp(word,"-") || gmt_is_pattern (word) || gmt_is_color (GMT, word))
 
+/* The two flip_angle functions are needed when vectors given by angle/length is to be plotted
+ * using Cartesian projections in which the direction of positive x and/or y-axis might have
+ * been reversed.  Thus we flip the vector angle accordingly.
+ */
+
 void GMT_flip_angle_f (struct GMT_CTRL *GMT, float *angle)
 {
 	if (GMT->current.proj.projection == GMT_LINEAR) {	/* Must check if negative scales were used */
