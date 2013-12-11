@@ -18,6 +18,15 @@
 
 #include "okbfuns.h"
 
+static double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi);
+static double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
+	double c_tet, double s_tet, double c_phi, double s_phi); 
+static double eq_30 (double c, double s, double x, double y, double z);
+static double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z);
+static void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or, double *c_tet, double *s_tet,
+	double *c_phi, double *s_phi);
+
+/*--------------------------------------------------------------------*/
 double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, bool is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int pm, struct LOC_OR *loc_or) {
 
@@ -80,8 +89,8 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 			loc_or[l].z = body_verts[k].z - z_o;
 		}
 		rot_17 (n_vert, top, loc_or, &c_tet, &s_tet, &c_phi, &s_phi); /* rotate coords by eq (17) of okb */
-		okb += (is_grav) ? okb_grv (n_vert, loc_or, &c_phi) :
-				okb_mag (n_vert, km, pm, loc_or, &c_tet, &s_tet, &c_phi, &s_phi);
+		okb += (is_grav) ? okb_grv (n_vert, loc_or, c_phi) :
+				okb_mag (n_vert, km, pm, loc_or, c_tet, s_tet, c_phi, s_phi);
 		cnt_v += n_vert;
 	}
 	tot = (is_grav) ? okb * rho: okb;
@@ -89,7 +98,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 }
 
 /* ---------------------------------------------------------------------- */
-void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
+static void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 	/* Rotates coordinates by teta and phi acording to equation (17) of Okabe */
 	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */
@@ -131,13 +140,13 @@ void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
 }
 
 /* ---------------------------------------------------------------------- */
-double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double *c_phi) {
+static double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi) {
 /*  Computes the gravity anomaly due to a facet. */
 
 	unsigned int l;
 	double x1, x2, y1, y2, dx, dy, r, c_psi, s_psi, grv = 0, grv_p;
 
-	if (fabs(*c_phi) < FLT_EPSILON) return 0.0;
+	if (fabs(c_phi) < FLT_EPSILON) return 0.0;
 	for (l = 0; l < n_vert; l++) {
 		x1 = loc_or[l].x;	x2 = loc_or[l+1].x;
 		y1 = loc_or[l].y;	y2 = loc_or[l+1].y;
@@ -151,10 +160,11 @@ double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double *c_phi) {
 			grv_p = 0;
 		grv += grv_p;
 	}
-	return (grv * *c_phi);
+	return (grv * c_phi);
 }
+
 /* ---------------------------------------------------------------------- */
-double eq_30 (double c, double s, double x, double y, double z) {
+static double eq_30 (double c, double s, double x, double y, double z) {
 	double r, Ji = 0, log_arg;
 
 	r = sqrt(x * x + y * y + z * z);
@@ -169,23 +179,23 @@ double eq_30 (double c, double s, double x, double y, double z) {
 }
 
 /* ---------------------------------------------------------------------- */
-double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
-			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
+static double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
+			double c_tet, double s_tet, double c_phi, double s_phi) {
 /*  Computes the total magnetic anomaly due to a facet. */
 
 	unsigned int i;
 	double qsi1, qsi2, eta1, eta2, z2, z1, dx, dy, kx, ky, kz, v, r, c_psi, s_psi;
 	double ano = 0, ano_p, mag_fac, xi, xi1, yi, yi1, mx, my, mz, r_1, tg_psi, auxil;
 
-	mag_fac = *s_phi * (mag_param[pm].rim[0] * *c_tet + mag_param[pm].rim[1] * *s_tet) +
-				   mag_param[pm].rim[2] * *c_phi;
+	mag_fac = s_phi * (mag_param[pm].rim[0] * c_tet + mag_param[pm].rim[1] * s_tet) +
+				   mag_param[pm].rim[2] * c_phi;
 
 	if (fabs(mag_fac) < FLT_EPSILON) return 0.0;
 
 	kx = mag_var[km].rk[0];	ky = mag_var[km].rk[1];	kz = mag_var[km].rk[2];
-	v = kx * *c_tet + ky * *s_tet;
-	mx = v * *c_phi - kz * *s_phi;	my = ky * *c_tet - kx * *s_tet;
-	mz = v * *s_phi + kz * *c_phi;
+	v = kx * c_tet + ky * s_tet;
+	mx = v * c_phi - kz * s_phi;	my = ky * c_tet - kx * s_tet;
+	mz = v * s_phi + kz * c_phi;
 
 	for (i = 0; i < n_vert; i++) {
 		xi = loc_or[i].x;	xi1 = loc_or[i+1].x;
@@ -211,7 +221,7 @@ double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LO
 }
 
 /* ---------------------------------------------------------------------- */
-double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z) {
+static double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z) {
 	double r, ez, Li = 0, tmp;
 
 	ez = y * y + z * z;
