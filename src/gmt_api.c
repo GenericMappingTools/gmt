@@ -150,6 +150,7 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
+#include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 #include <stdarg.h>
 
 #ifdef HAVE_DIRENT_H_
@@ -169,6 +170,8 @@
 #endif
 
 /* Various functions declared elsewhere but needed here	(see gmt_module.c) */
+EXTERN_MSC void gmt_core_module_show_all (void *API);
+EXTERN_MSC void gmt_supplements_module_show_all (void *API);
 EXTERN_MSC void *dlopen (const char *module_name, int mode);
 EXTERN_MSC int dlclose (void *handle);
 EXTERN_MSC void *dlsym (void *handle, const char *name);
