@@ -178,12 +178,13 @@ enum GMT_time_mode {
 	GMT_TIME_RESET   = 4U};		/* Reset time mark */
 
 /* Verbosity levels */
-enum GMT_enum_verbose {GMT_MSG_QUIET = 0,	/* No messages whatsoever */
-	GMT_MSG_NORMAL,			/* Default output, e.g., warnings and errors only */
-	GMT_MSG_COMPAT,			/* Compatibility warnings */
-	GMT_MSG_VERBOSE,		/* Verbose level */
-	GMT_MSG_LONG_VERBOSE,		/* Longer verbose */
-	GMT_MSG_DEBUG};			/* Debug messages for developers mostly */
+enum GMT_enum_verbose {GMT_MSG_QUIET = 0,  /* No messages whatsoever */
+	GMT_MSG_NORMAL,                        /* Default output, e.g., warnings and errors only */
+	GMT_MSG_TICTOC,                        /* To print a tic-toc elapsed time message */
+	GMT_MSG_COMPAT,                        /* Compatibility warnings */
+	GMT_MSG_VERBOSE,                       /* Verbose level */
+	GMT_MSG_LONG_VERBOSE,                  /* Longer verbose */
+	GMT_MSG_DEBUG};                        /* Debug messages for developers mostly */
 
 /*============================================================ */
 /*===============+ GMT_GRID Public Declaration =============== */

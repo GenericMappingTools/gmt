@@ -2704,12 +2704,13 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 
 int gmt_parse_V_option (struct GMT_CTRL *GMT, char arg) {
 	switch (arg) {
-		case 'q': case '0': GMT->current.setting.verbose = GMT_MSG_QUIET; break;
-		case 'n':           GMT->current.setting.verbose = GMT_MSG_NORMAL; break;
-		case 'c': case '1': GMT->current.setting.verbose = GMT_MSG_COMPAT; break;
+		case 'q': case '0': GMT->current.setting.verbose = GMT_MSG_QUIET;   break;
+		case 'n':           GMT->current.setting.verbose = GMT_MSG_NORMAL;  break;
+		case 't':           GMT->current.setting.verbose = GMT_MSG_TICTOC;  break;
+		case 'c': case '1': GMT->current.setting.verbose = GMT_MSG_COMPAT;  break;
 		case 'v': case '2': GMT->current.setting.verbose = GMT_MSG_VERBOSE; break;
 		case 'l': case '3': GMT->current.setting.verbose = GMT_MSG_LONG_VERBOSE; break;
-		case 'd': case '4': GMT->current.setting.verbose = GMT_MSG_DEBUG; break;
+		case 'd': case '4': GMT->current.setting.verbose = GMT_MSG_DEBUG;   break;
 		default: return true;
 	}
 	return false;
