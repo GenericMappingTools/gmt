@@ -26,6 +26,10 @@
 
 #include "gmt_dev.h"
 
+EXTERN_MSC int GMT_gmtdp (void *V_API, int mode, void *args);
+EXTERN_MSC int GMT_minmax (void *V_API, int mode, void *args);
+EXTERN_MSC int GMT_gmtstitch (void *V_API, int mode, void *args);
+
 int GMT_gmtdp (void *V_API, int mode, void *args)
 {	/* This was the GMT4 name */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
