@@ -40,8 +40,9 @@ and added this to ConfigUserCmake
     # Set location of GLIB ...:
     set (GLIB_INCLUDE_DIR "C:/programs/compa_libs/glib-2.38.2/compileds/${VC}_${BITAGE}/include/glib-2.0")
     set (GLIB_LIBRARY "C:/programs/compa_libs/glib-2.38.2/compileds/${VC}_${BITAGE}/lib/glib-2.0.lib")
+	add_definitions(/DUSE_GTHREADS)
 
-maybe you don't need the above if cmake is able to find glib in your system.
+maybe you don't need the first too above if cmake is able to find glib in your system.
 
 Use undocumented (and temporary) option -z to set the number of threads. e.g. -z2, -z4, ... or -za to use all available
 */
