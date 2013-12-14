@@ -31,10 +31,6 @@
 #ifndef _GMT_IO_H
 #define _GMT_IO_H
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
 

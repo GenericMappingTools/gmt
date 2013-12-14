@@ -110,6 +110,10 @@ EXTERN_MSC int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int obje
 #	define DT_DIR 4
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 /* Macro to apply columns log/scale/offset conversion on the fly */
 #define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
 
