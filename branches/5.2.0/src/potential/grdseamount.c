@@ -240,14 +240,13 @@ void disc_area_volume_height (double a, double b, double h, double hc, double f,
 void para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
 {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
-	double e, r2, rc2, hx;
+	double e, r2, rc2;
 
 	r2 = a * b;
 	e = 1.0 - f*f;
-	hx = h / e;	/* Height at origin if not truncated */
-	rc2 = r2 * (1.0 - hc / hx);	/* product of a*b where h = hc */
+	rc2 = r2 * (1.0 - e * hc / h);	/* product of a*b where h = hc */
 	*A = M_PI * rc2;
-	*V = 0.5 * (*A) * (pow (hx - hc, 2.0) / hx - f*f * (hx - h));
+	*V = 0.5 * M_PI * r2 * h * (e * pow ((1.0/e) - (hc/h), 2.0) - f*f*((1.0/e)-1.0));
 	*z = (*V) / (*A);
 }
 

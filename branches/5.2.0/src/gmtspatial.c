@@ -101,6 +101,9 @@ struct GMTSPATIAL_CTRL {
 		bool active;
 		unsigned int mode;
 	} E;
+	struct F {	/* -F */
+		bool active;
+	} F;
 	struct I {	/* -I[i|e] */
 		bool active;
 		unsigned int mode;
@@ -659,9 +662,9 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-F] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]]\n\t[%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-F] [-I[i|e]]\n\t[%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -686,6 +689,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   the comparison to points that project perpendicularly on to the other line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Orient all polygons to have the same handedness.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + for counter-clockwise or - for clockwise handedness.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force all input segments to become closed polygons by adding repeated point if needed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Compute Intersection locations between input polygon(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append e or i for external or internal crossings only [Default is both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use uppercase E or I to consider all segments within the same table as one entity [separate].\n");
@@ -818,6 +822,9 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 					Ctrl->E.mode = POL_IS_CCW;
 				else
 					n_errors++;
+				break;
+			case 'F':	/* Force polygon mode */
+				Ctrl->F.active = true;
 				break;
 			case 'I':	/* Compute intersections between polygons */
 				Ctrl->I.active = true;
@@ -996,6 +1003,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	
 	if (Ctrl->D.active || Ctrl->Q.active) geometry = GMT_IS_LINE;	/* May be lines, may be polygons... */
 	else if (Ctrl->A.active) geometry = GMT_IS_POINT;	/* NN analysis involves points */
+	else if (Ctrl->F.active) geometry = GMT_IS_POLY;	/* Forcing polygon mode */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
@@ -1014,6 +1022,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 	
+	if (Ctrl->F.active) {	/* We read as polygons to forec closure, now write out revised data */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
+			Return (API->error);
+		}
+		Return (EXIT_SUCCESS);
+	}
 	if (Ctrl->S.active && Ctrl->S.mode != POL_SPLIT) external = 1;
 	
 	GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Use Cartesian calculations and user units */
