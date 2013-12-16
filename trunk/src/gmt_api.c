@@ -323,19 +323,28 @@ void GMTAPI_Set_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *obj)
 #ifdef DEBUG
 void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 {	/* Can be used to display API->object info wherever it is called as part of a debug operation */
-	unsigned int item;
+	unsigned int item, ext;
 	struct GMTAPI_DATA_OBJECT *S;
-	char message[GMT_BUFSIZ];
-	if (API->deep_debug == false) return;
-	GMT_Message (API, GMT_TIME_NONE, txt);
-	sprintf (message, "N = %3.3d -----------------------------------------------------------------\n", API->n_objects);
+	char message[GMT_BUFSIZ], O, M;
+	//if (API->deep_debug == false) return;
+	if (!GMT_is_verbose (API->GMT, GMT_MSG_DEBUG)) return;
+	sprintf (message, "==> %d API Objects at end of %s\n", API->n_objects, txt);
 	GMT_Message (API, GMT_TIME_NONE, message);
+	if (API->n_objects == 0) return;
+	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
+	sprintf (message, "K.. ID RESOURCE.... DATA........ FAMILY.... DIR... S O M L\n");
+	GMT_Message (API, GMT_TIME_NONE, message);
+	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
 	for (item = 0; item < API->n_objects; item++) {
 		if ((S = API->object[item]) == NULL) continue;
-		sprintf (message, "%3.3d %3.3d %12" PRIxS " %12" PRIxS " %s\n" , item, S->ID, (size_t)S->resource, (size_t)S->data, GMT_family[S->family]);
+		O = (S->no_longer_owner) ? 'N' : 'Y';
+		M = (S->messenger) ? 'Y' : 'N';
+		ext = (S->alloc_mode == GMT_ALLOCATED_EXTERNALLY) ? '*' : ' ';
+		sprintf (message, "%c%2d %2d %12" PRIxS " %12" PRIxS " %10s %6s %d %c %c %d\n", ext, item, S->ID, (size_t)S->resource, (size_t)S->data,
+			GMT_family[S->family], GMT_direction[S->direction], S->status, O, M, S->alloc_level);
 		GMT_Message (API, GMT_TIME_NONE, message);
 	}
-	GMT_Message (API, GMT_TIME_NONE, "-------------------------------------------------------------------------\n");
+	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
 }
 #endif
 
@@ -1832,6 +1841,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			if (S_obj->resource) return (GMTAPI_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to GMT_DATASET memory location\n");
 			D_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			S_obj->alloc_mode = D_obj->alloc_mode;
 			S_obj->resource = D_obj;			/* Set resource pointer from object to this dataset */
 			break;
 			
@@ -3127,6 +3137,9 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 		else
 			i++;	/* Was allocated higher up, leave alone and go to next */
 	}
+#ifdef DEBUG
+	GMT_list_API (API, "GMTAPI_Garbage_Collection");
+#endif
 }
 
 int GMTAPI_Memory_Registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, void *resource) {
@@ -3178,6 +3191,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 		free (API);	/* Free API */
 		return_null (API, GMT_MEMORY_ERROR);
 	}
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session initialized GMT structure\n");
 
 	/* Allocate memory to keep track of registered data resources */
 
@@ -3219,6 +3233,7 @@ int GMT_Destroy_Session (void *V_API)
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	
+	GMT_Report (API, GMT_MSG_DEBUG, "Entering GMT_Destroy_Session\n");
 	GMT_Garbage_Collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
 	GMTAPI_free_sharedlibs (API);			/* Close shared libraries and free list */
 	
@@ -3539,6 +3554,9 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	if (method != GMT_IS_COORD) API->registered[direction] = true;	/* We have at least registered one item */
 	object_ID = GMTAPI_Add_Data_Object (API, S_obj);
 	GMT_Report (API, GMT_MSG_DEBUG, message, object_ID, API->n_objects);
+#ifdef DEBUG
+	GMT_list_API (API, "GMT_Register_IO");
+#endif
 	return_value (API, API->error, object_ID);
 }
 
@@ -3669,7 +3687,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 					if (D_obj && D_obj->table && D_obj->table[0]) {
 						struct GMT_DATATABLE *T_obj = D_obj->table[0];
 						uint64_t *p = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short-hand for counts of tbl, seg, rows */
-						T_obj->segment[p[GMT_SEG]] = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
+						if (!T_obj->segment[p[GMT_SEG]]) T_obj->segment[p[GMT_SEG]] = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
 						GMT_assign_segment (API->GMT, T_obj->segment[p[GMT_SEG]], p[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into segment */
 						if (API->GMT->current.io.current_record[0]) T_obj->segment[p[GMT_SEG]]->header = strdup (API->GMT->current.io.current_record);
 						p[GMT_SEG]++;	/* Total number of segments */
@@ -3793,12 +3811,22 @@ void * GMT_Retrieve_Data (void *V_API, int object_ID)
 	if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, GMT_NOTSET)) == GMT_NOTSET) {
 		return_null (API, API->error);
 	}
-	
+	/* Make sure the resource is present */
 	if (API->object[item]->resource == NULL) {
 		return_null (API, GMT_PTR_IS_NULL);
 	}
+	/* Make sure the data pointer has not been set */
+	if (API->object[item]->data) {
+		return_null (API, GMT_PTR_NOT_NULL);
+	}
+	/* Assign data from resource and wipe resource pointer */
+	API->object[item]->data = API->object[item]->resource;
+	API->object[item]->resource = NULL;
 	
-	return (API->object[item]->resource);	/* Return pointer to the container */
+#ifdef DEBUG
+	GMT_list_API (API, "GMT_Retrieve_Data");
+#endif
+	return (API->object[item]->data);	/* Return pointer to the data container */
 }
 
 #ifdef FORTRAN_API
@@ -3876,6 +3904,7 @@ void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 	}
 #ifdef DEBUG
 	GMTAPI_Set_Object (API, API->object[item]);
+	GMT_list_API (API, "GMT_Get_Data");
 #endif
 	return (new_obj);		/* Return pointer to the data container */
 }
@@ -3946,6 +3975,10 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	}
 	if ((new_obj = GMT_Get_Data (API, in_ID, mode, data)) == NULL) return_null (API, API->error);
 
+#ifdef DEBUG
+	GMT_list_API (API, "GMT_Read_Data");
+#endif
+	
 	return (new_obj);		/* Return pointer to the data container */
 }
 
@@ -4075,6 +4108,9 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	/* With out_ID in hand we can now put the data where it should go */
 	if (GMT_Put_Data (API, out_ID, mode, data) != GMT_OK) return_error (API, API->error);
 
+#ifdef DEBUG
+	GMT_list_API (API, "GMT_Write_Data");
+#endif
 	return (GMT_OK);	/* No error encountered */
 }
 
@@ -4118,6 +4154,7 @@ int GMT_Put_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 	}
 #ifdef DEBUG
 	GMTAPI_Set_Object (API, API->object[item]);
+	GMT_list_API (API, "GMT_Put_Data");
 #endif
 	return (GMT_OK);	/* No error encountered */
 }
@@ -4648,7 +4685,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 						/* Hook into table header list [NOT DONE YET] */
 						break;
 					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
-						if (p[GMT_SEG] > 0) {	/* Must firstcopy over records for the previous segments; last segment done by GMT_End_IO */
+						if (p[GMT_SEG] > 0) {	/* Must first copy over records for the previous segments; last segment done by GMT_End_IO */
 							GMT_assign_segment (API->GMT, T_obj->segment[p[GMT_SEG]-1], p[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into segment */
 							p[GMT_SEG]++, p[GMT_ROW] = 0;	/* Go to next segment */
 							T_obj->n_segments++;
@@ -5004,9 +5041,18 @@ int GMT_Destroy_Data (void *V_API, void *object)
 		void *address = API->object[item]->data;
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: freed memory for a %s for object %d\n", GMT_family[family], object_ID);
 		if ((error = GMTAPI_Unregister_IO (API, object_ID, GMT_NOTSET))) return_error (API, error);	/* Did not find object */
-		for (j = 0; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Set repeated entries to NULL so we don't try to free twice */
+		for (j = 0; j < API->n_objects; j++) {
+			if (API->object[j]->data == address) API->object[j]->data = NULL;		/* Set repeated data references to NULL so we don't try to free twice */
+			if (API->object[j]->resource == address) API->object[j]->resource = NULL;	/* Set matching resources to NULL so we don't try to read from there again */
+		}
+#ifdef DEBUG
+		GMT_list_API (API, "GMT_Destroy_Data");
+#endif
 	}
-	/* Quietly ignore these errors: GMT_PTR_IS_NULL, GMT_FREE_EXTERNAL_NOT_ALLOWED, GMT_FREE_WRONG_LEVEL as they are not considered errors here. */
+	else {
+		/* Quietly ignore these errors: GMT_PTR_IS_NULL, GMT_FREE_EXTERNAL_NOT_ALLOWED, GMT_FREE_WRONG_LEVEL as they are not considered errors here. */
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: Ignored warning %d for object %d\n", error, object_ID);
+	}
 	return (GMT_OK);	/* Returns number of items freed or an error */	
 }
 

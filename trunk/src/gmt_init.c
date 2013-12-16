@@ -1431,7 +1431,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	
 	/* Set up machinery to call mapproject */
 
-	/* Register In as input source via ref */
+	/* Register In as input source via ref (this just returns the ID associated with In sinc already registered by GMT_Create_Data) */
 	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, In)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
@@ -1444,7 +1444,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
-	was_R = GMT->common.R.active ;	was_J = GMT->common.J.active;
+	was_R = GMT->common.R.active;	was_J = GMT->common.J.active;
 	GMT->common.R.active = GMT->common.J.active = false;	/* To allow new entries */
 	
 	/* Determine suitable -R setting for this projection */
@@ -1500,8 +1500,10 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n", GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
-	GMT_free_dataset (GMT, &Out);
 	if (GMT_Destroy_Data (GMT->parent, &In) != GMT_OK) {
+		return (GMT->parent->error);
+	}
+	if (GMT_Destroy_Data (GMT->parent, &Out) != GMT_OK) {
 		return (GMT->parent->error);
 	}
 	
