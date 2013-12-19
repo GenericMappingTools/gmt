@@ -420,26 +420,26 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE,"\t<topogrd> is the input grdfile with topography (load) values, in meters. If -T is used,\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   <topogrd> may be a filename template with a floating point format (C syntax) and\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   a different load file name will be set and loaded for each time step.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-D Sets density values for mantle, load(crust), moat infill, and water in kg/m^3.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-E Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio].\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-G filename for output grdfile with flexed surface.  If -T is set then <outgrid>\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   must be a filename template that contains a floating point format (C syntax) and\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<topogrd> is the input grdfile with topography (load) values, in meters. If -T is used,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <topogrd> may be a filename template with a floating point format (C syntax) and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a different load file name will be set and loaded for each time step.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), moat infill, and water in kg/m^3.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grdfile with flexed surface.  If -T is set then <outgrid>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%s] or Poisson's ratio [%s].\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%s] or Poisson's ratio [%s].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
-	GMT_Message (API, GMT_TIME_NONE,"\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   For a single specific time, just give <start>. unit is years; append k for kyr and M for Myr.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   For a logarithmic time scale, use -Tl and specify n steps instead of time increment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. unit is years; append k for kyr and M for Myr.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, use -Tl and specify n steps instead of time increment.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE,"\t-W Specify water depth in m; append k for km.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-Z Specify reference depth to flexed surface in m; append k for km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, ".");
 	return (EXIT_FAILURE);
@@ -514,7 +514,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		
 		/* 1. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
-			user_time = Ctrl->T.start = t * Ctrl->T.inc;	/* In units of user's choice */
+			user_time = Ctrl->T.start - t * Ctrl->T.inc;	/* In units of user's choice */
 			R->time_yr = user_time * Ctrl->T.scale;		/* Now in years */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating solution for time %g\n", user_time);
 		}
@@ -544,6 +544,17 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
 		 		GMT_GRID_IS_COMPLEX_REAL, NULL, file, Orig)) == NULL)	/* Get data only */
 				Return (API->error);
+			if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
+				uint64_t node, n_subaerial = 0;
+				double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
+				for (node = 0; node < Grid->header->size; node++) {
+					if (Grid->data[node] > Ctrl->W.water_depth) {
+						Grid->data[node] = Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost;
+						n_subaerial++;
+					}
+				}
+				if (n_subaerial) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were subarial so heights were scaled for the equivalent submerged case\n", n_subaerial);
+			}
 			/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
 			(void) GMT_set_outgrid (GMT, file, Orig, &Grid);
 			/* From here we address the grid via Grid ; we are done with using the address Orig directly. */
