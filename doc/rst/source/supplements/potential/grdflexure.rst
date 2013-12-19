@@ -78,6 +78,7 @@ Optional Arguments
     [Default is one step, with no time dependency].  For a single specific time, just
     give *start*. The unit is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, use **-Tl** and specify *n* steps instead of *dt*.
+    We then write a separate grid file for each time step.
 
 **-W**\ *wd*
     Set reference depth to the undeformed flexed surface [0].
