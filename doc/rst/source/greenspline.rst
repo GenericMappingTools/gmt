@@ -19,7 +19,7 @@ Synopsis
 [ **-I**\ *xinc*\ [/*yinc*\ [/*zinc*]] ] [ **-L** ] [ **-N**\ *nodefile* ]
 [ **-Q**\ *az*\ \|\ *x/y/z* ]
 [ |SYN_OPT-Rz| ]
-[ **-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*] ] [ **-T**\ *maskgrid* ]
+[ **-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ **-T**\ *maskgrid* ]
 [ |SYN_OPT-V| ]
 [ **-W** ]
 [ |SYN_OPT-b| ]
@@ -166,7 +166,7 @@ Optional Arguments
     coordinates are geographical; note the shorthands **-Rg** and
     **-Rd** cannot be used if a 3-D domain is specified.
 
-**-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*]
+**-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*]
     Select one of six different splines. The first two are used for
     1-D, 2-D, or 3-D Cartesian splines (see **-D** for discussion). Note
     that all tension values are expected to be normalized tension in the

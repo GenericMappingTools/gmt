@@ -73,7 +73,7 @@
 
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
 #define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
-#define GMT_COMPAT_OPT(new_P) if (strchr (list, new_P)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
+#define GMT_COMPAT_OPT(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
 
 extern int gmt_geo_C_format (struct GMT_CTRL *GMT);
 extern void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
@@ -1430,7 +1430,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	
 	/* Set up machinery to call mapproject */
 
-	/* Register In as input source via ref */
+	/* Register In as input source via ref (this just returns the ID associated with In sinc already registered by GMT_Create_Data) */
 	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, In)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
@@ -1443,7 +1443,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
-	was_R = GMT->common.R.active ;	was_J = GMT->common.J.active;
+	was_R = GMT->common.R.active;	was_J = GMT->common.J.active;
 	GMT->common.R.active = GMT->common.J.active = false;	/* To allow new entries */
 	
 	/* Determine suitable -R setting for this projection */
@@ -1499,8 +1499,10 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n", GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
-	GMT_free_dataset (GMT, &Out);
 	if (GMT_Destroy_Data (GMT->parent, &In) != GMT_OK) {
+		return (GMT->parent->error);
+	}
+	if (GMT_Destroy_Data (GMT->parent, &Out) != GMT_OK) {
 		return (GMT->parent->error);
 	}
 	
@@ -2703,12 +2705,13 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 
 int gmt_parse_V_option (struct GMT_CTRL *GMT, char arg) {
 	switch (arg) {
-		case 'q': case '0': GMT->current.setting.verbose = GMT_MSG_QUIET; break;
-		case 'n':           GMT->current.setting.verbose = GMT_MSG_NORMAL; break;
-		case 'c': case '1': GMT->current.setting.verbose = GMT_MSG_COMPAT; break;
+		case 'q': case '0': GMT->current.setting.verbose = GMT_MSG_QUIET;   break;
+		case 'n':           GMT->current.setting.verbose = GMT_MSG_NORMAL;  break;
+		case 't':           GMT->current.setting.verbose = GMT_MSG_TICTOC;  break;
+		case 'c': case '1': GMT->current.setting.verbose = GMT_MSG_COMPAT;  break;
 		case 'v': case '2': GMT->current.setting.verbose = GMT_MSG_VERBOSE; break;
 		case 'l': case '3': GMT->current.setting.verbose = GMT_MSG_LONG_VERBOSE; break;
-		case 'd': case '4': GMT->current.setting.verbose = GMT_MSG_DEBUG; break;
+		case 'd': case '4': GMT->current.setting.verbose = GMT_MSG_DEBUG;   break;
 		default: return true;
 	}
 	return false;
@@ -6317,6 +6320,8 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 	struct GMT_CTRL *GMT = API->GMT, *Csave = NULL;
 
 	Csave = calloc (1U, sizeof (struct GMT_CTRL));
+
+	GMT_free_tmp_arrays (GMT);			/* Free temp memory for vector io or processing */
 
 	/* First memcpy over everything; this will include pointer addresses we will have to fix below */
 

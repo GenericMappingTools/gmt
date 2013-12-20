@@ -236,6 +236,7 @@ struct GMT_IO {				/* Used to process input data records */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
 	bool read_mixed;		/* true if we are reading ascii x y [z] [variable numbers of text] */
 	bool need_previous;		/* true if when parsing a record we need access to previous record values (e.g., for gap or duplicate checking) */
+	bool warn_geo_as_cartesion;	/* true if we should warn if we read a record with geographic data while the expected format has not been set (i.e., no -J or -fg) */
 
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */

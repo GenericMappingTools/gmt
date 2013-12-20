@@ -26,7 +26,7 @@
  * Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of
  *    Scattered Data on the Surface of a Sphere with a Surface under Tension,
  *    AMC Trans. Math. Software, 23 (3), 435-442.
- * We translated both to C using f2c and link with -lf2c
+ * We translated both to C using f2c and removed/rewrite statements that needed -lf2c
  *
  * Author:      Paul Wessel
  * Date:        1-AUG-2011

@@ -161,8 +161,7 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   First 3 columns must have lon, lat (or lat, lon, see -:) and age (Ma).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify file with the rotations to be used (see man page for format).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
+	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied to all input points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Output tracks for ages (or stages, see -L) between young and old [Default is entire track].\n");

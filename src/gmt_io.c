@@ -110,6 +110,10 @@ EXTERN_MSC int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int obje
 #	define DT_DIR 4
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 /* Macro to apply columns log/scale/offset conversion on the fly */
 #define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
 
@@ -1882,6 +1886,7 @@ void GMT_io_init (struct GMT_CTRL *GMT)
 
 	GMT->current.io.give_report = true;
 	GMT->current.io.seg_no = GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;	/* These gets incremented so 1 means 1st record */
+	GMT->current.io.warn_geo_as_cartesion = true;	/* Not yet read geographic data while in Cartesian mode so we want to warn if we find it */
 	GMT->current.setting.io_seg_marker[GMT_IN] = GMT->current.setting.io_seg_marker[GMT_OUT] = '>';
 	strcpy (GMT->current.io.r_mode, "r");
 	strcpy (GMT->current.io.w_mode, "w");
@@ -4509,7 +4514,13 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 
 	else if (expectation & GMT_IS_UNKNOWN) {
 		/* True if we dont know but must try both geographic or float formats  */
-		return (gmt_scanf_geo (s, val));
+		int type = gmt_scanf_geo (s, val);
+		if ((type == GMT_IS_LON) && GMT->current.io.warn_geo_as_cartesion) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Longitude input data detected and successfully converted but will be considered Cartesian coordinates.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: If you need longitudes to be processed as periodic in 360 degrees then you must use -fg.\n");
+			GMT->current.io.warn_geo_as_cartesion = false;	/* OK, done with the warning */
+		}
+		return (type);
 	}
 
 	else {
@@ -4745,6 +4756,28 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T)
 			if (S->max[col] > T->max[col]) T->max[col] = S->max[col];
 		}
 	}
+}
+
+void GMT_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D)
+{
+	uint64_t tbl, col;
+	struct GMT_DATATABLE *T = NULL;
+	if (!D) return;	/* No dataset given */
+	if (!D->n_columns) return;	/* No columns given */
+	if (!D->min) D->min = GMT_memory (GMT, NULL, D->n_columns, double);
+	if (!D->max) D->max = GMT_memory (GMT, NULL, D->n_columns, double);
+	for (col = 0; col < D->n_columns; col++) {	/* Initialize */
+		D->min[col] = DBL_MAX;
+		D->max[col] = -DBL_MAX;
+	}
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		T = D->table[tbl];
+		for (col = 0; col < D->n_columns; col++) {
+			if (T->min[col] < D->min[col]) D->min[col] = T->min[col];
+			if (T->max[col] > D->max[col]) D->max[col] = T->max[col];
+		}
+	}
+	
 }
 
 int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PALETTE *P, bool *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  bool *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, unsigned int def_outline, struct GMT_OGR_SEG *G)

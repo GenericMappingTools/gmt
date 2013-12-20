@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: gmt_core_module.h 12380 2013-10-23 19:20:13Z pwessel $
  *
  * Copyright (c) 2012-2013
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe

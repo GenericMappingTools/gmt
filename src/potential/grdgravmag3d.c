@@ -26,6 +26,8 @@
  * Author:	Joaquim Luis
  * Date:	1-Apr-2012
  *
+ *          Removed #if 0 code that dealt with side faces in rev r12620 
+ *
  */
 
 #define THIS_MODULE_NAME	"grdgravmag3d"
@@ -644,30 +646,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 					cos_vec2, mag_var, loc_or, &body_desc, body_verts);
 		}
 	}
-#if 0
-		k = grdgravmag3d_body_set(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 2);
-		loc_or = GMT_memory (GMT, loc_or, k, struct LOC_OR);
-		for (k = 0; k < Gout->header->ny; k++) {
-			y_o = (Ctrl->box.is_geog) ? (y_obs[k] + Ctrl->box.lat_0) * Ctrl->box.d_to_m : y_obs[k];
-			for (i = 0; i < np; i++) {
-				x_o = (Ctrl->box.is_geog) ? (x_obs[i] - Ctrl->box.lon_0) *
-						Ctrl->box.d_to_m * cos(y_obs[k]*D2R) : x_obs[i];
-				a = okabe (GMT, x_o, y_o, body_desc, km, 0, loc_or);
-				Gout->data[GMT_IJP(Gout->header, k, i)] += (float)a;
-			}
-		}
 
-		k = grdgravmag3d_body_set(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 4);
-		for (k = 0; k < Gout->header->ny; k++) {
-			y_o = (Ctrl->box.is_geog) ? (y_obs[k] + Ctrl->box.lat_0) * Ctrl->box.d_to_m : y_obs[k];
-			for (i = 0; i < np; i++) {
-				x_o = (Ctrl->box.is_geog) ? (x_obs[i] - Ctrl->box.lon_0) *
-						Ctrl->box.d_to_m * cos(y_obs[k]*D2R) : x_obs[i];
-				a = okabe (GMT, x_o, y_o, body_desc, km, 0, loc_or);
-				Gout->data[GMT_IJP(Gout->header, k, i)] += (float)a;
-			}
-		}
-#endif
 	/*---------------------------------------------------------------------------------------------*/
 
 	if (Ctrl->G.active) {
@@ -818,96 +797,30 @@ int grdgravmag3d_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct
 	double cosj, cosj1;
 	struct GMT_GRID_HEADER *h = Grid->header;
 
-		j1 = j + inc_j;		i1 = i + inc_i;
-		cosj = cos_vec[j];		cosj1 = cos_vec[j1];
+	j1 = j + inc_j;		i1 = i + inc_i;
+	cosj = cos_vec[j];		cosj1 = cos_vec[j1];
 
-		body_verts[0].x = (is_geog) ? x[i]  * cosj  : x[i];
-		body_verts[1].x = (is_geog) ? x[i1] * cosj  : x[i1];
-		body_verts[2].x = (is_geog) ? x[i1] * cosj1 : x[i1];
-		body_verts[3].x = (is_geog) ? x[i]  * cosj1 : x[i];
-		body_verts[0].y = y[j];
-		body_verts[1].y = body_verts[0].y;
-		body_verts[2].y = y[j1];
-		body_verts[3].y = body_verts[2].y;
-		if (inc_i == 1) {
-			int ij;
-			ij = (int)GMT_IJP(h,j,i);
-			body_verts[0].z = z[ij];
-			body_verts[1].z = z[ij + 1];  /* z[GMT_IJP(h,j,i1)];  */
-			ij = (int)GMT_IJP(h,j1,i1);
-			body_verts[2].z = z[ij];      /* z[GMT_IJP(h,j1,i1)]; */
-			body_verts[3].z = z[ij - 1];  /* z[GMT_IJP(h,j1,i)];  */
-		}
-		else {		/* Base surface */
-			body_verts[0].z = body_verts[1].z = body_verts[2].z = body_verts[3].z = Ctrl->Z.z0;
-		}
-#if 0
-	else {
-		int k;
-
-		n_pts = Grid->header->nx;
-		if ((face % 2) == 0) n_pts = Grid->header->ny;		/* Even faces are at const X */
-
-		body_desc->n_f = 1;
-		body_desc->n_v = GMT_memory (GMT, body_verts->n_v, body_verts->n_f, int);
-		body_desc->n_v[0] = n_pts + 2;
-		body_desc->ind = GMT_memory (GMT, body_verts->ind, body_verts->n_v[0], int);
-		body_verts.x = GMT_memory (GMT, body_verts.x, body_desc->n_v[0], double);
-		body_verts.y = GMT_memory (GMT, body_verts.y, body_desc->n_v[0], double);
-		body_verts.z = GMT_memory (GMT, body_verts.z, body_desc->n_v[0], double);
-
-		if (face == 1) {		/* South face. Build facet in CW direction when viewed from outside */
-			k = Grid->header->ny - 1;
-			if (is_geog) cosLat = cos(y[k]*D2R);
-			for (i = 0; i < n_pts; i++) {
-				body_desc->ind[i] = i;
-				body_verts[i].x = (is_geog) ? (x[i]  - Ctrl->box.lon_0) * Ctrl->box.d_to_m * cosLat : x[i];
-				body_verts[i].y = (is_geog) ? (y[k]  + Ctrl->box.lat_0)  * Ctrl->box.d_to_m : y[k];
-				body_verts[i].z = z[GMT_IJP(h,0,i)];
-			}
-		}
-		else if (face == 2) {
-			k = Grid->header->nx - 1;
-			for (i = 0; i < n_pts; i++) {
-				if (is_geog) cosLat = cos(y[i]*D2R);
-				body_desc->ind[i] = n_pts - 1 - i;
-				body_verts[i].x = (is_geog) ? (x[k]  - Ctrl->box.lon_0) * Ctrl->box.d_to_m * cosLat : x[k];
-				body_verts[i].y = (is_geog) ? (y[i]  + Ctrl->box.lat_0)  * Ctrl->box.d_to_m : y[i];
-				body_verts[i].z = z[GMT_IJP(h,i,k)];
-			}
-		}
-		else if (face == 3) {
-			k = 0;
-			if (is_geog) cosLat = cos(y[k]*D2R);
-			for (i = 0; i < n_pts; i++) {
-				i = n_pts - 1 - i;
-				body_desc->ind[i] = i;
-				body_verts[i].x = (is_geog) ? (x[i] - Ctrl->box.lon_0) * Ctrl->box.d_to_m * cosLat : x[i];
-				body_verts[i].y = (is_geog) ? (y[k]  + Ctrl->box.lat_0)  * Ctrl->box.d_to_m : y[k];
-				body_verts[i].z = z[GMT_IJP(h,h->ny-1,i)];
-			}
-		}
-		else if (face == 4) {
-			k = 0;
-			for (i = 0; i < n_pts; i++) {
-				if (is_geog) cosLat = cos(y[i]*D2R);
-				body_desc->ind[i] = i;
-				body_verts[i].x = (is_geog) ? (x[k]  - Ctrl->box.lon_0) * Ctrl->box.d_to_m * cosLat : x[k];
-				body_verts[i].y = (is_geog) ? (y[i]  + Ctrl->box.lat_0)  * Ctrl->box.d_to_m : y[i];
-				body_verts[i].z = z[GMT_IJP(h,i,k)];
-			}
-		}
-		/* Now this is common to all 4 cases */
-		body_desc->ind[n_pts]  = n_pts;
-		body_desc->ind[n_pts+1]= n_pts + 1;
-		body_verts[n_pts].x   = body_verts[n_pts-1].x;
-		body_verts[n_pts+1].x = body_verts[0].x;
-		body_verts[n_pts].y   = body_verts[n_pts-1].y;
-		body_verts[n_pts+1].y = body_verts[0].y;
-		body_verts[n_pts].z   = body_verts[n_pts+1].z = Ctrl->Z.z0;
+	body_verts[0].x = (is_geog) ? x[i]  * cosj  : x[i];
+	body_verts[1].x = (is_geog) ? x[i1] * cosj  : x[i1];
+	body_verts[2].x = (is_geog) ? x[i1] * cosj1 : x[i1];
+	body_verts[3].x = (is_geog) ? x[i]  * cosj1 : x[i];
+	body_verts[0].y = y[j];
+	body_verts[1].y = body_verts[0].y;
+	body_verts[2].y = y[j1];
+	body_verts[3].y = body_verts[2].y;
+	if (inc_i == 1) {
+		int ij;
+		ij = (int)GMT_IJP(h,j,i);
+		body_verts[0].z = z[ij];
+		body_verts[1].z = z[ij + 1];  /* z[GMT_IJP(h,j,i1)];  */
+		ij = (int)GMT_IJP(h,j1,i1);
+		body_verts[2].z = z[ij];      /* z[GMT_IJP(h,j1,i1)]; */
+		body_verts[3].z = z[ij - 1];  /* z[GMT_IJP(h,j1,i)];  */
 	}
-	return(n_pts+3);
-#endif
+	else {		/* Base surface */
+		body_verts[0].z = body_verts[1].z = body_verts[2].z = body_verts[3].z = Ctrl->Z.z0;
+	}
+
 	return(0);
 }
 

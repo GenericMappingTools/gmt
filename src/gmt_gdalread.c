@@ -789,7 +789,7 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 		&& (hTable = GDALGetRasterColorTable( hBand )) != NULL ) {
 
 		n_colors = GDALGetColorEntryCount( hTable );
-		Ctrl->ColorMap = GMT_memory(GMT, NULL, n_colors*4, int);
+		Ctrl->ColorMap = GMT_memory(GMT, NULL, n_colors*4+1, int);
 		for (i = 0, j = 0; i < n_colors; i++) {
 			GDALGetColorEntryAsRGB( hTable, i, &sEntry );
 			Ctrl->ColorMap[j++] = sEntry.c1;
@@ -797,6 +797,7 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 			Ctrl->ColorMap[j++] = sEntry.c3;
 			Ctrl->ColorMap[j++] = sEntry.c4;
 		}
+		Ctrl->ColorMap[j++] = -1;
 	}
 	else
 		Ctrl->ColorMap = NULL;

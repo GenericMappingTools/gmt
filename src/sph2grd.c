@@ -19,7 +19,7 @@
  * sph2grd evalutes a grid using a spherical harmonics model
  *
  * Author:	Paul Wessel
- * Date:	1-JUN-2006
+ * Date:	1-JUN-2013
  */
  
 #define THIS_MODULE_NAME	"sph2grd"
@@ -461,7 +461,6 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	for (L = 0; L <= L_max; L++) {
 		GMT_free (GMT, C[L]);
 		GMT_free (GMT, S[L]);
-		
 	}
 	GMT_free (GMT, C);
 	GMT_free (GMT, S);

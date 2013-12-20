@@ -223,6 +223,8 @@ EXTERN_MSC void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, con
 
 /* gmt_support.c: */
 
+EXTERN_MSC void GMT_flip_angle_d (struct GMT_CTRL *GMT, double *angle);
+EXTERN_MSC void GMT_flip_angle_f (struct GMT_CTRL *GMT, float *angle);
 EXTERN_MSC struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]);
 EXTERN_MSC unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);
 EXTERN_MSC unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);

@@ -15,7 +15,7 @@ Synopsis
 
 **sphdistance** [ *table* ] **-G**\ *grdfile* [ **-C** ] [ **-E** ]
 [ |SYN_OPT-I| ]
-[ **-L**\ *unit* ] [ **-Q**\ *voronoi.d* ]
+[ **-L**\ *unit* ] [ **-Q**\ *voronoi.txt* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -51,7 +51,7 @@ Optional Arguments
 .. include:: explain_intables.rst_
 
 **-C**
-    For large data set you can save some memory (at the expense of more
+    For large data sets you can save some memory (at the expense of more
     processing) by only storing one form of location coordinates
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays
@@ -67,12 +67,15 @@ Optional Arguments
     (spherical degree), **e** (m), **f** (feet), **k** (km), **M**
     (mile), **n** (nautical mile) or **u** survey foot. A spherical
     approximation is used unless :ref:`PROJ_ELLIPSOID <Projection Parameters>` is set to an actual
-    ellipsoid. **-N** Read the information pertaining to each Voronoi
+    ellipsoid.
+
+**-N**
+    Read the information pertaining to each Voronoi
     polygon (the unique node lon, lat and polygon area) from a separate
     file [Default acquires this information from the ASCII segment
     headers of the output file]. Required if binary input via **-Q** is used.
 
-**-Q**\ *voronoi.d*
+**-Q**\ *voronoi.txt*
     Append the name of a file with pre-calculated Voronoi polygons
     [Default performs the Voronoi construction on input data]. For
     binary data **-bi** you must specify the node
@@ -117,8 +120,8 @@ To generate the same grid in two steps using **sphtriangulate** separately, try
 
    ::
 
-    gmt sphtriangulate testdata.txt -Qv > voronoi.d
-    gmt sphdistance -Qvoronoi.d -Rg -I1 -Gglobedist.nc
+    gmt sphtriangulate testdata.txt -Qv > voronoi.txt
+    gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
 
 See Also
 --------

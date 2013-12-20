@@ -343,6 +343,39 @@ void gmt_lab_to_rgb (struct GMT_CTRL *GMT, double rgb[], double lab[])
 
 #define gmt_is_fill(GMT,word) (!strcmp(word,"-") || gmt_is_pattern (word) || gmt_is_color (GMT, word))
 
+/* The two flip_angle functions are needed when vectors given by angle/length is to be plotted
+ * using Cartesian projections in which the direction of positive x and/or y-axis might have
+ * been reversed.  Thus we flip the vector angle accordingly.
+ */
+
+void GMT_flip_angle_f (struct GMT_CTRL *GMT, float *angle)
+{
+	if (GMT->current.proj.projection == GMT_LINEAR) {	/* Must check if negative scales were used */
+		if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
+			if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
+				*angle += 180.0f;
+			else
+				*angle = 180.0f - (*angle);
+		}
+		else if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale only */
+			*angle = -*angle;
+	}
+}
+
+void GMT_flip_angle_d (struct GMT_CTRL *GMT, double *angle)
+{
+	if (GMT->current.proj.projection == GMT_LINEAR) {	/* Must check if negative scales were used */
+		if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
+			if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
+				*angle += 180.0;
+			else
+				*angle = 180.0 - (*angle);
+		}
+		else if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale only */
+			*angle = -*angle;
+	}
+}
+
 unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned int *f)
 {
 	/* Fills the integer array f with the prime factors of n.
@@ -10084,7 +10117,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 						sprintf (ID, "%*.*" PRIu64 "-%*.*" PRIu64, sdig, sdig, seg_no, ndig, ndig, row);
 				}
 				S->label = strdup (ID);
-				sprintf (buffer, "Cross profile number -L%s at %8.3f/%07.3f az=%05.1f",
+				sprintf (buffer, "Cross profile number -L\"%s\" at %8.3f/%07.3f az=%05.1f",
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 
@@ -10198,7 +10231,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 						sprintf (ID, "%*.*" PRIu64 "%*.*" PRIu64, sdig, sdig, seg_no, ndig, ndig, row);
 				}
 				S->label = strdup (ID);
-				sprintf (buffer, "Cross profile number -L%s at %g/%g az=%05.1f",
+				sprintf (buffer, "Cross profile number -L\"%s\" at %g/%g az=%05.1f",
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 
@@ -10665,7 +10698,7 @@ struct GMT_INT_SELECTION * GMT_set_int_selection (struct GMT_CTRL *GMT, char *it
 	select->item = GMT_memory (GMT, NULL, max_value, uint64_t);	/* Allocate the sized array */
 	if (k) select->invert = true;		/* Save that we want the inverse selection */
 	/* Here we have user-supplied selection information */
-	for (k = 0; k < n_items; k++) {
+	for (k = n = 0; k < n_items; k++) {
 		pos = 0;	/* Reset since GMT_strtok changed it */
 		while (!error && (GMT_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
 			if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (NULL);
@@ -10685,6 +10718,13 @@ struct GMT_INT_SELECTION * GMT_set_int_selection (struct GMT_CTRL *GMT, char *it
 	select->n = n;							/* Total number of items */
 	select->item = GMT_memory (GMT, select->item, n, uint64_t);	/* Trim back array size */
 	GMT_sort_array (GMT, select->item, n, GMT_ULONG);		/* Sort the selection */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Number of integer selections returned: %" PRIu64 "\n", n);
+#ifdef DEBUG
+	if (GMT->current.setting.verbose == GMT_MSG_DEBUG) {
+		for (n = 0; n < select->n; n++)
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Selection # %" PRIu64 ": %" PRIu64 "\n", n, select->item[n]);
+	}
+#endif
 	
 	return (select);
 }
