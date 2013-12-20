@@ -120,7 +120,7 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flat>]] [-L[<hcut>]] [-N<norm>] [-Q<bmode><fmode>] [-S<r_scale>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-N<norm>] [-Q<bmode><fmode>] [-S<r_scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[l]<t0>/<t1>/<dt>|<n>] [-Z<base>] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n",
 		GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
@@ -140,7 +140,7 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Seamounts are truncated.  Append flattening or expect it in an extra input column [no truncation].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grdfile with constructed surface.  If -T is set then <outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file names.\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List area, volume, and mean height for each seamount; NO grid is created.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append the noise-floor cutoff level [0]\n");
@@ -362,34 +362,20 @@ void gaussian_area_volume_height (double a, double b, double h, double hc, doubl
 	/* Compute area and volume of circular or elliptical Gaussian seamounts */
 
 	bool circular = doubleAlmostEqual (a, b);
-	double r, t, c, d, logt;
+	double r2, t, c, logt;
 
-	if (circular) {
-		r = a;
-		if (fabs (hc) < GMT_CONV_LIMIT) {	/* Exact, no noise floor */
-			*A = M_PI * r * r;
-			*V = (2.0 / 9.0) * M_PI * r * r * h * (1.0 + (9.0 / 2.0) * f * f);
-		}
-		else {			/* Noise floor at hc */
-			t = hc / h;
-			c = 1.0 + (9.0 / 2.0) * f * f;
-			*A = (2.0 / 9.0) * M_PI * r * r * ((9.0 / 2.0) * f * f - log (t));
-			*V = (2.0 / 9.0) * M_PI * r * r * h * (c - t * (c - log (t)));
-		}
+	c = (9.0 / 2.0) * f * f;
+	r2 = (circular) ? a * a : a * b;
+	if (fabs (hc) < GMT_CONV_LIMIT) {	/* Exact, no noise floor */
+		*A = M_PI * r2;
+		*V = (2.0 / 9.0) * M_PI * r2 * h * (1.0 + c);
 	}
-	else {		/* Elliptical cases */
-		c = (9.0 / 2.0) * f * f;
-		d = 3 * M_SQRT2 * f / 2.0;
+	else {			/* Noise floor at hc */
 		t = hc / h;
 		logt = log (t);
-		if (fabs (hc) < GMT_CONV_LIMIT) {	/* Exact, no noise floor */
-			*A = M_PI * a * b;
-			*V = (2.0 / 9.0) * M_PI * a * b * h * (pow (erfc (d), 2.0) * exp (c) + c);
-		}
-		else {			/* Noise floor at hc */
-			*A = (2.0 / 9.0) * M_PI * a * b * (c - logt);
-			*V = (2.0 / 9.0) * M_PI * a * b * h * (pow (erf (sqrt (c - logt)) - erf (d), 2.0) * exp (c) + c - t * (c - logt));
-		}
+		c = 1.0 + (9.0 / 2.0) * f * f;
+		*A = (2.0 / 9.0) * M_PI * r2 * (c - logt);
+		*V = (2.0 / 9.0) * M_PI * r2 * h * (1.0 + c - t * (1.0 + c - logt));
 	}
 	*z = (*V) / (*A);
 }
@@ -445,16 +431,16 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	unsigned int n_expected_fields, n_out, nx1, d_mode, row, col, row_0, col_0;
 	unsigned int max_d_col, d_row, *d_col = NULL, t, build_mode, t0_col, t1_col;
 	
-	uint64_t n_read = 0, n_smts = 0, tbl, seg, rec, ij;
+	uint64_t n_smts = 0, tbl, seg, rec, ij;
 	
 	bool map = false, periodic = false, replicate, first;
 	
 	char unit, unit_name[8], file[GMT_LEN256] = {""};
 	
 	float *data = NULL;
-	double x, y, r, c, d, K, in[8], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, gamma, beta;
+	double x, y, r, c, d, in[8], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
 	double add, f, max, r_km, amplitude, h_scale, z_assign, h_scl, noise, this_user_time, life_span, t_mid, v_curr, v_prev;
-	double r_mean, h_mean, r_curr, r_prev, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM, *V = NULL;
+	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM, *V = NULL;
 	double fwd_scale, inv_scale, inch_to_unit, unit_to_inch, prev_user_time, h_curr, h_prev, h0, phi_prev, phi_curr;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL;
 	void (*shape_func) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
@@ -690,8 +676,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 						/* Replace the values in the in array with these incremental values instead */
 						if (Ctrl->E.active) {	/* Elliptical parameters */
 							e = in[4] / in[3];	/* Eccentricity */
-							in[3] = r_mean;
-							in[4] = r_mean * e;
+							in[3] = r_mean / sqrt (e);	/* Since we solved for sqrt (a*b) above */
+							in[4] = in[3] * e;
 							in[5] = h_mean;
 						}
 						else {	/* Circular */
@@ -837,7 +823,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		}
 
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-		GMT_memcpy (data, Grid->data, Grid->header->size, float);
+		GMT_memcpy (data, Grid->data, Grid->header->size, float);	/* THis will go away once gmt_nc.c is fixed to leave array alone */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Grid) != GMT_OK) {
 			Return (API->error);
 		}
