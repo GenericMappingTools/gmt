@@ -1021,7 +1021,9 @@ int GMT_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *hea
 	gmt_grd_xy_scale (GMT, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
 	gmt_grd_layout (GMT, header, grid, complex_mode, GMT_OUT);	/* Deal with complex layout */
-	return ((*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode));
+	err = (*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode);
+	if (header->scaled_after_write == 0) GMT_pack_grid (GMT, header, grid, k_grd_unpack); /* revert scale and offset to leave grid as it was before writing */
+	return (err);
 }
 
 size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_value)
