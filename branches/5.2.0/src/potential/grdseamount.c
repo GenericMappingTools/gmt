@@ -18,7 +18,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:RVbfhir" GMT_OPT("FH")
+#define GMT_PROG_OPTIONS "-:RVbfhir" GMT_OPT("H")
 
 #define SHAPE_GAUS	0
 #define SHAPE_PARA	1
@@ -353,7 +353,7 @@ void cone_area_volume_height (double a, double b, double h, double hc, double f,
 	r2 = a * b;
 	e = 1.0 - f;
 	*A = M_PI * r2 * (1.0 - e * hc / h);
-	*V = (M_PI / (3 * e)) * r2 * h * (pow (e, 3.0) * ((1.0 / e) - (hc / h)) - pow (f, 3.0));
+	*V = (M_PI / (3 * e)) * r2 * h * (pow (e, 3.0) * pow ((1.0 / e) - (hc / h), 3.0) - pow (f, 3.0));
 	*z = (*V) / (*A);
 }
 
@@ -394,6 +394,47 @@ void gaussian_area_volume_height (double a, double b, double h, double hc, doubl
 	*z = (*V) / (*A);
 }
 
+double cone_solver (double in[], double f, double v, bool elliptical)
+{	/* Return effective phi given volume fraction */
+	double A, V0, phi, r02, h0;
+	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
+	h0 = (elliptical) ? in[5] : in[3];
+	A = M_PI * r02 * h0 / (3.0 * (1 - f));
+	V0 = M_PI * r02 * h0  * (1 + f + f*f) / 3.0;
+	phi = pow (1.0 - V0 * (1.0 - v) / A, (1.0/3.0));
+	return (phi);
+}
+
+double para_solver (double in[], double f, double v, bool elliptical)
+{	/* Return effective phi given volume fraction */
+	double A, V0, phi, r02, h0;
+	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
+	h0 = (elliptical) ? in[5] : in[3];
+	A = M_PI * r02 * h0 / (2.0 * (1 - f*f));
+	V0 = M_PI * r02 * h0  * (1 + f*f) / 2.0;
+	phi = pow (1.0 - V0 * (1.0 - v)/A, 0.25);
+	return (phi);
+}
+
+double gauss_solver (double in[], double f, double v, bool elliptical)
+{	/* Return effective phi given volume fraction */
+	int n = 0;
+	double A, B, V0, phi, phi0, r02, h0;
+	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
+	h0 = (elliptical) ? in[5] : in[3];
+	A = 2.0 * M_PI * r02 * h0 * exp (9.0 * f * f / 2.0) / 9.0;
+	V0 = 2.0 * M_PI * r02 * h0 * (1.0 + 9.0 * f * f / 2.0) / 9.0;
+	B = V0 * (1.0 - v) / A;
+	phi = v * (1 - f) + f;	/* Initial guess */
+	do {
+		phi0 = phi;
+		phi = M_SQRT2 * sqrt (-log (B/(1 + 4.5 * phi0*phi0))) / 3.0;
+		n++;
+	} while (fabs (phi-phi0) > 1e-6);
+	//fprintf (stderr, "Gauss_solver: n = %d phi = %g\n", n, phi);
+	return (phi);
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdseamount_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -412,10 +453,12 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	
 	float *data = NULL;
 	double x, y, r, c, d, K, in[8], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, gamma, beta;
-	double add, f, max, r_km, amplitude, h_scale, z_assign, h_scl, noise, this_user_time, life_span, t_mid, v_this, v_prev;
-	double r_mean, h_mean, r_this, r_prev, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM, *V = NULL;
-	double fwd_scale, inv_scale, inch_to_unit, unit_to_inch, prev_user_time, V_sum = 0.0;
+	double add, f, max, r_km, amplitude, h_scale, z_assign, h_scl, noise, this_user_time, life_span, t_mid, v_curr, v_prev;
+	double r_mean, h_mean, r_curr, r_prev, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM, *V = NULL;
+	double fwd_scale, inv_scale, inch_to_unit, unit_to_inch, prev_user_time, h_curr, h_prev, h0, phi_prev, phi_curr;
+	double *V_sum = NULL, *h_sum = NULL, *h = NULL;
 	void (*shape_func) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
+	double (*phi_solver) (double in[], double f, double v, bool elliptical);
 	
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
@@ -458,10 +501,13 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	switch (Ctrl->C.mode) {
-		case SHAPE_CONE:  shape_func = cone_area_volume_height; break;
+		case SHAPE_CONE:  shape_func = cone_area_volume_height;
+				  phi_solver = cone_solver; break;
 		case SHAPE_DISC:  shape_func = disc_area_volume_height; break;
-		case SHAPE_PARA:  shape_func = para_area_volume_height; break;
-		case SHAPE_GAUS:  shape_func = gaussian_area_volume_height; break;
+		case SHAPE_PARA:  shape_func = para_area_volume_height;
+		  		  phi_solver = para_solver; break;
+		case SHAPE_GAUS:  shape_func = gaussian_area_volume_height;
+		  		  phi_solver = gauss_solver; break;
 	}
 
 	build_mode = (Ctrl->T.active) ? SHAPE_DISC : Ctrl->C.mode;	/* For incremental building we use disc increments regardless of shape */
@@ -480,6 +526,9 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	}
 	GMT_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);
 	V = GMT_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
+	V_sum = GMT_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
+	h_sum = GMT_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
+	h = GMT_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	if (build_mode == SHAPE_GAUS) {
 		noise = exp (-4.5);		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
 		h_scl = 1.0 / (1.0 - noise);	/* Compensation scale to make the peak amplitude = 1 given our adjustment for noise above */
@@ -541,6 +590,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 				/* Compute area, volume, mean amplitude */
 				shape_func (a, b, amplitude, Ctrl->L.value, Ctrl->F.value, &area, &volume, &height);
 				V[n_smts] = volume;
+				h[n_smts] = amplitude;
 				if (map) {	/* Report values in km^2, km^3, and m */
 					area   *= GMT->current.proj.DIST_KM_PR_DEG * GMT->current.proj.DIST_KM_PR_DEG * c;
 					volume *= GMT->current.proj.DIST_KM_PR_DEG * GMT->current.proj.DIST_KM_PR_DEG * c;
@@ -553,7 +603,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 					out[col++] = height;
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
-				GMT_Report (API, GMT_MSG_VERBOSE, "Seamount area, volume, mean height: %g %g %g\n", area, volume, height);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Seamount %" PRIu64 " area, volume, mean height: %g %g %g\n", n_smts, area, volume, height);
 			}
 		}
 	}
@@ -601,50 +651,43 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 					if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 					if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
+					GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate seamount # %6d\n", n_smts);
 					/* Ok, we are inside the region - process data */
 					
-					if (Ctrl->T.active) {	/* Must compute volume fractions v_this, v_prev of an evolving seamount */
-						life_span = S->coord[t0_col][rec] - S->coord[t1_col][rec];
+					if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
+						life_span = S->coord[t0_col][rec] - S->coord[t1_col][rec];	/* Total life span of this seamount */
 						if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
-							t_mid = 0.5 * (S->coord[t0_col][rec] + S->coord[t1_col][rec]);
-							v_this = 0.5 * (1.0 + erf (-6.0 * (this_user_time - t_mid) / (M_SQRT2 * life_span)));
-							v_prev = 0.5 * (1.0 + erf (-6.0 * (prev_user_time - t_mid) / (M_SQRT2 * life_span)));
-							if (v_prev < 0.0015) v_prev = 0.0;	/* Deal with the 3-sigma truncation */
-							if (v_this > 0.9985) v_this = 1.0;	/* Deal with the 3-sigma truncation */
+							t_mid = 0.5 * (S->coord[t0_col][rec] + S->coord[t1_col][rec]);	/* time at mid point in evolution */
+							v_curr = 0.5 * (1.0 + erf (-6.0 * (this_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at end of this time step */
+							v_prev = 0.5 * (1.0 + erf (-6.0 * (prev_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at start of this time step */
+							if (v_prev < 0.0015) v_prev = 0.0;	/* Deal with the 3-sigma truncation, i.e., throw first tail in with first slice */
+							if (v_curr > 0.9985) v_curr = 1.0;	/* Deal with the 3-sigma truncation, i.e., throw last tail in with last slice */
 						}
 						else {	/* Linear volume flux */
-							v_this = (S->coord[t0_col][rec] - this_user_time) / life_span;
-							v_prev = (S->coord[t0_col][rec] - prev_user_time) / life_span;
+							v_curr = (S->coord[t0_col][rec] - this_user_time) / life_span;	/* Normalized volume fraction at end of this time step */
+							v_prev = (S->coord[t0_col][rec] - prev_user_time) / life_span;	/* Normalized volume fraction at start of this time step */
 						}
-						dV = V[n_smts] * (v_this - v_prev);	/* Incremental volume */
-						V_sum += dV;
-						gamma = (Ctrl->E.active) ? in[5] / in[3] : in[3] / in[GMT_Z];
-						beta = (Ctrl->E.active) ? in[4] / in[3] : 1.0;
+						dV = V[n_smts] * (v_curr - v_prev);	/* Incremental volume produced */
+						V_sum[n_smts] += dV;			/* Keep track of volume sum so we can compare with truth later */
 						if (Ctrl->F.mode == TRUNC_FILE)
 							f = (Ctrl->E.active) ? in[6] : in[4];
 						else
 							f = Ctrl->F.value;
-						switch (Ctrl->C.mode) {
-							case SHAPE_CONE:  K = M_PI * (1.0 + f + f * f) / 3.0; break;
-							case SHAPE_PARA:  K = M_PI * (1.0 + f * f) / 2.0; break;
-							case SHAPE_GAUS:
-								c = (9.0 / 2.0) * f * f;
-								d = 3 * M_SQRT2 * f / 2.0;
-								K = (2.0 / 9.0) * M_PI * (pow (erfc (d), 2.0) * exp (c) + c);
-								break;
+						phi_curr = phi_solver (in, f, v_curr, Ctrl->E.active);
+						phi_prev = phi_solver (in, f, v_prev, Ctrl->E.active);
+						h0 = (Ctrl->E.active) ? in[5] : in[3];
+						switch (Ctrl->C.mode) {	/* Given the phi values, evalute the corresponding heights */
+							case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
+							case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
+							case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
 						}
-						K *= (gamma * beta);
-						r_this = pow (V[n_smts] * v_this / K, 1.0/3.0);
-						r_prev = pow (V[n_smts] * v_prev / K, 1.0/3.0);
-						/* Here are the incremental disc load dimensions */
-						r_mean = 0.5 * (r_this + r_prev);
-						r_mean = (v_prev == 0.0) ? sqrt (2.0) * r_this / 3.0 : r_prev + (r_this - r_prev) / 3.0;
-						r_mean = (v_prev == 0.0) ? r_this / sqrt (3.0) : r_prev + (r_this - r_prev) / 3.0;
-						//r_mean = (v_prev == 0.0) ? r_this / sqrt (3.0) : 0.5 * (r_this + r_prev);
-						r_mean = (v_prev == 0.0) ? r_this / sqrt (3.0) : r_prev;
-						h_mean = dV / (M_PI * r_mean * r_mean);
-						GMT_Report (API, GMT_MSG_VERBOSE, "r_mean = %g h_mean = %g v_prev = %g v_this = %g V_sum = %g\n", r_mean, h_mean, v_prev, v_this, V_sum);
-						/* Replace the values in the in array with these incremental values */
+						h_mean = fabs (h_curr - h_prev);	/* This is our disc layer thickness */
+						r_mean = sqrt (dV / (M_PI * h_mean));	/* Radius given by volume and height */
+						h_sum[n_smts] += h_mean;		/* Keep track of height sum so we can compare with truth later */
+
+						GMT_Report (API, GMT_MSG_DEBUG, "r_mean = %.1f h_mean = %.1f v_prev = %.3f v_curr = %.3f phi_prev = %.3f phi_curr = %.3f h_prev = %.1f h_curr = %.1f V_sum = %g h_sum = %g\n",
+							r_mean, h_mean, v_prev, v_curr, phi_prev, phi_curr, h_prev, h_curr, V_sum[n_smts], h_sum[n_smts]);
+						/* Replace the values in the in array with these incremental values instead */
 						if (Ctrl->E.active) {	/* Elliptical parameters */
 							e = in[4] / in[3];	/* Eccentricity */
 							in[3] = r_mean;
@@ -656,13 +699,14 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 							in[3] = h_mean;
 						}
 					}
-						
+					
 					scol_0 = (int)GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
 					if (scol_0 < 0) continue;	/* Still outside x-range */
 					if ((col_0 = scol_0) >= Grid->header->nx) continue;	/* Still outside x-range */
 					srow_0 = (int)GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
 					if (srow_0 < 0) continue;	/* Still outside y-range */
 					if ((row_0 = srow_0) >= Grid->header->ny) continue;	/* Still outside y-range */
+					
 					if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 						sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees, convert to direction, get sin/cos */
 						a = in[3];			/* Semi-major axis */
@@ -690,7 +734,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 						r_km = r_in * Ctrl->S.value;	/* Scaled up by user scale */
 						r = r_km;			/* Copy of r_km */
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-						f = (Ctrl->C.mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
+						f = (build_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
 						amplitude = in[3];		/* Seamount max height from base */
 						if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[4];	/* Flattening given by input file */
 					}
@@ -703,7 +747,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 					}
 					if (build_mode == SHAPE_GAUS) h_scale *= h_scl;
 
-					/* Initialize local search machinery */
+					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
 					if (d_col) GMT_free (GMT, d_col);
 					d_col = GMT_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
 		
@@ -777,7 +821,6 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 							}
 						}
 					}
-					GMT_Report (API, GMT_MSG_VERBOSE, "Evaluated seamount # %6d\r", n_smts);
 				}
 			}
 			prev_user_time = this_user_time;	/* Make this the previous time */
@@ -800,11 +843,13 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		}
 		GMT_memcpy (Grid->data, data, Grid->header->size, float);
 	}
-
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluated seamount # %6d\n", n_smts);
 	
+	//for (ij = 0; ij < n_smts; ij++) fprintf (stderr, "Smt %d: V = %g Stacked V = %g h = %g Stacked h = %g\n", (int)ij, V[ij], V_sum[ij], h[ij], h_sum[ij]);
 	if (d_col) GMT_free (GMT, d_col);
 	GMT_free (GMT, V);
+	GMT_free (GMT, h);
+	GMT_free (GMT, V_sum);
+	GMT_free (GMT, h_sum);
 	GMT_free (GMT, data);
 	
 	Return (GMT_OK);
