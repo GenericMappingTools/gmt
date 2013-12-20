@@ -1022,7 +1022,7 @@ int GMT_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *hea
 
 	gmt_grd_layout (GMT, header, grid, complex_mode, GMT_OUT);	/* Deal with complex layout */
 	err = (*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode);
-	if (header->scaled_after_write == 0) GMT_pack_grid (GMT, header, grid, k_grd_unpack); /* revert scale and offset to leave grid as it was before writing */
+	if (GMT->parent->leave_grid_scaled == 0) GMT_pack_grid (GMT, header, grid, k_grd_unpack); /* revert scale and offset to leave grid as it was before writing unless session originated from gm*/
 	return (err);
 }
 
