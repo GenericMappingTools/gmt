@@ -13,9 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdflexure** *topogrd* **-G**\ *outgrid*
-[ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-D**\ *rm/rl/ri/rw>* ]
-[ **-E**\ *Te*\ [**u**] ] [ **-F**\ *nu_a*[/*h_a*/*nu_m*] ]
+**grdflexure** *topogrd* **-D**\ *rm/rl/ri/rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
+[ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*[/*h_a*/*nu_m*] ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-T**\ [**l**]\ *t0*\ [/*t1*/*dt*] ]
 [ |SYN_OPT-V| ]
@@ -116,7 +115,7 @@ using :doc:`grdproject </grdproject>`.
 Plate Flexure
 -------------
 
-The FFT solution to elastic plate flexure requires the infill density to equal
+The FFT solution to plate flexure requires the infill density to equal
 the load density.  This is typically only true directly beneath the load; beyond the load
 the infill tends to be lower-density sediments or even water (or air).  Wessel [2001]
 proposed an approximation that allows for the specification of an infill density
@@ -130,7 +129,7 @@ loads on weak plates, a fairy uncommon situation.
 Examples
 --------
 
-To complute elastic plate flexure from the load *topo.nc*,
+To compute elastic plate flexure from the load *topo.nc*,
 for a 10 km thick plate with typical densities, try
 
    ::

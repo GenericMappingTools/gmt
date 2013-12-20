@@ -104,6 +104,11 @@ struct RHEOLOGY {
 	void (*setup) (struct GMT_CTRL *, struct GRDFLEXURE_CTRL *, struct GMT_FFT_WAVENUMBER *, struct RHEOLOGY *);	/* Init function */
 };
 
+struct FLX_GRID {
+	struct GMT_GRID *Grid;		/* Pointer to the grid, or NULL if it does not exist */
+	struct GMT_FFT_WAVENUMBER *K;	/* Pointer to FFT struct, unless G is NULL */
+};
+
 #define	YOUNGS_MODULUS	7.0e10		/* Pascal = Nt/m**2  */
 #define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
 #define	POISSONS_RATIO	0.25
@@ -267,7 +272,7 @@ double transfer_ve (double k, struct RHEOLOGY *R)
 	return (phi_ve);
 }
 
-void spectral_solution (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
+void Apply_Transfer_Function (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
 	/* Do the spectral convolution for isostatic response in the Freq domain. */
 	uint64_t k;
 	double  mk, transfer_fn;
@@ -373,7 +378,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must give -T<t0> or -T[l]t0[u]/t1[u]/dt[u]\n");
 					n_errors++;
 				}
-				Ctrl->T.start = get_age (A, &Ctrl->T.unit, &Ctrl->T.scale);
+				Ctrl->T.start = smt_get_age (A, &Ctrl->T.unit, &Ctrl->T.scale);
 				if (n == 3) {
 					Ctrl->T.end = smt_get_age (B, &Ctrl->T.unit, &Ctrl->T.scale);
 					Ctrl->T.inc = smt_get_age (C, &Ctrl->T.unit, &Ctrl->T.scale);
@@ -454,17 +459,106 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdflexure_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
+struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options, struct GRDFLEXURE_CTRL *Ctrl, char *file)
+{
+	struct GMT_GRID *Grid = NULL, *Orig = NULL;
+	struct FLX_GRID *G = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	if (!GMT_check_filearg (GMT, '<', file, GMT_IN)) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Load file %s not found - skipped\n", file);
+		return NULL;
+	}
+	/* Must initialize a new load grid */
+	GMT_Report (API, GMT_MSG_VERBOSE, "Read load file %s\n", file);
+	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, file, NULL)) == NULL) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Error reading the header of file %s - file skipped\n", file);
+		return NULL;
+	}
+	GMT_grd_init (GMT, Orig->header, options, true);	/* Update the header */
+	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+ 		GMT_GRID_IS_COMPLEX_REAL, NULL, file, Orig)) == NULL) {	/* Get data only */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Error reading the data of file %s - file skipped\n", file);
+		return NULL;
+	}
+	if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
+		uint64_t node, n_subaerial = 0;
+		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
+		for (node = 0; node < Grid->header->size; node++) {
+			if (Grid->data[node] > Ctrl->W.water_depth) {
+				Grid->data[node] = Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost;
+				n_subaerial++;
+			}
+		}
+		if (n_subaerial) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were subarial so heights were scaled for the equivalent submerged case\n", n_subaerial);
+	}
+	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
+	(void) GMT_set_outgrid (API->GMT, file, Orig, &Grid);
+	/* From here we address the grid via Grid; we are done with using the address Orig directly. */
+	G = GMT_memory (GMT, NULL, 1, struct FLX_GRID);	/* Allocate a Flex structure */
+	G->K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
+	/* 4. DO THE FORWARD FFT */
+	GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
+	if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, G->K)) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Error taking the FFT of %s - file skipped\n", file);
+		return NULL;
+	}
+	G->Grid = Grid;	/* Pass it back via the grid array */
+	return (G);
+}
+
+struct RHEOLOGY *Select_Rheology (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl)
+{
+	unsigned int fmode;
+	struct RHEOLOGY *R = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* Select the transfer function to use */
+	if (Ctrl->F.active)		/* One of two firmoviscous functions */
+		fmode = Ctrl->F.mode;
+	else if (Ctrl->M.active)	/* Viscoelastic */
+		fmode = FLX_VE;
+	else				/* Elastic */
+		fmode = FLX_E;
+		
+	R = GMT_memory (GMT, NULL, 1, struct RHEOLOGY);	/* Allocate rheology structure */
+	
+	switch (fmode) {	/* Set function pointers */
+		case FLX_E:
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected Elastic transfer function\n");
+			R->setup = setup_elastic;	R->transfer = transfer_elastic;		break;
+		case FLX_VE:
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected Viscoelastic transfer function\n");
+			R->setup = setup_ve;		R->transfer = transfer_ve;		break;
+		case FLX_FV1:
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected Firmoviscous transfer function for elastic plate over viscous half-space\n");
+			R->setup = setup_fv;		R->transfer = transfer_fv;		break;
+		case FLX_FV2:
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected Firmoviscous transfer function for elastic plate over viscous layer over viscous half-space\n");
+			R->setup = setup_fv2;		R->transfer = transfer_fv2;		break;
+	}
+	return (R);
+}
+
+void Accumulate_Solution (struct GMT_CTRL *GMT, struct GMT_GRID *Out, struct GMT_GRID *Component)
+{
+	uint64_t node;
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Add in latest component\n");
+	for (node = 0; node < Out->header->size; node++) Out->data[node] += Component->data[node];
+}
+
 int GMT_grdflexure (void *V_API, int mode, void *args) {
-	unsigned int fmode, t;
+	unsigned int t, t_load;
 	int error;
-	bool init_load;
+	bool retain_original;
 	float *orig_load = NULL;
 	double user_time;
 	char file[GMT_LEN256] = {""};
 
-	struct GMT_GRID *Grid = NULL, *Orig = NULL;
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct RHEOLOGY *R = NULL;
+	struct FLX_GRID **G = NULL;
+	struct GMT_GRID *Out = NULL;
 	struct GRDFLEXURE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -491,128 +585,95 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
-	/* Set the transfer function to use */
-	if (Ctrl->F.active)		/* One of two firmoviscous functions */
-		fmode = Ctrl->F.mode;
-	else if (Ctrl->M.active)	/* Viscoelastic */
-		fmode = FLX_VE;
-	else				/* Elastic */
-		fmode = FLX_E;
-		
-	R = GMT_memory (GMT, NULL, 1, struct RHEOLOGY);	/* Allocate rheology structure */
+	/* 1. SELECT THE TRANSFER FUNCTION TO USE */
 	
-	switch (fmode) {	/* Set function pointers */
-		case FLX_E:
-			R->setup = setup_elastic;	R->transfer = transfer_elastic;		break;
-		case FLX_VE:
-			R->setup = setup_ve;		R->transfer = transfer_ve;		break;
-		case FLX_FV1:
-			R->setup = setup_fv;		R->transfer = transfer_fv;		break;
-		case FLX_FV2:
-			R->setup = setup_fv2;		R->transfer = transfer_fv2;		break;
+	R = Select_Rheology (GMT, Ctrl);
+	
+	/* 2. READ ALL INPUT LOAD GRIDS, DETREND, AND TAKE FFT */
+	
+	if (Ctrl->In.many) {	/* Must read in a new load grid, possibly one for each time increment */
+		G = GMT_memory (GMT, NULL, Ctrl->T.n_times, struct FLX_GRID *);	/* Allocate grid array structure */
+		for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each time step there may be a load file */
+			user_time = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - t * Ctrl->T.inc) : Ctrl->T.start - t * Ctrl->T.inc;	/* In units of user's choice */
+			sprintf (file, Ctrl->In.file, user_time);
+			G[t] = Prepare_Load (GMT, options, Ctrl, file);
+			K = G[t]->K;	/* We only need one pointer to get to wavenumbers; this just ensure we keep one */
+		}
+	}
+	else {	/* Just read the single load grid */
+		G = GMT_memory (GMT, NULL, 1, struct FLX_GRID);	/* Allocate grid array structure with one entry */
+		G[0] = Prepare_Load (GMT, options, Ctrl, Ctrl->In.file);
+		K = G[0]->K;	/* We only need one pointer to get to wavenumbers, since they are all the same */
 	}
 	
-	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
+	/* 3. DETERMINE AND POSSIBLY CREATE ONE OUTPUT GRID */
+	retain_original = (Ctrl->T.n_times > 1);	/* True when we will have to loop over the loads */
+	if (retain_original) {	/* We may need to reuse loads for different times and will have to keep copy of unchanged H(kx,ky) */
+		orig_load = GMT_memory (GMT, NULL, G[0]->Grid->header->size, float);	/* Single temporary storage to hold one original H(kx,ky) grid */
+		/* We must also allocate a separate output grid */
+		if ((Out = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G[0]->Grid)) == NULL) Return (API->error);	/* Output grid of same size as input */
+	}
+	else	/* With a single load -> flexure operation we can just recycle the input grid for the output */
+		Out = G[0]->Grid;
+
+	/* Here, G[t] contains all the input load grids, ready to go as H(kx,ky) */
 	
-	Ctrl->T. n_times = (Ctrl->T.active) ? lrint ((Ctrl->T.start - Ctrl->T.end) / Ctrl->T.inc) + 1 : 1;
-	
-	for (t = 0; t < Ctrl->T. n_times; t++) {	/* For each time step (or just once) */
+	for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each time step (i.e., at least once) */
 		
-		/* 1. SET THE CURRENT TIME VALUE (IF USED) */
+		/* 4a. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
 			user_time = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - t * Ctrl->T.inc) : Ctrl->T.start - t * Ctrl->T.inc;	/* In units of user's choice */
 			R->time_yr = user_time * Ctrl->T.scale;		/* Now in years */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating solution for time %g\n", user_time);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating flexural deformation for time %g\n", user_time);
 		}
 		
-		/* 2. DETERMINE INPUT FILE NAME */
-		if (Ctrl->In.many) {	/* Must read in a new load grid for each time increment */
-			sprintf (file, Ctrl->In.file, user_time);
-			if (!GMT_check_filearg (GMT, '<', file, GMT_IN)) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "No load file found for time %g - skipping this time\n", user_time);
-				continue;
-			}
-			init_load = true;
-		}
-		else if (t == 0) {	/* First time with a constant grid */
-			strcpy (file, Ctrl->In.file);
-			init_load = true;
-		}
-		else	/* Later times with the same constant grid */
-			init_load = false;
+		if (retain_original) GMT_memset (Out->data, Out->header->size, float);	/* Reset output grid to zero; not necessary when we only get here once */
 		
-		/* 3. OBTAIN NEXT (OR POSSIBLY ONLY) LOAD */
-		if (init_load) {	/* Must initialize a new load grid */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read load file %s\n", file);
-			if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, file, NULL)) == NULL)
-				Return (API->error);
-			GMT_grd_init (GMT, Orig->header, options, true);	/* Update the header */
-			if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
-		 		GMT_GRID_IS_COMPLEX_REAL, NULL, file, Orig)) == NULL)	/* Get data only */
-				Return (API->error);
-			if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
-				uint64_t node, n_subaerial = 0;
-				double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
-				for (node = 0; node < Grid->header->size; node++) {
-					if (Grid->data[node] > Ctrl->W.water_depth) {
-						Grid->data[node] = Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost;
-						n_subaerial++;
-					}
-				}
-				if (n_subaerial) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were subarial so heights were scaled for the equivalent submerged case\n", n_subaerial);
-			}
-			/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
-			(void) GMT_set_outgrid (GMT, file, Orig, &Grid);
-			/* From here we address the grid via Grid ; we are done with using the address Orig directly. */
-			K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
-			/* 4. DO THE FORWARD FFT */
-			GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
-			if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, K)) {
-				Return (EXIT_FAILURE);
-			}
-			if (Ctrl->T. n_times > 1 && !Ctrl->In.many) {	/* First time with a constant grid that is needed again; make a copy */
-				orig_load = GMT_memory (GMT, NULL, Grid->header->size, float);
-				GMT_memcpy (orig_load, Grid->data, Grid->header->size, float);
+		for (t_load = 0; t_load <= t; t_load++) {	/* For each load already emplaced at the current output time t */
+			if (G[t_load] == NULL) continue;	/* Quietly skip times with no load */
+			
+			/* 4b. COMPUTE THE RESPONSE DUE TO THIS LOAD */
+			if (retain_original) GMT_memcpy (orig_load, G[t_load]->Grid->data, G[t_load]->Grid->header->size, float);	/* Make a copy of H(kx,ky) before operations */
+			Apply_Transfer_Function (GMT, G[t_load]->Grid, Ctrl, G[t_load]->K, R);	/* Multiplies H(kx,ky) by transfer function, yielding W(kx,ky) */
+			if (retain_original) {	/* Must add this contribution to our total output grid */
+				Accumulate_Solution (GMT, Out, G[t_load]->Grid);
+				GMT_memcpy (G[t_load]->Grid->data, orig_load, G[t_load]->Grid->header->size, float);	/* Restore H(kx,ky) to what it was before operations */
 			}
 		}
-		else if (t > 0) {	/* Restore the constant FFT'ed grid */
-			GMT_memcpy (Grid->data, orig_load, Grid->header->size, float);
-		}
-
-		/* 5. COMPUTE THE NEW SOLUTION */
-		spectral_solution (GMT, Grid, Ctrl, K, R);
 		
-		/* 6. DO THE INVERSE FFT */
-		if (GMT_FFT (API, Grid, GMT_FFT_INV, GMT_FFT_COMPLEX, K))
+		/* 4c. TAKE THE INVERSE FFT TO GET w(x,y) */
+		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
 
-		/* 7. APPLY SCALING */
-		GMT_scale_and_offset_f (GMT, Grid->data, Grid->header->size, 1.0, -Ctrl->Z.zm);
+		/* 4d. APPLY SCALING AND OFFSET */
+		GMT_scale_and_offset_f (GMT, Out->data, Out->header->size, 1.0, -Ctrl->Z.zm);
 
-		/* 8. WRITE OUTPUT GRID */
+		/* 4d. WRITE OUTPUT GRID */
 		
-		/* Get ready for output */
-		if (Ctrl->T.active)
+		if (Ctrl->T.active) { /* Separate output grid since many time steps */
+			char remark[GMT_GRID_REMARK_LEN160] = {""};
 			sprintf (file, Ctrl->G.file, user_time);
-		else
+			sprintf (remark, "Solution for t = %g", user_time);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remark, Out))
+				Return (API->error);
+		}
+		else	/* Single output grid */
 			strcpy (file, Ctrl->G.file);
-		/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
 			Return (API->error);
 			
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
-			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Grid) != GMT_OK) {
+			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_OK) {
 				Return (API->error);
-		}
-
-		/* 9. FREE GRID IF NEW ONE IS NEEDED */
-		if (Ctrl->In.many) {
-			GMT_Destroy_Data (API, &Grid);
-			GMT_free (GMT, K);
 		}
 	}
 	
-	if (K) GMT_free (GMT, K);
+	/* 5. FREE ALL GRIDS AND ARRAYS */
+	for (t = 0; t < Ctrl->T.n_times; t++) {	/* Free up grid structures */
+		if (G[t] == NULL) continue;	/* Quietly skip containers with no grids */
+		GMT_Destroy_Data (API, &G[t]->Grid);
+		GMT_free (GMT, G[t]->K);
+	}
 	GMT_free (GMT, R);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "done!\n");
