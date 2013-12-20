@@ -75,6 +75,7 @@ struct GRDFLEXURE_CTRL {
 	} N;
 	struct T {	/* -T[l]<t0>[u]/<t1>[u]/<d0>[u]|n  */
 		bool active, log;
+		unsigned int n_times;
 		double start, end, inc;	/* Time ago, so start > end */
 		double time;	/* The current time in a sequence */
 		double scale;	/* Scale factor from user time to year */
@@ -115,6 +116,7 @@ void *New_grdflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.E = YOUNGS_MODULUS;
 	C->C.nu = POISSONS_RATIO;
+	C->T.n_times = 1;
 
 	return (C);
 }
@@ -373,11 +375,15 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				}
 				Ctrl->T.start = get_age (A, &Ctrl->T.unit, &Ctrl->T.scale);
 				if (n == 3) {
-					Ctrl->T.end = get_age (B, &Ctrl->T.unit, &Ctrl->T.scale);
-					Ctrl->T.inc = get_age (C, &Ctrl->T.unit, &Ctrl->T.scale);
+					Ctrl->T.end = smt_get_age (B, &Ctrl->T.unit, &Ctrl->T.scale);
+					Ctrl->T.inc = smt_get_age (C, &Ctrl->T.unit, &Ctrl->T.scale);
+					if (Ctrl->T.end > Ctrl->T.start) double_swap (Ctrl->T.start, Ctrl->T.end);	/* Enforce that old time is larger */
+					Ctrl->T.n_times = (Ctrl->T.log) ? irint (Ctrl->T.inc) : lrint ((Ctrl->T.start - Ctrl->T.end) / Ctrl->T.inc) + 1;
+					if (Ctrl->T.log) Ctrl->T.inc = (log10 (Ctrl->T.start) - log10 (Ctrl->T.end)) / (Ctrl->T.n_times - 1);	/* Convert n to inc_logt */
 				}
 				else {
-					Ctrl->T.end = Ctrl->T.start;	Ctrl->T.inc = 1.0;	/* This will give one time in the series */	
+					Ctrl->T.end = Ctrl->T.start;	Ctrl->T.inc = 1.0;	/* This will give one time in the series */
+					Ctrl->T.n_times = 1;
 				}					
 				break;
 			case 'W':
@@ -449,7 +455,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 #define Return(code) {Free_grdflexure_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdflexure (void *V_API, int mode, void *args) {
-	unsigned int fmode, n_times, t;
+	unsigned int fmode, t;
 	int error;
 	bool init_load;
 	float *orig_load = NULL;
@@ -508,13 +514,13 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	
 	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
 	
-	n_times = (Ctrl->T.active) ? lrint ((Ctrl->T.start - Ctrl->T.end) / Ctrl->T.inc) + 1 : 1;
+	Ctrl->T. n_times = (Ctrl->T.active) ? lrint ((Ctrl->T.start - Ctrl->T.end) / Ctrl->T.inc) + 1 : 1;
 	
-	for (t = 0; t < n_times; t++) {	/* For each time step (or just once) */
+	for (t = 0; t < Ctrl->T. n_times; t++) {	/* For each time step (or just once) */
 		
 		/* 1. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
-			user_time = Ctrl->T.start - t * Ctrl->T.inc;	/* In units of user's choice */
+			user_time = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - t * Ctrl->T.inc) : Ctrl->T.start - t * Ctrl->T.inc;	/* In units of user's choice */
 			R->time_yr = user_time * Ctrl->T.scale;		/* Now in years */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating solution for time %g\n", user_time);
 		}
@@ -564,7 +570,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, K)) {
 				Return (EXIT_FAILURE);
 			}
-			if (n_times > 1 && !Ctrl->In.many) {	/* First time with a constant grid that is needed again; make a copy */
+			if (Ctrl->T. n_times > 1 && !Ctrl->In.many) {	/* First time with a constant grid that is needed again; make a copy */
 				orig_load = GMT_memory (GMT, NULL, Grid->header->size, float);
 				GMT_memcpy (orig_load, Grid->data, Grid->header->size, float);
 			}
