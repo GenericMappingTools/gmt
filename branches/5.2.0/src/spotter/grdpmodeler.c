@@ -104,7 +104,7 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the rotation file to be used (see man page for format).\n");
+	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename with the model predictions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
@@ -117,7 +117,7 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   w : Rotation rate in degrees/Myr.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   x : Change in longitude since formation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   y : Change in latitude since formation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   X : Congitude at origin of crust.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   X : Longitude at origin of crust.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Y : Latitude at origin of crust.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set fixed time of reconstruction to override age grid.\n");
 	GMT_Option (API, "V,bi2,h,i,r,.");

@@ -12,6 +12,7 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 
 #if defined(_WIN32)
 void *dlopen (const char *module_name, int mode)

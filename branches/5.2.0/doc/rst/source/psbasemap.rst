@@ -40,8 +40,8 @@ Several map projections are available, and the user may specify separate
 tickmark intervals for boundary annotation, ticking, and [optionally]
 gridlines. A simple map scale or directional rose may also be plotted.
 At least one of the options **-B**,
-**-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**]
-], or
+**-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**],
+or
 **-T**\ [**f**\ \|\ **m**][**x**]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
 must be specified. 
 
@@ -61,7 +61,7 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 
-[**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
+**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]
     Draw a simple map insert box on the map.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and

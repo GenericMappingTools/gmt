@@ -28,6 +28,8 @@
 
 enum GMT_enum_cplx {GMT_RE = 0, GMT_IM = 1};	/* Real and imaginary indices */
 
+EXTERN_MSC void GMT_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
+
 EXTERN_MSC struct GMT_PALETTE * GMT_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_from, unsigned int mode);
 EXTERN_MSC unsigned int GMT_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit);
 EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, unsigned int lonlat, bool worldmap);

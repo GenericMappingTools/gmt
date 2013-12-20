@@ -6,14 +6,15 @@
 # by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
-# Below, <X> is either core, supplements, or a users custom shared lib tag
+# Below, <TAG> is either core, supplements, or a users custom shared lib tag
 #
 # This script will find all the C files in the current dir (if core)
 # or in subdirs (if supplements) and extract all the THIS_MODULE_PURPOSE
-# and other strings from the sources files, then create two files:
-# gmt_<X>_module.h and gmt_<X>_module.c.
+# and other strings from the sources files, then create one file:
+# 	gmt_<TAG>_module.h	Function prototypes (required for Win32)
+# 	gmt_<TAG>_module.c	Look-up functions
 #
-# Note: gmt_<X>_module.h and gmt_<X>_module.c are in svn.  Only
+# Note: gmt_<TAG>_module.[ch] are in svn.  Only
 # retrun this script when there are changes in the code.
 #
 
@@ -21,8 +22,7 @@ if [ $# -ne 1 ]; then
 cat << EOF
 usage: gmt_make_module_src.sh [tag]
 	tag is the name of the set of modules.
-	It is core or supplements for the GMT developers;
-	It is whatever you call it for your custom extension.
+	Choose between core or supplements.
 EOF
 	exit 0
 fi
@@ -33,10 +33,15 @@ LIB=$1
 U_TAG=`echo $LIB | tr '[a-z]' '[A-Z]'`
 L_TAG=`echo $LIB | tr '[A-Z]' '[a-z]'`
 
-if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory
+if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory and set LIB_STRING
 	grep "#define THIS_MODULE_LIB		" */*.c | awk -F: '{print $1}' | sort > /tmp/tmp.lis
-else	# Just look in current dir (for core or users)
-	grep "#define THIS_MODULE_LIB		\"$L_TAG\"" *.c | awk -F: '{print $1}' | sort > /tmp/tmp.lis
+	LIB_STRING="GMT suppl: The official supplements to the Generic Mapping Tools"
+elif [ "$U_TAG" = "CORE" ]; then	# Just look in current dir and set LIB_STRING
+	grep "#define THIS_MODULE_LIB		" */*.c | awk -F: '{print $1}' | sort > /tmp/tmp.lis
+	LIB_STRING="GMT core: The main section of the Generic Mapping Tools"
+else	# Just look in current dir (for user extension)
+	echo "Error: Tag must be either core or supplements"
+	exit
 fi
 rm -f /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/all.lis
 while read program; do
@@ -50,14 +55,11 @@ paste /tmp/SORT.txt /tmp/LIB.lis /tmp/PURPOSE.lis | sort -k1 > /tmp/SORTED.txt
 awk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
 rm -f /tmp/tmp.lis /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt
 
-# The file with the message for each shared library
-FILE_MODULEINFO=gmt_moduleinfo.txt
-LIB_STRING=`grep LIB_STRING $FILE_MODULEINFO | grep ${L_TAG} | awk -F= '{print $NF}'`
-
-# The two output files produced
+# The output file produced
 FILE_GMT_MODULE_C=gmt_${L_TAG}_module.c
 FILE_GMT_MODULE_H=gmt_${L_TAG}_module.h
 COPY_YEAR=$(date +%Y)
+
 #
 # Generate FILE_GMT_MODULE_H
 #
@@ -227,7 +229,7 @@ if [ "$U_TAG" = "CORE" ]; then
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
-	GMT_Message (V_API, GMT_TIME_NONE, "\n=== " $LIB_STRING " ===\n");
+	GMT_Message (V_API, GMT_TIME_NONE, "\n===  $LIB_STRING  ===\n");
 	while (g_${L_TAG}_module[module_id].name != NULL) {
 		if (module_id == 0 || strcmp (g_${L_TAG}_module[module_id-1].component, g_${L_TAG}_module[module_id].component)) {
 			/* Start of new supplemental group */

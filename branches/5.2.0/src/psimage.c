@@ -53,7 +53,6 @@ struct PSIMAGE_CTRL {
 	} F;
 	struct G {	/* -G[f|b|t]<rgb> */
 		bool active;
-		unsigned int mode;	/* 0 for f|b, 1 for t */
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
@@ -179,7 +178,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 				break;
 			case 'G':	/* Background/foreground color for 1-bit images */
 				Ctrl->G.active = true;
-				letter = (GMT_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case F|f|B|b switching below */
+				letter = (GMT_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case f|b|t switching below */
 				switch (letter) {
 					case 'f':
 						/* Set color for foreground pixels */
@@ -205,7 +204,6 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 							GMT_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
-						Ctrl->G.mode = 1;
 						break;
 					default:	/* Gave either -G<r/g/b>, -G-, or -G<colorname>; all treated as -Gf */
 						if (opt->arg[0] == '-' && opt->arg[1] == '\0')
@@ -295,7 +293,7 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 
 int GMT_psimage (void *V_API, int mode, void *args)
 {
-	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
+	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0, n_trans = -1, done = 0;
 	unsigned int row, col;
 	bool free_GMT = false, did_gray = false;
 
@@ -359,15 +357,30 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT_set_pad (GMT, API->pad);	/* Reset to GMT default */
 
 		if (I->ColorMap != NULL) {
-			unsigned char *r_table = NULL, *g_table = NULL, *b_table = NULL;
+			unsigned char *r_table = NULL, *g_table = NULL, *b_table = NULL, *a_table = NULL;
 			r_table = GMT_memory (GMT, NULL, 256, unsigned char);
 			g_table = GMT_memory (GMT, NULL, 256, unsigned char);
 			b_table = GMT_memory (GMT, NULL, 256, unsigned char);
-			for (n = 0; n < 256; n++) {
+			a_table = GMT_memory (GMT, NULL, 256, unsigned char);
+			for (n = 0; n < 256 && I->ColorMap[n*4] >= 0; n++) {
 				r_table[n] = I->ColorMap[n*4    ];	/* 4 because color table is RGBA */
 				g_table[n] = I->ColorMap[n*4 + 1];
 				b_table[n] = I->ColorMap[n*4 + 2];
+				a_table[n] = I->ColorMap[n*4 + 3];
+				if (!Ctrl->G.active && a_table[n] == 0) n_trans = n;	/* Save transparent color */
 			}
+			/* If there is a transparent color, make sure that it becomes a unique color */
+			if (n_trans >= 0) {
+				for (i = done = 0; i < 256 && !done; i++) {
+					for (j = 0, done = 1; j < n; j++) {
+						if (j != n_trans && r_table[j] == r_table[n_trans] && g_table[j] == g_table[n_trans] && b_table[j] == b_table[n_trans]) r_table[n_trans] = (r_table[n_trans]+1)%256, done = 0;
+					}
+				}
+				Ctrl->G.t_rgb[0] = r_table[n_trans] / 255.;
+				Ctrl->G.t_rgb[1] = g_table[n_trans] / 255.;
+				Ctrl->G.t_rgb[2] = b_table[n_trans] / 255.;
+			}
+	
 			I->data = GMT_memory (GMT, I->data, 3 * I->header->nm, unsigned char);	/* Expand to reuse */
 			n = (int)(3 * I->header->nm - 1);
 			for (j = (int)I->header->nm - 1; j >= 0; j--) {
@@ -376,7 +389,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 				I->data[n--] = r_table[I->data[j]];	/* Now we can overwrite this value */
 			}
 			I->header->n_bands = 3;
-			GMT_free (GMT, r_table);	GMT_free (GMT, g_table);	GMT_free (GMT, b_table);
+			GMT_free (GMT, r_table);	GMT_free (GMT, g_table);	GMT_free (GMT, b_table);	GMT_free (GMT, a_table);
 		}
 
 		picture = (unsigned char *)I->data;
@@ -415,7 +428,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		j = header.depth / 8;
 		n = j * (header.width * header.height + 1);
 		buffer = GMT_memory (GMT, NULL, n, unsigned char);
-		for (i = 0; i < j; i++) buffer[i] = (unsigned char)Ctrl->G.t_rgb[i];
+		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.t_rgb[i]);
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
 #ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_OK) {	/* If I is NULL then nothing is done */

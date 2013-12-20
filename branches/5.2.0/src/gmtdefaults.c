@@ -95,7 +95,7 @@ int GMT_gmtdefaults_parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, 
 				break;
 			case 'L':	/* List the user's current GMT defaults settings */
 				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; it is the default behavior.\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; it is now the default behavior.\n");
 				}
 				else
 					n_errors += GMT_default_error (GMT, opt->option);

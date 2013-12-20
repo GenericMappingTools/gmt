@@ -97,10 +97,8 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
-#include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 #include "gmt_core_module.h" 	/* Core module modes and properties */
 #include "gmt_supplements_module.h" 	/* Suppl module modes and properties */
-#include "gmt_compat.h" 	/* Compatibility module names */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
 #include "gmt_grd.h"            /* Define grd file header structure */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
@@ -115,7 +113,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
 #include "gmt_memory.h"         /* extern functions defined in gmt_memory.c */
 #include "gmt_support.h"        /* extern functions defined in gmt_support.c */
-#include "gmt_vector.h"         /* extern functions defined in gmt_vector.c */
 #include "gmt_types.h"          /* GMT type declarations */
 
 #ifdef _OPENMP                  /* Using open MP parallelization */

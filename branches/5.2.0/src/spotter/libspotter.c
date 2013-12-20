@@ -59,6 +59,14 @@ void GMT_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, do
 #define SPOTTER_N_GRID		100
 #define SPOTTER_D_CUT		1.0e-6
 
+void spotter_rot_usage (struct GMTAPI_CTRL *API, char option)
+{
+	GMT_Message (API, GMT_TIME_NONE, "\t-%c Specify file with the rotations to be used (see man page for format).\n", option);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to extract that rotation from the GPlates rotation database (if installed)\n");
+}
+
 /* Sort functions used to order the rotations */
 
 int spotter_comp_stage (const void *p_1, const void *p_2)

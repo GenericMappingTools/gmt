@@ -70,6 +70,7 @@ enum GMT_enum_length {
 	GMT_TINY_CHUNK  = 8U,
 	GMT_SMALL_CHUNK = 64U,
 	GMT_CHUNK       = 2048U,
+	GMT_BIG_CHUNK   = 65536U,
 	GMT_LEN16	= 16U,		/* All strings used to format date/clock output must be this length */
 	GMT_LEN32  = 32U,          /* Small length of texts */
 	GMT_LEN64  = 64U,          /* Intermediate length of texts */

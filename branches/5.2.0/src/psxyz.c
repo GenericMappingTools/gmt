@@ -564,6 +564,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
+		GMT_set_meminc (GMT, GMT_BIG_CHUNK);	/* Only a sizeable amount of PSXZY_DATA structures when we initially allocate */
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
 		if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) p_in = in2;
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
@@ -704,11 +705,13 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 						data[n].dim[0] = p_in[ex1];	/* direction */
 						data[n].dim[1] = p_in[ex2];
 						data[n].dim[2] = p_in[ex3];
+						GMT_flip_angle_d (GMT, &data[n].dim[0]);
 					}
 					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						data[n].dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
 						data[n].dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
 						data[n].dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
+						GMT_flip_angle_d (GMT, &data[n].dim[0]);
 					}
 					else {				/* Got axis in km */
 						data[n].dim[0] = p_in[ex1];	/* Azimuth will be forwarded to GMT_geo_rectangle/ellipse */
@@ -748,6 +751,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 						data[n].dim[1] = hypot (data[n].x - x_2, data[n].y - y_2);	/* Compute vector length in case of shrinking */
 					}
 					else {
+						GMT_flip_angle_d (GMT, &data[n].dim[0]);
 						sincosd (data[n].dim[0], &s, &c);
 						x_2 = data[n].x + data[n].dim[1] * c;
 						y_2 = data[n].y + data[n].dim[1] * s;
@@ -986,6 +990,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
 		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 		GMT_free (GMT, data);
+		GMT_reset_meminc (GMT);
 	}
 	else {	/* Line/polygon part */
 		uint64_t seg;

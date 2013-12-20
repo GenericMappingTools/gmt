@@ -941,12 +941,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				case GMT_SYMBOL_ELLIPSE:
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
 						dim[0] = p_in[ex1];
+						GMT_flip_angle_d (GMT, &dim[0]);
 						dim[1] = p_in[ex2];
 						dim[2] = p_in[ex3];
 						PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					}
 					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
+						GMT_flip_angle_d (GMT, &dim[0]);
 						dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
 						dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
 						PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
@@ -982,6 +984,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */
 					}
 					else {	/* Compute tip coordinates from tail and length */
+						GMT_flip_angle_d (GMT, &direction);
 						sincosd (direction, &s, &c);
 						x_2 = plot_x + length * c;
 						y_2 = plot_y + length * s;

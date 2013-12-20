@@ -165,7 +165,7 @@ To extract data in the region **-R**-40/40/-70/-30 from
     gmt img2grd -M world_grav.img.7.2 -Gmerc_grav.nc -R-40/40/-70/-30 -V
 
 Note that the **-V** option tells us that the range was adjusted to
-**-R**-40/40/-70.0004681551/-29.9945810754. We can also use **grdinfo**
+**-R**-40/40/-70.0004681551/-29.9945810754. We can also use :doc:`grdinfo </grdinfo>`
 to find that the grid file header shows its region to be
 **-R**\ 0/80/0/67.9666667 This is the range of x,y we will get from a
 Spherical Mercator projection using
@@ -174,7 +174,7 @@ ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
 
    ::
 
-    gmtset PROJ_ ELLIPSOID Sphere
+    gmt set PROJ_ELLIPSOID Sphere
 
     gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav | \
               gmt grdtrack -Gmerc_grav.nc | gmt mapproject \
@@ -182,7 +182,7 @@ ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
 
 It is recommended to use the above method of projecting and unprojecting
 the data in such an application, because then there is only one
-interpolation step (in **grdtrack**). If one first tries to convert the
+interpolation step (in :doc:`grdtrack </grdtrack>`). If one first tries to convert the
 grid file to lon,lat and then sample it, there are two interpolation
 steps (in conversion and in sampling).
 
@@ -203,12 +203,12 @@ it may be always better to use)
         gmt surface -R-40/40/-70/70 -I2m -Ggrav.nc
 
 To make a Mercator map of the above region, suppose our gmt.conf value
-for **PROJ_LENGTH_UNIT** is inch. Then since the above merc_grav.nc
+for :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` is inch. Then since the above merc_grav.nc
 file is projected with **-Jm**\ 1i it is 80 inches wide. We can make a
 map 8 inches wide by using **-Jx**\ 0.1i on any map programs applied to
 this grid (e.g., :doc:`grdcontour </grdcontour>`,
 :doc:`grdimage </grdimage>`, :doc:`grdview </grdview>`), and then
-for overlays which work in lon,lat (e.g., **psxy**, **pscoast**) we can
+for overlays which work in lon,lat (e.g., :doc:`psxy </psxy>`, :doc:`pscoast </pscoast>`) we can
 use the above adjusted **-R** and **-Jm**\ 0.1 to get the two systems to
 match up.
 
