@@ -104,6 +104,9 @@
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
 
+/* CMake definitions: This must be first! */
+#include "gmt_config.h"
+
 #include <float.h>
 #include <limits.h>
 #include <math.h>
