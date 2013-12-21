@@ -26,6 +26,7 @@
  *
  */
 
+#include "../config.h"
 #include "gmt_dev.h"
 
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))

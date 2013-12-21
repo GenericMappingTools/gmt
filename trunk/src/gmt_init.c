@@ -52,6 +52,7 @@
  *	GMT_init_time_system_structure  Does what it says
  */
 
+#include "../config.h"
 #include "gmt_dev.h"
 #include <stdarg.h>
 #include "gmt_internals.h"
