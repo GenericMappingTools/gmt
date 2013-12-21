@@ -148,6 +148,7 @@
  * time and he frees any remaining GMT objects.
  */
 
+#include "../config.h"
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
