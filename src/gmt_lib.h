@@ -37,6 +37,7 @@ extern "C" {
 #include "gmt_notposix.h"       /* Non-POSIX extensions */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_dev.h"
+#include "gmt_crossing.h"       /* Declarations of structure for GMT map crossings */
 #include "gmt_internals.h"
 
 /* Declaration modifiers for DLL support (MSC et al) */
