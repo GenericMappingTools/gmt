@@ -27,12 +27,6 @@
 #ifndef _GMT_CONTOUR_H
 #define _GMT_CONTOUR_H
 
-/* Various settings for contour label placements at crossing lines */
-enum GMT_enum_contline {
-	GMT_CONTOUR_NONE = 0,	/* No contour/line crossing  */
-	GMT_CONTOUR_XLINE,	/* Contour labels where crossing straight lines (via key points) */
-	GMT_CONTOUR_XCURVE};	/* Contour labels where crossing arbitrary lines (via file) */
-
 struct GMT_XOVER {		/* Structure with info on all track cross-over */
 	double *x;		/* x or Longitude */
 	double *y;		/* y or Latitude */

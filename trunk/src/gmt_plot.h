@@ -74,20 +74,6 @@
 
 #define GMT_DOT_SIZE 0.005	/* Size of a "dot" on a GMT PS map [in inches] */
 
-/* FRONT symbols */
-
-enum GMT_enum_front {GMT_FRONT_FAULT = 0,
-	GMT_FRONT_TRIANGLE,
-	GMT_FRONT_SLIP,
-	GMT_FRONT_CIRCLE,
-	GMT_FRONT_BOX};
-
-/* Direction of FRONT symbols: */
-
-enum GMT_enum_frontdir {GMT_FRONT_RIGHT = -1,
-	GMT_FRONT_CENTERED,
-	GMT_FRONT_LEFT};
-
 struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	double f_gap;		/* Gap between front symbols in inches */
 	double f_len;		/* Length of front symbols in inches */
@@ -95,25 +81,6 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	int f_sense;	/* Draw symbols to left (+1), centered (0), or right (-1) of line */
 	int f_symbol;	/* Which symbol to draw along the front line */
 };
-
-/* Note: If changes are made to GMT_enum_vecattr you must also change pslib.h: PSL_enum_vecattr */
-enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head */
-	GMT_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
-	GMT_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
-	GMT_VEC_END		= 8,		/* Place vector head at end of vector */
-	GMT_VEC_HEADS		= 12,		/* Mask for either head end */
-	GMT_VEC_JUST_B		= 0,		/* Align vector beginning at (x,y) */
-	GMT_VEC_JUST_C		= 16,		/* Align vector center at (x,y) */
-	GMT_VEC_JUST_E		= 32,		/* Align vector end at (x,y) */
-	GMT_VEC_JUST_S		= 64,		/* Align vector center at (x,y) */
-	GMT_VEC_ANGLES		= 128,		/* Got start/stop angles instead of az, length */
-	GMT_VEC_POLE		= 256,		/* Got pole of small/great circle */
-	GMT_VEC_OUTLINE		= 512,		/* Draw vector head outline using default pen */
-	GMT_VEC_OUTLINE2	= 1024,		/* Draw vector head outline using supplied v_pen */
-	GMT_VEC_FILL		= 2048,		/* Fill vector head using default fill */
-	GMT_VEC_FILL2		= 4096,		/* Fill vector head using supplied v_fill) */
-	GMT_VEC_MARC90		= 8192,		/* Matharc only: if angles subtend 90, draw straight angle symbol */
-	GMT_VEC_SCALE		= 32768};	/* Not needed in pslib: If not set we determine the required inch-to-degree scale */
 
 #define GMT_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
 #define GMT_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */
@@ -123,7 +90,7 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
-	unsigned int status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
+	unsigned int status;	/* Bit flags for vector information (see enum GMT_enum_vecattr) */
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */

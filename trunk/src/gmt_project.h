@@ -56,69 +56,21 @@
 
 /* Linear projections tagged 0-99 */
 #define GMT_IS_LINEAR(C) (C->current.proj.projection / 100 == 0)
-enum GMT_enum_annot {GMT_LINEAR = 0,
-	GMT_LOG10,	/* These numbers are only used for GMT->current.proj.xyz_projection[3], */
-	GMT_POW,	/* while GMT->current.proj.projection = 0 */
-	GMT_TIME,
-	GMT_ANNOT_CPT,
-	GMT_CUSTOM};
-
 #define GMT_ZAXIS		50
 
 /* Cylindrical projections tagged 100-199 */
 #define GMT_IS_CYLINDRICAL(C) (C->current.proj.projection / 100 == 1)
-enum GMT_enum_cyl {GMT_MERCATOR = 100,
-	GMT_CYL_EQ,
-	GMT_CYL_EQDIST,
-	GMT_CYL_STEREO,
-	GMT_MILLER,
-	GMT_TM,
-	GMT_UTM,
-	GMT_CASSINI,
-	GMT_OBLIQUE_MERC = 150,
-	GMT_OBLIQUE_MERC_POLE};
 
 /* Conic projections tagged 200-299 */
 #define GMT_IS_CONICAL(C) (C->current.proj.projection / 100 == 2)
-enum GMT_enum_conic {GMT_ALBERS = 200,
-	GMT_ECONIC,
-	GMT_POLYCONIC,
-	GMT_LAMBERT = 250};
 
 /* Azimuthal projections tagged 300-399 */
 #define GMT_IS_AZIMUTHAL(C) (C->current.proj.projection / 100 == 3)
 #define GMT_IS_PERSPECTIVE(C) (C->current.proj.projection == GMT_ORTHO || C->current.proj.projection == GMT_GENPER)
-enum GMT_enum_azim {GMT_STEREO = 300,
-	GMT_LAMB_AZ_EQ,
-	GMT_ORTHO,
-	GMT_AZ_EQDIST,
-	GMT_GNOMONIC,
-	GMT_GENPER,
-	GMT_POLAR = 350};
 
 /* Misc projections tagged 400-499 */
 #define GMT_IS_MISC(C) (C->current.proj.projection / 100 == 4)
-enum GMT_enum_misc {GMT_MOLLWEIDE = 400,
-	GMT_HAMMER,
-	GMT_SINUSOIDAL,
-	GMT_VANGRINTEN,
-	GMT_ROBINSON,
-	GMT_ECKERT4,
-	GMT_ECKERT6,
-	GMT_WINKEL};
 
-/* The various GMT measurement units */
-enum GMT_enum_units {GMT_IS_METER = 0,
-	GMT_IS_KM,
-	GMT_IS_MILE,
-	GMT_IS_NAUTICAL_MILE,
-	GMT_IS_INCH,
-	GMT_IS_CM,
-	GMT_IS_PT,
-	GMT_IS_FOOT,
-	GMT_IS_SURVEY_FOOT,
-	GMT_N_UNITS,
-	GMT_IS_NOUNIT = -1};
 
 /* GMT_IS_RECT_GRATICULE means parallels and meridians are orthogonal, but does not imply linear spacing */
 #define GMT_IS_RECT_GRATICULE(C) (C->current.proj.projection <= GMT_MILLER)
@@ -191,7 +143,7 @@ struct GMT_THREE_D {
 	bool view_given;	/* true if a fixed projected point was given in -E ..+cx0/y0 */
 };
 
-struct GMT_DATUM {	/* Main parameter for a particular datum */
+struct GMT_DATUM_INFO {	/* Main parameter for a particular datum */
 	double a, b, f, e_squared, ep_squared;
 	double xyz[3];
 	int ellipsoid_id;	/* Ellipsoid GMT ID number (or -1) */
@@ -204,7 +156,7 @@ struct GMT_DATUM_CONV {
 	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
 	double one_minus_f;	/* 1 - f */
 	double dxyz[3];		/* Ellipsoids offset in meter from Earth's center of mass for x,y, and z */
-	struct GMT_DATUM from, to;	/* The old and new datums */
+	struct GMT_DATUM_INFO from, to;	/* The old and new datums */
 };
 
 struct GMT_PROJ4 {	/* Used to assign proj4 projections from GMT projections */
@@ -394,21 +346,6 @@ struct GMT_PROJ {
 	bool got_azimuths, got_elevations, z_down;
 
 };
-
-enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */
-	GMT_IS_INSIDE	= 1,	/* Plain frame ticks/annotations on the inside of boundary */
-	GMT_IS_GRAPH	= 2,	/* Plain fram with arrow extensions on axes */
-	GMT_IS_FANCY	= 4,	/* Fancy baseframe */
-	GMT_IS_ROUNDED	= 12};	/* Fancy baseframe, rounded */
-
-/* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANNOT/INTV for upper and lower) */
-
-enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis */
-	GMT_ANNOT_LOWER,	/* Tick annotations farthest from the axis*/
-	GMT_TICK_UPPER,		/* Frame tick marks closest to the axis */
-	GMT_TICK_LOWER,		/* Frame tick marks closest to the axis */
-	GMT_GRID_UPPER,		/* Gridline spacing */
-	GMT_GRID_LOWER};	/* Gridline spacing */
 
 /* Some convenient macros for axis routines */
 

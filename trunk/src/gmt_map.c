@@ -7107,7 +7107,7 @@ void GMT_init_ellipsoid (struct GMT_CTRL *GMT)
 
 /* Datum conversion routines */
 
-void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DATUM *to, bool heights)
+void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM_INFO *from, struct GMT_DATUM_INFO *to, bool heights)
 {
 	/* Initialize datum conv structures based on the parsed values*/
 
@@ -7115,8 +7115,8 @@ void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DA
 
 	GMT->current.proj.datum.h_given = heights;
 
-	GMT_memcpy (&GMT->current.proj.datum.from, from, 1, struct GMT_DATUM);
-	GMT_memcpy (&GMT->current.proj.datum.to,   to,   1, struct GMT_DATUM);
+	GMT_memcpy (&GMT->current.proj.datum.from, from, 1, struct GMT_DATUM_INFO);
+	GMT_memcpy (&GMT->current.proj.datum.to,   to,   1, struct GMT_DATUM_INFO);
 
 	GMT->current.proj.datum.da = GMT->current.proj.datum.to.a - GMT->current.proj.datum.from.a;
 	GMT->current.proj.datum.df = GMT->current.proj.datum.to.f - GMT->current.proj.datum.from.f;
@@ -7124,14 +7124,14 @@ void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DA
 	GMT->current.proj.datum.one_minus_f = 1.0 - GMT->current.proj.datum.from.f;
 }
 
-void GMT_ECEF_init (struct GMT_CTRL *GMT, struct GMT_DATUM *D)
+void GMT_ECEF_init (struct GMT_CTRL *GMT, struct GMT_DATUM_INFO *D)
 {
 	/* Duplicate the parsed datum to the GMT from datum */
 
-	GMT_memcpy (&GMT->current.proj.datum.from, D, 1, struct GMT_DATUM);
+	GMT_memcpy (&GMT->current.proj.datum.from, D, 1, struct GMT_DATUM_INFO);
 }
 
-int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D)
+int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM_INFO *D)
 {
 	int i;
 	double t;

@@ -68,7 +68,7 @@ extern "C" {
 
 /* PSL codes for vector attributes - mirroring similar codes and macros in GMT */
 
-/* Note: If changes are made to PSL_enum_vecattr you must also change gmt_plot.h: GMT_enum_vecattr */
+/* Note: If changes are made to PSL_enum_vecattr you must also change gmt_enums.h: GMT_enum_vecattr */
 enum PSL_enum_vecattr {PSL_VEC_LEFT = 1,	/* Only draw left half of vector head */
 	PSL_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
 	PSL_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */

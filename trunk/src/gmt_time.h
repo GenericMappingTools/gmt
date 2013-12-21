@@ -25,7 +25,6 @@
 
 #ifndef _GMT_TIME_H
 #define _GMT_TIME_H
-
 /*--------------------------------------------------------------------
  *			GMT TIME STRUCTURES
  *--------------------------------------------------------------------*/
@@ -44,5 +43,6 @@ struct GMT_TIME_LANGUAGE {		/* Language-specific text strings for calendars */
 	char day_name[3][7][GMT_LEN16];	/* Full, short, and 1-char weekday names */
 	char week_name[3][GMT_LEN16];	/* Full, short, and 1-char versions of the word Week */
 };
+
 
 #endif  /* _GMT_TIME_H */
