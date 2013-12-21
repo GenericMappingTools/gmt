@@ -278,7 +278,7 @@ EXTERN_MSC double GMT_rdc2dt (struct GMT_CTRL *GMT, int64_t rd, double secs);
 EXTERN_MSC void GMT_dt2rdc (struct GMT_CTRL *GMT, double t, int64_t *rd, double *s);
 EXTERN_MSC int64_t GMT_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd);
 EXTERN_MSC void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, bool upper, unsigned int kind, double dt);
-EXTERN_MSC void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t rd, struct GMT_gcal *gcal);
+EXTERN_MSC void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t rd, struct GMT_GCAL *gcal);
 
 /* gmt_map.c: */
 
@@ -319,9 +319,9 @@ EXTERN_MSC double GMT_mindist_to_point (struct GMT_CTRL *GMT, double lon, double
 EXTERN_MSC bool GMT_UTMzone_to_wesn (struct GMT_CTRL *GMT, unsigned int zone_x, char zone_y, int hemi, double wesn[]);
 EXTERN_MSC void GMT_ECEF_forward (struct GMT_CTRL *GMT, double in[], double out[]);
 EXTERN_MSC void GMT_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[]);
-EXTERN_MSC void GMT_ECEF_init (struct GMT_CTRL *GMT, struct GMT_DATUM *D);
-EXTERN_MSC void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DATUM *to, bool heights);
-EXTERN_MSC int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D);
+EXTERN_MSC void GMT_ECEF_init (struct GMT_CTRL *GMT, struct GMT_DATUM_INFO *D);
+EXTERN_MSC void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM_INFO *from, struct GMT_DATUM_INFO *to, bool heights);
+EXTERN_MSC int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM_INFO *D);
 EXTERN_MSC void GMT_conv_datum (struct GMT_CTRL *GMT, double in[], double out[]);
 EXTERN_MSC uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx);
 EXTERN_MSC void GMT_set_spherical (struct GMT_CTRL *GMT, bool notify);

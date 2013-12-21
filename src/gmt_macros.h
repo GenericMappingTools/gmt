@@ -16,7 +16,8 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_macros.h contains definitions of macros used throught GMT.
+ * gmt_macros.h contains definitions of macros used throught GMT.  They
+ * do not depend on configuration.
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009

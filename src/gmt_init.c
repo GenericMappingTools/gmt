@@ -2966,7 +2966,7 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 	char line[GMT_LEN256] = {""}, symbol[GMT_LEN256] = {""};
 	unsigned int code = 0, pos;
 	FILE *in = NULL;
-	struct gmt_encoding *enc = &GMT->current.setting.ps_encoding;
+	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
 
 	GMT_getsharepath (GMT, "pslib", enc->name, ".ps", line, R_OK);
 	if ((in = fopen (line, "r")) == NULL) {
@@ -9874,10 +9874,10 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 		{ "z"        , GMT_ZAXIS }
 	};
 	struct GMT_CTRL *GMT = NULL;
-	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS] = {   /* This constant is created by GNUmakefile - do not edit */
+	struct GMT_ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS] = {   /* This constant is created by GNUmakefile - do not edit */
 	#include "gmt_ellipsoids.h"	/* This include file is created by GNUmakefile - do not edit */
 	};
-	struct DATUM datum[GMT_N_DATUMS] = {     /* This constant is created by GNUmakefile - do not edit */
+	struct GMT_DATUM datum[GMT_N_DATUMS] = {     /* This constant is created by GNUmakefile - do not edit */
 	#include "gmt_datums.h"		/* This include file is created by GNUmakefile - do not edit */
 	};
 

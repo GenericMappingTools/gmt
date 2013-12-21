@@ -183,7 +183,7 @@ int get_first_year (struct GMT_CTRL *GMT, double t)
 	/* obtain yyyy/mm/dd and return year */
 	int64_t rd;
 	double s;
-	struct GMT_gcal CAL;
+	struct GMT_GCAL CAL;
 	GMT_dt2rdc (GMT, t, &rd, &s);
 	GMT_gcal_from_rd (GMT, rd, &CAL);
 	return (CAL.year);

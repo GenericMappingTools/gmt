@@ -75,6 +75,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 //#include "gmt_notposix.h"       /* Non-POSIX extensions */
 
 #include "gmt_constants.h"      /* All basic constant definitions */
+#include "gmt_enums.h"          /* All basic enums definitions */
 #include "gmt_macros.h"         /* All basic macros definitions */
 #include "gmt_dimensions.h"     /* Constant definitions created by configure */
 #include "gmt_time.h"           /* Declarations of structures for dealing with time */
@@ -108,6 +109,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
 #include "gmt_memory.h"         /* extern functions defined in gmt_memory.c */
 #include "gmt_support.h"        /* extern functions defined in gmt_support.c */
+#include "gmt_crossing.h"       /* Declarations of structure for GMT map crossings */
 #include "gmt_types.h"          /* GMT type declarations */
 
 #ifdef _OPENMP                  /* Using open MP parallelization */

@@ -33,7 +33,7 @@
 #include <stdint.h>
 
 /*--------------------------------------------------------------------
- * GMT TYPE DEFINITIONS
+ * GMT TYPE DEFINITIONS RE STRUCTURES USED THROUGHOUT GMT
  *--------------------------------------------------------------------*/
 
 struct GMT_MAP {		/* Holds all map-related parameters */
