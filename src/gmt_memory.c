@@ -33,7 +33,7 @@
    GMT_free                Memory deallocation
  */
 
-#include "gmt_dev.h"
+#include "gmt_lib.h"
 
 #ifdef HAVE_MEMALIGN
 #	include <malloc.h>

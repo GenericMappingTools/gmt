@@ -76,8 +76,7 @@
  *	GMT_get_bcr_img		Get interpolated image value(s) by convolution
  */
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 
 unsigned int gmt_bcr_reject (struct GMT_GRID_HEADER *h, double xx, double yy)
 {

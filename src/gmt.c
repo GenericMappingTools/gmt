@@ -26,7 +26,7 @@
  *
  */
 
-#include "../config.h"
+#include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_dev.h"
 
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))

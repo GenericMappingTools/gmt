@@ -61,8 +61,7 @@
  * All functions that begin with lower case gmt_* are private to this file only.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 #include "common_byteswap.h"
 
 struct GRD_PAD {

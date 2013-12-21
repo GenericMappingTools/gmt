@@ -56,8 +56,7 @@
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 #include "netcdf.h"
 
 /* Declaration modifier for netcdf DLL support

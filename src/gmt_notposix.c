@@ -41,8 +41,7 @@
  *      atanh:  inverse hyperbolic tangent
  */
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 
 /*
  * POSIX replacements

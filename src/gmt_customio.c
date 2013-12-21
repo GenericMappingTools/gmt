@@ -57,8 +57,7 @@
  *	     same function (but netCDF is one exception)
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 
 /* Defined in gmt_cdf.c */
 int GMT_cdf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
