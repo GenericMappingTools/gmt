@@ -22,8 +22,7 @@
  * Version:	5.x
  */
  
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 
 #define MAX_SWEEPS 50
 

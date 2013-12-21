@@ -100,8 +100,7 @@
  *	GMT_zz_to_z :			Generic inverse linear z projection
  */
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 
 /* Basic error reporting when things go badly wrong. This Return macro can be
  * used in stead of regular return(code) to print out what the code is before

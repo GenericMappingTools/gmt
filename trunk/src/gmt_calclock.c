@@ -31,8 +31,7 @@
 	W H F Smith, April 2000
 */
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 
 /* Private functions to this file: 
    int gmt_kday_on_or_before (int date, int kday);

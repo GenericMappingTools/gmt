@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 /* CMake definitions: This must be first! */
-#include "gmt_config.h"
+//#include "gmt_config.h"
 
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
@@ -75,7 +75,7 @@ extern "C" {
 
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
-#include "gmt_notposix.h"       /* Non-POSIX extensions */
+//#include "gmt_notposix.h"       /* Non-POSIX extensions */
 
 #include "gmt_constants.h"      /* All basic constant definitions */
 #include "gmt_macros.h"         /* All basic macros definitions */
@@ -96,7 +96,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_nan.h"            /* Machine-dependent macros for making and testing NaNs */
 #include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
-#include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_core_module.h" 	/* Core module modes and properties */
 #include "gmt_supplements_module.h" 	/* Suppl module modes and properties */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */

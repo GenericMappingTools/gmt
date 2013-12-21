@@ -24,7 +24,7 @@
  * Version:	5.x
  */
 
-#include "gmt_dev.h"
+#include "gmt_lib.h"
 
 EXTERN_MSC int GMT_gmtdp (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_minmax (void *V_API, int mode, void *args);

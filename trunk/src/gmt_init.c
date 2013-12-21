@@ -52,10 +52,8 @@
  *	GMT_init_time_system_structure  Does what it says
  */
 
-#include "../config.h"
-#include "gmt_dev.h"
+#include "gmt_lib.h"
 #include <stdarg.h>
-#include "gmt_internals.h"
 #include "common_runpath.h"
 
 #ifdef GMT_MATLAB

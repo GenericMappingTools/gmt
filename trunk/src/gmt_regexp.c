@@ -28,8 +28,7 @@
  *
  */
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 
 /*
  * ERE pattern matching with PCRE or POSIX

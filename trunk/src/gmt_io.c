@@ -90,8 +90,7 @@
  * Now 64-bit enabled.
  */
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt_lib.h"
 #include "common_byteswap.h"
 
 EXTERN_MSC unsigned int GMTAPI_count_objects (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, int *first_ID);
