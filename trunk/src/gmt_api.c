@@ -119,7 +119,7 @@
  * 2. Memory not allocated by GMT will have an implicit alloc_mode = GMT_ALLOCATED_EXTERNALLY [0]
  *    and alloc_mode = 0 (i.e., gmt executable level) but it does not matter since such memory is
  *    only used for reading and we may never free it or reallocate it within GMT. This alloc_mode
- *    only applies to data arrays inside objects (e.g., G->data), not GMT objects themselves.
+ *    only applies to data arrays inside objects (e.g., G->data), not the GMT objects themselves.
  * 3. Memory passed into modules as "input files" requires no special treatment since its level
  *    will be lower than that of the module it is used in, and when that module tries to free it
  *    (directly with GMT_Destroy_Data or via end-of-module GMT_Garbage_Collection) it will skip
@@ -314,7 +314,7 @@ void GMTAPI_Set_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *obj)
 		case GMT_IS_VECTOR:	obj->V = obj->data; break;
 		case GMT_IS_COORD:	break;	/* No worries */
 #ifdef HAVE_GDAL
-		case GMT_IS_IMAGE:	break;
+		case GMT_IS_IMAGE:	obj->I = obj->data; break;
 #endif
 	}
 }
@@ -1483,6 +1483,7 @@ int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode
 	}
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
 	S_obj->data = P_obj;		/* Retain pointer to the allocated data so we can find the object via its data pointer */
+	S_obj->data = NULL;
 	
 	return GMT_OK;
 }
@@ -1908,6 +1909,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	S_obj->alloc_mode = D_obj->alloc_mode;	/* Clarify allocation mode for this entity */
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
 	S_obj->data = D_obj;		/* Retain pointer to the allocated data so we can find its object via the data pointer later */
+	S_obj->data = NULL;
 	
 	return GMT_OK;
 }
@@ -2143,6 +2145,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	S_obj->alloc_mode = T_obj->alloc_mode;	/* Clarify allocation mode for this entity */
 	S_obj->status = GMT_IS_USED;	/* Mark as read */
 	S_obj->data = T_obj;		/* Retain pointer to the allocated data so we can find the object via its pointer later */
+	S_obj->data = NULL;
 	
 	return GMT_OK;
 }
@@ -2702,6 +2705,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as written (unless we only updated header) */
 	S_obj->data = G_obj;		/* Retain pointer to the allocated data so we can find the object via its pointer later */
+	S_obj->data = NULL;
 
 	return (GMT_OK);		
 }

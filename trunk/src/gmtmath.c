@@ -3875,6 +3875,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			uint64_t nr, c;
 			struct GMT_DATASET *N = NULL;
 			nr = (Ctrl->S.active) ? 1 : 0;
+			if ((N = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT->parent->error);
 			N = GMT_alloc_dataset (GMT, R, nr, n_columns, GMT_ALLOC_NORMAL);
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				for (r = 0; r < N->table[0]->segment[seg]->n_rows; r++) {
@@ -3886,9 +3887,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, N->io_mode, NULL, Ctrl->Out.file, N) != GMT_OK) {
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (API, &N) != GMT_OK) {
-				Return (API->error);
-			}
+			GMT_free_dataset (API->GMT, &N);
+			//if (GMT_Destroy_Data (API, &N) != GMT_OK) {
+			//	Return (API->error);
+			//}
 		}
 		else {	/* Write the whole enchilada */
 			if (R != Template) stack[0]->alloc_mode = 2;	/* Since GMT_Write_Data will register it */

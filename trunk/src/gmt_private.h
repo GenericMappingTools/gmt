@@ -98,18 +98,22 @@ struct GMTAPI_DATA_OBJECT {
 	unsigned method;		/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} or sum with enum GMT_enum_via (GMT_VIA_{NONE,VECTOR,MATRIX,OUTPUT}); using unsigned type because sum exceeds enum GMT_enum_method */
 	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
-	void *resource;				/* Points to registered filename, memory location, etc. where data will be obtained from */
-	void *data;				/* Points to GMT object that was read or written */
+	void *resource;				/* Points to registered filename, memory location, etc., where data can be obtained from with GMT_Get_Data. */
+	void *data;				/* Points to GMT object that was read from a resource */
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
 	void * (*import) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to input function (for DATASET/TEXTSET only) */
+#ifdef DEBUG
 	struct GMT_GRID *G;
 	struct GMT_DATASET *D;
 	struct GMT_TEXTSET *T;
 	struct GMT_PALETTE *C;
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
-	
+#ifdef HAVE_GDAL
+	struct GMT_IMAGE *I;
+#endif
+#endif
 };
 
 struct GMTAPI_CTRL {
@@ -137,14 +141,16 @@ struct GMTAPI_CTRL {
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
 	bool internal;				/* true if session was initiated by gmt.c */
-	bool deep_debug;			/* temprorary for debug */
+	bool deep_debug;			/* temporary for debugging */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
 	unsigned int do_not_exit;		/* 0 by default, mieaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
 	struct Gmt_libinfo *lib;		/* List of shared libs to consider */
 	unsigned int n_shared_libs;		/* How many in lib */
 };
 
+#ifdef DEBUG
 EXTERN_MSC void GMT_list_API (struct GMTAPI_CTRL *ptr, char *txt);
+#endif
 EXTERN_MSC int GMTAPI_report_error	(void *C, int error);
 
 /* Macro to test if filename is a special name indicating memory location */
