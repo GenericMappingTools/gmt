@@ -72,24 +72,24 @@ fonts can be found in the :doc:`gmt` man page.
     Color used for the foreground of images (i.e., when z > highest
     color table entry) [white].
 
-.. _COLOR_HSV_MAX_SATURATION:
+.. _COLOR_HSV_MAX_S:
 
-**COLOR_HSV_MAX_SATURATION**
+**COLOR_HSV_MAX_S**
     Maximum saturation (0-1) assigned for most positive intensity value [0.1].
 
-.. _COLOR_HSV_MIN_SATURATION:
+.. _COLOR_HSV_MIN_S:
 
-**COLOR_HSV_MIN_SATURATION**
+**COLOR_HSV_MIN_S**
     Minimum saturation (0-1) assigned for most negative intensity value [1.0].
 
-.. _COLOR_HSV_MAX_VALUE:
+.. _COLOR_HSV_MAX_V:
 
-**COLOR_HSV_MAX_VALUE**
+**COLOR_HSV_MAX_V**
     Maximum value (0-1) assigned for most positive intensity value [1.0].
 
-.. _COLOR_HSV_MIN_VALUE:
+.. _COLOR_HSV_MIN_V:
 
-**COLOR_HSV_MIN_VALUE**
+**COLOR_HSV_MIN_V**
     Minimum value (0-1) assigned for most negative intensity value [0.3].
 
 .. _COLOR_MODEL:
@@ -931,11 +931,6 @@ fonts can be found in the :doc:`gmt` man page.
     that explain the logic of operations. These are useful if you need
     to edit the file and make changes; otherwise you can set it to false
     which yields a somewhat slimmer PostScript file [false].
-
-.. _PS_COPIES:
-
-**PS_COPIES**
-    (**\* -c**) Number of plot copies to make [1].
 
 .. _PS_IMAGE_COMPRESS:
 
