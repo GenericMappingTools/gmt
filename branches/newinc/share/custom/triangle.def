@@ -1,0 +1,9 @@
+#	$Id$
+#
+#	Definition file for triangle symbol.  Use in psxy
+#	as -Sktriangle/size.  Unlike -St, this allows for
+#	using patterns as fill
+#
+-0.433012701892	-0.25	M
+0.433012701892	-0.25	D
+0		0.5	D

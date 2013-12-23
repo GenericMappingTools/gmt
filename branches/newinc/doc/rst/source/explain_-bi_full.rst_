@@ -1,0 +1,21 @@
+.. _-bi_full:
+
+**-bi**\ [*ncols*][*type*]
+    Select binary input. Append one or more comma-separated combinations
+    of *ncols*\ *type*, where *ncols* is the actual number of data
+    columns and *type* must be one of **c** (int8_t, aka char), **u**
+    (uint8_t, aka unsigned char), **h** (int16_t, 2-byte signed int),
+    **H** (uint16_t, 2-byte unsigned int), **i** (int32_t, 4-byte
+    signed int), **I** ((capital i) uint32_t, 4-byte unsigned int), **l**
+    ((lower case el) int64_t, 8-byte signed int), **L** (uint64_t, 8-byte unsigned
+    int), **f** (4-byte single-precision float), and **d** (8-byte
+    double-precision float). In addition, use **x** to skip *ncols*
+    bytes anywhere in the record. Append **w** to any item to force
+    byte-swapping. Alternatively, append **+L**\ \|\ **B** to indicate
+    that the entire data file should be read as little- or big-endian,
+    respectively. The total number of *ncols* may exceed the columns
+    actually needed by the program. If no *ncols* is specified we assume
+    that *type* applies to all columns and that *ncols* is implied by
+    the expectation of the program. If the input file is netCDF, no
+    **-b** is needed; simply append **?**\ *var1*\ **/**\ *var2*\ **/**\ *...*
+    to the filename to specify the variables to be read.

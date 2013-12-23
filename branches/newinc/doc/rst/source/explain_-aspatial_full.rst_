@@ -1,0 +1,28 @@
+.. _-aspatial_full:
+
+**-a**\ *col*\ =\ *name*\ [*...*\ ]
+    Control how aspatial data are handled in GMT during input and output.
+    Reading OGR/GMT-formatted files. To assign certain aspatial data
+    items to GMT data columns, give one or more comma-separated
+    associations *col*\ =\ *name*, where *name* is the name of an
+    aspatial attribute field in a OGR/GMT file and whose value we wish
+    to as data input for column *col*. In addition, to assign an
+    aspatial value to non-column data, you may specify *col* as **D**
+    for *distance*, **G** for *fill*, **I** for *ID*, **L** for *label*,
+    **T** for *text*, **W** for *pen*, and **Z** for *value* [e.g., used
+    to look-up color via a CPT].
+    Write OGR/GMT-formatted files. Give one or more comma-separated
+    associations *col*\ =\ *name*\ [:*type*], To write OGR/GMT-formatted
+    files, give one or more comma-separated associations
+    *col*\ =\ *name*\ [:*type*], with an optional data type from DOUBLE,
+    FLOAT, INTEGER, CHAR, STRING, DATETIME, or LOGICAL [DOUBLE]. To
+    extract information from GMT multisegment headers encoded in the
+    **-D**\ *distance*, **-G**\ *fill*, **-I**\ *ID*, **-L**\ *label*,
+    **-T**\ *text*, **-W**\ *pen*, or **-Z**\ *value* settings, specify
+    *COL* as **D**, **G**, **I**, **L**, **T**, **W** or **Z**,
+    respectively; type will be set automatically. Finally, you *must*
+    append **+g**\ *geometry*, where *geometry* is either POINT, LINE,
+    or POLY. Optionally, prepend **M** for multi-versions of these
+    geometries. To force the clipping of features crossing the Dateline,
+    use upper-case **+G** instead. See GMT Appendix Q for details of the
+    OGR/GMT file format.

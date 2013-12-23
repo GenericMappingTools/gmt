@@ -1,0 +1,8 @@
+#	$Id$
+#
+#	Definition file for a horizontal lozenge; a narrow diamond-like symbol.
+#
+0	0.25	M
+0.5	0	D
+0	-0.25	D
+-0.5	0	D

@@ -1,0 +1,2 @@
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] :ref:`(more ...) <-R_full>`
+    Specify the region of interest. |Add_-R|

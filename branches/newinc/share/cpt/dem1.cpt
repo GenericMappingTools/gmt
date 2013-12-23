@@ -1,0 +1,16 @@
+#       $Id$
+#
+# Color table for topography, via cpt-city
+# Designed by: Thomas Dewez for printing
+# Modified by P Wessel to avoid discontinuities
+#
+# COLOR_MODEL = RGB
+0	51/102/0	100	129/195/31
+100	129/195/31	200	255/255/204
+200	255/255/204	400	244/189/69
+400	244/189/69	500	102/51/12
+500	102/51/12	600	102/51/0
+600	102/51/0	800	255/254/253
+B	51/102/0
+F	white
+N	51/102/0

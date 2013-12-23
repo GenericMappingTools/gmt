@@ -1,0 +1,15 @@
+.. _-f_full:
+
+**-f**\ [**i**\ \|\ **o**]\ *colinfo*
+    Specify the data types of input and/or output columns (time or
+    geographical data). Specify **i** or **o** to make this apply only
+    to input or output [Default applies to both]. Give one or more
+    columns (or column ranges) separated by commas, or use **-f**
+    multiple times. Append **T** (absolute calendar time), **t**
+    (relative time in chosen :ref:`TIME_UNIT <TIME_UNIT>` since :ref:`TIME_EPOCH <TIME_EPOCH>`),
+    **x** (longitude), **y** (latitude), **p**\ [*unit*] (projected
+    x,y map coordinates in given unit [meter]) or **f** (floating point)
+    to each column or column range item. Shorthand
+    **-f**\ [**i**\ \|\ **o**]\ **g** means
+    **-f**\ [**i**\ \|\ **o**]0\ **x**,1\ **y** (geographic
+    coordinates).

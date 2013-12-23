@@ -1,0 +1,2 @@
+**-f**\ [**i**\ \|\ **o**]\ *colinfo* :ref:`(more ...) <-f_full>`
+    Specify data types of input and/or output columns. |Add_-f|

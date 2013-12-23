@@ -1,0 +1,38 @@
+.. _example_09:
+
+(9) Time-series along tracks
+----------------------------
+
+A common application in many scientific disciplines involves plotting
+one or several time-series as as "wiggles" along tracks. Marine
+geophysicists often display magnetic anomalies in this manner, and
+seismologists use the technique when plotting individual seismic traces.
+In our example we will show how a set of Geosat sea surface slope
+profiles from the south Pacific can be plotted as "wiggles" using the
+:doc:`pswiggle </pswiggle>` program. We will embellish
+the plot with track numbers, the location of the Pacific-Antarctic
+Ridge, recognized fracture zones in the area, and a "wiggle" scale. The
+Geosat tracks are stored in the file ``tracks.txt``, the ridge in ``ridge.xy``, and all the
+fracture zones are stored in the multiple segment file ``fz.xy``. The
+profile id is contained in the segment headers and we wish to use the
+last data point in each of the track segments to construct an input file
+for :doc:`pstext </pstext>` that will label each profile
+with the track number. We know the profiles trend approximately N40E so
+we want the labels to have that same orientation (i.e., the angle with
+the baseline must be 50). We do this by extracting the last record from
+each track and select segment header as textstring when running
+the output through :doc:`pstext </pstext>`. Note we
+offset the positions by -0.05 inch with **-D** in order to have a small
+gap between the profile and the label:
+
+.. literalinclude:: /_verbatim/example_09.txt
+   :language: bash
+
+The output shows the sea-surface slopes along 42 descending Geosat
+tracks in the Eltanin and Udintsev fracture zone region in a Mercator projection.
+
+.. figure:: /_images/example_09.*
+   :width: 500 px
+   :align: center
+
+   Time-series as wiggles along a track.

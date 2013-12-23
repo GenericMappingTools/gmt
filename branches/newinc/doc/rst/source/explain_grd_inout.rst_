@@ -1,0 +1,31 @@
+Grid File Formats
+-----------------
+
+By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called "packing" of grids, writing out floating point
+data as 1- or 2-byte integers. To specify the precision, scale and
+offset, the user should add the suffix
+**=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
+*id* is a two-letter identifier of the grid type and precision, and
+*scale* and *offset* are optional scale factor and offset to be applied
+to all grid values, and *nan* is the value used to indicate missing
+data. When reading grids, the format is generally automatically
+recognized. If not, the same suffix can be added to input grid file
+names. See :doc:`grdreformat </grdreformat>` and Section
+:ref:`grid-file-format`
+of the GMT Technical Reference and Cookbook for more information.
+
+When reading a netCDF file that contains multiple grids, GMT will
+read, by default, the first 2-dimensional grid that can find in that
+file. To coax GMT into reading another multi-dimensional variable in
+the grid file, append **?**\ *varname* to the file name, where *varname*
+is the name of the variable. Note that you may need to escape the
+special meaning of **?** in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes. The **?**\ *varname* suffix can also be used for output
+grids to specify a variable name different from the default: "z". See
+:doc:`grdreformat </grdreformat>` and Section :ref:`grid-file-format` of the GMT
+Technical Reference and Cookbook for more information, particularly on
+how to read splices of 3-, 4-, or 5-dimensional grids.

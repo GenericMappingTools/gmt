@@ -1,0 +1,11 @@
+#	$Id$
+#
+#	Definition file for pentagon symbol.  Use in psxy
+#	as -Skpentagon/size.  Unlike -Sn, this allows for
+#	using patterns as fill
+#
+0.293892626	-0.404508497	M
+0.475528258	0.154508497	D
+0		0.5		D
+-0.475528258	0.154508497	D
+-0.293892626	-0.404508497	D

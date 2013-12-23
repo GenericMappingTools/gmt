@@ -1,0 +1,327 @@
+**-S**\ [*symbol*][\ *size*\ [**u**]]
+    Plot symbols. If present, *size* is symbol size in the unit set in
+    :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
+    code (see below) is not given it will be read from the last column in
+    the input data; this cannot be used in conjunction with binary input.
+    Optionally, append **c**, **i**, or
+    **p** to indicate that the size information in the input data is in
+    units of cm, inch, or point, respectively [Default is
+    **PROJ_LENGTH_UNIT**]. Note: if you provide *both* size and symbol via the
+    input file you must use **PROJ_LENGTH_UNIT** to indicate the unit
+    used for the symbol size or append the units to the sizes in the file.
+    If symbol sizes are expected via the third data column then you may convert
+    those values to suitable symbol sizes via the **-i** mechanism.
+
+    The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
+    **S**, **T** are normalized to have the same area as a circle with
+    diameter *size*, while the size of the corresponding lowercase symbols
+    refers to the diameter of a circumscribed circle.
+
+    You can change symbols by adding the required **-S** option to any of
+    your multisegment headers.
+
+    Choose between these symbol codes:
+
+    **-S-**
+        x-dash (-). *size* is the length of a short horizontal (x-dir) line segment.
+
+    **-S+**
+        plus (+). *size* is diameter of circumscribing circle.
+
+    **-Sa**
+        st\ **a**\ r. *size* is diameter of circumscribing circle.
+
+    **-Sb**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**b**\ [*base*]]
+        Vertical **b**\ ar extending from *base* to y. *size* is bar width.
+        Append **u** if *size* is in x-units [Default is plot-distance units].
+        By default, *base* = ymin. Append **b**\ [*base*\ ] to change this
+        value. If *base* is not appended then we read it from the last input
+        data column.
+
+    **-SB**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**b**\ [*base*]]
+        Horizontal **b**\ ar extending from *base* to x. *size* is bar width.
+        Append **u** if *size* is in y-units [Default is plot-distance units].
+        By default, *base* = xmin. Append **b**\ [*base*\ ] to change this
+        value. If *base* is not appended then we read it from the last input
+        data column.
+
+    **-Sc**
+        **c**\ ircle. *size* is diameter of circle.
+
+    **-Sd**
+        **d**\ iamond. *size* is diameter of circumscribing circle.
+
+    **-Se**
+        **e**\ llipse. Direction (in degrees counter-clockwise from horizontal),
+        major_axis, and minor_axis must be found in columns 3, 4, and 5.
+
+    **-SE**
+        Same as **-Se**, except azimuth (in degrees east of north) should be
+        given instead of direction. The azimuth will be mapped into an angle
+        based on the chosen map projection (**-Se** leaves the directions
+        unchanged.) Furthermore, the axes lengths must be given in km instead of
+        plot-distance units. An exception occurs for a linear projection in
+        which we assume the ellipse axes are given in the same units as **-R**.
+	For degenerate ellipses (circles) with diameter given in km, use **-SE-**.
+
+    **-Sf**
+        **f**\ ront.
+        **-Sf**\ *gap*\ [/*size*][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*].
+        Supply distance gap between symbols and symbol size. If *gap* is
+        negative, it is interpreted to mean the number of symbols along the
+        front instead. If *size* is missing it is set to 30% of the *gap*, except
+        when *gap* is negative and *size* is thus required.  Append **+l** or
+        **+r** to plot symbols on the left or
+        right side of the front [Default is centered]. Append **+**\ *type* to
+        specify which symbol to plot: **b**\ ox, **c**\ ircle, **f**\ ault,
+        **s**\ lip, or **t**\ riangle. [Default is **f**\ ault]. Slip means
+        left-lateral or right-lateral strike-slip arrows (centered is not an
+        option). Append **+o**\ *offset* to offset the first symbol from the
+        beginning of the front by that amount [0]. Note: By placing **-Sf**
+        options in the segment header you can change the front types on a
+        segment-by-segment basis.
+
+    **-Sg**
+        octa\ **g**\ on. *size* is diameter of circumscribing circle.
+
+    **-Sh**
+        **h**\ exagon. *size* is diameter of circumscribing circle.
+
+    **-Si**
+        **i**\ nverted triangle. *size* is diameter of circumscribing circle.
+
+    **-Sj**
+        Rotated rectangle. Direction (in degrees counter-clockwise from
+        horizontal), x-dimension, and y-dimension must be found in columns 3, 4,
+        and 5.
+
+    **-SJ**
+        Same as **-Sj**, except azimuth (in degrees east of north) should be
+        given instead of direction. The azimuth will be mapped into an angle
+        based on the chosen map projection (**-Sj** leaves the directions
+        unchanged.) Furthermore, the dimensions must be given in km instead of
+        plot-distance units. An exception occurs for a linear projection in
+        which we assume the dimensions are given in the same units as **-R**.
+
+    **-Sk**
+        **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
+        definition file called *name*\ .def in (1) the current
+        directory or (2) in ~/.gmt or (3) in
+        **$GMT_SHAREDIR**/custom. The symbol as defined in that file is of size
+        1.0 by default; the appended *size* will scale symbol accordingly. Users
+        may add their own custom \*.def files; see CUSTOM SYMBOLS below.
+
+    **-Sl**
+        **l**\ etter or text string (less than 256 characters). Give size, and
+        append **+t**\ *string* after the size. Note that the size is only approximate;
+        no individual scaling is done for different characters. Remember to
+        escape special characters like \*. Optionally, you may append **+f**\ *font*
+        to select a particular font [Default is **FONT_ANNOT_PRIMARY**] and
+	**+j**\ *justify* to change justification [CM].
+
+    **-Sm**
+        **m**\ ath angle arc, optionally with one or two arrow heads [Default is
+        no arrow heads]. The *size* is the length of the vector head. Arc width
+        is set by **-W**. The radius of the arc and its start and stop
+        directions (in degrees counter-clockwise from horizontal) must be given
+        in columns 3-5. See VECTOR ATTRIBUTES for specifying other attributes.
+
+    **-SM**
+        Same as **-Sm** but switches to straight angle symbol if angles subtend
+        90 degrees exactly.
+
+    **-Sn**
+        pe\ **n**\ tagon. *size* is diameter of circumscribing circle.
+
+    **-Sp**
+        **p**\ oint. No size needs to be specified (1 pixel is used).
+
+    **-Sq**
+        **q**\ uoted line, i.e., lines with annotations such as contours. Append
+        [**d**\ \|\ **D**\ \|\ **f**\ \|\ **l**\ \|\ **L**\ \|\ **n**\ \|\ **x**\ \|\ **X**]\ *info*\ [:*labelinfo*].
+        The required argument controls the placement of labels along the quoted
+        lines. Choose among five controlling algorithms:
+
+            **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**] or
+            **D**\ *dist*\ [**d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**]
+            For lower case **d**, give distances between labels on the plot in
+            your preferred measurement unit **c** (cm), **i** (inch), or **p**
+            (points), while for upper case **D**, specify distances in map units
+            and append the unit; choose among **e** (m), **f** (foot), **k**
+            (km), **M** (mile), **n** (nautical mile) or **u** (US survey foot),
+            and **d** (arc degree), **m** (arc minute), or **s** (arc second).
+            [Default is 10\ **c** or 4\ **i**]. As an option, you can append
+            /*fraction* which is used to place the very first label for each
+            contour when the cumulative along-contour distance equals *fraction
+            \* dist* [0.25].
+            **f**\ *ffile.d*
+            Reads the ascii file *ffile.d* and places labels at locations in the
+            file that matches locations along the quoted lines. Inexact matches
+            and points outside the region are skipped.
+            **l\|L**\ *line1*\ [,*line2*,...]
+            Give *start* and *stop* coordinates for one or more comma-separated
+            straight line segments. Labels will be placed where these lines
+            intersect the quoted lines. The format of each *line* specification
+            is *start/stop*, where *start* and *stop* are either a specified
+            point *lon/lat* or a 2-character **XY** key that uses the
+            justification format employed in **pstext** to indicate a point on
+            the map, given as [LCR][BMT]. **L** will interpret the point pairs
+            as defining great circles [Default is straight line].
+            **n**\ *n_label*
+            Specifies the number of equidistant labels for quoted lines line
+            [1]. Upper case **N** starts labeling exactly at the start of the
+            line [Default centers them along the line]. **N**-1 places one
+            justified label at start, while **N**\ +1 places one justified label
+            at the end of quoted lines. Optionally, append
+            /*min_dist*\ [**c**\ \|\ **i**\ \|\ **p**] to enforce that a
+            minimum distance separation between successive labels is enforced.
+            **x\|X**\ *xfile.d*
+            Reads the multisegment file *xfile.d* and places labels at the
+            intersections between the quoted lines and the lines in *xfile.d*.
+            **X** will resample the lines first along great-circle arcs.
+            In addition, you may optionally append
+            **+r**\ *radius*\ [**c**\ \|\ **i**\ \|\ **p**] to set a minimum
+            label separation in the x-y plane [no limitation].
+
+            The optional *labelinfo* controls the specifics of the label
+            formatting and consists of a concatenated string made up of any of
+            the following control arguments:
+
+            **+a**\ *angle*
+                For annotations at a fixed angle, **+an** for line-normal, or
+                **+ap** for line-parallel [Default].
+
+            **+c**\ *dx*\ [/*dy*]
+                Sets the clearance between label and optional text box. Append
+                **c**\ \|\ **i**\ \|\ **p** to specify the unit or % to indicate a
+                percentage of the label font size [15%].
+
+            **+d**
+                Turns on debug which will draw helper points and lines to illustrate
+                the workings of the quoted line setup.
+
+            **+e**
+                Delay the plotting of the text. This is used to build a clip path
+                based on the text, then lay down other overlays while that clip path
+                is in effect, then turning of clipping with psclip **-Ct** which
+                finally plots the original text.
+
+            **+f**\ *font*
+                Sets the desired font [Default **FONT_ANNOT_PRIMARY** with its
+                size changed to 9p].
+
+            **+g**\ [*color*\ ]
+                Selects opaque text boxes [Default is transparent]; optionally
+                specify the color [Default is **PS_PAGE_COLOR**].
+
+            **+j**\ *just*
+                Sets label justification [Default is MC]. Ignored when
+                **-SqN**\ \|\ **n**\ +\|-1 is used.
+
+            **+l**\ *label*
+                Sets the constant label text.
+
+            **+L**\ *flag*
+                Sets the label text according to the specified flag:
+
+                **+Lh**
+                Take the label from the current segment header (first scan for
+                an embedded **-L**\ *label* option, if not use the first word
+                following the segment flag). For multiple-word labels, enclose
+                entire label in double quotes.
+                **+Ld**
+                Take the Cartesian plot distances along the line as the label;
+                append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
+                **PROJ_LENGTH_UNIT**].
+                **+LD**
+                Calculate actual map distances; append
+                **d\|e\|f\|k\|n\|M\|n\|s** as the unit [Default is
+                **d**\ (egrees), unless label placement was based on map
+                distances along the lines in which case we use the same unit
+                specified for that algorithm]. Requires a map projection to be
+                used.
+                **+Lf**
+                Use text after the 2nd column in the fixed label location file
+                as the label. Requires the fixed label location setting.
+                **+Lx**
+                As **+Lh** but use the headers in the *xfile.d* instead.
+                Requires the crossing file option.
+
+            **+n**\ *dx*\ [/*dy*]
+                Nudges the placement of labels by the specified amount (append
+                **c**\ \|\ **i**\ \|\ **p** to specify the units). Increments
+                are considered in the coordinate system defined by the
+                orientation of the line; use **+N** to force increments in the
+                plot x/y coordinates system [no nudging].
+            **+o**
+                Selects rounded rectangular text box [Default is rectangular].
+                Not applicable for curved text (**+v**) and only makes sense for
+                opaque text boxes.
+            **+p**\ [*pen*\ ]
+                Draws the outline of text boxes [Default is no outline];
+                optionally specify pen for outline [Default is width = 0.25p,
+                color = black, style = solid].
+            **+r**\ *min_rad*
+                Will not place labels where the line’s radius of curvature is
+                less than *min_rad* [Default is 0].
+            **+t**\ [*file*\ ]
+                Saves line label x, y, and text to *file* [Line_labels.txt].
+                Use **+T** to save x, y, angle, text instead.
+            **+u**\ *unit*
+                Appends *unit* to all line labels. If *unit* starts with a
+                leading hyphen (-) then there will be no space between label
+                value and the unit. [Default is no unit].
+            **+v**
+                Specifies curved labels following the path [Default is straight
+                labels].
+            **+w**
+                Specifies how many (*x*,\ *y*) points will be used to estimate
+                label angles [Default is 10].
+            **+=**\ *prefix*
+                Prepends *prefix* to all line labels. If *prefix* starts with a
+                leading hyphen (-) then there will be no space between label
+                value and the prefix. [Default is no prefix].
+
+        Note: By placing **-Sq** options in the segment header you can change
+        the quoted text attributes on a segment-by-segment basis.
+
+    **-Sr**
+        **r**\ ectangle. No size needs to be specified, but the x- and
+        y-dimensions must be found in columns 3 and 4.
+    **-SR**
+        **R**\ ounded rectangle. No size needs to be specified, but the x-
+        and y-dimensions and corner radius must be found in columns 3, 4,
+        and 5.
+    **-Ss**
+        **s**\ quare. *size* is diameter of circumscribing circle.
+    **-St**
+        **t**\ riangle. *size* is diameter of circumscribing circle.
+    **-Sv**
+        **v**\ ector. Direction (in degrees counter-clockwise from
+        horizontal) and length must be found in columns 3 and 4. The *size*
+        is the length of the vector head. Vector width is set by **-W**. See
+        VECTOR ATTRIBUTES for specifying other attributes.
+    **-SV**
+        Same as **-Sv**, except azimuth (in degrees east of north) should be
+        given instead of direction. The azimuth will be mapped into an angle
+        based on the chosen map projection (**-Sv** leaves the directions
+        unchanged.) See VECTOR ATTRIBUTES for specifying other attributes.
+    **-Sw**
+        pie **w**\ edge. Start and stop directions (in degrees
+        counter-clockwise from horizontal) for pie slice must be found in
+        columns 3 and 4.
+    **-SW**
+        Same as **-Sw**, except azimuths (in degrees east of north) should
+        be given instead of the two directions. The azimuths will be mapped
+        into angles based on the chosen map projection (**-Sw** leaves the
+        directions unchanged.)
+    **-Sx**
+        cross (x). *size* is diameter of circumscribing circle.
+    **-Sy**
+        y-dash (\|). *size* is the length of a short vertical (y-dir) line
+        segment.
+    **-S=**
+        geovector. Azimuth (in degrees east from north) and length (in km)
+        must be found in columns 3 and 4. The *size* is the length of the
+        vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
+        for specifying attributes.

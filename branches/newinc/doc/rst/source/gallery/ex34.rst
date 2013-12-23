@@ -1,0 +1,21 @@
+.. _example_34:
+
+(34) Using country polygons for plotting and shading
+----------------------------------------------------
+
+The script produces the plot in Figure. Here
+we demonstrate how :doc:`pscoast </pscoast>` can be used to extract
+and plot country polygons.  We show two panels; one in which we do
+a basic basemap and another where we lay down a color topography
+image and then place a transparent layer identifying the future
+Franco-Italian Union whose untimely breakup in 2045 the historians
+will continue to debate for some time.
+
+.. literalinclude:: /_verbatim/example_34.txt
+   :language: bash
+
+.. figure:: /_images/example_34.*
+   :width: 500 px
+   :align: center
+
+   Using country polygons for plotting and shading.

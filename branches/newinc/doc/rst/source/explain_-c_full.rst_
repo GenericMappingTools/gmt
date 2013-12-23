@@ -1,0 +1,6 @@
+.. _-c_full:
+
+**-c**\ *copies*
+    Specify number of plot copies. [Default is 1]. When used without
+    argument, use the same number of copies and specified in the last
+    **-c** in a previous GMT command.

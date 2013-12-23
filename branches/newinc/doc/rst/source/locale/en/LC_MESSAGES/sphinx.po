@@ -1,0 +1,4 @@
+#: sphinx/themes/basic/searchbox.html:20
+msgid "Enter search terms or a module, class or function name."
+msgstr "Enter search terms."
+

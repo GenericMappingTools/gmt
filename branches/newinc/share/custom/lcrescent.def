@@ -1,0 +1,7 @@
+#	$Id$
+#
+#	Definition file a leftpointing crescent symbol.
+#
+0.25		0.5	M
+0.25		0	1 		90	270	A
+0.538675135	0	1.154700538	240	120	A

@@ -1,0 +1,49 @@
+**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ [\ **+d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+    Choose or inquire about suitable grid dimensions for FFT and set
+    optional parameters. Control the FFT dimension:
+    
+        **-Nf** will force the FFT to use the actual dimensions of the data. 
+
+        **-Nq** will inQuire about more suitable dimensions, report those, then continue. 
+
+        **-Ns** will present a list of optional dimensions, then exit. 
+
+        **-N**\ *nx/ny* will do FFT on array size *nx/ny* (must be >= grid file size). Default chooses
+        dimensions >= data which optimize speed and accuracy of FFT. If FFT
+        dimensions > grid file dimensions, data are extended and tapered to zero.
+
+    Control detrending of data: Append modifiers for removing a linear trend:
+
+        **+d**: Detrend data, i.e. remove best-fitting linear trend [Default].
+
+        **+a**: Only remove mean value.
+
+        **+h**: Only remove mid value, i.e. 0.5 * (max + min).
+
+        **+l**: Leave data alone.
+
+    Control extension and tapering of data:
+    Use modifiers to control how the extension and tapering are to be performed:
+
+        **+e** extends the grid by imposing edge-point symmetry [Default],
+
+        **+m** extends the grid by imposing edge mirror symmetry
+
+        **+n** turns off data extension.
+
+        Tapering is performed from the data edge to the FFT grid edge [100%].
+        Change this percentage via **+t**\ *width*. When **+n** is in effect,
+        the tapering is applied instead to the data margins as no extension is
+        available [0%].
+
+    Control writing of temporary results:
+    For detailed investigation you can write the intermediate grid being passed
+    to the forward FFT; this is likely to have been detrended, extended by
+    point-symmetry along all edges, and tapered. Append **+w**\ [*suffix*] from
+    which output file name(s) will be created (i.e., *ingrid_prefix.ext*)
+    [tapered], where *ext* is your file extension. Finally, you may save
+    the complex grid produced by the forward FFT by appending **+z**. By
+    default we write the real and imaginary components to
+    *ingrid*\ \_*real* *ext* and *ingrid*\ \_imag.\ *ext*. Append
+    **p** to save instead the polar form of magnitude and phase to files
+    *ingrid*\ \_mag.\ *ext* and *ingrid*\ \_phase.\ *ext*.

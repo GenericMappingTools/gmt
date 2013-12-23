@@ -1,0 +1,17 @@
+#       $Id$
+#
+# Color table for bathymetry modeled after IBCSO
+# at depth but going through an aquamarine patch
+# between 2009-3000, then into lightblue to ~white.
+# Designed by P. Wessel, SOEST
+# COLOR_MODEL = RGB
+-8000   black           -7000   31/40/79
+-7000   31/40/79        -6000   38/60/106
+-6000   38/60/106       -4000   53/99/160
+-4000   53/99/160       -3500   72/151/211
+-3500   72/151/211      -2500   mediumaquamarine
+-2500   mediumaquamarine        -1000   141/210/239
+-1000   141/210/239     0       245/255/255
+B       black
+F       245/255/255
+N	gray

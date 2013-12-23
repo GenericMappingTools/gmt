@@ -1,0 +1,42 @@
+`Vector Attributes <#toc15>`_
+-----------------------------
+
+Several modifiers may be appended to the vector-producing options to
+specify the placement of vector heads, their shapes, and the
+justification of the vector:
+
+    **+a**\ *angle* sets the angle of the vector head apex [30].
+
+    **+b** places a vector head at the beginning of the vector path [none].
+
+    **+e** places a vector head at the end of the vector path [none].
+
+    **+g**-\|\ *fill* turns off vector head fill (if -) or sets the vector
+    head fill [Default fill is used, which may be no fill].
+
+    **+l** draws half-arrows, using only the left side [both].
+
+    **+n**\ *norm* scales down vector attributes (pen thickness, head size)
+    with decreasing length, where vectors shorter than *norm* will have
+    their attributes scaled by length/\ *norm* [arrow attributes remains
+    invariant to length].
+
+    **+o**\ *plon*\ /\ *plat* specifies the oblique pole for the great or
+    small circles.  Only needed for great circles if **+q** is given.
+
+    **+p**\ [-][*pen*\ ] sets the vector pen attributes. If *pen* has a
+    leading - then the head outline is not drawn. [Default pen is used, and
+    head outline is drawn]
+
+    **+q** means the input *angle*, *length* is instead the *start* and *stop*
+    opening angles of the arc segment relative to the point.
+
+    **+r** draws half-arrows, using only the right side [both].
+
+In addition, all but circular vectors may take these modifiers:
+
+    **+j**\ *just* determines how the input *x*,\ *y* point relates to the
+    vector. Choose from **b**\ eginning [default], **e**\ nd, or **c**\ enter.
+
+    **+s** means the input *angle*, *length* is instead the *x*, *y*
+    coordinates of the vector end point.

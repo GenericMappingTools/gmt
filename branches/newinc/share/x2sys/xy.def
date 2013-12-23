@@ -1,0 +1,14 @@
+#		$Id$
+#
+# Define file for X2SYS processing of ASCII xy files
+#
+# This file applies to plain 2-column ASCII files.
+# Only locations can be found since there are no data columns
+#
+#---------------------------------------------------------------------
+#ASCII		# The input file is ASCII
+#SKIP 1		# The number of header records to skip
+#---------------------------------------------------------------------
+#name	intype	NaN-proxy?	NaN-proxy	scale	offset	oformat
+x	a	N		0		1	0	%g
+y	a	N		0		1	0	%g

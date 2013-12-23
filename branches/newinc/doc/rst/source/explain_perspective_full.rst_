@@ -1,0 +1,17 @@
+.. _perspective_full:
+
+**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+    Selects perspective view and sets the azimuth and elevation of the
+    viewpoint [180/90]. When **-p** is used in consort with **-Jz** or
+    **-JZ**, a third value can be appended which indicates at which
+    z-level all 2D material, like the plot frame, is plotted (in
+    perspective). [Default is at the bottom of the z-axis]. Use **-px**
+    or **-py** to plot against the "wall" x = level or y = level
+    (default is on the horizontal plane, which is the same as using
+    **-pz**). For frames used for animation, you may want to append
+    **+** to fix the center of your data domain (or specify a particular
+    world coordinate point with **+w**\ *lon0*/*lat*\ [/*z*]) which will
+    project to the center of your page size (or specify the coordinates
+    of the projected view point with **+v**\ *x0*/*y0*. When **-p** is
+    used without any further arguments, the values from the last use of
+    **-p** in a previous GMT command will be used.

@@ -1,0 +1,6 @@
+#	$Id$
+#
+# Simulates the COPPER colormap in Matlab
+#
+0		0/0/0		0.796875	255/159/102
+0.796875	255/159/102	1		255/200/128

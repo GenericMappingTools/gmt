@@ -1,0 +1,10 @@
+.. _-icols_full:
+
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
+    Select specific data columns for input, in arbitrary order. Columns
+    not listed will be skipped. Give columns (or column ranges)
+    separated by commas [Default reads all columns in order]. To each
+    column, optionally add any of the following, in this order: **l**
+    takes the **log10** of the input values first; **s**\ *scale*,
+    subsequently multiplies by a given scale factor; **o**\ *offset*,
+    finally adds a given offset.

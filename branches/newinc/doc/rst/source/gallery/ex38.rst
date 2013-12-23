@@ -1,0 +1,18 @@
+.. _example_38:
+
+(38) Histogram equalization of bathymetry grids
+-----------------------------------------------
+
+This example shows how to use histogram equalization to enhance various
+ranges of a grid depending on its frequency distribution. The key tool
+used here is :doc:`grdhisteq </grdhisteq>`.
+
+.. literalinclude:: /_verbatim/example_38.txt
+   :language: bash
+
+.. figure:: /_images/example_38.*
+   :width: 500 px
+   :align: center
+
+   Histogram equalization of bathymetry grids.
+

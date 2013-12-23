@@ -1,0 +1,8 @@
+#	$Id$
+#
+#	Directories with MGD77 files
+#	Currently set for P Wessel data library
+#	Paul Wessel, Sept-2005
+#
+/Users/pwessel/UH/RESOURCES/DATA/NGDC/latest
+/Users/pwessel/UH/RESOURCES/DATA/NGDC/DVD
