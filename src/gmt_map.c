@@ -100,7 +100,8 @@
  *	GMT_zz_to_z :			Generic inverse linear z projection
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 /* Basic error reporting when things go badly wrong. This Return macro can be
  * used in stead of regular return(code) to print out what the code is before
@@ -7107,7 +7108,7 @@ void GMT_init_ellipsoid (struct GMT_CTRL *GMT)
 
 /* Datum conversion routines */
 
-void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM_INFO *from, struct GMT_DATUM_INFO *to, bool heights)
+void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DATUM *to, bool heights)
 {
 	/* Initialize datum conv structures based on the parsed values*/
 
@@ -7115,8 +7116,8 @@ void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM_INFO *from, struct G
 
 	GMT->current.proj.datum.h_given = heights;
 
-	GMT_memcpy (&GMT->current.proj.datum.from, from, 1, struct GMT_DATUM_INFO);
-	GMT_memcpy (&GMT->current.proj.datum.to,   to,   1, struct GMT_DATUM_INFO);
+	GMT_memcpy (&GMT->current.proj.datum.from, from, 1, struct GMT_DATUM);
+	GMT_memcpy (&GMT->current.proj.datum.to,   to,   1, struct GMT_DATUM);
 
 	GMT->current.proj.datum.da = GMT->current.proj.datum.to.a - GMT->current.proj.datum.from.a;
 	GMT->current.proj.datum.df = GMT->current.proj.datum.to.f - GMT->current.proj.datum.from.f;
@@ -7124,14 +7125,14 @@ void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM_INFO *from, struct G
 	GMT->current.proj.datum.one_minus_f = 1.0 - GMT->current.proj.datum.from.f;
 }
 
-void GMT_ECEF_init (struct GMT_CTRL *GMT, struct GMT_DATUM_INFO *D)
+void GMT_ECEF_init (struct GMT_CTRL *GMT, struct GMT_DATUM *D)
 {
 	/* Duplicate the parsed datum to the GMT from datum */
 
-	GMT_memcpy (&GMT->current.proj.datum.from, D, 1, struct GMT_DATUM_INFO);
+	GMT_memcpy (&GMT->current.proj.datum.from, D, 1, struct GMT_DATUM);
 }
 
-int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM_INFO *D)
+int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D)
 {
 	int i;
 	double t;

@@ -74,7 +74,8 @@
  *  gmt_xyz_to_lab          Convert CIELAB XYZ to LAB
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 enum GMT_profmode {
 	GMT_GOT_AZIM	= 1,

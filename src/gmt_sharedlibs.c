@@ -11,7 +11,7 @@
  * which says it is open source.
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 
 #if defined(_WIN32)

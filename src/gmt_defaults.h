@@ -30,7 +30,7 @@
  *			GMT DEFAULTS STRUCTURE DEFINITION
  *--------------------------------------------------------------------*/
 
-struct GMT_ELLIPSOID {	/* Information about a particular ellipsoid */
+struct ELLIPSOID {	/* Information about a particular ellipsoid */
 	/* Table taken from Snyder "Map projection - a working manual", p 12 Table 1 */
 	char name[GMT_LEN64];
 	int date;
@@ -38,14 +38,14 @@ struct GMT_ELLIPSOID {	/* Information about a particular ellipsoid */
 	double flattening;
 };
 
-struct GMT_DATUM {	/* Information about a particular datum */
+struct DATUM {	/* Information about a particular datum */
 	char name[GMT_LEN64];	/* Datum name */
 	char ellipsoid[GMT_LEN64];	/* Ellipsoid GMT ID name */
 	char region[GMT_LEN256];	/* Region of use */
 	double xyz[3];		/* Coordinate shifts in meter for x, y, and z */
 };
 
-struct GMT_ENCODING {
+struct gmt_encoding {
 	char name[GMT_LEN64];
 	int code[5]; /* Codes for symbols we print. */
 };
@@ -84,7 +84,9 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	unsigned int verbose;     /* Level of verbosity 0-4 [1] */
 	unsigned int fft;         /* Any of FFT_implementations: k_fft_auto, k_fft_accelerate, k_fft_fftw3, k_fft_kiss, k_fft_brenner */
+#ifdef HAVE_FFTW3F
 	unsigned int fftw_plan;   /* Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
+#endif
 	unsigned int history;     /* mode to pass information via history file gmt.history (k_history_off, k_history_read, k_history_write) */
 	double extrapolate_val[2];/* Choose between [0] = 0, 1D extrapolated vals are NaN, = 1 -> extrapolate, = 2 -> set to const stored in [1] */
 	/* IO group */
@@ -133,8 +135,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int proj_length_unit;	/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
 	enum GMT_enum_radius proj_mean_radius;	/* Choose 0 (mean), 1 (authalic), 2 (volumetric), 3 (meridional) or 4 (quadratic) [0] */
 	enum GMT_enum_latswap proj_aux_latitude;	/* Choose GMT_LATSWAP_NONE, GMT_LATSWAP_G2A, GMT_LATSWAP_G2C, GMT_LATSWAP_G2M, GMT_LATSWAP_G2O, GMT_LATSWAP_G2P [GMT_LATSWAP_NONE] */
-	struct GMT_DATUM proj_datum[GMT_N_DATUMS];	/* Datum parameters */
-	struct GMT_ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
+	struct DATUM proj_datum[GMT_N_DATUMS];	/* Datum parameters */
+	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	/* PS group [These are arguments to pass to PSL_beginsession and PSL_setdefaults] */
 	/* [All other internal PSL settings are set directly when parsing PSL settings ] */
 	double ps_page_size[2];			/* Width and height of paper to plot on in points [Letter or A4] */
@@ -147,7 +149,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	bool ps_orientation;			/* Orientation of page [false = Landscape, true = Portrait] */
 	bool ps_comments;			/* true if we write comments in the PS file */
 	char ps_transpmode[16];			/* Transparency mode for PDF only */
-	struct GMT_ENCODING ps_encoding;
+	struct gmt_encoding ps_encoding;
 	/* TIME group */
 	double time_interval_fraction;		/* How much of a partial interval is needed in order to annotate it */
 	bool time_is_interval;		/* Does a time given as a month (or year or day) mean the middle of the interval? */

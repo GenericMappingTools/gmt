@@ -27,6 +27,19 @@
 #ifndef _GMT_COMMON_H
 #define _GMT_COMMON_H
 
+/* Constants related to detecting data gaps which should be treated as segment boundaries */
+enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current column value exceeds <gap> */
+	GMT_POSGAP_IN_COL,			/* Check if current minus previous column value exceeds <gap> */
+	GMT_ABSGAP_IN_COL,			/* Check if |current minus previous column value| exceeds <gap> */
+	GMT_NEGGAP_IN_MAP_COL,			/* Check if previous minus current column value exceeds <gap> after map projection */
+	GMT_POSGAP_IN_MAP_COL,			/* Check if current minus previous column value exceeds <gap> after map projection */
+	GMT_ABSGAP_IN_MAP_COL,			/* Check if |current minus previous column value| exceeds <gap> after map projection */
+	GMT_GAP_IN_GDIST,			/* Check if great-circle distance between successive points exceeds <gap> (in km,m,nm, etc)*/
+	GMT_GAP_IN_CDIST,			/* Check if Cartesian distance between successive points exceeds <gap> */
+	GMT_GAP_IN_PDIST,			/* Check if Cartesian distance between successive points exceeds <gap> after map projection */
+	GMT_GAP_IN_DDIST,			/* Check if great-circle distance between successive points exceeds <gap> (in arc degrees,min,sec) */
+	GMT_N_GAP_METHODS};
+
 #define MAX_ASPATIAL 64		/* No more than 64 aspatial options in -a */
 
 #define GMT_SHORTHAND_OPTIONS	"BJRXxYycp"	/* All of the shorthand options */

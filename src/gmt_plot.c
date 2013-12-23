@@ -80,7 +80,8 @@
  *	gmt_theta_r_map_boundary :	Plot plain basemap for polar (cylindrical) projection
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 double GMT_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
@@ -1763,6 +1764,18 @@ void gmt_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 						xa = x0 - L, xb = x0 + L;
 						ya = yb = y0;
 					}
+
+					/* Clip to map */
+
+					if (xa < 0.0) xa = 0.0;
+					if (xb < 0.0) xb = 0.0;
+					if (ya < 0.0) ya = 0.0;
+					if (yb < 0.0) yb = 0.0;
+					if (xa > GMT->current.map.width) xa = GMT->current.map.width;
+					if (xb > GMT->current.map.width) xb = GMT->current.map.width;
+					if (ya > GMT->current.map.height) ya = GMT->current.map.height;
+					if (yb > GMT->current.map.height) yb = GMT->current.map.height;
+
 					PSL_plotsegment (PSL, xa, ya, xb, yb);
 
 					if (GMT_is_geographic (GMT, GMT_IN)) {
@@ -1778,6 +1791,18 @@ void gmt_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 						xa = xb = x0;
 						ya = y0 - L, yb = y0 + L;
 					}
+
+					/* Clip to map */
+
+					if (xa < 0.0) xa = 0.0;
+					if (xb < 0.0) xb = 0.0;
+					if (ya < 0.0) ya = 0.0;
+					if (yb < 0.0) yb = 0.0;
+					if (xa > GMT->current.map.width) xa = GMT->current.map.width;
+					if (xb > GMT->current.map.width) xb = GMT->current.map.width;
+					if (ya > GMT->current.map.height) ya = GMT->current.map.height;
+					if (yb > GMT->current.map.height) yb = GMT->current.map.height;
+
 					PSL_plotsegment (PSL, xa, ya, xb, yb);
 				}
 			}

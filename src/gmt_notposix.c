@@ -41,7 +41,8 @@
  *      atanh:  inverse hyperbolic tangent
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 /*
  * POSIX replacements
@@ -500,14 +501,14 @@ double log1p (double x) {
 #	include "s_rint.c"
 #endif /* HAVE_RINT */
 
-#ifndef HAVE_SINCOS
+#if !defined(HAVE_SINCOS)
 /* Platform does not have sincos - make a dummy one with sin and cos */
 void sincos (double a, double *s, double *c)
 {
 	*s = sin (a);
 	*c = cos (a);
 }
-#endif /* HAVE_SINCOS */
+#endif /* !defined(HAVE_SINCOS) */
 
 #ifndef HAVE_Y0
 

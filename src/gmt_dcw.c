@@ -16,7 +16,8 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 /* Misc functions to find and read DCW polygons.
  * Some of the countries have state borders too.

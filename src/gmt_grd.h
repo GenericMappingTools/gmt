@@ -33,6 +33,19 @@
 /* netcdf convention */
 #define GMT_NC_CONVENTION "COARDS, CF-1.5"
 
+enum GMT_enum_grdtype {
+	/* Special cases of geographic grids with periodicity */
+	GMT_GRID_CARTESIAN=0,			/* Cartesian data, no periodicity involved */
+	GMT_GRID_GEOGRAPHIC_LESS360,		/* x is longitude, but range is < 360 degrees */
+	GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT,	/* x is longitude, range is 360 degrees, no repeat node */
+	GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT,	/* x is longitude, range is 360 degrees, gridline registered and repeat node at 360*/
+	GMT_GRID_GEOGRAPHIC_MORE360		/* x is longitude, and range exceeds 360 degrees */
+};
+
+enum GMT_enum_grdlayout {	/* Grid layout for complex grids */
+	GMT_GRID_IS_SERIAL = 0,		/* Grid is RRRRRR...[IIIIII...] */
+	GMT_GRID_IS_INTERLEAVED = 1};	/* Grid is RIRIRIRI... - required layout for FFT */
+
 /*
  * GMT's internal representation of grids is north-up, i.e., the index of the
  * least dimension (aka y or lat) increases to the south. NetCDF files are
@@ -56,6 +69,18 @@ enum Netcdf_row_order {
 enum Netcdf_chunksize {
 	k_netcdf_io_classic = 0, /* netCDF classic format */
 	k_netcdf_io_chunked_auto /* netCDF 4 auto-determined optimal chunk size */
+};
+
+/* The array wesn in the header has a name that indicates the order (west, east, south, north).
+ * However, to avoid using confusing indices 0-5 we define very brief constants
+ * XLO, XHI, YLO, YHI, ZLO, ZHI that should be used instead: */
+enum GMT_enum_wesnIDs {
+	XLO = 0, /* Index for west or xmin value */
+	XHI,     /* Index for east or xmax value */
+	YLO,     /* Index for south or ymin value */
+	YHI,     /* Index for north or ymax value */
+	ZLO,     /* Index for zmin value */
+	ZHI      /* Index for zmax value */
 };
 
 /* These macros should be used to convert between (column,row) and (x,y).  It will eliminate

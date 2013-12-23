@@ -64,9 +64,9 @@
 
 /* Macros for printing a tic/toc elapsed time message*/
 
-#define GMT_tic(C) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_RESET,"");}
-#define GMT_toc(C,...) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_ELAPSED, \
-		"(%s) | %s\n", C->init.module_name, __VA_ARGS__);}
+#define GMT_tic(C) {if (C->current.setting.verbose == GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_RESET,"");}
+#define GMT_toc(C) {if (C->current.setting.verbose == GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_ELAPSED, \
+		" (%s)\n", C->init.module_name);}
 
 /* These are the 5 named option codes */
 enum GMT_enum_opt {

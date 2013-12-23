@@ -73,7 +73,8 @@
  * Version:	5.x
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 #define GMT_PROJ_MAX_ITERATIONS	200
 #define GMT_PROJ_CONV_LIMIT	1e-9

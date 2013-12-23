@@ -29,7 +29,6 @@
 #define THIS_MODULE_PURPOSE	"Do geospatial operations on lines and polygons"
 
 #include "gmt_dev.h"
-#include "common_math.h"
 
 #define GMT_PROG_OPTIONS "-:RVabfghios" GMT_OPT("HMm")
 

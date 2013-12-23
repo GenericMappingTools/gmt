@@ -37,11 +37,6 @@
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using GhostScript"
 
 #include "gmt_dev.h"
-#ifdef HAVE_GDAL
-#include "gmt_gdalread.h"
-EXTERN_MSC int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl);
-EXTERN_MSC int GMT_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GDALWRITE_CTRL *prhs);
-#endif
 
 #define GMT_PROG_OPTIONS "-V"
 

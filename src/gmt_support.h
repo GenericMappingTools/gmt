@@ -19,6 +19,12 @@
 #ifndef _GMT_SUPPORT_H
 #define _GMT_SUPPORT_H
 
+/* Return codes from GMT_inonout */
+enum GMT_enum_inside {
+	GMT_OUTSIDE = 0,
+	GMT_ONEDGE,
+	GMT_INSIDE};
+
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {
 	unsigned int n_arg;	/* How many commands this macro represents */

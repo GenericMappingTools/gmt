@@ -61,45 +61,9 @@
  * All functions that begin with lower case gmt_* are private to this file only.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 #include "common_byteswap.h"
-
-#ifdef __APPLE__ /* Accelerate framework */
-#include <Accelerate/Accelerate.h>
-#undef I /* because otherwise we are in trouble with, e.g., struct GMT_IMAGE *I */
-#endif
-
-static inline void scale_and_offset_f (float *data, size_t length, float scale, float offset) {
-	/* Routine that scales and offsets the data in a vector
-	 *  data:   Single-precision real input vector
-	 *  length: The number of elements to process
-	 * This function uses the vDSP portion of the Accelerate framework if possible */
-#ifndef __APPLE__
-	size_t n;
-#endif
-	if (scale == 1.0) /* offset only */
-#ifdef __APPLE__ /* Accelerate framework */
-		vDSP_vsadd (data, 1, &offset, data, 1, length);
-#else
-		for (n = 0; n < length; ++n)
-			data[n] += offset;
-#endif
-	else if (offset == 0.0) /* scale only */
-#ifdef __APPLE__ /* Accelerate framework */
-		vDSP_vsmul (data, 1, &scale, data, 1, length);
-#else
-		for (n = 0; n < length; ++n)
-			data[n] *= scale;
-#endif
-	else /* scale + offset */
-#ifdef __APPLE__ /* Accelerate framework */
-		vDSP_vsmsa (data, 1, &scale, &offset, data, 1, length);
-#else
-		for (n = 0; n < length; ++n)
-			data[n] = data[n] * scale + offset;
-#endif
-}
-
 
 struct GRD_PAD {
 	double wesn[4];
@@ -124,7 +88,7 @@ EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 //#define GMT_DUMPING
-void grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
+void grd_dump (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
 {
 #ifdef GMT_DUMPING
 	unsigned int row, col;

@@ -16,9 +16,7 @@
  * Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * common_math.h declares shared math functions determined by configure.
- * It is included by gmt_lib.h and gmtspatial.c
- * It depends on configure and is not distributed as part of the API or DEV.
+ * common_math.h declares shared math functions
  *
  * Author:  Florian Wobbe
  * Date:    10-MAR-2012
@@ -73,6 +71,12 @@ extern "C" {
 #	define int64_abs(x) ((int64_t)(((x) >= 0) ? (x) : -(x)))
 #endif
 
+	/* Limit casting to one place (here) for dropping lrint output to signed or unsigned ints */
+#define irint(x) ((int)lrint(x))
+#define urint(x) ((unsigned int)lrint(x))
+#define irintf(x) ((int)lrintf(x))
+#define urintf(x) ((unsigned int)lrintf(x))
+
 	/* Safe rounding of float and double to signed and unsigned 64 bit ints */
 #if defined(SIZEOF_INT) && SIZEOF_LONG == 8
 #	define irint64(x) lrint(x)
@@ -85,6 +89,16 @@ extern "C" {
 #	define irint64f(x) llrintf(x)
 #	define urint64f(x) ((uint64_t)llrintf(x))
 #endif
+
+	EXTERN_MSC bool floatAlmostEqualUlpsAndAbs(float A, float B, float maxDiff, int maxUlpsDiff);
+	EXTERN_MSC bool doubleAlmostEqualUlpsAndAbs(double A, double B, double maxDiff, int maxUlpsDiff);
+	EXTERN_MSC bool floatAlmostEqualUlps(float A, float B, int maxUlpsDiff);
+	EXTERN_MSC bool doubleAlmostEqualUlps(double A, double B, int maxUlpsDiff);
+
+#	define floatAlmostEqual(A, B) (floatAlmostEqualUlps(A, B, 5))
+#	define doubleAlmostEqual(A, B) (doubleAlmostEqualUlps(A, B, 5))
+#	define floatAlmostEqualZero(A, B) (floatAlmostEqualUlpsAndAbs(A, B, 5*FLT_EPSILON, 5))
+#	define doubleAlmostEqualZero(A, B) (doubleAlmostEqualUlpsAndAbs(A, B, 5*DBL_EPSILON, 5))
 
 #ifdef __cplusplus
 }

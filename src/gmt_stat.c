@@ -52,7 +52,8 @@
  *	GMT_factorial:	Factorials.
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 int gmt_f_test_new (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, double chisq2, uint64_t nu2, double *prob, int iside)
 {
@@ -1298,11 +1299,6 @@ double GMT_tcrit (struct GMT_CTRL *GMT, double alpha, double nu)
 	return (sign * t_mid);
 }
 
-void sincosd (double x, double *s, double *c)
-{
-	sincos ((x) * D2R,s,c);
-}
-
 double GMT_chi2crit (struct GMT_CTRL *GMT, double alpha, double nu)
 {
 	/* Critical values for Chi^2-distribution */
@@ -1599,7 +1595,7 @@ int GMT_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 
 int compare_observation (const void *a, const void *b)
 {
-	const struct GMT_OBSERVATION *obs_1 = a, *obs_2 = b;
+	const struct OBSERVATION *obs_1 = a, *obs_2 = b;
 
 	/* Sorts observations into ascending order based on obs->value */
 	if (obs_1->value < obs_2->value)
@@ -1609,14 +1605,14 @@ int compare_observation (const void *a, const void *b)
 	return 0;
 }
 
-double GMT_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile)
+double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n, double quantile)
 {
 	uint64_t k;
 	double weight_half = 0.0, weight_count;
 
 	/* First sort data on z */
 
-	qsort (data, n, sizeof (struct GMT_OBSERVATION), compare_observation);
+	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
 
 	/* Find weight sum, then get half-value */
 
@@ -1631,7 +1627,7 @@ double GMT_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, 
 	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].value + data[k+1].value) : data[k].value));
 }
 
-double GMT_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n)
+double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n)
 {
 	/* Based on mode_output in blockmode_func.c */
 
@@ -1641,7 +1637,7 @@ double GMT_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, ui
 
 	/* First sort data on z */
 
-	qsort (data, n, sizeof (struct GMT_OBSERVATION), compare_observation);
+	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
 
 	/* Find weight sum, then get half-value */
 

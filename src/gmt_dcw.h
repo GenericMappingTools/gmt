@@ -16,8 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_dwc.h contains all enums, structs, and function prototypes for
- * using the DCW in GMT.
+ * gmt_dwc.h contains definitions for using the DCW in GMT.
  * DCW - The Digital Chart of the World
  *
  * Author:	Paul Wessel

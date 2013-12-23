@@ -90,7 +90,8 @@
  * Now 64-bit enabled.
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 #include "common_byteswap.h"
 
 EXTERN_MSC unsigned int GMTAPI_count_objects (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, int *first_ID);
@@ -1867,7 +1868,7 @@ void GMT_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir)
 
 void GMT_io_init (struct GMT_CTRL *GMT)
 {
-	/* No need to memset the structure to NULL as this is already done.
+	/* No need to memset the structure to NULL as this is done in gmt_init.h directory.
 	 * The assignments here are done once per GMT session as GMT_io_init is called
 	 * from GMT_begin.  Some variables may change later due to --PAR=value parsing.
 	 * GMT_io_init must be called before parsing of defaults. */
