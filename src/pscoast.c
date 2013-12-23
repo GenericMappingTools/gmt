@@ -658,7 +658,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	if (!GMT_is_geographic (GMT, GMT_IN)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d for geographic data\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
 		Return (EXIT_FAILURE);
 	}
 	

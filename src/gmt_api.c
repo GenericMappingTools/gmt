@@ -3189,6 +3189,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	API->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & 1;	/* if set, then API_exit & GMT_exit are simply a return; otherwise they call exit */
 	API->mode = mode & 2;		/* if false|0 then we dont list read and write as modules */
+	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we same some CPU */
 
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
 	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
