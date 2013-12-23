@@ -6019,9 +6019,10 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	 * mode = 4:	Reset elapsed time to 0, no time stamp.
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
-	time_t toc, S;
+	time_t toc_abs;
+	clock_t toc, S;
 	size_t source_info_len;
-	unsigned int H, M;
+	unsigned int H, M, milli;
 	char message[4*GMT_BUFSIZ] = {""}, stamp[GMT_LEN256] = {""};
 	struct GMTAPI_CTRL *API = NULL;
 	va_list args;
@@ -6029,21 +6030,23 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	API = gmt_get_api_ptr (V_API);
-	if (mode) toc = time ((time_t *)0);
+	if (mode) toc = clock ();
 	if (mode & 4) API->GMT->current.time.tic = toc;
 
 	switch (mode) {
 		case 1:
-			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&toc));
+			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&toc_abs));
 			break;
 		case 2:
 		case 6:
-			S = toc - API->GMT->current.time.tic;
+			S = (toc - (clock_t)API->GMT->current.time.tic);	/* Elapsed time in ticks */
+			milli = (unsigned)(((float)S / CLOCKS_PER_SEC - (int)(S / CLOCKS_PER_SEC)) * CLOCKS_PER_SEC);	/* millisec */
+			S /= CLOCKS_PER_SEC;	/* Elapsed time in seconds */
 			H = urint (floor (S * GMT_SEC2HR));
 			S -= H * GMT_HR2SEC_I;
 			M = urint (floor (S * GMT_SEC2MIN));
 			S -= M * GMT_MIN2SEC_I;
-			sprintf (stamp, "Elapsed time %2.2d:%2.2d:%2.2d", H, M, (int)S);
+			sprintf (stamp, "Elapsed time %2.2d:%2.2d:%2.2d.%2.2d", H, M, (int)S, milli);
 			break;
 		default: break;
 	}
