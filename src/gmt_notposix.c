@@ -500,14 +500,14 @@ double log1p (double x) {
 #	include "s_rint.c"
 #endif /* HAVE_RINT */
 
-#if !defined(HAVE_SINCOS)
+#ifndef HAVE_SINCOS
 /* Platform does not have sincos - make a dummy one with sin and cos */
 void sincos (double a, double *s, double *c)
 {
 	*s = sin (a);
 	*c = cos (a);
 }
-#endif /* !defined(HAVE_SINCOS) */
+#endif /* HAVE_SINCOS */
 
 #ifndef HAVE_Y0
 

@@ -34,6 +34,7 @@
 #define THIS_MODULE_PURPOSE	"Update track index database from track bin file"
 
 #include "x2sys.h"
+#include "gmt_notposix.h"
 
 #define GMT_PROG_OPTIONS "->V"
 

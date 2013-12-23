@@ -16,7 +16,9 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * common_runpath.h contains prototypes of functions shared between GMT and PSL
+ * common_runpath.h contains prototypes of functions to determine run-time dirs
+ * which is needed in gmt_init.c.
+ * It depends on configure and is not distributed as part of the API or DEV.
  *
  * Author:  Florian Wobbe
  * Date:    3-MAR-2012

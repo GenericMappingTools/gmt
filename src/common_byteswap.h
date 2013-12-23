@@ -16,7 +16,10 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * common_byteswap.h contains inline functions for byteswapping
+ * common_byteswap.h contains inline functions for byteswapping.
+ * It is included only where it is needed in gmt_*.c and in some modules
+ * where swapping is required.
+ * It depends on configure and is not distributed as part of the API or DEV.
  *
  * Author:  Florian Wobbe
  * Date:    12-APR-2012

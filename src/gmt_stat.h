@@ -20,11 +20,12 @@
 #define _GMT_STAT_H
 
 /* for weighted mean/mode */
-struct OBSERVATION {
+struct GMT_OBSERVATION {
 	float value;
 	float weight;
 };
 
+EXTERN_MSC void sincosd (double x, double *s, double *c);
 EXTERN_MSC double GMT_bei (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_ber (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_kei (struct GMT_CTRL *GMT, double x);
@@ -60,8 +61,8 @@ EXTERN_MSC int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j
 EXTERN_MSC int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est);
 EXTERN_MSC double GMT_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *std);
 
-EXTERN_MSC double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n, double quantile);
-EXTERN_MSC double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n);
+EXTERN_MSC double GMT_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile);
+EXTERN_MSC double GMT_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n);
 
 EXTERN_MSC int GMT_sig_f (struct GMT_CTRL *GMT, double chi1, uint64_t n1, double chi2, uint64_t n2, double level, double *prob);
 EXTERN_MSC int GMT_student_t_a (struct GMT_CTRL *GMT, double t, uint64_t n, double *prob);

@@ -1455,23 +1455,23 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 					case 2:	/* 2-D */
 						switch (Ctrl->A.mode) {
 							case 1:	/* (x, y, az, gradient) */
-								az = D2R * S->segment[seg]->coord[2][row];
+								az = S->segment[seg]->coord[2][row];
 								obs[p] = S->segment[seg]->coord[3][row];
 								break;
 							case 2:	/* (x, y, gradient, azimuth) */
-								az = D2R * S->segment[seg]->coord[3][row];
+								az = S->segment[seg]->coord[3][row];
 								obs[p] = S->segment[seg]->coord[2][row];
 								break;
 							case 3:	/* (x, y, direction, gradient) */
-								az = M_PI_2 - D2R * S->segment[seg]->coord[2][row];
+								az = 90.0 - S->segment[seg]->coord[2][row];
 								obs[p] = S->segment[seg]->coord[3][row];
 								break;
 							case 4:	/* (x, y, gx, gy) */
-								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
+								az = R2D * atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);	/* Get azimuth of gradient */
 								obs[p] = hypot (S->segment[seg]->coord[3][row], S->segment[seg]->coord[3][row]);	/* Get magnitude of gradient */
 								break;
 							case 5:	/* (x, y, nx, ny, gradient) */
-								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
+								az = R2D * atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);	/* Get azimuth of gradient */
 								obs[p] = S->segment[seg]->coord[4][row];	/* Magnitude of gradient */
 								break;
 							default:
@@ -1479,7 +1479,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 								Return (GMT_DATA_READ_ERROR);
 								break;
 						}
-						sincos (az, &D[k][GMT_X], &D[k][GMT_Y]);
+						sincosd (az, &D[k][GMT_X], &D[k][GMT_Y]);
 						break;
 					case 3:	/* 3-D */
 						switch (Ctrl->A.mode) {

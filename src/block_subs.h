@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-/* This code is included into the three blockm*_func.c files which each
+/* This code is included by the three blockm*_func.c files which each
  * will define their names (e.g., BLOCKMEAN).  That definition controls
  * the names of the functions defined below.
  */

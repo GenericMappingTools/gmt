@@ -29,7 +29,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Project grids or images and plot them on maps"
 
-#include "gmt_dev.h"
+#include "gmt_lib.h"
 
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcfnptxy" GMT_OPT("S")
 

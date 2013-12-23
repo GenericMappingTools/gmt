@@ -36,6 +36,7 @@
 
 #include "gmt_dev.h"
 #include "common_byteswap.h"
+#include "gmt_notposix.h"
 
 #define GMT_PROG_OPTIONS "-JRVbh"
 

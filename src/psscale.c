@@ -693,8 +693,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 	if (extend) {	/* Adjustment to triangle base coordinates so pen abuts perfectly with bar */
 		double theta, s, c, w = GMT->current.setting.map_frame_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
-		theta = atan (2.0 * e_length / width);	/* triangle base angle in radians */
-		sincos (theta, &s, &c);
+		theta = R2D * atan (2.0 * e_length / width);	/* triangle base angle in radians */
+		sincosd (theta, &s, &c);
 		xd = 0.5 * w * (c - 1.0);
 		yd = 0.5 * w * (s - 1.0);
 		xt = yd * 2.0 * e_length / width;	/* Shift of triangle peak x-pos to maintain original angle theta */

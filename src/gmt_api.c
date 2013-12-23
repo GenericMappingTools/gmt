@@ -302,7 +302,7 @@ struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr)
 typedef size_t (*p_func_size_t) (uint64_t row, uint64_t col, size_t dim);
 
 #ifdef DEBUG
-void GMTAPI_Set_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *obj)
+void GMTAPI_Set_Object (struct GMTAPI_DATA_OBJECT *obj)
 {	/* This is mostly for debugging and may go away or remain under DEBUG */
 	switch (obj->family) {
 		case GMT_IS_GRID:	obj->G = obj->data; break;
@@ -663,7 +663,7 @@ int GMTAPI_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *
 	return (GMT_OK);
 }
 
-int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, struct GMT_MATRIX *M)
+int GMTAPI_init_matrix (uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, struct GMT_MATRIX *M)
 {
 	double off = 0.5 * registration;
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
@@ -682,7 +682,7 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 	return (GMT_OK);
 }
 
-int GMTAPI_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, struct GMT_VECTOR *V)
+int GMTAPI_init_vector (uint64_t dim[], double *range, double *inc, int registration, struct GMT_VECTOR *V)
 {
 	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
@@ -723,7 +723,7 @@ double * GMTAPI_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_MATRI
 	return (coord);
 }
 
-double * GMTAPI_vector_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_VECTOR *V)
+double * GMTAPI_vector_coord (struct GMTAPI_CTRL *API, struct GMT_VECTOR *V)
 {	/* Allocate and compute coordinates for a vector, if equidistantly defined */
 	unsigned int k;
 	double *coord = NULL, off, inc;
@@ -1195,7 +1195,7 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 	return (object_ID);		
 }
 
-bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL *API, int family, int geometry)
+bool GMTAPI_Validate_Geometry (int family, int geometry)
 {	/* Sanity check that geometry and family are compatible; note they may be -1 hence int */
 	bool problem = false;
 	if (geometry == GMT_NOTSET || family == GMT_NOTSET) return false;	/* No errors if nothing to check */
@@ -3196,7 +3196,6 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 		return_null (API, GMT_MEMORY_ERROR);
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session initialized GMT structure\n");
-
 	/* Allocate memory to keep track of registered data resources */
 
 	API->n_objects_alloc = GMT_SMALL_CHUNK;	/* Start small; this may grow as more resources are registered */
@@ -3422,7 +3421,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	
 	if (V_API == NULL) return_value (V_API, GMT_NOT_A_SESSION, GMT_NOTSET);
 	API = gmt_get_api_ptr (V_API);
-	if (GMTAPI_Validate_Geometry (API, family, geometry)) return_value (API, GMT_BAD_GEOMETRY, GMT_NOTSET);
+	if (GMTAPI_Validate_Geometry (family, geometry)) return_value (API, GMT_BAD_GEOMETRY, GMT_NOTSET);
 
 	/* Check if this filename is an embedded API Object ID passed via the filename and of the right kind.  */
 	if ((object_ID = GMTAPI_Memory_Registered (API, family, direction, resource)) != GMT_NOTSET) return (object_ID);	/* OK, return the object ID */
@@ -3591,7 +3590,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
-	if (GMTAPI_Validate_Geometry (API, family, geometry)) return_error (API, GMT_BAD_GEOMETRY);
+	if (GMTAPI_Validate_Geometry (family, geometry)) return_error (API, GMT_BAD_GEOMETRY);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
 	if (!((mode & GMT_ADD_FILES_IF_NONE) || (mode & GMT_ADD_FILES_ALWAYS) || (mode & GMT_ADD_STDIO_IF_NONE) || (mode & GMT_ADD_STDIO_ALWAYS) || (mode & GMT_ADD_EXISTING))) return_error (API, GMT_NOT_A_VALID_MODE);
 
@@ -3907,7 +3906,7 @@ void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 		return_null (API, API->error);
 	}
 #ifdef DEBUG
-	GMTAPI_Set_Object (API, API->object[item]);
+	GMTAPI_Set_Object (API->object[item]);
 	GMT_list_API (API, "GMT_Get_Data");
 #endif
 	return (new_obj);		/* Return pointer to the data container */
@@ -3965,7 +3964,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			return_null (API, API->error);
 		}
 #ifdef DEBUG
-		GMTAPI_Set_Object (API, API->object[item]);
+		GMTAPI_Set_Object (API->object[item]);
 #endif
 		return ((API->object[item]->data) ? API->object[item]->data : API->object[item]->resource);	/* Return pointer to the data */
 	}
@@ -4157,7 +4156,7 @@ int GMT_Put_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 		return_error (API, API->error);
 	}
 #ifdef DEBUG
-	GMTAPI_Set_Object (API, API->object[item]);
+	GMTAPI_Set_Object (API->object[item]);
 	GMT_list_API (API, "GMT_Put_Data");
 #endif
 	return (GMT_OK);	/* No error encountered */
@@ -5185,13 +5184,13 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			n_layers = (dim == NULL) ? 1U : dim[GMT_Z];
 		 	new_obj = GMT_create_matrix (API->GMT, n_layers);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_matrix (API, dim, range, inc, registration, mode, new_obj);
+			error = GMTAPI_init_matrix (dim, range, inc, registration, mode, new_obj);
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
 	 		new_obj = GMT_create_vector (API->GMT, dim[0]);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_vector (API, dim, range, inc, registration, new_obj);
+			error = GMTAPI_init_vector (dim, range, inc, registration, new_obj);
 			break;
 		default:
 			API->error = GMT_NOT_A_VALID_FAMILY;
@@ -5278,7 +5277,7 @@ double * GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void
 #endif
 		case GMT_IS_VECTOR:	/* GMT vector */
 			if (dim != GMT_Y) return_null (API, GMT_DIM_TOO_LARGE);
-			coord = GMTAPI_vector_coord (API, dim, container);
+			coord = GMTAPI_vector_coord (API, container);
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix */
 			if (dim > GMT_Z) return_null (API, GMT_DIM_TOO_LARGE);
@@ -5621,7 +5620,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | mode, NULL, G->header->name, G) == NULL)	/* Get data only */
 			return (NULL);
 	}
-	//grd_dump (GMT, G->header, G->data, false, "Read in FFT_Create");
+	//grd_dump (G->header, G->data, false, "Read in FFT_Create");
 	
 	/* Make sure there are no NaNs in the grid - that is a fatal flaw */
 	
@@ -5633,9 +5632,9 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	
 	if (F->trend_mode == GMT_FFT_REMOVE_NOT_SET) F->trend_mode = GMT_FFT_REMOVE_NOTHING;	/* Delayed default */
 	GMT_grd_detrend (GMT, G, F->trend_mode, K->coeff);	/* Detrend data, if requested */
-	//grd_dump (GMT, G->header, G->data, false, "After detrend");
+	//grd_dump (G->header, G->data, false, "After detrend");
 	gmt_fft_taper (GMT, G, F);				/* Taper data, if requested */
-	//grd_dump (GMT, G->header, G->data, false, "After Taper");
+	//grd_dump (G->header, G->data, false, "After Taper");
 	K->dim = 2;	/* 2-D FFT */
 	return (K);
 }
@@ -5711,9 +5710,9 @@ int GMTAPI_FFT_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int direction, u
 	int status;
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_IN, K);	/* Save intermediate grid, if requested, before interleaving */
 	GMT_grd_mux_demux (API->GMT, G->header, G->data, GMT_GRID_IS_INTERLEAVED);
-	grd_dump (API->GMT, G->header, G->data, true, "After demux");
+	grd_dump (G->header, G->data, true, "After demux");
 	status = GMT_FFT_2D (API, G->data, G->header->mx, G->header->my, direction, mode);
-	//grd_dump (API->GMT, G->header, G->data, true, "After FFT");
+	//grd_dump (G->header, G->data, true, "After FFT");
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_OUT, K);	/* Save complex grid, if requested */
 	return (status);
 }

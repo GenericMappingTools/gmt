@@ -585,8 +585,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 			c_x = GMT_memory (GMT, NULL, n_sectors_2, double);
 			c_y = GMT_memory (GMT, NULL, n_sectors_2, double);
 			for (i = 0; i < n_sectors_2; i++) {
-				angle = (i + 0.5) * (M_PI/n_sectors_2);	/* Angle of central diameter of each corridor */
-				sincos (angle, &c_y[i], &c_x[i]);	/* Unit vector of diameter */
+				angle = (i + 0.5) * (180.0/n_sectors_2);	/* Angle of central diameter of each corridor */
+				sincosd (angle, &c_y[i], &c_x[i]);	/* Unit vector of diameter */
 			}
 		}
 		else {

@@ -603,7 +603,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 					dx = x_front - x_back;
 					dy = y_front - y_back;
 					a = atan2 (dy, dx) + add;
-					sincos (a, &sa, &ca);
+					sa = sin (a);	ca = cos (a);
 					x_end = xp[j] + tick_length * ca;
 					y_end = yp[j] + tick_length * sa;
 					PSL_plotsegment (PSL, xp[j], yp[j], x_end, y_end);

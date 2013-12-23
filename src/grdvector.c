@@ -528,8 +528,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 					vec_azim = GMT_azim_to_angle (GMT, x, y, 0.1, vec_azim);
 				}
 				GMT_flip_angle_d (GMT, &vec_azim);
-				vec_azim *= D2R;	/* vec_azim is now in radians */
-				sincos (vec_azim, &s, &c);
+				sincosd (vec_azim, &s, &c);
 				x2 = plot_x + scaled_vec_length * c;
 				y2 = plot_y + scaled_vec_length * s;
 
