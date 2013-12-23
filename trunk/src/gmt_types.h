@@ -33,7 +33,7 @@
 #include <stdint.h>
 
 /*--------------------------------------------------------------------
- * GMT TYPE DEFINITIONS RE STRUCTURES USED THROUGHOUT GMT
+ * GMT TYPE DEFINITIONS
  *--------------------------------------------------------------------*/
 
 struct GMT_MAP {		/* Holds all map-related parameters */
@@ -128,7 +128,6 @@ struct GMT_INTERNAL {
 	/* These are internal parameters that need to be passed around between
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
-	unsigned int padding;
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */

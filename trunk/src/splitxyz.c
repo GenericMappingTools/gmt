@@ -466,11 +466,11 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 					}
 					else {
 						S->coord[d_col][row] = S->coord[d_col][row-1] + hypot (dx,dy);
-						S->coord[h_col][row] = R2D * d_atan2(dy,dx);	/* Angles are stored as CCW angles in degrees */
+						S->coord[h_col][row] = d_atan2(dy,dx);	/* Angles are stored as CCW angles in radians */
 					}
 				}
 				else 
-					S->coord[h_col][row] = 90.0 - S->coord[h_col][row];	/* Angles are stored as CCW angles in degrees */
+					S->coord[h_col][row] = D2R * (90.0 - S->coord[h_col][row]);	/* Angles are stored as CCW angles in radians */
 			}
 			if (!Ctrl->S.active) S->coord[h_col][0] = S->coord[h_col][1];
 			
@@ -483,12 +483,12 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 
 			begin = end = 0;
 			while (end < S->n_rows-1) {
-				sincosd (S->coord[h_col][begin], &last_s, &last_c);
+				sincos (S->coord[h_col][begin], &last_s, &last_c);
 				csum = last_c;	ssum = last_s;
 				ok = true;
 				while (ok && end < S->n_rows-1) {
 					end++;
-					sincosd (S->coord[h_col][end], &this_s, &this_c);
+					sincos (S->coord[h_col][end], &this_s, &this_c);
 					dotprod = this_c * last_c + this_s * last_s;
 					if (fabs (dotprod) > 1.0) dotprod = copysign (1.0, dotprod);
 					if (d_acos (dotprod) > Ctrl->C.value) {	/* Fails due to too much change in azimuth  */

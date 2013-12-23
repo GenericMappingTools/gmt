@@ -49,7 +49,8 @@
  *
  */
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 static inline struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 

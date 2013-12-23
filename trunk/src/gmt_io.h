@@ -31,11 +31,43 @@
 #ifndef _GMT_IO_H
 #define _GMT_IO_H
 
-#include "gmt_config.h"	/* Just until we deal with off_t */
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
 
+/* Three different i/o status: unused, actively using, or used */
+enum GMT_enum_status {
+	GMT_IS_UNUSED = 0,	/* We have not yet read from/written to this resource */
+	GMT_IS_USING,		/* Means we have started reading from/writing to this file */
+	GMT_IS_USED};		/* Means we are done reading from/writing to this file */
+
+/* THere are three GMT/OGR status values */
+enum GMT_ogr_status {
+	GMT_OGR_UNKNOWN = -1,	/* We have not parsed enough records to know yet */
+	GMT_OGR_FALSE,		/* This is NOT a GMT/OGR file */
+	GMT_OGR_TRUE};		/* This is a GMT/OGR file */
+
 #define GMT_polygon_is_hole(S) (S->pol_mode == GMT_IS_HOLE || (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE))
+
+/* Specific feature geometries as obtained from OGR */
+/* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
+
+enum GMT_enum_ogr {
+	GMT_IS_LINESTRING = 2,
+	GMT_IS_POLYGON,
+	GMT_IS_MULTIPOINT,
+	GMT_IS_MULTILINESTRING,
+	GMT_IS_MULTIPOLYGON};
+
+/* Codes for aspatial assocation with segment header options: */
+
+enum GMT_enum_segopt {
+	GMT_IS_D = -1,	/* -D */
+	GMT_IS_G = -2,			/* -G */
+	GMT_IS_I = -3,			/* -I */
+	GMT_IS_L = -4,			/* -L */
+	GMT_IS_T = -5,			/* -T */
+	GMT_IS_W = -6,			/* -W */
+	GMT_IS_Z = -7};			/* -Z */
 
 /* Macros to simplify check for return status */
 #define GMT_REC_IS_TABLE_HEADER(C)	(C->current.io.status & GMT_IO_TABLE_HEADER)
@@ -54,6 +86,43 @@
 
 /* Determine if current binary table has header */
 #define GMT_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.setting.io_header[dir] && GMT->current.setting.io_n_header_items)
+
+/* Types of possible column entries in a file: */
+
+enum GMT_col_enum {
+	GMT_IS_NAN   =   0,	/* Returned by GMT_scanf routines when read fails */
+	GMT_IS_FLOAT		=   1,	/* Generic (double) data type, no special format */
+	GMT_IS_LAT		=   2,
+	GMT_IS_LON		=   4,
+	GMT_IS_GEO		=   6,	/* data type is either Lat or Lon */
+	GMT_IS_RELTIME		=   8,	/* For I/O of data in user units */
+	GMT_IS_ABSTIME		=  16,	/* For I/O of data in calendar+clock units */
+	GMT_IS_RATIME		=  24,	/* To see if time is either Relative or Absolute */
+	GMT_IS_ARGTIME		=  32,	/* To invoke GMT_scanf_argtime()  */
+	GMT_IS_DIMENSION	=  64,	/* A float with [optional] unit suffix, e.g., 7.5c, 0.4i; convert to inch  */
+	GMT_IS_GEOANGLE		= 128,	/* An angle to be converted via map projection to angle on map  */
+	GMT_IS_STRING		= 256,	/* An text argument [internally used, not via -f]  */
+	GMT_IS_UNKNOWN		= 512};	/* Input type is not knowable without -f */
+
+/* Various ways to report longitudes */
+
+enum GMT_lon_enum {
+	GMT_IS_GIVEN_RANGE 			= 0,	/* Report lon as is */
+	GMT_IS_0_TO_P360_RANGE			= 1,	/* Report 0 <= lon <= 360 */
+	GMT_IS_0_TO_P360			= 2,	/* Report 0 <= lon < 360 */
+	GMT_IS_M360_TO_0_RANGE			= 3,	/* Report -360 <= lon <= 0 */
+	GMT_IS_M360_TO_0			= 4,	/* Report -360 < lon <= 0 */
+	GMT_IS_M180_TO_P180_RANGE		= 5,	/* Report -180 <= lon <= +180 */
+	GMT_IS_M180_TO_P180			= 6,	/* Report -180 <= lon < +180 */
+	GMT_IS_M180_TO_P270_RANGE		= 7};	/* Report -180 <= lon < +270 [GSHHS only] */
+
+/* How to handle NaNs in records */
+
+enum GMT_io_nan_enum {
+	GMT_IO_NAN_OK = 0,	/* NaNs are fine; just ouput the record as is */
+	GMT_IO_NAN_SKIP,	/* -s[cols]	: Skip records with z == NaN in selected cols [z-col only] */
+	GMT_IO_NAN_KEEP,	/* -sr		: Skip records with z != NaN */
+	GMT_IO_NAN_ONE};	/* -sa		: Skip records with at least one NaN */
 
 /* Use POSIX functions ftello() and fseeko(), which represent the
  * position using the off_t type: */
@@ -253,6 +322,13 @@ struct GMT_PLOT_CALCLOCK {
 	struct GMT_CLOCK_IO clock;
 	struct GMT_GEO_IO geo;
 };
+
+/* Byteswap widths used with gmt_byteswap_file */
+typedef enum {
+	Int16len = 2,
+	Int32len = 4,
+	Int64len = 8
+} SwapWidth;
 
 /* For the GMT_GRID container, see gmt_grdio.h */
 

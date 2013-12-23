@@ -353,7 +353,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 				length = hypot (dx, dy);
 				n_ticks = urint (ceil (length / tick_gap));	/* At least one per side */
 				a = atan2 (dy, dx) + add;
-				sa = sin (a);	ca = cos (a);
+				sincos (a, &sa, &ca);
 				for (kk = 0; kk <= n_ticks; kk++) {
 					x_back = save[pol].x[j-1] + kk * dx / (n_ticks + 1);
 					y_back = save[pol].y[j-1] + kk * dy / (n_ticks + 1);

@@ -30,6 +30,32 @@
 #include <Accelerate/Accelerate.h>
 #endif
 
+enum GMT_FFT_EXTEND {
+	GMT_FFT_EXTEND_POINT_SYMMETRY = 0,
+	GMT_FFT_EXTEND_MIRROR_SYMMETRY,
+	GMT_FFT_EXTEND_NONE,
+	GMT_FFT_EXTEND_NOT_SET};
+	
+enum GMT_FFT_TREND {
+	GMT_FFT_REMOVE_NOT_SET = -1,
+	GMT_FFT_REMOVE_NOTHING = 0,
+	GMT_FFT_REMOVE_MEAN,
+	GMT_FFT_REMOVE_MID,
+	GMT_FFT_REMOVE_TREND};
+	
+enum GMT_FFT_KCHOICE {
+	GMT_FFT_K_IS_KX = 0,
+	GMT_FFT_K_IS_KY,
+	GMT_FFT_K_IS_KR,
+	};
+	
+enum GMT_FFT_DIMSET {
+	GMT_FFT_EXTEND = 0,
+	GMT_FFT_FORCE,
+	GMT_FFT_SET,
+	GMT_FFT_LIST,
+	GMT_FFT_QUERY};
+
 struct GMT_FFT_WAVENUMBER {	/* Holds parameters needed to calculate kx, ky, kr */
 	int nx2, ny2;
 	unsigned int dim;	/* FFT dimension as setup by Init */

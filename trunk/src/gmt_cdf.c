@@ -38,7 +38,8 @@
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *header, char job)
 {

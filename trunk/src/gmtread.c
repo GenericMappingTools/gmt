@@ -28,7 +28,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Read GMT objects into external API"
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
 
 #define GMT_PROG_OPTIONS "->RV"
 

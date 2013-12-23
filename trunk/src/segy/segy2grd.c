@@ -31,7 +31,6 @@
 
 #include "gmt_dev.h"
 #include "segy_io.h"
-#include "common_byteswap.h"
 
 #define GMT_PROG_OPTIONS "-VRr" GMT_OPT("F")
 

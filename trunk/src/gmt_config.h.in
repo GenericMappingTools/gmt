@@ -39,23 +39,6 @@
 
 #include "../config.h"
 
-#include <limits.h> /* defines PATH_MAX */
-#include <stdlib.h> /* defines _MAX_PATH on WIN32 */
-#if ! defined PATH_MAX && defined _MAX_PATH
-#	define PATH_MAX _MAX_PATH
-#endif
-#ifndef PATH_MAX
-#	define PATH_MAX 1024
-#endif
-
-/* Help us with big and little endianness */
-#ifdef WORDS_BIGENDIAN
-#define GMT_BIGENDIAN	true
-#define GMT_ENDIAN		'B'
-#else
-#define GMT_BIGENDIAN	false
-#define GMT_ENDIAN		'L'
-#endif
 
 /* which regex library <pcre.h>, <regex.h> */
 #cmakedefine HAVE_PCRE

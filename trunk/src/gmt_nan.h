@@ -33,6 +33,8 @@
 #ifndef _GMT_NAN_H
 #define _GMT_NAN_H
 
+#include "gmt_notposix.h"
+
 #ifdef NO_IEEE
 #	define GMT_make_fnan(x) (x = FLT_MAX)
 #	define GMT_make_dnan(x) (x = DBL_MAX)

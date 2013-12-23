@@ -104,9 +104,6 @@
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
 
-/* CMake definitions: This must be first! */
-#include "gmt_config.h"
-
 #include <float.h>
 #include <limits.h>
 #include <math.h>
@@ -129,21 +126,6 @@
 #endif
 #ifndef PATH_MAX
 #	define PATH_MAX 1024
-#endif
-
-/* Size prefixes for printf/scanf for size_t and ptrdiff_t */
-#ifdef _MSC_VER
-#	define PRIxS "Ix"  /* printf size_t */
-#	define PRIuS "Iu"  /* printf size_t */
-#	define PRIdS "Id"  /* printf ptrdiff_t */
-#	define SCNuS "u"   /* scanf  size_t (__int32 even on 64-bit platforms) */
-#	define SCNdS "d"   /* scanf  ptrdiff_t (__int32 even on 64-bit platforms) */
-#else
-#	define PRIxS "zx"  /* printf size_t */
-#	define PRIuS "zu"  /* printf size_t */
-#	define PRIdS "zd"  /* printf ptrdiff_t */
-#	define SCNuS PRIuS /* scanf  size_t */
-#	define SCNdS PRIdS /* scanf  ptrdiff_t */
 #endif
 
 /* Macro for exit since this should be returned when called from Matlab */
@@ -2274,7 +2256,7 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length
 	return (new_word);
 }
 
-void psl_freewords (struct PSL_WORD **word, int n_words)
+void psl_freewords (struct PSL_CTRL *PSL, struct PSL_WORD **word, int n_words)
 {
 	/* Free all the words and their texts */
 	int k;
@@ -2635,7 +2617,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	PSL_command (PSL, "    PSL_width k1 w1 w2 gt {w1} {w2} ifelse put\n    PSL_width k 0 put\n");
 	PSL_command (PSL, "    PSL_count k 0 put\n  } if\n} for\n");
 
-	psl_freewords (word, n_alloc_txt);
+	psl_freewords (PSL, word, n_alloc_txt);
 	PSL_free (word);
 	return (PSL_NO_ERROR);
 }

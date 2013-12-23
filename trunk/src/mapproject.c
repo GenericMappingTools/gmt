@@ -66,7 +66,7 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	} D;
 	struct E {	/* -E[<datum>] */
 		bool active;
-		struct GMT_DATUM_INFO datum;	/* Contains a, f, xyz[3] */
+		struct GMT_DATUM datum;	/* Contains a, f, xyz[3] */
 	} E;
 	struct F {	/* -F[k|m|n|i|c|p] */
 		bool active;
@@ -103,8 +103,8 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	struct T {	/* -T[h]<from>[/<to>] */
 		bool active;
 		bool heights;	/* True if we have heights */
-		struct GMT_DATUM_INFO from;	/* Contains a, f, xyz[3] */
-		struct GMT_DATUM_INFO to;	/* Contains a, f, xyz[3] */
+		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
+		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
 };
 

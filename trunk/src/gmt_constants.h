@@ -30,7 +30,8 @@
  *	GMT API CONSTANTS DEFINITIONS
  *===================================================================================*/
 
-#include "gmt_error_codes.h"		/* All API error codes are defined here */
+#include "gmt_error_codes.h"			/* All API error codes are defined here */
+#include "gmt_define.h"			/* All constant values are defined here */
 
 /*--------------------------------------------------------------------
  *			GMT CONSTANTS MACRO DEFINITIONS
@@ -63,6 +64,35 @@
 
 #define GMT_CONV_LIMIT	1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_SMALL	1.0e-4		/* Needed when results aren't exactly zero but close */
+
+/* Various allocation-length parameters */
+enum GMT_enum_length {
+	GMT_TINY_CHUNK  = 8U,
+	GMT_SMALL_CHUNK = 64U,
+	GMT_CHUNK       = 2048U,
+	GMT_BIG_CHUNK   = 65536U,
+	GMT_LEN16	= 16U,		/* All strings used to format date/clock output must be this length */
+	GMT_LEN32  = 32U,          /* Small length of texts */
+	GMT_LEN64  = 64U,          /* Intermediate length of texts */
+	GMT_LEN128 = 128U,         /* Double of 64 */
+	GMT_LEN256 = 256U,         /* Max size of some text items */
+	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
+	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
+	GMT_MIN_MEMINC  = 1U,        /* E.g., 16 kb of 8-byte doubles */
+	GMT_MAX_MEMINC  = 67108864U};   /* E.g., 512 Mb of 8-byte doubles */
+
+/* The four plot length units [m just used internally] */
+enum GMT_enum_unit {
+	GMT_CM = 0,
+	GMT_INCH,
+	GMT_M,
+	GMT_PT};
+
+/* Handling of swap/no swap in i/o */
+enum GMT_swap_direction {
+	k_swap_none = 0,
+	k_swap_in,
+	k_swap_out};
 
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
 #define GMT_LEN_UNITS2	"efkMnu"	/* Distances in meter, foot, survey foot, km, Mile, nautical mile */
@@ -104,49 +134,84 @@
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
-/* Synopsis-related constants */
-#define GMT_inc_OPT	"<xinc>[<unit>][=|+][/<yinc>[<unit>][=|+]]"
-#define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
-#define GMT_Jx_OPT	"-Jx|X<args>"
-#define GMT_Jz_OPT	"-Jz|Z<args>"
-#define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[r]"
-#define GMT_Rgeoz_OPT	"-R<west>/<east>/<south>/<north>[/<zmin>/<zmax>][r]"
-#define GMT_Rx_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r]"
+/* Various options for FFT calculations [Default is 0] */
+enum FFT_implementations {
+	k_fft_auto = 0,    /* Automatically select best FFT algorithm */
+	k_fft_accelerate,  /* Select Accelerate Framework vDSP FFT [OS X only] */
+	k_fft_fftw,        /* Select FFTW */
+	k_fft_kiss,        /* Select Kiss FFT (always available) */
+	k_fft_brenner,     /* Select Brenner FFT (Legacy*/
+	k_n_fft_algorithms /* Number of FFT implementations available in GMT */
+};
 
-/* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
+/* Various algorithms for triangulations */
+enum GMT_enum_tri {
+	GMT_TRIANGLE_WATSON = 0, /* Select Watson's algorithm */
+	GMT_TRIANGLE_SHEWCHUK};  /* Select Shewchuk's algorithm */
 
-#define GMT_bi_OPT	"-bi[<ncol>][t][w][+L|B]"
-#define GMT_bo_OPT	"-bo[<ncol>][t][w][+L|B]"
-#define GMT_fi_OPT	"-f<info>"
-#define GMT_fo_OPT	"-f<info>"
-#define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+r<remark>][+t<title>]"
+/* Various 1-D interpolation modes */
+enum GMT_enum_spline {
+	GMT_SPLINE_LINEAR = 0, /* Linear spline */
+	GMT_SPLINE_AKIMA,      /* Akima spline */
+	GMT_SPLINE_CUBIC,      /* Cubic spline */
+	GMT_SPLINE_NONE};      /* No spline set */
 
-/* For options needing a length or radius */
+enum GMT_enum_extrap {
+	GMT_EXTRAPOLATE_NONE = 0,   /* No extrapolation; set to NaN outside bounds */
+	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
+	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
 
-#define GMT_DIST_OPT	"[-|+]<dist>[<unit>]"
-#define GMT_RADIUS_OPT	"[-|+]<radius>[<unit>]"
+/* Various line/grid/image interpolation modes */
+enum GMT_enum_track {
+	GMT_TRACK_FILL = 0,	/* Normal fix_up_path behavior: Keep all (x,y) points but add intermediate if gap > cutoff */
+	GMT_TRACK_FILL_M,	/* Fill in, but navigate via meridians (y), then parallels (x) */
+	GMT_TRACK_FILL_P,	/* Fill in, but navigate via parallels (x), then meridians (y) */
+	GMT_TRACK_SAMPLE_FIX,	/* Resample the track at equidistant points; old points may be lost. Use given spacing */
+	GMT_TRACK_SAMPLE_ADJ};	/* Resample the track at equidistant points; old points may be lost. Adjust spacing to fit length of track exactly */
 
-/* Options for map rose, scale and insert, used in pscoast and psbasemap */
+enum GMT_enum_bcr {
+	BCR_NEARNEIGHBOR = 0, /* Nearest neighbor algorithm */
+	BCR_BILINEAR,         /* Bilinear spline */
+	BCR_BSPLINE,          /* B-spline */
+	BCR_BICUBIC};         /* Bicubic spline */
 
-#define GMT_TROSE	"[f|m][x]<lon0>/<lat0>/<diameter>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
-#define GMT_SCALE	"[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[e|f|M|n|k|u][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]"
-#define GMT_INSERT	"[<u>]<xmin>/<xmax>/<ymin>/<ymax>[r]|<width>[/<height>][+c<lon>/<lat>][+p<pen>][+f<fill>]"
+/* Various grid/image boundary conditions */
+enum GMT_enum_bc {
+	GMT_BC_IS_NOTSET = 0, /* BC not yet set */
+	GMT_BC_IS_NATURAL,    /* Use natural BC */
+	GMT_BC_IS_PERIODIC,   /* Use periodic BC */
+	GMT_BC_IS_GEO,        /* Geographic BC condition */
+	GMT_BC_IS_DATA};      /* Fill in BC with actual data */
 
-/* Argument to *contour programs */
+enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */
+	GMT_RADIUS_MEAN = 0,	/* Mean radius IUGG R_1 = (2*a+b)/3 = a (1 - f/3) */
+	GMT_RADIUS_AUTHALIC,	/* Authalic radius 4*pi*r^2 = surface area of ellipsoid, R_2 = sqrt (0.5a^2 + 0.5b^2 (tanh^-1 e)/e) */
+	GMT_RADIUS_VOLUMETRIC,	/* Volumetric radius 3/4*pi*r^3 = volume of ellipsoid, R_3 = (a*a*b)^(1/3) */
+	GMT_RADIUS_MERIDIONAL,	/* Meridional radius, M_r = [(a^3/2 + b^3/2)/2]^2/3 */
+	GMT_RADIUS_QUADRATIC};	/* Quadratic radius, Q_r = 1/2 sqrt (3a^2 + b^2) */
 
-#define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"
-#define GMT_CONTT	"-T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:[<labels>]]"
+enum GMT_enum_latswap {GMT_LATSWAP_NONE = -1,	/* Deactivate latswapping */
+	GMT_LATSWAP_G2A = 0,	/* input = geodetic;   output = authalic   */
+	GMT_LATSWAP_A2G,	/* input = authalic;   output = geodetic   */
+	GMT_LATSWAP_G2C,	/* input = geodetic;   output = conformal  */
+	GMT_LATSWAP_C2G,	/* input = conformal;  output = geodetic   */
+	GMT_LATSWAP_G2M,	/* input = geodetic;   output = meridional */
+	GMT_LATSWAP_M2G,	/* input = meridional; output = geodetic   */
+	GMT_LATSWAP_G2O,	/* input = geodetic;   output = geocentric */
+	GMT_LATSWAP_O2G,	/* input = geocentric; output = geodetic   */
+	GMT_LATSWAP_G2P,	/* input = geodetic;   output = parametric */
+	GMT_LATSWAP_P2G,	/* input = parametric; output = geodetic   */
+	GMT_LATSWAP_O2P,	/* input = geocentric; output = parametric */
+	GMT_LATSWAP_P2O,	/* input = parametric; output = geocentric */
+	GMT_LATSWAP_N};		/* number of defined swaps  */
 
-/* Options for coastline extraction  */
-#ifdef NEW_GSHHG
-#define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>]"
+/* Help us with big and little endianness */
+#ifdef WORDS_BIGENDIAN
+#define GMT_BIGENDIAN	true
+#define GMT_ENDIAN		'B'
 #else
-#define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+as][+r|l][+p<percent>]"
+#define GMT_BIGENDIAN	false
+#define GMT_ENDIAN		'L'
 #endif
-
-/* Used in tools that sets grdheader information via a -D option */
-
-#define GMT_GRDEDIT	"-D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark>"
-
 
 #endif  /* _GMT_CONSTANTS_H */

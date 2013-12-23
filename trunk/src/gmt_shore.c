@@ -16,7 +16,8 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-#include "gmt_lib.h"
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 #include "gshhg_version.h"
 /*
  * These functions simplifies the access to the GMT shoreline, border, and river

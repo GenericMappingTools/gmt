@@ -129,7 +129,7 @@ cat << EOF > ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
-#include "gmt_lib.h"
+#include "gmt_dev.h"
 #ifndef BUILD_SHARED_LIBS
 #include "${FILE_GMT_MODULE_H}"
 #endif

@@ -34,7 +34,6 @@
  */
 
 /* CMake definitions: This must be first! */
-#include "../config.h"
 #include "gmt_config.h"
 
 #include <stdlib.h>

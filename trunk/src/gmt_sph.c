@@ -34,7 +34,7 @@
  *
  */
  
-#include "gmt_lib.h"
+#include "gmt_dev.h"
 #include "gmt_sph.h"
 
 typedef double doublereal;

@@ -31,7 +31,7 @@
 #ifndef _GMT_CALCLOCK_H
 #define _GMT_CALCLOCK_H
 
-struct GMT_GCAL {	/* (proleptic) Gregorian calendar  */
+struct GMT_gcal {	/* (proleptic) Gregorian calendar  */
 	int year;		/* signed; negative and 0 allowed  */
 	unsigned int month;	/* Always between 1 and 12  */
 	unsigned int day_m;	/* Day of month; always in 1 - 31  */
@@ -52,7 +52,7 @@ struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
 };
 
 struct GMT_MOMENT_INTERVAL {
-	struct GMT_GCAL	cc[2];		
+	struct GMT_gcal	cc[2];		
 	double dt[2];		
 	double sd[2];		/* Seconds since the start of the day.  */
 	int64_t rd[2];

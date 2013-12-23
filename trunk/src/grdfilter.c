@@ -568,7 +568,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	char *filter_name[GRDFILTER_N_FILTERS+2] = {"Boxcar", "Cosine Arch", "Gaussian", "Custom", "Operator", "Median", "Mode", "Lower", \
 		"Lower+", "Upper", "Upper-", "Spherical Median", "Spherical Mode"};
 
-	struct GMT_OBSERVATION *work_data = NULL;
+	struct OBSERVATION *work_data = NULL;
 
 	struct GMT_GRID *Gin = NULL, *Gout = NULL, *Fin = NULL, *A = NULL, *L = NULL;
 	struct FILTER_INFO F;
@@ -813,7 +813,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && (filter_type == GRDFILTER_MEDIAN || filter_type == GRDFILTER_MODE)) {	/* Spherical (weighted) median/modes requires even more work */
 			slower = true;
 			filter_type = (filter_type == GRDFILTER_MEDIAN) ? GRDFILTER_MEDIAN_SPH : GRDFILTER_MODE_SPH;	/* Set to the weighted versions */
-			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, struct GMT_OBSERVATION);
+			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, struct OBSERVATION);
 		}
 		else
 			work_array = GMT_memory (GMT, NULL, F.nx*F.ny, double);

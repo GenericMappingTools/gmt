@@ -274,7 +274,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	m_ij = 0;
 	GMT_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
 		lon = GMT_grd_col_to_x (col, Grid->header);	/* Current longitude */
-		for (M = 0; M < L; M++, m_ij++) sincosd (lon * M, &Sinm[m_ij], &Cosm[m_ij]);
+		for (M = 0; M < L; M++, m_ij++) sincos (lon * M, &Sinm[m_ij], &Cosm[m_ij]);
 	}
 	
 	GMT_row_loop (GMT, Grid, row) {	/* For each output latitude */

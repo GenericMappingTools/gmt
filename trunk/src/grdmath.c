@@ -3143,7 +3143,7 @@ void grd_YLM_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 
 	L = irint (stack[prev]->factor);
 	M = irint (stack[last]->factor);
-	z = abs (M);	/* abs() just in case routine is called with -M to add (-1)^M */
+	z = abs (M) * D2R;	/* abs() just in case routine is called with -M to add (-1)^M */
 
 	GMT_row_padloop (GMT, info->G, row, node) {	/* For each latitude */
 
@@ -3157,7 +3157,7 @@ void grd_YLM_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 		}
 		else {
 			GMT_col_padloop (GMT, info->G, col, node) {
-				sincosd (z * info->d_grd_x[col], &S, &C);
+				sincos (z * info->d_grd_x[col], &S, &C);
 				stack[prev]->G->data[node] = (float)(P * C);
 				stack[last]->G->data[node] = (float)(P * S);
 			}

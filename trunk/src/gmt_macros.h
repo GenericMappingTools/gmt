@@ -16,8 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_macros.h contains definitions of macros used throught GMT.  They
- * do not depend on configuration.
+ * gmt_macros.h contains definitions of macros used throught GMT.
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009
@@ -74,6 +73,7 @@
 #define cosdf(x) cosf((x) * D2R)
 #define tand(x) tan((x) * D2R)
 #define tandf(x) tanf((x) * D2R)
+#define sincosd(x,s,c) sincos((x) * D2R,s,c)
 #define asind(x) (asin(x) * R2D)
 #define acosd(x) (acos(x) * R2D)
 #define atand(x) (atan(x) * R2D)
@@ -105,24 +105,5 @@
 #define GMT_setnval(array,n,value) {uint64_t k; for (k = 0; k < (uint64_t)n; k++) array[k] = value;}
 /* Macro to simplify assignment of one 3-vector to another */
 #define GMT_cpy3v(to,from) memcpy(to, from, 3*sizeof(double))
-
-/* Macro to do conversion to inches with PROJ_LENGTH_UNIT as default */
-
-#define GMT_to_inch(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_INCH)
-#define GMT_to_points(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_PT)
-
-/* Limit casting to one place (here) for dropping lrint output to signed or unsigned ints */
-
-#define irint(x) ((int)lrint(x))
-#define urint(x) ((unsigned int)lrint(x))
-#define irintf(x) ((int)lrintf(x))
-#define urintf(x) ((unsigned int)lrintf(x))
-
-/* Comparing floats */
-#define floatAlmostEqual(A, B) (floatAlmostEqualUlps(A, B, 5))
-#define doubleAlmostEqual(A, B) (doubleAlmostEqualUlps(A, B, 5))
-#define floatAlmostEqualZero(A, B) (floatAlmostEqualUlpsAndAbs(A, B, 5*FLT_EPSILON, 5))
-#define doubleAlmostEqualZero(A, B) (doubleAlmostEqualUlpsAndAbs(A, B, 5*DBL_EPSILON, 5))
-
 
 #endif  /* _GMT_MACROS_H */

@@ -214,12 +214,10 @@ void rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, struct M_TENSOR *m
 	double a = PREF.str * D2R, d =  PREF.dip * D2R;
 	double sa, ca, s2a, c2a, sa2, ca2, sd, cd, s2d, c2d, sd2, cd2;
 
-	sa = sin (a);	ca = cos (a);
-	a *= 2.0;
-	s2a = sin (a);	c2a = cos (a);
- 	sd = sin (a);	cd = cos (a);
-	d *= 2.0;
-	s2d = sin (a);	c2d = cos (a);
+	sincos (a, &sa, &ca);
+	sincos (2.0 * a, &s2a, &c2a);
+ 	sincos (d, &sd, &cd);
+ 	sincos (2.0 * d, &s2d, &c2d);
 	sa2 = sa * sa;	ca2 = ca * ca;
 	sd2 = sd * sd; cd2 = cd * cd;
 
@@ -325,7 +323,7 @@ int gutm (double lon, double lat, double *xutm, double *yutm, int fuseau)
 	/* calcul des coordonnees utm */
 	amo = ((double)fuseau * 6. - 183.);
 	al = lat * D2R;
-	sincosd (lat, &si, &co);
+	sincos (al, &si, &co);
 	xi = co * sind (lon - amo);
 	xi = 0.5 * log((1. + xi) / (1. - xi));
 	eta = atan2 (si, co * cosd (lon - amo)) - al;
@@ -397,10 +395,10 @@ void distaz (double lat1, double lon1, double lat2, double lon2, double *distkm,
 			if ((M_PI_2 - fabs(lat1)) > EPSIL) lat1 = atan(CONSTANTE2 * tan(lat1));
 			if ((M_PI_2 - fabs(lat2)) > EPSIL) lat2 = atan(CONSTANTE2 * tan(lat2));
 		}
-		slat1 = sin (lat1);	clat1 = cos (lat1);
-		slon1 = sin (lon1);	clon1 = cos (lon1);
-		slat2 = sin (lat2);	clat2 = cos (lat2);
-		slon2 = sin (lon2);	clon2 = cos (lon2);
+		sincos (lat1, &slat1, &clat1);
+		sincos (lon1, &slon1, &clon1);
+		sincos (lat2, &slat2, &clat2);
+		sincos (lon2, &slon2, &clon2);
   
 		a1 = clat1 * clon1;
 		b1 = clat1 * slon1;
