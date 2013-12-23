@@ -16,7 +16,9 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * common_string.h contains prototypes of functions shared between GMT and PSL
+ * common_string.h contains prototypes of common string functions used
+ * by various library functions.
+ * It depends on configure and is not distributed as part of the API or DEV.
  *
  * Author:  Florian Wobbe
  * Date:    3-MAR-2012
@@ -42,24 +44,6 @@ extern "C" {
 #else
 #	include "compat/stdbool.h"
 #endif /* HAVE_STDBOOL_H_ */
-
-#include <limits.h> /* defines PATH_MAX */
-#include <stdlib.h> /* defines _MAX_PATH on WIN32 */
-#if ! defined PATH_MAX && defined _MAX_PATH
-#	define PATH_MAX _MAX_PATH
-#endif
-#ifndef PATH_MAX
-#	define PATH_MAX 1024
-#endif
-
-EXTERN_MSC unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *start, char *token);
-EXTERN_MSC void GMT_chop (char *string);
-EXTERN_MSC char *GMT_chop_ext (char *string);
-EXTERN_MSC void GMT_strstrip(char *string, bool strip_leading);
-EXTERN_MSC void GMT_cr2lf (char *string);
-EXTERN_MSC void GMT_strlshift (char *string, size_t n);
-EXTERN_MSC void GMT_strrepc (char *string, int c, int r);
-EXTERN_MSC size_t GMT_strlcmp (char *str1, char *str2);
 
 #ifdef WIN32
 EXTERN_MSC void DOS_path_fix (char *dir);

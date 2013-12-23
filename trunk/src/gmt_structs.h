@@ -16,15 +16,15 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_time.h contains definitions of structures dealing with time.
+ * gmt_structs.h contains definitions of all non-API GMT structures.
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009
  * Version:	5 API
  */
 
-#ifndef _GMT_TIME_H
-#define _GMT_TIME_H
+#ifndef _GMT_STRUCTS_H
+#define _GMT_STRUCTS_H
 /*--------------------------------------------------------------------
  *			GMT TIME STRUCTURES
  *--------------------------------------------------------------------*/
@@ -45,4 +45,4 @@ struct GMT_TIME_LANGUAGE {		/* Language-specific text strings for calendars */
 };
 
 
-#endif  /* _GMT_TIME_H */
+#endif  /* _GMT_STRUCTS_H */

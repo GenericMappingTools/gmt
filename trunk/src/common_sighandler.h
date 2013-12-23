@@ -16,7 +16,9 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * common_sighandler.h contains the prototype of a signal-handling function
+ * common_sighandler.h contains the prototype of a signal-handling function.
+ * It is only included by gmt.c.
+ * It depends on configure and is not distributed as part of the API or DEV.
  *
  * Author:  Florian Wobbe
  * Date:    5-SEP-2013

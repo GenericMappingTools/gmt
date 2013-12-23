@@ -31,6 +31,7 @@
 #ifndef _GMT_IO_H
 #define _GMT_IO_H
 
+#include "gmt_config.h"	/* Just until we deal with off_t */
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
 

@@ -104,13 +104,49 @@
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
-/* Help us with big and little endianness */
-#ifdef WORDS_BIGENDIAN
-#define GMT_BIGENDIAN	true
-#define GMT_ENDIAN		'B'
+/* Synopsis-related constants */
+#define GMT_inc_OPT	"<xinc>[<unit>][=|+][/<yinc>[<unit>][=|+]]"
+#define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
+#define GMT_Jx_OPT	"-Jx|X<args>"
+#define GMT_Jz_OPT	"-Jz|Z<args>"
+#define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[r]"
+#define GMT_Rgeoz_OPT	"-R<west>/<east>/<south>/<north>[/<zmin>/<zmax>][r]"
+#define GMT_Rx_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r]"
+
+/* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
+
+#define GMT_bi_OPT	"-bi[<ncol>][t][w][+L|B]"
+#define GMT_bo_OPT	"-bo[<ncol>][t][w][+L|B]"
+#define GMT_fi_OPT	"-f<info>"
+#define GMT_fo_OPT	"-f<info>"
+#define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+r<remark>][+t<title>]"
+
+/* For options needing a length or radius */
+
+#define GMT_DIST_OPT	"[-|+]<dist>[<unit>]"
+#define GMT_RADIUS_OPT	"[-|+]<radius>[<unit>]"
+
+/* Options for map rose, scale and insert, used in pscoast and psbasemap */
+
+#define GMT_TROSE	"[f|m][x]<lon0>/<lat0>/<diameter>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
+#define GMT_SCALE	"[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[e|f|M|n|k|u][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]"
+#define GMT_INSERT	"[<u>]<xmin>/<xmax>/<ymin>/<ymax>[r]|<width>[/<height>][+c<lon>/<lat>][+p<pen>][+f<fill>]"
+
+/* Argument to *contour programs */
+
+#define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"
+#define GMT_CONTT	"-T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:[<labels>]]"
+
+/* Options for coastline extraction  */
+#ifdef NEW_GSHHG
+#define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>]"
 #else
-#define GMT_BIGENDIAN	false
-#define GMT_ENDIAN		'L'
+#define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+as][+r|l][+p<percent>]"
 #endif
+
+/* Used in tools that sets grdheader information via a -D option */
+
+#define GMT_GRDEDIT	"-D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark>"
+
 
 #endif  /* _GMT_CONSTANTS_H */

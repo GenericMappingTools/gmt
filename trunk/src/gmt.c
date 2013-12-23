@@ -27,7 +27,8 @@
  */
 
 #include "gmt_version.h"        /* Only contains the current GMT version number */
-#include "gmt_dev.h"
+#include "gmt_lib.h"
+#include "common_string.h"      /* All code shared between GMT and PSL */
 
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))
 #	include <signal.h>
@@ -72,6 +73,7 @@ int main (int argc, char *argv[]) {
 	if ((api_ctrl = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL)
 		return EXIT_FAILURE;
 	api_ctrl->internal = true;	/* This is a proper GMT internal session (external programs will default to false) */
+	
 	progname = strdup (GMT_basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example
 	 * by the MSYS shell when executing gmt via symlinks */

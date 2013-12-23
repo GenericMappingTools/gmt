@@ -32,7 +32,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert, paste, or extract columns from data tables"
 
-#include "gmt_dev.h"
+#include "gmt_lib.h"
 
 #define GMT_PROG_OPTIONS "-:>Vabfghios" GMT_OPT("HMm")
 

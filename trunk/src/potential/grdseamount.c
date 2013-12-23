@@ -368,7 +368,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		if (srow_0 < 0) continue;	/* Still outside y-range */
 		if ((row_0 = srow_0) >= Grid->header->ny) continue;	/* Still outside y-range */
 		if (Ctrl->E.active) {	/* Elliptical seamount parameters */
-			sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees */
+			sincosd (90.0 - in[GMT_Z], &sa, &ca);	/* in[GMT_Z] is azimuth in degrees */
 			a = in[3];			/* Semi-major axis */
 			b = in[4];			/* Semi-minor axis */
 			e = in[4] / in[3];		/* Eccentricity */

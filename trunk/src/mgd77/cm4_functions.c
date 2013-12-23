@@ -29,6 +29,7 @@
 
 #include "mgd77.h"
 #include "cm4_functions.h"
+#include "gmt_notposix.h"
 
 #define I_DIM(x, y) (((x) > (y)) ? (x) - (y) : 0)
 
@@ -137,7 +138,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	double bc[29], wb[58], trig[132], ru, rt, rse[9], doy, fyr, cego, epch;
 	double rlgm[15], rrgt[9], tsmg[6], tssq[6], tsto[6], tdmg[12], tdsq[10], tdto[10];
 	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas, rtay_dk;
-	double cnmp, enmp, omgs, omgd, hion, cpol, epol, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
+	double cnmp, enmp, omgs, omgd, hion, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
 	double sthe, cthe, psiz, cpsi, spsi, ctgo, stgo, sego, cdip = 0, edip = 0, ctmo, stmo, cemo, semo, taus = 0, taud = 0, cosp;
 	double *hq, *ht, *pleg, *rcur;			/* was hq[53040], ht[17680], pleg[4422], rcur[9104] */
 	double *bkpo, *ws, *gamf, *epmg, *esmg;		/* was bkpo[12415], ws[4355], gamf[8840], epmg[1356], esmg[1356] */
@@ -269,10 +270,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	(void)i_unused; /* silence -Wunused-but-set-variable */
 
 	fclose(fp);
-	cpol = cnmp * D2R;
-	epol = enmp * D2R;
-	sincos(cpol, &stmp, &ctmp);
-	sincos(epol, &semp, &cemp);
+	sincosd(cnmp, &stmp, &ctmp);
+	sincosd(enmp, &semp, &cemp);
 	rion = rm + hion;
 
 	mut = calloc((size_t)(Ctrl->CM4_DATA.n_times), sizeof(double));

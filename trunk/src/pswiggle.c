@@ -87,7 +87,7 @@ void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double 
 
 	if (fixed) {
 		az = fix_az;
-		sincos (az, &s, &c);
+		sincosd (az, &s, &c);
 	}
 
 	if (paint_wiggle || outline) {
@@ -99,12 +99,12 @@ void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double 
 			if (!fixed && i < np-1) {
 				dx = x[i+1] - x[i];
 				dy = y[i+1] - y[i];
-				if (!(dx == 0.0 && dy == 0.0)) az = -d_atan2 (dy, dx) - TWO_PI;	/* Azimuth of normal to track */
-				while (az < start_az) az += TWO_PI;
-				if (az > stop_az) az -= M_PI;
+				if (!(dx == 0.0 && dy == 0.0)) az = -R2D * d_atan2 (dy, dx) - 360.0;	/* Azimuth of normal to track */
+				while (az < start_az) az += 360.0;
+				if (az > stop_az) az -= 180.0;
 			}
 			if (fabs (z[i]) > 0.0) {
-				if (!fixed) sincos (az, &s, &c);
+				if (!fixed) sincosd (az, &s, &c);
 				len = zscale * z[i];
 				x_inc = len * s;
 				y_inc = len * c;
@@ -393,7 +393,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 	uint64_t row, seg, j;
 	size_t n_alloc = GMT_CHUNK;
 
-	double x_2, y_2, start_az, stop_az, fix_az, dz;
+	double x_2, y_2, start_az, stop_az, dz;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL, *z = NULL;
 
 	struct GMT_DATASET *D = NULL;
@@ -450,7 +450,6 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 	/* Now convert angles to radians and keep it that way */
 	start_az = (Ctrl->A.value - 90.0) * D2R;
 	stop_az  = (Ctrl->A.value + 90.0) * D2R;
-	fix_az = Ctrl->I.value * D2R;
 
 	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
@@ -491,7 +490,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 
 				if (j > 0 && GMT_is_dnan (z[row])) {	/* Data gap, plot what we have */
 					negative = zz[j-1] < 0.0;
-					plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, start_az, stop_az, Ctrl->I.active, fix_az, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
+					plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, start_az, stop_az, Ctrl->I.active, Ctrl->I.value, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
 					j = 0;
 				}
 				else if (!GMT_is_dnan (z[row-1]) && (z[row]*z[row-1] < 0.0 || z[row] == 0.0)) {	/* Crossed 0, add new point and plot */
@@ -501,7 +500,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 					zz[j++] = 0.0;
 					if (j == n_alloc) alloc_space (GMT, &n_alloc, &xx, &yy, &zz);
 					negative = zz[j-2] < 0.0;
-					plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, start_az, stop_az, Ctrl->I.active, fix_az, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
+					plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, start_az, stop_az, Ctrl->I.active, Ctrl->I.value, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
 					xx[0] = xx[j-1];
 					yy[0] = yy[j-1];
 					zz[0] = zz[j-1];
@@ -516,7 +515,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 	
 			if (j > 1) {
 				negative = zz[j-1] < 0.0;
-				plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, start_az, stop_az, Ctrl->I.active, fix_az, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
+				plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, start_az, stop_az, Ctrl->I.active, Ctrl->I.value, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
 			}
 		}
 	}

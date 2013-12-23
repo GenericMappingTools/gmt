@@ -946,7 +946,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
-		grd_dump (GMT, Grid[0]->header, Grid[0]->data, false, "After Inv FFT");
+		grd_dump (Grid[0]->header, Grid[0]->data, false, "After Inv FFT");
 
 		if (!doubleAlmostEqual (Ctrl->S.scale, 1.0)) GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
 

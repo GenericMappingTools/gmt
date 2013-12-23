@@ -36,7 +36,20 @@ extern "C" {
 #include "gmt_config.h"
 #include "gmt_notposix.h"       /* Non-POSIX extensions */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
+#ifdef HAVE_FFTW3F
+/* FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
+#	include <fftw3.h>
+#endif
+#include "common_string.h"      /* All code shared between GMT and PSL */
+#include "common_math.h"     /* Shared math functions */
 #include "gmt_dev.h"
+#ifdef HAVE_GDAL
+/* Format # 22 */
+EXTERN_MSC int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl);
+EXTERN_MSC int GMT_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GDALWRITE_CTRL *prhs);
+#endif
+
+
 #include "gmt_internals.h"
 
 /* Declaration modifiers for DLL support (MSC et al) */

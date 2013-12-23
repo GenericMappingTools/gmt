@@ -3,6 +3,10 @@
  * are not required to compile and link the sph supplement.
  */
 
+#ifndef HAVE_SINCOS
+EXTERN_MSC void sincos (double x, double *s, double *c);
+#endif
+
 /* Need three functions from stripack.c: */
 extern doublereal store_(doublereal *);
 extern integer lstptr_(integer *, integer *, integer *, integer *);
@@ -2942,7 +2946,9 @@ L14:
 
 /* Transform (PLAT,PLON) to Cartesian coordinates. */
 
-sincos (*plat, &p[2], &cos_plat);    sincos (*plon, &p[1], &p[0]);    p[0] *= cos_plat;    p[1] *= cos_plat;
+    sincos (*plat, &p[2], &cos_plat);
+    sincos (*plon, &p[1], &p[0]);
+    p[0] *= cos_plat;    p[1] *= cos_plat;
 
 /* Find the vertex indexes of a triangle containing P. */
 

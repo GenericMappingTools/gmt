@@ -21,6 +21,7 @@
 #include "mgd77_IGF_coeffs.h"
 #include "mgd77_init.h"
 #include "mgd77_recalc.h"
+#include "gmt_notposix.h"
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>

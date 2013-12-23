@@ -4,7 +4,7 @@
  *    See README file for copying and redistribution conditions.
  */
 
-#include "gmt_dev.h"	/* to have gmt environment */
+#include "gmt_lib.h"	/* to have gmt environment */
 #include "meca.h"
 #include "utilmeca.h"
 #include "nrutil.h"

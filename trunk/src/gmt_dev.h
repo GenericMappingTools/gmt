@@ -66,19 +66,16 @@ extern "C" {
 
 #include <time.h>
 
-#include "common_math.h"     /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
 
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
-//#include "gmt_notposix.h"       /* Non-POSIX extensions */
-
 #include "gmt_constants.h"      /* All basic constant definitions */
+#include "gmt_dimensions.h"     /* Constant definitions created by configure */
 #include "gmt_enums.h"          /* All basic enums definitions */
 #include "gmt_macros.h"         /* All basic macros definitions */
-#include "gmt_dimensions.h"     /* Constant definitions created by configure */
-#include "gmt_time.h"           /* Declarations of structures for dealing with time */
+#include "gmt_structs.h"        /* Declarations of basic GMT structures */
 #include "gmt_texture.h"        /* Declarations of structures for dealing with pen, fill, etc. */
 #include "gmt_defaults.h"       /* Declarations of structure for GMT default settings */
 #include "gmt_ps.h"             /* Declarations of structure for GMT PostScript settings */
@@ -92,7 +89,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_fft.h"            /* Structures and enums used by programs needing FFTs */
 #include "gmt_nan.h"            /* Machine-dependent macros for making and testing NaNs */
 #include "gmt_error.h"          /* Only contains error codes */
-#include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
 #include "gmt_core_module.h" 	/* Core module modes and properties */
 #include "gmt_supplements_module.h" 	/* Suppl module modes and properties */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
@@ -117,9 +113,22 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #endif
 
 #include "gmt_prototypes.h"     /* All GMT low-level API */
-#include "gmt_init.h"           /* extern functions defined in gmt_init.c */
 #include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
-#include "common_string.h"      /* All code shared between GMT and PSL */
+
+/* Size prefixes for printf/scanf for size_t and ptrdiff_t */
+#ifdef _MSC_VER
+#	define PRIxS "Ix"  /* printf size_t */
+#	define PRIuS "Iu"  /* printf size_t */
+#	define PRIdS "Id"  /* printf ptrdiff_t */
+#	define SCNuS "u"   /* scanf  size_t (__int32 even on 64-bit platforms) */
+#	define SCNdS "d"   /* scanf  ptrdiff_t (__int32 even on 64-bit platforms) */
+#else
+#	define PRIxS "zx"  /* printf size_t */
+#	define PRIuS "zu"  /* printf size_t */
+#	define PRIdS "zd"  /* printf ptrdiff_t */
+#	define SCNuS PRIuS /* scanf  size_t */
+#	define SCNdS PRIdS /* scanf  ptrdiff_t */
+#endif
 
 #ifdef __cplusplus
 }

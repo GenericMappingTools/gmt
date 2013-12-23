@@ -32,6 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Initialize a new x2sys track database"
 
 #include "x2sys.h"
+#include "gmt_notposix.h"
 
 #define GMT_PROG_OPTIONS "->RV"
 
