@@ -147,7 +147,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 			GMT_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
 			GMT_message (GMT, "\t   Frame settings are modified via an optional single invocation of\n");
-			GMT_message (GMT, "\t     -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>]\n");
+			GMT_message (GMT, "\t     -B[<axes>][+b][+g<fill>][+n][+o<lon>/<lat>][+t<title>]\n");
 			GMT_message (GMT, "\t   Axes parameters are specified via one or more invocations of\n");
 			GMT_message (GMT, "\t     -B[p|s][x|y|z]<info>\n\n");
 			GMT_message (GMT, "\t   1. Frame settings control which axes to plot, frame fill, title, and type of gridlines:\n");
@@ -159,6 +159,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t     The optional +b will erect a 3-D frame box to outline the 3-D domain [no frame box]. The +b\n");
 			GMT_message (GMT, "\t     is also required for x-z or y-z gridlines to be plotted (if such gridlines are selected below).\n");
 			GMT_message (GMT, "\t     Append +g<fill> to paint the inside of the map region before further plotting [no fill].\n");
+			GMT_message (GMT, "\t     Append +n to have no frame and annotations whatsoever [Default is controlled by WESNZ/wesnz].\n");
 			GMT_message (GMT, "\t     Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
 			GMT_message (GMT, "\t     Note: the +o modifier is ignored unless gridlines are specified via the axes parameters (below).\n");
 			GMT_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title].\n");
@@ -220,7 +221,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 			GMT_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
 			GMT_message (GMT, "\t   (1) Frame settings are modified via an optional single invocation of\n");
-			GMT_message (GMT, "\t     -B[<axes>][+g<fill>][+o<lon>/<lat>][+t<title>]\n");
+			GMT_message (GMT, "\t     -B[<axes>][+g<fill>][+n][+o<lon>/<lat>][+t<title>]\n");
 			GMT_message (GMT, "\t   (2) Axes parameters are specified via one or more invocations of\n");
 			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+u<unit>]\n");
 			GMT_message (GMT, "\t   <intervals> is composed of concatenated [<type>]<stride>[<unit>][l|p] sub-strings\n");
@@ -3065,7 +3066,6 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 			return (1);
 		}
 	}
-	
 	for (k = 0; in[k]; k++) {
 		switch (in[k]) {
 			/* Draw AND Annotate */
@@ -3084,6 +3084,8 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 			case '+':
 				if (in[k+1] == 'b')	/* Got +b appended to MAP_FRAME_AXES, possibly */
 					GMT->current.map.frame.draw_box = true;
+				else if (in[k+1] == 'n')	/* Got +n appended to MAP_FRAME_AXES, means no frame nor annotations desired */
+					GMT->current.map.frame.no_frame = true;
 				else if (GMT_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Modifier + in MAP_FRAME_AXES is deprecated; use +b instead.\n");
 					GMT->current.map.frame.draw_box = true;
@@ -3101,7 +3103,11 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 				error++;
 		}
 	}
-	if (s_given) GMT_memcpy (GMT->current.map.frame.side, f_side, 5, unsigned int);	/* Overwrite the GMT defaults */
+	if (s_given) {
+		GMT_memcpy (GMT->current.map.frame.side, f_side, 5, unsigned int);	/* Overwrite the GMT defaults */
+		GMT->current.map.frame.no_frame = false;
+	}
+	if (GMT->current.map.frame.no_frame) GMT_memset (GMT->current.map.frame.side, 5, unsigned int);	/* Set all to nothing */
 	if (z_axis[0] || z_axis[1] || z_axis[2] || z_axis[3]) GMT_memcpy (GMT->current.map.frame.z_axis, z_axis, 4, unsigned int);	/* Overwrite the GMT defaults */
 	return (error);
 }
@@ -7274,6 +7280,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 	if (strchr ("pxyz", in[0])) return (-1);	/* -B[p[xyz] is definitively not the frame settings (-Bs is tricker; see below) */
 	if (strstr (in, "+b")) is_frame++;	/* Found a +b so likely frame */
 	if (strstr (in, "+g")) is_frame++;	/* Found a +g so likely frame */
+	if (strstr (in, "+n")) is_frame++;	/* Found a +n so likely frame */
 	if (strstr (in, "+o")) is_frame++;	/* Found a +o so likely frame */
 	if (strstr (in, "+t")) is_frame++;	/* Found a +t so likely frame */
 	if (strchr ("WESNZwenz", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (left s off since -Bs could trick it) */
@@ -7298,6 +7305,9 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 						error++;
 					}
 					GMT->current.map.frame.paint = true;
+					break;
+				case 'n':	/* Turn off frame entirely; this is also done in gmt5_decode_wesnz */
+					GMT->current.map.frame.no_frame = true;
 					break;
 				case 'o':	/* Specify pole for oblique gridlines */
 					if (GMT->current.proj.projection == GMT_OBLIQUE_MERC) {
