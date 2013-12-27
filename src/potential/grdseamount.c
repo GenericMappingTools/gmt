@@ -2,11 +2,11 @@
  * $Id$
  *
  * grdseamount.c will create a grid made up from elliptical or circular
- * seamounts that can be Gaussian, Conical or Disc, with or without truncated
+ * seamounts that can be Gaussian, Conical, Parabolic or Disc, with or without truncated
  * tops (not for dics, obviously, as already truncated). If time information
  * is provided we can also produce grids for each time step that shows either
  * the cumulative relief up until this time or just the incremental relief
- * for each time step.
+ * for each time step, such as needed for time-dependent flexure.
  *
  * Author: Paul Wessel
  * Date: 3-MAR-2013
@@ -127,7 +127,7 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tInput contains x (or lon), y (or lat), radius, height for each seamount.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   With -E we expect lon, lat, azimuth, semi-major, semi-minor, radius, height instead\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   With -E we expect lon, lat, azimuth, semi-major, semi-minor, radius, height instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -F (with no argument) is given then an extra column with flattening (0-1) is expected.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Build a mAsk grid, append outside/inside values [1/NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Here, height is ignored and -L, -N, -Q, -T and -Z are disallowed.\n");
@@ -143,18 +143,19 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file names.\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List area, volume, and mean height for each seamount; NO grid is created.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append the noise-floor cutoff level [0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append the noise-floor cutoff level [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grid so maximum grid height equals <norm>. Not allowed with -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only used in conjunction with -T.  Append the two modes:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <bmode> to compute either (c)umulative or (i)ncremental volume through time.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian or (l)inear flux history.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian or (l)inear flux distribution.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets ad hoc scale factor for radii [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increment for sequence of calculations [one step, no time dependency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. Unit is years; append k for kyr and M for Myr.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time spacing, use -Tl and specify n steps instead of time increment.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies two extra input columns with start and stop time for each seamount's life span.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Add in background depth [0].  Not allowed for -Qi.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Q to select cumulative versus incremental loads.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Add in moho depth [0].  Not allowed for -Qi.\n");
 	GMT_Option (API, "V,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is Cartesian - no units are implied; but see -D].\n");
