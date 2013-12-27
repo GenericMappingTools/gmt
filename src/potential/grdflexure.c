@@ -73,6 +73,10 @@ struct GRDFLEXURE_CTRL {
 		bool active;
 		struct GMT_FFT_INFO *info;
 	} N;
+	struct S {	/* Starved moat */
+		bool active;
+		double beta;	/* Fraction of moat w(x) filled in [1] */
+	} S;
 	struct T {	/* -T[l]<t0>[u]/<t1>[u]/<d0>[u]|n  */
 		bool active, log;
 		unsigned int n_times;
@@ -121,6 +125,7 @@ void *New_grdflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.E = YOUNGS_MODULUS;
 	C->C.nu = POISSONS_RATIO;
+	C->S.beta = 1.0;
 	C->T.n_times = 1;
 
 	return (C);
@@ -173,6 +178,11 @@ void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct G
 	 * and and amplitudes but scale airy_ratio by A to compensate for the lower load weight */
 	
 	rho_load = Ctrl->D.rhol;
+	if (Ctrl->S.active && Ctrl->S.beta < 1.0) {	/* Treat starved infill as approximate case with different infill density */
+		Ctrl->D.approx = true;
+		Ctrl->D.rhoi = Ctrl->S.beta * Ctrl->D.rhoi - Ctrl->D.rhow * (1.0 - Ctrl->S.beta);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Starved moat with beta = %g implies an effective rho_i  = %g\n", Ctrl->S.beta, Ctrl->D.rhol);
+	}
 	if (Ctrl->D.approx) {	/* Do approximate calculation when both rhol and rhoi were set */
 		char way = (Ctrl->D.rhoi < Ctrl->D.rhol) ? '<' : '>';
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->D.rhoi, way, Ctrl->D.rhol);
@@ -371,6 +381,10 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				break;
+			case 'S':	/* Starved basin */
+				Ctrl->S.active = true;
+				Ctrl->S.beta = atof (opt->arg);
+				break;
 			case 'T':	/* Time lattice */
 				Ctrl->T.active = true;
 				k = (opt->arg[0] == 'l') ? 1 : 0;
@@ -414,6 +428,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file,  "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Must set density values\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.beta < 0.0 || Ctrl->S.beta > 1.0), "Syntax error -S option: beta value must be in 0-1 range\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->T.active, "Syntax error -F option: Requires time information via -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Syntax error -M option: Requires time information via -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->E.active, "Syntax error -F option: Requires elastic thickness via -E\n");
@@ -429,7 +444,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>/<rhoi>/<rhow> -E<te> -G<outgrid> [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-T[l]<t0>/<t1>/<dt>|<n>]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-S<beta>] [-T[l]<t0>/<t1>/<dt>|<n>]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -447,6 +462,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify starved moat fraction in 0-1 range (1 = fully filled, 0 = no infill) [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. unit is years; append k for kyr and M for Myr.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, use -Tl and specify n steps instead of time increment.\n");
