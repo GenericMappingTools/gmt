@@ -16,7 +16,7 @@ Synopsis
 **grdflexure** *topogrd* **-D**\ *rm/rl/ri/rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
 [ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*[/*h_a*/*nu_m*] ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-T**\ [**l**]\ *t0*\ [/*t1*/*dt*] ]
+[ **-S**\ *beta* ] [ **-T**\ [**l**]\ *t0*\ [/*t1*/*dt*] ]
 [ |SYN_OPT-V| ]
 [ **-W**\ *wd*] [ **-Z**\ *zm*]
 [ **-fg** ]
@@ -41,7 +41,8 @@ Required Arguments
 
 **-D**\ *rm*/*rl*/\ [*ri* \]/*rw*
     Sets density for mantle, load, infill (optionally, otherwise it is
-    assumed to equal the load density), and water.
+    assumed to equal the load density), and water.  If *ri@ differs from
+    *rl* then an approximate solution will be found.
 **-E**\ *Te*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
@@ -62,7 +63,6 @@ Optional Arguments
 **-Cy**\ *Young*
     Change the current value of Young's modulus [7.0e10 N/m^2].
 
-
 **-F**\ **-F**\ *nu_a*[/*h_a*/*nu_m*]
     Specify a firmoviscous model in conjuncton with an elastic plate
     thickness specified via **-E**.  Just give one viscosity (*nu_a*)
@@ -71,6 +71,11 @@ Optional Arguments
     asthenospheric and the latter that of the lower mantle 
 
 .. include:: ../../explain_fft.rst_
+
+**-S**\ *beta*
+    Specify a starved moat fraction in the 0-1 range, where 1 means the moat is fully
+    filled with material of density *ri* while 0 means it is only filled with
+    material of density *rw* (i.e., just water) [1].
 
 **-T**\ [**l**]\ *start*/*stop*/*dt*
     Specify *start*, *stop*, and time increment (*dt*) for sequence of calculations
