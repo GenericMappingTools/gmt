@@ -67,7 +67,7 @@ void GMT_memtrack_off (struct GMT_CTRL *GMT)
 	GMT->hidden.mem_keeper->active = false;
 }
 
-static inline double gmt_memtrack_mem (struct GMT_CTRL *GMT, size_t mem, unsigned int *unit) {
+static inline double gmt_memtrack_mem (size_t mem, unsigned int *unit) {
 	/* Report the memory in the chosen unit */
 	unsigned int k = 0;
 	double val = mem / 1024.0;	/* Kb */
@@ -316,7 +316,7 @@ static inline bool gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, vo
 static inline void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) {
 	unsigned int u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
-	double size = gmt_memtrack_mem (GMT, x->size, &u);
+	double size = gmt_memtrack_mem (x->size, &u);
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s (ID = %" PRIuS "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 	if (M->do_log)
@@ -347,19 +347,19 @@ void GMT_memtrack_report (struct GMT_CTRL *GMT) {
 		n_multi_frees = M->n_freed - M->n_allocated;
 	/* Only insist on report if a leak or multi free, otherwise requires -V: */
 	level = (excess || n_multi_frees) ? GMT_MSG_NORMAL : GMT_MSG_VERBOSE;
-	size = gmt_memtrack_mem (GMT, M->maximum, &u);
+	size = gmt_memtrack_mem (M->maximum, &u);
 	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n",
 							size, unit[u], M->maximum);
 		if (M->do_log)
 			fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
 							 PRIuS " bytes]\n", size, unit[u], M->maximum);
-	size = gmt_memtrack_mem (GMT, M->largest, &u);
+	size = gmt_memtrack_mem (M->largest, &u);
 	GMT_Report (GMT->parent, level, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
 		if (M->do_log)
 			fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
 							 PRIuS " bytes]\n", size, unit[u], M->largest);
 	if (M->current) {
-		size = gmt_memtrack_mem (GMT, M->current, &u);
+		size = gmt_memtrack_mem (M->current, &u);
 		GMT_Report (GMT->parent, level, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
 								size, unit[u], M->current);
 		if (M->do_log)

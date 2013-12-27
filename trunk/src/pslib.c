@@ -2256,7 +2256,7 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length
 	return (new_word);
 }
 
-void psl_freewords (struct PSL_CTRL *PSL, struct PSL_WORD **word, int n_words)
+void psl_freewords (struct PSL_WORD **word, int n_words)
 {
 	/* Free all the words and their texts */
 	int k;
@@ -2617,7 +2617,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	PSL_command (PSL, "    PSL_width k1 w1 w2 gt {w1} {w2} ifelse put\n    PSL_width k 0 put\n");
 	PSL_command (PSL, "    PSL_count k 0 put\n  } if\n} for\n");
 
-	psl_freewords (PSL, word, n_alloc_txt);
+	psl_freewords (word, n_alloc_txt);
 	PSL_free (word);
 	return (PSL_NO_ERROR);
 }
