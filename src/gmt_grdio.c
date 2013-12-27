@@ -88,7 +88,7 @@ EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 //#define GMT_DUMPING
-void grd_dump (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
+void grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
 {
 #ifdef GMT_DUMPING
 	unsigned int row, col;

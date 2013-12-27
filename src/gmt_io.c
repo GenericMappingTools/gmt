@@ -891,6 +891,7 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 
 	/* First look in the current working directory */
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 1. GMT_getsharepath trying current dir\n");
 	sprintf (path, "%s%s", stem, suffix);
 	if (!access (path, mode)) return (path);	/* Yes, found it in current directory */
 
@@ -904,9 +905,11 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	/* Not found, see if there is a file in the user's GMT_USERDIR (~/.gmt) directory */
 
 	if (GMT->session.USERDIR) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 2. GMT_getsharepath trying USERDIR %s\n", GMT->session.USERDIR);
 		/* Try to get file from $GMT_USERDIR */
 		sprintf (path, "%s/%s%s", GMT->session.USERDIR, stem, suffix);
 		if (!access (path, mode)) return (path);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 3. GMT_getsharepath trying USERDIR subdir %s/%s\n", GMT->session.USERDIR, subdir);
 		/* Try to get file from $GMT_USERDIR/subdir */
 		sprintf (path, "%s/%s/%s%s", GMT->session.USERDIR, subdir, stem, suffix);
 		if (!access (path, mode)) return (path);
@@ -915,10 +918,12 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	/* Try to get file from $GMT_SHAREDIR/subdir */
 
 	if (subdir) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 4. GMT_getsharepath trying SHAREDIR subdir %s/%s\n", GMT->session.SHAREDIR, subdir);
 		sprintf (path, "%s/%s/%s%s", GMT->session.SHAREDIR, subdir, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 5. GMT_getsharepath failed\n");
 	return (NULL);	/* No file found, give up */
 }
 
