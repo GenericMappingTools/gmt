@@ -172,7 +172,7 @@ done
 unset GLOBIGNORE
 
 # Start with proper GMT defaults
-gmt gmtset -Du FORMAT_TIME_STAMP "Version 5"
+gmt set -Du FORMAT_TIME_STAMP "Version 5"
 
 # Now run the original script
 . "${script}"

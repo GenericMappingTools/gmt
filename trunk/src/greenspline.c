@@ -475,8 +475,23 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 				}
 				break;
 			case 'T':	/* Input mask grid */
-				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_IN)))
+				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_IN))) {	/* Obtain -R -I -r from file */
+					struct GMT_GRID *G = NULL;	
 					Ctrl->T.file = strdup (opt->arg);
+					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
+						return (API->error);
+					}
+					Ctrl->R3.range[0] = G->header->wesn[XLO]; Ctrl->R3.range[1] = G->header->wesn[XHI];
+					Ctrl->R3.range[2] = G->header->wesn[YLO]; Ctrl->R3.range[3] = G->header->wesn[YHI];
+					Ctrl->R3.inc[GMT_X] = G->header->inc[GMT_X];	Ctrl->R3.inc[GMT_Y] = G->header->inc[GMT_Y];
+					Ctrl->R3.offset = G->header->registration;
+					Ctrl->R3.dimension = 2;
+					Ctrl->R3.mode = true;
+					if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+						return (API->error);
+					}
+					GMT->common.R.active = true;
+				}
 				else
 					n_errors++;
 				break;
@@ -528,7 +543,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 	
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && GMT_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
 	n_errors += GMT_check_condition (GMT, !(GMT->common.R.active || Ctrl->N.active || Ctrl->T.active), "Syntax error: No output locations specified (use either [-R -I], -N, or -T)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "Syntax error: The -R<gridfile> option only applies to 2-D gridding\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "Syntax error: The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
 	n_errors += GMT_check_binary_io (GMT, dimension + 1);
 	n_errors += GMT_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Syntax error -S option: Tension must be in range 0 <= t < 1\n");
