@@ -215,13 +215,13 @@ unset GMT5_SHAREDIR
 export GMT_SHAREDIR="$GMT_SHAREDIR"
 export GMT_USERDIR="$GMT_USERDIR"
 export GMT_DATADIR="$src"
-gmt gmtset -Du
+gmt set -Du
 . "${script}"
 EOF
 chmod 755 gmtest.sh
 
 # Start with proper GMT defaults
-gmt gmtset -Du
+gmt set -Du
 
 # Now run the original script
 . "${script}"
