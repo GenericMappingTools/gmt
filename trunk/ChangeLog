@@ -6,6 +6,10 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2013-12-31	pwessel
+	* gmt2kml.c:		Now using GMT_Put_Record instead of old stdout printing.
+				This addresses issue #473.
+
 2013-12-10	pwessel
 	* grdvector.c:		Vector direction did not adjust when negative scales were
 				used in -JX or -Jx.
