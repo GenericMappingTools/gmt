@@ -168,36 +168,6 @@ char *GMT_fgets (struct GMT_CTRL *GMT, char *str, int size, FILE *stream)
 	return (str);
 }
 
-char *GMT_fgets_chop (struct GMT_CTRL *GMT, char *str, int size, FILE *stream)
-{
-	char *p;
-
-	/* fgets will always set str[size-1] = '\0' if more data than str can handle is found.
-	 * Thus, we examine str[size-2].  If this is neither '\0' nor '\n' then we have only
-	 * read a portion of a logical record that is longer than size.
-	 */
-	str[size-2] = '\0'; /* Set last but one record to 0 */
-	if (!fgets (str, size, stream))
-		return (NULL); /* Got nothing */
-
-	p = strpbrk (str, "\r\n");
-	if ( p == NULL || ((p-str+2 == size) && *p != '\n') ) {
-		/* If CR or LF not found, or last but one record not \n,
-		 * then only got part of a record */
-		int c, n = 0;
-		/* Read char-by-char until newline is consumed */
-		while ((c = fgetc (stream)) != '\n' && c != EOF)
-			(void) (isspace(c) || ++n); /* Do not count whitespace */
-		if (n)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n-1, size);
-	}
-	if (p)
-		/* Overwrite 1st CR or LF with terminate string */
-		*p = '\0';
-
-	return (str);
-}
-
 int GMT_fclose (struct GMT_CTRL *GMT, FILE *stream)
 {
 	if (!stream || stream == NULL)  return (0);

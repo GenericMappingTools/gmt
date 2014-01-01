@@ -615,6 +615,33 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+size_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp)
+{
+	int c;
+	size_t in = 0U;
+	char *line = *L;
+	while ((c = fgetc (fp)) != EOF) {
+		if (c == '\r' || c == '\n') {	/* Got logical end of record */
+			line[in++] = '\n';	/* End each logical record with a single \n */
+			line[in] = '\0';
+			while (c == '\n' || c == '\r') c = fgetc (fp);	/* Skip past any repeating \r \n */
+			if (c != EOF) ungetc (c, fp);	/* Put back the next char unless we got to EOF */
+			return in;	/* How many characters we return */
+		}
+		if (in == (*size-2)) {	/* Need to extend our buffer; the -2 makes room for an extra \n \0 as needed */
+			(*size) <<= 1;	/* Double the current buffer space */
+			line = *L = GMT_memory (GMT, *L, *size, char);
+		}
+		line[in++] = c;	/* Add this char to our buffer */
+	}
+	if (c == EOF) return 0U;
+	if (in && line[in-1] != '\n') {
+		line[in++] = '\n';
+		line[in] = '\0';
+	}
+	return in;
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_ps2raster_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -642,7 +669,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
-	size_t len;
+	size_t len, line_size = 0U;
 	bool got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape, landscape_orig;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, BeginPageSetup_here = false;
 	bool transparency = false, look_for_transparency;
@@ -657,7 +684,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	char ps_file[GMT_BUFSIZ] = "", no_U_file[GMT_BUFSIZ] = "",
 			clean_PS_file[GMT_BUFSIZ] = "", tmp_file[GMT_BUFSIZ] = "",
 			out_file[GMT_BUFSIZ] = "", BB_file[GMT_BUFSIZ] = "";
-	char line[GMT_BUFSIZ] = {""}, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
+	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
 			cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
@@ -765,6 +792,9 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	/* Use default DPI if not already set */
 	if (Ctrl->E.dpi <= 0) Ctrl->E.dpi = (Ctrl->T.device == GS_DEV_PDF) ? 720 : 300;
 
+	line_size = GMT_BUFSIZ;
+	line = GMT_memory (GMT, NULL, line_size, char);	/* Initial buffer size */
+	
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
@@ -772,7 +802,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		ps_names = GMT_memory (GMT, NULL, n_alloc, char *);
-		while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fpl) != NULL) {
+		while (line_reader (GMT, &line, &line_size, fpl)) {
 			if (!*line || *line == '#') /* Empty line or comment */
 				continue;
 			ps_names[Ctrl->In.n_files++] = strdup (line);
@@ -855,7 +885,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				Return (EXIT_FAILURE);
 			}
-			while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp) != NULL) {
+			while (line_reader (GMT, &line, &line_size, fp)) {
 				if (dump && !strncmp (line, "% Begin GMT time-stamp", 22))
 					dump = false;
 				if (dump)
@@ -900,7 +930,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
 				Return (EXIT_FAILURE);
 			}
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fpb) != NULL && !got_BB) {
+			while (line_reader (GMT, &line, &line_size, fp) && !got_BB) {
 				/* We only use the High resolution BB */
 				if ((strstr (line,"%%HiResBoundingBox:"))) {
 					sscanf (&line[19], "%s %s %s %s", c1, c2, c3, c4);
@@ -928,8 +958,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							Return (EXIT_FAILURE);
 						}
-						/* must leave loop because fpb has been closed and GMT_fgets would
-						 * read from cosed file: */
+						/* must leave loop because fpb has been closed and line_reader would
+						 * read from closed file: */
 						break;
 					}
 					got_BB = got_HRBB = true;
@@ -969,7 +999,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		 * Since we prefer the HiResBB over BB we must continue to read until both are found or 20 lines have past */
 
 		i = 0;
-		while ((GMT_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL) && i < 20 && !(got_BB && got_HRBB && got_end)) {
+		while (line_reader (GMT, &line, &line_size, fp) && i < 20 && !(got_BB && got_HRBB && got_end)) {
 			i++;
 			if (!line[0] || line[0] != '%')
 				{ /* Skip empty and non-comment lines */ }
@@ -1037,7 +1067,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		transparency = false;
-		while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp) != NULL) {
+		while (line_reader (GMT, &line, &line_size, fp)) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
 				if (look_for_transparency && line[0] == '{' && strstr (line, " PSL_transp")) {
 					transparency = true;		/* Yes, found transparency */
@@ -1136,15 +1166,18 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				double new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
 				char t1[8], t2[8];	/* To hold the translate part when landscape */
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
-					char line_[128], dumb1[8], dumb2[8], dumb3[8];
+					size_t Lsize = 128U;
+					char dumb1[8], dumb2[8], dumb3[8];
+					char *line_ = GMT_memory (GMT, NULL, Lsize, char); 
 					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
-					GMT_fgets_chop (GMT, line_, 128, fp);   /* Read also next line which is to overwrite */
+					line_reader (GMT, &line_, &Lsize, fp);   /* Read also next line which is to be overwritten */
 					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
 					if (landscape_orig)
 						sscanf(line_, "%s %s %s %s %s %s %s %s",c1, t1, t2, dumb1, dumb2, dumb3, c2, c3);
 					else
 						sscanf(line_, "%s %s %s",c1, c2,c3);
 					old_scale_x = atof (c2);		old_scale_y = atof (c3);
+					GMT_free (GMT, line_);
 				}
 				else if (BeginPageSetup_here) {
 					BeginPageSetup_here = false;
@@ -1187,7 +1220,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			}
 #ifdef HAVE_GDAL
 			else if (found_proj && !strncmp (line, "%%PageTrailer", 13)) {
-				GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp);
+				line_reader (GMT, &line, &line_size, fp);
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s\n", line);
 
@@ -1254,7 +1287,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		/* Recede a bit to test the contents of last line. -7 for when PS has CRLF endings */
 		fseek (fp, (off_t)-7, SEEK_END);
 		/* Read until last line is encountered */
-		while ( GMT_fgets (GMT, line, BUFSIZ, fp) );
+		while (line_reader (GMT, &line, &line_size, fp));
 		if ( strncmp (line, "%%EOF", 5U) )
 			/* Possibly a non-closed GMT PS file. To be confirmed later */
 			excessK = true;
@@ -1534,6 +1567,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 	for (k = 0; k < Ctrl->In.n_files; k++) free (ps_names[k]);
 	GMT_free (GMT, ps_names);
+	GMT_free (GMT, line);
+	GMT_Report (API, GMT_MSG_DEBUG, "Final input buffer length was % "PRIuS "\n", line_size);
 
 	Return (GMT_OK);
 }
