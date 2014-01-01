@@ -496,6 +496,22 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+int kml_print (struct GMTAPI_CTRL *API, int ntabs, char *format, ...)
+{	/* Message whose output depends on verbosity setting */
+	int tab;
+	char record[GMT_BUFSIZ] = {""};
+	va_list args;
+
+	for (tab = 0; tab < ntabs; tab++) record[tab] = '\t';
+	va_start (args, format);
+	/* append format to the record: */
+	vsnprintf (record + ntabs, GMT_BUFSIZ - ntabs, format, args);
+	va_end (args);
+	assert (strlen (record) < GMT_BUFSIZ);
+	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+	return (GMT_NOERROR);
+}
+
 int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat)
 {
 	if (*lat < GMT->common.R.wesn[YLO] || *lat > GMT->common.R.wesn[YHI]) return (true);
@@ -505,83 +521,84 @@ int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat)
 	return (false);
 }
 
-void tabs (int ntabs)
-{	/* Outputs the n leading tabs for this KML line */
-	while (ntabs--) putchar ('\t');
-}
-
-void print_altmode (int extrude, int fmode, int altmode, int ntabs)
+void print_altmode (struct GMTAPI_CTRL *API, int extrude, int fmode, int altmode, int ntabs)
 {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
-	if (extrude) tabs (ntabs), printf ("<extrude>1</extrude>\n");
-	if (fmode) tabs (ntabs), printf ("<tessellate>1</tessellate>\n");
-	if (altmode == KML_GROUND_REL || altmode == KML_ABSOLUTE) tabs (ntabs), printf ("<altitudeMode>%s</altitudeMode>\n", RefLevel[altmode]);
-	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) tabs (ntabs), printf ("<gx:altitudeMode>%s</gx:altitudeMode>\n", RefLevel[altmode]);
+	if (extrude) kml_print (API, ntabs, "<extrude>1</extrude>\n");
+	if (fmode) kml_print (API, ntabs, "<tessellate>1</tessellate>\n");
+	if (altmode == KML_GROUND_REL || altmode == KML_ABSOLUTE) kml_print (API, ntabs, "<altitudeMode>%s</altitudeMode>\n", RefLevel[altmode]);
+	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) kml_print (API, ntabs, "<gx:altitudeMode>%s</gx:altitudeMode>\n", RefLevel[altmode]);
 }
 
-int ascii_output_one (struct GMT_CTRL *GMT, double x, int col)
-{	/* Used instead of GMT_ascii_output_col since Windoze has trouble with GMT->session.std[GMT_OUT] and stdout mixing */
+void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int ntabs)
+{
+	char X[GMT_LEN256] = {""}, Y[GMT_LEN256] = {""}, Z[GMT_LEN256] = {""};
+	GMT_ascii_format_col (API->GMT, X, out[GMT_X], GMT_OUT, GMT_X);
+	GMT_ascii_format_col (API->GMT, Y, out[GMT_Y], GMT_OUT, GMT_Y);
+	GMT_ascii_format_col (API->GMT, Z, out[GMT_Z], GMT_OUT, GMT_Z);
+	kml_print (API, ntabs, "%s,%s,%s\n", X, Y, Z);
+}
+
+void place_region_tag (struct GMTAPI_CTRL *API, double wesn[], double min[], double max[], int N)
+{
 	char text[GMT_LEN256] = {""};
-
-	GMT_ascii_format_col (GMT, text, x, GMT_OUT, col);
-	return (printf ("%s", text));
-}
-
-void place_region_tag (struct GMT_CTRL *GMT, double wesn[], double min[], double max[], int N)
-{
 	if (GMT_360_RANGE (wesn[XLO], wesn[XHI])) { wesn[XLO] = -180.0; wesn[XHI] = +180.0;}
-	tabs (N++); printf ("<Region>\n");
-	tabs (N++); printf ("<LatLonAltBox>\n");
-	tabs (N);	printf ("<north>");	ascii_output_one (GMT, wesn[YHI], GMT_Y);	printf ("</north>\n");
-	tabs (N);	printf ("<south>");	ascii_output_one (GMT, wesn[YLO], GMT_Y);	printf ("</south>\n");
-	tabs (N);	printf ("<east>");	ascii_output_one (GMT, wesn[XHI], GMT_X);	printf ("</east>\n");
-	tabs (N);	printf ("<west>");	ascii_output_one (GMT, wesn[XLO], GMT_X);	printf ("</west>\n");
+	kml_print (API, N++, "<Region>\n");
+	kml_print (API, N++, "<LatLonAltBox>\n");
+	GMT_ascii_format_col (API->GMT, text, wesn[YHI], GMT_OUT, GMT_Y);
+	kml_print (API, N, "<north>%s</north>\n", text);
+	GMT_ascii_format_col (API->GMT, text, wesn[YLO], GMT_OUT, GMT_Y);
+	kml_print (API, N, "<south>%s</south>\n", text);
+	GMT_ascii_format_col (API->GMT, text, wesn[XHI], GMT_OUT, GMT_X);
+	kml_print (API, N, "<east>%s</east>\n", text);
+	GMT_ascii_format_col (API->GMT, text, wesn[XLO], GMT_OUT, GMT_X);
+	kml_print (API, N, "<west>%s</west>\n", text);
 	if (max[ALT] > min[ALT]) {
-		tabs (N); printf ("<minAltitude>%g</minAltitude>\n", min[ALT]);
-		tabs (N); printf ("<maxAltitude>%g</maxAltitude>\n", max[ALT]);
+		kml_print (API, N, "<minAltitude>%g</minAltitude>\n", min[ALT]);
+		kml_print (API, N, "<maxAltitude>%g</maxAltitude>\n", max[ALT]);
 	}
-	tabs (--N); printf ("</LatLonAltBox>\n");
+	kml_print (API, --N, "</LatLonAltBox>\n");
 	if (max[LOD] != min[LOD]) {
-		tabs (N++); printf ("<Lod>\n");
-		tabs (N); printf ("<minLodPixels>%ld</minLodPixels>\n", lrint (min[LOD]));
-		tabs (N); printf ("<maxLodPixels>%ld</maxLodPixels>\n", lrint (max[LOD]));
+		kml_print (API, N++, "<Lod>\n");
+		kml_print (API, N, "<minLodPixels>%ld</minLodPixels>\n", lrint (min[LOD]));
+		kml_print (API, N, "<maxLodPixels>%ld</maxLodPixels>\n", lrint (max[LOD]));
 		if (min[FADE] > 0.0 || max[FADE] > 0.0) {
-			tabs (N); printf ("<minFadeExtent>%g</minFadeExtent>\n", min[FADE]);
-			tabs (N); printf ("<maxFadeExtent>%g</maxFadeExtent>\n", max[FADE]);
+			kml_print (API, N, "<minFadeExtent>%g</minFadeExtent>\n", min[FADE]);
+			kml_print (API, N, "<maxFadeExtent>%g</maxFadeExtent>\n", max[FADE]);
 		}
-		tabs (--N); printf ("</Lod>\n");
+		kml_print (API, --N, "</Lod>\n");
 	}
-	tabs (--N); printf ("</Region>\n");
+	kml_print (API, --N, "</Region>\n");
 }
 
-void set_iconstyle (double *rgb, double scale, char *iconfile, int N)
+void set_iconstyle (struct GMTAPI_CTRL *API, double *rgb, double scale, char *iconfile, int N)
 {	/* No icon = no symbol */
-	tabs (N++); printf ("<IconStyle>\n");
-	tabs (N++); printf ("<Icon>\n");
-	if (iconfile[0] != '-') { tabs (N); printf ("<href>%s</href>\n", iconfile); }
-	tabs (--N); printf ("</Icon>\n");
+	kml_print (API, N++, "<IconStyle>\n");
+	kml_print (API, N++, "<Icon>\n");
+	if (iconfile[0] != '-') kml_print (API, N, "<href>%s</href>\n", iconfile);
+	kml_print (API, --N, "</Icon>\n");
 	if (iconfile[0] != '-') {
-		tabs (N); printf ("<scale>%g</scale>\n", scale);
-		tabs (N); printf ("<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+		kml_print (API, N, "<scale>%g</scale>\n", scale);
+		kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	}
-	tabs (--N); printf ("</IconStyle>\n");
+	kml_print (API, --N, "</IconStyle>\n");
 }
 
-void set_linestyle (struct GMT_PEN *pen, double *rgb, int N)
+void set_linestyle (struct GMTAPI_CTRL *API, struct GMT_PEN *pen, double *rgb, int N)
 {
-	tabs (N++); printf ("<LineStyle>\n");
-	tabs (N); printf ("<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
-	tabs (N); printf ("<width>%ld</width>\n", lrint (pen->width));
-	tabs (--N); printf ("</LineStyle>\n");
+	kml_print (API, N++, "<LineStyle>\n");
+	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+	kml_print (API, N, "<width>%ld</width>\n", lrint (pen->width));
+	kml_print (API, --N, "</LineStyle>\n");
 }
 
-void set_polystyle (double *rgb, int outline, int active, int N)
+void set_polystyle (struct GMTAPI_CTRL *API, double *rgb, int outline, int active, int N)
 {
-	tabs (N++); printf ("<PolyStyle>\n");
-	tabs (N); printf ("<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
-	tabs (N); printf ("<fill>%d</fill>\n", !active);
-	tabs (N); printf ("<outline>%d</outline>\n", outline);
-	tabs (--N); printf ("</PolyStyle>\n");
+	kml_print (API, N++, "<PolyStyle>\n");
+	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+	kml_print (API, N, "<fill>%d</fill>\n", !active);
+	kml_print (API, N, "<outline>%d</outline>\n", outline);
+	kml_print (API, --N, "</PolyStyle>\n");
 }
 
 void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double *rgb)
@@ -660,6 +677,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""}, C[5][GMT_LEN64] = {"","","","",""};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};
 	char *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
+	char text[GMT_LEN256] = {""};
 
 	double rgb[4], out[5], last_x;
 
@@ -712,6 +730,13 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		}
 	}
 
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+		Return (API->error);	/* Enables data output and sets access mode */
+	}
+
 	/* Now we are ready to take on some input values */
 
 	out[GMT_Z] = Ctrl->A.altitude;
@@ -733,65 +758,65 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	if (GMT->common.O.active || GMT->common.K.active) use_folder = true;	/* When at least one or -O, -K is used */
 	if (GMT->common.O.active) {
 		N++;	/* Due to the extra folder tag */
-		tabs (N++); printf ("<%s>\n", Document[KML_FOLDER]);
-		tabs (N); printf ("<name>%s</name>\n", Ctrl->T.folder);
+		kml_print (API, N++, "<%s>\n", Document[KML_FOLDER]);
+		kml_print (API, N, "<name>%s</name>\n", Ctrl->T.folder);
 	}
 	else {
 		/* Create KML header */
-		printf ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		printf ("<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
-		tabs (N++); printf ("<%s>\n", Document[KML_DOCUMENT]);
+		kml_print (API, 0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		kml_print (API, 0, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
+		kml_print (API, N++, "<%s>\n", Document[KML_DOCUMENT]);
 		if (Ctrl->T.title != NULL && *Ctrl->T.title != '\0')
-			tabs (N), printf ("<name>%s</name>\n", Ctrl->T.title);
-		if (Ctrl->Z.invisible) tabs (N), printf ("<visibility>0</visibility>\n");
-		if (Ctrl->Z.open) tabs (N), printf ("<open>1</open>\n");
+			kml_print (API, N, "<name>%s</name>\n", Ctrl->T.title);
+		if (Ctrl->Z.invisible) kml_print (API, N, "<visibility>0</visibility>\n");
+		if (Ctrl->Z.open) kml_print (API, N, "<open>1</open>\n");
 		if (use_folder) {
-			tabs (N++); printf ("<%s>\n", Document[KML_FOLDER]);
-			tabs (N); printf ("<name>%s</name>\n", Ctrl->T.folder);
+			kml_print (API, N++, "<%s>\n", Document[KML_FOLDER]);
+			kml_print (API, N, "<name>%s</name>\n", Ctrl->T.folder);
 		}
 	}
 
-	tabs (N++); printf ("<Style id=\"st%d\">\n", index);	/* Default style unless -C is used */
+	kml_print (API, N++, "<Style id=\"st%d\">\n", index);	/* Default style unless -C is used */
 
 	/* Set icon style (applies to symbols only */
-	set_iconstyle (Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
+	set_iconstyle (API, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 
 	/* Set shared line and polygon style (also for extrusions) */
-	set_linestyle (&Ctrl->W.pen, Ctrl->W.pen.rgb, N);
-	set_polystyle (Ctrl->G.fill[F_ID].rgb, !Ctrl->W.mode, Ctrl->G.active[F_ID], N);
+	set_linestyle (API, &Ctrl->W.pen, Ctrl->W.pen.rgb, N);
+	set_polystyle (API, Ctrl->G.fill[F_ID].rgb, !Ctrl->W.mode, Ctrl->G.active[F_ID], N);
 
 	/* Set style for labels */
-	tabs (N++); printf ("<LabelStyle>\n");
-	tabs (N); printf ("<scale>%g</scale>\n", Ctrl->S.scale[N_ID]);
-	tabs (N); printf ("<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
-	tabs (--N); printf ("</LabelStyle>\n");
-	tabs (--N); printf ("</Style>\n");
+	kml_print (API, N++, "<LabelStyle>\n");
+	kml_print (API, N, "<scale>%g</scale>\n", Ctrl->S.scale[N_ID]);
+	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
+	kml_print (API, --N, "</LabelStyle>\n");
+	kml_print (API, --N, "</Style>\n");
 
 	for (index = -3; Ctrl->C.active && index < (int)P->n_colors; index++) {	/* Place styles for each color in CPT file */
 		get_rgb_lookup (GMT, P, index, rgb);
-		tabs (N++); printf ("<Style id=\"st%d\">\n", index + 4); /* +4 to make index a positive integer */
+		kml_print (API, N++, "<Style id=\"st%d\">\n", index + 4); /* +4 to make index a positive integer */
 		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */
-			set_iconstyle (Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
+			set_iconstyle (API, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 		else if (Ctrl->F.mode == LINE)	/* Line style only */
-			set_linestyle (&Ctrl->W.pen, rgb, N);
+			set_linestyle (API, &Ctrl->W.pen, rgb, N);
 		else {	/* Polygons */
 			if (!Ctrl->W.active) {	/* Only fill, no outline */
-				set_polystyle (rgb, false, Ctrl->G.active[F_ID], N);
+				set_polystyle (API, rgb, false, Ctrl->G.active[F_ID], N);
 			}
 			else if (Ctrl->W.mode == 0) { /* Use -C for fill, -W for outline */
-				set_polystyle (rgb, true, Ctrl->G.active[F_ID], N);
-				set_linestyle (&Ctrl->W.pen, Ctrl->W.pen.rgb, N);
+				set_polystyle (API, rgb, true, Ctrl->G.active[F_ID], N);
+				set_linestyle (API, &Ctrl->W.pen, Ctrl->W.pen.rgb, N);
 			}
 			else if (Ctrl->W.mode == 1) { /* Use -G for fill, -C for outline */
-				set_polystyle (Ctrl->G.fill[F_ID].rgb, true, Ctrl->G.active[F_ID], N);
-				set_linestyle (&Ctrl->W.pen, rgb, N);
+				set_polystyle (API, Ctrl->G.fill[F_ID].rgb, true, Ctrl->G.active[F_ID], N);
+				set_linestyle (API, &Ctrl->W.pen, rgb, N);
 			}
 			else if (Ctrl->W.mode == 2) { /* Use -C for fill and outline */
-				set_polystyle (rgb, true, Ctrl->G.active[F_ID], N);
-				set_linestyle (&Ctrl->W.pen, rgb, N);
+				set_polystyle (API, rgb, true, Ctrl->G.active[F_ID], N);
+				set_linestyle (API, &Ctrl->W.pen, rgb, N);
 			}
 		}
-		tabs (--N); printf ("</Style>\n");
+		kml_print (API, --N, "</Style>\n");
 	}
 	index = -4;	/* Default unless -C changes things */
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
@@ -801,12 +826,12 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 			GMT_Message (API, GMT_TIME_NONE, "Could not open description file %s\n", Ctrl->D.file);
 			Return (EXIT_FAILURE);
 		}
-		tabs (N++); printf ("<description>\n");
-		tabs (N++); printf ("<![CDATA[\n");
-		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) tabs (N), printf ("%s", line);
+		kml_print (API, N++, "<description>\n");
+		kml_print (API, N++, "<![CDATA[\n");
+		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) kml_print (API, N, "%s", line);
 		GMT_fclose (GMT, fp);
-		tabs (--N); printf ("]]>\n");
-		tabs (--N); printf ("</description>\n");
+		kml_print (API, --N, "]]>\n");
+		kml_print (API, --N, "</description>\n");
 	}
 
 	/* If binary input then call GMT_gmtconvert to handle that and read in as ascii, else do as below.
@@ -821,59 +846,58 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
-		place_region_tag (GMT, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
+		place_region_tag (API, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 		first = false;
 	}
 	else if (Ctrl->R2.automatic) {	/* Issue Region tag */
 		double wesn[4];
 		if (get_data_region (GMT, Din, wesn)) Return (EXIT_FAILURE);
-		place_region_tag (GMT, wesn, Ctrl->Z.min, Ctrl->Z.max, N);
+		place_region_tag (API, wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 	}
 	set_nr = pnt_nr = 0;
 
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		T = Din->table[tbl];	/* Current table */
 		if (T->file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
-			tabs (N++); printf ("<Folder>\n");
-			tabs (N);
+			kml_print (API, N++, "<Folder>\n");
 			if (!strcmp (T->file[GMT_IN], "<stdin>"))
-				printf ("<name>stdin</name>\n");
+				kml_print (API, N, "<name>stdin</name>\n");
 			else
-				printf ("<name>%s</name>\n", T->file[GMT_IN]);
+				kml_print (API, N, "<name>%s</name>\n", T->file[GMT_IN]);
 		}
 		for (seg = 0; seg < T->n_segments; seg++) {	/* Process each segment in this table */
 			pnt_nr = 0;
 
 			/* Only point sets will be organized in folders as lines/polygons are single entities */
 			if (Ctrl->F.mode < LINE) {	/* Meaning point-types, not lines or polygons */
-				tabs (N++); printf ("<Folder>\n");
-				tabs (N);
+				kml_print (API, N++, "<Folder>\n");
 				if (T->segment[seg]->label)
-					printf ("<name>%s</name>\n", T->segment[seg]->label);
+					kml_print (API, N, "<name>%s</name>\n", T->segment[seg]->label);
 				else
-					printf ("<name>%s Set %d</name>\n", name[Ctrl->F.mode], set_nr);
+					kml_print (API, N, "<name>%s Set %d</name>\n", name[Ctrl->F.mode], set_nr);
 				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
 					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", buffer) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
 				else
 					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
-				if (act) {
-					tabs (N); printf ("<description>%s</description>\n", description);
-				}
+				if (act)
+					kml_print (API, N, "<description>%s</description>\n", description);
 			}
 			else {	/* Line or polygon means we lay down the placemark first*/
 				if (Ctrl->C.active && GMT_parse_segment_item (GMT, T->segment[seg]->header, "-Z", description)) {
 					double z_val = atof (description);
 					index = GMT_get_index (GMT, P, z_val);
 				}
-				tabs (N++); printf ("<Placemark>\n");
+				kml_print (API, N++, "<Placemark>\n");
 				if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 				else if (Ctrl->N.mode == FMT_LABEL) {
-					tabs (N); printf ("<name>"); printf (Ctrl->N.fmt, (int)set_nr); printf ("</name>\n");
+					kml_print (API, N, "<name>");
+					kml_print (API, 0, Ctrl->N.fmt, (int)set_nr);
+					kml_print (API, 0, "</name>\n");
 				}
 				else if (T->segment[seg]->label)
-					tabs (N), printf ("<name>%s</name>\n", T->segment[seg]->label);
+					kml_print (API, N, "<name>%s</name>\n", T->segment[seg]->label);
 				else
-					tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], set_nr);
+					kml_print (API, N, "<name>%s %d</name>\n", name[Ctrl->F.mode], set_nr);
 				description[0] = 0;
 				do_description = false;
 				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) {
@@ -889,15 +913,16 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 					strcat (description, buffer);
 					do_description = true;
 				}
-				if (do_description) { tabs (N); printf ("<description>%s</description>\n", description); }
-				tabs (N); printf ("<styleUrl>#st%d</styleUrl>\n", index + 4); /* +4 to make index a positive integer */
-				tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-				print_altmode (Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
+				if (do_description)
+					kml_print (API, N, "<description>%s</description>\n", description);
+				kml_print (API, N, "<styleUrl>#st%d</styleUrl>\n", index + 4); /* +4 to make index a positive integer */
+				kml_print (API, N++, "<%s>\n", feature[Ctrl->F.mode]);
+				print_altmode (API, Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
 				if (Ctrl->F.mode == POLYGON) {
-					tabs (N++); printf ("<outerBoundaryIs>\n");
-					tabs (N++); printf ("<LinearRing>\n");
+					kml_print (API, N++, "<outerBoundaryIs>\n");
+					kml_print (API, N++, "<LinearRing>\n");
 				}
-				tabs (N++); printf ("<coordinates>\n");
+				kml_print (API, N++, "<coordinates>\n");
 			}
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
 				switch (n_coord) {	/* Sort out input coordinates from remaining items which may be text */
@@ -955,73 +980,67 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 				if (Ctrl->F.mode < LINE && GMT_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
 
 				if (Ctrl->F.mode < LINE) {	/* Print the information for this point */
-					tabs (N++); printf ("<Placemark>\n");
+					kml_print (API, N++, "<Placemark>\n");
 					if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 					else if (Ctrl->N.mode == GET_COL_LABEL) {
 						GMT_strtok (extra, " \t,", &pos, item);
-						tabs (N), printf ("<name>%s</name>\n", item);
+						kml_print (API, N, "<name>%s</name>\n", item);
 					}
 					else if (Ctrl->N.mode == GET_LABEL)
-						tabs (N), printf ("<name>%s</name>\n", extra);
+						kml_print (API, N, "<name>%s</name>\n", extra);
 					else if (Ctrl->N.mode == FMT_LABEL) {
-						tabs (N); printf ("<name>"); printf (Ctrl->N.fmt, pnt_nr); printf ("</name>\n");
+						kml_print (API, N, "<name>");
+						kml_print (API, 0, Ctrl->N.fmt, pnt_nr);
+						kml_print (API, 0, "</name>\n");
 					}
 					else if (T->segment[seg]->label && T->segment[seg]->n_rows > 1)
-						tabs (N), printf ("<name>%s %" PRIu64 "</name>\n", T->segment[seg]->label, row);
+						kml_print (API, N, "<name>%s %" PRIu64 "</name>\n", T->segment[seg]->label, row);
 					else if (T->segment[seg]->label)
-						tabs (N), printf ("<name>%s</name>\n", T->segment[seg]->label);
+						kml_print (API, N, "<name>%s</name>\n", T->segment[seg]->label);
 					else
-						tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], pnt_nr);
+						kml_print (API, N, "<name>%s %d</name>\n", name[Ctrl->F.mode], pnt_nr);
 					if (Ctrl->L.n_cols) {
-						tabs (N++); printf ("<ExtendedData>\n");
+						kml_print (API, N++, "<ExtendedData>\n");
 						for (col = 0; col < Ctrl->L.n_cols; col++) {
-							tabs (N); printf ("<Data name = \"%s\">\n", Ctrl->L.name[col]);
-							tabs (++N); printf ("<value>");
+							kml_print (API, N, "<Data name = \"%s\">\n", Ctrl->L.name[col]);
+							kml_print (API, N++, "<value>");
 							GMT_strtok (extra, " \t,", &pos, item);
-							printf ("%s", item);
-							printf ("</value>\n");
-							tabs (--N); printf ("</Data>\n");
+							kml_print (API, 0, "%s", item);
+							kml_print (API, 0, "</value>\n");
+							kml_print (API, --N, "</Data>\n");
 						}
-						tabs (--N); printf ("</ExtendedData>\n");
+						kml_print (API, --N, "</ExtendedData>\n");
 					}
 					if (Ctrl->F.mode == SPAN) {
-						tabs (N++); printf ("<TimeSpan>\n");
+						kml_print (API, N++, "<TimeSpan>\n");
 						if (!GMT_is_dnan (out[t1_col])) {
-							tabs (N); printf ("<begin>");
-							ascii_output_one (GMT, out[t1_col], t1_col);
-							printf ("</begin>\n");
+							GMT_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
+							kml_print (API, N, "<begin>%s</begin>\n", text);
 						}
 						if (!GMT_is_dnan (out[t2_col])) {
-							tabs (N); printf ("<end>");
-							ascii_output_one (GMT, out[t2_col], t2_col);
-							printf ("</end>\n");
+							GMT_ascii_format_col (GMT, text, out[t2_col], GMT_OUT, t2_col);
+							kml_print (API, N, "<end>%s</end>\n", text);
 						}
-						tabs (--N); printf ("</TimeSpan>\n");
+						kml_print (API, --N, "</TimeSpan>\n");
 					}
 					else if (Ctrl->F.mode == EVENT) {
-						tabs (N++); printf ("<TimeStamp>\n");
-						tabs (N); printf ("<when>");
-						ascii_output_one (GMT, out[t1_col], t1_col);
-						printf ("</when>\n");
-						tabs (--N); printf ("</TimeStamp>\n");
+						kml_print (API, N++, "<TimeStamp>\n");
+						GMT_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
+						kml_print (API, N, "<when>%s</when>\n", text);
+						kml_print (API, --N, "</TimeStamp>\n");
 					}
-					tabs (N); printf ("<styleUrl>#st%d</styleUrl>\n", index + 4); /* +4 to make index a positive integer */
-					tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-					print_altmode (Ctrl->E.active, false, Ctrl->A.mode, N);
-					tabs (N); printf ("<coordinates>");
-					ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
-					ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
-					ascii_output_one (GMT, out[GMT_Z], GMT_Z);
-					printf ("</coordinates>\n");
-					tabs (--N); printf ("</%s>\n", feature[Ctrl->F.mode]);
-					tabs (--N); printf ("</Placemark>\n");
+					kml_print (API, N, "<styleUrl>#st%d</styleUrl>\n", index + 4); /* +4 to make index a positive integer */
+					kml_print (API, N++, "<%s>\n", feature[Ctrl->F.mode]);
+					print_altmode (API, Ctrl->E.active, false, Ctrl->A.mode, N);
+					kml_print (API, N, "<coordinates>");
+					ascii_output_three (API, out, N);
+					kml_print (API, N, "</coordinates>\n");
+					kml_print (API, --N, "</%s>\n", feature[Ctrl->F.mode]);
+					kml_print (API, --N, "</Placemark>\n");
 				}
 				else {	/* For lines and polygons we just output the coordinates */
 					if (GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = 0.0;	/* Google Earth can not handle lines at NaN altitude */
-					tabs (N);
-					ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
-					ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
-					ascii_output_one (GMT, out[GMT_Z], GMT_Z);	printf ("\n");
+					ascii_output_three (API, out, N);
 					if (row > 0 && no_dateline && crossed_dateline (out[GMT_X], last_x)) {
 						/* GE cannot handle polygons crossing the dateline; warn for now */
 						GMT_Report (API, GMT_MSG_NORMAL, "Warning: At least on polygon is straddling the Dateline.  Google Earth will wrap these the wrong way\n");
@@ -1038,24 +1057,28 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 			if (pnt_nr == 0)
 				set_nr--;
 			else if (Ctrl->F.mode < LINE)
-				tabs (--N), printf ("</Folder>\n");
+				kml_print (API, --N, "</Folder>\n");
 			else {
-				tabs (--N); printf ("</coordinates>\n");
+				kml_print (API, --N, "</coordinates>\n");
 				if (Ctrl->F.mode == POLYGON) {
-					tabs (--N); printf ("</LinearRing>\n");
-					tabs (--N); printf ("</outerBoundaryIs>\n");
+					kml_print (API, --N, "</LinearRing>\n");
+					kml_print (API, --N, "</outerBoundaryIs>\n");
 				}
-				tabs (--N); printf ("</%s>\n", feature[Ctrl->F.mode]);
-				tabs (--N); printf ("</Placemark>\n");
+				kml_print (API, --N, "</%s>\n", feature[Ctrl->F.mode]);
+				kml_print (API, --N, "</Placemark>\n");
 			}
 			set_nr++;
 		}
-		if (T->file[GMT_IN]) tabs (--N), printf ("</Folder>\n");
+		if (T->file[GMT_IN]) kml_print (API, --N, "</Folder>\n");
 	}
-	if (use_folder) tabs (--N), printf ("</%s>\n", Document[KML_FOLDER]);
+	if (use_folder) kml_print (API, --N, "</%s>\n", Document[KML_FOLDER]);
 	if (!GMT->common.K.active) {
-		tabs (--N), printf ("</%s>\n", Document[KML_DOCUMENT]);
-		printf ("</kml>\n");
+		kml_print (API, --N, "</%s>\n", Document[KML_DOCUMENT]);
+		kml_print (API, 0, "</kml>\n");
+	}
+
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
 	}
 
 	Return (GMT_OK);
