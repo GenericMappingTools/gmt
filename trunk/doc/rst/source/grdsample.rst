@@ -63,6 +63,11 @@ Optional Arguments
     Translate between grid and pixel registration; if the input is
     grid-registered, the output will be pixel-registered and vice-versa.
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
+.. include:: explain_-n.rst_
+
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
