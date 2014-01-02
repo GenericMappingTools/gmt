@@ -5205,7 +5205,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 			GMT_init_track (GMT, yy, nn, &(G->ylist));
 			for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
 				GMT_init_track (GMT, G->xp->segment[line_no]->coord[GMT_Y], G->xp->segment[line_no]->n_rows, &(G->ylist_XP));
-				G->nx = (unsigned int)GMT_crossover (GMT, G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, &G->XC);
+				G->nx = (unsigned int)GMT_crossover (GMT, G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, false, &G->XC);
 				GMT_free (GMT, G->ylist_XP);
 				if (G->nx == 0) continue;
 
@@ -8077,7 +8077,37 @@ void gmt_x_alloc (struct GMT_CTRL *GMT, struct GMT_XOVER *X, size_t nx_alloc, bo
 	}
 }
 
-uint64_t GMT_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t *sa0, struct GMT_XSEGMENT A[], uint64_t na, double xb[], double yb[], uint64_t *sb0, struct GMT_XSEGMENT B[], uint64_t nb, bool internal, struct GMT_XOVER *X)
+bool gmt_x_overlap (double *xa, double *xb, uint64_t *xa_start, uint64_t *xa_stop, uint64_t *xb_start, uint64_t *xb_stop, bool geo)
+{
+	/* Return true if the two x-ranges overlap */
+	if (geo) {	/* More complicated, and may change both the start/stop indices and the array longitudes */
+		int k;
+		double dx = xa[*xa_stop] - xa[*xa_start];
+		if (dx > 180.0) {xa[*xa_start] += 360.0; uint_swap(*xa_start, *xa_stop);}	/* Deal with 360 and swap start and stop indices */
+		dx = xb[*xb_stop] - xb[*xb_start];
+		if (dx > 180.0) {xb[*xb_start] += 360.0; uint_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
+		/* Here we have fixed a 360 jump and reassign what is start and stop. We must now look for overlaps
+		 * by considering the segments may be off by -360, 0, or +360 degrees in longitude */
+		
+		for (k = -1; k <= 1; k++) {	/* Try these offsets of k * 360 */
+			dx = k * 360.0;
+			if ((xa[*xa_start] + dx) >= xb[*xb_start] && (xa[*xa_start] + dx) <= xb[*xb_stop]) {	/* Overlap when k*360 offset is considered */
+				xa[*xa_start] += dx;	xa[*xa_stop] += dx;	/* Make the adjustment to the array */
+				return true;
+			}
+			if ((xa[*xa_stop] + dx) >= xb[*xb_start] && (xa[*xa_stop] + dx) <= xb[*xb_stop]) {		/* Overlap when this 360 offset is considered */
+				xa[*xa_start] += dx;	xa[*xa_stop] += dx;	/* Make the adjustment to the array  */
+				return true;
+			}
+		}
+		return false;	/* No overlap */
+	}
+	else {	/* Simple since xa_start <= xa_stop and xb_start <= xb_stop */
+		return (!((xa[*xa_stop] < xb[*xb_start]) || (xa[*xa_start] > xb[*xb_stop])));
+	}
+}
+
+uint64_t GMT_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t *sa0, struct GMT_XSEGMENT A[], uint64_t na, double xb[], double yb[], uint64_t *sb0, struct GMT_XSEGMENT B[], uint64_t nb, bool internal, bool geo, struct GMT_XOVER *X)
 {
 	size_t nx_alloc;
 	uint64_t nx, this_a, this_b, xa_start = 0, xa_stop = 0, xb_start = 0, xb_stop = 0, ta_start = 0, ta_stop = 0, tb_start, tb_stop, n_seg_a, n_seg_b;
@@ -8152,7 +8182,7 @@ uint64_t GMT_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 
 			/* OK, first check for any overlap in x range */
 
-			if (xa_OK && xb_OK && !((xa[xa_stop] < xb[xb_start]) || (xa[xa_start] > xb[xb_stop]))) {
+			if (xa_OK && xb_OK && gmt_x_overlap (xa, xb, &xa_start, &xa_stop, &xb_start, &xb_stop, geo)) {
 
 				/* We have segment overlap in x.  Now check if the segments cross  */
 

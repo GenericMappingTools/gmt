@@ -299,6 +299,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	bool has_time[2];			/* true for each cruises that actually has a time column */
 	bool *duplicate = NULL;		/* Array, true for any cruise that is already listed */
 	bool cmdline_files = false;		/* true if files where given directly on the command line */
+	bool wrap = false;			/* true if data wraps so -Rg was given */
 	
 	size_t n_alloc = 1;
 
@@ -515,7 +516,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 			break;
 	}
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
-
+	wrap = (GMT_is_geographic (GMT, GMT_IN) && GMT->common.R.active && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
+	
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
 		Return (error);
 	}
@@ -618,7 +620,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 
 			/* Calculate all possible crossover locations */
 
-			nx = GMT_crossover (GMT, data[0][s->x_col], data[0][s->y_col], data_set[0].ms_rec, ylist_A, n_rec[0], data[1][s->x_col], data[1][s->y_col], data_set[1].ms_rec, ylist_B, n_rec[1], (A == B), &XC);
+			nx = GMT_crossover (GMT, data[0][s->x_col], data[0][s->y_col], data_set[0].ms_rec, ylist_A, n_rec[0], data[1][s->x_col], data[1][s->y_col], data_set[1].ms_rec, ylist_B, n_rec[1], (A == B), wrap, &XC);
 
 			if (nx && xover_locations_only) {	/* Report crossover locations only */
 				sprintf (line, "%s - %s", trk_name[A], trk_name[B]);
