@@ -4022,7 +4022,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			break;
 		case GMTCASE_GLOBAL_Y_SCALE:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
-				GMT_COMPAT_CHANGE ("PS_SCALE_X");
+				GMT_COMPAT_CHANGE ("PS_SCALE_Y");
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_PS_SCALE_Y:
