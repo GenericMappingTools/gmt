@@ -629,6 +629,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 
 	uint64_t j;
  	unsigned int i;
+	bool first = true;
 	size_t n_alloc;
 	FILE *fp = NULL;
 	double **z = NULL, *rec = NULL;
@@ -655,6 +656,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 
 	j = 0;
 	while (!x2sys_read_record (GMT, fp, rec, s, G)) {	/* Gets the next data record */
+		if (s->multi_segment && s->ms_next && !first) p->n_segments++;
 		for (i = 0; i < s->n_fields; i++) z[i][j] = rec[i];
 		p->ms_rec[j] = p->n_segments;
 		j++;
@@ -663,9 +665,11 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 			for (i = 0; i < s->n_fields; i++) z[i] = GMT_memory (GMT, z[i], n_alloc, double);
 			p->ms_rec = GMT_memory (GMT, p->ms_rec, n_alloc, uint64_t);
 		}
-		if (s->multi_segment && s->ms_next) p->n_segments++;
+		first = false;
 	}
-
+	p->n_segments++;	/* To get the total number of segments 0-(n_segments-1) */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_read_file : File %s contained %" PRIu64 " segments\n", path, p->n_segments);
+	
 	fclose (fp);
 	GMT_free (GMT, rec);
 	for (i = 0; i < s->n_fields; i++) z[i] = GMT_memory (GMT, z[i], j, double);
