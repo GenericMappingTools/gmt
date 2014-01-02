@@ -67,18 +67,24 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #elif defined(__FreeBSD__)
 # ifdef __x86_64__
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_rip)
+# elif defined( __arm__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
 # else
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_eip)
 # endif
 #elif defined(SIZEOF_GREG_T)
 # ifdef __x86_64__
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_RIP])
+# elif defined( __arm__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
 # else
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_EIP])
 # endif
 #else
 # ifdef __x86_64__
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.rip)
+# elif defined( __arm__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
 # else
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.eip)
 # endif
