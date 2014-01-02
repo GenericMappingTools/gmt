@@ -440,7 +440,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 					sprintf (record, "%s: x_max: %.7f", G->header->name, G->header->wesn[XHI]);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					sprintf (record, "%s: x_inc: %.7f", G->header->name, G->header->inc[GMT_X]);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					sprintf (record, "%s: name: %s",    G->header->name, G->header->x_units);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-					sprintf (record, "%s: nx: %dn",     G->header->name, G->header->nx);		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					sprintf (record, "%s: nx: %d",      G->header->name, G->header->nx);		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					sprintf (record, "%s: y_min: %.7f", G->header->name, G->header->wesn[YLO]);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					sprintf (record, "%s: y_max: %.7f", G->header->name, G->header->wesn[YHI]);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					sprintf (record, "%s: y_inc: %.7f", G->header->name, G->header->inc[GMT_Y]);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
