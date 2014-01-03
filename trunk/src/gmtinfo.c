@@ -597,8 +597,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 						fixed_phase[col] = 0;	/* Phase not constant, not a grid */
 				}
 			}
-			n++;	/* Number of records processed in current block (all/table/segment; see -A) */
 		}
+		n++;	/* Number of records processed in current block (all/table/segment; see -A) */
 		if (file[0] == 0) strncpy (file, GMT->current.io.current_filename[GMT_IN], GMT_BUFSIZ);	/* Grab name of current file while we can */
 		
 	}
