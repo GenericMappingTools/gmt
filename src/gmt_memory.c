@@ -428,7 +428,7 @@ void GMT_free_tmp_arrays (struct GMT_CTRL *GMT)
 	/* Free temporary coordinate memory used by this session */
 	size_t col;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Free %" PRIuS " temporary column arrays, each of length : %" PRIuS "\n", GMT->hidden.mem_cols, GMT->hidden.mem_rows);
+	if (GMT->hidden.mem_cols) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Free %" PRIuS " temporary column arrays, each of length : %" PRIuS "\n", GMT->hidden.mem_cols, GMT->hidden.mem_rows);
 	for (col = 0; col < GMT->hidden.mem_cols; col++) {	/* For each column, free an array */
 		if (GMT->hidden.mem_coord[col]) GMT_free (GMT, GMT->hidden.mem_coord[col]);
 	}
