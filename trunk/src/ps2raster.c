@@ -926,7 +926,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
 				Return (EXIT_FAILURE);
 			}
-			while (line_reader (GMT, &line, &line_size, fp) && !got_BB) {
+			while (line_reader (GMT, &line, &line_size, fpb) && !got_BB) {
 				/* We only use the High resolution BB */
 				if ((strstr (line,"%%HiResBoundingBox:"))) {
 					sscanf (&line[19], "%s %s %s %s", c1, c2, c3, c4);
