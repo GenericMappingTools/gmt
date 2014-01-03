@@ -622,23 +622,19 @@ size_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp)
 	char *line = *L;
 	while ((c = fgetc (fp)) != EOF) {
 		if (c == '\r' || c == '\n') {	/* Got logical end of record */
-			line[in++] = '\n';	/* End each logical record with a single \n */
 			line[in] = '\0';
 			while (c == '\n' || c == '\r') c = fgetc (fp);	/* Skip past any repeating \r \n */
 			if (c != EOF) ungetc (c, fp);	/* Put back the next char unless we got to EOF */
 			return in;	/* How many characters we return */
 		}
-		if (in == (*size-2)) {	/* Need to extend our buffer; the -2 makes room for an extra \n \0 as needed */
+		if (in == (*size-1)) {	/* Need to extend our buffer; the -1 makes room for an \0 as needed */
 			(*size) <<= 1;	/* Double the current buffer space */
 			line = *L = GMT_memory (GMT, *L, *size, char);
 		}
 		line[in++] = c;	/* Add this char to our buffer */
 	}
 	if (c == EOF) return 0U;
-	if (in && line[in-1] != '\n') {
-		line[in++] = '\n';
-		line[in] = '\0';
-	}
+	if (in) line[in] = '\0';
 	return in;
 }
 
