@@ -3451,7 +3451,13 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p, *file = strdup (resource);
 				if (family == GMT_IS_GRID && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids so access can work */
-				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) *p = '\0';	/* Chop off any +<stuff> for images so access can work */
+				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
+					 /* PW 1/4/2014: No record or docs for why this was added and it causes trouble with files that have a + in their name.
+					  * I am taking out this "fix" and when/if we are told of an example perhaps we can figure out why this was
+					  * added in the first place. I think the only +-mechanism we have is +U|u but that should not apply? */
+					GMT_Report (API, GMT_MSG_NORMAL, "Let Paul Wessel know if you get this message and send him your command\n", file);
+					//*p = '\0';	/* Chop off any +<stuff> for images so access can work */
+				}
 				if (GMT_access (API->GMT, file, F_OK) && !GMT_check_url_name(file)) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_Report (API, GMT_MSG_NORMAL, "File %s not found\n", file);
 					return_value (API, GMT_FILE_NOT_FOUND, GMT_NOTSET);
