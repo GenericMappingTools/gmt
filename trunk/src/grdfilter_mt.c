@@ -40,9 +40,8 @@ and added this to ConfigUserCmake
     # Set location of GLIB ...:
     set (GLIB_INCLUDE_DIR "C:/programs/compa_libs/glib-2.38.2/compileds/${VC}_${BITAGE}/include/glib-2.0")
     set (GLIB_LIBRARY "C:/programs/compa_libs/glib-2.38.2/compileds/${VC}_${BITAGE}/lib/glib-2.0.lib")
-	add_definitions(/DUSE_GTHREADS)
 
-maybe you don't need the first too above if cmake is able to find glib in your system.
+maybe you don't need the above if cmake is able to find glib in your system.
 
 Use undocumented (and temporary) option -z to set the number of threads. e.g. -z2, -z4, ... or -za to use all available
 */
@@ -52,10 +51,6 @@ Use undocumented (and temporary) option -z to set the number of threads. e.g. -z
 #define THIS_MODULE_PURPOSE	"Filter a grid in the space (or time) domain"
 
 #include "gmt_dev.h"
-
-#ifdef USE_GTHREADS
-#include <glib.h>
-#endif
 
 #define GMT_PROG_OPTIONS "-RVf"
 
@@ -892,9 +887,11 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	if (tid == 0) {	/* First or only thread */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n", Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n",
+				Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
 		if (Ctrl->F.quantile != 0.5)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s [using %g%% quantile].\n", filter_name[filter_type], 100.0 * Ctrl->F.quantile);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s [using %g%% quantile].\n",
+					filter_name[filter_type], 100.0 * Ctrl->F.quantile);
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
 #ifdef USE_GTHREADS
@@ -984,7 +981,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Gout->header->ny) / Ctrl->z.n_threads);
    		if (i == Ctrl->z.n_threads - 1) threadArg[i].r_stop = Gout->header->ny;	/* Make sure last row is not left behind */
-   		//fprintf(stderr, "MERDA2 %d\tstart = %d\tstop = %d\n", i, threadArg[i].r_start, threadArg[i].r_stop);
 		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
 	}
 
@@ -999,7 +995,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	GMT_free (GMT, threadArg);
 
-	GMT_toc(GMT);		/* Print total run time, but only if -Vt was set */
+	GMT_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
 
 	GMT_free (GMT, weight);
 	GMT_free (GMT, F.x);
@@ -1130,11 +1126,9 @@ void threaded_function (struct THREAD_STRUCT *t) {
     struct FILTER_INFO F        = t->F;
 
 
-	if (filter_type > GRDFILTER_OPERATOR) {	/* These filters are not convolutions; they require sorting or comparisons */
-		if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && (filter_type == GRDFILTER_MEDIAN || filter_type == GRDFILTER_MODE)) {
-			/* Spherical (weighted) median/modes requires even more work */
+	if (slow) {
+		if (slower)		/* Spherical (weighted) median/modes requires even more work */
 			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, struct OBSERVATION);
-		}
 		else
 			work_array = GMT_memory (GMT, NULL, F.nx*F.ny, double);
 	}
@@ -1148,7 +1142,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing output line %d\r", row_out);
 #ifdef DEBUG
-		if (Ctrl->A.active && row_out != Ctrl->A.ROW) continue;	/* Not at our selected row for testing */
+		if (Ctrl->A.active && row_out != Ctrl->A.ROW) continue;		/* Not at our selected row for testing */
 #endif
 		y_out = GMT_grd_row_to_y (GMT, row_out, Gout->header);		/* Current output y [or latitude] */
 		lat_out = (Ctrl->D.mode == GRDFILTER_GEO_MERCATOR) ? IMG2LAT (y_out) : y_out;	/* Adjust lat if IMG grid */
@@ -1190,7 +1184,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 			n_conv = 0;	/* Just to check # of points in the convolution - not used in any calculations */
 #endif
 			/* Now loop over the filter domain and collect those points that should be considered by the filter operation */
-			
+
 			for (jj = -F.y_half_width; go_on && jj <= F.y_half_width; jj++) {	/* Possible -/+ rows to consider for filter input */
 				row_in = row_origin + jj;		/* Current input data row number */
 				if (row_in < 0 || (row_in >= (int)Gin->header->ny)) continue;	/* Outside input y-range */
@@ -1216,7 +1210,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 					}
 
 					/* Get here when point is inside and usable  */
-					
+
 					if (slow) {	/* Add it to the relevant temporary work array */
 						if (slower) {	/* Need to store both value and weight */
 							work_data[n_in_median].value = Gin->data[ij_in];
