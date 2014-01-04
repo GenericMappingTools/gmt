@@ -8083,9 +8083,9 @@ bool gmt_x_overlap (double *xa, double *xb, uint64_t *xa_start, uint64_t *xa_sto
 	if (geo) {	/* More complicated, and may change both the start/stop indices and the array longitudes */
 		int k;
 		double dx = xa[*xa_stop] - xa[*xa_start];
-		if (dx > 180.0) {xa[*xa_start] += 360.0; uint_swap(*xa_start, *xa_stop);}	/* Deal with 360 and swap start and stop indices */
+		if (dx > 180.0) {xa[*xa_start] += 360.0; uint64_swap(*xa_start, *xa_stop);}	/* Deal with 360 and swap start and stop indices */
 		dx = xb[*xb_stop] - xb[*xb_start];
-		if (dx > 180.0) {xb[*xb_start] += 360.0; uint_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
+		if (dx > 180.0) {xb[*xb_start] += 360.0; uint64_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
 		/* Here we have fixed a 360 jump and reassign what is start and stop. We must now look for overlaps
 		 * by considering the segments may be off by -360, 0, or +360 degrees in longitude */
 		
