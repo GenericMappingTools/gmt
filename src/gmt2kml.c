@@ -31,6 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Convert GMT data tables to KML files for Google Earth"
 
 #include "gmt_dev.h"
+#include <stdarg.h>
 
 #define GMT_PROG_OPTIONS "-:>KOVabfghi" GMT_OPT("HMm")
 
