@@ -57,6 +57,25 @@ extern "C" {
 #include "gmt_option.h"
 #include "gmt_resources.h"
 
+/* Include glib header and define mutex calls that are no-op when not linking against glib
+   These are used only GLIB based multi-threading */
+
+#ifdef USE_GTHREADS
+#include <glib.h>
+
+#define GMT_declare_gmutex static GMutex mutex;
+#define GMT_set_gmutex g_mutex_lock (&mutex);
+#define GMT_unset_gmutex g_mutex_unlock (&mutex);
+
+#else
+
+#define GMT_declare_gmutex
+#define GMT_set_gmutex
+#define GMT_unset_gmutex
+
+#endif
+
+
 /*=====================================================================================
  *	GMT API FUNCTION PROTOTYPES
  *=====================================================================================
