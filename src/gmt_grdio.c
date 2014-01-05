@@ -2088,7 +2088,7 @@ int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, st
 	/* registration may contain complex mode information */
 	if (registration & GMT_GRID_DEFAULT_REG) registration |= GMT->common.r.registration;	/* Set the default registration */
 	header->registration = (registration & 1);
-	header->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);
+	header->complex_mode = (registration & GMT_GRID_IS_COMPLEX_MASK);
 	header->grdtype = gmt_get_grdtype (GMT, header);
 	GMT_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 1), "");

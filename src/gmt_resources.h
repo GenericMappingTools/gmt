@@ -218,7 +218,7 @@ enum GMT_enum_gridio {
 	GMT_GRID_DATA_ONLY		= 2U,	/* Read|write the grid array given w/e/s/n set in the header */
 	GMT_GRID_IS_COMPLEX_REAL	= 4U,	/* Read|write the real component to/from a complex grid */
 	GMT_GRID_IS_COMPLEX_IMAG	= 8U,	/* Read|write the imaginary component to/from a complex grid */
-	GMT_GRID_IS_COMPLEX_MASK	= 12U,	/* To mask out the rea|imag flags */
+	GMT_GRID_IS_COMPLEX_MASK	= 12U,	/* To mask out the real|imag flags */
 	GMT_GRID_NO_HEADER		= 16U,	/* Write a native grid without the leading grid header */
 	GMT_GRID_ROW_BY_ROW		= 32U,	/* Read|write the grid array one row at the time sequentially */
 	GMT_GRID_ROW_BY_ROW_MANUAL	= 64U};	/* Read|write the grid array one row at the time in any order */
