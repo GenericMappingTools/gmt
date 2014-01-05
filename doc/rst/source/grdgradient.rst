@@ -69,7 +69,8 @@ Optional Arguments
     counterclockwise from the positive x (east) direction. Append **o**
     to report orientations (0-180) rather than directions (0-360).
     Append **n** to add 90 degrees to all angles (e.g., to give
-    orientation of lineated features).
+    orientation of lineated features).  Unlike **-A**, here we return
+    the up-slope direction of the gradient.
 **-E**\ [**s\|p**]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]
     Compute Lambertian radiance appropriate to use with :doc:`grdimage` and :doc:`grdview`.
     The Lambertian Reflection assumes an ideal surface that
