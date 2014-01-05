@@ -595,7 +595,7 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	
 	mode = (F->polar) ? 1 : 0;
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffiz %s and %s\n", suffix[mode][0], suffix[mode][1]);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffix %s and %s\n", suffix[mode][0], suffix[mode][1]);
 
 	if (G->header->arrangement == GMT_GRID_IS_SERIAL) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot save complex grid unless it is interleaved.\n");
@@ -611,7 +611,7 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 
 	/* Set up and allocate the temporary grid. */
 	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
-		G->header->registration | GMT_GRID_IS_COMPLEX_REAL, 0, NULL)) == NULL) {
+		G->header->registration | GMT_GRID_IS_COMPLEX_MASK, 0, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", Grid->header->name);
 		return;
 	}
@@ -651,11 +651,11 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 		}
 	}
 	for (k = 0; k < 2; k++) {	/* Write the two grids */
-		if ((file = file_name_with_suffix (GMT, Grid->header->name, suffix[mode][k])) == NULL) {
+		if ((file = file_name_with_suffix (GMT, G->header->name, suffix[mode][k])) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
 			return;
 		}
-		sprintf (Grid->header->title, "The %s part of FFT transformed input grid %s", suffix[mode][k], Grid->header->name);
+		sprintf (Grid->header->title, "The %s part of FFT transformed input grid %s", suffix[mode][k], G->header->name);
 		if (k == 1 && mode) strcpy (Grid->header->z_units, "radians");
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | wmode[k], NULL, file, Grid) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s could not be written\n", file);
