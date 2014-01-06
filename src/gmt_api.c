@@ -778,7 +778,10 @@ size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	GMT_memcpy (h_tmp, h, 1, struct GMT_GRID_HEADER);
 	h_tmp->complex_mode |= mode;	/* Set the mode-to-be so that if complex the size is doubled */
 	
-	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
+	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) {
+		GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
+		GMT_adjust_loose_wesn (GMT, wesn, h);		/* Subset requested; make sure wesn matches header spacing */
+	}
 	GMT_grd_setpad (GMT, h_tmp, GMT->current.io.pad);	/* Use the system pad setting by default */
 	GMT_set_grddim (GMT, h_tmp);			/* Computes all integer parameters */
 	size = h_tmp->size;				/* This is the size needed to hold grid + padding */
