@@ -50,7 +50,7 @@ projection names stands for Equal-Area and Conformal, respectively):
         Give the central meridian *lon0* (optional) and *scale*
         (**1:**\ *xxxx* or UNIT/degree).
 
-    **-Jm**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JM**\ [*lon0/*\ [*lat0/*\ ]]\ *width*
+    **-Jm**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JM**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Mercator **[C]**)
 
         Give central meridian *lon0* (optional), standard parallel *lat0*
         (optional), and *scale* along parallel (**1:**\ *xxxx* or UNIT/degree).
@@ -84,7 +84,7 @@ projection names stands for Equal-Area and Conformal, respectively):
           * 0 - Plate Carree, Simple Cylindrical, Plain/Plane Chart
 
     **-Jt**\ *lon0/*\ [*lat0/*\ ]\ *scale* or
-    **-JT**\ *lon0/*\ [*lat0/*\ ]\ *width*
+    **-JT**\ *lon0/*\ [*lat0/*\ ]\ *width* (Transverse Mercator **[C]**)
 
         Give the central meridian *lon0*, central parallel *lat0*
         (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree).
