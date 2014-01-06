@@ -9,10 +9,7 @@
 # This script assumes GMT_App_F_stand+.sh and GMT_App_F_iso+.sh have
 # both been run previously.
 
-gmt ps2raster -Tg -E300 -P -A GMT_App_F_stand+.ps
-gmt ps2raster -Tg -E300 -P -A GMT_App_F_iso+.ps
-mv GMT_App_F_stand+.png A.png
-mv GMT_App_F_iso+.png B.png
-gmt psimage A.png -E300 -P -K > GMT_App_F_stand+_iso+.ps
-gmt psimage B.png -E300 -O -X3.2i >> GMT_App_F_stand+_iso+.ps
-rm -f A.png B.png
+gmt ps2raster -Tg -E300 -P -A -D. "${src:-.}"/GMT_App_F_stand+.ps
+gmt ps2raster -Tg -E300 -P -A -D. "${src:-.}"/GMT_App_F_iso+.ps
+gmt psimage GMT_App_F_stand+.png -E300 -P -K > GMT_App_F_stand+_iso+.ps
+gmt psimage GMT_App_F_iso+.png -E300 -O -X3.2i >> GMT_App_F_stand+_iso+.ps
