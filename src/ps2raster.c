@@ -627,7 +627,7 @@ int64_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp)
 			if (c != EOF) ungetc (c, fp);	/* Put back the next char unless we got to EOF */
 			return in;	/* How many characters we return */
 		}
-		if (in == (*size-1)) {	/* Need to extend our buffer; the -1 makes room for an \0 as needed */
+		if ((size_t)in == (*size-1)) {	/* Need to extend our buffer; the -1 makes room for an \0 as needed */
 			(*size) <<= 1;	/* Double the current buffer space */
 			line = *L = GMT_memory (GMT, *L, *size, char);
 		}
