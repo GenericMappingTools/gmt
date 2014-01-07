@@ -645,6 +645,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	if (single && GMT_Destroy_Data (API, &Din) != GMT_OK) {
 		Return (API->error);
 	}
+	GMT_free_dataset (API->GMT, &Dout);	/* Since not registered */
 	
 	Return (EXIT_SUCCESS);
 }

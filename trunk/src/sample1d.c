@@ -463,6 +463,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 		Return (API->error);
 	}
+	GMT_free_dataset (API->GMT, &Dout);	/* Since not registered */
 
 	if (Ctrl->N.active) GMT_free (GMT, t_out);
 	if (nan_flag) GMT_free (GMT, nan_flag);

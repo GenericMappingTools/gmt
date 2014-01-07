@@ -3888,12 +3888,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 			GMT_free_dataset (API->GMT, &N);
-			//if (GMT_Destroy_Data (API, &N) != GMT_OK) {
-			//	Return (API->error);
-			//}
 		}
 		else {	/* Write the whole enchilada */
-			if (R != Template) stack[0]->alloc_mode = 2;	/* Since GMT_Write_Data will register it */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, R->io_mode, NULL, Ctrl->Out.file, R) != GMT_OK) {
 				Return (API->error);

@@ -1923,8 +1923,8 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		else if (delete_grid)
-			GMT_free_grid (GMT, &Grid, false);
+		if (delete_grid)
+			GMT_free_grid (GMT, &Grid, dimension == 2);
 		else if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Orig\n");
 		}
