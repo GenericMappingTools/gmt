@@ -892,6 +892,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		GMT_free_dataset (GMT, &Din);
+		GMT_free_dataset (GMT, &Dout);
 	}
 	else {	/* Standard resampling point case */
 		bool pure_ascii = false;

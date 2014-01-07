@@ -378,6 +378,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
+	GMT_free_dataset (API->GMT, &D[GMT_OUT]);	/* Since not registered */
 	
 	Return (GMT_OK);
 }

@@ -498,5 +498,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->Q.active || Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
+	GMT_free_dataset (API->GMT, &D[GMT_OUT]);	/* Since not registered */
+	
 	Return (GMT_OK);
 }
