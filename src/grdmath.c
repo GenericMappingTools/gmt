@@ -1869,9 +1869,9 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	T = D->table[0];	/* Only one table in a single file */
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
+		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 		(void) GMT_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, true, &d, NULL, NULL);
 		stack[last]->G->data[node] = (float)d;
-		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 	}
 
 	ASCII_free (GMT, info, &D, "LDIST");	/* Free memory used for line */
@@ -1907,10 +1907,10 @@ void grd_LDIST1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	dist = GMT_memory (GMT, NULL, T->n_segments, double);
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
+		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 		lon = info->d_grd_x[col], lat = info->d_grd_y[row];
 		i = floor(lon/bin_size);
 		if (i != old_i || row != old_row) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d, Bin %d\n", row, i);
 			lon1 = (i + 0.5) * bin_size;
 			for (seg = 0, hor = DBL_MAX; seg < T->n_segments; seg++) {
 				x = 0.5 * (T->segment[seg]->min[GMT_X] + T->segment[seg]->max[GMT_X]);
@@ -1923,12 +1923,12 @@ void grd_LDIST1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 		}
 
 		for (seg = 0, d = DBL_MAX; seg < T->n_segments; seg++) {	/* Loop over each line segment */
-			if (dist[seg] < hor) GMT_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
+			if (dist[seg] < hor) (void) GMT_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
 		}
 		stack[last]->G->data[node] = (float)d;
 	}
-	GMT_free (GMT, dist);
 
+	GMT_free (GMT, dist);
 	ASCII_free (GMT, info, &D, "LDIST1");	/* Free memory used for line */
 }
 
@@ -1946,13 +1946,13 @@ void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	prev = last - 1;
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
+		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 		if (stack[prev]->G->data[node] == 0.0)
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
 			(void) GMT_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, true, &d, NULL, NULL);
 			stack[prev]->G->data[node] = (float)d;
 		}
-		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 	}
 
 	ASCII_free (GMT, info, &D, "LDIST2");	/* Free memory used for line */
