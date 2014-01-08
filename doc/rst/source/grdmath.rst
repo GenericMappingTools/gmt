@@ -280,6 +280,8 @@ and output arguments.
 +---------------+-------+-----------------------------------------------------------------------------------------------------------------+
 | **LDIST**     | 1 1   | Compute distance (in degrees if -fg) from lines in multi-segment ASCII file A                                   |
 +---------------+-------+-----------------------------------------------------------------------------------------------------------------+
+| **LDIST1**    | 1 1   | Compute distance (in degrees if -fg) from lines in multi-segment ASCII file A; optimized for coastlines         |
++---------------+-------+-----------------------------------------------------------------------------------------------------------------+
 | **LDIST2**    | 2 1   | As LDIST, from lines in ASCII file B but only to nodes where A != 0                                             |
 +---------------+-------+-----------------------------------------------------------------------------------------------------------------+
 | **LE**        | 2 1   | 1 if A <= B, else 0                                                                                             |
@@ -483,6 +485,10 @@ Notes On Operators
    :ref:`PROJ_ELLIPSOID <Projection Parameters>` is not spherical then geodesics are used in
    spherical calculations.
 
+   The operator **LDIST1** is a version of **LDIST** that is optimized for the use is coastline data sets
+   created with **pscoast**. It includes fast searching routines that significantly reduce the
+   processing time without penalty to the result.
+
 #. The operator **PLM** calculates the associated Legendre polynomial
    of degree L and order M (0 <= M <= L), and its argument is the sine of
    the latitude. **PLM** is not normalized and includes the Condon-Shortley
@@ -520,7 +526,7 @@ Notes On Operators
 #. All functions expecting a positive radius (e.g., **LOG**, **KEI**,
    etc.) are passed the absolute value of their argument. (9) The bitwise
    operators (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
-   **BITTEST**, and **BITXOR**) convert a grid’s single precision values to
+   **BITTEST**, and **BITXOR**) convert single precision values to
    unsigned 32-bit ints to perform the bitwise operations. Consequently,
    the largest whole integer value that can be stored in a float grid is
    2^24 or 16,777,216. Any higher result will be masked to fit in the lower
