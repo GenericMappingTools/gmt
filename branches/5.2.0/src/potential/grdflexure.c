@@ -38,6 +38,8 @@
 #define FLX_FV1	2	/* Firmoviscous 1-layer */
 #define FLX_FV2	3	/* Firmoviscous 2-layer */
 
+double smt_get_age (char *A, char *unit, double *scale);
+
 struct GRDFLEXURE_CTRL {
 	struct In {	/* Input load file or template */
 		bool active, many;
@@ -137,18 +139,6 @@ void Free_grdflexure_Ctrl (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *C) {	/*
 	if (C->G.file) free (C->G.file);	
 	if (C->N.info) GMT_free (GMT, C->N.info);
 	GMT_free (GMT, C);	
-}
-
-double get_age (char *A, char *unit, double *scale)
-{	/* Convert <age>[k|m] to years, return unit and scale as well */
-	size_t k = strlen (A) - 1;
-	*scale = 1.0;
-	*unit = 0;
-	switch (A[k]) {
-		case 'k': *scale = 1.0e3; *unit = A[k]; A[k] = '\0'; break;
-		case 'M': *scale = 1.0e6; *unit = A[k]; A[k] = '\0'; break;
-	}
-	return (atof (A) * (*scale));
 }
 
 double transfer_elastic (double k, struct RHEOLOGY *R)
