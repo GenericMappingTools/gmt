@@ -148,5 +148,5 @@ References
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`grdfft </grdfft>`, :doc:`gravfft </gravfft>`
+:doc:`gmt </gmt>`, :doc:`grdfft </grdfft>`, :doc:`gravfft </supplements/potential/gravfft>`
 :doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`
