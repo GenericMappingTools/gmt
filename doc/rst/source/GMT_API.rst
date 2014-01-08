@@ -961,7 +961,13 @@ are addressed by
 which returns a pointer to the allocated resource. Specify which
 ``family`` and select ``mode`` from ``GMT_DUPLICATE_DATA``,
 ``GMT_DUPLICATE_ALLOC``, and ``GMT_DUPLICATE_NONE``, as discussed above
-(also see ``mode`` discussion above).
+(also see ``mode`` discussion above). For datasets and textsets you can
+add modifiers ``GMT_ALLOC_VERTICAL`` or ``GMT_ALLOC_HORIZONTAL`` if you
+wish to put all data in a single long table or to paste all tables
+side-by-side, respectively (thus getting one wide table instead).
+Additional note for datasets: Normally we allocate the output given the
+corresponding input dimensions. You can override these by specifying your
+alternative dimensions in the input dataset variable dim[].
 The ``data`` is a pointer to the resource you wish to duplicate. In case
 of an error we return a NULL pointer and pass an error code via
 ``API->error``.

@@ -1809,7 +1809,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 
 	S_obj = API->object[item];	/* S is the object whose data we will export */
 	if (S_obj->family != GMT_IS_DATASET) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_FAMILY));	/* Called with wrong data type */
-	if (mode > GMT_WRITE_SET && !S_obj->filename) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
+	if (mode >= GMT_WRITE_TABLE && !S_obj->filename) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once unless overridden by mode */
 		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));
 	default_method = GMT_IS_FILE;
@@ -2082,7 +2082,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	if (object_ID == GMT_NOTSET) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_TEXTSET, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMTAPI_report_error (API, API->error));
 
-	default_method = (mode > GMT_WRITE_SET) ? GMT_IS_FILE : GMT_IS_STREAM;
+	default_method = (mode >= GMT_WRITE_TABLE) ? GMT_IS_FILE : GMT_IS_STREAM;
 	S_obj = API->object[item];
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless overridden by mode */
 		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));
@@ -4010,13 +4010,16 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,CPT,IMAGE}.
  	 * Pass mode as one of GMT_DUPLICATE_{NONE|ALLOC|DATA} to just duplicate the
 	 * container and header structures, allocate space of same dimensions as original,
-	 * or allocate space and duplicate contents.
+	 * or allocate space and duplicate contents.  For GMT_IS_{DATA|TEXT}SET you may add
+	 * the modifiers GMT_ALLOC_VERTICAL or GMT_ALLOC_HORIZONTAL. Also, for GMT_IS_DATASET
+	 * you can manipulate the incoming data->dim to overwrite the number of items allocated.
+	 * [By default we follow the dimensions of hte incoming data].
 	 *
 	 * Return: Pointer to new resource, or NULL if an error (set via API->error).
 	 */
 	
 	int object_ID, item;
-	unsigned int geometry = 0U;
+	unsigned int geometry = 0U, pmode = 0U;
 	void *new_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -4035,10 +4038,31 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			break;
 #endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
-			new_obj = GMT_duplicate_dataset (API->GMT, data, 0, &geometry);
+			pmode = (mode & (GMT_ALLOC_VERTICAL + GMT_ALLOC_HORIZONTAL));	/* Just isolate any special allocation modes */
+			mode -= pmode;	/* Remove the hor/ver flags from the rest of mode */
+			if (mode == GMT_DUPLICATE_DATA)
+				new_obj = GMT_duplicate_dataset (API->GMT, data, pmode, &geometry);
+			else if (mode == GMT_DUPLICATE_ALLOC) {	/* Allocate data set of same size, possibly modulated by Din->dim (of > 0) and pmode */
+				struct GMT_DATASET *Din = data;	/* We know this is a GMT_DATASET pointer */
+				new_obj = GMT_alloc_dataset (API->GMT, data, Din->dim[GMT_ROW], Din->dim[GMT_COL], pmode);
+				geometry = Din->geometry;
+				GMT_memset (Din->dim, 4, uint64_t);	/* Reset alloc dimensions */
+			}
+			else {	/* Just want a dataset structure */
+				struct GMT_DATASET *Din = data;	/* We know this is a GMT_DATASET pointer */
+				new_obj = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASET);
+				geometry = Din->geometry;
+			}
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
-			new_obj = GMT_duplicate_textset (API->GMT, data, 0);
+			pmode = (mode & (GMT_ALLOC_VERTICAL + GMT_ALLOC_HORIZONTAL));	/* Just isolate any special allocation modes */
+			mode -= pmode;	/* Remove the hor/ver flags from the rest of mode */
+			if (mode == GMT_DUPLICATE_DATA)
+				new_obj = GMT_duplicate_textset (API->GMT, data, pmode);
+			else if (mode == GMT_DUPLICATE_ALLOC)	/* Allocate text set of same size, possibly modulated by pmode */
+				new_obj =  GMT_alloc_textset (API->GMT, data, pmode);
+			else	/* Just want a dataset structure */
+				new_obj = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXTSET);
 			geometry = GMT_IS_NONE;
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */

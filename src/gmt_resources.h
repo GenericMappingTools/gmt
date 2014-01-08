@@ -138,8 +138,8 @@ enum GMT_enum_header {
 	GMT_HEADER_ON};			/* Enable header blocks out as default */
 
 enum GMT_enum_dest {
-	GMT_WRITE_OGR = -1,		/* Output OGR/GMT format [Requires proper -a setting] */
-	GMT_WRITE_SET,			/* Write all output tables and all their segments to one destination [Default] */
+	GMT_WRITE_SET = 0,		/* Write all output tables and all their segments to one destination [Default] */
+	GMT_WRITE_OGR,			/* Output OGR/GMT format [Requires proper -a setting] */
 	GMT_WRITE_TABLE,		/* Write each output table and all their segments to separate destinations */
 	GMT_WRITE_SEGMENT,		/* Write all output tables' segments to separate destinations */
 	GMT_WRITE_TABLE_SEGMENT};	/* Same as 2 but if no filenames we use both tbl and seg with format */
@@ -148,15 +148,15 @@ enum GMT_enum_alloc {
 	GMT_ALLOCATED_EXTERNALLY = 0,	/* Allocated outside of GMT: We cannot reallocate or free this memory */
 	GMT_ALLOCATED_BY_GMT = 1};	/* Allocated by GMT: We may reallocate as needed and free when no longer needed */
 
-enum GMT_enum_shape {
-	GMT_ALLOC_NORMAL = 0,		/* Normal allocation of new dataset based on shape of input dataset */
-	GMT_ALLOC_VERTICAL,		/* Allocate a single table for data set to hold all input tables by vertical concatenation */
-	GMT_ALLOC_HORIZONTAL};		/* Alocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
-
 enum GMT_enum_duplicate {
 	GMT_DUPLICATE_NONE = 0,		/* Duplicate data set structure but no allocate&copy of data records|grid|image */
 	GMT_DUPLICATE_ALLOC,		/* Duplicate data set structure and allocate space for data records|grid|image, but no copy */
 	GMT_DUPLICATE_DATA};		/* Duplicate data set structure, allocate space for data records|grid|image, and copy */
+
+enum GMT_enum_shape {
+	GMT_ALLOC_NORMAL = 0,		/* Normal allocation of new dataset based on shape of input dataset */
+	GMT_ALLOC_VERTICAL = 4,		/* Allocate a single table for data set to hold all input tables by vertical concatenation */
+	GMT_ALLOC_HORIZONTAL = 8};	/* Alocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
 
 enum GMT_enum_out {
 	GMT_WRITE_NORMAL = 0,		/* Write header and contents of this entity (table or segment) */
@@ -461,6 +461,7 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
 	size_t n_alloc;			/* The current allocation length of tables */
+	uint64_t dim[4];		/* Only used by GMT_Duplicate_Data to override dimensions */
 	unsigned int geometry;		/* The geometry of this dataset */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),

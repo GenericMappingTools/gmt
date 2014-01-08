@@ -5166,7 +5166,9 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	T = D->table[0];
 	T->ogr = GMT_memory (GMT, NULL, 1, struct GMT_OGR);
 	sprintf (buffer, "%.8g/%.8g/%.8g/%.8g", M->table[0]->segment[0]->coord[0][0], M->table[0]->segment[0]->coord[1][0], M->table[0]->segment[0]->coord[2][0], M->table[0]->segment[0]->coord[3][0]);
-	GMT_free_dataset (GMT, &M);
+	if (GMT_Destroy_Data (GMT->parent, &M) != GMT_OK) {
+		return (GMT->parent->error);
+	}
 	T->ogr->region = strdup (buffer);
 	T->ogr->proj[1] = strdup ("\"-Jx1d --PROJ_ELLIPSOID=WGS84\"");
 	T->ogr->proj[2] = strdup ("\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"");

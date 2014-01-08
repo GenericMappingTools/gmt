@@ -346,7 +346,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	D = Din;	/* The default is to work with the input data as is */
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
 		if (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY)
-			D = GMT_duplicate_dataset (GMT, Din, GMT_ALLOC_NORMAL, NULL);
+			D = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC + GMT_ALLOC_NORMAL, Din);
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Current segment */
@@ -454,7 +454,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 			}
 		}
 	}
-	if (D != Din) GMT_free_dataset (GMT, &D);	/* Free the duplicate dataset */
+	if (D != Din && GMT_Destroy_Data (API, &D) != GMT_OK) Return (API->error);	/* Free the duplicate dataset */
 	
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {

@@ -325,7 +325,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	D[GMT_OUT] = GMT_alloc_dataset (GMT, D[GMT_IN], 0, 0, GMT_ALLOC_NORMAL);	/* Allocate identical output tables; we reallocate memory below */
+	D[GMT_OUT] = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, D[GMT_IN]);	/* Allocate identical output tables; we reallocate memory below */
 
 	geo = GMT_is_geographic (GMT, GMT_IN);					/* true for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */
@@ -378,7 +378,6 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
-	GMT_free_dataset (API->GMT, &D[GMT_OUT]);	/* Since not registered */
 	
 	Return (GMT_OK);
 }
