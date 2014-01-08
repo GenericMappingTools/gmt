@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
 *    $Id$
 *
-*	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+*	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
 *	See LICENSE.TXT file for copying and redistribution conditions.
 *	This program is free software; you can redistribute it and/or modify
 *	it under the terms of the GNU Lesser General Public License as published by
@@ -539,7 +539,8 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		GMT_set_cartesian (GMT, GMT_OUT);
 
-	Dout = GMT_alloc_dataset (GMT, Din, 0, n_out + add_cols, GMT_ALLOC_NORMAL);
+	Din->dim[GMT_COL] = n_out + add_cols;	/* State we want a different set of columns on output */
+	Dout = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, Din);
 	GMT_memset (out, 3, double);
 
 	/* OK, with data in hand we can do some damage */

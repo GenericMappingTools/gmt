@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 # Figure files
 set (_fig_fig GMT4_mode.png GMT5_Summit_2011.jpg GMT5_mode.png
-	GMT_Environment.pdf gimp-panel.png gimp-sliders.png hsv-cone.png
+	GMT_Environment.pdf gimp-sliders+panel.png hsv-cone.png
 	formatpicture.png formatting.png highres.png
 	noantialias.png rendering.png withantialias.png)
 

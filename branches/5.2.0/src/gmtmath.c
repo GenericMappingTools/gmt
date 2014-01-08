@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -3651,7 +3651,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 				}
-				else {	/* Need new named storage place */
+				else {	/* Need new named storage place; use GMT_duplicate_dataset/GMT_free_dataset since no point adding to registered resources since internal use only */
 					k = n_stored;
 					recall[k] = GMT_memory (GMT, NULL, 1, struct GMTMATH_STORED);
 					recall[k]->label = strdup (label);
@@ -3875,6 +3875,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			uint64_t nr, c;
 			struct GMT_DATASET *N = NULL;
 			nr = (Ctrl->S.active) ? 1 : 0;
+			if ((N = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT->parent->error);
 			N = GMT_alloc_dataset (GMT, R, nr, n_columns, GMT_ALLOC_NORMAL);
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				for (r = 0; r < N->table[0]->segment[seg]->n_rows; r++) {
@@ -3886,12 +3887,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, N->io_mode, NULL, Ctrl->Out.file, N) != GMT_OK) {
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (API, &N) != GMT_OK) {
-				Return (API->error);
-			}
+			GMT_free_dataset (API->GMT, &N);
 		}
 		else {	/* Write the whole enchilada */
-			if (R != Template) stack[0]->alloc_mode = 2;	/* Since GMT_Write_Data will register it */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, R->io_mode, NULL, Ctrl->Out.file, R) != GMT_OK) {
 				Return (API->error);

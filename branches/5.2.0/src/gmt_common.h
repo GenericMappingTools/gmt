@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 
 #define MAX_ASPATIAL 64		/* No more than 64 aspatial options in -a */
 
-#define GMT_SHORTHAND_OPTIONS	"BJRXxYycp"	/* All of the shorthand options */
+#define GMT_SHORTHAND_OPTIONS	"BJRXYcp"	/* All of the shorthand options */
 #define GMT_CRITICAL_OPT_ORDER "-VJfRb"		/* If given options among these must be parsed first and in this order */
 
 struct GMT_COMMON {

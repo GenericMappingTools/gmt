@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -119,7 +119,7 @@
  * 2. Memory not allocated by GMT will have an implicit alloc_mode = GMT_ALLOCATED_EXTERNALLY [0]
  *    and alloc_mode = 0 (i.e., gmt executable level) but it does not matter since such memory is
  *    only used for reading and we may never free it or reallocate it within GMT. This alloc_mode
- *    only applies to data arrays inside objects (e.g., G->data), not GMT objects themselves.
+ *    only applies to data arrays inside objects (e.g., G->data), not the GMT objects themselves.
  * 3. Memory passed into modules as "input files" requires no special treatment since its level
  *    will be lower than that of the module it is used in, and when that module tries to free it
  *    (directly with GMT_Destroy_Data or via end-of-module GMT_Garbage_Collection) it will skip
@@ -314,7 +314,7 @@ void GMTAPI_Set_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *obj)
 		case GMT_IS_VECTOR:	obj->V = obj->data; break;
 		case GMT_IS_COORD:	break;	/* No worries */
 #ifdef HAVE_GDAL
-		case GMT_IS_IMAGE:	break;
+		case GMT_IS_IMAGE:	obj->I = obj->data; break;
 #endif
 	}
 }
@@ -780,7 +780,10 @@ size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	GMT_memcpy (h_tmp, h, 1, struct GMT_GRID_HEADER);
 	h_tmp->complex_mode |= mode;	/* Set the mode-to-be so that if complex the size is doubled */
 	
-	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
+	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) {
+		GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
+		GMT_adjust_loose_wesn (GMT, wesn, h);		/* Subset requested; make sure wesn matches header spacing */
+	}
 	GMT_grd_setpad (GMT, h_tmp, GMT->current.io.pad);	/* Use the system pad setting by default */
 	GMT_set_grddim (GMT, h_tmp);			/* Computes all integer parameters */
 	size = h_tmp->size;				/* This is the size needed to hold grid + padding */
@@ -1514,6 +1517,7 @@ int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode
 	}
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
 	S_obj->data = P_obj;		/* Retain pointer to the allocated data so we can find the object via its data pointer */
+	S_obj->data = NULL;
 	
 	return GMT_OK;
 }
@@ -1836,7 +1840,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 
 	S_obj = API->object[item];	/* S is the object whose data we will export */
 	if (S_obj->family != GMT_IS_DATASET) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_FAMILY));	/* Called with wrong data type */
-	if (mode > GMT_WRITE_SET && !S_obj->filename) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
+	if (mode >= GMT_WRITE_TABLE && !S_obj->filename) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once unless overridden by mode */
 		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));
 	default_method = GMT_IS_FILE;
@@ -1939,6 +1943,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	S_obj->alloc_mode = D_obj->alloc_mode;	/* Clarify allocation mode for this entity */
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
 	S_obj->data = D_obj;		/* Retain pointer to the allocated data so we can find its object via the data pointer later */
+	S_obj->data = NULL;
 	
 	return GMT_OK;
 }
@@ -2108,7 +2113,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	if (object_ID == GMT_NOTSET) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_TEXTSET, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMTAPI_report_error (API, API->error));
 
-	default_method = (mode > GMT_WRITE_SET) ? GMT_IS_FILE : GMT_IS_STREAM;
+	default_method = (mode >= GMT_WRITE_TABLE) ? GMT_IS_FILE : GMT_IS_STREAM;
 	S_obj = API->object[item];
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless overridden by mode */
 		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));
@@ -2174,6 +2179,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	S_obj->alloc_mode = T_obj->alloc_mode;	/* Clarify allocation mode for this entity */
 	S_obj->status = GMT_IS_USED;	/* Mark as read */
 	S_obj->data = T_obj;		/* Retain pointer to the allocated data so we can find the object via its pointer later */
+	S_obj->data = NULL;
 	
 	return GMT_OK;
 }
@@ -2733,6 +2739,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as written (unless we only updated header) */
 	S_obj->data = G_obj;		/* Retain pointer to the allocated data so we can find the object via its pointer later */
+	S_obj->data = NULL;
 
 	return (GMT_OK);		
 }
@@ -3218,6 +3225,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	API->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & 1;	/* if set, then API_exit & GMT_exit are simply a return; otherwise they call exit */
 	API->mode = mode & 2;		/* if false|0 then we dont list read and write as modules */
+	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we same some CPU */
 
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
 	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
@@ -3475,7 +3483,13 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p, *file = strdup (resource);
 				if (family == GMT_IS_GRID && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids so access can work */
-				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) *p = '\0';	/* Chop off any +<stuff> for images so access can work */
+				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
+					 /* PW 1/4/2014: No record or docs for why this was added and it causes trouble with files that have a + in their name.
+					  * I am taking out this "fix" and when/if we are told of an example perhaps we can figure out why this was
+					  * added in the first place. I think the only +-mechanism we have is +U|u but that should not apply? */
+					GMT_Report (API, GMT_MSG_NORMAL, "Let Paul Wessel know if you get this message and send him your command\n", file);
+					//*p = '\0';	/* Chop off any +<stuff> for images so access can work */
+				}
 				if (GMT_access (API->GMT, file, F_OK) && !GMT_check_url_name(file)) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_Report (API, GMT_MSG_NORMAL, "File %s not found\n", file);
 					return_value (API, GMT_FILE_NOT_FOUND, GMT_NOTSET);
@@ -4021,13 +4035,16 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,CPT,IMAGE}.
  	 * Pass mode as one of GMT_DUPLICATE_{NONE|ALLOC|DATA} to just duplicate the
 	 * container and header structures, allocate space of same dimensions as original,
-	 * or allocate space and duplicate contents.
+	 * or allocate space and duplicate contents.  For GMT_IS_{DATA|TEXT}SET you may add
+	 * the modifiers GMT_ALLOC_VERTICAL or GMT_ALLOC_HORIZONTAL. Also, for GMT_IS_DATASET
+	 * you can manipulate the incoming data->dim to overwrite the number of items allocated.
+	 * [By default we follow the dimensions of hte incoming data].
 	 *
 	 * Return: Pointer to new resource, or NULL if an error (set via API->error).
 	 */
 	
 	int object_ID, item;
-	unsigned int geometry = 0U;
+	unsigned int geometry = 0U, pmode = 0U;
 	void *new_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -4046,10 +4063,31 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			break;
 #endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
-			new_obj = GMT_duplicate_dataset (API->GMT, data, 0, &geometry);
+			pmode = (mode & (GMT_ALLOC_VERTICAL + GMT_ALLOC_HORIZONTAL));	/* Just isolate any special allocation modes */
+			mode -= pmode;	/* Remove the hor/ver flags from the rest of mode */
+			if (mode == GMT_DUPLICATE_DATA)
+				new_obj = GMT_duplicate_dataset (API->GMT, data, pmode, &geometry);
+			else if (mode == GMT_DUPLICATE_ALLOC) {	/* Allocate data set of same size, possibly modulated by Din->dim (of > 0) and pmode */
+				struct GMT_DATASET *Din = data;	/* We know this is a GMT_DATASET pointer */
+				new_obj = GMT_alloc_dataset (API->GMT, data, Din->dim[GMT_ROW], Din->dim[GMT_COL], pmode);
+				geometry = Din->geometry;
+				GMT_memset (Din->dim, 4, uint64_t);	/* Reset alloc dimensions */
+			}
+			else {	/* Just want a dataset structure */
+				struct GMT_DATASET *Din = data;	/* We know this is a GMT_DATASET pointer */
+				new_obj = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASET);
+				geometry = Din->geometry;
+			}
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
-			new_obj = GMT_duplicate_textset (API->GMT, data, 0);
+			pmode = (mode & (GMT_ALLOC_VERTICAL + GMT_ALLOC_HORIZONTAL));	/* Just isolate any special allocation modes */
+			mode -= pmode;	/* Remove the hor/ver flags from the rest of mode */
+			if (mode == GMT_DUPLICATE_DATA)
+				new_obj = GMT_duplicate_textset (API->GMT, data, pmode);
+			else if (mode == GMT_DUPLICATE_ALLOC)	/* Allocate text set of same size, possibly modulated by pmode */
+				new_obj =  GMT_alloc_textset (API->GMT, data, pmode);
+			else	/* Just want a dataset structure */
+				new_obj = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXTSET);
 			geometry = GMT_IS_NONE;
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */
@@ -5425,7 +5463,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | mode, NULL, G->header->name, G) == NULL)	/* Get data only */
 			return (NULL);
 	}
-	//grd_dump (GMT, G->header, G->data, false, "Read in FFT_Create");
+	//grd_dump (G->header, G->data, false, "Read in FFT_Create");
 	
 	/* Make sure there are no NaNs in the grid - that is a fatal flaw */
 	
@@ -5437,9 +5475,9 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	
 	if (F->trend_mode == GMT_FFT_REMOVE_NOT_SET) F->trend_mode = GMT_FFT_REMOVE_NOTHING;	/* Delayed default */
 	GMT_grd_detrend (GMT, G, F->trend_mode, K->coeff);	/* Detrend data, if requested */
-	//grd_dump (GMT, G->header, G->data, false, "After detrend");
+	//grd_dump (G->header, G->data, false, "After detrend");
 	gmt_fft_taper (GMT, G, F);				/* Taper data, if requested */
-	//grd_dump (GMT, G->header, G->data, false, "After Taper");
+	//grd_dump (G->header, G->data, false, "After Taper");
 	K->dim = 2;	/* 2-D FFT */
 	return (K);
 }
@@ -5515,9 +5553,9 @@ int GMTAPI_FFT_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int direction, u
 	int status;
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_IN, K);	/* Save intermediate grid, if requested, before interleaving */
 	GMT_grd_mux_demux (API->GMT, G->header, G->data, GMT_GRID_IS_INTERLEAVED);
-	grd_dump (API->GMT, G->header, G->data, true, "After demux");
+	grd_dump (G->header, G->data, true, "After demux");
 	status = GMT_FFT_2D (API, G->data, G->header->mx, G->header->my, direction, mode);
-	//grd_dump (API->GMT, G->header, G->data, true, "After FFT");
+	//grd_dump (G->header, G->data, true, "After FFT");
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_OUT, K);	/* Save complex grid, if requested */
 	return (status);
 }
@@ -5822,9 +5860,10 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	 * mode = 4:	Reset elapsed time to 0, no time stamp.
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
-	time_t toc, S;
+	time_t toc_abs;
+	clock_t toc, S;
 	size_t source_info_len;
-	unsigned int H, M;
+	unsigned int H, M, milli;
 	char message[4*GMT_BUFSIZ] = {""}, stamp[GMT_LEN256] = {""};
 	struct GMTAPI_CTRL *API = NULL;
 	va_list args;
@@ -5832,21 +5871,23 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	API = gmt_get_api_ptr (V_API);
-	if (mode) toc = time ((time_t *)0);
+	if (mode) toc = clock ();
 	if (mode & 4) API->GMT->current.time.tic = toc;
 
 	switch (mode) {
 		case 1:
-			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&toc));
+			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&toc_abs));
 			break;
 		case 2:
 		case 6:
-			S = toc - API->GMT->current.time.tic;
+			S = (toc - (clock_t)API->GMT->current.time.tic);	/* Elapsed time in ticks */
+			milli = (unsigned)(((float)S / CLOCKS_PER_SEC - (int)(S / CLOCKS_PER_SEC)) * CLOCKS_PER_SEC);	/* millisec */
+			S /= CLOCKS_PER_SEC;	/* Elapsed time in seconds */
 			H = urint (floor (S * GMT_SEC2HR));
 			S -= H * GMT_HR2SEC_I;
 			M = urint (floor (S * GMT_SEC2MIN));
 			S -= M * GMT_MIN2SEC_I;
-			sprintf (stamp, "Elapsed time %2.2d:%2.2d:%2.2d", H, M, (int)S);
+			sprintf (stamp, "Elapsed time %2.2d:%2.2d:%2.2d.%2.2d", H, M, (int)S, milli);
 			break;
 		default: break;
 	}

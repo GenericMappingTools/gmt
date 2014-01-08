@@ -161,7 +161,7 @@ mkdir -p "$exec_dir"
 cd "$exec_dir"
 
 # Start with proper GMT defaults
-gmt gmtset -Du PS_CHAR_ENCODING ISOLatin1+
+gmt set -Du PS_CHAR_ENCODING ISOLatin1+
 
 # Tentative PS file name
 ps="${script_name%.sh}.ps"

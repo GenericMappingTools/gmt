@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -165,36 +165,6 @@ char *GMT_fgets (struct GMT_CTRL *GMT, char *str, int size, FILE *stream)
 		/* This will report wrong lengths if last line has no '\n' but we don't care */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n, size-2);
 	}
-	return (str);
-}
-
-char *GMT_fgets_chop (struct GMT_CTRL *GMT, char *str, int size, FILE *stream)
-{
-	char *p;
-
-	/* fgets will always set str[size-1] = '\0' if more data than str can handle is found.
-	 * Thus, we examine str[size-2].  If this is neither '\0' nor '\n' then we have only
-	 * read a portion of a logical record that is longer than size.
-	 */
-	str[size-2] = '\0'; /* Set last but one record to 0 */
-	if (!fgets (str, size, stream))
-		return (NULL); /* Got nothing */
-
-	p = strpbrk (str, "\r\n");
-	if ( p == NULL || ((p-str+2 == size) && *p != '\n') ) {
-		/* If CR or LF not found, or last but one record not \n,
-		 * then only got part of a record */
-		int c, n = 0;
-		/* Read char-by-char until newline is consumed */
-		while ((c = fgetc (stream)) != '\n' && c != EOF)
-			(void) (isspace(c) || ++n); /* Do not count whitespace */
-		if (n)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n-1, size);
-	}
-	if (p)
-		/* Overwrite 1st CR or LF with terminate string */
-		*p = '\0';
-
 	return (str);
 }
 
@@ -891,6 +861,7 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 
 	/* First look in the current working directory */
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 1. GMT_getsharepath trying current dir\n");
 	sprintf (path, "%s%s", stem, suffix);
 	if (!access (path, mode)) return (path);	/* Yes, found it in current directory */
 
@@ -904,9 +875,11 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	/* Not found, see if there is a file in the user's GMT_USERDIR (~/.gmt) directory */
 
 	if (GMT->session.USERDIR) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 2. GMT_getsharepath trying USERDIR %s\n", GMT->session.USERDIR);
 		/* Try to get file from $GMT_USERDIR */
 		sprintf (path, "%s/%s%s", GMT->session.USERDIR, stem, suffix);
 		if (!access (path, mode)) return (path);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 3. GMT_getsharepath trying USERDIR subdir %s/%s\n", GMT->session.USERDIR, subdir);
 		/* Try to get file from $GMT_USERDIR/subdir */
 		sprintf (path, "%s/%s/%s%s", GMT->session.USERDIR, subdir, stem, suffix);
 		if (!access (path, mode)) return (path);
@@ -915,10 +888,12 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	/* Try to get file from $GMT_SHAREDIR/subdir */
 
 	if (subdir) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 4. GMT_getsharepath trying SHAREDIR subdir %s/%s\n", GMT->session.SHAREDIR, subdir);
 		sprintf (path, "%s/%s/%s%s", GMT->session.SHAREDIR, subdir, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 5. GMT_getsharepath failed\n");
 	return (NULL);	/* No file found, give up */
 }
 
@@ -5191,7 +5166,9 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	T = D->table[0];
 	T->ogr = GMT_memory (GMT, NULL, 1, struct GMT_OGR);
 	sprintf (buffer, "%.8g/%.8g/%.8g/%.8g", M->table[0]->segment[0]->coord[0][0], M->table[0]->segment[0]->coord[1][0], M->table[0]->segment[0]->coord[2][0], M->table[0]->segment[0]->coord[3][0]);
-	GMT_free_dataset (GMT, &M);
+	if (GMT_Destroy_Data (GMT->parent, &M) != GMT_OK) {
+		return (GMT->parent->error);
+	}
 	T->ogr->region = strdup (buffer);
 	T->ogr->proj[1] = strdup ("\"-Jx1d --PROJ_ELLIPSOID=WGS84\"");
 	T->ogr->proj[2] = strdup ("\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"");

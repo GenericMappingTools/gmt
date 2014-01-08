@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #ifndef _GMT_PROTOTYPES_H
 #define _GMT_PROTOTYPES_H
 
-EXTERN_MSC void grd_dump (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt);
+EXTERN_MSC void grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt);
 
 /* Temporary redef of strdup to allow check of memory leaks due to usage of strdup */
 #ifdef FISH_STRDUP_LEAKS
@@ -144,7 +144,6 @@ EXTERN_MSC void GMT_quad_reset (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, uint64
 EXTERN_MSC void GMT_quad_add (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, double x);
 EXTERN_MSC unsigned int GMT_quad_finalize (struct GMT_CTRL *GMT, struct GMT_QUAD *Q);
 EXTERN_MSC char * GMT_fgets (struct GMT_CTRL *GMT, char *str, int size, FILE *stream);
-EXTERN_MSC char * GMT_fgets_chop (struct GMT_CTRL *GMT, char *str, int size, FILE *stream);
 EXTERN_MSC int GMT_fclose (struct GMT_CTRL *GMT, FILE *stream);
 EXTERN_MSC int GMT_access (struct GMT_CTRL *GMT, const char *filename, int mode);		/* access wrapper */
 EXTERN_MSC FILE * GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode);
@@ -260,7 +259,7 @@ EXTERN_MSC void GMT_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 EXTERN_MSC void GMT_hold_contour (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_x_free (struct GMT_CTRL *GMT, struct GMT_XOVER *X);
 EXTERN_MSC int GMT_init_track (struct GMT_CTRL *GMT, double y[], uint64_t n, struct GMT_XSEGMENT **S);
-EXTERN_MSC uint64_t GMT_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t sa[], struct GMT_XSEGMENT A[], uint64_t na, double xb[], double yb[], uint64_t sb[], struct GMT_XSEGMENT B[], uint64_t nb, bool internal, struct GMT_XOVER *X);
+EXTERN_MSC uint64_t GMT_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t sa[], struct GMT_XSEGMENT A[], uint64_t na, double xb[], double yb[], uint64_t sb[], struct GMT_XSEGMENT B[], uint64_t nb, bool internal, bool geo, struct GMT_XOVER *X);
 EXTERN_MSC void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where);
 EXTERN_MSC char * GMT_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt[], double z, bool closed, unsigned int count[]);
 EXTERN_MSC void GMT_str_setcase (struct GMT_CTRL *GMT, char *value, int mode);

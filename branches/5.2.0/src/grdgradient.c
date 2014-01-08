@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,10 @@
  * azim = azimuth clockwise from north in degrees.
  * gradient = -[(dz/dx)sin(azim) + (dz/dy)cos(azim)].
  * the expression in [] is the correct gradient.  We take
- * -[]  in order that data which goes DOWNHILL in the
+ * -[] in order that data which goes DOWNHILL in the
  * azim direction will give a positive value; this is
- * for image shading purposes.
+ * for image shading purposes.  Note for -D we instead use
+ * the common convention of reporting the UPHILL direction.
  *
  * Author:	W.H.F. Smith
  * Date: 	1-JAN-2010
@@ -126,7 +127,7 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -A<azim>/<azim2> will compute two directions and save the one larger in magnitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Find the direction of grad z.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Find the direction of the vector grad z (up-slope direction).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default: azimuth].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to add 90 degrees to the values from c or o.\n");
@@ -336,7 +337,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};
 	
 	double dx_grid, dy_grid, x_factor, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
-	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output;
+	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output, one;
 	double x_factor2 = 0.0, y_factor2 = 0.0, dzdx2 = 0.0, dzdy2 = 0.0, dzds1, dzds2;
 	double p0 = 0.0, q0 = 0.0, p0q0_cte = 1.0, norm_z, mag, s[3], lim_x, lim_y, lim_z;
 	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale;
@@ -415,16 +416,17 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 	}
 	new_grid = GMT_set_outgrid (GMT, Ctrl->In.file, Surf, &Out);	/* true if input is a read-only array */
 	
-	if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {
+	if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
 		dy_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_Y];
 	}
-	else {
+	else {	/* Cartesian */
 		dx_grid = Surf->header->inc[GMT_X];
 		dy_grid = Surf->header->inc[GMT_Y];
 	}
-	x_factor = -1.0 / (2.0 * dx_grid);
-	y_factor = -1.0 / (2.0 * dy_grid);
+	one = (Ctrl->D.active) ? +1.0 : -1.0;	/* With -D we want positive grad direction, not negative as for shading (-A, -E) */
+	x_factor = one / (2.0 * dx_grid);
+	y_factor = one / (2.0 * dy_grid);
 	if (Ctrl->A.active) {	/* Convert azimuths to radians to save multiplication later */
 		if (Ctrl->A.two) {
 			Ctrl->A.azimuth[1] *= D2R;
@@ -454,7 +456,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 		if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = GMT_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
-			if (dx_grid > 0.0) x_factor = -1.0 / (2.0 * dx_grid);	/* Use previous value at the poles */
+			if (dx_grid > 0.0) x_factor = one / (2.0 * dx_grid);	/* Use previous value at the poles */
 			if (Ctrl->A.active) {
 				if (Ctrl->A.two) x_factor2 = x_factor * sin (Ctrl->A.azimuth[1]);
 				x_factor *= sin (Ctrl->A.azimuth[0]);
@@ -470,7 +472,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 				continue;
 			}
 
-			/* We can now evalute the central finite differences */
+			/* We can now evaluate the central finite differences */
 			dzdx = (Surf->data[ij+1] - Surf->data[ij-1]) * x_factor;
 			dzdy = (Surf->data[ij-Surf->header->mx] - Surf->data[ij+Surf->header->mx]) * y_factor;
 			if (Ctrl->A.two) {
@@ -639,7 +641,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 		else if (Ctrl->E.mode == 1)
 			strcpy (buffer, "Peucker piecewise linear radiance");
 		else
-			strcpy (buffer, "Directions of maximum slopes");
+			strcpy (buffer, "Directions of grad (z) [uphill direction]");
 	}
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
@@ -650,7 +652,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 
 	if (Ctrl->S.active) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Slope)) Return (API->error);
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Magnitude of maximum slopes", Slope)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Magnitude of grad (z)", Slope)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Slope) != GMT_OK) {
 			Return (API->error);
 		}

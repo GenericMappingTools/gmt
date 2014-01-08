@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -4027,7 +4027,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			break;
 		case GMTCASE_GLOBAL_Y_SCALE:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
-				GMT_COMPAT_CHANGE ("PS_SCALE_X");
+				GMT_COMPAT_CHANGE ("PS_SCALE_Y");
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_PS_SCALE_Y:
