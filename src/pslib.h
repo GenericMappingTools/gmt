@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 2009-2013 by P. Wessel and R. Scharroo
+ *	Copyright (c) 2009-2014 by P. Wessel and R. Scharroo
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -161,6 +161,7 @@ enum PSL_enum_line {PSL_BUTT_CAP	= 0,
 
 enum PSL_enum_verbose {PSL_MSG_QUIET = 0,	/* No messages whatsoever */
 	PSL_MSG_FATAL,		/* Fatal errors */
+	PSL_MSG_TICTOC,		/* To print a tic-toc elapsed time message */
 	PSL_MSG_COMPAT,		/* Compatibility warnings */
 	PSL_MSG_NORMAL,		/* Warnings level -V */
 	PSL_MSG_VERBOSE,	/* Longer verbose, -Vl in some programs */

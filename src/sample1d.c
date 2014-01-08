@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -257,7 +257,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	unsigned char *nan_flag = NULL;
 	
 	size_t m_alloc;
-	uint64_t k, tbl, col, row, seg, m = 0, m_supplied = 0;
+	uint64_t k, tbl, col, row, seg, m = 0, m_supplied = 0, dim[4] = {0, 0, 0, 0};
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
 	double tt, low_t, high_t, last_t, *lon = NULL, *lat = NULL;
@@ -343,7 +343,8 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 		}
 	}
 
-	if ((Dout = GMT_create_dataset (GMT, 0, 0, 0, Din->n_columns, GMT_IS_LINE, true)) == NULL) Return (API->error);
+	dim[GMT_COL] = Din->n_columns;	/* Only known dimension, the rest is 0 */
+	if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 	Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
 	Dout->n_tables = Din->n_tables;
 
@@ -463,6 +464,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 		Return (API->error);
 	}
+	//GMT_free_dataset (API->GMT, &Dout);	/* Since not registered */
 
 	if (Ctrl->N.active) GMT_free (GMT, t_out);
 	if (nan_flag) GMT_free (GMT, nan_flag);

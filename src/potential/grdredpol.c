@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -287,82 +287,82 @@ void tfpoeq(double *w, int m, int n, double *greel, double *gim,
 
 /*	Translated to C by f2c (and further massaged) from a routine of A. Galdeano */
 
-    /* Parameter adjustments */
-    gim_offset = 1 + m;
-    gim -= gim_offset;
-    greel_offset = 1 + m;
-    greel -= greel_offset;
-    w_offset = 1 + m;
-    w -= w_offset;
+	/* Parameter adjustments */
+	gim_offset = 1 + m;
+	gim -= gim_offset;
+	greel_offset = 1 + m;
+	greel -= greel_offset;
+	w_offset = 1 + m;
+	w -= w_offset;
 
-    /* Function Body */
-    ky = (n + 1) / 2;
-    lx = (m + 1) / 2;
-/*  CALCUL DES COEF. DU FILTRE */
-    xmn = (double)(m * n);
-    if (m == mkeep) goto L2;
-    mkeep = m;
-    arg = TWO_PI / m;
-    for (i = 0; i < m; i++) {
-	arg1 = arg * i;
-	sinphi[i] = sin(arg1);
-	cosphi[i] = cos(arg1);
-    }
-L2:
-    if (n == nkeep) goto L4;
-    nkeep = n;
-    arg = TWO_PI / n;
-    for (i = 0; i < n; i++) {
-	arg1 = arg * i;
-	sinpsi[i] = sin(arg1);
-	cospsi[i] = cos(arg1);
-    }
-L4:
-    lx1 = lx + 1;
-    m1 = m + 1;
-    n1 = n + 1;
-    for (k1 = 1; k1 <= n; ++k1) {
-	k = k1 - ky;
-	k2 = n1 - k1;
-	for (l1 = lx; l1 <= m; ++l1) {
-	    l = l1 - lx;
-	    l2 = m1 - l1;
-	    somr = 0.;
-	    somi = 0.;
-	    for (ir = lx1; ir <= m; ++ir) {
-		lr = ir - lx;
-		lrm = lr * l % m + 1;
-		somr += greel[ir + m] * cosphi[lrm - 1];
-		somi += gim[ir + m] * sinphi[lrm - 1];
-	    }
-	    for (is = 2; is <= ky; ++is) {
-		ks = is - 1;
-		ksn = ks * k % n + 1;
-		if (ksn <= 0) ksn += n;
-		co2 = cospsi[ksn - 1];
-		si2 = sinpsi[ksn - 1];
-		somr += greel[lx + is * m] * co2;
-		somi += gim[lx + is * m] * si2;
-		for (ir1 = lx1; ir1 <= m; ++ir1) {
-		    lr = ir1 - lx;
-		    ir2 = lx - lr;
-		    lrm = lr * l % m + 1;
-		    co1 = cosphi[lrm - 1];
-		    si1 = sinphi[lrm - 1];
-		    c1c2 = co1 * co2;
-		    s1s2 = si1 * si2;
-		    c1s2 = co1 * si2;
-		    c2s1 = co2 * si1;
-		    somr = somr + greel[ir1 + is * m] * (c1c2 - s1s2) + greel[ir2 + is * m] * (c1c2 + s1s2);
-		    somi = somi + gim[ir1 + is * m] * (c1s2 + c2s1) + gim[ir2 + is * m] * (c1s2 - c2s1);
-		}
-	    }
-	    somr = somr + somr + greel[lx + m];
-	    somi += somi;
-	    w[l1 + k1 * m] = (somr + somi) / xmn;
-	    if (l1 != lx)
-		w[l2 + k2 * m] = (somr - somi) / xmn;
+	/* Function Body */
+	ky = (n + 1) / 2;
+	lx = (m + 1) / 2;
+	/*  CALCUL DES COEF. DU FILTRE */
+	xmn = (double)(m * n);
+	if (m == mkeep) goto L2;
+	mkeep = m;
+	arg = TWO_PI / m;
+	for (i = 0; i < m; i++) {
+		arg1 = arg * i;
+		sinphi[i] = sin(arg1);
+		cosphi[i] = cos(arg1);
 	}
+L2:
+	if (n == nkeep) goto L4;
+	nkeep = n;
+	arg = TWO_PI / n;
+	for (i = 0; i < n; i++) {
+		arg1 = arg * i;
+		sinpsi[i] = sin(arg1);
+		cospsi[i] = cos(arg1);
+	}
+L4:
+	lx1 = lx + 1;
+	m1 = m + 1;
+	n1 = n + 1;
+	for (k1 = 1; k1 <= n; ++k1) {
+		k = k1 - ky;
+		k2 = n1 - k1;
+		for (l1 = lx; l1 <= m; ++l1) {
+			l = l1 - lx;
+			l2 = m1 - l1;
+			somr = 0.;
+			somi = 0.;
+			for (ir = lx1; ir <= m; ++ir) {
+				lr = ir - lx;
+				lrm = lr * l % m + 1;
+				somr += greel[ir + m] * cosphi[lrm - 1];
+				somi += gim[ir + m] * sinphi[lrm - 1];
+			}
+			for (is = 2; is <= ky; ++is) {
+				ks = is - 1;
+				ksn = ks * k % n + 1;
+				if (ksn <= 0) ksn += n;
+				co2 = cospsi[ksn - 1];
+				si2 = sinpsi[ksn - 1];
+				somr += greel[lx + is * m] * co2;
+				somi += gim[lx + is * m] * si2;
+				for (ir1 = lx1; ir1 <= m; ++ir1) {
+					lr = ir1 - lx;
+					ir2 = lx - lr;
+					lrm = lr * l % m + 1;
+					co1 = cosphi[lrm - 1];
+					si1 = sinphi[lrm - 1];
+					c1c2 = co1 * co2;
+					s1s2 = si1 * si2;
+					c1s2 = co1 * si2;
+					c2s1 = co2 * si1;
+					somr = somr + greel[ir1 + is * m] * (c1c2 - s1s2) + greel[ir2 + is * m] * (c1c2 + s1s2);
+					somi = somi + gim[ir1 + is * m] * (c1s2 + c2s1) + gim[ir2 + is * m] * (c1s2 - c2s1);
+				}
+			}
+			somr = somr + somr + greel[lx + m];
+			somi += somi;
+			w[l1 + k1 * m] = (somr + somi) / xmn;
+			if (l1 != lx)
+				w[l2 + k2 * m] = (somr - somi) / xmn;
+		}
     }
 }
 
@@ -414,9 +414,9 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
   *	Updated for IGRF 11th generation
   */
 
-     struct IGRF {
-	double e_1[3255];
-     };
+	struct IGRF {
+		double e_1[3255];
+	};
      /* Initialized data */
      static struct IGRF equiv_22 = {
        {-31543.,-2298., 5922., -677., 2905.,-1061.,  924., 1121., /* g0 (1900) */
@@ -993,7 +993,8 @@ int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-E<dip_grd>/<dec_grd>] [-F<m>/<n>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filter>]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filter>]\n\t[%s]\n\n",
+				GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
                 
@@ -1014,8 +1015,7 @@ int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdredpol and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -1023,11 +1023,10 @@ int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-
 	unsigned int n_errors = 0, n_files = 0, pos = 0;
-	int j;
-	char	p[GMT_LEN256] = {""};
-	struct	GMT_OPTION *opt = NULL;
+	int    j;
+	char   p[GMT_LEN256] = {""};
+	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -1138,11 +1137,11 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	bool wrote_one = false;
 	unsigned int i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
-        unsigned int k, l, i3, n_jlon, n_jlat, n_coef;
+	unsigned int k, l, i3, n_jlon, n_jlat, n_coef;
 	int error = 0;
 	uint64_t ij, jj;
-        double	tmp_d, sloni, slati, slonf, slatf, slonm, slatm;
-        double	*ftlon = NULL, *ftlat = NULL, *gxr = NULL, *gxi = NULL, *fxr = NULL;
+	double	tmp_d, sloni, slati, slonf, slatf, slonm, slatm;
+	double	*ftlon = NULL, *ftlat = NULL, *gxr = NULL, *gxi = NULL, *fxr = NULL;
 	double	*gxar = NULL, *gxai = NULL, *gxbr = NULL, *gxbi = NULL, *gxgr = NULL;
 	double	*gxgi = NULL, *fxar = NULL, *fxbr = NULL, *fxgr = NULL, *fix = NULL;
 	double	*gxtr = NULL, *gxti = NULL, *gxmr = NULL, *gxmi = NULL, *gxnr = NULL;
@@ -1156,8 +1155,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	struct	REDPOL_CTRL *Ctrl = NULL;
 	struct	GMT_GRID *Gin = NULL, *Gout = NULL, *Gdip = NULL, *Gdec = NULL, *Gfilt = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct	GMT_OPTION *options = NULL;
+	struct	GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -1228,55 +1227,51 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	/* Section to deal with possible external grids with dip and dec for interpolation */
 
 	if (Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd) {
-		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->E.dipfile, NULL)) == NULL) {	/* Get header only */
+		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->E.dipfile, NULL)) == NULL)	/* Get header only */
 			Return (API->error);
-		}
 	
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->E.dipfile, Gdip) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->E.dipfile, Gdip) == NULL)
 			Return (API->error);
-		}
 	}
 	if (Ctrl->E.dip_dec_grd) {
-		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->E.decfile, NULL)) == NULL) {
+		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->E.decfile, NULL)) == NULL)
 			Return (API->error);
-		}
 	
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->E.decfile, Gdec) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->E.decfile, Gdec) == NULL)
 			Return (API->error);
-		}
 	}
 
 	n_coef = Ctrl->F.ncoef_row * Ctrl->F.ncoef_col;
-       	cosphi = GMT_memory (GMT, NULL, n_coef, double);
-       	sinphi = GMT_memory (GMT, NULL, n_coef, double);
-       	cospsi = GMT_memory (GMT, NULL, n_coef, double);
-       	sinpsi = GMT_memory (GMT, NULL, n_coef, double);
-       	gxr    = GMT_memory (GMT, NULL, n_coef, double);
-       	gxi    = GMT_memory (GMT, NULL, n_coef, double);
-       	gxar   = GMT_memory (GMT, NULL, n_coef, double);
-       	gxai   = GMT_memory (GMT, NULL, n_coef, double);
-       	gxbr   = GMT_memory (GMT, NULL, n_coef, double);
-       	gxbi   = GMT_memory (GMT, NULL, n_coef, double);
-       	gxgr   = GMT_memory (GMT, NULL, n_coef, double);
-       	gxgi   = GMT_memory (GMT, NULL, n_coef, double);
-       	fxr    = GMT_memory (GMT, NULL, n_coef, double);
-       	fix    = GMT_memory (GMT, NULL, n_coef, double);
-       	fxar   = GMT_memory (GMT, NULL, n_coef, double);
-       	fxbr   = GMT_memory (GMT, NULL, n_coef, double);
-       	fxgr   = GMT_memory (GMT, NULL, n_coef, double);
-       	ftlon  = GMT_memory (GMT, NULL, Gin->header->nx, double);
-       	ftlat  = GMT_memory (GMT, NULL, Gin->header->ny, double);
+	cosphi = GMT_memory (GMT, NULL, n_coef, double);
+	sinphi = GMT_memory (GMT, NULL, n_coef, double);
+	cospsi = GMT_memory (GMT, NULL, n_coef, double);
+	sinpsi = GMT_memory (GMT, NULL, n_coef, double);
+	gxr    = GMT_memory (GMT, NULL, n_coef, double);
+	gxi    = GMT_memory (GMT, NULL, n_coef, double);
+	gxar   = GMT_memory (GMT, NULL, n_coef, double);
+	gxai   = GMT_memory (GMT, NULL, n_coef, double);
+	gxbr   = GMT_memory (GMT, NULL, n_coef, double);
+	gxbi   = GMT_memory (GMT, NULL, n_coef, double);
+	gxgr   = GMT_memory (GMT, NULL, n_coef, double);
+	gxgi   = GMT_memory (GMT, NULL, n_coef, double);
+	fxr    = GMT_memory (GMT, NULL, n_coef, double);
+	fix    = GMT_memory (GMT, NULL, n_coef, double);
+	fxar   = GMT_memory (GMT, NULL, n_coef, double);
+	fxbr   = GMT_memory (GMT, NULL, n_coef, double);
+	fxgr   = GMT_memory (GMT, NULL, n_coef, double);
+	ftlon  = GMT_memory (GMT, NULL, Gin->header->nx, double);
+	ftlat  = GMT_memory (GMT, NULL, Gin->header->ny, double);
 
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) { 
-       		gxtr = GMT_memory (GMT, NULL, n_coef, double);
-       		gxti = GMT_memory (GMT, NULL, n_coef, double);
-       		gxmr = GMT_memory (GMT, NULL, n_coef, double);
-       		gxmi = GMT_memory (GMT, NULL, n_coef, double);
-       		gxnr = GMT_memory (GMT, NULL, n_coef, double);
-       		gxni = GMT_memory (GMT, NULL, n_coef, double);
-       		fxtr = GMT_memory (GMT, NULL, n_coef, double);
-       		fxmr = GMT_memory (GMT, NULL, n_coef, double);
-       		fxnr = GMT_memory (GMT, NULL, n_coef, double);
+		gxtr = GMT_memory (GMT, NULL, n_coef, double);
+		gxti = GMT_memory (GMT, NULL, n_coef, double);
+		gxmr = GMT_memory (GMT, NULL, n_coef, double);
+		gxmi = GMT_memory (GMT, NULL, n_coef, double);
+		gxnr = GMT_memory (GMT, NULL, n_coef, double);
+		gxni = GMT_memory (GMT, NULL, n_coef, double);
+		fxtr = GMT_memory (GMT, NULL, n_coef, double);
+		fxmr = GMT_memory (GMT, NULL, n_coef, double);
+		fxnr = GMT_memory (GMT, NULL, n_coef, double);
 	}
 
 	/* Generate vectors of lon & lats */
@@ -1365,11 +1360,11 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 					if (!(Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {
 						rtp_filt_colinear(i,j,n21,gxr,gxi,gxar,gxai,gxbr,gxbi,gxgr,gxgi,
-								  u,v,alfa,beta,gama, Ctrl);
+						                  u,v,alfa,beta,gama, Ctrl);
 					}
 					else {		/* Case more general. alfa, beta, gama, tau, mu e nu */
-						rtp_filt_NOTcolinear(i,j,n21,gxr,gxi,gxar,gxai,gxbr,gxbi,gxgr,gxgi,gxtr,
-							gxti,gxmr,gxmi,gxnr,gxni,u,v,alfa,beta,gama,tau,mu,nu, Ctrl);
+						rtp_filt_NOTcolinear(i,j,n21,gxr,gxi,gxar,gxai,gxbr,gxbi,gxgr,gxgi,gxtr,gxti,
+						                     gxmr,gxmi,gxnr,gxni,u,v,alfa,beta,gama,tau,mu,nu, Ctrl);
 					}
 				}
 			}
@@ -1379,7 +1374,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 			gxgr[ij_mn(Ctrl,m21-1,0)] = 0;	gxgi[ij_mn(Ctrl,m21-1,0)] = 0; 
 
 			/* Compute iFT of the filter */
-			tfpoeq(fxr,Ctrl->F.ncoef_row,  Ctrl->F.ncoef_col,gxr,gxi,   cosphi,sinphi,cospsi,sinpsi); 
+			tfpoeq(fxr, Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxr,gxi,   cosphi,sinphi,cospsi,sinpsi); 
 			tfpoeq(fxar,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxar,gxai, cosphi,sinphi,cospsi,sinpsi); 
 			tfpoeq(fxbr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxbr,gxbi, cosphi,sinphi,cospsi,sinpsi); 
 			tfpoeq(fxgr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxgr,gxgi, cosphi,sinphi,cospsi,sinpsi); 
@@ -1466,10 +1461,10 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Report (API, GMT_MSG_VERBOSE, "\n"); 
 
-	GMT_free(GMT, cosphi);		GMT_free(GMT, sinphi);
-	GMT_free(GMT, cospsi);		GMT_free(GMT, sinpsi);
-	GMT_free(GMT, gxr);		GMT_free(GMT, gxi);
-	GMT_free(GMT, ftlat);		GMT_free(GMT, ftlon);
+	GMT_free(GMT, cosphi);      GMT_free(GMT, sinphi);
+	GMT_free(GMT, cospsi);      GMT_free(GMT, sinpsi);
+	GMT_free(GMT, gxr);         GMT_free(GMT, gxi);
+	GMT_free(GMT, ftlat);       GMT_free(GMT, ftlon);
 	GMT_free(GMT, fxr);
 
 	GMT_free(GMT, fxar);		GMT_free(GMT, fxbr);
@@ -1479,11 +1474,11 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	GMT_free(GMT, gxbr);		GMT_free(GMT, gxbi);
 	GMT_free(GMT, gxgr);		GMT_free(GMT, gxgi);
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {
-       		GMT_free(GMT, gxtr);		GMT_free(GMT, gxti);
-       		GMT_free(GMT, gxmr);		GMT_free(GMT, gxmi);
-       		GMT_free(GMT, gxnr);		GMT_free(GMT, gxni);
-       		GMT_free(GMT, fxtr);		GMT_free(GMT, fxmr);
-       		GMT_free(GMT, fxnr);
+		GMT_free(GMT, gxtr);	GMT_free(GMT, gxti);
+		GMT_free(GMT, gxmr);	GMT_free(GMT, gxmi);
+		GMT_free(GMT, gxnr);	GMT_free(GMT, gxni);
+		GMT_free(GMT, fxtr);	GMT_free(GMT, fxmr);
+		GMT_free(GMT, fxnr);
 	}
 
 	strcpy (Gout->header->title, "Anomaly reducted to the pole");

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -547,7 +547,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		}
 		else { /* The triangles have a non-constant magnetization */
 			mag_var = GMT_memory (GMT, NULL, n_triang, struct MAG_VAR);
-			if (Ctrl->T.m_var1) {		/* Only the mag intensity changes, Dec & Dip are the same as the Field */
+			if (Ctrl->T.m_var1) {		/* Only the mag intensity changes. Mag dec & dip are constant */
 				for (i = 0; i < n_triang; i++) {
 					t_mag = (Ctrl->box.mag_int[vert[i].a] + Ctrl->box.mag_int[vert[i].b] + Ctrl->box.mag_int[vert[i].c])/3.;
 					mag_var[i].rk[0] = t_mag * cc_t;
@@ -608,8 +608,8 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			GMT_Message (API, GMT_TIME_NONE, "computed %.2d%s of %d prisms\r", j, "%", n_triang);
 			j++;
 		}
-		km = (int)((Ctrl->T.m_var)  ? i : 0);
-		pm = (int)((Ctrl->T.m_var4) ? i : 0);
+		km = (int)((Ctrl->T.m_var)  ? i : 0);	/* Variable magnetization (intensity) */
+		pm = (int)((Ctrl->T.m_var4) ? i : 0);	/* When al 5 paremeters (F, Mag) may be variable (undocumented) */
 
 		/* Don't waste time with zero mag triangles */
 		if (Ctrl->H.active && Ctrl->T.m_var && mag_var[i].rk[0] == 0 && mag_var[i].rk[1] == 0 && mag_var[i].rk[2] == 0)

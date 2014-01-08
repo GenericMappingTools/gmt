@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -659,7 +659,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	if (!GMT_is_geographic (GMT, GMT_IN)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d for geographic data\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
 		Return (EXIT_FAILURE);
 	}
 	

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -662,11 +662,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
 		double xyz[2][3];
+		uint64_t dim[4] = {1, 0, 0, 3};
 		
-		if ((Din = GMT_create_dataset (GMT, 1, 0, 0, 3, GMT_IS_LINE, true)) == NULL) Return (API->error);
+		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		GMT_free_table (GMT, Din->table[0], Din->alloc_mode);	/* Since we will add our own below */
-		
-		//if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		if (Ctrl->E.unit == 0) {	/* Was not set via -E; default to Cartesian or km (great circle dist) */
 			Ctrl->E.unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';
 			Ctrl->E.mode = (GMT_is_geographic (GMT, GMT_IN)) ? 2 : 0;
@@ -869,7 +868,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t col, n_cols = Din->n_columns + Ctrl->G.n_grids, row, seg;
 		struct GMT_DATASEGMENT *Sin = NULL, *Sout = NULL;
 		
-		Dout = GMT_alloc_dataset (GMT, Din, 0, n_cols, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
+		Din->dim[GMT_COL] = n_cols;	/* State we want a different set of columns on output */
+		Dout = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, Din);	/* Same table length as Din, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
 		if (Din->table[0]->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* More than one segment triggers -mo */
 		
 		for (seg = 0; seg < Din->table[0]->n_segments; seg++) {	/* For each segment to resample */
@@ -891,7 +891,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_free_dataset (GMT, &Din);
 	}
 	else {	/* Standard resampling point case */
 		bool pure_ascii = false;

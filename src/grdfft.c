@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -946,7 +946,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
-		grd_dump (GMT, Grid[0]->header, Grid[0]->data, false, "After Inv FFT");
+		grd_dump (Grid[0]->header, Grid[0]->data, false, "After Inv FFT");
 
 		if (!doubleAlmostEqual (Ctrl->S.scale, 1.0)) GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
 

@@ -7560,16 +7560,9 @@ level will turn it into brown.
 
 .. _GIMP:
 
-.. figure:: /_images/gimp-sliders.png
-   :height: 209 px
-   :width: 375 px
-   :align: center
-   :scale: 75 %
-
-
-.. figure:: /_images/gimp-panel.png
-   :height: 209 px
-   :width: 375 px
+.. figure:: /_images/gimp-sliders+panel.png
+   :height: 230 px
+   :width: 775 px
    :align: center
    :scale: 75 %
 

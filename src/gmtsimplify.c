@@ -1,7 +1,7 @@
 /*
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -325,7 +325,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	D[GMT_OUT] = GMT_alloc_dataset (GMT, D[GMT_IN], 0, 0, GMT_ALLOC_NORMAL);	/* Allocate identical output tables; we reallocate memory below */
+	D[GMT_OUT] = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, D[GMT_IN]);	/* Allocate identical output tables; we reallocate memory below */
 
 	geo = GMT_is_geographic (GMT, GMT_IN);					/* true for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */

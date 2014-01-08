@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  * $Id$
  *
- * Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ * Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -88,7 +88,7 @@ EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 //#define GMT_DUMPING
-void grd_dump (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
+void grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
 {
 #ifdef GMT_DUMPING
 	unsigned int row, col;
@@ -1021,7 +1021,9 @@ int GMT_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *hea
 	gmt_grd_xy_scale (GMT, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
 	gmt_grd_layout (GMT, header, grid, complex_mode, GMT_OUT);	/* Deal with complex layout */
-	return ((*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode));
+	err = (*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode);
+	if (GMT->parent->leave_grid_scaled == 0) GMT_pack_grid (GMT, header, grid, k_grd_unpack); /* revert scale and offset to leave grid as it was before writing unless session originated from gm*/
+	return (err);
 }
 
 size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_value)
@@ -2085,7 +2087,7 @@ int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, st
 	/* registration may contain complex mode information */
 	if (registration & GMT_GRID_DEFAULT_REG) registration |= GMT->common.r.registration;	/* Set the default registration */
 	header->registration = (registration & 1);
-	header->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);
+	header->complex_mode = (registration & GMT_GRID_IS_COMPLEX_MASK);
 	header->grdtype = gmt_get_grdtype (GMT, header);
 	GMT_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 1), "");

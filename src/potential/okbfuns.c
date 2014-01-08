@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,20 +28,28 @@ static void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or, double
 
 /*--------------------------------------------------------------------*/
 double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, bool is_grav,
-		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int pm, struct LOC_OR *loc_or) {
+              struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int pm, struct LOC_OR *loc_or_) {
 
-	double okb = 0, tot = 0, c_tet = 0, s_tet = 0, c_phi = 0, s_phi = 0;
+	double okb = 0, c_tet = 0, s_tet = 0, c_phi = 0, s_phi = 0;
 	unsigned int i, l, k, cnt_v = 0, n_vert;
 	bool top = true;
+	struct LOC_OR loc_or[32];
+	GMT_declare_gmutex		/* A no-op when no USE_GTHREADS */
 
 /* x_o, y_o, z_o are the coordinates of the observation point
  * rho is the body density times G constant
  * km is an: index of current body facet (if they have different mags); or 0 if mag=const
+ * pm is an: index of current body facet (when all F, Mag may vary); or 0 if mag=const. This an UNDOCUMENTED feature 
  * bd_desc is a structure containing the body's description. It contains the following members
  * n_f -> number of facets (int)
  * n_v -> number of vertex of each facet (pointer)
  * ind -> index describing the vertex order of each facet. These index must
  * describe the facet in a clock-wise order when viewed from outside.
+ *
+ * loc_or_ is now deprecated (replaced) by the heap alloc(ed) (local) loc_or.
+ * Though this might be a limitation form the dynamic allocation view point,
+ * it is need for multi-threading usage of this function. A 32 size should be
+ * enough for all use cases in GMT.
 
     _________________________________________________________________
     |                                                               |
@@ -93,8 +101,10 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 				okb_mag (n_vert, km, pm, loc_or, c_tet, s_tet, c_phi, s_phi);
 		cnt_v += n_vert;
 	}
-	tot = (is_grav) ? okb * rho: okb;
-	return (tot);
+	GMT_set_gmutex		/* A no-op when no USE_GTHREADS */
+	if (is_grav) okb *= rho;
+	GMT_unset_gmutex
+	return (okb);
 }
 
 /* ---------------------------------------------------------------------- */
