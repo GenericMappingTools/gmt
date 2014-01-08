@@ -1,6 +1,6 @@
 Package: gmt
 Version: 4.5.11
-Revision: 5
+Revision: 6
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-non-gpl-src.tar.bz2
 Source-MD5: e51a8827d9b0ce3f36cfe6be01f24931
@@ -50,6 +50,7 @@ SplitOff2: <<
 <<
 SplitOff3: <<
   Package: %N-dev
+  Depends: %N-shlibs (= %v-%r)
   Conflicts: gmt5-dev
   Replaces: gmt5-dev
   BuildDependsOnly: True

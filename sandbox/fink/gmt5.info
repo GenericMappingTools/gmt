@@ -1,6 +1,6 @@
 Package: gmt5
 Version: 5.1.0
-Revision: 5
+Revision: 6
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v-src.tar.bz2
 Source-MD5: da741319c883a3dbaf27ec7eaf66c166
 PatchFile: %n.patch
@@ -64,6 +64,7 @@ SplitOff2: <<
 <<
 SplitOff3: <<
   Package: %N-dev
+  Depends: %N-shlibs (= %v-%r)
   Conflicts: gmt-dev
   Replaces: gmt-dev
   BuildDependsOnly: True
