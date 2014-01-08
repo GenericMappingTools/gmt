@@ -3651,7 +3651,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 				}
-				else {	/* Need new named storage place */
+				else {	/* Need new named storage place; use GMT_duplicate_dataset/GMT_free_dataset since no point adding to registered resources since internal use only */
 					k = n_stored;
 					recall[k] = GMT_memory (GMT, NULL, 1, struct GMTMATH_STORED);
 					recall[k]->label = strdup (label);

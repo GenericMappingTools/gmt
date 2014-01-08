@@ -358,7 +358,8 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 	/* We now know the exact number of segments and columns and an upper limit on total records.
 	 * Allocate data set with a single table with those proportions. This copies headers as well */
 	
-	D[GMT_OUT] = GMT_alloc_dataset (GMT, D[GMT_IN], 0, n_cols_out, (Ctrl->A.active) ? GMT_ALLOC_HORIZONTAL : GMT_ALLOC_NORMAL);
+	D[GMT_IN]->dim[GMT_COL] = n_cols_out;	/* State we want a different set of columns on output */
+	D[GMT_OUT] = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC + ((Ctrl->A.active) ? GMT_ALLOC_HORIZONTAL : GMT_ALLOC_NORMAL), D[GMT_IN]);
 	
 	n_horizontal_tbls = (Ctrl->A.active) ? D[GMT_IN]->n_tables : 1;	/* Only with pasting do we go horizontally */
 	n_vertical_tbls   = (Ctrl->A.active) ? 1 : D[GMT_IN]->n_tables;	/* Only for concatenation do we go vertically */
@@ -498,7 +499,5 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->Q.active || Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
-	GMT_free_dataset (API->GMT, &D[GMT_OUT]);	/* Since not registered */
-	
 	Return (GMT_OK);
 }

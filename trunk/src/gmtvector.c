@@ -539,7 +539,8 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		GMT_set_cartesian (GMT, GMT_OUT);
 
-	Dout = GMT_alloc_dataset (GMT, Din, 0, n_out + add_cols, GMT_ALLOC_NORMAL);
+	Din->dim[GMT_COL] = n_out + add_cols;	/* State we want a different set of columns on output */
+	Dout = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, Din);
 	GMT_memset (out, 3, double);
 
 	/* OK, with data in hand we can do some damage */
@@ -645,7 +646,6 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	if (single && GMT_Destroy_Data (API, &Din) != GMT_OK) {
 		Return (API->error);
 	}
-	GMT_free_dataset (API->GMT, &Dout);	/* Since not registered */
 	
 	Return (EXIT_SUCCESS);
 }
