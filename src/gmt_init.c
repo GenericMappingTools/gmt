@@ -4229,6 +4229,18 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			break;
 		case GMTCASE_PROJ_DATUM:	/* Not implemented yet */
 			break;
+		case GMTCASE_PROJ_GEODESIC:
+			if (!strncmp (lower_value, "vincenty", 8U)) /* Same as exact*/
+				GMT->current.setting.proj_geodesic = GMT_GEODESIC_VINCENTY;
+			else if (!strncmp (lower_value, "andoyer", 7U)) /* Andoyer approximation */
+				GMT->current.setting.proj_geodesic = GMT_GEODESIC_ANDOYER;
+			else if (!strncmp (lower_value, "rudoe", 5U)) /* Volumetric radius R_3 */
+				GMT->current.setting.proj_geodesic = GMT_GEODESIC_RUDOE;
+			else
+				error = true;
+			GMT_init_geodesic (GMT);	/* Set function pointer depending on the geodesic selected */
+			break;
+
 		case GMTCASE_MEASURE_UNIT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_CHANGE ("PROJ_LENGTH_UNIT");
@@ -5304,6 +5316,22 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			break;
 		case GMTCASE_PROJ_DATUM:	/* Not implemented yet */
 			break;
+		case GMTCASE_PROJ_GEODESIC:
+			switch (GMT->current.setting.proj_geodesic) {
+				case GMT_GEODESIC_VINCENTY:
+					strcpy (value, "Vincenty");
+					break;
+				case GMT_GEODESIC_ANDOYER:
+					strcpy (value, "Andoyer");
+					break;
+				case GMT_GEODESIC_RUDOE:
+					strcpy (value, "Rudoe");
+					break;
+				default:
+					strcpy (value, "undefined");
+			}
+			break;
+
 		case GMTCASE_MEASURE_UNIT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;

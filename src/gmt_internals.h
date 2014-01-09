@@ -67,6 +67,7 @@ EXTERN_MSC int GMT_getrgb_index (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for user file */
 EXTERN_MSC size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_value);
 EXTERN_MSC void GMT_init_ellipsoid (struct GMT_CTRL *GMT);
+EXTERN_MSC void GMT_init_geodesic (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_io_init (struct GMT_CTRL *GMT);			/* Initialize pointers */
 EXTERN_MSC uint64_t GMT_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double lon2, double **x, double **y);
 EXTERN_MSC uint64_t GMT_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double lat2, double **x, double **y);

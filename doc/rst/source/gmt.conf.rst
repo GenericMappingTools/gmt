@@ -878,6 +878,15 @@ fonts can be found in the :doc:`gmt` man page.
     :doc:`mapproject` man page for further details and how to view
     ellipsoid and datum parameters.
 
+.. _PROJ_GEODESIC:
+
+**PROJ_GEODESIC**
+    Selects the algorithm to use for geodesic calculations. Choose between
+    **Vincenty** [Default], **Rudoe**, or **Andoyer**. The **Andoyer**
+    algorithm is only approximate (to within a few tens of meters) but is
+    up to 5 times faster.  The **Rudoe** is given for legacy purposes.
+    The default **Vincenty** is accurate to about 0.5 mm.
+
 .. _PROJ_LENGTH_UNIT:
 
 **PROJ_LENGTH_UNIT**
