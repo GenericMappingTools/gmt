@@ -34,7 +34,7 @@
  * Version:	5 API
  *
  */
- 
+
 #define THIS_MODULE_NAME	"sphdistance"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make grid of distances to nearest points on a sphere"
@@ -79,11 +79,11 @@ void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	 * is a polar cap; if so set the required metadata flags */
 	uint64_t row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
-	
+
 	GMT_set_seg_minmax (GMT, P);	/* Set the domain of the segment */
-	
+
 	/* Then loop over points to accumulate sums */
-	
+
 	for (row = 1; row < P->n_rows; row++) {	/* Start at row = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
 		GMT_set_delta_lon (P->coord[GMT_X][row-1], P->coord[GMT_X][row], dlon);
 		lon_sum += dlon;
@@ -105,7 +105,7 @@ void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 
 void *New_sphdistance_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPHDISTANCE_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct SPHDISTANCE_CTRL);
 	C->L.unit = 'e';	/* Default is meter distances */
 	return (C);
@@ -113,10 +113,10 @@ void *New_sphdistance_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_sphdistance_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free (C->G.file);	
-	if (C->N.file) free (C->N.file);	
-	if (C->Q.file) free (C->Q.file);	
-	GMT_free (GMT, C);	
+	if (C->G.file) free (C->G.file);
+	if (C->N.file) free (C->N.file);
+	if (C->Q.file) free (C->Q.file);
+	GMT_free (GMT, C);
 }
 
 int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
@@ -127,12 +127,12 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: sphdistance [<table>] -G<outgrid> %s [-C] [-E]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<unit>] [-N<nodetable>] [-Q<voronoitable>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
-        
+
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output distance grid file.\n");
 	GMT_Option (API, "I");
-        
+
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
@@ -147,7 +147,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
 	GMT_Option (API, "V,bi2,h,i,r,s,:,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -228,7 +228,7 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && GMT->common.b.active[GMT_IN] && !Ctrl->N.active, "Syntax error: Binary input data (-bi) with -Q also requires -N.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -260,7 +260,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -282,7 +282,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 
 	GMT_memset (&T, 1, struct STRIPACK);
 
-	GMT_init_distaz (GMT, Ctrl->L.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
+	GMT_init_distaz (GMT, Ctrl->L.unit, GMT_sph_mode (GMT), GMT_MAP_DIST);
 
 	if (!GMT->common.R.active) {	/* Default to a global grid */
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
@@ -346,7 +346,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		n_alloc = 0;
 		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
-		
+
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -378,15 +378,15 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 				}
 				prev_x = in[GMT_X];	prev_y = in[GMT_Y];
 			}
-			
+
 			/* Convert lon,lat in degrees to Cartesian x,y,z triplets */
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);
-	
+
 			xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];
 			if (!Ctrl->C.active) {
 				lon[n] = in[GMT_X];	lat[n] = in[GMT_Y];
 			}
-			
+
 			if (++n == n_alloc) {	/* Get more memory */
 				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
 				GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
@@ -414,7 +414,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 	}
-	
+
 	/* OK, time to create and work on the distance grid */
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -438,7 +438,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		P->max = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
 
 		GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
-	
+
 		V = &T.V;
 	}
 	for (node = 0; node < n; node++) {
@@ -475,9 +475,9 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 			if ((++vertex) == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 		}
-		
+
 		/* Here we have the polygon in P */
-		
+
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
@@ -514,7 +514,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		}
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing polygon %7ld\n", node);
-	
+
 	if (!Ctrl->Q.active) {
 		GMT_free (GMT, P->coord[GMT_X]);
 		GMT_free (GMT, P->coord[GMT_Y]);
@@ -535,7 +535,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		GMT_free (GMT, lon);
 		GMT_free (GMT, lat);
 	}
-	
+
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
@@ -543,6 +543,6 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 
 	if (n_set > Grid->header->nm) n_set = Grid->header->nm;	/* Not confuse the public */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
-	
+
 	Return (GMT_OK);
 }
