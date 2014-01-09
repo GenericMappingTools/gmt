@@ -509,8 +509,8 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	/* Round off area to nearest multiple of block-dimension */
 
 	iw = irint (floor (wesn[XLO] / c->bsize) * c->bsize);
-	ie = irint (ceil  (wesn[XHI] / c->bsize) * c->bsize);
-	is = 90 - irint ( ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
+	ie = irint (ceil (wesn[XHI] / c->bsize) * c->bsize);
+	is = 90 - irint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
 	in = 90 - irint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
 	i_ant = 90 - irint (floor ((90.0 - GSHHS_ANTARCTICA_LIMIT) / c->bsize) * c->bsize);
 	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
@@ -655,9 +655,9 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) continue;	/* Dont want anything to do with Antarctica */
 				else if (level == ANT_LEVEL_GROUND && c->ant_mode == GSHHS_ANTARCTICA_ICE) continue;	/* Don't use the Grounding line */
 				else if (level == ANT_LEVEL_ICE && c->ant_mode == GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;	/* Use grounding line so skip ice-shelf Antractica continent */
+				level = 1;	/* Reset either shelf-ice or groundlin line polygon level to land */
 			}
 			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) continue;	/* Wants nothing but Antarctica */
-			level = 1;	/* Reset either shelf-ice or groundlin line polygon level to land */
 		}
 		if (level < c->min_level) continue;	/* Test if level range was set */
 		if (level > c->max_level) continue;
@@ -806,8 +806,8 @@ int GMT_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	/* Round off area to nearest multiple of block-dimension */
 
 	iw = irint (floor (wesn[XLO] / c->bsize) * c->bsize);
-	ie = irint (ceil  (wesn[XHI] / c->bsize) * c->bsize);
-	is = 90 - irint ( ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
+	ie = irint (ceil (wesn[XHI] / c->bsize) * c->bsize);
+	is = 90 - irint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
 	in = 90 - irint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
 	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
@@ -857,7 +857,6 @@ int GMT_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsi
 	int s, i, err;
 	unsigned int k;
 	bool skip;
-	
 
 	c->lon_sw = (c->bins[b] % c->bin_nx) * c->bin_size / 60.0;
 	c->lat_sw = 90.0 - ((c->bins[b] / c->bin_nx) + 1) * c->bin_size / 60.0;
