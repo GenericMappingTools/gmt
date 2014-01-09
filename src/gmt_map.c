@@ -309,7 +309,7 @@ void gmt_lat_swap_init (struct GMT_CTRL *GMT)
 	lat conversions without plotting maps.
 
 	W H F Smith, 10--13 May 1999.   */
-	
+
 	/* PW notes: Projections only convert latitudes if GMT->current.proj.GMT_convert_latitudes is true.
 	 *       This is set by GMT_mapsetup if the ellipsoid is not a sphere.  Calling gmt_lat_swap_init by itself
 	 *	 does not affect the mapping machinery.  Since various situations call for the use
@@ -843,7 +843,7 @@ unsigned int gmt_rect_crossing (struct GMT_CTRL *GMT, double lon0, double lat0, 
 		gmt_y_rect_corner (GMT, &yy[n]);
 		if (fabs (d) > 0.0 && yy[n] >= GMT->current.proj.rect[YLO] && yy[n] <= GMT->current.proj.rect[YHI]) n++;
 	}
-	
+
 	if (n == 0) return (0);
 
 	/* Eliminate duplicates */
@@ -1288,7 +1288,7 @@ uint64_t gmt_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	unsigned int (*clipper[4]) (double, double, double, double, double *, double *, double, bool (*inside) (double, double), bool (*outside) (double, double), int *);
 	bool (*inside[4]) (double, double);
 	bool (*outside[4]) (double, double);
-	
+
 #ifdef DEBUG
 	FILE *fp = NULL;
 	bool dump = false;
@@ -1378,7 +1378,6 @@ unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	struct GMT_DATASEGMENT **L = NULL;
 	bool (*inside[2]) (double, double);
 	bool (*outside[2]) (double, double);
-	
 
 	inside[0] = gmt_inside_upper_boundary;	outside[0] = gmt_outside_upper_boundary;
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
@@ -1414,7 +1413,7 @@ unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 		if (S->header) L[side]->header = strdup (S->header);
 		if (S->ogr) GMT_duplicate_ogr_seg (GMT, L[side], S);
 	}
-	L[0]->range = 2;	L[1]->range = 3;	
+	L[0]->range = 2;	L[1]->range = 3;
 	*Lout = L;
 	return (2);
 }
@@ -1538,7 +1537,7 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	unsigned int (*clipper[4]) (double, double, double, double, double *, double *, double, bool (*inside) (double, double), bool (*outside) (double, double), int *);
 	bool (*inside[4]) (double, double);
 	bool (*outside[4]) (double, double);
-	
+
 #ifdef DEBUG
 	FILE *fp = NULL;
 	bool dump = false;
@@ -1984,9 +1983,9 @@ void gmt_map_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 double gmt_mean_radius (struct GMT_CTRL *GMT, double a, double f)
 {
 	double r, b = a * (1 - f);
-	
+
 	if (f == 0.0) return a;	/* Not that hard */
-	
+
 	switch (GMT->current.setting.proj_mean_radius) {
 		case GMT_RADIUS_MEAN:
 			r = a * (1.0 - f / 3.0);
@@ -2008,7 +2007,7 @@ double gmt_mean_radius (struct GMT_CTRL *GMT, double a, double f)
 			exit (EXIT_FAILURE);
 			break;
 	}
-	
+
 	return (r);
 }
 
@@ -2222,7 +2221,7 @@ double gmt_az_backaz_vincenty (struct GMT_CTRL *GMT, double lonE, double latE, d
 	**	OUTPUT
 	**  	faz -- azimuth from first point to second in radians clockwise from North.
 	**	baz -- azimuth from second point back to first point.
-	**	bool back_az controls which is returned 
+	**	bool back_az controls which is returned
 	** Modified by P.W. from: http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478
 	*/
 	int n_iter = 0;
@@ -2358,7 +2357,7 @@ void GMT_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 
 	/* Now determine 'round' major and minor tick intervals */
 	if (GMT_axis_is_geo (GMT, axis))	/* Geographical coordinate */
-		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0; 
+		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
 	else	/* General (linear) axis */
 		p = pow (10.0, floor (log10 (d)));
 	d /= p;	/* d is now in degrees, minutes or seconds, or in the range [1;10) */
@@ -3351,7 +3350,7 @@ bool gmt_map_init_oblique (struct GMT_CTRL *GMT) {
 		GMT_merc_sph (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_merc_sph (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->common.R.oblique = true;	/* Since wesn was oblique, not geographical wesn */
-	}	
+	}
 
 	GMT_imerc_sph (GMT, &w, &s, xmin, ymin);	/* Get oblique wesn boundaries */
 	GMT_imerc_sph (GMT, &e, &n, xmax, ymax);
@@ -5222,7 +5221,7 @@ double gmt_flatearth_dist_degree (struct GMT_CTRL *GMT, double x0, double y0, do
 	   offset (360 - offset)
 	 */
 	double dlon;
-	
+
 	GMT_set_delta_lon (x0, x1, dlon);
 	return (hypot ( dlon * cosd (0.5 * (y1 + y0)), (y1 - y0)));
 }
@@ -5600,7 +5599,7 @@ bool gmt_near_a_point_cartesian (struct GMT_CTRL *GMT, double x, double y, struc
 
 	/* No, must search the points */
 	if (!each_point_has_distance) d02 = dist * dist;
-	
+
 	for (seg = 0; seg < T->n_segments; seg++) {
 		for (row = 0; row < T->segment[seg]->n_rows; row++) {
 			x0 = T->segment[seg]->coord[GMT_X][row];
@@ -5753,7 +5752,7 @@ bool gmt_near_lines_cartesian (struct GMT_CTRL *GMT, double lon, double lat, str
 			OK = true;
 		}
 	}
-	return (OK);	
+	return (OK);
 }
 
 bool gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
@@ -6528,7 +6527,7 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
 		}
 	}
-	
+
 	if (O->header->z_min < I->header->z_min || O->header->z_max > I->header->z_max) {	/* Truncate output to input extrama */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_grd_project: Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g]\n",
 			O->header->z_min, O->header->z_max, I->header->z_min, I->header->z_max);
@@ -6541,7 +6540,7 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			O->header->z_min = I->header->z_min;	O->header->z_max = I->header->z_max;
 		}
 	}
-	
+
 	/* Time to clean up our mess */
 
 	GMT_free (GMT, x_in);
@@ -7124,7 +7123,7 @@ void GMT_init_ellipsoid (struct GMT_CTRL *GMT)
 	GMT->current.proj.KM_PR_DEG = GMT->current.proj.M_PR_DEG / METERS_IN_A_KM;
 	GMT->current.proj.DIST_M_PR_DEG = GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.DIST_KM_PR_DEG = GMT->current.proj.KM_PR_DEG;
-	
+
 	gmt_lat_swap_init (GMT);		/* Compute coefficients needed for auxilliary latitude conversions */
 }
 
@@ -7137,7 +7136,7 @@ void GMT_init_geodesic (struct GMT_CTRL *GMT)
 			break;
 		case GMT_GEODESIC_ANDOYER:
 			GMT->current.map.geodesic_meter = gmt_andoyer_dist_meter;
-			GMT->current.map.geodesic_az_backaz = gmt_az_backaz_vincenty;	/* THis may change later */
+			GMT->current.map.geodesic_az_backaz = gmt_az_backaz_vincenty;	/* This may change later */
 			break;
 		case GMT_GEODESIC_RUDOE:
 			GMT->current.map.geodesic_meter = gmt_rudoe_dist_meter;
@@ -7145,6 +7144,7 @@ void GMT_init_geodesic (struct GMT_CTRL *GMT)
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The PROJ_GEODESIC is not set! - use Vincenty\n");
+			GMT->current.setting.proj_geodesic = GMT_GEODESIC_VINCENTY;
 			GMT->current.map.geodesic_meter = gmt_vincenty_dist_meter;
 			GMT->current.map.geodesic_az_backaz = gmt_az_backaz_vincenty;
 			break;
@@ -7917,7 +7917,7 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 		double_auto[i] = GMT_is_geographic (GMT, GMT_IN) && !GMT->current.map.frame.slash &&
 		GMT->current.map.frame.axis[GMT_X].item[i].active && GMT->current.map.frame.axis[GMT_X].item[i].interval == 0.0 &&
 		GMT->current.map.frame.axis[GMT_Y].item[i].active && GMT->current.map.frame.axis[GMT_Y].item[i].interval == 0.0;
-	
+
 	GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 	GMT_auto_frame_interval (GMT, GMT_Y, GMT_ANNOT_UPPER);
 	GMT_auto_frame_interval (GMT, GMT_Z, GMT_ANNOT_UPPER);
@@ -8079,7 +8079,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 	 *  1) d|e|f|k|m|M|n|s
 	 *  2) GMT (Cartesian distance after projecting with -J) | X (Cartesian)
 	 *  3) S (cosine distance) | P (cosine after first inverse projecting with -J)
-	 * distance-calculation modifier mode: 0 (Cartesian), 1 (flat Earth), 2 (great-circle, 3 (geodesic), 4 (loxodrome)
+	 * distance-calculation modifier mode: 0 (Cartesian), 1 (flat Earth), 2 (great-circle), 3 (geodesic), 4 (loxodrome)
 	 * type: 0 = map distances, 1 = contour distances, 2 = contour annotation distances
 	 * We set distance and azimuth functions and scales for this type.
 	 * At the moment there is only one azimuth function pointer for all.
@@ -8096,7 +8096,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 
 	switch (unit) {
 			/* First the three arc angular distance units */
-			
+
 		case 'd':	/* Arc degrees on spherical body using desired metric mode */
 			gmt_set_distaz (GMT, GMT_DIST_DEG + mode, type);
 			GMT->current.map.dist[type].arc = true;	/* Angular measure */
@@ -8111,9 +8111,9 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			GMT->current.map.dist[type].scale = GMT_DEG2SEC_F;
 			GMT->current.map.dist[type].arc = true;	/* Angular measure */
 			break;
-			
+
 			/* Various distance units on the planetary body */
-			
+
 		case 'e':	/* Meters on spherical body using desired metric mode */
 			gmt_set_distaz (GMT, GMT_DIST_M + mode, type);
 			break;
@@ -8121,7 +8121,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			gmt_set_distaz (GMT, GMT_DIST_M + mode, type);
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_FOOT;
 			break;
-		case 'k':	/* Km on spherical body using desired metric mode */
+		case 'k':	/* Kilometers on spherical body using desired metric mode */
 			gmt_set_distaz (GMT, GMT_DIST_M + mode, type);
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_KM;
 			break;
@@ -8137,9 +8137,9 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			gmt_set_distaz (GMT, GMT_DIST_M + mode, type);
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_SURVEY_FOOT;
 			break;
-			
+
 			/* Cartesian distances.  Note: The X|C|R|Z|S|P 'units' are only passed internally and are not available as user selections directly */
-			
+
 		case 'X':	/* Cartesian distances in user units */
 			proj_type = GMT_CARTESIAN;
 			gmt_set_distaz (GMT, GMT_CARTESIAN_DIST, type);
@@ -8148,7 +8148,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			gmt_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ, type);
 			proj_type = GMT_GEO2CART;
 			break;
-			
+
 		case 'R':	/* Cartesian distances squared in user units */
 			proj_type = GMT_CARTESIAN;
 			gmt_set_distaz (GMT, GMT_CARTESIAN_DIST2, type);
@@ -8159,7 +8159,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			break;
 
 			/* Specialized cosine distances used internally only (e.g., greenspline) */
-			
+
 		case 'S':	/* Spherical cosine distances (for various gridding functions) */
 			gmt_set_distaz (GMT, GMT_DIST_COS + mode, type);
 			break;
@@ -8167,13 +8167,13 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			gmt_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ_INV, type);
 			proj_type = GMT_CART2GEO;
 			break;
-			
+
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Distance units must be one of %s\n", GMT_LEN_UNITS_DISPLAY);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			break;
 	}
-	
+
 	GMT->current.map.dist[type].init = true;	/* OK, we have now initialized the info for this type */
 	return (proj_type);
 }
