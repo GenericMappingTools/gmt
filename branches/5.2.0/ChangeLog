@@ -2,9 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
-2014-01-08	remko
+2014-01-09	remko
 	* all:			Merged in 5.1.1
-	* grdmath.c:		New function LDIST1 is optimized form of LDIST for coast lines.
+	* grdmath.c:		New function LDISTC is optimized form of LDIST for coast lines.
 
 2013-12-06	pwessel
 	* gmtspatial.c:		Enhanced -Q to force interpretation of lines or polygons, plus
@@ -22,6 +22,9 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-01-09	remko
+	* grdmath.c:		LDIST and PDIST will again produce km when using geodesics.
+
 2014-01-01	pwessel
 	* x2sys/x2sys.c:	Mishandled the assignment of segment number for each record.
 	* gmt_support.c:	Allow GMT_crossover to deal with global wrapped data.

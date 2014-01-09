@@ -36,7 +36,7 @@
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
-EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);	
+EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);
 EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile);
 
 #define GRDMATH_ARG_IS_OPERATOR		 0
@@ -127,7 +127,7 @@ void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_grdmath_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);	
+	if (C->Out.file) free (C->Out.file);
 	GMT_free (GMT, C);
 }
 
@@ -207,7 +207,7 @@ int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct G
 				break;
 
 			/* Processes program-specific parameters */
-			
+
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
@@ -461,7 +461,7 @@ void grd_BITAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 		}
 	}
 	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITAND resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
-	
+
 }
 
 void grd_BITLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -488,7 +488,7 @@ void grd_BITLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 				stack[prev]->G->data[node] = GMT->session.f_NaN;
 				first = false;
 			}
-			else {		
+			else {
 				b = (unsigned int)b_signed;
 				result = a << b;
 				result_trunc = (result & FLOAT_BIT_MASK);
@@ -573,7 +573,7 @@ void grd_BITRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMA
 				stack[prev]->G->data[node] = GMT->session.f_NaN;
 				first = false;
 			}
-			else {		
+			else {
 				b = (unsigned int)b_signed;
 				result = a >> b;
 				result_trunc = (result & FLOAT_BIT_MASK);
@@ -853,7 +853,7 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	unsigned int row, col, mx;
 	double cy, *cx = NULL;
 	float *z = NULL;
-	
+
 	/* Curvature (Laplacian). */
 
 	if (stack[last]->constant) {
@@ -868,10 +868,10 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 
 	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
 	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
-	
+
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
-	
+
 	z = GMT_memory (GMT, NULL, info->size, float);
 	cx = GMT_memory (GMT, NULL, info->G->header->ny, double);
 	GMT_row_loop (GMT, info->G, row) cx[row] = 1.0 / (info->dx[row] * info->dx[row]);
@@ -908,11 +908,11 @@ void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		c = 1.0 / (info->dx[row] * info->dx[row]);
 		/* Unless pad has real data we assign outside col values via natural BCs */
 		ij = GMT_IJP (info->G->header, row, 0);	/* First col */
-		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA) 
+		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij-1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij+1]);	/* Set left node via BC curv = 0 */
 		next_left = stack[last]->G->data[ij-1];
 		ij = GMT_IJP (info->G->header, row, info->G->header->nx-1);	/* Last col */
-		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA) 
+		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-1]);	/* Set right node via BC curv = 0 */
 		GMT_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 			left = next_left;
@@ -942,11 +942,11 @@ void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	mx = info->G->header->mx;
 	GMT_col_loop (GMT, info->G, 0, col, node) {	/* Process d2/dy2 column by column */
 		/* Unless pad has real data we assign outside row values via natural BCs */
-		if (stack[last]->G->header->BC[YHI] != GMT_BC_IS_DATA) 
+		if (stack[last]->G->header->BC[YHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[node-mx] = (float)(2.0 * stack[last]->G->data[node] - stack[last]->G->data[node+mx]);	/* Set top node via BC curv = 0 */
 		next_bottom = stack[last]->G->data[node-mx];
 		ij = GMT_IJP (info->G->header, info->G->header->ny-1, col);	/* Last row for this column */
-		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA) 
+		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+mx] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx]);	/* Set bottom node via BC curv = 0 */
 		GMT_row_loop (GMT, info->G, row) { /* Cannot use node inside here and must get ij separately */
 			ij = GMT_IJP (info->G->header, row, col);	/* current node in this column */
@@ -980,10 +980,10 @@ void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 
 	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
 	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
-	
+
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
-	
+
 	z = GMT_memory (GMT, NULL, info->size, float);
 	cx = GMT_memory (GMT, NULL, info->G->header->ny, double);
 	GMT_row_loop (GMT, info->G, row) cx[row] = 0.5 / (info->dx[row] * info->dx[row]);
@@ -1030,11 +1030,11 @@ void grd_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 		c = 0.5 / info->dx[row];
 		/* Unless pad has real data we assign outside col values via natural BCs */
 		ij = GMT_IJP (info->G->header, row, 0);	/* First col */
-		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA) 
+		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij-1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij+1]);	/* Set left node via BC curv = 0 */
 		next_left = stack[last]->G->data[ij-1];
 		ij = GMT_IJP (info->G->header, row, info->G->header->nx-1);	/* Last col */
-		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA) 
+		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-1]);	/* Set right node via BC curv = 0 */
 		GMT_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 			left = next_left;
@@ -1233,9 +1233,9 @@ int do_derivative (float *z, uint64_t this_node, int off, unsigned int type)
 	int nan_flag;
 
 	nan_flag = (type == 0) ? -2 : 0;	/* Return -2 if we find two nans except for diagonals where we return 0 */
-	
+
 	/* Because of padding, all internal nodes have neighbors on either side (left, right, above, below) */
-	
+
 	prev_node = this_node - off;	/* Previous node in line */
 	next_node = this_node + off;	/* Next node in line */
 	if (GMT_is_fnan (z[prev_node])) {			/* At least one of the two neighbor points is a NaN */
@@ -1277,10 +1277,10 @@ void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 
 	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
 	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
-	
+
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
-	
+
 	z = GMT_memory (GMT, NULL, info->size, float);
 
 	/* We will visit each node on the grid and determine if there are extrema.  We do this
@@ -1296,7 +1296,7 @@ void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 	 */
 
 	mx1 = info->G->header->mx + 1;
-	
+
 	GMT_grd_loop (GMT, info->G, row, col, node) {
 
 		if (GMT_is_fnan (stack[last]->G->data[node])) continue;	/* No extrema if point is NaN */
@@ -1385,7 +1385,7 @@ void grd_FLIPLR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	}
 
 	/* This must also apply to the pads since any BCs there must be flipped as well, hence a local loop is used */
-	
+
 	mx_half = info->G->header->mx / 2;
 	mx1 = info->G->header->mx - 1;
 	for (node = row = 0; row < info->G->header->my; row++, node += info->G->header->mx) {	/* Do this to all rows */
@@ -1831,9 +1831,13 @@ void grd_KURT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, int geometry, char *op)
 {
 	struct GMT_DATASET *D = NULL;
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical (in degrees) */
-		GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
-		if (GMT_compat_check (GMT, 4) && (!strcmp (op, "LDIST") || !strcmp (op, "PDIST"))) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: %s returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n", op);
+	if (GMT_is_geographic (GMT, GMT_IN)) {
+		if (GMT_sph_mode (GMT) == GMT_GEODESIC)	/* When using geodesics, returns km */
+			GMT_init_distaz (GMT, 'k', GMT_GEODESIC, GMT_MAP_DIST);
+		else {	/* Return spherical degrees */
+			GMT_init_distaz (GMT, 'd', GMT_sph_mode (GMT), GMT_MAP_DIST);
+			if (GMT_compat_check (GMT, 4) && (!strcmp (op, "LDIST") || !strcmp (op, "PDIST"))) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: %s returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n", op);
+		}
 	}
 	else
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
@@ -2054,7 +2058,7 @@ void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	GMT_memset (stack[last]->G->data, info->size, float);	/* Wipes everything */
 	GMT_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = lmsscl_f;
-	
+
 	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 }
 
@@ -2719,7 +2723,7 @@ void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	unsigned int prev = last - 1;
 	double a, b;
 
-	GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);	/* Spherical, in degrees */
+	GMT_init_distaz (GMT, 'd', GMT_sph_mode (GMT), GMT_MAP_DIST);	/* Spherical, in degrees */
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
@@ -2733,7 +2737,7 @@ void grd_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	unsigned int prev = last - 1;
 	double x0 = 0.0, y0 = 0.0, az;
 
-	GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
+	GMT_init_distaz (GMT, 'd', GMT_sph_mode (GMT), GMT_MAP_DIST);
 	if (stack[prev]->constant) x0 = stack[prev]->factor;
 	if (stack[last]->constant) y0 = stack[last]->factor;
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
@@ -3056,7 +3060,7 @@ void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 			else w_x[col] = 1.0;	/* Inside non-tapered x-range */
 		}
 	}
-		
+
 	/* Now compute y taper weights: Ramp 0 to 1 for left margin, constant 1, then ramp 1 to 0 for right margin.
 	 * We apply these as we loop over rows and do the w_x * w_y taper */
 	strip = stack[last]->factor;
@@ -3369,12 +3373,12 @@ char *grdmath_setlabel (struct GMT_CTRL *GMT, char *arg)
 void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct GRDMATH_STORE *recall[], struct GRDMATH_INFO *info) {
 	/* Free allocated memory before quitting */
 	unsigned int k;
-	
+
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
 		if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
-		
+
 		GMT_free (GMT, stack[k]);
 	}
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
@@ -3408,7 +3412,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	bool subset;
 	char *in_file = NULL, *label = NULL;
-	
+
 	uint64_t node, row, col;
 
 	struct GRDMATH_STACK *stack[GRDMATH_STACK_SIZE];
@@ -3455,7 +3459,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STACK);
 	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
-	
+
 	/* Internally replace the = file sequence with an output option ->file*/
 
 	GMT_Destroy_Options (API, &options);
@@ -3542,9 +3546,9 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	for (k = 0, start = info.G->header->pad[XLO], colx = -start; k < (int)info.G->header->mx; colx++, k++) info.d_grd_x[k] = GMT_grd_col_to_x (GMT, colx, info.G->header);
 	for (k = 0, start = info.G->header->pad[YHI], rowx = -start; k < (int)info.G->header->my; rowx++, k++) info.d_grd_y[k] = GMT_grd_row_to_y (GMT, rowx, info.G->header);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Make sure latitudes remain in range; if not apply geographic BC */
-		for (kk = 0; kk < info.G->header->pad[YHI]; kk++) 
+		for (kk = 0; kk < info.G->header->pad[YHI]; kk++)
 			if (info.d_grd_y[kk] > 90.0) info.d_grd_y[kk] = 2.0 * 90.0 - info.d_grd_y[kk];
-		for (kk = 0, k = info.G->header->my - info.G->header->pad[YLO]; kk < info.G->header->pad[YLO]; kk++, k++) 
+		for (kk = 0, k = info.G->header->my - info.G->header->pad[YLO]; kk < info.G->header->pad[YLO]; kk++, k++)
 			if (info.d_grd_y[k] < -90.0) info.d_grd_y[k] = -2.0 * 90.0 - info.d_grd_y[k];
 	}
 	for (k = 0; k < (int)info.G->header->mx; k++) info.f_grd_x[k] = (float)info.d_grd_x[k];
@@ -3587,7 +3591,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YMAX] = info.G->header->wesn[YHI];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YINC] = info.G->header->inc[GMT_Y];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NY] = info.G->header->ny;
-	
+
 	GMT_Report (API, GMT_MSG_VERBOSE, " ");
 
 	nstack = 0;
@@ -3616,7 +3620,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 			}
 			this_stack = nstack - 1;
 			GMT_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
-			
+
 			GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
@@ -3629,7 +3633,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 			new_stack = nstack;
 			continue;
 		}
-		
+
 		if (op != GRDMATH_ARG_IS_FILE && !GMT_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "Warning: The number or operator %s may be confused with an existing file %s!\n", opt->arg, opt->arg);
 
 		if (op < GRDMATH_ARG_IS_OPERATOR) {	/* File name or factor */
@@ -3716,7 +3720,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				if (recall[k]->stored.G && GMT_Destroy_Data (API, &recall[k]->stored.G) != GMT_OK) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 				}
-				
+
 				free ((void *)recall[k]->label);
 				GMT_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
