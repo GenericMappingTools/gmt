@@ -1826,7 +1826,7 @@ void grd_KURT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = f_kurt;
 }
 
-/* Helper functions ASCII_read and ASCII_free are used in LDIST[2] and PDIST[2] */
+/* Helper functions ASCII_read and ASCII_free are used in LDIST* and PDIST* */
 
 struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, int geometry, char *op)
 {
@@ -1881,17 +1881,17 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	ASCII_free (GMT, info, &D, "LDIST");	/* Free memory used for line */
 }
 
-void grd_LDIST1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: LDIST1 1 1 Compute distance (in degrees if -fg) from lines in multi-segment ASCII file A; Optimized for coastlines.  */
+void grd_LDISTC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LDISTC 1 1 As LDIST, optimized for coastline data produced with pscoast.  */
 {
 	uint64_t node, row, col, seg;
 	int i, old_i = 999999, old_row = 999999;
 	double d;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
-	double lon, lon1, lat, x, y, hor, *dist, bin_size = 1.0;
+	double lon, lon1, lat, x, y, hor, bin_size = 1.0, slop;
 
-	if ((D = ASCII_read (GMT, info, GMT_IS_LINE, "LDIST1")) == NULL) return;
+	if ((D = ASCII_read (GMT, info, GMT_IS_LINE, "LDISTC")) == NULL) return;
 	T = D->table[0];	/* Only one table in a single file */
 
 	/* Check if this is indeed a coastline data seti; set bin size of coastline segments accordingly. Default = 1 deg */
@@ -1907,8 +1907,7 @@ void grd_LDIST1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 		bin_size = 20.0;
 	else
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: input is not coast line data set. May lead to erroneous results.\n");
-	
-	dist = GMT_memory (GMT, NULL, T->n_segments, double);
+	slop = 2 * GMT_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (degrees or km) */
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
 		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
@@ -1920,23 +1919,22 @@ void grd_LDIST1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			for (seg = 0, hor = DBL_MAX; seg < T->n_segments; seg++) {
 				x = 0.5 * (T->segment[seg]->min[GMT_X] + T->segment[seg]->max[GMT_X]);
 				y = 0.5 * (T->segment[seg]->min[GMT_Y] + T->segment[seg]->max[GMT_Y]);
-				dist[seg] = GMT_distance (GMT, lon1, lat, x, y);
-				if (dist[seg] < hor) hor = dist[seg];
+				T->segment[seg]->dist = d = GMT_distance (GMT, lon1, lat, x, y);
+				if (d < hor) hor = d;
 			}
-			/* Add 1.5 bin size to the closest distance to a bin as slop. This should always include the closest points in any bin */
-			hor = hor + 1.5 * bin_size;
+			/* Add 2 bin sizes to the closest distance to a bin as slop. This should always include the closest points in any bin */
+			hor = hor + slop;
 			old_i = i, old_row = row;
 		}
 
 		/* Loop over each line segment in each bin that is closer than the horizon defined above */
 		for (seg = 0, d = DBL_MAX; seg < T->n_segments; seg++) {
-			if (dist[seg] < hor) (void) GMT_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
+			if (T->segment[seg]->dist < hor) (void) GMT_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
 		}
 		stack[last]->G->data[node] = (float)d;
 	}
 
-	GMT_free (GMT, dist);
-	ASCII_free (GMT, info, &D, "LDIST1");	/* Free memory used for line */
+	ASCII_free (GMT, info, &D, "LDISTC");	/* Free memory used for line */
 }
 
 void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
