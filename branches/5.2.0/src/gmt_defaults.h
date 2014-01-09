@@ -135,6 +135,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int proj_length_unit;	/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
 	enum GMT_enum_radius proj_mean_radius;	/* Choose 0 (mean), 1 (authalic), 2 (volumetric), 3 (meridional) or 4 (quadratic) [0] */
 	enum GMT_enum_latswap proj_aux_latitude;	/* Choose GMT_LATSWAP_NONE, GMT_LATSWAP_G2A, GMT_LATSWAP_G2C, GMT_LATSWAP_G2M, GMT_LATSWAP_G2O, GMT_LATSWAP_G2P [GMT_LATSWAP_NONE] */
+	enum GMT_enum_geodesic proj_geodesic;	/* Choose GMT_GEODESIC_EXACT, GMT_GEODESIC_APPROXIMATE, GMT_GEODESIC_VINCENTY, GMT_GEODESIC_RUDOE, GMT_GEODESIC_ANDOYER [GMT_GEODESIC_EXACT] */
 	struct DATUM proj_datum[GMT_N_DATUMS];	/* Datum parameters */
 	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	/* PS group [These are arguments to pass to PSL_beginsession and PSL_setdefaults] */

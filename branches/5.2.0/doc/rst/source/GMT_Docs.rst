@@ -2137,11 +2137,16 @@ Geodesic distances
 ^^^^^^^^^^^^^^^^^^
 
 For the most accurate calculations we use a full ellipsoidal
-formulation. Currently, we are using Vincenty's [1975] formula [7]_. You
+formulation. Currently, we are using Vincenty's [1975] formula [7]_
+which is accurate to 0.5 mm. You
 select this mode of computation by using the **+** prefix to the
 specified distance (or to the unit itself in cases where no distance is
 required). For instance, a search radius of 20 km using this mode of
-computation would be set by **-S+**\ 20\ **k**.
+computation would be set by **-S+**\ 20\ **k**.  You may use the
+gmtdefaults :ref:`PROJ_GEODESIC <PROJ_GEODESIC>` which defaults to
+*Vincenty* but may also be set to *Rudoe* for old GMT4-style calculations
+or *Andoyer* for an approximate geodesic (within a few tens of meters)
+that is much faster to compute.
 
 Length units
 ~~~~~~~~~~~~

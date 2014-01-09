@@ -205,6 +205,11 @@ enum GMT_enum_latswap {GMT_LATSWAP_NONE = -1,	/* Deactivate latswapping */
 	GMT_LATSWAP_P2O,	/* input = parametric; output = geocentric */
 	GMT_LATSWAP_N};		/* number of defined swaps  */
 
+enum GMT_enum_geodesic {	/* Various geodesic algorithms */
+	GMT_GEODESIC_VINCENTY = 0,	/* Best possible, currently Vincenty */
+	GMT_GEODESIC_ANDOYER,		/* Faster approximation, currently Andoyer */
+	GMT_GEODESIC_RUDOE};		/* For legacy calculations */
+
 /* Help us with big and little endianness */
 #ifdef WORDS_BIGENDIAN
 #define GMT_BIGENDIAN	true

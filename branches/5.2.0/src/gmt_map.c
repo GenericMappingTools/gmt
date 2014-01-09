@@ -111,7 +111,7 @@
 #define Return(err) { GMT_Report(GMT->parent,GMT_MSG_NORMAL,"Internal Error = %s\n",VAR_TO_STR(err)); return (err);}
 
 
-/* Note by P. Wessel, 18-Oct-2012:
+/* Note by P. Wessel, 18-Oct-2012, updated 08-JAN-2014:
  * In the olden days, GMT only did great circle distances.  In GMT 4 we implemented geodesic
  * distances by Rudoe's formula as given in Bomford [1971].  However, that geodesic is not
  * exactly what we wanted as it is a normal section and do not strictly follow the geodesic.
@@ -129,6 +129,7 @@
  *	Karney [1]: 		1565109.09921789
  *	Vincenty [2]:		1565109.099218036
  *	NGS [3]			1565109.0992
+ *	Andoyer [4]		1565092.276857755
  *
  * [0] via Joaquim Luis, supposedly Vincenty [2012]
  * [1] via online calculator at max precision http://geographiclib.sourceforge.net/cgi-bin/Geod
@@ -136,13 +137,14 @@
  *     This is not identical to Vincenty in proj4 but written by Evenden (proj.4 author)
  * [3] via online calculator http://www.ngs.noaa.gov/cgi-bin/Inv_Fwd/inverse2.prl. Their notes says
  *     this is Vincenty; unfortunately I cannot control the output precision.
+ * [4] Andoyer approximate from Astronomical Algorithms, Jean Meeus, second edition
  *
  * Based on these comparisons we decided to implement the Vincenty [2] code as given.  The older Rudoe
- * code remains in this file for reference.  The define of USE_VINCENTY below selects the new Vincenty code.
+ * code is also accessible, as is the approximation by Andoyer which is good to a few tens of m.
  * The choice was based on the readily available C code versus having to reimplement Karney in C.
  */
 
-#define USE_VINCENTY 1	/* New GMT 5 behavior */
+static char *GEOD_TEXT[3] = {"Vincenty", "Andoyer", "Rudoe"};
 
 double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
@@ -2205,11 +2207,9 @@ double gmt_az_backaz_sphere (struct GMT_CTRL *GMT, double lonE, double latE, dou
 	return (az);
 }
 
-#ifdef USE_VINCENTY
-#define GEOD_TEXT "Vincenty"
 #define VINCENTY_EPS		5e-14
 #define VINCENTY_MAX_ITER	50
-double gmt_az_backaz_geodesic (struct GMT_CTRL *GMT, double lonE, double latE, double lonS, double latS, bool back_az)
+double gmt_az_backaz_vincenty (struct GMT_CTRL *GMT, double lonE, double latE, double lonS, double latS, bool back_az)
 {
 	/* Translation of NGS FORTRAN code for determination of true distance
 	** and respective forward and back azimuths between two points on the
@@ -2266,9 +2266,8 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *GMT, double lonE, double latE, d
 	az = (back_az) ? atan2 (tu1, tu2) : atan2 (cu1 * sx, baz * cx - su1 * cu2) + M_PI;
 	return (R2D * az);
 }
-#else
-#define GEOD_TEXT "Rudoe"
-double gmt_az_backaz_geodesic (struct GMT_CTRL *GMT, double lonE, double latE, double lonS, double latS, bool baz)
+
+double gmt_az_backaz_rudoe (struct GMT_CTRL *GMT, double lonE, double latE, double lonS, double latS, bool baz)
 {
 	/* Calculate azimuths or backazimuths for geodesics using geocentric latitudes.
 	 * First point is considered "Event" and second "Station".
@@ -2318,7 +2317,6 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *GMT, double lonE, double latE, d
 	if (az < 0.0) az += 360.0;
 	return (az);
 }
-#endif
 
 double GMT_az_backaz (struct GMT_CTRL *GMT, double lonE, double latE, double lonS, double latS, bool baz)
 {
@@ -5327,8 +5325,33 @@ double GMT_geodesic_dist_cos (struct GMT_CTRL *GMT, double lonS, double latS, do
 	return (cosd (gmt_geodesic_dist_degree (GMT, lonS, latS, lonE, latE)));
 }
 
-#if USE_VINCENTY
-double gmt_geodesic_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE)
+double gmt_andoyer_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2)
+{	/* Approximate geodesic distance on an ellipsoid in degrees
+	 *  H. Andoyer from Astronomical Algorithms, Jean Meeus, second edition.
+	 */
+	double sg = sind (0.5 * (lat2 - lat1));
+	double sf = sind (0.5 * (lat2 + lat1));
+	double sl = sind (0.5 * (lon2 - lon1));	/* Might have wrong sign if 360 wrap but we only use sl^2 */
+	double s, c, w, r, h1, h2;
+	sg *= sg;
+	sl *= sl;
+	sf *= sf;
+	s = sg * (1.0 - sl) + (1.0 - sf) * sl;
+	c = (1.0 - sg) * (1.0 - sl) + sf * sl;
+
+	w = atan (sqrt (s/c));
+	r = sqrt (s*c) / w;
+	h1 = 0.5 * (3.0 * r - 1.0) / c;
+	h2 = 0.5 * (3.0 * r + 1.0) / s;
+	return (2.0 * w * (1.0 + GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening * (h1 * sf * (1.0 - sg) - h2 * (1.0 - sf) * sg)));
+}
+
+double gmt_andoyer_dist_meter (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2)
+{
+	return (GMT->current.proj.EQ_RAD * gmt_andoyer_dist_degree (GMT, lon1, lat1, lon2, lat2));
+}
+
+double gmt_vincenty_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE)
 {
 	/* Translation of NGS FORTRAN code for determination of true distance
 	** and respective forward and back azimuths between two points on the
@@ -5393,8 +5416,8 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, 
 	GMT->current.proj.n_geodesic_calls++;
 	return (s * GMT->current.proj.EQ_RAD);
 }
-#else
-double gmt_geodesic_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE)
+
+double gmt_rudoe_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE)
 {
 	/* Compute length of geodesic between locations in meters
 	 * We use Rudoe's equation from Bomford.
@@ -5464,7 +5487,6 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, 
 
 	return (dist);
 }
-#endif
 
 double gmt_loxodrome_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2)
 {	/* Calculates the distance along the loxodrome, in meter */
@@ -7106,6 +7128,30 @@ void GMT_init_ellipsoid (struct GMT_CTRL *GMT)
 	gmt_lat_swap_init (GMT);		/* Compute coefficients needed for auxilliary latitude conversions */
 }
 
+void GMT_init_geodesic (struct GMT_CTRL *GMT)
+{
+	switch (GMT->current.setting.proj_geodesic) {
+		case GMT_GEODESIC_VINCENTY:
+			GMT->current.map.geodesic_meter = gmt_vincenty_dist_meter;
+			GMT->current.map.geodesic_az_backaz = gmt_az_backaz_vincenty;
+			break;
+		case GMT_GEODESIC_ANDOYER:
+			GMT->current.map.geodesic_meter = gmt_andoyer_dist_meter;
+			GMT->current.map.geodesic_az_backaz = gmt_az_backaz_vincenty;	/* THis may change later */
+			break;
+		case GMT_GEODESIC_RUDOE:
+			GMT->current.map.geodesic_meter = gmt_rudoe_dist_meter;
+			GMT->current.map.geodesic_az_backaz = gmt_az_backaz_rudoe;
+			break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The PROJ_GEODESIC is not set! - use Vincenty\n");
+			GMT->current.map.geodesic_meter = gmt_vincenty_dist_meter;
+			GMT->current.map.geodesic_az_backaz = gmt_az_backaz_vincenty;
+			break;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "The PROJ_GEODESIC set to %s\n", GEOD_TEXT[GMT->current.setting.proj_geodesic]);
+}
+
 /* Datum conversion routines */
 
 void GMT_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DATUM *to, bool heights)
@@ -7329,7 +7375,7 @@ double * GMT_dist_array_2 (struct GMT_CTRL *GMT, double x[], double y[], uint64_
 
 				case 3:	/* Geodesic distances in meter */
 
-					inc = gmt_geodesic_dist_meter (GMT, x[this_p], y[this_p], x[prev], y[prev]);
+					inc = (*GMT->current.map.geodesic_meter) (GMT, x[this_p], y[this_p], x[prev], y[prev]);
 					break;
 			}
 
@@ -7964,9 +8010,9 @@ void gmt_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type)
 				type_name[type], aux[choice], rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius);
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
-			GMT->current.map.dist[type].func = &gmt_geodesic_dist_meter;
-			GMT->current.map.azimuth_func = &gmt_az_backaz_geodesic;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using %s geodesics in meters\n", type_name[type], GEOD_TEXT);
+			GMT->current.map.dist[type].func = GMT->current.map.geodesic_meter;
+			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using %s geodesics in meters\n", type_name[type], GEOD_TEXT[GMT->current.setting.proj_geodesic]);
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			GMT->current.map.dist[type].func = gmt_flatearth_dist_degree;
@@ -7981,7 +8027,7 @@ void gmt_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type)
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			GMT->current.map.dist[type].func = &gmt_geodesic_dist_degree;
-			GMT->current.map.azimuth_func = &gmt_az_backaz_geodesic;
+			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using geodesics in degrees\n", type_name[type]);
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
@@ -7992,7 +8038,7 @@ void gmt_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type)
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
 			GMT->current.map.dist[type].func = &GMT_geodesic_dist_cos;
-			GMT->current.map.azimuth_func = &gmt_az_backaz_geodesic;
+			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using cosine of geodesic angle\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_LOXODROME:	/* 2-D lon, lat data, but measure distance along rhumblines in meter */

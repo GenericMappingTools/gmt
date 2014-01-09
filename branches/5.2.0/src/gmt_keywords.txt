@@ -118,11 +118,12 @@ MAP_VECTOR_SHAPE		# Head shape of vectors
 #-------------------------------------------------------
 # PROJ Group:	Projection settings
 #-------------------------------------------------------
-PROJ_ELLIPSOID			# Current ellipsoid used by projections
+PROJ_AUX_LATITUDE		# Auxiliary latitude used in spherical approximations
 PROJ_DATUM			# Current datum used by projections
+PROJ_ELLIPSOID			# Current ellipsoid used by projections
+PROJ_GEODESIC			# Geodesic method used [vincenty]
 PROJ_LENGTH_UNIT		# Unit used to report lengths
 PROJ_MEAN_RADIUS		# Mean radius used in spherical approximations
-PROJ_AUX_LATITUDE		# Auxiliary latitude used in spherical approximations
 PROJ_SCALE_FACTOR		# Scale factor for UTM maps
 #-------------------------------------------------------
 # PS Group:	PostScript settings
