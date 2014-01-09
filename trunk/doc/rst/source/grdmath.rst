@@ -478,10 +478,10 @@ Notes On Operators
    grid domain and the (lon, lat) point are expected to be in degrees.
    Similarly, the **SAZ** and **SBAZ** operators calculate spherical
    azimuth and back-azimuths in degrees, respectively. The operators
-   **LDIST** and **PDIST** also computes spherical distances (if **-fg** is
-   set), else they return Cartesian distances. Note: If the current
-   :ref:`PROJ_ELLIPSOID <Projection Parameters>` is not spherical then geodesics are used in
-   spherical calculations.
+   **LDIST** and **PDIST** compute spherical distances if **-fg** is
+   set or implied, else they return Cartesian distances. Note: If the current
+   :ref:`PROJ_ELLIPSOID <Projection Parameters>` is spherical then distances will be in degrees,
+   otherwise geodesics are used in calculations of distances and the result will be in km.
 
 #. The operator **PLM** calculates the associated Legendre polynomial
    of degree L and order M (0 <= M <= L), and its argument is the sine of
