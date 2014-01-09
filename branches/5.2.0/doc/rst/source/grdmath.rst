@@ -280,9 +280,9 @@ and output arguments.
 +---------------+-------+-----------------------------------------------------------------------------------------------------------------+
 | **LDIST**     | 1 1   | Compute distance (in degrees if -fg) from lines in multi-segment ASCII file A                                   |
 +---------------+-------+-----------------------------------------------------------------------------------------------------------------+
-| **LDIST1**    | 1 1   | Compute distance (in degrees if -fg) from lines in multi-segment ASCII file A; optimized for coastlines         |
-+---------------+-------+-----------------------------------------------------------------------------------------------------------------+
 | **LDIST2**    | 2 1   | As LDIST, from lines in ASCII file B but only to nodes where A != 0                                             |
++---------------+-------+-----------------------------------------------------------------------------------------------------------------+
+| **LDISTC**    | 1 1   | As LDIST, optimized for coastline data produced with **pscoast**                                                |
 +---------------+-------+-----------------------------------------------------------------------------------------------------------------+
 | **LE**        | 2 1   | 1 if A <= B, else 0                                                                                             |
 +---------------+-------+-----------------------------------------------------------------------------------------------------------------+
@@ -480,12 +480,12 @@ Notes On Operators
    grid domain and the (lon, lat) point are expected to be in degrees.
    Similarly, the **SAZ** and **SBAZ** operators calculate spherical
    azimuth and back-azimuths in degrees, respectively. The operators
-   **LDIST** and **PDIST** compute spherical distances if **-fg** is
-   set or implied, else they return Cartesian distances. Note: If the current
-   :ref:`PROJ_ELLIPSOID <Projection Parameters>` is spherical then distances will be in degrees,
-   otherwise geodesics are used in calculations of distances and the result will be in km.
+   **LDIST** and **PDIST** also computes spherical distances (if **-fg** is
+   set), else they return Cartesian distances. Note: If the current
+   :ref:`PROJ_ELLIPSOID <Projection Parameters>` is not spherical then geodesics are used in
+   spherical calculations.
 
-   The operator **LDIST1** is a version of **LDIST** that is optimized for the use is coastline data sets
+   The operator **LDISTC** is a version of **LDIST** that is optimized for the use is coastline data sets
    created with **pscoast**. It includes fast searching routines that significantly reduce the
    processing time without penalty to the result.
 
