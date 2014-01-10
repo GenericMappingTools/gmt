@@ -1089,6 +1089,11 @@ void grd_DEG2KM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	uint64_t node;
 	double a = 0.0;
 
+	if (GMT_is_geographic (GMT, GMT_IN)) {
+		if (GMT_sph_mode (GMT) == GMT_GEODESIC) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, DEG2KM is only exact when PROJ_ELLIPSOID == sphere\n");
+	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, DEG2KM used with Cartesian data\n");
 	if (stack[last]->constant) a = stack[last]->factor * GMT->current.proj.DIST_KM_PR_DEG;
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : stack[last]->G->data[node] * GMT->current.proj.DIST_KM_PR_DEG);
 }
@@ -1762,6 +1767,11 @@ void grd_KM2DEG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	uint64_t node;
 	double a = 0.0, f = 1.0 / GMT->current.proj.DIST_KM_PR_DEG;
 
+	if (GMT_is_geographic (GMT, GMT_IN)) {
+		if (GMT_sph_mode (GMT) == GMT_GEODESIC) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, KM2DEG is only exact when PROJ_ELLIPSOID == sphere\n");
+	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, KM2DEG used with Cartesian data\n");
 	if (stack[last]->constant) a = stack[last]->factor * f;
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : (stack[last]->G->data[node] * f));
 }
@@ -1835,14 +1845,8 @@ void grd_KURT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, int geometry, char *op)
 {
 	struct GMT_DATASET *D = NULL;
-	if (GMT_is_geographic (GMT, GMT_IN)) {
-		if (GMT_sph_mode (GMT) == GMT_GEODESIC)	/* When using geodesics, returns km */
-			GMT_init_distaz (GMT, 'k', GMT_GEODESIC, GMT_MAP_DIST);
-		else {	/* Return spherical degrees */
-			GMT_init_distaz (GMT, 'd', GMT_sph_mode (GMT), GMT_MAP_DIST);
-			if (GMT_compat_check (GMT, 4) && (!strcmp (op, "LDIST") || !strcmp (op, "PDIST"))) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: %s returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n", op);
-		}
-	}
+	if (GMT_is_geographic (GMT, GMT_IN))
+		GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
 	else
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
@@ -1866,7 +1870,7 @@ int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_DATA
 }
 
 void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: LDIST 1 1 Compute distance (in degrees|km if -fg) from lines in multi-segment ASCII file A.  */
+/*OPERATOR: LDIST 1 1 Compute distance (in km if -fg) from lines in multi-segment ASCII file A.  */
 {
 	uint64_t node, row, col;
 	double d;
@@ -2338,7 +2342,7 @@ void grd_OR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 }
 
 void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: PDIST 1 1 Compute distance (in degrees|km if -fg) from points in ASCII file A.  */
+/*OPERATOR: PDIST 1 1 Compute distance (in km if -fg) from points in ASCII file A.  */
 {
 	uint64_t dummy[2], node, row, col;
 	struct GMT_DATATABLE *T = NULL;
@@ -2663,19 +2667,14 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 }
 
 void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: SDIST 2 1 Spherical (Great circle|geodesic) distance (in degrees|km) between grid nodes and stack lon,lat (A, B).  */
+/*OPERATOR: SDIST 2 1 Spherical (Great circle|geodesic) distance (in km) between grid nodes and stack lon,lat (A, B).  */
 {
 	uint64_t node, row, col;
 	unsigned int prev = last - 1;
 	double a, b;
 
-	if (GMT_is_geographic (GMT, GMT_IN)) {
-		//if (GMT_sph_mode (GMT) == GMT_GEODESIC)	/* When using geodesics, returns km */
-		//	GMT_init_distaz (GMT, 'k', GMT_GEODESIC, GMT_MAP_DIST);
-		//else {	/* Return spherical degrees */
-			GMT_init_distaz (GMT, 'd', GMT_sph_mode (GMT), GMT_MAP_DIST);
-		//}
-	}
+	if (GMT_is_geographic (GMT, GMT_IN))
+		GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "SDIST Error: Grid must be geographic; see CDIST for Cartesian data.\n");
 		return;
