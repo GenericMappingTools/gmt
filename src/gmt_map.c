@@ -2226,7 +2226,7 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *GMT, double lonE, double latE, d
 	** Modified by P.W. from: http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478
 	*/
 	int n_iter = 0;
-	static double az, c, d, e, r, f, dx, x, y, sa, cx, cy, cz, sx, sy, c2a, cu1, cu2, su1, tu1, tu2, ts, baz, faz;
+	static double az, c, d, e, r, f, d_lon, dx, x, y, sa, cx, cy, cz, sx, sy, c2a, cu1, cu2, su1, tu1, tu2, ts, baz, faz;
 
 	f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening;
 	r = 1.0 - f;
@@ -2238,7 +2238,8 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *GMT, double lonE, double latE, d
 	ts  = cu1 * cu2;
 	baz = ts * tu2;
 	faz = baz * tu1;
-	x = dx = D2R * (lonE - lonS);
+	GMT_set_delta_lon (lonS, lonE, d_lon);
+	x = dx = D2R * d_lon;
 	do {
 		n_iter++;
 		sincos (x, &sx, &cx);
@@ -5254,7 +5255,7 @@ double gmt_haversine (struct GMT_CTRL *GMT, double lon1, double lat1, double lon
 	}
 
 	sy = sind (0.5 * (lat2 - lat1));
-	sx = sind (0.5 * (lon2 - lon1));
+	sx = sind (0.5 * (lon2 - lon1));	/* If there is a 360 wrap here then the sign of sx is wrong but we only use sx^2 */
 	sin_half_squared = sy * sy + cosd (lat2) * cosd (lat1) * sx * sx;
 
 	return (sin_half_squared);
@@ -5342,7 +5343,7 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, 
 	**	s -- distance between points in meters.
 	** Modified by P.W. from: http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478
 	*/
-	static double s, c, d, e, r, f, dx, x, y, sa, cx, cy, cz, sx, sy, c2a, cu1, cu2, su1, tu1, tu2, ts, baz, faz;
+	static double s, c, d, e, r, f, d_lon, dx, x, y, sa, cx, cy, cz, sx, sy, c2a, cu1, cu2, su1, tu1, tu2, ts, baz, faz;
 	int n_iter = 0;
 
 	f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening;
@@ -5355,7 +5356,8 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, 
 	ts  = cu1 * cu2;
 	baz = ts * tu2;
 	faz = baz * tu1;
-	x = dx = D2R * (lonE - lonS);
+	GMT_set_delta_lon (lonS, lonE, d_lon);
+	x = dx = D2R * d_lon;
 	do {
 		n_iter++;
 		sincos (x, &sx, &cx);
@@ -5400,7 +5402,7 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, 
 	 * We use Rudoe's equation from Bomford.
 	 */
 
-	double e1, el, sinthi, costhi, sinthk, costhk, tanthi, tanthk, sina12, cosa12;
+	double e1, el, sinthi, costhi, sinthk, costhk, tanthi, tanthk, sina12, cosa12, d_lon;
 	double al, a12top, a12bot, a12, e2, e3, c0, c2, c4, v1, v2, z1, z2, x2, y2, dist;
 	double e1p1, sqrte1p1, sin_dl, cos_dl, u1bot, u1, u2top, u2bot, u2, b0, du, pdist;
 
@@ -5429,7 +5431,8 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *GMT, double lonS, double latS, 
 	e1 = 1.0 + el;
 	sincosd (latE, &sinthi, &costhi);
 	sincosd (latS, &sinthk, &costhk);
-	sincosd (lonE - lonS, &sin_dl, &cos_dl);
+	GMT_set_delta_lon (lonS, lonE, d_lon);
+	sincosd (d_lon, &sin_dl, &cos_dl);
 	tanthi = sinthi / costhi;
 	tanthk = sinthk / costhk;
 	al = tanthi / (e1 * tanthk) + GMT->current.proj.ECC2 * sqrt ((e1 + tanthi * tanthi) / (e1 + tanthk * tanthk));
