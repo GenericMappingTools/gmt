@@ -1130,6 +1130,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (GMT, lon);
 	GMT_free (GMT, lat);
+	GMT_eliminate_lon_jumps (GMT, GMT->hidden.mem_coord[GMT_X], n_new);
 	*a_lon = GMT_assign_vector (GMT, n_new, GMT_X);
 	*a_lat = GMT_assign_vector (GMT, n_new, GMT_Y);
 	

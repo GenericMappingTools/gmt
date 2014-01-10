@@ -1995,6 +1995,22 @@ void GMT_get_lon_minmax (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows, dou
 	GMT_free (GMT, Q);
 }
 
+void GMT_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows)
+{	/* Eliminate longitude jumps in array lon using clever quadrant checking. */
+	unsigned int way;
+	uint64_t row;
+	struct GMT_QUAD *Q = GMT_quad_init (GMT, 1);	/* Allocate and initialize one QUAD structure */
+
+	/* We must keep separate min/max for both Dateline and Greenwich conventions */
+	for (row = 0; row < n_rows; row++) GMT_quad_add (GMT, Q, lon[row]);
+
+	/* Finalize longitude range settings */
+	way = GMT_quad_finalize (GMT, Q);
+	for (row = 0; row < n_rows; row++) GMT_lon_range_adjust (Q->range[way], &lon[row]);
+	
+	GMT_free (GMT, Q);
+}
+
 void GMT_set_seg_polar (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 {	/* Must check if polygon is a polar cap.  We use the idea that the sum of
  	 * the change in angle along the polygon is either -/+360 (if pole is inside)
