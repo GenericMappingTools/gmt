@@ -700,6 +700,28 @@ void grd_CDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	}
 }
 
+void grd_CDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: CDIST2 2 1 As CDIST but only to nodes that are != 0.  */
+{
+	uint64_t node, row, col;
+	unsigned int prev = last - 1;
+	double a, b;
+
+	if (GMT_is_geographic (GMT, GMT_IN)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CDIST2 Error: Grid must be Cartesian; see SDIST2 for geographic data.\n");
+		return;
+	}
+	GMT_grd_padloop (GMT, info->G, row, col, node) {
+		if (stack[prev]->G->data[node] == 0.0)
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+			stack[prev]->G->data[node] = (float)hypot (a - info->d_grd_x[col], b - info->d_grd_y[row]);
+		}
+	}
+}
+
 void grd_CEIL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CEIL 1 1 ceil (A) (smallest integer >= A).  */
 {
@@ -2723,7 +2745,7 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 }
 
 void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: SDIST 2 1 Spherical (Great circle|geodesic) distance (in km) between grid nodes and stack lon,lat (A, B).  */
+/*OPERATOR: SDIST 2 1 Spherical distance (in km) between grid nodes and stack lon,lat (A, B).  */
 {
 	uint64_t node, row, col;
 	unsigned int prev = last - 1;
@@ -2740,6 +2762,31 @@ void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 		stack[prev]->G->data[node] = (float) GMT_distance (GMT, a, b, info->d_grd_x[col], info->d_grd_y[row]);
+	}
+}
+
+void grd_SDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: SDIST2 2 1 As SDIST but only to nodes that are != 0.  */
+{
+	uint64_t node, row, col;
+	unsigned int prev = last - 1;
+	double a, b;
+
+	if (GMT_is_geographic (GMT, GMT_IN))
+		GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "SDIST2 Error: Grid must be geographic; see CDIST2 for Cartesian data.\n");
+		return;
+	}
+
+	GMT_grd_padloop (GMT, info->G, row, col, node) {
+		if (stack[prev]->G->data[node] == 0.0)
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+			stack[prev]->G->data[node] = (float) GMT_distance (GMT, a, b, info->d_grd_x[col], info->d_grd_y[row]);
+		}
 	}
 }
 
