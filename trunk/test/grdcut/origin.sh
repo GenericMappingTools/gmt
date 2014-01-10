@@ -5,7 +5,8 @@
 ps=origin.ps
 
 # Create global grid by evaluating distances to 0,0
-gmt grdmath -Rd -I1 0 0 SDIST = tmp.nc
+gmt set PROJ_ELLIPSOID Sphere
+gmt grdmath -Rd -I1 0 0 SDIST KM2DEG = tmp.nc
 gmt grdcontour tmp.nc -JQ0/7i -P -K -A10 -C5 -Baf -Y6.5i -Xc > $ps
 # Plot three origins and circles
 gmt psxy -R -J -O -K -SE << EOF >> $ps

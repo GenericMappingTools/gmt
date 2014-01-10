@@ -3,19 +3,19 @@
 (18) Volumes and Spatial Selections
 -----------------------------------
 
-To demonstrate potential usage of the new programs
-:doc:`grdvolume </grdvolume>` and
+To demonstrate potential usage of the programs
+:doc:`gmtspatial </gmtspatial>`, :doc:`grdvolume </grdvolume>` and
 :doc:`gmtselect </gmtselect>` we extract a subset of the
 Sandwell & Smith altimetric gravity field [1]_ for the northern Pacific
 and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
 and (2) are within 200 km of the Pratt seamount. We do this by dumping
-the 50 mGal contours to disk, then making a simple AWK script ``center.awk`` that
+the 50 mGal contours to disk, then use gmtspatial that
 returns the mean location of the points making up each closed polygon,
 and then pass these locations to
-:doc:`gmtselect </gmtselect>` which retains only the
+:doc:`gmtselect </gmtselect>`, which retains only the
 points within 200 km of Pratt. We then mask out all the data outside
 this radius and use :doc:`grdvolume </grdvolume>` to
-determine the combined area and volumes of the chosen seamounts. Our
+determine the combined area and (gravimetric) volumes of the chosen seamounts. Our
 illustration is presented in Figure.
 
 .. literalinclude:: /_verbatim/example_18.txt
