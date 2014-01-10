@@ -16,7 +16,7 @@ name="Rome"
 
 # Calculate distances (km) to all points on a global 1x1 grid
 
-gmt grdmath -Rg -I1 $lon $lat SDIST 111.13 MUL = dist.nc
+gmt grdmath -Rg -I1 $lon $lat SDIST = dist.nc
 
 # Location info for 5 other cities + label justification
 
