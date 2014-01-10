@@ -2670,6 +2670,8 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 	if (GMT->current.proj.scale[GMT_Y] < 0.0) GMT->current.proj.xyz_pos[GMT_Y] = false;	/* User wants y to increase down */
 	switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
+			if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME)
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -JX|x option: Your x-column contains absolute time but -JX|x...T was not specified!\n");
 			GMT->current.proj.fwd_x = ((GMT_x_is_lon (GMT, GMT_IN)) ? &GMT_translind  : &GMT_translin);
 			GMT->current.proj.inv_x = ((GMT_x_is_lon (GMT, GMT_IN)) ? &GMT_itranslind : &GMT_itranslin);
 			if (GMT->current.proj.xyz_pos[GMT_X]) {
@@ -2683,7 +2685,7 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[XLO] <= 0.0 || GMT->common.R.wesn[XHI] <= 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Jx option:  Limits must be positive for log10 option\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -JX|x option:  Limits must be positive for log10 option\n");
 				GMT_exit (GMT, EXIT_FAILURE); return false;
 			}
 			xmin = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XLO]) : d_log10 (GMT, GMT->common.R.wesn[XHI]);
@@ -2703,6 +2705,8 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 	}
 	switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
+			if (GMT->current.io.col_type[GMT_IN][GMT_Y] == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME)
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -JX|x option:  Your y-column contains absolute time but -JX|x...T was not specified!\n");
 			ymin = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YLO] : GMT->common.R.wesn[YHI];
 			ymax = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO];
 			GMT->current.proj.fwd_y = &GMT_translin;
@@ -2710,7 +2714,7 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[YLO] <= 0.0 || GMT->common.R.wesn[YHI] <= 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Jx option:  Limits must be positive for log10 option\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -JX|x option:  Limits must be positive for log10 option\n");
 				GMT_exit (GMT, EXIT_FAILURE); return false;
 			}
 			ymin = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YLO]) : d_log10 (GMT, GMT->common.R.wesn[YHI]);

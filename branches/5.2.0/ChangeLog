@@ -22,6 +22,14 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-01-10	pwessel
+	* grdmath.c:		We consider the change in SDIST, PDIST to return degrees instead
+				of km to be a bug as it makes it difficult to handle geodesics
+				for which degrees make no sense.  Thus we have consolidated all
+				the ?DIST operators to give km if geographic data are involved.
+				Example 23 has been adjusted accordingly, as has several test
+				scripts.  Please check your own scripts for SDIST.
+
 2014-01-09	pwessel
 	* gmt_vector.c:		Add protection against introduced longitude-jumps produced
 				by resampling in GMT_fix_up_path.

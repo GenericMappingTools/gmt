@@ -14,7 +14,7 @@ lat=-80
 D=5000
 mode=c
 no_U=1
-
+gmt set PROJ_ELLIPSOID Sphere
 # Set contour limits so we just draw the filter radius
 lo=`gmt gmtmath -Q $D 2 DIV 0.5 SUB =`
 hi=`gmt gmtmath -Q $D 2 DIV 0.5 ADD =`
@@ -39,7 +39,7 @@ else	# Just normalize the output to 0-1 and make a cpt to fit
 fi
 echo "N white" >> t.cpt	# White is NaN
 # Compute radial distances from our point
-gmt grdmath -fg -R0/360/-90/90 -I1 $lon $lat SDIST DEG2KM = r.nc
+gmt grdmath -fg -R0/360/-90/90 -I1 $lon $lat SDIST = r.nc
 # Plot polar map of result
 if [ $no_U -eq 1 ]; then
 	gmt grdimage  t.nc -JA0/$plat/7i -P -B30g10 -Ct.cpt -R0/360/$range -K -X0.75i -Y0.5i > $ps
