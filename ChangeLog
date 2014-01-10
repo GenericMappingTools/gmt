@@ -22,6 +22,9 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-01-09	pwessel
+	* gmt_vector.c:		Add protection against introduced longitude-jumps produced
+				by resampling in GMT_fix_up_path.
 2014-01-09	remko
 	* grdmath.c:		LDIST and PDIST will again produce km when using geodesics.
 
