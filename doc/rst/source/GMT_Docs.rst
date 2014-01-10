@@ -268,7 +268,7 @@ promoted (and possibly renamed) from earlier supplements:
 :doc:`gmtinfo`
     Report information about data tables. Previously known by the name minmax
     (this name is still recognized when GMT is running in compatibility mode).
- 
+
 :doc:`gmtsimplify`
     A line-reduction tool for coastlines and similar lines. Previously found
     in the misc supplement under the name gmtdp (this name is recognized when
@@ -1181,7 +1181,7 @@ alternative modes.
 
 #. Permanent mode
 
-#. Temporary mode 
+#. Temporary mode
 
 The permanent mode makes use of the free executable program `EditPath
 <http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml>`_
@@ -1200,7 +1200,7 @@ For further details the user should read the entire help section at the header o
 
 The ``gmtswitch.bat`` solution, however, has the drawback that the batch file must be located
 elsewhere and in a directory that is on the user's PATH, otherwise it wont be located after
-first use unless the other GMT bin directory has a similar batch file. A better solution is to install the 
+first use unless the other GMT bin directory has a similar batch file. A better solution is to install the
 `Windows console enhancement <http://sourceforge.net/projects/console>`_
 that includes multiple tabs and configure the different tabs to start the different GMT versions.
 All it takes is in the Tab setting to call a batch that modifies the PATH locally. That PATH
@@ -7789,9 +7789,9 @@ images (e.g., **-I** option in :doc:`grdimage`) by changing the saturation
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
 necessary) and then darkened by moving (*sv*) toward
-(:ref:`COLOR_HSV_MIN_SATURATION <COLOR_HSV_MIN_SATURATION>`, :ref:`COLOR_HSV_MIN_VALUE <COLOR_HSV_MIN_VALUE>`)
+(:ref:`COLOR_HSV_MIN_S <COLOR_HSV_MIN_S>`, :ref:`COLOR_HSV_MIN_V <COLOR_HSV_MIN_V>`)
 if the intensity is negative, or lightened by sliding (*sv*) toward
-(:ref:`COLOR_HSV_MAX_SATURATION <COLOR_HSV_MAX_SATURATION>`, :ref:`COLOR_HSV_MAX_VALUE <COLOR_HSV_MAX_VALUE>`)
+(:ref:`COLOR_HSV_MAX_S <COLOR_HSV_MAX_S>`, :ref:`COLOR_HSV_MAX_V <COLOR_HSV_MAX_V>`)
 if the illumination is positive. The extremes of the *s* and *v* are defined in the
 :doc:`gmt.conf` file and are usually chosen so the corresponding points are nearly black
 (*s = 1*, *v = 0*) and white (*s = 0*, *v = 1*).
