@@ -55,7 +55,7 @@ specify fill of water-areas then the latter will be transparent (i.e.,
 earlier graphics drawn in those areas will not be overwritten).
 Likewise, if the water-areas are painted and no land fill is set then
 the land-areas will be transparent. A map projection must be supplied.
-The PostScript code is written to standard output. 
+The PostScript code is written to standard output.
 
 Required Arguments
 ------------------
@@ -79,14 +79,14 @@ Optional Arguments
 **-C**\ [**l**\ \|\ **r**/]\ *fill*
     Set the shade, color, or pattern for lakes and river-lakes [Default
     is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
-    separate fills by prepending **l**/ for lakes and **r**/ for
+    separate fills by prepending **l/** for lakes and **r/** for
     river-lakes, repeating the **-C** option as needed.
 
 **-D**\ *resolution*\ [**+**]
     Selects the resolution of the data set to use ((**f**)ull,
     (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
     resolution drops off by 80% between data sets [Default is **l**].
-    Append )+) to automatically select a lower resolution should the one
+    Append **+** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
 
 **-F**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
@@ -197,7 +197,7 @@ Optional Arguments
     clip started.
 **-S**\ *fill*\ \|\ **c**
     Select filling or clipping of "wet" areas. Append the shade, color,
-    or pattern; or use **-Sc** for clipping [Default is no fill]. 
+    or pattern; or use **-Sc** for clipping [Default is no fill].
 
 ..  include:: explain_-T_rose.rst_
 
@@ -206,7 +206,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**\ [*level*/]\ *pen* :ref:`(more ...) <set-pens>` 
+**-W**\ [*level*/]\ *pen* :ref:`(more ...) <set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
     [Defaults: width = default, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
@@ -214,7 +214,7 @@ Optional Arguments
     lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
     Repeat **-W** as needed. When specific level pens are set, those not
     listed will not be drawn [Default draws all levels; but see **-A**].
-    
+
 .. include:: explain_-XY.rst_
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
@@ -264,7 +264,7 @@ gridded topography is only seen over land, using a Mercator map at scale
 for the file **$GMT_SHAREDIR**/coastline.conf. This file may contain
 any number of records that each holds the full pathname of an
 alternative directory. Comment lines (#) and blank lines are allowed.
-The desired file is then sought for in the alternate directories. 
+The desired file is then sought for in the alternate directories.
 
 .. include:: explain_gshhs.rst_
 
