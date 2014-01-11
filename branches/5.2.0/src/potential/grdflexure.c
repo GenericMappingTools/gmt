@@ -448,7 +448,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%s] or Poisson's ratio [%s].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
@@ -680,8 +680,11 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	for (t = 0; t < Ctrl->T.n_times; t++) {	/* Free up grid structures */
 		if (G[t] == NULL) continue;	/* Quietly skip containers with no grids */
 		GMT_Destroy_Data (API, &G[t]->Grid);
+		GMT_free (GMT, G[t]->K->info);
 		GMT_free (GMT, G[t]->K);
+		GMT_free (GMT, G[t]);
 	}
+	GMT_free (GMT, G);
 	GMT_free (GMT, R);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "done!\n");
