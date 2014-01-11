@@ -8,7 +8,7 @@
     boundary as the coastline for Antarctica; append **+ag** to instead
     select the ice grounding line as coastline.  For expert users who wish to
     print their own Antarctica coastline and islands via `psxy` you can
-    use **+as** to skip all GSHHG features below 60S or **+AS** to instead
+    use **+as** to skip all GSHHG features below 60S or **+aS** to instead
     skip all features north of 60S.  Finally, append
     **+p**\ *percent* to exclude polygons whose percentage area of the
     corresponding full-resolution feature is less than *percent*. See
