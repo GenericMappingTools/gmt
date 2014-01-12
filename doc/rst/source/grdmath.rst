@@ -14,6 +14,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdmath**
+[ **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ **-D**\ *resolution*\ [**+**] ]
 [ |SYN_OPT-I| ]
 [ **-M** ] [ **-N** ]
 [ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
@@ -58,6 +60,16 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. |Add_-A| replace:: (**-A** is only relevant to the **LDISTG** operator)
+.. include:: explain_-A.rst_
+
+**-D**\ *resolution*\ [**+**]
+    Selects the resolution of the data set to use with the operator LDISTG
+    ((**f**)ull, (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
+    resolution drops off by 80% between data sets [Default is **l**].
+    Append **+** to automatically select a lower resolution should the one
+    requested not be available [abort if not found].
 
 .. include:: explain_-I.rst_
 
@@ -284,7 +296,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LDIST2**    | 2 1   | As LDIST, from lines in ASCII file B but only to nodes where A != 0                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **LDISTC**    | 1 1   | As LDIST, optimized for coastline data produced with **pscoast**                                       |
+| **LDISTG**    | 0 1   | As LDIST, but operates on the GSHHG dataset (see -A, -D for options).                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LE**        | 2 1   | 1 if A <= B, else 0                                                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -491,9 +503,8 @@ Notes On Operators
    You can trade speed with accuracy by changing the algorithm used to
    compute the geodesic (see :ref:`PROJ_GEODESIC <Projection Parameters>`).
 
-   The operator **LDISTC** is a version of **LDIST** that is optimized for the use is coastline data sets
-   created with **pscoast**. It includes fast searching routines that significantly reduce the
-   processing time without penalty to the result.
+   The operator **LDISTG** is a version of **LDIST** that operates on the GSHHG data. Instead of reading an ASCII file,
+   it directly accesses one of the GSHHG data sets as determined by the **-D** and **-A** options.
 
 #. The operator **PLM** calculates the associated Legendre polynomial
    of degree L and order M (0 <= M <= L), and its argument is the sine of
@@ -546,6 +557,8 @@ Notes On Operators
 .. include:: explain_grd_coord.rst_
 
 .. include:: explain_sto_rcl_clr.rst_
+
+.. include:: explain_gshhs.rst_
 
 Macros
 ------
