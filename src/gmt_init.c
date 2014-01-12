@@ -807,8 +807,8 @@ void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error)
 	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
 	GMT_message (GMT, "\t   Full syntax is <xinc>[%s|+][=][/<yinc>[%s|+][=]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
-	GMT_message (GMT, "\t   For geographic regions in degrees you can optionally append units\n");
-	GMT_message (GMT, "\t   among (f)oot, (m)inute, (s)econd, m(e)ter, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.\n");
+	GMT_message (GMT, "\t   For geographic regions in degrees you can optionally append units from this list:\n");
+	GMT_message (GMT, "\t   (d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.\n");
 	GMT_message (GMT, "\t   Append = to adjust the region to fit increments [Adjust increment to fit domain].\n");
 	GMT_message (GMT, "\t   Alternatively, specify number of nodes by appending +. Then, the increments\n");
 	GMT_message (GMT, "\t   are calculated from the given domain and node-registration settings\n");
