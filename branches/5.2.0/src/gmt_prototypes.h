@@ -343,6 +343,7 @@ EXTERN_MSC int GMT_assemble_br (struct GMT_CTRL *GMT, struct GMT_BR *c, bool shi
 EXTERN_MSC int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p, unsigned int np, bool sample, double step, int anti_bin);
 EXTERN_MSC int GMT_set_resolution (struct GMT_CTRL *GMT, char *res, char opt);
 EXTERN_MSC char GMT_shore_adjust_res (struct GMT_CTRL *GMT, char res);
+EXTERN_MSC struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], char res, struct GMT_SHORE_SELECT *A);
 
 /* gmt_vector.c: */
 
