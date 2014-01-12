@@ -61,6 +61,7 @@ struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
 	int fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
 	int antarctica_mode;	/* If 1, we skip all data south of 60S, i.e. the Antarctica continent and islands */
 	double area;	/* Area of smallest geographical feature to include [0] */
+	double bin_size;	/* Current GSHHG bin size in degrees */
 };
 
 struct GMT_GSHHS_pol {	/* Information pertaining to each GSHHS polygon */

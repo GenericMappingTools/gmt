@@ -445,6 +445,7 @@ struct GMT_DATATABLE {	/* To hold an array of line segment structures and header
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the table */
 	size_t n_alloc;			/* The current allocation length of segments */
+	double dist;			/* Distance from a point to this feature */
 	enum GMT_enum_out mode;		/* 0 = output table, 1 = output header only, 2 = skip table */
 	struct GMT_OGR *ogr;		/* Pointer to struct with all things GMT/OGR (if MULTI-geometry and not MULTIPOINT) */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */

@@ -79,6 +79,15 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		char *file;
 	} Out;
+	struct A {	/* -A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>] */
+		bool active;
+		struct GMT_SHORE_SELECT info;
+	} A;
+	struct D {	/* -D<resolution> */
+		bool active;
+		bool force;	/* if true, select next highest level if current set is not avaialble */
+		char set;	/* One of f, h, i, l, c */
+	} D;
 	struct I {	/* -Idx[/dy] */
 		bool active;
 		double inc[2];
@@ -96,6 +105,7 @@ struct GRDMATH_INFO {
 	uint64_t nm;
 	size_t size;
 	char *ASCII_file;
+	char gshhg_res;	/* If -D is set */
 	bool convert;		/* Reflects -M */
 	double *d_grd_x,  *d_grd_y;
 	double *d_grd_xn, *d_grd_yn;
@@ -103,6 +113,7 @@ struct GRDMATH_INFO {
 	float *f_grd_xn, *f_grd_yn;
 	double *dx, dy;		/* In flat-Earth m if -M is set */
 	struct GMT_GRID *G;
+	struct GMT_SHORE_SELECT *A;	/* If -A is processed */
 };
 
 struct GRDMATH_STACK {
@@ -122,6 +133,8 @@ void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->A.info.high = GSHHS_MAX_LEVEL;	/* Include all GSHHS levels (if LDISTC is used) */
+	C->D.set = 'l';				/* Low-resolution coastline data */
 	return (C);
 }
 
@@ -208,6 +221,15 @@ int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* Restrict GSHHS features */
+				Ctrl->A.active = true;
+				GMT_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				break;
+			case 'D':	/* Set GSHHS resolution */
+				Ctrl->D.active = true;
+				Ctrl->D.set = opt->arg[0];
+				Ctrl->D.force = (opt->arg[1] == '+');
+				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
@@ -1937,7 +1959,7 @@ void grd_LDISTC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 		bin_size = 20.0;
 	else
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: input is not coast line data set. May lead to erroneous results.\n");
-	slop = 2 * GMT_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (degrees or km) */
+	slop = 2 * GMT_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (km) */
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
 		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
@@ -1965,6 +1987,69 @@ void grd_LDISTC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	}
 
 	ASCII_free (GMT, info, &D, "LDISTC");	/* Free memory used for line */
+}
+
+void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LDISTG 0 1 As LDIST, but operates on GSHHS coastlines (see -A, -D for options).  */
+{
+	uint64_t node, row, col, seg, tbl;
+	int i, old_i = INT32_MAX, old_row = INT32_MAX;
+	double lon, lon1, lat, x, y, hor, bin_size, slop, d, d_lon, wesn[4];
+	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASET *D = NULL;
+
+	if (!GMT_is_geographic (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
+		GMT_parse_common_options (GMT, "f", 'f', "g");
+	GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
+
+	/* We must extend the area to make sure there are bins with GSHHG data around any -Rw/e/s/n.
+	 * The max distance to a coastline is ~2700 km, so as a conservative measure we wish to
+	 * extend the given w/e/s/n by ~25 spherical degrees in all directions.  We can later be
+	 * more clever since that max distance is only applicable in the S Pacific. */
+	GMT_memcpy (wesn, info->G->header->wesn, 4, double);	/* First make a copy of actual region */
+	wesn[YLO] -= 25.0;	if (wesn[YLO] < -90.0) wesn[YLO] = -90.0;
+	wesn[YHI] += 25.0;	if (wesn[YHI] > +90.0) wesn[YHI] = +90.0;
+	d_lon = (wesn[YLO] == -90.0 || wesn[YHI] == +90.0) ? 360.0 : 25.0 / cosd (MAX (fabs (wesn[YLO]), fabs (wesn[YHI])));
+	wesn[XLO] -= d_lon;	wesn[XHI] += d_lon;	/* New longitude extent */
+	if ((wesn[XHI] - wesn[XLO]) > 360.0) {	/* Need full range */
+		wesn[XLO] = 0.0;	wesn[XHI] = 360.0;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Extract GSHHG data for extended region %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+	
+	if ((D = GMT_get_gshhg_lines (GMT, wesn, info->gshhg_res, info->A)) == NULL) return;
+
+	bin_size = info->A->bin_size;	/* Current GSHHG bin size in degrees */
+	slop = 2 * GMT_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (km) */
+	if (last == UINT32_MAX) last = 0;	/* Was called the very first time when n_stack - 1 goes crazy since it is unsigned */
+	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
+		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
+		lon = info->d_grd_x[col], lat = info->d_grd_y[row];
+		i = floor(lon/bin_size);
+		/* For any new bin along a row, find the closest center of coastline bins */
+		if (i != old_i || row != old_row) {
+			lon1 = (i + 0.5) * bin_size;
+			for (tbl = 0, hor = DBL_MAX; tbl < D->n_tables; tbl++) {
+				x = 0.5 * (D->table[tbl]->min[GMT_X] + D->table[tbl]->max[GMT_X]);
+				y = 0.5 * (D->table[tbl]->min[GMT_Y] + D->table[tbl]->max[GMT_Y]);
+				D->table[tbl]->dist = d = GMT_distance (GMT, lon1, lat, x, y);
+				if (d < hor) hor = d;
+			}
+			/* Add 2 bin sizes to the closest distance to a bin as slop. This should always include the closest points in any bin */
+			hor = hor + slop;
+			old_i = i, old_row = row;
+		}
+
+		/* Loop over each line segment in each bin that is closer than the horizon defined above */
+		for (tbl = 0, d = DBL_MAX; tbl < D->n_tables; tbl++) {
+			T = D->table[tbl];
+			if (T->dist >= hor) continue;	/* Skip entire bins that are too far away */
+			for (seg = 0; seg < T->n_segments; seg++) {
+				if (T->segment[seg]->dist < hor) (void) GMT_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
+			}
+		}
+		stack[last]->G->data[node] = (float)d;
+	}
+	GMT_free_dataset (GMT, &D);
 }
 
 void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3626,6 +3711,9 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	}
 	x_noise = GMT_SMALL * info.G->header->inc[GMT_X];	y_noise = GMT_SMALL * info.G->header->inc[GMT_Y];
 	info.dx = GMT_memory (GMT, NULL, info.G->header->my, double);
+	if (Ctrl->D.force) Ctrl->D.set = GMT_shore_adjust_res (GMT, Ctrl->D.set);
+	info.gshhg_res = Ctrl->D.set;	/* Selected GSHHG resolution, if used */
+	info.A = &Ctrl->A.info;		/* Selected GSHHG flags, if used */
 
 	if (Ctrl->M.active) {	/* Use flat earth distances for gradients */
 		for (kk = 0; kk < info.G->header->my; kk++) info.dx[kk] = GMT->current.proj.DIST_M_PR_DEG * info.G->header->inc[GMT_X] * cosd (info.d_grd_y[kk]);
@@ -3659,7 +3747,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("IMNRVbfnr-" GMT_OPT("F"), opt->option)) continue;
+		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F"), opt->option)) continue;
 		/* if (opt->option == GMT_OPT_OUTFILE) continue; */	/* We do output after the loop */
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
