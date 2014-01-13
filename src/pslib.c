@@ -2689,12 +2689,21 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 	else if (!strstr (file, ".ras")) {	/* Not a .ras file; convert to ras */
 		int code;
 		char cmd[PSL_BUFSIZ], tmp_file[32];
+#ifdef WIN32
+		char *null_dev = "nul";
+#else
+		char *null_dev = "/dev/null";
+#endif
 		sprintf (tmp_file, "PSL_TMP_%d.ras", (int)getpid());
-		sprintf (cmd, "convert %s %s", file, tmp_file);
-		if (system (cmd)) {
-			PSL_message (PSL, PSL_MSG_FATAL, "Automatic conversion of file %s to Sun rasterfile failed\n", file);
-			remove (tmp_file);	/* Remove the temp file */
-			PSL_exit (EXIT_FAILURE);
+		/* Try imagemagick "convert" */
+		sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
+		if (system (cmd)) {	/* convert failed, try GraphicsMagic's "gm convert" */
+			sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
+			if (system (cmd)) {	/* gmt convert failed, give up */
+				PSL_message (PSL, PSL_MSG_FATAL, "Automatic conversion of file %s to Sun rasterfile failed\n", file);
+				remove (tmp_file);	/* Remove the temp file */
+				PSL_exit (EXIT_FAILURE);
+			}
 		}
 		if ((fp = fopen (tmp_file, "rb")) == NULL) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Cannot open image file %s!\n", tmp_file);
