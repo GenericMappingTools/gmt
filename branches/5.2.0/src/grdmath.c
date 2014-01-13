@@ -1948,7 +1948,8 @@ void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 {
 	uint64_t node, row, col, seg, tbl;
 	int i, old_i = INT32_MAX, old_row = INT32_MAX;
-	double lon, lon1, lat, x, y, hor, bin_size, slop, d, d_lon, wesn[4] = {0.0, 360.0, -90.0, 90.0};
+	double lon, lon1, lat, x, y, hor, bin_size, slop, d, d_lon;
+	double max_hor = 0.0, wesn[4] = {0.0, 360.0, -90.0, 90.0};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 
@@ -1981,6 +1982,7 @@ void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			/* Add 2 bin sizes to the closest distance to a bin as slop. This should always include the closest points in any bin */
 			hor = hor + slop;
 			old_i = i, old_row = row;
+			if (hor > max_hor) max_hor = hor;
 		}
 
 		/* Loop over each line segment in each bin that is closer than the horizon defined above */
@@ -1993,6 +1995,7 @@ void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 		}
 		stack[last]->G->data[node] = (float)d;
 	}
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Max LDISTG horizon distance used: %g\n", max_hor);
 	GMT_free_dataset (GMT, &D);
 }
 
