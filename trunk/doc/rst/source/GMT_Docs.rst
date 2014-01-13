@@ -2824,7 +2824,7 @@ only do we have both primary and secondary annotation items but we also
 have interval annotations versus tickmark annotations, numerous time
 units, and several ways in which to modify the plot. We will demonstrate
 this flexibility with a series of examples. While all our examples will
-only show a single *x*\ -axis (south, selected via **-BS** ), time-axis
+only show a single *x*\ -axis (south, selected via **-BS**), time-axis
 annotations are supported for all axes.
 
 Our first example shows a time period of almost two months in Spring
