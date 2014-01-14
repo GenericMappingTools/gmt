@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-01-14	remko
+	* gmt_shore.c:		Do not adjust longitudes in determining min/max, they are
+				always in same quadrant inside bins.
+
 2014-01-12	remko/pwessel
 	* all:			Merged in 5.1.1
 	* grdmath.c:		New function LDISTG does LDIST while using GSHHG directly.
