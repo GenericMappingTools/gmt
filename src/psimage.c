@@ -34,40 +34,40 @@
 #define GMT_PROG_OPTIONS "->JKOPRUVXYcptxy"
 
 struct PSIMAGE_CTRL {
-	struct In {
+	struct PSIMG_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C<xpos>/<ypos>[/<justify>] */
+	struct PSIMG_C {	/* -C<xpos>/<ypos>[/<justify>] */
 		bool active;
 		double x, y;
 		char justify[3];
 	} C;
-	struct E {	/* -E<dpi> */
+	struct PSIMG_E {	/* -E<dpi> */
 		bool active;
 		double dpi;
 	} E;
-	struct F {	/* -F<pen> */
+	struct PSIMG_F {	/* -F<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} F;
-	struct G {	/* -G[f|b|t]<rgb> */
+	struct PSIMG_G {	/* -G[f|b|t]<rgb> */
 		bool active;
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
 	} G;
-	struct I {	/* -I */
+	struct PSIMG_I {	/* -I */
 		bool active;
 	} I;
-	struct M {	/* -M */
+	struct PSIMG_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N<nx>/<ny> */
+	struct PSIMG_N {	/* -N<nx>/<ny> */
 		bool active;
 		unsigned int nx, ny;
 	} N;
-	struct W {	/* -W[-]<width>[/<height>] */
+	struct PSIMG_W {	/* -W[-]<width>[/<height>] */
 		bool active;
 		bool interpolate;
 		double width, height;
