@@ -1990,7 +1990,7 @@ void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			T = D->table[tbl];
 			if (T->dist >= hor) continue;	/* Skip entire bins that are too far away */
 			for (seg = 0; seg < T->n_segments; seg++) {
-				if (T->segment[seg]->dist < hor) (void) GMT_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
+				(void) GMT_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
 			}
 		}
 		stack[last]->G->data[node] = (float)d;

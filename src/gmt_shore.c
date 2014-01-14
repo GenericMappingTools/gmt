@@ -1091,7 +1091,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], char res, struct GMT_SHORE_SELECT *A)
 {
 	/* Return a dataset with GSHHS lines (not polygons) */
-	
+
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 	unsigned int base = GMT_set_resolution (GMT, &res, 'D');
 	int ind, err, np, k;
@@ -1102,7 +1102,7 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 	struct GMT_GSHHS_POL *p = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
-	
+
 	if (GMT_init_shore (GMT, res, &c, wesn, A)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 		return (NULL);
@@ -1110,10 +1110,10 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extract data from GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 	west_border = floor (wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (wesn[XHI] / c.bsize) * c.bsize;
-	
+
 	D = GMT_create_dataset (GMT, 0U, 0U, 0U, 2U, GMT_IS_LINE, true);	/* 2 cols but no tables yet */
 	D->table = GMT_memory (GMT, NULL, c.nb, struct GMT_DATATABLE *);
-	
+
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading GSHHS segments from bin # %5ld\r", c.bins[ind]);
@@ -1144,7 +1144,9 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			GMT_free (GMT, p);
 			D->n_segments += D->table[tbl]->n_segments;	/* Sum up total number of segments across the data set */
 			D->n_records  += D->table[tbl]->n_records;	/* Sum up total number of records across the data set */
+			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Avoid longitude adjustments: longitudes are guaranteed to be correct; rounding errors only messes things up */
 			GMT_set_tbl_minmax (GMT, D->table[tbl++]);	/* Determine min/max extent for all segments and the table */
+			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	/* Reset X column to be longitudes */
 		}
 		GMT_free_shore (GMT, &c);	/* Done with this GSHHS bin */
 	}
@@ -1153,7 +1155,7 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 	D->n_tables = tbl;
 
 	GMT_shore_cleanup (GMT, &c);	/* Done with the GSHHS database */
-	
+
 	return (D);
 }
 
