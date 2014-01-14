@@ -76,14 +76,14 @@ struct PSIMAGE_CTRL {
 
 void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSIMAGE_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.pen = GMT->current.setting.map_default_pen;
 	strcpy (C->C.justify, "LB");
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
-	C->N.nx = C->N.ny = 1;	
+	C->N.nx = C->N.ny = 1;
 	return (C);
 }
 
@@ -126,7 +126,7 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "O,P,R,U,V,X,c,p");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -253,9 +253,9 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.width <= 0.0 && Ctrl->E.dpi <= 0.0, "Must specify image width (-W) or dpi (-E)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.nx < 1 || Ctrl->N.ny < 1), 
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.nx < 1 || Ctrl->N.ny < 1),
 			"Syntax error -N option: Must specify positive values for replication\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
+	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0,
 			"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -288,18 +288,66 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 	return (0);	/* Neither */
 }
 
+int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, int n, int *r, int *g, int *b)
+{
+	int i, j, idx, trans = false;
+	unsigned char *table = NULL;
+
+	table = GMT_memory (GMT, NULL, 256*256*256, unsigned char);
+	memset (table, 0, 256*256*256);
+
+	/* Check off all the non-transparent colors, store the transparent one */
+	*r = *g = *b = 0;
+	for (i = j = 0; i < n; i++, j+=4) {
+		if (rgba[j+3] == 0)
+			*r = rgba[j], *g = rgba[j+1], *b = rgba[j+2], trans = true;
+		else
+			idx = 256 * (256*(int)rgba[j] + (int)rgba[j+1]) + (int)rgba[j+2];
+			table[idx] = true;
+	}
+
+	/* Was there a transparent color */
+	if (!trans) {
+		GMT_free (GMT, table);
+		return (0);
+	}
+
+	/* Was the transparent color unique? */
+	idx = 256 * (256*(*r) + (*g)) + (*b);
+	if (!table[idx]) {
+		GMT_free (GMT, table);
+		return (1);
+	}
+
+	/* Find a unique color */
+	idx = 0;
+	for (*r = 0; *r < 256; (*r)++) {
+		for (*g = 0; *g < 256; (*g)++) {
+			for (*b = 0; *b < 256; (*b)++, idx++) {
+				if (!table[idx]) {
+					GMT_free (GMT, table);
+					return (2);
+				}
+			}
+		}
+	}
+	GMT_free (GMT, table);
+	return (3);
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psimage (void *V_API, int mode, void *args)
 {
-	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0, n_trans = -1, done = 0;
+	int i, j, k, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0, n_trans = 0, done = 0;
 	unsigned int row, col;
 	bool free_GMT = false, did_gray = false;
 
 	double x, y, wesn[4];
 
-	unsigned char *picture = NULL, *buffer = NULL;
+	unsigned char *picture = NULL, *buffer = NULL, colormap[4*256];
+	int r, g, b;
 
 	char *format[2] = {"EPS", "Sun raster"};
 
@@ -356,46 +404,47 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		}
 		GMT_set_pad (GMT, API->pad);	/* Reset to GMT default */
 
-		if (I->ColorMap != NULL) {
-			unsigned char *r_table = NULL, *g_table = NULL, *b_table = NULL, *a_table = NULL;
-			r_table = GMT_memory (GMT, NULL, 256, unsigned char);
-			g_table = GMT_memory (GMT, NULL, 256, unsigned char);
-			b_table = GMT_memory (GMT, NULL, 256, unsigned char);
-			a_table = GMT_memory (GMT, NULL, 256, unsigned char);
-			for (n = 0; n < 256 && I->ColorMap[n*4] >= 0; n++) {
-				r_table[n] = I->ColorMap[n*4    ];	/* 4 because color table is RGBA */
-				g_table[n] = I->ColorMap[n*4 + 1];
-				b_table[n] = I->ColorMap[n*4 + 2];
-				a_table[n] = I->ColorMap[n*4 + 3];
-				if (!Ctrl->G.active && a_table[n] == 0) n_trans = n;	/* Save transparent color */
-			}
-			/* If there is a transparent color, make sure that it becomes a unique color */
-			if (n_trans >= 0) {
-				for (i = done = 0; i < 256 && !done; i++) {
-					for (j = 0, done = 1; j < n; j++) {
-						if (j != n_trans && r_table[j] == r_table[n_trans] && g_table[j] == g_table[n_trans] && b_table[j] == b_table[n_trans]) r_table[n_trans] = (r_table[n_trans]+1)%256, done = 0;
-					}
-				}
-				Ctrl->G.t_rgb[0] = r_table[n_trans] / 255.;
-				Ctrl->G.t_rgb[1] = g_table[n_trans] / 255.;
-				Ctrl->G.t_rgb[2] = b_table[n_trans] / 255.;
-			}
-	
-			I->data = GMT_memory (GMT, I->data, 3 * I->header->nm, unsigned char);	/* Expand to reuse */
+		/* Handle transparent images */
+		if (I->ColorMap != NULL) {	/* Image has a color map */
+			/* Convert colormap from integer to unsigned char and count colors */
+			for (n = 0; n < 4 * 256 && I->ColorMap[n] >= 0; n++) colormap[n] = (unsigned char)I->ColorMap[n];
+			n /= 4;
+			if (!Ctrl->G.active) n_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
+
+			/* Expand 8-bit indexed image to 24-bit image */
+			I->data = GMT_memory (GMT, I->data, 3 * I->header->nm, unsigned char);
 			n = (int)(3 * I->header->nm - 1);
 			for (j = (int)I->header->nm - 1; j >= 0; j--) {
-				I->data[n--] = b_table[I->data[j]];
-				I->data[n--] = g_table[I->data[j]];
-				I->data[n--] = r_table[I->data[j]];	/* Now we can overwrite this value */
+				k = 4 * I->data[j] + 3;
+				if (n_trans && colormap[k] == 0)
+					I->data[n--] = b, I->data[n--] = g, I->data[n--] = r;
+				else
+					I->data[n--] = colormap[--k], I->data[n--] = colormap[--k], I->data[n--] = colormap[--k];
 			}
 			I->header->n_bands = 3;
-			GMT_free (GMT, r_table);	GMT_free (GMT, g_table);	GMT_free (GMT, b_table);	GMT_free (GMT, a_table);
+		}
+		else if (I->header->n_bands == 4) { /* RGBA image, with a color map */
+			if (!Ctrl->G.active) n_trans = find_unique_color (GMT, I->data, I->header->nm, &r, &g, &b);
+			for (j = n = 0; j < 4 * (int)I->header->nm; j++) { /* Reduce image from 32- to 24-bit */
+				if (n_trans && I->data[j+3] == 0)
+					I->data[n++] = r, I->data[n++] = g, I->data[n++] = b, j+=3;
+				else
+					I->data[n++] = I->data[j++], I->data[n++] = I->data[j++], I->data[n++] = I->data[j++];
+			}
+			I->header->n_bands = 3;
+		}
+
+		/* If a transparent color was found, we replace it with a unique one */
+		if (n_trans) {
+			Ctrl->G.t_rgb[0] = r / 255.;
+			Ctrl->G.t_rgb[1] = g / 255.;
+			Ctrl->G.t_rgb[2] = b / 255.;
 		}
 
 		picture = (unsigned char *)I->data;
 		header.width = I->header->nx;
 		header.height = I->header->ny;
-		header.depth = (int)(I->header->n_bands * 8);
+		header.depth = (int)I->header->n_bands * 8;
 	}
 #else
 	else {	/* Without GDAL we can only read EPS and Sun raster */
@@ -403,7 +452,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 #endif
-	
+
 	if (Ctrl->M.active && header.depth == 24) {	/* Downgrade to grayshade image */
 		did_gray = true;
 		n = 3 * header.width * header.height;
@@ -478,19 +527,19 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		for (col = 0; col < Ctrl->N.nx; col++) {
 			x = Ctrl->C.x + col * Ctrl->W.width;
 			if (header.depth == 0)
-				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, header.length, 
+				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, header.length,
 						header.width, header.height, header.xorigin, header.yorigin);
 			else if (header.depth == 1) {
 				/* Invert is opposite from what is expected. This is to match the behaviour of -Gp */
 				if (Ctrl->I.active)
-					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, 
+					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture,
 							header.width, header.height, Ctrl->G.f_rgb, Ctrl->G.b_rgb);
 				else
-					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, 
+					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture,
 							header.width, header.height, Ctrl->G.b_rgb, Ctrl->G.f_rgb);
 			}
 			else
-				 PSL_plotcolorimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, 
+				 PSL_plotcolorimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture,
 						 PS_transparent * header.width, header.height, PS_interpolate * header.depth);
 		}
 	}
