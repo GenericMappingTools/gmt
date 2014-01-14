@@ -737,12 +737,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
 		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.alternate)) == NULL) Return (API->error);
+#if 0
 		if (Ctrl->D.active) {
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {
 				Return (API->error);
 			}
 		}
 		else	/* Never written */
+#endif
 			GMT_free_dataset (GMT, &Dtmp);
 		
 		/* Sample the grids along all profiles in Dout */
