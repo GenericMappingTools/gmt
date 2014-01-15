@@ -301,9 +301,10 @@ int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, int n, int *r,
 	for (i = j = 0; i < n; i++, j+=4) {
 		if (rgba[j+3] == 0)
 			*r = rgba[j], *g = rgba[j+1], *b = rgba[j+2], trans = true;
-		else
+		else {
 			idx = 256 * (256*(int)rgba[j] + (int)rgba[j+1]) + (int)rgba[j+2];
 			table[idx] = true;
+		}
 	}
 
 	/* Was there a transparent color */
