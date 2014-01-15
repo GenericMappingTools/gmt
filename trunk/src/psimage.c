@@ -288,6 +288,8 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 	return (0);	/* Neither */
 }
 
+#define Return(code) {GMT_free (GMT, table); return (code);}
+
 int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, int n, int *r, int *g, int *b)
 {
 	int i, j, idx, trans = false;
@@ -307,41 +309,32 @@ int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, int n, int *r,
 		}
 	}
 
-	/* Was there a transparent color */
-	if (!trans) {
-		GMT_free (GMT, table);
-		return (0);
-	}
+	/* Was there a transparent color? */
+	if (!trans) Return (0);
 
 	/* Was the transparent color unique? */
 	idx = 256 * (256*(*r) + (*g)) + (*b);
-	if (!table[idx]) {
-		GMT_free (GMT, table);
-		return (1);
-	}
+	if (!table[idx]) Return (1);
 
 	/* Find a unique color */
 	idx = 0;
 	for (*r = 0; *r < 256; (*r)++) {
 		for (*g = 0; *g < 256; (*g)++) {
 			for (*b = 0; *b < 256; (*b)++, idx++) {
-				if (!table[idx]) {
-					GMT_free (GMT, table);
-					return (2);
-				}
+				if (!table[idx]) Return (2);
 			}
 		}
 	}
-	GMT_free (GMT, table);
-	return (3);
+	Return (3);
 }
+#undef Return
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psimage (void *V_API, int mode, void *args)
 {
-	int i, j, k, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0, n_trans = 0, done = 0;
+	int i, j, k, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0, has_trans = 0, done = 0;
 	unsigned int row, col;
 	bool free_GMT = false, did_gray = false;
 
@@ -410,14 +403,14 @@ int GMT_psimage (void *V_API, int mode, void *args)
 			/* Convert colormap from integer to unsigned char and count colors */
 			for (n = 0; n < 4 * 256 && I->ColorMap[n] >= 0; n++) colormap[n] = (unsigned char)I->ColorMap[n];
 			n /= 4;
-			if (!Ctrl->G.active) n_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
+			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
 
 			/* Expand 8-bit indexed image to 24-bit image */
 			I->data = GMT_memory (GMT, I->data, 3 * I->header->nm, unsigned char);
 			n = (int)(3 * I->header->nm - 1);
 			for (j = (int)I->header->nm - 1; j >= 0; j--) {
 				k = 4 * I->data[j] + 3;
-				if (n_trans && colormap[k] == 0)
+				if (has_trans && colormap[k] == 0)
 					I->data[n--] = b, I->data[n--] = g, I->data[n--] = r;
 				else
 					I->data[n--] = colormap[--k], I->data[n--] = colormap[--k], I->data[n--] = colormap[--k];
@@ -425,9 +418,9 @@ int GMT_psimage (void *V_API, int mode, void *args)
 			I->header->n_bands = 3;
 		}
 		else if (I->header->n_bands == 4) { /* RGBA image, with a color map */
-			if (!Ctrl->G.active) n_trans = find_unique_color (GMT, I->data, I->header->nm, &r, &g, &b);
+			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, I->data, I->header->nm, &r, &g, &b);
 			for (j = n = 0; j < 4 * (int)I->header->nm; j++) { /* Reduce image from 32- to 24-bit */
-				if (n_trans && I->data[j+3] == 0)
+				if (has_trans && I->data[j+3] == 0)
 					I->data[n++] = r, I->data[n++] = g, I->data[n++] = b, j+=3;
 				else
 					I->data[n++] = I->data[j++], I->data[n++] = I->data[j++], I->data[n++] = I->data[j++];
@@ -436,7 +429,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		}
 
 		/* If a transparent color was found, we replace it with a unique one */
-		if (n_trans) {
+		if (has_trans) {
 			Ctrl->G.t_rgb[0] = r / 255.;
 			Ctrl->G.t_rgb[1] = g / 255.;
 			Ctrl->G.t_rgb[2] = b / 255.;
@@ -476,10 +469,10 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	else if (header.depth >= 8) {
 		PS_transparent = -1;
 		j = header.depth / 8;
-		n = j * (header.width * header.height + 1) ;
-		buffer = GMT_memory (GMT, NULL, n+3, unsigned char);
+		n = j * (header.width * header.height + 1);
+		buffer = GMT_memory (GMT, NULL, n, unsigned char);
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.t_rgb[i]);
-		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
+		GMT_memcpy (&(buffer[j]), picture, n - j, unsigned char);
 #ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_OK) {	/* If I is NULL then nothing is done */
 			Return (API->error);
