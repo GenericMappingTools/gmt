@@ -476,8 +476,8 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	else if (header.depth >= 8) {
 		PS_transparent = -1;
 		j = header.depth / 8;
-		n = j * (header.width * header.height + 1);
-		buffer = GMT_memory (GMT, NULL, n, unsigned char);
+		n = j * (header.width * header.height + 1) ;
+		buffer = GMT_memory (GMT, NULL, n+3, unsigned char);
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.t_rgb[i]);
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
 #ifdef HAVE_GDAL
