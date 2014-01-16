@@ -527,7 +527,7 @@ int PSL_endclipping (struct PSL_CTRL *PSL, int n)
 	/* n > 0 means restore clipping n times
 	 * n == PSL_ALL_CLIP restores all current clippings.
 	 */
-	
+
 	if (n == PSL_ALL_CLIP) {	/* Undo all recorded levels of clipping paths */
 		PSL_command (PSL, "PSL_nclip {PSL_cliprestore} repeat\n");	/* Undo all levels of clipping and reset clip count */
 		PSL_comment (PSL, "Clipping is currently OFF\n");
@@ -1180,7 +1180,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		if (!(PSL_is_gray(PSL->init.page_rgb) && PSL_eq(PSL->init.page_rgb[0],1.0)))	/* Change background color from white */
 			PSL_command (PSL, "clippath %s F N\n", psl_putcolor (PSL, PSL->init.page_rgb));
 		PSL_comment (PSL, "End of PSL header\n");
-		
+
 		/* Save page size */
 		PSL_defpoints (PSL, "PSL_page_xsize", PSL->internal.landscape ? PSL->internal.p_height : PSL->internal.p_width);
 		PSL_defpoints (PSL, "PSL_page_ysize", PSL->internal.landscape ? PSL->internal.p_width : PSL->internal.p_height);
@@ -1463,8 +1463,8 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	 */
 
 	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL;
-	int font, sub, super, small, old_font;
-	double orig_size, small_size, size, scap_size;
+	int dy, font, sub, super, small, old_font;
+	double orig_size, small_size, size, scap_size, ustep, dstep;
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
 		PSL_message (PSL, PSL_MSG_FATAL, "text_item > %d long!\n", PSL_BUFSIZ);
@@ -1502,6 +1502,8 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	orig_size = size = fontsize;
 	small_size = size * 0.7;
 	scap_size = size * 0.85;
+	ustep = 0.35 * size;
+	dstep = 0.25 * size;
 	sub = super = small = false;
 
 	tempstring = PSL_memory (PSL, NULL, strlen(string)+1, char);	/* Since strtok steps on it */
@@ -1542,12 +1544,16 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 		else if (ptr[0] == '-') {	/* Subscript toggle  */
 			sub = !sub;
 			size = (sub) ? small_size : fontsize;
+			dy = (sub) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
+			PSL_command (PSL, "0 %d G ", dy);
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '+') {	/* Superscript toggle */
 			super = !super;
 			size = (super) ? small_size : fontsize;
+			dy = (super) ? psl_ip (PSL, ustep) : -psl_ip (PSL, ustep);
+			PSL_command (PSL, "0 %d G ", dy);
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
@@ -1782,7 +1788,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			sub = !sub;
 			size = (sub) ? small_size : fontsize;
 			dy = (sub) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
-			PSL_command (PSL, "0 %d G\n", dy);
+			PSL_command (PSL, "0 %d G ", dy);
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
@@ -1790,7 +1796,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			super = !super;
 			size = (super) ? small_size : fontsize;
 			dy = (super) ? psl_ip (PSL, ustep) : -psl_ip (PSL, ustep);
-			PSL_command (PSL, "0 %d G\n", dy);
+			PSL_command (PSL, "0 %d G ", dy);
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
@@ -2822,7 +2828,7 @@ int psl_mathrightangle (struct PSL_CTRL *PSL, double x, double y, double param[]
 	double size, xx[3], yy[3];
 
 	PSL_command (PSL, "V %d %d T %lg R\n", psl_ix (PSL, x), psl_iy (PSL, y), param[1]);
-	size = param[0] / M_SQRT2; 
+	size = param[0] / M_SQRT2;
 
 	xx[0] = xx[1] = size;	xx[2] = 0.0;
 	yy[0] = 0.0;	yy[1] = yy[2] = size;
@@ -2870,7 +2876,7 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
-	
+
 	da = head_arc_length * 180.0 / (M_PI * r);	/* Angle corresponding to the arc length */
 	/* rshift kicks in when we want a half-arrow head.  In that case we dont want it to be
 	 * exactly half since the vector line will then stick out 1/2 line thickness.  So we adjust
@@ -2887,7 +2893,7 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	if (heads) {	/* Will draw at least one head */
 		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], true);	/* Set fill for head(s) */
 	}
-	
+
 	for (i = 0; i < 2; i++) {	/* For both ends */
 		if (heads & (i+1)) {	/* Add arrow head at this angle */
 			A = D2R * angle[i];	sa = sin (A);	ca = cos (A);
@@ -2917,7 +2923,7 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 			PSL_command (PSL, "P clip %s %s U\n", dump[fill], line[outline]);
 		}
 	}
-	
+
 	PSL_command (PSL, "U \n");
 	return (PSL_NO_ERROR);
 }
@@ -2950,7 +2956,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
-	
+
 	PSL_command (PSL, "V %d %d T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 	xx[0] = (heads & 1) ? off : 0.0;
@@ -2959,12 +2965,12 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 
 	if (heads == 0) {	/* No heads requested */
 		PSL_command (PSL, "U\n");
-		return (PSL_NO_ERROR);	
+		return (PSL_NO_ERROR);
 	}
-	
+
 	asymmetry = PSL_vec_side (status);		  /* -1 = left-only, +1 = right-only, 0 = normal head */
 	yshift = 0.5 * asymmetry * tailwidth;
-	
+
 	if (heads & 1) {	/* Need head at beginning, pointing backwards */
 		xx[0] = 0.0; yy[0] = -yshift;	n = 1;	/* Vector tip */
 		if (asymmetry != +1) {	/* Need left side */
@@ -2978,7 +2984,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		}
 		PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 		PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
-		
+
 	}
 	PSL_command (PSL, "U\n");
 	if (heads & 2) {	/* Need head at end, pointing forwards */

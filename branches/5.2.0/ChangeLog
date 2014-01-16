@@ -26,6 +26,10 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-01-16	remko
+	* pslib.c:		Take superscripts and subscripts into account when determining
+				dimensions of text box.
+
 2014-01-10	pwessel
 	* grdmath.c:		We consider the change in SDIST, PDIST to return degrees instead
 				of km to be a bug as it makes it difficult to handle geodesics

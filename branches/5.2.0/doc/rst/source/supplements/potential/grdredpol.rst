@@ -63,7 +63,7 @@ Optional Arguments
 **-E**\ *dip_grd/dec_grd*
     Get magnetization DIP & DEC from these grids [default: use IGRF].
     Note that these two grids do not need to have the same resolution as
-    the anomaly grid. Than can be coarser.
+    the anomaly grid. They can be coarser.
 
 **-F**\ *m/n*
     The filter window size in terms of row/columns. The default value is 25x25.
