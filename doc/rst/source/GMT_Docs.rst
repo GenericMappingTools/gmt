@@ -743,7 +743,7 @@ the past behind. Occasionally, users will supply an ancient
 GMT 3 syntax which may have worked in GMT 4 but is not honored in GMT 5.
 
 Here are a list of known incompatibilities that are correctly processed
-correctly with a warning under compatibility mode:
+with a warning under compatibility mode:
 
 *  GMT **default names**: We have
    organized the default parameters logically by group and renamed several to
