@@ -712,7 +712,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	convert = (make_plot || (GMT->common.R.active && GMT->common.J.active));
 	get_contours = (Ctrl->D.active || Ctrl->W.active);
 
-	if (make_plot && GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT->common.J.active && GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	n_alloc = GMT_CHUNK;
 	x = GMT_memory (GMT, NULL, n_alloc, double);
