@@ -107,7 +107,7 @@ Optional Arguments
     left-most column is # 0, the right-most is # (*n_cols* - 1).  [Default is 0].
 
 **-Q**\ *q_factor*
-    assess Quality of output value by checking mean weight in
+    Assess Quality of output value by checking mean weight in
     convolution. Enter *q_factor* between 0 and 1. If mean weight <
     *q_factor*, output is suppressed at this point [Default does not check Quality].
 
