@@ -156,15 +156,13 @@ double gmt_y[] = {
 
 int GMT_gmtlogo (void *V_API, int mode, void *args)
 {	/* High-level function that implements the gmtlogo task */
-	int error, ID, ID2, k;
-	uint64_t par[2] = {2, NP};
+	int error;
 	
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	
 	char text[GMT_LEN64] = {""}, cmd[GMT_BUFSIZ] = {""};
-	char string[GMT_LEN16], string2[GMT_LEN16], file[GMT_BUFSIZ] = {""};
+	char file[GMT_BUFSIZ] = {""};
 	
-	struct GMT_VECTOR *V = NULL, *S = NULL;
 	struct GMTLOGO_CTRL *Ctrl = NULL;	/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
