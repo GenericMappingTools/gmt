@@ -157,7 +157,7 @@ double gmt_y[] = {
 int GMT_gmtlogo (void *V_API, int mode, void *args)
 {	/* High-level function that implements the gmtlogo task */
 	int error, ID, ID2, k;
-	uint64_t par[2]; par[0] = 2; par[1] = NP;
+	uint64_t par[2] = {2, NP};
 	
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	

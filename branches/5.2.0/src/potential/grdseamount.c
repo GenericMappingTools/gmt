@@ -439,7 +439,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	char unit, unit_name[8], file[GMT_LEN256] = {""};
 	
 	float *data = NULL;
-	double x, y, r, c, d, in[8], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
+	double x, y, r, c, in[8], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
 	double add, f, max, r_km, amplitude, h_scale, z_assign, h_scl, noise, this_user_time, life_span, t_mid, v_curr, v_prev;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM, *V = NULL;
 	double fwd_scale, inv_scale, inch_to_unit, unit_to_inch, prev_user_time, h_curr, h_prev, h0, phi_prev, phi_curr;
@@ -818,8 +818,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		else
 			strcpy (file, Ctrl->G.file);
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
 			double n_scl = Ctrl->N.value / max;
+			GMT_Report (API, GMT_MSG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
 			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= (float)n_scl;
 		}
 
