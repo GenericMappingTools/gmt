@@ -6,6 +6,9 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-01-22	pwessel
+	* pscoast.c:		The processing of -I -N levels and pens could get out of sync
+				so that the wrong pen was used for the specified feature.
 2014-01-16	remko
 	* pslib.c:		Take superscripts and subscripts into account when determining
 				dimensions of text box.
