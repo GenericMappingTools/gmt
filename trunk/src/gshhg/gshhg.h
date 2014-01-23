@@ -61,7 +61,7 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHG_DATA_RELEASE	12		/* For v2.2.3 data set */
+#define GSHHG_DATA_RELEASE	13		/* For v2.2.4 data set */
 #define GSHHG_PROG_VERSION	"1.16"
 
 #define GSHHG_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
