@@ -112,15 +112,17 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-        GMT_Message (API, GMT_TIME_NONE, "-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
-	GMT_Message (API, GMT_TIME_NONE, "   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
-	GMT_Message (API, GMT_TIME_NONE, "-L List header records only (no data records will be written).\n");
-	GMT_Message (API, GMT_TIME_NONE, "-I Output data for polygon number <id> only.  Use -Ic to get all continent polygons\n");
-	GMT_Message (API, GMT_TIME_NONE, "   [Default is all polygons].\n");
-	GMT_Message (API, GMT_TIME_NONE, "-N Output features whose level matches <level> [Default outputs all levels].\n");
-	GMT_Message (API, GMT_TIME_NONE, "-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
-	GMT_Message (API, GMT_TIME_NONE, "   [Default outputs all polygons].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tgshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b is a GSHHG polygon or line file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+        GMT_Message (API, GMT_TIME_NONE, "\t-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L List header records only (no data records will be written).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Output data for polygon number <id> only.  Use -Ic to get all continent polygons\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is all polygons].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Output features whose level matches <level> [Default outputs all levels].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default outputs all polygons].\n");
 	GMT_Option (API, "V,bo2,o,:,.");
 	
 	return (EXIT_FAILURE);
@@ -208,7 +210,7 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 
 int GMT_gshhg (void *V_API, int mode, void *args)
 {
-	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id;
+	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id, m_min = 9999, m_max = 0;
 	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;
 	size_t n_read;
@@ -314,7 +316,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		/* OK, we want to return info for this feature */
 
 		level = h.flag & 255;				/* Level is 1-4 */
-		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
+		version = (h.flag >> 8) & 255;			/* Version is 1-255 */
 		if (first) GMT_Report (API, GMT_MSG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = false;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
@@ -332,6 +334,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		if (version >= 9) {				/* Magnitude for area scale */
 			m = h.flag >> 26;
 			scale = pow (10.0, (double)m);		/* Area scale */
+			if (m < m_min) m_min = m;
+			if (m > m_max) m_max = m;
 		}
 		area = h.area / scale;				/* Now im km^2 */
 		f_area = h.area_full / scale;			/* Now im km^2 */
@@ -410,6 +414,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);	/* Get the next GSHHG header */
 	}
 	GMT_fclose (GMT, fp);
+	//fprintf(stderr, "m range: %d to %d\n", m_min, m_max);
 	
 	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
