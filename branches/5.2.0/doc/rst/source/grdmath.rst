@@ -603,7 +603,7 @@ s_xy.nc from the relation tan (2\*a) = 2 \* s_xy / (s_xx - s_yy), use
 
    ::
 
-    gmt grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN2 2 DIV = direction.nc
+    gmt grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN 2 DIV = direction.nc
 
 To calculate the fully normalized spherical harmonic of degree 8 and
 order 4 on a 1 by 1 degree world map, using the real amplitude 0.4 and

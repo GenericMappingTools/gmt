@@ -6488,7 +6488,7 @@ void gmt_free_texttable (struct GMT_CTRL *GMT, struct GMT_TEXTTABLE *table)
 	for (seg = 0; seg < table->n_segments; seg++) gmt_free_textsegment (GMT, table->segment[seg]);
 	for (k = 0; k < table->n_headers; k++) free (table->header[k]);
 	if (table->n_headers) GMT_free (GMT, table->header);
-	GMT_free (GMT, table->segment);
+	if (table->segment) GMT_free (GMT, table->segment);
 	for (k = 0; k < 2; k++) if (table->file[k]) free (table->file[k]);
 	GMT_free (GMT, table);
 }
