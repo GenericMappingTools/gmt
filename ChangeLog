@@ -6,6 +6,12 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-01-26	pwessel
+	* gmt_grdio.c:		Building the grid command string could exceed its length if
+				the argument became exactly the max length of the array; then
+				a final extra character \0 would be added and exceed array length.
+				Thanks to Joachim Saul for pointing it out.
+
 2014-01-22	pwessel
 	* pscoast.c:		The processing of -I -N levels and pens could get out of sync
 				so that the wrong pen was used for the specified feature.
