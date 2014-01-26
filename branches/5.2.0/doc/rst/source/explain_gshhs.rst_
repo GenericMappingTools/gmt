@@ -1,13 +1,16 @@
 `Gshhs Information <#toc11>`_
 -----------------------------
 
-The coastline database is GSHHG (formerly GSHHS) which is compiled from two sources:
-World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII). In
-particular, all level-1 polygons (ocean-land boundary) are derived from
+The coastline database is GSHHG (formerly GSHHS) which is compiled from
+three sources:  World Vector Shorelines (WVS), CIA World Data Bank II
+(WDBII), and Atlas of the Cryosphere (AC, for Antarctica only).
+Apart from Antarctica, all level-1 polygons (ocean-land boundary) are derived from
 the more accurate WVS while all higher level polygons (level 2-4,
 representing land/lake, lake/island-in-lake, and
 island-in-lake/lake-in-island-in-lake boundaries) are taken from WDBII.
-Much processing has taken place to convert WVS and WDBII data into
+The Antarctica coastlines come in two flavors: ice-front or grounding line,
+selectable via the **-A** option.
+Much processing has taken place to convert WVS, WDBII, and AC data into
 usable form for GMT: assembling closed polygons from line segments,
 checking for duplicates, and correcting for crossings between polygons.
 The area of each polygon has been determined so that the user may choose
