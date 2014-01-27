@@ -7,6 +7,14 @@ Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory. It was formerly called
 GSHHS (... Shorelines instead of Geography).
 
+Version Feb 1, 2014
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.3.0 which introduces levels 5,6 for Antarctica
+ice-front and grounding line.  Only ice-front can be used in GMT 5.1.x
+and these will report level = 5 and source = A.  GMT 5.2.x will be
+able to offer more choices.
+
 Version Nov 1, 2013
 
 No source code changes but expected to work with the latest GSHHG
