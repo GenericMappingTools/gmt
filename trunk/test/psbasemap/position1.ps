@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 16:10:43) [64-bit] [C4] Document from GMT_psbasemap
-%%Creator: GMT
-%%For: remko
+%%Title: GMT v5.1.1_r12785M [64-bit] Document from psbasemap
+%%Creator: GMT5
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 16:14:52 2011
+%%CreationDate: Mon Jan 27 07:02:29 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -60,9 +60,11 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -108,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -569,8 +576,9 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  psbasemap -JX8i/5i -R0/12/0/12 -B1g1/1g1SW -K
+%%GMT: psbasemap -JX8i/5i -R0/12/0/12 -B1g1 -BSW -K
 %%PROJ: xy 0.00000000 12.00000000 0.00000000 12.00000000 0.000 12.000 0.000 12.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -782,14 +790,16 @@ def
 (12) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -F+j -R0/12/0/12 -JX8i/5i -O -K
+%%GMT: pstext -F+j -R0/12/0/12 -JX8i/5i -O -K
 %%PROJ: xy 0.00000000 12.00000000 0.00000000 12.00000000 0.000 12.000 0.000 12.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -841,14 +851,16 @@ PSL_eoclip N
 9600 3000 M (11111111110) br Z
 9600 3500 M (01234567890) br Z
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -F+j -Ggreen -R0/12/0/12 -JX8i/5i -O -K
+%%GMT: pstext -F+j -Ggreen -R0/12/0/12 -JX8i/5i -O -K
 %%PROJ: xy 0.00000000 12.00000000 0.00000000 12.00000000 0.000 12.000 0.000 12.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -863,44 +875,38 @@ PSL_eoclip N
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
 V
-V MU 0 0 M (10) FP 280 F0 (-1) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M (10) FP 0 140 G 280 F0 (-1) FP 0 -140 G pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 60 def
 /PSL_dy 60 def
 800 4500 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-800 4500 M V MU 0 0 M (10) FP 280 F0 (-1) FP pathbbox N pop exch pop add U neg 0 G
+800 4500 M V MU 0 0 M (10) FP 0 140 G 280 F0 (-1) FP 0 -140 G pathbbox N pop exch pop add U neg 0 G
 (10) Z
-0 140 G
-280 F0 (-1) Z
-0 -140 G
-400 F0
+0 140 G 280 F0 (-1) Z
+0 -140 G 400 F0
 V
-V MU 0 0 M (10) FP 280 F0 (-1) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M (10) FP 0 140 G 280 F0 (-1) FP 0 -140 G pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 60 def
 /PSL_dy 60 def
 4000 4500 T PSL_dim_w neg PSL_dim_h -2 div T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-4000 4500 M V MU 0 0 M (10) FP 280 F0 (-1) FP pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+4000 4500 M V MU 0 0 M (10) FP 0 140 G 280 F0 (-1) FP 0 -140 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (10) Z
-0 140 G
-280 F0 (-1) Z
-0 -140 G
-400 F0
+0 140 G 280 F0 (-1) Z
+0 -140 G 400 F0
 V
-V MU 0 0 M (10) FP 280 F0 (-1) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M (10) FP 0 140 G 280 F0 (-1) FP 0 -140 G pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 60 def
 /PSL_dy 60 def
 7200 4500 T PSL_dim_w neg PSL_dim_h neg T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-7200 4500 M V MU 0 0 M (10) FP 280 F0 (-1) FP pathbbox N 4 1 roll exch pop add exch U neg exch neg exch G
+7200 4500 M V MU 0 0 M (10) FP 0 140 G 280 F0 (-1) FP 0 -140 G pathbbox N 4 1 roll exch pop add exch U neg exch neg exch G
 (10) Z
-0 140 G
-280 F0 (-1) Z
-0 -140 G
-400 F0
+0 140 G 280 F0 (-1) Z
+0 -140 G 400 F0
 V
 (oo) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 60 def
@@ -926,14 +932,16 @@ PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul 
 U
 8000 4500 M (oo) tr Z
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psbasemap -JX8i/5i -R0/1.2/0/1.2 -B0.1/0.1NE -O
+%%GMT: psbasemap -JX8i/5i -R0/1.2/0/1.2 -B0.1 -BNE -O
 %%PROJ: xy 0.00000000 1.20000000 0.00000000 1.20000000 0.000 1.200 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1070,6 +1078,7 @@ def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -6000 T
 0 setlinecap
+%%EndObject
 %%PageTrailer
 U
 showpage
