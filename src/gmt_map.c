@@ -3665,7 +3665,7 @@ bool GMT_UTMzone_to_wesn (struct GMT_CTRL *GMT, unsigned int zone_x, char zone_y
 
 	bool error = false;
 
-	wesn[XHI] = 180.0 + 6.0 * zone_x;	wesn[XLO] = wesn[XHI] - 6.0;
+	wesn[XHI] = -180.0 + 6.0 * zone_x;	wesn[XLO] = wesn[XHI] - 6.0;
 
 	if (zone_y == 0) {	/* Latitude zone is not specified */
 		if (hemi == -1) {
