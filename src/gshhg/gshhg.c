@@ -33,7 +33,8 @@
  *		1.14 15-APR-2012:  	Data version is now 2.2.1. [no change to format]
  *		1.15 1-JAN-2013:   	Data version is now 2.2.2. [no change to format]
  *		1.16 1-JUL-2013:   	Data version is now 2.2.3. [no change to format]
- *		1-NOV-2013.   PW: Data version is now 2.2.4. [no change to format]
+ *		1.17 1-NOV-2013.	Data version is now 2.2.4. [no change to format]
+ *		1.18 1-FEB-2014:   	Data version is now 2.3.0. [no change to format but levels 5,6 added for Antarctica]
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -210,7 +211,7 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 
 int GMT_gshhg (void *V_API, int mode, void *args)
 {
-	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id, m_min = 9999, m_max = 0;
+	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id;
 	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;
 	size_t n_read;
@@ -334,8 +335,6 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		if (version >= 9) {				/* Magnitude for area scale */
 			m = h.flag >> 26;
 			scale = pow (10.0, (double)m);		/* Area scale */
-			if (m < m_min) m_min = m;
-			if (m > m_max) m_max = m;
 		}
 		area = h.area / scale;				/* Now im km^2 */
 		f_area = h.area_full / scale;			/* Now im km^2 */
@@ -414,7 +413,6 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);	/* Get the next GSHHG header */
 	}
 	GMT_fclose (GMT, fp);
-	//fprintf(stderr, "m range: %d to %d\n", m_min, m_max);
 	
 	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
