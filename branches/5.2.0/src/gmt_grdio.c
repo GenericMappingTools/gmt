@@ -1365,7 +1365,7 @@ void GMT_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		len = strlen (header->command);
 		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
 			len += strlen (argv[i]) + 1;
-			if (len > GMT_GRID_COMMAND_LEN320) continue;
+			if (len >= GMT_GRID_COMMAND_LEN320) continue;
 			strcat (header->command, " ");
 			strcat (header->command, argv[i]);
 		}

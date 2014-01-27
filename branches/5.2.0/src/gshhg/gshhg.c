@@ -315,7 +315,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 
 		/* OK, we want to return info for this feature */
 
-		level = h.flag & 255;				/* Level is 1-4 */
+		level = h.flag & 255;				/* Level is 1-4 [5-6 for Antarctica] */
 		version = (h.flag >> 8) & 255;			/* Version is 1-255 */
 		if (first) GMT_Report (API, GMT_MSG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = false;
@@ -327,7 +327,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		e = h.east  * GSHHG_SCL;
 		s = h.south * GSHHG_SCL;
 		n = h.north * GSHHG_SCL;
-		source = (src == 1) ? 'W' : 'C';		/* Either WVS or CIA (WDBII) pedigree */
+		source = (level > 4) ? 'A' : ((src == 1) ? 'W' : 'C');		/* Either Antarctica, WVS or CIA (WDBII) pedigree */
 		if (is_river) source = (char)tolower ((int)source);	/* Lower case c means river-lake */
 		is_line = (h.area) ? 0 : 1;			/* Either Polygon (0) or Line (1) (if no area) */
 		if (is_line && D->geometry == GMT_IS_POLY) D->geometry = GMT_IS_LINE;	/* Change from polygon to line geometry */
