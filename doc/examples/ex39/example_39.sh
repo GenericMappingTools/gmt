@@ -25,7 +25,7 @@ gmt psscale -Ct.cpt -O -K -D1.25i/-0.2i/5.5i/0.1ih -Bxaf -By+lm >> $ps
 gmt grdgradient v2.nc -Nt0.75 -A45 -Gvint.nc
 gmt grdimage v2.nc -Ivint.nc -JG -O -K -Bg -Ct.cpt -X-1.25i -Y1.9i >> $ps
 echo 4 4.5 L = 90 | gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N >> $ps
-gmt sph2grd VenusTopo180.txt -I1 -Rg -Ng -Gv3.nc -V -F1/1/170/180
+gmt sph2grd VenusTopo180.txt -I1 -Rg -Ng -Gv3.nc -F1/1/170/180
 gmt grdgradient v3.nc -Nt0.75 -A45 -Gvint.nc
 gmt grdimage v3.nc -Ivint.nc -JG -O -K -Bg -Ct.cpt -X-1.25i -Y1.9i >> $ps
 echo 4 4.5 L = 180 | gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N >> $ps
