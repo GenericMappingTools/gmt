@@ -660,7 +660,8 @@ pointer to the named resource. If ``direction`` is GMT_OUT and the
 can use GMT_Retrieve_Data_ to assign a pointer to the memory location
 (variable) where the output was allocated. For grid (and image)
 resources you may request to obtain a subset via the :ref:`wesn <tbl-wesn>` array (see
-Table :ref:`wesn <tbl-wesn>` for information); otherwise, pass NULL to obtain the
+Table :ref:`wesn <tbl-wesn>` for information); otherwise, pass NULL
+(or an array with at least 4 items all set to 0) to obtain the
 entire grid (or image). The ``direction`` indicates input or output and
 is either GMT_IN or GMT_OUT. Finally, the function returns a
 unique resource ID, or GMT_NOTSET if there was an error.
@@ -907,23 +908,29 @@ For the first case, pass the ``par`` array, as indicated below:
     An empty GMT_DATASET structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, each with ``par[2]`` rows, all
     with ``par[3]`` columns, is allocated.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
 **GMT_IS_TEXTSET**
     An empty GMT_TEXTSET structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, all with ``par[2]`` text records (rows), is allocated.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
 **GMT_IS_CPT**
     An empty GMT_PALETTE structure with ``par[0]`` palette entries is allocated.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
 **GMT_IS_VECTOR**
     An empty GMT_VECTOR structure with ``par[0]`` column entries is allocated.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
 **GMT_IS_MATRIX**
     An empty GMT_MATRIX structure is allocated. ``par[3]`` indicates
     the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
 
-In this case, pass ``wesn``, ``inc`` as NULL. For the second approach, you
-instead pass ``wesn``, ``inc``, and ``registration`` and leave as NULL.
+In this case, pass ``wesn``, ``inc`` as NULL (or arrays with elements all set to 0).
+For the second approach, you
+instead pass ``wesn``, ``inc``, and ``registration`` and leave ``par`` as NULL
+(or with all elements equal 0).
 For grids and images you may pass ``pad`` to set the padding, or -1 to
 accept the GMT default. The ``mode`` determines what is actually
 allocated when you have chosen grids or images. As for GMT_Read_Data_
