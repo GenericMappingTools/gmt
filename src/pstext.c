@@ -536,14 +536,19 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 
 int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[])
 {	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
-	int ix, iy, nscan;
+	int ix, iy, nscan = 0;
+	unsigned int pos = 0;
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, txt_z[GMT_LEN256] = {""};
 
 	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 	buffer[0] = '\0';	/* Initialize buffer to NULL */
 
 	if (Ctrl->Z.active) {	/* Expect z in 3rd column */
-		nscan = sscanf (record, "%s %s %s %[^\n]\n", txt_x, txt_y, txt_z, buffer);
+		if (GMT_strtok (record, " \t,", &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (GMT_strtok (record, " \t,", &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (GMT_strtok (record, " \t,", &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
+		strcpy (buffer, &record[pos]);
+		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		if ((GMT_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
 			return (-1);
@@ -568,12 +573,14 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 		else
 			GMT->current.io.curr_rec[iy] = GMT->common.R.wesn[YHI];
 
-		nscan = 2;
+		nscan = 2;	/* Since x,y are implicit */
 		nscan += sscanf (record, "%[^\n]\n", buffer);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
 	else {
-		nscan = sscanf (record, "%s %s %[^\n]\n", txt_x, txt_y, buffer);
+		if (GMT_strtok (record, " \t,", &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (GMT_strtok (record, " \t,", &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
 
