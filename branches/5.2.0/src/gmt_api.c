@@ -203,6 +203,9 @@ static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions 
 #define return_error(API,err) { GMTAPI_report_error(API,err); return (err);}
 #define return_value(API,err,val) { GMTAPI_report_error(API,err); return (val);}
 
+/* We asked for subset of grid if the wesn pointer is not NULL but indicates a region */
+#define full_region(wesn) (!wesn || (wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]))
+
 /* Misc. local text strings needed in this file only, used when debug verbose is on (-Vd) */
 
 static const char *GMT_method[] = {"File", "Stream", "File Descriptor", "Memory Copy", "Memory Reference"};
@@ -670,13 +673,14 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a matrix for handing external %s\n", GMT_direction[direction]);
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
-	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
+	if (full_region (range) && (dims == 2 || (range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
 		GMT_memcpy (M->range, dummy_range, 2 * dims, double);
 		M->n_rows = dim[0];
 		M->n_columns = dim[1];
 	}
-	else {
+	else {	/* Was given valid range and inc */
+		if (!inc || (inc[GMT_X] == 0.0 && inc[GMT_Y] == 0.0)) return (GMT_VALUE_NOT_SET);
 		GMT_memcpy (M->range, range, 2 * dims, double);
 		M->n_rows = GMT_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
 		M->n_columns = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
@@ -687,13 +691,16 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 int GMTAPI_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int direction, struct GMT_VECTOR *V)
 {
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a vector for handing external %s\n", GMT_direction[direction]);
-	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
+	if (dim == NULL) return (GMT_PTR_IS_NULL);	/* number of columns not provided */
+	if (dim[0] == 0) return (GMT_VALUE_NOT_SET);
+	if (range == NULL || (range[XLO] == range[XHI])) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
 		V->n_rows = dim[1];	/* If so, n_rows is passed via dim[1], unless it is GMT_OUT when it is zero */
 		GMT_memcpy (V->range, dummy_range, 2, double);
 	}
 	else {	/* Equidistant vector */
 		double off = 0.5 * registration;
+		if (!inc || inc[GMT_X] == 0.0) return (GMT_VALUE_NOT_SET);
 		V->n_rows = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 		GMT_memcpy (V->range, range, 2, double);
 	}
@@ -780,7 +787,7 @@ size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	GMT_memcpy (h_tmp, h, 1, struct GMT_GRID_HEADER);
 	h_tmp->complex_mode |= mode;	/* Set the mode-to-be so that if complex the size is doubled */
 	
-	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) {
+	if (!full_region (wesn)) {
 		GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
 		GMT_adjust_loose_wesn (GMT, wesn, h);		/* Subset requested; make sure wesn matches header spacing */
 	}
@@ -3467,7 +3474,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 
 	if ((object_ID = GMTAPI_is_registered (API, family, geometry, direction, mode, NULL, resource)) != GMT_NOTSET) {	/* Registered before */
 		if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, direction)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);
-		if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) {	/* Update the subset region if given (for grids/images only) */
+		if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && !full_region (wesn)) {	/* Update the subset region if given (for grids/images only) */
 			S_obj = API->object[item];	/* Use S as shorthand */
 			GMT_memcpy (S_obj->wesn, wesn, 4, double);
 			S_obj->region = true;
@@ -3585,7 +3592,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			break;
 	}
 
-	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) {	/* Copy the subset region if it was given (for grids) */
+	if (!full_region (wesn)) {	/* Copy the subset region if it was given (for grids) */
 		GMT_memcpy (S_obj->wesn, wesn, 4, double);
 		S_obj->region = true;
 	}
@@ -3979,10 +3986,10 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	
 	if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
 		if ((in_ID = GMTAPI_is_registered (API, family, geometry, GMT_IN, mode, input, data)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
-		if (wesn) {	/* Must update subset selection */
+		if (!full_region (wesn)) {	/* Must update subset selection */
 			int item;
 			if ((item = GMTAPI_Validate_ID (API, family, in_ID, GMT_IN)) == GMT_NOTSET) return_null (API, API->error);
-			if (!(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) GMT_memcpy (API->object[item]->wesn, wesn, 4, double);
+			GMT_memcpy (API->object[item]->wesn, wesn, 4, double);
 		}
 	}
 	else if (input) {	/* Case 1: Load from a single, given source. Register it first. */
@@ -5021,10 +5028,13 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
 			if (dim == NULL && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If nothing is known then it must be output */
-			n_layers = (dim == NULL) ? 1U : dim[GMT_Z];
+			n_layers = (dim == NULL || dim[0] == 0) ? 1U : dim[GMT_Z];
 		 	new_obj = GMT_create_matrix (API->GMT, n_layers, def_direction);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_matrix (API, dim, range, inc, registration, mode, def_direction, new_obj);
+			if ((API->error = GMTAPI_init_matrix (API, dim, range, inc, registration, mode, def_direction, new_obj))) {	/* Failure, must free the object */
+				struct GMT_MATRIX *M = return_address (new_obj, GMT_IS_MATRIX);	/* Get pointer to resource */
+				GMT_free_matrix (API->GMT, &M, true);
+			}
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
@@ -5032,7 +5042,10 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if (dim[1] == 0 && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If only n_columns is known then it must be output */
 	 		new_obj = GMT_create_vector (API->GMT, dim[0], def_direction);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_vector (API, dim, range, inc, registration, def_direction, new_obj);
+			if ((API->error = GMTAPI_init_vector (API, dim, range, inc, registration, def_direction, new_obj))) {	/* Failure, must free the object */
+				struct GMT_VECTOR *V = return_address (new_obj, GMT_IS_VECTOR);	/* Get pointer to resource */
+				GMT_free_vector (API->GMT, &V, true);
+			}
 			break;
 		default:
 			API->error = GMT_NOT_A_VALID_FAMILY;
@@ -6148,6 +6161,14 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
 
 	GMT_grd_init (API->GMT, &header, NULL, false);
+	if (full_region (limit)) {	/* Here that means limit was not properly given */
+		GMT_Report (API, GMT_MSG_NORMAL, "Grid domain not specified for %s\n", file);
+		return EXIT_FAILURE;
+	}
+	if (inc[GMT_X] == 0.0 || inc[GMT_Y] == 0.0) {	/* Here that means grid spacing was not properly given */
+		GMT_Report (API, GMT_MSG_NORMAL, "Grid spacing not specified for %s\n", file);
+		return EXIT_FAILURE;
+	}
 	
 	/* Set header parameters */
 	
