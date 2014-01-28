@@ -46,6 +46,20 @@
 extern "C" {
 #endif
 
+/* Note: GMT functions will sometimes have arguments that are unused by design, i.e., to ensure that
+ * a family of functions have the same number and type of arguments so that pointers to these functions
+ * can be passed, even though in some cases not all arguments are used.  These will result in compiler
+ * warnings [-Wunused-variable]. To suppress those (and only those), we can define GMT_UNUSED as this:
+ */
+#ifdef __GNUC__
+#define GMT_UNUSED __attribute__ ((unused))
+#else
+#define GMT_UNUSED
+#endif
+/* and then add UNUSED after all such variables.  For GNU compilers the warning is then suppressed.
+ * Other compilers will not see anything and give whatever harmless warnings they normally do.
+ */
+
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 

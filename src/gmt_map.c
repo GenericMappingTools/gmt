@@ -2257,7 +2257,7 @@ double gmt_az_backaz_vincenty (struct GMT_CTRL *GMT, double lonE, double latE, d
 		x = ((e * cy * c + cz) * sy * c + y) * sa;
 		x = (1.0 - c) * x * f + dx;
 	} while (fabs (d - x) > VINCENTY_EPS && n_iter <= VINCENTY_MAX_ITER);
-	if (n_iter > 50) {
+	if (n_iter > VINCENTY_MAX_ITER) {
 		GMT->current.proj.n_geodesic_approx++;	/* Count inaccurate results */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
 	}
