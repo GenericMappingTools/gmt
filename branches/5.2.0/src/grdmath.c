@@ -1969,7 +1969,7 @@ void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
 		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 		lon = info->d_grd_x[col], lat = info->d_grd_y[row];
-		i = floor(lon/bin_size);
+		i = (int)floor(lon/bin_size);
 		/* For any new bin along a row, find the closest center of coastline bins */
 		if (i != old_i || row != old_row) {
 			lon1 = (i + 0.5) * bin_size;
@@ -1981,7 +1981,7 @@ void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			}
 			/* Add 2 bin sizes to the closest distance to a bin as slop. This should always include the closest points in any bin */
 			hor = hor + slop;
-			old_i = i, old_row = row;
+			old_i = i, old_row = (int)row;
 			if (hor > max_hor) max_hor = hor;
 		}
 

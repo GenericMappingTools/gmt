@@ -1130,7 +1130,7 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			if ((D->table[tbl] = GMT_create_table (GMT, 0U, 0U, 2U, false)) == NULL) return (NULL);
 			D->table[tbl]->segment = GMT_memory (GMT, NULL, n_seg, struct GMT_DATASEGMENT *);
 			D->table[tbl]->n_segments = n_seg;
-			for (k = seg = 0; k < np; k++) {	/* For each line segment from GSHHS */
+			for (seg = k = 0; k < np; k++) {	/* For each line segment from GSHHS */
 				if (p[k].n == 0) continue;	/* One of the ones to skip anyway */
 				/* Allocate segment to hold this line segment and memcpy over the coordinates */
 				S = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
