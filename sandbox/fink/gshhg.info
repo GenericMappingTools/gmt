@@ -1,7 +1,7 @@
 Package: gshhg
 Version: 2.3.0
 Revision: 1
-Source: ftp://ftp.soest.hawaii.edu/gmt/gshhg-gmt-nc4-%v.tar.gz
+Source: ftp://ftp.soest.hawaii.edu/gmt/gshhg-gmt-%v.tar.gz
 Source-MD5: d03386334c981312ebc41bc7155c11f0
 Recommends: gmt5
 Replaces: gshhs
