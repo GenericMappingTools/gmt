@@ -325,9 +325,9 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->D.dir) free (C->D.dir);
+	free (C->D.dir);
 	if (C->F.file) free (C->F.file);
-	if (C->G.file) free (C->G.file);
+	free (C->G.file);
 	if (C->L.file) free (C->L.file);
 	free (C->W.doctitle);
 	free (C->W.overlayname);
@@ -486,8 +486,10 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
-				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT)))
+				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT))) {
+					free (Ctrl->D.dir);
 					Ctrl->D.dir = strdup (opt->arg);
+				}
 				else
 					n_errors++;
 				break;

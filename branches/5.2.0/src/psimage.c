@@ -290,13 +290,14 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 
 #define Return(code) {GMT_free (GMT, table); return (code);}
 
-int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, int n, int *r, int *g, int *b)
+int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b)
 {
-	int i, j, idx, trans = false;
+	size_t i, j;
+	int idx;
+	bool trans = false;
 	unsigned char *table = NULL;
 
-	table = GMT_memory (GMT, NULL, 256*256*256, unsigned char);
-	memset (table, 0, 256*256*256);
+	table = GMT_memory (GMT, NULL, 256*256*256, unsigned char);	/* Get table all initialized to zero */
 
 	/* Check off all the non-transparent colors, store the transparent one */
 	*r = *g = *b = 0;
