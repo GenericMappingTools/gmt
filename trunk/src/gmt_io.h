@@ -114,7 +114,7 @@ enum GMT_lon_enum {
 	GMT_IS_M360_TO_0			= 4,	/* Report -360 < lon <= 0 */
 	GMT_IS_M180_TO_P180_RANGE		= 5,	/* Report -180 <= lon <= +180 */
 	GMT_IS_M180_TO_P180			= 6,	/* Report -180 <= lon < +180 */
-	GMT_IS_M180_TO_P270_RANGE		= 7};	/* Report -180 <= lon < +270 [GSHHS only] */
+	GMT_IS_M180_TO_P270_RANGE		= 7};	/* Report -180 <= lon < +270 [GSHHG only] */
 
 /* How to handle NaNs in records */
 
