@@ -106,6 +106,13 @@ endif (OPENMP_FOUND AND NOT GMT_OPENMP)
 
 find_package (Threads)
 
+find_package(GLIB COMPONENTS gio gobject gthread)
+#if (GLIB_FOUND)
+	set (HAVE_GLIB TRUE CACHE INTERNAL "System has GLIB")
+	include_directories (${GLIB_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARY})
+#endif (GLIB_FOUND)
+
 # check for math and POSIX functions
 include(ConfigureChecks)
 
