@@ -1,6 +1,6 @@
 # GMT Time language file for FR (French) mode [FR]
 #
-#       $Id
+#       $Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Janvier		Jan	J
