@@ -126,6 +126,12 @@
 # Set location of ZLIB (can be root directory or path to header file) [auto]:
 #set (ZLIB_ROOT "zlib_install_prefix")
 
+# Set location of GLIB ...:
+#set (GLIB_INCLUDE_DIR "<path-to-include-dir>")
+#set (GLIB_LIBRARY "<path-to>glib-2.0.lib")
+# Since this is an optional (and experimental) option you need to add this too
+#add_definitions(/DUSE_GTHREADS)
+
 ##
 ## Section 3: GMT features
 ##
