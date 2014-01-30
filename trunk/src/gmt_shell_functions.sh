@@ -60,7 +60,7 @@ gmt_get_field() {
 #	Return w/e/s/n from given table file(s)
 #	May also add -Idx/dy to round off answer
 gmt_get_region() {
-	printf "%s/%s/%s/%s\n" `gmt gmtinfo -C $* | cut -d'	' -f1-4`
+	printf "%s/%s/%s/%s\n" `gmt info -C $* | cut -d'	' -f1-4`
 }
 
 #	Return the w/e/s/n from the header in grd file
