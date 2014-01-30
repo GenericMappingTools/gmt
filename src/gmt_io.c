@@ -1914,7 +1914,7 @@ void GMT_lon_range_adjust (unsigned int range, double *lon)
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) >= 180.0) (*lon) -= 360.0;
 			break;
-		case GMT_IS_M180_TO_P270_RANGE:	/* Make -180 <= lon < +270 [Special case for GSHHS only] */
+		case GMT_IS_M180_TO_P270_RANGE:	/* Make -180 <= lon < +270 [Special case for GSHHG only] */
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) >= 270.0) (*lon) -= 360.0;
 			break;
