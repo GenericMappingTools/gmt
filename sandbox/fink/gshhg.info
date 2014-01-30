@@ -1,8 +1,8 @@
 Package: gshhg
-Version: 2.2.4
-Revision: 2
+Version: 2.3.0
+Revision: 1
 Source: ftp://ftp.soest.hawaii.edu/gmt/gshhg-gmt-nc4-%v.tar.gz
-Source-MD5: 4132b4911f568102353dec169ea0c84a
+Source-MD5: d03386334c981312ebc41bc7155c11f0
 Recommends: gmt5
 Replaces: gshhs
 CompileScript: echo "Moving files..."
@@ -19,14 +19,13 @@ DescDetail: <<
 	products into a single quality-checked hierarchical data base at
 	5 resolutions.
 
-	Although these shorelines are distributed as part of the Generic Mapping
-	Tools (GMT), they can be used stand-alone or with other applications
-	that can read NetCDF files. This version required at least netCDF
-	version 4.
+	These tiled GSHHG files in netCDF4 format are intended for use by
+	the Genetic Mapping Tools (GMT).
 <<
 DescPort: <<
-	This version includes moving the files to %i/share/gmt/gshhg as recently recommended
-	at http://gmt.soest.hawaii.edu/projects/gmt/wiki/PackagingGMT/
+	This version includes moving the files to %i/share/gmt/gshhg as
+	recommended at
+	http://gmt.soest.hawaii.edu/projects/gmt/wiki/PackagingGMT/
 <<
 License: GPL
 DocFiles: LICENSE.TXT README.TXT
