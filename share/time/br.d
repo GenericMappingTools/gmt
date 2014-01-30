@@ -1,4 +1,4 @@
-# GMT Time language file for BR (brazilian portuguese (exactly equal to the pt.pt)) mode [BR]
+# GMT Time language file for BR (brazilian portuguese) mode [BR]
 #
 #	$Id$
 #-------------------------------------------------
