@@ -60,7 +60,7 @@
  *
  */
 
-#define GSHHG_SITE "ftp://ftp.soest.hawaii.edu/pwessel/gshhs/"
+#define GSHHG_SITE "ftp://ftp.soest.hawaii.edu/pwessel/gshhg/"
 
 #define RIVERLAKE		5	/* Fill array id for riverlakes */
 #define ANT_LEVEL_ICE		5
