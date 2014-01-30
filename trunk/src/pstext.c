@@ -257,8 +257,8 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pstext [<table>] %s %s [-A] [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[a+<angle>][+c<justify>][+f<font>][+h|l][+j<justify>]] [-G<color>] [%s] [-K] [-L] [-M]\n", GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l][+j[<justify>]]] [-G<color>] [%s] [-K]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z[<zlevel>|+]]\n", GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -302,16 +302,16 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify values for text attributes that apply to all text records:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +a<angle> specifies the baseline angle for all text [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +a[<angle>] specifies the baseline angle for all text [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +c<justify> get the corresponding coordinate from the -R string instead of a given (x,y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +f<fontinfo> sets the size, font, and optionally the text color [%s].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   +f[<fontinfo>] sets the size, font, and optionally the text color [%s].\n",
 		GMT_putfont (API->GMT, API->GMT->current.setting.font_annot[0]));
-	GMT_Message (API, GMT_TIME_NONE, "\t   +j<justify> sets text justification relative to given (x,y) coordinate.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +j[<justify>] sets text justification relative to given (x,y) coordinate.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +h will use as text the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +l will use as text the label specified via -L<label> in the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given on the -F option.  Only one of +h or +l can be specified.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given by the -F option.  Only one of +h or +l can be specified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
