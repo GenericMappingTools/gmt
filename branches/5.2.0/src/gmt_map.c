@@ -137,11 +137,12 @@
  *     This is not identical to Vincenty in proj4 but written by Evenden (proj.4 author)
  * [3] via online calculator http://www.ngs.noaa.gov/cgi-bin/Inv_Fwd/inverse2.prl. Their notes says
  *     this is Vincenty; unfortunately I cannot control the output precision.
- * [4] Andoyer approximate from Astronomical Algorithms, Jean Meeus, second edition
+ * [4] Andoyer approximate from Astronomical Algorithms, Jean Meeus, 2009, second edition, Willmann-Bell, Inc.
  *
  * Based on these comparisons we decided to implement the Vincenty [2] code as given.  The older Rudoe
  * code is also accessible, as is the approximation by Andoyer which is good to a few tens of m.
  * The choice was based on the readily available C code versus having to reimplement Karney in C.
+ * When GMT 6 is started we expect to use proj4
  */
 
 static char *GEOD_TEXT[3] = {"Vincenty", "Andoyer", "Rudoe"};
