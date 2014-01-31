@@ -1011,6 +1011,8 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				if (polygon && GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
+
 				n = (int)L->n_rows;				/* Number of points in this segment */
 
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->coord[GMT_X];
