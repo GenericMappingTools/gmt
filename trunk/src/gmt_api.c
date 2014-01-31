@@ -3461,19 +3461,20 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			/* No, so presumably it is a regular file name */
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p, *file = strdup (resource);
-				if (family == GMT_IS_GRID && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids so access can work */
+				if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
 				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
-					 /* PW 1/4/2014: No record or docs for why this was added and it causes trouble with files that have a + in their name.
-					  * I am taking out this "fix" and when/if we are told of an example perhaps we can figure out why this was
-					  * added in the first place. I think the only +-mechanism we have is +U|u but that should not apply? */
-					GMT_Report (API, GMT_MSG_NORMAL, "Let Paul Wessel know if you get this message and send him your command\n", file);
-					//*p = '\0';	/* Chop off any +<stuff> for images so access can work */
+					char *c = strchr (file, '.');	/* The period before an extension */
+					 /* PW 1/30/2014: Protect images with band requiest, e.g., my_image.jpg+b2 */
+					if (c && c < p && p[1] == 'b' && isdigit (p[2])) {
+						GMT_Report (API, GMT_MSG_DEBUG, "Truncating +b modifier for image filename %s\n", file);
+						*p = '\0';	/* Chop off any +b<band> for images at end of extension so access can work */
+					}
 				}
-				if (GMT_access (API->GMT, file, F_OK) && !GMT_check_url_name(file)) {	/* For input we can check if the file exists (except if via Web) */
+				if (GMT_access (API->GMT, file, F_OK) && !GMT_check_url_name (file)) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_Report (API, GMT_MSG_NORMAL, "File %s not found\n", file);
 					return_value (API, GMT_FILE_NOT_FOUND, GMT_NOTSET);
 				}
-				if (GMT_access (API->GMT, file, R_OK) && !GMT_check_url_name(file)) {	/* Found it but we cannot read. */
+				if (GMT_access (API->GMT, file, R_OK) && !GMT_check_url_name (file)) {	/* Found it but we cannot read. */
 					GMT_Report (API, GMT_MSG_NORMAL, "Not permitted to read file %s\n", file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
