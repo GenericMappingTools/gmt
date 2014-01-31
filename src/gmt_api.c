@@ -120,6 +120,7 @@
  *    and alloc_mode = 0 (i.e., gmt executable level) but it does not matter since such memory is
  *    only used for reading and we may never free it or reallocate it within GMT. This alloc_mode
  *    only applies to data arrays inside objects (e.g., G->data), not the GMT objects themselves.
+ *    The GMT objects (the containers) are freed at the end of their level, if not before.
  * 3. Memory passed into modules as "input files" requires no special treatment since its level
  *    will be lower than that of the module it is used in, and when that module tries to free it
  *    (directly with GMT_Destroy_Data or via end-of-module GMT_Garbage_Collection) it will skip
