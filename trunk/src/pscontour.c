@@ -486,7 +486,13 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 				break;
 			case 'C':	/* CPT table */
 				Ctrl->C.active = true;
-				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
+				if (GMT_File_Is_Memory (opt->arg)) {	/* Passed a memory reference from a module */
+					Ctrl->C.interval = 1.0;
+					Ctrl->C.cpt = true;
+					if (Ctrl->C.file) free (Ctrl->C.file);
+					Ctrl->C.file = strdup (opt->arg);
+				}
+				else if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
 					if (Ctrl->C.file) free (Ctrl->C.file);
