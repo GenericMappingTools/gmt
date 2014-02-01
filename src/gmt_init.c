@@ -1331,7 +1331,9 @@ int GMT_default_error (struct GMT_CTRL *GMT, char option)
 		case 'r': error += GMT->common.r.active == false; break;
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
+#ifdef USE_GTHREADS
 		case 'x': error += GMT->common.x.active == false; break;
+#endif
 		case ':': error += GMT->common.colon.active == false; break;
 
 		default:
@@ -9744,10 +9746,12 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			GMT->common.t.value = atof (item);
 			break;
 
+#ifdef GTHREADS
 		case 'x':
 			error += (GMT_more_than_once (GMT, GMT->common.x.active) || gmt_parse_x_option (GMT, item));
 			GMT->common.x.active = true;
 			break;
+#endif
 
 		case ':':
 			error += (GMT_more_than_once (GMT, GMT->common.colon.active) || gmt_parse_colon_option (GMT, item));
