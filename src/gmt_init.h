@@ -102,11 +102,6 @@ EXTERN_MSC int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[]
 EXTERN_MSC void GMT_setmode (struct GMT_CTRL *GMT, int direction);
 #endif
 
-#ifdef MIRONE
-EXTERN_MSC struct GMT_CTRL * GMT_short_begin (int argc, char **argv);
-EXTERN_MSC void GMT_end_for_mex (struct GMT_CTRL *GMT);
-#endif
-
 /* Inline functions */
 
 ///* Wrapper around GMT_begin_module for internally registered GMT modules */

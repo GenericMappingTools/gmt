@@ -905,7 +905,7 @@ int GMT_access (struct GMT_CTRL *GMT, const char* filename, int mode)
 	file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
 	if (!filename || !filename[0])
 		return (-1);	/* No file given */
-	sscanf (filename, "%[^=?]", file);	/* Exclude netcdf 3/-D grid extensions to make sure we get a valid file name */
+	sscanf (filename, "%[^=?]", file);	/* Exclude netcdf 3-D grid extensions to make sure we get a valid file name */
 	if (file[0] == '\0')
 		return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 

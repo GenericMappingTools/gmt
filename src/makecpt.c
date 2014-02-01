@@ -219,7 +219,7 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 				break;
 			case 'T':	/* Sets up color z values */
 				Ctrl->T.active = true;
-				if (!access (opt->arg, R_OK))
+				if (!GMT_access (GMT, opt->arg, R_OK))
 					Ctrl->T.file = strdup (opt->arg);
 				else {
 					Ctrl->T.inc = 0.0;
