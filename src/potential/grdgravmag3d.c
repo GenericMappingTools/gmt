@@ -42,7 +42,7 @@
 #include <glib.h>
 #endif
 
-#define GMT_PROG_OPTIONS "-:RVf"
+#define GMT_PROG_OPTIONS "-:RVfx"
 
 typedef void (*PFV) ();		/* pointer to a function returning void */
 typedef double (*PFD) ();		/* pointer to a function returning double */
@@ -110,10 +110,6 @@ struct GRDOKB_CTRL {
 		bool is_geog;
 		double	d_to_m, *mag_int, lon_0, lat_0;
 	} box;
-	struct GRDOKB_x {	/* -x */
-		bool active;
-		int n_threads;
-	} x;
 };
 
 struct DATA {
@@ -178,7 +174,6 @@ void *New_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	C->D.z_dir = -1;		/* -1 because Z was positive down for Okabe */
 	C->S.radius = 30000;
 	C->T.year = 2000;
-	C->x.n_threads = 1;		/* Default number of threads (for the case of no multi-threading) */
 	return (C);
 }
 
@@ -198,9 +193,9 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgravmag3d grdfile_top [grdfile_bot] [-C<density>] [-D] [-E<thick>] [-F<xy_file>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [-H<...>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z<level>] [-fg]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z<level>] [-fg] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -213,9 +208,18 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D if z is positive down [Default positive up]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H sets parameters for computation of magnetic anomaly\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H sets parameters for computation of magnetic anomaly (Can be used multiple times)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f_dec/f_dip -> geomagnetic declination/inclination\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m_int/m_dec/m_dip -> body magnetic intensity/declination/inclination\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  OR for a grid mode \n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +m<magfile> where 'magfile' is the name of the magnetic intensity file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To compute a component, specify any of:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     x|X|e|E  to compute the E-W component.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     y|Y|n|N  to compute the N-S component.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     z|Z      to compute the Vertical component.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h|H      to compute the Horizontal component.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t|T|f|F  to compute the total field.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set anny of -H+i|+g|+r|+f|+n to do that\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L sets level of observation [Default = 0]\n");
@@ -231,6 +235,11 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z z level of reference plane [Default = 0]\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+#ifdef USE_GTHREADS
+	GMT_Option (API, "x");
+#else
+	GMT_Message (API, GMT_TIME_NONE, "\t-x Not available since this binary was not build with multi-threading support.\n");
+#endif
 	GMT_Option (API, ":,.");
 
 	return (EXIT_FAILURE);
@@ -296,7 +305,7 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 				}
 				else if (opt->arg[0] == '+' && opt->arg[1] == 'i') {
 					if (opt->arg[2]) {
-						Ctrl->H.incfile = strdup (&opt->arg[2]);    /* Inclination grid */
+						Ctrl->H.incfile = strdup (&opt->arg[2]);    /* Inclination grid (NOT IMPLEMENTED YET) */
 						Ctrl->H.got_incgrid = true;
 					}
 					else {
@@ -306,7 +315,7 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 					break;
 				}
 				else if (opt->arg[0] == '+' && opt->arg[1] == 'd') {
-					Ctrl->H.decfile = strdup (&opt->arg[2]);        /* Declination grid */
+					Ctrl->H.decfile = strdup (&opt->arg[2]);        /* Declination grid (NOT IMPLEMENTED YET) */
 					Ctrl->H.got_decgrid = true;
 					break;
 				}
@@ -396,23 +405,6 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 			case 'b':
 				Ctrl->H.bhatta = true;
 				break;
-#ifdef USE_GTHREADS
-			case 'x':
-				Ctrl->x.active = true;
-				if (opt->arg && opt->arg[0] == 'a')		/* Use all processors abvailable */
-					Ctrl->x.n_threads = g_get_num_processors();
-				else if (opt->arg)
-					Ctrl->x.n_threads = atoi(opt->arg);
-
-				if (Ctrl->x.n_threads == 0)
-					Ctrl->x.n_threads = 1;
-				else if (Ctrl->x.n_threads < 0)
-					Ctrl->x.n_threads = MAX(g_get_num_processors() - 1, 1);		/* Max -1 but at least one */
-				else
-					Ctrl->x.n_threads = MIN((int)g_get_num_processors(), Ctrl->x.n_threads);	/* No more than maximum available */
-
-				break;
-#endif
 			default:
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -481,6 +473,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdgravmag3d_parse (GMT, Ctrl, options))) Return (error);
@@ -1319,17 +1312,17 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
 	struct THREAD_STRUCT *threadArg;
 #ifdef USE_GTHREADS
 	GThread **threads;
-	if (Ctrl->x.n_threads > 1)
-		threads = GMT_memory (GMT, NULL, Ctrl->x.n_threads, GThread *);
+	if (GMT->common.x.n_threads > 1)
+		threads = GMT_memory (GMT, NULL, GMT->common.x.n_threads, GThread *);
 #endif
 
 	GMT_tic(GMT);
 
 	indf = (Ctrl->H.pirtt) ? 1 : 0;
 
-	threadArg = GMT_memory (GMT, NULL, Ctrl->x.n_threads, struct THREAD_STRUCT);
+	threadArg = GMT_memory (GMT, NULL, GMT->common.x.n_threads, struct THREAD_STRUCT);
 
-	for (i = 0; i < Ctrl->x.n_threads; i++) {
+	for (i = 0; i < GMT->common.x.n_threads; i++) {
 		threadArg[i].GMT        = GMT;
 		threadArg[i].Ctrl       = Ctrl;
 		threadArg[i].Grid       = Grid;
@@ -1348,10 +1341,10 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
    		threadArg[i].g          = g;
    		threadArg[i].cos_vec    = cos_vec;
    		threadArg[i].n_pts      = n_pts;
-   		threadArg[i].r_start    = i * irint((Grid->header->ny - 1 - indf) / Ctrl->x.n_threads);
+   		threadArg[i].r_start    = i * irint((Grid->header->ny - 1 - indf) / GMT->common.x.n_threads);
    		threadArg[i].thread_num = i;
 
-		if (Ctrl->x.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
+		if (GMT->common.x.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
    			threadArg[i].r_stop = Grid->header->ny - 1 + indf;
 			grdgravmag3d_calc_surf_ (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
@@ -1359,18 +1352,18 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
 #ifndef USE_GTHREADS
 	}
 #else
-   		threadArg[i].r_stop = (i + 1) * irint((Grid->header->ny - 1 - indf) / Ctrl->x.n_threads);
-   		if (i == Ctrl->x.n_threads - 1) threadArg[i].r_stop = Grid->header->ny - 1 + indf;	/* Make sure last row is not left behind */
+   		threadArg[i].r_stop = (i + 1) * irint((Grid->header->ny - 1 - indf) / GMT->common.x.n_threads);
+   		if (i == GMT->common.x.n_threads - 1) threadArg[i].r_stop = Grid->header->ny - 1 + indf;	/* Make sure last row is not left behind */
    		//fprintf(stderr, "MERDA2 %d\tstart = %d\tstop = %d\n", i, threadArg[i].r_start, threadArg[i].r_stop);
 		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
 	}
 
-	if (Ctrl->x.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
-		for (i = 0; i < Ctrl->x.n_threads; i++)
+	if (GMT->common.x.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
+		for (i = 0; i < GMT->common.x.n_threads; i++)
 			g_thread_join(threads[i]);
 	}
 
-	if (Ctrl->x.n_threads > 1)
+	if (GMT->common.x.n_threads > 1)
 		GMT_free (GMT, threads);
 #endif
 
