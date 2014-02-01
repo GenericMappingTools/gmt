@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_grdimage
-%%Creator: GMT
-%%For: remko
+%%Title: GMT v5.1.1_r12825 [64-bit] Document from grdimage
+%%Creator: GMT5
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:59:04 2011
+%%CreationDate: Fri Jan 31 18:02:36 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,8 +576,9 @@ O0
 -3672 PSL_xorig sub PSL_page_xsize 2 div add 900 TM
 
 % PostScript produced by:
-%%GMT:  grdimage 31715.i2=bs -Jx0.017id -B30g180/30g90WSnE -C31715.cpt -Xc -Y0.75i -P -K
+%%GMT: grdimage tt.i2=bs -Jx0.017id -Bx30g180 -By30g90 -BWSnE -Ctt.cpt -Xc -Y0.75i -P -K
 %%PROJ: latlong -3.00000000 357.00000000 -90.00000000 90.00000000 -180.000 180.000 -90.000 90.000 +proj=latlong +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -610,9 +616,9 @@ q9Y_JSoAtGpR!Y@^!AWJN26HC?4W\(eT$uu.u63U408r^(*_@B59@/,2lV9TWO-:-TV*rmF*LTgDP^e!
 (eIIp5iM9-uY'1UDJ*.hi#m2T&olg,oj3Df%4O%gC1h6+\c4Zrg@6H#]4fG`7ZHeJr&H*+pQW6QMU`Wm9pM`X<?q#ll1]Cr?
 .*F[gFgPY<?R`^Hd$OL)X'CmcSUF_A43lOj"B&9uuP=A2Ld8&fsTaUbj76MQ@AsN`)k+N6/4>c.gCoLWFuP+DT8WP^K>qRW_
 uUUajM&Z5X_gd.AH*rK3Ri1DWkO=;2X#KeoO2I7O(*b61L``F;A&js4E]KJP5lh#9P&Ht(D?*>ms6(?r2;`mQ+iQ"_uh3+bX
-G+N:*M&<YA<:(ErH>)uQr>tq<k5#KiKOFLq!2(aW!."qbR"-VX;Q&&8Q+iD[X680M^!1=ETUcS?%16=npg9*'jM-qL$+?en%
-";#.#4tpg*5m.;%@Q4TK\r$g&l'ViOj9odc;>!$#)sf07&-N%DUHQ'h,`Z@)bWpU8\/h"AJs]ne-.e=%)qjc<qe]dQh2H\O'
-f"PpCrn!M"H>(4$fYD%M=(\B`DdoqisBphEOQt/[bi+d#SW>@2F5HpcR;MXQ^)Pc>KI-V~>
+G+N:*M&<YA<:(ErH>)uQr>tq<k5#KiKOFLq!24mE[o1X0uM$t":4W^"l!WW7@&Hb']>B?f-\DW&,63KEq&q\bH5]aQBL+IiU
+J5CNqJd*cb`,H*$#S*S\D2Mpl8&;:IWOc`@2qV?M392GE\p()1qE+a#^JdU$Al!9W\C1-SI7^i/mqo_CiH`+#48WhF[_63#N
+q][R*@A?:l,'rc"QDLiEq)!>`H\[^iuDVHn\-u63;4M**/T;g*_F9F3aLh%Vj6glr]i^~>
 U
 PSL_cliprestore
 4 W
@@ -658,16 +664,30 @@ S
 6793 3672 M 0 83 D S
 7344 0 M 83 0 D S
 0 0 M -83 0 D S
+7344 0 M 83 0 D S
+0 0 M -83 0 D S
+7344 612 M 83 0 D S
+0 612 M -83 0 D S
 7344 612 M 83 0 D S
 0 612 M -83 0 D S
 7344 1224 M 83 0 D S
 0 1224 M -83 0 D S
+7344 1224 M 83 0 D S
+0 1224 M -83 0 D S
+7344 1836 M 83 0 D S
+0 1836 M -83 0 D S
 7344 1836 M 83 0 D S
 0 1836 M -83 0 D S
 7344 2448 M 83 0 D S
 0 2448 M -83 0 D S
+7344 2448 M 83 0 D S
+0 2448 M -83 0 D S
 7344 3060 M 83 0 D S
 0 3060 M -83 0 D S
+7344 3060 M 83 0 D S
+0 3060 M -83 0 D S
+7344 3672 M 83 0 D S
+0 3672 M -83 0 D S
 7344 3672 M 83 0 D S
 0 3672 M -83 0 D S
 61 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
@@ -684,20 +704,20 @@ S
 5569 -167 M (-90Ê) tc Z
 6181 -167 M (-60Ê) tc Z
 6793 -167 M (-30Ê) tc Z
-7511 0 M (-90Ê) ml Z
 -167 0 M (-90Ê) mr Z
-7511 612 M (-60Ê) ml Z
+7511 0 M (-90Ê) ml Z
 -167 612 M (-60Ê) mr Z
-7511 1224 M (-30Ê) ml Z
+7511 612 M (-60Ê) ml Z
 -167 1224 M (-30Ê) mr Z
-7511 1836 M (0Ê) ml Z
+7511 1224 M (-30Ê) ml Z
 -167 1836 M (0Ê) mr Z
-7511 2448 M (30Ê) ml Z
+7511 1836 M (0Ê) ml Z
 -167 2448 M (30Ê) mr Z
-7511 3060 M (60Ê) ml Z
+7511 2448 M (30Ê) ml Z
 -167 3060 M (60Ê) mr Z
-7511 3672 M (90Ê) ml Z
+7511 3060 M (60Ê) ml Z
 -167 3672 M (90Ê) mr Z
+7511 3672 M (90Ê) ml Z
 83 W
 1 A
 -42 0 M 0 612 D S
@@ -766,14 +786,16 @@ S
 7427 3755 M -7510 0 D S
 0 3755 M 0 -3838 D S
 -83 3755 M 0 -3838 D S
+%%EndObject
 0 A
 FQ
 O0
 0 3900 TM
 
 % PostScript produced by:
-%%GMT:  grdimage 31715.i2=bs -Jx0.017id -B30g180/30g90WsnE -C31715.cpt -Y3.25i -O -K
+%%GMT: grdimage tt.i2=bs -Jx0.017id -Bx30g180 -By30g90 -BWsnE -Ctt.cpt -Y3.25i -O -K
 %%PROJ: latlong 0.00000000 360.00000000 -90.00000000 90.00000000 -180.000 180.000 -90.000 90.000 +proj=latlong +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -811,9 +833,9 @@ KpAerf]G4CtfO9agY09;kV6cr$5W[&RMaU&O)V7eWNKH:[J^_'D"EEK;5U'=0H5:hV"4E-1KfU%/>1WR
 KT+OoNngCL)0V8"7aHaU`*B^*fQCE<p5=B\Gefm%Ci*UfRhcQI=VZDW?ES3Kdj);EgM-pWN#%d&CT`2:];;5fQOdM-lIgq)?
 m/97hZKTGgk[W%)fZh%T:-Y5`.9./p==NYTZ;gRr1J7_SE"mC57n,Bu!N_2&-^cn.X:E4Hd3bNK<A=A[&]QYp9\VR9.g+($U
 "eWg>8uW1H5tE=3l!+GVa4[@3-;O:h:E2A$@2ca0S\<d?IeOaO`OECGsq)<P%`Uktb:p3k=(:FTt_"p<uTN\oGH8It<OV+=N
-Jdi*."C#(qMo`h*4GoKUq/CUOD<NmT]FIj,m]L9g6PTXFcW41dL,cs895r;-W(0qV@),UVrUHG*N6eSZa0Y!fE]he\fd"/P%
-XE<OJN_hj*o'OYO?l;Nlm32lo,GP6d--Qo'**SB2d\1/Y'Q^&`%\%Z7??GUd>MU/c\5j&H6V-4ZD-cN`;L*.?Hc7jGjO=;ET
-o7g`/@+b?(nJ0\%nk\JM'Lk+`DG/&is`tfn*W'RC4@@9S:?Z>N_?`>3bf2d"9~>
+Jdi*."C#(qMo`h*4GoKUq/CUORR14oUNc'tFrM9c:TIMY:\_N^=X>(_.+73]G,Fr3iakDA1Re2.5N*Z`WJ-0qT%#7Q3eB&Qh
+j<8H$P>?%j9Q39S6>W*2D1'&`ig:t0W9QVqC767G/Wk*gq1W]ceF*^j(fNl.)/eNJZF4%74qXQ'XJY6*0ZO%EjY)+IYT2jc[
+bbMa-\Wpc)8fAH&)mlhM/b@0`H\^Dj#^V,EOqd_\6g@d*-[Nc:-]oB#Q~>
 U
 PSL_cliprestore
 4 W
@@ -864,34 +886,48 @@ S
 7344 3672 M 0 83 D S
 7344 0 M 83 0 D S
 0 0 M -83 0 D S
+7344 0 M 83 0 D S
+0 0 M -83 0 D S
+7344 612 M 83 0 D S
+0 612 M -83 0 D S
 7344 612 M 83 0 D S
 0 612 M -83 0 D S
 7344 1224 M 83 0 D S
 0 1224 M -83 0 D S
+7344 1224 M 83 0 D S
+0 1224 M -83 0 D S
+7344 1836 M 83 0 D S
+0 1836 M -83 0 D S
 7344 1836 M 83 0 D S
 0 1836 M -83 0 D S
 7344 2448 M 83 0 D S
 0 2448 M -83 0 D S
+7344 2448 M 83 0 D S
+0 2448 M -83 0 D S
+7344 3060 M 83 0 D S
+0 3060 M -83 0 D S
 7344 3060 M 83 0 D S
 0 3060 M -83 0 D S
 7344 3672 M 83 0 D S
 0 3672 M -83 0 D S
-7511 0 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+7344 3672 M 83 0 D S
+0 3672 M -83 0 D S
+-167 0 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-90Ê) ml Z
--167 0 M (-90Ê) mr Z
-7511 612 M (-60Ê) ml Z
+(-90Ê) mr Z
+7511 0 M (-90Ê) ml Z
 -167 612 M (-60Ê) mr Z
-7511 1224 M (-30Ê) ml Z
+7511 612 M (-60Ê) ml Z
 -167 1224 M (-30Ê) mr Z
-7511 1836 M (0Ê) ml Z
+7511 1224 M (-30Ê) ml Z
 -167 1836 M (0Ê) mr Z
-7511 2448 M (30Ê) ml Z
+7511 1836 M (0Ê) ml Z
 -167 2448 M (30Ê) mr Z
-7511 3060 M (60Ê) ml Z
+7511 2448 M (30Ê) ml Z
 -167 3060 M (60Ê) mr Z
-7511 3672 M (90Ê) ml Z
+7511 3060 M (60Ê) ml Z
 -167 3672 M (90Ê) mr Z
+7511 3672 M (90Ê) ml Z
 83 W
 1 A
 -42 0 M 0 612 D S
@@ -956,14 +992,16 @@ S
 7427 3755 M -7510 0 D S
 0 3755 M 0 -3838 D S
 -83 3755 M 0 -3838 D S
+%%EndObject
 0 A
 FQ
 O0
 0 3900 TM
 
 % PostScript produced by:
-%%GMT:  grdimage 31715.i2=bs -Jx0.017id -B30g180/30g90WsnE -C31715.cpt -Y3.25i -O
+%%GMT: grdimage tt.i2=bs -Jx0.017id -Bx30g180 -By30g90 -BWsnE -Ctt.cpt -Y3.25i -O
 %%PROJ: latlong -180.00000000 180.00000000 -90.00000000 90.00000000 -180.000 180.000 -90.000 90.000 +proj=latlong +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1000,10 +1038,10 @@ j8#E,FCB\&2.0:1P!LKbmXCJ<J_#X0`kJ1U0!Qr4a*Ip>r&@<)'CqZ5ZirQ3B-ko"sF(H\k*NV4s#AZs
 JB5ac&5o$d.a81+<]lDsfG<rCbthq_H7I%)5j,:ME+RQO"I@c_6<duGKp:iZ;!9Da#UCt&'EEro`q+GXrEm473N\S1^-LNIM
 7`G2T\*>+qQ>O"MU*L=e1qqWWr\3oc&daMW'"7aPa&Gk4Om)8NAn&T"eN)=H/M<*K^J?dDa5<=h^V3B(;mO&nT+S/>ENj*8H
 (RNdh7p:1dot%qShu#)3He&;'J.s`M>Y7g2[g&C'b=\KFM1JaLY$"pu<ON*/mtY"\%u:X<S)!JR$V?1boMc/9tcUN=6J<8G1
-h<R<"cbN6"@tOUW9H4GdTRNL5NV:rq=[QOF;T6#O4IcIj=qZ:t'.a8U&(KuZE>dHR4o/CVtW01KX2*M`7]OjWse8SM'1SI$:
-'d`AAB6BV9O#ClnZ6h_Z\iYk">Hdi&r!!LB[)Lt-O28]PVIE9hFW6>%9?\j2"&2U%H`X.V0b]aS(*(65uBgU#*5q_Ko#X<K)
-A"i*;!W`Uu$[.O/8tgMUd`RET@.FU^1ic-(Q_K(jRf,cM>^pN=X"5+Qf8tj1!'3i;:%lm.8:0ZO+s$KnGP;'j49pEmh?h##T
-*O<]MhQ,WKu8.Y]])%$M5u(U_[$M~>
+h<R<"cbN6"@tOUW9H4GdTRNL5NV:rq=[QOF;T6#O4IcIj=qZ:t'.a8U&(KuZE>dHR4o/CVtW01KX2*M`7]OjWse8SM'1SI$/
+.d`QNa6BaM6j9ZR>6m-ms24+FF!p(V$nY[/E@Ar+EX<?Qb<%!no6q*(^*$]"&1#+lW(=dbC\#N8loBU5d)()/t&@DKmj@pA!
+Uge7mHiP;'o`u]&fd-t9)3=nEV(4^`G_+th_?RbQ'N3KG%BjY4PX*>+lRD7_G9f?;]9*TtgO&+3Cd%U/=RQ4I$K$E?h?C_n(
+C/n)It_jJiPTn\+Q=hGLiG7p5X5~>
 U
 PSL_cliprestore
 4 W
@@ -1054,34 +1092,48 @@ S
 7344 3672 M 0 83 D S
 7344 0 M 83 0 D S
 0 0 M -83 0 D S
+7344 0 M 83 0 D S
+0 0 M -83 0 D S
+7344 612 M 83 0 D S
+0 612 M -83 0 D S
 7344 612 M 83 0 D S
 0 612 M -83 0 D S
 7344 1224 M 83 0 D S
 0 1224 M -83 0 D S
+7344 1224 M 83 0 D S
+0 1224 M -83 0 D S
+7344 1836 M 83 0 D S
+0 1836 M -83 0 D S
 7344 1836 M 83 0 D S
 0 1836 M -83 0 D S
 7344 2448 M 83 0 D S
 0 2448 M -83 0 D S
+7344 2448 M 83 0 D S
+0 2448 M -83 0 D S
+7344 3060 M 83 0 D S
+0 3060 M -83 0 D S
 7344 3060 M 83 0 D S
 0 3060 M -83 0 D S
 7344 3672 M 83 0 D S
 0 3672 M -83 0 D S
-7511 0 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+7344 3672 M 83 0 D S
+0 3672 M -83 0 D S
+-167 0 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-90Ê) ml Z
--167 0 M (-90Ê) mr Z
-7511 612 M (-60Ê) ml Z
+(-90Ê) mr Z
+7511 0 M (-90Ê) ml Z
 -167 612 M (-60Ê) mr Z
-7511 1224 M (-30Ê) ml Z
+7511 612 M (-60Ê) ml Z
 -167 1224 M (-30Ê) mr Z
-7511 1836 M (0Ê) ml Z
+7511 1224 M (-30Ê) ml Z
 -167 1836 M (0Ê) mr Z
-7511 2448 M (30Ê) ml Z
+7511 1836 M (0Ê) ml Z
 -167 2448 M (30Ê) mr Z
-7511 3060 M (60Ê) ml Z
+7511 2448 M (30Ê) ml Z
 -167 3060 M (60Ê) mr Z
-7511 3672 M (90Ê) ml Z
+7511 3060 M (60Ê) ml Z
 -167 3672 M (90Ê) mr Z
+7511 3672 M (90Ê) ml Z
 83 W
 1 A
 -42 0 M 0 612 D S
@@ -1146,6 +1198,7 @@ S
 7427 3755 M -7510 0 D S
 0 3755 M 0 -3838 D S
 -83 3755 M 0 -3838 D S
+%%EndObject
 %%PageTrailer
 U
 showpage
