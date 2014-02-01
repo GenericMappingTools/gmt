@@ -5936,6 +5936,9 @@ int GMT_Option (void *V_API, char *options)
 			case 'r':	/* Pixel registration */
 				arg[k++] = 'F';
 				break;
+			case 'x':	/* Number of threads (for multi-threaded progs) */
+				arg[k++] = 'y';
+				break;
 			default:	/* All others are pass-through */
 				arg[k++] = p[0];
 				break;

@@ -43,7 +43,7 @@ and added this to ConfigUserCmake
 
 maybe you don't need the above if cmake is able to find glib in your system.
 
-Use undocumented (and temporary) option -z to set the number of threads. e.g. -z2, -z4, ... or -za to use all available
+Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all available
 */
 
 #define THIS_MODULE_NAME	"grdfilter"
@@ -52,7 +52,7 @@ Use undocumented (and temporary) option -z to set the number of threads. e.g. -z
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-RVf"
+#define GMT_PROG_OPTIONS "-RVfx"
 
 struct GRDFILTER_CTRL {
 	struct GRDFILT_In {
@@ -378,7 +378,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<mode>] -G<outgrid>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -425,7 +425,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 #endif
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify how NaNs in the input grid should be treated.  There are three options:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify how NaNs in the input grid should be treated. There are three options:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ni skips all NaN values and returns a filtered value unless all are NaN [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Np sets filtered output to NaN is any NaNs are found inside filter circle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Nr sets filtered output to NaN if the corresponding input node was NaN.\n");
@@ -433,13 +433,13 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
-	GMT_Option (API, "V,f,.");
+	GMT_Option (API, "V,f");
 #ifdef USE_GTHREADS
-	GMT_Message (API, GMT_TIME_NONE, "\t-z Control the number of processors used in multi-threading.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -za Use all available processors.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -zn Use n processors (not more tham max available off course).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -z-1 Use (all - 1)  processors.\n");
+	GMT_Option (API, "x");
+#else
+	GMT_Message (API, GMT_TIME_NONE, "\t-x Not available since this binary was not build with multi-threading support.\n");
 #endif
+	GMT_Option (API, ".");
 	
 	return (EXIT_FAILURE);
 }
@@ -573,23 +573,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 			case 'T':	/* Toggle registration */
 				Ctrl->T.active = true;
 				break;
-#ifdef USE_GTHREADS
-			case 'z':
-				Ctrl->z.active = true;
-				if (opt->arg && opt->arg[0] == 'a')		/* Use all processors abvailable */
-					Ctrl->z.n_threads = g_get_num_processors();
-				else if (opt->arg)
-					Ctrl->z.n_threads = atoi(opt->arg);
 
-				if (Ctrl->z.n_threads == 0)
-					Ctrl->z.n_threads = 1;
-				else if (Ctrl->z.n_threads < 0)
-					Ctrl->z.n_threads = MAX(g_get_num_processors() - 1, 1);		/* Max -1 but at least one */
-				else
-					Ctrl->z.n_threads = MIN((int)g_get_num_processors(), Ctrl->z.n_threads);	/* No more than maximum available */
-
-				break;
-#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -670,6 +654,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfilter_parse (GMT, Ctrl, options))) Return (error);
@@ -738,7 +723,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "be recomputed for every output node, so expect this run to be slow. Calculations\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
@@ -901,7 +886,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
 #ifdef USE_GTHREADS
-		GMT_Report (API, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", Ctrl->z.n_threads);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", GMT->common.x.n_threads);
 #endif
 	}
 
@@ -946,13 +931,13 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	GMT_tic(GMT);
 
 #ifdef USE_GTHREADS
-	if (Ctrl->z.n_threads > 1)
-		threads = GMT_memory (GMT, NULL, Ctrl->z.n_threads, GThread *);
+	if (GMT->common.x.n_threads > 1)
+		threads = GMT_memory (GMT, NULL, GMT->common.x.n_threads, GThread *);
 #endif
 
-	threadArg = GMT_memory (GMT, NULL, Ctrl->z.n_threads, struct THREAD_STRUCT);
+	threadArg = GMT_memory (GMT, NULL, GMT->common.x.n_threads, struct THREAD_STRUCT);
 
-	for (i = 0; i < Ctrl->z.n_threads; i++) {
+	for (i = 0; i < GMT->common.x.n_threads; i++) {
 		threadArg[i].GMT        = GMT;
 		threadArg[i].Ctrl       = Ctrl;
 		threadArg[i].Gin        = Gin;
@@ -974,10 +959,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
    		threadArg[i].nx_wrap    = nx_wrap;
    		threadArg[i].effort_level = effort_level;
    		threadArg[i].filter_type  = filter_type;
-   		threadArg[i].r_start    = i * irint((Gout->header->ny) / Ctrl->z.n_threads);
+   		threadArg[i].r_start    = i * irint((Gout->header->ny) / GMT->common.x.n_threads);
    		threadArg[i].thread_num = i;
 
-		if (Ctrl->z.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
+		if (GMT->common.x.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
    			threadArg[i].r_stop = Gout->header->ny;
 			threaded_function (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
@@ -985,17 +970,17 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #ifndef USE_GTHREADS
 	}
 #else
-   		threadArg[i].r_stop = (i + 1) * irint((Gout->header->ny) / Ctrl->z.n_threads);
-   		if (i == Ctrl->z.n_threads - 1) threadArg[i].r_stop = Gout->header->ny;	/* Make sure last row is not left behind */
+   		threadArg[i].r_stop = (i + 1) * irint((Gout->header->ny) / GMT->common.x.n_threads);
+   		if (i == GMT->common.x.n_threads - 1) threadArg[i].r_stop = Gout->header->ny;	/* Make sure last row is not left behind */
 		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
 	}
 
-	if (Ctrl->z.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
-		for (i = 0; i < Ctrl->z.n_threads; i++)
+	if (GMT->common.x.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
+		for (i = 0; i < GMT->common.x.n_threads; i++)
 			g_thread_join(threads[i]);
 	}
 
-	if (Ctrl->z.n_threads > 1)
+	if (GMT->common.x.n_threads > 1)
 		GMT_free (GMT, threads);
 #endif
 
