@@ -288,7 +288,7 @@ To create a simple linear map with pscoast and convert it to tif with a
    ::
 
     gmt pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
-    gmt ps2raster cara -Tt -W
+    gmt ps2raster cara.ps -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
 produce a true geotiff file.

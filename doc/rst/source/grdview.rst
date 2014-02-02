@@ -8,8 +8,8 @@ grdview
 
     grdview - Create 3-D perspective image or surface mesh from a grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -96,7 +96,7 @@ Optional Arguments
 
 .. include:: explain_-P.rst_
 
-**-Q**\ *args*\ [**g**]
+**-Q**\ *args*\ [**+m**]
     Select one of four settings: 1. Specify **m** for mesh plot
     [Default], and optionally append *color* for a different mesh paint
     [white]. 2. Specify **s** for surface plot, and optionally append
