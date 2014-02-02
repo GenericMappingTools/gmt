@@ -307,7 +307,7 @@ void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->W.pen[0].width *= 3.0;	/* Contour pen */
 	C->W.pen[2].width *= 3.0;	/* Facade pen */
 	C->Q.dpi = 100;
-	GMT_init_fill (GMT, &C->Q.fill, GMT->PSL->init.page_rgb[0], GMT->PSL->init.page_rgb[1], GMT->PSL->init.page_rgb[2]);
+	GMT_init_fill (GMT, &C->Q.fill, GMT->current.setting.ps_page_rgb[0], GMT->current.setting.ps_page_rgb[1], GMT->current.setting.ps_page_rgb[2]);
 	return (C);
 }
 
@@ -1228,6 +1228,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_MESH) {	/* Plot mesh */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Do mesh plot with mesh color %s\n", GMT_putcolor (GMT, Ctrl->Q.fill.rgb));
 		PSL_comment (PSL, "Start of mesh plot\n");
 		GMT_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->Q.monochrome) Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
