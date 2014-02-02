@@ -58,6 +58,7 @@
 #define GRDVIEW_MESH		0	/* Default */
 #define GRDVIEW_SURF		1
 #define GRDVIEW_IMAGE		2
+#define GRDVIEW_WATERFALL	3
 
 struct GRDVIEW_CTRL {
 	struct In {
@@ -349,13 +350,14 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity, just give the value instead.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>.  Append +g<fill> to paint\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>. Append +g<fill> to paint\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the facade between the plane and the data perimeter.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set plot request. Choose one of the following:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default].  Append <color> for mesh paint [%s].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default]. Append <color> for mesh paint [%s].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qw for Waterfall plot. Append <color> for lines paint [%s].\n",
 		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface.  Append m to draw meshlines on the surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface. Append m to draw meshlines on the surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to rasterimage.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qc. As -Qi but use PS Level 3 colormasking for nodes with z = NaN.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the GMT_YIQ transformation, append +m.\n");
@@ -500,11 +502,29 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 					c[0] = '\0';	/* Chop off +m */
 				}
 				switch (opt->arg[0]) {
+					case 'c':	/* Image with colormask */
+						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
+						Ctrl->Q.mode = GRDVIEW_IMAGE;
+						Ctrl->Q.mask = true;
+						break;
+					case 'i':	/* Image with clipmask */
+						Ctrl->Q.mode = GRDVIEW_IMAGE;
+						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
+						break;
 					case 'm':	/* Mesh plot */
 						Ctrl->Q.mode = GRDVIEW_MESH;
 						if (opt->arg[1]) {	/* Appended /<color> or just <color> */
 							k = (opt->arg[1] == '/') ? 2 : 1;
-							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill), "Syntax error -Qm option: To give mesh color, use -Qm<color>\n");
+							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
+							                                 "Syntax error -Qm option: To give mesh color, use -Qm<color>\n");
+						}
+						break;
+					case 'w':	/* Waterfall plot */
+						Ctrl->Q.mode = GRDVIEW_WATERFALL;
+						if (opt->arg[1]) {	/* Appended /<color> or just <color> */
+							k = (opt->arg[1] == '/') ? 2 : 1;
+							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
+							                                 "Syntax error -Qw option: To give waterfall color, use -Qw<color>\n");
 						}
 						break;
 					case 's':	/* Color without contours */
@@ -513,15 +533,6 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						break;
 					case 't':	/* Image without color interpolation */
 						Ctrl->Q.special = true;
-					case 'i':	/* Image with clipmask */
-						Ctrl->Q.mode = GRDVIEW_IMAGE;
-						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
-						break;
-					case 'c':	/* Image with colormask */
-						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
-						Ctrl->Q.mode = GRDVIEW_IMAGE;
-						Ctrl->Q.mask = true;
-						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
 						n_errors++;
@@ -1225,6 +1236,30 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 		GMT_free (GMT, ix);
 		GMT_free (GMT, iy);
+	}
+
+	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL) {	/* Plot mesh */
+		PSL_comment (PSL, "Start of waterfall plot\n");
+		GMT_setpen (GMT, &Ctrl->W.pen[1]);
+		if (Ctrl->Q.monochrome)
+			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
+		for (j = j_start; j != j_stop; j += j_inc) {
+			y_bottom = yval[j];
+			//y_top = y_bottom + abs (j_inc) * Z->header->inc[GMT_Y];
+			for (i = i_start; i != i_stop; i += i_inc) {
+				bin = GMT_IJ0 (Z->header, j, i);
+				ij = GMT_IJP (Topo->header, j, i);
+				for (k = bad = 0; !bad && k < 4; k++) bad += GMT_is_fnan (Topo->data[ij+ij_inc[k]]);
+				if (bad) continue;
+				x_left = xval[i];
+				x_right = x_left + abs (i_inc) * Z->header->inc[GMT_X];
+				GMT_geoz_to_xy (GMT, x_left,  y_bottom, (double)(Topo->data[ij+ij_inc[0]]), &xx[0], &yy[0]);
+				GMT_geoz_to_xy (GMT, x_right, y_bottom, (double)(Topo->data[ij+ij_inc[1]]), &xx[1], &yy[1]);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE);
+			}
+		}
+		GMT_free (GMT, xval);
+		GMT_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_MESH) {	/* Plot mesh */
