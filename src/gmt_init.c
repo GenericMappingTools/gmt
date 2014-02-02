@@ -9746,7 +9746,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			GMT->common.t.value = atof (item);
 			break;
 
-#ifdef GTHREADS
+#ifdef USE_GTHREADS
 		case 'x':
 			error += (GMT_more_than_once (GMT, GMT->common.x.active) || gmt_parse_x_option (GMT, item));
 			GMT->common.x.active = true;
