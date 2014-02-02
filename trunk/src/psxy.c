@@ -84,6 +84,10 @@ struct PSXY_CTRL {
 };
 
 #define CAP_WIDTH		7.0	/* Error bar cap width */
+#define EBAR_NORMAL		1
+#define EBAR_ASYMMETRICAL	2
+#define EBAR_WHISKER		3
+#define EBAR_NOTCHED_WHISKER	4
 
 void *New_psxy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXY_CTRL *C;
@@ -412,16 +416,16 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				while (opt->arg[j] && opt->arg[j] != '/') {
 					switch (opt->arg[j]) {
 					case 'x':	/* Error bar for x */
-						Ctrl->E.xbar = 1; break;
+						Ctrl->E.xbar = EBAR_NORMAL; break;
 					case 'X':	/* Box-whisker instead */
-						Ctrl->E.xbar = 2;
-						if (opt->arg[j+1] == 'n') {Ctrl->E.xbar++; j++;}
+						Ctrl->E.xbar = EBAR_WHISKER;
+						if (opt->arg[j+1] == 'n') {Ctrl->E.xbar = EBAR_NOTCHED_WHISKER; j++;}
 						break;
 					case 'y':	/* Error bar for y */
-						Ctrl->E.ybar = 1; break;
+						Ctrl->E.ybar = EBAR_NORMAL; break;
 					case 'Y':	/* Box-whisker instead */
-						Ctrl->E.ybar = 2;
-						if (opt->arg[j+1] == 'n') {Ctrl->E.ybar++; j++;}
+						Ctrl->E.ybar = EBAR_WHISKER;
+						if (opt->arg[j+1] == 'n') {Ctrl->E.ybar = EBAR_NOTCHED_WHISKER; j++;}
 						break;
 					default:	/* Get error 'cap' width */
 						strncpy (txt_a, &opt->arg[j], GMT_LEN256);
@@ -570,27 +574,27 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	if (Ctrl->E.active) {	/* Set error bar parameters */
 		j = 2;	/* Normally, error bar related columns start in position 2 */
-		if (Ctrl->E.xbar == 1) {
+		if (Ctrl->E.xbar == EBAR_NORMAL) {
 			xy_errors[GMT_X] = j++;
 			error_type[GMT_X] = 0;
 		}
-		else if (Ctrl->E.xbar == 2) {	/* Box-whisker instead */
+		else if (Ctrl->E.xbar == EBAR_WHISKER) {	/* Box-whisker instead */
 			xy_errors[GMT_X] = j++;
 			error_type[GMT_X] = 1;
 		}
-		else if (Ctrl->E.xbar == 3) {	/* Notched Box-whisker instead */
+		else if (Ctrl->E.xbar == EBAR_NOTCHED_WHISKER) {	/* Notched Box-whisker instead */
 			xy_errors[GMT_X] = j++;
 			error_type[GMT_X] = 2;
 		}
-		if (Ctrl->E.ybar == 1) {
+		if (Ctrl->E.ybar == EBAR_NORMAL) {
 			xy_errors[GMT_Y] = j++;
 			error_type[GMT_Y] = 0;
 		}
-		else if (Ctrl->E.ybar == 2) {	/* Box-whisker instead */
+		else if (Ctrl->E.ybar == EBAR_WHISKER) {	/* Box-whisker instead */
 			xy_errors[GMT_Y] = j++;
 			error_type[GMT_Y] = 1;
 		}
-		else if (Ctrl->E.ybar == 3) {	/* Notched Box-whisker instead */
+		else if (Ctrl->E.ybar == EBAR_NOTCHED_WHISKER) {	/* Notched Box-whisker instead */
 			xy_errors[GMT_Y] = j++;
 			error_type[GMT_Y] = 2;
 		}
