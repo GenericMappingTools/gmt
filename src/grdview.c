@@ -355,6 +355,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set plot request. Choose one of the following:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default]. Append <color> for mesh paint [%s].\n",
+		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qw for Waterfall plot. Append <color> for lines paint [%s].\n",
 		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface. Append m to draw meshlines on the surface.\n");
