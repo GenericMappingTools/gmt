@@ -53,6 +53,10 @@ struct GMTCONVERT_CTRL {
 	struct A {	/* -A */
 		bool active;
 	} A;
+	struct C {	/* -C[+l<min>+u<max>+i>] */
+		bool active, invert;
+		uint64_t min, max;
+	} C;
 	struct D {	/* -D[<template>] */
 		bool active;
 		char *name;
@@ -90,6 +94,7 @@ void *New_gmtconvert_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C = GMT_memory (GMT, NULL, 1, struct GMTCONVERT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->C.max = ULONG_MAX;	/* Max records possible in one segment */
 
 	return (C);
 }
@@ -107,7 +112,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l|m<stride>]] [-I[tsr]] [-L] [-N] [-Q[~]<selection>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>]] [-E[f|l|m<stride>]] [-I[tsr]] [-L] [-N] [-Q[~]<selection>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -118,6 +123,10 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Paste files horizontally, not concatenate vertically [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All files must have the same number of segments and rows,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   but they may differ in their number of columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Only output segments whose number of records matches criteria:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +l<min> Segment must have at least <min> records [0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +u<max> Segment must have at most <max> records [inf]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +i will invert the test.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Write individual segments to separate files [Default writes one\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for an integer (e.g., %%d) that represents\n");
@@ -161,7 +170,9 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n_files = 0;
+	unsigned int pos, n_errors = 0, k, n_files = 0;
+	int64_t value = 0;
+	char p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -182,6 +193,30 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 
 			case 'A':	/* pAste mode */
 				Ctrl->A.active = true;
+				break;
+			case 'C':	/* record-count selection mode */
+				Ctrl->C.active = true;
+				pos = 0;
+				while (GMT_getmodopt (GMT, opt->arg, "ilu", &pos, p)) {	/* Looking for +i, +l, +u */
+					switch (p[0]) {
+						case 'i':	/* Invert selection */
+							Ctrl->C.invert = true;	break;
+						case 'l':	/* Set fewest records required */
+						 	if ((value = atol (&p[1])) < 0)
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: The -C+l modifier was given negative record count!\n");
+							else
+								Ctrl->C.min = (uint64_t)value;
+							break;
+						case 'u':	/* Set max records required */
+					 		if ((value = atol (&p[1])) < 0)
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: The -C+u modifier was given negative record count!\n");
+							else
+								Ctrl->C.max = (uint64_t)value;
+							break;
+						default:
+							n_errors++;	break;
+					}
+				}
 				break;
 			case 'D':	/* Write each segment to a separate output file */
 				Ctrl->D.active = true;
@@ -250,6 +285,7 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 	
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active), "Syntax error: -L or -S requires ASCII input data\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.min > Ctrl->C.max), "Syntax error: -C minimum records cannot exceed maximum records\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.name && !strstr (Ctrl->D.name, "%"), "Syntax error: -D Output template must contain %%d\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active, "Syntax error: Only one of -Q and -S can be used simultaneously\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
@@ -373,6 +409,10 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 				if (Ctrl->S.select->invert == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
 			if (Ctrl->Q.active && !GMT_get_int_selection (GMT, Ctrl->Q.select, seg)) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
+			if (Ctrl->C.active) {	/* See if the number of records in this segment passes our test for output */
+				match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows >= Ctrl->C.min && D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows <= Ctrl->C.max);
+				if (Ctrl->C.invert == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
+			}
 			if (D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode) continue;	/* No point copying values given segment content will be skipped */
 			n_out_seg++;	/* Number of segments that passed the test */
 			last_row = D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows - 1;
