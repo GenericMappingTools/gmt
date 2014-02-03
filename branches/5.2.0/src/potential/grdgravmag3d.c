@@ -1194,7 +1194,7 @@ void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
     unsigned int r_start        = t->r_start;
     unsigned int r_stop         = t->r_stop;
 
-	void (*v_func[3])(struct GMT_CTRL *, struct GRDOKB_CTRL *, struct GMT_GRID *, struct BODY_DESC *, struct BODY_VERTS *,
+	int (*v_func[3])(struct GMT_CTRL *, struct GRDOKB_CTRL *, struct GMT_GRID *, struct BODY_DESC *, struct BODY_VERTS *,
 	      double *, double *, double *, unsigned int, unsigned int, unsigned int, unsigned int); 
 	double (*d_func[3])(struct GMT_CTRL *, double, double, double, double, bool, struct BODY_DESC, struct BODY_VERTS *,
 	        unsigned int, unsigned int, struct LOC_OR *);
