@@ -139,18 +139,18 @@ Optional Arguments
 
 **-W**\ **type**\ *pen*
 
-**-Wc**
-    Draw contour lines on top of surface or mesh (not image). Append pen
-    attributes used for the contours. [Default: width = 0.75p, color =
-    black, style = solid].
-**-Wm**
-    Sets the pen attributes used for the mesh. [Default: width = 0.25p,
-    color = black, style = solid]. You must also select **-Qm** or
-    **-Qsm** for meshlines to be drawn.
-**-Wf**
-    Sets the pen attributes used for the facade. [Default: width =
-    0.25p, color = black, style = solid]. You must also select **-N**
-    for the facade outline to be drawn. 
+    **-Wc**
+        Draw contour lines on top of surface or mesh (not image). Append pen
+        attributes used for the contours. [Default: width = 0.75p, color =
+        black, style = solid].
+    **-Wm**
+        Sets the pen attributes used for the mesh. [Default: width = 0.25p,
+        color = black, style = solid]. You must also select **-Qm** or
+        **-Qsm** for meshlines to be drawn.
+    **-Wf**
+        Sets the pen attributes used for the facade. [Default: width =
+        0.25p, color = black, style = solid]. You must also select **-N**
+        for the facade outline to be drawn. 
 
 .. include:: explain_-XY.rst_
 
