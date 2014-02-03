@@ -13,7 +13,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtconvert** [ *table* ] [ **-A** ] [ **-D**\ [*template*] ]
+**gmtconvert** [ *table* ] [ **-A** ] [ **-C**\ [**+l**\ *min*\ ][\ **+u**\ *max*\ ][**+i**]]
+[ **-D**\ [*template*] ]
 [ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
 [ **-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ [**~**\ ]*selection* ]
 [ **-S**\ [**~**\ ]\ *"search string"* \|
@@ -37,13 +38,14 @@ Description
 
 **gmtconvert** reads its standard input [or input files] and writes out
 the desired information to standard output. It can do a combination of
-seven tasks: (1) convert between binary and ASCII data tables, (2) paste
+nine tasks: (1) convert between binary and ASCII data tables, (2) paste
 corresponding records from multiple files horizontally into a single
 file, (3) extract a subset of the available columns, (4) only extract
 segments whose header record matches a text pattern search, (5) only
 list segment headers and no data records, (6) extract first and/or last
-data record for each segment, and (7) reverse the order
-of items on output. Input (and hence output) may have multiple
+data record for each segment, (7) reverse the order of items on output,
+(8) output only ranges of segment numbers, and (9) output only segments
+whose record count matches criteria.  Input (and hence output) may have multiple
 sub-headers, and ASCII tables may have regular headers as well. 
 
 Required Arguments
@@ -63,6 +65,14 @@ Optional Arguments
     of segments and number of rows per segment. Note for binary input,
     all the files you want to paste must have the same number of columns
     (as set with **-bi**); ascii tables can have different number of columns.
+
+**-C**\ [**+l**\ *min*\ ][\ **+u**\ *max*\ ][**+i**]
+    Only output segments whose number of records matches your given criteria:
+    Append **+l**\ *min* to ensure all segment must have at least *min* records
+    to be written to output [0], and append **+u**\ *max*  to ensure all segments
+    must have at most *max* records to be written [inf].  You may append **+i**
+    to invert the selection, i.e., only segments with record counts outside the
+    given range will be output.
 
 **-D**\ [*template*]
     For multiple segment data, dump each segment to a separate output

@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-02-03	pwessel
+	* gmtconvert.c:		New option -C to limit output to segments whose record count
+				matches our criteria.
+
 2014-01-14	remko
 	* gmt_shore.c:		Do not adjust longitudes in determining min/max, they are
 				always in same quadrant inside bins.
