@@ -97,17 +97,16 @@ Optional Arguments
 .. include:: explain_-P.rst_
 
 **-Q**\ *args*\ [**+m**]
-    Select one of four settings: 1. Specify **m** for mesh plot
-    [Default], and optionally append *color* for a different mesh paint
-    [white]. 2. Specify **s** for surface plot, and optionally append
-    **m** to have mesh lines drawn on top of surface. 3. Specify **i**
-    for image plot, and optionally append the effective dpi resolution
-    for the rasterization [100]. 4. Specify **c**. Same as **-Qi** but
-    will make nodes with z = NaN transparent, using the colormasking
-    feature in PostScript Level 3 (the PS device must support PS Level
-    3). For any of these choices, you may force a monochrome image by
-    appending the modifier **+m**. Colors are then converted to shades
-    of gray using the (monochrome television) YIQ transformation. 
+    Select one of following settings. For any of these choices, you may force
+    a monochrome image by appending the modifier **+m**. Colors are then
+    converted to shades of gray using the (monochrome television) YIQ transformation
+
+    #. Specify **m** for mesh plot [Default], and optionally append *color* for a different mesh paint [white].
+    #. Specify **mx** or **my** for waterfall plots (row or column profiles). Specify color as for plain **m**
+    #. Specify **s** for surface plot, and optionally append **m** to have mesh lines drawn on top of surface.
+    #. Specify **i** for image plot, and optionally append the effective dpi resolution for the rasterization [100].
+    #. Specify **c**. Same as **-Qi** but will make nodes with z = NaN transparent, using the colormasking
+       feature in PostScript Level 3 (the PS device must support PS Level 3). . 
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
