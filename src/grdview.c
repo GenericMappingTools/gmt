@@ -58,7 +58,8 @@
 #define GRDVIEW_MESH		0	/* Default */
 #define GRDVIEW_SURF		1
 #define GRDVIEW_IMAGE		2
-#define GRDVIEW_WATERFALL	3
+#define GRDVIEW_WATERFALL_X	3
+#define GRDVIEW_WATERFALL_Y	4
 
 struct GRDVIEW_CTRL {
 	struct In {
@@ -328,10 +329,12 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n",
+	             GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>|<value>] [%s] [-K] [-N<level>[+g<fill>]] [-O] [-P] [-Q<args>[+m]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n",
+	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -356,15 +359,16 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set plot request. Choose one of the following:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default]. Append <color> for mesh paint [%s].\n",
 		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qw for Waterfall plot. Append <color> for lines paint [%s].\n",
-		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qmx or -Qmy do waterfall type plots (row or column profiles).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface. Append m to draw meshlines on the surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to rasterimage.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qc. As -Qi but use PS Level 3 colormasking for nodes with z = NaN.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the GMT_YIQ transformation, append +m.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
-	GMT_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n\t   Append o[<pen>] to draw tile outline [Default uses no outline].");
+	GMT_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n"
+	                "\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n"
+	                "\t   Append o[<pen>] to draw tile outline [Default uses no outline].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.");
@@ -513,19 +517,24 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
 						break;
 					case 'm':	/* Mesh plot */
-						Ctrl->Q.mode = GRDVIEW_MESH;
-						if (opt->arg[1]) {	/* Appended /<color> or just <color> */
-							k = (opt->arg[1] == '/') ? 2 : 1;
-							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
-							                                 "Syntax error -Qm option: To give mesh color, use -Qm<color>\n");
+						n = 0;
+						if (opt->arg[1] && opt->arg[1] == 'x') {
+							Ctrl->Q.mode = GRDVIEW_WATERFALL_X;
+							Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = 1;	/* Default to white */
+							n = 1;
 						}
-						break;
-					case 'w':	/* Waterfall plot */
-						Ctrl->Q.mode = GRDVIEW_WATERFALL;
-						if (opt->arg[1]) {	/* Appended /<color> or just <color> */
-							k = (opt->arg[1] == '/') ? 2 : 1;
+						else if (opt->arg[1] && opt->arg[1] == 'y') {
+							Ctrl->Q.mode = GRDVIEW_WATERFALL_Y;
+							Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = 1;	/* Default to white */
+							n = 1;
+						}
+						else
+							Ctrl->Q.mode = GRDVIEW_MESH;
+
+						if (opt->arg[n+1]) {	/* Appended /<color> or just <color> */
+							k = ((opt->arg[n+1] == '/') ? 2 : 1) + n;
 							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
-							                                 "Syntax error -Qw option: To give waterfall color, use -Qw<color>\n");
+							                                 "Syntax error -Qm option: To give mesh color, use -Qm[x|y]<color>\n");
 						}
 						break;
 					case 's':	/* Color without contours */
@@ -1220,12 +1229,14 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Creating PostScript image ");
 		if (Ctrl->Q.monochrome) {
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "[B/W image]\n");
-			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
+			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
+			                    x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
 			GMT_free (GMT, bitimage_8);
 		}
 		else {
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "[color image]\n");
-			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
+			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
+			                    x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
 			GMT_free (GMT, bitimage_24);
 		}
 
@@ -1239,25 +1250,45 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_free (GMT, iy);
 	}
 
-	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL) {	/* Plot mesh */
+	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_Y) {	/* Plot Y waterfall */
+		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
 		PSL_comment (PSL, "Start of waterfall plot\n");
 		GMT_setpen (GMT, &Ctrl->W.pen[1]);
+		GMT_setfill (GMT, &Ctrl->Q.fill, true);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
-		for (j = j_start; j != j_stop; j += j_inc) {
-			y_bottom = yval[j];
-			//y_top = y_bottom + abs (j_inc) * Z->header->inc[GMT_Y];
-			for (i = i_start; i != i_stop; i += i_inc) {
-				bin = GMT_IJ0 (Z->header, j, i);
-				ij = GMT_IJP (Topo->header, j, i);
-				for (k = bad = 0; !bad && k < 4; k++) bad += GMT_is_fnan (Topo->data[ij+ij_inc[k]]);
-				if (bad) continue;
-				x_left = xval[i];
-				x_right = x_left + abs (i_inc) * Z->header->inc[GMT_X];
-				GMT_geoz_to_xy (GMT, x_left,  y_bottom, (double)(Topo->data[ij+ij_inc[0]]), &xx[0], &yy[0]);
-				GMT_geoz_to_xy (GMT, x_right, y_bottom, (double)(Topo->data[ij+ij_inc[1]]), &xx[1], &yy[1]);
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE);
+		for (i = i_start+1; i != i_stop; i += i_inc) {
+			for (k = 0, j = j_start-1; j != j_stop; j += j_inc, k++) {
+				ij  = GMT_IJP(Topo->header, j, i);
+				if (GMT_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
+				GMT_geoz_to_xy (GMT, xval[i], yval[j], (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
 			}
+			GMT_geoz_to_xy (GMT, xval[i], yval[j_start-1] + (k - 1) * (i_inc * Z->header->inc[GMT_Y]), z_base, &xx[k], &yy[k]);
+			GMT_geoz_to_xy (GMT, xval[i], yval[j_start-1], z_base, &xx[k+1], &yy[k+1]);
+			PSL_plotpolygon (PSL, xx, yy, k+2);
+		}
+		GMT_free (GMT, xval);
+		GMT_free (GMT, yval);
+	}
+
+	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_X) {	/* Plot X waterfall */
+		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
+		PSL_comment (PSL, "Start of waterfall plot\n");
+		GMT_setpen (GMT, &Ctrl->W.pen[1]);
+		GMT_setfill (GMT, &Ctrl->Q.fill, true);
+		if (Ctrl->Q.monochrome)
+			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
+		for (j = j_start-1; j != j_stop; j += j_inc) {
+			for (k = 0, i = i_start+1; i != i_stop; i += i_inc, k++) {
+				ij  = GMT_IJP(Topo->header, j, i);
+				if (GMT_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
+				GMT_geoz_to_xy (GMT, xval[i_start+1] + k * (i_inc * Z->header->inc[GMT_X]), yval[j],		// i_inc = -1
+				                (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
+			}
+			GMT_geoz_to_xy (GMT, xval[i_start+1] + (k - 1) * (i_inc * Z->header->inc[GMT_X]), yval[j], z_base, &xx[k], &yy[k]);
+			GMT_geoz_to_xy (GMT, xval[i_start+1], yval[j], z_base, &xx[k+1], &yy[k+1]);
+			PSL_plotpolygon (PSL, xx, yy, k+2);
+			//PSL_plotline (PSL, xx, yy, k+2, PSL_MOVE + PSL_STROKE);
 		}
 		GMT_free (GMT, xval);
 		GMT_free (GMT, yval);
@@ -1267,7 +1298,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do mesh plot with mesh color %s\n", GMT_putcolor (GMT, Ctrl->Q.fill.rgb));
 		PSL_comment (PSL, "Start of mesh plot\n");
 		GMT_setpen (GMT, &Ctrl->W.pen[1]);
-		if (Ctrl->Q.monochrome) Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
+		if (Ctrl->Q.monochrome)
+			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
 		for (j = j_start; j != j_stop; j += j_inc) {
 			y_bottom = yval[j];
 			y_top = y_bottom + abs (j_inc) * Z->header->inc[GMT_Y];
@@ -1678,7 +1710,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (col = Z->header->nx ; col > 0; col--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
+			for (col = Z->header->nx ; col > 0; col--, n++)
+				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/*	Eastern side */
@@ -1687,7 +1720,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (row = Z->header->ny; row > 0; row--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+			for (row = Z->header->ny; row > 0; row--, n++)
+				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[2])	{	/* Northern side */
@@ -1696,7 +1730,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (col = Z->header->nx; col > 0; col--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
+			for (col = Z->header->nx; col > 0; col--, n++)
+				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[3]) {	/*	Western side */
@@ -1705,7 +1740,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (row = Z->header->ny; row > 0; row--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+			for (row = Z->header->ny; row > 0; row--, n++)
+				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 	}
