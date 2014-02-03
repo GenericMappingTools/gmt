@@ -491,7 +491,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	}
 	if (!gmt5 && wesn_at_end) gmt4++;		/* Presumably got WESNwesn stuff towards the end of the option */
 	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
-	if (n_slashes) gmt4++;				/* Presumably / to separate axis in GMT4 style */
+	if (!custom && n_slashes) gmt4++;		/* Presumably / to separate axis in GMT4 style */
 	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_arg_inspector: GMT4 = %d GMT5 = %d\n", gmt4, gmt5);
 	if (gmt5 && !gmt4) {
