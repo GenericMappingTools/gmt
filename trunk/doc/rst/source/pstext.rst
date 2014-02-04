@@ -268,6 +268,8 @@ Limitations
 In paragraph mode, the presence of composite characters and other escape
 sequences may lead to unfortunate word splitting. Also, if a font is
 requested with an outline pen it will not be used in paragraph mode.
+Note if any single word is wider than your chosen paragraph width then
+the paragraph width is automatically enlarged to fit the widest word.
 
 The **-N** option does not adjust the BoundingBox information so you may
 have to post-process the PostScript output with ps2raster to obtain a
