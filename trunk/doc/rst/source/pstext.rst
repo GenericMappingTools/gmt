@@ -180,10 +180,9 @@ Optional Arguments
 **-T**
     Specify the shape of the textbox when using **-G** and/or **-W**.
     Choose lower case **o** to get a straight rectangle [Default].
-    Choose upper case **O** to get a rounded rectangle. Choose lower
-    case **c** to get a concave rectangle (only in paragraph mode).
-    Choose upper case **C** to get a convex rectangle (only in paragraph
-    mode). 
+    Choose upper case **O** to get a rounded rectangle. In paragraph
+    mode (**-M**) you can also choose lower case **c** to get a concave
+    rectangle or upper case **C** to get a convex rectangle. 
 
 .. include:: explain_-U.rst_
 
