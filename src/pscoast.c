@@ -221,8 +221,8 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t      c = All canals (8-10).\n");
 	GMT_Option (API, "K");
 	GMT_mapscale_syntax (API->GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Dump a multisegment ascii (or binary, see -bo) file to standard output.  No plotting occurs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify any combination of -W, -I, -N.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Dump a multisegment ASCII (or binary, see -bo) file to standard output.  No plotting occurs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify one of -F, -I, -N, or -W.\n");
 	GMT_pen_syntax (API->GMT, 'N', "Draw boundaries.  Specify feature and optionally append pen [Default for all levels: %s].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from the features below.  Repeat the -N option as many times as needed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     1 = National boundaries.\n");
