@@ -1483,19 +1483,19 @@ uint64_t gmt_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 
 	if (n == 0) return (0);
 
-	GMT_prep_tmp_arrays (GMT, 0, 2);	/* Init or reallocate tmp vectors */
+	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
 	xx = GMT->hidden.mem_coord[GMT_X];	/* Short-hands only */
 	yy = GMT->hidden.mem_coord[GMT_Y];
 
 	(void) GMT_map_outside (GMT, lon[0], lat[0]);
-	j = gmt_move_to_wesn (GMT, xx, yy, lon[0], lat[0], 0.0, 0.0, 0, 0);	/* May add 2 points */
+	j = gmt_move_to_wesn (GMT, xx, yy, lon[0], lat[0], 0.0, 0.0, 0, 0);	/* Add one point */
 
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (GMT, lon[i], lat[i]);
 		nx = gmt_map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 		for (k = 0; k < nx; k++) {
 			GMT_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
-			xx[j] = xc[k];
+			xx[j]   = xc[k];
 			yy[j++] = yc[k];
 			(*total_nx) ++;
 		}
