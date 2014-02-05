@@ -30,6 +30,9 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-02-03	pwessel
+	* pslib.c:		Auto-widen paragraph width to at least fit widest word.
+
 2014-01-26	pwessel
 	* gmt_grdio.c:		Building the grid command string could exceed its length if
 				the argument became exactly the max length of the array; then

@@ -521,7 +521,7 @@ void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 	GMT_Message (API, GMT_TIME_NONE, "\t     for a region in these multiples [none].  Use +R to extend region by increments instead [0].\n");
 	if (plot == 1) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +g<fill> to fill [none].\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified unless -M is in effect to plot or get data.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified to plot; if -M is in effect we just get the data.\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   If modifier +r or +R is given and no -J or -M is set we just print the -Rstring.\n");
 	}
 }

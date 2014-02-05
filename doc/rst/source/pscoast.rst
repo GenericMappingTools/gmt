@@ -167,10 +167,11 @@ Optional Arguments
 **-M**
     Dumps a single multisegment ASCII (or binary, see
     **-bo**) file to standard output. No plotting
-    occurs. Specify any combination of **-F**, **-W**, **-I**, **-N**.
+    occurs. Specify one of **-F**, **-I**, **-N** or **-W**.
     Note: if **-M** is used with **-F** then **-R** or the **+r** modifier
     to **-F** are not required as we automatically determine the region
     given the selected geographic entities.
+
 **-N**\ *border*\ [/*pen*]
     Draw political boundaries. Specify the type of boundary and
     [optionally] append pen attributes [Default pen: width = default,
