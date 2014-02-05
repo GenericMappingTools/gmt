@@ -180,10 +180,9 @@ Optional Arguments
 **-T**
     Specify the shape of the textbox when using **-G** and/or **-W**.
     Choose lower case **o** to get a straight rectangle [Default].
-    Choose upper case **O** to get a rounded rectangle. Choose lower
-    case **c** to get a concave rectangle (only in paragraph mode).
-    Choose upper case **C** to get a convex rectangle (only in paragraph
-    mode). 
+    Choose upper case **O** to get a rounded rectangle. In paragraph
+    mode (**-M**) you can also choose lower case **c** to get a concave
+    rectangle or upper case **C** to get a convex rectangle. 
 
 .. include:: explain_-U.rst_
 
@@ -269,6 +268,8 @@ Limitations
 In paragraph mode, the presence of composite characters and other escape
 sequences may lead to unfortunate word splitting. Also, if a font is
 requested with an outline pen it will not be used in paragraph mode.
+Note if any single word is wider than your chosen paragraph width then
+the paragraph width is automatically enlarged to fit the widest word.
 
 The **-N** option does not adjust the BoundingBox information so you may
 have to post-process the PostScript output with ps2raster to obtain a

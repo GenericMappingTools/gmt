@@ -2603,6 +2603,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 
 	PSL_comment (PSL, "Define array of word widths:\n");
 	PSL_command (PSL, "/PSL_width %d array def\n", n_items);
+	PSL_command (PSL, "/PSL_max_word_width 0 def\n");
 	PSL_command (PSL, "0 1 PSL_n1 {");
 	PSL_command (PSL, (PSL->internal.comments) ? "\t%% Determine word width given the font and fontsize for each word\n" : "\n");
 	PSL_command (PSL, "  /i edef");
@@ -2611,7 +2612,11 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	PSL_command (PSL, (PSL->internal.comments) ? "\t%% Get and set font and size\n" : "\n");
 	PSL_command (PSL, "  PSL_width i PSL_word i get stringwidth pop put");
 	PSL_command (PSL, (PSL->internal.comments) ? "\t%% Calculate and store width\n": "\n");
+	PSL_command (PSL, "  PSL_width i get PSL_max_word_width gt { /PSL_max_word_width PSL_width i get def} if");
+	PSL_command (PSL, (PSL->internal.comments) ? "\t%% Keep track of widest word\n": "\n");
 	PSL_command (PSL, "} for\n");
+	PSL_command (PSL, "PSL_max_word_width PSL_parwidth gt { /PSL_parwidth PSL_max_word_width def } if");
+	PSL_command (PSL, (PSL->internal.comments) ? "\t%% Auto-widen paragraph width if widest word exceeds it\n": "\n");
 
 	PSL_comment (PSL, "Define array of word char counts:\n");
 	PSL_command (PSL, "/PSL_count %d array def\n", n_items);

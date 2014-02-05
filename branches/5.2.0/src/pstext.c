@@ -326,8 +326,8 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set shape of textbox when using -G and/or -W.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add o for rectangle [Default], O for rectangle with rounded corners,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c for concave rectangle, C for convex rectangle.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add o for rectangle [Default] or O for rectangle with rounded corners,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   When -M is used you can also set c for concave and C for convex rectangle.\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].");
 	GMT_Option (API, "X");

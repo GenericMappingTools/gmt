@@ -1629,14 +1629,14 @@ void gmt_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, 
 	if (nc) GMT_free (GMT, xings);
 }
 
-void gmt_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int xz_or_yz)
+void gmt_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int plane)
 {
 	unsigned int k, i, nz, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double dz, zz, min, max, *z = NULL;
-	char *plane[2] = {"x-z", "y-z"};
+	char *plane_name[2] = {"y-z", "x-z"};
 
-	min = (xz_or_yz == GMT_X) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[YLO];
-	max = (xz_or_yz == GMT_X) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
+	min = (plane == GMT_Y) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[YLO];
+	max = (plane == GMT_Y) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
 
 	for (k = 0; k < 2; k++) {
 		if (GMT->current.setting.map_grid_cross_size[k] > 0.0) continue;
@@ -1645,7 +1645,7 @@ void gmt_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, d
 
 		if (!GMT->current.map.frame.axis[GMT_Z].item[item[k]].active || fabs(dz) == 0.0) continue;
 
-		PSL_comment (PSL, "%s gridlines %s\n", plane[xz_or_yz], k ? "(secondary)" : "(primary)");
+		PSL_comment (PSL, "%s gridlines %s\n", plane_name[plane], k ? "(secondary)" : "(primary)");
 
 		GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[k]);
 
@@ -2253,12 +2253,11 @@ void GMT_map_basemap (struct GMT_CTRL *GMT)
 
 void gmt_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int quadrant, double *nesw, bool back)
 {
-	GMT_plane_perspective (GMT, (quadrant + 1) % 2, nesw[quadrant % 4]);
+	int plane = (quadrant + 1) % 2;
+	GMT_plane_perspective (GMT, plane, nesw[quadrant % 4]);
 	PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
-	if (back) {
-		gmt_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], 0);
-		gmt_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], 1);
-	}
+	if (back)
+		gmt_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane);
 }
 
 void GMT_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode)
