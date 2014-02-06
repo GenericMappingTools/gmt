@@ -1490,30 +1490,28 @@ uint64_t gmt_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 {
 	uint64_t i, j = 0, nx, k;
 	unsigned int sides[4];
-	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
+	double xlon[4], xlat[4], xc[4], yc[4];
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
 	if (n == 0) return (0);
 
 	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
-	xx = GMT->hidden.mem_coord[GMT_X];	/* Short-hands only */
-	yy = GMT->hidden.mem_coord[GMT_Y];
 
 	(void) GMT_map_outside (GMT, lon[0], lat[0]);
-	j = gmt_move_to_wesn (GMT, xx, yy, lon[0], lat[0], 0.0, 0.0, 0, 0);	/* Add one point */
+	j = gmt_move_to_wesn (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], lon[0], lat[0], 0.0, 0.0, 0, 0);	/* Add one point */
 
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (GMT, lon[i], lat[i]);
 		nx = gmt_map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 		for (k = 0; k < nx; k++) {
 			GMT_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
-			xx[j]   = xc[k];
-			yy[j++] = yc[k];
+			GMT->hidden.mem_coord[GMT_X][j]   = xc[k];
+			GMT->hidden.mem_coord[GMT_Y][j++] = yc[k];
 			(*total_nx) ++;
 		}
 		GMT_prep_tmp_arrays (GMT, j+2, 2);	/* Init or reallocate tmp vectors */
-		j += gmt_move_to_wesn (GMT, xx, yy, lon[i], lat[i], lon[i-1], lat[i-1], j, nx);	/* May add 2 points, which explains the j+2 stuff */
+		j += gmt_move_to_wesn (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], lon[i], lat[i], lon[i-1], lat[i-1], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
 	*x = GMT_assign_vector (GMT, j, GMT_X);
