@@ -507,6 +507,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		left = wesn[XLO];
 		bottom = wesn[YLO];
 	}
+	GMT_Report (API, GMT_MSG_DEBUG, "Allocate Grid container for Mercator data\n");
 	if ((Merc = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 		GMT_GRID_PIXEL_REG, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
@@ -641,6 +642,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Undo the implicit spherical Mercator -Jm1i projection.\n");
 	/* Preparing source and destination for GMT_grdproject */
 	/* a. Register the Mercator grid to be the source read by GMT_grdproject by passing a pointer */
+	GMT_Report (API, GMT_MSG_DEBUG, "Register Mercator Grid container as grdproject input\n");
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Merc)) == GMT_NOTSET) {
 		Return (API->error);
 	}
@@ -649,6 +651,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	}
 	/* b. If -E: Register a grid struct Geo to be the destination allocated and written to by GMT_grdproject, else write to -G<file> */
 	if (Ctrl->E.active) {	/* Since we will resample again, register a memory location for the result */
+		GMT_Report (API, GMT_MSG_DEBUG, "Register memory Grid container as grdproject output\n");
 		if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
 			Return (API->error);
 		}
@@ -670,6 +673,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		/* Preparing source and destination for GMT_grdsample */
 		/* a. Register the Geographic grid returned by GMT_grdproject to be the source read by GMT_grdsample by passing a pointer */
 		struct GMT_GRID *Geo = NULL;
+		GMT_Report (API, GMT_MSG_DEBUG, "Retrieve Geo Grid container as grdproject output\n");
 		if ((Geo = GMT_Retrieve_Data (API, out_ID)) == NULL) {
 			Return (API->error);
 		}
@@ -677,6 +681,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		strncpy (Geo->header->z_units, z_units, GMT_GRID_UNIT_LEN80);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
+		GMT_Report (API, GMT_MSG_DEBUG, "Register Geo Grid container as grdsample input\n");
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Geo)) == GMT_NOTSET) {
 			Return (API->error);
 		}
