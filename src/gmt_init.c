@@ -6899,7 +6899,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 		t = s;
 		phase = strtod (t, &s);
 	}
-	if (val == 0.0 && t == s) {
+	if (val == 0.0 && t[0] && t == s) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Bad interval in -B option (%c-component, %c-info): %s gave interval = 0\n", axis, flag, in);
 		return (3);
 	}
