@@ -866,6 +866,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 			cont[c].type = (P->range[i].annot && !Ctrl->A.mode) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = Ctrl->T.active;
+			GMT_Report (API, GMT_MSG_DEBUG, "Contour slice %d: Value = %g type = %c angle = %g\n", c, cont[c].val, cont[c].type, cont[c].angle);
 			c++;
 		}
 		cont[c].val = P->range[P->n_colors-1].z_high;
@@ -877,6 +878,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 			cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
 		cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		cont[c].do_tick = Ctrl->T.active;
+		GMT_Report (API, GMT_MSG_DEBUG, "Contour slice %d: Value = %g type = %c angle = %g\n", c, cont[c].val, cont[c].type, cont[c].angle);
 		n_contours = c + 1;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
