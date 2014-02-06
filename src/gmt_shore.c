@@ -242,13 +242,17 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 
 	if (GMT->session.GSHHGDIR) {
 		sprintf (path, "%s/%s%s", GMT->session.GSHHGDIR, stem, GSHHG_EXT);
-		if ( access (path, R_OK) == 0 && gshhg_require_min_version (path, version) )
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. GSHHG: GSHHGDIR set, trying %s\n", path);
+		if ( access (path, R_OK) == 0 && gshhg_require_min_version (path, version) ) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. GSHHG: OK, could access %s\n", path);
 			return (path);
+		}
 		else {
 			/* remove reference to invalid GMT->session.GSHHGDIR but don't free
 			 * the pointer. this is no leak because the reference still exists
 			 * in the previous copy of the current GMT_CTRL struct. */
 			GMT->session.GSHHGDIR = NULL;
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. GSHHG: Failure, could not access %s\n", path);
 		}
 	}
 
@@ -258,34 +262,45 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 
 		/* We get here if coastline.conf exists - search among its directories for the named file */
 
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: coastline.conf found at %s\n", path);
 		fp = fopen (path, "r");
 		while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
 			if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 			GMT_chop (dir);		/* Chop off LF or CR/LF */
 			sprintf (path, "%s/%s%s", dir, stem, GSHHG_EXT);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Trying %s\n", path);
 			if ( gshhg_require_min_version (path, version) ) {
 				fclose (fp);
 				/* update invalid GMT->session.GSHHGDIR */
 				if (GMT->session.GSHHGDIR) free ((void *)GMT->session.GSHHGDIR);
 				GMT->session.GSHHGDIR = strdup (dir);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: OK, could access %s\n", path);
 				return (path);
 			}
+			else
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Failure, could not access %s\n", path);
 		}
 		fclose (fp);
 	}
 
 	/* 3. Then check for the named file itself */
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Trying via sharepath\n");
 	if (GMT_getsharepath (GMT, "coast", stem, GSHHG_EXT, path, R_OK)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Trying %s\n", path);
 		if ( gshhg_require_min_version (path, version) ) {
 			/* update invalid GMT->session.GSHHGDIR */
 			sprintf (dir, "%s/%s", GMT->session.SHAREDIR, "coast");
 			if (GMT->session.GSHHGDIR) free ((void *)GMT->session.GSHHGDIR);
 			GMT->session.GSHHGDIR = strdup (dir);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: OK, could access %s\n", path);
 			return (path);
 		}
+		else
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Failure, could not access %s\n", path);
 	}
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Failure, could not access any GSHHG files\n");
 	if (warn_once) {
 		warn_once = false;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHG version %d.%d.%d or newer is "
