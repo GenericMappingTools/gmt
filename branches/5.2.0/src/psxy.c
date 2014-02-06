@@ -48,10 +48,10 @@ struct PSXY_CTRL {
 		bool active;
 		double dx, dy;
 	} D;
-	struct E {	/* -E[x|X][y|Y][cap][/[+|-]<pen>] */
+	struct E {	/* -E[x[+]|X][y[+]|Y][cap][/[+|-]<pen>] */
 		bool active;
-		unsigned int xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
-		unsigned int mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
+		unsigned int xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = asumemtrical error bar, 3 = box-whisker, 4 = notched box-whisker */
+		unsigned int mode;		/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
 		double size;
 		struct GMT_PEN pen;
 	} E;
@@ -83,7 +83,8 @@ struct PSXY_CTRL {
 	} W;
 };
 
-#define CAP_WIDTH		7.0	/* Error bar cap width */
+#define EBAR_CAP_WIDTH		7.0	/* Error bar cap width */
+#define EBAR_NONE		0
 #define EBAR_NORMAL		1
 #define EBAR_ASYMMETRICAL	2
 #define EBAR_WHISKER		3
@@ -98,7 +99,7 @@ void *New_psxy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new co
 
 	C->E.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
-	C->E.size = CAP_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
+	C->E.size = EBAR_CAP_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	return (C);
 }
 
@@ -109,13 +110,14 @@ void Free_psxy_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallocate 
 	GMT_free (GMT, C);
 }
 
-void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_x, double error_width2, int line) {
+void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_x[], double error_width2, int line, int kind) {
 	double x_1, x_2, y_1, y_2;
 	bool tip1, tip2;
+	unsigned int first = 0, second = (kind == EBAR_ASYMMETRICAL) ? 1 : 0;	/* first and second are either both 0 or second is 1 for asymmetrical bars */
 
 	tip1 = tip2 = (error_width2 > 0.0);
-	GMT_geo_to_xy (GMT, x - delta_x, y, &x_1, &y_1);
-	GMT_geo_to_xy (GMT, x + delta_x, y, &x_2, &y_2);
+	GMT_geo_to_xy (GMT, x - fabs (delta_x[first]),  y, &x_1, &y_1);
+	GMT_geo_to_xy (GMT, x + fabs (delta_x[second]), y, &x_2, &y_2);
 	if (GMT_is_dnan (x_1)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X error bar exceeded domain near line %d. Set to x_min\n", line);
 		x_1 = GMT->current.proj.rect[XLO];
@@ -131,13 +133,14 @@ void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, doub
 	if (tip2) PSL_plotsegment (PSL, x_2, y_2 - error_width2, x_2, y_2 + error_width2);
 }
 
-void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_y, double error_width2, int line) {
+void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_y[], double error_width2, int line, int kind) {
 	double x_1, x_2, y_1, y_2;
 	bool tip1, tip2;
+	unsigned int first = 0, second = (kind == EBAR_ASYMMETRICAL) ? 1 : 0;	/* first and second are either both 0 or second is 1 for asymmetrical bars */
 
 	tip1 = tip2 = (error_width2 > 0.0);
-	GMT_geo_to_xy (GMT, x, y - delta_y, &x_1, &y_1);
-	GMT_geo_to_xy (GMT, x, y + delta_y, &x_2, &y_2);
+	GMT_geo_to_xy (GMT, x, y - fabs (delta_y[first]),  &x_1, &y_1);
+	GMT_geo_to_xy (GMT, x, y + fabs (delta_y[second]), &x_2, &y_2);
 	if (GMT_is_dnan (y_1)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y error bar exceeded domain near line %d. Set to y_min\n", line);
 		y_1 = GMT->current.proj.rect[YLO];
@@ -246,7 +249,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxy [<table>] %s %s [-A[m|p]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][n][cap][/[+|-]<pen>]] [-G<fill>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x[+]|y[+]|X|Y][n][cap][/[+|-]<pen>]] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I<intens>] [-K] [-L] [-N] [-O] [-P] [-S[<symbol>][<size>|+s<scale>[unit][/<origin>][l]]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [-W[+|-][<pen>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, \
@@ -266,7 +269,8 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each multiheader.  Then, color is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset symbol or line positions by <dx>/<dy> [no offset].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Draw error bars for x, y, or both.  Add cap-width [%gp].\n", CAP_WIDTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Draw (symmetrical) error bars for x, y, or both.  Add cap-width [%gp].\n", EBAR_CAP_WIDTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t   If + is appended after x|y then we expect asymmetrical errors (two columns) [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append pen attributes. A leading + applies cpt color (-C) to symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fill and error pen; - applies it to pen only.  If X or Y is used then\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a box-and-whisker diagram is drawn instead, using data from 4 extra\n");
@@ -415,27 +419,34 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				j = 0;
 				while (opt->arg[j] && opt->arg[j] != '/') {
 					switch (opt->arg[j]) {
-					case 'x':	/* Error bar for x */
-						Ctrl->E.xbar = EBAR_NORMAL; break;
-					case 'X':	/* Box-whisker instead */
-						Ctrl->E.xbar = EBAR_WHISKER;
-						if (opt->arg[j+1] == 'n') {Ctrl->E.xbar = EBAR_NOTCHED_WHISKER; j++;}
-						break;
-					case 'y':	/* Error bar for y */
-						Ctrl->E.ybar = EBAR_NORMAL; break;
-					case 'Y':	/* Box-whisker instead */
-						Ctrl->E.ybar = EBAR_WHISKER;
-						if (opt->arg[j+1] == 'n') {Ctrl->E.ybar = EBAR_NOTCHED_WHISKER; j++;}
-						break;
-					default:	/* Get error 'cap' width */
-						strncpy (txt_a, &opt->arg[j], GMT_LEN256);
-						j0 = 0;
-						while (txt_a[j0] && txt_a[j0] != '/') j0++;
-						txt_a[j0] = 0;
-						Ctrl->E.size = GMT_to_inch (GMT, txt_a);
-						while (opt->arg[j] && opt->arg[j] != '/') j++;
-						j--;
-						break;
+						case 'x':	/* Error bar for x */
+							Ctrl->E.xbar = EBAR_NORMAL;
+							if (opt->arg[j+1] == '+') { Ctrl->E.xbar = EBAR_ASYMMETRICAL; j++;}
+							break;
+						case 'X':	/* Box-whisker instead */
+							Ctrl->E.xbar = EBAR_WHISKER;
+							if (opt->arg[j+1] == 'n') {Ctrl->E.xbar = EBAR_NOTCHED_WHISKER; j++;}
+							break;
+						case 'y':	/* Error bar for y */
+							Ctrl->E.ybar = EBAR_NORMAL;
+							if (opt->arg[j+1] == '+') { Ctrl->E.ybar = EBAR_ASYMMETRICAL; j++;}
+							break;
+						case 'Y':	/* Box-whisker instead */
+							Ctrl->E.ybar = EBAR_WHISKER;
+							if (opt->arg[j+1] == 'n') {Ctrl->E.ybar = EBAR_NOTCHED_WHISKER; j++;}
+							break;
+						case '+':	/* Only allowed for -E+ as shorthand for -Ex+y+ */
+							if (j == 0) Ctrl->E.xbar = Ctrl->E.ybar = EBAR_ASYMMETRICAL;
+							break;
+						default:	/* Get error 'cap' width */
+							strncpy (txt_a, &opt->arg[j], GMT_LEN256);
+							j0 = 0;
+							while (txt_a[j0] && txt_a[j0] != '/') j0++;
+							txt_a[j0] = 0;
+							Ctrl->E.size = GMT_to_inch (GMT, txt_a);
+							while (opt->arg[j] && opt->arg[j] != '/') j++;
+							j--;
+							break;
 					}
 					j++;
 				}
@@ -448,6 +459,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 						n_errors++;
 					}
 				}
+				GMT_Report (API, GMT_MSG_DEBUG, "Settings for -E: x = %d y = %d\n", Ctrl->E.xbar, Ctrl->E.ybar);
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
@@ -517,7 +529,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	unsigned int set_type, n_needed, n_cols_start = 2, justify, tbl;
 	unsigned int i, n_total_read = 0, j, geometry, read_mode;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
-	unsigned int xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
+	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR;
 
 	char *text_rec = NULL, s_args[GMT_BUFSIZ] = {""};
@@ -573,36 +585,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	not_line = (S.symbol != GMT_SYMBOL_FRONT && S.symbol != GMT_SYMBOL_QUOTED_LINE && S.symbol != GMT_SYMBOL_LINE);
 
 	if (Ctrl->E.active) {	/* Set error bar parameters */
-		j = 2;	/* Normally, error bar related columns start in position 2 */
-		if (Ctrl->E.xbar == EBAR_NORMAL) {
-			xy_errors[GMT_X] = j++;
-			error_type[GMT_X] = 0;
-		}
-		else if (Ctrl->E.xbar == EBAR_WHISKER) {	/* Box-whisker instead */
-			xy_errors[GMT_X] = j++;
-			error_type[GMT_X] = 1;
-		}
-		else if (Ctrl->E.xbar == EBAR_NOTCHED_WHISKER) {	/* Notched Box-whisker instead */
-			xy_errors[GMT_X] = j++;
-			error_type[GMT_X] = 2;
-		}
-		if (Ctrl->E.ybar == EBAR_NORMAL) {
-			xy_errors[GMT_Y] = j++;
-			error_type[GMT_Y] = 0;
-		}
-		else if (Ctrl->E.ybar == EBAR_WHISKER) {	/* Box-whisker instead */
-			xy_errors[GMT_Y] = j++;
-			error_type[GMT_Y] = 1;
-		}
-		else if (Ctrl->E.ybar == EBAR_NOTCHED_WHISKER) {	/* Notched Box-whisker instead */
-			xy_errors[GMT_Y] = j++;
-			error_type[GMT_Y] = 2;
-		}
+		j = 2;	/* Normally, error bar related columns start in column 2 */
+		if (Ctrl->E.xbar != EBAR_NONE) { xy_errors[GMT_X] = j;	j += error_cols[Ctrl->E.xbar]; error_type[GMT_X] = Ctrl->E.xbar;}
+		if (Ctrl->E.ybar != EBAR_NONE) { xy_errors[GMT_Y] = j;	j += error_cols[Ctrl->E.ybar]; error_type[GMT_Y] = Ctrl->E.ybar;}
 		if (!(xy_errors[GMT_X] || xy_errors[GMT_Y])) {	/* Default is plain error bars for both */
 			def_err_xy = true;
 			xy_errors[GMT_X] = 2;	/* Assumes xy input, later check for -: */
 			xy_errors[GMT_Y] = 3;
-			error_type[GMT_X] = error_type[GMT_Y] = 1;
+			error_type[GMT_X] = error_type[GMT_Y] = EBAR_NORMAL;
 		}
 	}
 
@@ -650,8 +640,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	if (Ctrl->E.active) {
 		if (S.read_size) GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_DIMENSION;	/* Must read symbol size from data record */
-		if (xy_errors[GMT_X] && xy_errors[GMT_Y] && error_type[GMT_X] >= 1) xy_errors[GMT_Y] += error_cols[error_type[GMT_X]] - 1;	/* Need 3 or 4 columns for whisker bars */
-		if (def_err_xy && GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* -E should be -Eyx */
+		if (def_err_xy && GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* With -:, -E should become -Eyx */
 			uint_swap (xy_errors[GMT_X], xy_errors[GMT_Y]);
 			uint_swap (error_type[GMT_X], error_type[GMT_Y]);
 		}
@@ -666,6 +655,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	n_needed = n_cols_start + S.n_required;
 	error += GMT_check_binary_io (GMT, n_needed);
+	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
@@ -850,14 +840,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				if (Ctrl->E.mode & 1) GMT_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 				GMT_setpen (GMT, &Ctrl->E.pen);
 				if (error_x) {
-					if (error_type[GMT_X] == 0)
-						plot_x_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], in[xy_errors[GMT_X]], Ctrl->E.size, n_total_read);
+					if (error_type[GMT_X] < EBAR_WHISKER)
+						plot_x_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.size, n_total_read, error_type[GMT_X]);
 					else
 						plot_x_whiskerbar (GMT, PSL, plot_x, in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.size, current_fill.rgb, n_total_read, error_type[GMT_X]);
 				}
 				if (error_y) {
-					if (error_type[GMT_Y] == 0)
-						plot_y_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], in[xy_errors[GMT_Y]], Ctrl->E.size, n_total_read);
+					if (error_type[GMT_Y] < EBAR_WHISKER)
+						plot_y_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_Y]], Ctrl->E.size, n_total_read, error_type[GMT_Y]);
 					else
 						plot_y_whiskerbar (GMT, PSL, in[GMT_X], plot_y, &in[xy_errors[GMT_Y]], Ctrl->E.size, current_fill.rgb, n_total_read, error_type[GMT_Y]);
 				}
@@ -887,7 +877,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			}
 			if (S.read_size) S.size_x = in[ex1];	/* Got size from input column */
 			dim[0] = S.size_x;
-			//if (S.convert_size) dim[0] = ((S.convert_size == 2) ? log10 (dim[0]) : dim[0]) * S.scale - S.origin;
 
 			switch (S.symbol) {
 				case GMT_SYMBOL_NONE:

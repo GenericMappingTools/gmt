@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-02-06	pwessel
+	* psxy.c:		New modifier -Ex[+]y[+] to do asymmetrical error bars.
+
 2014-02-03	pwessel
 	* gmtconvert.c:		New option -C to limit output to segments whose record count
 				matches our criteria.
