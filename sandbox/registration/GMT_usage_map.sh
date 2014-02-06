@@ -44,15 +44,13 @@
 # then acts on these records as described above.
 # Note: This script uses the GMT4 registration dir since that part is in GMT 4 subversion
 
-GMT4=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT4
 HDF5_DISABLE_VERSION_CHECK=2
 
 if [ "X$GMTHOME" = "X" ]; then	# Running crontab and environment is not set
-	. /sw/bin/init.sh
-	GS_LIB=/sw/share/ghostscript/9.05/lib
-	GMTHOME4=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt4
-	GMTHOME5=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5
-	PATH=$GMTHOME5/trunk/build/gmt5/bin:/usr/local/bin:$PATH
+	GS_LIB=/opt/local/share/ghostscript/9.10/lib
+	GMTHOME4=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt4-dev
+	GMTHOME5=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5-dev
+	PATH=$GMTHOME5/trunk/build/gmt5/bin:/usr/local/bin:/opt/local/bin:$PATH
 	export PATH
 	export GS_LIB
 fi
