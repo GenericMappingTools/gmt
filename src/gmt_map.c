@@ -1524,8 +1524,8 @@ uint64_t gmt_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 	fp = fopen ("crap.d", "a");
 	fprintf (fp, "> N = %d\n", (int)j);
 	for (i = 0; i < j; i++) {
-		out[GMT_X] = xx[i];
-		out[GMT_Y] = yy[i];
+		out[GMT_X] = *x[i];
+		out[GMT_Y] = *y[i];
 		GMT->current.io.output (GMT, fp, 2, out);
 	}
 	fclose (fp);
