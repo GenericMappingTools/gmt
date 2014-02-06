@@ -18,7 +18,7 @@ Synopsis
 [ **-A**\ [**m**\ \|\ **p**] ] 
 [ |SYN_OPT-B| ]
 [ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
-[ **-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ] 
+[ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ] 
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N** ] 
 [ **-O** ] [ **-P** ] 
@@ -96,10 +96,12 @@ Optional Arguments
     Offset the plot symbol or line locations by the given amounts *dx/dy*
     [Default is no offset]. If *dy* is not given it is set equal to *dx*.
 
-**-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*]
-    Draw error bars. Append **x** and/or **y** to indicate which bars you
+**-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*]
+    Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
     want to draw (Default is both x and y). The x and/or y errors must be
-    stored in the columns after the (x,y) pair [or (x,y,size) triplet]. The
+    stored in the columns after the (x,y) pair [or (x,y,size) triplet]. If
+    a **+** is appended after **x** and/or **y** then we will draw asymmetrical
+    error bar; these requires two rather than one extra data column.  The
     *cap* parameter indicates the length of the end-cap on the error bars
     [7\ **p**]. Pen attributes for error bars may also be set [Defaults: width
     = default, color = black, style = solid]. A leading **+** will use the
