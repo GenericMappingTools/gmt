@@ -5938,6 +5938,7 @@ void GMT_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64
 	S->max   = GMT_memory (GMT, NULL, n_columns, double);
 
 	if (n_rows > GMT_INITIAL_MEM_ROW_ALLOC) {	/* Large segment, just pass allocated pointers and start over with new tmp vectors later */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_assign_segment: Pass %" PRIu64 " large arrays with length = %" PRIu64 " off and get new tmp arrays\n", n_columns, n_rows);
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
 			if (n_rows < GMT->hidden.mem_rows) GMT->hidden.mem_coord[col] = GMT_memory (GMT, GMT->hidden.mem_coord[col], n_rows, double);	/* Trim back */
 			S->coord[col] = GMT->hidden.mem_coord[col];	/* Pass the pointer */
