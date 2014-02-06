@@ -1186,33 +1186,29 @@ uint64_t gmt_move_to_rect (struct GMT_CTRL *GMT, double *x_edge, double *y_edge,
 uint64_t gmt_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double **x, double **y, uint64_t *total_nx)
 {
 	uint64_t i, j = 0;
-	unsigned int nx, k;
-	unsigned int sides[4];
-	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
+	unsigned int nx, k, sides[4];
+	double xlon[4], xlat[4], xc[4], yc[4];
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
 	if (n == 0) return (0);
 
-	GMT_prep_tmp_arrays (GMT, 0, 2);	/* Init or reallocate tmp vectors */
-	xx = GMT->hidden.mem_coord[GMT_X];	/* Short-hands only */
-	yy = GMT->hidden.mem_coord[GMT_Y];
+	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
 	(void) GMT_map_outside (GMT, lon[0], lat[0]);
-	GMT_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
-	j += gmt_move_to_rect (GMT, xx, yy, j, 0);
-
+	GMT_geo_to_xy (GMT, lon[0], lat[0], &GMT->hidden.mem_coord[GMT_X][0], &GMT->hidden.mem_coord[GMT_Y][0]);
+	j += gmt_move_to_rect (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], 0, 0);
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (GMT, lon[i], lat[i]);
 		nx = gmt_map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 		for (k = 0; k < nx; k++) {
 			GMT_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
-			xx[j] = xc[k];
-			yy[j++] = yc[k];
+			GMT->hidden.mem_coord[GMT_X][j] = xc[k];
+			GMT->hidden.mem_coord[GMT_Y][j++] = yc[k];
 			(*total_nx) ++;
 		}
-		GMT_geo_to_xy (GMT, lon[i], lat[i], &xx[j], &yy[j]);
-		GMT_prep_tmp_arrays (GMT, j+2, 2);		/* Init or reallocate tmp vectors */
-		j += gmt_move_to_rect (GMT, xx, yy, j, nx);	/* May add 2 points, which explains the j+2 stuff */
+		GMT_geo_to_xy (GMT, lon[i], lat[i], &GMT->hidden.mem_coord[GMT_X][j], &GMT->hidden.mem_coord[GMT_Y][j]);
+		GMT_prep_tmp_arrays (GMT, j+2, 2);	/* Init or reallocate tmp vectors */
+		j += gmt_move_to_rect (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
 	*x = GMT_assign_vector (GMT, j, GMT_X);
@@ -1526,8 +1522,8 @@ uint64_t gmt_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 	fp = fopen ("crap.d", "a");
 	fprintf (fp, "> N = %d\n", (int)j);
 	for (i = 0; i < j; i++) {
-		out[GMT_X] = xx[i];
-		out[GMT_Y] = yy[i];
+		out[GMT_X] = *x[i];
+		out[GMT_Y] = *y[i];
 		GMT->current.io.output (GMT, fp, 2, out);
 	}
 	fclose (fp);
