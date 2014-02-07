@@ -154,6 +154,8 @@ message(
 	"*  FFTW include dir           : ${FFTW3_INCLUDE_DIR}\n"
 	"*  Accelerate Framework       : ${ACCELERATE_FRAMEWORK}\n"
 	"*  Regex support              : ${GMT_CONFIG_REGEX_MESSAGE}\n"
+	"*  ZLIB library               : ${ZLIB_LIBRARY}\n"
+	"*  ZLIB include dir           : ${ZLIB_INCLUDE_DIR}\n"
 	"*  File locking               : ${FLOCK}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
