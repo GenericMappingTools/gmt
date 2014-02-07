@@ -78,6 +78,11 @@ if (_GSHHG_FILE AND NOT GSHHG_FOUND)
 	endif (_COMPILED_GSHHG_VERSION)
 endif (_GSHHG_FILE AND NOT GSHHG_FOUND)
 
+if (GSHHG_EXT STREQUAL "")
+	message(FATAL_ERROR "unexpected: the string literal 'GSHHG_EXT' is empty - reset to .nc")
+	set (GSHHG_EXT ${GSHHG_EXT} CACHE INTERNAL ".nc")
+endif()
+
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (GSHHG DEFAULT_MSG
 	GSHHG_PATH GSHHG_VERSION GSHHG_EXT)
