@@ -1521,7 +1521,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				if (Ctrl->W.URL) fprintf (fpw, "%s/", Ctrl->W.URL);
 				if (Ctrl->D.active) {		/* Do not write the directory name */
 					char *p;
-					p = strstr(out_file, "/");
+					p = strrchr (out_file, '/');
 					(p == NULL) ? fprintf (fpw, "%s</href>\n", out_file) : fprintf (fpw, "%s</href>\n", ++p);
 				}
 				else
