@@ -51,8 +51,8 @@ echo ${lon} $lat | gmt psxy -R -J -O -K -Sx0.1 -W1p >> $ps
 # Draw filter boundary
 gmt grdcontour r.nc -J -O -K -C1 -L$lo/$hi -W1p -R0/360/$range >> $ps
 # Repeat plots in rectangular gmt projection
-gmt grdimage t.nc -JQ180/7i -B30g10 -BWsNe+t"$D km Gaussian at ($lon, $lat)" -Ct.cpt -O -K -Y7.8i -R0/360/$range --FONT_TITLE=18p >> $ps
+gmt grdimage t.nc -JQ0/7i -B30g10 -BWsNe+t"$D km Gaussian at ($lon, $lat)" -Ct.cpt -O -K -Y7.8i -R-180/180/$range --FONT_TITLE=18p >> $ps
 echo ${lon} $lat | gmt psxy -R -J -O -K -Sx0.1 -W1p >> $ps
-gmt grdcontour  -R0/360/$range r.nc -J -O -K -C1 -L$lo/$hi -W1p >> $ps
+gmt grdcontour -R r.nc -J -O -K -C1 -L$lo/$hi -W1p >> $ps
 gmt psscale -Ct.cpt -D3.5i/-0.15i/6i/0.05ih -O -K -Bx$t -By+l"${mode} [$n_conv]" >> $ps
 gmt psxy -R -J -O -T >> $ps
