@@ -20,7 +20,7 @@ Synopsis
 [ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
 [ **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t** ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**+g**][\ **+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*] ]
+[ **-W**\ [**+g**][**+k**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*] ]
 
 |No-spaces|
 
@@ -146,7 +146,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**\ [**+g**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*]
+**-W**\ [**+g**][**+k**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*]
     Write a ESRI type world file suitable to make (e.g) .tif files be
     recognized as geotiff by softwares that know how to do it. Be aware,
     however, that different results are obtained depending on the image
@@ -208,10 +208,8 @@ Optional Arguments
     **ps2raster** requires by manually editing a line into the
     PostScript file, prefixed with %%PROJ.
 
-    For example the command gmt pscoast -JM0/12c -R-10/-4/37/43
-    -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
-
-    adds this comment line
+    For example the command ``gmt pscoast -JM0/12c -R-10/-4/37/43
+    -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps`` adds this comment line
 
     %%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
     4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0

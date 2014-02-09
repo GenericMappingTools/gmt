@@ -494,7 +494,7 @@ struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options,
 		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
 		for (node = 0; node < Grid->header->size; node++) {
 			if (Grid->data[node] > Ctrl->W.water_depth) {
-				Grid->data[node] = Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost;
+				Grid->data[node] = (float)(Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost);
 				n_subaerial++;
 			}
 		}
