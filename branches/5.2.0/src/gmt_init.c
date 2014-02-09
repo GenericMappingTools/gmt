@@ -69,7 +69,7 @@
 
 #define GMT_more_than_once(GMT,active) (GMT_check_condition (GMT, active, "Warning: Option -%c given more than once\n", option))
 
-#define GMT_COMPAT_INFO "Please see " GMT_TRAC_WIKI "Changes for more information.\n"
+#define GMT_COMPAT_INFO "Please see " GMT_TRAC_WIKI "/doc/5.1.0/GMT_Docs.html#new-features-in-gmt-5 for more information.\n"
 
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
 #define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)

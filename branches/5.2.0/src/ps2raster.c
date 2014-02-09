@@ -1519,7 +1519,13 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				fprintf (fpw, "\t\t<Icon>\n");
 				fprintf (fpw, "\t\t\t<href>");
 				if (Ctrl->W.URL) fprintf (fpw, "%s/", Ctrl->W.URL);
-				fprintf (fpw, "%s</href>\n", out_file);
+				if (Ctrl->D.active) {		/* Do not write the directory name */
+					char *p;
+					p = strrchr (out_file, '/');
+					(p == NULL) ? fprintf (fpw, "%s</href>\n", out_file) : fprintf (fpw, "%s</href>\n", ++p);
+				}
+				else
+					fprintf (fpw, "%s</href>\n", out_file);
 				fprintf (fpw, "\t\t</Icon>\n");
 				fprintf (fpw, "\t\t<altitudeMode>%s</altitudeMode>\n", RefLevel[Ctrl->W.mode]);
 				if (Ctrl->W.mode > KML_GROUND_ABS && Ctrl->W.mode < KML_SEAFLOOR_ABS)

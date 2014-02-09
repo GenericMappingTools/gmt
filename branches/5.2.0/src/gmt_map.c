@@ -230,16 +230,27 @@ void gmt_set_polar (struct GMT_CTRL *GMT)
 	}
 }
 
-void gmt_cyl_validate_clon (struct GMT_CTRL *GMT) {
+void gmt_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode) {
 	/* Make sure that for global (360-range) cylindrical projections, the central meridian is neither west nor east.
-	 * If so then we reset it to the middle value */
+	 * If so then we reset it to the middle value or we change -R:
+	 * mode == 0: <clon> should be reset based on w/e mid-point
+	 * mode == 1: -J<clon> is firm so w/e is centered on <c.lon>
+	 */
 	if (GMT_is_dnan (GMT->current.proj.pars[0]))
 		GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Not set at all, set to middle lon */
 	else if (GMT->current.map.is_world && (GMT->current.proj.pars[0] == GMT->common.R.wesn[XLO] || GMT->current.proj.pars[0] == GMT->common.R.wesn[XHI])) {
 		/* Reset central meridian since cannot be 360 away from one of the boundaries since that gives xmin == xmax below */
-		double new_lon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Central meridian for global cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
-		GMT->current.proj.pars[0] = new_lon;
+		if (mode == 1) {	/* Change -R to fit central meridian */
+			double w = GMT->current.proj.pars[0] - 180.0, e = GMT->current.proj.pars[0] + 180.0;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Region for global cylindrical projection had to be reset from %g/%g to %g/%g\n",
+				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], w, e);
+			GMT->common.R.wesn[XLO] = w;	GMT->common.R.wesn[XHI] = e;
+		}
+		else {	/* Change central meridian to fit -R */
+			double new_lon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Central meridian for global cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
+			GMT->current.proj.pars[0] = new_lon;
+		}
 	}
 }
 
@@ -2846,7 +2857,7 @@ bool gmt_map_init_merc (struct GMT_CTRL *GMT) {
 		GMT_exit (GMT, EXIT_FAILURE); return false;
 	}
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	gmt_cyl_validate_clon (GMT);	/* Make sure the central longitude is valid */
+	gmt_cyl_validate_clon (GMT, 0);	/* Make sure the central longitude is valid */
 	GMT_vmerc (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	GMT->current.proj.j_x *= D;
 	GMT->current.proj.j_ix /= D;
@@ -2897,7 +2908,7 @@ bool gmt_map_init_cyleq (struct GMT_CTRL *GMT) {
 	GMT->current.proj.iDx = 1.0 / GMT->current.proj.Dx;
 	GMT->current.proj.iDy = 1.0 / GMT->current.proj.Dy;
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	gmt_cyl_validate_clon (GMT);	/* Make sure the central longitude is valid */
+	gmt_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
 	GMT_vcyleq (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	GMT_cyleq (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 	GMT_cyleq (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
@@ -2931,7 +2942,7 @@ bool gmt_map_init_cyleqdist (struct GMT_CTRL *GMT) {
 	GMT_set_spherical (GMT, true);	/* Force spherical for now */
 
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	gmt_cyl_validate_clon (GMT);	/* Make sure the central longitude is valid */
+	gmt_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
 	GMT_vcyleqdist (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	GMT_cyleqdist (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 	GMT_cyleqdist (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
@@ -2965,7 +2976,7 @@ bool gmt_map_init_miller (struct GMT_CTRL *GMT) {
 	GMT_set_spherical (GMT, true);	/* Force spherical for now */
 
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	gmt_cyl_validate_clon (GMT);	/* Make sure the central longitude is valid */
+	gmt_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
 	GMT_vmiller (GMT, GMT->current.proj.pars[0]);
 	GMT_miller (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 	GMT_miller (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
@@ -2999,7 +3010,7 @@ bool gmt_map_init_cylstereo (struct GMT_CTRL *GMT) {
 	GMT_set_spherical (GMT, true);	/* Force spherical for now */
 
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	gmt_cyl_validate_clon (GMT);	/* Make sure the central longitude is valid */
+	gmt_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
 	GMT_vcylstereo (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	GMT_cylstereo (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 	GMT_cylstereo (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
