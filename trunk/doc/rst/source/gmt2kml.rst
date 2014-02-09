@@ -233,7 +233,7 @@ limit, try
 
    ::
 
-    gmt gmt2kml mypolygons.txt -Gfyellow+t0.5 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
+    gmt gmt2kml mypolygons.txt -Gfyellow@50 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
 To convert a file with point locations (lon, lat, time) into a KML file
 with green circle symbols that will go active at the specified time and
