@@ -106,7 +106,7 @@ Optional Arguments
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
     specified unless **+r**, **+R**, or **-M** is in effect, and only one **-F** option can be given.
-    To plot multiple countries in different colors, call pscoast multiple times.
+    You may repeat **-F** to give different groups of items separate pen/fill settings.
     If modifiers **+r** or **+R** are used and neither **-J** nor **-M** is set then
     we just print the **-R**\ *wesn* string.
 
@@ -259,6 +259,14 @@ gridded topography is only seen over land, using a Mercator map at scale
     gmt pscoast  -R-30/30/-40/40 -Jm0.1i -B5 -Gc -P -K > africa.ps
     gmt grdimage -Jm0.1i etopo5.nc -Ccolors.cpt -O -K >> africa.ps
     gmt pscoast  -Q -O >> africa.ps
+
+To plot Great Britain, Italy, and France in blue with a red outline and
+Spain, Portugal and Greece in yellow (no outline), and pick up the plot
+domain form the extents of these countries, use
+
+   ::
+
+    gmt pscoast  -JM6i -P -Baf -FGB,IT,FR+gblue+p0.25p,red+r -FES,PT,GR+gyellow > map.ps
 
 **pscoast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
