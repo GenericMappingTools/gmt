@@ -158,8 +158,12 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
+	unsigned int k;
 	if (!C) return;
-	if (C->F.active && C->F.info.codes) free ((void *)C->F.info.codes);
+	if (C->F.active && C->F.info.n_items) {
+		for (k = 0; k < C->F.info.n_items; k++)
+			free ((void *)C->F.info.item[k].codes);
+	}
 	GMT_free (GMT, C);
 }
 
@@ -305,7 +309,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				Ctrl->D.set = (opt->arg[0]) ? opt->arg[0] : 'l';
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
-			case 'F':
+			case 'F':	/* Select DCW items; repeatable */
 				Ctrl->F.active = true;
 				n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->F.info);
 				break;

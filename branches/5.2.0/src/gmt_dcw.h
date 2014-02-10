@@ -36,15 +36,21 @@ enum GMT_DCW_modes {
 	GMT_DCW_EXTRACT	= 8
 };
 
+struct GMT_DCW_CHUNK {	/* One set of codes with their color/fill */
+	char *codes;		/* Comma separated list of codes with modifiers */
+	unsigned int mode;	/* 4 = outline, 8 = fill */
+	struct GMT_PEN pen;	/* Pen for outline [no outline] */
+	struct GMT_FILL fill;	/* Fill for polygons */
+};
+
 struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	bool region;		/* Determine region from polygons instead of -R */
 	bool adjust;		/* Round/adjust the region from polygons using the incs */
 	bool extend;		/* Extend region rather than quantize it */
-	char *codes;		/* Comma separated list of codes with modifiers */
-	unsigned int mode;	/* 0 = get -R, 1 = paint, 2 = dump */
 	double inc[4];		/* Increments for rounded region */
-	struct GMT_PEN pen;	/* Pen for outline [no outline] */
-	struct GMT_FILL fill;	/* Fill for polygons */
+	unsigned int mode;	/* 1 get countries, 2 get countries and states */
+	unsigned int n_items;	/* Number of items (times) -F was given */
+	struct GMT_DCW_CHUNK *item;
 };
 
 EXTERN_MSC unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode);
