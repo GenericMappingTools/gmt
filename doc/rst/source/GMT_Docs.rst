@@ -76,7 +76,7 @@ SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
 Honolulu, HI, Silver Spring, MD, Faro, Portugal, Darmstadt and
-Bremerhaven, Germany, November 2013
+Bremerhaven, Germany, March 2014
 
 
 A Reminder
@@ -156,7 +156,7 @@ such decisions by supporting the GMT project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991--2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
+Copyright ©1991--2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
 Luis and F. Wobbe
 
 The Generic Mapping Tools (GMT) is free software; you can
