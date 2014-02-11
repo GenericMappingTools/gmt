@@ -1572,7 +1572,9 @@ void gmt_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, dou
 
 	len = GMT_get_annot_offset (GMT, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
+	
 	for (i = 0; i < nx; i++) {
+		if (!(GMT->current.setting.map_annot_oblique & 1) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
 
 		if (GMT_prepare_label (GMT, line_angles[i], sides[i], xx[i], yy[i], type, &line_angle, &text_angle, &justify)) continue;
 
