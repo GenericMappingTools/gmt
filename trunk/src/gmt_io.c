@@ -5768,6 +5768,8 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *GMT, uint64_t n_tables
 			T->segment[seg] = GMT_memory (GMT, NULL, 1, struct GMT_TEXTSEGMENT);
 			T->segment[seg]->record = GMT_memory (GMT, NULL, n_rows, char *);
 			T->segment[seg]->n_alloc = n_rows;
+			T->segment[seg]->n_rows = n_rows;
+			
 		}
 	}
 	D->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
