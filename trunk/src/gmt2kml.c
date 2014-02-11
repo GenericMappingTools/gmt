@@ -777,7 +777,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		}
 	}
 
-	kml_print (API, N++, "<Style id=\"st%d\">\n", index);	/* Default style unless -C is used */
+	kml_print (API, N++, "<Style id=\"st%d\">\n", (int) getpid());	/* Default style unless -C is used, use PID to get unique style ID in case of layer-caking -O -K */
 
 	/* Set icon style (applies to symbols only */
 	set_iconstyle (API, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
