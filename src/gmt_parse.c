@@ -120,18 +120,30 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	API = gmt_get_api_ptr (V_API);	/* Convert API to a GMTAPI_CTRL pointer */
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
-		unsigned int pos = 0, new_n_args = 0;
+		unsigned int pos = 0, new_n_args = 0, k, i, o;
+		bool quoted;
 		size_t n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ] = {""}, *txt_in = in;	/* Passed a single text string */
 		new_args = GMT_memory (G, NULL, n_alloc, char *);
-
-		while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words */
+		/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
+		 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
+		 * space, and then replace all ASCII 31 with space at the end (we do the same for tab using ASCII 29 GS (group separator) */
+		for (k = 0, quoted = false; txt_in[k]; k++) {
+			if (txt_in[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+			else if (quoted && txt_in[k] == '\t') txt_in[k] = 29;
+			else if (quoted && txt_in[k] == ' ')  txt_in[k] = 31;
+		}
+		while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words, and strip off double quotes */
+			for (k = 0; p[k]; k++) if (p[k] == 29) p[k] = '\t'; else if (p[k] == 31) p[k] = ' ';	/* Replace spaces and tabs masked above */
+			//for (i = o = 0; p[i]; i++) if (p[i] != '\"') p[o++] = p[i];	/* Ignore double quotes */
+			//p[o] = '\0';
 			new_args[new_n_args++] = strdup (p);
 			if (new_n_args == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
 				new_args = GMT_memory (G, new_args, n_alloc, char *);
 			}
 		}
+		for (k = 0; txt_in[k]; k++) if (txt_in[k] == 29) txt_in[k] = '\t'; else if (txt_in[k] == 31) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
 		args = new_args;
 		n_args = new_n_args;
 	}

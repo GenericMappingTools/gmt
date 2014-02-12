@@ -33,6 +33,9 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-02-1o	pwessel
+	*gmt2kml.c:		Make sure the default style IDs are unique for each process.
+
 2014-02-03	pwessel
 	* pslib.c:		Auto-widen paragraph width to at least fit widest word.
 
