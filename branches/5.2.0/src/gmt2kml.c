@@ -673,7 +673,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
 
 	uint64_t row, seg;
-	int set_nr = 0, index = 0, N = 1, error = 0;
+	int set_nr = 0, index = 0, N = 1, error = 0, def_index;
 
 	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""}, C[5][GMT_LEN64] = {"","","","",""};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};
@@ -777,7 +777,9 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		}
 	}
 
-	kml_print (API, N++, "<Style id=\"st%d\">\n", index);	/* Default style unless -C is used */
+	def_index = (int) getpid();
+	if (Ctrl->C.active && P->n_colors) def_index += P->n_colors;	/* To make sure default index exceeds highest cpt index and is thus unique */
+	kml_print (API, N++, "<Style id=\"st%d\">\n", def_index);	/* Default style unless -C is used, use PID to get unique style ID in case of layer-caking -O -K */
 
 	/* Set icon style (applies to symbols only */
 	set_iconstyle (API, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
@@ -819,7 +821,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		}
 		kml_print (API, --N, "</Style>\n");
 	}
-	index = -4;	/* Default unless -C changes things */
+	index = def_index;	/* Default unless -C changes things */
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
 		char line[GMT_BUFSIZ];
 		FILE *fp = NULL;
