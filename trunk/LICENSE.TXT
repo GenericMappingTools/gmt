@@ -1,4 +1,5 @@
-$Id$
+$LastChangedDate$
+$Revision$
 
 As of GMT 5.0.0, GMT is distributed under the GNU Lesser General Public
 License (LGPL) version 3 or later. Copies of the The GNU General Public

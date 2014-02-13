@@ -215,7 +215,12 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;
 	size_t n_read;
-	bool must_swab, OK, first = true;
+	bool OK, first = true;
+#ifdef WORDS_BIGENDIAN
+	static const bool must_swab = false;
+#else
+	static const bool must_swab = true;
+#endif
 
 	uint64_t dim[4] = {1, 0, 0, 2};
 
@@ -303,8 +308,6 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
 	n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);
-	version = (h.flag >> 8) & 255;
-	must_swab = (version != GSHHG_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 
 	while (n_read == 1) {
 		n_seg++;

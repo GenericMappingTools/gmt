@@ -61,9 +61,6 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHG_DATA_RELEASE	14		/* For v2.2.4 data set */
-#define GSHHG_PROG_VERSION	"1.18"
-
 #define GSHHG_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
 #define GSHHG_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
