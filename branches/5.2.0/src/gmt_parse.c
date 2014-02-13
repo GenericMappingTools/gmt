@@ -120,7 +120,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	API = gmt_get_api_ptr (V_API);	/* Convert API to a GMTAPI_CTRL pointer */
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
-		unsigned int pos = 0, new_n_args = 0, k, i, o;
+		unsigned int pos = 0, new_n_args = 0, k;
 		bool quoted;
 		size_t n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ] = {""}, *txt_in = in;	/* Passed a single text string */
