@@ -5437,7 +5437,10 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 			if (table->segment[seg]->ogr && GMT->common.a.output) gmt_write_ogr_segheader (GMT, fp, table->segment[seg]);
 		}
 		if (table->segment[seg]->mode == GMT_WRITE_HEADER) continue;	/* Skip after writing segment header */
-		if (table->segment[seg]->range) {save = GMT->current.io.geo.range; GMT->current.io.geo.range = table->segment[seg]->range; }	/* Segment-specific formatting */
+		if (table->segment[seg]->range) {	/* Segment-specific formatting for longitudes */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s Segment %d changed io.geo.range from %d to %d\n", out_file, (int)seg, GMT->current.io.geo.range, table->segment[seg]->range);
+			save = GMT->current.io.geo.range; GMT->current.io.geo.range = table->segment[seg]->range;
+		}
 		for (row = 0; row < table->segment[seg]->n_rows; row++) {
 			for (col = 0; col < table->segment[seg]->n_columns; col++) out[col] = table->segment[seg]->coord[col][row];
 			GMT->current.io.output (GMT, fp, table->segment[seg]->n_columns, out);
