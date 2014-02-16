@@ -5992,6 +5992,7 @@ struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 
 	T = GMT_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 	if (!alloc_only) T->n_segments = n_segments;
+	if (!alloc_only) T->n_records = n_segments * n_rows;
 	T->n_alloc = n_segments;
 	if (n_columns) {
 		T->min = GMT_memory (GMT, NULL, n_columns, double);
