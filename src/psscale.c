@@ -61,7 +61,8 @@ struct PSSCALE_CTRL {
 	struct D {	/* -D<xpos/ypos/length/width[h]> */
 		bool active;
 		bool horizontal;
-		double x, y, width, length;
+		struct GMT_ANCHOR *anchor;
+		double width, length;
 	} D;
 	struct E {	/* -E[b|f][<length>][+n[<text>]] */
 		bool active;
@@ -129,6 +130,7 @@ void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->C.file) free (C->C.file);
+	GMT_free_anchorpoint (GMT, &C->D.anchor);
 	if (C->E.text) free (C->E.text);
 	if (C->Z.file) free (C->Z.file);
 	GMT_free (GMT, C);	
@@ -140,14 +142,17 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [%s] [-C<cpt>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D[g|n|x]<x0>/<y0>/<length>/<width>[h] [-A[a|l|c]] [%s] [-C<cpt>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]\n\t[%s] [%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q] [%s] [-S]\n\t[-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>] [%s]\n\t[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set top mid-point position and length/width for scale.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set top mid-point position x0/y0 and length/width for scale; use one of three coordinate systems:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dn for normalized coordinates in 0-1 range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dg for map coordinates; The -R and -J options are required.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx for plot coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative length to reverse the scalebar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append h for horizontal scale\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -245,18 +250,19 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				n = (unsigned int)strlen (opt->arg) - 1;
-				flag = opt->arg[n];
-				if (flag == 'h' || flag == 'H') {
-					Ctrl->D.horizontal = true;
-					opt->arg[n] = 0;	/* Temporarily remove this for sscanf */
+				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
+				else {
+					n = (unsigned int)strlen (Ctrl->D.anchor->args) - 1;
+					flag = Ctrl->D.anchor->args[n];
+					if (flag == 'h' || flag == 'H') {
+						Ctrl->D.horizontal = true;
+						Ctrl->D.anchor->args[n] = 0;	/* Temporarily remove this for sscanf */
+					}
+					sscanf (Ctrl->D.anchor->args, "%[^/]/%s", txt_c, txt_d);
+					if (Ctrl->D.horizontal) Ctrl->D.anchor->args[n] = flag;	/* Restore the flag */
+					Ctrl->D.length = GMT_to_inch (GMT, txt_c);
+					Ctrl->D.width  = GMT_to_inch (GMT, txt_d);
 				}
-				sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-				if (Ctrl->D.horizontal) opt->arg[n] = flag;	/* Restore the flag */
-				Ctrl->D.x   = GMT_to_inch (GMT, txt_a);
-				Ctrl->D.y   = GMT_to_inch (GMT, txt_b);
-				Ctrl->D.length = GMT_to_inch (GMT, txt_c);
-				Ctrl->D.width  = GMT_to_inch (GMT, txt_d);
 				break;
 			case 'E':
 				Ctrl->E.active = true;
@@ -1266,26 +1272,28 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
+	GMT_set_anchorpoint (GMT, Ctrl->D.anchor);	/* Finalize anchor point plot coordinates, if needed */
+
 	/* We must do any origin translation manually in psscale */
 
 	if (Ctrl->D.horizontal) {
-		Ctrl->D.x -= 0.5 * fabs (Ctrl->D.length);
-		Ctrl->D.y -= Ctrl->D.width;
+		Ctrl->D.anchor->x -= 0.5 * fabs (Ctrl->D.length);
+		Ctrl->D.anchor->y -= Ctrl->D.width;
 		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
 	}
 	else {
-		Ctrl->D.y -= 0.5 * fabs (Ctrl->D.length);
+		Ctrl->D.anchor->y -= 0.5 * fabs (Ctrl->D.length);
 		GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = 0;
 		double_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
-	PSL_setorigin (PSL, Ctrl->D.x, Ctrl->D.y, 0.0, PSL_FWD);
+	PSL_setorigin (PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->y, 0.0, PSL_FWD);
 	
 	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode, 
 		GMT->current.map.frame.draw, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
 		Ctrl->L.interval, Ctrl->M.active, Ctrl->T);
-	PSL_setorigin (PSL, -Ctrl->D.x, -Ctrl->D.y, 0.0, PSL_FWD);
+	PSL_setorigin (PSL, -Ctrl->D.anchor->x, -Ctrl->D.anchor->y, 0.0, PSL_FWD);
 	GMT_plane_perspective (GMT, -1, 0.0);
 
 	GMT_plotend (GMT);

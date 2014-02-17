@@ -223,6 +223,9 @@ EXTERN_MSC void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, con
 
 /* gmt_support.c: */
 
+EXTERN_MSC struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg);
+EXTERN_MSC void GMT_set_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR *A);
+EXTERN_MSC void GMT_free_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR **Ap);
 EXTERN_MSC void GMT_flip_angle_d (struct GMT_CTRL *GMT, double *angle);
 EXTERN_MSC void GMT_flip_angle_f (struct GMT_CTRL *GMT, float *angle);
 EXTERN_MSC struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]);

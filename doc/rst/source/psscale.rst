@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**]
+**psscale** **-D**\ [**n**\|**g**\|**x**]\ *x0*/*y0*/*length*/*width*\ [**h**]
 [ **-A**\ [**a**\ \|\ **l**\ \|\ **c**] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
@@ -55,9 +55,13 @@ it is plotted with **FONT_LABEL**
 Required Arguments
 ------------------
 
-**-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**]
-    Defines the position of the center/top (for horizontal scale) or
+**-D**\ [**n**\|**g**\|**x**]\ *x0*/*y0*/*length*/*width*\ [**h**]
+    Defines the position *x0*/*y0* of the center/top (for horizontal scale) or
     center/left (for vertical scale) and the dimensions of the scale.
+    You can specify *x0*/*y0* in one of three coordinate systems:
+    Use **-Dg** for map coordinates (requires **-R** and **-J**),
+    **-Dn** for normalized (0-1) coordinates (requires **-R** and **-J**),
+    or **-Dx** for plot coordinates (inches, cm, etc.).
     Give a negative length to reverse the scalebar. Append *h* to get a
     horizontal scale [Default is vertical].
 
@@ -198,7 +202,7 @@ and show back- and foreground colors, and annotating every 5 units, use
 
    ::
 
-    gmt psscale -D6.5i/2i/7.5c/1.25c -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: > map.ps
+    gmt psscale -Dx6.5i/2i/7.5c/1.25c -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: > map.ps
 
 Notes
 -----
