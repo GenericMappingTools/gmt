@@ -54,9 +54,6 @@
 /* compile with ZLIB support <zlib.h> */
 #cmakedefine HAVE_ZLIB
 
-/* file locking */
-#cmakedefine FLOCK
-
 /* shared library */
 #cmakedefine BUILD_SHARED_LIBS
 
@@ -94,6 +91,7 @@
 #cmakedefine HAVE__ACCESS
 #cmakedefine HAVE_BASENAME
 #cmakedefine HAVE_DLADDR
+#cmakedefine HAVE_FCNTL
 #cmakedefine HAVE_FILENO
 #cmakedefine HAVE__FILENO
 #cmakedefine HAVE_FSEEKO
