@@ -164,7 +164,6 @@ Finally we are ready to compile GMT5.
   set (NETCDF_ROOT z:/software)
   set (GDAL_ROOT z:/software)
   set (PCRE_ROOT z:/software)
-  set (FLOCK TRUE)
 
 - Open Windows SDK Command Prompt
 
