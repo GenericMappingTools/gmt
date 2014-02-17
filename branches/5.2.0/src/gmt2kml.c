@@ -673,7 +673,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
 
 	uint64_t row, seg;
-	int set_nr = 0, index = 0, N = 1, error = 0, def_index;
+	int set_nr = 0, index, N = 1, error = 0, process_id;
 
 	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""}, C[5][GMT_LEN64] = {"","","","",""};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};
@@ -777,9 +777,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		}
 	}
 
-	def_index = (int) getpid();
-	if (Ctrl->C.active && P->n_colors) def_index += P->n_colors;	/* To make sure default index exceeds highest cpt index and is thus unique */
-	kml_print (API, N++, "<Style id=\"st%d\">\n", def_index);	/* Default style unless -C is used, use PID to get unique style ID in case of layer-caking -O -K */
+	process_id = (int) getpid();
+	kml_print (API, N++, "<Style id=\"st-%d-0\">\n", process_id);	/* Default style unless -C is used, use PID to get unique style ID in case of layer-caking -O -K */
 
 	/* Set icon style (applies to symbols only */
 	set_iconstyle (API, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
@@ -796,8 +795,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	kml_print (API, --N, "</Style>\n");
 
 	for (index = -3; Ctrl->C.active && index < (int)P->n_colors; index++) {	/* Place styles for each color in CPT file */
-		get_rgb_lookup (GMT, P, index, rgb);
-		kml_print (API, N++, "<Style id=\"st%d\">\n", index + 4); /* +4 to make index a positive integer */
+		get_rgb_lookup (GMT, P, index, rgb);	/* For -3, -2, -1 we get the back, fore, nan colors */
+		kml_print (API, N++, "<Style id=\"st-%d-%d\">\n", process_id, index + 4); /* +4 to make the first style ID = 1 */
 		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */
 			set_iconstyle (API, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 		else if (Ctrl->F.mode == LINE)	/* Line style only */
@@ -821,7 +820,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		}
 		kml_print (API, --N, "</Style>\n");
 	}
-	index = def_index;	/* Default unless -C changes things */
+	index = -4;	/* Default style unless -C changes things */
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
 		char line[GMT_BUFSIZ];
 		FILE *fp = NULL;
@@ -918,7 +917,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 				}
 				if (do_description)
 					kml_print (API, N, "<description>%s</description>\n", description);
-				kml_print (API, N, "<styleUrl>#st%d</styleUrl>\n", index + 4); /* +4 to make index a positive integer */
+				kml_print (API, N, "<styleUrl>#st-%d-%d</styleUrl>\n", process_id, index + 4); /* +4 to make style ID  >= 0 */
 				kml_print (API, N++, "<%s>\n", feature[Ctrl->F.mode]);
 				print_altmode (API, Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
 				if (Ctrl->F.mode == POLYGON) {
@@ -1032,7 +1031,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 						kml_print (API, N, "<when>%s</when>\n", text);
 						kml_print (API, --N, "</TimeStamp>\n");
 					}
-					kml_print (API, N, "<styleUrl>#st%d</styleUrl>\n", index + 4); /* +4 to make index a positive integer */
+					kml_print (API, N, "<styleUrl>#st-%d-%d</styleUrl>\n", process_id, index + 4); /* +4 to make index a positive integer */
 					kml_print (API, N++, "<%s>\n", feature[Ctrl->F.mode]);
 					print_altmode (API, Ctrl->E.active, false, Ctrl->A.mode, N);
 					kml_print (API, N, "<coordinates>");

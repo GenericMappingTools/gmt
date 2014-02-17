@@ -134,9 +134,10 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 			else if (quoted && txt_in[k] == ' ')  txt_in[k] = 31;
 		}
 		while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words, and strip off double quotes */
+			unsigned int i, o;
 			for (k = 0; p[k]; k++) if (p[k] == 29) p[k] = '\t'; else if (p[k] == 31) p[k] = ' ';	/* Replace spaces and tabs masked above */
-			//for (i = o = 0; p[i]; i++) if (p[i] != '\"') p[o++] = p[i];	/* Ignore double quotes */
-			//p[o] = '\0';
+			for (i = o = 0; p[i]; i++) if (p[i] != '\"') p[o++] = p[i];	/* Ignore double quotes */
+			p[o] = '\0';
 			new_args[new_n_args++] = strdup (p);
 			if (new_n_args == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
