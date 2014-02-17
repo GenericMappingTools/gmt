@@ -2485,7 +2485,7 @@ void table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 	uint64_t s, row, k;
 	unsigned int prev = last - 1;
 	double p, *z = NULL;
-	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
+	struct GMT_DATATABLE *T_prev = S[prev]->D->table[0];
 
 	/* last holds the selected quantile (0-100), prev the data % */
 	if (!S[last]->constant) {
@@ -2512,7 +2512,7 @@ void table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = p;
 		}
 		else {	/* Just accumulate the total table */
-			GMT_memcpy (&z[k], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+			GMT_memcpy (&z[k], T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
 			k += info->T->segment[s]->n_rows;
 		}
 	}
