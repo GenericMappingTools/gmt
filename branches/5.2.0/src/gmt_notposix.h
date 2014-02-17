@@ -174,12 +174,6 @@
 
 #	define PATH_SEPARATOR ';' /* Win uses ; while Unix uses : */
 
-	/* FLOCK is a pain. If cannot be used under Windows.
-	 * Also, users have problems with file locking because their
-	 * NFS does not support it. Only those who are really sure should
-	 * activate -DFLOCK. For these reasons, FLOCK is off by default.
-	 */
-#	undef FLOCK          /* Do not support file locking */
 #	define SET_IO_MODE   /* Need to force binary i/o upon request */
 
 #	if defined(USE_VLD) && defined(DEBUG)

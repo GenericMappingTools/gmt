@@ -6169,31 +6169,71 @@ void gmt_freeshorthand (struct GMT_CTRL *GMT) {/* Free memory used by shorthand 
 	GMT_free (GMT, GMT->session.shorthand);
 }
 
-#ifdef FLOCK
-void gmt_file_lock (struct GMT_CTRL *GMT, int fd, struct flock *lock)
+#ifdef HAVE_FCNTL_H_ /* Use POSIX fcntl */
+bool gmt_file_lock (struct GMT_CTRL *GMT, int fd)
 {
 	int status;
-	lock->l_type = F_WRLCK;		/* Lock for [exclusive] reading/writing */
-	lock->l_whence = SEEK_SET;	/* These three apply lock to entire file */
-	lock->l_start = lock->l_len = 0;
+	struct flock lock;
+	lock.l_type = F_WRLCK;		/* Lock for exclusive (writing) */
+	lock.l_whence = SEEK_SET;	/* These three apply lock to entire file */
+	lock.l_start = lock.l_len = 0;
 
-	if ((status = fcntl (fd, F_SETLKW, lock))) {	/* Will wait for file to be ready for reading */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Error %d returned by fcntl [F_WRLCK]\n", status);
-		return;
+	if ((status = fcntl (fd, F_SETLKW, &lock))) /* Will block until exclusive lock is acquired */
+	{
+		int errsv = status; /* make copy of status */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: exclusive lock could not be acquired (%s)\n", strerror(errsv));
+		return false;
 	}
+	return true;
 }
 
-void gmt_file_unlock (struct GMT_CTRL *GMT, int fd, struct flock *lock)
+bool gmt_file_unlock (struct GMT_CTRL *GMT, int fd)
 {
 	int status;
-	lock->l_type = F_UNLCK;		/* Release lock and close file */
-	lock->l_whence = SEEK_SET;	/* These three apply lock to entire file */
-	lock->l_start = lock->l_len = 0;
+	struct flock lock;
+	lock.l_type = F_UNLCK;		/* Release lock and close file */
+	lock.l_whence = SEEK_SET;	/* These three apply lock to entire file */
+	lock.l_start = lock.l_len = 0;
 
-	if ((status = fcntl (fd, F_SETLK, lock))) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Error %d returned by fcntl [F_UNLCK]\n", status);
-		return;
+	if ((status = fcntl (fd, F_SETLK, &lock))) /* Release lock */
+	{
+		int errsv = status; /* make copy of status */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: failed to release lock (%s)\n", strerror(errsv));
+		return false;
 	}
+	return true;
+}
+
+#elif defined (WIN32) /* Use Windows API */
+bool gmt_file_lock (struct GMT_CTRL *GMT, int fd) {
+	OVERLAPPED over = { 0 };
+	HANDLE hand = (HANDLE)_get_osfhandle(fd);
+	if (!LockFileEx(hand, LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &over)) /* Will block until exclusive lock is acquired */
+	{
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: exclusive lock could not be acquired (%s)\n", dlerror());
+		return false;
+	}
+	return true;
+}
+
+bool gmt_file_unlock (struct GMT_CTRL *GMT, int fd) {
+	HANDLE hand = (HANDLE)_get_osfhandle(fd);
+	if (!UnlockFile(hand, 0, 0, 0, 1))
+	{
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: failed to release lock (%s)\n", dlerror());
+		return false;
+	}
+	return true;
+}
+
+#else /* Not Windows and fcntl not available */
+bool gmt_file_lock (struct GMT_CTRL *GMT, int fd) {
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: file locking not supported.\n");
+	return false;
+}
+
+bool gmt_file_unlock (struct GMT_CTRL *GMT, int fd) {
+	return false;
 }
 #endif
 
@@ -6206,9 +6246,6 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 	char option[GMT_LEN64] = {""}, value[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
-#ifdef FLOCK
-	struct flock lock;
-#endif
 
 	if (!(GMT->current.setting.history & k_history_read))
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
@@ -6232,9 +6269,7 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 	GMT_hash_init (GMT, unique_hashnode, GMT_unique_option, GMT_N_UNIQUE, GMT_N_UNIQUE);
 
 	/* When we get here the file exists */
-#ifdef FLOCK
-	gmt_file_lock (GMT, fileno(fp), &lock);
-#endif
+	gmt_file_lock (GMT, fileno(fp));
 	/* Format of GMT 5 gmt.history is as follow:
 	 * BEGIN GMT <version>		This is the start of parsable section
 	 * OPT ARG
@@ -6272,9 +6307,7 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 	}
 
 	/* Close the file */
-#ifdef FLOCK
-	gmt_file_unlock (GMT, fileno(fp), &lock);
-#endif
+	gmt_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
 	return (GMT_NOERROR);
@@ -6286,9 +6319,6 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 	bool empty;
 	char hfile[GMT_BUFSIZ] = {""}, cwd[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
-#ifdef FLOCK
-	struct flock lock;
-#endif
 
 	if (!(GMT->current.setting.history & k_history_write))
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
@@ -6316,9 +6346,8 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 	if ((fp = fopen (hfile, "w")) == NULL) return (-1);	/* Not OK to be unsuccessful in creating this file */
 
 	/* When we get here the file is open */
-#ifdef FLOCK
-	gmt_file_lock (GMT, fileno(fp), &lock);
-#endif
+	if (!gmt_file_lock (GMT, fileno(fp)))
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: %s is not locked for exclusive access. Multiple gmt processes running at once could corrupt history file.\n", hfile);
 
 	fprintf (fp, "# GMT 5 Session common arguments shelf\n");
 	fprintf (fp, "BEGIN GMT " GMT_PACKAGE_VERSION "\n");
@@ -6331,9 +6360,7 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 	fprintf (fp, "END\n");
 
 	/* Close the file */
-#ifdef FLOCK
-	gmt_file_unlock (GMT, fileno(fp), &lock);
-#endif
+	gmt_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
 	return (GMT_NOERROR);
