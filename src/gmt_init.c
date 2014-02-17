@@ -6064,12 +6064,34 @@ void gmt_freeshorthand (struct GMT_CTRL *GMT) {/* Free memory used by shorthand 
 	GMT_free (GMT, GMT->session.shorthand);
 }
 
-#ifdef HAVE_FCNTL_H_ /* Use POSIX fcntl */
+#if defined (WIN32) /* Use Windows API */
+bool gmt_file_lock (struct GMT_CTRL *GMT, int fd) {
+	OVERLAPPED over = { 0 };
+	HANDLE hand = (HANDLE)_get_osfhandle(fd);
+	if (!LockFileEx(hand, LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &over)) /* Will block until exclusive lock is acquired */
+	{
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: exclusive lock could not be acquired (%s)\n", dlerror());
+		return false;
+	}
+	return true;
+}
+
+bool gmt_file_unlock (struct GMT_CTRL *GMT, int fd) {
+	HANDLE hand = (HANDLE)_get_osfhandle(fd);
+	if (!UnlockFile(hand, 0, 0, 0, 1))
+	{
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: failed to release lock (%s)\n", dlerror());
+		return false;
+	}
+	return true;
+}
+
+#elif defined (HAVE_FCNTL_H_) /* Use POSIX fcntl */
 bool gmt_file_lock (struct GMT_CTRL *GMT, int fd)
 {
 	int status;
 	struct flock lock;
-	lock.l_type = F_WRLCK;		/* Lock for exclusive (writing) */
+	lock.l_type = F_WRLCK;		/* Lock for exclusive reading/writing */
 	lock.l_whence = SEEK_SET;	/* These three apply lock to entire file */
 	lock.l_start = lock.l_len = 0;
 
@@ -6094,28 +6116,6 @@ bool gmt_file_unlock (struct GMT_CTRL *GMT, int fd)
 	{
 		int errsv = status; /* make copy of status */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: failed to release lock (%s)\n", strerror(errsv));
-		return false;
-	}
-	return true;
-}
-
-#elif defined (WIN32) /* Use Windows API */
-bool gmt_file_lock (struct GMT_CTRL *GMT, int fd) {
-	OVERLAPPED over = { 0 };
-	HANDLE hand = (HANDLE)_get_osfhandle(fd);
-	if (!LockFileEx(hand, LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &over)) /* Will block until exclusive lock is acquired */
-	{
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: exclusive lock could not be acquired (%s)\n", dlerror());
-		return false;
-	}
-	return true;
-}
-
-bool gmt_file_unlock (struct GMT_CTRL *GMT, int fd) {
-	HANDLE hand = (HANDLE)_get_osfhandle(fd);
-	if (!UnlockFile(hand, 0, 0, 0, 1))
-	{
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: failed to release lock (%s)\n", dlerror());
 		return false;
 	}
 	return true;
@@ -6159,7 +6159,8 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 	else	/* Try home directory instead */
 		sprintf (hfile, "%s/gmt.history", GMT->session.HOMEDIR);
 
-	if ((fp = fopen (hfile, "r")) == NULL) return (GMT_NOERROR);	/* OK to be unsuccessful in opening this file */
+	if ((fp = fopen (hfile, "r+")) == NULL) /* In order to place an exclusive lock, fp must be open for writing */
+		return (GMT_NOERROR);	/* OK to be unsuccessful in opening this file */
 
 	GMT_hash_init (GMT, unique_hashnode, GMT_unique_option, GMT_N_UNIQUE, GMT_N_UNIQUE);
 

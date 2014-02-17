@@ -138,9 +138,6 @@
 # Configure default units (possible values are SI and US) [SI]:
 #set (UNITS "US")
 
-# Enable file locking [FALSE]:
-#set (FLOCK TRUE)
-
 # Enable building of shared libraries [TRUE] (disable to use static libraries;
 # not recommended):
 #set (BUILD_SHARED_LIBS FALSE)
