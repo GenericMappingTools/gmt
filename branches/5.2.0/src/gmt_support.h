@@ -25,6 +25,13 @@ enum GMT_enum_inside {
 	GMT_ONEDGE,
 	GMT_INSIDE};
 
+/* Return codes from GMT_get_anchorpoint */
+enum GMT_enum_anchor {
+	GMT_ANCHOR_NOTSET = -1,
+	GMT_ANCHOR_NORM,
+	GMT_ANCHOR_MAP,
+	GMT_ANCHOR_PLOT};
+
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {
 	unsigned int n_arg;	/* How many commands this macro represents */
@@ -57,5 +64,14 @@ struct GMT_TEXT_SELECTION {	/* Used to hold array with items (0-n) that have bee
 	bool *caseless;		/* Treat as caseless */
 	bool ogr_match;		/* Compare pattern to an OGR item */
 };
+
+/* Definition of structure used for holding information about an anchor point */
+struct GMT_ANCHOR {	/* Used to hold items relevant for an anchor point */
+	double x;		/* X position of anchor point */
+	double y;		/* Y position of anchor point */
+	enum GMT_enum_anchor mode;	/* Coordinate mode */
+	char *args;		/* Text representation of any additional arguments */
+};
+
 
 #endif /* _GMT_SUPPORT_H */

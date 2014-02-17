@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
-**-E**\ *dpi* ] [ **-C**\ *xpos*/*ypos*\ [/*justify*] ] [ **-F**\ *pen*
+**-E**\ *dpi* ] [ **-D**\ [**n**\|**g**\|**x**]*x0*/*y0*\ [/*justify*] ] [ **-F**\ *pen*
 ] [ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [
 **-J**\ *parameters* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-M** ] [ **-N**\ *nx*\ [/*ny*] ] [ **-O** ] [ **-P** ] [
@@ -69,11 +69,13 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-C**\ *xpos*/*ypos*\ [/*justify*]
-    Sets position of the image in plot coordinates (inches, cm, etc.)
-    from the current origin of the plot. By default, this defines the
-    position of the lower left corner of the image, but this can be
-    changed by specifying justification [0/0/BL].
+**-D**\ [**n**\|**g**\|**x**]*x0*/*y0*\ [/*justify*]
+    Sets position *x0*/*y0* of the image using one of three coordinate systems.
+    Use **-Dg** for map coordinates (requires **-R** and **-J**), **-Dn** for normalized (0-1) coordinates (requires **-R** and **-J**),
+    or **-Dx** for plot coordinates (inches, cm, etc.).  By default, this
+    defines the position *x0*/*y0* as the lower left corner of the image, but this can be
+    changed by specifying justification [x0/0/BL].
+
 **-F**\ *pen*
     Draws a rectangular frame around the image with the given pen [no
     frame]. 
@@ -165,7 +167,7 @@ aspect ratio, use
 
    ::
 
-    gmt psimage tiger.eps -C2i/1i/TR -W3i > image.ps
+    gmt psimage tiger.eps -Dx2i/1i/TR -W3i > image.ps
 
 To replicate the 1-bit raster image template 1_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles

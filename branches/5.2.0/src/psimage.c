@@ -38,11 +38,11 @@ struct PSIMAGE_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct PSIMG_C {	/* -C<xpos>/<ypos>[/<justify>] */
+	struct PSIMG_D {	/* -D<xpos>/<ypos>[/<justify>] */
 		bool active;
-		double x, y;
+		struct GMT_ANCHOR *anchor;
 		char justify[3];
-	} C;
+	} D;
 	struct PSIMG_E {	/* -E<dpi> */
 		bool active;
 		double dpi;
@@ -81,7 +81,7 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.pen = GMT->current.setting.map_default_pen;
-	strcpy (C->C.justify, "LB");
+	strcpy (C->D.justify, "LB");
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
 	C->N.nx = C->N.ny = 1;
 	return (C);
@@ -90,6 +90,7 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_psimage_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->In.file) free (C->In.file);
+	GMT_free_anchorpoint (GMT, &C->D.anchor);
 	GMT_free (GMT, C);
 }
 
@@ -99,7 +100,7 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psimage <imagefile> [-E<dpi> or -W[-]<width>[/<height>]] [-C<xpos>/<ypos>[/<justify>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psimage <imagefile> [-E<dpi> or -W[-]<width>[/<height>]] [-D[g|n|x]<x0>/<y0>[/<justify>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<pen>] [-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-N<nx>[/<ny>]] [-O]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -112,7 +113,10 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   then the original aspect ratio is maintained.  If <width> < 0\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then we use absolute value and interpolate image in PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the lower left position on the map for raster image [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set the lower left position x0,y0 on the map for raster image [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dn for normalized coordinates in 0-1 range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dg for map coordinates; The -R and -J options are required.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx for plot coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append justification (see pstext for codes).\n");
 	GMT_pen_syntax (API->GMT, 'F', "Draw a frame around the image with the given pen.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
@@ -157,13 +161,16 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
-			case 'C':	/* Image placement */
-				Ctrl->C.active = true;
-				n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, Ctrl->C.justify);
-				n_errors += GMT_check_condition (GMT, n < 2 || n > 3, "Error: Syntax is -C<xpos>/<ypos>[/<justify>]\n");
-				Ctrl->C.x = GMT_to_inch (GMT, txt_a);
-				Ctrl->C.y = GMT_to_inch (GMT, txt_b);
-				if (n == 2) strcpy (Ctrl->C.justify, "LB");	/* Default positioning */
+			case 'C':	/* Image placement (old syntax) */
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -C option is deprecated, use -D instead.\n");
+			case 'D':
+				Ctrl->D.active = true;
+				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
+				else {
+					n = sscanf (Ctrl->D.anchor->args, "%2s", Ctrl->D.justify);
+					n_errors += GMT_check_condition (GMT, n < 0 || n > 1, "Error: Syntax is -D[g|n|x]<x0>/<y0>[/<justify>]\n");
+					if (n == 0) strcpy (Ctrl->D.justify, "LB");	/* Default positioning */
+				}
 				break;
 			case 'E':	/* Specify image dpi */
 				Ctrl->E.active = true;
@@ -489,9 +496,9 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
 	if (Ctrl->E.dpi > 0.0) Ctrl->W.width = (double) header.width / Ctrl->E.dpi;
 	if (Ctrl->W.height == 0.0) Ctrl->W.height = header.height * Ctrl->W.width / header.width;
-	justify = GMT_just_decode (GMT, Ctrl->C.justify, 12);
-	Ctrl->C.x -= 0.5 * ((justify-1)%4) * Ctrl->W.width;
-	Ctrl->C.y -= 0.5 * (justify/4) * Ctrl->W.height;
+	justify = GMT_just_decode (GMT, Ctrl->D.justify, 12);
+	Ctrl->D.anchor->x -= 0.5 * ((justify-1)%4) * Ctrl->W.width;
+	Ctrl->D.anchor->y -= 0.5 * (justify/4) * Ctrl->W.height;
 
 	/* The following is needed to have psimage work correctly in perspective */
 
@@ -500,27 +507,28 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		wesn[XHI] = Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height;
+		wesn[XHI] = Ctrl->D.anchor->x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->D.anchor->y + Ctrl->N.ny * Ctrl->W.height;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+		GMT_set_anchorpoint (GMT, Ctrl->D.anchor);	/* Finalize anchor point plot coordinates, if needed */
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		wesn[XHI] = Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height;
+		wesn[XHI] = Ctrl->D.anchor->x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->D.anchor->y + Ctrl->N.ny * Ctrl->W.height;
 		GMT->common.R.active = GMT->common.J.active = true;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
 	for (row = 0; row < Ctrl->N.ny; row++) {
-		y = Ctrl->C.y + row * Ctrl->W.height;
+		y = Ctrl->D.anchor->y + row * Ctrl->W.height;
 		if (Ctrl->N.ny > 1) GMT_Report (API, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->N.nx, row);
 		for (col = 0; col < Ctrl->N.nx; col++) {
-			x = Ctrl->C.x + col * Ctrl->W.width;
+			x = Ctrl->D.anchor->x + col * Ctrl->W.width;
 			if (header.depth == 0)
 				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, header.length,
 						header.width, header.height, header.xorigin, header.yorigin);
@@ -542,7 +550,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
  	if (Ctrl->F.active) {	/* Draw frame */
  		GMT_setfill (GMT, NULL, true);
 		GMT_setpen (GMT, &Ctrl->F.pen);
- 		PSL_plotbox (PSL, Ctrl->C.x, Ctrl->C.y, Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width, Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height);
+ 		PSL_plotbox (PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->y, Ctrl->D.anchor->x + Ctrl->N.nx * Ctrl->W.width, Ctrl->D.anchor->y + Ctrl->N.ny * Ctrl->W.height);
  	}
 
 	GMT_plane_perspective (GMT, -1, 0.0);
