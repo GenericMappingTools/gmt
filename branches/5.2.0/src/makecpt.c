@@ -58,6 +58,10 @@ struct MAKECPT_CTRL {
 		bool active;
 		unsigned int mode;
 	} D;
+	struct E {	/* -E<nlevels> */
+		bool active;
+		unsigned int levels;
+	} E;
 	struct F {	/* -F[r|R|h|c] */
 		bool active;
 		unsigned int model;
@@ -114,7 +118,7 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-G<zlo>/<zhi>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c] [-G<zlo>/<zhi>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[-I] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>]\n\t[%s] [-Z] [%s]\n", GMT_V_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -125,6 +129,10 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input cpt file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies we read data from given commandline files or stdin to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   determine the data range (use -i to select data column, else last column is used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <nlevels> is not set we use the number of color slices in the chosen CPT\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
@@ -191,6 +199,13 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 				Ctrl->D.mode = 1;
 				if (opt->arg[0] == 'i') Ctrl->D.mode = 2;
 				break;
+			case 'E':	/* Use n levels */
+				Ctrl->E.active = true;
+				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
+					n_errors++;
+				}
+				break;
 			case 'F':	/* Sets format for color reporting */
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
@@ -250,12 +265,13 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] > 0, "Syntax error: No input files expected\n");
+	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] > 0 && !Ctrl->E.active, "Syntax error: No input files expected unless -E is used\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high || Ctrl->T.inc < 0.0), "Syntax error -T option: Give start < stop and inc > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.file && GMT_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
 	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -322,6 +338,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	if (Ctrl->G.active) Pin = GMT_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 	
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
+	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
 
 	/* Set up arrays */
 
@@ -365,6 +382,25 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 
 		z = GMT_memory (GMT, NULL, nz, double);
 		for (i = 0; i < nz; i++) z[i] = Ctrl->T.low + i * Ctrl->T.inc;	/* Desired z values */
+	}
+	else if (Ctrl->E.active) {
+		struct GMT_DATASET *D = NULL;
+		double inc;
+		unsigned int col;
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
+			Return (API->error);
+		}
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
+		col = D->n_columns - 1;	/* Use the last column of the input as z */
+		nz = Ctrl->E.levels;
+		inc = (D->max[col] - D->min[col]) / (nz - 1);
+		z = GMT_memory (GMT, NULL, nz, double);
+		for (i = 0; i < nz; i++) z[i] = D->min[col] + i * inc;	/* Desired z values */
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else {	/* Just copy what was in the cpt file */
 		nz = Pin->n_colors + 1;

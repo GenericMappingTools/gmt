@@ -1771,6 +1771,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 		if (!D_obj->min) D_obj->min = GMT_memory (API->GMT, NULL, D_obj->n_columns, double);
 		if (!D_obj->max) D_obj->max = GMT_memory (API->GMT, NULL, D_obj->n_columns, double);
 	}
+	GMT_set_dataset_minmax (API->GMT, D_obj);	/* Set the min/max values for the entire dataset */
 	D_obj->geometry = geometry;	/* Since GMT_read_table may have updated it */
 	if (!via) API->object[this_item]->data = D_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 	return (D_obj);
