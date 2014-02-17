@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pslegend** [ *textfile* ]
-**-D**\ [**n**\|**g**\|**x**]\ *x0*/*y0*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
 **-F**\ [\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ] [
 **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
@@ -41,14 +41,14 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 `Required Arguments <#toc4>`_
 -----------------------------
 
-**-D**\ [**n**\|**g**\|**x**]\ *x0*/*y0*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
     Positions the legend and specifies its size. The *just* is a 2-char
     justification string (see :doc:`pstext`) that relates the given
     position *x0*/*y0* to a point on the rectangular legend box. You can
     specify the position of the legend in one of three coordinate systems:
     Use **-Dg** for map coordinates (requires **-R** and **-J**),
     **-Dn** for normalized (0-1) coordinates (requires **-R** and **-J**),
-    or **-Dx** for plot coordinates (inches, cm, etc.). Use to optional
+    or **-Dx** for plot coordinates (inches, cm, etc.). Use the optional
     *dx*/*dy* to shift the legend by that amount in the direction
     implied by the justification. If *height* is zero or not given then
     we estimate *height* based the expected vertical extent of the items

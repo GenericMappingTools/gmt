@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
-**-E**\ *dpi* ] [ **-D**\ [**n**\|**g**\|**x**]*x0*/*y0*\ [/*justify*] ] [ **-F**\ *pen*
+**-E**\ *dpi* ] [ **-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*\ [/*justify*] ] [ **-F**\ *pen*
 ] [ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [
 **-J**\ *parameters* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-M** ] [ **-N**\ *nx*\ [/*ny*] ] [ **-O** ] [ **-P** ] [
@@ -69,7 +69,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-D**\ [**n**\|**g**\|**x**]*x0*/*y0*\ [/*justify*]
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*\ [/*justify*]
     Sets position *x0*/*y0* of the image using one of three coordinate systems.
     Use **-Dg** for map coordinates (requires **-R** and **-J**), **-Dn** for normalized (0-1) coordinates (requires **-R** and **-J**),
     or **-Dx** for plot coordinates (inches, cm, etc.).  By default, this
