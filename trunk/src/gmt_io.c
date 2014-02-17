@@ -98,6 +98,8 @@ EXTERN_MSC unsigned int GMTAPI_count_objects (struct GMTAPI_CTRL *API, unsigned 
 EXTERN_MSC int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
 EXTERN_MSC int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
 
+uint64_t gmt_bin_colselect (struct GMT_CTRL *GMT);
+
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
 #endif
