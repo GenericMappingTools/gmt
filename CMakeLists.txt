@@ -156,7 +156,6 @@ message(
 	"*  Regex support              : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  ZLIB library               : ${ZLIB_LIBRARY}\n"
 	"*  ZLIB include dir           : ${ZLIB_INCLUDE_DIR}\n"
-	"*  File locking               : ${FLOCK}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
 	"*  Build mode                 : ${BUILD_MODE}\n"
