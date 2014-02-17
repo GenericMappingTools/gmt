@@ -6086,7 +6086,7 @@ bool gmt_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	return true;
 }
 
-#elif defined (HAVE_FCNTL_H_) /* Use POSIX fcntl */
+#elif defined (HAVE_FCNTL) /* Use POSIX fcntl */
 bool gmt_file_lock (struct GMT_CTRL *GMT, int fd)
 {
 	int status;
