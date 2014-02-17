@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **makecpt** [ **-A**\ [**+**\ ]\ *transparency* ] [ **-C**\ *table* ]
-[ **-D**\ [**i**\ \|\ **o**] ]
+[ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ [*nlevels*] ]
 [ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-G**\ *zlo*\ /\ *zhi* ] [ **-I** ] [ **-M** ]
 [ **-N** ] [ **-Q**\ [**i**\ \|\ **o**] ]
 [ **-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* ]
@@ -76,6 +76,13 @@ Optional Arguments
     parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`, and
     :ref:`COLOR_NAN <COLOR_NAN>`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) cpt file.
+**-E**\ [*nlevels*]
+    Implies reading data table(s) from given command-line files or standard input.
+    We use the last data column to determine the data range; use **-i** to
+    select another column, and use **-bi** if your data table is native binary.
+    We create a linear color table by dividing the table data z-range into
+    *nlevels* equidistant slices.  If *nlevels* is not given it defaults to
+    the number of levels in the chosen CPT file.
 **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**]
     Force output cpt file to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
