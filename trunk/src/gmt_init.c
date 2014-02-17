@@ -6065,6 +6065,8 @@ void gmt_freeshorthand (struct GMT_CTRL *GMT) {/* Free memory used by shorthand 
 }
 
 #if defined (WIN32) /* Use Windows API */
+#include <windows.h>
+
 bool gmt_file_lock (struct GMT_CTRL *GMT, int fd) {
 	OVERLAPPED over = { 0 };
 	HANDLE hand = (HANDLE)_get_osfhandle(fd);
