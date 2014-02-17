@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ [**n**\|**g**\|**x**]\ *x0*/*y0*/*length*/*width*\ [**h**]
+**psscale** **-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*/*length*/*width*\ [**h**]
 [ **-A**\ [**a**\ \|\ **l**\ \|\ **c**] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
@@ -55,7 +55,7 @@ it is plotted with **FONT_LABEL**
 Required Arguments
 ------------------
 
-**-D**\ [**n**\|**g**\|**x**]\ *x0*/*y0*/*length*/*width*\ [**h**]
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*/*length*/*width*\ [**h**]
     Defines the position *x0*/*y0* of the center/top (for horizontal scale) or
     center/left (for vertical scale) and the dimensions of the scale.
     You can specify *x0*/*y0* in one of three coordinate systems:
