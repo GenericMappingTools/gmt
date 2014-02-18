@@ -42,10 +42,9 @@ struct PSLEGEND_CTRL {
 		bool active;
 		double dx, dy;
 	} C;
-	struct D {	/* -D[g|j|n|x]<anchor>/<w>[/<h>]/<justify>[/<dx>/<dy>] */
+	struct D {	/* -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] */
 		bool active;
 		struct GMT_ANCHOR *anchor;
-		unsigned int anchor_mode;
 		double width, height, dx, dy;
 		int justify;
 	} D;
@@ -73,7 +72,7 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->C.dx = C->C.dy = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_CLEARANCE;	/* 4 pt */
-	C->D.width = C->D.height = 1.0;
+	C->D.justify = PSL_TC;	/* If nothing is specified we use this justification */
 	C->F.radius = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_RADIUS;		/* 6 pt */
 	GMT_init_fill (GMT, &C->F.fill, -1.0, -1.0, -1.0);		/* Default is no fill */
 	C->F.pen1 = GMT->current.setting.map_frame_pen;
@@ -97,7 +96,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[g|j|n|x]<anchor>/<width>[/<height>]/<justify>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -112,10 +111,11 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dn to specify <anchor> with normalized coordinates in 0-1 range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx to specify <anchor> with plot coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All except -Dx require the -R and -J options to be set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append the <width> and optionally the <height> of the legend box.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (If <height> is 0 or not specified then we estimate it from <infofile>).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate that point on the legend box with <x0>/<y0>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <dx>/<dy> to shift the legend from the selected anchor in the direction implied by <justify> [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append the legend box <width>. The remaining arguments are optional:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <height> is 0 or not specified then we estimate it from <infofile>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate a point on the legend box with <x0>/<y0> [TC].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: If -Dj<code> is used and <justify> not set then <justify> is set equal to <code>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append <dx>/<dy> to shift legend from selected anchor in direction implied by <justify> [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<infofile> is one or more ASCII information files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
@@ -149,7 +149,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 	unsigned int k, n_errors = 0, pos;
 	unsigned int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, txt_f[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -171,22 +171,45 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
 				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {	/* Args is <width>[/<height>]/<justify>[<dx>/<dy>] */
+				else {	/* Args is <width>[/<height>][/<justify>][/<dx>/<dy>] */
 					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-					n_errors += GMT_check_condition (GMT, n < 2, "Error: Syntax is -D[g|j|n|x]<anchor>/<width>[/<height>]/<justify>[<dx>/<dy>]\n");
+					n_errors += GMT_check_condition (GMT, n < 2, "Error: Syntax is -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
 					Ctrl->D.width = GMT_to_inch (GMT, txt_a);
-					if (n == 2 || n == 4) {	/* Did not give height, so shuffle the following 3 items */
-						Ctrl->D.height = 0.0;
-						strncpy (txt_e, txt_d, GMT_LEN256);
-						strncpy (txt_d, txt_c, GMT_LEN256);
-						strncpy (txt_c, txt_b, GMT_LEN256);
-					}
-					else	/* Got height via txt_b */
-						Ctrl->D.height = GMT_to_inch (GMT, txt_b);
-					Ctrl->D.justify = GMT_just_decode (GMT, txt_c, 12);
-					if (n > 3) {	/* Got the optional offsets */
-						Ctrl->D.dx = GMT_to_inch (GMT, txt_d);
-						Ctrl->D.dy = GMT_to_inch (GMT, txt_e);
+					switch (n) {
+						case 1: /* Only gave anchor and width; change default justify if -Dj */
+							if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate */
+								Ctrl->D.justify = Ctrl->D.anchor->justify;
+							break;
+						case 2:	/* Gave width and (height or justify) */
+							if (strlen (txt_b) == 2 && strchr ("LMRBCT", txt_b[GMT_X]) && strchr ("LMRBCT", txt_b[GMT_Y]))	/* Gave a 2-char justification code */
+								Ctrl->D.justify = GMT_just_decode (GMT, txt_b, 12);
+							else /* Got height */
+								Ctrl->D.height = GMT_to_inch (GMT, txt_b);
+							break;
+						case 3:	/* Gave width and (height and justify) or (dx/dy) */
+							if (strlen (txt_c) == 2 && strchr ("LMRBCT", txt_c[GMT_X]) && strchr ("LMRBCT", txt_c[GMT_Y])) {	/* Gave a 2-char justification code */
+								Ctrl->D.height = GMT_to_inch (GMT, txt_b);
+								Ctrl->D.justify = GMT_just_decode (GMT, txt_c, 12);
+							}
+							else {	/* Just got offsets */
+								Ctrl->D.dx = GMT_to_inch (GMT, txt_b);
+								Ctrl->D.dy = GMT_to_inch (GMT, txt_c);
+							}
+							break;
+						case 4:	/* Gave width and (height or justify) and dx/dy */
+							if (strlen (txt_b) == 2 && strchr ("LMRBCT", txt_b[GMT_X]) && strchr ("LMRBCT", txt_b[GMT_Y]))	/* Gave a 2-char justification code */
+								Ctrl->D.justify = GMT_just_decode (GMT, txt_b, 12);
+							else
+								Ctrl->D.height = GMT_to_inch (GMT, txt_b);
+							Ctrl->D.dx = GMT_to_inch (GMT, txt_c);
+							Ctrl->D.dy = GMT_to_inch (GMT, txt_d);
+							break;
+						case 5:	/* Got them all */
+							Ctrl->D.height = GMT_to_inch (GMT, txt_b);
+							Ctrl->D.justify = GMT_just_decode (GMT, txt_c, 12);
+							Ctrl->D.dx = GMT_to_inch (GMT, txt_d);
+							Ctrl->D.dy = GMT_to_inch (GMT, txt_e);
+							break;
 					}
 				}
 				break;
@@ -269,8 +292,9 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error: The -D option is required!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0 || Ctrl->D.height < 0.0, "Syntax error -D option: legend box sizes cannot be negative!\n");
-	if (Ctrl->D.anchor->mode == GMT_ANCHOR_MAP) {	/* Overlays with -Dg need -R -J; other cases don't */
+	n_errors += GMT_check_condition (GMT, Ctrl->D.width <= 0.0, "Syntax error -D option: legend box width must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.height < 0.0, "Syntax error -D option: legend box height cannot be negative!\n");
+	if (Ctrl->D.anchor->mode != GMT_ANCHOR_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
