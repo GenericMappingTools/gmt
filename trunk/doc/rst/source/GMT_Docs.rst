@@ -5053,8 +5053,8 @@ transformation <GMT_pow>`)
              -Wthick -P -K sqrt.d > GMT_pow.ps
     gmt psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
 
-Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
--------------------------------------------------------------------------------
+Linear projection with polar coordinates (**-Jp** **-JP**)
+----------------------------------------------------------
 
 .. _GMT_polar:
 
