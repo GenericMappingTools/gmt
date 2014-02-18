@@ -10860,15 +10860,6 @@ struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *
 	return (select);
 }
 
-void GMT_just_to_code (struct GMT_CTRL *GMT, int justify, char code[])
-{	/* Convert justify integer back to 2-char code */
-	if (justify < 1 || justify > 11) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No code corresponding to justify = %d\n", justify);
-		return;
-	}
-	strncpy (code, GMT_just_code[justify], 2U);
-}
-
 void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x, double *y)
 {	/* See GMT_just_decode for how text code becomes the justify integer.
  	 * If geo is true we get point from wesn, else we get from projected coordinates */
@@ -10902,18 +10893,18 @@ void GMT_free_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR **Ap) {
 
 struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg) {
 	/* Used to decipher option -D in psscale, pslegend, and psimage:
-	 * -D[g|j|n|x]<xpos>/<ypos>[/<remainder]
+	 * -D[g|j|n|x]<anchor>[/<remainder]
 	 * where g means map coordinates, n means normalized coordinates, and x means plot coordinates.
-	 * For -Dj we instead spacify a 2-char justification code and get xpos/ypos from the corresponding
-	 * plot box coordinates.
+	 * For j we instead spacify a 2-char justification code and get anchor point from the corresponding
+	 * plot box coordinates; the <anchor> point is the coordinate pair <x0>/<y0>.
 	 * All -D flavors except -Dx require -R -J.
-	 * Remainder arguments are returned as well via A->args.
+	 * Remaining arguments are returned as well via the string A->args.
 	 */
 	unsigned int n_errors = 0, k = 1;	/* Assume 1st character tells us the mode */
 	int n, justify = 0;
 	enum GMT_enum_anchor mode = GMT_ANCHOR_NOTSET;
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, the_rest[GMT_LEN256] = {""};
-	static char *kind = "gjnx";
+	static char *kind = "gjnx";	/* The 4 types of coordinates */
 	struct GMT_ANCHOR *A = NULL;
 	
 	switch (arg[0]) {
@@ -10932,39 +10923,42 @@ struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg) {
 	}
 	
 	if (mode == GMT_ANCHOR_NOTSET) {	/* Did not specify what anchor point mode to use, must determine it from args */
-		if (strchr (GMT_DIM_UNITS, txt_x[strlen(txt_x)-1]))	/* x position included a unit */
+		if (strchr (GMT_DIM_UNITS, txt_x[strlen(txt_x)-1]))		/* x position included a unit */
 			mode = GMT_ANCHOR_PLOT;
 		else if (strchr (GMT_DIM_UNITS, txt_y[strlen(txt_y)-1]))	/* y position included a unit */
 			mode = GMT_ANCHOR_PLOT;
 		else if (GMT->common.J.active == false && GMT->common.R.active == false)	/* No -R, -J were given so can only mean plot coordinates */
 			mode = GMT_ANCHOR_PLOT;
-		else if (strlen (txt_x) == 2 && strchr ("LMRBCT", txt_x[GMT_X]) && strchr ("LMRBCT", txt_x[GMT_Y]))	/* Gave a 2-char justification code */
+		else if (strlen (txt_x) == 2 && strchr ("LMRBCT", toupper(txt_x[GMT_X])) && strchr ("LMRBCT", toupper(txt_x[GMT_Y])))	/* Apparently a 2-char justification code */
 			mode = GMT_ANCHOR_JUST;
-		else	/* Must assume the user gave map coordinates */
+		else {	/* Must assume the user gave map coordinates */
 			mode = GMT_ANCHOR_MAP;
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Your -D option was interpreted to mean -D%c\n", kind[mode]);
+		}
 	}
 	/* Here we know or have assumed the mode and can process coordinates accordingly */
 	
 	if (mode != GMT_ANCHOR_PLOT && GMT->common.J.active == false && GMT->common.R.active == false) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -D%c anchor coordinates require -R -J to be set\n", kind[mode]);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -D%c anchor coordinates require both -R -J to be specified\n", kind[mode]);
 		return NULL;
 	}
 	
+	/* Here we have something to return */
 	A = GMT_memory (GMT, NULL, 1, struct GMT_ANCHOR);
 	switch (mode) {
 		case GMT_ANCHOR_NORM:
 			A->x = atof (txt_x);
 			A->y = atof (txt_y);
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor specified via normalized coordinates: %g, %g\n", A->x, A->y);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via normalized coordinates: %g, %g\n", A->x, A->y);
 			break;
 		case GMT_ANCHOR_PLOT:
 		 	A->x = GMT_to_inch (GMT, txt_x);
 		 	A->y = GMT_to_inch (GMT, txt_y);
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor specified via plot coordinates (in inches): %g, %g\n", A->x, A->y);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via plot coordinates (in inches): %g, %g\n", A->x, A->y);
 			break;
 		case GMT_ANCHOR_JUST:
 			A->justify = justify;
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor specified via justification code: %s\n", txt_x);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via justification code: %s\n", txt_x);
 			break;
 		case GMT_ANCHOR_MAP:
 			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &A->x), txt_x);
@@ -10972,13 +10966,13 @@ struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg) {
 			if (n_errors)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not parse geographic coordinates %s and/or %s\n", txt_x, txt_y);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor specified via map coordinates: %g, %g\n", A->x, A->y);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via map coordinates: %g, %g\n", A->x, A->y);
 			break;
 		case GMT_ANCHOR_NOTSET:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Should never reach this case in GMT_get_anchorpoint - report this problem\n");
 			break;
 	}
-	if (n_errors)	/* Free anchor structure */
+	if (n_errors)	/* Failure; free anchor structure */
 		GMT_free_anchorpoint (GMT, &A);
 	else {	/* Assign args */
 		A->mode = mode;
@@ -10993,17 +10987,17 @@ void GMT_set_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR *A) {
 	double x, y;
 	if (A->mode == GMT_ANCHOR_MAP) {	/* Convert from map coordinates to plot coordinates */
 		GMT_geo_to_xy (GMT, A->x, A->y, &x, &y);
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert map anchor coordinates from %g, %g to %g, %g\n", A->x, A->y, x, y);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert map anchor point coordinates from %g, %g to %g, %g\n", A->x, A->y, x, y);
 		A->x = x;	A->y = y;
 	}
 	else if (A->mode == GMT_ANCHOR_JUST) {	/* Convert from justify code to plot coordinates */
 		GMT_just_to_lonlat (GMT, A->justify, false, &A->x, &A->y);
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert map anchor coordinates from justification %s to %g, %g\n", GMT_just_code[A->justify], A->x, A->y);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert code anchor point coordinates from justification %s to %g, %g\n", GMT_just_code[A->justify], A->x, A->y);
 	}
 	else if (A->mode == GMT_ANCHOR_NORM) {	/* Convert relative to plot coordinates */
 		x = A->x * (2.0 * GMT->current.map.half_width);
 		y = A->y * GMT->current.map.height;
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert normalized anchor coordinates from %g, %g to %g, %g\n", A->x, A->y, x, y);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert normalized anchor point coordinates from %g, %g to %g, %g\n", A->x, A->y, x, y);
 		A->x = x;	A->y = y;
 	}
 	/* Now the anchor point is given in plot coordinates (inches) */

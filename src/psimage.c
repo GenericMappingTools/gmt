@@ -38,11 +38,11 @@ struct PSIMAGE_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct PSIMG_D {	/* -D<xpos>/<ypos>[/<justify>] */
+	struct PSIMG_D {	/* -D[g|j|n|x]<anchor>[/<justify>][/<dx>/<dy>] */
 		bool active;
 		struct GMT_ANCHOR *anchor;
 		double dx, dy;
-		char justify[3];
+		int justify;
 	} D;
 	struct PSIMG_E {	/* -E<dpi> */
 		bool active;
@@ -82,7 +82,7 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.pen = GMT->current.setting.map_default_pen;
-	strcpy (C->D.justify, "LB");
+	C->D.justify = PSL_BL;
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
 	C->N.nx = C->N.ny = 1;
 	return (C);
@@ -172,23 +172,15 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 			case 'D':
 				Ctrl->D.active = true;
 				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {	/* args are [/<justify>][/<dx>/<dy>] */
+				else {	/* args are [/<justify>][/<dx>/<dy>] (0-3) */
 					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+					if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate as default */
+						Ctrl->D.justify = Ctrl->D.anchor->justify;
 					switch (n) {
-						case 1: strcpy (Ctrl->D.justify, txt_a);	break;
+						case 1: Ctrl->D.justify = GMT_just_decode (GMT, txt_a, 12);	break;
 						case 2: Ctrl->D.dx = GMT_to_inch (GMT, txt_a); 	Ctrl->D.dy = GMT_to_inch (GMT, txt_b);
-							if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate */
-								GMT_just_to_code (GMT, Ctrl->D.anchor->justify, Ctrl->D.justify);
 							break;
-						case 3: strcpy (Ctrl->D.justify, txt_a);	Ctrl->D.dx = GMT_to_inch (GMT, txt_b); 	Ctrl->D.dy = GMT_to_inch (GMT, txt_c); break;
-						default:
-							if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate */
-								GMT_just_to_code (GMT, Ctrl->D.anchor->justify, Ctrl->D.justify);
-							else {
-								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Syntax is -D[g|j|n|x]<anchorpoint>[/<justify>][/<dx>/<dy>]\n");
-								n_errors++;
-							}
-							break;
+						case 3: Ctrl->D.justify = GMT_just_decode (GMT, txt_a, 12);	Ctrl->D.dx = GMT_to_inch (GMT, txt_b); 	Ctrl->D.dy = GMT_to_inch (GMT, txt_c); break;
 					}
 				}
 				break;
@@ -516,7 +508,6 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
 	if (Ctrl->E.dpi > 0.0) Ctrl->W.width = (double) header.width / Ctrl->E.dpi;
 	if (Ctrl->W.height == 0.0) Ctrl->W.height = header.height * Ctrl->W.width / header.width;
-	justify = GMT_just_decode (GMT, Ctrl->D.justify, 12);
 
 	/* The following is needed to have psimage work correctly in perspective */
 
@@ -525,11 +516,11 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		Ctrl->D.anchor->x -= 0.5 * ((justify-1)%4) * Ctrl->W.width;
-		Ctrl->D.anchor->y -= 0.5 * (justify/4) * Ctrl->W.height;
+		Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.width;
+		Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->W.height;
 		/* Also deal with any justified offsets if given */
-		Ctrl->D.anchor->x -= ((justify%4)-2) * Ctrl->D.dx;
-		Ctrl->D.anchor->y -= ((justify/4)-1) * Ctrl->D.dy;
+		Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.dx;
+		Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.dy;
 		wesn[XHI] = Ctrl->D.anchor->x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->D.anchor->y + Ctrl->N.ny * Ctrl->W.height;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
@@ -538,11 +529,11 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		GMT_set_anchorpoint (GMT, Ctrl->D.anchor);	/* Finalize anchor point plot coordinates, if needed */
-		Ctrl->D.anchor->x -= 0.5 * ((justify-1)%4) * Ctrl->W.width;
-		Ctrl->D.anchor->y -= 0.5 * (justify/4) * Ctrl->W.height;
+		Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.width;
+		Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->W.height;
 		/* Also deal with any justified offsets if given */
-		Ctrl->D.anchor->x -= ((justify%4)-2) * Ctrl->D.dx;
-		Ctrl->D.anchor->y -= ((justify/4)-1) * Ctrl->D.dy;
+		Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.dx;
+		Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.dy;
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */

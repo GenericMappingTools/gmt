@@ -224,7 +224,6 @@ EXTERN_MSC void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, con
 /* gmt_support.c: */
 
 EXTERN_MSC void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x, double *y);
-EXTERN_MSC void GMT_just_to_code (struct GMT_CTRL *GMT, int justify, char code[]);
 EXTERN_MSC struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC void GMT_set_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR *A);
 EXTERN_MSC void GMT_free_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR **Ap);
