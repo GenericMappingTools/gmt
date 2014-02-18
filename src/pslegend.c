@@ -336,12 +336,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_opts[GMT_BUFSIZ] = {""};
 	char *opt = NULL, sarg[GMT_LEN256] = {""}, txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""};
 	char B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""};
-	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0;
+	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0, *c = NULL;
 #ifdef DEBUG
 	int guide = 0;
 #endif
 
 	unsigned char *dummy = NULL;
+	
 
 	double x_orig, y_orig, x_off, x, y, r, x0, y0, dx, dy, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off, height, az1, az2, m_az;
@@ -877,7 +878,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
 							uint64_t dim[4] = {1, 1, 2, 2};	/* We will a 2-row data set for fronts; allocate just the first time */
 							double length, tlen, gap;
-							char *c = NULL;
 							int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
 							if (Front == NULL && (Front = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a Front data set for pslegend\n");
@@ -955,12 +955,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 								}
 							}
 							else if (symbol[0] == 'V' || symbol[0] == 'v') {	/* Vector */
-								if (strchr (size, ',')) {	/* We got dir,length combined */
+								/* Because we support both GMT4 and GMT5 vector notations this section is a bit messy */
+								if (strchr (size, ',')) {	/* We got dir,length combined as one argument */
 									sscanf (size, "%[^,],%s", A, B);
 									az1 = GMT_to_inch (GMT, A);
 									x = GMT_to_inch (GMT, B);
 								}
-								else {
+								else {	/* No dir given, default to horizontal */
 									az1 = 0.0;
 									x = GMT_to_inch (GMT, size);
 								}
@@ -970,9 +971,17 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 									size[i++] = '\0';	/* So GMT_to_inch won't complain */
 									sprintf (sub, "%s%s+jc+e", symbol, &size[i]);
 								}
-								else if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
-									sprintf (sub, "v%gi+jc+e", 0.3*x);	/* Head size is 30% of length */
+								else if ((c = strchr (symbol, '+'))) {	/* GMT5 syntax: Pass along all the given modifiers */
+									strcpy (sub, symbol);
+									if ((c = strstr (sub, "+j")) && c[2] != 'c') {	/* Got justification, check if it is +jc */
+										GMT_Report (API, GMT_MSG_NORMAL, "Warning: Vector justification changed from +j%c to +jc\n", c[2]);
+										c[2] = 'c';	/* Replace with centered justification */
+									}
+									else	/* Add +jc */
+										strcat (sub, "+jc");
 								}
+								else	/* The necessary arguments not supplied, so we make a reasonable default */
+									sprintf (sub, "v%gi+jc+e", 0.3*x);	/* Head size is 30% of length */
 								if (txt_c[0] == '-') strcat (sub, "+g-");
 								else { strcat (sub, "+g"); strcat (sub, txt_c);}
 								if (txt_d[0] == '-') strcat (sub, "+p-");
