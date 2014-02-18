@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*/*length*/*width*\ [**h**]
+**psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*length*/*width*\ [**h**] [/*justify*]\ [/*dx*/*dy*]
 [ **-A**\ [**a**\ \|\ **l**\ \|\ **c**] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
@@ -55,15 +55,21 @@ it is plotted with **FONT_LABEL**
 Required Arguments
 ------------------
 
-**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*/*length*/*width*\ [**h**]
-    Defines the position *x0*/*y0* of the center/top (for horizontal scale) or
-    center/left (for vertical scale) and the dimensions of the scale.
-    You can specify *x0*/*y0* in one of three coordinate systems:
-    Use **-Dg** for map coordinates (requires **-R** and **-J**),
-    **-Dn** for normalized (0-1) coordinates (requires **-R** and **-J**),
-    or **-Dx** for plot coordinates (inches, cm, etc.).
-    Give a negative length to reverse the scalebar. Append *h* to get a
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*length*/*width*\ [**h**] [/*justify*]\ [/*dx*/*dy*]
+    Defines the *anchor* position *x0*/*y0* of the color scale using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
+    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+    Append the *length* and *width* of the color bar.
+    Give a negative *length* to reverse the scale bar. Append **h** to get a
     horizontal scale [Default is vertical].
+    By default, the *anchor* point is assumed to be the top center (CT) of the bar for
+    horizontal bars and left middle (LM) for vertical bars, but this
+    can be changed by specifying a 2-char justification code *justify* (see :doc:`pstext`).
+    Note: If **Dj** is used then *justify* defaults to the mirror opposite setting used to define *anchor*.
+    Finally, you can offset the color scale by *dx*/*dy* away from the *anchor* point in
+    the direction implied by *justify*.
 
 Optional Arguments
 ------------------
@@ -202,7 +208,14 @@ and show back- and foreground colors, and annotating every 5 units, use
 
    ::
 
-    gmt psscale -Dx6.5i/2i/7.5c/1.25c -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: > map.ps
+    gmt psscale -Dx6.5i/2i/7.5c/1.25c -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: >> map.ps
+
+To overlay a horizontal color scale (4 inches long; 1 cm wide) above a
+Mercator map produced by a previous call, ensuring a 2 cm offset from the map frame, use
+
+   ::
+
+    gmt psscale -DjCT/4i/1c/0/2c -O -Ccolors.cpt -Baf >> map.ps
 
 Notes
 -----

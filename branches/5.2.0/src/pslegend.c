@@ -42,12 +42,12 @@ struct PSLEGEND_CTRL {
 		bool active;
 		double dx, dy;
 	} C;
-	struct D {	/* -D[x]<x0>/<y0>/w/h/just[/xoff/yoff] */
+	struct D {	/* -D[g|j|n|x]<anchor>/<w>[/<h>]/<justify>[/<dx>/<dy>] */
 		bool active;
 		struct GMT_ANCHOR *anchor;
 		unsigned int anchor_mode;
 		double width, height, dx, dy;
-		char justify[3];
+		int justify;
 	} D;
 	struct F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]] */
 		bool active;
@@ -97,7 +97,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[g|n|x]<x0>/<y0>/<w>[/<h>]/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[g|j|n|x]<anchor>/<width>[/<height>]/<justify>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -106,13 +106,16 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set position and size of legend box.  Give x0/y0 in one of three coordinate systems:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dn for normalized coordinates in 0-1 range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dg for map coordinates; The -R and -J options are required.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx for plot coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append the justification of the legend box using pstext justification codes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append offsets to shift the box from the selected point in the direction implied by <just>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If legend box height <h> is 0 or not specified then we estimate it from <infofile>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set anchor point <x0>/<y0> and size of legend box; use one of four coordinate systems:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dg to specify <anchor> with map coordinates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to specify <anchor> with 2-char justification code (LB, CM, etc).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dn to specify <anchor> with normalized coordinates in 0-1 range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx to specify <anchor> with plot coordinates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   All except -Dx require the -R and -J options to be set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append the <width> and optionally the <height> of the legend box.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (If <height> is 0 or not specified then we estimate it from <infofile>).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate that point on the legend box with <x0>/<y0>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <dx>/<dy> to shift the legend from the selected anchor in the direction implied by <justify> [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<infofile> is one or more ASCII information files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
@@ -168,21 +171,22 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
 				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {
-					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_c, txt_d, Ctrl->D.justify, txt_e, txt_f);
-					n_errors += GMT_check_condition (GMT, n < 2 || n > 5, "Error: Syntax is -D[g|n|x]<xpos>/<ypos>/<width>[/<height>]/<justify>[<dx>/<dy>]\n");
-					Ctrl->D.width = GMT_to_inch (GMT, txt_c);
+				else {	/* Args is <width>[/<height>]/<justify>[<dx>/<dy>] */
+					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+					n_errors += GMT_check_condition (GMT, n < 2, "Error: Syntax is -D[g|j|n|x]<anchor>/<width>[/<height>]/<justify>[<dx>/<dy>]\n");
+					Ctrl->D.width = GMT_to_inch (GMT, txt_a);
 					if (n == 2 || n == 4) {	/* Did not give height, so shuffle the following 3 items */
 						Ctrl->D.height = 0.0;
-						strncpy (txt_f, txt_e, GMT_LEN256);
-						strncpy (txt_e, Ctrl->D.justify, GMT_LEN256);
-						strncpy (Ctrl->D.justify, txt_d, 3U);
+						strncpy (txt_e, txt_d, GMT_LEN256);
+						strncpy (txt_d, txt_c, GMT_LEN256);
+						strncpy (txt_c, txt_b, GMT_LEN256);
 					}
-					else	/* Got height */
-						Ctrl->D.height = GMT_to_inch (GMT, txt_d);
+					else	/* Got height via txt_b */
+						Ctrl->D.height = GMT_to_inch (GMT, txt_b);
+					Ctrl->D.justify = GMT_just_decode (GMT, txt_c, 12);
 					if (n > 3) {	/* Got the optional offsets */
-						Ctrl->D.dx = GMT_to_inch (GMT, txt_e);
-						Ctrl->D.dy = GMT_to_inch (GMT, txt_f);
+						Ctrl->D.dx = GMT_to_inch (GMT, txt_d);
+						Ctrl->D.dy = GMT_to_inch (GMT, txt_e);
 					}
 				}
 				break;
@@ -314,7 +318,7 @@ struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct G
 int GMT_pslegend (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pslegend task */
 	unsigned int tbl;
-	int i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
+	int i, k, justify = 0, n = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
 	int status = 0, object_ID;
 	bool flush_paragraph = false, draw_vertical_line = false, gave_label, gave_mapscale_options, did_old = false;
 	uint64_t seg, row;
@@ -570,19 +574,17 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	/* Must reset any -X -Y to 0 so they are not used further in the GMT_modules we call below */
 	GMT_memset (GMT->current.setting.map_origin, 2, double);
 
-	justify = GMT_just_decode (GMT, Ctrl->D.justify, 12);
-
 	GMT_set_anchorpoint (GMT, Ctrl->D.anchor);	/* Finalize anchor point plot coordinates, if needed */
 
 	/* Allow for justification so that the anchor point is the plot location of the lower left corner of box */
 
-	Ctrl->D.anchor->x -= 0.5 * ((justify-1)%4) * Ctrl->D.width;
-	Ctrl->D.anchor->y -= 0.5 * (justify/4) * Ctrl->D.height;
+	Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.width;
+	Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->D.height;
 
 	/* Also deal with any justified offsets if given */
 	
-	Ctrl->D.anchor->x -= ((justify%4)-2) * Ctrl->D.dx;
-	Ctrl->D.anchor->y -= ((justify/4)-1) * Ctrl->D.dy;
+	Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.dx;
+	Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.dy;
 	
 	/* Set new origin */
 	

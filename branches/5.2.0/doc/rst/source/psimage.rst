@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
-**-E**\ *dpi* ] [ **-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*\ [/*justify*] ] [ **-F**\ *pen*
+**-E**\ *dpi* ] [ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [/*justify*]\ [/*dx*/*dy*] ] [ **-F**\ *pen*
 ] [ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [
 **-J**\ *parameters* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-M** ] [ **-N**\ *nx*\ [/*ny*] ] [ **-O** ] [ **-P** ] [
@@ -69,12 +69,16 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*\ [/*justify*]
-    Sets position *x0*/*y0* of the image using one of three coordinate systems.
-    Use **-Dg** for map coordinates (requires **-R** and **-J**), **-Dn** for normalized (0-1) coordinates (requires **-R** and **-J**),
-    or **-Dx** for plot coordinates (inches, cm, etc.).  By default, this
-    defines the position *x0*/*y0* as the lower left corner of the image, but this can be
-    changed by specifying justification [x0/0/BL].
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [/*justify*]\ [/*dx*/*dy*]
+    Sets *anchor* position *x0*/*y0* of the image using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
+    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+    By default, the *anchor* is assumed to be the lower left corner of the image, but this
+    can be changed by specifying a 2-char justification code *justify* (see :doc:`pstext`).
+    Finally, you can offset the image by *dx*/*dy* away from the *anchor* point in the
+    direction implied by *justify* [LB].
 
 **-F**\ *pen*
     Draws a rectangular frame around the image with the given pen [no
