@@ -56,7 +56,6 @@ EXTERN_MSC bool GMT_annot_pos (struct GMT_CTRL *GMT, double min, double max, str
 EXTERN_MSC int GMT_comp_int_asc (const void *p_1, const void *p_2);
 EXTERN_MSC float GMT_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type);
 EXTERN_MSC void GMT_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned int type);
-EXTERN_MSC int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify);
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC void GMT_free_custom_symbols (struct GMT_CTRL *GMT);
 EXTERN_MSC bool GMT_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix);

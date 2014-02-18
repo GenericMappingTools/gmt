@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pslegend** [ *textfile* ]
-**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *anchor*/*width*\ [/*height*]/\ *justify*\ [/*dx*/*dy*]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
 **-F**\ [\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ] [
 **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
@@ -41,18 +41,19 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 `Required Arguments <#toc4>`_
 -----------------------------
 
-**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *x0*/*y0*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
-    Positions the legend and specifies its size. The *just* is a 2-char
-    justification string (see :doc:`pstext`) that relates the given
-    position *x0*/*y0* to a point on the rectangular legend box. You can
-    specify the position of the legend in one of three coordinate systems:
-    Use **-Dg** for map coordinates (requires **-R** and **-J**),
-    **-Dn** for normalized (0-1) coordinates (requires **-R** and **-J**),
-    or **-Dx** for plot coordinates (inches, cm, etc.). Use the optional
-    *dx*/*dy* to shift the legend by that amount in the direction
-    implied by the justification. If *height* is zero or not given then
-    we estimate *height* based the expected vertical extent of the items
-    to be placed. 
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *anchor*/*width*\ [/*height*]/\ *justify*\ [/*dx*/*dy*]
+    Defines the *anchor* position *x0*/*y0* of the legend using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
+    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+    Append the *width* and optionally the *height* of the legend box.
+    If *height* is zero or not given then we estimate *height* based the expected
+    vertical extent of the items to be placed.
+    The *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
+    anchor *x0*/*y0* to a point on the rectangular legend box.
+    Finally, you can offset the legend box by *dx*/*dy* away from the *anchor* point in
+    the direction implied by *justify*.
 
 `Optional Arguments <#toc5>`_
 -----------------------------

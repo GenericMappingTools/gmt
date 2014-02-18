@@ -27,10 +27,11 @@ enum GMT_enum_inside {
 
 /* Return codes from GMT_get_anchorpoint */
 enum GMT_enum_anchor {
-	GMT_ANCHOR_NOTSET = -1,
-	GMT_ANCHOR_NORM,
-	GMT_ANCHOR_MAP,
-	GMT_ANCHOR_PLOT};
+	GMT_ANCHOR_NOTSET = -1,		/* -D */
+	GMT_ANCHOR_MAP,			/* -Dg */
+	GMT_ANCHOR_JUST,		/* -Dj */
+	GMT_ANCHOR_NORM,		/* -Dn */
+	GMT_ANCHOR_PLOT};		/* -Dx */
 
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {
@@ -70,6 +71,7 @@ struct GMT_ANCHOR {	/* Used to hold items relevant for an anchor point */
 	double x;		/* X position of anchor point */
 	double y;		/* Y position of anchor point */
 	enum GMT_enum_anchor mode;	/* Coordinate mode */
+	int justify;		/* Justification integer (1-11) for anchor (if given via -Dj) */
 	char *args;		/* Text representation of any additional arguments */
 };
 

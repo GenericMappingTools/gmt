@@ -223,6 +223,8 @@ EXTERN_MSC void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, con
 
 /* gmt_support.c: */
 
+EXTERN_MSC void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x, double *y);
+EXTERN_MSC void GMT_just_to_code (struct GMT_CTRL *GMT, int justify, char code[]);
 EXTERN_MSC struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC void GMT_set_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR *A);
 EXTERN_MSC void GMT_free_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR **Ap);
@@ -243,6 +245,7 @@ EXTERN_MSC bool GMT_get_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELE
 EXTERN_MSC void GMT_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **S);
 EXTERN_MSC bool GMT_get_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match);
 EXTERN_MSC struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *arg);
+EXTERN_MSC int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int GMT_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);

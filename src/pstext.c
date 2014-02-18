@@ -555,24 +555,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 		}
 	}
 	else if (Ctrl->F.R_justify) {
-		int i, j;
-
-		i = Ctrl->F.R_justify % 4;		/* See GMT_just_decode in gmt_support.c */
-		j = Ctrl->F.R_justify / 4;
-		if (i == 1)
-			GMT->current.io.curr_rec[ix] = GMT->common.R.wesn[XLO];
-		else if (i == 2)
-			GMT->current.io.curr_rec[ix] = (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]) / 2;
-		else
-			GMT->current.io.curr_rec[ix] = GMT->common.R.wesn[XHI];
-
-		if (j == 0)
-			GMT->current.io.curr_rec[iy] = GMT->common.R.wesn[YLO];
-		else if (j == 1)
-			GMT->current.io.curr_rec[iy] = (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]) / 2;
-		else
-			GMT->current.io.curr_rec[iy] = GMT->common.R.wesn[YHI];
-
+		GMT_just_to_lonlat (GMT, Ctrl->F.R_justify, true, &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
 		nscan = 2;	/* Since x,y are implicit */
 		nscan += sscanf (record, "%[^\n]\n", buffer);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
