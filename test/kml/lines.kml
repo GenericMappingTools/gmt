@@ -1,0 +1,1606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+	<Document>
+		<Style id="st-x-0">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+			<LineStyle>
+				<color>ff000000</color>
+				<width>1</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>ff80c0ff</color>
+				<fill>1</fill>
+				<outline>1</outline>
+			</PolyStyle>
+			<LabelStyle>
+				<scale>1</scale>
+				<color>bfffffff</color>
+			</LabelStyle>
+		</Style>
+		<Style id="st-x-1">
+			<LineStyle>
+				<color>ff000000</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-2">
+			<LineStyle>
+				<color>ffffffff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-3">
+			<LineStyle>
+				<color>ff808080</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-4">
+			<LineStyle>
+				<color>ff00ff00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-5">
+			<LineStyle>
+				<color>ffff0000</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-6">
+			<LineStyle>
+				<color>ff0000ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-7">
+			<LineStyle>
+				<color>ffffff00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-8">
+			<LineStyle>
+				<color>ffee99ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-9">
+			<LineStyle>
+				<color>ff66ddff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-10">
+			<LineStyle>
+				<color>ff006600</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-11">
+			<LineStyle>
+				<color>ff660000</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-12">
+			<LineStyle>
+				<color>ff4455aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-13">
+			<LineStyle>
+				<color>ffcc8800</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-14">
+			<LineStyle>
+				<color>ffff11ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-15">
+			<LineStyle>
+				<color>ffeeeeff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-16">
+			<LineStyle>
+				<color>ff7700ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-17">
+			<LineStyle>
+				<color>ff99ff88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-18">
+			<LineStyle>
+				<color>ffff6688</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-19">
+			<LineStyle>
+				<color>ff778855</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-20">
+			<LineStyle>
+				<color>ff440066</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-21">
+			<LineStyle>
+				<color>ff00ffdd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-22">
+			<LineStyle>
+				<color>ff0088ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-23">
+			<LineStyle>
+				<color>ff006677</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-24">
+			<LineStyle>
+				<color>ff9900bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-25">
+			<LineStyle>
+				<color>ff997799</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-26">
+			<LineStyle>
+				<color>ff00aa88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-27">
+			<LineStyle>
+				<color>ff663322</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-28">
+			<LineStyle>
+				<color>ff003322</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-29">
+			<LineStyle>
+				<color>ff77bbaa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-30">
+			<LineStyle>
+				<color>ff22bb00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-31">
+			<LineStyle>
+				<color>ff5555ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-32">
+			<LineStyle>
+				<color>ff77aaff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-33">
+			<LineStyle>
+				<color>ff001144</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-34">
+			<LineStyle>
+				<color>ffaa99ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-35">
+			<LineStyle>
+				<color>ff88bb00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-36">
+			<LineStyle>
+				<color>ffff9999</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-37">
+			<LineStyle>
+				<color>ffffdd88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-38">
+			<LineStyle>
+				<color>ffbb1100</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-39">
+			<LineStyle>
+				<color>ff000099</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-40">
+			<LineStyle>
+				<color>ff994477</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-41">
+			<LineStyle>
+				<color>ffddffbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-42">
+			<LineStyle>
+				<color>ff8899bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-43">
+			<LineStyle>
+				<color>ff4411aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-44">
+			<LineStyle>
+				<color>ff444455</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-45">
+			<LineStyle>
+				<color>ffee1199</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-46">
+			<LineStyle>
+				<color>ff77ffdd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-47">
+			<LineStyle>
+				<color>ff0055aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-48">
+			<LineStyle>
+				<color>ff665500</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-49">
+			<LineStyle>
+				<color>ffffccdd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-50">
+			<LineStyle>
+				<color>ff44ff99</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-51">
+			<LineStyle>
+				<color>ffbb4400</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-52">
+			<LineStyle>
+				<color>ff8855bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-53">
+			<LineStyle>
+				<color>ffee66dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-54">
+			<LineStyle>
+				<color>ff00ddff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-55">
+			<LineStyle>
+				<color>ff990077</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-56">
+			<LineStyle>
+				<color>ffaaddff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-57">
+			<LineStyle>
+				<color>ff77ff00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-58">
+			<LineStyle>
+				<color>ff0099cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-59">
+			<LineStyle>
+				<color>ff44aa55</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-60">
+			<LineStyle>
+				<color>ffbbbb33</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-61">
+			<LineStyle>
+				<color>ff220022</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-62">
+			<LineStyle>
+				<color>ffbbaa99</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-63">
+			<LineStyle>
+				<color>ffccff00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-64">
+			<LineStyle>
+				<color>ffaaffee</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-65">
+			<LineStyle>
+				<color>ffcc00ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-66">
+			<LineStyle>
+				<color>ff1144dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-67">
+			<LineStyle>
+				<color>ff335577</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-68">
+			<LineStyle>
+				<color>ffaa55ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-69">
+			<LineStyle>
+				<color>ff5599bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-70">
+			<LineStyle>
+				<color>ffaa5500</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-71">
+			<LineStyle>
+				<color>ff335500</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-72">
+			<LineStyle>
+				<color>ff8866ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-73">
+			<LineStyle>
+				<color>ff447766</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-74">
+			<LineStyle>
+				<color>ff554488</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-75">
+			<LineStyle>
+				<color>ffbb9900</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-76">
+			<LineStyle>
+				<color>ffcc00bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-77">
+			<LineStyle>
+				<color>ff550044</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-78">
+			<LineStyle>
+				<color>ffffbb88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-79">
+			<LineStyle>
+				<color>ffbb7777</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-80">
+			<LineStyle>
+				<color>ff55dd88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-81">
+			<LineStyle>
+				<color>ffff8800</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-82">
+			<LineStyle>
+				<color>ff6600aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-83">
+			<LineStyle>
+				<color>ff220066</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-84">
+			<LineStyle>
+				<color>ffdd77bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-85">
+			<LineStyle>
+				<color>ff4477ee</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-86">
+			<LineStyle>
+				<color>ff66cc00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-87">
+			<LineStyle>
+				<color>ffbbccbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-88">
+			<LineStyle>
+				<color>ffccbbee</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-89">
+			<LineStyle>
+				<color>ff558833</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-90">
+			<LineStyle>
+				<color>ff99dd88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-91">
+			<LineStyle>
+				<color>ff997755</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-92">
+			<LineStyle>
+				<color>ff228866</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-93">
+			<LineStyle>
+				<color>ff553355</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-94">
+			<LineStyle>
+				<color>ff003377</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-95">
+			<LineStyle>
+				<color>ff777777</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-96">
+			<LineStyle>
+				<color>ffff4455</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-97">
+			<LineStyle>
+				<color>ff99bb77</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-98">
+			<LineStyle>
+				<color>ff112200</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-99">
+			<LineStyle>
+				<color>ff005544</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-100">
+			<LineStyle>
+				<color>ff22ddaa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-101">
+			<LineStyle>
+				<color>ffcc99dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-102">
+			<LineStyle>
+				<color>ff771188</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-103">
+			<LineStyle>
+				<color>ff22cccc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-104">
+			<LineStyle>
+				<color>ff440000</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-105">
+			<LineStyle>
+				<color>ff77ddaa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-106">
+			<LineStyle>
+				<color>ff3388cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-107">
+			<LineStyle>
+				<color>ff7788ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-108">
+			<LineStyle>
+				<color>ffaabbff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-109">
+			<LineStyle>
+				<color>ff44aaaa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-110">
+			<LineStyle>
+				<color>ff5500ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-111">
+			<LineStyle>
+				<color>ffdd4400</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-112">
+			<LineStyle>
+				<color>ff332200</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-113">
+			<LineStyle>
+				<color>ff002233</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-114">
+			<LineStyle>
+				<color>ffff55bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-115">
+			<LineStyle>
+				<color>ffeeee88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-116">
+			<LineStyle>
+				<color>ff3300ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-117">
+			<LineStyle>
+				<color>ff004400</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-118">
+			<LineStyle>
+				<color>ff991133</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-119">
+			<LineStyle>
+				<color>ffcc66ee</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-120">
+			<LineStyle>
+				<color>ffaa66aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-121">
+			<LineStyle>
+				<color>ff7777bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-122">
+			<LineStyle>
+				<color>ffbb4477</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-123">
+			<LineStyle>
+				<color>ff221144</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-124">
+			<LineStyle>
+				<color>ff111177</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-125">
+			<LineStyle>
+				<color>ff00aaff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-126">
+			<LineStyle>
+				<color>ff445544</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-127">
+			<LineStyle>
+				<color>ffcc6666</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-128">
+			<LineStyle>
+				<color>ffaa11ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-129">
+			<LineStyle>
+				<color>ff11dd33</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-130">
+			<LineStyle>
+				<color>ff55bbff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-131">
+			<LineStyle>
+				<color>ffddffff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-132">
+			<LineStyle>
+				<color>ffcc2277</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-133">
+			<LineStyle>
+				<color>ff00aa55</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-134">
+			<LineStyle>
+				<color>ff883333</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-135">
+			<LineStyle>
+				<color>ff004455</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-136">
+			<LineStyle>
+				<color>ffffaadd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-137">
+			<LineStyle>
+				<color>ffaaff00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-138">
+			<LineStyle>
+				<color>ff008800</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-139">
+			<LineStyle>
+				<color>ff226699</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-140">
+			<LineStyle>
+				<color>ff3300cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-141">
+			<LineStyle>
+				<color>ff55ffff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-142">
+			<LineStyle>
+				<color>ffffeecc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-143">
+			<LineStyle>
+				<color>ff6655bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-144">
+			<LineStyle>
+				<color>ffffbb00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-145">
+			<LineStyle>
+				<color>ff885500</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-146">
+			<LineStyle>
+				<color>ff6688cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-147">
+			<LineStyle>
+				<color>ffbb88ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-148">
+			<LineStyle>
+				<color>ffff7755</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-149">
+			<LineStyle>
+				<color>ffccee66</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-150">
+			<LineStyle>
+				<color>ffdd0044</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-151">
+			<LineStyle>
+				<color>ff77ccdd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-152">
+			<LineStyle>
+				<color>ffff55ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-153">
+			<LineStyle>
+				<color>ffbb44aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-154">
+			<LineStyle>
+				<color>ff4499ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-155">
+			<LineStyle>
+				<color>ff7733dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-156">
+			<LineStyle>
+				<color>ff0066ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-157">
+			<LineStyle>
+				<color>ff779988</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-158">
+			<LineStyle>
+				<color>ff9944bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-159">
+			<LineStyle>
+				<color>ff008899</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-160">
+			<LineStyle>
+				<color>ff331100</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-161">
+			<LineStyle>
+				<color>ff885577</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-162">
+			<LineStyle>
+				<color>ff3344bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-163">
+			<LineStyle>
+				<color>ffffdd00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-164">
+			<LineStyle>
+				<color>ffcc9999</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-165">
+			<LineStyle>
+				<color>ffff77bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-166">
+			<LineStyle>
+				<color>ff55ee66</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-167">
+			<LineStyle>
+				<color>ff00cc66</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-168">
+			<LineStyle>
+				<color>ff882255</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-169">
+			<LineStyle>
+				<color>ff889900</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-170">
+			<LineStyle>
+				<color>ffaaddbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-171">
+			<LineStyle>
+				<color>ffee9966</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-172">
+			<LineStyle>
+				<color>ff00ff77</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-173">
+			<LineStyle>
+				<color>ff775555</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-174">
+			<LineStyle>
+				<color>ff440088</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-175">
+			<LineStyle>
+				<color>ff00bbee</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-176">
+			<LineStyle>
+				<color>ff332233</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-177">
+			<LineStyle>
+				<color>ff441144</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-178">
+			<LineStyle>
+				<color>ff447788</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-179">
+			<LineStyle>
+				<color>ff66aa77</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-180">
+			<LineStyle>
+				<color>ffbbbbcc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-181">
+			<LineStyle>
+				<color>ffbbbb88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-182">
+			<LineStyle>
+				<color>ffdd55ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-183">
+			<LineStyle>
+				<color>ff44aacc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-184">
+			<LineStyle>
+				<color>ffaaffbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-185">
+			<LineStyle>
+				<color>ff777700</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-186">
+			<LineStyle>
+				<color>ff0088dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-187">
+			<LineStyle>
+				<color>ff223377</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-188">
+			<LineStyle>
+				<color>ff77bbee</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-189">
+			<LineStyle>
+				<color>ff1100cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-190">
+			<LineStyle>
+				<color>ff665577</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-191">
+			<LineStyle>
+				<color>ffaa99bb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-192">
+			<LineStyle>
+				<color>ff99bbcc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-193">
+			<LineStyle>
+				<color>ff88ffff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-194">
+			<LineStyle>
+				<color>ff338800</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-195">
+			<LineStyle>
+				<color>ff1166dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-196">
+			<LineStyle>
+				<color>ff44bb88</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-197">
+			<LineStyle>
+				<color>ff11aabb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-198">
+			<LineStyle>
+				<color>ff4477cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-199">
+			<LineStyle>
+				<color>ff663377</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-200">
+			<LineStyle>
+				<color>ffeeccbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-201">
+			<LineStyle>
+				<color>ff003399</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-202">
+			<LineStyle>
+				<color>ff99dd11</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-203">
+			<LineStyle>
+				<color>ff333311</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-204">
+			<LineStyle>
+				<color>ff5544cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-205">
+			<LineStyle>
+				<color>ff000022</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-206">
+			<LineStyle>
+				<color>ff6633ee</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-207">
+			<LineStyle>
+				<color>ff220099</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-208">
+			<LineStyle>
+				<color>ff8800cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-209">
+			<LineStyle>
+				<color>ff55ccbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-210">
+			<LineStyle>
+				<color>ff554433</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-211">
+			<LineStyle>
+				<color>ff224444</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-212">
+			<LineStyle>
+				<color>ffff33cc</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-213">
+			<LineStyle>
+				<color>ffeeffdd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-214">
+			<LineStyle>
+				<color>ff66ffbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-215">
+			<LineStyle>
+				<color>ff333366</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-216">
+			<LineStyle>
+				<color>ff225533</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-217">
+			<LineStyle>
+				<color>ffcc9966</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-218">
+			<LineStyle>
+				<color>ff55ff00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-219">
+			<LineStyle>
+				<color>ff337744</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-220">
+			<LineStyle>
+				<color>ff777799</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-221">
+			<LineStyle>
+				<color>ff7777dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-222">
+			<LineStyle>
+				<color>ff338888</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-223">
+			<LineStyle>
+				<color>ffbb77dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-224">
+			<LineStyle>
+				<color>ffcc88aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-225">
+			<LineStyle>
+				<color>ff66aa44</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-226">
+			<LineStyle>
+				<color>ff8800ee</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-227">
+			<LineStyle>
+				<color>ff884455</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-228">
+			<LineStyle>
+				<color>ffbbff77</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-229">
+			<LineStyle>
+				<color>ff77cc55</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-230">
+			<LineStyle>
+				<color>ff8866aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-231">
+			<LineStyle>
+				<color>ffff88ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-232">
+			<LineStyle>
+				<color>ff334411</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-233">
+			<LineStyle>
+				<color>ffff0077</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-234">
+			<LineStyle>
+				<color>ff00ffff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-235">
+			<LineStyle>
+				<color>ffcc7711</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-236">
+			<LineStyle>
+				<color>ffaa00aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-237">
+			<LineStyle>
+				<color>ff4466ff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-238">
+			<LineStyle>
+				<color>ff22ffbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-239">
+			<LineStyle>
+				<color>ffdd5555</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-240">
+			<LineStyle>
+				<color>ff88ffbb</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-241">
+			<LineStyle>
+				<color>ffff88aa</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-242">
+			<LineStyle>
+				<color>ff33aa00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-243">
+			<LineStyle>
+				<color>ff556699</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-244">
+			<LineStyle>
+				<color>ff556677</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-245">
+			<LineStyle>
+				<color>ff55ffdd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-246">
+			<LineStyle>
+				<color>ff113355</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-247">
+			<LineStyle>
+				<color>ffaa9966</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-248">
+			<LineStyle>
+				<color>ff553300</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-249">
+			<LineStyle>
+				<color>ff887733</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-250">
+			<LineStyle>
+				<color>ff662200</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-251">
+			<LineStyle>
+				<color>ffbbcc00</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-252">
+			<LineStyle>
+				<color>ff77ee55</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-253">
+			<LineStyle>
+				<color>ffffaa22</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-254">
+			<LineStyle>
+				<color>ffccaaff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-255">
+			<LineStyle>
+				<color>ffcc22dd</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-256">
+			<LineStyle>
+				<color>ff882200</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-257">
+			<LineStyle>
+				<color>ff44ddff</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-258">
+			<LineStyle>
+				<color>ff113300</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Style id="st-x-259">
+			<LineStyle>
+				<color>ff666644</color>
+				<width>1</width>
+			</LineStyle>
+		</Style>
+		<Folder>
+			<name>./lines.txt</name>
+			<Placemark>
+				<name>Line 0</name>
+				<styleUrl>#st-x-5</styleUrl>
+				<LineString>
+					<tessellate>1</tessellate>
+					<coordinates>
+						0,0,0
+						0,1,0
+					</coordinates>
+				</LineString>
+			</Placemark>
+			<Placemark>
+				<name>Line 1</name>
+				<styleUrl>#st-x-6</styleUrl>
+				<LineString>
+					<tessellate>1</tessellate>
+					<coordinates>
+						0,0,0
+						1,0,0
+					</coordinates>
+				</LineString>
+			</Placemark>
+		</Folder>
+	</Document>
+</kml>
