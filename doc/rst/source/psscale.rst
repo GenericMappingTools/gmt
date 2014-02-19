@@ -49,8 +49,8 @@ Variations in intensity due to shading/illumination may be displayed by
 setting the option **-I**. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
-units is specified by **FONT_ANNOT_PRIMARY**. If a label is requested,
-it is plotted with **FONT_LABEL** 
+units is specified by :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`. If a label is requested,
+it is plotted with :ref:`FONT_LABEL <FONT_LABEL>` 
 
 Required Arguments
 ------------------
@@ -99,7 +99,7 @@ Optional Arguments
     color changes are annotated. To use a subset, add an extra column to
     the cpt-file with a L, U, or B to annotate Lower, Upper, or Both
     color segment boundaries (but see **-B**). If not given, **psscale**
-    will read stdin. Like **grdview**, **psscale** can understand
+    will read stdin. Like :doc:`grdview`, **psscale** can understand
     pattern specifications in the cpt file. For CPT files where the
     *z* range is in meters, it may be useful to change to another unit
     when plotting.  To do so, append **+U**\ *unit* to the file name.
@@ -215,7 +215,7 @@ Mercator map produced by a previous call, ensuring a 2 cm offset from the map fr
 
    ::
 
-    gmt psscale -DjCT/4i/1c/0/2c -O -Ccolors.cpt -Baf >> map.ps
+    gmt psscale -DjCT/4i/1c/0/2ch -O -Ccolors.cpt -Baf -R -J >> map.ps
 
 Notes
 -----
