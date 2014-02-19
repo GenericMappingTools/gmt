@@ -1,0 +1,2403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+	<Document>
+		<Style id="st-x-0">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+			<LineStyle>
+				<color>ff000000</color>
+				<width>1</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>ff80c0ff</color>
+				<fill>1</fill>
+				<outline>1</outline>
+			</PolyStyle>
+			<LabelStyle>
+				<scale>1</scale>
+				<color>bfffffff</color>
+			</LabelStyle>
+		</Style>
+		<Style id="st-x-1">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-2">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-3">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-4">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-5">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-6">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-7">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-8">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-9">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-10">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-11">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-12">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-13">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-14">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-15">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-16">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-17">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-18">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-19">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-20">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-21">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-22">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-23">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-24">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-25">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-26">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-27">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-28">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-29">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-30">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-31">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-32">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-33">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-34">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-35">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-36">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-37">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-38">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-39">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-40">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-41">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-42">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-43">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-44">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-45">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-46">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-47">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-48">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-49">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-50">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-51">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-52">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-53">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-54">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-55">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-56">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-57">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-58">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-59">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-60">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-61">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-62">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-63">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-64">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-65">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-66">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-67">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-68">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-69">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-70">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-71">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-72">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-73">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-74">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-75">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-76">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-77">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-78">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-79">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-80">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-81">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-82">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-83">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-84">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-85">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-86">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-87">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-88">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-89">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-90">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-91">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-92">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-93">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-94">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-95">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-96">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-97">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-98">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-99">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-100">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-101">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-102">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-103">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-104">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-105">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-106">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-107">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-108">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-109">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-110">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-111">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-112">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-113">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-114">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-115">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-116">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-117">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-118">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-119">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-120">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-121">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-122">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-123">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-124">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-125">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-126">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-127">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-128">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-129">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-130">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-131">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-132">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-133">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-134">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-135">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-136">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-137">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-138">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-139">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-140">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-141">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-142">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-143">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-144">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-145">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-146">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-147">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-148">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-149">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-150">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-151">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-152">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-153">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-154">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-155">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-156">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-157">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-158">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-159">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-160">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-161">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-162">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-163">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-164">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-165">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-166">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-167">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-168">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-169">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-170">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-171">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-172">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-173">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-174">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-175">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-176">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-177">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-178">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-179">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-180">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-181">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-182">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-183">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-184">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-185">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-186">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-187">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-188">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-189">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-190">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-191">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-192">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-193">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-194">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-195">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-196">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-197">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-198">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-199">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-200">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-201">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-202">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-203">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-204">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-205">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-206">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-207">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-208">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-209">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-210">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-211">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-212">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-213">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-214">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-215">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-216">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-217">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-218">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-219">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-220">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-221">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-222">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-223">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-224">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-225">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-226">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-227">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-228">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-229">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-230">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-231">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-232">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-233">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-234">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-235">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-236">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-237">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-238">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-239">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-240">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-241">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-242">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-243">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-244">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-245">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-246">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-247">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-248">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-249">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-250">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-251">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-252">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-253">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-254">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-255">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-256">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-257">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-258">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Style id="st-x-259">
+			<IconStyle>
+				<Icon>
+					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
+				</Icon>
+				<scale>1</scale>
+				<color>ff80c0ff</color>
+			</IconStyle>
+		</Style>
+		<Folder>
+			<name>./pointsets.txt</name>
+			<Folder>
+				<name>Point Set 0</name>
+				<Placemark>
+					<name>Point 0</name>
+					<styleUrl>#st-x-5</styleUrl>
+					<Point>
+						<coordinates>
+						0,0,0
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>Point 1</name>
+					<styleUrl>#st-x-5</styleUrl>
+					<Point>
+						<coordinates>
+						0,1,0
+						</coordinates>
+					</Point>
+				</Placemark>
+			</Folder>
+			<Folder>
+				<name>Point Set 1</name>
+				<Placemark>
+					<name>Point 0</name>
+					<styleUrl>#st-x-6</styleUrl>
+					<Point>
+						<coordinates>
+						0,0,0
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>Point 1</name>
+					<styleUrl>#st-x-6</styleUrl>
+					<Point>
+						<coordinates>
+						1,0,0
+						</coordinates>
+					</Point>
+				</Placemark>
+			</Folder>
+		</Folder>
+	</Document>
+</kml>
