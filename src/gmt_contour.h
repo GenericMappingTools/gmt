@@ -45,6 +45,11 @@ enum GMT_enum_label {
 	GMT_LABEL_IS_SEG,	/* Label is computed from segment number, via +Ln */
 	GMT_LABEL_IS_FSEG};	/* Label is computed from file and segment number, via +LN */
 
+/* Various settings for quoted line label for crossections */
+enum GMT_enum_crossect {
+	GMT_LBL_START = 1,	/* Add suffix for 2nd label */
+	GMT_LBL_END};		/* Add suffix for 2st label */
+	
 struct GMT_XOVER {		/* Structure with info on all track cross-over */
 	double *x;		/* x or Longitude */
 	double *y;		/* y or Latitude */
@@ -115,6 +120,7 @@ struct GMT_CONTOUR {
 	unsigned int angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
 	unsigned int n_segments;		/* The number of segments */
 	unsigned int save_labels;	/* 1 if we wish to save label locations to a text file, 2 if we wish to include label angles [1 = no angles] */
+	unsigned int crossect;		/* For SqN2 only: 1 to add text at 2nd label, 2 to add at first label [0 = off] */
 	int number_placement;	/* How the n_cont labels are distributed [-1/0/+1]*/
 	int hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
 	bool annot;			/* true if we want labels */
@@ -136,6 +142,7 @@ struct GMT_CONTOUR {
 	char label_file[GMT_BUFSIZ];	/* Output files for text dump of label locations */
 	char unit[GMT_LEN64];	/* Unit for labels */
 	char prefix[GMT_LEN64];	/* prefix for labels */
+	char crossect_tag[GMT_LEN64];	/* suffix for crosection */
 	char line_name[16];		/* Name of line: contour or line */
 	char flag;			/* Char for the option key */
 	char **f_label;			/* Array for fixed labels */
