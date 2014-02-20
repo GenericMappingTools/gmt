@@ -33,6 +33,18 @@ enum GMT_enum_contline {
 	GMT_CONTOUR_XLINE,	/* Contour labels where crossing straight lines (via key points) */
 	GMT_CONTOUR_XCURVE};	/* Contour labels where crossing arbitrary lines (via file) */
 
+/* Various settings for quoted line/contour label types */
+enum GMT_enum_label {
+	GMT_LABEL_IS_NONE = 0,	/* No contour/line crossing  */
+	GMT_LABEL_IS_CONSTANT,	/* Label is constant, given by +l<label> */
+	GMT_LABEL_IS_HEADER,	/* Label is taken from header, given by +Lh */
+	GMT_LABEL_IS_PDIST,	/* Label is computed from plot distances, via +Ld */
+	GMT_LABEL_IS_MDIST,	/* Label is computed from map distances, via +LD */
+	GMT_LABEL_IS_FFILE,	/* Label is taken from 3rd column in given file, via +Lf */
+	GMT_LABEL_IS_XFILE,	/* Label is taken from segment header in crossing file, via +Lx */
+	GMT_LABEL_IS_SEG,	/* Label is computed from segment number, via +Ln */
+	GMT_LABEL_IS_FSEG};	/* Label is computed from file and segment number, via +LN */
+
 struct GMT_XOVER {		/* Structure with info on all track cross-over */
 	double *x;		/* x or Longitude */
 	double *y;		/* y or Latitude */
@@ -91,6 +103,7 @@ struct GMT_CONTOUR {
 	unsigned int half_width;	/* Number of points to use in smoothing the angle [10/2] */
 	unsigned int n_cont;		/* Number of labels per segment */
 	enum GMT_enum_contline crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */
+	enum GMT_enum_label label_type;	/* 0-7; see above for enums */
 	unsigned int nx;		/* Number of crossovers at any time */
 	unsigned int f_n;			/* Number of such points */
 	unsigned int clearance_flag;	/* 1 if spacing given in % of labelfont size, 0 otherwise */
@@ -100,7 +113,6 @@ struct GMT_CONTOUR {
 	unsigned int just;		/* Label justification */
 	unsigned int end_just[2];	/* Justification for end of lines */
 	unsigned int angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
-	unsigned int label_type;	/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
 	unsigned int n_segments;		/* The number of segments */
 	unsigned int save_labels;	/* 1 if we wish to save label locations to a text file, 2 if we wish to include label angles [1 = no angles] */
 	int number_placement;	/* How the n_cont labels are distributed [-1/0/+1]*/
