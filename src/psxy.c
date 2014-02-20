@@ -1083,7 +1083,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		}
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
-			if (D->table[tbl]->n_headers && S.G.label_type == 2)	/* Get potential label from first header */
+			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from first header */
 				GMT_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
 
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
@@ -1129,7 +1129,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					polygon = false;
 					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 				}
-				if (S.G.label_type == 2)	/* Get potential label from segment header */
+				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
 					GMT_extract_label (GMT, L->header, S.G.label, L->ogr);
 
 				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
