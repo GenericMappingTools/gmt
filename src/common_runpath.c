@@ -281,9 +281,6 @@ char *GMT_runtime_libdir (char *result) {
 #endif /* WIN32 */
 
 	/* unsupported, or not shared library */
-	/* If path contains the bin dir, replace bin with lib as a quick fix for Cygwin */
-	if (result && strlen (result) > 4 && !strncmp (&result[strlen(result)-4], "/bin", 4U))
-		strncpy (&result[strlen(result)-3], "lib", 3U);
 		
 	return NULL;
 }

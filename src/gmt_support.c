@@ -3470,20 +3470,20 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 			case 'l':	/* Exact Label specification */
 				strncpy (G->label, &p[1], GMT_BUFSIZ);
-				G->label_type = 1;
+				G->label_type = GMT_LABEL_IS_CONSTANT;
 				break;
 
 			case 'L':	/* Label code specification */
 				switch (p[1]) {
 					case 'h':	/* Take the first string in segment headers */
-						G->label_type = 2;
+						G->label_type = GMT_LABEL_IS_HEADER;
 						break;
 					case 'd':	/* Use the current plot distance in chosen units */
-						G->label_type = 3;
+						G->label_type = GMT_LABEL_IS_PDIST;
 						G->dist_unit = GMT_unit_lookup (GMT, p[2], GMT->current.setting.proj_length_unit);
 						break;
 					case 'D':	/* Use current map distance in chosen units */
-						G->label_type = 4;
+						G->label_type = GMT_LABEL_IS_MDIST;
 						if (p[2] && strchr ("defkMn", (int)p[2])) {	/* Found a valid unit */
 							c = p[2];
 							GMT_init_distaz (GMT, c, GMT_sph_mode (GMT), GMT_LABEL_DIST);
@@ -3493,20 +3493,20 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 						G->dist_unit = (int)c;
 						break;
 					case 'f':	/* Take the 3rd column in fixed contour location file */
-						G->label_type = 5;
+						G->label_type = GMT_LABEL_IS_FFILE;
 						break;
 					case 'x':	/* Take the first string in segment headers in the crossing file */
-						G->label_type = 6;
+						G->label_type = GMT_LABEL_IS_XFILE;
 						break;
 					case 'n':	/* Use the current segment number */
-						G->label_type = 7;
+						G->label_type = GMT_LABEL_IS_SEG;
 						break;
 					case 'N':	/* Use <current file number>/<segment number> */
-						G->label_type = 8;
+						G->label_type = GMT_LABEL_IS_FSEG;
 						break;
 					default:	/* Probably meant lower case l */
 						strncpy (G->label, &p[1], GMT_BUFSIZ);
-						G->label_type = 1;
+						G->label_type = GMT_LABEL_IS_HEADER;
 						break;
 				}
 				break;
@@ -3987,19 +3987,19 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		G->clearance[GMT_X] = 0.01 * G->clearance[GMT_X] * G->font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		G->clearance[GMT_Y] = 0.01 * G->clearance[GMT_Y] * G->font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	}
-	if (G->label_type == 5 && !G->fixed) {	/* Requires fixed file */
+	if (G->label_type == GMT_LABEL_IS_FFILE && !G->fixed) {	/* Requires fixed file */
 		error++;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Labeling option +Lf requires the fixed label location setting\n", G->flag);
 	}
-	if (G->label_type == 6 && G->crossing != GMT_CONTOUR_XCURVE) {	/* Requires cross file */
+	if (G->label_type == GMT_LABEL_IS_XFILE && G->crossing != GMT_CONTOUR_XCURVE) {	/* Requires cross file */
 		error++;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Labeling option +Lx requires the crossing lines setting\n", G->flag);
 	}
-	if (G->spacing && G->dist_kind == 1 && G->label_type == 4 && G->dist_unit == 0) {	/* Did not specify unit - use same as in -G */
+	if (G->spacing && G->dist_kind == 1 && G->label_type == GMT_LABEL_IS_MDIST && G->dist_unit == 0) {	/* Did not specify unit - use same as in -G */
 		GMT->current.map.dist[GMT_LABEL_DIST].func = GMT->current.map.dist[GMT_CONT_DIST].func;
 		GMT->current.map.dist[GMT_LABEL_DIST].scale = GMT->current.map.dist[GMT_CONT_DIST].scale;
 	}
-	if ((G->dist_kind == 1 || G->label_type == 4) && !GMT_is_geographic (GMT, GMT_IN)) {
+	if ((G->dist_kind == 1 || G->label_type == GMT_LABEL_IS_MDIST) && !GMT_is_geographic (GMT, GMT_IN)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Map distance options requires a map projection.\n", G->flag);
 		error++;
 	}
@@ -4032,7 +4032,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 		}
-		n_col = (G->label_type == 5) ? 3 : 2;
+		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;
 		G->f_xy[GMT_X] = GMT_memory (GMT, NULL, n_alloc, double);
 		G->f_xy[GMT_Y] = GMT_memory (GMT, NULL, n_alloc, double);
 		if (n_col == 3) G->f_label = GMT_memory (GMT, NULL, n_alloc, char *);
@@ -4938,22 +4938,22 @@ bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_labe
 	}
 
 	switch (G->label_type) {
-		case 0:
+		case GMT_LABEL_IS_NONE:
 			if (label && label[0])
 				strcpy (this_label, label);
 			else
 				label_OK = false;
 			break;
 
-		case 1:
-		case 2:
+		case GMT_LABEL_IS_CONSTANT:
+		case GMT_LABEL_IS_HEADER:
 			if (G->label && G->label[0])
 				strcpy (this_label, G->label);
 			else
 				label_OK = false;
 			break;
 
-		case 3:
+		case GMT_LABEL_IS_PDIST:
 			if (G->spacing) {	/* Distances are even so use special contour format */
 				GMT_get_format (GMT, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit], G->unit, NULL, format);
 				sprintf (this_label, format, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
@@ -4963,29 +4963,29 @@ bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_labe
 			}
 			break;
 
-		case 4:
+		case GMT_LABEL_IS_MDIST:
 			sprintf (this_label, GMT->current.setting.format_float_map, this_value_dist);
 			break;
 
-		case 5:
+		case GMT_LABEL_IS_FFILE:
 			if (G->f_label[fj] && G->f_label[fj][0])
 				strcpy (this_label, G->f_label[fj]);
 			else
 				label_OK = false;
 			break;
 
-		case 6:
+		case GMT_LABEL_IS_XFILE:
 			if (G->xp->segment[xl]->label && G->xp->segment[xl]->label[0])
 				strcpy (this_label, G->xp->segment[xl]->label);
 			else
 				label_OK = false;
 			break;
 
-		case 7:
+		case GMT_LABEL_IS_SEG:
 			sprintf (this_label, "%" PRIu64, (GMT->current.io.status & GMT_IO_SEGMENT_HEADER) ? GMT->current.io.seg_no - 1 : GMT->current.io.seg_no);
 			break;
 
-		case 8:
+		case GMT_LABEL_IS_FSEG:
 			sprintf (this_label, "%d/%" PRIu64, GMT->current.io.tbl_no, (GMT->current.io.status & GMT_IO_SEGMENT_HEADER) ? GMT->current.io.seg_no - 1 : GMT->current.io.seg_no);
 			break;
 
@@ -5073,11 +5073,11 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 			dy = yy[i] - yy[i-1];
 			step = stept = hypot (dx, dy);
 			map_dist[i] = map_dist[i-1] + step;
-			if (G->dist_kind == 1 || G->label_type == 4) {
+			if (G->dist_kind == 1 || G->label_type == GMT_LABEL_IS_MDIST) {
 				lon[0] = lon[1];	lat[0] = lat[1];
 				GMT_xy_to_geo (GMT, &lon[1], &lat[1], xx[i], yy[i]);
 				if (G->dist_kind == 1) step = GMT_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
-				if (G->label_type == 4) stept = GMT_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_LABEL_DIST);
+				if (G->label_type == GMT_LABEL_IS_MDIST) stept = GMT_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_LABEL_DIST);
 			}
 			if (radii[i] < G->min_radius) step = stept = 0.0;	/* If curvature is too great we simply don't add up distances */
 			track_dist[i] = track_dist[i-1] + step;
@@ -5118,7 +5118,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					}
 					this_dist = G->label_dist_spacing - dist_offset + last_label_dist;
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
-						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == 0 || G->label_type == 3));
+						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE || G->label_type == GMT_LABEL_IS_PDIST));
 						new_label->node = i - 1;
 						gmt_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -5185,7 +5185,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
 					this_dist = dist;
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
-						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == 0));
+						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
 						new_label->node = (j == 0) ? 0 : j - 1;
 						gmt_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
 						if (G->number_placement) new_label->end = e_val;
@@ -5238,7 +5238,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 						this_value_dist = value_dist[right] - f * (value_dist[right] - value_dist[left]);
 					}
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, line_no, 0, G)) {
-						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == 0));
+						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
 						gmt_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
@@ -5276,7 +5276,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					new_label->dist = map_dist[start];
 					this_value_dist = value_dist[start];
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, j, G)) {
-						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == 0));
+						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
 						gmt_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {

@@ -1004,7 +1004,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		}
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
-			if (D->table[tbl]->n_headers && S.G.label_type == 2) GMT_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
+			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) GMT_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
 
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
@@ -1046,7 +1046,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					polygon = false;
 					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 				}
-				if (S.G.label_type == 2)	/* Get potential label from segment header */
+				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
 					GMT_extract_label (GMT, L->header, S.G.label, L->ogr);
 
 				xp = GMT_memory (GMT, NULL, n, double);

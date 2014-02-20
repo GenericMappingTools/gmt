@@ -10066,7 +10066,13 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	GMT->init.runtime_bindir = strdup (path);
 
 	/* Set runtime libdir */
+#if defined(__CYGWIN__)
+	/* Since no dladdr under Cygwin we must assume lib dir parallels bin dir */
+	if (strlen (path) > 4 && !strncmp (&path[strlen(path)-4], "/bin", 4U))
+		strncpy (&path[strlen(path)-3], "lib", 3U);
+#else
 	GMT_runtime_libdir (path);
+#endif
 	GMT->init.runtime_libdir = strdup (path);
 
 	GMT_set_env (GMT);	/* Get GMT_SHAREDIR and other environment path parameters */
