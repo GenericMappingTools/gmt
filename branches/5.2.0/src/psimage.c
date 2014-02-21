@@ -354,7 +354,7 @@ int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int 
 
 int GMT_psimage (void *V_API, int mode, void *args)
 {
-	int i, j, k, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0, has_trans = 0;
+	int i, j, k, n, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0, has_trans = 0;
 	unsigned int row, col;
 	bool free_GMT = false, did_gray = false;
 
