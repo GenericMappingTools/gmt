@@ -3401,7 +3401,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, c;
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t|T[<file>]][+u<unit>][+v][+w<width>][+=<prefix>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t|T[<file>]][+u<unit>][+v][+w<width>][+x|X<suffix>][+=<prefix>] strings */
 
 	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
 
@@ -3559,6 +3559,22 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'w':	/* Angle filter width [Default is 10 points] */
 				G->half_width = atoi (&p[1]) / 2;
+				break;
+
+			case 'x':	/* Crossection labeling for SqN2 only; add given text to start and end label */
+				if (!G->number || G->n_cont != 2) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sq option: The + modifier is only valid with -SqN2\n");
+					bad++;
+				}
+				else {
+					G->crossect = true;
+					if (p[1])
+						sscanf (&p[1], "%[^,],%s", G->crossect_tag[0], G->crossect_tag[1]);
+					else {	/* Default is to prime the end annotation only */
+						G->crossect_tag[0][0] = '\0';
+						strcpy (G->crossect_tag[1], "'");
+					}
+				}
 				break;
 
 			case '=':	/* Label Prefix specification */
@@ -5186,6 +5202,9 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					this_dist = dist;
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
+						if (G->crossect) {	/* Special crossection mode */
+							strcat (new_label->label, G->crossect_tag[i]);
+						}
 						new_label->node = (j == 0) ? 0 : j - 1;
 						gmt_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
 						if (G->number_placement) new_label->end = e_val;

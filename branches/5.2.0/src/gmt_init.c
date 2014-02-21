@@ -776,6 +776,10 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	if (kind == 0) GMT_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
 	GMT_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
 	GMT_message (GMT, "%s +w sets how many (x,y) points to use for angle calculation [10].\n", pad);
+	if (kind == 1) {
+		GMT_message (GMT, "%s +x[first,last] adds <first> and <last> to these two labels [,'].\n", pad);
+		GMT_message (GMT, "%s   This modifier is only allowed if -SqN2 is used.\n", pad);
+	}
 	GMT_message (GMT, "%s +=<prefix> to give all labels a prefix.\n", pad);
 }
 
