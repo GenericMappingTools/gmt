@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdgradient** *in_grdfile* **-G**\ *out_grdfile*
-[ **-A**\ *azim*\ [/*azim2*] ] [ **-D**\ [**c**][**o**][**n**] ]
+[ **-A**\ *azim*\ [/*azim2*] ] [ **-D**\ [**a**][**c**][**o**][**n**] ]
 [ **-E**\ [**s\|p**\ ]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*] ] 
 [ **-L**\ *flag* ] 
 [ **-N**\ [**e**\ ][**t**][*amp*][/\ *sigma*\ [/*offset*]] ]
@@ -62,15 +62,15 @@ Optional Arguments
     retained; this is useful for illuminating data with two directions
     of lineated structures, e.g., **-A**\ *0*/*270* illuminates from the
     north (top) and west (left).
-**-D**\ [**c**][**o**][**n**]
-    Find the direction of the gradient of the data. By default, the
-    directions are measured clockwise from north, as *azim* in **-A**
+**-D**\ [**a**][**c**][**o**][**n**]
+    Find the direction of the positive (up-slope) gradient of the data.
+    To instead find the aspect (the down-slope direction), use **-Da**.
+    By default, directions are measured clockwise from north, as *azim* in **-A**
     above. Append **c** to use conventional Cartesian angles measured
     counterclockwise from the positive x (east) direction. Append **o**
     to report orientations (0-180) rather than directions (0-360).
     Append **n** to add 90 degrees to all angles (e.g., to give
-    orientation of lineated features).  Unlike **-A**, here we return
-    the up-slope direction of the gradient.
+    local strikes of the surface ).
 **-E**\ [**s\|p**]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]
     Compute Lambertian radiance appropriate to use with :doc:`grdimage` and :doc:`grdview`.
     The Lambertian Reflection assumes an ideal surface that

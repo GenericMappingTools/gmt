@@ -48,7 +48,7 @@ struct GRDGRADIENT_CTRL {
 		bool two;
 		double azimuth[2];
 	} A;
-	struct D {	/* -D[a][o][n] */
+	struct D {	/* -D[a][c][o][n] */
 		bool active;
 		unsigned int mode;
 	} D;
@@ -117,7 +117,7 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[s|p|m]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
 
@@ -128,7 +128,8 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -A<azim>/<azim2> will compute two directions and save the one larger in magnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Find the direction of the vector grad z (up-slope direction).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default: azimuth].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append a to get the aspect instead (down-slope direction).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to report Cartesian angle (0-360 CCW from East (+x-axis)) [Default: azimuth].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to add 90 degrees to the values from c or o.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
@@ -196,9 +197,10 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 				j = 0;
 				while (opt->arg[j]) {
 					switch (opt->arg[j]) {
-						case 'C': case 'c': Ctrl->D.mode |= 1; break;
-						case 'O': case 'o': Ctrl->D.mode |= 2; break;
-						case 'N': case 'n': Ctrl->D.mode |= 4; break;
+						case 'c': Ctrl->D.mode |= 1; break;
+						case 'o': Ctrl->D.mode |= 2; break;
+						case 'n': Ctrl->D.mode |= 4; break;
+						case 'a': Ctrl->D.mode |= 8; break;
 						default:
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: Unrecognized modifier\n");
 							n_errors++;
@@ -500,6 +502,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 				else {
 					azim = (Ctrl->D.mode & 1) ? atan2d (dzdy, dzdx) : 90.0 - atan2d (dzdy, dzdx);
 					if (Ctrl->D.mode & 4) azim += 90.0;
+					if (Ctrl->D.mode & 8) azim += 180.0;
 					if (azim < 0.0) azim += 360.0;
 					if (azim >= 360.0) azim -= 360.0;
 					if (Ctrl->D.mode & 2 && azim >= 180) azim -= 180.0;
