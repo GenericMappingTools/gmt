@@ -393,7 +393,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-		col = D->n_columns - 1;	/* Use the last column of the input as z */
+		col = (unsigned int)(D->n_columns - 1);	/* Use the last column of the input as z */
 		nz = Ctrl->E.levels;
 		inc = (D->max[col] - D->min[col]) / (nz - 1);
 		z = GMT_memory (GMT, NULL, nz, double);
