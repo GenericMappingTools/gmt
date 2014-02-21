@@ -11,7 +11,9 @@ offset, the user should add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. When reading grids, the format is generally automatically
+data. In case the two characters *id* is not provided, as in **=/**\ *scale*
+than a *id*\ **=**\ *nf* is assumed.
+When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
 names. See :doc:`grdreformat </grdreformat>` and Section
 :ref:`grid-file-format`
