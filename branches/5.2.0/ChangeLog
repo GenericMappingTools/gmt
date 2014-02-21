@@ -33,7 +33,11 @@
 201x-yy-zz	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
-2014-02-1o	pwessel
+2014-02-20	pwessel
+	* grdcontour.c:		The -Zscale/offset option was applied incorrectly due to a
+				change in the underlying scaling function.
+	* grdvolume.c:		---"---
+2014-02-10	pwessel
 	*gmt2kml.c:		Make sure the default style IDs are unique for each process.
 
 2014-02-03	pwessel
