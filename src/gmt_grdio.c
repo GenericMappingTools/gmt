@@ -338,9 +338,13 @@ int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *heade
 	/* decode grid type */
 	strncpy (type_code, format, 2);
 	type_code[2] = '\0';
-	err = GMT_grd_format_decoder (Ctrl, type_code, &header->type); /* update header type id */
-	if (err != GMT_NOERROR)
-		return err;
+	if (type_code[0] == '/')		/* user passed a scale with no id code  =/scale[...]. Assume "nf" */
+		header->type = 18;
+	else {
+		err = GMT_grd_format_decoder(Ctrl, type_code, &header->type); /* update header type id */
+		if (err != GMT_NOERROR)
+			return err;
+	}
 
 	/* parse scale/offset/invalid if any */
 	p = strchr (format, '/');
