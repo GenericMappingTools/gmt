@@ -453,7 +453,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 /* Three sub functions used by GMT_grdcontour */
 
-void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[], unsigned int mode)
+void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[], unsigned int mode, FILE *fp)
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
@@ -645,14 +645,14 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
 			}
 			save[k].do_it = false;
-			if (mode & 2) GMT_write_label_record (GMT, x_lbl, y_lbl, 0.0, lbl[save[pol].high], mode & 4);
+			if (mode & 2) GMT_write_label_record (GMT, fp, x_lbl, y_lbl, 0.0, lbl[save[pol].high], mode & 4);
 		}
 		else {
 			if (mode & 1) {
 				GMT_setpen (GMT, &save[pol].pen);
 				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
 			}
-			if (mode & 2) GMT_write_label_record (GMT, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high], mode & 4);
+			if (mode & 2) GMT_write_label_record (GMT, fp, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high], mode & 4);
 		}
 	}
 }
@@ -1237,7 +1237,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
 		save = GMT_memory (GMT, save, n_save, struct SAVE);
 
-		grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode);
+		grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode, Ctrl->contour.fp);
 		for (i = 0; i < n_save; i++) {
 			GMT_free (GMT, save[i].x);
 			GMT_free (GMT, save[i].y);

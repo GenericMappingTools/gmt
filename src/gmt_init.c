@@ -9780,8 +9780,14 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 't':
 			error += GMT_more_than_once (GMT, GMT->common.t.active);
-			GMT->common.t.active = true;
-			GMT->common.t.value = atof (item);
+			if (item[0]) {
+				GMT->common.t.active = true;
+				GMT->common.t.value = atof (item);
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -t was not given any value (please add transparency in 0-100%% range)!\n");
+				error++;
+			}
 			break;
 
 #ifdef USE_GTHREADS
