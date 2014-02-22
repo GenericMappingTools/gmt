@@ -8646,7 +8646,7 @@ Complete conditional test
 
 The complete conditional test uses a multi-line format, such as
 
-| **if** *var* = *OP constant* **then** {
+| **if** *var* *OP constant* **then** {
 |  <one or more lines with commands>
 | } **elseif** *var OP constant* **then** {
 |  <one or more lines with commands>

@@ -1924,7 +1924,7 @@ int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_DATA
 }
 
 void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: LDIST 1 1 Compute distance (in km if -fg) from lines in multi-segment ASCII file A.  */
+/*OPERATOR: LDIST 1 1 Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A.  */
 {
 	uint64_t node, row, col;
 	double d;
@@ -2452,7 +2452,7 @@ void grd_OR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 }
 
 void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: PDIST 1 1 Compute distance (in km if -fg) from points in ASCII file A.  */
+/*OPERATOR: PDIST 1 1 Compute minimum distance (in km if -fg) from points in ASCII file A.  */
 {
 	uint64_t dummy[2], node, row, col;
 	struct GMT_DATATABLE *T = NULL;
