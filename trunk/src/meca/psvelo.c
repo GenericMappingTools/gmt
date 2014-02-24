@@ -354,7 +354,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	if (Ctrl->E.active) Ctrl->L.active = true;
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	GMT_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, true, &Ctrl->G.fill);
+	GMT_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 
 	station_name = GMT_memory (GMT, NULL, 64, char);
 
