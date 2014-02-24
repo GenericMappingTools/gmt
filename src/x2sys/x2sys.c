@@ -192,6 +192,11 @@ int get_first_year (struct GMT_CTRL *GMT, double t)
 void x2sys_set_home (struct GMT_CTRL *GMT)
 {
 	char *this = NULL;
+#ifdef WIN32
+	static char *par = "%X2SYS_HOME%";
+#else
+	static char *par = "$X2SYS_HOME";
+#endif
 
 	if (X2SYS_HOME) return;	/* Already set elsewhere */
 
@@ -199,9 +204,9 @@ void x2sys_set_home (struct GMT_CTRL *GMT)
 		X2SYS_HOME = GMT_memory (GMT, NULL, strlen (this) + 1, char);
 		strcpy (X2SYS_HOME, this);
 	}
-	else {	/* Default to the x2sys dir under GMT->session.SHAREDIR */
-		X2SYS_HOME = GMT_memory (GMT, NULL, strlen (GMT->session.SHAREDIR) + 7, char);
-		sprintf (X2SYS_HOME, "%s/x2sys", GMT->session.SHAREDIR);
+	else {	/* Require user to set this parameters since subdirs will be created and it would be messy to just use . */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %s has not been set but is a required parameter\n", par);
+		exit (EXIT_FAILURE);
 	}
 #ifdef WIN32
 		DOS_path_fix (X2SYS_HOME);

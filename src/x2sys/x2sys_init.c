@@ -107,12 +107,17 @@ void Free_x2sys_init_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/*
 }
 
 int GMT_x2sys_init_usage (struct GMTAPI_CTRL *API, int level) {
+#ifdef WIN32
+	static char *par = "%X2SYS_HOME%";
+#else
+	static char *par = "$X2SYS_HOME";
+#endif
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_init <TAG> [-Cc|f|g|e] [-D<deffile>] [-E<suffix>] [-F] [-G[d/g]] [-I[<binsize>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t<TAG> is the unique system identifier.  Files created will be placed in\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the directory X2SYS_HOME/<TAG>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<TAG> is the unique system identifier.  Files created will be placed in the directory %s/<TAG>.\n", par);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: The environmental parameter %s must be defined.\n", par);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -296,10 +301,12 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 	if (!Ctrl->D.active) Ctrl->D.file = strdup (Ctrl->In.TAG);	/* Default */
 	sprintf (def_file, "%s.def", Ctrl->D.file);
 	if (access (def_file, R_OK)) {	/* No such local *.def file */
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to find local definition file : %s\n", def_file);
-		Return (EXIT_FAILURE);
+		if (!GMT_getsharepath (GMT, "x2sys", Ctrl->D.file, ".def", def_file, R_OK)) {	/* Decode Custom font file */
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to find local definition file : %s\n", def_file);
+			Return (EXIT_FAILURE);
+		}
 	}
-	else if ((fp_def = fopen (def_file, "r")) == NULL) {
+	if ((fp_def = fopen (def_file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open local definition file : %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
