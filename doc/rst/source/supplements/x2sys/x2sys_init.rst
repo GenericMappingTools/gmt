@@ -43,7 +43,10 @@ crossovers, use **x2sys_report** to report crossover statistics or
 **x2sys_list** to pull out selected crossover information that
 **x2sys_solve** can use to determine track-specific systematic
 corrections. These corrections may be used with **x2sys_datalist** to
-extract corrected data values for use in subsequent work.
+extract corrected data values for use in subsequent work.  Because you
+can run **x2sys_init** you *must* set the environmental parameter
+X2SYS_HOME to a directory where you have write permission, which  is
+where x2sys can keep track of your settings.
 
 Required Arguments
 ------------------
