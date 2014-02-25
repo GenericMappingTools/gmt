@@ -354,7 +354,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	if (Ctrl->E.active) Ctrl->L.active = true;
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	GMT_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, true, &Ctrl->G.fill);
+	GMT_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 
 	station_name = GMT_memory (GMT, NULL, 64, char);
 
@@ -483,7 +483,10 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
 					dim[5] = GMT->current.setting.map_vector_shape;
 					dim[6] = (double)Ctrl->A.S.v.status;
-					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
+					if (Ctrl->A.S.v.status & GMT_VEC_FILL2)
+						GMT_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
+					else if (&Ctrl->G.active)
+						GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->A.S.v.pen);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen);
