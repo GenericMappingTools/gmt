@@ -302,7 +302,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	int error = 0, scol, srow;
 	unsigned int zcol, row, col, i, *flag = NULL;
 	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
-	uint64_t ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
+	uint64_t ij, gmt_ij, n_read, n_filled = 0, n_used = 0;
 
 	char c, Amode;
 
@@ -557,7 +557,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
 
 	do {	/* Keep returning records until we reach EOF */
-		n_read++;
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
@@ -568,8 +567,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		}
 
 		/* Data record to process */
-	
 		n_read++;
+	
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {
 				GMT_Report (API, GMT_MSG_NORMAL, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
@@ -712,11 +711,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		GMT_free (GMT, flag);
 		
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			char line[GMT_BUFSIZ];
+			char line[GMT_BUFSIZ], e_value[GMT_LEN32];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_VERBOSE, " n_read: %" PRIu64 "  n_used: %" PRIu64 "  n_filled: %" PRIu64 " n_empty: %" PRIu64 " set to ",
-				n_read, n_used, n_filled, n_empty);
-			(GMT_is_dnan (Ctrl->N.value)) ? GMT_Report (API, GMT_MSG_VERBOSE, "NaN\n") : GMT_Report (API, GMT_MSG_VERBOSE, line, Ctrl->N.value);
+			(GMT_is_dnan (Ctrl->N.value)) ? sprintf (e_value, "NaN") : sprintf (e_value, GMT->current.setting.format_float_out, Ctrl->N.value);
+			GMT_Report (API, GMT_MSG_VERBOSE, " Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
+				n_read, n_used, n_filled, n_empty, e_value);
 			if (n_bad) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " records unreadable\n", n_bad);
 			if (n_stuffed && Amode != 'n') GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " nodes had multiple entries that were processed\n", n_stuffed);
 			if (n_confused) GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
