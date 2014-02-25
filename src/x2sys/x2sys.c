@@ -382,6 +382,14 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 		X->in_order[i] = X->out_order[i] = i;
 		X->use_column[i] = 1;
 		G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = (X->x_col == is) ? GMT_IS_LON : ((X->y_col == is) ? GMT_IS_LAT : GMT_IS_UNKNOWN);
+		if (X->x_col == is) 
+			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_LON;
+		else if (X->y_col == is)
+			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_LAT;
+		else if (X->t_col == is)
+			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_ABSTIME;
+		else
+			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_UNKNOWN;
 	}
 	X->n_data_cols = x2sys_n_data_cols (GMT, X);
 	X->rec_size = (8 + X->n_data_cols) * sizeof (double);
