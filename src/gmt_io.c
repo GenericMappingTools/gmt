@@ -688,6 +688,8 @@ int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 		GMT_io_banner (GMT, direction);
 		GMT->common.b.o_delay = false;
 	}
+	if (direction == GMT_IN && GMT->common.i.active && GMT->common.i.n_cols > expected)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Number of %s columns required [%" PRIu64 "] is less that implied by -i [%" PRIu64 "]\n", mode[GMT_IN], expected, GMT->common.i.n_cols);
 	return (GMT_OK);
 }
 

@@ -714,11 +714,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 			char line[GMT_BUFSIZ], e_value[GMT_LEN32];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			(GMT_is_dnan (Ctrl->N.value)) ? sprintf (e_value, "NaN") : sprintf (e_value, GMT->current.setting.format_float_out, Ctrl->N.value);
-			GMT_Report (API, GMT_MSG_VERBOSE, " Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
+			GMT_Report (API, GMT_MSG_VERBOSE, "Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
 				n_read, n_used, n_filled, n_empty, e_value);
 			if (n_bad) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " records unreadable\n", n_bad);
 			if (n_stuffed && Amode != 'n') GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " nodes had multiple entries that were processed\n", n_stuffed);
-			if (n_confused) GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
+			if (n_confused) GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " values gave bad indices: Pixel vs Gridline registration confusion?\n", n_confused);
 		}
 	}
 
