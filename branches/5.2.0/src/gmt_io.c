@@ -300,7 +300,7 @@ int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	if (bad_record) {
 		GMT->current.io.n_bad_records++;
 		if (GMT->current.io.give_report && GMT->current.io.n_bad_records == 1) {	/* Report 1st occurrence */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid binary record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid binary data record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs.\n");
 		}
@@ -688,6 +688,8 @@ int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 		GMT_io_banner (GMT, direction);
 		GMT->common.b.o_delay = false;
 	}
+	if (direction == GMT_IN && GMT->common.i.active && GMT->common.i.n_cols > expected)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Number of %s columns required [%" PRIu64 "] is less that implied by -i [%" PRIu64 "]\n", mode[GMT_IN], expected, GMT->common.i.n_cols);
 	return (GMT_OK);
 }
 
@@ -1381,7 +1383,7 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
 			GMT->current.io.status = GMT_IO_EOF;
 			if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {	/* Report summary and reset counters */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " records with invalid x and/or y values\n", GMT->current.io.n_bad_records);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n", GMT->current.io.n_bad_records);
 				GMT->current.io.n_bad_records = GMT->current.io.pt_no = GMT->current.io.n_clean_rec = 0;
 				GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;
 			}
@@ -1462,7 +1464,7 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 		if (bad_record) {	/* This record failed our test and had NaNs */
 			GMT->current.io.n_bad_records++;
 			if (GMT->current.io.give_report && (GMT->current.io.n_bad_records == 1)) {	/* Report 1st occurrence of bad record */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid ASCII record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid ASCII data record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
@@ -1609,7 +1611,7 @@ bool gmt_get_binary_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t n) {
 			GMT->current.io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 			if (GMT->current.io.give_report && GMT->current.io.n_bad_records) {
 				/* Report summary and reset */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " records with invalid x and/or y values\n", GMT->current.io.n_bad_records);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "This file had %" PRIu64 " data records with invalid x and/or y values\n", GMT->current.io.n_bad_records);
 				GMT->current.io.n_bad_records = GMT->current.io.rec_no = GMT->current.io.pt_no = GMT->current.io.n_clean_rec = 0;
 			}
 			return (true);	/* Done with this file */
