@@ -636,7 +636,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
-			Return (EXIT_FAILURE);
+			continue;
 		}
 		rec = 0;
 		last_julian = -1;
