@@ -299,7 +299,11 @@ static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *
 	F->MGD77_datadir = GMT_memory (GMT, NULL, n_alloc, char *);
 	while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
-		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line, \n included in count */
+		if (line[0] == ' ' || line[0] == '\0') continue;    /* Blank line, \n included in count */
+#ifdef WIN32
+		if (line[0] == '/' && line[2] != '/') continue;     /* A unix style path */
+		GMT_strrepc(line, '/', '\\');                       /* Replace slashes with backslashes because later the dir /b path would fail */
+#endif
 		GMT_chop (line);
 		F->MGD77_datadir[F->n_MGD77_paths] = GMT_memory (GMT, NULL, strlen (line) + 1, char);
 		strcpy (F->MGD77_datadir[F->n_MGD77_paths], line);
@@ -4160,7 +4164,6 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 				if (length && strncmp (d_name, this_arg, length)) continue;
 				k = (unsigned int)strlen (d_name) - 1;
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
-				if (k < 8) continue;	/* Not a NGDC 8-char ID */
 				if (n == n_alloc) L = GMT_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
 				L[n] = GMT_memory (GMT, NULL, k + 1, char);
 				strncpy (L[n], d_name, k);
