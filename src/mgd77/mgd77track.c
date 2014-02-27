@@ -40,6 +40,7 @@
 
 #define GAP_D	0	/* Indices into Ctrl.G */
 #define GAP_T	1
+#define GAP_N	2
 
 struct MGD77TRACK_ANNOT {
 	double annot_int_dist;
@@ -84,8 +85,8 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 		int mode;
 	} F;
 	struct G {	/* -G */
-		bool active[2];
-		unsigned int value[2];
+		bool active[3];
+		unsigned int value[3];
 	} G;
 	struct I {	/* -I */
 		bool active;
@@ -151,8 +152,9 @@ int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77track cruise(s) %s %s\n\t[-A[c][<size>]][,<inc><unit>] [%s] ", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[<unit>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d|n<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[<unit>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n",
+	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s]\n\n", GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
      
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -173,6 +175,7 @@ int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_
 	GMT_Message (API, GMT_TIME_NONE, "\t   up to b<stopdate> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Do NOT apply bitflags to MGD77+ cruises [Default applies error flags stored in the file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Consider point separations exceeding d<gap> (km) or t<gap> (minutes) to indicate a gap (do not draw) [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use n<number> to plot only one every other <number> points. Useful to reduce plot file size.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
 	GMT_Option (API, "K");
@@ -187,9 +190,15 @@ int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_
 	GMT_Message (API, GMT_TIME_NONE, "\t   day marker, and d for distance marker.  Then, append 5 comma-separated items:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <markersize>[unit],<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default settings for the three marker types are:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -TT%g,black,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.id);
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Tt%g,white,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.id);
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Td%g,black,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -TT%g,black,%g,%d,black\n",
+	             Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.size,
+	             Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.id);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Tt%g,white,%g,%d,black\n",
+	             Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.size,
+	             Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.id);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Td%g,black,%g,%d,black\n",
+	             Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size,
+	             Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", GMT_putpen (API->GMT, Ctrl->W.pen));
 	GMT_Option (API, "X,c,p,t,.");
@@ -366,12 +375,16 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 			case 'G':
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance gap in km */
-					Ctrl->G.active[GAP_D] = true;
-						Ctrl->G.value[GAP_D] = urint (atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
+					Ctrl->G.active[GAP_D]     = true;
+						Ctrl->G.value[GAP_D]  = urint (atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
 						break;
 					case 't':	/* Distance gap in minutes */
 						Ctrl->G.active[GAP_T] = true;
-						Ctrl->G.value[GAP_T] = urint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
+						Ctrl->G.value[GAP_T]  = urint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
+						break;
+					case 'n':	/* Distance gap in number of points */
+						Ctrl->G.active[GAP_N] = true;
+						Ctrl->G.value[GAP_N]  = urint (atof (&opt->arg[1]));
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
@@ -474,12 +487,18 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0, "Syntax error: Cannot specify both start time AND start distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX, "Syntax error: Cannot specify both stop time AND stop distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "Syntax error -S: Start distance exceeds stop distance!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Syntax error -D: Start time exceeds stop time!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0, "Syntax error -Gd: Must specify a positive gap distance in km!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0, "Syntax error -Gt: Must specify a positive gap distance in minutes!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0,
+	                                 "Syntax error: Cannot specify both start time AND start distance\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX,
+	                                 "Syntax error: Cannot specify both stop time AND stop distance\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop,
+	                                 "Syntax error -S: Start distance exceeds stop distance!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop,
+	                                 "Syntax error -D: Start time exceeds stop time!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0,
+	                                 "Syntax error -Gd: Must specify a positive gap distance in km!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0,
+	                                 "Syntax error -Gt: Must specify a positive gap distance in minutes!\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Region is not set\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -551,7 +570,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	
 	size_t n_alloc_c = GMT_SMALL_CHUNK;
 	
-       	char label[GMT_LEN256] = {""}, the_date[GMT_LEN64] = {""}, the_clock[GMT_LEN64] = {""};
+	char label[GMT_LEN256] = {""}, the_date[GMT_LEN64] = {""}, the_clock[GMT_LEN64] = {""};
 	char name[GMT_LEN64] = {""}, **list = NULL;
 
 	double x, y, annot_dist[2] = {0, 0}, tick_dist[2] = {0, 0}, annot_time[2] = {0, 0};
@@ -652,13 +671,14 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
-			Return (EXIT_FAILURE);
+			continue;
 		}
 		MGD77_Close_File (GMT, &M);
 		track_time = (double*)D->values[0];
 		lon = (double*)D->values[1];
 		lat = (double*)D->values[2];
-		if ((track_dist = GMT_dist_array_2 (GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* Work internally in meters */
+		if ((track_dist = GMT_dist_array_2(GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL)		/* Work internally in meters */
+			GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 		for (rec = 0; rec < D->H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] < Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
 		first_rec = rec;
 		for (rec = D->H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) && track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */
@@ -671,22 +691,36 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		if (Ctrl->G.active[GAP_D] || Ctrl->G.active[GAP_T]) {
 			uint64_t start, stop;
 			start = first_rec;
-			while (start < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[start+1] - track_dist[start]) > Ctrl->G.value[GAP_D]) || (Ctrl->G.active[GAP_T] && (track_time[start+1] - track_time[start]) > Ctrl->G.value[GAP_T]))) {	/* First start of first segment */
+			while (start < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[start+1] - track_dist[start]) > Ctrl->G.value[GAP_D]) ||
+			       (Ctrl->G.active[GAP_T] && (track_time[start+1] - track_time[start]) > Ctrl->G.value[GAP_T]))) {	/* First start of first segment */
 				lon[start] = GMT->session.d_NaN;	/* Flag to make sure we do not plot this gap later */
 				start++;
 			}
 			while (start <= last_rec) {
 				stop = start;
-				while (stop < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[stop+1] - track_dist[stop]) < Ctrl->G.value[GAP_D]) || (Ctrl->G.active[GAP_T] && (track_time[stop+1] - track_time[stop]) < Ctrl->G.value[GAP_T]))) stop++;	/* stop will be last point in segment */
+				while (stop < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[stop+1] - track_dist[stop]) < Ctrl->G.value[GAP_D]) ||
+				       (Ctrl->G.active[GAP_T] && (track_time[stop+1] - track_time[stop]) < Ctrl->G.value[GAP_T]))) stop++;	/* stop will be last point in segment */
 				GMT_geo_line (GMT, &lon[start], &lat[start], stop-start+1);
 				start = stop + 1;
-				while (start < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[start+1] - track_dist[start]) > Ctrl->G.value[GAP_D]) || (Ctrl->G.active[GAP_T] && (track_time[start+1] - track_time[start]) > Ctrl->G.value[GAP_T]))) {	/* First start of first segment */
+				while (start < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[start+1] - track_dist[start]) > Ctrl->G.value[GAP_D]) ||
+				       (Ctrl->G.active[GAP_T] && (track_time[start+1] - track_time[start]) > Ctrl->G.value[GAP_T]))) {	/* First start of first segment */
 					lon[start] = GMT->session.d_NaN;	/* Flag to make sure we do not plot this gap later */
 					start++;
 				}
 			}
 		}
 		else {	/* Plot the whole shabang */
+			if (Ctrl->G.active[GAP_N]) {				/* Decimate track by one every other N */
+				for (rec = 0, i = 0; rec < D->H.n_records; rec += Ctrl->G.value[GAP_N]) {
+					lon[i] = lon[rec];
+					lat[i] = lat[rec];
+					i++;
+				}
+				lon[i] = lon[D->H.n_records - 1];		/* Make sure that last point is included too */
+				lat[i] = lat[D->H.n_records - 1];
+				D->H.n_records = i;
+				last_rec = i;
+			}
 			GMT_geo_line (GMT, lon, lat, D->H.n_records);
 		}
 
@@ -824,7 +858,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		unsigned int id;
 		double size;
 		size = GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size;
-		for (id = 0; id < n_id; id++) annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat, cruise_id[id].angle, cruise_id[id].text, size);
+		for (id = 0; id < n_id; id++)
+			annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat, cruise_id[id].angle, cruise_id[id].text, size);
 		GMT_free (GMT, cruise_id);
 	}
 

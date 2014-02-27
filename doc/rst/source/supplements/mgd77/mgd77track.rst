@@ -16,16 +16,17 @@ Synopsis
 **mgd77track** *NGDC-ids*
 |SYN_OPT-R|
 **-J**\ *parameters*
-[ **-A**\ [**c**\ ][*size*\ ][,\ *spacing*] ]
+[ **-A**\ [**c**][*size*][,\ *spacing*] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ **f**\ \|\ **g**\ \|\ **e** ] [ **-Da**\ *startdate* ] 
 [ **-Db**\ *stopdate* ] [ **-F** ] [ **-G**\ **d**\ \|\ **t**\ *gap* ]
 [ **-I**\ *ignore* ] [ **-K** ] [ **-L**\ *trackticks* ] [ **-O** ]
-[ **-P** ] [ **-Sa**\ *startdist*\ [**u**\ ] ]
-[ **-Sb**\ *stopdist*\ [**u**\ ] ]
+[ **-P** ] [ **-Sa**\ *startdist*\ [**u**] ]
+[ **-Sb**\ *stopdist*\ [**u**] ]
 [ **-TT**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
+[ **-W**\ [**-**\ \|\ **+**][*pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
@@ -54,10 +55,10 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**c**\ ][*size*\ ][,\ *spacing*]
+**-A**\ [**c**][*size*][,\ *spacing*]
     Append **c** to annotate using the MGD77 cruise ID [Default uses the
     filename prefix]. Optional *size* is the font size in points. The
-    leg annotation font is controlled by **FONT\_LABEL**. By default,
+    leg annotation font is controlled by :ref:`FONT_LABEL <FONT_LABEL>`. By default,
     each leg is annotated every time it enters the map region.
     Alternatively, append ,\ *spacing* to place this label every
     *spacing* units apart along the track. Append one of the units **k**
@@ -95,7 +96,7 @@ Optional Arguments
 **-L**\ *trackticks*
     To put time/distance log-marks on the track. E.g.
     **a**\ 500\ **ka**\ 24\ **ht**\ 6\ **h** means (**a**)nnotate every
-    500 km (**k**) and 24 **h**(ours), with
+    500 km (**k**) and 24 **h**\ (ours), with
     (**t**)ickmarks every 500 km and 6 hours. Alternatively you may use
     the modifiers **d** (days) and **n** (nautical miles).
 
@@ -103,11 +104,11 @@ Optional Arguments
 
 .. include:: ../../explain_-P.rst_
 
-**-Sa**\ *startdist*\ [**u**\ ]
+**-Sa**\ *startdist*\ [**u**]
     Do not plot data that are less than *startdist* meter along track
     from port of departure. Append **k** for km, **m** for miles, or
     **n** for nautical miles [Default is 0 meters].
-**-Sb**\ *stopdist*\ [**u**\ ]
+**-Sb**\ *stopdist*\ [**u**]
     Do not plot data that are more than *stopdist* meter along track
     from port of departure. Append **k** for km, **m** for miles, or
     **n** for nautical miles [Default is end of track].
@@ -121,9 +122,12 @@ Optional Arguments
     
 .. include:: ../../explain_-U.rst_
 
-**-W**\ *pen*
-    Append *pen* used for the trackline. [Default is 0.25p,black].
-    [Default is solid]. 
+**-W**\ [**-**\ \|\ **+**][*pen*]
+    Append *pen* used for the trackline. [Defaults:
+    width = default, color = black, style = solid]. A leading **+** will
+    use the lookup color (via **-C**) for both symbol fill and outline
+    pen color, while a leading **-** will set outline pen color and turn
+    off symbol fill. 
 
 .. include:: ../../explain_-XY.rst_
  
@@ -152,7 +156,7 @@ plot to the default printer, enter the following command:
    ::
 
     gmt mgd77track 01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
-                            -La1da1000kf6hf250k \| lpr
+                   -La1da1000kf6hf250k \| lpr
 
 See Also
 --------
