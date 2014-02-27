@@ -6,8 +6,8 @@
     Optionally, append **c**, **i**, or
     **p** to indicate that the size information in the input data is in
     units of cm, inch, or point, respectively [Default is
-    **PROJ_LENGTH_UNIT**]. Note: if you provide *both* size and symbol via the
-    input file you must use **PROJ_LENGTH_UNIT** to indicate the unit
+    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. Note: if you provide *both* size and symbol via the
+    input file you must use :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` to indicate the unit
     used for the symbol size or append the units to the sizes in the file.
     If symbol sizes are expected via the third data column then you may convert
     those values to suitable symbol sizes via the **-i** mechanism.
@@ -116,7 +116,7 @@
         append **+t**\ *string* after the size. Note that the size is only approximate;
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append **+f**\ *font*
-        to select a particular font [Default is **FONT_ANNOT_PRIMARY**] and
+        to select a particular font [Default is :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`] and
 	**+j**\ *justify* to change justification [CM].
 
     **-Sm**
@@ -158,7 +158,7 @@
             Reads the ascii file *ffile.d* and places labels at locations in the
             file that matches locations along the quoted lines. Inexact matches
             and points outside the region are skipped.
-            **l\|L**\ *line1*\ [,*line2*,...]
+            **l\|L**\ *line1*\ [,\ *line2*,...]
             Give *start* and *stop* coordinates for one or more comma-separated
             straight line segments. Labels will be placed where these lines
             intersect the quoted lines. The format of each *line* specification
@@ -207,12 +207,12 @@
                 finally plots the original text.
 
             **+f**\ *font*
-                Sets the desired font [Default **FONT_ANNOT_PRIMARY** with its
+                Sets the desired font [Default :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>` with its
                 size changed to 9p].
 
             **+g**\ [*color*\ ]
                 Selects opaque text boxes [Default is transparent]; optionally
-                specify the color [Default is **PS_PAGE_COLOR**].
+                specify the color [Default is :ref:`PS_PAGE_COLOR <PS_PAGE_COLOR>`].
 
             **+j**\ *just*
                 Sets label justification [Default is MC]. Ignored when
@@ -232,7 +232,7 @@
                 **+Ld**
                 Take the Cartesian plot distances along the line as the label;
                 append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
-                **PROJ_LENGTH_UNIT**].
+                :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`].
                 **+LD**
                 Calculate actual map distances; append
                 **d\|e\|f\|k\|n\|M\|n\|s** as the unit [Default is
