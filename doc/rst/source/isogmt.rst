@@ -22,7 +22,7 @@ read from the usual locations (current directory, *~/.gmt*, or home
 directory), but changes will only be written in a temporary directory,
 which will be removed after execution. The name of the temporary
 directory will be available to the command or script as the environment
-variable **GMT_TMPDIR**.
+variable GMT_TMPDIR.
 
 Examples
 --------

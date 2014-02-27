@@ -123,7 +123,7 @@ Optional Arguments
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
     used (see UNITS). Note that the area will depend on the current
-    setting of PROJ_ELLIPSOID; this should be a recent ellipsoid to get
+    setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a recent ellipsoid to get
     accurate results. 
 
 .. |Add_-Rgeo| replace:: Clips polygons to the map

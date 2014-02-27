@@ -314,14 +314,6 @@ To create a simple KMZ file for use in Google Earth, try
 
 (These commands assume that GhostScript can be found in your system's path.)
 
-Binary Data
------------
-
-GMT programs can produce binary PostScript image data and this is
-determined by the default setting PS_IMAGE_FORMAT. Because
-**ps2raster** needs to process the input files on a line-by-line basis
-you need to make sure the image format is set to *ascii* and not *bin*.
-
 GhostScript Options
 -------------------
 
