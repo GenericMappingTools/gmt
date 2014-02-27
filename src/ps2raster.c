@@ -342,7 +342,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s|S<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -394,7 +394,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   of sub-sampling box.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is no anti-aliasing, which is the same as specifying size 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the ghostscript command to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   standard error.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   b means BMP.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e means EPS.\n");
@@ -792,7 +792,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 	line_size = GMT_BUFSIZ;
 	line = GMT_memory (GMT, NULL, line_size, char);	/* Initial buffer size */
-	
+
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
@@ -941,7 +941,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
 						fclose (fpb);
 						fpb = NULL;                      /* so we don't accidentally close twice */
-						remove (BB_file);                /* Remove the file */
+						if (!Ctrl->S.active) remove (BB_file);                /* Remove the file */
 						if (Ctrl->D.active)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
@@ -966,7 +966,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			}
 			if (fpb != NULL) /* don't close twice */
 				fclose (fpb);
-			remove (BB_file);	/* Remove the file with BB info */
+			if (!Ctrl->S.active) remove (BB_file);	/* Remove the file with BB info */
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...", x0, y0, x1, y1);
 		}
 
@@ -1148,7 +1148,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				setup = true;
 			else if (!strncmp (line, "%%EndSetup", 10)) {
 				setup = false;
-				if (Ctrl->T.eps != 1)	/* Write out /PageSize command */
+				if (Ctrl->T.eps == -1)	/* Write out /PageSize command */
 					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
 					fprintf (fpo, "%d rotate\n", r);
@@ -1167,7 +1167,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
 					size_t Lsize = 128U;
 					char dumb1[8], dumb2[8], dumb3[8];
-					char *line_ = GMT_memory (GMT, NULL, Lsize, char); 
+					char *line_ = GMT_memory (GMT, NULL, Lsize, char);
 					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
 					line_reader (GMT, &line_, &Lsize, fp);   /* Read also next line which is to be overwritten */
 					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
@@ -1287,7 +1287,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		fseek (fp, (off_t)-7, SEEK_END);
 		/* Read until last line is encountered */
 		while (line_reader (GMT, &line, &line_size, fp) != EOF);
-		if ( strncmp (line, "%%EOF", 5U) )
+		if (strncmp (line, "%%EOF", 5U))
 			/* Possibly a non-closed GMT PS file. To be confirmed later */
 			excessK = true;
 
@@ -1388,18 +1388,20 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (EXIT_FAILURE);
 				}
-				remove (pdf_file);	/* The temporary PDF file is no longer needed */
+				if (!Ctrl->S.active) remove (pdf_file);	/* The temporary PDF file is no longer needed */
 			}
 
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, " Done.\n");
 
-		if (!Ctrl->T.eps)
-			remove (tmp_file);
-		if ( strlen (no_U_file) > 0 ) /* empty string == file was not created */
-			remove (no_U_file);
-		if ( strlen (clean_PS_file) > 0 )
-			remove (clean_PS_file);
+		if (!Ctrl->S.active) {
+			if (!Ctrl->T.eps)
+				remove (tmp_file);
+			if ( strlen (no_U_file) > 0 ) /* empty string == file was not created */
+				remove (no_U_file);
+			if ( strlen (clean_PS_file) > 0 )
+				remove (clean_PS_file);
+		}
 
 		if (Ctrl->W.active && found_proj && !Ctrl->W.kml) {	/* Write a world file */
 			double x_inc, y_inc;
