@@ -192,11 +192,11 @@ directly from data. (notice also the negative sign of the argument to
 
     gmt gravfft bat.grd -D600 -Gmoho_g.grd -A-6000
 
-Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
+Now, subtract it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
 
    ::
 
-    gmt grdmath water_g.grd moho_g.grd ADD = mba.grd
+    gmt grdmath water_g.grd moho_g.grd SUB = mba.grd
 
 To compute the Moho gravity effect of an elastic plate bat.grd with Te =
 7 km, density of 2700, over a mantle of density 3300, at an averge depth
