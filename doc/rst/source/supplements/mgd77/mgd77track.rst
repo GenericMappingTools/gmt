@@ -19,7 +19,7 @@ Synopsis
 [ **-A**\ [**c**][*size*][,\ *spacing*] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ **f**\ \|\ **g**\ \|\ **e** ] [ **-Da**\ *startdate* ] 
-[ **-Db**\ *stopdate* ] [ **-F** ] [ **-G**\ **d**\ \|\ **t**\ *gap* ]
+[ **-Db**\ *stopdate* ] [ **-F** ] [ **-G**\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]
 [ **-I**\ *ignore* ] [ **-K** ] [ **-L**\ *trackticks* ] [ **-O** ]
 [ **-P** ] [ **-Sa**\ *startdist*\ [**u**] ]
 [ **-Sb**\ *stopdist*\ [**u**] ]
@@ -80,11 +80,13 @@ Optional Arguments
 **-F**
     Do not apply the error bit flags if present in a MGD77+ file
     [Default will apply these flags upon reading the data].
-**-G**\ **d**\ \|\ **t**\ *gap*
+**-G**\ **d**\ \|\ **t**\ \|\ **n**\ *gap*
     Let successive point separations exceeding **d**\ *gap* (km) or
     **t**\ *gap* (minutes) indicate a break in the track where we should
     not draw a line [no gaps recognized]. Repeat to use both types of
-    gap checking.
+    gap checking. The **n**\ *N* form is used to plot only one every other *N* points.
+    This is useful to reduce plot file size bat cannot be used (will be ignored)
+    with the other two gap types.
 **-I**\ *ignore*
     Ignore certain data file formats from consideration. Append
     **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain table
