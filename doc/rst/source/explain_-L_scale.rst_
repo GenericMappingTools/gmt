@@ -13,6 +13,6 @@
     **+u** to append the unit to all distance annotations along the
     scale. If you want to place a rectangle behind the scale, specify
     suitable **+p**\ *pen* and/or **+g**\ *fill* parameters. Note:
-    Use **FONT_LABEL** to change the label font and **FONT_ANNOT_PRIMARY**
+    Use :ref:`FONT_LABEL <FONT_LABEL>` to change the label font and :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`
     to change the annotation font.  The height of the map scale is controlled
-    by **MAP_SCALE_HEIGHT**.
+    by :ref:`MAP_SCALE_HEIGHT <MAP_SCALE_HEIGHT>`.
