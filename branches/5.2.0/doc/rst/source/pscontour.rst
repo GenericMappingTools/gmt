@@ -218,13 +218,6 @@ file mesh.ijk, using the colors in temp.cpt, run
 
     gmt pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
 
-Bugs
-----
-
-Sometimes there will appear to be thin lines of the wrong color in the
-image. This is a round-off problem which may be remedied by using a
-higher value of **PS_DPI** in the :doc:`gmt.conf` file.
-
 To save the triangulated 100-m contour lines in topo.txt and separate
 them into multisegment files (one for each contour level), try
 

@@ -49,8 +49,8 @@ Variations in intensity due to shading/illumination may be displayed by
 setting the option **-I**. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
-units is specified by :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`. If a label is requested,
-it is plotted with :ref:`FONT_LABEL <FONT_LABEL>` 
+units is specified by :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`.
+If a label is requested, it is plotted with :ref:`FONT_LABEL <FONT_LABEL>`.
 
 Required Arguments
 ------------------
@@ -123,7 +123,7 @@ Optional Arguments
     Add illumination effects. Optionally, set the range of intensities
     from - to + *max\_intens*. If not specified, 1 is used.
     Alternatively, append *low/high* intensities to specify an
-    asymmetric range [Default is no illumination]. 
+    asymmetric range [Default is no illumination].
 
 .. include:: explain_-J.rst_
 
@@ -158,7 +158,7 @@ Optional Arguments
     Select logarithmic scale and power of ten annotations. All z-values
     in the cpt file will be converted to p = log10(z) and only integer p
     values will be annotated using the 10^p format [Default is linear
-    scale]. 
+    scale].
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rgeo.rst_
@@ -176,7 +176,7 @@ Optional Arguments
     computed from **-D** and the current fontsize and offset parameters.
     You can add (or remove) additional space on any side by appending
     **+s**\ *off*, where **s** is one of **l**\ eft, **r**\ ight,
-    **b**\ ottom, or **t**\ op. 
+    **b**\ ottom, or **t**\ op.
 
 .. include:: explain_-U.rst_
 
@@ -188,11 +188,11 @@ Optional Arguments
 **-Z**\ *zfile*
     File with colorbar-width per color entry. By default, width of entry
     is scaled to color range, i.e., z = 0-100 gives twice the width as z
-    = 100-150 (Also see **-L**). 
+    = 100-150 (Also see **-L**).
 
 .. include:: explain_-c.rst_
 
-.. |Add_perspective| replace:: (Required **-R** and **-J** for proper functioning). 
+.. |Add_perspective| replace:: (Required **-R** and **-J** for proper functioning).
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_

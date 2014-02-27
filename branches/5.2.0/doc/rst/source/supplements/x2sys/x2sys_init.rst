@@ -176,8 +176,9 @@ use **d** as netCDF will automatically handle type-conversions during reading.
 *oformat* is a C-style format string used to print values from this column.
 
 If you give - as the *oformat* then GMT's formatting machinery
-will be used instead (i.e., **FORMAT_FLOAT_OUT**,
-**FORMAT_GEO_MAP**, **FORMAT_DATE_MAP**, **FORMAT_CLOCK_MAP**).
+will be used instead (i.e., :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`,
+:ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`, :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`,
+:ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`).
 Some file formats already have definition files premade. These include
 mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
 netCDF files), gmt (for old mgg supplement binary files), xy (for plain
