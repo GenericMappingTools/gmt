@@ -49,7 +49,7 @@ Variations in intensity due to shading/illumination may be displayed by
 setting the option **-I**. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
-units is specified by **FONT_ANNOT_PRIMARY**. If a label is requested,
+units is specified by :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`. If a label is requested,
 it is plotted with **FONT_LABEL** 
 
 Required Arguments
