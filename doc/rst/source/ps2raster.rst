@@ -131,6 +131,7 @@ Optional Arguments
 
 **-S**
     Print to standard error the GhostScript command after it has been executed.
+    This option also prevent all intermediate files from being removed.
 
 **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t**
     Sets the output format, where **b** means BMP, **e** means EPS,
@@ -141,7 +142,7 @@ Optional Arguments
     append - to get a grayscale image only. The EPS format can be
     combined with any of the other formats. For example, **-Tef**
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
-    PDF file from the list of input PS or PDF files. It requires **-F** option. 
+    PDF file from the list of input PS or PDF files. It requires **-F** option.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -220,7 +221,7 @@ Optional Arguments
     where 'merc' is the keyword for the coordinate conversion; the 2 to
     5th elements contain the map limits, 6 to 9th the map limits in
     projected coordinates and the rest of the line has the regular proj4
-    string for this projection. 
+    string for this projection.
 
 .. include:: explain_help.rst_
 
