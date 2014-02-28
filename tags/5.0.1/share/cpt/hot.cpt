@@ -1,7 +1,0 @@
-#	$Id$
-#
-# Simulates the HOT colormap in Matlab
-#
-0	black	0.375	red
-0.375	red	0.75	yellow
-0.75	yellow	1	white

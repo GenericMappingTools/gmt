@@ -1,3 +1,0 @@
-.TP
-GMT_colon_OPT (*)
-Swap 1st and 2nd column on input and/or output.

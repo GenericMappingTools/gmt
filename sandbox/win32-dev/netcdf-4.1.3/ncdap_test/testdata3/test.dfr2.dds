@@ -1,5 +1,0 @@
-Dataset {
-    Byte Raster%20Image%20%230[Raster%20Image%20%230__Y = 6][Raster%20Image%20%230__X = 5];
-    Byte Raster%20Image%20%231[Raster%20Image%20%231__Y = 6][Raster%20Image%20%231__X = 5];
-    Byte Raster%20Image%20%232[Raster%20Image%20%232__Y = 6][Raster%20Image%20%232__X = 5];
-} testdfr2.hdf;

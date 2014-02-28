@@ -1,2 +1,0 @@
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] :ref:`(more ...) <-icols_full>`
-    Select input columns.

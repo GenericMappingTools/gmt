@@ -1,9 +1,0 @@
-netcdf synth7 {
-types:
-  float(*) Q1_t ;
-variables:
-	Q1_t Q1 ;
-data:
-
- Q1 = {1320, 2320, 3320, 4320, 5320, 6320, 7320, 8320} ;
-}

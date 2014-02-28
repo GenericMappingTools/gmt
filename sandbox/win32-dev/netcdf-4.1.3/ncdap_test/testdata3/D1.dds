@@ -1,8 +1,0 @@
-Dataset {
-    Sequence {
-        String instrument_id;
-        String location;
-        Float64 latitude;
-        Float64 longitude;
-    } Drifters;
-} EOSDB.DBO;

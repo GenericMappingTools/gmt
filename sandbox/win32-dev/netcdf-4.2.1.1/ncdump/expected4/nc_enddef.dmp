@@ -1,9 +1,0 @@
-netcdf nc_enddef {
-dimensions:
-	dim = 1 ;
-variables:
-	double var(dim) ;
-data:
-
- var = 1 ;
-}

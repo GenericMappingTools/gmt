@@ -1,5 +1,0 @@
-.TP
-GMT_colon_OPT
-Swap 1st and 2nd column on input and/or output  [Default is no swapping].
-Append BD(i) to select input only or BD(o) to select output only.  [Default affects both].
-This option is typically used to handle (latitude, longitude) files; see also GMT_i_OPT.

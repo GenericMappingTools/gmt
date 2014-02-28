@@ -1,9 +1,0 @@
-#	$Id$
-#
-#	Definition file a convex 4-pointed star symbol.
-#
-0	0.5	M
-0.5	0.5	1 	180	270	A
-0.5	-0.5	1	90	180	A
--0.5	-0.5	1	0	90	A
--0.5	0.5	1	270	360	A

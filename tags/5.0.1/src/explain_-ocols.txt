@@ -1,3 +1,0 @@
-.TP
-GMT_o_OPT (*)
-Select output columns.

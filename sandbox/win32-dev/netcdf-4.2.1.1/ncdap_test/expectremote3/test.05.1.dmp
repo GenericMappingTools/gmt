@@ -1,7 +1,0 @@
-netcdf test {
-variables:
-	float types.floats.f32 ;
-data:
-
- types.floats.f32 = 0 ;
-}

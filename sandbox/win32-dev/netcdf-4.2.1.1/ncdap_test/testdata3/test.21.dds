@@ -1,8 +1,0 @@
-Dataset {
-    Structure {
-        Int32 j;
-        Int32 i;
-        Int16 g[3][3][3];
-        Int16 f[2][2];
-    } exp;
-} ComplexStructure01;

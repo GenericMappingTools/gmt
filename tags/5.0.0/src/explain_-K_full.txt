@@ -1,4 +1,0 @@
-.TP
-OPT(K)
-More IT(PostScript) code will be appended later [Default terminates the plot system].
-Required for all but the last plot command when building multi-layer plots.

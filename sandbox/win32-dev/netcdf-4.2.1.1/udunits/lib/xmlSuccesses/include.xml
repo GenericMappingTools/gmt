@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-
-<unit-system>
-    <import>../udunits2-prefixes.xml</import>
-</unit-system>

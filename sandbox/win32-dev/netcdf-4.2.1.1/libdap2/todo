@@ -1,7 +1,0 @@
-1. preset alloc for vlen memory
-2. take tests from libsrc4 &/or nc_test4
-   to test get_var{a,s...}
-3. getvarx is really a form of vars, not vara,
-   socorrect the names and comments to change
-   references to vara -> varx.
-

@@ -1,3 +1,0 @@
-.TP
-GMT_r_OPT
-Set pixel node registration [gridline].

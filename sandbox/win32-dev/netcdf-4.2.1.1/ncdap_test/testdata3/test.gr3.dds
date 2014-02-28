@@ -1,5 +1,0 @@
-Dataset {
-    Int32 GR_Pixel[GR_Pixel__comps = 3][GR_Pixel__Y = 5][GR_Pixel__X = 5];
-    Int32 GR_Line[GR_Line__comps = 3][GR_Line__Y = 5][GR_Line__X = 5];
-    Int32 GR_Component[GR_Component__comps = 3][GR_Component__Y = 5][GR_Component__X = 5];
-} testgr3.hdf;

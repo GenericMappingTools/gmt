@@ -1,8 +1,0 @@
-Dataset {
-    Int32 GR_1[GR_1__Y = 5][GR_1__X = 5];
-    Int32 GR_2[GR_2__comps = 2][GR_2__Y = 5][GR_2__X = 5];
-    Int32 GR_4[GR_4__comps = 4][GR_4__Y = 5][GR_4__X = 5];
-    Int32 GR_8[GR_8__comps = 8][GR_8__Y = 5][GR_8__X = 5];
-    Int32 GR_16[GR_16__comps = 16][GR_16__Y = 5][GR_16__X = 5];
-    Int32 GR_32[GR_32__comps = 32][GR_32__Y = 5][GR_32__X = 5];
-} testgr2.hdf;

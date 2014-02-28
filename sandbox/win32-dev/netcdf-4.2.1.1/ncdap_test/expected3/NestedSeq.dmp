@@ -1,9 +1,0 @@
-netcdf NestedSeq {
-dimensions:
-	person1 = 5 ;
-variables:
-	int person1.age(person1) ;
-data:
-
- person1.age = 1, 2, 3, 5, 8 ;
-}

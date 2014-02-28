@@ -1,3 +1,0 @@
-Dataset {
-    Float32 v[time = 10];
-} in_v.nc;

@@ -1,7 +1,0 @@
-netcdf ref_tst_solar_2 {
-types:
-  int(*) unimaginatively_named_vlen_type ;
-
-// global attributes:
-		unimaginatively_named_vlen_type :equally_unimaginatively_named_attribute_YAWN = {-99}, {-99, -99} ;
-}

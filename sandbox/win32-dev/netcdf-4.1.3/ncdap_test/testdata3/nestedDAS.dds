@@ -1,4 +1,0 @@
-Dataset {
-    Byte b31;
-    String b32;
-} SimpleTypes;

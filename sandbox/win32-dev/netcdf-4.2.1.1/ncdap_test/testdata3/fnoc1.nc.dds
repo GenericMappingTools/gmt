@@ -1,7 +1,0 @@
-Dataset {
-    Int16 u[time_a = 16][lat = 17][lon = 21];
-    Int16 v[time_a = 16][lat = 17][lon = 21];
-    Float32 lat[lat = 17];
-    Float32 lon[lon = 21];
-    Float32 time[time = 16];
-} fnoc1.nc;

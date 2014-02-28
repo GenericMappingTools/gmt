@@ -1,9 +1,0 @@
-netcdf test {
-dimensions:
-	b_0 = 5 ;
-variables:
-	byte b(b_0) ;
-data:
-
- b = 1, 3, 5, 7, 9 ;
-}

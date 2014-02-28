@@ -1,8 +1,0 @@
-.. _colon_full:
-
-**-:**\ [**i**\ \|\ **o**]
-    Swap 1st and 2nd column on input and/or output [Default is no
-    swapping]. Append **i** to select input only or **o** to select
-    output only. [Default affects both]. This option is typically used
-    to handle (latitude, longitude) files; see also
-    **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*].

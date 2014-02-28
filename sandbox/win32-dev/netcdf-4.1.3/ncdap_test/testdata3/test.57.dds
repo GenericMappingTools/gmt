@@ -1,6 +1,0 @@
-Dataset {
-    Sequence {
-        Byte b[10];
-        Int32 i[10];
-    } foo;
-} SequenceofArrays;

@@ -1,3 +1,0 @@
-.TP
-GMT_s_OPT (*)
-Set handling of NaN records.

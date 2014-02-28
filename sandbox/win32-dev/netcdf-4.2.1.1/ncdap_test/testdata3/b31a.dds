@@ -1,7 +1,0 @@
-Dataset {
-    Sequence {
-        Float64 id;
-        String class;
-        String text;
-    } b31;
-} b31;

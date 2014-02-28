@@ -1,7 +1,0 @@
-netcdf synth8 {
-dimensions:
-	unlimited = UNLIMITED ; // (0 currently)
-variables:
-	float Q1.Q2.v4(unlimited) ;
-data:
-}

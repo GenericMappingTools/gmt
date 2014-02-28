@@ -1,9 +1,0 @@
-Dataset {
-      Structure {
-        Byte    v1[4];
-        Int16   v2[4];
-        Int32   v3[2];
-        Float32 v4[2];
-        Float64 v5[2];
-      } S1[2];
-    } TEST2;

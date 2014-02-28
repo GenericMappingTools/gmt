@@ -1,9 +1,0 @@
-Dataset {
-    Float64 TIME[TIME = 12];
-    Grid {
-      Array:
-        Float32 SST[TIME = 12];
-      Maps:
-        Float64 TIME[TIME = 12];
-    } SST;
-} data.nc;

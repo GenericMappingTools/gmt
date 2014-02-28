@@ -1,9 +1,0 @@
-netcdf test {
-types:
-  int(*) person_t ;
-variables:
-	person_t person ;
-data:
-
- person = {1, 2, 3, 5, 8} ;
-}

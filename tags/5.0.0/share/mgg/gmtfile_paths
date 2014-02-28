@@ -1,8 +1,0 @@
-#	$Id$
-#
-#	Directories with gmtfiles
-#	Currently set for SOEST data library
-#	Paul Wessel, January-2002
-#
-/home/gmt3/pwessel/DATA/NGDC/gmt
-/Users/pwessel/this_gmt/src/mgg

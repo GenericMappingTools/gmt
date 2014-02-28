@@ -1,5 +1,0 @@
-Dataset {
-    Structure {
-        Int16 WVC_Lat[row = 558][WVC = 24];
-    } NSCAT%20Rev%2017;
-} 1990-S1700101.HDF;

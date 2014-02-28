@@ -1,7 +1,0 @@
-netcdf test {
-variables:
-	double f64 ;
-data:
-
- f64 = 1000 ;
-}

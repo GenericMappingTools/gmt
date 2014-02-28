@@ -1,8 +1,0 @@
-Dataset {
-    Grid {
-     ARRAY:
-        Float64 amp[10];
-     MAPS:
-        Float64 x[10];
-    } OneD;
-} Simple;

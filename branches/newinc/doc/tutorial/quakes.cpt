@@ -1,5 +1,0 @@
-# color palette for seismicity
-#z0  red  green blue    z1   red green blue
-0	255	0	0	100	255	0	0
-100	0	255	0	300	0	255	0
-300	0	0	255	100000	0	0	255

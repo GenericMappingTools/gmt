@@ -1,4 +1,0 @@
-.TP
-GMT_r_OPT (*)
-Force pixel node registration [Default is gridline registration].
-(Node registrations are defined in BD(GMT) Technical Reference and Cookbook, Appendix B on grid file formats.)

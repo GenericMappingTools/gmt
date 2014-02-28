@@ -1,9 +1,0 @@
-#	$Id$
-#
-# GMT_triangle.lis contains the non-GPL licenced software that is stored in the
-# GMT_triangle tar/zip files.
-#
-src/TRIANGLE.HOWTO
-src/README.TRIANGLE
-src/triangle.c
-src/triangle.h

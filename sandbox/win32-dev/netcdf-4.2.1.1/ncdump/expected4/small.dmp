@@ -1,7 +1,0 @@
-netcdf small {
-variables:
-	byte t ;
-data:
-
- t = 1 ;
-}

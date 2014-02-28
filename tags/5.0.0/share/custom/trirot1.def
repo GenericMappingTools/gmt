@@ -1,8 +1,0 @@
-#	$Id$
-#
-#	Definition file for 90-degree triangle symbol (1st quadrant).  Use in psxy
-#	as -Sktrirot1/size.  Can be circumscribed by the square.
-#
--0.353553391	-0.353553391	M
-0.353553391	-0.353553391	D
--0.353553391	0.353553391	D

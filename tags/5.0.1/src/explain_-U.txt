@@ -1,3 +1,0 @@
-.TP
-GMT_U_OPT (*)
-Draw GMT time stamp logo on plot.
