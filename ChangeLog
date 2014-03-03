@@ -2,10 +2,16 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-03-03	pwessel
+	* pslegend.c:		The flush_paragraph was not reset to false before 2nd loop,
+				causing the text (T) option to fail if it was the first item.
 -----------------------------------------------------------------------------------------
-201x-yy-zz	pwessel
+2014-03-01	pwessel
 	GMT 5.1.1 finalized and released.
 -----------------------------------------------------------------------------------------
+2014-02-27	remko
+	* ps2raster.c:		Fix issue with psimage-included EPS files (issue #521)
+
 2014-02-20	pwessel
 	* grdcontour.c:		The -Zscale/offset option was applied incorrectly due to a
 				change in the underlying scaling function.

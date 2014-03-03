@@ -22,7 +22,7 @@ other platforms.
 Note there are three GMT tar archives available (#3 is optional):
 
 1. gmt-5.x.x.tar.bz2:          The GMT 5 distribution
-2. gshhg-gmt-nc4-2.x.x.tar.gz: All five resolutions of GSHHG coastline data
+2. gshhg-gmt-2.x.x.tar.gz:     All five resolutions of GSHHG coastline data
 3. dcw-gmt-1.x.x.tar.bz2:      Digital Chart of the World polygon data
 
 The archives are available in bzip2 (*.bz2) and gzip (*.gz) formats.
@@ -206,6 +206,7 @@ libraries.  Currently, the supplemental archive include the directories:
               and error ellipses on maps.
   mgd77     - Programs for handling of native MGD77 files.
   misc      - dimfilter
+  potential - geopotential manipulations
   segyprogs - Plotting SEGY seismic data sets.
   spotter   - Plate tectonic & kinematics applications.
   x2sys     - Track intersection (crossover) tools.
