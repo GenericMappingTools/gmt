@@ -43,9 +43,10 @@ Acknowledgments
 ===============
 
 The Generic Mapping Tools (GMT) could not have been designed without
-the generous support of several people. We gratefully acknowledge A. B.
-Watts and the late W. F. Haxby for supporting our efforts on the
-original version 1.0 while we were their graduate students at
+the generous support of several people. The Founders (Wessel and Smith)
+gratefully acknowledge A. B.
+Watts and the late W. F. Haxby for supporting their efforts on the
+original version 1.0 while they were their graduate students at
 Lamont-Doherty Earth Observatory. Doug Shearer and Roger Davis patiently
 answered many questions over e-mail. The subroutine ``gauss`` was
 written and supplied by Bill Menke. Further development of versions

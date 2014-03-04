@@ -160,7 +160,7 @@ Finally we are ready to compile GMT5.
   an example:
 
   set (CMAKE_INSTALL_PREFIX z:/software/gmt5msc)
-  set (GSHHG_ROOT z:/software/src/gshhg-gmt-nc4)
+  set (GSHHG_ROOT z:/software/src/gshhg-gmt)
   set (NETCDF_ROOT z:/software)
   set (GDAL_ROOT z:/software)
   set (PCRE_ROOT z:/software)

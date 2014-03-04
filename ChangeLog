@@ -2,45 +2,31 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-03-03	pwessel
+	* pslegend.c:		The flush_paragraph was not reset to false before 2nd loop,
+				causing the text (T) option to fail if it was the first item.
+
+-----------------------------------------------------------------------------------------
+2014-03-01	pwessel
+	GMT 5.1.1 finalized and released.
+-----------------------------------------------------------------------------------------
+2014-02-27	remko
+	* ps2raster.c:		Fix issue with psimage-included EPS files (issue #521)
+
+2014-02-20	pwessel
+	* grdcontour.c:		The -Zscale/offset option was applied incorrectly due to a
+				change in the underlying scaling function.
+	* grdvolume.c:		---"---
+
+2014-02-10	pwessel
+	*gmt2kml.c:		Make sure the default style IDs are unique for each process.
+
 2014-02-06	pwessel
 	* psxy.c:		New modifier -Ex[+]y[+] to do asymmetrical error bars.
 
 2014-02-03	pwessel
 	* gmtconvert.c:		New option -C to limit output to segments whose record count
 				matches our criteria.
-
-2014-01-14	remko
-	* gmt_shore.c:		Do not adjust longitudes in determining min/max, they are
-				always in same quadrant inside bins.
-
-2014-01-12	remko/pwessel
-	* all:			Merged in 5.1.1
-	* grdmath.c:		New function LDISTG does LDIST while using GSHHG directly.
-
-2013-12-06	pwessel
-	* gmtspatial.c:		Enhanced -Q to force interpretation of lines or polygons, plus
-				changed the single + to +h [but backwards compatible].
-
-2013-12-01	pwessel
-	* potential/gravfft.c:	Added approximate flex solution when rhoi != rhol
-	* potential/grdseamount.c:	Added shapes parabola and disc
-
-2013-11-09	pwessel
-	* gmt_shore.c:		Extended -A option with modifiers to handle various
-				Antarctica options available via GSHHG 2.3.0
-
------------------------------------------------------------------------------------------
-201x-yy-zz	pwessel
-	GMT 5.1.1 finalized and released.
------------------------------------------------------------------------------------------
-2014-02-20	pwessel
-	* grdcontour.c:		The -Zscale/offset option was applied incorrectly due to a
-				change in the underlying scaling function.
-	* grdvolume.c:		---"---
-2014-02-10	pwessel
-	*gmt2kml.c:		Make sure the default style IDs are unique for each process.
-
-2014-02-03	pwessel
 	* pslib.c:		Auto-widen paragraph width to at least fit widest word.
 
 2014-01-26	pwessel
@@ -52,9 +38,17 @@
 2014-01-22	pwessel
 	* pscoast.c:		The processing of -I -N levels and pens could get out of sync
 				so that the wrong pen was used for the specified feature.
+
 2014-01-16	remko
 	* pslib.c:		Take superscripts and subscripts into account when determining
 				dimensions of text box.
+
+2014-01-14	remko
+	* gmt_shore.c:		Do not adjust longitudes in determining min/max, they are
+				always in same quadrant inside bins.
+
+2014-01-12	remko/pwessel
+	* grdmath.c:		New function LDISTG does LDIST while using GSHHG directly.
 
 2014-01-10	pwessel
 	* grdmath.c:		We consider the change in SDIST, PDIST to return degrees instead
@@ -67,6 +61,7 @@
 2014-01-09	pwessel
 	* gmt_vector.c:		Add protection against introduced longitude-jumps produced
 				by resampling in GMT_fix_up_path.
+
 2014-01-09	remko
 	* grdmath.c:		LDIST and PDIST will again produce km when using geodesics.
 
@@ -86,6 +81,14 @@
 2013-12-08	remko
 	* psimage.c:		Now properly plots transparent images and makes -Gt work.
 
+2013-12-06	pwessel
+	* gmtspatial.c:		Enhanced -Q to force interpretation of lines or polygons, plus
+				changed the single + to +h [but backwards compatible].
+
+2013-12-01	pwessel
+	* potential/gravfft.c:	Added approximate flex solution when rhoi != rhol
+	* potential/grdseamount.c:	Added shapes parabola and disc
+
 2013-11-26	pwessel
 	* gmt_io.c:		GMT would crash on a blank line with no newline at end at all.
 	* pstext.c:		pstext did not process GMT4-style input properly.
@@ -95,6 +98,7 @@
 				Let users select the -N+l (leave trend alone). That is, do not overwrite with default mode.
 				Let the default detrend be remove MID point.
 				Explicitly set -N+a in gravfft command to avoid failures due to coming changes in gravfft.
+
 2013-11-25	pwessel
 	* grdlandmask.c:	Failed to fill partial bins with no coastlines when the region
 				crossed Greenwich [issue #451].
@@ -131,6 +135,8 @@
 	* gmt_support.c:	Fix symbol-size issue in psxy -Sc [issue #435].
 
 2013-11-09	pwessel
+	* gmt_shore.c:		Extended -A option with modifiers to handle various
+				Antarctica options available via GSHHG 2.3.0
 	* grdvector.c:		Did not convert direction to azimuths for geo vectors.
 
 2013-11-08	pwessel
