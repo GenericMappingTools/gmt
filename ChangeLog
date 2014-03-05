@@ -12,10 +12,23 @@
 2014-02-27	remko
 	* ps2raster.c:		Fix issue with psimage-included EPS files (issue #521)
 
+2014-02-25	pwessel
+	* xyz2grd.c:		Gave incorrect n_read count and for -bi -An insisted on 3 cols.
+
+2014-02-22	pwessel
+	* grdcontour.c:		Fix writing of contour labels to text file.
+	
 2014-02-20	pwessel
 	* grdcontour.c:		The -Zscale/offset option was applied incorrectly due to a
 				change in the underlying scaling function.
 	* grdvolume.c:		---"---
+	
+2014-02-19	pwessel
+	*mgd77/mgd77list.c:	Crashed with -Am4 as time column was not loaded.
+
+2014-02-18	pwessel
+	*gmtmath.c:		Crashed for some options because a dataset's n_records was not set.
+
 2014-02-10	pwessel
 	*gmt2kml.c:		Make sure the default style IDs are unique for each process.
 
