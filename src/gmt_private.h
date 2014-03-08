@@ -110,9 +110,9 @@ struct GMTAPI_DATA_OBJECT {
 	struct GMT_PALETTE *C;
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
+#endif
 #ifdef HAVE_GDAL
 	struct GMT_IMAGE *I;
-#endif
 #endif
 };
 
