@@ -69,7 +69,7 @@ struct GSHHG {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	uint32_t n;		/* Number of points in this polygon */
 	uint32_t flag;	/* = level + version << 8 + greenwich << 16 + source << 24 + river << 25 + p << 26 */
 	/* flag contains 6 items, as follows:
-	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
+	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake, 5 Antarctic Ice-front, 6 Antarctic grounding line.
 	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 9 for GSHHG release 9.
  	 * 3rd byte:	greenwich = (flag >> 16) & 3: Values: 0 if Greenwich nor Dateline are crossed,
 	 *		1 if Greenwich is crossed, 2 if Dateline is crossed, 3 if both is crossed.
