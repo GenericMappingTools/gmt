@@ -354,14 +354,14 @@ support via ``GMT_grdimage`` [4]_.
 .. code-block:: c
 
   struct GMT_IMAGE {
-      enum GMT_enum_type type;                /* Data type, e.g. GMT_FLOAT */
+      enum GMT_enum_type      type;           /* Data type, e.g. GMT_FLOAT */
       int                    *ColorMap;       /* Array with color lookup values */
       struct GMT_GRID_HEADER *header;         /* Pointer to full GMT header for the image */
       unsigned char          *data;           /* Pointer to actual image */
       /* ---- Variables "hidden" from the API ---- */
-      unsigned int            id;             /* The internal number of the data set */
-      enum GMT_enum_alloc     alloc_mode;     /* Allocation info [0] */
+      uint64_t                id;             /* The internal number of the data set */
       unsigned int            alloc_level;    /* Level of initial allocation */
+      enum GMT_enum_alloc     alloc_mode;     /* Allocation info [0] */
       const char             *ColorInterp;
   };
 
@@ -409,12 +409,16 @@ Table 1.1: Definition of the ``GMT_UNIVECTOR`` union that holds a pointer to any
   struct GMT_VECTOR {
       uint64_t             n_columns;     /* Number of vectors */
       uint64_t             n_rows;        /* Number of rows in each vector */
+      enum GMT_enum_reg    registration;  /* 0 for gridline and 1 for pixel registration */
       enum GMT_enum_type  *type;          /* Array with data type for each vector */
-      double               range[2];      /* The min and max limits on t-range (or 0,0) */
       union GMT_UNIVECTOR *data;          /* Array with unions for each column */
-      unsigned int         id;            /* An identification number */
-      enum GMT_enum_alloc  alloc_mode;    /* Determines if we may free the vectors or not */
+      double               range[2];      /* The min and max limits on t-range (or 0,0) */
+      char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
+      char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
+      /* ---- Variables "hidden" from the API ---- */ 
+      uint64_t             id;            /* An identification number */
       unsigned int         alloc_level;   /* Level of initial allocation */
+      enum GMT_enum_alloc  alloc_mode;    /* Determines if we may free the vectors or not */
   };
 
 
@@ -426,20 +430,22 @@ User data matrices (GMT matrices)
 .. code-block:: c
 
   struct GMT_MATRIX {
-      uint64_t n_rows;                    /* Number of rows in the matrix */
-      uint64_t n_columns;                 /* Number of columns in the matrix */
-      unsigned int n_layers;              /* Number of layers in a 3-D matrix */
-      unsigned int shape;                 /* 0 = C (rows) and 1 = Fortran (cols) */
-      unsigned int registration;          /* 0 for gridline and 1 for pixel registration */
-      size_t dim;                         /* Length of dimension for row (C) or column (Fortran) */
-      size_t size;                        /* Byte length of data */
-      enum GMT_enum_alloc alloc_mode;     /* Determines if we may free the vectors or not */
-      double range[6];                    /* The min and max limits on x-, y-, and z-ranges */
-      union GMT_UNIVECTOR data;           /* Union with pointers a data matrix of any type */
+      uint64_t             n_rows;        /* Number of rows in the matrix */
+      uint64_t             n_columns;     /* Number of columns in the matrix */
+      uint64_t             n_layers;      /* Number of layers in a 3-D matrix */
+      enum GMT_enum_fmt    shape;         /* 0 = C (rows) and 1 = Fortran (cols) */
+      enum GMT_enum_reg    registration;  /* 0 for gridline and 1 for pixel registration  */
+      size_t               dim;           /* Allocated length of longest C or Fortran dim */
+      size_t               size;          /* Byte length of data */
+      enum GMT_enum_type   type;          /* Data type, e.g. GMT_FLOAT */
+      double               range[6];      /* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
+      union GMT_UNIVECTOR  data;          /* Union with pointer to actual matrix of the chosen type */
+      char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
+      char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */      
       /* ---- Variables "hidden" from the API ---- */
-      unsigned int id;                    /* An identification number */
-      unsigned int alloc_level;           /* Level of initial allocation */
-      enum GMT_enum_type type;            /* The matrix data type */
+      uint64_t             id;            /* The internal number of the data set */
+      unsigned int         alloc_level;   /* The level it was allocated at */
+      enum GMT_enum_alloc  alloc_mode;    /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
   };
 
 
@@ -1111,7 +1117,7 @@ and pass the ``par`` array as indicated below:
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
 **GMT_IS_MATRIX**
-    An empty ``GMT_MATRIX`` structure is allocated. ``par[3]`` indicates
+    An empty ``GMT_MATRIX`` structure is allocated. ``par[2]`` indicates
     the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
 
 For the second approach, you
