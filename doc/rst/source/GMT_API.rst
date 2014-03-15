@@ -1289,6 +1289,7 @@ To read an entire resource from a file, stream, or file handle, use
 * mode -- *see below*
 * :ref:`wesn <tbl-wesn>`
 * input -- 
+* Return: Pointer to data container, or NULL if there were errors (passed back via API->error) *
 
 
 where ``ptr`` is NULL except when reading grids in two steps (i.e.,
@@ -1525,7 +1526,7 @@ proper lengths. The function returns 1 if there is an error
 Manipulate data
 ---------------
 
-Once you have created and allocated and empty resources, or read in
+Once you have created and allocated empty resources, or read in
 resources from the outside, you will wish to manipulate their contents.
 This section discusses how to set up loops and access the important
 variables for the various data families. For grids and images it may
