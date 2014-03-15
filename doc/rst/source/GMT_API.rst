@@ -1877,8 +1877,7 @@ three sets of ``args`` depending on ``mode``. The three modes differ in
 how the options are passed to the module:
 
     *mode* == ``GMT_MODULE_EXIST``
-        Just print a brief one-line summary of the module; args should be NULL.
-	If ``module`` equals NULL then we list summaries for all the modules.
+        Return GMT_NOERROR (0) if module exists, GMT_NOT_A_VALID_MODULE otherwise.
 
     *mode* == ``GMT_MODULE_PURPOSE``
         Just prints the purpose of the module; args should be NULL.
@@ -1896,6 +1895,7 @@ how the options are passed to the module:
         options are passed (i.e., the ``argc, argv[]`` model used by the GMT programs themselves).
 
 
+If ``module`` equals NULL then we list summaries for all the modules.
 If no module by the given name is found we return -1.
 
 Set program options via text array arguments
