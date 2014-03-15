@@ -668,24 +668,24 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	
 	world_map_save = GMT->current.map.is_world;
 
-	if (need_coast_base && GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info))  {
-		GMT_Report (API, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+	if (need_coast_base && (err = GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)))  {
+		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		need_coast_base = false;
 	}
 
-	if (Ctrl->N.active && GMT_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "%s resolution political boundary data base not installed\n", shore_resolution[base]);
+	if (Ctrl->N.active && (err = GMT_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution political boundaries]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
 	if (need_coast_base) GMT_Report (API, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
-	if (Ctrl->I.active && GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "%s resolution river data base not installed\n", shore_resolution[base]);
+	if (Ctrl->I.active && (err = GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution rivers]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->I.active = false;
 	}
 
 	if (!(need_coast_base || Ctrl->F.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No databases available - aborts\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No GSHHG databases available - must abort\n");
 		Return (EXIT_FAILURE);
 	}
 

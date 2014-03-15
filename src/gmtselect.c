@@ -506,8 +506,8 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 			Ctrl->N.mask[3] = Ctrl->N.mask[1];
 			Ctrl->N.mask[2] = Ctrl->N.mask[4] = Ctrl->N.mask[0];
 		}
-		if (GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+		if ((err = GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);

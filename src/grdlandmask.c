@@ -285,8 +285,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 		Ctrl->N.mask[2] = Ctrl->N.mask[4] = Ctrl->N.mask[0];
 	}
 
-	if (GMT_init_shore (GMT, Ctrl->D.set, &c, Grid->header->wesn, &Ctrl->A.info)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+	if ((err = GMT_init_shore (GMT, Ctrl->D.set, &c, Grid->header->wesn, &Ctrl->A.info))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		Return (EXIT_FAILURE);
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {

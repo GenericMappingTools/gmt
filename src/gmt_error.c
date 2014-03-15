@@ -28,6 +28,7 @@
 
 const char *g_error_string[] = {
 	/* GMT_NOERROR */			"No internal GMT error",
+	/* GMT_GRDIO_NONUNIQUE_FORMAT */	"Non-unique grid format",
 	/* GMT_GRDIO_UNKNOWN_FORMAT */		"Not a supported grid format",
 	/* GMT_GRDIO_UNKNOWN_TYPE */		"Unknown grid data type",
 	/* GMT_GRDIO_UNKNOWN_ID */		"Unknown grid format id number",
