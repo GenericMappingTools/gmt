@@ -673,7 +673,7 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 	double off = 0.5 * registration;
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
 	if ((mode & GMT_VIA_OUTPUT) && dim == NULL && range == NULL && inc == NULL) return (GMT_NOERROR);	/* OK for creating blank container for output */
-	if (full_region (range) && (dims == 2 || (range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
+	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
 		GMT_memcpy (M->range, dummy_range, 2 * dims, double);
 		M->n_rows = dim[0];
