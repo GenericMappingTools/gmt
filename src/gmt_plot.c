@@ -3473,7 +3473,7 @@ void GMT_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y,
 
 int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 {
-	int error, kind;
+	int kind;
 	uint64_t k, seg;
 	bool write_angle = (G->save_labels == 2);
 	char record[GMT_BUFSIZ] = {""};
