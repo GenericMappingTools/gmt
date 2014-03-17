@@ -386,7 +386,6 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
 
   union GMT_UNIVECTOR { 
       uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
-      uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
       int8_t   *sc1;       /* Pointer for signed 1-byte array */
       uint16_t *ui2;       /* Pointer for unsigned 2-byte array */
       int16_t  *si2;       /* Pointer for signed 2-byte array */
@@ -447,7 +446,6 @@ User data matrices (GMT matrices)
       unsigned int         alloc_level;   /* The level it was allocated at */
       enum GMT_enum_alloc  alloc_mode;    /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
   };
-
 
 Likewise, programs may have an integer 2-D matrix in memory and wish to
 use that as the input grid to the ``GMT_grdfilter`` module, which
@@ -1289,7 +1287,8 @@ To read an entire resource from a file, stream, or file handle, use
 * mode -- *see below*
 * :ref:`wesn <tbl-wesn>`
 * input -- 
-* Return: Pointer to data container, or NULL if there were errors (passed back via API->error) *
+* ptr -- NULL or ??? (when reading grids in two steps)
+* Return: Pointer to data container, or NULL if there were errors (passed back via API->error)
 
 
 where ``ptr`` is NULL except when reading grids in two steps (i.e.,
@@ -2230,7 +2229,7 @@ If your program needs to write any of the four recognized data types
 (CPT files, data tables, text tables, or GMT grids) you can use the
 GMT_Put_Data_. In the case of data and text tables, you may also
 consider the GMT_Put_Record_ function. As a general rule, your
-program organization may simplify if you can write the export the entire
+program organization may simplify if you can write and export the entire
 resource with GMT_Put_Data_. However, if the program logic is simple
 or already involves using GMT_Get_Record_, it may be better to export
 one data record at the time via GMT_Put_Record_.
@@ -2278,8 +2277,18 @@ The prototype for writing to a file (via name, stream, or file handle) is
                         unsigned int geometry, unsigned int mode,
                         double wesn[], void *output, void *data);
 
-where ``data`` is a pointer to any of the four structures discussed
-previously. Again, the ``mode`` parameter is specific to each data type:
+* :ref:`API <GMT_Create_Session>`
+* :ref:`family <tbl-family>`
+* :ref:`method <tbl-methods>`
+* :ref:`geometry <tbl-geometry>`
+* mode -- specific to each data type (\ *see below*)
+* :ref:`wesn <tbl-wesn>`
+* output -- 
+* data -- A pointer to any of the four structures :ref:`GMT_VECTOR <struct-vector>`,
+  :ref:`GMT_MATRIX <struct-matrix>`, :ref:`GMT_GRID <struct-grid>`, :ref:`GMT_PALETTE <struct-palette>`
+* Return: 0 on success, otherwise return -1 and set API->error to reflect to cause.
+
+where ``data`` is a pointer to any of the four structures discussed previously.
 
 **CPT table**
     ``mode`` controls if the CPT table's back-, fore-, and NaN-colors
@@ -2342,12 +2351,10 @@ previously. Again, the ``mode`` parameter is specific to each data type:
     processed in order. To completely specify which row to be written,
     use ``GMT_GRID_ROW_BY_ROW_MANUAL`` instead.
 
-If successful the function returns 0; otherwise we return 1
-and set ``API->error`` to reflect to cause.  Note: If ``method`` is
-GMT_IS_FILE, :ref:`family <tbl-family>` is ``GMT_IS_GRID``, and the filename implies a change
-from NaN to another value then the grid is modified accordingly.  If you
-continue to use that grid after writing please be aware that the changes
-you specified were applied to the grid.
+Note: If ``method`` is GMT_IS_FILE, :ref:`family <tbl-family>` is ``GMT_IS_GRID``,
+and the filename implies a change from NaN to another value then the grid is
+modified accordingly. If you continue to use that grid after writing please be
+aware that the changes you specified were applied to the grid.
 
 Exporting a data set to memory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
