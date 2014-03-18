@@ -8619,23 +8619,6 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		degenerate = true;
 		text[1] = 0;
 	}
-#if 0
-	char *s = NULL;
-	/* This is now removed since -i can do exactly the same thing */
-	if (!strchr (GMT_VECTOR_CODES "fq", text[0]) && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
-		k = (int)strlen (text) - 1;	/* Last character position */
-		s[0] = '\0';		/* Temporarily separate this modifer from the rest of the symbol option (restored at end of function) */
-		p->convert_size = (text[k] == 'l') ? 2 : 1;		/* If last char is l we want log10 conversion */
-		if (p->convert_size == 2) text[k] = '\0';		/* Temporarily remove the l */
-		n = sscanf (s+2, "%[^,],%[^l]", txt_a, txt_b);	/* Get the 1-2 pieces */
-		if (n == 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-S...+s contains bad scale info\n");
-		p->scale = GMT_to_inch (GMT, txt_a);	/* The scale may have units */
-		if (n == 2) p->origin = atof (txt_b);	/* Origin is in data units */
-		if (p->convert_size == 2 && n == 2) p->origin = log10 (p->origin);	/* To simplify calculations later */
-		p->origin *= p->scale;		/* So now size = (given_size | log10(given_size)) * p->scale - p->origin */
-		if (p->convert_size == 2) text[k] = 'l';	/* Replace the l we removed */
-	}
-#endif
 	if (!text[0]) {	/* No symbol or size given */
 		p->size_x = p->size_y = 0.0;
 		symbol_type = '*';
