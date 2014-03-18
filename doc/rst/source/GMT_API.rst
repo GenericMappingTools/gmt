@@ -1895,7 +1895,7 @@ how the options are passed to the module:
         options are passed (i.e., the ``argc, argv[]`` model used by the GMT programs themselves).
 
 
-If ``module`` equals NULL then we list summaries for all the modules.
+If ``module`` equals NULL and ``mode == GMT_MODULE_PURPOSE`` then we list summaries for all the modules
 If no module by the given name is found we return -1.
 
 Set program options via text array arguments
