@@ -14,7 +14,7 @@
 
 **Walter H. F. Smith**
 
-**Laboratory for Satellite Altimetry, NOAA/NESDIS**
+**Laboratory for Satellite Altimetry, NOAA/NESDIS/STAR**
 
 **Remko Scharroo**
 

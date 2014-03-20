@@ -16,7 +16,7 @@
 
 **Walter H. F. Smith**
 
-**Laboratory for Satellite Altimetry, NOAA/NESDIS**
+**Laboratory for Satellite Altimetry, NOAA/NESDIS/STAR**
 
 **Remko Scharroo**
 
@@ -76,7 +76,7 @@ Yip helped translate GMT to POSIX ANSI C and incorporate netCDF 3. The
 SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
-Honolulu, HI, Silver Spring, MD, Faro, Portugal, Darmstadt and
+Honolulu, HI, College Park, MD, Faro, Portugal, Darmstadt and
 Bremerhaven, Germany, March 2014
 
 
