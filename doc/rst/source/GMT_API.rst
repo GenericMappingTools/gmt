@@ -1087,34 +1087,36 @@ two ways:
 For the first case pass ``wesn``, ``inc`` as NULL (or arrays with elements all set to 0),
 and pass the ``par`` array as indicated below:
 
-**GMT_IS_GRID**
+  **GMT_IS_GRID**
     An empty ``GMT_GRID`` structure with a header is allocated; the data
-    array is NULL. The ``par`` argument is not used.
+    array is NULL. The ``par`` argument is not used. Here ``wesn`` and ``inc`` can
+    be NULL but than **-R** and **-I** must have been set because they are inquired to
+    get the necessary info. If they were not set, than ``wesn`` and ``inc`` must in
+    fact be transmitted.
 
-**GMT_IS_IMAGE**
-    An empty ``GMT_GRID`` structure with a header is allocated; the image
-    array is NULL. The ``par`` argument is not used.
+  **GMT_IS_IMAGE**
+    Same as **GMT_IS_GRID** above but return an empty ``GMT_IMAGE``
 
-**GMT_IS_DATASET**
+  **GMT_IS_DATASET**
     An empty ``GMT_DATASET`` structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, each with ``par[2]`` rows, all
     with ``par[3]`` columns, is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
-**GMT_IS_TEXTSET**
+  **GMT_IS_TEXTSET**
     An empty ``GMT_TEXTSET`` structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, all with ``par[2]`` text records (rows), is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
-**GMT_IS_CPT**
+  **GMT_IS_CPT**
     An empty ``GMT_PALETTE`` structure with ``par[0]`` palette entries is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
-**GMT_IS_VECTOR**
+  **GMT_IS_VECTOR**
     An empty ``GMT_VECTOR`` structure with ``par[0]`` column entries is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
-**GMT_IS_MATRIX**
+  **GMT_IS_MATRIX**
     An empty ``GMT_MATRIX`` structure is allocated. ``par[2]`` indicates
     the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
 
@@ -1286,8 +1288,8 @@ To read an entire resource from a file, stream, or file handle, use
 * :ref:`geometry <tbl-geometry>`
 * mode -- *see below*
 * :ref:`wesn <tbl-wesn>`
-* input -- 
-* ptr -- NULL or ??? (when reading grids in two steps)
+* input -- a pointer to char holding the file name to read.
+* ptr -- NULL or the pointer returned by this function after a first call (when reading grids in two steps)
 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error)
 
 
