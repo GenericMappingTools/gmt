@@ -721,8 +721,21 @@ int GMT_project (void *V_API, int mode, void *args)
 		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;
 		P.find_new_point = true;
 	}
-	if (Ctrl->G.active) P.n_outputs = 3;
-
+	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
+		P.n_outputs = 3;
+		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
+		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+		GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
+	}
+	else {	/* Decode and set the various output column types */
+		for (col = 0; col < P.n_outputs; col++) {
+			switch (P.output_choice[col]) {
+				case 0: case 4: GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_LON;	break;
+				case 1: case 5: GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_LAT;	break;
+				default: 	GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_FLOAT;	break;
+			}
+		}
+	}
 	p_data = GMT_memory (GMT, NULL, n_alloc, struct PROJECT_DATA);
 
 	if (Ctrl->G.active && Ctrl->E.active && (Ctrl->L.min == Ctrl->L.max)) Ctrl->L.constrain = true;	/* Default generate from A to B  */
