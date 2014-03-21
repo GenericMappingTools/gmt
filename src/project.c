@@ -771,7 +771,7 @@ int GMT_project (void *V_API, int mode, void *args)
 				Ctrl->G.mode = 0;
 			}
 			else if (doubleAlmostEqual (Ctrl->G.colat, 90.0)) {	/* Great circle pole needed */
-				if (!Ctrl->L.active) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, a, b));
+				if (Ctrl->L.constrain) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, a, b));
 			}
 			else {	/* Find small circle pole so C and E are |lat| degrees from it. */
 				for (col = 0; col < 3; col++) m[col] = a[col] + b[col];	/* Mid point along A-B */
@@ -806,7 +806,7 @@ int GMT_project (void *V_API, int mode, void *args)
 				GMT_normalize3v (GMT, x);
 				GMT_cross3v (GMT, x, P.pole, bp);
 				GMT_normalize3v (GMT, bp);
-				if (!Ctrl->L.active) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, ap, bp));
+				if (Ctrl->L.constrain) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, ap, bp));
 			}
 		}
 		if (Ctrl->L.constrain) {
