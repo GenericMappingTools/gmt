@@ -1088,36 +1088,36 @@ For the first case pass ``wesn``, ``inc`` as NULL (or arrays with elements all s
 and pass the ``par`` array as indicated below:
 
   **GMT_IS_GRID**
-    An empty ``GMT_GRID`` structure with a header is allocated; the data
+    An empty :ref:`GMT_GRID <struct-grid>` structure with a header is allocated; the data
     array is NULL. The ``par`` argument is not used. Here ``wesn`` and ``inc`` can
     be NULL but than **-R** and **-I** must have been set because they are inquired to
     get the necessary info. If they were not set, than ``wesn`` and ``inc`` must in
     fact be transmitted.
 
   **GMT_IS_IMAGE**
-    Same as **GMT_IS_GRID** above but return an empty ``GMT_IMAGE``
+    Same as **GMT_IS_GRID** above but return an empty :ref:`GMT_IMAGE <struct-image>`
 
   **GMT_IS_DATASET**
-    An empty ``GMT_DATASET`` structure consisting of ``par[0]`` tables,
+    An empty :ref:`GMT_DATASET <struct-dataset>` structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, each with ``par[2]`` rows, all
     with ``par[3]`` columns, is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
   **GMT_IS_TEXTSET**
-    An empty ``GMT_TEXTSET`` structure consisting of ``par[0]`` tables,
+    An empty :ref:`GMT_TEXTSET <struct-textset>` structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, all with ``par[2]`` text records (rows), is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
   **GMT_IS_CPT**
-    An empty ``GMT_PALETTE`` structure with ``par[0]`` palette entries is allocated.
+    An empty :ref:`GMT_PALETTE <struct-palette>` structure with ``par[0]`` palette entries is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
   **GMT_IS_VECTOR**
-    An empty ``GMT_VECTOR`` structure with ``par[0]`` column entries is allocated.
+    An empty :ref:`GMT_VECTOR <struct-vector>` structure with ``par[0]`` column entries is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.
 
   **GMT_IS_MATRIX**
-    An empty ``GMT_MATRIX`` structure is allocated. ``par[2]`` indicates
+    An empty :ref:`GMT_MATRIX <struct-matrix>` structure is allocated. ``par[2]`` indicates
     the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
 
 For the second approach, you
