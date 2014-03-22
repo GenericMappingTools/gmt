@@ -290,6 +290,36 @@ such GMT grids expect this type of variable.
        void                   *extra;       /* Row-by-row machinery information [NULL] */
    };
 
+GMT images
+~~~~~~~~~~
+
+GMT images are used to represent bit-mapped images typically obtained
+via the GDAL bridge. These can be reprojected internally, such as when
+used in grdimage. Since images and grids share the concept of a header,
+we use the same header structure for grids as for images; however, some
+additional metadata attributes are also needed. Finally, the image
+itself may be of any data type and have more than one band (channel).
+Both image and header information are passed via a ``struct GMT_IMAGE``,
+which is a container that holds both items. Thus, the arguments to
+GMT API functions that handle GMT images expect this type of
+variable. Unlike the other objects, writting images has only partial
+support via ``GMT_grdimage`` [4]_.
+
+.. _struct-image:
+
+.. code-block:: c
+
+  struct GMT_IMAGE {
+      enum GMT_enum_type      type;           /* Data type, e.g. GMT_FLOAT */
+      int                    *ColorMap;       /* Array with color lookup values */
+      struct GMT_GRID_HEADER *header;         /* Pointer to full GMT header for the image */
+      unsigned char          *data;           /* Pointer to actual image */
+      /* ---- Variables "hidden" from the API ---- */
+      uint64_t                id;             /* The internal number of the data set */
+      unsigned int            alloc_level;    /* Level of initial allocation */
+      enum GMT_enum_alloc     alloc_mode;     /* Allocation info [0] */
+      const char             *ColorInterp;
+  };
 
 CPT palette tables
 ~~~~~~~~~~~~~~~~~~
@@ -333,37 +363,6 @@ pass as arguments to GMT modules.
        unsigned int          z_unit[2];          /* Unit enum specified via +u<unit> */
        double                z_unit_to_meter[2]; /* Scale, given z_unit, to convert z from <unit> to meters */
    };
-
-GMT images
-~~~~~~~~~~
-
-GMT images are used to represent bit-mapped images typically obtained
-via the GDAL bridge. These can be reprojected internally, such as when
-used in grdimage. Since images and grids share the concept of a header,
-we use the same header structure for grids as for images; however, some
-additional metadata attributes are also needed. Finally, the image
-itself may be of any data type and have more than one band (channel).
-Both image and header information are passed via a ``struct GMT_IMAGE``,
-which is a container that holds both items. Thus, the arguments to
-GMT API functions that handle GMT images expect this type of
-variable. Unlike the other objects, writting images has only partial
-support via ``GMT_grdimage`` [4]_.
-
-.. _struct-image:
-
-.. code-block:: c
-
-  struct GMT_IMAGE {
-      enum GMT_enum_type      type;           /* Data type, e.g. GMT_FLOAT */
-      int                    *ColorMap;       /* Array with color lookup values */
-      struct GMT_GRID_HEADER *header;         /* Pointer to full GMT header for the image */
-      unsigned char          *data;           /* Pointer to actual image */
-      /* ---- Variables "hidden" from the API ---- */
-      uint64_t                id;             /* The internal number of the data set */
-      unsigned int            alloc_level;    /* Level of initial allocation */
-      enum GMT_enum_alloc     alloc_mode;     /* Allocation info [0] */
-      const char             *ColorInterp;
-  };
 
 User data columns (GMT vectors)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -424,6 +423,16 @@ Table 1.1: Definition of the ``GMT_UNIVECTOR`` union that holds a pointer to any
 User data matrices (GMT matrices)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Likewise, programs may have an integer 2-D matrix in memory and wish to
+use that as the input grid to the ``GMT_grdfilter`` module, which
+normally expects a ``struct GMT_GRID`` with floating point data via a
+file or provided by memory reference. As for user vectors, we create a
+``struct GMT_MATRIX`` (see :ref:`Create empty resources <sec-create>`), assign the appropriate
+union pointer to your data matrix and provide information on dimensions
+and data type. Let the GMT module know you
+are passing a grid via a ``struct GMT_MATRIX`` and it will know how to
+read the matrix properly.
+
 .. _struct-matrix:
 
 .. code-block:: c
@@ -446,16 +455,6 @@ User data matrices (GMT matrices)
       unsigned int         alloc_level;   /* The level it was allocated at */
       enum GMT_enum_alloc  alloc_mode;    /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
   };
-
-Likewise, programs may have an integer 2-D matrix in memory and wish to
-use that as the input grid to the ``GMT_grdfilter`` module, which
-normally expects a ``struct GMT_GRID`` with floating point data via a
-file or provided by memory reference. As for user vectors, we create a
-``struct GMT_MATRIX`` (see :ref:`Create empty resources <sec-create>`), assign the appropriate
-union pointer to your data matrix and provide information on dimensions
-and data type. Let the GMT module know you
-are passing a grid via a ``struct GMT_MATRIX`` and it will know how to
-read the matrix properly.
 
 The ``enum`` types referenced in :ref:`GMT_VECTOR <struct-vector>` and
 Table :ref:`GMT_MATRIX <struct-matrix>` and summarized in Table :ref:`enums <tbl-enums>`
@@ -527,22 +526,23 @@ simply command-line files then things simplify considerably.
 
    b. Each resource registration generates a unique ID number. For
       memory resources, we embed these numbers in unique filenames of
-      the form "@GMTAPI@-######". When GMT i/o library functions
-      encounter such filenames they extract the ID and make a connection
-      to the corresponding resource. Multiple table data or text sources
-      are combined into a single virtual source for GMT modules to
+      the form "@GMTAPI@-######" with GMT_Encode_ID_. When GMT i/o library
+      functions encounter such filenames they extract the ID and make a
+      connection to the corresponding resource. Multiple table data or text
+      sources are combined into a single virtual source for GMT modules to
       operate on. In contrast, CPT, Grid, and Image resources are
       operated on individually.
 
-   c. Enable data import once all registrations are complete.
+   c. Enable data import once all registrations are complete
+      (:ref:`Resources init <sec-res_init>`).
 
    d. Read data into memory. You may choose to read everything at once
       or read record-by-record (tables only).
 
    e. Prepare required arguments and call the GMT module you wish to use.
 
-   f. Process any results returned to memory via pointers rather than
-      written to files.
+   f. For non-mapping modules, process any results returned to memory via
+      pointers rather than written to files.
 
    g. Destroy the resources allocated by GMT modules to hold results,
       or let the garbage collector do this automatically at the end of
@@ -961,6 +961,7 @@ it returns 0.
 | GMT_ZHI |  z_max (top) boundary of 3-D matrix subset      |
 +---------+-------------------------------------------------+
 
+.. _sec-res_init:
 
 Resource initialization
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -989,7 +990,7 @@ options). The prototype for this function is
                      unsigned int n_args, void *args);
 
 where :ref:`family <tbl-family>` specifies what kind of resource is to be registered,
-ref:`geometry <tbl-geometry>` specifies the geometry of the data, ``direction`` is either
+:ref:`geometry <tbl-geometry>` specifies the geometry of the data, ``direction`` is either
 ``GMT_IN`` or ``GMT_OUT``, and ``mode`` is a bit flag that determines
 what we do if no resources have been registered. The choices are
 
@@ -1008,7 +1009,7 @@ what we do if no resources have been registered. The choices are
 
 The standard behavior is ``GMT_REG_DEFAULT``. Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
-in :ref:`Section <sec-func>`); otherwise ``args`` is an array of ``n_args``
+in :ref:`Prepare modules opts <sec-func>`); otherwise ``args`` is an array of ``n_args``
 strings (i.e., the int argc, char \*argv[] model)
 
 Many programs will register an export location where results of a

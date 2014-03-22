@@ -7992,7 +7992,8 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 				GMT->current.proj.xyz_projection[GMT_Y] = GMT->current.proj.xyz_projection[GMT_X];
 				GMT->current.proj.pars[1] = GMT->current.proj.pars[0];
 				GMT->current.proj.pars[3] = GMT->current.proj.pars[2];
-				if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+				/* Assume -JX<width>[unit]d means a linear geographic plot so x = lon and y = lat */
+				if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 			}
 
 			/* Not both sizes can be zero, but if one is, we will adjust to the scale of the other */
