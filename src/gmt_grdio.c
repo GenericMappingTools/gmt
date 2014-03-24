@@ -1111,7 +1111,7 @@ int GMT_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 			break;
 		case 2:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: grid x range <= 0.0\n");
-			if (GMT_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Make sure east > west for geographic coordinates\n");
+			if (GMT_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Make sure west < east for geographic coordinates\n");
 			error++;
 			break;
 		case 1:
