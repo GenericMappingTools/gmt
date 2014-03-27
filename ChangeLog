@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-03-26	remko
+	* ps2raster.c:		Bug fix: -C should also apply when computing BoundingBox.
+
 2014-03-03	pwessel
 	* pslegend.c:		The flush_paragraph was not reset to false before 2nd loop,
 				causing the text (T) option to fail if it was the first item.
@@ -17,12 +20,12 @@
 
 2014-02-22	pwessel
 	* grdcontour.c:		Fix writing of contour labels to text file.
-	
+
 2014-02-20	pwessel
 	* grdcontour.c:		The -Zscale/offset option was applied incorrectly due to a
 				change in the underlying scaling function.
 	* grdvolume.c:		---"---
-	
+
 2014-02-19	pwessel
 	*mgd77/mgd77list.c:	Crashed with -Am4 as time column was not loaded.
 
@@ -120,10 +123,10 @@
 
 2013-11-12	pwessel
 	* gmt_init.c:		grdmath could corrupt the gmt.history file [issue # 438].
- 	
+
 2013-11-10	pwessel
 	* gmt_support.c:	Fix symbol-size issue in psxy -Sc [issue #435].
-	
+
 2013-11-09	pwessel
 	* grdvector.c:		Did not convert direction to azimuths for geo vectors.
 
@@ -229,7 +232,7 @@
 	* gmt_plot.c:		Expanded "l" symbol macro to handle variable text and template-ing.
 	* psxy[z].c:		The -Sl symbol now takes modifiers +f<font> and +j<justify>.
 				The old %font suffix is supported under compatibility.
-	
+
 2013-06-16	pwessel
 	* The latest version of GSHHG is 2.2.3
 
@@ -380,7 +383,7 @@
 	* sph2grd.c:		New program for evaluating spherical harmonic coefficients
 				into grids.  Just spherical right now, no ellipsoidal adjustments
 				or taking derivatives of geopotentials.
-				
+
 2013-03-05	pwessel
 	* pshistogram:		Added -N to draw equivalent normal distributions.
 	* grdtrack.c:		Enhanced -E to also handle lines from origins and circles.
@@ -468,7 +471,7 @@
 				The XOR operator was incorrect, it is now clarified to be
 				0 if A == NaN and B == NaN, NaN if B == NaN, else A.
 				Added BITAND, BITLEFT, BITNOT, BITOR, BITRIGHT, BITTEST, BITXOR
-	
+
 2013-01-10	pwessel
 	* gmt_proj.c:		The -JE projection returned NaN if projection center was used,
 				causing some artifacts in pscoast -JE for global maps.
@@ -503,7 +506,7 @@
 2012-10-16	pwessel
 	* gmt_init.c:		Added two additional GMT defaults (PROJ_MEAN_RADIUS and PROJ_AUX_LATITUDE)
 				that control how great circle distances are approximated.
-	
+
 2012-10-09	pwessel
 	* grdmath.c:		Added operator SUM which adds up all non-NaN entries in a grid.
 				Returns a grid with all nodes set to the sum constant.
@@ -731,7 +734,7 @@
 				maintain the same distance from point to annotation.
 
 2012-01-30	jluis
-	* ps2raster.c:		On Windows the default name of the ghostscript executable 
+	* ps2raster.c:		On Windows the default name of the ghostscript executable
 				is now that of the 64 bits version (gswin64c).
 
 2012-01-25	remko
@@ -793,7 +796,7 @@
 	* gmt_customio.c:	Make nx and ny of 'unsigned short int' type in surfer6 header.
 				Note that original format specification by Golden Software
 				clearly say they are 'short int' but this change shouldn't
-				break anything and will allow dealing with larger grid sizes. 
+				break anything and will allow dealing with larger grid sizes.
 
 2012-01-04	pwessel
 	* grdvector.c:		Updated -Q to take new vector specification format.
@@ -837,7 +840,7 @@
 
 2011-12-03	pwessel
 	* gmtmath.c:		Did not check that -Tmin/max has min > max.
-	
+
 2011-12-03	pwessel
 	* mgd77/mgd77track.c:	Did not set GMT's time system to Unix before dealing
 				with dates.  Now done centrally by MGD77_Init.
@@ -903,8 +906,8 @@
 				to connect together polygons for fill.
 
 2011-11-19	jluis
-	* mgd77/mgd77.c:	Fix memory allocation bug in MGD77_Read_Header_Sequence() where 
-				it was reading MGD77_RECORD_LENGTH records into a shorter 
+	* mgd77/mgd77.c:	Fix memory allocation bug in MGD77_Read_Header_Sequence() where
+				it was reading MGD77_RECORD_LENGTH records into a shorter
 				MGD77_HEADER_LENGTH longer variable.
 
 2011-11-18	pwessel
@@ -934,7 +937,7 @@
 	* grdinfo.c:		Modifier -Ts<dz> returns a symmetrical range about zero.
 	* grdpaste.c:		Had trouble shuffling longitudes correctly for geographic grids.
 	* *.c:			Improved freeing of allocated memory as reported under --enable-devdebug
-			
+
 2011-11-12	pwessel
 	* gmtmercmap.c:		New example of API use: Create a shaded-relief Mercator map using
 				Etopo 1|2|5m global relief, with optional color bar.  Option -D
@@ -1102,10 +1105,10 @@
 	* ps2raster_func.c:	Add -TE option to include /PageSize in EPS.
 
 2011-08-30	jluis
-	* gmt_plot.h:		More Voodoo. If the "char string[GMT_TEXT_LEN64];" 
-				is not the first member in the GMT_SYMBOL struct than 
-				psxy -Sl<size>/Text will have corrupt 'Text'in non-debug 
-				binaries compiled with VS2010. 
+	* gmt_plot.h:		More Voodoo. If the "char string[GMT_TEXT_LEN64];"
+				is not the first member in the GMT_SYMBOL struct than
+				psxy -Sl<size>/Text will have corrupt 'Text'in non-debug
+				binaries compiled with VS2010.
 
 2011-08-29	remko
 	* gmt_init.c gmt_error.h:	Let GMT_report product return value of 1.
@@ -1148,13 +1151,13 @@
 2011-08-24	remko
 	* gmt_version.c:	Introduced new function GMT_version() to generate version number.
 	* *_tests.sh:		Now using graphicsmagick instead of imagemagick for compare.
-	
+
 2011-08-23	pwessel
 	* guru/install_gmt.sh:	Now offers option to set PCRE libs or disable.
 	* gmt_init.c:		New parameter GMT_TRIANGULATE which selects the triangulation
 				algorithm to use (Watson or Shewchuk). The latter is only
 				available if --enable-triangle was used during configuration.
-				
+
 2011-08-20	pwessel
 	* psrose_func.c:	The -C with no file still looked for a file.
 				do_fill was not initialized, could case black fill.
@@ -1254,10 +1257,10 @@
 	* spotter/gridspotter_func.c:	Fixed porting bugs and added spotter_7.sh as test.
 	* gmtvector_func.c:	Fixed several bugs and added some enhancements.  Now has
 				a few test scripts in the test dir.
-	
+
 2011-07-05	jluis
 	* gmt_init.c:		Add GMT_equal_double|float functions to compare floats after
-				www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
+				www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
 				For the time being they are only used in greenspline.
 
 2011-07-05	pwessel
@@ -1291,7 +1294,7 @@
 				-Amin to exclude smaller polygons on output [suggested by José
 				Luis García Pallero], as well as -Q to control output of river-lakes
 				and -N to control which levels to get.  Octave/Matlab format can be
-				natively requiested in GMT using 
+				natively requiested in GMT using
 
 2011-06-23	remko
 	* gmt_init.c:		Introduced MAP_TICK_LENGTH_{PRIMARY,SECONDARY} to set major
@@ -1311,7 +1314,7 @@
 				Also 'g' follows 'f', unless in consort with 'a', then follows 'a'.
 
 2011-06-21	jluis
-	* gmtinstall.bat:	It now builds also the supplements and put all dlls 
+	* gmtinstall.bat:	It now builds also the supplements and put all dlls
 				supplements inside the main gmt.dll.
 
 2011-06-21	pwessel
@@ -1360,7 +1363,7 @@
 	* gmt_support.c:	Even the order of args to the compare function in qsort_r
 				is permuted between BSD and GNU... [See 2011-05-28 entry].
 	* spotter:		Added spotter test examples - fixed porting bugs.
-				
+
 2011-06-13	remko
 	* gmt_support.c:	Use defs GMT_{INSIDE,ONEDGE,OUTSIDE} from gmt_support.h
 				instead of local defs GMT_{INSIDE,ONSIDE,OUTSIDE}_POLYGON.
@@ -1593,7 +1596,7 @@
 
 2011-05-11	jluis
 	* grdimage_func.c:	Now reads also indexed and gray scale images.
-				Use white for NaN color in images written with gdalwrite. 
+				Use white for NaN color in images written with gdalwrite.
 	* gmt_gdalwrite.c:	When known, save projection info in GeoTiff files.
 
 2011-05-09	pwessel
@@ -1637,9 +1640,9 @@
 	* grdvector_func.c:	Now treats input grids as read-only.
 	* pstext_func.c:	The -A can reset the text angle but also needs to reset justification
 	* grdfilter_func.c:	Bad col_in set as i_orig was reset incorrectly.
-	
+
 2011-05-03	jluis
-	* trend1d_func.c:	Added -F...|p as an option to output only the model coefficients 
+	* trend1d_func.c:	Added -F...|p as an option to output only the model coefficients
 
 2011-05-02	pwessel
 	* gmt_init.c:		FORMAT_FLOAT_OUT can now be used to set column-specific
@@ -1717,7 +1720,7 @@
 	* gmt_gdalread.h:	Add new struct to interface with GMT_gdalwrite
 	* grdimage_func.c:	Add new (still undocumented) options -d & -F to allow saving
 				images directly in raster formats via GDAL.
-				
+
 2011-04-26	pwessel
 	* gmt_support.c:	All boundcond functions modified as old structs EDGEINFO and
 				BCR are simplified into a few parameters in the GRDHEADER,
@@ -1733,7 +1736,7 @@
 2011-04-25	remko
 	* grdimage_func.c:	Add half a cell at edge when projecting pixel grid.
 	* gmt_map.c:		When longitude spans 360 in Lambert projection, set is_world = TRUE.
-	* gmt_grdio.c (GMT_grd_setregion):	Keep grid longitude range when map.is_world.		
+	* gmt_grdio.c (GMT_grd_setregion):	Keep grid longitude range when map.is_world.
 	* gmt_grd.h:		Restrict GMT_is_subgrid to actual subgrids.
 	* gmt.txt:		Added -n option.
 	* explain_-n_full.txt:	Fixed typos, fixed wrong GMT_n_OPT
@@ -1758,9 +1761,9 @@
 	* GMT_App_N.sh:		Remove GMT_Appendix_N_1.tex when empty.
 	* gmt_grdio.c (GMT_grd_setregion):	Return value now 0, 1, 2 instead of 1, 0, 0;
 				Hence add ! before GMT_grd_setregion where it was used before.
-				
+
 2011-04-24	jluis
-	* grdimage_func.c:	Accepts to illuminate an image read via GDAL with an 
+	* grdimage_func.c:	Accepts to illuminate an image read via GDAL with an
 				illumination grid computed with grdgradient.
 
 2011-04-23	pwessel
@@ -1791,13 +1794,13 @@
 	* gmt_vector.c:		Now holds the Gauss-Jordan and SVD codes (num.rec) that
 				were used in greenspline_func.c.  These may eventually be
 				replaced by the most optimal LA code on each platform.
-				
+
 2011-04-18	pwessel
 	* gmt_support.c:	Added GMT_boundcond_image_set for images and renamed
 				GMT_boundcond_image_set to GMT_boundcond_image_grid_set.
 	* gmt_map.c:		Added GMT_img_project for efficient reprojection of images.
 				This will be used in grdimage soon.
-	
+
 2011-04-18	remko
 	* grdsample_func.c:	Allow some slack in determining whether -R exceeds grid boundaries.
 	* doc/fig/*.ps:		Copied all output of scripts and examples here for use with
@@ -1812,7 +1815,7 @@
 	* grdblend_func.c:	Now accepts -r (to set registration) and will automatically
 				call GMT_grdsample to first resample any input grid that has
 				another registration or grid spacing than the chosen output grid.
-	
+
 2011-04-16      pwessel
 	* gmt_map.c:		The GMT_wesn_search did not handle periodic longitudes well,
 				now replaced with proper quadrant checking as in minmax.
@@ -1843,7 +1846,7 @@
 
 2011-04-12      pwessel
 	* configure.ac:		Added check for log2, with macro in gmt_math.h
-	
+
 2011-04-12	remko
 	* gmt_esri_io.c:	Load GTOPO30 and SRTM30 as pixel registered grids (which they are).
 	* gmt_gdalread.[ch]:	Removed C.active from GDALREAD_CTRL. Need was based on misinterpretation.
@@ -1864,11 +1867,11 @@
 
 2011-04-09	jluis
 	* psimage_func.c:	When used with GDAL alow selecting the image's bands order via a
-				my_image.jpg+b<stuff> mechanism. 
+				my_image.jpg+b<stuff> mechanism.
 				Test if image name has a +b<stuff> glued to the name.
 	* grdimage_func.c:	---"---
 	* gmt_grd.h:		Add a new member "pocket" to the GRD_HEADER struct
-	* gmt_gdalread.c:	Fix band parsing algorithm; allow band selection with reverse ordering. 
+	* gmt_gdalread.c:	Fix band parsing algorithm; allow band selection with reverse ordering.
 				When reading image to grid make sure only one band is processed.
 	* gmt_gdalread.h:	Add a new member to GD_CTRL to hold the actual number of loaded bands
 	* gmtapi_util.c:	---"---
@@ -1907,7 +1910,7 @@
 2011-04-04	jluis
 	* gmt_init.c:		Apply a workaround to the test of  access to 'GMT_TMPDIR' that
 				made the Win 64 bits version crash when that env variable was set.
-				
+
 2011-04-03	pwessel
 	* grdfilter_func.c:	The -Nr option failed to set nodes to NaN.
 
@@ -1928,7 +1931,7 @@
 
 2011-04-01	jluis
 	* gmtapi_util.c:	First cut of functions to read images via GDAL and store them
-	* gmt_grdio.[ch]	in the new IMAGE container. (Still very crude and probably buggy) 
+	* gmt_grdio.[ch]	in the new IMAGE container. (Still very crude and probably buggy)
 
 2011-03-31	remko
 	* grdedit_func.c:	Do functionality of -T before -R
@@ -1939,10 +1942,10 @@
 				build multi-component KML files in association with gmt2kml.
 	* gmt_io.c:		Let GMT_write_segmentheader deal with the segment marker so
 				that internally we only have a clean header (or NULL).
-				
+
 2011-03-30	jluis
 	* gmt_esri_io.c:	Also detects the Arc/Info float binary format (GRIDFLOAT)
-	* grdimage_func.c:	Overzealous -C testing prevented the usage of an image via -Dr 
+	* grdimage_func.c:	Overzealous -C testing prevented the usage of an image via -Dr
 
 2011-03-29	pwessel
 	* surface_func.c:	Improved gridding of pixel-registered grids by temporarily adding
@@ -1974,12 +1977,12 @@
 	* doc/GNUmakefile:	Removed everything dealing with HMTL documentation
 
 2011-03-27	jluis
-	* gmt_esri_io.c:	Extend the ESRI format to also read ESRI .HDR format. 
+	* gmt_esri_io.c:	Extend the ESRI format to also read ESRI .HDR format.
 				That is a raw binary + a .hdr ascii header file.
 				It knows also how to deal with plain GTOPO30 and SRTM30
 				raw binary files (that, is without companion .hdr file)
 				as well as SRTM1 and SRTM3 (with a .hgt extension)
-	* gmt_io.c:		Add extra test ' && c != EOF' to GMT_fgets to avoid potential 
+	* gmt_io.c:		Add extra test ' && c != EOF' to GMT_fgets to avoid potential
 				infinite while loop when called on a binary file.
 
 2011-03-26	pwessel
@@ -2005,9 +2008,9 @@
 	* guru/GMT_www.lis:	Now also includes PDF documentation (in addition to HTML)
 
 2011-03-24	jluis
-	* gmt_grdio.c:		Do more extensive tests to see if a file is in the internet 
+	* gmt_grdio.c:		Do more extensive tests to see if a file is in the internet
 				or is compressed and accessed via GDAL.
-	* gmtapi_util.c:	Add GMT_check_url_name() function to test if file resides 
+	* gmtapi_util.c:	Add GMT_check_url_name() function to test if file resides
 				in internet or is compressed and accessed via GDAL.
 
 2011-03-24	remko
@@ -2017,8 +2020,8 @@
 	* share/doc/gmt/*:	All moved to doc/*
 
 2011-03-23	jluis
-	* gmt_grdio.c:		Do not test if file exist for files imported via GDAL and 
-				that are located elsewhere on the Web (name starting by 'http'). 
+	* gmt_grdio.c:		Do not test if file exist for files imported via GDAL and
+				that are located elsewhere on the Web (name starting by 'http').
 				With this we can import files directly via their URL
 	* gmtapi_util.c:	---"---
 
@@ -2028,7 +2031,7 @@
 				no annotation but still a plot title
 
 2011-03-21	jluis
-	* gmt_gdalread.h:	Add a new member to GDALREAD_CTRL struct to host the pointer 
+	* gmt_gdalread.h:	Add a new member to GDALREAD_CTRL struct to host the pointer
 				to the pre-allocated grid array.
 	* gmt_gdalread.c:	Use pre-allocated *grid array if it was transmitted. Note that
 				in this case there is no test if pre-allocated mem is enough.
@@ -2043,8 +2046,8 @@
 2011-03-19	jluis
 	* gmt_gdalread.c:	Add code to do pixel interleaving of char arrays.
 				Handle new complex choice of 0,1,2
-	* gmt_gdalread.h:	Add two members to the GDALREAD_CTRL struct to deal with Pixel 
-				interleaving and put data into complex arrays 
+	* gmt_gdalread.h:	Add two members to the GDALREAD_CTRL struct to deal with Pixel
+				interleaving and put data into complex arrays
 	* gmt_customio.c:	GMT_gdal_read_grd now handles the complex case too.
 
 2011-03-18	pwessel

@@ -844,8 +844,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			free (ps_names[k]);
 		}
 		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
-		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s -r%d -sOutputFile=%s.pdf %s",
-			at_sign, Ctrl->G.file, Ctrl->C.arg, Ctrl->E.dpi, Ctrl->F.file, all_names_in);
+		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%s.pdf %s",
+			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, Ctrl->F.file, all_names_in);
 
 		sys_retval = system (cmd2);		/* Execute the GhostScript command */
 		if (sys_retval) {
@@ -919,7 +919,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Find HiResBoundingBox ");
 			sprintf (BB_file, "%s/ps2raster_%dc.bb", Ctrl->D.dir, (int)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
-			sprintf (cmd, "%s%s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, psfile_to_use, BB_file);
+			sprintf (cmd, "%s%s %s %s%s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, alpha_bits(Ctrl), psfile_to_use, BB_file);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
