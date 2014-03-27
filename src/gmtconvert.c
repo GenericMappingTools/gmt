@@ -248,7 +248,7 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 				Ctrl->I.active = true;
 				for (k = 0; opt->arg[k]; k++) {
 					switch (opt->arg[k]) {
-						case 'f': Ctrl->I.mode |= INV_TBLS; break;	/* Reverse table order */
+						case 't': Ctrl->I.mode |= INV_TBLS; break;	/* Reverse table order */
 						case 's': Ctrl->I.mode |= INV_SEGS; break;	/* Reverse segment order */
 						case 'r': Ctrl->I.mode |= INV_ROWS; break;	/* Reverse record order */
 						default:

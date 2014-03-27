@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-03-26	remko
+	* ps2raster.c:		Bug fix: -C should also apply when computing BoundingBox.
+
 2014-03-03	pwessel
 	* pslegend.c:		The flush_paragraph was not reset to false before 2nd loop,
 				causing the text (T) option to fail if it was the first item.
@@ -18,12 +21,12 @@
 
 2014-02-22	pwessel
 	* grdcontour.c:		Fix writing of contour labels to text file.
-	
+
 2014-02-20	pwessel
 	* grdcontour.c:		The -Zscale/offset option was applied incorrectly due to a
 				change in the underlying scaling function.
 	* grdvolume.c:		---"---
-	
+
 2014-02-19	pwessel
 	*mgd77/mgd77list.c:	Crashed with -Am4 as time column was not loaded.
 
