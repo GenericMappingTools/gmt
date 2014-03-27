@@ -10151,7 +10151,12 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 						sprintf (ID, "%*.*" PRIu64 "-%*.*" PRIu64, sdig, sdig, seg_no, ndig, ndig, row);
 				}
 				S->label = strdup (ID);
-				sprintf (buffer, "Cross profile number -L\"%s\" at %8.3f/%07.3f az=%05.1f",
+				if (strchr (ID, ' ')) {	/* Has spaces */
+					char tmp[GMT_BUFSIZ] = {""};
+					sprintf (tmp, "\"%s\"", ID);
+					strcpy (ID, tmp);
+				}
+				sprintf (buffer, "Cross profile number -L%s at %8.3f/%07.3f az=%05.1f",
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 
