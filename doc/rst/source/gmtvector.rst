@@ -146,7 +146,7 @@ Cartesian 3-D vectors, use
 
    ::
 
-    gmt gmtvector points.txt -Tr133/34 -Co -fg > reconstructed.txt
+    gmt gmtvector points.txt -Tr133/34/35 -Co -fg > reconstructed.txt
 
 To rotate the point 65/33 by all rotations given in file rots.txt, use
 
