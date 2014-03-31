@@ -128,6 +128,7 @@ EXTERN_MSC struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTI
 
 /* gmt_io.c: */
 
+EXTERN_MSC bool GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 EXTERN_MSC void GMT_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows);
 EXTERN_MSC void GMT_set_geographic (struct GMT_CTRL *GMT, unsigned int dir);
 EXTERN_MSC void GMT_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir);

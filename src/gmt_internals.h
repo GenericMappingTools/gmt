@@ -113,7 +113,6 @@ EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon
 EXTERN_MSC void GMT_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 EXTERN_MSC int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text);
 EXTERN_MSC bool GMT_check_url_name (char *fname);
-EXTERN_MSC bool GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 EXTERN_MSC int64_t GMT_splitinteger (double value, int epsilon, double *doublepart);
 EXTERN_MSC bool GMT_is_gleap (int gyear);
 EXTERN_MSC void GMT_str_tolower (char *string);
