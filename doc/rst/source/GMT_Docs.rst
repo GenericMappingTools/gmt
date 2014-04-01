@@ -4519,7 +4519,7 @@ needed than name the variables on the command line. For example:
 If one or more of the selected variables are two-dimensional, and have
 the same leading dimension as the other selected variables they will be
 plotted in their entirety. For example, if a netCDF files contains 6
-time steps recording temperature at 4 points, and the variable ``tmp`` is a 6 by
+time steps recording temperature at 4 points, and the variable ``temp`` is a 6 by
 4 array, then the command ``gmtconvert "file.nc?time/temp"`` can result in:
 
    ::
@@ -4532,7 +4532,7 @@ time steps recording temperature at 4 points, and the variable ``tmp`` is a 6 by
     2012-06-27T12:00:00 27.2 27.2 27.5 27.5
 
 If, for example, only the second temperature column is needed, use
-``gmt gmtconvert "file.nc?time/temp"`` (indices start counting at 0).
+``gmt gmtconvert "file.nc?time/temp[1]"`` (indices start counting at 0).
 
 The COARDS conventions set restrictions on the names that can be used
 for the units of the variables and coordinates. For example, the units

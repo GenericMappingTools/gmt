@@ -370,15 +370,15 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 				t_out = GMT_dist_array (GMT, lon, lat, m, true);
 			}
 			else if (Ctrl->N.active) {	/* Get relevant t_out segment */
+				uint64_t n_outside = 0;
 				low_t  = MIN (S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
 				high_t = MAX (S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
 				for (row = m = 0; row < m_supplied; row++) {
-					if (t_supplied_out[row] < low_t || t_supplied_out[row] > high_t) continue;
+					if (t_supplied_out[row] < low_t || t_supplied_out[row] > high_t) n_outside++;
 					t_out[m++] = t_supplied_out[row];
 				}
-				if (m == 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Warning: No output points for range %g to %g\n", S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
-					continue;
+				if (n_outside) {
+					GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %" PRIu64 " knot points outside range %g to %g\n", n_outside, S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
 				}
 			}
 			else {	/* Generate evenly spaced output */

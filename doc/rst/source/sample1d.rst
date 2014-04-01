@@ -69,7 +69,7 @@ Optional Arguments
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
     :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
-**-I**\ *inc*\ [*unit*\ ]
+**-I**\ *inc*\ [*unit*]
     *inc* defines the sampling interval [Default is the separation
     between the first and second abscissa point in the *infile*]. Append
     a distance unit (see UNITS) to indicate that the first two columns
@@ -83,7 +83,7 @@ Optional Arguments
     selected it applies to both *infile* and *knotfile*. Also note that
     **-i** never applies to *knotfile* since we always consider the
     first column only.
-**-S**\ *start*
+**-S**\ *start*\ [*stop*] 
     For equidistant sampling, *start* indicates the location of the
     first output value. [Default is the smallest even multiple of *inc*
     inside the range of *infile*]. Optionally, append /*stop* to

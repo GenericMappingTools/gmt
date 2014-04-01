@@ -953,7 +953,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 					break;
 			}
-
+			if (GMT_is_a_blank_line (record)) continue;	/* Nothing in this record */
+			
 			/* Data record to process */
 
 			if (n_contours == n_alloc) {
