@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-04-02	pwessel
+	* spotter/backtracker.c:	Merge -e with -E to simplify operations and to
+				disallow lower-case options other than for GMT common options.
+				Backwards compatible for now but this will cease in 5.2.x
+	* spotter/grdrotator.c:	---"---
+
 2014-03-26	remko
 	* ps2raster.c:		Bug fix: -C should also apply when computing BoundingBox.
 

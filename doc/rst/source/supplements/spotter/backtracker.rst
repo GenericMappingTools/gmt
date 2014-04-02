@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**backtracker** [ *table* ] **-E**\ *rot_file* \|
-**-e**\ *lon*/*lat*/*angle* [ **-A**\ [*young*/*old*] ] [
+**backtracker** [ *table* ] **-E**\ *rot_file*\|\ *lon*/*lat*/*angle*
+[ **-A**\ [*young*/*old*] ] [
 **-Df**\ \|\ **b** ] [ **-F**\ *drift.txt* ] [
 **-Lf**\ \|\ **b**\ *step* ] [ **-N**\ *upper_age* ] [
 **-Q**\ *fixed_age* ] [ **-S**\ *filestem* ] [ **-T**\ *zero_age* ]
@@ -63,16 +63,13 @@ Required Arguments
     to 10000. Blank lines and records whose first column contains # will
     be ignored. You may prepend a leading + to the filename to indicate
     you wish to invert the rotations.
-    Alternatively, give the filename composed of two plate IDs
+    Alternative 1: Give the filename composed of two plate IDs
     separated by a hyphen (e.g., PAC-MBL) and we will instead extract
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found.
-
-**-e**\ *lon*/*lat*/*angle*
-    Alternatively, specify the longitude, latitude, and opening angle
-    (all in degrees and separated by /) for a single total
-    reconstruction rotation that should be applied to all input points
-    (input ages, if present, are ignored).
+    Alternative 2: Specify *lon*/*lat*/*angle*, i.e., the longitude,
+    latitude, and opening angle (all in degrees and separated by /) for
+    a single total reconstruction rotation.
 
 Optional Arguments
 ------------------

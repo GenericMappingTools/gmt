@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdrotate** *ingrdfile* **-E**\ *rotfile* \|
-**-e**\ *lon*/*lat*/*angle* **-G**\ *outgrdfile* [ **-F**\ *polygonfile* ]
+**grdrotate** *ingrdfile* **-E**\ *rot_file*\|\ *lon*/*lat*/*angle*
+**-G**\ *outgrdfile* [ **-F**\ *polygonfile* ]
 [ **-N** ]
 [ |SYN_OPT-R| ]
 [ **-S** ] [ **-T**\ *age* ]
@@ -62,15 +62,14 @@ Required Arguments
     to 10000. Blank lines and records whose first column contains # will
     be ignored. You may prepend a leading + to the filename to indicate
     you wish to invert the rotations.
-    Alternatively, give the filename composed of two plate IDs
+    Alternative 1: Give the filename composed of two plate IDs
     separated by a hyphen (e.g., PAC-MBL) and we will instead extract
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found.
+    Alternative 2: Specify *lon*/*lat*/*angle*, i.e., the longitude,
+    latitude, and opening angle (all in degrees and separated by /) for
+    a single total reconstruction rotation.
 
-**-e**\ *lon*/*lat*/*angle*
-    Alternatively, specify the longitude, latitude, and opening angle
-    (all in degrees and separated by /) for a single total
-    reconstruction.
 **-G**\ *outgrdfile*
     Name of output grid. This is the grid with the data reconstructed
     according to the specified rotation.
@@ -121,7 +120,7 @@ clip_path.d, using a total reconstruction rotation with pole at (135.5,
 
    ::
 
-    gmt grdrotater topo.nc -e135.5/-33/37.3 -V -Fclip_path.d -Grot_topo.nc > rot_clip_path.d
+    gmt grdrotater topo.nc -E135.5/-33/37.3 -V -Fclip_path.d -Grot_topo.nc > rot_clip_path.d
 
 To rotate the entire grid faa.nc back to 32 Ma using the rotation file
 *rotations.txt* and a bilinear interpolation, try
