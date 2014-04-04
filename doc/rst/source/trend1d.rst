@@ -18,6 +18,7 @@ Synopsis
 [ **-C**\ *condition\_number* ] [ **-I**\ [*confidence\_level*] ]
 [ |SYN_OPT-V| ] [ **-W** ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -85,6 +86,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**]. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

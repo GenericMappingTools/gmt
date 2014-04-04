@@ -34,7 +34,7 @@
 
 #include "x2sys.h"
 
-#define GMT_PROG_OPTIONS "->JRVb"
+#define GMT_PROG_OPTIONS "->JRVbd"
 
 /* Control structure for x2sys_cross */
 
@@ -105,7 +105,7 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_cross <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-Il|a|c] [%s] [-Qe|i]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\n", GMT_bo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_bo_OPT, GMT_do_OPT);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOutput is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tIf time is not selected (or present) we use record numbers as proxies i1 i2\n");
@@ -132,7 +132,7 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum points on either side of xover to use in interpolation [Default is 3].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
-	GMT_Option (API, "bo,.");
+	GMT_Option (API, "bo,do,.");
 	
 	return (EXIT_FAILURE);
 }

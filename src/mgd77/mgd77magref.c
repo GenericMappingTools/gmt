@@ -21,7 +21,7 @@
 #include "gmt_dev.h"
 #include "mgd77.h"
 
-#define GMT_PROG_OPTIONS "-Vbh" GMT_OPT("Hm")
+#define GMT_PROG_OPTIONS "-Vbdh" GMT_OPT("Hm")
 
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -83,7 +83,7 @@ int GMT_mgd77magref_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77magref [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<rthxyzdi[/[0|9]1234567]>] [-G] [-L<rtxyz[/1234]>] [-Sc|l<low>/<high>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -149,7 +149,7 @@ int GMT_mgd77magref_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "V,bi0");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 4 input columns (unless -A is used).  Note for binary input, absolute time must\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   be in the unix time-system (unless -A+y is used).\n");
-	GMT_Option (API, "bo,h,:,.");
+	GMT_Option (API, "bo,d,h,:,.");
 
 	return (EXIT_FAILURE);
 }

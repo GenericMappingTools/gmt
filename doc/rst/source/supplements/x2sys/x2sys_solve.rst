@@ -18,6 +18,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ **-W[u]** ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 
 |No-spaces|
 
@@ -89,6 +90,8 @@ Optional Arguments
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bi.rst_
+
+.. include:: ../../explain_-di.rst_
 
 .. include:: ../../explain_help.rst_
 

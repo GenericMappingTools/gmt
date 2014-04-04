@@ -22,6 +22,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-n| ]
 
 |No-spaces|
@@ -199,6 +200,8 @@ Optional Arguments
     of the **-A** options. The binary input option is only available for
     numerical data columns. 
 .. include:: ../../explain_-bi.rst_
+
+.. include:: ../../explain_-di.rst_
 
 .. include:: ../../explain_-n.rst_
 

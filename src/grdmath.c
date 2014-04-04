@@ -32,7 +32,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:RVbfghinrs" GMT_OPT("F")
+#define GMT_PROG_OPTIONS "-:RVbdfghinrs" GMT_OPT("F")
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
@@ -149,7 +149,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdmath [%s]\n\t[%s]\n\t[-D<resolution>][+] [%s]\n\t[-M] [-N] [%s] [%s] [%s]\n\t[%s]\n\t[%s]"
-		" [%s]\n\t[%s] [%s] [%s]\n",	GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT,
+		" [%s]\n\t[%s] [%s] [%s] [%s]\n",	GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT,
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tA B op C op D op ... = outfile\n\n");
 
@@ -195,7 +195,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\t-N Do not perform strict domain check if several grids are involved.\n"
 		"\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_SMALL);
 	GMT_Option (API, "R,V");
-	GMT_Option (API, "f,g,h,i");
+	GMT_Option (API, "bi2,di,f,g,h,i");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE).\n");
 	GMT_Option (API, "n,r,s,.");
 

@@ -41,6 +41,8 @@
 
 #define GMT_bi_OPT	"-bi[<ncol>][t][w][+L|B]"
 #define GMT_bo_OPT	"-bo[<ncol>][t][w][+L|B]"
+#define GMT_di_OPT	"-di<nodata>"
+#define GMT_do_OPT	"-do<nodata>"
 #define GMT_fi_OPT	"-f<info>"
 #define GMT_fo_OPT	"-f<info>"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+r<remark>][+t<title>]"

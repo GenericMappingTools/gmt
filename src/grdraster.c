@@ -37,7 +37,7 @@
 #include "gmt_dev.h"
 #include "common_byteswap.h"
 
-#define GMT_PROG_OPTIONS "-JRVbh"
+#define GMT_PROG_OPTIONS "-JRVbdh"
 
 void GMT_str_toupper (char *string);
 
@@ -643,7 +643,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdraster <file number>|<text> %s [-G<outgrid>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<table>] [%s]\n\t[%s] [%s]\n", GMT_Id_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<table>] [%s] [%s]\n\t[%s] [%s]\n", GMT_Id_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<file number> (#) or <text> corresponds to one of the datasets listed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[<text> can be a unique substring of the description].\n\n");
@@ -671,7 +671,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the filename for output ASCII table with xyz triplets.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To get binary triplets, see -bo.  Cannot be used with -G.\n");
-	GMT_Option (API, "V,bo3,h,o,.");
+	GMT_Option (API, "V,bo3,do,h,o,.");
 
 	return (EXIT_FAILURE);
 }

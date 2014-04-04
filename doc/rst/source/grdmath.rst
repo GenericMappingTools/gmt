@@ -20,6 +20,7 @@ Synopsis
 [ **-M** ] [ **-N** ]
 [ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-h| ]
@@ -94,6 +95,9 @@ Optional Arguments
     only applies to the data files needed by operators **LDIST**,
     **PDIST**, and **INSIDE**.
 .. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

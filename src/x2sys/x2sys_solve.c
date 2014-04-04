@@ -38,7 +38,7 @@
 
 #include "x2sys.h"
 
-#define GMT_PROG_OPTIONS "->Vb"
+#define GMT_PROG_OPTIONS "->Vbd"
 
 #define N_COE_PARS	12	/* Total number of items that might be known at each crossover */
 #define COL_COE		0	/* The crossover value in whatever field we are studying */
@@ -184,7 +184,7 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *API, int level) {
 #ifdef SAVEFORLATER
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [-I<tracklist>] [%s] [-W]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT);
 #endif
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -201,7 +201,7 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Weights are present in last column for weighted fit [no weights].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append 'u' to report unweighted mean/std [Default, report weighted stats].\n");
-	GMT_Option (API, "bi,.");
+	GMT_Option (API, "bi,di,.");
 	
 	return (EXIT_FAILURE);
 }

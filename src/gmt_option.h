@@ -46,6 +46,7 @@
 #define GMT_a_OPT	"-a<col>=<name>[,...]"
 #define GMT_b_OPT	"-b[i|o][<ncol>][t][w][+L|B]"
 #define GMT_c_OPT	"-c<ncopies>"
+#define GMT_d_OPT	"-d[i|o]<nodata>"
 #define GMT_f_OPT	"-f[i|o]<info>"
 #define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z[-|+]<gap>[<unit>]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+r<remark>][+t<title>]"

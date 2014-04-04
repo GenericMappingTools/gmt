@@ -23,6 +23,7 @@ Synopsis
 [ **-Z**\ *over-relaxation_factor* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -139,6 +140,9 @@ boundary conditions in the longitude direction.
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. 
 .. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

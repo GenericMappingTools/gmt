@@ -1,0 +1,2 @@
+**-d**\ [**i**\ \|\ **o**]\ *nodata* :ref:`(more ...) <-d_full>` 
+    Replace input columns that equal *nodata* with NaN and do the reverse on output. |Add_-d|

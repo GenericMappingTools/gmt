@@ -18,6 +18,7 @@ Synopsis
 [ **-F**\ *xy\_filter*/*z\_filter* ] [ **-N**\ *template* ]
 [ **-Q**\ *flags* ] [ **-S** ] [ |SYN_OPT-V| ] [ **-Z** ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -118,6 +119,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**]. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

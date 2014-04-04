@@ -32,7 +32,7 @@
 
 #include "x2sys.h"
 
-#define GMT_PROG_OPTIONS "->RVb"
+#define GMT_PROG_OPTIONS "->RVbd"
 
 struct X2SYS_DATALIST_CTRL {
 	struct A {	/* -A */
@@ -90,7 +90,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_datalist <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT);
 	
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -107,7 +107,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: data columns exclude navigation (lon|x|lat|y|time) columns.)\n");
-	GMT_Option (API, "V,bo,.");
+	GMT_Option (API, "V,bo,do,.");
 	
 	return (EXIT_FAILURE);
 }

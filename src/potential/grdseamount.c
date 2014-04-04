@@ -18,7 +18,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:RVbfhir" GMT_OPT("H")
+#define GMT_PROG_OPTIONS "-:RVbdfhir" GMT_OPT("H")
 
 #define SHAPE_GAUS	0
 #define SHAPE_PARA	1
@@ -121,8 +121,8 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-N<norm>] [-Q<bmode><fmode>] [-S<r_scale>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[l]<t0>/<t1>/<dt>|<n>] [-Z<base>] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n",
-		GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[l]<t0>/<t1>/<dt>|<n>] [-Z<base>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n",
+		GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -156,7 +156,7 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies two extra input columns with start and stop time for each seamount's life span.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Q to select cumulative versus incremental loads.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Add in moho depth [0].  Not allowed for -Qi.\n");
-	GMT_Option (API, "V,bi");
+	GMT_Option (API, "V,bi,di");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is Cartesian - no units are implied; but see -D].\n");
 	GMT_Option (API, "h,i,r,:,.");

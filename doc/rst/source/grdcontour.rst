@@ -32,6 +32,7 @@ Synopsis
 [ **-Z**\ [*factor*\ [/*shift*]][**p**] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-do| ]
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
@@ -190,6 +191,9 @@ Optional Arguments
 .. include:: explain_-bo.rst_
 
 .. include:: explain_-c.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-do.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

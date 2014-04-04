@@ -30,7 +30,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:Vbh" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:Vbdh" GMT_OPT("HMm")
 
 #define POINT			0
 #define LINE			1
@@ -66,7 +66,7 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: kml2gmt [<kmlfiles>] [%s] [-Z] [%s] [%s] [%s] > GMTdata.txt\n", GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: kml2gmt [<kmlfiles>] [%s] [-Z] [%s] [%s] [%s] [%s] > GMTdata.txt\n", GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -76,7 +76,7 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
-	GMT_Option (API, "V,bo,h,:,.");
+	GMT_Option (API, "V,bo,do,h,:,.");
 
 	return (EXIT_FAILURE);
 }

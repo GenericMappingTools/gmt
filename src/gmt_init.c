@@ -596,6 +596,21 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t-c Specify the number of copies [%d].\n", GMT->PSL->init.copies);
 			break;
 
+		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
+
+			GMT_message (GMT, "\t-d On input, replace <nodata> with NaN; on output do the reverse.\n");
+			break;
+
+		case 'k':	/* -di option to tell GMT the relationship between NaN and a nan-proxy for input */
+
+			GMT_message (GMT, "\t-di Replace any <nodata> in input data with NaN.\n");
+			break;
+
+		case 'l':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
+
+			GMT_message (GMT, "\t-do Replace any NaNs in output data with <nodata>.\n");
+			break;
+
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
 
 			GMT_message (GMT, "\t-f Special formatting of input/output columns (time or geographical).\n");
@@ -1306,6 +1321,7 @@ int GMT_default_error (struct GMT_CTRL *GMT, char option)
 		case 'a': error += GMT->common.a.active == false; break;
 		case 'b': error += (GMT->common.b.active[GMT_IN] == false && GMT->common.b.active[GMT_OUT] == false); break;
 		case 'c': error += GMT->common.c.active == false; break;
+		case 'd': error += (GMT->common.d.active[GMT_IN] == false && GMT->common.d.active[GMT_OUT] == false); break;
 		case 'f': error += (GMT->common.f.active[GMT_IN] == false &&  GMT->common.f.active[GMT_OUT] == false); break;
 		case 'g': error += GMT->common.g.active == false; break;
 		case 'H':
@@ -2106,6 +2122,33 @@ int gmt_compare_cols (const void *point_1, const void *point_2)
 	return (0);
 }
 
+unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg)
+{
+	unsigned int dir, first, last;
+	char *c = NULL;
+
+	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -d requires an argument */
+	if (arg[0] == 'i') {
+		first = last = GMT_IN;
+		c = &arg[1];
+	}
+	else if (arg[0] == 'o') {
+		first = last = GMT_OUT;
+		c = &arg[1];
+	}
+	else {
+		first = GMT_IN;	last = GMT_OUT;
+		c = arg;
+	}
+	
+	for (dir = first; dir <= last; dir++) {
+		GMT->common.d.active[dir] = true;
+		GMT->common.d.nan_proxy[dir] = atof (c);
+		
+	}
+	return (GMT_NOERROR);
+}
+
 int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg)
 {
 	/* Routine will decode the -i<col>|<colrange>[l][s<scale>][o<offset>],... arguments */
@@ -2120,6 +2163,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg)
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -i requires an argument */
 
 	strncpy (copy, arg, GMT_BUFSIZ);
+	if ((c = strstr (copy, "+n"))) c[0] = '\0';	/* Chop off modifier since processed earlier */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
@@ -2170,7 +2214,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 {
 	/* Routine will decode the -o<col>|<colrange>,... arguments */
 
-	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
+	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL;
 	unsigned int pos = 0;
 	uint64_t k = 0;
 	int64_t i, start = -1, stop = -1, inc;
@@ -2178,6 +2222,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -o requires an argument */
 
 	strncpy (copy, arg, GMT_BUFSIZ);
+	if ((c = strstr (copy, "+n"))) c[0] = '\0';	/* Chop off modifier */
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
@@ -9690,6 +9735,21 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'c':
 			error += (GMT_more_than_once (GMT, GMT->common.c.active) || gmt_parse_c_option (GMT, item));
 			GMT->common.c.active = true;
+			break;
+
+		case 'd':
+			switch (item[0]) {
+				case 'i':
+					error += GMT_check_condition (GMT, GMT->common.d.active[GMT_IN], "Warning Option -di given more than once\n");
+					break;
+				case 'o':
+					error += GMT_check_condition (GMT, GMT->common.d.active[GMT_OUT], "Warning Option -do given more than once\n");
+					break;
+				default:
+					error += GMT_check_condition (GMT, GMT->common.d.active[GMT_IN] + GMT->common.d.active[GMT_OUT], "Warning Option -d given more than once\n");
+					break;
+			}
+			error += gmt_parse_d_option (GMT, item);
 			break;
 
 		case 'f':

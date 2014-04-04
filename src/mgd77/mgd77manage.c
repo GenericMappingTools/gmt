@@ -26,7 +26,7 @@
 #include "mgd77.h"
 #include "mgd77_e77.h"	/* E77 Header Errata Codes */
 
-#define GMT_PROG_OPTIONS "-RVbn"
+#define GMT_PROG_OPTIONS "-RVbdn"
 
 int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 
@@ -133,7 +133,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77manage <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-Cf|g|e] [-D<name1>,<name2>,...]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s[+|-]] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s[+|-]] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_n_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -200,7 +200,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [Default is -Nk].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    See -C for selecting distance calculation procedure.\n");
-	GMT_Option (API, "Rg,V,bi,n,.");
+	GMT_Option (API, "Rg,V,bi,di,n,.");
 	
 	return (EXIT_FAILURE);
 }

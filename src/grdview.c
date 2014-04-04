@@ -512,6 +512,9 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
 						Ctrl->Q.mask = true;
 						break;
+					case 't':	/* Image without color interpolation */
+						Ctrl->Q.special = true;
+						/* Deliberate fall-through */
 					case 'i':	/* Image with clipmask */
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
 						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
@@ -541,8 +544,6 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						Ctrl->Q.mode = GRDVIEW_SURF;
 						if (opt->arg[1] == 'm') Ctrl->Q.outline = true;
 						break;
-					case 't':	/* Image without color interpolation */
-						Ctrl->Q.special = true;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
 						n_errors++;

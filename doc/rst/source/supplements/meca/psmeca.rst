@@ -28,6 +28,7 @@ psmeca [ *table* ] **-J**\ *parameters*
 [ |SYN_OPT-Y| ]
 [ **-Z**\ *cptfile*]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
@@ -317,6 +318,9 @@ following columns:
     determined by the z-value in the third column.
 
 .. include:: ../../explain_-c.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-di.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_

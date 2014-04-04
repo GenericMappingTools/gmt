@@ -124,6 +124,10 @@ struct GMT_COMMON {
 		bool active;
 		unsigned int copies;
 	} c;
+	struct d {	/* -d[i][o]<nan_proxy> */
+		bool active[2];
+		double nan_proxy[2];
+	} d;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
 	} f;
@@ -146,7 +150,7 @@ struct GMT_COMMON {
 		char *remark;
 		char *colnames;	/* Not set by -h but maintained here */
 	} h;	
-	struct i {	/* -i<col>|<colrange>,.. */
+	struct i {	/* -i<col>|<colrange>,... */
 		bool active;
 		uint64_t n_cols;
 	} i;
@@ -159,7 +163,7 @@ struct GMT_COMMON {
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */
 	} n;
-	struct o {	/* -o<col>|<colrange>,.. */
+	struct o {	/* -o<col>|<colrange>,... */
 		bool active;
 		uint64_t n_cols;
 	} o;

@@ -20,6 +20,7 @@ Synopsis
 [ **-J**\ *parameters* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-o| ]
 
 |No-spaces|
@@ -79,6 +80,9 @@ Optional Arguments
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-do.rst_
     
 .. include:: explain_-ocols.rst_
 |

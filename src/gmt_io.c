@@ -280,7 +280,12 @@ int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
-		if (!GMT_is_dnan (GMT->current.io.curr_rec[col_no])) continue;	/* Clean data, do nothing */
+		if (!GMT_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
+			if (GMT->common.d.active[GMT_IN] && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
+				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
+			else	/* Still clean, so skip to next column */
+				continue;
+		}
 		/* We end up here if we found a NaN */
 		if (!GMT->current.setting.io_nan_records && GMT->current.io.skip_if_NaN[col_no]) bad_record = true;	/* This field is not allowed to be NaN */
 		if (GMT->current.io.skip_if_NaN[col_no]) set_nan_flag = true;
@@ -1441,7 +1446,10 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 			}
 			else				/* Default column order */
 				col_pos = col_no;
-			if ((n_convert = GMT_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val)) == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
+			n_convert = GMT_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val);
+			if (GMT->common.d.active[GMT_IN] && n_convert != GMT_IS_NAN && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], val))	/* Input matched no-data setting, so change to NaN */
+				n_convert = GMT_IS_NAN;
+			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
 				if (GMT->current.setting.io_nan_records || !GMT->current.io.skip_if_NaN[col_pos]) {	/* This field (or all fields) can be NaN so we pass it on */
 					GMT->current.io.curr_rec[col_pos] = GMT->session.d_NaN;
 					n_ok++;	/* Since NaN is considered an OK result */
@@ -1689,6 +1697,7 @@ int gmt_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr)
 	for (i = 0, k = 0; i < n_out; i++) {
 		col_pos = (GMT->common.o.active) ? GMT->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
 		val = (col_pos >= n) ? GMT->session.d_NaN : ptr[col_pos];	/* If we request beyond length of array, return NaN */
+		if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_OUT];	/* Write this value instead of NaNs */
 		if (GMT->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (GMT->current.io.geo.range, &val);
 		if (GMT->current.io.fmt[GMT_OUT][i].skip < 0) gmt_x_write (GMT, fp, -GMT->current.io.fmt[GMT_OUT][i].skip);	/* Pre-fill */
 		k += GMT->current.io.fmt[GMT_OUT][i].io (GMT, fp, 1, &val);
@@ -1737,6 +1746,8 @@ int GMT_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr)
 		else
 			col = i;	/* Just goto next column */
 		val = (col >= n) ? GMT->session.d_NaN : ptr[col];	/* If we request beyond length of array, return NaN */
+		if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_OUT];	/* Write this value instead of NaNs */
+
 		e = GMT_ascii_output_col (GMT, fp, val, col);	/* Write one item without any separator at the end */
 
 		if (i == last)					/* This is the last field, must add newline */

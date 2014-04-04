@@ -24,6 +24,12 @@
 
 .. |SYN_OPT-c| replace:: **-c**\ *copies*
 
+.. |SYN_OPT-d| replace:: **-d**\ [**i**\ \|\ **o**]*nodata*
+
+.. |SYN_OPT-di| replace:: **-di**\ *nodata*
+
+.. |SYN_OPT-do| replace:: **-do**\ *nodata*
+
 .. |SYN_OPT-f| replace:: **-f**\ [**i**\ \|\ **o**]\ *colinfo*
 
 .. |SYN_OPT-g| replace:: **-g**\ [**a**]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*]\ **z**\ [+\|-]\ *gap*\ [**u**]

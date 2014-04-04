@@ -54,7 +54,7 @@
 #include "gmt_dev.h"
 #include "gshhg.h"
 
-#define GMT_PROG_OPTIONS "-:Vbo"
+#define GMT_PROG_OPTIONS "-:Vbdo"
 
 struct GSHHG_CTRL {
 	struct In {	/* <file> */
@@ -109,7 +109,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -124,7 +124,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Output features whose level matches <level> [Default outputs all levels].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default outputs all polygons].\n");
-	GMT_Option (API, "V,bo2,o,:,.");
+	GMT_Option (API, "V,bo2,do,o,:,.");
 	
 	return (EXIT_FAILURE);
 }

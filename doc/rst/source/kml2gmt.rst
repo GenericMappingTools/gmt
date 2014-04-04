@@ -15,6 +15,7 @@ Synopsis
 
 **kml2gmt** [ *kmlfiles* ] [ |SYN_OPT-V| ] [ **-Z** ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -51,6 +52,9 @@ Optional Arguments
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-do.rst_
 
 .. include:: explain_colon.rst_
 

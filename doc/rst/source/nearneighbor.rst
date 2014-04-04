@@ -21,6 +21,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ **-W** ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -90,6 +91,9 @@ Optional Arguments
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns]. 
 .. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

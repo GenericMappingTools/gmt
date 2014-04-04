@@ -20,6 +20,7 @@ Synopsis
 [ **-S** ] [
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-h| ]
 
 |No-spaces|
@@ -80,6 +81,8 @@ Optional Arguments
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
+
+.. include:: ../../explain_-do.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_

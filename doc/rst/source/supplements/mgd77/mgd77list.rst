@@ -28,6 +28,7 @@ Synopsis
 [ **-W**\ *weight* ]
 [ **-Z**\ *+*\ \|\ **-** ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-h| ]
 
 |No-spaces|
@@ -424,6 +425,7 @@ Optional Arguments
     is positive down]. 
 
 .. include:: ../../explain_-bo_full.rst_
+.. include:: ../../explain_-do_full.rst_
 |
 |   ignored if **-bo** is selected. Likewise,
 |   string-fields cannot be selected. Note that if time is one of the

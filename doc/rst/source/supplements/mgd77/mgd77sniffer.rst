@@ -25,6 +25,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x** ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-n| ]
 
 |No-spaces|
@@ -259,6 +260,8 @@ Optional Arguments
 
 .. |Add_-bo| replace:: Output binary data for **-D**\ d\|f\|s\|v option.
 .. include:: ../../explain_-bo.rst_
+
+.. include:: ../../explain_-do.rst_
 
 .. include:: ../../explain_-n.rst_
 

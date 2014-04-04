@@ -5934,6 +5934,11 @@ int GMT_Option (void *V_API, char *options)
 				arg[k++] = (p[1] == 'i') ? 'C' : 'D';
 				arg[k++] = (p[2]) ? p[2] : '0';
 				break;
+			case 'd':	/* Nodata flag -d, -di, -do */
+				if (p[1] == 'i') arg[k++] = 'k';
+				else if (p[1] == 'o') arg[k++] = 'l';
+				else arg[k++] = 'd';
+				break;
 			case 'r':	/* Pixel registration */
 				arg[k++] = 'F';
 				break;
