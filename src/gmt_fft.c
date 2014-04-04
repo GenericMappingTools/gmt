@@ -2051,6 +2051,7 @@ void GMT_fft_initialization (struct GMT_CTRL *GMT) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {
 			fftwf_plan_with_nthreads(n_cpu);
+			GMT->current.setting.fftwf_threads = true;
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Initialize FFTW with %d threads.\n", n_cpu);
 		}
 	}
@@ -2083,7 +2084,10 @@ void GMT_fft_initialization (struct GMT_CTRL *GMT) {
 void GMT_fft_cleanup (struct GMT_CTRL *GMT) {
 	/* Called by GMT_end */
 #if defined HAVE_FFTW3F_THREADS
-	fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW */
+	if (GMT->current.setting.fftwf_threads) {
+		fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW */
+		GMT->current.setting.fftwf_threads = false;
+	}
 #endif
 #ifdef __APPLE__ /* Accelerate framework */
 	GMT_fft_1d_vDSP_reset (&GMT->current.fft);
