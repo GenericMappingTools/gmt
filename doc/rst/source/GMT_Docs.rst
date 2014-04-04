@@ -2314,7 +2314,7 @@ Standardized command line options
 ---------------------------------
 
 Most of the programs take many of the same arguments like those related
-to setting the data region, the map projection, etc. The 24 switches in
+to setting the data region, the map projection, etc. The 25 switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
@@ -2350,6 +2350,8 @@ importance (some are use a lot more than others).
 | **-b**   | Select binary input and/or output                                  |
 +----------+--------------------------------------------------------------------+
 | **-c**   | Specify the number of plot copies                                  |
++----------+--------------------------------------------------------------------+
+| **-d**   | Replace user *nodata* values with IEEE NaNs                        |
 +----------+--------------------------------------------------------------------+
 | **-f**   | Specify the data format on a per column basis                      |
 +----------+--------------------------------------------------------------------+
@@ -3244,6 +3246,18 @@ Number of Copies: The **-c** option
 The **-c** option specifies the number of plot copies [Default is 1].
 This value is embedded in the PostScript file and will make a printer
 issue the chosen number of copies without respooling.
+
+Missing data conversion: The **-d** option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Within GMT, any missing values are represented by the IEEE NaN value.
+However, there are occasionally the need to handle user data where
+missing data are represented by some unlikely data value such as -99999.
+Since GMT cannot guess that in your data set -99999 is a special value,
+you can use the **-d** option to have such values replaced with NaNs.
+Similarly, should your GMT output need to conform to such a requirement
+you can replace all NaNs with the chosen nodata value.  If only input
+or output should be affected, use **-di** or **-do**, respectably.
 
 Data type selection: The **-f** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
