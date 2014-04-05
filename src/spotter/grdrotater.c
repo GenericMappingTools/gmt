@@ -395,6 +395,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
 							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
+		if (!GMT->common.R.active) global = GMT_grd_is_global (GMT, G->header);
 	}
 	not_global = !global;
 	
