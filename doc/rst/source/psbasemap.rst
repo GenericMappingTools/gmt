@@ -16,7 +16,7 @@ Synopsis
 **psbasemap** **-J**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
+[ **-A**\ [*file*] ] [ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
 [ **-K** ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
 **-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**] ] ]
 [ **-O** ] [ **-P** ]
@@ -58,6 +58,12 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+**-A**\ [*file*]
+    No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline
+    for the (possibly oblique) rectangular map domain.  The plot domain must be given via the oblique
+    **-R**\ *llx/lly/urx/ury*\ **r** specification and **-J**, with no other options present.  The
+    sampling interval is controlled via **MAP_LINE_STEP** parameter.
 
 .. include:: explain_-B.rst_
 

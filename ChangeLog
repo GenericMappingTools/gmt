@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-04-04	pwessel
+	* psbasemap.c:		Added new option -A[file] which instead of plotting a map
+				will write the coordinates of the plot domain outline to
+				the given file (or stdout).
+
 2014-04-03	pwessel
 	* gmt_init.c:		Added new common GMT option -d[i|o\<nodata>], which can be
 				used anywhere to convert users <nodata> values to NaN, and to do

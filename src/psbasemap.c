@@ -37,6 +37,10 @@
 /* Control structure for psbasemap */
 
 struct PSBASEMAP_CTRL {
+	struct A {	/* -A */
+		bool active;
+		char *file;
+	} A;
 	struct D {	/* -D */
 		bool active;
 		struct GMT_MAP_INSERT item;
@@ -66,6 +70,7 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	if (C->A.file) free (C->A.file);
 	GMT_free (GMT, C);
 }
 
@@ -75,8 +80,8 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s %s\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s]\n\t[%s] [-K]\n", GMT_INSERT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s]\n\t[%s] [-K]\n", GMT_INSERT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-T%s]\n", GMT_TROSE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
@@ -84,8 +89,12 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (API, "B,JZ,R");
+	GMT_Option (API, "JZ,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A No plotting.  Just write coordinates of the (oblique) rectangular map boundary\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to given file (or stdout).  Requires -R and -J only.  Spacing along border\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT defaults MAP_LINE_STEP.\n");
+	GMT_Option (API, "B");
 	GMT_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
 	GMT_Option (API, "K");
 	GMT_mapscale_syntax (API->GMT, 'L', "Draw a simple map scale centered on <lon0>/<lat0>.");
@@ -115,6 +124,10 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* No plot, just output region outline  */
+				Ctrl->A.active = true;
+				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
+				break;
 			case 'D':	/* Draw map insert */
 				Ctrl->D.active = true;
 				n_errors += GMT_getinsert (GMT, 'D', opt->arg, &Ctrl->D.item);
@@ -148,7 +161,9 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -B, -D, -L, -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && !GMT->common.R.oblique, "Syntax error: Cannot use -A unless a rectangular domain via -R<llx/lly/urx/ury>r is set\n");
+	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->A.active || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -A, -B, -D, -L, -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Cannot use -B, -D, -L, -T with -A\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !GMT_is_geographic (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -189,7 +204,39 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Constructing the basemap\n");
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	
+	if (Ctrl->A.active) {	/* Just save outline in geographic coordinates */
+		/* Loop counter-clockwise around the rectangular projected domain, recovering the lon/lat points */
+		uint64_t nx, ny, k = 0, i, dim[4] = {1, 1, 0, 2};
+		char msg[GMT_BUFSIZ] = {""};
+		struct GMT_DATASET *D = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
+		
+		nx = urint (GMT->current.map.width  / GMT->current.setting.map_line_step);
+		ny = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
+		dim[GMT_ROW] = 2 * (nx + ny) - 3;
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+		S = D->table[0]->segment[0];
+		for (i = 0; i < nx; i++, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], i * GMT->current.setting.map_line_step, 0.0);
+		for (i = 0; i < ny; i++, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], GMT->current.map.width, i * GMT->current.setting.map_line_step);
+		for (i = nx; i > 0; i--, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], i * GMT->current.setting.map_line_step, GMT->current.map.height);
+		for (i = ny; i > 0; i--, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], 0.0, i * GMT->current.setting.map_line_step);
+		S->coord[GMT_X][k] = S->coord[GMT_X][0];	S->coord[GMT_Y][k++] = S->coord[GMT_Y][0];
+		S->n_rows = k;
+		D->table[0]->n_headers = 1;
+		D->table[0]->header = GMT_memory (GMT, NULL, 1U, char *);
+		sprintf (msg, " Geographical coordinates for a (oblique) rectangular plot domain outline polygon");
+		D->table[0]->header[0] = strdup (msg);
+		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLYGON, GMT_WRITE_SET, NULL, Ctrl->A.file, D) != GMT_OK) {
+			Return (API->error);
+		}
+		Return (GMT_OK);
+	}
 
+	/* Regular plot behaviour */
+	
 	GMT_plotinit (GMT, options);
 
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
