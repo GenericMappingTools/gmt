@@ -18,7 +18,7 @@ Synopsis
 |SYN_OPT-R|
 [ **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ] 
 [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
-[ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
+[ **-S**\ [*zfile*] ]
 [ |SYN_OPT-V| ]
 [ **-Z**\ [*flags*\ ] ]
 [ |SYN_OPT-bi| ]
@@ -80,10 +80,6 @@ Optional Arguments
     character (and not the equal sign) as separator by both starting and ending
     with it. For example:
     **-D**:*xname*:*yname*:*zname*:*scale*:*offset*:*invalid*:*title*:*remark*:
-**-N**\ *nodata*
-    No data. Set nodes with no input xyz triplet to this value [Default
-    is NaN]. For z-tables, this option is used to replace z-values that
-    equal *nodata* with NaN.
 **-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You
     must also supply the **-Z** option. The output is written to *zfile*
@@ -145,7 +141,8 @@ Optional Arguments
     to xyz input files; see **-Z** for z tables. 
 .. include:: explain_-bi.rst_
 
-.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. |Add_-di| replace:: Also sets nodes with no input xyz triplet to this value
+    [Default is NaN].
 .. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
@@ -193,11 +190,11 @@ scanline-oriented data raw.b, use
     gmt xyz2grd raw.b -Dm/m/m/1/0 -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 
 To make a grid file from the raw binary USGS DEM (short integer
-scanline-oriented data topo30. on the NGDC global relief Data CD-ROM,
+scanline-oriented data topo30.b on the NGDC global relief Data CD-ROM,
 with values of -9999 indicate missing data, one must on some machine
-reverse the byte-order. On such machines (like Sun, use
+reverse the byte-order. On such machines (like Sun), use
 
-    gmt xyz2grd topo30. -Dm/m/m/1/0 -Gustopo.nc -R234/294/24/50 -I30s -N-9999 -B -ZTLhw
+    gmt xyz2grd topo30.b -Dm/m/m/1/0 -Gustopo.nc -R234/294/24/50 -I30s -di-9999 -ZTLhw
 
 Say you have received a binary file with 4-byte floating points that
 were written on a machine of different byte-order than yours. You can

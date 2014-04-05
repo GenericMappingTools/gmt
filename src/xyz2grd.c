@@ -61,10 +61,6 @@ struct XYZ2GRD_CTRL {
 		bool active;
 		double inc[2];
 	} I;
-	struct N {	/* -N<nodata> */
-		bool active;
-		double value;
-	} N;
 	struct S {	/* -S */
 		bool active;
 		char *file;
@@ -78,7 +74,6 @@ void *New_xyz2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct XYZ2GRD_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->N.value = GMT->session.d_NaN;
 	C->Z.type = 'a';
 	C->Z.format[0] = 'T';	C->Z.format[1] = 'L';
 	return (C);
@@ -99,7 +94,7 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: xyz2grd [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[f|l|m|n|r|s|u|z]]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<nodata>] [-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -119,8 +114,6 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Az: Sum multiple entries at the same node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will compute mean values].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Append header information; leave field blank to get default value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set value for nodes without input xyz triplet [Default is NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Z-table entries that equal <nodata> are replaced by NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Swap the byte-order of the input data and write result to <zfile>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (or stdout if no file given).  Requires -Z, and no grid file created!\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For this option, only one input file (or stdin) is allowed.\n");
@@ -151,7 +144,9 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     d  8-byte floating point double precision.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option assumes all nodes have data values.\n");
-	GMT_Option (API, "bi3,di,f,h,i,r,s,:,.");
+	GMT_Option (API, "bi3,di");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Also sets value for nodes without input xyz triplet [Default is NaN].\n");
+	GMT_Option (API, "f,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -170,6 +165,7 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 	char *ptr_to_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+	EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
 
 	memset (io, 0, sizeof(struct GMT_Z_IO)); /* Initialize with zero */
 
@@ -231,13 +227,20 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'N':
-				Ctrl->N.active = true;
-				if (opt->arg[0])
-					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
-					n_errors++;
+				if (GMT_compat_check (GMT, 4)) {	/* Honor old -N<value> option */
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N is deprecated; use GMT common option -di<nodata> instead.\n");
+					if (opt->arg[0]) {
+						char arg[GMT_LEN64] = {""};
+						sprintf (arg, "i%s", opt->arg);
+						n_errors += gmt_parse_d_option (GMT, arg);
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
+						n_errors++;
+					}
 				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -507,7 +510,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	/* Here we will read either x,y,z or z data, using -R -I [-r] for sizeing */
 	
-	no_data_f = (float)Ctrl->N.value;
+	no_data_f = (!GMT->common.d.active[GMT_IN]) ? GMT->session.f_NaN : (float)GMT->common.d.nan_proxy[GMT_IN];
 	
 	/* Set up and allocate output grid [note: zero padding specificied] */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -527,7 +530,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	if (Ctrl->Z.active && Ctrl->N.active && GMT_is_dnan (Ctrl->N.value)) Ctrl->N.active = false;	/* No point testing */
+	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && GMT_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing */
 
 	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
 		zcol = GMT_X;
@@ -579,7 +582,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 				Return (EXIT_FAILURE);
 			}
 			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
-			Grid->data[gmt_ij] = (Ctrl->N.active && in[zcol] == Ctrl->N.value) ? GMT->session.f_NaN : (float)in[zcol];
+			Grid->data[gmt_ij] = (GMT->common.d.active[GMT_IN] && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
 			ij++;
 		}
 		else {	/* Get x, y, z */
@@ -717,7 +720,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			char line[GMT_BUFSIZ], e_value[GMT_LEN32];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			(GMT_is_dnan (Ctrl->N.value)) ? sprintf (e_value, "NaN") : sprintf (e_value, GMT->current.setting.format_float_out, Ctrl->N.value);
+			(GMT_is_dnan (GMT->common.d.active[GMT_IN])) ? sprintf (e_value, "NaN") : sprintf (e_value, GMT->current.setting.format_float_out, GMT->common.d.nan_proxy[GMT_IN]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
 				n_read, n_used, n_filled, n_empty, e_value);
 			if (n_bad) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " records unreadable\n", n_bad);

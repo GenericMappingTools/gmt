@@ -13,11 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ] [ **-N**\ [**i**]\ *nodata* ]
+**grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [*weight*] ] [ **-Z**\ [*flags*] ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-o| ]
@@ -52,11 +53,6 @@ Optional Arguments
     **f** to start at 1 (Fortran-style counting). Alternatively, append
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
-
-**-N**\ [**i**]\ *nodata* 
-    Output this z-value where the latter equals NaN [Default writes NaN].
-    Alternatively prepend **i** to do the inverse. That is, to replace the
-    *nodata* values in grid with NaN. Useful to use with the **-s** option.
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the grid. If this subsection exceeds the
@@ -104,6 +100,9 @@ Optional Arguments
 .. |Add_-bo| replace:: [Default is 3]. This option
     only applies to xyz output; see **-Z** for z table output. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| replace:: See also **TIME
     COORDINATES** below. **-h** Output 1 header record based on
