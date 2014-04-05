@@ -43,15 +43,13 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E[+]rotfile */
+	struct E {	/* -E[+]rotfile or -E<lon/lat/angle> */
 		bool active;
+		bool single;
 		bool mode;
 		char *file;
-	} E;
-	struct e {	/* -e<lon/lat/angle> */
-		bool active;
 		double lon, lat, w;
-	} e;
+	} E;
 	struct F {	/* -Fpolfile */
 		bool active;
 		char *file;
@@ -96,7 +94,7 @@ int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdrotater <grid> -E[+]<rottable> OR -e<plon>/<plat>/<prot> -G<outgrid> [-F<polygontable>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdrotater <grid> -E[+]<rottable>|<plon>/<plat>/<prot> -G<outgrid> [-F<polygontable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<rotoutline>] [-N] [%s] [-S] [-T<time>] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] > projpol\n\n", GMT_b_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT);
 
@@ -108,7 +106,7 @@ int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   unless the grid is global.\n");
 	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option requires you to specify the age of the reconstruction with -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify a single finite rotation (in degrees) to be applied.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Write the rotated polygon or grid outline to <rotoutline> [stdout].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon table that describes the area of the grid\n");
@@ -159,19 +157,29 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
 				break;
-			case 'E':	/* File with stage poles */
-				Ctrl->E.active = true;	k = 0;
-				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
-				if (GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN))
-					Ctrl->E.file  = strdup (&opt->arg[k]);
-				else
-					n_errors++;
-				break;
 			case 'e':
-				Ctrl->e.active  = true;
-				sscanf (opt->arg, "%[^/]/%[^/]/%lg", txt_a, txt_b, &Ctrl->e.w);
-				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->e.lon), txt_a);
-				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->e.lat), txt_b);
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
+				/* Fall-through on purpose */
+			case 'E':	/* File with stage poles or a single rotation pole */
+				Ctrl->E.active = true;
+				k = (opt->arg[0] == '+') ? 1 : 0;
+				if (!GMT_access (GMT, &opt->arg[k], F_OK) && GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN)) {	/* Was given a file (with possible leading + flag) */
+					Ctrl->E.file  = strdup (&opt->arg[k]);
+					if (k == 1) Ctrl->E.mode = true;
+				}
+				else {	/* Apply a fixed total reconstruction rotation to all input points  */
+					unsigned int ns = 0;
+					size_t kk;
+					for (kk = 0; kk < strlen (opt->arg); kk++) if (opt->arg[kk] == '/') ns++;
+					if (ns == 2) {	/* Looks like we got lon/lat/omega */
+						Ctrl->E.single  = true;
+						sscanf (opt->arg, "%[^/]/%[^/]/%lg", txt_a, txt_b, &Ctrl->E.w);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.lon), txt_a);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.lat), txt_b);
+					}
+					else	/* Junk of some sort */
+						n_errors++;
+				}
 				break;
 			case 'F':
 				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN)))
@@ -195,11 +203,11 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 				k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				if (k == 3) {	/* Gave -Tlon/lat/angle */
 					if (GMT_compat_check (GMT, 4)) {
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -e<lon>/<lat>/<angle> instead.\n");
-						Ctrl->e.active  = true;
-						Ctrl->e.w = atof (txt_c);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->e.lon), txt_a);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->e.lat), txt_b);
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -E<lon>/<lat>/<angle> instead.\n");
+						Ctrl->E.single = Ctrl->E.active = true;
+						Ctrl->E.w = atof (txt_c);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.lon), txt_a);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.lat), txt_b);
 					}
 					else {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must specify age of rotation\n");
@@ -226,9 +234,8 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: -N and -S cannot both be given\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 2 columns\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error: -N and -D cannot both be given\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->e.active, "Syntax error: -E and -e cannot both be given\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->e.active, "Syntax error: Must specify either -E -T or -e\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->T.active, "Syntax error: Option -E requires -T\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error: Option -E is required\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.single && !Ctrl->T.active, "Syntax error: Option -E<rottable> requires -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -388,6 +395,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
 							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
+		if (!GMT->common.R.active) global = GMT_grd_is_global (GMT, G->header);
 	}
 	not_global = !global;
 	
@@ -409,9 +417,9 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		pol = D->table[0];	/* Since it is a single file */
 	}
 
-	if (Ctrl->e.active) {	/* Get rotation matrix R */
-		GMT_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w, R);	/* Make rotation matrix from rotation parameters */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
+	if (Ctrl->E.single) {	/* Get rotation matrix R */
+		GMT_make_rot_matrix (GMT, Ctrl->E.lon, Ctrl->E.lat, Ctrl->E.w, R);	/* Make rotation matrix from rotation parameters */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", Ctrl->E.lon, Ctrl->E.lat, Ctrl->E.w);
 	}
 	else {
 		int n_stages;
@@ -491,7 +499,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Interpolate reconstructed grid\n");
 
-	GMT_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, -Ctrl->e.w, R);	/* Make inverse rotation using negative angle */
+	GMT_make_rot_matrix (GMT, Ctrl->E.lon, Ctrl->E.lat, -Ctrl->E.w, R);	/* Make inverse rotation using negative angle */
 	
 	GMT_grd_loop (GMT, G_rot, row, col, ij_rot) {
 		G_rot->data[ij_rot] = GMT->session.f_NaN;
@@ -551,7 +559,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 
 	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
-	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
+	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->E.lon, Ctrl->E.lat, Ctrl->E.w);
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_rot)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_rot) != GMT_OK) {
 		Return (API->error);

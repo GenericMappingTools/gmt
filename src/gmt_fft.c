@@ -2047,7 +2047,7 @@ void GMT_fft_initialization (struct GMT_CTRL *GMT) {
 #else
 	n_cpu = (int)sysconf (_SC_NPROCESSORS_CONF);
 #endif
-	if (n_cpu > 1) {
+	if (n_cpu > 1 && !GMT->current.setting.fftwf_threads) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {
 			fftwf_plan_with_nthreads(n_cpu);

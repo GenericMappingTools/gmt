@@ -88,6 +88,8 @@
 				by resampling in GMT_fix_up_path.
 
 2014-01-09	remko
+	* gmt_vector.c:		Add protection against introduced longitude-jumps produced
+				by resampling in GMT_fix_up_path.
 	* grdmath.c:		LDIST and PDIST will again produce km when using geodesics.
 
 2014-01-01	pwessel

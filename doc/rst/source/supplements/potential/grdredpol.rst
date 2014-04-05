@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdredpol** *anom_grd* **-G**\ *rtp_grd* [**-C**\ *<dec/dip>*]
-[**-E**\ *<dec_grd/dip\grd>*] [**-F**\ *<m/n>*] [**-M**\ *<m\|r>*]
-[**-N** ] [**-W**\ *<win_width>*]
+**grdredpol** *anom_grd* **-G**\ *rtp_grd* [**-C**\ *dec/dip*]
+[**-E**\ *dec_grd/dip\grd*] [**-F**\ *<m/n>*] [**-M**\ *m\|r*]
+[**-N** ] [**-W**\ *win_width*]
 [ |SYN_OPT-V| ]
-[ **-T<year>** ]
-[ **-Z<filter>** ]
+[ **-T**\ *year* ]
+[ **-Z**\ *filtergrd* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-n| ]
 
@@ -78,7 +78,7 @@ Optional Arguments
 **-R**\ *west*/*east*/*south*/*north*
     defines the Region of the output points. [Default: Same as input.]
 
-**-Y**\ *year*
+**-T**\ *year*
     Decimal year used by the IGRF routine to compute the declination and
     inclination at each point [default: 2000]
 
@@ -86,7 +86,7 @@ Optional Arguments
     The size of the moving window in degrees [5].
 
 **-Z**\ *filter_grd*
-    Write the filter file on disk.
+    Write the filter file to disk.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
