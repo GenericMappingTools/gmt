@@ -114,7 +114,14 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_-c_full.rst_
 
-.. include:: explain_colon_full.rst_
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d_full.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di_full.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-do_full.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f_full.rst_
@@ -138,6 +145,8 @@ programs. No space between the option flag and the associated arguments.
 .. include:: explain_-s_full.rst_
 
 .. include:: explain_-t_full.rst_
+
+.. include:: explain_colon_full.rst_
 
 .. include:: explain_help.rst_
 
