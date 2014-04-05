@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-04-05	pwessel
+	* xyz2grd.c:		Replaced -N<nodata> with common option -di<nodata>, but
+				left -N for backwards compatibility under 4.
+	* grd2xyz.c:		Replaced -N[i]<nodata> with common option -d[i]<nodata>, but
+				left -N for backwards compatibility under 4.
+
 2014-04-04	pwessel
 	* psbasemap.c:		Added new option -A[file] which instead of plotting a map
 				will write the coordinates of the plot domain outline to
