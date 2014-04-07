@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdfilter** *ingrid* **-D**\ *distance\_flag*
-**-Fx**\ *width*\ [/*width2*][*mode*][\ **+q**\ *quantile*]
+**-Fx**\ *width*\ [/*width2*][*modifiers*]
 **-G**\ *outgrid*
 [ |SYN_OPT-I| ]
 [ **-N**\ **i**\ \|\ **p**\ \|\ **r** ]
@@ -27,14 +27,14 @@ Synopsis
 Description
 -----------
 
-**grdfilter** will filter a *.nc* file in the time domain using one of
+**grdfilter** will filter a grid file in the time domain using one of
 the selected convolution or non-convolution isotropic or rectangular
 filters and compute distances using Cartesian or Spherical geometries.
-The output *.nc* file can optionally be generated as a sub-region of the
+The output grid file can optionally be generated as a sub-region of the
 input (via **-R**) and/or with new increment (via **-I**) or
 registration (via **-T**). In this way, one may have "extra space" in
 the input data so that the edges will not be used and the output can be
-within one-half- width of the input edges. If the filter is low-pass,
+within one half-width of the input edges. If the filter is low-pass,
 then the output may be less frequently sampled than the input. 
 
 Required Arguments
@@ -70,11 +70,12 @@ Required Arguments
     *flag* = 5: grid (x,y) in Mercator **-Jm**\ 1 img units, *width* in
     km, Spherical distance calculation.
 
-**-Fx**\ *width*\ [/*width2*][*mode*\ ]
+**-Fx**\ *width*\ [/*width2*][*modifiers*\ ]
     Sets the filter type. Choose among convolution and non-convolution
     filters. Use any filter code **x** (listed below) followed by the full
     diameter *width*. This gives an isotropic filter; append /*width2*
-    for a rectangular filter (requires **-Dp** or **-D0**).
+    for a rectangular filter (requires **-Dp** or **-D0**).  Some filters
+    allow for optional arguments and modifiers.
 
     Convolution filters (and their codes) are:
 
@@ -103,8 +104,16 @@ Required Arguments
 
     (**p**) Maximum likelihood probability (a mode estimator): Return
     modal value. If more than one mode is found we return their average
-    value. Append **-** or **+** to the filter width if you rather want
-    to return the smallest or largest of the modal values.
+    value. Append **+l** or **+u** if you rather want
+    to return the lowermost or uppermost of the modal values.
+
+    (**h**) Histogram mode (another mode estimator): Return the modal
+    value as the center of the dominant peak in a histogram. Append /*binwidth* to
+    specify the binning interval.  Use modifier **+c** to center the
+    bins on multiples of *binwidth* [Default has bin edges that are
+    multiples of *binwidth*].  If more than one mode is found we return their average
+    value. Append **+l** or **+u** if you rather want
+    to return the lowermost or uppermost of the modal values.
 
     (**l**) Lower: Return the minimum of all values.
 

@@ -74,10 +74,11 @@ struct GRDFILTER_CTRL {
 		bool active;
 		bool highpass;
 		bool custom;
+		bool center;
 		bool operator;
 		char filter;	/* Character codes for the filter */
 		char *file;
-		double width, width2, quantile;
+		double width, width2, quantile, bin, span;
 		bool rect;
 		int mode;	/*-1 0 +1 */
 	} F;
@@ -103,6 +104,25 @@ struct GRDFILTER_CTRL {
 	} z;
 };
 
+struct GRDFILTER_BIN_MODE_INFO {	/* Used for histogram binning */
+	double width;		/* The binning width used */
+	double i_offset;	/* 0.5 if we are to bin using the center the bins on multiples of width, else 0.0 */
+	double o_offset;	/* 0.0 if we are to report center the bins on multiples of width, else 0.5 */
+	double i_width;		/* 1/width, to avoid divisions later */
+	int min, max;		/* The raw min,max bin numbers (min can be negative) */
+	unsigned int n_bins;	/* Number of bins required */
+	double *fcount;		/* The histogram counts (double for weighted data), to be reset before each spatial block */
+	unsigned int *icount;	/* The histogram counts (ints to unweighted data), to be reset before each spatial block */
+	int mode_choice;	/* For multiple modes: GRDFILTER_MODE_KIND_LOW picks lowest, GRDFILTER_MODE_KIND_AVE picks average, GRDFILTER_MODE_KIND_HIGH picks highest */
+};
+
+enum Grdfilter_mode {
+	GRDFILTER_MODE_KIND_LOW  = -1,
+	GRDFILTER_MODE_KIND_AVE  = 0,
+	GRDFILTER_MODE_KIND_HIGH = +1
+};
+
+
 /* Forward/Inverse Spherical Mercator coordinate transforms */
 #define IMG2LAT(img) (2.0*atand(exp((img)*D2R))-90.0)
 #define LAT2IMG(lat) (R2D*log(tand(0.5*((lat)+90.0))))
@@ -118,7 +138,7 @@ struct GRDFILTER_CTRL {
 #define GRDFILTER_X_DIST	5
 #define GRDFILTER_Y_DIST	6
 
-#define GRDFILTER_FILTERS	"bcgfompLlUu"
+#define GRDFILTER_FILTERS	"bcgfhompLlUu"	/* These dont have to be in any order */
 #define GRDFILTER_MODES		"012345p"
 
 /* Distance modes: */
@@ -131,21 +151,24 @@ struct GRDFILTER_CTRL {
 #define GRDFILTER_GEO_SPHERICAL		4
 #define GRDFILTER_GEO_MERCATOR		5
 /* Convolution filters: */
-#define GRDFILTER_BOXCAR	0
+#define GRDFILTER_BOXCAR	0	/* Note: The order of these filters matter and must match entries in filter_code[] array */
 #define GRDFILTER_COSINE	1
 #define GRDFILTER_GAUSSIAN	2
 #define GRDFILTER_CUSTOM	3
 #define GRDFILTER_OPERATOR	4
 /* Spatial non-convolution filters: */
 #define GRDFILTER_MEDIAN	5
-#define GRDFILTER_MODE		6
-#define GRDFILTER_MIN		7
-#define GRDFILTER_MINPOS	8
-#define GRDFILTER_MAX		9
-#define GRDFILTER_MAXNEG	10
-#define GRDFILTER_MEDIAN_SPH	11
-#define GRDFILTER_MODE_SPH	12
-#define GRDFILTER_N_FILTERS	11	/* Not counting the two _SPH variants */
+#define GRDFILTER_LMS		6
+#define GRDFILTER_HIST		7
+#define GRDFILTER_MIN		8
+#define GRDFILTER_MINPOS	9
+#define GRDFILTER_MAX		10
+#define GRDFILTER_MAXNEG	11
+#define GRDFILTER_MEDIAN_SPH	12
+#define GRDFILTER_LMS_SPH	13
+#define GRDFILTER_HIST_SPH	14
+#define GRDFILTER_N_FILTERS	12	/* Not counting the three _SPH variants */
+#define GRDFILTER_CART_TO_SPH	7	/* Value to add to GRDFILTER_MEDIAN to get GRDFILTER_MEDIAN_SPH */
 
 #define NAN_IGNORE	0
 #define NAN_REPLACE	1
@@ -182,6 +205,7 @@ struct THREAD_STRUCT {
 	struct GMT_GRID *Gout;
 	struct GMT_GRID *A, *L;
 	struct FILTER_INFO F;
+	struct GRDFILTER_BIN_MODE_INFO *B;
 };
 
 static void *threading_function (void *args);
@@ -195,7 +219,9 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.mode = GRDFILTER_NOTSET;	
 	C->F.quantile = 0.5;	/* Default is median */	
-	C->z.n_threads = 1;		/* Default number of threads (for the case of no multi-threading) */
+	C->F.span = 0.5;	/* Default LMS span is half the data */	
+	C->F.mode = GRDFILTER_MODE_KIND_AVE;
+	C->z.n_threads = 1;	/* Default number of threads (for the case of no multi-threading) */
 	return (C);
 }
 
@@ -212,6 +238,131 @@ void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 static void *thread_function (void *args) {
 	threaded_function ((struct THREAD_STRUCT *)args);
 	return NULL;
+}
+
+struct GRDFILTER_BIN_MODE_INFO *grdfilter_bin_setup (struct GMT_CTRL *GMT, double min, double max, double width, bool center, int mode_choice, bool weighted)
+{
+	/* Estimate mode by finding a maximum in the histogram resulting
+	 * from binning the grid data with the specified width.
+	 * This function sets up quantities needed as we loop over the
+	 * spatial bins */
+
+	struct GRDFILTER_BIN_MODE_INFO *B = GMT_memory (GMT, NULL, 1, struct GRDFILTER_BIN_MODE_INFO);
+
+	B->i_offset = (center) ? 0.5 : 0.0;
+	B->o_offset = (center) ? 0.0 : 0.5;
+	B->width = width;
+	B->i_width = 1.0 / width;
+	B->min = irint (floor ((min * B->i_width) + B->i_offset));
+	B->max = irint (ceil  ((max * B->i_width) + B->i_offset));
+	B->n_bins = B->max - B->min + 1;
+	if (weighted)
+		B->fcount = GMT_memory (GMT, NULL, B->n_bins, double);
+	else
+		B->icount = GMT_memory (GMT, NULL, B->n_bins, unsigned int);
+	B->mode_choice = mode_choice;
+	
+	return (B);
+}
+
+double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B)
+{
+	/* Estimate mode by finding a maximum in the histogram resulting
+	 * from binning unweighted data with the specified width. We check if we find more
+	 * than one mode and return the chosen one as per the settings. */
+
+	double value = 0.0;
+	uint64_t i;
+	unsigned int n_modes = 0, mode_count = 0;
+	int bin, mode_bin = 0;
+	bool done;
+
+	GMT_memset (B->icount, B->n_bins, unsigned int);	/* Reset the counts */
+	for (i = 0; i < n; i++) {	/* Loop over data points */
+		bin = irint (floor ((z[i] * B->i_width) + B->i_offset)) - B->min;
+		B->icount[bin]++;			/* Add up counts */
+		if (B->icount[bin] > mode_count) {	/* New max count value; make a note */
+			mode_count = B->icount[bin];	/* Highest count so far... */
+			mode_bin = bin;			/* ...occuring for this bin */
+			n_modes = 1;			/* Only one of these so far */
+		}
+		else if (B->icount[bin] == mode_count) n_modes++;	/* Bin has same peak as previous best mode; increase mode count */
+	}
+	if (n_modes == 1) {	/* Single mode; we are done */
+		value = ((mode_bin + B->min) + B->o_offset) * B->width;
+		return (value);
+	}
+	
+	/* Here we found more than one mode and must choose according to settings */
+	
+	for (bin = 0, done = false; !done && bin < B->n_bins; bin++) {	/* Loop over bin counts */
+		if (B->icount[bin] < mode_count) continue;	/* Not one of the modes */
+		switch (B->mode_choice) {
+			case GRDFILTER_MODE_KIND_LOW:	/* Pick lowest mode; we are done */
+				value = ((bin + B->min) + B->o_offset) * B->width;
+				done = true;
+				break;
+			case GRDFILTER_MODE_KIND_AVE:		/* Get the average of the modes */
+				value += ((bin + B->min) + B->o_offset) * B->width;
+				break;
+			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
+			 	value = ((bin + B->min) + B->o_offset) * B->width;
+				break;
+		}
+	}
+	if (B->mode_choice == GRDFILTER_MODE_KIND_AVE) value /= n_modes;	/* The average of the multiple modes */
+
+	return (value);
+}
+
+double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B)
+{
+	/* Estimate mode by finding a maximum in the histogram resulting
+	 * from binning weighted data with the specified width. We check if we find more
+	 * than one mode and return the chosen one as per the settings. */
+
+	double value = 0.0, mode_count = 0.0;
+	uint64_t i;
+	unsigned int n_modes = 0;
+	int bin, mode_bin = 0;
+	bool done;
+
+	GMT_memset (B->fcount, B->n_bins, double);	/* Reset the counts */
+	for (i = 0; i < n; i++) {	/* Loop over data points */
+		bin = urint (floor ((data[i].value * B->i_width) + B->i_offset)) - B->min;
+		B->fcount[bin] += data[i].weight;	/* Add up weights */
+		if (B->fcount[bin] > mode_count) {	/* New max weight value; make a note */
+			mode_count = B->fcount[bin];	/* Highest count so far... */
+			mode_bin = bin;			/* ...occuring for this bin */
+			n_modes = 1;			/* Only one of these so far */
+		}
+		else if (doubleAlmostEqual (B->fcount[bin], mode_count)) n_modes++;	/* Bin has same peak as previous best mode; increase mode count */
+	}
+	if (n_modes == 1) {	/* Single mode; we are done */
+		value = ((mode_bin + B->min) + B->o_offset) * B->width;
+		return (value);
+	}
+	
+	/* Here we found more than one mode and must choose according to settings */
+	
+	for (bin = 0, done = false; !done && bin < B->n_bins; bin++) {	/* Loop over bin counts */
+		if (B->fcount[bin] < mode_count) continue;	/* Not one of the modes */
+		switch (B->mode_choice) {
+			case GRDFILTER_MODE_KIND_LOW:	/* Pick lowest mode; we are done */
+				value = ((bin + B->min) + B->o_offset) * B->width;
+				done = true;
+				break;
+			case GRDFILTER_MODE_KIND_AVE:		/* Get the average of the modes */
+				value += ((bin + B->min) + B->o_offset) * B->width;
+				break;
+			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
+			 	value = ((bin + B->min) + B->o_offset) * B->width;
+				break;
+		}
+	}
+	if (B->mode_choice == GRDFILTER_MODE_KIND_AVE) value /= n_modes;	/* The average of the multiple modes */
+
+	return (value);
 }
 
 void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *weight, double output_lat, double par[], double x_off, double y_off)
@@ -377,7 +528,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<mode>] -G<outgrid>\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<modifiers>] -G<outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -407,15 +558,22 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     f: Custom : Give grid file with custom filter weights (requires -D0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     o: Operator : Give grid file with custom operator weights (requires -D0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geospatial filters:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h: Histogram-based mode estimator.  Append width/bin and optional modifiers:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Data inside filter domain is binned using the <bin> increment\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append +c to center the bins on multiples of <bin> [Default has bin edges as multiples]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append +l to return the lowest mode if multiple modes are found [return average].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append +u to return the uppermost mode if multiple modes are found [return average].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     l: Lower : return minimum of all points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     L: Lower+ : return minimum of all +ve points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     L: Lower+ : return minimum of all positive points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     m: Median : return the median (50%% quantile) value of all points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append +q<quantile> to select another quantile (in 0-1 range) [0.5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     p: Maximum likelihood probability estimator : return mode of all points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        By default, we return the average if more than one mode is found.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append - or + to the width to instead return the smallest or largest mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        We approximate the mode using the Least Median of Squares estimator.\n");
+	//GMT_Message (API, GMT_TIME_NONE, "\t        Append +c<span> to select a different LMS span, in percent [50].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append +l to return the lowest mode if multiple modes are found [return average].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append +u to return the uppermost mode if multiple modes are found [return average].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     u: Upper : return maximum of all points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     U: Upper- : return maximum of all -ve points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     U: Upper- : return maximum of all negative points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename for filtered grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 #ifdef DEBUG
@@ -517,6 +675,32 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 						Ctrl->F.custom = true;
 						Ctrl->F.operator = (Ctrl->F.filter == 'o');	/* Means weightsum is zero so no normalization, please */
 					}
+					else if (Ctrl->F.filter == 'h') {	/* Histogram-based mode filter */
+						sscanf (&txt[1], "%[^/]/%s", a, b);	/* Get filter width and bin width */
+						Ctrl->F.width = atof (a);
+						Ctrl->F.bin = atof (b);
+						sscanf (&txt[1], "%[^+]/%s", a, b);	/* Look for modifiers */
+						if (b[0]) {	/* Gave modifiers */
+							if ((p = strstr (b, "+l"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_LOW;
+							if ((p = strstr (b, "+u"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_HIGH;
+							if ((p = strstr (b, "+c"))) Ctrl->F.center = true;
+						}
+					}
+					else if (Ctrl->F.filter == 'p') {	/* LMS-based mode filter */
+						sscanf (&txt[1], "%[^+]/%s", a, b);
+						Ctrl->F.width = atof (a);
+						if (b[0]) {	/* Gave modifiers */
+							if ((p = strstr (b, "+l"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_LOW;
+							if ((p = strstr (b, "+u"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_HIGH;
+							if ((p = strstr (b, "+s"))) {
+								Ctrl->F.span = atof (&p[2]) / 100.0;	/* Got span in percent */
+								if (Ctrl->F.span <= 0.0 || Ctrl->F.span > 0.5) {
+									GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Fp: Span must be in 0-0.5 range\n");
+									n_errors++;
+								}
+							}
+						}
+					}
 					else if (strchr (txt, '/')) {	/* Gave xwidth/ywidth for rectangular Cartesian filtering */
 						sscanf (&txt[1], "%[^/]/%s", a, b);
 						Ctrl->F.width = atof (a);
@@ -527,7 +711,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 						Ctrl->F.width = atof (&txt[1]);
 					if (Ctrl->F.width < 0.0) Ctrl->F.highpass = true;
 					Ctrl->F.width = fabs (Ctrl->F.width);
-					if (Ctrl->F.filter == 'p') {	/* Check for some further info in case of mode filtering */
+					if (Ctrl->F.filter == 'h' || Ctrl->F.filter == 'p') {	/* Check for some further info in case of mode filtering */
 						c = opt->arg[strlen(txt)-1];
 						if (c == '-') Ctrl->F.mode = -1;
 						if (c == '+') Ctrl->F.mode = +1;
@@ -626,12 +810,13 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	double merc_range, *weight = NULL, *x_shift = NULL;
 	double wesn[4], inc[2];
 
-	char filter_code[GRDFILTER_N_FILTERS] = {'b', 'c', 'g', 'f', 'o', 'm', 'p', 'l', 'L', 'u', 'U'};
-	char *filter_name[GRDFILTER_N_FILTERS+2] = {"Boxcar", "Cosine Arch", "Gaussian", "Custom", "Operator", "Median", "Mode", "Lower", \
-		"Lower+", "Upper", "Upper-", "Spherical Median", "Spherical Mode"};
+	char filter_code[GRDFILTER_N_FILTERS] = {'b', 'c', 'g', 'f', 'o', 'm', 'p', 'h', 'l', 'L', 'u', 'U'};
+	char *filter_name[GRDFILTER_N_FILTERS+3] = {"Boxcar", "Cosine Arch", "Gaussian", "Custom", "Operator", "Median", "LMS", "Histogram Mode", "Lower", \
+		"Lower+", "Upper", "Upper-", "Weighted Median", "Weighted Mode", "Weighted Histogram Mode"};
 
 	struct GMT_GRID *Gin = NULL, *Gout = NULL, *Fin = NULL, *A = NULL, *L = NULL;
 	struct FILTER_INFO F;
+	struct GRDFILTER_BIN_MODE_INFO *B = NULL;
 	struct GRDFILTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -871,10 +1056,14 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (filter_type > GRDFILTER_OPERATOR) {	/* These filters are not convolutions; they require sorting or comparisons */
 		slow = true;
 		last_median = 0.5 * (Gin->header->z_min + Gin->header->z_max);	/* Initial guess */
-		if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && (filter_type == GRDFILTER_MEDIAN || filter_type == GRDFILTER_MODE)) {	/* Spherical (weighted) median/modes requires even more work */
+		if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && (filter_type == GRDFILTER_MEDIAN || filter_type == GRDFILTER_LMS || filter_type == GRDFILTER_HIST)) {	/* Spherical (weighted) median/modes requires even more work */
 			slower = true;
-			filter_type = (filter_type == GRDFILTER_MEDIAN) ? GRDFILTER_MEDIAN_SPH : GRDFILTER_MODE_SPH;	/* Set to the weighted versions */
+			filter_type += GRDFILTER_CART_TO_SPH;	/* Set to the weighted versions */
 		}
+		if (filter_type == GRDFILTER_HIST)
+			B = grdfilter_bin_setup (GMT, Gin->header->z_min, Gin->header->z_max, Ctrl->F.bin, Ctrl->F.center, Ctrl->F.mode, false);
+		else if (filter_type == GRDFILTER_HIST_SPH)
+			B = grdfilter_bin_setup (GMT, Gin->header->z_min, Gin->header->z_max, Ctrl->F.bin, Ctrl->F.center, Ctrl->F.mode, true);
 	}
 
 	if (tid == 0) {	/* First or only thread */
@@ -945,6 +1134,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		threadArg[i].A          = A;
 		threadArg[i].L          = L;
    		threadArg[i].F          = F;
+   		threadArg[i].B          = B;
    		threadArg[i].weight     = weight;
    		threadArg[i].x_shift    = x_shift;
    		threadArg[i].col_origin = col_origin;
@@ -992,6 +1182,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	GMT_free (GMT, F.x);
 	GMT_free (GMT, F.y);
 	if (visit_check) GMT_free (GMT, F.visit);
+	if (B) GMT_free (GMT, B);
 
 	GMT_free (GMT, col_origin);
 	if (!fast_way) GMT_free (GMT, x_shift);
@@ -1079,7 +1270,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 
 	bool same_grid = false;
 	bool visit_check = false, go_on, get_weight_sum = true;
-	unsigned int n_in_median, n_nan = 0, col_out, row_out;
+	unsigned int n_in_median, n_nan = 0, col_out, row_out, n_span;
 	unsigned int one_or_zero = 1, GMT_n_multiples = 0;
 	int tid = 0, col_in, row_in, ii, jj, row_origin, error = 0;
 #ifdef DEBUG
@@ -1115,7 +1306,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
     struct GMT_GRID *A          = t->A;
     struct GMT_GRID *L          = t->L;
     struct FILTER_INFO F        = t->F;
-
+    struct GRDFILTER_BIN_MODE_INFO *B = t->B;
 
 	if (slow) {
 		if (slower)		/* Spherical (weighted) median/modes requires even more work */
@@ -1240,8 +1431,12 @@ void threaded_function (struct THREAD_STRUCT *t) {
 							GMT_median (GMT, work_array, n_in_median, Gin->header->z_min, Gin->header->z_max, last_median, &this_estimate);
 							last_median = this_estimate;
 							break;
-						case GRDFILTER_MODE:	/* Mode */
-							GMT_mode (GMT, work_array, n_in_median, n_in_median/2, true, Ctrl->F.mode, &GMT_n_multiples, &this_estimate);
+						case GRDFILTER_LMS:	/* Mode */
+							n_span = urint (Ctrl->F.span * n_in_median);
+							GMT_mode (GMT, work_array, n_in_median, n_span, true, Ctrl->F.mode, &GMT_n_multiples, &this_estimate);
+							break;
+						case GRDFILTER_HIST:	/* Histogram peak */
+							this_estimate = GMT_histmode (GMT, work_array, n_in_median, B);
 							break;
 						case GRDFILTER_MIN:	/* Lowest of all values */
 							this_estimate = GMT_extreme (GMT, work_array, n_in_median, DBL_MAX, 0, -1);
@@ -1255,11 +1450,15 @@ void threaded_function (struct THREAD_STRUCT *t) {
 						case GRDFILTER_MAXNEG:	/* Upper of negative values */
 							this_estimate = GMT_extreme (GMT, work_array, n_in_median, 0.0, -1, +1);
 							break;
-						case GRDFILTER_MEDIAN_SPH:	/* Spherical Median */
+						case GRDFILTER_MEDIAN_SPH:	/* Weighted Median */
 							this_estimate = GMT_median_weighted (GMT, work_data, n_in_median, Ctrl->F.quantile);
 							break;
-						case GRDFILTER_MODE_SPH: /* Spherical Mode */
+						case GRDFILTER_LMS_SPH: /* Weighted Mode */
+							// n_span = urint (Ctrl->F.span * n_in_median);
 							this_estimate = GMT_mode_weighted (GMT, work_data, n_in_median);
+							break;
+						case GRDFILTER_HIST_SPH: /* Weighted histogram Mode */
+							this_estimate = GMT_histmode_weighted (GMT, work_data, n_in_median, B);
 							break;
 					}
 					Gout->data[ij_out] = (float)this_estimate;	/* Truncate to float */

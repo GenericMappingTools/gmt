@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-04-07	pwessel
+	* grdfilter.c:		Added new filter -Fh<width>/<binwidth>[+c][+l][+u] to perform
+				histogram mode filtering.
+
 2014-04-05	pwessel
 	* xyz2grd.c:		Replaced -N<nodata> with common option -di<nodata>, but
 				left -N for backwards compatibility under 4.
