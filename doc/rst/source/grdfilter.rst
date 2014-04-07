@@ -104,7 +104,8 @@ Required Arguments
     (**p**) Maximum likelihood probability (a mode estimator): Return
     modal value. If more than one mode is found we return their average
     value. Append **-** or **+** to the filter width if you rather want
-    to return the smallest or largest of the modal values.
+    to return the smallest or largest of the modal values. By mode we mean
+    the least median of squares approximation to the mode.
 
     (**l**) Lower: Return the minimum of all values.
 
