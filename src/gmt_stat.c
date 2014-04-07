@@ -1629,53 +1629,48 @@ double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint
 
 double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n)
 {
-	/* Based on mode_output in blockmode_func.c */
+	/* Looks for the “shortest 50%”. This means that when the cumulative weight
+	   (y) is plotted against the value (x) then the line between (xi,yi) and
+	   (xj,yj) should be the steepest for any combination where (yj-yi) is 50%
+	   of the total sum of weights */
 
-	double top, topj, topi, bottomj, bottomi, pj, pi, wsum = 0.0;
-	uint64_t k;
-	int64_t i = 0, j = n - 1, nh = n / 2;
-#ifdef DEBUG
-	int dump = 0;
-#endif
+	double top, bottom, wsum, p, p_max, mode;
+	uint64_t i, j;
 
 	/* First sort data on z */
-
 	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
 
-#ifdef DEBUG
-	if (dump) {
-		FILE *fp = fopen ("mdump.txt", "w");
-		for (k = 0; k < n; k++) fprintf (fp, "%g\t%g\n", data[k].value, data[k].weight);
-		fclose (fp);
-	}
-#endif
+	/* Compute the total weight */
+	for (wsum = 0.0, i = 0; i < n; i++) wsum += data[i].weight;
 
-	for (k = 0; k < n; k++) wsum += data[k].weight;
+	/* Do some initializations */
+	wsum = 0.5 * wsum;	/* Sets the 50% range */
 
-	top = wsum;
+	/* First check if any single point has 50% or more of the total weights; if so we are done */
+	for (i = 0; i < n; i++) if (data[i].weight >= wsum) return data[i].value;
+	
+	/* Some more initializations */
+	top = p_max = 0.0;
+	mode = 0.5 * (data[0].value + data[n-1].value);
 
-	while ((j-i) > nh) {
-		topi = top - data[i].weight;
-		topj = top - data[j].weight;
-		bottomi = data[j].value - data[i+1].value;
-		bottomj = data[j-1].value - data[i].value;
+	for (i = j = 0; j < n; j++) {
+		top += data[j].weight;
+		if (top < wsum) continue;
+		while (top > wsum && i < j) top -= data[i++].weight;
+		bottom = data[j].value - data[i].value;
 
-		if (bottomj == 0.0) return (data[j-1].value);
-		if (bottomi == 0.0) return (data[i+1].value);
-		pi = topi / bottomi;
-		pj = topj / bottomj;
-		if (pi > pj) {
-			i++;	top = topi;
-		}
-		else if (pi < pj) {
-			j--;	top = topj;
-		}
-		else {
-			top -= (data[i].weight + data[j].weight);
-			i++;	j--;
+		/* If all is comprised in one point or if a lot of values are the same,
+		   then we have a spike. Maybe another logic is needed to handle
+		   multiple spikes in the data */
+		if (bottom == 0.0) return (data[i].value);
+
+		p = top / bottom;
+		if (p > p_max) {
+			p_max = p;
+			mode = 0.5 * (data[i].value + data[j].value);
 		}
 	}
-	return ((double)(0.5 * (data[j].value + data[i].value)));
+	return (mode);
 }
 
 int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est)

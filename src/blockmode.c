@@ -273,6 +273,7 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 	return (value);
 }
 
+#if 0
 double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index)
 {
 	/* Estimate mode by finding a maximum in the estimated
@@ -336,6 +337,54 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 		else *index = (way == +1) ? d[i].src_id : d[j].src_id;
 	}
 	return (0.5 * (d[j].a[k] + d[i].a[k]));
+}
+#endif
+
+double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index)
+{
+	/* Looks for the “shortest 50%”. This means that when the cumulative weight
+	   (y) is plotted against the value (x) then the line between (xi,yi) and
+	   (xj,yj) should be the steepest for any combination where (yj-yi) is 50%
+	   of the total sum of weights */
+
+	double top, bottom, p, p_max, mode;
+	uint64_t i, j, src;
+
+
+	/* Do some initializations */
+	wsum = 0.5 * wsum; /* Sets the 50% range */
+	/* First check if any single point has 50% or more of the total weights; if so we are done */
+	for (i = 0; i < n; i++) if (d[i].a[BLK_W] >= wsum) {
+		if (index) *index = d[i].src_id;
+		return d[i].a[k];
+	}
+	top = p_max = 0.0;
+	mode = 0.5 * (d[0].a[k] + d[n-1].a[k]);
+	if (index) src = (emode & BLK_DO_INDEX_HI) ? d[n-1].src_id : d[0].src_id;
+
+	for (i = j = 0; j < n; j++) {
+		top += d[j].a[BLK_W];
+		if (top < wsum) continue;
+		while (top > wsum && i < j) top -= d[i++].a[BLK_W];
+		bottom = d[j].a[k] - d[i].a[k];
+
+		/* If all is comprised in one point or if a lot of values are the same,
+		   then we have a spike. Maybe another logic is needed to handle
+		   multiple spikes in the data */
+		if (bottom == 0.0) {
+			if (index) *index = d[i].src_id;
+			return (d[i].a[k]);
+		}
+
+		p = top / bottom;
+		if (p > p_max) {
+			p_max = p;
+			mode = 0.5 * (d[i].a[k] + d[j].a[k]);
+			if (index) src = (emode & BLK_DO_INDEX_HI) ? d[j].src_id : d[i].src_id;
+		}
+	}
+	if (emode && index) *index = src;
+	return (mode);
 }
 
 /* Must free allocated memory before returning */
