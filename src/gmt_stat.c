@@ -1634,12 +1634,21 @@ double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64
 	double top, topj, topi, bottomj, bottomi, pj, pi, wsum = 0.0;
 	uint64_t k;
 	int64_t i = 0, j = n - 1, nh = n / 2;
+#ifdef DEBUG
+	int dump = 0;
+#endif
 
 	/* First sort data on z */
 
 	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
 
-	/* Find weight sum, then get half-value */
+#ifdef DEBUG
+	if (dump) {
+		FILE *fp = fopen ("mdump.txt", "w");
+		for (k = 0; k < n; k++) fprintf (fp, "%g\t%g\n", data[k].value, data[k].weight);
+		fclose (fp);
+	}
+#endif
 
 	for (k = 0; k < n; k++) wsum += data[k].weight;
 

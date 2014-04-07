@@ -366,6 +366,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append +q<quantile> to select another quantile (in 0-1 range) [0.5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     p: Maximum likelihood probability estimator : return mode of all points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        By default, we return the average if more than one mode is found.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        We approximate the mode using the Least Median of Squares estimator.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append - or + to the width to instead return the smallest or largest mode.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     u: Upper : return maximum of all points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     U: Upper- : return maximum of all -ve points.\n");
