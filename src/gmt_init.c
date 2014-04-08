@@ -127,7 +127,16 @@ enum history_mode {
 void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 {
 	/* The function print to stderr a short explanation for each of the options listed by
-	 * the variable <options>.  Only the common parameter options are covered
+	 * the variable <options>.  Only the common parameter options are covered.
+	 * NOte: The cases below do not directly correspond to the common option letters,
+	 * although in some cases they do (e.g., case 'B' explains -B).  For instance, to
+	 * display the help for the -r (registration setting for grid) option we use case F.
+	 * Part of this is historic and part is multiple flavor of output for same option.
+	 * However, GMT_explain_options is not called directly but via GMT_Option which
+	 * do accept a list of comma-separated options and there are the normal GMT common
+	 * option letters, sometimes with modifiers, and it translate between those and the
+	 * crazy cases below.
+	 * Remaining cases for additional options: A,H,L,M,N,T,W,e,m,q,u,v,w
 	 */
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = "qncvld";
