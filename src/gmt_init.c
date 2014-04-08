@@ -877,11 +877,11 @@ void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t     a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels.\n");
 	GMT_message (GMT, "\t        Append r if coordinates are the lower left and upper right corners of a rectangular area.\n");
-	GMT_message (GMT, "\t     b) Give <u><xmin>/<xmax>/<ymin>/<ymax> of bounding recangle in projected coordinates.\n");
-	GMT_message (GMT, "\t     c) Give [<u>]width[/height] of bounding recangle and use +c to set box center (<u> is unit).\n");
+	GMT_message (GMT, "\t     b) Give <u><xmin>/<xmax>/<ymin>/<ymax> of bounding rectangle in projected coordinates.\n");
+	GMT_message (GMT, "\t     c) Give [<u>]width[/height] of bounding rectangle and use +c to set box center (<u> is unit).\n");
 	GMT_message (GMT, "\t   Append any combination of these modifiers to draw the map insert rectangle:\n");
 	GMT_message (GMT, "\t     +c<lon>/<lat> to specify insert rectangle center (required for case c above).\n");
-	GMT_message (GMT, "\t     +g<fill> to paint the insert rectangle [no fill]\n");
+	GMT_message (GMT, "\t     +g<fill> to paint the insert rectangle [no fill].\n");
 	GMT_message (GMT, "\t     +p<pen> to draw the insert rectangle outline [no outline].\n");
 }
 
