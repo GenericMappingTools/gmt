@@ -201,6 +201,7 @@ Optional Arguments
     numerical data columns. 
 .. include:: ../../explain_-bi.rst_
 
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
 
 .. include:: ../../explain_-n.rst_

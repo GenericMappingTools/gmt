@@ -261,6 +261,7 @@ Optional Arguments
 .. |Add_-bo| replace:: Output binary data for **-D**\ d\|f\|s\|v option.
 .. include:: ../../explain_-bo.rst_
 
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-do.rst_
 
 .. include:: ../../explain_-n.rst_
