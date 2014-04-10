@@ -33,7 +33,7 @@ columns on standard input [or *x[y]file*]. These values are treated as
 timeseries X(t) [Y(t)] sampled at equal intervals spaced *dt* units
 apart. There may be any number of lines of input. **spectrum1d** will
 create file[s] containing auto- [and cross- ] spectral density estimates
-by Welch’s method of ensemble averaging of multiple overlapped windows,
+by Welch's method of ensemble averaging of multiple overlapped windows,
 using standard error estimates from Bendat and Piersol.
 
 The output files have 3 columns: f or w, p, and e. f or w is the

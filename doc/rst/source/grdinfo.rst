@@ -60,7 +60,7 @@ Optional Arguments
     *dy*, and output this in the form **-R**\ *w/e/s/n* (unless **-C**
     is set). To report the actual grid region, select **-I-**. If no
     argument is given then we report the grid increment in the form
-    **-I**\ *xinc/yinc*. If **-Ib** is given we write each grid’s
+    **-I**\ *xinc/yinc*. If **-Ib** is given we write each grid's
     bounding box polygon instead.
 **-L**\ [**0** \| **1** \| **2**]
     **-L0**

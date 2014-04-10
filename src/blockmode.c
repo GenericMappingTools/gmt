@@ -232,7 +232,8 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 
 	double value = 0.0, mode_count = 0.0;
 	uint64_t i;
-	unsigned int bin, mode_bin = 0, n_modes = 0;
+	unsigned int n_modes = 0;
+	int bin, mode_bin = 0;
 	bool done;
 
 	GMT_memset (B->count, B->n_bins, double);	/* Reset the counts */
@@ -253,7 +254,7 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 	
 	/* Here we found more than one mode and must choose according to settings */
 	
-	for (bin = 0, done = false; !done && bin < B->n_bins; bin++) {	/* Loop over bin counts */
+	for (bin = 0, done = false; !done && bin < (int)B->n_bins; bin++) {	/* Loop over bin counts */
 		if (B->count[bin] < mode_count) continue;	/* Not one of the modes */
 		switch (B->mode_choice) {
 			case BLOCKMODE_LOW:	/* Pick lowest mode; we are done */

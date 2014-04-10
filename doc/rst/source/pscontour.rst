@@ -42,7 +42,7 @@ Description
 
 **pscontour** reads an ASCII [or binary] xyz-file and produces a raw
 contour plot by triangulation. By default, the optimal Delaunay
-triangulation is performed (using either Shewchuk’s [1996] or Watson’s
+triangulation is performed (using either Shewchuk's [1996] or Watson's
 [1982] method as selected during GMT installation; type **pscontour
 -** to see which method is selected), but the user may optionally
 provide a second file with network information, such as a triangular

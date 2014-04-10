@@ -10,7 +10,7 @@
 
 **Pål (Paul) Wessel**
 
-**SOEST, University of Hawai’i at Manoa**
+**SOEST, University of Hawai'i at Manoa**
 
 **Walter H. F. Smith**
 
@@ -72,8 +72,8 @@ program to maintain.
 
 
 Starting with GMT version 5, all standard GMT programs have been
-split into a short driver program (the “new” GMT  programs) and a
-function “module”. The drivers simply call the corresponding
+split into a short driver program (the "new" GMT  programs) and a
+function "module". The drivers simply call the corresponding
 GMT modules; it is these modules that do all the work. These new
 functions have been placed in a new GMT high-level API library and can
 be called from a variety of environments (C/C++, Fortran, Julia, Python,
@@ -101,9 +101,9 @@ combination of files, pointers, and memory locations into *a single
 virtual data set* from which the GMT function may read (a) all
 records at once into memory, or (b) read one record at a time. Likewise,
 GMT functions may write their output to a virtual destination, which
-might be a memory location in the user’s application, a file pointer or
+might be a memory location in the user's application, a file pointer or
 descriptor, or an output file. The GMT functions are unaware of these
-details and simply read from a “source” and write to a “destination”.
+details and simply read from a "source" and write to a "destination".
 
 Our audience
 ------------
@@ -145,7 +145,7 @@ For the purpose of this documentation a few definitions are needed:
    mean a 4-byte integer. All integers used in the API are 4-byte
    integers with the exception of one function where a longer integer is
    used. Since different operating systems have their own way of
-   defining 8-byte integers we use C99’s ``int64_t`` for this purpose;
+   defining 8-byte integers we use C99's ``int64_t`` for this purpose;
    it is guaranteed to yield the correct type that the GMT function
    expect.
 
@@ -368,7 +368,7 @@ User data columns (GMT vectors)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Programs that wish to call GMT modules may hold data in their own
-particular data structures. For instance, the user’s program may have
+particular data structures. For instance, the user's program may have
 three column arrays of type float and wishes to use these as the input
 source to the ``GMT_surface`` module, which normally expects double
 precision triplets via a ``struct GMT_DATASET`` read from a file or
@@ -1023,7 +1023,7 @@ Dimension parameters for user 1-D column vectors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We refer to Table :ref:`vector <struct-vector>`. The ``type`` array must hold the data
-type of each data column in the user’s program. All types other than
+type of each data column in the user's program. All types other than
 GMT_DOUBLE will be converted internally in GMT to ``double``, thus
 possibly increasing memory requirements. If the type is ``GMT_DOUBLE`` then
 GMT will be able to use the column directly by reference. The
@@ -1063,7 +1063,7 @@ Create empty resources
 
 If your application needs to build and populate GMT resources in ways
 that do not depend on external resources (files, memory locations,
-etc.), then GMT_Create_Data_ can obtain a “blank slate” by calling
+etc.), then GMT_Create_Data_ can obtain a "blank slate" by calling
 
 .. _GMT_Create_Data:
 
@@ -1318,10 +1318,10 @@ report the error. The ``mode`` parameter has different meanings for
 different data types.
 
 **CPT table**
-    ``mode`` contains bit-flags that control how the CPT file’s back-,
+    ``mode`` contains bit-flags that control how the CPT file's back-,
     fore-, and NaN-colors should be initialized. Select 0 to use the CPT
-    file’s back-, fore-, and NaN-colors, 2 to replace these with the
-    GMT default values, or 4 to replace them with the color table’s
+    file's back-, fore-, and NaN-colors, 2 to replace these with the
+    GMT default values, or 4 to replace them with the color table's
     entries for highest and lowest value.
 
 **Data table**
@@ -1600,7 +1600,7 @@ column does not enter you can instead do a single loop:
 Note we must use ``G->header->size`` (size of allocated array) and not
 ``G->header->nm`` (number of nodes in grid) since the latter is smaller
 due to the padding and a single loop like the above treats the pad as
-part of the “inside” grid.
+part of the "inside" grid.
 
 Manipulate data tables
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -1754,7 +1754,7 @@ GMT common option by calling the function
     int GMT_Option (void *API, char *options);
 
 where ``options`` is a comma-separated list of GMT common options
-(e.g., “R,J,O,X”). You can repeat this function with different sets of
+(e.g., "R,J,O,X"). You can repeat this function with different sets of
 options in order to intersperse your own custom options with in an
 overall alphabetical order; see any GMT module for examples of typical
 layouts.
@@ -1790,7 +1790,7 @@ option has been parsed and in some cases determine the values that was set with
 
     int GMT_Get_Common (void *API, unsigned int option, double *par);
 
-where ``option`` is a single option character (e.g., ‘R’) and ``par`` is
+where ``option`` is a single option character (e.g., 'R') and ``par`` is
 a double array with at least a length of 6. If the particular option has
 been parsed then the function returns the number of parameters passed
 back via ``par``; otherwise we return -1. For instance, to determine if
@@ -1906,10 +1906,10 @@ Set program options via text array arguments
 
 When ``mode > 0`` we expect an array ``args`` of character
 strings that each holds a single command line options (e.g.,
-“-R120:30/134:45/8S/3N”) and interpret ``mode`` to be the count of how
+"-R120:30/134:45/8S/3N") and interpret ``mode`` to be the count of how
 many options are passed. This, of course, is almost exactly how the
 stand-alone GMT programs are called (and reflects how they themselves
-are activated internally). We call this the “argc–argv” mode. Depending
+are activated internally). We call this the "argc-argv" mode. Depending
 on how your program obtains the necessary options you may find that this
 interface offers all you need.
 
@@ -1934,8 +1934,8 @@ above, and ``mode`` must be passed as -1 (or any negative value). Using
 this interface can be more involved since you need to generate the
 linked list of program options; however, utility functions exist to
 simplify its use. This interface is intended for programs whose internal
-workings are better suited to generate such arguments – we call this the
-“options” mode. The order in the list is not important as GMT will
+workings are better suited to generate such arguments -- we call this the
+"options" mode. The order in the list is not important as GMT will
 sort it internally according to need. The option structure is defined below.
 
 .. _options:
@@ -2182,7 +2182,7 @@ Again, :ref:`family <tbl-family>` selects which kind of resource is passed via `
 The ``mode`` determines what kind of comment is being considered, how it
 should be included, and in what form the comment passed via ``arg`` is.
 Table :ref:`comments <tbl-comments>` lists the available options, which may be combined
-by adding (bitwise “or”). The ``GMT_Set_Comment`` does not actually
+by adding (bitwise "or"). The ``GMT_Set_Comment`` does not actually
 output anything but sets the relevant comment and header records in the
 relevant structure. When a file is written out the information will be
 output as well (Note: Users can always decide if they wish to turn

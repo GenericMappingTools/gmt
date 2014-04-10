@@ -155,7 +155,7 @@ Optional Arguments
 **-M**
     Paragraph mode. Files must be multiple segment files. Segments are
     separated by a special record whose first character must be *flag*
-    [Default is ’>’]. Starting in the 3rd column, we expect to find
+    [Default is **>**]. Starting in the 3rd column, we expect to find
     information pertaining to the typesetting of a text paragraph (the
     remaining lines until next segment header). The information expected
     is (*x y* [*font angle justify*\ ] *linespace parwidth parjust*),

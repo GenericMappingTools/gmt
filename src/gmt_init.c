@@ -127,7 +127,16 @@ enum history_mode {
 void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 {
 	/* The function print to stderr a short explanation for each of the options listed by
-	 * the variable <options>.  Only the common parameter options are covered
+	 * the variable <options>.  Only the common parameter options are covered.
+	 * NOte: The cases below do not directly correspond to the common option letters,
+	 * although in some cases they do (e.g., case 'B' explains -B).  For instance, to
+	 * display the help for the -r (registration setting for grid) option we use case F.
+	 * Part of this is historic and part is multiple flavor of output for same option.
+	 * However, GMT_explain_options is not called directly but via GMT_Option which
+	 * do accept a list of comma-separated options and there are the normal GMT common
+	 * option letters, sometimes with modifiers, and it translate between those and the
+	 * crazy cases below.
+	 * Remaining cases for additional options: A,H,L,M,N,T,W,e,m,q,u,v,w
 	 */
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = "qncvld";
@@ -910,11 +919,11 @@ void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t     a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels.\n");
 	GMT_message (GMT, "\t        Append r if coordinates are the lower left and upper right corners of a rectangular area.\n");
-	GMT_message (GMT, "\t     b) Give <u><xmin>/<xmax>/<ymin>/<ymax> of bounding recangle in projected coordinates.\n");
-	GMT_message (GMT, "\t     c) Give [<u>]width[/height] of bounding recangle and use +c to set box center (<u> is unit).\n");
+	GMT_message (GMT, "\t     b) Give <u><xmin>/<xmax>/<ymin>/<ymax> of bounding rectangle in projected coordinates.\n");
+	GMT_message (GMT, "\t     c) Give [<u>]width[/height] of bounding rectangle and use +c to set box center (<u> is unit).\n");
 	GMT_message (GMT, "\t   Append any combination of these modifiers to draw the map insert rectangle:\n");
 	GMT_message (GMT, "\t     +c<lon>/<lat> to specify insert rectangle center (required for case c above).\n");
-	GMT_message (GMT, "\t     +g<fill> to paint the insert rectangle [no fill]\n");
+	GMT_message (GMT, "\t     +g<fill> to paint the insert rectangle [no fill].\n");
 	GMT_message (GMT, "\t     +p<pen> to draw the insert rectangle outline [no outline].\n");
 }
 
