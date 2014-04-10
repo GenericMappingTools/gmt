@@ -216,7 +216,7 @@ However, we can be smarter than this. Realizing that the input img file
 had pixels 2.0 minutes wide (or checking the nx and ny with grdinfo
 merc_grav.nc) we realize that merc_grav.nc used the full resolution of
 the img file and it has 2400 by 2039 pixels, and at 8 inches wide this
-is 300 pixels per inch. We decide we don’t need that many and we will be
+is 300 pixels per inch. We decide we do not need that many and we will be
 satisfied with 100 pixels per inch, so we want to average the data into
 3 by 3 squares. (If we want a contour plot we will probably choose to
 average the data much more (e.g., 6 by 6) to get smooth contours.) Since

@@ -91,10 +91,10 @@ Optional Arguments
     has four columns and that the fourth column contains the
     magnetization intensity (plus signal), which needs not to be
     constant. In this case the third argument of the **-H** option is
-    ignored. A *raw* format (selected by the ’r’ flag is a file with N
+    ignored. A *raw* format (selected by the **r** flag is a file with N
     rows (one per triangle) and 9 columns corresponding to the x,y,x
     coordinates of each of the three vertex of each triangle.
-    Alternatively, the ’s’ flag indicates that the surface file is in
+    Alternatively, the **s** flag indicates that the surface file is in
     the ascii STL (Stereo Lithographic) format. These two type of files
     are used to provide a closed surface.
 
