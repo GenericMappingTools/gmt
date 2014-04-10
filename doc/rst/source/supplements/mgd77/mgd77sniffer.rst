@@ -187,7 +187,7 @@ Optional Arguments
 **-K**
     Reverse navigation quality flags (good to bad and vice versa). May
     be necessary when a majority of navigation fixes are erroneously
-    flagged bad, which can happen when a cruise’s first navigation fix
+    flagged bad, which can happen when a cruise's first navigation fix
     is extremely erroneous. Caution! This will affect sniffer output and
     should only be attempted after careful manual navigation review.
 
@@ -342,7 +342,7 @@ E77 Error Format
     N Errata table verification status
 
     # mgd77manage applies corrections if the errata table is verified
-    (toggle ’N’ above to ’Y’ after review)
+    (toggle 'N' above to 'Y' after review)
 
     # For instructions on E77 format and usage, see
     `http://gmt.soest.hawaii.edu/mgd77/errata.php <http://gmt.soest.hawaii.edu/mgd77/errata.php>`_
@@ -385,7 +385,7 @@ E77 Error Format
     Y  08010039  1975-05-10T22:16:05.88  74  C-0-0 NAV: excessive speed
 
 **Error Code Description**
-    Each of the three error classes is separated by a dash ’-’ and
+    Each of the three error classes is separated by a dash **-** and
     described by a combination of alphabetic characters or 0 signifying
     no detected problems.
 

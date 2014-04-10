@@ -70,7 +70,7 @@ Optional Arguments
     IGRF total field magnetic reference field, and **r** for recomputed
     magnetic anomaly (append 1 or 2 to specify which total field column
     to use [1]). For gravity we choose the reference field based on the
-    parameter Gravity Theoretical Formula Code in the cruise’s MGD77
+    parameter Gravity Theoretical Formula Code in the cruise's MGD77
     header. If this is not set or is invalid we default to the IGF 1980.
     You can override this behaviour by appending the desired code: 1 =
     Heiskanen 1924, 2 = International 1930, 3 = IGF1967, or 4 = IGF1980.
@@ -164,7 +164,7 @@ Optional Arguments
     renamed file.
 **-E**\ *empty*
     Give a single character that will be repeated to fill empty string
-    values, e.g., ’9’ will yield a string like "99999..." [9].
+    values, e.g., "9" will yield a string like "99999..." [9].
 **-F**
     Force mode. When this mode is active you are empowered to delete or
     replace even the standard MGD77 set of columns. You better know what
@@ -251,7 +251,7 @@ Discussion
 
 The mgd77 supplement is an attempt to (1) improve on the
 limited functionality of the existing mgg supplement, (2) incorporate
-some of the ideas from Scripps’ gmt+ supplement by allowing extra data
+some of the ideas from Scripps' gmt+ supplement by allowing extra data
 columns, and (3) add new capabilities for managing marine
 geophysical trackline data stored in an architecture-independent CF-1.0-
 and COARDS-compliant netCDF file format. Here are some of the underlying
@@ -357,7 +357,7 @@ terms will have those corrections applied (if a correction table is
 supplied). All of these steps require the presence of the relevant
 meta-data and all can be overruled by the user. In addition, users may
 add their own bitflags as separate data columns and use
-**mgd77list**\ ’s logical tests to further dictate which data are
+**mgd77list**'s logical tests to further dictate which data are
 suppressed from output.
 
 Credits

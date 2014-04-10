@@ -31,8 +31,8 @@ Description
 gravity/geoid response of a bathymetry file. It will take the 2-D
 forward FFT of a bathymetry grid and compute it's gravity/geoid response
 using full Parker's method applied to the chosen model. The available
-models are the “loading from top”, or elastic plate model, and the
-“loading from below” which accounts for the plate's response to a
+models are the "loading from top", or elastic plate model, and the
+"loading from below" which accounts for the plate's response to a
 sub-surface load (appropriate for hot spot modeling - if you believe
 them). In both cases, the model parameters are set with **-T** and
 **-Z** options. Second mode computes the admittance or coherence between
@@ -65,7 +65,7 @@ Optional Arguments
     and exit. *n* and *wavelength* are used to compute (n \* wavelength)
     the total profile length in meters. *mean\_depth* is the mean water
     depth. Append dataflags (one or two) of *tbw* in any order. *t* =
-    use “from top” model, *b* = use "from below" model. Optionally
+    use "from top" model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
 **-D**\ *density*
     Sets density contrast across surface. Used, for example, to compute
@@ -123,9 +123,9 @@ Optional Arguments
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
 **-Z**\ *<zm>[/<zl>]*
-    Moho [and swell] average compensation depths. For the “load from
-    top” model you only have to provide *zm*, but for the “loading from
-    below” don't forget *zl*.
+    Moho [and swell] average compensation depths. For the "load from
+    top" model you only have to provide *zm*, but for the "loading from
+    below" don't forget *zl*.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -166,7 +166,7 @@ in Parker expansion):
 
     gmt gravfft bat.grd -D1665 -Gwater_g.grd -E4
 
-Now subtract it to your free-air anomaly faa.grd and you’ll get the
+Now subtract it to your free-air anomaly faa.grd and you will get the
 Bouguer anomaly. You may wonder why we are subtracting and not adding.
 After all the Bouger anomaly pretends to correct the mass deficiency
 presented by the water layer, so we should add because water is less
@@ -206,7 +206,7 @@ of 9 km
 
     gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 
-If you add now the sea-bottom and Moho’s effects, you’ll get the full
+If you add now the sea-bottom and Moho's effects, you will get the full
 gravity response of your isostatic model. We will use here only the
 first term in Parker expansion.
 

@@ -482,7 +482,7 @@ Notes On Operators
    set or implied, else they return Cartesian distances. Note: If the current
    :ref:`PROJ_ELLIPSOID <Projection Parameters>` is ellipsoidal then
    geodesics are used in calculations of distances, which can be slow.
-   You can trade speed with accuracy by changing the algorighm used to
+   You can trade speed with accuracy by changing the algorithm used to
    compute the geodesic (see :ref:`PROJ_GEODESIC <Projection Parameters>`).
 
 #. The operator **PLM** calculates the associated Legendre polynomial

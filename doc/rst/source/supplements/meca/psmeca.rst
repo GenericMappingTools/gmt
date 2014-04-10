@@ -351,7 +351,7 @@ Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998,
 p.167.
 
-Cliff Frohlich, Cliff’s Nodes Concerning Plotting Nodal Lines for P, Sh
+Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh
 and Sv
 
 Seismological Research Letters, Volume 67, Number 1, January-February,

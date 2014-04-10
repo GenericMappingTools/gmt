@@ -84,7 +84,7 @@ Optional Arguments
 **-W**
     Means that each input records has an extra column with the composite
     weight for each crossover record. These are used to obtain a
-    weighted least squares solution [no weights]. Append ’u’ to report
+    weighted least squares solution [no weights]. Append **u** to report
     unweighted mean/std [Default, report weighted stats].
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code

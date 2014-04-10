@@ -127,7 +127,7 @@ Optional Arguments
     *cols* is the total number of columns in the input text table file.
     For this mode, it expects to read depths consisted of several
     columns. Each column represents a filtered grid with a filter width,
-    which can be obtained by ’grd2xyz -Z’. The outcome will be median,
+    which can be obtained by **grd2xyz -Z**. The outcome will be median,
     MAD, and mean. So, the column with the medians is used to generate
     the regional component and the column with the MADs is used to
     conduct the error analysis.
