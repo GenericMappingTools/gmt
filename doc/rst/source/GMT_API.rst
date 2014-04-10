@@ -1007,7 +1007,7 @@ what we do if no resources have been registered. The choices are
 
     **GMT_ADD_EXISTING** means "only use already registered resources".
 
-The standard behavior is ``GMT_REG_DEFAULT``. Next, ``n_args`` is 0
+The standard behavior is ``GMT_ADD_DEFAULT``. Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in :ref:`Prepare modules opts <sec-func>`); otherwise ``args`` is an array of ``n_args``
 strings (i.e., the int argc, char \*argv[] model)

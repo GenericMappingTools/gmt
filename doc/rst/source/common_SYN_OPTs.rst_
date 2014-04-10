@@ -24,7 +24,7 @@
 
 .. |SYN_OPT-c| replace:: **-c**\ *copies*
 
-.. |SYN_OPT-d| replace:: **-d**\ [**i**\ \|\ **o**]*nodata*
+.. |SYN_OPT-d| replace:: **-d**\ [**i**\ \|\ **o**]\ *nodata*
 
 .. |SYN_OPT-di| replace:: **-di**\ *nodata*
 

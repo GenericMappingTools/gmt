@@ -425,7 +425,6 @@ Optional Arguments
     is positive down]. 
 
 .. include:: ../../explain_-bo_full.rst_
-.. include:: ../../explain_-do_full.rst_
 |
 |   ignored if **-bo** is selected. Likewise,
 |   string-fields cannot be selected. Note that if time is one of the
@@ -433,6 +432,7 @@ Optional Arguments
 |   1970). To read this information in GMT to obtain absolute calendar
 |   time will require you to use --TIME_SYSTEM=1.
 
+.. include:: ../../explain_-do_full.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
