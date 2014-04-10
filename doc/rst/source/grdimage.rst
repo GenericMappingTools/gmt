@@ -105,7 +105,7 @@ Optional Arguments
     is a valid file syntax. Note, however, that to use it this way you
     must not be blocked by a proxy. If you are, chances are good that it
     can work by setting the environmental variable
-    *http_proxy* with the value ’your\_proxy:port’ Append
+    *http_proxy* with the value 'your\_proxy:port' Append
     **r** to use the region specified by **-R** to apply to the image.
     For example, if you have used **-Rd** then the image will be
     assigned the limits of a global domain. The interest of this mode is

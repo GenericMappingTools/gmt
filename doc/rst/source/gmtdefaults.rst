@@ -44,7 +44,7 @@ Optional Arguments
 **-D**
     Print the system GMT defaults to standard output. Append **u**
     for US defaults or **s** for SI defaults. [**-D** alone gives the
-    version selected at compile time; If **-D** is omitted, the user’s
+    version selected at compile time; If **-D** is omitted, the user's
     currently active defaults are printed.] 
 
 .. include:: explain_help.rst_

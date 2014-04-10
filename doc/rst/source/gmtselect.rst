@@ -120,7 +120,7 @@ Optional Arguments
     Pass all records whose location is within *dist* of any of the line
     segments in the ASCII multiple-segment file *linefile*. If *dist* is
     zero then we will scan each sub-header in the *ptfile* for an
-    embedded **-D**\ *dist* setting that sets each line’s individual
+    embedded **-D**\ *dist* setting that sets each line's individual
     distance value. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances append a distance unit (see
     UNITS). Alternatively, if **-R** and **-J** are used then geographic
@@ -129,7 +129,7 @@ Optional Arguments
     distances are compared to *dist*. Use **-Lp** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
     within the segments endpoints [Default considers points "beyond" the
-    line’s endpoints.
+    line's endpoints.
 
 **-N**\ *maskvalues*
     Pass all records whose location is inside specified geographical

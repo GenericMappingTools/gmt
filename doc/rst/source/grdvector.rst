@@ -65,7 +65,7 @@ Optional Arguments
     Use *cptfile* to assign colors based on vector length.  Alternatively,
     supply the name of a GMT color master CPT [rainbow] and let
     **grdvector** automatically determine a 16-level continuous CPT from
-    the grid’s z-range.
+    the grid's z-range.
 **-G**\ *fill*
     Sets color or shade for vector interiors [Default is no fill].
 **-I**

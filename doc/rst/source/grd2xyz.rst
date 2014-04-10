@@ -137,7 +137,7 @@ for x, y, or z coordinate, respectively.
 Examples
 --------
 
-To edit individual values in the 5’ by 5’ hawaii_grv.nc file, dump the .nc to ASCII:
+To edit individual values in the 5' by 5' hawaii_grv.nc file, dump the .nc to ASCII:
 
    ::
 

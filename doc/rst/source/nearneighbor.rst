@@ -40,7 +40,7 @@ or more points within a radius centered on the node. The average value
 is computed as a weighted mean of the nearest point from each sector
 inside the search radius. The weighting function used is w(r) = 1 / (1 +
 d ^ 2), where d = 3 \* r / search_radius and r is distance from the
-node. This weight is modulated by the observation points’ weights [if
+node. This weight is modulated by the weights of the observation points [if
 supplied]. 
 
 Required Arguments

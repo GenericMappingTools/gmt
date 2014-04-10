@@ -165,7 +165,7 @@ see if this is the problem, you should do this:
 (note that output is in radians; on some machines you need "nawk" to do
 this). Then if these numbers jump around a lot, you may do this:
 
-    awk '{ print NR, $0 }’ yourdata.xyz \| filter1d -Fb5 -N4/0
+    awk '{ print NR, $0 }' yourdata.xyz \| filter1d -Fb5 -N4/0
     --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 
 and plot this data set instead.

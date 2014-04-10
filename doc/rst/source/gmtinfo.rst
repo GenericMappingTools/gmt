@@ -99,7 +99,7 @@ Optional Arguments
     or **-Sxy** leaves space for both error bars using the values in
     third and fourth (2 and 3) columns.
 **-T**\ *dz*\ [/*col*]
-    Report the min/max of the first (0’th) column to the nearest
+    Report the min/max of the first (0'th) column to the nearest
     multiple of *dz* and output this in the form **-T**\ *zmin/zmax/dz*.
     To use another column, append /\ *col*. Only works when **-I** is
     selected. 

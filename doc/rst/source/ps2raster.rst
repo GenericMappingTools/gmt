@@ -98,7 +98,7 @@ Optional Arguments
     **-G**\ c:\\programs\\gs\\gs9.02\\bin\\gswin64c). WARNING: because
     of the poor decision of embedding the bits on the gs exe name we
     cannot satisfy both the 32 and 64 bits GhostScript executable names.
-    So in case of ’get from registry’ failure the default name (when no
+    So in case of 'get from registry' failure the default name (when no
     **-G** is used) is the one of the 64 bits version, or gswin64c
 
 **-I**
@@ -170,7 +170,7 @@ Optional Arguments
     and create a geoTIFF image right away. The output file will have a
     .tiff extension.
 
-    The world file naming follows the convention of jamming a ’w’ in the
+    The world file naming follows the convention of jamming a 'w' in the
     file extension. So, if output is tif **-Tt** the world file is a
     .tfw, for jpeg we have a .jgw and so on. This option automatically
     sets **-A** **-P**.
@@ -201,7 +201,7 @@ Optional Arguments
     Further notes on the creation of georeferenced rasters.
     **ps2raster** can create a georeferenced raster image with a world
     file OR uses GDAL to convert the GMT PostScript file to geotiff.
-    GDAL uses Proj.4 for it’s projection library. To provide with the
+    GDAL uses Proj.4 for its projection library. To provide with the
     information it needs to do the georeferencing, GMT 4.5 embeds a
     comment near the start of the PostScript file defining the
     projection using Proj.4 syntax. Users with pre-GMT v4.5 PostScript

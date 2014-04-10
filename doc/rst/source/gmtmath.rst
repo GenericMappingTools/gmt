@@ -492,7 +492,7 @@ natural boundary conditions.
 
 8. The bitwise operators
 (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
-**BITTEST**, and **BITXOR**) convert a tables’s double precision values
+**BITTEST**, and **BITXOR**) convert a tables's double precision values
 to unsigned 64-bit ints to perform the bitwise operations. Consequently,
 the largest whole integer value that can be stored in a double precision
 value is 2^53 or 9,007,199,254,740,992. Any higher result will be masked

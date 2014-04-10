@@ -249,7 +249,7 @@ GMT will use ellipsoidal formulae if they are implemented and the
 user have selected an ellipsoid as the reference shape (see
 :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`). The user needs to be aware of a
 few potential pitfalls: (1) For some projections, such as Transverse
-Mercator, Albers, and Lambert’s conformal conic we use the ellipsoidal
+Mercator, Albers, and Lambert's conformal conic we use the ellipsoidal
 expressions when the areas mapped are small, and switch to the spherical
 expressions (and substituting the appropriate auxiliary latitudes) for
 larger maps. The ellipsoidal formulae are used as follows: (a)

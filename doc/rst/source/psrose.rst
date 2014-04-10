@@ -106,7 +106,7 @@ Optional Arguments
 .. include:: explain_-P.rst_
 
 **-R**\ *r0*/*r1*/*az\_0*/*az\_1*
-    Specifies the ’region’ of interest in (r,azimuth) space. r0 is 0, r1
+    Specifies the 'region' of interest in (r,azimuth) space. r0 is 0, r1
     is max length in units. For azimuth, specify either -90/90 or 0/180
     for half circle plot or 0/360 for full circle.
 

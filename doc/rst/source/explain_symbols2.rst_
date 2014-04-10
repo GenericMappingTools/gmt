@@ -276,7 +276,7 @@
                 color = black, style = solid].
 
             **+r**\ *min\_rad*
-                Will not place labels where the line’s radius of curvature is
+                Will not place labels where the line's radius of curvature is
                 less than *min\_rad* [Default is 0].
 
             **+t**\ [*file*\ ]

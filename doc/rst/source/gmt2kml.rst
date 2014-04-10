@@ -37,7 +37,7 @@ Description
 -----------
 
 **gmt2kml** reads one or more GMT table file and converts them to a
-single output file using Google Earth’s KML format. Data may represent
+single output file using Google Earth's KML format. Data may represent
 points, lines, or polygons, and you may specify additional attributes
 such as title, altitude mode, colors, pen widths, transparency, regions,
 and data descriptions. You may also extend the feature down to ground

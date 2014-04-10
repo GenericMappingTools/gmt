@@ -33,10 +33,10 @@ Synopsis
 Description
 -----------
 
-**greenspline** uses the Green’s function G(\ **x**; **x’**) for the
+**greenspline** uses the Green's function G(\ **x**; **x'**) for the
 chosen spline and geometry to interpolate data at regular [or arbitrary]
 output locations. Mathematically, the solution is composed as
-*w*\ (**x**) = sum {*c*\ (*i*) G(\ **x’**; **x**\ (*i*))}, for *i* = 1,
+*w*\ (**x**) = sum {*c*\ (*i*) G(\ **x'**; **x**\ (*i*))}, for *i* = 1,
 *n*, the number of data points {**x**\ (*i*), *w*\ (*i*)}. Once the *n*
 coefficients *c*\ (*i*) have been found the sum can be evaluated at any
 output point **x**. Choose between minimum curvature, regularized, or
@@ -182,7 +182,7 @@ Optional Arguments
     surface splines and both imply **-D**\ 4: (**p**) Minimum
     curvature spline [*Parker*, 1994], (**q**) Continuous curvature
     spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
-    G(\ **x’**; **x’**) for the last method is slower to compute (a series solution) so we
+    G(\ **x'**; **x'**) for the last method is slower to compute (a series solution) so we
     pre-calculate values and use cubic spline interpolation lookup instead.
     Optionally append **+n**\ *N* (an odd integer) to change how many
     points to use in the spline setup [10001].  The finite Legendre sum has
@@ -293,7 +293,7 @@ a measure of uranium oxide concentrations (in percent), try
 2-d Spherical Surface Examples
 ------------------------------
 
-To recreate Parker’s [1994] example on a global 1x1 degree grid,
+To recreate Parker's [1994] example on a global 1x1 degree grid,
 assuming the data are in file mag_obs_1990.d, try
 
    ::
