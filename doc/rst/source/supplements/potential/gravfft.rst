@@ -14,12 +14,12 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
-[ **-C**\ <n/wavelength/mean\_depth/tbw> ] [ **-A**\ *z\_offset* ] [ **-D**\ <density> ]
-[ **-E**\ <n\_terms> ] [ **-F**\ [f\|g\|v\|n\|e] ] [ **-I**\ <wbctk> ]
+[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-A**\ *z\_offset* ] [ **-D**\ *density* ]
+[ **-E**\ *n\_terms* ] [ **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-Q** ] [ **-T**\ <te/rl/rm/rw>[+m] ]
+[ **-Q** ] [ **-T**\ *te/rl/rm/rw*[**+m**] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ <zm>[/<zl>] ]
+[ **-Z**\ *zm*[/*zl*] ]
 [ **-fg** ]
 
 |No-spaces|
@@ -60,7 +60,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-C**\ *<n/wavelength/mean\_depth/tbw>*
+**-C**\ *n/wavelength/mean\_depth/tbw*
     Compute only the theoretical admittance curves of the selected model
     and exit. *n* and *wavelength* are used to compute (n \* wavelength)
     the total profile length in meters. *mean\_depth* is the mean water
@@ -71,7 +71,7 @@ Optional Arguments
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-N+h**
+    do not use **-T**. It also implicitly sets **-N+h**.
 **-E**\ *n\_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 3]
@@ -88,18 +88,19 @@ Optional Arguments
 
        **n** = North deflections of the vertical (micro-radian).
 
-**-I**\ *<wbctk>*
-    Use <ingrid2> and <topo_grd> to estimate admittance\|coherence and
-    write it to stdout (-G ignored if set). This grid should contain
+**-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k**
+    Use *ingrd2* and <topo_grd> to estimate admittance\|coherence and
+    write it to stdout (**-G** ignored if set). This grid should contain
     gravity or geoid for the same region of <topo_grd>. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
     optionally, a theoretical admittance. Append dataflags (one to
-    three) of wbct. **w** writes wavelength instead of wavenumber **k**
-    Use km or wavelength unit [m] **c** computes coherence instead of
-    admittance **b** writes a forth column with "loading from below"
-    theoretical admittance **t** writes a forth column with "elastic
-    plate" theoretical admittance
+    three) from **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**.
+    **w** writes wavelength instead of wavenumber, **k**
+    selects km for wavelength unit [m], **c** computes coherence instead of
+    admittance, **b** writes a forth column with "loading from below"
+    theoretical admittance, and **t** writes a forth column with "elastic
+    plate" theoretical admittance.
 
 .. include:: ../../explain_fft.rst_
 
@@ -114,7 +115,7 @@ Optional Arguments
     necessary parameters are set within **-T** and **-Z** options. The
     number of powers in Parker expansion is restricted to 1.
     See an example further down.
-**-T**\ *<te/rl/rm/rw>[+m]*
+**-T**\ *te/rl/rm/rw*[**+m**]
     Compute the isostatic compensation from the topography load (input grid file) on
     an elastic plate of thickness *te*. Also append densities for load, mantle, and
     water in SI units. Give average mantle depth via **-Z**. If the elastic thickness
@@ -122,7 +123,7 @@ Optional Arguments
     computed from *te* and Young modulus). Optionaly, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
-**-Z**\ *<zm>[/<zl>]*
+**-Z**\ *zm*[/*zl*]
     Moho [and swell] average compensation depths. For the "load from
     top" model you only have to provide *zm*, but for the "loading from
     below" don't forget *zl*.

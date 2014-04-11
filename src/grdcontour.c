@@ -1009,10 +1009,12 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			cont_do_tick[n_contours] = (char)Ctrl->T.active;
 		}
 	}
+#if 0
+	/* PS: 4/10/2014: I commented this out as for phase grids in -180/180 range we always missed the 180 contour. */
 	if (GMT->current.map.z_periodic && n_contours > 1 && fabs (contour[n_contours-1] - contour[0] - 360.0) < GMT_SMALL) {	/* Get rid of redundant contour */
 		n_contours--;
 	}
-
+#endif
 	if (n_contours == 0) {	/* No contours within range of data */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No contours found\n");
 		if (make_plot) {

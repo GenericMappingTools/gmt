@@ -4317,8 +4317,10 @@ void gmt_setcontjump (float *z, uint64_t nz)
 
 	z[0] = fmodf (z[0], 360.0f);
 	if (z[0] > 180.0f) z[0] -= 360.0f;
+	else if (z[0] < -180.0f) z[0] += 360.0f;
 	for (i = 1; i < nz; i++) {
 		if (z[i] > 180.0f) z[i] -= 360.0f;
+		else if (z[i] < -180.0f) z[i] += 360.0f;
 		dz = z[i] - z[0];
 		if (fabsf (dz) > 180.0f) z[i] -= copysignf (360.0f, dz);
 		z[i] = fmodf (z[i], 360.0f);
