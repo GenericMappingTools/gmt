@@ -605,5 +605,7 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 	/* Update [read-only] pointer to the current option list */
 	API->GMT->current.options = options;
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
+	if (GMT_is_geographic (API->GMT, GMT_IN)) API->GMT->current.io.warn_geo_as_cartesion = false;	/* Don't need this warning */
+	
 	return (GMT_OK);
 }
