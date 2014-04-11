@@ -29,7 +29,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcfhipsxy" GMT_OPT("E")
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcfhipstxy" GMT_OPT("E")
 
 EXTERN_MSC int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
 
