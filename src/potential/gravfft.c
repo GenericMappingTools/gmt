@@ -58,10 +58,6 @@ struct GRAVFFT_CTRL {
 		unsigned int n_grids;	/* 1 or 2 */
 		char *file[2];
 	} In;
-	struct GRVF_A {	/* -A<z_offset> */
-		bool active;
-		double z_offset;
-	} A;
 	struct GRVF_C {	/* -C<zlevel> */
 		bool active;
 		unsigned int n_pt;
@@ -196,10 +192,6 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
 				else
 					n_errors++;
-				break;
-			case 'A':	/* Add const to ingrid1 */
-				Ctrl->A.active = true;
-				sscanf (opt->arg, "%lf", &Ctrl->A.z_offset);
 				break;
 			case 'C':	/* For theoretical curves only */
 				Ctrl->C.active = true;
@@ -387,7 +379,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid>[-A<z_offset>] [-C<n/wavelength/mean_depth/tbw>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
@@ -397,7 +389,6 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\ttopo_grd is the input grdfile with topography values\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-G filename for output netCDF grdfile with gravity [or geoid] values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-A add a constant to the bathymetry (not to <ingrid2>) before doing anything else.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-C n/wavelength/mean_depth/tbw Compute admittance curves based on a theoretical model.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   Total profile length in meters = <n> * <wavelength> (unless -Kx is set).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   --> Rest of parametrs are set within -T AND -Z options\n");
@@ -453,7 +444,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 
 int GMT_gravfft (void *V_API, int mode, void *args) {
 
-	unsigned int i, j, k, n;
+	unsigned int i, k, n;
 	int error = 0;
 	uint64_t m;
 	char	format[64] = {""}, buffer[256] = {""};
@@ -565,12 +556,6 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	 * we are done with using the addresses Orig[k] directly. */
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
-		if (Ctrl->A.active) {	/* Apply specified offset */
-			for (j = 0; j < Grid[0]->header->ny; j++)
-				for (i = 0; i < Grid[0]->header->nx; i++)
-					Grid[0]->data[GMT_IJP(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
-		}
-
 		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
 	}
 
