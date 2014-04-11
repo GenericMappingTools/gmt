@@ -92,7 +92,6 @@ Core modules
    sphtriangulate
    splitxyz
    surface
-   testapi
    trend1d
    trend2d
    triangulate
