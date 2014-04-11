@@ -14,12 +14,12 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
-[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-A**\ *z\_offset* ] [ **-D**\ *density* ]
-[ **-E**\ *n\_terms* ] [ **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
+[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density* ] [ **-E**\ *n\_terms* ]
+[ **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-Q** ] [ **-T**\ *te/rl/rm/rw*[**+m**] ]
+[ **-Q** ] [ **-T**\ *te/rl/rm/rw*\ [**+m**] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ *zm*[/*zl*] ]
+[ **-Z**\ *zm*\ [*zl*] ]
 [ **-fg** ]
 
 |No-spaces|
@@ -89,9 +89,9 @@ Optional Arguments
        **n** = North deflections of the vertical (micro-radian).
 
 **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k**
-    Use *ingrd2* and <topo_grd> to estimate admittance\|coherence and
+    Use *ingrd2* and *ingrd1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
     write it to stdout (**-G** ignored if set). This grid should contain
-    gravity or geoid for the same region of <topo_grd>. Default
+    gravity or geoid for the same region of *ingrd1*. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
     optionally, a theoretical admittance. Append dataflags (one to
@@ -115,7 +115,7 @@ Optional Arguments
     necessary parameters are set within **-T** and **-Z** options. The
     number of powers in Parker expansion is restricted to 1.
     See an example further down.
-**-T**\ *te/rl/rm/rw*[**+m**]
+**-T**\ *te/rl/rm/rw*\ [**+m**]
     Compute the isostatic compensation from the topography load (input grid file) on
     an elastic plate of thickness *te*. Also append densities for load, mantle, and
     water in SI units. Give average mantle depth via **-Z**. If the elastic thickness
@@ -123,7 +123,7 @@ Optional Arguments
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
-**-Z**\ *zm*[/*zl*]
+**-Z**\ *zm*\ [*zl*]
     Moho [and swell] average compensation depths. For the "load from
     top" model you only have to provide *zm*, but for the "loading from
     below" don't forget *zl*.

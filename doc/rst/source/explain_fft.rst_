@@ -44,6 +44,6 @@
     [tapered], where *ext* is your file extension. Finally, you may save
     the complex grid produced by the forward FFT by appending **+z**. By
     default we write the real and imaginary components to
-    *ingrid*\ \_*real* *ext* and *ingrid*\ \_imag.\ *ext*. Append
+    *ingrid*\ \_real.\ *ext* and *ingrid*\ \_imag.\ *ext*. Append
     **p** to save instead the polar form of magnitude and phase to files
     *ingrid*\ \_mag.\ *ext* and *ingrid*\ \_phase.\ *ext*.
