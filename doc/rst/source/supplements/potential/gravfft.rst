@@ -14,12 +14,12 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
-[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-A**\ *z\_offset* ] [ **-D**\ *density* ]
-[ **-E**\ *n\_terms* ] [ **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
+[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density* ] [ **-E**\ *n\_terms* ]
+[ **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-Q** ] [ **-T**\ *te/rl/rm/rw*[**+m**] ]
+[ **-Q** ] [ **-T**\ *te/rl/rm/rw*\ [**+m**] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ *zm*[/*zl*] ]
+[ **-Z**\ *zm*\ [*zl*] ]
 [ **-fg** ]
 
 |No-spaces|
@@ -89,9 +89,9 @@ Optional Arguments
        **n** = North deflections of the vertical (micro-radian).
 
 **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k**
-    Use *ingrd2* and <topo_grd> to estimate admittance\|coherence and
+    Use *ingrd2* and *ingrd1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
     write it to stdout (**-G** ignored if set). This grid should contain
-    gravity or geoid for the same region of <topo_grd>. Default
+    gravity or geoid for the same region of *ingrd1*. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
     optionally, a theoretical admittance. Append dataflags (one to
@@ -115,15 +115,15 @@ Optional Arguments
     necessary parameters are set within **-T** and **-Z** options. The
     number of powers in Parker expansion is restricted to 1.
     See an example further down.
-**-T**\ *te/rl/rm/rw*[**+m**]
+**-T**\ *te/rl/rm/rw*\ [**+m**]
     Compute the isostatic compensation from the topography load (input grid file) on
     an elastic plate of thickness *te*. Also append densities for load, mantle, and
     water in SI units. Give average mantle depth via **-Z**. If the elastic thickness
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
-    computed from *te* and Young modulus). Optionaly, append *+m* to write a grid
+    computed from *te* and Young modulus). Optionally, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
-**-Z**\ *zm*[/*zl*]
+**-Z**\ *zm*\ [*zl*]
     Moho [and swell] average compensation depths. For the "load from
     top" model you only have to provide *zm*, but for the "loading from
     below" don't forget *zl*.
@@ -154,6 +154,20 @@ other grids geographical grids were you want to convert degrees into
 meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject </grdproject>`.
+
+Plate Flexure
+-------------
+
+The FFT solution to elastic plate flexure requires the infill density to equal
+the load density.  This is typically only true directly beneath the load; beyond the load
+the infill tends to be lower-density sediments or even water (or air).  Wessel [2001]
+proposed an approximation that allows for the specification of an infill density
+different from the load density while still allowing for an FFT solution. Basically,
+the plate flexure is solved for using the infill density as the effective load density but
+the amplitudes are adjusted by a factor *A* = sqrt ((rm - ri)/(rm - rl)), which is
+the theoretical difference in amplitude due to a point load using the two different
+load densities.  The approximation is very good but breaks down for large
+loads on weak plates, a fairy uncommon situation.
 
 Examples
 --------
@@ -264,10 +278,13 @@ long profile using the same parameters as above
 References
 ----------
 
-Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the
+Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geotermal
 Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
 `http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
+Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
+J. Geophys. Res., 106(B9), 19,431-19,441,
+`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/110.1029/2000JB000083>`_
 
 See Also
 --------
