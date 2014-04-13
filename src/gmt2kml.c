@@ -673,6 +673,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
 
 	uint64_t row, seg;
+	size_t L = 0;
 	int set_nr = 0, index, N = 1, error = 0, process_id;
 
 	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""}, C[5][GMT_LEN64] = {"","","","",""};
@@ -1007,9 +1008,15 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 							kml_print (API, N, "<Data name = \"%s\">\n", Ctrl->L.name[col]);
 							kml_print (API, N++, "<value>");
 							GMT_strtok (extra, " \t,", &pos, item);
-							kml_print (API, 0, "%s", item);
-							kml_print (API, 0, "</value>\n");
-							kml_print (API, --N, "</Data>\n");
+							L = strlen (item);
+							if (L && item[0] == '\"' && item[L-1] == '\"') {	/* Quoted string on input, remove quotes on output */
+								item[L-1] = '\0';
+								kml_print (API, N, "%s", &item[1]);
+							}
+							else
+								kml_print (API, N, "%s", item);
+							kml_print (API, --N, "</value>\n");
+							kml_print (API, N, "</Data>\n");
 						}
 						kml_print (API, --N, "</ExtendedData>\n");
 					}
