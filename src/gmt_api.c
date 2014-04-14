@@ -3924,6 +3924,28 @@ int GMT_Status_IO_ (unsigned int *mode)
 }
 #endif
 
+int GMT_Insert_Data (void *V_API, int object_ID, void *obj) {
+	/* ... */
+
+	int item;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+
+	/* Determine the item in the object list that matches this object_ID */
+	API = gmt_get_api_ptr (V_API);
+	if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, GMT_NOTSET)) == GMT_NOTSET) {
+		return_error (API, API->error);
+	}
+	/* Make sure the resource is present */
+	if (API->object[item]->resource == NULL)
+		return_error (API, GMT_PTR_IS_NULL);
+
+	/* Assign data from resource and wipe resource pointer */
+	API->object[item]->data = API->object[item]->resource = obj;
+	return (GMT_NOERROR);
+}
+
 void * GMT_Retrieve_Data (void *V_API, int object_ID)
 {
 	/* Function to return pointer to the container for a registered data set.
