@@ -810,6 +810,11 @@ with a warning under compatibility mode:
    option is deprecated; use **-N**\ *tcol* instead as we automatically
    determine the number of columns in the file.
 
+*  :doc:`gmt2kml`: The **-L** option no longer expects column numbers,
+   just the column names.  This allows the extra columns to contain text
+   strings but means users have to supply the data columns in the order
+   specified by **-L**.
+
 *  :doc:`gmtconvert`: **-F** is
    deprecated; use common option **-o** instead.
 
