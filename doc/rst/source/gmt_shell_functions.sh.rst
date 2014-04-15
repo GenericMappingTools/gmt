@@ -21,9 +21,11 @@ Synopsis
 
 **gmt_abort** *message*
 
-**gmt_nrecords** *file(s)*
+**gmt_get_nrecords** *file(s)*
 
-**gmt_nfields** *string*
+**gmt_get_ndatarecords** *file(s)*
+
+**gmt_get_nfields** *string*
 
 **gmt_get_field** *string*
 
@@ -36,6 +38,8 @@ Synopsis
 **gmt_get_map_height** **-R** **-J**
 
 **gmt_set_psfile** *file*
+
+**gmt_set_pdffile** *file*
 
 **gmt_set_framename** *prefix framenumber*
 
@@ -77,10 +81,13 @@ functions made available are:
 **gmt_abort**
     Send a message to standard error and exit the shell.
 
-**gmt_nrecords**
+**gmt_get_nrecords**
     Returns the total number of lines in *file(s)*
 
-**gmt_nfields**
+**gmt_get_ndatarecords**
+    Returns the total number of data records in *file(s)*, i.e., not counting headers.
+
+**gmt_get_nfields**
     Returns the number of fields or words in *string*
 
 **gmt_get_field**
@@ -95,11 +102,11 @@ functions made available are:
     Returns the region in the form w/e/s/n based on the header of a grid
     *file*. Optionally add -I*dx*/\ *dy* to round off the answer.
 
-**gmt_map_width**
+**gmt_get_map_width**
     Expects the user to give the desired **-R** **-J** settings and
     returns the map width in the current measurement unit.
 
-**gmt_map_height**
+**gmt_get_map_height**
     Expects the user to give the desired **-R** **-J** settings and
     returns the map height in the current measurement unit.
 
@@ -120,7 +127,7 @@ functions made available are:
 Notes
 -----
 
-1. These functions only work in the bourne shell (**sh**) and their
+1. These functions only work in the Bourne shell (**sh**) and their
 derivatives (like **ash**, **bash**, **ksh** and **zsh**). These
 functions do not work in the C shell (**csh**) or their derivatives
 (like **tcsh**), and cannot be used in DOS batch scripts either.
