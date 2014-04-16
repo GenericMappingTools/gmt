@@ -7825,7 +7825,11 @@ int GMT_just_decode (struct GMT_CTRL *GMT, char *key, unsigned int def)
 	 */
 	unsigned int i, j, k;
 
-	if (isdigit ((int)key[0])) return (atoi(key));
+	if (isdigit ((int)key[0])) {	/* Apparently got one of the 1-11 codes */
+		i = atoi(key);
+		if (i < 1 || i > 11 || (i%4) == 0) i = -99;
+		return (i);
+	}
 
 	i = def % 4;
 	j = def / 4;
