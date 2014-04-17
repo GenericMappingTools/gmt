@@ -4827,6 +4827,8 @@ int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (GMT->common.a.active) {	/* Use aspatial data instead */
 		for (col = 0; col < GMT->common.a.n_aspatial; col++) {
 			if (GMT->common.a.col[col] >= 0) continue;	/* Skip regular data column fillers */
+			if (!G && !GMT->current.io.OGR->tvalue) continue;	/* Nothing set yet */
+			if (!G && !GMT->current.io.OGR->dvalue) continue;	/* Nothing set yet */
 			txt = (G) ? G->tvalue[col] : GMT->current.io.OGR->tvalue[col];
 			z = (G) ? G->dvalue[col] : GMT->current.io.OGR->dvalue[col];
 			switch (GMT->common.a.col[col]) {

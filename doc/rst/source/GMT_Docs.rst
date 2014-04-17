@@ -810,6 +810,11 @@ with a warning under compatibility mode:
    option is deprecated; use **-N**\ *tcol* instead as we automatically
    determine the number of columns in the file.
 
+*  :doc:`gmt2kml`: The **-L** option no longer expects column numbers,
+   just the column names.  This allows the extra columns to contain text
+   strings but means users have to supply the data columns in the order
+   specified by **-L**.
+
 *  :doc:`gmtconvert`: **-F** is
    deprecated; use common option **-o** instead.
 
@@ -1648,7 +1653,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdfilter`      | Filter 2-D gridded data sets in the space domain                    |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Plotting of 1-D and 2-D Data*                                      |
+|                       | **Plotting of 1-D and 2-D Data**                                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdcontour`     | Contouring of 2-D gridded data sets                                 |
 +-----------------------+---------------------------------------------------------------------+
@@ -1686,7 +1691,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psxyz`          | Plot symbols, polygons, and lines in 3-D                            |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Gridding of Data Tables*                                           |
+|                       | **Gridding of Data Tables**                                         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`greenspline`    | Interpolation with Green's functions for splines in 1--3 D          |
 +-----------------------+---------------------------------------------------------------------+
@@ -1698,7 +1703,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`triangulate`    | Perform optimal Delauney triangulation and gridding                 |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Sampling of 1-D and 2-D Data*                                      |
+|                       | **Sampling of 1-D and 2-D Data**                                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtsimplify`    | Line reduction using the Douglas-Peucker algorithm                  |
 +-----------------------+---------------------------------------------------------------------+
@@ -1708,7 +1713,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sample1d`       | Resampling of 1-D table data sets                                   |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Projection and Map-transformation*                                 |
+|                       | **Projection and Map-transformation**                               |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdproject`     | Project gridded data sets onto a new coordinate system              |
 +-----------------------+---------------------------------------------------------------------+
@@ -1716,7 +1721,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`project`        | Project table data onto lines or great circles                      |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Retrieve Information*                                              |
+|                       | **Retrieve Information**                                            |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtdefaults`    | List the current default settings                                   |
 +-----------------------+---------------------------------------------------------------------+
@@ -1728,7 +1733,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdinfo`        | Get information about grid files                                    |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Mathematical Operations on Tables or Grids*                        |
+|                       | **Mathematical Operations on Tables or Grids**                      |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtmath`        | Mathematical operations on table data                               |
 +-----------------------+---------------------------------------------------------------------+
@@ -1742,7 +1747,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sphtriangulate` | Delaunay or Voronoi construction of spherical lon,lat data          |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Convert or Extract Subsets of Data*                                |
+|                       | **Convert or Extract Subsets of Data**                              |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtconnect`     | Connect segments into more complete lines or polygons               |
 +-----------------------+---------------------------------------------------------------------+
@@ -1770,7 +1775,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`xyz2grd`        | Convert an equidistant table *xyz* file to a 2-D grid file          |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Determine Trends in 1-D and 2-D Data*                              |
+|                       | **Determine Trends in 1-D and 2-D Data**                            |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`fitcircle`      | Finds the best-fitting great or small circle for a set of points    |
 +-----------------------+---------------------------------------------------------------------+
@@ -1780,7 +1785,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`trend2d`        | Fits polynomial trends to :math:`z = f(x,y)` series                 |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Other Operations on 2-D Grids*                                     |
+|                       | **Other Operations on 2-D Grids**                                   |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2cpt`        | Make color palette table from a grid files                          |
 +-----------------------+---------------------------------------------------------------------+
@@ -1802,7 +1807,7 @@ summary of the standard command line options and a breakdown of the
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdvolume`      | Calculate volumes under a surface within specified contour          |
 +-----------------------+---------------------------------------------------------------------+
-|                       | *Miscellaneous Tools*                                               |
+|                       | **Miscellaneous Tools**                                             |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmt2kml`        | Like :doc:`psxy` but plots KML for use in Google Earth              |
 +-----------------------+---------------------------------------------------------------------+

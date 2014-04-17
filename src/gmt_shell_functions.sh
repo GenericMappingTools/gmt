@@ -37,16 +37,24 @@ gmt_abort() {
 }
 
 #	Return integer total number of lines in the file(s)
+gmt_get_nrecords() {
+	cat $* | wc -l | awk '{print $1}'
+}
+#	Same with backwards compatible name...
 gmt_nrecords() {
 	cat $* | wc -l | awk '{print $1}'
 }
 
 #	Return integer total number of data records in the file(s)
-gmt_ndatarecords() {
+gmt_get_ndatarecords() {
 	cat $* | egrep -v '^>|^#' | wc -l | awk '{print $1}'
 }
 
 #	Returns the number of fields or arguments
+gmt_get_nfields() {
+	echo $* | awk '{print NF}'
+}
+#	Same with backwards compatible name...
 gmt_nfields() {
 	echo $* | awk '{print NF}'
 }
@@ -69,17 +77,24 @@ gmt_get_gridregion() {
 }
 
 #	Return the current map width (expects -R and -J settings)
+gmt_get_map_width() {
+	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $5}'
+}
+#	Same with backwards compatible name...
 gmt_map_width() {
 	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $5}'
 }
 
 #	Return the current map height (expects -R and -J settings)
+gmt_get_map_height() {
+	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $7}' | cut -f1 -d' '
+}
+#	ame with backwards compatible name...
 gmt_map_height() {
 	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $7}' | cut -f1 -d' '
 }
 
 # Make output PostScript file name based on script base name
-
 gmt_set_psfile() {
 	echo `basename $1 '.sh'`.ps
 }
