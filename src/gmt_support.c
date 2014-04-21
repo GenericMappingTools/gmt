@@ -9315,6 +9315,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				 	if (OP[k+1] == '=') s->operator = 'G';	/* Let >= be called operator G */
 					break;
 				case '=':	/* Equal [Default] */
+					if (OP[k+1] != '=') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Please use == to indicate equality operator\n");
 					if (GMT_is_dnan (s->const_val[0])) s->operator = 'E';	/* Let var == NaN be called operator E (equals NaN) */
 					break;
 			}
