@@ -847,6 +847,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%s.pdf %s",
 			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, Ctrl->F.file, all_names_in);
 
+		GMT_Report (API, GMT_MSG_DEBUG, "\nRunning: %s\n", cmd2);
 		sys_retval = system (cmd2);		/* Execute the GhostScript command */
 		if (sys_retval) {
 			GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd2, sys_retval);
@@ -919,7 +920,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Find HiResBoundingBox ");
 			sprintf (BB_file, "%s/ps2raster_%dc.bb", Ctrl->D.dir, (int)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
-			sprintf (cmd, "%s%s %s %s%s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, alpha_bits(Ctrl), psfile_to_use, BB_file);
+			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
+			GMT_Report (API, GMT_MSG_DEBUG, "\nRunning: %s\n", cmd);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
@@ -950,6 +952,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 							device_options[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
+						GMT_Report (API, GMT_MSG_DEBUG, "\nRunning: %s\n", cmd);
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
 						if (Ctrl->S.active)
 							GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
@@ -1339,6 +1342,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 
 			/* Execute the GhostScript command */
+			GMT_Report (API, GMT_MSG_DEBUG, "\nRunning: %s\n", cmd);
 			sys_retval = system (cmd);
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
@@ -1383,6 +1387,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				if (Ctrl->S.active)	/* Print 2nd GhostScript command */
 					GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 				/* Execute the 2nd GhostScript command */
+				GMT_Report (API, GMT_MSG_DEBUG, "\nRunning: %s\n", cmd);
 				sys_retval = system (cmd);
 				if (sys_retval) {
 					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
@@ -1474,6 +1479,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 						proj4_cmd, quiet, out_file, world_file);
 #endif
 				free(proj4_cmd);
+				GMT_Report (API, GMT_MSG_DEBUG, "\nRunning: %s\n", cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "\nThe gdal_translate command: \n%s\n", cmd);
 				if (sys_retval) {
