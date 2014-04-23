@@ -421,10 +421,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 
 		/* Get information about x variable */
 		gmt_nc_get_units (GMT, ncid, ids[header->xy_dim[0]], header->x_units);
-		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) gmt_nc_check_step (GMT, header->nx, xy, header->x_units, header->name);
+		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy)))
+			gmt_nc_check_step (GMT, header->nx, xy, header->x_units, header->name);
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?  GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
+			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ? GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
 		}
 		else if (!j) {
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
@@ -439,7 +440,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 
 		/* Get information about y variable */
 		gmt_nc_get_units (GMT, ncid, ids[header->xy_dim[1]], header->y_units);
-		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[1]], xy))) gmt_nc_check_step (GMT, header->ny, xy, header->y_units, header->name);
+		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[1]], xy)))
+			gmt_nc_check_step (GMT, header->ny, xy, header->y_units, header->name);
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy))
 			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
 		else if (!j)
@@ -507,14 +509,19 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		}
 
 #ifdef NC4_DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->wesn: %g %g %g %g\n", header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->row_order: %s\n", header->row_order == k_nc_start_south ? "S->N" : "N->S");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->wesn: %g %g %g %g\n",
+	            header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->row_order: %s\n",
+	            header->row_order == k_nc_start_south ? "S->N" : "N->S");
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->nx: %3d   head->ny:%3d\n", header->nx, header->ny);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->t-index %d,%d,%d\n", header->t_index[0], header->t_index[1], header->t_index[2]);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n", header->BC[XLO], header->BC[XHI], header->BC[YLO], header->BC[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->t-index %d,%d,%d\n",
+	            header->t_index[0], header->t_index[1], header->t_index[2]);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", 
+	            header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n",
+	            header->BC[XLO], header->BC[XHI], header->BC[YLO], header->BC[YHI]);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->grdtype:%u %u\n", header->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
 #endif
 	}
@@ -559,26 +566,30 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmt_nc_put_units (ncid, z_id, header->z_units);
-		if (header->z_scale_factor != 1.0) {
+
+		if (header->z_scale_factor != 1.0)
 			GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
-		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "scale_factor");
-		if (header->z_add_offset != 0.0) {
+
+		if (header->z_add_offset != 0.0)
 			GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1U, &header->z_add_offset));
-		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "add_offset");
-		if (job == 'u' && header->is_netcdf4 && nc_vers[0] == 4 && nc_vers[1] <= 3) {
-			/* netCDF-4 libs of versions <= 4.3 have a bug and crash when
-			 * rewriting the _FillValue attribute in netCDF-4 files */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: netCDF libraries < 4.3 cannot alter the _FillValue attribute in netCDF-4 files.\n");
+
+		if (z_type != NC_FLOAT && z_type != NC_DOUBLE)
+			header->nan_value = rintf (header->nan_value); /* round to integer */
+		if (job == 'u' && header->is_netcdf4) {
+			/* netCDF-4 has a bug and crash when * rewriting the _FillValue attribute in netCDF-4 files
+			   https://bugtracking.unidata.ucar.edu/browse/NCF-187 
+			   To work-around it we implement the renaming trick advised on NCF-133
+			*/
+			GMT_err_trap (nc_rename_att (ncid, z_id, "_FillValue", "_fillValue")); 
+			GMT_err_trap (nc_put_att_float (ncid, z_id, "_fillValue", z_type, 1U, &header->nan_value));
+			GMT_err_trap (nc_rename_att (ncid, z_id, "_fillValue", "_FillValue")); 
 		}
-		else {
-			if (z_type != NC_FLOAT && z_type != NC_DOUBLE)
-				header->nan_value = rintf (header->nan_value); /* round to integer */
+		else
 			GMT_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
-		}
 
 		/* Limits need to be stored in actual, not internal grid, units */
 		if (header->z_min <= header->z_max) {
