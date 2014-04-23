@@ -113,7 +113,7 @@ new title in the header. We accomplish this by
 
    ::
 
-    gmt grdedit data.nc -R-60/-50/10/30 -D/////"Gravity Anomalies"
+    gmt grdedit data.nc -R-60/-50/10/30 -D//////"Gravity Anomalies"
 
 The grid world.nc has the limits 0/360/-72/72. To shift the data so that
 the limits would be -180/180/-72/72, use
