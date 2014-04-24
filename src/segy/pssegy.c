@@ -27,7 +27,7 @@
  *		2.2 7/30/2010 Ported to GMT 5 P. Wessel (global variables removed)
  *
  * This program is free software and may be copied or redistributed under the terms
- * of the GNU public license.
+ * of the GNU LGPL license.
  */
 
 #define THIS_MODULE_NAME	"pssegy"
