@@ -30,7 +30,7 @@
  *		2.2 7/30/2010 Ported to GMT 5 P. Wessel (global variables removed)
  *
  * This program is free software and may be copied, modified or redistributed
- * under the terms of the GNU public license, see http://www.gnu.org
+ * under the terms of the GNU LGPL license, see http://www.gnu.org
  */
 
 #define THIS_MODULE_NAME	"pssegyz"

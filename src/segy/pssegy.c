@@ -27,7 +27,7 @@
  *		2.2 7/30/2010 Ported to GMT 5 P. Wessel (global variables removed)
  *
  * This program is free software and may be copied or redistributed under the terms
- * of the GNU public license.
+ * of the GNU LGPL license.
  */
 
 #define THIS_MODULE_NAME	"pssegy"
@@ -502,7 +502,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		if (fpi == NULL) fpi = stdin;
 	}
 
-	if ((fpt = fopen (Ctrl->T.file, "r")) == NULL) {
+	if (Ctrl->T.active && (fpt = fopen (Ctrl->T.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find trace list file %s\n", Ctrl->T.file);
 		Return (EXIT_FAILURE);
 	}
