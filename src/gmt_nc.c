@@ -518,7 +518,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->t-index %d,%d,%d\n",
 	            header->t_index[0], header->t_index[1], header->t_index[2]);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", 
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n",
 	            header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n",
 	            header->BC[XLO], header->BC[XHI], header->BC[YLO], header->BC[YHI]);
@@ -567,13 +567,15 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmt_nc_put_units (ncid, z_id, header->z_units);
 
-		if (header->z_scale_factor != 1.0)
+		if (header->z_scale_factor != 1.0) {
 			GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
+		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "scale_factor");
 
-		if (header->z_add_offset != 0.0)
+		if (header->z_add_offset != 0.0) {
 			GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1U, &header->z_add_offset));
+		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "add_offset");
 
@@ -581,15 +583,16 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 			header->nan_value = rintf (header->nan_value); /* round to integer */
 		if (job == 'u' && header->is_netcdf4) {
 			/* netCDF-4 has a bug and crash when * rewriting the _FillValue attribute in netCDF-4 files
-			   https://bugtracking.unidata.ucar.edu/browse/NCF-187 
+			   https://bugtracking.unidata.ucar.edu/browse/NCF-187
 			   To work-around it we implement the renaming trick advised on NCF-133
 			*/
-			GMT_err_trap (nc_rename_att (ncid, z_id, "_FillValue", "_fillValue")); 
+			GMT_err_trap (nc_rename_att (ncid, z_id, "_FillValue", "_fillValue"));
 			GMT_err_trap (nc_put_att_float (ncid, z_id, "_fillValue", z_type, 1U, &header->nan_value));
-			GMT_err_trap (nc_rename_att (ncid, z_id, "_fillValue", "_FillValue")); 
+			GMT_err_trap (nc_rename_att (ncid, z_id, "_fillValue", "_FillValue"));
 		}
-		else
+		else {
 			GMT_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+		}
 
 		/* Limits need to be stored in actual, not internal grid, units */
 		if (header->z_min <= header->z_max) {
