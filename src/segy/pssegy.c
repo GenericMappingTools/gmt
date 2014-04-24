@@ -502,7 +502,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		if (fpi == NULL) fpi = stdin;
 	}
 
-	if ((fpt = fopen (Ctrl->T.file, "r")) == NULL) {
+	if (Ctrl->T.active && (fpt = fopen (Ctrl->T.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find trace list file %s\n", Ctrl->T.file);
 		Return (EXIT_FAILURE);
 	}
