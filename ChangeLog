@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-04-24	pwessel
+	* grdcut.c:		Needed to extend -Z to also consider -Zr so that -Zn
+				would return a NaN-free subset.
+
 2014-04-02	pwessel
 	* spotter/backtracker.c:	Merge -e with -E to simplify operations and to
 				disallow lower-case options other than for GMT common options.

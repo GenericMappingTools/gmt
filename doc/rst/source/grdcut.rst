@@ -18,7 +18,7 @@ Synopsis
 [ **-N**\ [*nodata*] ]
 [ **-S**\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ [**n**]\ *min/max*] ]
+[ **-Z**\ [**n**\ |\ **r**]\ *min/max*] ]
 [ |SYN_OPT-f| ]
 
 |No-spaces|
@@ -62,12 +62,14 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-Z**\ [**n**\ ]\ *min/max*]
+**-Z**\ [**n**\ |\ **r**]\ *min/max*]
     Determine the new rectangular region so that all nodes outside this
     region are also outside the given *z*-range [-inf/+inf]. To indicate
     no limit on min or max, specify a hyphen (-). Normally, any NaNs
     encountered are simply skipped. Use **-Zn** to consider a NaN to be
-    outside the *z*-range. 
+    outside the *z*-range so resulting grid is NaN-free, or **-Zr** to
+    consider NaNs to be within the data range [Default simply skips NaNs
+    when making the range decision.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
