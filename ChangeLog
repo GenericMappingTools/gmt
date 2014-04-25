@@ -2,9 +2,15 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
-2014-04-07	pwessel
-	* grdfilter.c:		Added new filter -Fh<width>/<binwidth>[+c][+l][+u] to perform
-				histogram mode filtering.
+2014-04-24	pwessel
+	* grdcut.c:		Needed to extend -Z to also consider -Zr so that -Zn
+				would return a NaN-free subset.
+
+2014-04-02	pwessel
+	* spotter/backtracker.c:	Merge -e with -E to simplify operations and to
+				disallow lower-case options other than for GMT common options.
+				Backwards compatible for now but this will cease in 5.2.x
+	* spotter/grdrotator.c:	---"---
 
 2014-04-05	pwessel
 	* xyz2grd.c:		Replaced -N<nodata> with common option -di<nodata>, but
