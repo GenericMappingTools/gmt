@@ -1,4 +1,4 @@
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
+**-R**\ [*unit*]\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
     *west*, *east*, *south*, and *north* specify the region of interest,
     and you may specify them in decimal degrees or in
     [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
