@@ -362,7 +362,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		if ((retval = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
 		stage = retval;
 		if (debug && row == d_row && col == d_col) {
-			fprintf (stderr, "In: grd_x[col] = %g grd_y[row] = %g grd_yc[row] = %g\n", grd_x[col], grd_y[row], grd_yc[row]);
+			fprintf (stderr, "In: grd_x[col] = %g grd_y[row] = %g grd_yc[row] = %g age = %g\n", grd_x[col], grd_y[row], grd_yc[row], age);
 		}
 		switch (Ctrl->S.mode) {
 			case PM_RATE:	/* Compute plate motion speed at this point in time/space */
