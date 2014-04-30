@@ -42,9 +42,6 @@
 #define PM_LAT		6
 #define PM_DIST		7
 
-bool debug = false;
-unsigned int d_col, d_row;
-
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct In {
@@ -214,11 +211,6 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 				Ctrl->T.active = true;
 				Ctrl->T.value = atof (opt->arg);
 				break;
-			case 'D':
-				debug = true;
-				sscanf (opt->arg, "%u/%u", &d_row, &d_col);
-				fprintf (stderr, "Got r = %u and c = %u\n", d_row, d_col);
-				break;
 				
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -361,9 +353,6 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		if (GMT_is_dnan (age)) continue;	/* No crustal age */
 		if ((retval = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
 		stage = retval;
-		if (debug && row == d_row && col == d_col) {
-			fprintf (stderr, "In: grd_x[col] = %g grd_y[row] = %g grd_yc[row] = %g age = %g\n", grd_x[col], grd_y[row], grd_yc[row], age);
-		}
 		switch (Ctrl->S.mode) {
 			case PM_RATE:	/* Compute plate motion speed at this point in time/space */
 				d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat);
@@ -396,9 +385,6 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
 				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = lon * R2D;
-				if (debug && row == d_row && col == d_col) {
-					fprintf (stderr, "Out: value = %g\n", value);
-				}
 				break;
 			case PM_DIST:	/* Compute distance between node and point of origin at ridge */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
