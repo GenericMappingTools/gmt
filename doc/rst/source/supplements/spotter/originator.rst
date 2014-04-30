@@ -149,6 +149,8 @@ Optional Arguments
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 
+.. include:: ../../explain_geodetic.rst_
+
 Examples
 --------
 

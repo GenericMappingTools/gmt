@@ -1,0 +1,11 @@
+`Geodetic versus Geocentric Coordiinates <#toc11>`_
+---------------------------------------------------
+
+All spherical rotations are applied to geocentric coordinates.
+This means that incoming data points and grids are considered
+to represent geodetic coordinates and must first
+be converted to geocentric coordinates. Rotations are then applied, and the
+final reconstructed points are converted back to geodetic
+coordinates.  This default behavior can be bypassed if the
+ellipsoid setting :ref:`PROJ_ELLIPSOID <Projection Parameters>`
+is changed to Sphere.

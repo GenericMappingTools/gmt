@@ -171,7 +171,7 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n)
 	switch (n) {
 		case CLIP_STEXT:
 			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
-			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
+			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
 			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed straight text\n");
 			break;
 		case CLIP_CTEXT:
