@@ -318,9 +318,9 @@ int PSL_plottextpath_ (double x[], double y[], int *n, int node[], double *fonts
 	return (PSL_plottextpath (PSL_FORTRAN, x, y, *n, node, *fontsize, label, *m, angle, *justify, offset, *mode));
 }
 
-int PSL_plottextclip_ (double x[], double y[], int *m, double *fontsize, char *label[], double angle[], int *justify, double offset[], int *mode, int len)
+int PSL_plottextclip_ (double x[], double y[], int *m, double *fontsize, char *label[], double angle[], double size[], int fnt[], int *justify, double offset[], int *mode, int len)
 {
-	return (PSL_plottextclip (PSL_FORTRAN, x, y, *m, *fontsize, label, angle, *justify, offset, *mode));
+	return (PSL_plottextclip (PSL_FORTRAN, x, y, *m, *fontsize, label, angle, size, fnt, *justify, offset, *mode));
 }
 
 int PSL_setorigin_ (double *x, double *y, double *angle, int *mode)

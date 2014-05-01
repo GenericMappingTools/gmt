@@ -3571,7 +3571,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		if (G->curved_text)
 			PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, form);
 		else
-			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, form | 1);
+			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, NULL, NULL, 0, NULL, form | 1);
 		return;
 	}
 
@@ -3637,14 +3637,14 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 			}
 			/* Note this uses the last segments pen/fontrgb on behalf of all */
 			GMT_textpath_init (GMT, &L->pen, G->rgb, &G->pen, L->rgb);
-			PSL_plottextclip (PSL, xt, yt, (int)m, G->font_label.size, txt, angle, just, G->clearance, form);	/* This turns clipping ON */
+			PSL_plottextclip (PSL, xt, yt, (int)m, G->font_label.size, txt, angle, NULL, NULL, just, G->clearance, form);	/* This turns clipping ON */
 			GMT_free (GMT, angle);
 			GMT_free (GMT, xt);
 			GMT_free (GMT, yt);
 			GMT_free (GMT, txt);
 		}
 		else {	/* 2nd time called, just pass form with the 3rd bit set */
-			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, form | 8);	/* Now place the text using PSL variables already declared */
+			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, NULL, NULL, 0, NULL, form | 8);	/* Now place the text using PSL variables already declared */
 		}
 	}
 }
@@ -3659,7 +3659,7 @@ void gmt_contlabel_clippath (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 
 	if (mode == 0) {	/* Turn OFF Clipping and bail */
 		PSL_comment (PSL, "Turn label clipping off:\n");
-		PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 2);	/* This turns clipping OFF if it was ON in the first place */
+		PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, NULL, NULL, 0, NULL, 2);	/* This turns clipping OFF if it was ON in the first place */
 		return;
 	}
 
@@ -3698,7 +3698,7 @@ void gmt_contlabel_clippath (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 		/* Note this uses the last segments pen/fontrgb on behalf of all */
 		GMT_textpath_init (GMT, &L->pen, G->rgb, &G->pen, L->rgb);
 		form = (G->box & 4) ? 16 : 0;
-		PSL_plottextclip (PSL, xt, yt, (int)m, G->font_label.size, txt, angle, just, G->clearance, form);	/* This turns clipping ON */
+		PSL_plottextclip (PSL, xt, yt, (int)m, G->font_label.size, txt, angle, NULL, NULL, just, G->clearance, form);	/* This turns clipping ON */
 		G->box |= 8;	/* Special message to just repeate the PSL call as variables have been defined */
 		GMT_free (GMT, angle);
 		GMT_free (GMT, xt);
