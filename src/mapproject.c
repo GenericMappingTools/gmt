@@ -795,7 +795,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 				
 			}
 			else {	/* Simply copy other columns and output */
-				if (!GMT_get_cols (GMT, GMT_OUT)) {
+				if (n_output == 0) {
 					GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN));
 					n_output = GMT_get_cols (GMT, GMT_OUT);
 				}
@@ -918,7 +918,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				}
 				else {	/* Simply copy other columns and output */
-					if (!GMT_get_cols (GMT, GMT_OUT)) {
+					if (n_output == 0) {
 						GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN) + 1 + 2 * Ctrl->L.active);
 						n_output = GMT_get_cols (GMT, GMT_OUT);
 					}
@@ -961,7 +961,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				}
 				else {	/* Simply copy other columns and output */
-					if (!GMT_get_cols (GMT, GMT_OUT)) {
+					if (n_output == 0) {
 						GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN));
 						n_output = GMT_get_cols (GMT, GMT_OUT);
 					}

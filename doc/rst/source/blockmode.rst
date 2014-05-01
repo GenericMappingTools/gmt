@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ **-C** ]
-[ **-D**\ [*width*]\ [**+c**][**+l**\ \|\ **+h** ]
+[ **-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
 [ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**i**\ \|\ **o**] ]
@@ -68,11 +68,11 @@ Optional Arguments
     Use the center of the block as the output location [Default uses the
     modal xy location (but see **-Q**)]. **-C** overrides **-Q**.
 
-**-D**\ [*width*]\ [**+c**][**+l**\ \|\ **+h**]
+**-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
     Perform unweighted mode calculation via histogram binning, using the
     specified histogram *width*. Append **+c** to center bins so that
     their mid point is a multiple of *width* [uncentered].
-    If multiple modes are found for a block we return the average mode.
+    If multiple modes are found for a block we return the average mode [**+a**].
     Append **+l** or **+h** to return the low of high mode instead, respectively.
     If *width* is not given it will default to 1 provided your data set only
     contains integers. Also, for integer data and integer bin *width* we

@@ -38,12 +38,6 @@
 
 #define GMT_PROG_OPTIONS "-:>RVabfghior" GMT_OPT("FH")
 
-enum Blockmode_mode {
-	BLOCKMODE_LOW  = -1,
-	BLOCKMODE_AVE  = 0,
-	BLOCKMODE_HIGH = +1
-};
-
 struct BIN_MODE_INFO {	/* Used for histogram binning */
 	double width;		/* The binning width used */
 	double i_offset;	/* 0.5 if we are to bin using the center the bins on multiples of width, else 0.0 */
@@ -70,7 +64,7 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Compute modes via binning using <width>; append +c to center bins. If there are multiple\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   modes we return the average mode; append +l or +h to pick the low or high mode instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   modes we return the average mode [+a]; append +l or +h to pick the low or high mode instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be combined with -E and implicitly sets -Q.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If your data are integers and <width> is not given we default to -D1+c+l\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default computes the mode as the Least Median of Squares (LMS) estimate].\n");
@@ -123,6 +117,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 					while ((GMT_strtok (c, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'c': Ctrl->D.center = true; break;	/* Center the histogram */
+							case 'a': Ctrl->D.mode = BLOCKMODE_AVE; break;	/* Pick average mode */
 							case 'l': Ctrl->D.mode = BLOCKMODE_LOW; break;	/* Pick low mode */
 							case 'h': Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
 							default:	/* Bad modifier */
@@ -195,6 +190,7 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	 * spatial bins */
 
 	struct BIN_MODE_INFO *B = GMT_memory (GMT, NULL, 1, struct BIN_MODE_INFO);
+	char *mode = "lah";
 
 	if (is_integer) {	/* Special consideration for integers */
 		double d_intval;
@@ -204,11 +200,14 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 		}
 		d_intval = (double)lrint (width);
 		if (doubleAlmostEqual (d_intval, width)) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "For integer data and integer width we automatically select centered bins and lowest mode\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "For integer data and integer width we automatically select centered bins\n");
 			center = true;
-			mode_choice = BLOCKMODE_LOW;
+			if (mode_choice == BLOCKMODE_DEF) {
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "For integer data and integer width we automatically select lowest mode\n");
+				mode_choice = BLOCKMODE_LOW;
+			}
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Effective mode option is -D%g+c+l\n", width);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Effective mode option is -D%g+c+%c\n", width, mode[mode_choice+1]);
 	}
 	B->i_offset = (center) ? 0.5 : 0.0;
 	B->o_offset = (center) ? 0.0 : 0.5;
@@ -218,7 +217,7 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	B->max = irint (ceil  ((d[n-1].a[k] * B->i_width) + B->i_offset));
 	B->n_bins = B->max - B->min + 1;
 	B->count = GMT_memory (GMT, NULL, B->n_bins, double);
-	B->mode_choice = mode_choice;
+	B->mode_choice = (mode_choice == BLOCKMODE_DEF) ? BLOCKMODE_AVE : mode_choice;
 	
 	return (B);
 }
