@@ -111,7 +111,7 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 .. include:: ../../explain_grdresample2.rst_
 
-.. include:: ../../explain_geodetic.rst_
+.. include:: explain_geodetic.rst_
 
 Examples
 --------
