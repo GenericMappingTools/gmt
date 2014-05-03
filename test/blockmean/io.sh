@@ -16,7 +16,7 @@ cat << EOF > ascii_i.txt
 1.33	1.8	2	1.33	1.8	20	18 	21
 0.65	0.7	1	0.65	0.7	10	7 	11
 EOF
-gmt gmtconvert ascii_i.txt -bod > bin_i.b
+gmt gmtconvert ascii_i.txt -bo8d > bin_i.b
 
 # 2. do basic gmt blockmean ascii/bin i/o with no -i/-o
 gmt blockmean -R0/5/0/5 -I1 -r ascii_i.txt > ascii_o.txt
@@ -25,7 +25,7 @@ gmt gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = io_answer.txt
 
 # 3. Same as 2, but with selecting cols 3-5 via -i
 gmt blockmean -R0/5/0/5 -I1 -r ascii_i.txt -i3-5 > ascii_o.txt
-gmt blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -i3-5 -bod | gmt gmtconvert -bi3d > bin_o.txt
+gmt blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -i3-5 -bo3d | gmt gmtconvert -bi3d > bin_o.txt
 gmt gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = >> io_answer.txt
 
 # 4. Same 2-3, but just output cols 2,0 via -o

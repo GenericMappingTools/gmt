@@ -123,6 +123,15 @@ static char *blk_name[BLK_N_ITEMS] =
 };
 #endif
 
+#if defined(BLOCKMODE)	/* Only used by blockmode */
+enum Blockmode_mode {
+	BLOCKMODE_DEF  = -2,
+	BLOCKMODE_LOW  = -1,
+	BLOCKMODE_AVE  = 0,
+	BLOCKMODE_HIGH = +1
+};
+#endif
+
 #if defined(BLOCKMEAN)	/* Only used by blockmean */
 enum GMT_enum_blks {BLK_Z	= 0,
 	BLK_W		= 1,
@@ -164,6 +173,9 @@ void * NEW_BLK (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control
 	C = GMT_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
+#if defined(BLOCKMODE)	/* Only used by blockmode */
+	C->D.mode = BLOCKMODE_LOW;
+#endif
 #if defined(BLOCKMEDIAN)	/* Initialize default to 0.5, i.e., the median */
 	C->T.quantile = 0.5;
 #endif
