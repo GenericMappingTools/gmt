@@ -3262,25 +3262,18 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 #endif
 	/* Regular macro symbol */
 
-	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes */
+	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes outside the gsave/grestore around each symbol */
 		symbol->text = false;	/* Only do this once */	
 		s = symbol->first;	/* Start at first item */
 		while (s) {		/* Examine all items for possible text */
 			if (s->action == GMT_SYMBOL_TEXT || s->action == GMT_SYMBOL_VARTEXT) {	/* Text item found */
-				if ((c = strchr (s->string, '%')) && !(c[1] == 'X' || c[1] == 'Y') && GMT_compat_check (GMT, 4)) {	/* Gave font name or number, too, using GMT 4 style */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in macro l: <string>[%%<font>] is deprecated syntax, use +f<font> instead\n");
-					*c = 0;		/* Replace % with the end of string NUL indicator */
-					c++;		/* Go to next character */
-					if (GMT_getfont (GMT, c, &font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
-					(void) GMT_setfont (GMT, &font);
-				}
 				gmt_format_symbol_string (GMT, s, size, type, start, user_text);
 				if (s->p[0] < 0.0)	/* Fixed point size for text */
-					font.size = -s->p[0];
+					s->font.size = -s->p[0];
 				else	/* Fractional size that depends on symbol size */
-					font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
+					s->font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
 				/* Set PS macro for fetching this font and size */
-				gmt_encodefont (PSL, font.id, font.size, symbol->name, id++);
+				gmt_encodefont (PSL, s->font.id, s->font.size, symbol->name, id++);
 			}
 			s = s->next;
 		}
@@ -3475,6 +3468,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					PSL_setcolor (PSL, f->rgb, PSL_IS_FILL);
 				else
 					PSL_setfill (PSL, GMT->session.no_rgb, this_outline);
+				GMT_setfont (GMT, &s->font);
 				PSL_command (PSL, "PSL_symbol_%s_setfont_%d\n", symbol->name, id++);
 				PSL_plottext (PSL, x, y, font.size, user_text, 0.0, s->justify, this_outline);
 				break;

@@ -9426,8 +9426,8 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				if ((c = strchr (s->string, '$')) && isdigit (c[1])) {	/* Got a text string containing one or more variables */
 					s->action = GMT_SYMBOL_VARTEXT;
 				}
-				s->font = GMT->current.setting.font_annot[0];
-				s->justify = PSL_MC;
+				s->font = GMT->current.setting.font_annot[0];	/* Default font for symbols */
+				s->justify = PSL_MC;				/* Default justification of text */
 				head->text = true;
 				k = 1;
 				while (col[last][k] && col[last][k] != '+') k++;
@@ -9448,6 +9448,14 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 						}
 					}
 				}
+				/* Fit in GMT 4 compatibility mode we must check for obsolete %font suffix in the text */
+				if (GMT_compat_check (GMT, 4) && (c = strchr (s->string, '%')) && !(c[1] == 'X' || c[1] == 'Y')) {	/* Gave font name or number, too, using GMT 4 style */
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in macro l: <string>[%%<font>] is deprecated syntax, use +f<font> instead\n");
+					*c = 0;		/* Replace % with the end of string NUL indicator */
+					c++;		/* Go to next character */
+					if (GMT_getfont (GMT, c, &s->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
+				}
+				
 				break;
 
 			case 'r':		/* Draw rect symbol */
