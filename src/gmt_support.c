@@ -9416,9 +9416,11 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				s->p[0] = atof (col[2]);
 				break;
 
-			case 'l':		/* Draw letter/text symbol */
-				if (last != 4) error++;
-				s->p[0] = atof (col[2]);
+			case 'l':		/* Draw letter/text symbol [ expect x, y, size, string l]*/
+				if (last != 4) error++;	/* Did not get the expected arguments */
+				s->p[0] = atof (col[2]);	/* Text size is either (1) fixed point size of (2) fractional size relative to the 1x1 box */
+				if (col[2][strlen(col[2])-1] == 'p')	/* Gave font size as a fixed point size that will not scale with symbol size */
+					s->p[0] = -s->p[0];	/* Mark fixed size via a negative point size */
 				s->string = GMT_memory (GMT, NULL, strlen (col[3]) + 1, char);
 				strcpy (s->string, col[3]);
 				if ((c = strchr (s->string, '$')) && isdigit (c[1])) {	/* Got a text string containing one or more variables */
@@ -9426,6 +9428,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				}
 				s->font = GMT->current.setting.font_annot[0];
 				s->justify = PSL_MC;
+				head->text = true;
 				k = 1;
 				while (col[last][k] && col[last][k] != '+') k++;
 				if (col[last][k]) {	/* Gave modifiers */
@@ -9433,13 +9436,13 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 					char p[GMT_BUFSIZ];
 					while ((GMT_strtok (&col[last][k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 						switch (p[0]) {
-							case 'f':	/* Change font */
+							case 'f':	/* Change font [Note: font size is ignore as the size argument take precedent] */
 								if (GMT_getfont (GMT, &p[1], &s->font))
-									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "macro code l contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, s->font));
+									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Macro code l contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, s->font));
 								break;
 							case 'j':	s->justify = GMT_just_decode (GMT, &p[1], 12);	break;	/* text justification */
 							default:
-								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error option -Sl: Bad modifier +%c\n", p[0]);
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Macro code l contains bad modifier +%c\n", p[0]);
 								error++;
 								break;
 						}

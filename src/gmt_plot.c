@@ -3145,7 +3145,20 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
 
 void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], unsigned int *type, unsigned int start, char *text)
-{	/* Returns the [possibly reformatted] string to use for the letter macro */
+{	/* Returns the [possibly reformatted] string to use for the letter macro.
+ 	 * These are the things that can happen:
+	 * 1. Action is GMT_SYMBOL_TEXT means we have a static fixed text string; just copy
+	 * 2, Gave $<n> only, where <n> indicates which of the variables is a string.  Then we
+	 *    try to get the remaining text from the input and use that as the text.
+	 * 3. We have a format statement that contains free-form text with interspersed
+	 *    special formatting commands.  These have the syntax
+	 *    %X  Add longitude or x using chosen default format.
+	 *    %Y  Add latitude or y using chosen default format.
+	 *    $<n>[+X|Y|T]  Format the numerical variable $<n>; if
+	 *      followed by +X|Y|T we format as lon, lat, or time,
+	 *      else we use FORMAT_FLOAT_OUT.
+	 * Limitation: Currently, $<n> expects <n< to be 0-9 only.
+	 */
 	unsigned int n;
 	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text */
 		strcpy (text, s->string);
@@ -3153,7 +3166,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 		unsigned int want_col, col, pos;
 		/* Tricky, how do we know which column in the input goes with this variable $n, i.e. how is n related to record col?.  Then,
 		   we must scan the GMT->io.current.current_record for the col'th item and strcpy that into text.  The reason n -> col is
-		   tricky is while we may now this is the 3rd extra variable, we dont know if -C<cpt< was used or if this is psxyz, no? */
+		   tricky is while we may know this is the 3rd extra variable, we dont know if -C<cpt< was used or if this is psxyz, no? */
 		want_col = start + n;
 		for (col = pos = 0; col <= want_col; col++) GMT_strtok (GMT->current.io.current_record, " \t,", &pos, text);
 	}
@@ -3175,7 +3188,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 						text[out++] = s->string[in];
 					break;
 				case '$':	/* Possibly a variable $n */
-					if (isdigit (s->string[in+1])) {	/* Yes it was */
+					if (isdigit (s->string[in+1])) {	/* Yes, it was */
 						n = (s->string[in+1] - '0');
 						n_skip = 1;
 						if (s->string[in+2] == '+' && strchr ("TXY", s->string[in+3])) {	/* Specific formatting requested */
@@ -3201,10 +3214,26 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 	}
 }
 
+void gmt_encodefont (struct PSL_CTRL *PSL, int font_no, double size, char *name, unsigned int id)
+{	/* Create the custom symbol macro that selects the correct font and size for the symbol item */
+	
+	bool encode = (PSL->init.encoding && !PSL->internal.font[font_no].encoded);
+
+	if (PSL->internal.comments) PSL_command (PSL, "%% Set font encoding and size for this custom symbol %s item %d\n", name, id);
+	PSL_command (PSL, "/PSL_symbol_%s_setfont_%d {", name, id);
+	if (encode) {	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
+		PSL_command (PSL, " PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);
+		PSL->internal.font[font_no].encoded = true;
+	}
+	PSL_command (PSL, " %d F%d } def\n", psl_ip (PSL, size), font_no);
+}
+
+#define GMT_N_COND_LEVELS	10	/* Number of max nesting level for conditionals */
+
 int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
 {
-	unsigned int na, i, level = 0, start, *type = NULL;
-	bool flush = false, this_outline = false, found_elseif = false, skip[11];
+	unsigned int na, i, id = 0, level = 0, start = 0, *type = NULL;
+	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
@@ -3233,6 +3262,30 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 #endif
 	/* Regular macro symbol */
 
+	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes */
+		symbol->text = false;	/* Only do this once */	
+		s = symbol->first;	/* Start at first item */
+		while (s) {		/* Examine all items for possible text */
+			if (s->action == GMT_SYMBOL_TEXT || s->action == GMT_SYMBOL_VARTEXT) {	/* Text item found */
+				if ((c = strchr (s->string, '%')) && !(c[1] == 'X' || c[1] == 'Y') && GMT_compat_check (GMT, 4)) {	/* Gave font name or number, too, using GMT 4 style */
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in macro l: <string>[%%<font>] is deprecated syntax, use +f<font> instead\n");
+					*c = 0;		/* Replace % with the end of string NUL indicator */
+					c++;		/* Go to next character */
+					if (GMT_getfont (GMT, c, &font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
+					(void) GMT_setfont (GMT, &font);
+				}
+				gmt_format_symbol_string (GMT, s, size, type, start, user_text);
+				if (s->p[0] < 0.0)	/* Fixed point size for text */
+					font.size = -s->p[0];
+				else	/* Fractional size that depends on symbol size */
+					font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
+				/* Set PS macro for fetching this font and size */
+				gmt_encodefont (PSL, font.id, font.size, symbol->name, id++);
+			}
+			s = s->next;
+		}
+	}
+	
 	/* We encapsulate symbol with gsave and translate origin to (x0, y0) first */
 	PSL_command (PSL, "V ");
 	PSL_setorigin (PSL, x0, y0, 0.0, PSL_FWD);
@@ -3241,14 +3294,15 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	start = symbol->start;	/* Link to top level head info */
 	
 	s = symbol->first;
+	id = 0;
 	while (s) {
 		if (s->conditional > 1) {	/* Process if/elseif/else and } by updating level and skip array, then go to next item */
 			if (s->conditional == 2) {	/* Beginning of if branch. If we are inside an earlier branch whose test false then all is false */
 				skip[level+1] = (level > 0 && skip[level]) ? true : gmt_custum_failed_bool_test (GMT, s, size), level++;
 				found_elseif = !skip[level];
 			}
-			if (level == 10) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Symbol macro (%s) logical nesting too deep [> 10]\n", symbol->name);
+			if (level == GMT_N_COND_LEVELS) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			if (s->conditional == 4) level--, found_elseif = false;	/* Simply reduce indent */
@@ -3410,21 +3464,18 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				p = (s->pen)  ? s->pen  : current_pen;
 				this_outline = (p && p->rgb[0] == -1) ? false : outline;
 				if (this_outline) GMT_setpen (GMT, p);
-				if ((c = strchr (s->string, '%')) && !(c[1] == 'X' || c[1] == 'Y') && GMT_compat_check (GMT, 4)) {	/* Gave font name or number, too */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in macro l: <string>[%<font>] is deprecated syntax\n");
-					*c = 0;		/* Replace % with the end of string NUL indicator */
-					c++;		/* Go to next character */
-					if (GMT_getfont (GMT, c, &font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad font (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
-					(void) GMT_setfont (GMT, &font);
-				}
 				gmt_format_symbol_string (GMT, s, size, type, start, user_text);
-				font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
+				if (s->p[0] < 0.0)	/* Fixed point size */
+					font.size = -s->p[0];
+				else	/* Fractional size */
+					font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
 				if (f && this_outline)
 					GMT_setfill (GMT, f, this_outline);
 				else if (f)
 					PSL_setcolor (PSL, f->rgb, PSL_IS_FILL);
 				else
 					PSL_setfill (PSL, GMT->session.no_rgb, this_outline);
+				PSL_command (PSL, "PSL_symbol_%s_setfont_%d\n", symbol->name, id++);
 				PSL_plottext (PSL, x, y, font.size, user_text, 0.0, s->justify, this_outline);
 				break;
 
