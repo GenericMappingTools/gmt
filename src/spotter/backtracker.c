@@ -620,7 +620,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
-			GMT_free (GMT, c);
+			if (c) GMT_free (GMT, c);
 		}
 		else {	/* Just return the projected locations */
 			if (Ctrl->W.active) {	/* Asked for confidence ellipses on reconstructed points */

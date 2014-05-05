@@ -1,9 +1,9 @@
-**-^**
+**-^** or just **-**
     Print a short message about the syntax of the command, then exits (NOTE: on Windows use just **-**).
-**+**
+**-+** or just **+**
     Print an extensive usage (help) message, including the explanation of
     any module-specific option (but not the GMT common options), then exits.
-**-?**
+**-?** or no arguments
     Print a complete usage (help) message, including the explanation of
     options, then exits.
 **-**\ **-version**

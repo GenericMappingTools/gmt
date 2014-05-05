@@ -724,9 +724,9 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 		case '.':	/* Trailer message */
 
-			GMT_message (GMT, "\t-^ Print short synopsis message.\n");
-			GMT_message (GMT, "\t+ Print longer synopsis message.\n");
-			GMT_message (GMT, "\t-? Print this usage message\n");
+			GMT_message (GMT, "\t-^ (or -) Print short synopsis message.\n");
+			GMT_message (GMT, "\t-+ (or +) Print longer synopsis message.\n");
+			GMT_message (GMT, "\t-? (or no arguments) Print this usage message\n");
 			GMT_message (GMT, "\t(See gmt.conf man page for GMT default parameters).\n");
 			break;
 

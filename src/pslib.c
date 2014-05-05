@@ -3127,7 +3127,7 @@ void psl_get_uppercase (char *new_c, char *old_c)
 
 int psl_encodefont (struct PSL_CTRL *PSL, int font_no)
 {
-	if (PSL->init.encoding == 0) return (PSL_NO_ERROR);		/* Already have StandardEncoding by default */
+	if (PSL->init.encoding == NULL) return (PSL_NO_ERROR);		/* Already have StandardEncoding by default */
 	if (PSL->internal.font[font_no].encoded) return (PSL_NO_ERROR);	/* Already reencoded or should not be reencoded ever */
 
 	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */

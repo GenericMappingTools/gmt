@@ -8589,12 +8589,18 @@ unless you append the modifiers **+X** (longitude via :ref:`FORMAT_GEO_MAP <FORM
 **+Y** (latitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`), or **+T** (calendar time via
 :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.
 
-Text alignment and font
-~~~~~~~~~~~~~~~~~~~~~~~
+Text alignment and font attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Like the **Sl** symbol in :doc:`psxy`, you can change the current
-font by appending to **l** the modifier **+f**\ *font* and the text justification
-by appending the modifier **+j**\ *justify*.
+font by appending to **l** the modifier **+f**\ *font* [FONT_ANNOT_PRIMARY] and change the text justification
+by appending the modifier **+j**\ *justify* [CM]. Note: Here, the *font* specification
+will only be considered for the font type and not its size (which is set separately by your *size*
+argument) or color and outline (which are set separately by **-G** and **-W** arguments).
+Finally, there are two ways to specify the font size.  If a fixed font size is given in points
+(e.g,, 12p) then the text will be set at that size regardless of the symbol size specified in **-S**.
+Without the trailing **p** we interpret the size as a relative size in the 0-1 range and the actual
+font size will then scale with the symbol size, just like other symbol items.
 
 Conditional statements
 ~~~~~~~~~~~~~~~~~~~~~~

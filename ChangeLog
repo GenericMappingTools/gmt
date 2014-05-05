@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-05-04	pwessel
+	* gmt_plot.c:		Fix treatment of text and font attributes in custom symbols
+	* gmt_support.c:	---"---.  This addresses issue # 553.
+
 2014-04-24	pwessel
 	* grdcut.c:		Needed to extend -Z to also consider -Zr so that -Zn
 				would return a NaN-free subset.
