@@ -164,6 +164,8 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 			first_char = 0, option = GMT_OPT_OUTFILE, arg++;
 		else if (args[arg][0] == '+' && !args[arg][1] && n_args == 1)	/* extended synopsis + */
 			first_char = 1, option = GMT_OPT_USAGE, G->common.synopsis.extended = true;
+		else if (args[arg][0] == '-' && args[arg][1] == '+' && !args[arg][2] && n_args == 1)	/* extended synopsis + */
+			first_char = 1, option = GMT_OPT_USAGE, G->common.synopsis.extended = true;
 		else if (args[arg][0] != '-')	/* Probably a file (could also be a gmt/grdmath OPERATOR or number, to be handled later by GMT_Make_Option) */
 			first_char = 0, option = GMT_OPT_INFILE;
 		else if (!args[arg][1])	/* Found the special synopsis option "-" */
