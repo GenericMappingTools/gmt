@@ -171,13 +171,13 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n)
 	switch (n) {
 		case CLIP_STEXT:
 			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
-			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed straight text\n");
+			//PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level\n");
 			break;
 		case CLIP_CTEXT:
 			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
-			PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed curved text\n");
+			//PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level\n");
 			break;
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */

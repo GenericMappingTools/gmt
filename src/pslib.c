@@ -1966,13 +1966,11 @@ int PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], int n, int n
 	return (PSL_NO_ERROR);
 }
 
-int PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], int m, double fontsize, char *label[], double angle[], double size[], int fnt[], int justify, double offset[], int mode)
+int PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], int m, double fontsize, char *label[], double angle[], int justify, double offset[], int mode)
 {
 	/* x,y		Array containing the locations where labels will go
 	 * m		Number of labels
 	 * angle	Text angle for each label
-	 * size		Text size for each label [or NULL if constant given by fontsize]
-	 * fnt		Text font id for each label [or NULL if constant and alreadyset]
 	 * label	Array of text labels
 	 * fontsize	fontsize of label text
 	 * offset	Gaps between text and textbox
@@ -2020,8 +2018,6 @@ int PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], int m, doubl
 	psl_defunits_array (PSL, "PSL_txt_x", x, m);
 	psl_defunits_array (PSL, "PSL_txt_y", y, m);
 	psl_set_real_array (PSL, "PSL_angle", angle, m);
-	if (size) psl_set_real_array (PSL, "PSL_fnt_size", size, m);
-	if (fnt) psl_set_int_array (PSL, "PSL_fnt_id", fnt, m);
 	psl_set_txt_array (PSL, "PSL_str", label, m);
 	PSL_definteger (PSL, "PSL_just", justify);
 	PSL_defunits (PSL, "PSL_gap_x", offset[0]);

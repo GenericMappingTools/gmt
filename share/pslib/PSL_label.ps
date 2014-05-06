@@ -487,44 +487,58 @@ end
 {
   /BoxH PSL_height PSL_gap_y 2 mul add def	% Height of current label space including clearance
   /DelY BoxH BoxH 0 3 array astore def		% Offsets in y from LL
+  /y0 0 PSL_justy add PSL_gap_y sub def		% (x0,y0) is the rotated and adjusted text LL point relative to xp,yp
   0 1 PSL_m1					% Loop over all labels
   { /k exch def					% Current label index
     /xp PSL_txt_x k get def
     /yp PSL_txt_y k get def			% Get text placement point
     /MAT PSL_angle k get matrix R def		% Rotate the coordinate system to follow baseline text
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def	% Width of current label space including clearance
-    /x0 0 BoxW PSL_justx mul add def		% (x0,y0) is the rotated and adjusted text LL point relative to xp,yp
-    /y0 0 PSL_justy add PSL_gap_y sub def
+    /W PSL_str k get stringwidth pop def	% Width of current label
+    /BoxW W PSL_gap_x 2 mul add def		% Width of current label space including clearance
+    /x0 0 W PSL_justx mul add PSL_gap_x sub def	% (x0,y0) is the rotated and adjusted text LL point relative to xp,yp
     /DelX 0 BoxW BoxW 3 array astore def	% Offsets in x from LL
     x0 y0 MAT transform
     /dy exch def /dx exch def
     xp dx add yp dy add M			% Start new clippath segment
     0 1 2
-    { % Visit all 5 points and append to clippath
+    { % Visit all points clockwise and append to clippath
       /ii exch def
       x0 DelX ii get add y0 DelY ii get add MAT transform
       /dy exch def /dx exch def
       xp dx add yp dy add L			% Start new clippath segment
-    } for P
+    } for
+    P						% Close the clippath segment
   } for
 } def
 
 /PSL_ST_clippath_round	% Create and lay down rounded rectangular clip path
 {
-  /PSL_justy2 PSL_just 4 idiv 2 div neg def
-  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def	% Smallest gap distance
+  /PSL_justy2 PSL_just 4 idiv 2 div neg def	% This is 0, -0.5, or 1
+  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def	% Smallest gap distance is our corner radius
   /BoxH PSL_height PSL_gap_y 2 mul add def	% Height of current label space including clearance
-  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
+  /y0 PSL_justy def				% (x0,y0) is the rotated and adjusted text LL point on inside rectangle relative to xp,yp
+  /xd PSL_gap_x BoxR sub def 			% When x_gap exceeds y_gap there will be an adjustment in x, else 0
+  /yd PSL_gap_y BoxR sub def 			% When y_gap exceeds x_gap there will be an adjustment in y, else 0
+  /H2 PSL_height yd 2 mul add def		% Inner height when adjusting for any yd offset
+  /xL PSL_gap_x neg def				% Left-most x coordinate of text box
+  /yB PSL_gap_y neg def				% Bottom y coordinate of text box
+  /yT BoxH yB add def				% Top y coordinate of text box
   0 1 PSL_m1					% Loop over all labels
   { /k exch def					% Current label index
     /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def			% Get text placement point
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def	% Width of current label space including clearance
-    /x0 BoxW PSL_justx mul def			% (x0,y0) is the rotated and adjusted text LL point on inside rectangle relative to xp,yp
+    /yp PSL_txt_y k get def			% Get text placement point (xp, yp)
+    /W PSL_str k get stringwidth pop def	% Width of current label space
+    /BoxW W PSL_gap_x 2 mul add def		% Width of current label space including clearance
+    /W2 W xd 2 mul add def			% Inner width when adjusting for any xd offset
+    /xR xL BoxW add def				% Right-most x coordinate of text box
+    /x0 W PSL_justx mul def			% (x0,y0) is the rotated and adjusted text LL point on inside rectangle relative to xp,yp
     xp yp T PSL_angle k get R x0 y0 T		% Rotate the coordinate system to follow baseline text
-    BoxR 0 M					% Start rounded box
-    BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct P
-    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T	% Unto trans/rots
+    xL yd M					% Start of rounded box is on lower left side just before rounded corner
+    xL yB xR yB BoxR arct W2 0 D		% Draw LL rounded corner and line to start of LR rounded corner
+    xR yB xR yT BoxR arct 0 H2 D		% Draw LR rounded corner and line to UR rounded corner
+    xR yT xL yT BoxR arct W2 neg 0 D		% Draw UR rounded corner and line to UL rounded corner
+    xL yT xL yB BoxR arct P			% Draw UL rounded corner and close the clippath segment
+    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T	% Unto trans/rot above
   } for
 } def
 

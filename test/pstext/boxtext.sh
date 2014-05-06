@@ -5,10 +5,13 @@
 # (upper): Plain text with textbox clip path, then red paint, then render text
 ps=boxtext.ps
 gmtset PS_COMMENTS true
-pstext -R0/6/0/4 -Jx1i -Ba1 -P -Dj0.5i/0.5i -F+f32p+jLB -Gyellow -W0.25p,green  -K -C1c << EOF > $ps
+pstext -R0/6/0/4 -Jx1i -Ba1 -P -Dj0.5i/0.5i -F+f32p+jLB -Gyellow -W0.25p,green -TO -K -C1c << EOF > $ps
 2	2	TEXT
 EOF
-pstext -R0/6/0/4 -Jx1i -Ba1 -O -K -Dj0.5i/0.5i -F+f32p+jLB -Y5i -Gc -C1c << EOF >> $ps
+pstext -R0/6/0/4 -Jx1i -Ba1 -O -K -Dj0.5i/0.5i -F+f32p+jLB -Y5i -C1c -TO -W0.25p,green << EOF >> $ps
+2	2	TEXT
+EOF
+pstext -R -J -O -K -Dj0.5i/0.5i -F+f32p+jLB -Gc -C1c -TO << EOF >> $ps
 2	2	TEXT
 EOF
 psxy -R -J -O -K -Sri -Gred << EOF >> $ps
