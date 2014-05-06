@@ -134,7 +134,7 @@ Optional Arguments
 **-M**
     Force a monochrome graybar using the (television) YIQ transformation.
 
-**-N**\ [**p**\ \|\ *dpi* ]
+**-N**\ [**p**\ \|\ *dpi*]
     Controls how the color scale is represented by the PostScript language.
     To preferentially draw color rectangles (e.g., for discrete colors), append **p**.
     Otherwise we will preferentially draw images (e.g., for continuous colors).
