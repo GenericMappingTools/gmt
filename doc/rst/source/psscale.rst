@@ -55,7 +55,7 @@ If a label is requested, it is plotted with :ref:`FONT_LABEL <FONT_LABEL>`.
 Required Arguments
 ------------------
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*length*/*width*\ [**h**] [/*justify*]\ [/*dx*/*dy*]
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*length*/*width*\ [**h**][/*justify*]\ [/*dx*/*dy*]
     Defines the *anchor* position *x0*/*y0* of the color scale using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
@@ -144,7 +144,7 @@ Optional Arguments
 **-M**
     Force a monochrome graybar using the (television) YIQ transformation.
 
-**-N**\ [**p**\ \|\ *dpi* ]
+**-N**\ [**p**\ \|\ *dpi*]
     Controls how the color scale is represented by the PostScript language.
     To preferentially draw color rectangles (e.g., for discrete colors), append **p**.
     Otherwise we will preferentially draw images (e.g., for continuous colors).

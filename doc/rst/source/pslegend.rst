@@ -41,7 +41,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 `Required Arguments <#toc4>`_
 -----------------------------
 
-**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *anchor*/*width*\ [/*height*]\ [/*justify*]\ [/*dx*/*dy*]
+**-D**\ [**j**\ \|\ **g**\ \|\ **n**\ \|\ **x**]\ *anchor*/*width*\ [/*height*]\ [/*justify*]\ [/*dx*/*dy*]
     Defines the *anchor* position *x0*/*y0* of the legend using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
@@ -64,7 +64,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **-C**\ *dx*/*dy*
     Sets the clearance between the legend frame and the internal items
     [4\ **p**/4\ **p**].
-**-F**\ [\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+**-F**\ [\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the legend using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the legend box [no fill]
