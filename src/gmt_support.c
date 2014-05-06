@@ -9220,12 +9220,12 @@ int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify)
 }
 
 int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
-	unsigned int k, nc = 0, error = 0;
+	unsigned int k, nc = 0, nv, error = 0;
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true;
 	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], var[8] = {""}, OP[8] = {""}, constant[GMT_LEN64] = {""};
-	char *fill_p = NULL, *pen_p = NULL, *c = NULL;
+	char arg[2][GMT_LEN64], *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
@@ -9314,6 +9314,15 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 			s->var = atoi (&var[1]);				/* Get the i in $i, i.e., if $1 then return 1 since $0 is used for symbol scale */
 			for (k = 0; constant[k]; k++) if (constant[k] == ':') constant[k] = ' ';	/* Remove any colon in case constant has two range values */
 			sscanf (constant, "%lf %lf", &s->const_val[0], &s->const_val[1]);	/* Get one [or two] constants */
+			nv = sscanf (constant, "%s %s", &arg[0], &arg[1]);	/* Get one [or two] constants or variables */
+			for (k = 0; k < nv; k++) {
+				if (arg[k][0] == '$') {	/* Comparison value is also a variable */
+					s->is_var[k] = true;
+					s->cmp_var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
+				}
+				else
+					s->const_val[k] = atof (arg[k]);	/* A constant */
+			}
 			k = 0;
 			if (OP[0] == '!') s->negate = true, k = 1;	/* Reverse any test that follows */
 			s->operator = OP[k];	/* Use a 1-char code for operator (<, =, >, etc.); modify below where ambiguous */

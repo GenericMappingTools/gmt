@@ -3078,6 +3078,10 @@ void GMT_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen)
 	PSL_setcolor (GMT->PSL, pen->rgb, PSL_IS_STROKE);
 }
 
+/* Use inline function gmt_get_const_or_var to return either the constant or the variable k (0 or 1) used in the comparison with size[s->var] */
+
+static inline double gmt_get_const_or_var (struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], unsigned int k) { return ((s->is_var[k]) ? size[s->cmp_var[k]] : s->const_val[k]); }
+
 bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[])
 {
 	bool result;
@@ -3085,34 +3089,34 @@ bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL
 	
 	switch (s->operator) {
 		case '<':	/* < */
-			result = (size[s->var] < s->const_val[0]);
+			result = (size[s->var] < gmt_get_const_or_var (s, size, 0));
 			break;
 		case 'L':	/* <= */
-			result = (size[s->var] <= s->const_val[0]);
+			result = (size[s->var] <= gmt_get_const_or_var (s, size, 0));
 			break;
 		case '=':	/* == */
-			result = (size[s->var] == s->const_val[0]);
+			result = (size[s->var] == gmt_get_const_or_var (s, size, 0));
 			break;
 		case 'G':	/* >= */
-			result = (size[s->var] >= s->const_val[0]);
+			result = (size[s->var] >= gmt_get_const_or_var (s, size, 0));
 			break;
 		case '>':	/* > */
-			result = (size[s->var] > s->const_val[0]);
+			result = (size[s->var] > gmt_get_const_or_var (s, size, 0));
 			break;
 		case '%':	/* % */
-			result = (!GMT_IS_ZERO (fmod (size[s->var], s->const_val[0])));
+			result = (!GMT_IS_ZERO (fmod (size[s->var], gmt_get_const_or_var (s, size, 0))));
 			break;
 		case 'I':	/* [] inclusive range */
-			result = (size[s->var] >= s->const_val[0] && size[s->var] <= s->const_val[1]);
+			result = (size[s->var] >= gmt_get_const_or_var (s, size, 0) && size[s->var] <= gmt_get_const_or_var (s, size, 1));
 			break;
 		case 'i':	/* <> exclusive range */
-			result = (size[s->var] > s->const_val[0] && size[s->var] < s->const_val[1]);
+			result = (size[s->var] > gmt_get_const_or_var (s, size, 0) && size[s->var] < gmt_get_const_or_var (s, size, 1));
 			break;
 		case 'l':	/* [> in/ex-clusive range */
-			result = (size[s->var] >= s->const_val[0] && size[s->var] < s->const_val[1]);
+			result = (size[s->var] >= gmt_get_const_or_var (s, size, 0) && size[s->var] < gmt_get_const_or_var (s, size, 1));
 			break;
 		case 'r':	/* <] ex/in-clusive range */
-			result = (size[s->var] > s->const_val[0] && size[s->var] <= s->const_val[1]);
+			result = (size[s->var] > gmt_get_const_or_var (s, size, 0) && size[s->var] <= gmt_get_const_or_var (s, size, 1));
 			break;
 		case 'E':	/* var == NaN */
 			result = GMT_is_dnan (size[s->var]);

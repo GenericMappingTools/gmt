@@ -37,10 +37,10 @@
 
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3], const_val[2];
-	int action, operator, var;
+	int action, operator, var, cmp_var[2];
 	unsigned int conditional;
 	unsigned int justify;	/* For macro code l text justification [PSL_MC] */
-	bool negate;
+	bool negate, is_var[2];
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
 	struct GMT_CUSTOM_SYMBOL_ITEM *next;

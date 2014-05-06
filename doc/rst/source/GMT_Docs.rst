@@ -8615,37 +8615,42 @@ one) of many logical operators, as listed in Table :ref:`custop <tbl-custop>`.
 +----------------+----------------------------------------------------------+
 | **Operator**   | **Purpose**                                              |
 +================+==========================================================+
-| <              | Is *var* less than *constant*?                           |
+| <              | Is *var* less than *argument*?                           |
 +----------------+----------------------------------------------------------+
-| <=             | Is *var* less than or equal to *constant*?               |
+| <=             | Is *var* less than or equal to *argument*?               |
 +----------------+----------------------------------------------------------+
-| ==             | Is *var* equal to *constant*?                            |
+| ==             | Is *var* equal to *argument*?                            |
 +----------------+----------------------------------------------------------+
-| !=             | Is *var* not equal to *constant*?                        |
+| !=             | Is *var* not equal to *argument*?                        |
 +----------------+----------------------------------------------------------+
-| >=             | Is *var* greater than or equal to *constant*?            |
+| >=             | Is *var* greater than or equal to *argument*?            |
 +----------------+----------------------------------------------------------+
-| >              | Is *var* greater than *constant*?                        |
+| >              | Is *var* greater than *argument*?                        |
 +----------------+----------------------------------------------------------+
-| %              | Does *var* have a remainder with *constant*?             |
+| %              | Does *var* have a remainder with *argument*?             |
 +----------------+----------------------------------------------------------+
-| !%             | Is *var* an exact multiple of *constant*?                |
+| !%             | Is *var* an exact multiple of *argument*?                |
 +----------------+----------------------------------------------------------+
-| <>             | Is *var* within the exclusive range of *constant*?       |
+| <>             | Is *var* within the exclusive range of *argument*?       |
 +----------------+----------------------------------------------------------+
-| []             | Is *var* within the inclusive range of *constant*?       |
+| []             | Is *var* within the inclusive range of *argument*?       |
 +----------------+----------------------------------------------------------+
-| <]             | Is *var* within the in/ex-clusive range of *constant*?   |
+| <]             | Is *var* within the in/ex-clusive range of *argument*?   |
 +----------------+----------------------------------------------------------+
-| [>             | Is *var* within the ex/in-clusive range of *constant*?   |
+| [>             | Is *var* within the ex/in-clusive range of *argument*?   |
 +----------------+----------------------------------------------------------+
+
+Above, *var* always refers to one of your variable arguments (e.g., $1, $2)
+while *argument) is either a constant or one of your other variables.  In
+the case of the range arguments they are two colon-separated constants or
+variables (e.g., 10:50, $2:60, $3:$4, etc.).
 
 Simple conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 The simple if-test uses a one-line format, defined as
 
-    **if** *var OP constant* **then** *command*
+    **if** *var OP argument* **then** *command*
 
 where *var* must be one of the symbol parameters, specified as $1, $2,
 $3, etc. You must document what these additional parameters control. For
@@ -8666,15 +8671,20 @@ reversing the logic for the second copy, e.g.,
      if $1 <= 10 then 0 0 0.5 c -Gblue
 
 or you may instead consider the complete conditional construct below.
+Using a comparison between variables is similarly straightforward:
+
+::
+
+     if $2 > $3 then 0.2 0.3 0.4 c -Ggreen
 
 Complete conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The complete conditional test uses a multi-line format, such as
 
-| **if** *var* *OP constant* **then** {
+| **if** *var* *OP argument* **then** {
 |  <one or more lines with commands>
-| } **elseif** *var OP constant* **then** {
+| } **elseif** *var OP argument* **then** {
 |  <one or more lines with commands>
 | } **else** {
 |  <one or more lines with commands>

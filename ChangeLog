@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-05-06	pwessel
+	* gmt_support.c:	Added support for both variables and constants in the
+				conditional tests used for custom symbols; see issue # 554.
+	* gmt_plot.c:		---"---
+
 2014-05-04	pwessel
 	* gmt_plot.c:		Fix treatment of text and font attributes in custom symbols
 	* gmt_support.c:	---"---.  This addresses issue # 553.
@@ -28,7 +33,7 @@
 				the given file (or stdout).
 
 2014-04-03	pwessel
-	* gmt_init.c:		Added new common GMT option -d[i|o\<nodata>], which can be
+	* gmt_init.c:		Added new common GMT option -d[i|o]<nodata>, which can be
 				used anywhere to convert users <nodata> values to NaN, and to do
 				the reverse on output.
 
