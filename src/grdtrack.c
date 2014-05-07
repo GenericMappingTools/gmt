@@ -677,10 +677,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		GMT_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);
 		if (Ctrl->G.n_grids == 1) {
 			GMT_grd_minmax (GMT, GC[0].G, xyz);
-			Din->table[0] = GMT_make_profile (GMT, 'Q', Ctrl->E.lines, true, false, false, Ctrl->E.step, GMT_TRACK_FILL, xyz);
+			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, GMT_TRACK_FILL, xyz);
 		}
 		else
-			Din->table[0] = GMT_make_profile (GMT, 'Q', Ctrl->E.lines, true, false, false, Ctrl->E.step, GMT_TRACK_FILL, NULL);
+			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, GMT_TRACK_FILL, NULL);
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */
 	}
 	
