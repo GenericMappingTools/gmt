@@ -8615,29 +8615,29 @@ one) of many logical operators, as listed in Table :ref:`custop <tbl-custop>`.
 +----------------+----------------------------------------------------------+
 | **Operator**   | **Purpose**                                              |
 +================+==========================================================+
-| <              | Is *left* less than *right*?                           |
+| <              | Is *left* less than *right*?                             |
 +----------------+----------------------------------------------------------+
-| <=             | Is *left* less than or equal to *right*?               |
+| <=             | Is *left* less than or equal to *right*?                 |
 +----------------+----------------------------------------------------------+
-| ==             | Is *left* equal to *right*?                            |
+| ==             | Is *left* equal to *right*?                              |
 +----------------+----------------------------------------------------------+
-| !=             | Is *left* not equal to *right*?                        |
+| !=             | Is *left* not equal to *right*?                          |
 +----------------+----------------------------------------------------------+
-| >=             | Is *left* greater than or equal to *right*?            |
+| >=             | Is *left* greater than or equal to *right*?              |
 +----------------+----------------------------------------------------------+
-| >              | Is *left* greater than *right*?                        |
+| >              | Is *left* greater than *right*?                          |
 +----------------+----------------------------------------------------------+
-| %              | Does *left* have a remainder with *right*?             |
+| %              | Does *left* have a remainder with *right*?               |
 +----------------+----------------------------------------------------------+
-| !%             | Is *left* an exact multiple of *right*?                |
+| !%             | Is *left* an exact multiple of *right*?                  |
 +----------------+----------------------------------------------------------+
-| <>             | Is *left* within the exclusive range of *right*?       |
+| <>             | Is *left* within the exclusive range of *right*?         |
 +----------------+----------------------------------------------------------+
-| []             | Is *left* within the inclusive range of *right*?       |
+| []             | Is *left* within the inclusive range of *right*?         |
 +----------------+----------------------------------------------------------+
-| <]             | Is *left* within the in/ex-clusive range of *right*?   |
+| <]             | Is *left* within the in/ex-clusive range of *right*?     |
 +----------------+----------------------------------------------------------+
-| [>             | Is *left* within the ex/in-clusive range of *right*?   |
+| [>             | Is *left* within the ex/in-clusive range of *right*?     |
 +----------------+----------------------------------------------------------+
 
 Above, *left* refers to one of your variable arguments (e.g., $1, $2) or any constant (e.g. 45) on the left hand side of the operator.
