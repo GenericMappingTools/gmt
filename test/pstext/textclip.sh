@@ -18,5 +18,5 @@ gmt psxy -R -J -L -Gkhaki1 -W0.5p -O -K << EOF >> $ps
 3 9
 EOF
 
-gmt psclip -Cs -O >> $ps
+gmt psclip -C -O >> $ps
 

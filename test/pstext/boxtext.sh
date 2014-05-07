@@ -17,7 +17,7 @@ EOF
 psxy -R -J -O -K -Sri -Gred << EOF >> $ps
 3	2	6	4
 EOF
-psclip -R -J -Cs -O -K >> $ps
+psclip -R -J -C -O -K >> $ps
 #psbasemap -R -J -O -K -Bg1 >> $ps
 # Plot alignment lines to hightlight misalignment
 psxy -R0/6/0/9 -Jx1i -O -Y-5i -W0.5p,blue << EOF >> $ps

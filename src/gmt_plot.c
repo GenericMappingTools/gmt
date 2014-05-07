@@ -3781,11 +3781,11 @@ void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 	GMT_setfont (GMT, &G->font_label);
 	
 	if (G->transparent) {		/* Transparent boxes */
+		gmt_contlabel_plotlabels (GMT, PSL, G, 0);		/* Plot labels where they go first */
 		gmt_contlabel_clippath (GMT, PSL, G, 1);		/* Lays down clippath based on ALL labels */
 		gmt_contlabel_drawlines (GMT, PSL, G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
-		if (G->delay) return;						/* Leave clipping on and do not plot text yet - delayed until psclip -Cc|s */
+		if (G->delay) return;					/* Leave clipping on and do not plot text yet - delayed until psclip -C */
 		gmt_contlabel_clippath (GMT, PSL, G, 0);		/* Turn off label clipping */
-		gmt_contlabel_plotlabels (GMT, PSL, G, 0);		/* Now plot labels where they go directly */
 	}
 	else {	/* Opaque text boxes */
 		gmt_contlabel_drawlines (GMT, PSL, G, 0);

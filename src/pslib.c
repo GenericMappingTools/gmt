@@ -1916,7 +1916,7 @@ int PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], int n, int n
 
 	int i = 0, j, k;
 
-	if ((mode & 65) == 65) PSL->current.nclip++;
+	if ((mode & 65) == 65) PSL->current.nclip++;	/* Done laying data, now increment clip level */
 	if (mode & 8) {		/* If 8 bit is set we already have placed the info */
 		PSL_command (PSL, "%d PSL_curved_text_labels\n", mode);
 		return (PSL_NO_ERROR);
@@ -1945,13 +1945,11 @@ int PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], int n, int n
 	justify = abs (justify);
 
 	if (mode & 32) {	/* Do this only once */
-		PSL_definteger (PSL, "PSL_just", (int)justify);
-		PSL_defunits (PSL, "PSL_gap_x", offset[0]);
-		PSL_defunits (PSL, "PSL_gap_y", offset[1]);
-		/* if (justify > 1) { */	/* Only Lower Left (1) is already justified - all else must move */
-			PSL_deftextdim (PSL, "-H", fontsize, label[0]);			/* Get and set total string height */
-			PSL_command (PSL, "/PSL_height edef\n");
-		/* } */
+		PSL_definteger (PSL, "PSL_just", (int)justify);		/* Set text justification */
+		PSL_defunits (PSL, "PSL_gap_x", offset[0]);		/* Set text clearance in x direction */
+		PSL_defunits (PSL, "PSL_gap_y", offset[1]);		/* Set text clearance in y direction */
+		PSL_deftextdim (PSL, "-H", fontsize, label[0]);		/* Get total string height based on letter H */
+		PSL_command (PSL, "/PSL_height edef\n");		/* Set total string height */
 	}
 
 	/* Set these each time */
@@ -1974,23 +1972,18 @@ int PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], int m, doubl
 	 * label	Array of text labels
 	 * fontsize	fontsize of label text
 	 * offset	Gaps between text and textbox
-	 * just		Justification of text relative to label coordinates
-	 * mode		bits: 0 = lay down clip path, 1 = Just place text, 2 turn off clipping,
-	 *		8 = reuse pars, 16 = rounded box, 128 fill box, 256 draw box
+	 * just		Justification of text relative to label coordinates. If negative strip of leading/trailing spaces
+	 * mode		bits: 0 = lay down clip path, 1 = Place text first, 2 just turn off clipping,
+	 *		16 = rounded box [def is straight], Debug modes: 128 fill box, 256 draw box
 	 */
 
 	int i = 0, j, k;
 
 	if (mode & 2) {	/* Flag to terminate clipping */
-		return (PSL_endclipping (PSL, 1));	/* Decrease clipping by one level */
-	}
-	if (mode & 8) {		/* Flag to place text already defined in PSL arrays */
-		if (!(mode & (1+128+256))) PSL->current.nclip++;
-		PSL_command (PSL, "%d PSL_straight_text_labels\n", mode);
-		return (PSL_NO_ERROR);
+		return (PSL_endclipping (PSL, 1));	/* Decrease clip level by one */
 	}
 
-	/* Here mode == 0 (or 4) which means we plan to create labeltext clip paths (and paint them) */
+	/* Here mode 1st bit is 0 or 1 which means we plan to create text clip paths */
 
 	if (m <= 0) return (PSL_NO_ERROR);		/* Nothing to do yet */
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
@@ -2014,22 +2007,20 @@ int PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], int m, doubl
 	}
 	justify = abs (justify);
 
-	PSL_definteger (PSL, "PSL_m", m);
-	psl_defunits_array (PSL, "PSL_txt_x", x, m);
-	psl_defunits_array (PSL, "PSL_txt_y", y, m);
-	psl_set_real_array (PSL, "PSL_angle", angle, m);
-	psl_set_txt_array (PSL, "PSL_str", label, m);
-	PSL_definteger (PSL, "PSL_just", justify);
-	PSL_defunits (PSL, "PSL_gap_x", offset[0]);
-	PSL_defunits (PSL, "PSL_gap_y", offset[1]);
+	PSL_definteger (PSL, "PSL_m", m);			/* Set how many text strings */
+	psl_defunits_array (PSL, "PSL_txt_x", x, m);		/* x-coordinate of text anchor points */
+	psl_defunits_array (PSL, "PSL_txt_y", y, m);		/* y-coordinate of text anchor points */
+	psl_set_real_array (PSL, "PSL_angle", angle, m);	/* angle of text baseline with horizontal */
+	psl_set_txt_array (PSL, "PSL_str", label, m);		/* text strings */
+	PSL_definteger (PSL, "PSL_just", justify);		/* Justification of these texts */
+	PSL_defunits (PSL, "PSL_gap_x", offset[0]);		/* Clearance around text in x-direction */
+	PSL_defunits (PSL, "PSL_gap_y", offset[1]);		/* Clearance around text in y-direction */
+	PSL_deftextdim (PSL, "-H", fontsize, label[0]);		/* Get total string height based on letter H */
+	PSL_command (PSL, "/PSL_height edef\n");		/* Set total string height */
 
-	/* if (justify > 1) { */	/* Only Lower Left (1) is already justified - all else must move */
-		PSL_deftextdim (PSL, "-H", fontsize, label[0]);			/* Get and set total string height */
-		PSL_command (PSL, "/PSL_height edef\n");
-	/* } */
-
-	if (!(mode & (1+128+256))) PSL->current.nclip++;
+	if (mode & 1) PSL_command (PSL, "1 PSL_straight_text_labels\n");	/* Lay down text strings */
 	PSL_command (PSL, "%d PSL_straight_text_labels\n", mode);
+	PSL->current.nclip++;					/* Increment clip level counter */
 	return (PSL_NO_ERROR);
 }
 
