@@ -8615,45 +8615,44 @@ one) of many logical operators, as listed in Table :ref:`custop <tbl-custop>`.
 +----------------+----------------------------------------------------------+
 | **Operator**   | **Purpose**                                              |
 +================+==========================================================+
-| <              | Is *var* less than *argument*?                           |
+| <              | Is *left* less than *right*?                           |
 +----------------+----------------------------------------------------------+
-| <=             | Is *var* less than or equal to *argument*?               |
+| <=             | Is *left* less than or equal to *right*?               |
 +----------------+----------------------------------------------------------+
-| ==             | Is *var* equal to *argument*?                            |
+| ==             | Is *left* equal to *right*?                            |
 +----------------+----------------------------------------------------------+
-| !=             | Is *var* not equal to *argument*?                        |
+| !=             | Is *left* not equal to *right*?                        |
 +----------------+----------------------------------------------------------+
-| >=             | Is *var* greater than or equal to *argument*?            |
+| >=             | Is *left* greater than or equal to *right*?            |
 +----------------+----------------------------------------------------------+
-| >              | Is *var* greater than *argument*?                        |
+| >              | Is *left* greater than *right*?                        |
 +----------------+----------------------------------------------------------+
-| %              | Does *var* have a remainder with *argument*?             |
+| %              | Does *left* have a remainder with *right*?             |
 +----------------+----------------------------------------------------------+
-| !%             | Is *var* an exact multiple of *argument*?                |
+| !%             | Is *left* an exact multiple of *right*?                |
 +----------------+----------------------------------------------------------+
-| <>             | Is *var* within the exclusive range of *argument*?       |
+| <>             | Is *left* within the exclusive range of *right*?       |
 +----------------+----------------------------------------------------------+
-| []             | Is *var* within the inclusive range of *argument*?       |
+| []             | Is *left* within the inclusive range of *right*?       |
 +----------------+----------------------------------------------------------+
-| <]             | Is *var* within the in/ex-clusive range of *argument*?   |
+| <]             | Is *left* within the in/ex-clusive range of *right*?   |
 +----------------+----------------------------------------------------------+
-| [>             | Is *var* within the ex/in-clusive range of *argument*?   |
+| [>             | Is *left* within the ex/in-clusive range of *right*?   |
 +----------------+----------------------------------------------------------+
 
-Above, *var* always refers to one of your variable arguments (e.g., $1, $2)
-while *argument) is either a constant or one of your other variables.  In
-the case of the range arguments they are two colon-separated constants or
-variables (e.g., 10:50, $2:60, $3:$4, etc.).
+Above, *left* refers to one of your variable arguments (e.g., $1, $2) or any constant (e.g. 45) on the left hand side of the operator.
+On the right hand side of the operator *right* is either one of your other variables, or a constant, or a range indicated by
+two colon-separated constants or variables (e.g., 10:50, $2:60, $3:$4, etc.).
 
 Simple conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 The simple if-test uses a one-line format, defined as
 
-    **if** *var OP argument* **then** *command*
+    **if** *left* *OP* *right* **then** *command*
 
-where *var* must be one of the symbol parameters, specified as $1, $2,
-$3, etc. You must document what these additional parameters control. For
+where *left* must be one of the symbol parameters, specified as $1, $2,
+$3, etc., or a constant. You must document what these additional parameters control. For
 example, to plot a small cyan circle at (0.2, 0.3) with diameter 0.4
 only if $2 exceeds 45 you would write
 
@@ -8673,7 +8672,7 @@ reversing the logic for the second copy, e.g.,
 or you may instead consider the complete conditional construct below.
 Using a comparison between variables is similarly straightforward:
 
-::
+    ::
 
      if $2 > $3 then 0.2 0.3 0.4 c -Ggreen
 
@@ -8682,9 +8681,9 @@ Complete conditional test
 
 The complete conditional test uses a multi-line format, such as
 
-| **if** *var* *OP argument* **then** {
+| **if** *left* *OP *right* **then** {
 |  <one or more lines with commands>
-| } **elseif** *var OP argument* **then** {
+| } **elseif** *left* OP *right* **then** {
 |  <one or more lines with commands>
 | } **else** {
 |  <one or more lines with commands>

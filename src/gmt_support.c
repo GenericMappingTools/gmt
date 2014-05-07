@@ -9224,8 +9224,8 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true;
-	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], var[8] = {""}, OP[8] = {""}, constant[GMT_LEN64] = {""};
-	char arg[2][GMT_LEN64], *fill_p = NULL, *pen_p = NULL, *c = NULL;
+	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[8] = {""}, right[GMT_LEN64] = {""};
+	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
@@ -9304,21 +9304,19 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 
 		if (strstr (buffer, "if $")) {	/* Parse a logical if-test or elseif here */
 			if (strstr (buffer, "} elseif $")) {	/* Actually, it is an elseif-branch [skip { elseif]; nc -=3 means we count the cols only */
-				nc = sscanf (buffer, "%*s %*s %s %s %s %*s %s %s %s %s %s %s %s %s", var, OP, constant, col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]) - 3;
+				nc = sscanf (buffer, "%*s %*s %s %s %s %*s %s %s %s %s %s %s %s %s", arg[0], OP, right, col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]) - 3;
 				s->conditional = 8;	/* elseif test */
 			}
 			else {	/* Starting if-branch [skip if] */
-				nc = sscanf (buffer, "%*s %s %s %s %*s %s %s %s %s %s %s %s %s", var, OP, constant, col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]) - 3;
+				nc = sscanf (buffer, "%*s %s %s %s %*s %s %s %s %s %s %s %s %s", arg[0], OP, right, col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]) - 3;
 				s->conditional = (col[nc-1][0] == '{') ? 2 : 1;		/* If block (2) or single command (1) */
 			}
-			s->var = atoi (&var[1]);				/* Get the i in $i, i.e., if $1 then return 1 since $0 is used for symbol scale */
-			for (k = 0; constant[k]; k++) if (constant[k] == ':') constant[k] = ' ';	/* Remove any colon in case constant has two range values */
-			sscanf (constant, "%lf %lf", &s->const_val[0], &s->const_val[1]);	/* Get one [or two] constants */
-			nv = sscanf (constant, "%s %s", &arg[0], &arg[1]);	/* Get one [or two] constants or variables */
-			for (k = 0; k < nv; k++) {
-				if (arg[k][0] == '$') {	/* Comparison value is also a variable */
+			for (k = 0; right[k]; k++) if (right[k] == ':') right[k] = ' ';	/* Remove any colon in case right side has two range values */
+			nv = sscanf (right, "%s %s", arg[1], arg[2]);	/* Get one [or two] constants or variables on right hand side */
+			for (k = 0; k < nv + 1; k++) {
+				if (arg[k][0] == '$') {	/* Left or right hand side value is a variable */
 					s->is_var[k] = true;
-					s->cmp_var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
+					s->var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
 				}
 				else
 					s->const_val[k] = atof (arg[k]);	/* A constant */
@@ -9403,7 +9401,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				if (last != 1) error++;
 				k = (unsigned int)strlen (col[0]) - 1;	/* Index of last character */
 				if (col[0][0] == '$') {	/* Got a variable as angle */
-					s->var = atoi (&col[0][1]);
+					s->var[0] = atoi (&col[0][1]);
 					s->action = GMT_SYMBOL_VARROTATE;	/* Mark as a different rotate action */
 				}
 				else if (col[0][k] == 'a') {	/* Got a fixed azimuth */
@@ -9485,7 +9483,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 					c++;		/* Go to next character */
 					if (GMT_getfont (GMT, c, &s->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
 				}
-				
+
 				break;
 
 			case 'r':		/* Draw rect symbol */
@@ -10919,7 +10917,7 @@ void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
  	 * If geo is true we get point from wesn, else we get from projected coordinates */
 	int i, j;
 	double *box = (geo) ? GMT->common.R.wesn : GMT->current.proj.rect;
-	
+
 	i = justify % 4;	/* Split the 2-D justify code into x and y components */
 	j = justify / 4;
 	if (i == 1)
@@ -10960,7 +10958,7 @@ struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg) {
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, the_rest[GMT_LEN256] = {""};
 	static char *kind = "gjnx";	/* The 4 types of coordinates */
 	struct GMT_ANCHOR *A = NULL;
-	
+
 	switch (arg[0]) {
 		case 'n':	mode = GMT_ANCHOR_NORM;	break;	/* Normalized coordinates */
 		case 'g':	mode = GMT_ANCHOR_MAP;	break;	/* Map coordinates */
@@ -10975,7 +10973,7 @@ struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg) {
 	else {
 		if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) return NULL;	/* Not so good */
 	}
-	
+
 	if (mode == GMT_ANCHOR_NOTSET) {	/* Did not specify what anchor point mode to use, must determine it from args */
 		if (strchr (GMT_DIM_UNITS, txt_x[strlen(txt_x)-1]))		/* x position included a unit */
 			mode = GMT_ANCHOR_PLOT;
@@ -10991,12 +10989,12 @@ struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg) {
 		}
 	}
 	/* Here we know or have assumed the mode and can process coordinates accordingly */
-	
+
 	if (mode != GMT_ANCHOR_PLOT && GMT->common.J.active == false && GMT->common.R.active == false) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -D%c anchor coordinates require both -R -J to be specified\n", kind[mode]);
 		return NULL;
 	}
-	
+
 	/* Here we have something to return */
 	A = GMT_memory (GMT, NULL, 1, struct GMT_ANCHOR);
 	switch (mode) {
@@ -11056,4 +11054,4 @@ void GMT_set_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR *A) {
 	}
 	/* Now the anchor point is given in plot coordinates (inches) */
 	A->mode = GMT_ANCHOR_PLOT;
-}	
+}

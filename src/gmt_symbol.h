@@ -15,7 +15,7 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
- 
+
 /*
  * Miscellaneous definitions and structures related to:
  * 1. Compass symbols used by pscbasemap and pscoast
@@ -36,11 +36,11 @@
 #define VECTOR_HEAD_LENGTH	9.0
 
 struct GMT_CUSTOM_SYMBOL_ITEM {
-	double x, y, p[3], const_val[2];
-	int action, operator, var, cmp_var[2];
+	double x, y, p[3], const_val[3];
+	int action, operator, var[3];	/* var[0] refers to variable on left hand side of operator, var[1] and var[2] to the right hand */
 	unsigned int conditional;
 	unsigned int justify;	/* For macro code l text justification [PSL_MC] */
-	bool negate, is_var[2];
+	bool negate, is_var[3];
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
 	struct GMT_CUSTOM_SYMBOL_ITEM *next;
