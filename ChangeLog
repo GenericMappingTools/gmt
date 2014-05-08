@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-05-08	remko
+	* gmt_plot.c:		Fix bug in treatment of variable text introduced on 2014-05-04.
+				This addresses issue #554.
+
 2014-05-07	pwessel, remko
 	* gmt_support.c:	Added support for both variables and constants on both sides
 				of the operator in the conditional tests used for custom symbols;
@@ -16,12 +20,6 @@
 2014-04-24	pwessel
 	* grdcut.c:		Needed to extend -Z to also consider -Zr so that -Zn
 				would return a NaN-free subset.
-
-2014-04-02	pwessel
-	* spotter/backtracker.c:	Merge -e with -E to simplify operations and to
-				disallow lower-case options other than for GMT common options.
-				Backwards compatible for now but this will cease in 5.2.x
-	* spotter/grdrotator.c:	---"---
 
 2014-04-05	pwessel
 	* xyz2grd.c:		Replaced -N<nodata> with common option -di<nodata>, but
@@ -38,6 +36,12 @@
 	* gmt_init.c:		Added new common GMT option -d[i|o]<nodata>, which can be
 				used anywhere to convert users <nodata> values to NaN, and to do
 				the reverse on output.
+
+2014-04-02	pwessel
+	* spotter/backtracker.c:	Merge -e with -E to simplify operations and to
+				disallow lower-case options other than for GMT common options.
+				Backwards compatible for now but this will cease in 5.2.x
+	* spotter/grdrotator.c:	---"---
 
 2014-03-26	remko
 	* ps2raster.c:		Bug fix: -C should also apply when computing BoundingBox.
