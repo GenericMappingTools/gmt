@@ -3237,6 +3237,9 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 #endif
 	/* Regular macro symbol */
 
+	type = symbol->type;	/* Link to top level head info */
+	start = symbol->start;	/* Link to top level head info */
+
 	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes outside the gsave/grestore around each symbol */
 		symbol->text = false;	/* Only do this once */	
 		s = symbol->first;	/* Start at first item */
@@ -3258,8 +3261,6 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	PSL_command (PSL, "V ");
 	PSL_setorigin (PSL, x0, y0, 0.0, PSL_FWD);
 	GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
-	type = symbol->type;	/* Link to top level head info */
-	start = symbol->start;	/* Link to top level head info */
 	
 	s = symbol->first;
 	id = 0;
