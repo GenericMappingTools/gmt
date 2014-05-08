@@ -115,7 +115,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     legend. Each legend item is described by a unique record. All
     records begin with a unique character that is common to all records
     of the same kind. The order of the legend items is implied by the
-    order of the records. Ten different record types are recognized, and
+    order of the records. Fourteen different record types are recognized, and
     the syntax for each of these records are presented below:
 **#** *comment*
     Records starting with # and blank lines are skipped.
@@ -135,6 +135,11 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     above and below the line. Two gaps of *offset* units are left blank
     between the horizontal line and the left and right frame sides. If
     no pen is given we use MAP\_GRID\_PEN\_PRIMARY
+**F** *fill1 fill2 ... filln*
+    Specify fill (color of pattern) for cells.  If only *fill1* is given
+    then it is used to fill the entire row, otherwise give one fill value
+    for each active column (see **N**).  If any fill is - then no fill
+    takes place [Default].
 **G** *gap*
     The **G** record specifies a vertical gap of the given length. In
     addition to the standard units (**i**, **c**, **p**) you may use
@@ -170,10 +175,13 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     specify suitable **+p**\ *pen* and/or **+f**\ *fill* parameters. All
     these )+)\ *modifiers* are appended to *length* to make a single
     string.
-**N** *ncolumns*
+**N** *ncolumns* or *relwidth1 relwidth2 ... relwidthn*
     Change the number of columns in the legend [1]. This only affects
     the printing of symbols (**S**) and labels (**L**). The number of
-    columns stay in effect until **N** is used again.
+    columns stay in effect until **N** is used again.  To get columns
+    of unequal width, instead provide the relative width of each column
+    separated by whitespace.  The sum of these widths are equated to the
+    legend width set via **-D**.
 **S** *dx1 symbol size fill pen* [ *dx2 text* ]
     Plots the selected symbol with specified diameter, fill, and outline
     (see :doc:`psxy`). The symbol is centered at *dx1* from the left margin

@@ -48,8 +48,9 @@ struct PSLEGEND_CTRL {
 		double width, height, dx, dy;
 		int justify;
 	} D;
-	struct F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]] */
+	struct F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
+		bool debug;			/* If true we draw guide lines */
 		unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
 		double radius;			/* Radius for rounded corner */
 		double dx, dy;			/* Offset for background shaded rectangle (+s) */
@@ -97,7 +98,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]][+d]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout information from <infofile> [or stdin].\n");
@@ -123,6 +124,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Without further options: draw rectangular border around the legend (using MAP_FRAME_PEN)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      [Default is no border].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw guide lines for debugging.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<fill> to set the fill for the legend box [Default is no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
@@ -218,6 +220,9 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 				pos = 0;
 				while (GMT_getmodopt (GMT, opt->arg, "igprs", &pos, p)) {	/* Looking for +i, +f, +p, +r, +s */
 					switch (p[0]) {
+						case 'd':	/* debug mode */
+							Ctrl->F.debug = true;
+							break;
 						case 'i':	/* Secondary pen info */
 							Ctrl->F.mode |= 1;
 							if (p[1]) {	/* Gave 1-2 attributes */
@@ -305,9 +310,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pslegend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-#ifdef DEBUG
-/* Used to draw the current y-line for debug purposes only.  To use you would also
- * have to set the variable guide to 1 below. */
+/* Used to draw the current y-line for debug purposes only. */
 void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0)
 {
 	struct GMT_PEN faint_pen;
@@ -315,7 +318,26 @@ void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1,
 	GMT_setpen (GMT, &faint_pen);
 	PSL_plotsegment (PSL, x0, y0, x1, y0);
 }
-#endif
+
+/* Used to fill the cells in the the current y-line. */
+void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, double xoff[], unsigned int n_cols, char *fill[])
+{
+	unsigned int col;
+	double dim[2];
+	struct GMT_FILL F;
+	dim[1] = y1 - y0;
+	y0 = 0.5 * (y0 + y1);	/* Recycle y0 to mean mid level */
+	for (col = 0; col < n_cols; col++) {
+		if (!fill[col]) continue;	/* No fill for this cell */
+		if (GMT_getfill (GMT, fill[col], &F)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to interpret %s as a valid fill, skipped\n", fill[col]);
+			continue;
+		}
+		GMT_setfill (GMT, &F, false);
+		dim[0] = xoff[col+1] - xoff[col];
+		PSL_plotsymbol (GMT->PSL, x0 + 0.5 * (xoff[col+1] + xoff[col]), y0, dim, GMT_SYMBOL_RECT);
+	}
+}
 
 struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry)
 {
@@ -339,10 +361,12 @@ struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct G
 #define PAR 2
 #define N_CMD 3
 
+#define PSLEGEND_MAX_COLS	100
+
 int GMT_pslegend (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pslegend task */
-	unsigned int tbl;
-	int i, k, justify = 0, n = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
+	unsigned int tbl, pos;
+	int i, k, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan;
 	int status = 0, object_ID;
 	bool flush_paragraph = false, draw_vertical_line = false, gave_label, gave_mapscale_options, did_old = false;
 	uint64_t seg, row;
@@ -355,17 +379,15 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	char font[GMT_LEN256] = {""}, lspace[GMT_LEN256] = {""}, tw[GMT_LEN256] = {""}, jj[GMT_LEN256] = {""};
 	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_opts[GMT_BUFSIZ] = {""};
 	char *opt = NULL, sarg[GMT_LEN256] = {""}, txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""};
-	char B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""};
-	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0, *c = NULL;
-#ifdef DEBUG
-	int guide = 0;
-#endif
+	char B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
+	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 
 	unsigned char *dummy = NULL;
 	
 
 	double x_orig, y_orig, x_off, x, y, r, x0, y0, dx, dy, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off, height, az1, az2, m_az;
+	double sum_width, h, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
@@ -381,7 +403,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	struct GMT_DATASEGMENT *F = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
+	GMT_memset (&header, 1, struct imageinfo);	/* initialize struct */
+	GMT_memset (fill, PSLEGEND_MAX_COLS, char *);	/* initialize array */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -497,8 +520,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 
 						if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
-							char txt_cpy[GMT_BUFSIZ] = {""}, p[GMT_LEN256] = {""};
-							unsigned int pos = 0;
+							char txt_cpy[GMT_BUFSIZ] = {""};
+							pos = 0;
 							strncpy (txt_cpy, opt, GMT_BUFSIZ);
 							while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 								switch (p[0]) {
@@ -518,12 +541,20 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						column_number = 0;
 						break;
 
-					case 'N':	/* n_columns record */
-						sscanf (&line[2], "%s", txt_a);
-						n_columns = atoi (txt_a);
+					case 'N':	/* n_columns or column width record */
+						pos = n_columns = 0;
+						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
+							n_columns++;
+							if (n_columns == PSLEGEND_MAX_COLS) {
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
+								Return (GMT_RUNTIME_ERROR);
+							}
+						}
+						/* Check if user gave just the number of columns */
+						if (n_columns == 1 && (pos = atoi (&line[2])) > 1) n_columns = pos;
 						column_number = 0;
 						break;
-
+						
 					case '>':	/* Paragraph text header */
 						if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
 							GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
@@ -650,9 +681,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	column_number = 0;
 	txtcolor[0] = 0;
 
-#ifdef DEBUG
-	if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+	if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 
 	flush_paragraph = false;
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
@@ -670,6 +699,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 				switch (line[0]) {
 					case 'B':	/* Color scale Bar [Use GMT_psscale] */
+						dy = GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+						fillcell (GMT, x0, y0-dy, y0, x_off_col, 1, fill);
 						bar_opts[0] = '\0';
 						sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, bar_opts);
 						x_off = GMT_to_inch (GMT, bar_gap);
@@ -679,12 +710,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
 							Return (EXIT_FAILURE);
 						}
-						y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+						y0 -= dy;
 						column_number = 0;
 						API->io_enabled[GMT_IN] = true;	/* UNDOING SETTING BY psscale */
 						break;
 
-					case 'C':	/* Color change */
+					case 'C':	/* Font color change */
 						sscanf (&line[2], "%[^\n]", txtcolor);
 						break;
 
@@ -697,18 +728,28 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						PSL_plotsegment (PSL, Ctrl->D.anchor->x + L, y0, Ctrl->D.anchor->x + Ctrl->D.width - L, y0);
 						y0 -= quarter_line_spacing;
 						column_number = 0;
-#ifdef DEBUG
-						if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
+					case 'F':	/* Cell color */
+						/* First free all previous entries in fill array */
+						for (col = 0; col < PSLEGEND_MAX_COLS; col++) if (fill[col]) {free (fill[col]); fill[col] = NULL;}
+						pos = n_col = 0;
+						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
+							if (strcmp (p, "-")) fill[n_col++] = strdup (p);
+							if (n_columns == PSLEGEND_MAX_COLS) {
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding maximum columns (%d) in F operator\n", PSLEGEND_MAX_COLS);
+								Return (GMT_RUNTIME_ERROR);
+							}
+						}
+						if (n_col == 1 && n_columns > 1) {	/* Only gave a constant color or - for the entire row, duplicate per column */
+							for (col = 1; col < n_columns; col++) if (fill[0]) fill[col] = strdup (fill[0]);
+						}
 					case 'G':	/* Gap record */
 						sscanf (&line[2], "%s", txt_a);
 						y0 -= (txt_a[strlen(txt_a)-1] == 'l') ? atoi (txt_a) * one_line_spacing : GMT_to_inch (GMT, txt_a);
 						column_number = 0;
-#ifdef DEBUG
-						if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
 					case 'H':	/* Header record */
@@ -720,16 +761,16 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						ifont = GMT->current.setting.font_title;	/* Set default font */
 						GMT_getfont (GMT, tmp, &ifont);
 						d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
-						y0 -= Ctrl->L.spacing * ifont.size / PSL_POINTS_PER_INCH;
+						dy = Ctrl->L.spacing * ifont.size / PSL_POINTS_PER_INCH;
+						fillcell (GMT, x0, y0-dy, y0, x_off_col, 1, fill);
+						y0 -= dy;
 						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, y0 + d_off, GMT_putfont (GMT, ifont), text);
 						S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
 						// fprintf (stderr, "%s\n", buffer);
 						if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number = 0;
-#ifdef DEBUG
-						if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
 					case 'I':	/* Image record [use GMT_psimage] */
@@ -737,6 +778,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						PSL_loadimage (PSL, image, &header, &dummy);
 						PSL_free (dummy);
 						justify = GMT_just_decode (GMT, key, 12);
+						dy = GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
+						fillcell (GMT, x0, y0-dy, y0, x_off_col, 1, fill);
 						x_off = Ctrl->D.anchor->x;
 						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
 						sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
@@ -745,11 +788,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psimage returned error %d.\n", status);
 							Return (EXIT_FAILURE);
 						}
-						y0 -= GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
+						y0 -= dy;
 						column_number = 0;
 						break;
 
 					case 'L':	/* Label record */
+
 						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 						sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
 						if (size[0] == '-') size[0] = 0;
@@ -758,9 +802,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						ifont = GMT->current.setting.font_label;	/* Set default font */
 						GMT_getfont (GMT, tmp, &ifont);
 						d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
-						if (column_number%n_columns == 0) y0 -= Ctrl->L.spacing * ifont.size / PSL_POINTS_PER_INCH;
+						if (column_number%n_columns == 0) {	/* Label in first column, also fill row if requested */
+							dy = Ctrl->L.spacing * ifont.size / PSL_POINTS_PER_INCH;
+							fillcell (GMT, x0, y0-dy, y0, x_off_col, n_columns, fill);
+							y0 -= dy;
+						}
 						justify = GMT_just_decode (GMT, key, 0);
-						x_off = Ctrl->D.anchor->x + (Ctrl->D.width / n_columns) * (column_number%n_columns);
+						x_off = Ctrl->D.anchor->x + x_off_col[column_number];
 						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width / n_columns - Ctrl->C.dx : 0.5 * Ctrl->D.width / n_columns);
 						sprintf (buffer, "%g %g %s B%s %s", x_off, y0 + d_off, GMT_putfont (GMT, ifont), key, text);
 						S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
@@ -768,9 +816,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						// fprintf (stderr, "%s\n", buffer);
 						if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number++;
-#ifdef DEBUG
-						if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
 					case 'M':	/* Map scale record M lon0|- lat0 length[n|m|k][+opts] f|p  [-R -J] */
@@ -780,8 +826,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						/* Default assumes label is added on top */
 						just = 't';
 						gave_label = true;
+						dy = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
-
 						if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
 							char txt_cpy[GMT_BUFSIZ] = {""}, p[GMT_LEN256] = {""};
 							unsigned int pos = 0;
@@ -799,6 +845,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 								}
 							}
 						}
+						h = dy;
+						if (gave_label && (just == 't' || just == 'b')) h += d_off;
+						fillcell (GMT, x0, y0-h, y0, x_off_col, 1, fill);
 						if (gave_label && just == 't') y0 -= d_off;
 						if (!strcmp (txt_a, "-"))	/* No longitude needed */
 							sprintf (mapscale, "fx%gi/%gi/%s/%s", Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, y0, txt_b, txt_c);
@@ -819,16 +868,28 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							Return (EXIT_FAILURE);
 						}
 						if (gave_label && just == 'b') y0 -= d_off;
-						y0 -= GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
+						y0 -= dy;
 						column_number = 0;
-#ifdef DEBUG
-						if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
 					case 'N':	/* n_columns record */
-						sscanf (&line[2], "%s", txt_a);
-						n_columns = atoi (txt_a);
+						pos = n_columns = 0;
+						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
+							col_width[n_columns++] = atof (p);
+							if (n_columns == PSLEGEND_MAX_COLS) {
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
+								Return (GMT_RUNTIME_ERROR);
+							}
+						}
+						/* Check if user gave just the number of columns */
+						if (n_columns == 1 && (pos = atoi (&line[2])) > 1) {	/* Set number of columns and indicate equal widths */
+							n_columns = pos;
+							for (column_number = 0; column_number < n_columns; column_number++) col_width[column_number] = 1.0;
+						}
+						for (column_number = 0, sum_width = 0.0; column_number < n_columns; column_number++) sum_width += col_width[column_number];
+						for (column_number = 1, x_off_col[0] = 0.0; column_number < n_columns; column_number++) x_off_col[column_number] = x_off_col[column_number-1] + (Ctrl->D.width * col_width[column_number] / sum_width);
+						x_off_col[column_number] = Ctrl->D.width;	/* Holds width of row */
 						column_number = 0;
 						break;
 
@@ -861,9 +922,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							}
 						}
 						did_old = false;
-#ifdef DEBUG
-						if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						if (n == 0 || xx[0] == '-') sprintf (xx, "%g", x0);
 						if (n == 0 || yy[0] == '-') sprintf (yy, "%g", y0);
 						if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%d,%s", GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor);
@@ -882,13 +941,17 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						break;
 
 					case 'S':	/* Symbol record */
+					
 						n_scan = sscanf (&line[2], "%s %s %s %s %s %s %[^\n]", txt_a, symbol, size, txt_c, txt_d, txt_b, text);
 						off_ss = GMT_to_inch (GMT, txt_a);
 						off_tt = GMT_to_inch (GMT, txt_b);
 						d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;	/* To center the text */
-						if (column_number%n_columns == 0) y0 -= one_line_spacing;
+						if (column_number%n_columns == 0) {	/* Symbol in first column, also fill row if requested */
+							fillcell (GMT, x0, y0-one_line_spacing, y0, x_off_col, n_columns, fill);
+							y0 -= one_line_spacing;
+						}
 						y0 += half_line_spacing;	/* Move to center of box */
-						x_off = x0 + (Ctrl->D.width / n_columns) * (column_number%n_columns);
+						x_off = x0 + x_off_col[column_number];
 						if ((D[SYM] = alloc_if_not_done_already (API, D[SYM], GMT_IS_POINT)) == NULL) return (API->error);
 						S[SYM] = D[SYM]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
@@ -1097,9 +1160,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
 						column_number++;
-#ifdef DEBUG
-						if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
 					case 'T':	/* paragraph text record */
@@ -1139,9 +1200,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							y_start = y0;
 						}
 						column_number = 0;
-#ifdef DEBUG
-						if (guide) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
-#endif
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
 					default:
