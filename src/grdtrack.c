@@ -883,6 +883,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], value);
 				if (status < 0) some_outside = true;
 				for (col = Din->n_columns, k = 0; k < Ctrl->G.n_grids; k++, col++) Sout->coord[col][row] = value[k];
+				n_points++;
 			}
 		}
 		if (some_outside) GMT_Report (API, GMT_MSG_VERBOSE, "Some points along your profiles were outside the grid domain(s).\n");

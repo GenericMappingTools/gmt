@@ -3825,7 +3825,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	T->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 	n_cols = (get_distances) ? 3 :2;
 	T->n_columns = n_cols;
-	while (!error && (GMT_strtok (args, ",", &pos, p))) {
+	while (!error && (GMT_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
 		S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		GMT_alloc_segment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
 		k = p_mode = s = 0;	len = strlen (p);
@@ -3835,6 +3835,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 		}
 		if (s) {
 			strcpy (modifiers, &p[s]);
+			pos2 = 0;
 			while ((GMT_strtok (modifiers, "+", &pos2, p2))) {
 				switch (p2[0]) {
 					case 'a':	az = atof (&p2[1]);	p_mode |= GMT_GOT_AZIM;		break;
@@ -3869,7 +3870,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 			error += GMT_verify_expectations (GMT, ytype, GMT_scanf_arg (GMT, txt_d, ytype, &S->coord[GMT_Y][1]), txt_d);
 		}
 		else if (n == 2) {	/* More complicated: either <code>/<code> or <clon>/<clat> with +a|o|r */
-			if (p_mode & GMT_GOT_AZIM || (p_mode & GMT_GOT_ORIENT) || (p_mode & GMT_GOT_RADIUS)) {	/* Got a center point via coordinates */
+			if ((p_mode & GMT_GOT_AZIM) || (p_mode & GMT_GOT_ORIENT) || (p_mode & GMT_GOT_RADIUS)) {	/* Got a center point via coordinates */
 				error += GMT_verify_expectations (GMT, xtype, GMT_scanf_arg (GMT, txt_a, xtype, &S->coord[GMT_X][0]), txt_a);
 				error += GMT_verify_expectations (GMT, ytype, GMT_scanf_arg (GMT, txt_b, ytype, &S->coord[GMT_Y][0]), txt_b);
 			}
