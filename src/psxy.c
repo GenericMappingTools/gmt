@@ -566,6 +566,8 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	/*---------------------------- This is the psxy main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	if (Ctrl->E.active && S.symbol == GMT_SYMBOL_LINE)	/* Assume user only wants error bars */
+		S.symbol = GMT_SYMBOL_NONE;
 	/* Do we plot actual symbols, or lines */
 	not_line = (S.symbol != GMT_SYMBOL_FRONT && S.symbol != GMT_SYMBOL_QUOTED_LINE && S.symbol != GMT_SYMBOL_LINE);
 
@@ -620,8 +622,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	Ctrl->E.size *= 0.5;	/* Since we draw half-way in either direction */
 
-	if (Ctrl->E.active && S.symbol == GMT_SYMBOL_LINE)	/* Assume user only wants error bars */
-		S.symbol = GMT_SYMBOL_NONE;
 
 	if (Ctrl->C.active) {
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
