@@ -5,7 +5,7 @@
 #
 # This module accepts the following environment variables:
 #
-#    GSHHG_ROOT         - Specify the location of GSHHG
+#  GSHHG_ROOT, GSHHGDIR - Specify the location of GSHHG
 #
 # This module defines the following CMake variables:
 #
@@ -19,7 +19,7 @@
 # get GSHHG path
 find_path (GSHHG_PATH
 	NAMES binned_GSHHS_c.nc binned_GSHHS_c.cdf
-	HINTS ${GSHHG_ROOT} $ENV{GSHHG_ROOT}
+	HINTS ${GSHHG_ROOT} $ENV{GSHHG_ROOT} $ENV{GSHHGDIR}
 	PATH_SUFFIXES
 	gmt-gshhg
 	gshhg-gmt-nc4
@@ -69,7 +69,8 @@ if (_GSHHG_FILE AND NOT GSHHG_FOUND)
 		if (_EXIT_GSHHG_VERSION EQUAL 0)
 			# found GSHHG of required version or higher
 			set (GSHHG_VERSION ${GSHHG_VERSION} CACHE INTERNAL "GSHHG version")
-			get_filename_component (GSHHG_EXT ${_GSHHG_FILE} EXT CACHE)
+			get_filename_component (GSHHG_EXT ${_GSHHG_FILE} EXT)
+			set (GSHHG_EXT ${GSHHG_EXT} CACHE INTERNAL "GSHHG extension")
 		elseif (_EXIT_GSHHG_VERSION EQUAL -1)
 			# found GSHHG but version is too old
 			message (WARNING "GSHHG found but it is too old (${GSHHG_VERSION}). "
@@ -80,7 +81,7 @@ endif (_GSHHG_FILE AND NOT GSHHG_FOUND)
 
 if (GSHHG_EXT STREQUAL "")
 	message(FATAL_ERROR "unexpected: the string literal 'GSHHG_EXT' is empty - reset to .nc")
-	set (GSHHG_EXT ${GSHHG_EXT} CACHE INTERNAL ".nc")
+	set (GSHHG_EXT ".nc" CACHE INTERNAL "GSHHG default extension")
 endif()
 
 include (FindPackageHandleStandardArgs)
