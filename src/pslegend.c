@@ -697,7 +697,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 				}
 
 				switch (line[0]) {
-					case 'B':	/* Color scale Bar [Use GMT_psscale] */
+					case 'B':	/* B cptname offset height [ Optional psscale args -A -B -I -L -M -N -S -Z -p ] */
+						/* Color scale Bar [Use GMT_psscale] */
 						dy = GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 						fillcell (GMT, Ctrl->D.anchor->x, y0-dy, y0, x_off_col, 1, fill);
 						bar_opts[0] = '\0';
@@ -714,11 +715,11 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						API->io_enabled[GMT_IN] = true;	/* UNDOING SETTING BY psscale */
 						break;
 
-					case 'C':	/* Font color change */
+					case 'C':	/* Font color change: C textcolor */
 						sscanf (&line[2], "%[^\n]", txtcolor);
 						break;
 
-					case 'D':	/* Delimiter record */
+					case 'D':	/* Delimiter record: D offset pen */
 						sscanf (&line[2], "%s %s", txt_a, txt_b);
 						L = GMT_to_inch (GMT, txt_a);
 						if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) GMT_pen_syntax (GMT, 'W', " ");
@@ -730,7 +731,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
-					case 'F':	/* Cell color */
+					case 'F':	/* Cell color: F fill1[,fill2,...,filln]  */
 						/* First free all previous entries in fill array */
 						for (col = 0; col < PSLEGEND_MAX_COLS; col++) if (fill[col]) {free (fill[col]); fill[col] = NULL;}
 						pos = n_col = 0;
@@ -746,14 +747,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						}
 						break;
 
-					case 'G':	/* Gap record */
+					case 'G':	/* Gap record: G gap */
 						sscanf (&line[2], "%s", txt_a);
 						y0 -= (txt_a[strlen(txt_a)-1] == 'l') ? atoi (txt_a) * one_line_spacing : GMT_to_inch (GMT, txt_a);
 						column_number = 0;
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
-					case 'H':	/* Header record */
+					case 'H':	/* Header record: H fontsize|- font|- header */
 						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 						sscanf (&line[2], "%s %s %[^\n]", size, font, text);
 						if (size[0] == '-') size[0] = 0;
@@ -774,7 +775,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
-					case 'I':	/* Image record [use GMT_psimage] */
+					case 'I':	/* Image record [use GMT_psimage]: I imagefile width justification */
 						sscanf (&line[2], "%s %s %s", image, size, key);
 						PSL_loadimage (PSL, image, &header, &dummy);
 						PSL_free (dummy);
@@ -793,7 +794,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						column_number = 0;
 						break;
 
-					case 'L':	/* Label record */
+					case 'L':	/* Label record: L fontsize|- font|- justification label */
 
 						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 						sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
@@ -811,7 +812,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						}
 						justify = GMT_just_decode (GMT, key, 0);
 						x_off = Ctrl->D.anchor->x + x_off_col[column_number];
-						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width / n_columns - Ctrl->C.dx : 0.5 * Ctrl->D.width / n_columns);
+						//x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width / n_columns - Ctrl->C.dx : 0.5 * Ctrl->D.width / n_columns);
+						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.dx : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
 						sprintf (buffer, "%g %g %s B%s %s", x_off, y0 + d_off, GMT_putfont (GMT, ifont), key, text);
 						S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
@@ -875,7 +877,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
-					case 'N':	/* n_columns record */
+					case 'N':	/* n_columns record: N ncolumns OR rw1 rw2 ... rwn (for relative widths) */
 						pos = n_columns = 0;
 						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
 							col_width[n_columns++] = atof (p);
@@ -890,9 +892,15 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							for (column_number = 0; column_number < n_columns; column_number++) col_width[column_number] = 1.0;
 						}
 						for (column_number = 0, sum_width = 0.0; column_number < n_columns; column_number++) sum_width += col_width[column_number];
-						for (column_number = 1, x_off_col[0] = 0.0; column_number < n_columns; column_number++) x_off_col[column_number] = x_off_col[column_number-1] + (Ctrl->D.width * col_width[column_number] / sum_width);
+						for (column_number = 1, x_off_col[0] = 0.0; column_number < n_columns; column_number++) x_off_col[column_number] = x_off_col[column_number-1] + (Ctrl->D.width * col_width[column_number-1] / sum_width);
 						x_off_col[column_number] = Ctrl->D.width;	/* Holds width of row */
 						column_number = 0;
+						if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+							double s = GMT_convert_units (GMT, "1", GMT_INCH, GMT->current.setting.proj_length_unit);
+							GMT_Report (API, GMT_MSG_NORMAL, "Selected %d columns.  Column widths are:\n", n_columns);
+							for (col = 1; col <= n_columns; col++)
+								GMT_Report (API, GMT_MSG_NORMAL, "Column %d: %g %s\n", col, s*(x_off_col[col]-x_off_col[col-1]), GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+						}
 						break;
 
 					case '>':	/* Paragraph text header */
@@ -914,7 +922,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							Return (GMT_RUNTIME_ERROR);
 							break;
 						}
-					case 'P':	/* Paragraph text header */
+					case 'P':	/* Paragraph text header: P paragraph-mode-header-for-pstext */
 						if (!did_old) {
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
@@ -942,7 +950,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						column_number = 0;
 						break;
 
-					case 'S':	/* Symbol record */
+					case 'S':	/* Symbol record: S dx1 symbol size fill pen [ dx2 text ] */
 					
 						n_scan = sscanf (&line[2], "%s %s %s %s %s %s %[^\n]", txt_a, symbol, size, txt_c, txt_d, txt_b, text);
 						off_ss = GMT_to_inch (GMT, txt_a);
@@ -1166,7 +1174,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
-					case 'T':	/* paragraph text record */
+					case 'T':	/* paragraph text record: T paragraph-text */
 						if ((D[PAR] = alloc_if_not_done_already (API, D[PAR], GMT_IS_NONE)) == NULL) return (API->error);
 						/* If no previous > record, then use defaults */
 						S[PAR] = D[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
@@ -1183,7 +1191,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						column_number = 0;
 						break;
 
-					case 'V':	/* Vertical line from here to next V */
+					case 'V':	/* Vertical line from here to next V: V offset pen */
 						if (draw_vertical_line) {	/* Second time, now draw line */
 							sscanf (&line[2], "%s %s", txt_a, txt_b);
 							V = GMT_to_inch (GMT, txt_a);

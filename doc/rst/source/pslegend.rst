@@ -144,13 +144,13 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     The **G** record specifies a vertical gap of the given length. In
     addition to the standard units (**i**, **c**, **p**) you may use
     **l** for lines. A negative *gap* will move the current line upwards (thus closing a gap).
-**H** *fontsize*\ \|\ **-** *font*\ \|\ **-** header)
+**H** *fontsize*\ \|\ **-** *font*\ \|\ **-** header
     The **H** record plots a centered text string using the specified
     font parameters. Use **-** to default to size and type of **FONT\_TITLE**.
 **I** *imagefile width justification*
     Place an EPS or Sun raster image in the legend justified relative to
     the current point. The image *width* determines the size of the image on the page.
-**L** *fontsize*\ \|\ **-** *font*\ \|\ **-** justification label)
+**L** *fontsize*\ \|\ **-** *font*\ \|\ **-** justification label
     The **L** record plots a (L)eft, (C)entered, or (R)ight-justified
     text string within a column using the specified font parameters. Use
     **-** to default to the size and type of **FONT\_LABEL**.
@@ -182,6 +182,14 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     of unequal width, instead provide the relative width of each column
     separated by whitespace.  The sum of these widths are equated to the
     legend width set via **-D**.
+**P** *paragraph-mode-header-for-pstext*
+    Start a new text paragraph by specifying all the parameters needed
+    (see **pstext -M** record description). Note that **pslegend** knows
+    what all those values should be, so normally you can leave the
+    entire record (after P) blank or leave it out all together. If you
+    need to set at least one of the parameters directly, you must
+    specify all and set the ones you want to leave at their default
+    value to **-**.
 **S** *dx1 symbol size fill pen* [ *dx2 text* ]
     Plots the selected symbol with specified diameter, fill, and outline
     (see :doc:`psxy`). The symbol is centered at *dx1* from the left margin
@@ -209,14 +217,6 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     The **V** record draws a vertical line between columns (if more than
     one) using the selected *pen* *offset* is analogous to the offset
     for the **D** records but in the vertical direction.
-**P** *paragraph-mode-header-for-pstext*
-    Start a new text paragraph by specifying all the parameters needed
-    (see **pstext -M** record description). Note that **pslegend** knows
-    what all those values should be, so normally you can leave the
-    entire record (after P) blank or leave it out all together. If you
-    need to set at least one of the parameters directly, you must
-    specify all and set the ones you want to leave at their default
-    value to **-**.
 
 
 Defaults
