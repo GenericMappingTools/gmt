@@ -82,7 +82,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 .. include:: explain_-K.rst_
 
 **-L**\ *spacing*
-    Sets the linespacing factor in units of the current annotation font size [1.1]. 
+    Sets the line-spacing factor in units of the current annotation font size [1.1]. 
 
 .. include:: explain_-O.rst_
 
@@ -129,12 +129,15 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     The **C** record specifies the color with which the remaining text
     is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,
     or a named color. Use **-** to reset to default color.
-**D** *offset pen*
+**D** *offset pen* [**-**\|**+**\|**=**]
     The **D** record results in a horizontal line with specified *pen*
-    across the legend with one quarter of the line spacing left blank
+    across the legend with one quarter of the line-spacing left blank
     above and below the line. Two gaps of *offset* units are left blank
     between the horizontal line and the left and right frame sides. If
-    no pen is given we use MAP\_GRID\_PEN\_PRIMARY
+    no pen is given we use MAP\_GRID\_PEN\_PRIMARY.  To *not* add the
+    quarter line-spacing before the line, add **-**.  To no add the spacing
+    after the line, add **+**.  For no spacing at all, add **=**.
+    [Default places a quarter line-spacing both before and after the line]
 **F** *fill1 fill2 ... filln*
     Specify fill (color of pattern) for cells.  If only *fill1* is given
     then it is used to fill the entire row, otherwise give one fill value
@@ -213,10 +216,19 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     with **FONT\_ANNOT\_PRIMARY**. To specify special positioning and
     typesetting arrangements, or to enter a paragraph break, use the
     optional **P** record.
-**V** *offset pen*
+**V** *offset pen*  [**-**\|**+**\|**=**]
     The **V** record draws a vertical line between columns (if more than
-    one) using the selected *pen* *offset* is analogous to the offset
-    for the **D** records but in the vertical direction.
+    one) using the selected *pen*.  Here, *offset* is analogous to the offset
+    for the **D** records but in the vertical direction.  The first time
+    **V* is used we remember the vertical position, and the second time **V**
+    is set we draw from that past location to the present location.  Because
+    horizontal lines (via **D**) are often used on either side and these may
+    or may not have a quarter line-spacing before and after them, you can
+    append the flags **-**\|**+**\|**=** to indicate if a quarter line-space
+    vertical adjustment is needed.  If there was no quarter line-spacing before
+    the start of the vertical line, add **-**.  If there was no quarter line-spacing
+    after the vertical line, add **+**.  For no spacing at either end, add **=**.
+    [Default extends the vertical lines by a quarter line-spacing in both directions.]
 
 
 Defaults
