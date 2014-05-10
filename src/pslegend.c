@@ -166,9 +166,9 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 
 			case 'C':	/* Sets the clearance between frame and internal items */
 				Ctrl->C.active = true;
-				sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
+				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 				Ctrl->C.dx = GMT_to_inch (GMT, txt_a);
-				Ctrl->C.dy = GMT_to_inch (GMT, txt_b);
+				Ctrl->C.dy = (n == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->C.dx;
 				break;
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
@@ -470,8 +470,11 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 					case 'F':
 						break;
 
-					case 'D':	/* Delimiter record */
-						height += half_line_spacing;
+					case 'D':	/* Delimiter record: D offset pen [-|=|+] */
+						txt_c[0] = '\0';
+						sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
+						if (!(txt_c[0] == '-' || txt_c[0] == '=')) height += quarter_line_spacing;
+						if (!(txt_c[0] == '+' || txt_c[0] == '=')) height += quarter_line_spacing;
 						column_number = 0;
 						break;
 
@@ -719,14 +722,15 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sscanf (&line[2], "%[^\n]", txtcolor);
 						break;
 
-					case 'D':	/* Delimiter record: D offset pen */
-						sscanf (&line[2], "%s %s", txt_a, txt_b);
+					case 'D':	/* Delimiter record: D offset pen [-|=|+] */
+						txt_c[0] = '\0';
+						sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
 						L = GMT_to_inch (GMT, txt_a);
 						if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) GMT_pen_syntax (GMT, 'W', " ");
 						GMT_setpen (GMT, &current_pen);
-						y0 -= quarter_line_spacing;
+						if (!(txt_c[0] == '-' || txt_c[0] == '=')) y0 -= quarter_line_spacing;
 						PSL_plotsegment (PSL, Ctrl->D.anchor->x + L, y0, Ctrl->D.anchor->x + Ctrl->D.width - L, y0);
-						y0 -= quarter_line_spacing;
+						if (!(txt_c[0] == '+' || txt_c[0] == '=')) y0 -= quarter_line_spacing;
 						column_number = 0;
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
@@ -795,8 +799,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						break;
 
 					case 'L':	/* Label record: L fontsize|- font|- justification label */
-
-						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
+						text[0] = '\0';
 						sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
 						if (size[0] == '-') size[0] = 0;
 						if (font[0] == '-') font[0] = 0;
@@ -809,18 +812,23 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							fillcell (GMT, Ctrl->D.anchor->x, y0-dy, y0, x_off_col, n_columns, fill);
 							y0 -= dy;
 							column_number = 0;
+							if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
+						}
+						if (text[0] == '\0') {	/* Nothing to do, just skip to next */
+							column_number++;
+							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "The L record give no info so skip to next cell\n");
+							break;
 						}
 						justify = GMT_just_decode (GMT, key, 0);
 						x_off = Ctrl->D.anchor->x + x_off_col[column_number];
-						//x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width / n_columns - Ctrl->C.dx : 0.5 * Ctrl->D.width / n_columns);
 						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.dx : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
 						sprintf (buffer, "%g %g %s B%s %s", x_off, y0 + d_off, GMT_putfont (GMT, ifont), key, text);
+						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 						S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
 						// fprintf (stderr, "%s\n", buffer);
 						if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number++;
-						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
 						break;
 
 					case 'M':	/* Map scale record M lon0|- lat0 length[n|m|k][+opts] f|p  [-R -J] */
@@ -951,18 +959,29 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						break;
 
 					case 'S':	/* Symbol record: S dx1 symbol size fill pen [ dx2 text ] */
-					
 						n_scan = sscanf (&line[2], "%s %s %s %s %s %s %[^\n]", txt_a, symbol, size, txt_c, txt_d, txt_b, text);
-						off_ss = GMT_to_inch (GMT, txt_a);
-						off_tt = GMT_to_inch (GMT, txt_b);
-						d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;	/* To center the text */
 						if (column_number%n_columns == 0) {	/* Symbol in first column, also fill row if requested */
 							fillcell (GMT, Ctrl->D.anchor->x, y0-one_line_spacing, y0, x_off_col, n_columns, fill);
 							y0 -= one_line_spacing;
 							column_number = 0;
 						}
+						if (n_scan <= 0) {	/* No symbol, just skip to next cell */
+							column_number++;
+							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "The S record give no info so skip to next cell\n");
+							break;
+						}
+						if (strchr ("LCR", txt_a[0])) {	/* Gave L, C, or R justification relative to cell */
+							justify = GMT_just_decode (GMT, txt_a, 0);
+							off_ss = (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.dx : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
+							x_off = Ctrl->D.anchor->x + x_off_col[column_number];
+						}
+						else {
+							off_ss = GMT_to_inch (GMT, txt_a);
+							x_off = x0 + x_off_col[column_number];
+						}
+						off_tt = GMT_to_inch (GMT, txt_b);
+						d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;	/* To center the text */
 						y0 += half_line_spacing;	/* Move to center of box */
-						x_off = x0 + x_off_col[column_number];
 						if ((D[SYM] = alloc_if_not_done_already (API, D[SYM], GMT_IS_POINT)) == NULL) return (API->error);
 						S[SYM] = D[SYM]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
@@ -1191,24 +1210,27 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						column_number = 0;
 						break;
 
-					case 'V':	/* Vertical line from here to next V: V offset pen */
+					case 'V':	/* Vertical line from here to next V: V offset pen [-|+|=] */
+						txt_c[0] = '\0';
+						sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
 						if (draw_vertical_line) {	/* Second time, now draw line */
-							sscanf (&line[2], "%s %s", txt_a, txt_b);
 							V = GMT_to_inch (GMT, txt_a);
 							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) {
 								GMT_pen_syntax (GMT, 'V', " ");
 								Return (GMT_RUNTIME_ERROR);
 							}
 							GMT_setpen (GMT, &current_pen);
+							dy = (txt_c[0] == '+' || txt_c[0] == '=') ? 0.0 : quarter_line_spacing;
 							for (i = 1; i < n_columns; i++) {
 								x_off = Ctrl->D.anchor->x + x_off_col[i];
-								PSL_plotsegment (PSL, x_off, y_start-V+quarter_line_spacing, x_off, y0+V-quarter_line_spacing);
+								PSL_plotsegment (PSL, x_off, y_start-V, x_off, y0+V-dy);
 							}
 							draw_vertical_line = false;
 						}
 						else {
 							draw_vertical_line = true;
-							y_start = y0;
+							dy = (txt_c[0] == '-' || txt_c[0] == '=') ? 0.0 : quarter_line_spacing;
+							y_start = y0 + dy;
 						}
 						column_number = 0;
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, y0);
