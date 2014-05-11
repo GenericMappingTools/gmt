@@ -1,0 +1,14 @@
+.. _example_41:
+
+(41) Legend with Tables
+-----------------------
+
+
+.. literalinclude:: /_verbatim/example_41.txt
+   :language: bash
+
+.. figure:: /_images/example_41.*
+   :width: 500 px
+   :align: center
+
+   Illustrate typesetting legends that include tables.
