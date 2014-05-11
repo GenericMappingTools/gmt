@@ -129,15 +129,17 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     The **C** record specifies the color with which the remaining text
     is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,
     or a named color. Use **-** to reset to default color.
-**D** *offset pen* [**-**\|**+**\|**=**]
+**D** [*offset] pen* [**-**\|**+**\|**=**]
     The **D** record results in a horizontal line with specified *pen*
     across the legend with one quarter of the line-spacing left blank
     above and below the line. Two gaps of *offset* units are left blank
-    between the horizontal line and the left and right frame sides. If
-    no pen is given we use MAP\_GRID\_PEN\_PRIMARY.  To *not* add the
-    quarter line-spacing before the line, add **-**.  To no add the spacing
-    after the line, add **+**.  For no spacing at all, add **=**.
-    [Default places a quarter line-spacing both before and after the line]
+    between the horizontal line and the left and right frame sides [0]. If
+    no pen is given we use MAP\_GRID\_PEN\_PRIMARY, and if *pen* is
+    set to - then no visible line is drawn (we just remember the location
+    as a possible start/stop point for a vertical line; see **V**).  To *not* add the
+    quarter line-spacing before the line, add **-**.  To *not* add the spacing
+    after the line, add **+**.  For no spacing at all, add **=**
+    [Default places a quarter line-spacing both before and after the line].
 **F** *fill1 fill2 ... filln*
     Specify fill (color of pattern) for cells.  If only *fill1* is given
     then it is used to fill the entire row, otherwise give one fill value
@@ -178,13 +180,14 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     specify suitable **+p**\ *pen* and/or **+f**\ *fill* parameters. All
     these )+)\ *modifiers* are appended to *length* to make a single
     string.
-**N** *ncolumns* or *relwidth1 relwidth2 ... relwidthn*
+**N** [*ncolumns* or *relwidth1 relwidth2 ... relwidthn*]
     Change the number of columns in the legend [1]. This only affects
     the printing of symbols (**S**) and labels (**L**). The number of
     columns stay in effect until **N** is used again.  To get columns
     of unequal width, instead provide the relative width of each column
     separated by whitespace.  The sum of these widths are equated to the
-    legend width set via **-D**.
+    legend width set via **-D**.  If no argument is given the we set
+    *n_columns* to 1.
 **P** *paragraph-mode-header-for-pstext*
     Start a new text paragraph by specifying all the parameters needed
     (see **pstext -M** record description). Note that **pslegend** knows
@@ -193,13 +196,16 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     need to set at least one of the parameters directly, you must
     specify all and set the ones you want to leave at their default
     value to **-**.
-**S** *dx1 symbol size fill pen* [ *dx2 text* ]
+**S** [*dx1 symbol size fill pen* [ *dx2 text* ]]
     Plots the selected symbol with specified diameter, fill, and outline
     (see :doc:`psxy`). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. When plotting just a
-    symbol, without text, *dx2* and *text* can be omitted. Two **psxy**
+    symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
+    can also be given as a justification code L, C, R which justifies the
+    symbol with respect to the current column.  If no arguments are given
+    to **S** then we simply skip to the next column.  Two **psxy**
     symbols may take special modifiers: front (**f**) and vector (**v**). 
     You can append modifiers to the symbol and affect how the fronts and
     vectors are presented (see :doc:`psxy` man page for modifiers).
@@ -216,20 +222,15 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     with **FONT\_ANNOT\_PRIMARY**. To specify special positioning and
     typesetting arrangements, or to enter a paragraph break, use the
     optional **P** record.
-**V** *offset pen*  [**-**\|**+**\|**=**]
+**V** [*offset*] *pen*
     The **V** record draws a vertical line between columns (if more than
     one) using the selected *pen*.  Here, *offset* is analogous to the offset
-    for the **D** records but in the vertical direction.  The first time
-    **V* is used we remember the vertical position, and the second time **V**
-    is set we draw from that past location to the present location.  Because
-    horizontal lines (via **D**) are often used on either side and these may
-    or may not have a quarter line-spacing before and after them, you can
-    append the flags **-**\|**+**\|**=** to indicate if a quarter line-space
-    vertical adjustment is needed.  If there was no quarter line-spacing before
-    the start of the vertical line, add **-**.  If there was no quarter line-spacing
-    after the vertical line, add **+**.  For no spacing at either end, add **=**.
-    [Default extends the vertical lines by a quarter line-spacing in both directions.]
-
+    for the **D** records but in the vertical direction [0].  The first time
+    **V* is used we remember the vertical position of the last **D** line,
+    and the second time **V** is set we draw from that past location to the
+    most recent location of the **D** line.  Thus, **D** must be used to
+    mark the start and stop of a vertical line (so **V** must follow **D**).
+    If no horizontal line is desired simply give - as *pen* to **D**.
 
 Defaults
 --------
