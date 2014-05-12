@@ -63,8 +63,9 @@ void spotter_rot_usage (struct GMTAPI_CTRL *API, char option)
 {
 	GMT_Message (API, GMT_TIME_NONE, "\t-%c Specify file with the rotations to be used (see man page for format).\n", option);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to extract that rotation from the GPlates rotation database (if installed)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternative 1: Give a single rotation as plon/plat/prot.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternative 2: Give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to extract that rotation from the GPlates rotation database (if installed).\n");
 }
 
 /* Sort functions used to order the rotations */
