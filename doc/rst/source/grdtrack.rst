@@ -123,7 +123,7 @@ Optional Arguments
     **+r** to define a circle of given radius centered on the origin;
     this option requires either **+n** or **+i**.  The **+n**\ *np* sets
     the desired number of points, while **+l**\ *length* gives the
-    total length of the profile. Use **+d** to output the along-track
+    total length of the profile. Append **+d** to output the along-track
     distances after the coordinates.  Note: No track file will be read.
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)

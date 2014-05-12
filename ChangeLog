@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-05-08	remko
+	* gmt_plot.c:		Fix bug in treatment of variable text introduced on 2014-05-04.
+				This addresses issue #554.
+
 2014-05-04	pwessel
 	* gmt_plot.c:		Fix treatment of text and font attributes in custom symbols
 	* gmt_support.c:	---"---.  This addresses issue # 553.

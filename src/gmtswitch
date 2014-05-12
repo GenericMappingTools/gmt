@@ -159,7 +159,7 @@ else
     line=`sed -n 's/#.*//;'${i}p $home/.gmtversions`
     comment=`sed -n ${i}'s/.*# *\(.*\)/ (\1)/p' $home/.gmtversions`
     version=`basename $line`
-    echo "$i. Version ${version}${comment}" >&2
+    echo "$i. Select ${line}" >&2
   done
   echo "" >&2
   v=-1
