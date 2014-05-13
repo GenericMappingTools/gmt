@@ -266,6 +266,7 @@ char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 void psl_defunits_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
 int psl_set_xyn_arrays (struct PSL_CTRL *PSL, const char *xparam, const char *yparam, const char *nparam, double *x, double *y, int *node, int n, int m);
+int psl_set_xyn_curvearrays (struct PSL_CTRL *PSL, const char *xparam, const char *yparam, const char *nparam, double *x, double *y, int *node, int npath, int *n, int *m);
 void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
 void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
 void psl_set_real_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
@@ -1349,6 +1350,14 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode)
 	return (PSL_NO_ERROR);
 }
 
+char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], char *pattern, double offset)
+{
+	/* Creates a text string with the corresponding PS command */
+	static char buffer[PSL_BUFSIZ];
+	sprintf (buffer, "%d W %s %s", psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb), psl_putdash (PSL, pattern, offset));
+	return (buffer);
+}
+
 int PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[], char *encoding)
 {
 	/* Changes the standard PSL defaults for:
@@ -1895,6 +1904,81 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	PSL_free (piece);
 	PSL_free (piece2);
 	PSL_free (string);
+	return (PSL_NO_ERROR);
+}
+
+int PSL_plottextcurve (struct PSL_CTRL *PSL, double x[], double y[], int np[], int n_paths, int node[], char *label[], double angle[], int m[], double fontsize, int justify, double offset[], int mode)
+{
+	/* x,y		Array containing the n_paths combined label path
+	 * np		Array containing length of each label path
+	 * n_paths	Number of label path
+	 * node		Index into x/y array of label plot positions per segment
+	 * label	Array of text labels
+	 * angle	Text angle for each label
+	 * m		Array containing number of labels per segment
+	 * fontsize	fontsize of label text
+	 * just		Justification of text relative to label coordinates
+	 * offset	Clearances between text and textbox
+	 * mode		1: We place all the PSL variables required to use the text for clipping of painting.
+	 * mode		2: We paint the text that is stored in the PSL variables.
+	 * mode		4: We use the text stored in the PSL variables to set up a clip path.  Clipping is turned ON.
+	 * mode		8: We turn clip path OFF.
+	 * mode		32: draw the line before the text.
+	 * mode		128 = fill box
+	 * mode		256 = draw box
+	 * modes 1,2, 4, 128, 256 can be combined as bit flags; 8 must be given by itself.
+	 */
+
+	int extras;
+
+	if (n_paths <= 0) return (PSL_NO_ERROR);	/* Nothing to do yet */
+	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
+
+	if (mode & 1) {	/* Lay down PSL variables */
+		int i = 0, j, k, n, n_label = 0;
+		psl_encodefont (PSL, PSL->current.font_no);
+		psl_putfont (PSL, fontsize);	/* Set chosen font */
+
+		for (i = 0; i < n_paths; i++) n_label += m[i];	/* Count number of labels */
+		for (i = 0; i < n_label; i++) {
+			if (justify < 0)  {	/* Strip leading and trailing blanks */
+				for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
+				if (k > 0) {	/* Shift text to start, eliminating spaces */
+					j = 0;
+					while (label[i][k]) {
+						label[i][j] = label[i][j+k];
+						j++;
+					}
+					label[i][j] = 0;
+				}
+				/* Then strip off trailing blanks, if any */
+				for (j = (int)strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
+			}
+		}
+		justify = abs (justify);
+
+		/* Set clearance, justification, and text height parameters */
+		PSL_definteger (PSL, "PSL_just", (int)justify);		/* Set text justification */
+		PSL_defunits (PSL, "PSL_gap_x", offset[0]);		/* Set text clearance in x direction */
+		PSL_defunits (PSL, "PSL_gap_y", offset[1]);		/* Set text clearance in y direction */
+		PSL_deftextdim (PSL, "-H", fontsize, label[0]);		/* Get total string height based on letter H */
+		PSL_command (PSL, "/PSL_height edef\n");		/* Set total string height */
+
+		/* Set PSL arrays and constants for this set of lines and labels */
+
+		n = psl_set_xyn_curvearrays (PSL, "PSL_path_x", "PSL_path_y", "PSL_label_node", x, y, node, n_paths, np, m);
+		psl_set_int_array (PSL, "PSL_label_n", m, n_paths);
+		psl_set_real_array (PSL, "PSL_label_angle", angle, n_label);
+		psl_set_txt_array (PSL, "PSL_label_str", label, n_label);
+		PSL_definteger (PSL, "PSL_n_paths", n_paths);
+	}
+	
+	extras = mode & 384;	/* This just gets the 128 and 256 bit settings, if any */
+	if (mode & 2) PSL_command (PSL, "%d PSL_curved_path_labels\n", 2|extras);	/* Lay down visible text */
+	if (mode & 4) {	/* Set up text clip paths */
+		PSL_command (PSL, "%d PSL_curved_path_labels\n", 4|extras);
+		PSL->current.nclip++;	/* Increment clip level */
+	}
 	return (PSL_NO_ERROR);
 }
 
@@ -4101,6 +4185,51 @@ int psl_set_xyn_arrays (struct PSL_CTRL *PSL, const char *xparam, const char *yp
 	return (j);
 }
 
+int psl_set_xyn_curvearrays (struct PSL_CTRL *PSL, const char *xparam, const char *yparam, const char *nparam, double *x, double *y, int *node, int npath, int *n, int *m)
+{	/* These are used by PSL_plottextcurve.  We make sure there are no point pairs that would yield dx = dy = 0 (repeat point)
+	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
+	int i, j, k, p, ii, this_i, this_j, last_i, last_j, offset = 0, n_skipped, ntot = 0, new_tot = 0, nlab = 0, *new_n = NULL;
+	char *use = NULL;
+
+	for (p = 0; p < npath; p++) ntot += n[p];	/* Determine total number of points */
+	for (p = 0; p < npath; p++) nlab += m[p];	/* Determine total number of labels */
+	use = PSL_memory (PSL, NULL, ntot, char);
+	new_n = PSL_memory (PSL, NULL, npath, int);
+	for (p = 0; p < npath; p++) {
+		this_i = this_j = INT_MAX;
+		for (ii = j = n_skipped = k = 0; ii < n[p]; ii++) {
+			last_i = this_i;	last_j = this_j;
+			i = ii + offset;
+			this_i = 100 * psl_ix (PSL, x[i]);	/* Simulates the digits written by a %.2lf format */
+			this_j = 100 * psl_iy (PSL, y[i]);
+			if (this_i != last_i && this_j != last_j) {	/* Not a repeat point, use it */
+				use[i] = true;
+				j++;
+			}
+			else	/* Repeat point, skip it */
+				n_skipped++;
+			if (k < m[p] && node[k] == ii && n_skipped) node[k++] -= n_skipped;	/* Adjust node pointer since we are removing points and upsetting the order */
+		}
+		new_n[p] = j;
+		new_tot += j;
+		offset += n[p];
+		
+	}
+	PSL_command (PSL, "/%s\n", xparam);
+	for (i = 0; i < ntot; i++) if (use[i]) PSL_command (PSL, "%d\n", psl_ix (PSL, x[i]));
+	PSL_command (PSL, "%d array astore def\n", new_tot);
+	PSL_command (PSL, "/%s\n", yparam);
+	for (i = 0; i < ntot; i++) if (use[i]) PSL_command (PSL, "%d\n", psl_iy (PSL, y[i]));
+	PSL_command (PSL, "%d array astore def\n", new_tot);
+	PSL_command (PSL, "/%s\n", nparam);
+	for (i = 0; i < nlab; i++) PSL_command (PSL, "%d\n", node[i]);
+	PSL_command (PSL, "%d array astore def\n", nlab);
+	psl_set_int_array (PSL, "PSL_path_n", new_n, npath);
+
+	PSL_free (use);
+	PSL_free (new_n);
+	return (j);
+}
 void psl_set_real_array (struct PSL_CTRL *PSL, const char *param, double *array, int n)
 {	/* These are raw and not scaled */
 	int i;

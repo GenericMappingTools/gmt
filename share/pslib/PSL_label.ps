@@ -168,7 +168,7 @@ end
 % PSL LABEL CLIP FUNCTIONS
 
 % Two main functions deals with label placement and clipping:
-% PSL_curved_text_labels: handles text that must follow curved baseline
+% PSL_curved_path_labels: handles text that must follow curved baseline
 % PSL_straight_text_labels: handles text that has straight baseline
 %
 % Both functions assume that these variables have been predefined (at least once):
@@ -181,9 +181,10 @@ end
 % PSL_m		Number of labels
 % PSL_angle	The annotation angle for each label
 %
-% PSL_curved_text_labels expects those labels to be placed along a single
-% line of n points, hence it assumes these are defined:
+% PSL_curved_text_labels expects those labels to be placed along several
+% lines of n points, hence it assumes these are defined:
 %
+% PSL_path_n		Number of points in the path
 % PSL_n		Number of points in the path
 % PSL_x		(x,y) coordinates of the path
 % PSL_y
@@ -198,18 +199,42 @@ end
 % one for each line, and they may build up a pretty complex clip path.
 % Subroutines of this function are called PSL_CT_*
 
-/PSL_curved_text_labels
+/PSL_curved_path_labels
 { /bits exch def				% 4 on/of bit settings as indicated below
-  /PSL_clippath bits 1 and 1 eq def		% false inactive, true creates clippath for labels
-  /PSL_placetext bits 2 and 0 eq def		% true to place text, false to just make space
-  /PSL_strokeline bits 4 and 4 eq def		% true draws line, false skips
-  /PSL_firstcall bits 32 and 32 eq def		% true first time called, false later
-  /PSL_lastcall bits 64 and 64 eq def		% true last time called, false before
+  /PSL_placetext bits 2 and 2 eq def		% true to place text, false to just make space
+  /PSL_clippath bits 4 and 4 eq def		% false inactive, true creates clippath for labels
+  /PSL_strokeline false def			% true draws line, false skips
   /PSL_fillbox bits 128 and 128 eq def		% true to paint box opaque before placing text, false gives transparent box
   /PSL_drawbox bits 256 and 256 eq def		% true to draw box outline before placing text, false gives no outline
-  /PSL_n1 PSL_n 1 sub def			% one less is the upper limit in for loops
-  /PSL_m1 PSL_m 1 sub def			% same
+  /PSL_n_paths1 PSL_n_paths 1 sub def		% one less is the upper limit in for loop over the paths
   /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
+
+  PSL_clippath {clipsave N clippath} if		% Bracket with clipsave/cliprestore and start clip path
+  PSL_setlinepen				% Set line color
+  /kstart 0 def
+  /pstart 0 def
+  0 1 PSL_n_paths1
+  { /pindex exch def						% Index into the PSL_n PSL_m arrays
+    /PSL_n PSL_path_n pindex get def				% Get the number of points in this line segment
+    /PSL_m PSL_label_n pindex get def				% Get the number of labels for this line segment
+    /PSL_x PSL_path_x kstart PSL_n getinterval def		% Get the subset that is the current line segment x-coordinates
+    /PSL_y PSL_path_y kstart PSL_n getinterval def		% Get the subset that is the current line segment y-coordinates
+    /PSL_node PSL_label_node pstart PSL_m getinterval def	% Get the subset of note values for current line segment
+    /PSL_angle PSL_label_angle pstart PSL_m getinterval def	% Get the subset of angle values for current line segment
+    /PSL_str PSL_label_str pstart PSL_m getinterval def		% Get the subset of string values for current line segment
+    /kstart kstart PSL_n add def				% Go to next segment start index for path
+    /pstart pstart PSL_m add def				% Go to next segment start index for nodes
+    PSL_curved_text_labels					% Operate on this segment only
+  } for  % The loop over segments
+  			
+  PSL_clippath {PSL_clip} if N			% Activate clip path and return
+
+} def
+
+/PSL_curved_text_labels
+{
+  /PSL_n1 PSL_n 1 sub def	% one less is the upper limit in for loops
+  /PSL_m1 PSL_m 1 sub def	% same
 
   PSL_CT_calcstringwidth	% Calculate the width of each label string
   PSL_CT_calclinedist		% Calculate along-track distances
@@ -219,9 +244,6 @@ end
 % and place the text along the line where there are labels.  We will use the
 % new array PSL_xp/yp to store the final points prior to use
 
-  PSL_clippath PSL_firstcall and	% Want clipping and it is the first time called
-  {clipsave N clippath} if		% Bracket with clipsave/cliprestore and start clip path the first time - later we append
-  PSL_setlinepen			% Set line color
   /PSL_nn1 PSL_nn 1 sub def		% End index in for loop
   /n 0 def				% Toggle: o means line, 1 means text
   /k 0 def				% Index of the current text string
@@ -249,18 +271,35 @@ end
   } for
   n 0 eq {PSL_CT_drawline} if	% Finish off the last line segment
 
-  PSL_lastcall			% After last call we execute the clip path
-  {PSL_clippath
-    {PSL_clip} if N	% Clean up and return
-  } if
 } def
 
+/PSL_curved_path_lines
+{
+  /PSL_n_paths1 PSL_n_paths 1 sub def		% one less is the upper limit in for loop over the paths
+
+  PSL_setlinepen				% Set line color
+  /kstart 0 def
+  0 1 PSL_n_paths1
+  { /pindex exch def					% Index into the PSL_n PSL_m arrays
+    /PSL_n PSL_path_n pindex get def			% Get the number of points in this line segment
+    /PSL_n1 PSL_n 1 sub def				% one less is the upper limit in for loops
+    PSL_linepen pindex get cvx exec			% Set these pen attributes
+    PSL_path_x kstart get PSL_path_y kstart get M	% Anchor point of this segment
+    1 1 PSL_n1
+    { /i exch def
+      /k i kstart add def
+      PSL_path_x k get PSL_path_y k get L		% Draw to next point
+    } for  % Loop over points in segment
+    S
+    /kstart kstart PSL_n add def			% Go to next segment start index for path
+  } for  % The loop over segments			
+} def
+
+
 /PSL_CT_textline
-{PSL_placetext			% If we want to place the text
-  {PSL_clippath			% Place curved text along the path just laid down
-    {PSL_CT_clippath} {PSL_CT_placelabel} ifelse
-  } if
-  /n 0 def /k k 1 add def PSL_setlinepen			% Set n back to 0, goto next label, and switch to pen color
+{ PSL_placetext	{PSL_CT_placelabel} if		% If we want to place the text
+  PSL_clippath {PSL_CT_clippath} if
+  /n 0 def /k k 1 add def PSL_setlinepen	% Set n back to 0, goto next label, and switch to pen color
 } def
 
 /PSL_CT_calcstringwidth			% Calculate the width of each label string
