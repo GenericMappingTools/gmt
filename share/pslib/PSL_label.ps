@@ -221,6 +221,7 @@ end
     /PSL_node PSL_label_node pstart PSL_m getinterval def	% Get the subset of note values for current line segment
     /PSL_angle PSL_label_angle pstart PSL_m getinterval def	% Get the subset of angle values for current line segment
     /PSL_str PSL_label_str pstart PSL_m getinterval def		% Get the subset of string values for current line segment
+    /PSL_fnt PSL_label_font pstart PSL_m getinterval def	% Get the subset of font settings for current line segment
     PSL_curved_path_label					% Operate on this segment only
     /kstart kstart PSL_n add def				% Go to next segment start index for path
     /pstart pstart PSL_m add def				% Go to next segment start index for nodes
@@ -295,9 +296,10 @@ end
 } def
 
 /PSL_CT_textline
-{ PSL_placetext	{PSL_CT_placelabel} if		% If we want to place the text
+{ PSL_fnt k get cvx exec		% Get and set this label's font attributes
+  PSL_placetext	{PSL_CT_placelabel} if	% If we want to place the text
   PSL_clippath {PSL_CT_clippath} if
-  /n 0 def /k k 1 add def			% Set n back to 0, goto next label
+  /n 0 def /k k 1 add def		% Set n back to 0, goto next label
 } def
 
 /PSL_CT_calcstringwidth			% Calculate the width of each label string
@@ -398,7 +400,6 @@ end
 
 /PSL_CT_placelabel
 { % Places the curved text label on current segment
-  PSL_label_font k get cvx exec	% Get and set this labels font attributes
   /PSL_just PSL_label_justify k get def	% Get this labels justification
   PSL_usebox		% Want to lay down box outline or fill
   {PSL_CT_clippath	% Box path now current path
