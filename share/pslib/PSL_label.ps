@@ -543,7 +543,7 @@ end
     /x0 SW PSL_justx mul def			% (x0,y0) is the rotated and adjusted text LL point on inside rectangle relative to xp,yp
     xp yp T PSL_label_angle k get R x0 y0 T	% Rotate the coordinate system to follow baseline text and make (x0,y0) the origin
     PSL_gap_x neg PSL_gap_y neg M		% LL anchor point for rectangular box
-    BoxW 0 D 0 BoxH D BoxW neg 0 D P		% Draw box going CCW
+    0 BoxH D BoxW 0 D 0 BoxH neg D P		% Draw box going CW
     x0 neg y0 neg T PSL_label_angle k get neg R xp neg yp neg T	% Unto trans/rot above
   } for
 } def
@@ -568,7 +568,7 @@ end
     /x0 SW PSL_justx mul def			% (x0,y0) is the rotated and adjusted text LL point on inside rectangle relative to xp,yp
     xp yp T PSL_label_angle k get R x0 y0 T	% Rotate the coordinate system to follow baseline text and make (x0,y0) the origin
     PSL_gap_x neg PSL_gap_y neg M		% LL anchor point for rectangular box
-    BoxW 0 D 0 BoxH D BoxW neg 0 D P		% Outline box path going CCW
+    0 BoxH D BoxW 0 D 0 BoxH neg D P		% Draw box going CW
     PSL_fillbox {V PSL_setboxrgb fill U} if	% Optional paint
     PSL_drawbox {V PSL_setboxpen S U} if	% Optional outline
     N
@@ -602,10 +602,15 @@ end
     /x0 SW PSL_justx mul def			% (x0,y0) is the rotated and adjusted text LL point on inside rectangle relative to xp,yp
     xp yp T PSL_label_angle k get R x0 y0 T	% Rotate the coordinate system to follow baseline text and make (x0,y0) the origin
     xL yd M					% LL anchor point for rounded box is on lower left side just before rounded corner
-    xL yB xR yB BoxR arct W2 0 D		% Draw LL rounded corner and line to start of LR rounded corner
-    xR yB xR yT BoxR arct 0 H2 D		% Draw LR rounded corner and line to UR rounded corner
-    xR yT xL yT BoxR arct W2 neg 0 D		% Draw UR rounded corner and line to UL rounded corner
-    xL yT xL yB BoxR arct P			% Draw UL rounded corner and close the clippath segment
+    %xL yB xR yB BoxR arct W2 0 D		% Draw LL rounded corner and line to start of LR rounded corner
+    %xR yB xR yT BoxR arct 0 H2 D		% Draw LR rounded corner and line to UR rounded corner
+    %xR yT xL yT BoxR arct W2 neg 0 D		% Draw UR rounded corner and line to UL rounded corner
+    %xL yT xL yB BoxR arct P			% Draw UL rounded corner and close the clippath segment
+
+    xL yT xR yT BoxR arct W2 0 D		% Draw UL rounded corner and line to start of UR rounded corner
+    xR yT xR yB BoxR arct 0 H2 neg D		% Draw UR rounded corner and line to LR rounded corner
+    xR yB xL yB BoxR arct W2 neg 0 D		% Draw LR rounded corner and line to LL rounded corner
+    xL yB xL yd BoxR arct P			% Draw LL rounded corner and close the clippath segment
     x0 neg y0 neg T PSL_label_angle k get neg R xp neg yp neg T	% Unto trans/rot above
   } for
 } def
