@@ -306,7 +306,8 @@ end
 { /PSL_width PSL_m array def	% Assign space for distance
   0 1 PSL_m1
   { /i exch def
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt i get cvx exec				% Get and set this label's font attributes
+    PSL_width i PSL_str i get stringwidth pop put	% Compute width and store in the array
   } for
 } def
 
