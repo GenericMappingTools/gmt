@@ -37,9 +37,8 @@
 void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
 bool GMT_is_a_blank_line (char *line);
 
-#define PSTEXT_CLIP		1
-#define PSTEXT_PLOT		2
-#define PSTEXT_TERMINATE	3
+#define PSTEXT_CLIPPLOT		1
+#define PSTEXT_CLIPONLY		2
 
 struct PSTEXT_CTRL {
 	struct PSTEXT_A {	/* -A */
@@ -65,9 +64,9 @@ struct PSTEXT_CTRL {
 		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), or 2 = segment header (+h) */
 		char read[4];		/* Contains a, c, f, and/or j in order required to be read from input */
 	} F;
-	struct PSTEXT_G {	/* -G<fill> */
+	struct PSTEXT_G {	/* -G<fill> | -Gc|C */
 		bool active;
-		bool mode;
+		unsigned int mode;
 		struct GMT_FILL fill;
 	} G;
 	struct PSTEXT_L {	/* -L */
@@ -257,7 +256,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pstext [<table>] %s %s [-A] [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l][+j[<justify>]]] [-G<color>|c] [%s] [-K]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l][+j[<justify>]]] [-G<color>|c|C] [%s] [-K]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z[<zlevel>|+]]\n", GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
@@ -315,6 +314,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case C will first plot the text then activate clipping.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use psclip -C to deactivate the clipping.  Cannot be used with paragraph mode (-M).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List the font-numbers and font-names available, then exits.\n");
@@ -451,7 +451,9 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 			case 'G':
 				Ctrl->G.active = true;
 				if (opt->arg[0] == 'c' && !opt->arg[1])
-					Ctrl->G.mode = true;
+					Ctrl->G.mode = PSTEXT_CLIPPLOT;
+				else if (opt->arg[0] == 'C' && !opt->arg[1])
+					Ctrl->G.mode = PSTEXT_CLIPONLY;
 				else if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
@@ -603,21 +605,23 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 int GMT_pstext (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	int  error = 0, k, fmode, nscan;
+	int  error = 0, k, fmode, nscan, *c_just = NULL;
 	bool master_record = false, skip_text_records = false, old_is_world;
 	
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
 	
-	size_t n_alloc = 0;
+	size_t n_alloc = 0, old_alloc = 0;
 
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
-	char text[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, cp_line[GMT_BUFSIZ] = {""}, label[GMT_BUFSIZ] = {""}, pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	char text[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, cp_line[GMT_BUFSIZ] = {""}, label[GMT_BUFSIZ] = {""};
+	char pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_LEN256] = {""}, this_font[GMT_LEN256] = {""}, just_key[5] = {""}, txt_f[GMT_LEN256] = {""};
 	int input_format_version = GMT_NOTSET;
+	struct GMT_FONT *c_font = NULL;
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
@@ -680,10 +684,12 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (Ctrl->G.mode) {
+	if (Ctrl->G.mode) {	/* Need arrays to keep all the information until we lay it down in PSL */
 		n_alloc = 0;
 		GMT_malloc3 (GMT, c_angle, c_x, c_y, GMT_SMALL_CHUNK, &n_alloc, double);
 		c_txt = GMT_memory (GMT, NULL, n_alloc, char *);
+		c_just = GMT_memory (GMT, NULL, n_alloc, int);
+		c_font = GMT_memory (GMT, NULL, n_alloc, struct GMT_FONT);
 	}
 	
 	do {	/* Keep returning records until we have no more files */
@@ -943,12 +949,16 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			if (Ctrl->G.mode) {
 				if (m <= n_alloc) {
 					GMT_malloc3 (GMT, c_angle, c_x, c_y, m, &n_alloc, double);
+					c_just = GMT_memory (GMT, c_just, n_alloc, int);
 					c_txt = GMT_memory (GMT, c_txt, n_alloc, char *);
+					c_font = GMT_memory (GMT, c_font, n_alloc, struct GMT_FONT);
 				}
 				c_angle[m] = T.paragraph_angle;
 				c_txt[m] = strdup (curr_txt);
 				c_x[m] = plot_x;
 				c_y[m] = plot_y;
+				c_just[m] = T.block_justify;
+				c_font[m] = T.font;
 				m++;
 			}
 			else {	
@@ -971,10 +981,18 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	 	GMT_free (GMT, paragraph);
 	}
 	if (Ctrl->G.mode && m) {
-		int form;
+		int n_labels = m, form = (T.boxflag & 4) ? 32 : 0;	/* 32 = Rounded rectangle */
 		unsigned int kk;
-		GMT_textpath_init (GMT, &Ctrl->W.pen, Ctrl->W.pen.rgb, &Ctrl->W.pen, Ctrl->G.fill.rgb);
-		form = (T.boxflag & 4) ? 16 : 0;
+		char font[GMT_BUFSIZ] = {""}, **fonts = NULL;
+		EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
+		EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
+		EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
+		EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
+		
+		mode |= 1;	/* To lay down all PSL attributes */
+		if (Ctrl->G.mode == PSTEXT_CLIPPLOT) mode |= 2;	/* To place text */
+		mode |= 4;	/* To set clip path */
+		GMT_textpath_init (GMT, &Ctrl->W.pen, Ctrl->G.fill.rgb);
 		if (Ctrl->C.percent) {	/* Meant % of fontsize */
 			offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
 			offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
@@ -983,12 +1001,28 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			offset[0] = T.x_space;
 			offset[1] = T.y_space;
 		}
-		PSL_plottextclip (PSL, c_x, c_y, m, T.font.size, c_txt, c_angle, T.block_justify, offset, form);	/* This turns clipping ON */
-		for (kk = 0; kk < m; kk++) free (c_txt[kk]);
+		fonts = GMT_memory (GMT, NULL, m, char *);
+		for (kk = 0; kk < m; kk++) {
+			PSL_setfont (PSL, c_font[kk].id);
+			psl_encodefont (PSL, PSL->current.font_no);
+			sprintf (font, "%s %d F%d (%s) sH /PSL_height edef", psl_putcolor (PSL, c_font[kk].fill.rgb), psl_ip (PSL, c_font[kk].size), PSL->current.font_no, c_txt[kk]);
+			fonts[kk] = strdup (font);
+		}
+		psl_set_int_array (PSL, "PSL_label_justify", c_just, m);
+		psl_set_txt_array (PSL, "PSL_label_font", fonts, m);
+		/* Turn clipping ON after [optionally] displaying the text */
+		PSL_plottextline (PSL, NULL, NULL, NULL, 1, c_x, c_y, c_txt, c_angle, &n_labels, T.font.size, T.block_justify, offset, form);
+		for (kk = 0; kk < m; kk++) {
+			free (c_txt[kk]);
+			free (fonts[kk]);
+		}
 		GMT_free (GMT, c_angle);
 		GMT_free (GMT, c_x);
 		GMT_free (GMT, c_y);
 		GMT_free (GMT, c_txt);
+		GMT_free (GMT, c_just);
+		GMT_free (GMT, c_font);
+		GMT_free (GMT, fonts);
 	}
 	else if (!(Ctrl->N.active || Ctrl->Z.active)) GMT_map_clip_off (GMT);
 

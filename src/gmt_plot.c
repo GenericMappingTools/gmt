@@ -3581,119 +3581,125 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	 * mode = 1: We place all the PSL variables required to use the text for clipping of painting.
 	 * mode = 2: We paint the text that is stored in the PSL variables.
 	 * mode = 4: We use the text stored in the PSL variables to set up a clip path.  CLipping is turned ON.
-	 * mode = 8: We turn clip path OFF.
-	 * modes 1,2, and 4 can be combined as bit flags, 8 must be given by itself.
+	 * mode = 8: We draw the lines.
+	 * mode = 16: We turn clip path OFF.
+	 * mode = 32: We want rounded rectangles instead of straight rectangular boxes [straight text only].
 	 */
-	int just, form, *node = NULL;
-	uint64_t first_i, last_i, k, m, seg;
-	double *angle = NULL, *xt = NULL, *yt = NULL;
-	char **txt = NULL, **pen = NULL, buffer[GMT_BUFSIZ];
+	int justify = 0, form = 0, *just = NULL, *node = NULL, *nlabels_per_segment = NULL, *npoints_per_segment = NULL;
+	uint64_t k, m, seg;
+	unsigned int n_segments = 0, n_points = 0, n_labels = 0, first_point_in_segment = 0, this_seg;
+	double *angle = NULL, *xpath = NULL, *ypath = NULL, *xtxt = NULL, *ytxt = NULL;
+	char **txt = NULL, **pen = NULL, buffer[GMT_BUFSIZ] = {""}, **fonts = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
+	void *A1 = NULL, *A2 = NULL;
 	EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
-
-	if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
-		just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
-	else
-		just = G->just;
-
-	for (seg = last_i = m = 0, first_i = UINTMAX_MAX; seg < G->n_segments; seg++) {	/* Find first and last set of labels */
-		L = G->segment[seg];	/* Pointer to current segment */
-		if (L->n_labels) {	/* This segment has labels */
-			if (first_i == UINTMAX_MAX) first_i = seg;	/* OK, this is the first */
-			last_i = seg;			/* When done, this will hold the last i */
-			m += L->n_labels;		/* Total number of labels */
-		}
-	}
-
-	if (m == 0) return;	/* There are no labels */
-
-	if (mode == 8) {	/* Turn OFF Clipping and bail */
-		PSL_comment (PSL, "Turn label clipping off:\n");
-		PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 2);	/* This turns clipping OFF if it was ON in the first place */
-		return;
-	}
+	EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
+	EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
+	EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 
 	form = mode;
-	if (!G->transparent) form |= 128;	/* Want the box filled */
-	if (G->box & 1) form |= 256;		/* Want box outline */
-	if (G->curved_text) {	/* Curved labels in 2D with transparent or opaque textbox: use PSL_plottextpath */
-		unsigned int n_paths = 0, n_points = 0, n_labels = 0, start_k = 0, n;
-		int *n_m = NULL, *n_k = NULL;
+	if (mode & PSL_TXT_INIT) {	/* Determine and places all PSL attributes */
+		char font[PSL_BUFSIZ] = {""};
+		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
+			justify = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
+		else
+			justify = G->just;
+
 		for (seg = 0; seg < G->n_segments; seg++) {
 			L = G->segment[seg];	/* Pointer to current segment */
 			if (!L->annot || L->n_labels == 0) continue;
-			n_paths++;			/* Number of paths */
-			n_points += L->n;		/* Total number of points in all paths so far */
+			n_segments++;			/* Number of segments */
+			n_points += L->n;		/* Total number of points in all segments so far */
 			n_labels += L->n_labels;	/* Number of labels so far */
 		}	
-		GMT_malloc2 (GMT, xt, yt, n_points, NULL, double);
-		GMT_malloc2 (GMT, node, n_m, n_labels, NULL, int);
-		n_k = GMT_memory (GMT, NULL, n_paths, int);
+
+		if (n_labels == 0) return;	/* There are no labels */
+
+		if (G->box & 4) form |= PSL_TXT_ROUND;		/* Want round box shape */
+		if (G->curved_text) form |= PSL_TXT_CURVED;	/* Want text set along curved path */
+		if (!G->transparent) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
+		if (G->box & 1) form |= PSL_TXT_DRAWBOX;	/* Want box outline */
+		GMT_malloc2 (GMT, xpath, ypath, n_points, NULL, double);
+		nlabels_per_segment = GMT_memory (GMT, NULL, n_labels, int);
+		GMT_malloc2 (GMT, npoints_per_segment, nlabels_per_segment, n_segments, NULL, int);
+		if (G->curved_text) {	/* Must pass node locations of labels */
+			node = GMT_memory (GMT, NULL, n_labels, int);
+			A1 = node;
+		}
+		else {			/* Must pass x,y locations of labels */
+			GMT_malloc2 (GMT, xtxt, ytxt, n_points, NULL, double);
+			A1 = xtxt;
+			A2 = ytxt;
+		}
 		angle = GMT_memory (GMT, NULL, n_labels, double);
 		txt   = GMT_memory (GMT, NULL, n_labels, char *);
-		pen   = GMT_memory (GMT, NULL, n_paths, char *);
-		for (seg = m = n = 0; seg < G->n_segments; seg++) {
+		pen   = GMT_memory (GMT, NULL, n_segments, char *);
+		for (seg = m = this_seg = 0; seg < G->n_segments; seg++) {	/* Process all segments, skip those without labels */
 			L = G->segment[seg];	/* Pointer to current segment */
 			if (!L->annot || L->n_labels == 0) continue;
-			n_k[n] = L->n;	/* Points along this segment path */
-			if (seg > 0) start_k += n_k[n-1];		/* First point id in combined path */
-			GMT_memcpy (&xt[start_k], L->x, L->n, double);	/* Append this segment path to the combined path array */
-			GMT_memcpy (&yt[start_k], L->y, L->n, double);
-			n_m[n] = L->n_labels;		/* Number of labels for this path */
-			pen[n] = strdup (PSL_makepen (GMT->PSL, L->pen.width, L->pen.rgb, L->pen.style, L->pen.offset));
-			for (k = 0; k < L->n_labels; k++, m++) {
+			npoints_per_segment[this_seg] = L->n;	/* Points along this segment path */
+			if (this_seg > 0) first_point_in_segment += npoints_per_segment[this_seg-1];		/* First point id in combined path */
+			GMT_memcpy (&xpath[first_point_in_segment], L->x, L->n, double);	/* Append this segment path to the combined path array */
+			GMT_memcpy (&ypath[first_point_in_segment], L->y, L->n, double);
+			nlabels_per_segment[this_seg] = L->n_labels;		/* Number of labels for this path */
+			pen[this_seg] = strdup (PSL_makepen (GMT->PSL, L->pen.width, L->pen.rgb, L->pen.style, L->pen.offset));	/* Get pen PSL setting for this segment */
+			for (k = 0; k < L->n_labels; k++, m++) {	/* Process all labels for this segment */
 				angle[m] = L->L[k].angle;
 				txt[m]   = L->L[k].label;
-				node[m]  = (int)L->L[k].node;	/* node is a local index for the relevant segment */
+				if (G->curved_text)	/* Need local node number for text placement */
+					node[m]  = (int)L->L[k].node;	/* node is a local index for the relevant segment */
+				else {	/* Need coordinate of text placement */
+					xtxt[m]    = L->L[k].x;
+					ytxt[m]    = L->L[k].y;
+				}
 			}
-			n++;
+			this_seg++;
 		}
-		/* Note this uses the last segments pen/fontrgb on behalf of all */
-		GMT_textpath_init (GMT, &L->pen, G->rgb, &G->pen, L->rgb);
-		psl_set_txt_array (PSL, "PSL_linepen", pen, n_paths);
-		PSL_plottextcurve (PSL, xt, yt, n_k, n_paths, node, txt, angle, n_m, G->font_label.size, just, G->clearance, form);
-		GMT_free (GMT, n_k);
-		GMT_free (GMT, n_m);
-		GMT_free (GMT, node);
-		for (k = 0; k < n_paths; k++) free (pen[k]);
-		GMT_free (GMT, pen);
-	}
-	else {	/* 2-D Straight transparent or opaque text labels: repeat call to PSL_plottextclip */
-		if (G->box & 4) form |= 16;		/* Want round box shape */
-		/* Allocate temp space for everything that must be passed to PSL_plottextclip */
-		GMT_malloc3 (GMT, angle, xt, yt, m, NULL, double);
-		txt = GMT_memory (GMT, NULL, m, char *);
-		pen   = GMT_memory (GMT, NULL, G->n_segments, char *);
-		for (seg = m = 0; seg < G->n_segments; seg++) {
-			L = G->segment[seg];	/* Pointer to current segment */
-			pen[seg] = strdup (PSL_makepen (GMT->PSL, L->pen.width, L->pen.rgb, L->pen.style, L->pen.offset));
-			for (k = 0; k < L->n_labels; k++, m++) {
-				angle[m] = L->L[k].angle;
-				txt[m]   = L->L[k].label;
-				xt[m]    = L->L[k].x;
-				yt[m]    = L->L[k].y;
-			}
+	
+		PSL_comment (PSL, "Store path and label attributes:\n");
+		PSL_setfont (PSL, G->font_label.id);
+		psl_encodefont (PSL, PSL->current.font_no);		
+		sprintf (font, "%s %d F%d (%s) sH /PSL_height edef", psl_putcolor (PSL, G->font_label.fill.rgb), psl_ip (PSL, G->font_label.size), PSL->current.font_no, txt[0]);
+		GMT_textpath_init (GMT, &G->pen, G->rgb);
+		PSL_comment (PSL, "Store pens used for each line segment:\n");
+		psl_set_txt_array (PSL, "path_pen", pen, n_segments);
+		/* While all contours & quoted lines have same justification and font, this is not true of pstext items
+		 * so we use separate arrays for both font and justify [here both are constants]  */
+		just = GMT_memory (GMT, NULL, n_labels, int);
+		fonts = GMT_memory (GMT, NULL, n_labels, char *);
+		for (k = 0; k < n_labels; k++) {
+			just[k] = abs (justify);
+			fonts[k] = font;
 		}
-		/* Note this uses the last segments pen/fontrgb on behalf of all */
-		GMT_textpath_init (GMT, &L->pen, G->rgb, &G->pen, L->rgb);
-		psl_set_txt_array (PSL, "PSL_linepen", pen, G->n_segments);
-		PSL_plottextclip (PSL, xt, yt, (int)m, G->font_label.size, txt, angle, just, G->clearance, form);	/* This turns clipping ON */
-		for (k = 0; k < G->n_segments; k++) free (pen[k]);
-		GMT_free (GMT, pen);
+		PSL_comment (PSL, "Store text justification for each text label:\n");
+		psl_set_int_array   (PSL, "label_justify", just, n_labels);
+		PSL_comment (PSL, "Store font setting for each text label:\n");
+		psl_set_txt_array   (PSL, "label_font", fonts, n_labels);
+		GMT_free (GMT, just);
+		GMT_free (GMT, fonts);
 	}
-	GMT_free (GMT, angle);
-	GMT_free (GMT, xt);
-	GMT_free (GMT, yt);
-	GMT_free (GMT, txt);
+	PSL_plottextline (PSL, xpath, ypath, npoints_per_segment, n_segments, A1, A2, txt, angle, nlabels_per_segment, G->font_label.size, justify, G->clearance, form);
+	if (mode & PSL_TXT_INIT) {	/* Free up the things we allocated above */
+		GMT_free (GMT, npoints_per_segment);
+		GMT_free (GMT, nlabels_per_segment);
+		for (k = 0; k < n_segments; k++) free (pen[k]);
+		GMT_free (GMT, pen);
+		GMT_free (GMT, angle);
+		GMT_free (GMT, txt);
+		if (G->curved_text)
+			GMT_free (GMT, node);
+		else {
+			GMT_free (GMT, xtxt);
+			GMT_free (GMT, ytxt);
+		}
+	}
 }
 
-void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *LP, double Brgb[], struct GMT_PEN *BP, double Frgb[])
+void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[])
 {
-	PSL_defpen (GMT->PSL, "PSL_setlinepen", LP->width, LP->style, LP->offset, LP->rgb);
-	PSL_defpen (GMT->PSL, "PSL_setboxpen", LP->width, LP->style, LP->offset, LP->rgb);
-
+	PSL_comment (GMT->PSL, "Pen and fill for text boxes (if enabled):\n");
+	PSL_defpen (GMT->PSL, "PSL_setboxpen", BP->width, BP->style, BP->offset, BP->rgb);
 	PSL_defcolor (GMT->PSL, "PSL_setboxrgb", Brgb);
-	PSL_defcolor (GMT->PSL, "PSL_settxtrgb", Frgb);
 }
 
 void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
@@ -3717,17 +3723,14 @@ void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 	GMT_setfont (GMT, &G->font_label);
 	
 	if (G->transparent) {		/* Transparent boxes means we must set up plot text, then set up clip paths, then draw lines, then deactivate clipping */
-		gmt_contlabel_plotlabels (GMT, PSL, G, 7);		/* Place PSL variables(1), plot labels(2), then set up clip paths(4) */
-		if (G->curved_text) /* Since coordinates of all lines are in PSL variables we just call the PLS function to draw them */
-			PSL_command (PSL, "PSL_curved_path_lines\n");	/* Now draw the lines whose coordinates are in the PSL already*/
-		else /* FOr straight labels there are no paths yet so we draw them now */
-			gmt_contlabel_drawlines (GMT, PSL, G, 0);	/* Draw continuous lines everywhere - they will be clipped at labels */
-		if (G->delay) return;					/* Leave clipping on and do not plot text yet - delayed until a future psclip -C */
-		gmt_contlabel_plotlabels (GMT, PSL, G, 8);		/* Turn off label clipping (8) after drawing the lines */
+		/* Place PSL variables, plot labels, set up clip paths, draw lines */
+		unsigned int mode = PSL_TXT_INIT | PSL_TXT_SHOW | PSL_TXT_CLIP_ON | PSL_TXT_DRAW;
+		if (!G->delay) mode |= PSL_TXT_CLIP_OFF;	/* Also turn off clip path when done */
+		gmt_contlabel_plotlabels (GMT, PSL, G, mode);	/* Take the above actions */
 	}
 	else {	/* Opaque text boxes */
-		gmt_contlabel_drawlines (GMT, PSL, G, 0);		/* Here we must draw the lines first and then add labels on top */
-		gmt_contlabel_plotlabels (GMT, PSL, G, 3);		/* Place PSL variables(1) and plot labels(2) */
+		gmt_contlabel_plotlabels (GMT, PSL, G, PSL_TXT_INIT | PSL_TXT_DRAW);	/* Place PSL variables and draw lines */
+		gmt_contlabel_plotlabels (GMT, PSL, G, PSL_TXT_SHOW);			/* Plot labels */
 	}
 }
 

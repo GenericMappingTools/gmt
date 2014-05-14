@@ -96,7 +96,7 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I);
 /* gmt_plot.c prototypes only included if pslib has been included */
 
 EXTERN_MSC char * GMT_export2proj4 (struct GMT_CTRL *GMT);
-EXTERN_MSC void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *LP, double Brgb[], struct GMT_PEN *BP, double Frgb[]);
+EXTERN_MSC void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[]);
 EXTERN_MSC void GMT_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms);
 EXTERN_MSC void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B);
