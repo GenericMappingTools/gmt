@@ -221,7 +221,7 @@ end
     /PSL_node PSL_label_node pstart PSL_m getinterval def	% Get the subset of note values for current line segment
     /PSL_angle PSL_label_angle pstart PSL_m getinterval def	% Get the subset of angle values for current line segment
     /PSL_str PSL_label_str pstart PSL_m getinterval def		% Get the subset of string values for current line segment
-    PSL_curved_path_labels					% Operate on this segment only
+    PSL_curved_path_label					% Operate on this segment only
     /kstart kstart PSL_n add def				% Go to next segment start index for path
     /pstart pstart PSL_m add def				% Go to next segment start index for nodes
   } for  % The loop over segments
@@ -230,7 +230,7 @@ end
 
 } def
 
-/PSL_curved_path_labels
+/PSL_curved_path_label
 {	% Deals with a single line segment and its labels
   /PSL_n1 PSL_n 1 sub def	% one less is the upper limit in for loops
   /PSL_m1 PSL_m 1 sub def	% same
