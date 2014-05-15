@@ -3597,7 +3597,11 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
 	EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 
-	form = mode;
+	form = mode;					/* Which actions to take */
+	if (G->box & 4) form |= PSL_TXT_ROUND;		/* Want round box shape */
+	if (G->curved_text) form |= PSL_TXT_CURVED;	/* Want text set along curved path */
+	if (!G->transparent) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
+	if (G->box & 1) form |= PSL_TXT_DRAWBOX;	/* Want box outline */
 	if (mode & PSL_TXT_INIT) {	/* Determine and places all PSL attributes */
 		char font[PSL_BUFSIZ] = {""};
 		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
@@ -3615,10 +3619,6 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 
 		if (n_labels == 0) return;	/* There are no labels */
 
-		if (G->box & 4) form |= PSL_TXT_ROUND;		/* Want round box shape */
-		if (G->curved_text) form |= PSL_TXT_CURVED;	/* Want text set along curved path */
-		if (!G->transparent) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
-		if (G->box & 1) form |= PSL_TXT_DRAWBOX;	/* Want box outline */
 		GMT_malloc2 (GMT, xpath, ypath, n_points, NULL, double);
 		nlabels_per_segment = GMT_memory (GMT, NULL, n_labels, int);
 		GMT_malloc2 (GMT, npoints_per_segment, nlabels_per_segment, n_segments, NULL, int);

@@ -3399,7 +3399,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, c;
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t|T[<file>]][+u<unit>][+v][+w<width>][+=<prefix>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g[<fill>]][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t|T[<file>]][+u<unit>][+v][+w<width>][+=<prefix>] strings */
 
 	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
 
@@ -3450,7 +3450,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 
 			case 'g':	/* Box Fill specification */
-				if (GMT_getrgb (GMT, &p[1], G->rgb)) bad++;
+				if (p[1] && GMT_getrgb (GMT, &p[1], G->rgb)) bad++;
 				G->transparent = false;
 				break;
 
@@ -3523,7 +3523,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 
 			case 'p':	/* Draw text box outline [with optional textbox pen specification] */
-				if (GMT_getpen (GMT, &p[1], &G->pen)) bad++;
+				if (p[1] && GMT_getpen (GMT, &p[1], &G->pen)) bad++;
 				G->box |= 1;
 				break;
 

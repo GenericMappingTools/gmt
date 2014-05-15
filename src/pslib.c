@@ -572,7 +572,7 @@ int PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, int n, double
 	if (flag & 2) {	/* End path and [optionally] fill */
 		if (!PSL_eq(rgb[0],-1.0)) PSL_command (PSL, "V %s eofill U ", psl_putcolor (PSL, rgb));
 		PSL->current.nclip++;
-		PSL_command (PSL, (flag & 4) ? "PSL_eoclip\n" : "PSL_eoclip N\n");
+		PSL_command (PSL, (flag & 4) ? "PSL_eoclip\n" : "PSL_clip N\n");
 		PSL_comment (PSL, "End of polygon clip path.  Polygon clipping is currently ON\n");
 	}
 	return (PSL_NO_ERROR);
