@@ -4109,11 +4109,17 @@ void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, d
 	for (i = 0; i < npath; i++) ntot += n[i];	/* Determine total number of points */
 		
 	PSL_comment (PSL, "Set coordinate arrays for text label placements:\n");
-	PSL_command (PSL, "/PSL_%s_x\n", prefix);
-	for (i = 0; i < ntot; i++) PSL_command (PSL, "%d\n", psl_ix (PSL, x[i]));
+	PSL_command (PSL, "/PSL_%s_x ", prefix);
+	for (i = 0; i < ntot; i++) {
+		PSL_command (PSL, "%d ", psl_ix (PSL, x[i]));
+		if (((i+1)%10) == 0) PSL_command (PSL, "\n");
+	}
 	PSL_command (PSL, "%d array astore def\n", ntot);
-	PSL_command (PSL, "/PSL_%s_y\n", prefix);
-	for (i = 0; i < ntot; i++) PSL_command (PSL, "%d\n", psl_iy (PSL, y[i]));
+	PSL_command (PSL, "/PSL_%s_y ", prefix);
+	for (i = 0; i < ntot; i++) {
+		PSL_command (PSL, "%d ", psl_iy (PSL, y[i]));
+		if (((i+1)%10) == 0) PSL_command (PSL, "\n");
+	}
 	PSL_command (PSL, "%d array astore def\n", ntot);
 	sprintf (txt, "%s_n", prefix);
 	psl_set_int_array (PSL, txt, n, npath);
@@ -4148,16 +4154,22 @@ void psl_set_attr_arrays (struct PSL_CTRL *PSL, const char *prefix, int *node, d
 void psl_set_real_array (struct PSL_CTRL *PSL, const char *prefix, double *array, int n)
 {	/* These are raw and not scaled */
 	int i;
-	PSL_command (PSL, "/PSL_%s\n", prefix);
-	for (i = 0; i < n; i++) PSL_command (PSL, "%.2f\n", array[i]);
+	PSL_command (PSL, "/PSL_%s ", prefix);
+	for (i = 0; i < n; i++) {
+		PSL_command (PSL, "%.2f ", array[i]);
+		if (((i+1)%10) == 0) PSL_command (PSL, "\n");
+	}
 	PSL_command (PSL, "%d array astore def\n", n);
 }
 
 void psl_set_int_array (struct PSL_CTRL *PSL, const char *prefix, int *array, int n)
 {	/* These are raw and not scaled */
 	int i;
-	PSL_command (PSL, "/PSL_%s\n", prefix);
-	for (i = 0; i < n; i++) PSL_command (PSL, "%d\n", array[i]);
+	PSL_command (PSL, "/PSL_%s ", prefix);
+	for (i = 0; i < n; i++) {
+		PSL_command (PSL, "%d ", array[i]);
+		if (((i+1)%10) == 0) PSL_command (PSL, "\n");
+	}
 	PSL_command (PSL, "%d array astore def\n", n);
 }
 

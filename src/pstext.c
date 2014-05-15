@@ -129,6 +129,7 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->F.font = GMT->current.setting.font_annot[0];		/* Default font */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
 	C->S.pen = GMT->current.setting.map_default_pen;
+	C->T.mode = 'o';	/* Rectangular box shape */
 
 	return (C);
 }
@@ -181,9 +182,13 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 	}
 }
 
-void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
+void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 {
 	GMT_memset (T, 1, struct PSTEXT_INFO);
+	if (C->T.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Cannot have non-rectangular text box if clearance (-C) is zero.\n");
+		C->T.mode = 'o';
+	}
 	T->x_space = C->C.dx;
 	T->y_space = C->C.dy;
 	T->space_flag = (C->C.percent) ? 1 : 0;
@@ -451,9 +456,9 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 			case 'G':
 				Ctrl->G.active = true;
 				if (opt->arg[0] == 'c' && !opt->arg[1])
-					Ctrl->G.mode = PSTEXT_CLIPPLOT;
-				else if (opt->arg[0] == 'C' && !opt->arg[1])
 					Ctrl->G.mode = PSTEXT_CLIPONLY;
+				else if (opt->arg[0] == 'C' && !opt->arg[1])
+					Ctrl->G.mode = PSTEXT_CLIPPLOT;
 				else if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
@@ -649,7 +654,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input text table data\n");
-	load_parameters_pstext (&T, Ctrl);	/* Pass info from Ctrl to T */
+	load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 
 #if 0
 	if (!Ctrl->F.active) Ctrl->F.nread = 4;	/* Need to be backwards compatible */
@@ -981,7 +986,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	 	GMT_free (GMT, paragraph);
 	}
 	if (Ctrl->G.mode && m) {
-		int n_labels = m, form = (T.boxflag & 4) ? 32 : 0;	/* 32 = Rounded rectangle */
+		int n_labels = m, form = (T.boxflag & 4) ? PSL_TXT_ROUND : 0;	/* PSL_TXT_ROUND = Rounded rectangle */
 		unsigned int kk;
 		char font[GMT_BUFSIZ] = {""}, **fonts = NULL;
 		EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
@@ -989,9 +994,9 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
 		EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 		
-		mode |= 1;	/* To lay down all PSL attributes */
-		if (Ctrl->G.mode == PSTEXT_CLIPPLOT) mode |= 2;	/* To place text */
-		mode |= 4;	/* To set clip path */
+		form |= PSL_TXT_INIT;	/* To lay down all PSL attributes */
+		if (Ctrl->G.mode == PSTEXT_CLIPPLOT) form |= PSL_TXT_SHOW;	/* To place text */
+		form |= PSL_TXT_CLIP_ON;	/* To set clip path */
 		GMT_textpath_init (GMT, &Ctrl->W.pen, Ctrl->G.fill.rgb);
 		if (Ctrl->C.percent) {	/* Meant % of fontsize */
 			offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
@@ -1008,8 +1013,8 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			sprintf (font, "%s %d F%d", psl_putcolor (PSL, c_font[kk].fill.rgb), psl_ip (PSL, c_font[kk].size), PSL->current.font_no);
 			fonts[kk] = strdup (font);
 		}
-		psl_set_int_array (PSL, "PSL_label_justify", c_just, m);
-		psl_set_txt_array (PSL, "PSL_label_font", fonts, m);
+		psl_set_int_array (PSL, "label_justify", c_just, m);
+		psl_set_txt_array (PSL, "label_font", fonts, m);
 		/* Turn clipping ON after [optionally] displaying the text */
 		PSL_plottextline (PSL, NULL, NULL, NULL, 1, c_x, c_y, c_txt, c_angle, &n_labels, T.font.size, T.block_justify, offset, form);
 		for (kk = 0; kk < m; kk++) {

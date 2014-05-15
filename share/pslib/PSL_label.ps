@@ -521,8 +521,8 @@ end
   { /psl_k exch def				% Current label index psl_k
     PSL_ST_prepare_text				% Get all dimensions, coordinates, etc. for this label
     PSL_rounded					% Get either straight or rounded text box path
-      {PSL_ST_textbox_rect}
       {PSL_ST_textbox_round}
+      {PSL_ST_textbox_rect}
     ifelse
   } for
   PSL_clip					% Set the new clip path and increment clip counter
