@@ -351,6 +351,7 @@ EXTERN_MSC int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb
 EXTERN_MSC int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char *text);
 EXTERN_MSC int PSL_defunits (struct PSL_CTRL *PSL, const char *param, double value);
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
+EXTERN_MSC char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], , char *pattern, double offset);
 
 /* Other deep level routines that could be useful */
 EXTERN_MSC int psl_ix (struct PSL_CTRL *PSL, double value);
