@@ -957,7 +957,7 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
 	if (n > 1 && type & PSL_MOVE && type & PSL_CLOSE && ix[0] == ix[n-1] && iy[0] == iy[n-1]) n--;
 
 	if (type & PSL_MOVE) {
-		PSL_command (PSL, "N %d %d M\n", ix[0], iy[0]);
+		PSL_command (PSL, "%d %d M\n", ix[0], iy[0]);
 		PSL->internal.ix = ix[0];
 		PSL->internal.iy = iy[0];
 		i0++;
@@ -1015,7 +1015,7 @@ int PSL_plotpoint (struct PSL_CTRL *PSL, double x, double y, int pen)
 		}
 		else if (pen & PSL_MOVE) {
 			/* Do this always, even if idx = idy = 0, just to be sure we are where we are supposed to be */
-			PSL_command (PSL, "N %d %d M\n", ix, iy);
+			PSL_command (PSL, "%d %d M\n", ix, iy);
 		}
 		else if (idx == 0 && idy == 0)
 			return (PSL_NO_ERROR);
