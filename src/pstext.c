@@ -1005,7 +1005,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		for (kk = 0; kk < m; kk++) {
 			PSL_setfont (PSL, c_font[kk].id);
 			psl_encodefont (PSL, PSL->current.font_no);
-			sprintf (font, "%s %d F%d (%s) sH /PSL_height edef", psl_putcolor (PSL, c_font[kk].fill.rgb), psl_ip (PSL, c_font[kk].size), PSL->current.font_no, c_txt[kk]);
+			sprintf (font, "%s %d F%d", psl_putcolor (PSL, c_font[kk].fill.rgb), psl_ip (PSL, c_font[kk].size), PSL->current.font_no);
 			fonts[kk] = strdup (font);
 		}
 		psl_set_int_array (PSL, "PSL_label_justify", c_just, m);

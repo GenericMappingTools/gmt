@@ -3659,7 +3659,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		PSL_comment (PSL, "Store path and label attributes:\n");
 		PSL_setfont (PSL, G->font_label.id);
 		psl_encodefont (PSL, PSL->current.font_no);		
-		sprintf (font, "%s %d F%d (%s) sH /PSL_height edef", psl_putcolor (PSL, G->font_label.fill.rgb), psl_ip (PSL, G->font_label.size), PSL->current.font_no, txt[0]);
+		sprintf (font, "%s %d F%d", psl_putcolor (PSL, G->font_label.fill.rgb), psl_ip (PSL, G->font_label.size), PSL->current.font_no);
 		GMT_textpath_init (GMT, &G->pen, G->rgb);
 		PSL_comment (PSL, "Store pens used for each line segment:\n");
 		psl_set_txt_array (PSL, "path_pen", pen, n_segments);

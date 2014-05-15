@@ -461,7 +461,7 @@ int PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label, doub
 	dy = sign * annotfontsize * PSL->internal.p2u;	/* Font size in user units */
 
 	PSL_command (PSL, "\nV %d %d T %g R\n", psl_iz (PSL, x), psl_iz (PSL, y), angle);
-	PSL_command (PSL, "0 0 M %d 0 D S\n", psl_iz (PSL, length));
+	PSL_command (PSL, "N 0 0 M %d 0 D S\n", psl_iz (PSL, length));
 	scl = length / (val1 - val0);
 	annot_off = dy;
 	label_off = 2.5 * dy;	/* Label offset is 250% of annotation font size */
@@ -770,7 +770,7 @@ int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, doub
 	iy = psl_iy (PSL, y0);
 	PSL->internal.ix = psl_ix (PSL, x1);
 	PSL->internal.iy = psl_iy (PSL, y1);
-	PSL_command (PSL, "%d %d M %d %d D S\n", ix, iy, PSL->internal.ix - ix, PSL->internal.iy - iy);
+	PSL_command (PSL, "N %d %d M %d %d D S\n", ix, iy, PSL->internal.ix - ix, PSL->internal.iy - iy);
 	return (PSL_NO_ERROR);
 }
 
@@ -957,7 +957,7 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
 	if (n > 1 && type & PSL_MOVE && type & PSL_CLOSE && ix[0] == ix[n-1] && iy[0] == iy[n-1]) n--;
 
 	if (type & PSL_MOVE) {
-		PSL_command (PSL, "%d %d M\n", ix[0], iy[0]);
+		PSL_command (PSL, "N %d %d M\n", ix[0], iy[0]);
 		PSL->internal.ix = ix[0];
 		PSL->internal.iy = iy[0];
 		i0++;
@@ -1015,7 +1015,7 @@ int PSL_plotpoint (struct PSL_CTRL *PSL, double x, double y, int pen)
 		}
 		else if (pen & PSL_MOVE) {
 			/* Do this always, even if idx = idy = 0, just to be sure we are where we are supposed to be */
-			PSL_command (PSL, "%d %d M\n", ix, iy);
+			PSL_command (PSL, "N %d %d M\n", ix, iy);
 		}
 		else if (idx == 0 && idy == 0)
 			return (PSL_NO_ERROR);
@@ -1960,7 +1960,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 
 	bool curved = ((mode & PSL_TXT_CURVED) == PSL_TXT_CURVED);	/* True if baseline must follow line path */
 	int extras, kind = (curved) ? 1 : 0;
-	char *name[2] = {"straight", "curved"};
+	char *name[2] = {"straight", "curved"}, *ext[2] = {"clip", "labels"};
 
 	if (mode & 1) {	/* Lay down PSL variables */
 		int i = 0, j, k, n, n_labels = 0;
@@ -1990,7 +1990,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 	extras = mode & (PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX);	/* This just gets these bit settings, if present */
 	if (mode & PSL_TXT_SHOW) PSL_command (PSL, "%d PSL_%s_path_labels\n", PSL_TXT_SHOW|extras, name[kind]);	/* Lay down visible text */
 	if (mode & PSL_TXT_CLIP_ON) {	/* Set up text clip paths and turn clipping ON */
-		PSL_command (PSL, "%d PSL_%s_path_labels\n", PSL_TXT_CLIP_ON|extras, name[kind]);
+		PSL_command (PSL, "%d PSL_%s_path_%s\n", PSL_TXT_CLIP_ON|extras, name[kind], ext[kind]);
 		PSL->current.nclip++;	/* Increment clip level */
 	}
 	if (mode & PSL_TXT_DRAW) {	/* Draw the lines */
