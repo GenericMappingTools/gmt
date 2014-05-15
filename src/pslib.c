@@ -1985,19 +1985,27 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_definteger (PSL, "PSL_n_labels", n_labels);
 		if (!curved)	/* Set PSL array for text location with straight baselines */
 			psl_set_path_arrays (PSL, "txt", arg1, arg2, 1, &n_labels);
+		PSL_comment (PSL, "Estimate text heights:\n");
+		PSL_command (PSL, "PSL_set_label_heights\n");	/* Estimate text heights */
 	}
 	
 	extras = mode & (PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX);	/* This just gets these bit settings, if present */
-	if (mode & PSL_TXT_SHOW) PSL_command (PSL, "%d PSL_%s_path_labels\n", PSL_TXT_SHOW|extras, name[kind]);	/* Lay down visible text */
+	if (mode & PSL_TXT_SHOW) {	/* Lay down visible text */
+		PSL_comment (PSL, "Display the texts:\n");
+		PSL_command (PSL, "%d PSL_%s_path_labels\n", PSL_TXT_SHOW|extras, name[kind]);
+	}
 	if (mode & PSL_TXT_CLIP_ON) {	/* Set up text clip paths and turn clipping ON */
+		PSL_comment (PSL, "Set up text clippath and turn clipping ON:\n");
 		PSL_command (PSL, "%d PSL_%s_path_%s\n", PSL_TXT_CLIP_ON|extras, name[kind], ext[kind]);
 		PSL->current.nclip++;	/* Increment clip level */
 	}
-	if (mode & PSL_TXT_DRAW) {	/* Draw the lines */
-		PSL_command (PSL, "PSL_draw_path_lines\n");	/* Draw lines whose coordinates are in the PSL already*/
+	if (mode & PSL_TXT_DRAW) {	/* Draw the lines whose coordinates are in the PSL already */
+		PSL_comment (PSL, "Draw the text line segments:\n");
+		PSL_command (PSL, "PSL_draw_path_lines\n");
 	}
+	PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 	if (mode & PSL_TXT_CLIP_OFF) {	/* Turn OFF Clipping and bail */
-		PSL_comment (PSL, "Turn label clipping off:\n");
+		PSL_comment (PSL, "Turn label clipping OFF:\n");
 		return (PSL_endclipping (PSL, 1));	/* Decrease clipping by one level */
 	}
 	return (PSL_NO_ERROR);
@@ -4084,12 +4092,22 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 	}
 		
 	PSL_comment (PSL, "Set concatenated coordinate arrays for line segments:\n");
-	PSL_command (PSL, "/PSL_path_x\n");
-	for (i = 0; i < ntot; i++) if (!process || use[i]) PSL_command (PSL, "%d\n", psl_ix (PSL, x[i]));
-	PSL_command (PSL, "%d array astore def\n", new_tot);
-	PSL_command (PSL, "/PSL_path_y\n");
-	for (i = 0; i < ntot; i++) if (!process ||use[i]) PSL_command (PSL, "%d\n", psl_iy (PSL, y[i]));
-	PSL_command (PSL, "%d array astore def\n", new_tot);
+	PSL_command (PSL, "/PSL_path_x [ ");
+	for (i = k = 0; i < ntot; i++) {
+		if (process && !use[i]) continue;
+		PSL_command (PSL, "%d ", psl_ix (PSL, x[i]));
+		k++;
+		if ((k%10) == 0) PSL_command (PSL, "\n\t");
+	}
+	PSL_command (PSL, "] def\n");
+	PSL_command (PSL, "/PSL_path_y [ ");
+	for (i = k = 0; i < ntot; i++) {
+		if (process && !use[i]) continue;
+		PSL_command (PSL, "%d ", psl_iy (PSL, y[i]));
+		k++;
+		if ((k%10) == 0) PSL_command (PSL, "\n\t");
+	}
+	PSL_command (PSL, "] def\n");
 	PSL_comment (PSL, "Set array with number of points per line segments:\n");
 	psl_set_int_array (PSL, "path_n", new_n, npath);
 
@@ -4109,18 +4127,18 @@ void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, d
 	for (i = 0; i < npath; i++) ntot += n[i];	/* Determine total number of points */
 		
 	PSL_comment (PSL, "Set coordinate arrays for text label placements:\n");
-	PSL_command (PSL, "/PSL_%s_x ", prefix);
+	PSL_command (PSL, "/PSL_%s_x [ ", prefix);
 	for (i = 0; i < ntot; i++) {
 		PSL_command (PSL, "%d ", psl_ix (PSL, x[i]));
-		if (((i+1)%10) == 0) PSL_command (PSL, "\n");
+		if (((i+1)%10) == 0) PSL_command (PSL, "\n\t");
 	}
-	PSL_command (PSL, "%d array astore def\n", ntot);
-	PSL_command (PSL, "/PSL_%s_y ", prefix);
+	PSL_command (PSL, "] def\n");
+	PSL_command (PSL, "/PSL_%s_y [ ", prefix);
 	for (i = 0; i < ntot; i++) {
 		PSL_command (PSL, "%d ", psl_iy (PSL, y[i]));
-		if (((i+1)%10) == 0) PSL_command (PSL, "\n");
+		if (((i+1)%10) == 0) PSL_command (PSL, "\n\t");
 	}
-	PSL_command (PSL, "%d array astore def\n", ntot);
+	PSL_command (PSL, "] def\n");
 	sprintf (txt, "%s_n", prefix);
 	psl_set_int_array (PSL, txt, n, npath);
 }
@@ -4154,31 +4172,31 @@ void psl_set_attr_arrays (struct PSL_CTRL *PSL, const char *prefix, int *node, d
 void psl_set_real_array (struct PSL_CTRL *PSL, const char *prefix, double *array, int n)
 {	/* These are raw and not scaled */
 	int i;
-	PSL_command (PSL, "/PSL_%s ", prefix);
+	PSL_command (PSL, "/PSL_%s [ ", prefix);
 	for (i = 0; i < n; i++) {
 		PSL_command (PSL, "%.2f ", array[i]);
-		if (((i+1)%10) == 0) PSL_command (PSL, "\n");
+		if (((i+1)%10) == 0) PSL_command (PSL, "\n\t");
 	}
-	PSL_command (PSL, "%d array astore def\n", n);
+	PSL_command (PSL, "] def\n");
 }
 
 void psl_set_int_array (struct PSL_CTRL *PSL, const char *prefix, int *array, int n)
 {	/* These are raw and not scaled */
 	int i;
-	PSL_command (PSL, "/PSL_%s ", prefix);
+	PSL_command (PSL, "/PSL_%s [ ", prefix);
 	for (i = 0; i < n; i++) {
 		PSL_command (PSL, "%d ", array[i]);
-		if (((i+1)%10) == 0) PSL_command (PSL, "\n");
+		if (((i+1)%10) == 0) PSL_command (PSL, "\n\t");
 	}
-	PSL_command (PSL, "%d array astore def\n", n);
+	PSL_command (PSL, "] def\n");
 }
 
 void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[], int n)
 {
 	int i;
-	PSL_command (PSL, "/PSL_%s\n", prefix);
-	for (i = 0; i < n; i++) PSL_command (PSL, "(%s)\n", array[i]);
-	PSL_command (PSL, "%d array astore def\n", n);
+	PSL_command (PSL, "/PSL_%s [\n", prefix);
+	for (i = 0; i < n; i++) PSL_command (PSL, "\t(%s)\n", array[i]);
+	PSL_command (PSL, "] def\n", n);
 }
 
 void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t size)

@@ -1095,7 +1095,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		GMT_contlabel_free (GMT, &S.G);
 	}
 
-	if (clip_set) GMT_map_clip_off (GMT);
+	if (clip_set && !S.G.delay) GMT_map_clip_off (GMT);	/* We delay map clip off if text clipping was chosen via -Sq<args:+e */
 
 	GMT_plane_perspective (GMT, -1, 0.0);
 

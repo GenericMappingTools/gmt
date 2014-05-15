@@ -198,6 +198,19 @@ end
 % PSL_txt_x	(x,y) coordinates of the location of the m labels
 % PSL_txt_y
 
+/PSL_set_label_heights
+{	% Create array PSL_heights with full label heights
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
+  /PSL_heights PSL_n_labels array def		% Create array with text heights
+  0 1 PSL_n_labels_minus_1			% Loop psl_k = 0 < PSL_n_labels
+  { /psl_k exch def				% Current label index psl_k
+    /psl_label PSL_label_str psl_k get def	% Current text label
+    PSL_label_font psl_k get cvx exec		% Get and set this label's font attributes
+    psl_label sH /PSL_height edef		% Compute the height of this string
+    PSL_heights psl_k PSL_height put		% Store it in the array
+  } for
+} def
+
 %%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 /PSL_curved_path_labels
 { /psl_bits exch def				% 4 on/of bit settings as indicated below
@@ -275,7 +288,7 @@ end
 
 /PSL_CT_textline
 { PSL_fnt k get cvx exec		% Get and set this label's font attributes
-  PSL_str k get sH /PSL_height edef	% Determine the height of this text
+  /PSL_height PSL_heights k get def	% Recall the height of this text
   PSL_placetext	{PSL_CT_placelabel} if	% If we want to place the text
   PSL_clippath {PSL_CT_clippath} if
   /n 0 def /k k 1 add def		% Set n back to 0, goto next label
@@ -381,6 +394,7 @@ end
 /PSL_CT_placelabel
 { % Places the curved text label on current segment
   /PSL_just PSL_label_justify k get def	% Get this labels justification
+  /PSL_height PSL_heights k get def	% Recall the height of this string
   PSL_usebox		% Want to lay down box outline or fill
   {PSL_CT_clippath	% Box path now current path
     PSL_fillbox		% Want to paint box
@@ -534,7 +548,7 @@ end
   /psl_yp PSL_txt_y psl_k get def		% Get text placement y coordinate
   /psl_label PSL_label_str psl_k get def	% Current text label
   PSL_label_font psl_k get cvx exec		% Get and set this label's font attributes
-  psl_label sH /PSL_height edef			% Compute the height of this string
+  /PSL_height PSL_heights psl_k get def		% Recall the height of this string
   /psl_boxH PSL_height PSL_gap_y 2 mul add def	% Set height of current label including clearance
   /PSL_just PSL_label_justify psl_k get def	% Get text justification (1-11)
   /PSL_justx PSL_just 4 mod 1 sub 2 div neg def % This is 0, -0.5, or -1 for relative x-shift 

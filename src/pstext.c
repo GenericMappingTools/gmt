@@ -530,7 +530,6 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 	n_errors += GMT_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->T.mode && Ctrl->T.mode != 'o', "Warning: non-rectangular text boxes require a non-zero -C\n");
-	//n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->G.active && !Ctrl->W.active, "Warning: -T requires -W and/or -G\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Syntax error -Q option: Use l or u for lower/upper-case.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Syntax error -Gc option: Cannot be used with -M.\n");
@@ -611,7 +610,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pstext task */
 
 	int  error = 0, k, fmode, nscan, *c_just = NULL;
-	bool master_record = false, skip_text_records = false, old_is_world;
+	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false;
 	
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
@@ -674,7 +673,10 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	if (!(Ctrl->N.active || Ctrl->Z.active || Ctrl->G.mode)) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	if (!(Ctrl->N.active || Ctrl->Z.active)) {
+		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+		clip_set = true;
+	}
 
 	in = GMT->current.io.curr_rec;
 	text_col = n_expected_cols - 1;
@@ -1029,7 +1031,8 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		GMT_free (GMT, c_font);
 		GMT_free (GMT, fonts);
 	}
-	else if (!(Ctrl->N.active || Ctrl->Z.active)) GMT_map_clip_off (GMT);
+	else if (clip_set)
+		GMT_map_clip_off (GMT);
 
 	GMT->current.map.is_world = old_is_world;
 

@@ -690,14 +690,9 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
-	if (S.symbol == GMT_SYMBOL_FRONT || S.symbol == GMT_SYMBOL_QUOTED_LINE || (not_line && !Ctrl->N.active)) {
-		if (!S.G.delay) {
-			GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-			clip_set = true;
-		}
-	}
-	else if (!not_line && GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {
-		if (!S.G.delay) {
+	if (S.symbol != GMT_SYMBOL_LINE) {	/* Only set clip if plotting symbols */
+		/* Unless -N except special case of 360-range conical (which is periodic but do not touch at w=e) do we clip */
+		if (!Ctrl->N.active || (GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {
 			GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 			clip_set = true;
 		}
@@ -1182,7 +1177,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -Ctrl->D.dx, -Ctrl->D.dy, 0.0, PSL_FWD);	/* Reset shift */
 
-	if (clip_set) GMT_map_clip_off (GMT);
+	if (clip_set && !S.G.delay) GMT_map_clip_off (GMT);	/* We delay map clip off if text clipping was chosen via -Sq<args:+e */
 
 	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;

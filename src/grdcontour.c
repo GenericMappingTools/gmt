@@ -1105,7 +1105,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-		if (!Ctrl->contour.delay) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
 	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
