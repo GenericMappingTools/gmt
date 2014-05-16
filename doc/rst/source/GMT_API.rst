@@ -173,10 +173,10 @@ functions using opaque pointers (``void *``). Below we discuss these
 containers in some detail; we will later present how they are used when
 importing or exporting them to or from files, memory locations, or
 streams. The first five are the standard GMT objects, while the latter
-two are the special user data containers to facilitate converting user
-data into GMT resources. These resources are defined in the include
-file ``gmt_resources.h``; please consult this file to ensure correctness as it is difficult
-to keep the documentation up-to-date.
+two are the special user data containers to facilitate passing user
+data into and out of GMT modules. These resources are defined in the include
+file ``gmt_resources.h``; please consult this file to ensure correctness
+in case the documentation is not up-to-date.
 
 Data tables
 ~~~~~~~~~~~
@@ -185,7 +185,7 @@ Much data processed in GMT come in the form of ASCII, netCDF, or
 native binary data tables. These may have any number of header records
 (ASCII files only) and perhaps segment headers. GMT programs will read
 one or more such tables when importing data. However, to avoid memory
-duplication or limitations some programs may prefer to read records one
+duplication or data limitations some programs may prefer to read records one
 at the time. The GMT API has functions that let you read
 record-by-record by presenting a virtual data set that combines all the
 data tables specified as input. This simplifies record processing
@@ -227,7 +227,7 @@ variable. All segments are expected to have the same number of columns.
 Text tables
 ~~~~~~~~~~~
 
-Some data needed by GMT are simply free-form ASCII text tables. These
+Some data needed by GMT are simply free-form ASCII text tables. In many respects these
 are handled similarly to data tables. E.g., they may have any number of
 header records and even segment headers, and GMT programs can read one
 or more tables or get text records one at the time. A
@@ -274,7 +274,7 @@ perspective surfaces. Because the native GMT grid is simply a 1-D
 float array with all the metadata kept in a separate header, we pass
 this information via a ``struct GMT_GRID``, which is a container that
 holds both items. Thus, the arguments to GMT API functions that handle
-such GMT grids expect this type of variable.
+GMT grids expect this type of variable.
 
 .. _struct-grid:
 
@@ -457,19 +457,7 @@ read the matrix properly.
   };
 
 The ``enum`` types referenced in :ref:`GMT_VECTOR <struct-vector>` and
-Table :ref:`GMT_MATRIX <struct-matrix>` and summarized in Table :ref:`enums <tbl-enums>`
-and Table :ref:`types <tbl-types>`.
-
-.. _tbl-enums:
-
-+---------------------------+----------------------------------------------------------------+
-| constant                  | description                                                    |
-+===========================+================================================================+
-| GMT_ALLOCATED_EXTERNALLY  | Item was *not* allocated by GMT so do not reallocate or free   |
-+---------------------------+----------------------------------------------------------------+
-| GMT_ALLOCATED_BY_GMT      | GMT allocated the memory; reallocate and free as needed        |
-+---------------------------+----------------------------------------------------------------+
-+---------------------------+----------------------------------------------------------------+
+Table :ref:`GMT_MATRIX <struct-matrix>` and summarized in Table :ref:`types <tbl-types>`.
 
 .. _tbl-types:
 
@@ -537,7 +525,7 @@ simply command-line files then things simplify considerably.
       (:ref:`Resources init <sec-res_init>`).
 
    d. Read data into memory. You may choose to read everything at once
-      or read record-by-record (tables only).
+      or read record-by-record.
 
    e. Prepare required arguments and call the GMT module you wish to use.
 
@@ -546,7 +534,7 @@ simply command-line files then things simplify considerably.
 
    g. Destroy the resources allocated by GMT modules to hold results,
       or let the garbage collector do this automatically at the end of
-      the module and at the end of the session.
+      the session.
 
 #. Repeat steps a–f as many times as your application requires.
 
@@ -671,7 +659,6 @@ Next table gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Write_Data_         | Export a data resource                            |
 +-------------------------+---------------------------------------------------+
-+-------------------------+---------------------------------------------------+
 
 
 The GMT C Application Program Interface
@@ -713,7 +700,7 @@ passed from module to module. The key task of this initialization is to
 set up the GMT machinery and its internal variables used for map
 projections, plotting, i/o, etc. The initialization also allocates space
 for internal structures used to register resources. The ``pad`` argument
-sets how many rows and columns should be used for padding for grids and
+sets how many rows and columns should be used as padding for grids and
 images so that boundary conditions can be applied. GMT uses 2 so we
 recommend that value. The ``mode`` argument is only used for external APIs
 that need to replace GMT's calls to a hard exit upon failure with a soft return. Likewise,
@@ -834,8 +821,7 @@ Registration involves a direct or indirect call to
 where :ref:`family <tbl-family>` specifies what kind of resource is to be registered,
 :ref:`method <tbl-methods>` specifies
 how we to access this resource (see Table :ref:`methods <tbl-methods>` for recognized
-methods, as well as modifiers you can add; these are listed in Table
-:ref:`via <tbl-via>`), :ref:`geometry <tbl-geometry>` specifies the geometry of the data, ``ptr`` is the address of the
+methods), :ref:`geometry <tbl-geometry>` specifies the geometry of the data, ``ptr`` is the address of the
 pointer to the named resource. If ``direction`` is ``GMT_OUT`` and the
 ``method`` is not related to a file (filename, stream, or handle), then
 ``ptr`` must be NULL. After the GMT module has written the data you
@@ -882,7 +868,6 @@ it returns 0.
 +------------------+--------------------------------+
 | GMT_IS_IMAGE     | A GMT image                    |
 +------------------+--------------------------------+
-+------------------+--------------------------------+
 
 
 .. _tbl-methods:
@@ -908,7 +893,6 @@ it returns 0.
 +-------------------------------+-------+--------------------------------------------------------------+
 | GMT_IS_REFERENCE_VIA_MATRIX   | 204   | Pointer to memory we may *reference* data from via a matrix  |
 +-------------------------------+-------+--------------------------------------------------------------+
-+-------------------------------+-------+--------------------------------------------------------------+
 
 
 
@@ -920,7 +904,6 @@ it returns 0.
 | GMT_VIA_VECTOR   | User's data columns are accessed via a GMT_VECTOR structure  |
 +------------------+--------------------------------------------------------------+
 | GMT_VIA_MATRIX   | User's matrix is accessed via a GMT_MATRIX structure         |
-+------------------+--------------------------------------------------------------+
 +------------------+--------------------------------------------------------------+
 
 
@@ -939,7 +922,6 @@ it returns 0.
 | GMT_IS_POLYGON   | Geographic or Cartesian closed polygons   |
 +------------------+-------------------------------------------+
 | GMT_IS_SURFACE   | 2-D gridded surface                       |
-+------------------+-------------------------------------------+
 +------------------+-------------------------------------------+
 
 
@@ -994,20 +976,20 @@ where :ref:`family <tbl-family>` specifies what kind of resource is to be regist
 ``GMT_IN`` or ``GMT_OUT``, and ``mode`` is a bit flag that determines
 what we do if no resources have been registered. The choices are
 
-    **GMT_ADD_FILES_IF_NONE** means "add command line (option)
+    **GMT_ADD_FILES_IF_NONE** (1) means "add command line (option)
     files if none have been registered already"
 
-    **GMT_ADD_FILES_ALWAYS** means "always add any command line files"
+    **GMT_ADD_FILES_ALWAYS** (2) means "always add any command line files"
 
-    **GMT_ADD_STDIO_IF_NONE** means "add std\* if no other
+    **GMT_ADD_STDIO_IF_NONE** (4) means "add std\* if no other
     input/output have been specified"
 
-    **GMT_ADD_STDIO_ALWAYS** means "always add std\* even if
+    **GMT_ADD_STDIO_ALWAYS** (8) means "always add std\* even if
     resources have been registered".
 
-    **GMT_ADD_EXISTING** means "only use already registered resources".
+    **GMT_ADD_EXISTING** (16) means "only use already registered resources".
 
-The standard behavior is ``GMT_ADD_DEFAULT``. Next, ``n_args`` is 0
+The standard behavior is ``GMT_REG_DEFAULT`` (5). Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in :ref:`Prepare modules opts <sec-func>`); otherwise ``args`` is an array of ``n_args``
 strings (i.e., the int argc, char \*argv[] model)
@@ -1028,10 +1010,8 @@ GMT_DOUBLE will be converted internally in GMT to ``double``, thus
 possibly increasing memory requirements. If the type is ``GMT_DOUBLE`` then
 GMT will be able to use the column directly by reference. The
 ``n_columns`` and ``n_rows`` parameters indicate the number of vectors
-and their common length. If these are not yet known you may pass 0 for
-these values and set ``alloc_mode`` to ``GMT_ALLOCATED_BY_GMT``; this will
-make sure GMT will allocate the necessary memory to the variable you
-specify.
+and their common length. For output these may not yet be known so you should
+pass 0 for these values.
 
 Dimension parameters for user 2-D table arrays
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1063,7 +1043,7 @@ Create empty resources
 
 If your application needs to build and populate GMT resources in ways
 that do not depend on external resources (files, memory locations,
-etc.), then GMT_Create_Data_ can obtain a "blank slate" by calling
+etc.), then you can obtain a "blank slate" by calling
 
 .. _GMT_Create_Data:
 
@@ -1204,9 +1184,9 @@ return entire data sets. In the case of data and text tables you may
 also select record-by-record reading using the GMT_Get_Record_
 function. As a general rule, your program development simplifies if you
 can read entire resources into memory with GMT_Get_Data_ or
-GMT_Read_Data_ However, if this leads to unacceptable memory usage
+GMT_Read_Data_.  However, if this leads to unacceptable memory usage
 or if the program logic is particularly simple, you may obtain one data
-record at the time via GMT_Get_Record_
+record at the time via GMT_Get_Record_.
 
 All input functions takes a parameter called ``mode``. The ``mode``
 parameter generally has different meanings for the different data types
@@ -1440,7 +1420,7 @@ Examining record status
 
 Programs that read record-by-record must be aware of what the current
 record represents. Given the presence of headers, data gaps, NaN-record,
-etc. the developer will want to check the status after reading the next
+etc., the developer will want to check the status after reading the next
 record. The internal i/o status mode can be interrogated with the function
 
 .. _GMT_Status_IO:
@@ -1614,7 +1594,7 @@ records and add 1 to all columns beyond the first two (x and y):
 
   ::
 
-    int tbl, seg, row, col;
+    uint64_t tbl, seg, row, col;
     struct GMT_DATATABLE *T = NULL;
     struct GMT_DATASEGMENT *S = NULL;
 
@@ -1640,7 +1620,7 @@ following code snippet will visit all text records and print them out:
 
   ::
 
-    int tbl, seg, row, col;
+    uint64_t tbl, seg, row, col;
     struct GMT_TEXTTABLE *T = NULL;
     struct GMT_TEXTSEGMENT *S = NULL;
 
@@ -1733,7 +1713,7 @@ the GMT common options. For instance, you may wish to have your
 program present the ``-R`` option to the user, let GMT handle the
 parsing, and examine the values. You may also wish to encode your own
 custom options that may require you to parse user text into the
-corresponding floating point dimensions, length, coordinates, time, etc.
+corresponding floating point dimensions, constants, coordinates, time, etc.
 The API provides several functions to simplify these tedious parsing
 tasks. This section is intended to show how the programmer will obtain
 information from the user that is necessary to do the task at hand
@@ -2566,7 +2546,7 @@ returned by GMT_FFT_Parse_. Depending on the options you chose to
 pass to GMT_FFT_Parse_, the data may have a constant or a trend
 removed, reflected and extended by various symmetries, padded and
 tapered to desired transform dimensions, and possibly there are
-temporary files written out before the transform takes place. See the
+temporary files written out before the transform takes place. See the :doc:`grdfft`
 man page for a full explanation of the options presented by GMT_FFT_Option_.
 
 Taking the FFT
@@ -2611,7 +2591,7 @@ via ``data``. When done with your manipulations (below) you can call it
 again with the inverse flag to recover the corresponding space-domain
 version of your data. The 1-D FFT is fully normalized so that calling
 forward followed by inverse yields the original data set.  Note that unlike
-``GMT_FFT``, this functions does not do any data extension, mirroring, detrending,
+``GMT_FFT``, this function does not do any data extension, mirroring, detrending,
 etc. but operates directly on the data array given.
 
 Taking the 2-D FFT
@@ -2635,7 +2615,7 @@ via ``data``. When done with your manipulations (below) you can call it
 again with the inverse flag to recover the corresponding space-domain
 version of your data. The 2-D FFT is fully normalized so that calling
 forward followed by inverse yields the original data set.  Note that unlike
-``GMT_FFT``, this functions does not do any data extension, mirroring, detrending,
+``GMT_FFT``, this function does not do any data extension, mirroring, detrending,
 etc. but operates directly on the data array given.
 
 Wavenumber calculations
@@ -2661,7 +2641,7 @@ vector used earlier.
 1-D FFT manipulation
 ~~~~~~~~~~~~~~~~~~~~
 
-To be added later.
+To be added after gmtfft has been added as new module.
 
 2-D FFT manipulation
 ~~~~~~~~~~~~~~~~~~~~
@@ -2769,8 +2749,7 @@ where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, he
 ``limits`` may be used to specify a subset (normally, just pass zeros), ``inc`` specifies the x and y increments,
 the ``title`` and ``remark`` supplies the values of these strings.  The ``file``
 argument is the name of the file we wish to write to.  The function returns 0 unless there is an error.
-Note on input, ``dim[2]`` can be set to 1 which means we will allocate the array for you; otherwise
-we assume space has already been secured.  Also, if ``dim[3]`` is set to 1 we will in-place transpose
+If ``dim[3]`` is set to 1 we will in-place transpose
 the array from Fortran column-major array order to C-style row-major array order before writing. Note
 this means array will have been transposed when the function returns.
 
