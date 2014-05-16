@@ -734,7 +734,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
 		Return (error);
 	}
-
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		unsigned int n_warn[3] = {0, 0, 0}, warn;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
@@ -879,7 +878,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			}
 			if (S.read_size) S.size_x = in[ex1];	/* Got size from input column */
 			dim[0] = S.size_x;
-			//if (S.convert_size) dim[0] = ((S.convert_size == 2) ? log10 (dim[0]) : dim[0]) * S.scale - S.origin;
 
 			switch (S.symbol) {
 				case GMT_SYMBOL_NONE:

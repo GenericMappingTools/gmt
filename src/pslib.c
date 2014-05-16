@@ -172,6 +172,7 @@
 #define PSL_SMALL               1.0e-10
 #define PSL_MAX_L1_PATH         1000    /* Max path length in Level 1 implementations */
 #define PSL_PAGE_HEIGHT_IN_PTS  842     /* A4 height */
+#define PSL_PEN_LEN		128	/* Style length string */
 
 /*--------------------------------------------------------------------
  *			PSL FUNCTION MACRO DEFINITIONS
@@ -1276,9 +1277,9 @@ int PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset)
 	if (PSL_eq(offset,PSL->current.offset) && ((pattern && !strcmp (pattern, PSL->current.style)) || (!pattern && PSL->current.style[0] == '\0'))) return (PSL_NO_ERROR);
 	PSL->current.offset = offset;
 	if (pattern)
-		strncpy (PSL->current.style, pattern, 512);
+		strncpy (PSL->current.style, pattern, PSL_PEN_LEN);
 	else
-		memset (PSL->current.style, 0, 512);
+		memset (PSL->current.style, 0, PSL_PEN_LEN);
 	PSL_command (PSL, "%s\n", psl_putdash (PSL, pattern, offset));
 	return (PSL_NO_ERROR);
 }

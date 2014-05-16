@@ -2209,7 +2209,6 @@ void GMT_map_basemap (struct GMT_CTRL *GMT)
 	if (!GMT->common.B.active[0] && !GMT->common.B.active[1]) return;
 
 	GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
-	//PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
 
@@ -2288,6 +2287,7 @@ void GMT_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode)
 
 	if (GMT->current.map.frame.draw_box) {
 		PSL_setfill (PSL, GMT->session.no_rgb, true);
+		GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 		if (fore) {
 			gmt_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant + 3, nesw, false);
 			gmt_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant    , nesw, false);
@@ -3058,6 +3058,20 @@ void GMT_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen)
 	PSL_setcolor (GMT->PSL, pen->rgb, PSL_IS_STROKE);
 }
 
+void GMT_savepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen)
+{
+	/* GMT_getpen retrieves the current pen in PSL. */
+	struct PSL_CTRL *PSL = GMT->PSL;
+	if (!pen) return;
+	pen->width = PSL->current.linewidth;
+	pen->offset = PSL->current.offset;
+	if (PSL->current.style[0])
+		strncpy (pen->style, PSL->current.style, GMT_PEN_LEN);
+	else
+		memset (pen->style, 0, GMT_PEN_LEN);
+	GMT_rgb_copy (pen->rgb, PSL->current.rgb[PSL_IS_STROKE]);
+}
+
 bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[])
 {
 	bool result;
@@ -3221,7 +3235,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	char *c = NULL, user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL *f = NULL, *current_fill = fill;
-	struct GMT_PEN *p = NULL, *current_pen = pen;
+	struct GMT_PEN save_pen, *p = NULL, *current_pen = pen;
 	struct GMT_FONT font = GMT->current.setting.font_annot[0];
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -3242,10 +3256,12 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	}
 #endif
 	/* Regular macro symbol */
-
+	
 	type = symbol->type;	/* Link to top level head info */
 	start = symbol->start;	/* Link to top level head info */
-
+	/* Remember current settings as we wish to restore at the end */
+	GMT_savepen (GMT, &save_pen);
+	
 	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes outside the gsave/grestore around each symbol */
 		symbol->text = false;	/* Only do this once */	
 		s = symbol->first;	/* Start at first item */
@@ -3444,13 +3460,13 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					font.size = -s->p[0];
 				else	/* Fractional size */
 					font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
+				GMT_setfont (GMT, &s->font);
 				if (f && this_outline)
 					GMT_setfill (GMT, f, this_outline);
 				else if (f)
-					PSL_setcolor (PSL, f->rgb, PSL_IS_FILL);
+					PSL_setcolor (PSL, f->rgb, PSL_IS_FONT);
 				else
 					PSL_setfill (PSL, GMT->session.no_rgb, this_outline);
-				GMT_setfont (GMT, &s->font);
 				PSL_command (PSL, "PSL_symbol_%s_setfont_%d\n", symbol->name, id++);
 				PSL_plottext (PSL, x, y, font.size, user_text, 0.0, s->justify, this_outline);
 				break;
@@ -3468,6 +3484,8 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	PSL_comment (PSL, "End of symbol %s\n", symbol->name);
 	GMT_reset_meminc (GMT);
 
+	/* Restore settings */
+	GMT_setpen (GMT, &save_pen);
 	if (xx) GMT_free (GMT, xx);
 	if (yy) GMT_free (GMT, yy);
 	
