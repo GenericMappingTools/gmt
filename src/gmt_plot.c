@@ -377,6 +377,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool horizontal;		/* true if axis is horizontal */
 	bool neg = below;		/* true if annotations are to the left of or below the axis */
 	bool faro;			/* true if the anchor point of annotations is on the far side of the axis */
+	bool first = true;
 	bool is_interval;		/* true when the annotation is interval annotation and not tick annotation */
 	bool do_annot;		/* true unless we are dealing with Gregorian weeks */
 	bool do_tick;		/* true unless we are dealing with bits of weeks */
@@ -414,13 +415,6 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_comment (PSL, below ? "Start of front z-axis\n" : "Start of back z-axis\n");
 	PSL_setorigin (PSL, x0, y0, 0.0, PSL_FWD);
 
-	/* Change up/down (neg) and/or flip coordinates (exch) */
-	PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
-
-	for (k = 0; k < 2; k++) {
-		PSL_command (PSL, "/PSL_A%d_y %d def\n", k, A->item[k].active || A->item[k+2].active ? psl_iz (PSL, GMT->current.setting.map_tick_length[k]) : 0);	/* Length of primary/secondary tickmark */
-	}
-
 	PSL_comment (PSL, "Axis tick marks and annotations\n");
 	GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
 	if (horizontal)
@@ -447,12 +441,17 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		}
 	}
 
-	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
+	/* Axis items are in order: GMT_ANNOT_UPPER, GMT_ANNOT_LOWER, GMT_TICK_UPPER, GMT_TICK_LOWER, GMT_GRID_UPPER, GMT_GRID_LOWER */
+
+	for (k = 0; k < 2; k++)
+		PSL_command (PSL, "/PSL_A%d_y %d def\n", k, A->item[k].active || A->item[k+2].active ? psl_iz (PSL, GMT->current.setting.map_tick_length[k]) : 0);	/* Length of primary/secondary tickmark */
 
 	for (k = 0; k < GMT_GRID_UPPER; k++) {	/* For each one of the 6 axis items (gridlines are done separately) */
 
 		T = &A->item[k];		/* Get pointer to this item */
 		if (!T->active) continue;	/* Do not want this item plotted - go to next item */
+
+		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 
 		is_interval = (T->type == 'i' || T->type == 'I');	/* Interval or tick mark annotation? */
 		nx = GMT_coordinate_array (GMT, val0, val1, &A->item[k], &knots, &label_c);	/* Get all the annotation tick knots */
@@ -481,6 +480,12 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			font = GMT->current.setting.font_annot[annot_pos];			/* Set the font to use */
 			form = GMT_setfont (GMT, &font);
 			PSL_command (PSL, "/PSL_AH%d 0\n", annot_pos);
+			if (first) {
+				/* Change up/down (neg) and/or flip coordinates (exch) */
+				PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
+				first = false;
+			}
+			
 			for (i = 0; i < nx1; i++) {
 				if (GMT_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
@@ -2203,7 +2208,8 @@ void GMT_map_basemap (struct GMT_CTRL *GMT)
 
 	if (!GMT->common.B.active[0] && !GMT->common.B.active[1]) return;
 
-	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
+	GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
+	//PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
 

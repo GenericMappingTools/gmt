@@ -264,7 +264,7 @@ void psl_cmyk_to_rgb (double rgb[], double cmyk[]);
 char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 void psl_defunits_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
-void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *node, bool process);
+void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node, bool process);
 void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, double *y, int npath, int *n);
 void psl_set_attr_arrays (struct PSL_CTRL *PSL, const char *prefix, int *node, double *angle, char **txt, int npath, int *n, int *m);
 void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
@@ -1978,7 +1978,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_defunits (PSL, "PSL_gap_y", offset[1]);		/* Set text clearance in y direction */
 
 		/* Set PSL arrays and constants for this set of lines and labels */
-		psl_set_reducedpath_arrays (PSL, x, y, n_segments, np, (curved) ? arg1 : NULL, kind == 1);
+		psl_set_reducedpath_arrays (PSL, x, y, n_segments, np, nlabel_per_seg, (curved) ? arg1 : NULL, kind == 1);
 		psl_set_attr_arrays (PSL, "label", (curved) ? arg1 : NULL, angle, label, n_segments, np, nlabel_per_seg);
 		psl_set_int_array   (PSL, "label_n", nlabel_per_seg, n_segments);
 		PSL_definteger (PSL, "PSL_n_paths", n_segments);
@@ -1996,17 +1996,19 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 	}
 	if (mode & PSL_TXT_CLIP_ON) {	/* Set up text clip paths and turn clipping ON */
 		PSL_comment (PSL, "Set up text clippath and turn clipping ON:\n");
+		if (mode & PSL_TXT_CLIP_OFF) PSL_command (PSL, "V\n");
 		PSL_command (PSL, "%d PSL_%s_path_%s\n", PSL_TXT_CLIP_ON|extras, name[kind], ext[kind]);
 		PSL->current.nclip++;	/* Increment clip level */
 	}
 	if (mode & PSL_TXT_DRAW) {	/* Draw the lines whose coordinates are in the PSL already */
 		PSL_comment (PSL, "Draw the text line segments:\n");
-		PSL_command (PSL, "PSL_draw_path_lines\n");
+		PSL_command (PSL, "PSL_draw_path_lines N\n");
 	}
 	PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 	if (mode & PSL_TXT_CLIP_OFF) {	/* Turn OFF Clipping and bail */
 		PSL_comment (PSL, "Turn label clipping OFF:\n");
-		return (PSL_endclipping (PSL, 1));	/* Decrease clipping by one level */
+		PSL_endclipping (PSL, 1);	/* Decrease clipping by one level */
+		PSL_command (PSL, "U\n");
 	}
 	return (PSL_NO_ERROR);
 }
@@ -4054,10 +4056,10 @@ void psl_defunits_array (struct PSL_CTRL *PSL, const char *param, double *array,
 	PSL_command (PSL, "%d array astore def\n", n);
 }
 
-void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *node, bool process)
+void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node, bool process)
 {	/* These are used by PSL_plottextline.  We make sure there are no point pairs that would yield dx = dy = 0 (repeat point)
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
-	int i, j, k, p, ii, this_i, this_j, last_i, last_j, offset = 0, n_skipped, ntot = 0, new_tot = 0, *new_n = NULL;
+	int i, j, k, p, ii, kk, this_i, this_j, last_i, last_j, i_offset = 0, k_offset = 0, n_skipped, ntot = 0, new_tot = 0, *new_n = NULL;
 	char *use = NULL;
 
 	if (x == NULL && y == NULL) return;	/* No path */
@@ -4069,7 +4071,7 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 			this_i = this_j = INT_MAX;
 			for (ii = j = n_skipped = k = 0; ii < n[p]; ii++) {
 				last_i = this_i;	last_j = this_j;
-				i = ii + offset;
+				i = ii + i_offset;	/* Index into concatenated x,y arrays */
 				this_i = 100 * psl_ix (PSL, x[i]);	/* Simulates the digits written by a %.2lf format */
 				this_j = 100 * psl_iy (PSL, y[i]);
 				if (this_i != last_i && this_j != last_j) {	/* Not a repeat point, use it */
@@ -4078,11 +4080,16 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 				}
 				else	/* Repeat point, skip it */
 					n_skipped++;
-				if (k < n[p] && node[k] == ii && n_skipped) node[k++] -= n_skipped;	/* Adjust node pointer since we are removing points and upsetting the order */
+				kk = k + k_offset;	/* Index into concatenated node array */
+				if (k < m[p] && node[kk] == ii && n_skipped) {	/* Adjust node pointer since we are removing points and upsetting the node order */
+					node[kk++] -= n_skipped;
+					k++;
+				}
 			}
 			new_n[p] = j;
 			new_tot += j;
-			offset += n[p];
+			i_offset += n[p];
+			k_offset += m[p];
 		
 		}
 	}

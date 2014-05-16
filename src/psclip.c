@@ -75,8 +75,8 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-path; no file is needed.  -R, -J are not required (unless -B is used).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Terminate polygon clipping; append how many clip levels to restore or a for all [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-paths; no file is needed.  -R, -J are not required (unless -B is used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Terminates all clipping; optionally append how many clip levels to restore [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -115,15 +115,15 @@ int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT
 
 			case 'C':	/* Turn clipping off */
 				Ctrl->C.active = true;
-				Ctrl->C.n = 1;
+				Ctrl->C.n = PSL_ALL_CLIP;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->C.n = PSL_ALL_CLIP; break;
-					case '\0': Ctrl->C.n = 1; break;	/* Default anyway */
+					case '\0': Ctrl->C.n = PSL_ALL_CLIP; break;	/* Default anyway */
 					default:
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[a|<n>]\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[<n>]\n");
 							n_errors++;
 						}
 						break;

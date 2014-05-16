@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13135 [64-bit] Document from grdimage
+%%Title: GMT v5.1.2_r13146 [64-bit] Document from grdimage
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 10:25:48 2014
+%%CreationDate: Thu May 15 14:25:24 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -644,7 +644,7 @@ clipsave
 8100 0 D
 0 4042 D
 -8100 0 D
-PSL_eoclip N
+PSL_clip N
 V N 0 0 T 8100 4042 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 675 /Height 337 /BitsPerComponent 8
    /ImageMatrix [675 0 0 -337 0 337] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -5846,10 +5846,9 @@ U
 N 0 360 M 6000 0 D S
 N 0 0 M 0 360 D S
 N 6000 0 M 0 360 D S
-/MM {neg M} def
+N 0 0 M 6000 0 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
-N 0 0 M 6000 0 D S
 8 W
 N 375 0 M 0 -83 D S
 N 1125 0 M 0 -83 D S
@@ -5860,6 +5859,7 @@ N 4125 0 M 0 -83 D S
 N 4875 0 M 0 -83 D S
 N 5625 0 M 0 -83 D S
 /PSL_AH0 0
+/MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (0) sh mx
@@ -5888,7 +5888,6 @@ def
 (12) bc Z
 5625 PSL_A0_y MM
 (14) bc Z
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 3000 -500 M 267 F0
 (Geoid \(m\)) tc Z
 0 setlinecap
@@ -11275,11 +11274,10 @@ FO
 FO
 /PSL_GPP matrix currentmatrix def [0.866025 -0.25 0 0.866025 0 -5224.77] concat
 0 7200 T
-/MM {neg exch M} def
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
 25 W
 N 0 4080 M 0 -4080 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
 8 W
 N 0 0 M -83 0 D S
 N 0 816 M -83 0 D S
@@ -11288,6 +11286,7 @@ N 0 2448 M -83 0 D S
 N 0 3264 M -83 0 D S
 N 0 4080 M -83 0 D S
 /PSL_AH0 0
+/MM {neg exch M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-4) sh mx
@@ -11333,7 +11332,7 @@ clipsave
 12000 0 D
 0 12000 D
 -12000 0 D
-PSL_eoclip N
+PSL_clip N
 3900 6900 M PSL_font_encode 33 get 0 eq {Standard+_Encoding /ZapfChancery-MediumItalic /ZapfChancery-MediumItalic PSL_reencode PSL_font_encode 33 1 put} if
 1000 F33
 V MU 0 0 M (H) FP 850 F33 (AWAIIAN) FP 1000 F33 ( R) FP 850 F33 (IDGE) FP pathbbox N pop exch pop add U -2 div 0 G

@@ -32,7 +32,7 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 
-**psclip** **-C**\ [**c**\ \|\ **s**\ \|[\ **a**\ \|\ *n*] [ **-K** ] [ **-O** ]
+**psclip** **-C**\ [\ *n*] [ **-K** ] [ **-O** ]
 
 |No-spaces|
 
@@ -56,19 +56,13 @@ against these paths, the clipping may be deactivated by running
 Required Arguments
 ------------------
 
-**-C**\ [**c**\ \|\ **s**\ [**a**\ \|\ *n*]
+**-C**\ [\|\ *n*]
     Mark end of existing clip path(s). No input file will be processed.
     No projection information is needed unless **-B** has been selected
-    as well. Append **c** (for curved text) or **s** (for straight text)
-    to plot text previously used to lay down a clip path (e.g., via
-    contouring, pstext, or psxy **-Sq**). The curved text option
-    (**-Cc**) is only required if psxy **-Sq** was run with the **+v**
-    modifier; the pstext and contouring mechanisms use straight text.
-    Both **-Cc** and **-Cs** assumes only one level of text clipping was
-    initialized and we thus reduce the clip level by one. To undo one
-    level of polygon clipping (perhaps initiated by earlier psclip,
-    pscoast, or psmask calls) use **-C**. You can undo all clip levels
-    with **-Ca** or a specific number with **-C**\ *n*. Also supply
+    as well. With no arguments we terminate all active clipping paths.
+    Experts may restrict the termination to just *n* of the active
+    clipping path by passing that as the argument.
+    Remember to supply
     **-X** and **-Y** settings if you have moved since the clip started.
     
 .. include:: explain_-J.rst_
@@ -153,14 +147,6 @@ To deactivate the clipping in an existing plotfile, run:
    ::
 
     gmt psclip -C -O >> complex_plot.ps
-
-Bugs
-----
-
-**psclip** cannot handle polygons that contain the south or north pole.
-For such polygons, you should split them into two and make each
-explicitly contain the polar point. The two clip polygons will combine
-to give the desired effect.
 
 See Also
 --------
