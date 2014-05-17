@@ -673,6 +673,8 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
+	if (Ctrl->G.mode) GMT_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
+
 	if (!(Ctrl->N.active || Ctrl->Z.active)) {
 		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		clip_set = true;
@@ -1036,7 +1038,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 	GMT->current.map.is_world = old_is_world;
 
-	GMT_map_basemap (GMT);
+	if (!Ctrl->G.mode) GMT_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 

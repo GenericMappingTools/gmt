@@ -1105,6 +1105,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+		if (Ctrl->contour.delay) GMT_map_basemap (GMT);	/* Must do -B here before clipping makes it not doable */
 		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
@@ -1253,9 +1254,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
 		GMT_contlabel_plot (GMT, &Ctrl->contour);
 		
-		if (!Ctrl->contour.delay) GMT_map_clip_off (GMT);
-
-		GMT_map_basemap (GMT);
+		if (!Ctrl->contour.delay) {
+			GMT_map_clip_off (GMT);
+			GMT_map_basemap (GMT);
+		}
 
 		GMT_plane_perspective (GMT, -1, 0.0);
 

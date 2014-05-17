@@ -5,7 +5,7 @@
 ps=cliptxtbox.ps
 gmt pstext -R-74.25/-63.75/-44.0/-39.5 -JB-69/-41.75/-40.625/-42.875/6i \
 	-Ba1 -F+a0+j+f10p,Helvetica,black -DJ0.5c -C1c -Gc -K -P > $ps << EOF
-> -Sa0.5c -Gred -Wthick,red,solid
+#> -Sa0.5c -Gred -Wthick,red,solid
 -109.3832917 -27.14820833 BC EISL
 -9.880716667 -40.34883333 BC GOUG
 -109.3444139 -27.12498333 BC ISPA
@@ -26,7 +26,7 @@ gmt pstext -R-74.25/-63.75/-44.0/-39.5 -JB-69/-41.75/-40.625/-42.875/6i \
 -68.17500556 -42.37175278 BC GANG
 -69.38011667 -41.60036944 ML JACO
 -66.52473889 -40.54313611 MR NAHU
-> -St0.5c -Gyellow -Wthick,black,solid
+#> -St0.5c -Gyellow -Wthick,black,solid
 -70.66855556 -33.15028889 BC SANT
 -68.05017778 -41.70413611 ML CAIN
 -71.41349722 -41.13214167 TL BARI

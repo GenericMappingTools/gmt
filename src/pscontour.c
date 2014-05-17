@@ -1012,6 +1012,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+		if (Ctrl->contour.delay) GMT_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */
 		if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		Ctrl->contour.line_pen = Ctrl->W.pen[0];
 	}
@@ -1415,7 +1416,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	if (make_plot) {
 		if (!(Ctrl->N.active || Ctrl->contour.delay)) GMT_map_clip_off (GMT);
-		GMT_map_basemap (GMT);
+		if (!Ctrl->contour.delay) GMT_map_basemap (GMT);	/* If delayed clipping the basemap is done before plotting, else here */
 		GMT_plane_perspective (GMT, -1, 0.0);
 		GMT_plotend (GMT);
 	}
