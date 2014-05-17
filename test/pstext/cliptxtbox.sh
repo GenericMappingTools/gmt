@@ -4,7 +4,7 @@
 
 ps=cliptxtbox.ps
 gmt pstext -R-74.25/-63.75/-44.0/-39.5 -JB-69/-41.75/-40.625/-42.875/6i \
-	-Ba1 -F+a0+j+f10p,Helvetica,black -DJ0.5c -C1c -Gc -K -P > $ps << EOF
+	-Ba1 -F+a0+j+f10p,Helvetica,black -DJ0.5c -C0.2c -Gc -K -P > $ps << EOF
 #> -Sa0.5c -Gred -Wthick,red,solid
 -109.3832917 -27.14820833 BC EISL
 -9.880716667 -40.34883333 BC GOUG

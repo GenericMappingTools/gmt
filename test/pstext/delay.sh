@@ -5,8 +5,8 @@
 ps=delay.ps
 FONT=24p,Helvetica
 
-gmt pstext -R0/10/0/10 -JX15c/10c -F+f${FONT}+jCM -GC -B0 -B+glightbrown -C0 -K -P << EOF > $ps
-5 5 This text is invisible
+gmt pstext -R0/10/0/10 -JX15c/10c -F+f${FONT}+jCM -GC -B0 -B+glightbrown+t"Text below deliberately not plotted" -C0 -K -P << EOF > $ps
+5 5 This text is plain but invisible
 EOF
 
 # Overlay big polygon
