@@ -541,7 +541,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip					% Set the new clip path and increment clip counter
+  PSL_clip N					% Set the new clip path, increment clip counter and clear path
 } def
 
 /PSL_ST_prepare_text		% Compute various dimensions and coordinates for one label
