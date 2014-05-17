@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13146 [64-bit] Document from psbasemap
+%%Title: GMT v5.1.2_r13153 [64-bit] Document from psbasemap
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 14:07:24 2014
+%%CreationDate: Fri May 16 14:35:40 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -604,7 +604,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label show
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -638,15 +638,27 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-2 setlinecap
 25 W
+2 setlinecap
 N 0 9000 M 0 -9000 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 7800 0 T
 N 0 9000 M 0 -9000 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 -7800 0 T
 N 0 0 M 7800 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 9000 T
 N 0 0 M 7800 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -9000 T
 0 setlinecap
 %%EndObject
@@ -18219,6 +18231,7 @@ FO
 0 341 D
 -15 0 D
 FO
+25 W
 4 W
 3285 7 M
 -166 9 D
@@ -21212,7 +21225,7 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
 U
 PSL_cliprestore
@@ -22900,7 +22913,7 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
 U
 PSL_cliprestore
@@ -40405,6 +40418,7 @@ FO
 117 20 D
 -3 5 D
 FO
+25 W
 4 W
 3285 7 M
 -166 9 D
@@ -43414,7 +43428,7 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
 U
 PSL_cliprestore
@@ -45119,7 +45133,7 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
 U
 PSL_cliprestore

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13146 [64-bit] Document from pscoast
+%%Title: GMT v5.1.2_r13153 [64-bit] Document from pscoast
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 11:36:04 2014
+%%CreationDate: Fri May 16 14:35:57 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -604,7 +604,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label show
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -7977,7 +7977,7 @@ clipsave
 6360 0 D
 0 1743 D
 -6360 0 D
-PSL_eoclip N
+PSL_clip N
 12 W
 N 1503 1370 M 23 -45 D S
 N 1733 1297 M -42 -27 D S
@@ -10898,10 +10898,13 @@ S
 /PSL_txt_n [ 12 ] def
 PSL_set_label_heights
 2 PSL_straight_path_labels
+V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
+U
 PSL_cliprestore
+25 W
 8 W
 N 578 0 M 0 -83 D S
 N 578 1743 M 0 84 D S

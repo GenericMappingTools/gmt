@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13135 [64-bit] Document from grdcontour
+%%Title: GMT v5.1.2_r13153 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 10:26:06 2014
+%%CreationDate: Fri May 16 14:35:33 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -604,7 +604,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label show
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -643,7 +643,7 @@ clipsave
 6600 0 D
 0 3300 D
 -6600 0 D
-PSL_eoclip N
+PSL_clip N
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
@@ -4195,10 +4195,13 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 /PSL_txt_n [ 8 ] def
 PSL_set_label_heights
 2 PSL_straight_path_labels
+V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
+U
 PSL_cliprestore
+25 W
 8 W
 N 0 0 M 0 -83 D S
 N 0 3300 M 0 83 D S
@@ -4391,7 +4394,7 @@ clipsave
 6600 0 D
 0 3300 D
 -6600 0 D
-PSL_eoclip N
+PSL_clip N
 4 W
 V
 {1 0 0 C} FS
@@ -4616,7 +4619,7 @@ clipsave
 6600 0 D
 0 3300 D
 -6600 0 D
-PSL_eoclip N
+PSL_clip N
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
@@ -8163,10 +8166,13 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 /PSL_txt_n [ 8 ] def
 PSL_set_label_heights
 2 PSL_straight_path_labels
+V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
+U
 PSL_cliprestore
+25 W
 8 W
 N 0 0 M 0 -83 D S
 N 0 3300 M 0 83 D S
@@ -8352,7 +8358,7 @@ clipsave
 6600 0 D
 0 3300 D
 -6600 0 D
-PSL_eoclip N
+PSL_clip N
 4 W
 V
 {1 0 0 C} FS
@@ -8577,7 +8583,7 @@ clipsave
 6600 0 D
 0 3300 D
 -6600 0 D
-PSL_eoclip N
+PSL_clip N
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
@@ -12263,10 +12269,13 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 /PSL_txt_n [ 7 ] def
 PSL_set_label_heights
 2 PSL_straight_path_labels
+V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
+U
 PSL_cliprestore
+25 W
 8 W
 N 0 0 M 0 -83 D S
 N 0 3300 M 0 83 D S
@@ -12446,6 +12455,7 @@ O0
 294 41 D
 293 35 D
 S
+25 W
 0 A
 4 W
 3300 0 M
@@ -12455,16 +12465,16 @@ S
 6600 0 D
 S
 2 setlinecap
-/MM {neg exch M} def
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
 25 W
 N 0 1200 M 0 -1200 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
 8 W
 N 0 171 M -83 0 D S
 N 0 600 M -83 0 D S
 N 0 1029 M -83 0 D S
 /PSL_AH0 0
+/MM {neg exch M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-50) sw mx
@@ -12493,11 +12503,10 @@ N 0 1114 M -42 0 D S
 N 0 1200 M -42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 6600 0 T
-/MM {exch M} def
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
 25 W
 N 0 1200 M 0 -1200 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
 8 W
 N 0 171 M 83 0 D S
 N 0 600 M 83 0 D S
@@ -12516,11 +12525,10 @@ N 0 1114 M 42 0 D S
 N 0 1200 M 42 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 -6600 0 T
-/MM {neg M} def
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
 25 W
 N 0 0 M 6600 0 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
 8 W
 N 367 0 M 0 -83 D S
 N 1833 0 M 0 -83 D S
@@ -12533,11 +12541,10 @@ N 4033 0 M 0 -42 D S
 N 5500 0 M 0 -42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 1200 T
-/MM {M} def
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
 25 W
 N 0 0 M 6600 0 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
 8 W
 N 367 0 M 0 83 D S
 N 1833 0 M 0 83 D S

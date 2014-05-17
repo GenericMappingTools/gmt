@@ -318,8 +318,8 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given by the -F option.  Only one of +h or +l can be specified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case C will first plot the text then activate clipping.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append c to plot text then activate clip paths based on text (and -C).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case C will NOT plot the text and only then activate clipping.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use psclip -C to deactivate the clipping.  Cannot be used with paragraph mode (-M).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List the font-numbers and font-names available, then exits.\n");
@@ -455,9 +455,9 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':
 				Ctrl->G.active = true;
-				if (opt->arg[0] == 'c' && !opt->arg[1])
+				if (opt->arg[0] == 'C' && !opt->arg[1])
 					Ctrl->G.mode = PSTEXT_CLIPONLY;
-				else if (opt->arg[0] == 'C' && !opt->arg[1])
+				else if (opt->arg[0] == 'c' && !opt->arg[1])
 					Ctrl->G.mode = PSTEXT_CLIPPLOT;
 				else if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");

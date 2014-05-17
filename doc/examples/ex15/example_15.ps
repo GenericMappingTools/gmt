@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13146 [64-bit] Document from grdcontour
+%%Title: GMT v5.1.2_r13153 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 14:07:29 2014
+%%CreationDate: Fri May 16 14:35:30 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -604,7 +604,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label show
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -1676,10 +1676,11 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
 U
 PSL_cliprestore
+25 W
 8 W
 N 360 0 M 0 -83 D S
 N 360 3958 M 0 83 D S
@@ -4616,10 +4617,11 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
 U
 PSL_cliprestore
+25 W
 8 W
 N 360 0 M 0 -83 D S
 N 360 3958 M 0 83 D S
@@ -4710,6 +4712,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+25 W
 8 W
 N 360 0 M 0 -83 D S
 N 360 3958 M 0 83 D S
@@ -6342,7 +6345,7 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
 U
 PSL_cliprestore
@@ -7302,10 +7305,11 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
 U
 PSL_cliprestore
+25 W
 8 W
 N 360 0 M 0 -83 D S
 N 360 3958 M 0 83 D S

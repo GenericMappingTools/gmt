@@ -141,10 +141,10 @@ Optional Arguments
 
 **-G**\ *color*
     Sets the shade or color used for filling the text box [Default is no
-    fill]. Alternatively, use **-Gc** to use text (and **-C**) to build
-    clip paths and turn clipping on. This clipping can then be turned
-    off later and the text may be finally plotted using psclip **-Cs**
-    (provided only one pstext call was issued). 
+    fill]. Alternatively, use **-Gc** to plot the text and then use the
+    text dimensions (and **-C**) to build clip paths and turn clipping on.
+    This clipping can then be turned off later with psclip **-C**.
+    To **not** plot the text but activate clipping, use **-GC** instead.
 
 .. include:: explain_-Jz.rst_
 

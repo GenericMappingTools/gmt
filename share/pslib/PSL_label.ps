@@ -15,11 +15,11 @@
 
 /PSL_pathtext					% PSL_pathtext'' will place a string
   {PSL_pathtextdict begin			% of text along any path. It takes
-    /textheight exch def			% a string and starting offset
-    /just exch def				% distance from the beginning of
-    /offset exch def				% the path as its arguments. Note
-    /str exch def				% that PSL_pathtext assumes that a
-						% path has already been defined
+    /ydepth exch def                            % a string and starting offset
+    /textheight exch def			% distance from the beginning of
+    /just exch def				% the path as its arguments. Note
+    /offset exch def				% that PSL_pathtext assumes that a
+    /str exch def				% path has already been defined
 						% and after it places the text
 						% along the path, it clears the
 						% current path like the ``stroke''
@@ -43,7 +43,7 @@
     /setdist offset def				% Initialize the distance we have
 						% covered by setting characters.
     /charcount 0 def				% Initialize the character count.
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def % Compute the y-shift
     V flattenpath				% Reduce the path to a series of
 						% straight line segments. The
 						% characters will be placed along
@@ -395,6 +395,8 @@ end
 { % Places the curved text label on current segment
   /PSL_just PSL_label_justify k get def	% Get this labels justification
   /PSL_height PSL_heights k get def	% Recall the height of this string
+  /psl_label PSL_str k get def		% Get the current label
+  /psl_depth psl_label sd def		% Determine depth beneath baseline
   PSL_usebox		% Want to lay down box outline or fill
   {PSL_CT_clippath	% Box path now current path
     PSL_fillbox		% Want to paint box
@@ -402,7 +404,7 @@ end
     PSL_drawbox		% Want to draw outline of box
     {V PSL_setboxpen S U} if N
   } if
-  PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 
 /PSL_CT_clippath
@@ -593,7 +595,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R	% Set origin at text point and rotate the coordinate system to follow baseline text
     psl_SW PSL_justx mul psl_y0 M	% Goto LL point on label
-    psl_label show			% Place the text
+    psl_label dup sd neg 0 exch G show	% Place the text, adjust vertically for any depth below baseline
     U					% Undo damage to coordinate system
 } def
 

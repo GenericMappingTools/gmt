@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13135 [64-bit] Document from grdcontour
+%%Title: GMT v5.1.2_r13153 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 10:26:08 2014
+%%CreationDate: Fri May 16 14:35:43 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -604,7 +604,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label show
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -643,7 +643,7 @@ clipsave
 6614 0 D
 0 6555 D
 -6614 0 D
-PSL_eoclip N
+PSL_clip N
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
@@ -1342,10 +1342,13 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 /PSL_txt_n [ 28 ] def
 PSL_set_label_heights
 2 PSL_straight_path_labels
+V
 4 PSL_straight_path_clip
-PSL_draw_path_lines
+PSL_draw_path_lines N
 PSL_cliprestore
+U
 PSL_cliprestore
+25 W
 8 W
 N 0 0 M 0 -83 D S
 N 0 6555 M 0 83 D S
@@ -1537,17 +1540,17 @@ O0
 200 -1 D
 80 -2 D
 S
+25 W
 2 setlinecap
-/MM {neg exch M} def
+N 0 3780 M 0 -3780 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
-25 W
-N 0 3780 M 0 -3780 D S
 8 W
 N 0 270 M -83 0 D S
 N 0 1620 M -83 0 D S
 N 0 2970 M -83 0 D S
 /PSL_AH0 0
+/MM {neg exch M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (100) sw mx
@@ -1563,17 +1566,17 @@ def
 (300) mr Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-/MM {neg M} def
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
 25 W
 N 0 0 M 6614 0 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
 8 W
 N 0 0 M 0 -83 D S
 N 2004 0 M 0 -83 D S
 N 4009 0 M 0 -83 D S
 N 6013 0 M 0 -83 D S
 /PSL_AH0 0
+/MM {neg M} def
 (0) sh mx
 (50) sh mx
 (100) sh mx
