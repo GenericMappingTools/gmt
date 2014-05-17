@@ -1990,7 +1990,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_command (PSL, "PSL_set_label_heights\n");	/* Estimate text heights */
 	}
 	
-	extras = mode & (PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX);	/* This just gets these bit settings, if present */
+	extras = mode & (PSL_TXT_ROUND | PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX);	/* This just gets these bit settings, if present */
 	if (mode & PSL_TXT_SHOW) {	/* Lay down visible text */
 		PSL_comment (PSL, "Display the texts:\n");
 		PSL_command (PSL, "%d PSL_%s_path_labels\n", PSL_TXT_SHOW|extras, name[kind]);

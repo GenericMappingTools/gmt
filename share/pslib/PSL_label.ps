@@ -515,8 +515,8 @@ end
     PSL_ST_prepare_text				% Get all dimensions, coordinates, etc. for this label
     PSL_usebox					% If a text box is requested we go in here:
     {  PSL_rounded				% Place text box path, either straight or rounded, on stack
-        {PSL_ST_textbox_rect}
         {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
       ifelse
       PSL_fillbox {V PSL_setboxrgb fill U} if	% Paint it, if requested
       PSL_drawbox {V PSL_setboxpen S U} if	% Outline it, if requested
