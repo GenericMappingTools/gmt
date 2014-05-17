@@ -5,7 +5,7 @@
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri May 16 17:33:11 2014
+%%CreationDate: Fri May 16 17:46:50 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -635,7 +635,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/10/0/10 -JX15c/10c -F+f24p,Helvetica+jCM -GC -B0 -B+glightbrown -C0 -K -P
+%%GMT: pstext -R0/10/0/10 -JX15c/10c -F+f24p,Helvetica+jCM -GC -B0 '-B+glightbrown+tText below deliberately not plotted' -C0 -K -P
 %%PROJ: xy 0.00000000 10.00000000 0.00000000 10.00000000 0.000 10.000 0.000 10.000 +xy +a=6378137.000 +b=6356752.314245
 %%BeginObject PSL_Layer_1
 0 setlinecap
@@ -666,6 +666,11 @@ N 0 0 M 7087 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -4724 T
 0 setlinecap
+/PSL_H_y PSL_L_y PSL_LH add 233 add def
+3543 4724 PSL_H_y add M
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+400 F0
+(Text below deliberately not plotted) bc Z
 clipsave
 0 0 M
 7087 0 D
@@ -674,7 +679,6 @@ clipsave
 PSL_clip N
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {} def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_label_justify [ 6 ] def
 /PSL_label_font [
 	(0 A 400 F0)
