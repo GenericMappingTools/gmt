@@ -3728,7 +3728,7 @@ void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[])
 
 void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 {
-	unsigned int i;
+	unsigned int i, mode;
 	bool no_labels;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -3748,13 +3748,15 @@ void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 	
 	if (G->transparent) {		/* Transparent boxes means we must set up plot text, then set up clip paths, then draw lines, then deactivate clipping */
 		/* Place PSL variables, plot labels, set up clip paths, draw lines */
-		unsigned int mode = PSL_TXT_INIT | PSL_TXT_SHOW | PSL_TXT_CLIP_ON | PSL_TXT_DRAW;
+		mode = PSL_TXT_INIT | PSL_TXT_SHOW | PSL_TXT_CLIP_ON | PSL_TXT_DRAW;
 		if (!G->delay) mode |= PSL_TXT_CLIP_OFF;	/* Also turn off clip path when done */
 		gmt_contlabel_plotlabels (GMT, PSL, G, mode);	/* Take the above actions */
 	}
 	else {	/* Opaque text boxes */
 		gmt_contlabel_plotlabels (GMT, PSL, G, PSL_TXT_INIT | PSL_TXT_DRAW);	/* Place PSL variables and draw lines */
-		gmt_contlabel_plotlabels (GMT, PSL, G, PSL_TXT_SHOW);			/* Plot labels */
+		mode = PSL_TXT_SHOW;				/* Plot text */
+		if (G->delay) mode |= PSL_TXT_CLIP_ON;		/* Also turn on clip path after done */
+		gmt_contlabel_plotlabels (GMT, PSL, G, mode);	/* Plot labels and possibly turn on clipping if delay */
 	}
 }
 
