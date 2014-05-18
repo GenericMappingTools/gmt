@@ -683,6 +683,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (GMT_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);
 		penset_OK = false;	/* The pen for quoted lines are set within the PSL code itself so we dont do it here in psxy */
+		if (S.G.delay) GMT_map_basemap (GMT);	/* Must do it here due to clipping */
 	}
 
 	if ((Ctrl->A.active && Ctrl->A.mode == 0) || !GMT_is_geographic (GMT, GMT_IN)) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
@@ -1181,7 +1182,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	GMT->current.map.is_world = old_is_world;
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 
-	GMT_map_basemap (GMT);
+	if (!S.G.delay) GMT_map_basemap (GMT);
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
