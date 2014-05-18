@@ -739,11 +739,15 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Not enough arguments given to D operator\n");
 							Return (GMT_RUNTIME_ERROR);
 						}
-						if (n_scan == 2 && strchr ("-=+", txt_b[0])) {	/* Offset was skipped and we got D pen flag */
-							GMT_Report (API, GMT_MSG_DEBUG, "Got D pen flag --> D 0 pen flag\n");
-							strcpy (txt_c, txt_b);
-							strcpy (txt_b, txt_a);
-							strcpy (txt_a, "0");
+						if (n_scan == 2) {	/* Either got D <offset> <pen OR D <pen> <flag> */
+							if (strchr ("-=+", txt_b[0])) {	/* Offset was skipped and we got D pen flag */
+								GMT_Report (API, GMT_MSG_DEBUG, "Got D pen flag --> D 0 pen flag\n");
+								strcpy (txt_c, txt_b);
+								strcpy (txt_b, txt_a);
+								strcpy (txt_a, "0");
+							}
+							else	/* Just wipe text_c */
+								txt_c[0] = '\0';
 						}
 						else if (n_scan == 1) {	/* Offset was skipped and we got D pen */
 							GMT_Report (API, GMT_MSG_DEBUG, "Got D pen --> D 0 pen\n");

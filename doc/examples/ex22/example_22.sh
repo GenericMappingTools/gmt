@@ -74,6 +74,7 @@ END
 # Put together a reasonable legend text, and add logo and user's name:
 
 cat << END >> neis.legend
+G 0.25l
 P
 T USGS/NEIS most recent earthquakes for the last seven days.  The data were
 T obtained automatically from the USGS Earthquake Hazards Program page at

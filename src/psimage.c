@@ -268,6 +268,10 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 	if (Ctrl->G.f_rgb[0] == -2) { Ctrl->G.f_rgb[0] = Ctrl->G.f_rgb[1] = Ctrl->G.f_rgb[2] = 0.0; }
 	if (Ctrl->G.b_rgb[0] == -2) { Ctrl->G.b_rgb[0] = Ctrl->G.b_rgb[1] = Ctrl->G.b_rgb[2] = 1.0; }
 
+	if (!Ctrl->D.active) {
+		Ctrl->D.anchor = GMT_get_anchorpoint (GMT, "x0/0");	/* Default if no -D given */
+		Ctrl->D.active = true;
+	}
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
