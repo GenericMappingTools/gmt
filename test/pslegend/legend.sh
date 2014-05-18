@@ -25,9 +25,9 @@ S 0.1i f 0.25i blue 0.25p 0.3i This is a fault
 S 0.1i - 0.15i - 0.25p,- 0.3i A contour
 S 0.1i v 0.25i magenta 0.5p 0.3i This is a vector
 S 0.1i i 0.15i cyan 0.25p 0.3i This triangle is boring
+D 0.2i 1p
 V 0 1p
 N 1
-D 0.2i 1p
 M 5 5 600+u f
 G 0.05i
 I ${src:-.}/SOEST_block4.ras 3i CT

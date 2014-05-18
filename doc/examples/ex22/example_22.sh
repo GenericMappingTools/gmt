@@ -55,8 +55,8 @@ V 0 1p
 S 0.1i c 0.1i red 0.25p 0.2i Shallow depth (0-100 km)
 S 0.1i c 0.1i green 0.25p 0.2i Intermediate depth (100-300 km)
 S 0.1i c 0.1i blue 0.25p 0.2i Very deep (> 300 km)
-V 0 1p
 D 0 1p
+V 0 1p
 N 7
 V 0 1p
 S 0.1i c 0.06i - 0.25p 0.3i M 3
@@ -66,8 +66,8 @@ S 0.1i c 0.12i - 0.25p 0.3i M 6
 S 0.1i c 0.14i - 0.25p 0.3i M 7
 S 0.1i c 0.16i - 0.25p 0.3i M 8
 S 0.1i c 0.18i - 0.25p 0.3i M 9
-V 0 1p
 D 0 1p
+V 0 1p
 N 1
 END
 
