@@ -1104,7 +1104,6 @@ fonts can be found in the :doc:`gmt` man page.
     Language to use when plotting calendar items such as months and
     days. Select from:
 
-    * BR Brazilian Portuguese
     * CN1 Simplified Chinese
     * CN2 Traditional Chinese
     * DE German
