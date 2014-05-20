@@ -3644,7 +3644,6 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		if (n_labels == 0) return;	/* There are no labels */
 
 		GMT_malloc2 (GMT, xpath, ypath, n_points, NULL, double);
-		nlabels_per_segment = GMT_memory (GMT, NULL, n_labels, int);
 		GMT_malloc2 (GMT, npoints_per_segment, nlabels_per_segment, n_segments, NULL, int);
 		if (G->curved_text) {	/* Must pass node locations of labels */
 			node = GMT_memory (GMT, NULL, n_labels, int);
@@ -3710,6 +3709,8 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		GMT_free (GMT, pen);
 		GMT_free (GMT, angle);
 		GMT_free (GMT, txt);
+		GMT_free (GMT, xpath);
+		GMT_free (GMT, ypath);
 		if (G->curved_text)
 			GMT_free (GMT, node);
 		else {
