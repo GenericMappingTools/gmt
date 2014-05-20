@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-05-20	remko
+	* *.[ch]:		Renamed TIME_LANGUAGE to GMT_LANGUAGE. Introduced language-
+				dependent names and abbreviations of cardinal points.
+
 2014-05-08	remko
 	* gmt_plot.c:		Fix bug in treatment of variable text introduced on 2014-05-04.
 				This addresses issue #554.

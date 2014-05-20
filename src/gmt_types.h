@@ -72,20 +72,26 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	struct GMT_DIST dist[3];		/* struct with pointers to functions/scales returning distance between two points points */
 	bool (*near_lines_func) (struct GMT_CTRL *, double, double, struct GMT_DATATABLE *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to nearest line among a set of lines */
 	bool (*near_a_line_func) (struct GMT_CTRL *, double, double, uint64_t, struct GMT_DATASEGMENT *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to line */
-	bool (*near_point_func) (struct GMT_CTRL *, double, double, struct GMT_DATATABLE *, double);	/* Pointer to function returning distance to nearest point */	
+	bool (*near_point_func) (struct GMT_CTRL *, double, double, struct GMT_DATATABLE *, double);	/* Pointer to function returning distance to nearest point */
 	unsigned int (*wrap_around_check) (struct GMT_CTRL *, double *, double, double, double, double, double *, double *, unsigned int *);	/* Does x or y wrap checks */
 	double (*azimuth_func) (struct GMT_CTRL *, double, double, double, double, bool);	/* Pointer to function returning azimuth between two points points */
 	void (*get_crossings) (struct GMT_CTRL *, double *, double *, double, double, double, double);	/* Returns map crossings in x or y */
-	double (*geodesic_meter) (struct GMT_CTRL *, double, double, double, double);	/* pointer to geodesic function returning distance between two points points in meter */	
-	double (*geodesic_az_backaz) (struct GMT_CTRL *, double, double, double, double, bool);	/* pointer to geodesic function returning azimuth or backazimuth between two points points */	
+	double (*geodesic_meter) (struct GMT_CTRL *, double, double, double, double);	/* pointer to geodesic function returning distance between two points points in meter */
+	double (*geodesic_az_backaz) (struct GMT_CTRL *, double, double, double, double, bool);	/* pointer to geodesic function returning azimuth or backazimuth between two points points */
 };
 
 struct GMT_TIME_CONV {		/* Holds all time-related parameters */
 	struct GMT_TRUNCATE_TIME truncate;
 	struct GMT_Y2K_FIX Y2K_fix;		/* Used to convert 2-digit years to 4-digit years */
-	struct GMT_TIME_LANGUAGE language;	/* For time axis */
 	time_t tic;				/* Last system time marker */
 	int64_t today_rata_die;			/* The rata die of current day at start of program */
+};
+
+struct GMT_LANGUAGE {		/* Language-specific text strings for calendars, map annotations, etc. */
+	char month_name[4][12][GMT_LEN16];	/* Full, short, 1-char, and short (upper case) month names */
+	char day_name[3][7][GMT_LEN16];	/* Full, short, and 1-char weekday names */
+	char week_name[3][GMT_LEN16];	/* Full, short, and 1-char versions of the word Week */
+	char cardinal_name[3][4][GMT_LEN16];	/* Full, and abbreviated (map annot., direction) versions of compass directions */
 };
 
 struct GMT_INIT { /* Holds misc run-time parameters */
@@ -121,6 +127,7 @@ struct GMT_CURRENT {
 	struct GMT_MAP map;		/* Holds all projection-related parameters */
 	struct GMT_PLOT plot;		/* Holds all plotting-related parameters */
 	struct GMT_TIME_CONV time;	/* Holds all time-related parameters */
+	struct GMT_LANGUAGE language;	/* Holds all language-related parameters */
 	struct GMT_PS ps;		/* Hold parameters related to PS setup */
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */

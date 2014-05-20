@@ -161,7 +161,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
 	unsigned int time_Y2K_offset_year;	/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 	struct GMT_TIME_SYSTEM time_system;	/* All the information about the selected time system */
-	char time_language[GMT_LEN64];	/* Language file for time support */
+	char language[GMT_LEN64];	/* Language file for localization support */
 	/* Related parameters */
 	char given_unit[GMT_N_KEYS];		/* Unit given or implied for each setting */
 };

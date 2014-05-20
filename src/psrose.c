@@ -29,7 +29,7 @@
  * Date:	1-JAN-2010
  * Version:	5 API
  */
- 
+
 #define THIS_MODULE_NAME	"psrose"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
@@ -94,9 +94,9 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 
 void *New_psrose_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSROSE_CTRL *C = NULL;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct PSROSE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
@@ -110,12 +110,12 @@ void *New_psrose_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_psrose_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free (C->C.file);	
-	if (C->L.w) free (C->L.w);	
-	if (C->L.e) free (C->L.e);	
-	if (C->L.s) free (C->L.s);	
-	if (C->L.n) free (C->L.n);	
-	GMT_free (GMT, C);	
+	if (C->C.file) free (C->C.file);
+	if (C->L.w) free (C->L.w);
+	if (C->L.e) free (C->L.e);
+	if (C->L.s) free (C->L.s);
+	if (C->L.n) free (C->L.n);
+	GMT_free (GMT, C);
 }
 
 int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
@@ -147,7 +147,8 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire mode; only compute statistics - no plot is created.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [Default is WEST/EAST/SOUTH/NORTH for full circle and 90W/90E/-/0 for half-circle].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [Default is West/East/South/North (depending on GMT_LANGUAGE)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   for full circle and 90W/90E/-/0 for half-circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Specify arrow attributes (requires -C).\n");
 	GMT_vector_syntax (API->GMT, 15);
@@ -170,7 +171,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "c");
 	GMT_Message (API, GMT_TIME_NONE, "\t-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].\n", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
 	GMT_Option (API, "bi2,di,h,i,p,s,t,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -230,7 +231,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 			case 'L':	/* Overwride default labeling */
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
-					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel/eastlabel/southlabel/<northlabel>>\n");
+					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel>/<eastlabel>/<southlabel>/<northlabel>\n");
 					Ctrl->L.w = strdup (txt_a);	Ctrl->L.e = strdup (txt_b);
 					Ctrl->L.s = strdup (txt_c);	Ctrl->L.n = strdup (txt_d);
 				}
@@ -339,9 +340,9 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	bool automatic = false, sector_plot = false, windrose = true;
 	unsigned int n_bins, n_modes, form, n_in, half_only = 0, bin;
 	int error = 0, k, n_annot, n_alpha, sbin;
-	
+
 	uint64_t n = 0, i;
-	
+
 	size_t n_alloc = GMT_CHUNK;
 
 	char text[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""};
@@ -422,7 +423,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 
 	n = 0;
 	n_in = (GMT->common.i.active && GMT->common.i.n_cols == 1) ? 1 : 2;
-	
+
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
 		Return (error);
 	}
@@ -604,7 +605,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		int symbol = (half_only) ? GMT_SYMBOL_WEDGE : GMT_SYMBOL_CIRCLE;
 		double dim[3];
 		struct GMT_FILL no_fill;
-		
+
 		GMT_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 		dim[0] = (half_only) ? 0.5 * diameter : diameter;
 		dim[1] = 0.0;
@@ -623,7 +624,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 				PSL_plotsegment (PSL, -radius * c, -radius * s, radius * c, radius * s);
 			else
 				PSL_plotsegment (PSL, 0.0, 0.0, radius * c, radius * s);
-			
+
 		}
 	}
 
@@ -734,7 +735,10 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		if (Ctrl->L.n[0] == '-' && Ctrl->L.n[1] == '\0') Ctrl->L.n[0] = '\0';
 	}
 	else {	/* Use default labels */
-		Ctrl->L.w = strdup ("WEST");	Ctrl->L.e = strdup ("EAST");	Ctrl->L.s = strdup ("SOUTH");	Ctrl->L.n = strdup ("NORTH");
+		Ctrl->L.w = strdup (GMT->current.language.cardinal_name[0][0]);
+		Ctrl->L.e = strdup (GMT->current.language.cardinal_name[0][1]);
+		Ctrl->L.s = strdup (GMT->current.language.cardinal_name[0][2]);
+		Ctrl->L.n = strdup (GMT->current.language.cardinal_name[0][3]);
 	}
 	if (GMT->current.map.frame.draw) {	/* Draw grid lines etc */
 		GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
@@ -766,26 +770,26 @@ int GMT_psrose (void *V_API, int mode, void *args)
 				free (Ctrl->L.w);	free (Ctrl->L.e);	free (Ctrl->L.n);
 				if (GMT->current.setting.map_degree_symbol == gmt_none) {
 					if (half_only == 1) {
-						Ctrl->L.w = strdup ("90W");
-						Ctrl->L.e = strdup ("90E");
-						Ctrl->L.n = strdup ("0");
+						sprintf (Ctrl->L.w, "90%s", GMT->current.language.cardinal_name[2][0]);
+						sprintf (Ctrl->L.e, "90%s", GMT->current.language.cardinal_name[2][1]);
+						sprintf (Ctrl->L.n, "0");
 					}
 					else {
-						Ctrl->L.w = strdup ("0N");
-						Ctrl->L.e = strdup ("180S");
-						Ctrl->L.n = strdup ("90E");
+						sprintf (Ctrl->L.w, "0%s",   GMT->current.language.cardinal_name[2][3]);
+						sprintf (Ctrl->L.e, "180%s", GMT->current.language.cardinal_name[2][2]);
+						sprintf (Ctrl->L.n, "90%s",  GMT->current.language.cardinal_name[2][1]);
 					}
 				}
 				else {
 					if (half_only == 1) {
-						sprintf (text, "90%cW", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);	Ctrl->L.w = strdup (text);
-						sprintf (text, "90%cE", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);	Ctrl->L.e = strdup (text);
-						sprintf (text, "0%c",   (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);	Ctrl->L.n = strdup (text);
+						sprintf (Ctrl->L.w, "90%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][0]);
+						sprintf (Ctrl->L.e, "90%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][1]);
+						sprintf (Ctrl->L.n, "0%c",    (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
 					}
 					else {
-						sprintf (text, "0%cN", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);	Ctrl->L.w = strdup (text);
-						sprintf (text, "180%cS", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);	Ctrl->L.e = strdup (text);
-						sprintf (text, "90%cE",   (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);	Ctrl->L.n = strdup (text);
+						sprintf (Ctrl->L.w, "0%c%s",   (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][3]);
+						sprintf (Ctrl->L.e, "180%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][2]);
+						sprintf (Ctrl->L.n, "90%c%s",  (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][1]);
 					}
 				}
 			}
@@ -831,7 +835,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		PSL_plottext (PSL, 0.0, off + 2.0 * GMT->current.setting.map_annot_offset[0], GMT->current.setting.font_label.size, Ctrl->L.n, 0.0, 2, form);
 		PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
 	}
-	
+
 	GMT_plane_perspective (GMT, -1, 0.0);
 	PSL_setorigin (PSL, -x_origin, -y_origin, 0.0, PSL_INV);
 	GMT_plotend (GMT);

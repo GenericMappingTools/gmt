@@ -19,8 +19,8 @@
 # share CMakeLists.txt
 #
 
-set (_gmt_share_dirs conf cpt custom dbase mgd77 mgg pattern
-	pslib time x2sys)
+set (_gmt_share_dirs conf cpt custom dbase localization mgd77 mgg pattern
+	pslib x2sys)
 
 # install target for data
 install (DIRECTORY ${_gmt_share_dirs}

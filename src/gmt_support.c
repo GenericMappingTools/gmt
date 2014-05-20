@@ -7621,10 +7621,10 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	ms->size = 0.0;
 	ms->a_int[0] = 30.0;	ms->f_int[0] = 5.0;	ms->g_int[0] = 1.0;
 	ms->a_int[1] = 30.0;	ms->f_int[1] = 5.0;	ms->g_int[1] = 1.0;
-	strcpy (ms->label[0], "S");
-	strcpy (ms->label[1], "E");
-	strcpy (ms->label[2], "N");
-	strcpy (ms->label[3], "W");
+	strcpy (ms->label[0], GMT->current.language.cardinal_name[2][2]);
+	strcpy (ms->label[1], GMT->current.language.cardinal_name[2][1]);
+	strcpy (ms->label[2], GMT->current.language.cardinal_name[2][3]);
+	strcpy (ms->label[3], GMT->current.language.cardinal_name[2][0]);
 
 	/* First deal with possible prefixes f and x (i.e., f|m, x, xf|m, f|mx) */
 	if (text[j] == 'f') ms->type = 1, j++;
@@ -9033,18 +9033,19 @@ int GMT_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, do
 	return 0;
 }
 
-void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, unsigned int lonlat, bool worldmap)
+void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, bool do_hemi, unsigned int lonlat, bool worldmap)
 /* val:		Degree value of annotation */
 /* label:	String to hold the final annotation */
 /* do_minutes:	true if degree and minutes are desired, false for just integer degrees */
 /* do_seconds:	true if degree, minutes, and seconds are desired */
+/* do_hemi:	true if compass headings (W, E, S, N) are desired */
 /* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
 /* worldmap:	T/F, whatever GMT->current.map.is_world is */
 {
 	int sign, d, m, s, m_sec;
-	unsigned int k, n_items, h_pos = 0, level, type;
+	unsigned int k, n_items, level, type;
 	bool zero_fix = false;
-	char hemi[3] = {""}, format[GMT_LEN64] = {""};
+	char hemi[GMT_LEN16] = {""}, format[GMT_LEN64] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -9064,26 +9065,29 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 	}
 
 	if (GMT->current.plot.calclock.geo.wesn) {
-		if (GMT->current.plot.calclock.geo.wesn == 2) hemi[h_pos++] = ' ';
-		if (lonlat == 0) {
+		if (GMT->current.plot.calclock.geo.wesn == 2) strcat (hemi, " ");
+		if (!do_hemi || GMT_IS_ZERO (val)) { /* Skip adding hemisphere indication */
+		}
+		else if (lonlat == 0) {
 			switch (GMT->current.plot.calclock.geo.range) {
 				case GMT_IS_0_TO_P360_RANGE:
 				case GMT_IS_0_TO_P360:
-					hemi[h_pos] = (GMT_IS_ZERO (val)) ? 0 : 'E';
+					strcat (hemi, GMT->current.language.cardinal_name[1][1]);
 					break;
 				case GMT_IS_M360_TO_0_RANGE:
 				case GMT_IS_M360_TO_0:
-					hemi[h_pos] = (GMT_IS_ZERO (val)) ? 0 : 'W';
+					strcat (hemi, GMT->current.language.cardinal_name[2][1]);
 					break;
 				default:
-					hemi[h_pos] = (GMT_IS_ZERO (val) || doubleAlmostEqual (val, 180.0) || doubleAlmostEqual (val, -180.0)) ? 0 : ((val < 0.0) ? 'W' : 'E');
+					if (!(doubleAlmostEqual (val, 180.0) || doubleAlmostEqual (val, -180.0))) strcat (hemi, (val < 0.0) ? GMT->current.language.cardinal_name[1][0] : GMT->current.language.cardinal_name[1][1]);
 					break;
 			}
 		}
 		else
-			hemi[h_pos] = (GMT_IS_ZERO (val)) ? 0 : ((val < 0.0) ? 'S' : 'N');
+			strcat (hemi, (val < 0.0) ? GMT->current.language.cardinal_name[2][2] : GMT->current.language.cardinal_name[2][3]);
+
 		val = fabs (val);
-		if (hemi[h_pos] == 0) hemi[0] = 0;	/* No space if no hemisphere letter */
+		if (hemi[0] == ' ' && hemi[1] == 0) hemi[0] = 0;	/* No space if no hemisphere indication */
 	}
 	if (GMT->current.plot.calclock.geo.no_sign) val = fabs (val);
 	sign = (val < 0.0) ? -1 : 1;

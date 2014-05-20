@@ -2022,7 +2022,7 @@ void GMT_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows
 	/* Finalize longitude range settings */
 	way = GMT_quad_finalize (GMT, Q);
 	for (row = 0; row < n_rows; row++) GMT_lon_range_adjust (Q->range[way], &lon[row]);
-	
+
 	GMT_free (GMT, Q);
 }
 
@@ -3838,7 +3838,7 @@ int gmt_geo_C_format (struct GMT_CTRL *GMT)
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
 		}
-		/* Finally add %c for the W,E,S,N char (or NULL) */
+		/* Finally add %s for the W,E,S,N string (or NULL) */
 		sprintf (fmt, "%%s");
 		strcat (S->x_format, fmt);
 		strcat (S->y_format, fmt);
@@ -4089,7 +4089,7 @@ int gmt_scanf_g_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd)
 		}
 		GMT_str_toupper (month);
 		for (i = ival[1] = 0; i < 12 && ival[1] == 0; i++) {
-			if (!strcmp (month, GMT->current.time.language.month_name[3][i])) ival[1] = i + 1;
+			if (!strcmp (month, GMT->current.language.month_name[3][i])) ival[1] = i + 1;
 		}
 		if (ival[1] == 0) return (-1);	/* No match for month name */
 	}
@@ -4783,7 +4783,7 @@ void GMT_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D)
 			if (T->max[col] > D->max[col]) D->max[col] = T->max[col];
 		}
 	}
-	
+
 }
 
 int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PALETTE *P, bool *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  bool *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, unsigned int def_outline, struct GMT_OGR_SEG *G)
@@ -5789,7 +5789,7 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *GMT, uint64_t n_tables
 			T->segment[seg]->record = GMT_memory (GMT, NULL, n_rows, char *);
 			T->segment[seg]->n_alloc = n_rows;
 			//T->segment[seg]->n_rows = n_rows;
-			
+
 		}
 	}
 	D->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */

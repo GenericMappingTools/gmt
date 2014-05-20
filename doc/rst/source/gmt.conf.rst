@@ -226,7 +226,7 @@ fonts can be found in the :doc:`gmt` man page.
     strings in data fields. See **FORMAT_DATE_OUT** for details. In
     addition, you may use a single o instead of mm (to plot month name)
     and u instead of W[-]ww to plot "Week ##". Both of these text
-    strings will be affected by the **TIME_LANGUAGE**,
+    strings will be affected by the **GMT_LANGUAGE**,
     **FORMAT_TIME_PRIMARY_MAP** and **FORMAT_TIME_SECONDARY_MAP**
     setting. [yyyy-mm-dd].
 
@@ -408,6 +408,48 @@ fonts can be found in the :doc:`gmt` man page.
     Determines if linear (linear), Akima's spline (akima), natural cubic
     spline (cubic) or no interpolation (none) should be used for 1-D
     interpolations in various programs [akima].
+
+.. _GMT_LANGUAGE:
+
+**GMT_LANGUAGE**
+    Language to use when plotting calendar and map items such as months and
+    days, map annotations and cardinal points. Select from:
+
+    * CN1 Simplified Chinese
+    * CN2 Traditional Chinese
+    * DE German
+    * DK Danish
+    * EH Basque
+    * ES Spanish
+    * FI Finnish
+    * FR French
+    * GR Greek
+    * HI Hawaiian
+    * HU Hungarian
+    * IE Irish
+    * IL Hebrew
+    * IS Icelandic
+    * IT Italian
+    * JP Japanese
+    * KR Korean
+    * NL Dutch
+    * NO Norwegian
+    * PL Polish
+    * PT Portuguese
+    * RU Russian
+    * SE Swedish
+    * SG Scottish Gaelic
+    * TO Tongan
+    * TR Turkish
+    * UK British English
+    * US US English
+
+    If your language is not supported, please examine the
+    **$GMT_SHAREDIR**/localization/us.d file and make a similar file. Please
+    submit it to the GMT Developers for official inclusion. Custom
+    language files can be placed in directories **$GMT_SHAREDIR**/localization
+    or ~/.gmt. Note: Some of these languages may require you to also
+    change the **PS_CHAR_ENCODING** setting.
 
 .. _GMT_TRIANGULATE:
 
@@ -1097,47 +1139,6 @@ fonts can be found in the :doc:`gmt` man page.
     1999-12-15T12:00:00.0 (exactly middle of December), while if
     **TIME_IS_INTERVAL** = off then that date is interpreted to mean
     1999-12-01T00:00:00.0 (start of December) [off].
-
-.. _TIME_LANGUAGE:
-
-**TIME_LANGUAGE**
-    Language to use when plotting calendar items such as months and
-    days. Select from:
-
-    * CN1 Simplified Chinese
-    * CN2 Traditional Chinese
-    * DE German
-    * DK Danish
-    * EH Basque
-    * ES Spanish
-    * FI Finnish
-    * FR French
-    * GR Greek
-    * HI Hawaiian
-    * HU Hungarian
-    * IE Irish
-    * IL Hebrew
-    * IS Icelandic
-    * IT Italian
-    * JP Japanese
-    * NL Dutch
-    * NO Norwegian
-    * PL Polish
-    * PT Portuguese
-    * RU Russian
-    * SE Swedish
-    * SG Scottish Gaelic
-    * TO Tongan
-    * TR Turkish
-    * UK British English
-    * US US English
-
-    If your language is not supported, please examine the
-    **$GMT_SHAREDIR**/time/us.d file and make a similar file. Please
-    submit it to the GMT Developers for official inclusion. Custom
-    language files can be placed in directories **$GMT_SHAREDIR**/time
-    or ~/.gmt. Note: Some of these languages may require you to also
-    change the **PS_CHAR_ENCODING** setting.
 
 .. _TIME_SYSTEM:
 

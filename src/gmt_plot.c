@@ -1895,13 +1895,11 @@ void gmt_label_trim (char *label, int stage)
 	while (label[i])
 		label[stage++] = label[i++];	/* Copy over the later part of the label to the beginning */
 	label[stage] = '\0';
-	i = strlen (label) - 1;
-	if (strchr ("WESN", label[i])) label[i] = '\0';	/* Strip off the trailing W|E|S|N, if found */
 }
 
 void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
-	unsigned int i, k, nx, ny, form, remove[2] = {0,0}, add;
+	unsigned int i, k, nx, ny, form, remove[2] = {0,0}, trim, add;
 	bool do_minutes, do_seconds, done_Greenwich, done_Dateline;
 	bool full_lat_range, proj_A, proj_B, annot_0_and_360 = false, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_LEN256] = {""};
@@ -1990,24 +1988,25 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 					done_Greenwich = true;		/* OK, want to plot 0 */
 				if (doubleAlmostEqual (val[i], -180.0))
 					done_Dateline = true;	/* OK, want to plot -180 */
-				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (label, label_c[i], GMT_LEN256);
-				else
-					GMT_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, 0, is_world_save);
 				/* Only annotate val[i] if
 				 *	(1) projection is such that 0/360 or -180/180 are in different x/y locations, OR
 				 *	(2) Plot 360 if 0 hasn't been plotted, OR
 				 *	(3) plot +180 if -180 hasn't been plotted
 				 */
-
 				annot = annot_0_and_360 || !((done_Greenwich && doubleAlmostEqual (val[i], 360.0)) || (done_Dateline && doubleAlmostEqual (val[i], 180.0)));
+				trim = 0;
 				if (dual[GMT_X] && k == 0) {
 					del = fmod (val[i] - w2, dx[1]);
 					if (GMT_IS_ZERO (del) || doubleAlmostEqual (del, dx[1]))
 						annot = false;
 					else
-						gmt_label_trim (label, remove[GMT_X]);
+						trim = remove[GMT_X];
 				}
+				if (label_c && label_c[i] && label_c[i][0])
+					strncpy (label, label_c[i], GMT_LEN256);
+				else
+					GMT_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, !trim, 0, is_world_save);
+				gmt_label_trim (label, trim);
 				gmt_map_symbol_ns (GMT, PSL, val[i], label, s, n, annot, k, form);
 			}
 			if (nx) GMT_free (GMT, val);
@@ -2049,18 +2048,19 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			for (i = 0; i < ny; i++) {
 				if ((GMT->current.proj.polar || GMT->current.proj.projection == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
 					continue;
-				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (label, label_c[i], GMT_LEN256);
-				else
-					GMT_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, lonlat, is_world_save);
-				annot = true;
+				annot = true, trim = 0;
 				if (dual[GMT_Y] && k == 0) {
 					del = fmod (val[i] - s2, dy[1]);
 					if (GMT_IS_ZERO (del) || doubleAlmostEqual (del, dy[1]))
 						annot = false;
 					else
-						gmt_label_trim (label, remove[GMT_Y]);
+						trim = remove[GMT_Y];
 				}
+				if (label_c && label_c[i] && label_c[i][0])
+					strncpy (label, label_c[i], GMT_LEN256);
+				else
+					GMT_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, !trim, lonlat, is_world_save);
+				gmt_label_trim (label, trim);
 				gmt_map_symbol_ew (GMT, PSL, val[i], label, w, e, annot, k, form);
 			}
 			if (ny) GMT_free (GMT, val);
@@ -2910,7 +2910,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
 		sincosd (t_angle, &s, &c);
 		x[0] = mr->x0 - 2.0 * M_VW * mr->size * s, y[0] = mr->y0 + 2.0 * M_VW * mr->size * c;
-		if (!strcmp(mr->dlabel, "-")) GMT_get_annot_label (GMT, mr->declination, mr->dlabel, true, false, 0, GMT->current.map.is_world);
+		if (!strcmp(mr->dlabel, "-")) GMT_get_annot_label (GMT, mr->declination, mr->dlabel, true, false, true, 0, GMT->current.map.is_world);
 		form = GMT_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_label.size, mr->dlabel, t_angle, 2, form);
 	}
