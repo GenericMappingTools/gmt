@@ -61,9 +61,10 @@ Optional Arguments
 
 **-A**\ [*file*]
     No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline
-    for the (possibly oblique) rectangular map domain.  The plot domain must be given via the oblique
-    **-R**\ *llx/lly/urx/ury*\ **r** specification and **-J**, with no other options present.  The
-    sampling interval is controlled via **MAP_LINE_STEP** parameter.
+    for the (possibly oblique) rectangular map domain.  The plot domain must be given via 
+    **-R** and **-J**, with no other options allowed.  The sampling interval is controlled via
+    **MAP_LINE_STEP** parameter.  The coordinates are written to *file* or to standard output if no file
+    is specified.
 
 .. include:: explain_-B.rst_
 

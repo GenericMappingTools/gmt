@@ -91,7 +91,7 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Option (API, "JZ,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A No plotting.  Just write coordinates of the (oblique) rectangular map boundary\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A No plotting, just write coordinates of the (possibly oblique) rectangular map boundary\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to given file (or stdout).  Requires -R and -J only.  Spacing along border\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT defaults MAP_LINE_STEP.\n");
 	GMT_Option (API, "B");
@@ -161,7 +161,6 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && !GMT->common.R.oblique, "Syntax error: Cannot use -A unless a rectangular domain via -R<llx/lly/urx/ury>r is set\n");
 	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->A.active || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -A, -B, -D, -L, -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Cannot use -B, -D, -L, -T with -A\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !GMT_is_geographic (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
@@ -208,14 +207,14 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 	if (Ctrl->A.active) {	/* Just save outline in geographic coordinates */
 		/* Loop counter-clockwise around the rectangular projected domain, recovering the lon/lat points */
 		uint64_t nx, ny, k = 0, i, dim[4] = {1, 1, 0, 2};
-		char msg[GMT_BUFSIZ] = {""};
+		char msg[GMT_BUFSIZ] = {""}, *kind[2] = {"regular", "oblique"};
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		
 		nx = urint (GMT->current.map.width  / GMT->current.setting.map_line_step);
 		ny = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
 		dim[GMT_ROW] = 2 * (nx + ny) - 3;
+		GMT_Report (API, GMT_MSG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		S = D->table[0]->segment[0];
 		for (i = 0; i < nx; i++, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], i * GMT->current.setting.map_line_step, 0.0);
@@ -226,7 +225,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 		S->n_rows = k;
 		D->table[0]->n_headers = 1;
 		D->table[0]->header = GMT_memory (GMT, NULL, 1U, char *);
-		sprintf (msg, " Geographical coordinates for a (oblique) rectangular plot domain outline polygon");
+		sprintf (msg, " Geographical coordinates for a (%s) rectangular plot domain outline polygon", kind[GMT->common.R.oblique]);
 		D->table[0]->header[0] = strdup (msg);
 		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLYGON, GMT_WRITE_SET, NULL, Ctrl->A.file, D) != GMT_OK) {
