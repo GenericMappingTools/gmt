@@ -16,7 +16,7 @@ M	10	Outubro		Out	O
 M	11	Novembro	Nov	N
 M	12	Dezembro	Dez	D
 # Name and abbreviations for the word Week in this language
-U	1	Semana		Sna	S
+U	1	Semana		Sem	S
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
 W	1	Domingo			Dom	D
