@@ -2630,7 +2630,7 @@ negative number.
 +------------+-------------------------------------+
 
 Note that the appearance of certain time annotations (month-, week-, and
-day-names) may be affected by the :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`,
+day-names) may be affected by the :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`,
 :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>`, and
 :ref:`FORMAT_TIME_SECONDARY_MAP <FORMAT_TIME_SECONDARY_MAP>` settings.
 
@@ -2895,7 +2895,7 @@ the month annotations must be centered on the corresponding month and
 *not* the 3-month interval. The :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` selects month name
 only and :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>` selects the 1-character, upper
 case abbreviation of month names using the current language (selected by
-:ref:`TIME_LANGUAGE <TIME_LANGUAGE>`).
+:ref:`GMT_LANGUAGE <GMT_LANGUAGE>`).
 
 .. _cartesian_axis3:
 

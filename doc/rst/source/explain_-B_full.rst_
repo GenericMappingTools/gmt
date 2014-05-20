@@ -79,7 +79,7 @@
 
     Note for geographic axes **m** and **s** instead mean arc minutes and arc seconds.
     All entities that are language-specific are under control
-    by :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`. Alternatively, for linear maps, we can omit *stride*, thus setting
+    by :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`. Alternatively, for linear maps, we can omit *stride*, thus setting
     *xinfo*, *yinfo*, or *zinfo* to **a** plots annotations at
     automatically determined intervals,
 
@@ -131,6 +131,6 @@
     :ref:`MAP_LINE_STEP <MAP_LINE_STEP>`, :ref:`MAP_ANNOT_OBLIQUE <MAP_ANNOT_OBLIQUE>`,
     :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`, :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`,
     :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>`, :ref:`FORMAT_TIME_SECONDARY_MAP <FORMAT_TIME_SECONDARY_MAP>`,
-    :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`,
+    :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`,
     :ref:`MAP_TICK_LENGTH_PRIMARY <MAP_TICK_LENGTH_PRIMARY>`,
     and :ref:`MAP_TICK_PEN_PRIMARY <MAP_TICK_PEN_PRIMARY>`; see the :doc:`gmt.conf` man page for details.
