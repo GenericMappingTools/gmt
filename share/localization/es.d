@@ -26,3 +26,9 @@ W	4	Miércoles	Mie	M
 W	5	Jueves		Jue	J
 W	6	Viernes		Vie	V
 W	7	Sábado		Sab	S
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C	1	oeste		O	O
+C	2	este		E	E
+C	3	sur		S	S
+C	4	norte		N	N

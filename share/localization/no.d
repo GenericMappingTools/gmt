@@ -26,3 +26,9 @@ W	4	Onsdag		Ons	O
 W	5	Torsdag		Tor	T
 W	6	Fredag		Fre	F
 W	7	L@ordag		L@or	L
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C       1       vest		V	V
+C       2       @ost		@O	@O
+C       3       s@or		S	S
+C       4       nord		N	N

@@ -26,3 +26,9 @@ W 4 Среда Сре С
 W 5 Четверг  Чет Ч
 W 6 Пятница    Пят П
 W 7 Суббота  Суб С
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C	1	West		W	W
+C	2	East		E	E
+C	3	South		S	S
+C	4	North		N	N

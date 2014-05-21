@@ -26,3 +26,9 @@ W	4	Τετάρτη		Τετ	Τ
 W	5	Πέμπτη		Πεμ	Π
 W	6	Παρασκευή	Παρ	Π
 W	7	Σαββάτο		Σαβ	Σ
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C	1	Δύση 		Δ 	Δ
+C	2	Ανατολή 	Α 	Α
+C	3	Νότος 		Ν 	Ν
+C	4	Βορράς 		Β 	Β

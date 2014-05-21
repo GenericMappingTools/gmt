@@ -26,3 +26,9 @@ W	4	Mittwoch	Mi	M
 W	5	Donnerstag	Do	D
 W	6	Freitag		Fr	F
 W	7	Samstag		Sa	S
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C	1	Westen		W	W
+C	2	Osten		O	O
+C	3	Süden		S	S
+C	4	Norden		N	N

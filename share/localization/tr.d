@@ -26,3 +26,9 @@ W	4	Çarþamba	Çar	Ç
 W	5	Perþembe	Per	P
 W	6	Cuma		Cum	C
 W	7	Cumartesi	Cts	C
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C	1	West		W	W
+C	2	East		E	E
+C	3	South		S	S
+C	4	North		N	N

@@ -26,3 +26,9 @@ W	4	woensdag	wo	w
 W	5	donderdag	do	d
 W	6	vrijdag		vr	v
 W	7	zaterdag	za	z
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C	1	west		WL	W
+C	2	oost		OL	O
+C	3	zuid		ZB	Z
+C	4	noord		NB	N

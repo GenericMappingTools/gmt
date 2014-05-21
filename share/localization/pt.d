@@ -5,7 +5,7 @@
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Janeiro		Jan	J
 M	2	Fevereiro	Fev	F
-M	3	Março		Mar	M
+M	3	MarÃ§o		Mar	M
 M	4	Abril		Abr	A
 M	5	Maio		Mai	M
 M	6	Junho		Jun	J
@@ -19,10 +19,16 @@ M	12	Dezembro	Dez	D
 U	1	Semana		Sem	S
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	Domingo			Dom	D
-W	2	Segunda-Feira		Seg	S
-W	3	Terça-Feira		Ter	T
-W	4	Quarta-Feira		Qua	Q
-W	5	Quinta-Feira		Qui	Q
-W	6	Sexta-Feira		Sex	S
-W	7	Sábado			Sáb	S
+W	1	Domingo		Dom	D
+W	2	Segunda-Feira	Seg	S
+W	3	TerÃ§a-Feira	Ter	T
+W	4	Quarta-Feira	Qua	Q
+W	5	Quinta-Feira	Qui	Q
+W	6	Sexta-Feira	Sex	S
+W	7	SÃ¡bado		SÃ¡b	S
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C	1	oeste		O	O
+C	2	este		E	E
+C	3	sul		S	S
+C	4	norte		N	N

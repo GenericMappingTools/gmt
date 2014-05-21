@@ -26,3 +26,9 @@ W	4	水曜日		水	W
 W	5	木曜日		木	T
 W	6	金曜日		金	F
 W	7	土曜日		土	S
+# The following lines give the translation of the 4 major compass directions (WESN).
+# Name in full (optionally capitalized), abbreviation of longitude and latitude on map edge and wind direction (may be more than one letter).
+C	1	West		W	W
+C	2	East		E	E
+C	3	South		S	S
+C	4	North		N	N
