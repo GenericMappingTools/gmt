@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-05-26	pwessel
+	* gmt_plot.c, pslib.?, pstext.c, psclip.c:	New handling of PSL clipping for quoted text
+				lines (contours) and text.  No more different clip off types
+				in psclip.
+
 2014-05-08	remko
 	* gmt_plot.c:		Fix bug in treatment of variable text introduced on 2014-05-04.
 				This addresses issue #554.
