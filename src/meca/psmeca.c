@@ -130,7 +130,7 @@ struct PSMECA_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} T2;
- 	struct O2 {	/* -o */
+ 	struct O2 {	/* -Fo */
 		bool active;
 	} O2;
 };
@@ -232,7 +232,7 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t (y) Best double couple defined from principal axis:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -o option for old (psvelomeca) format (no depth in third column).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fo option for old (psvelomeca) format (no depth in third column).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][u]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default values are /%g/%fp\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written;\n");
@@ -463,7 +463,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "Syntax error: -S must specify scale\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->O2.active, "Syntax error: -Z cannot be combined with -o\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->O2.active, "Syntax error: -Z cannot be combined with -Fo\n");
 
 	/* Set to default pen where needed */
 
@@ -629,27 +629,35 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 
 		if (Ctrl->S.readmode == READ_CMT) {
 			meca.NP1.str = atof (col[2+new_fmt]);
+			if (meca.NP1.str > 180.0) meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = atof (col[3+new_fmt]);
 			meca.NP1.rake = atof (col[4+new_fmt]);
+			if (meca.NP1.rake > 180.0) meca.NP1.rake -= 360.0; else if (meca.NP1.rake < -180.0) meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.NP2.str = atof (col[5+new_fmt]);
+			if (meca.NP2.str > 180.0) meca.NP2.str -= 360.0; else if (meca.NP2.str < -180.0) meca.NP2.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP2.dip = atof (col[6+new_fmt]);
 			meca.NP2.rake = atof (col[7+new_fmt]);
+			if (meca.NP2.rake > 180.0) meca.NP2.rake -= 360.0; else if (meca.NP2.rake < -180.0) meca.NP2.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.moment.mant = atof (col[8+new_fmt]);
 			meca.moment.exponent = atoi(col[9+new_fmt]);
 			if (meca.moment.exponent == 0) meca.magms = atof (col[8+new_fmt]);
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
 			meca.NP1.str = atof (col[2+new_fmt]);
+			if (meca.NP1.str > 180.0) meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = atof (col[3+new_fmt]);
 			meca.NP1.rake = atof (col[4+new_fmt]);
+			if (meca.NP1.rake > 180.0) meca.NP1.rake -= 360.0; else if (meca.NP1.rake < -180.0) meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.magms = atof (col[5+new_fmt]);
 			meca.moment.exponent = 0;
 			define_second_plane (meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
 			meca.NP1.str = atof (col[2+new_fmt]);
+			if (meca.NP1.str > 180.0) meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = atof (col[3+new_fmt]);
 			meca.NP2.str = atof (col[4+new_fmt]);
+			if (meca.NP2.str > 180.0) meca.NP2.str -= 360.0; else if (meca.NP2.str < -180.0) meca.NP2.str += 360.0;		/* Strike must be in -180/+180 range*/
 			fault = atof (col[5+new_fmt]);
 			meca.magms = atof (col[6+new_fmt]);
 			meca.moment.exponent = 0;
