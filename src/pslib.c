@@ -265,7 +265,7 @@ void psl_cmyk_to_rgb (double rgb[], double cmyk[]);
 char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 void psl_defunits_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
-void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node, bool process);
+void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node);
 void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, double *y, int npath, int *n);
 void psl_set_attr_arrays (struct PSL_CTRL *PSL, const char *prefix, int *node, double *angle, char **txt, int npath, int *n, int *m);
 void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
@@ -1979,7 +1979,8 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_defunits (PSL, "PSL_gap_y", offset[1]);		/* Set text clearance in y direction */
 
 		/* Set PSL arrays and constants for this set of lines and labels */
-		psl_set_reducedpath_arrays (PSL, x, y, n_segments, np, nlabel_per_seg, (curved) ? arg1 : NULL, kind == 1);
+		if (curved)	/* Set PSL array for curved baselines [also used to draw lines if selected] */
+			psl_set_reducedpath_arrays (PSL, x, y, n_segments, np, nlabel_per_seg, arg1);
 		psl_set_attr_arrays (PSL, "label", (curved) ? arg1 : NULL, angle, label, n_segments, np, nlabel_per_seg);
 		psl_set_int_array   (PSL, "label_n", nlabel_per_seg, n_segments);
 		PSL_definteger (PSL, "PSL_n_paths", n_segments);
@@ -2003,7 +2004,16 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 	}
 	if (mode & PSL_TXT_DRAW) {	/* Draw the lines whose coordinates are in the PSL already */
 		PSL_comment (PSL, "Draw the text line segments:\n");
-		PSL_command (PSL, "PSL_draw_path_lines N\n");
+		if (curved) 	/* The coordinates are in the PSL already so use PLS function */
+			PSL_command (PSL, "PSL_draw_path_lines N\n");
+		else {	/* Must draw lines here instead */
+			int k, offset = 0;
+			for (k = 0; k < n_segments; k++) {	/* Draw each segment line */
+				PSL_command (PSL, "PSL_path_pen %d get cvx exec\n", k);	/* Set this segment's pen */
+				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE + PSL_STROKE);
+				offset += np[k];
+			}
+		}
 	}
 	PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 	if (mode & PSL_TXT_CLIP_OFF) {	/* Turn OFF Clipping and bail */
@@ -4057,7 +4067,7 @@ void psl_defunits_array (struct PSL_CTRL *PSL, const char *param, double *array,
 	PSL_command (PSL, "%d array astore def\n", n);
 }
 
-void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node, bool process)
+void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node)
 {	/* These are used by PSL_plottextline.  We make sure there are no point pairs that would yield dx = dy = 0 (repeat point)
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
 	int i, j, k, p, ii, kk, this_i, this_j, last_i, last_j, i_offset = 0, k_offset = 0, n_skipped, ntot = 0, new_tot = 0, *new_n = NULL;
@@ -4065,44 +4075,39 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 
 	if (x == NULL && y == NULL) return;	/* No path */
 	for (p = 0; p < npath; p++) ntot += n[p];	/* Determine total number of points */
-	if (process) {	/* Since we need dx/dy from these we preprocess to avoid any nasty surprises with repeat points */
-		use = PSL_memory (PSL, NULL, ntot, char);
-		new_n = PSL_memory (PSL, NULL, npath, int);
-		for (p = 0; p < npath; p++) {
-			this_i = this_j = INT_MAX;
-			for (ii = j = n_skipped = k = 0; ii < n[p]; ii++) {
-				last_i = this_i;	last_j = this_j;
-				i = ii + i_offset;	/* Index into concatenated x,y arrays */
-				this_i = 100 * psl_ix (PSL, x[i]);	/* Simulates the digits written by a %.2lf format */
-				this_j = 100 * psl_iy (PSL, y[i]);
-				if (this_i != last_i && this_j != last_j) {	/* Not a repeat point, use it */
-					use[i] = true;
-					j++;
-				}
-				else	/* Repeat point, skip it */
-					n_skipped++;
-				kk = k + k_offset;	/* Index into concatenated node array */
-				if (k < m[p] && node[kk] == ii && n_skipped) {	/* Adjust node pointer since we are removing points and upsetting the node order */
-					node[kk++] -= n_skipped;
-					k++;
-				}
+	/* Since we need dx/dy from these we preprocess to avoid any nasty surprises with repeat points */
+	use = PSL_memory (PSL, NULL, ntot, char);
+	new_n = PSL_memory (PSL, NULL, npath, int);
+	for (p = 0; p < npath; p++) {
+		this_i = this_j = INT_MAX;
+		for (ii = j = n_skipped = k = 0; ii < n[p]; ii++) {
+			last_i = this_i;	last_j = this_j;
+			i = ii + i_offset;	/* Index into concatenated x,y arrays */
+			this_i = 100 * psl_ix (PSL, x[i]);	/* Simulates the digits written by a %.2lf format */
+			this_j = 100 * psl_iy (PSL, y[i]);
+			if (this_i != last_i && this_j != last_j) {	/* Not a repeat point, use it */
+				use[i] = true;
+				j++;
 			}
-			new_n[p] = j;
-			new_tot += j;
-			i_offset += n[p];
-			k_offset += m[p];
-		
+			else	/* Repeat point, skip it */
+				n_skipped++;
+			kk = k + k_offset;	/* Index into concatenated node array */
+			if (k < m[p] && node[kk] == ii && n_skipped) {	/* Adjust node pointer since we are removing points and upsetting the node order */
+				node[kk++] -= n_skipped;
+				k++;
+			}
 		}
-	}
-	else {
-		new_n = n;	/* Use use the input numbers */
-		new_tot = ntot;
+		new_n[p] = j;
+		new_tot += j;
+		i_offset += n[p];
+		k_offset += m[p];
+	
 	}
 		
 	PSL_comment (PSL, "Set concatenated coordinate arrays for line segments:\n");
 	PSL_command (PSL, "/PSL_path_x [ ");
 	for (i = k = 0; i < ntot; i++) {
-		if (process && !use[i]) continue;
+		if (!use[i]) continue;
 		PSL_command (PSL, "%d ", psl_ix (PSL, x[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
@@ -4110,7 +4115,7 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 	PSL_command (PSL, "] def\n");
 	PSL_command (PSL, "/PSL_path_y [ ");
 	for (i = k = 0; i < ntot; i++) {
-		if (process && !use[i]) continue;
+		if (!use[i]) continue;
 		PSL_command (PSL, "%d ", psl_iy (PSL, y[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
@@ -4118,11 +4123,11 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 	PSL_command (PSL, "] def\n");
 	PSL_comment (PSL, "Set array with number of points per line segments:\n");
 	psl_set_int_array (PSL, "path_n", new_n, npath);
+	if (k > 100000) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL array placed has %d items - may exceed gs_init.ps MaxOpStack setting\n", k);
 
-	if (process) {	/* Free up temp arrays */
-		PSL_free (use);
-		PSL_free (new_n);
-	}
+	/* Free up temp arrays */
+	PSL_free (use);
+	PSL_free (new_n);
 	return;
 }
 

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13153 [64-bit] Document from psxy
+%%Title: GMT v5.1.2_r13154 [64-bit] Document from psxy
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri May 16 14:35:55 2014
+%%CreationDate: Mon May 26 11:11:17 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -193,6 +193,7 @@
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
+    /ydepth exch def
     /textheight exch def
     /just exch def
     /offset exch def
@@ -200,7 +201,7 @@
     /pathdist 0 def
     /setdist offset def
     /charcount 0 def
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
     V flattenpath
 	{movetoproc} {linetoproc}
 	{curvetoproc} {closepathproc}
@@ -432,6 +433,8 @@ end
 {
   /PSL_just PSL_label_justify k get def
   /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
   PSL_usebox
   {PSL_CT_clippath
     PSL_fillbox
@@ -439,7 +442,7 @@ end
     PSL_drawbox
     {V PSL_setboxpen S U} if N
   } if
-  PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 /PSL_CT_clippath
 {
@@ -530,8 +533,8 @@ end
     PSL_ST_prepare_text
     PSL_usebox
     {  PSL_rounded
-        {PSL_ST_textbox_rect}
         {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
       ifelse
       PSL_fillbox {V PSL_setboxrgb fill U} if
       PSL_drawbox {V PSL_setboxpen S U} if
@@ -554,7 +557,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip
+  PSL_clip N
 } def
 /PSL_ST_prepare_text
 {
@@ -2778,55 +2781,6 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_path_x [ 2142 2109 2034 1977 1929 1913 2411 2297 2214 1935 
-	1921 1709 1730 1732 1669 1611 2681 2486 2440 2255 
-	2193 1954 1954 1832 1808 1750 1592 1582 1509 1426 
-	1420 1412 1419 1408 1310 1008 1058 1155 1164 1211 
-	1316 1320 1336 1346 1393 1887 2001 2170 2251 2542 
-	2547 2613 2636 2666 2674 2738 2950 734 904 1031 
-	1042 1076 1082 1226 1800 1864 2024 2061 2142 2460 
-	2707 2860 2881 3032 2930 2932 2947 3042 3220 3220 
-	904 904 904 3559 3293 3164 3013 2848 2779 2578 
-	2554 2482 2102 1856 1226 1143 1098 1041 955 824 
-	508 229 245 288 642 533 3348 3203 3551 3559 
-	3371 3107 3107 2811 2582 2542 2344 2125 1911 1705 
-	1456 1262 1186 1059 1056 942 597 561 508 429 
-	357 132 331 379 141 3477 3453 3511 155 315 
-	576 319 336 360 518 836 1089 1186 1346 1402 
-	1473 2124 2206 2244 2499 3044 3195 3227 3272 3559 
-	3559 3559 2161 3220 3247 3274 3423 1359 1525 1446 
-	1172 1243 1359 678 791 960 903 808 629 293 
-	284 181 3480 3402 3437 3519 1590 1653 1684 1811 
-	1842 1871 2445 2889 3011 2946 2173 1892 1751 1656 
-	1590 395 565 251 209 2722 2683 2553 2069 1936 
-	2304 2392 2722 2421 2246 2208 2233 2338 2432 2421 
-	] def
-/PSL_path_y [ 3611 3573 3536 3470 3602 3611 3611 3479 3438 3154 
-	3141 3075 3368 3404 3580 3611 3611 3385 3363 3175 
-	2831 2835 2835 2797 2652 2573 2532 2652 2797 2884 
-	3146 3441 3529 3559 3611 3611 3584 3329 2898 2674 
-	2568 2507 2257 2230 2248 2377 2532 2530 2529 2595 
-	2785 3131 3256 3287 3291 3366 3611 3606 3047 2444 
-	2392 2358 2257 1900 2115 2140 2181 2232 2231 2303 
-	2330 2134 2106 2501 2805 2913 2990 3205 3611 3611 
-	3047 3047 3047 2412 1983 1828 1542 1585 1602 1918 
-	1949 1941 1943 1851 1615 1515 1580 1676 1865 2154 
-	2321 2522 2623 2689 3228 3587 3354 2980 2611 1838 
-	1605 1072 1072 1148 1207 1269 1664 1666 1585 1508 
-	1208 1075 959 1128 1132 1298 1878 1958 1985 2042 
-	2076 2181 3569 3409 3047 3098 3036 2974 1735 1660 
-	1264 1118 1052 1042 1026 993 664 570 733 819 
-	928 1372 1102 979 1021 794 763 824 907 1354 
-	1354 1354 127 254 384 515 322 341 197 210 
-	254 395 341 214 282 476 531 654 673 799 
-	835 1252 575 677 743 870 669 733 781 867 
-	888 793 887 702 651 371 264 226 556 638 
-	669 327 429 546 717 615 451 433 367 678 
-	738 752 615 532 508 597 601 618 579 532 
-	] def
-/PSL_path_n [ 6 10 19 22 23 3 23 3 23 3 
-	3 24 5 6 9 4 15 4 8 7 
-	] def
 /PSL_label_angle [ 85.91 17.21 271.45 273.57 359.41 49.15 281.89 20.56 307.89 66.25 
 	345.55 20.54 294.45 56.72 345.55 20.54 304.81 334.93 354.07 56.85 
 	286.95 62.02 78.35 350.92 283.95 34.28 337.41 7.84 7.84 9.24 
@@ -2882,7 +2836,228 @@ PSL_set_label_heights
 2 PSL_straight_path_labels
 V
 4 PSL_straight_path_clip
-PSL_draw_path_lines N
+PSL_path_pen 0 get cvx exec
+2142 3611 M
+-33 -38 D
+-75 -37 D
+-57 -66 D
+-48 132 D
+-16 9 D
+S
+PSL_path_pen 1 get cvx exec
+2411 3611 M
+-114 -132 D
+-83 -41 D
+-279 -284 D
+-14 -13 D
+-212 -66 D
+23 329 D
+-63 176 D
+-58 31 D
+S
+PSL_path_pen 2 get cvx exec
+2681 3611 M
+-195 -226 D
+-46 -22 D
+-185 -188 D
+-62 -344 D
+-239 4 D
+-122 -38 D
+-24 -145 D
+-58 -79 D
+-158 -41 D
+-10 120 D
+-73 145 D
+-83 87 D
+-14 557 D
+7 88 D
+-11 30 D
+-98 52 D
+S
+PSL_path_pen 3 get cvx exec
+1008 3611 M
+50 -27 D
+97 -255 D
+9 -431 D
+47 -224 D
+105 -106 D
+20 -311 D
+10 -27 D
+47 18 D
+494 129 D
+114 155 D
+250 -3 D
+291 66 D
+5 190 D
+89 471 D
+30 31 D
+8 4 D
+276 320 D
+S
+PSL_path_pen 4 get cvx exec
+734 3606 M
+170 -559 D
+138 -655 D
+34 -34 D
+6 -101 D
+144 -357 D
+638 240 D
+160 41 D
+37 51 D
+81 -1 D
+318 72 D
+247 27 D
+174 -224 D
+151 395 D
+-102 304 D
+2 108 D
+15 77 D
+273 621 D
+S
+PSL_path_pen 5 get cvx exec
+904 3047 M
+S
+PSL_path_pen 6 get cvx exec
+3559 2412 M
+-266 -429 D
+-129 -155 D
+-151 -286 D
+-234 60 D
+-201 316 D
+-24 31 D
+-72 -8 D
+-380 2 D
+-876 -328 D
+-83 -100 D
+-45 65 D
+-57 96 D
+-217 478 D
+-316 167 D
+-279 201 D
+16 101 D
+397 605 D
+-109 359 D
+S
+PSL_path_pen 7 get cvx exec
+3348 3354 M
+-145 -374 D
+348 -369 D
+S
+PSL_path_pen 8 get cvx exec
+3559 1838 M
+-188 -233 D
+-264 -533 D
+-525 135 D
+-40 62 D
+-198 395 D
+-219 2 D
+-420 -158 D
+-249 -300 D
+-194 -133 D
+-76 -116 D
+-130 173 D
+-114 166 D
+-345 580 D
+-36 80 D
+-53 27 D
+-79 57 D
+-297 139 D
+S
+PSL_path_pen 9 get cvx exec
+331 3569 M
+48 -160 D
+-238 -362 D
+S
+PSL_path_pen 10 get cvx exec
+3477 3098 M
+-24 -62 D
+58 -62 D
+S
+PSL_path_pen 11 get cvx exec
+155 1735 M
+160 -75 D
+261 -396 D
+-257 -146 D
+17 -66 D
+24 -10 D
+476 -49 D
+253 -329 D
+97 -94 D
+160 163 D
+127 195 D
+651 444 D
+120 -393 D
+255 42 D
+545 -227 D
+151 -31 D
+77 144 D
+287 447 D
+S
+PSL_path_pen 12 get cvx exec
+2161 127 M
+1059 127 D
+54 261 D
+149 -193 D
+S
+PSL_path_pen 13 get cvx exec
+1359 341 M
+166 -144 D
+-353 57 D
+71 141 D
+116 -54 D
+S
+PSL_path_pen 14 get cvx exec
+678 214 M
+113 68 D
+169 194 D
+-57 55 D
+-95 123 D
+-179 19 D
+-336 126 D
+-112 453 D
+S
+PSL_path_pen 15 get cvx exec
+3480 575 M
+-78 102 D
+35 66 D
+82 127 D
+S
+PSL_path_pen 16 get cvx exec
+1590 669 M
+63 64 D
+31 48 D
+158 107 D
+29 -95 D
+574 94 D
+566 -236 D
+-65 -280 D
+-1054 -145 D
+-141 330 D
+-95 82 D
+-66 31 D
+S
+PSL_path_pen 17 get cvx exec
+395 327 M
+170 102 D
+-314 117 D
+-42 171 D
+S
+PSL_path_pen 18 get cvx exec
+2722 615 M
+-39 -164 D
+-614 -84 D
+-133 311 D
+456 74 D
+330 -137 D
+S
+PSL_path_pen 19 get cvx exec
+2421 532 M
+-175 -24 D
+-38 89 D
+130 21 D
+94 -39 D
+-11 -47 D
+S
 PSL_cliprestore
 U
 PSL_cliprestore
