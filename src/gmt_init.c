@@ -6912,6 +6912,7 @@ int gmt_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, int *n
 		}
 	}
 	GMT_fclose (GMT, fp);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processed custom annotations via %s for axis %d.\n", A->file_custom, A->id);
 	if (n_int[0] && n_int[1]) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
 		n_errors++;
