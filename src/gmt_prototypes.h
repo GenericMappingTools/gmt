@@ -96,7 +96,7 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I);
 /* gmt_plot.c prototypes only included if pslib has been included */
 
 EXTERN_MSC char * GMT_export2proj4 (struct GMT_CTRL *GMT);
-EXTERN_MSC void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *LP, double Brgb[], struct GMT_PEN *BP, double Frgb[]);
+EXTERN_MSC void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[]);
 EXTERN_MSC void GMT_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms);
 EXTERN_MSC void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B);
@@ -377,6 +377,7 @@ EXTERN_MSC bool GMT_getinc (struct GMT_CTRL *GMT, char *line, double inc[]);
 EXTERN_MSC int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n);
 EXTERN_MSC int GMT_getfont (struct GMT_CTRL *GMT, char *line, struct GMT_FONT *F);
 EXTERN_MSC bool GMT_getpen (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *pen);
+EXTERN_MSC void GMT_savepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen);
 EXTERN_MSC bool GMT_getrgb (struct GMT_CTRL *GMT, char *line, double *rgb);
 EXTERN_MSC int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms);

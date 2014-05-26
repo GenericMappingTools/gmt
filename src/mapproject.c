@@ -420,7 +420,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 
 int GMT_mapproject (void *V_API, int mode, void *args)
 {
-	int x, y, ks, rmode, n_fields, two, way, error = 0;
+	int x, y, ks, rmode, n_fields, two, way, error = 0, o_type[2] = {GMT_Z, GMT_Z};
 	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	bool line_start = true, do_geo_conv = false;
 	bool geodetic_calc = false, datum_conv_only = false, double_whammy = false;
@@ -530,7 +530,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	}
 	else
 		datum_conv_only = Ctrl->T.active;
-
+	
 	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (Ctrl->G.mode) {	/* save output format in case -J changes it */
@@ -560,7 +560,11 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = save[GMT_X];
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = save[GMT_Y];
 	}
-
+	if (datum_conv_only) {	/* Both input and output is geographic */
+		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
+		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+	}
+	
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && !(geodetic_calc || Ctrl->T.active)) {
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
@@ -644,6 +648,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
 		GMT_set_geographic (GMT, GMT_IN);
 		GMT_set_geographic (GMT, GMT_OUT);
+		o_type[GMT_X] = GMT_X;	o_type[GMT_Y] = GMT_Y;
 		GMT->current.io.col_type[GMT_IN][GMT_Z] = GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 	}
 
@@ -951,8 +956,8 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 					pos = record[0] = 0;	/* Start with blank record */
 					GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring and update pos */
 					GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring and update pos */
-					GMT_add_to_record (GMT, record, out[x], GMT_Z, 2);	/* Format our output x value */
-					GMT_add_to_record (GMT, record, out[y], GMT_Z, 2);	/* Format our output y value */
+					GMT_add_to_record (GMT, record, out[x], o_type[GMT_X], 2);	/* Format our output x value */
+					GMT_add_to_record (GMT, record, out[y], o_type[GMT_Y], 2);	/* Format our output y value */
 					if (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) {
 						GMT_strtok (line, " \t,", &pos, p);		/* Returns zstring (ignored) and update pos */
 						GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */

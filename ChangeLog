@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-05-26	pwessel
+	* gmt_plot.c, pslib.?, pstext.c, psclip.c:	New handling of PSL clipping for quoted text
+				lines (contours) and text.  No more different clip off types
+				in psclip.
+
 2014-05-20	remko
 	* *.[ch]:		Renamed TIME_LANGUAGE to GMT_LANGUAGE. Introduced language-
 				dependent names and abbreviations of cardinal points.

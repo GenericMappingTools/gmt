@@ -18,6 +18,6 @@ gmt psxy -R -J -O -K -W1p,red << EOF >> $ps
 10	8.2
 EOF
 gmt psbasemap -R -J -O -K -Bg0.2 >> $ps
-gmt psclip -Cs -O -K  >> $ps
+gmt psclip -C -O -K  >> $ps
 gmt psbasemap -R -J -O -B2 -BWSne+t"Delayed Annotations" >> $ps
 

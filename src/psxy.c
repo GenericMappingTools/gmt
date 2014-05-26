@@ -673,6 +673,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (GMT_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);
 		penset_OK = false;	/* The pen for quoted lines are set within the PSL code itself so we dont do it here in psxy */
+		if (S.G.delay) GMT_map_basemap (GMT);	/* Must do it here due to clipping */
 	}
 
 	if ((Ctrl->A.active && Ctrl->A.mode == 0) || !GMT_is_geographic (GMT, GMT_IN)) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
@@ -680,14 +681,9 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
-	if (S.symbol == GMT_SYMBOL_FRONT || S.symbol == GMT_SYMBOL_QUOTED_LINE || (not_line && !Ctrl->N.active)) {
-		if (!S.G.delay) {
-			GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-			clip_set = true;
-		}
-	}
-	else if (!not_line && GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {
-		if (!S.G.delay) {
+	if (S.symbol != GMT_SYMBOL_LINE) {	/* Only set clip if plotting symbols */
+		/* Unless -N except special case of 360-range conical (which is periodic but do not touch at w=e) do we clip */
+		if (!Ctrl->N.active || (GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {
 			GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 			clip_set = true;
 		}
@@ -729,7 +725,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
 		Return (error);
 	}
-
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		unsigned int n_warn[3] = {0, 0, 0}, warn;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
@@ -1171,13 +1166,13 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -Ctrl->D.dx, -Ctrl->D.dy, 0.0, PSL_FWD);	/* Reset shift */
 
-	if (clip_set) GMT_map_clip_off (GMT);
+	if (clip_set && !S.G.delay) GMT_map_clip_off (GMT);	/* We delay map clip off if text clipping was chosen via -Sq<args:+e */
 
 	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 
-	GMT_map_basemap (GMT);
+	if (!S.G.delay) GMT_map_basemap (GMT);
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 

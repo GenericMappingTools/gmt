@@ -28,9 +28,9 @@ cat > lat_label.def << END
 END
 
 # generate simple location map
-pscoast -R115/20/135/36r -JB130/30/25/45/6i -Bag -Dl -Ggrey -Wthinnest -A500 -P -K -Xc > $ps
+gmt pscoast -R115/20/135/36r -JB130/30/25/45/6i -Bag -Dl -Ggrey -Wthinnest -A500 -P -K -Xc > $ps
 
 # insert custom symbol at 5 cm size
-psxy -R -J label_places1.txt -Sklat_label/5c -O -K -W1p >> $ps
+gmt psxy -R -J label_places1.txt -Sklat_label/5c -O -K -W1p >> $ps
 # insert custom symbol at 3 cm size
-psxy -R -J label_places2.txt -Sklat_label/3c -O -W1p,red -Glightblue >> $ps
+gmt psxy -R -J label_places2.txt -Sklat_label/3c -O -W1p,red -Glightblue >> $ps

@@ -1039,6 +1039,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use GMT_xy_axis to draw a y-axis based on x parameters. */
 			void (*tmp) (struct GMT_CTRL *, double, double *) = NULL;
+			char *custum;
 			
 			A = &GMT->current.map.frame.axis[GMT_X];
 			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
@@ -1049,6 +1050,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
 			/* Copy x-axis annotation and scale info to y-axis.  We dont need to undo this since GMT_end_module will restore it for us */
+			custum = GMT->current.map.frame.axis[GMT_Y].file_custom;	/* Need to remember what this was */
 			GMT_memcpy (&GMT->current.map.frame.axis[GMT_Y], &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
 			double_swap (GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y]);
 			double_swap (GMT->current.proj.origin[GMT_X], GMT->current.proj.origin[GMT_Y]);
@@ -1058,6 +1060,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[GMT_Y].item[i].parent = GMT_Y;
 			GMT_xy_axis (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & 1, GMT->current.map.frame.side[flip & 1 ? W_SIDE : E_SIDE] & 2);
 			PSL_setorigin (PSL, 0.0, 0.0, 90.0, PSL_INV);	/* Rotate back to where we started in this branch */
+			GMT->current.map.frame.axis[GMT_Y].file_custom = custum;	/* Restore correct pointer */
 		}
 		else {
 			if (!skip_lines) {	/* First draw gridlines */

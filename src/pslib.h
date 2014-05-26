@@ -157,6 +157,18 @@ enum PSL_enum_line {PSL_BUTT_CAP	= 0,
 	PSL_BEVEL_JOIN			= 2,
 	PSL_MITER_DEFAULT		= 35};
 
+/* PSL codes for text clipping (PSL_plottextline) */
+
+enum PSL_enum_txt {PSL_TXT_INIT	= 1,
+	PSL_TXT_SHOW		= 2,
+	PSL_TXT_CLIP_ON		= 4,
+	PSL_TXT_DRAW		= 8,
+	PSL_TXT_CLIP_OFF	= 16,
+	PSL_TXT_ROUND		= 32,
+	PSL_TXT_CURVED		= 64,
+	PSL_TXT_FILLBOX		= 128,
+	PSL_TXT_DRAWBOX		= 256};
+
 /* Verbosity levels */
 
 enum PSL_enum_verbose {PSL_MSG_QUIET = 0,	/* No messages whatsoever */
@@ -327,8 +339,7 @@ EXTERN_MSC int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, doub
 EXTERN_MSC int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double param[], int symbol);
 EXTERN_MSC int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *text, double angle, int justify, int mode);
 EXTERN_MSC int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *text, double angle, int justify, double offset[], int mode);
-EXTERN_MSC int PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], int m, double fontsize, char *label[], double angle[], double size[], int fnt[], int justify, double offset[], int mode);
-EXTERN_MSC int PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], int n, int node[], double fontsize, char *label[], int m, double angle[], int justify, double offset[], int mode);
+EXTERN_MSC int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], int n_segments, void *arg1, void *arg2, char *label[], double angle[], int nlabel_per_seg[], double fontsize, int justify, double offset[], int mode);
 EXTERN_MSC int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *header, unsigned char **image);
 EXTERN_MSC int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode);
 EXTERN_MSC int PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[], char *encoding);
@@ -351,6 +362,7 @@ EXTERN_MSC int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb
 EXTERN_MSC int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char *text);
 EXTERN_MSC int PSL_defunits (struct PSL_CTRL *PSL, const char *param, double value);
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
+EXTERN_MSC char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], char *pattern, double offset);
 
 /* Other deep level routines that could be useful */
 EXTERN_MSC int psl_ix (struct PSL_CTRL *PSL, double value);

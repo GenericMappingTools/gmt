@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.1b_r12155 [64-bit] Document from grdcontour
+%%Title: GMT v5.1.2_r13154 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Sep 13 19:53:21 2013
+%%CreationDate: Mon May 26 11:11:03 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -193,6 +193,7 @@
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
+    /ydepth exch def
     /textheight exch def
     /just exch def
     /offset exch def
@@ -200,7 +201,7 @@
     /pathdist 0 def
     /setdist offset def
     /charcount 0 def
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
     V flattenpath
 	{movetoproc} {linetoproc}
 	{curvetoproc} {closepathproc}
@@ -259,24 +260,54 @@ PSL_pathtextdict begin
     U /setdist setdist charwidth add def
   } def
 end
-/PSL_curved_text_labels
-{ /bits exch def
-  /PSL_clippath bits 1 and 1 eq def
-  /PSL_placetext bits 2 and 0 eq def
-  /PSL_strokeline bits 4 and 4 eq def
-  /PSL_firstcall bits 32 and 32 eq def
-  /PSL_lastcall bits 64 and 64 eq def
-  /PSL_fillbox bits 128 and 128 eq def
-  /PSL_drawbox bits 256 and 256 eq def
+/PSL_set_label_heights
+{
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  /PSL_heights PSL_n_labels array def
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    /psl_label PSL_label_str psl_k get def
+    PSL_label_font psl_k get cvx exec
+    psl_label sH /PSL_height edef
+    PSL_heights psl_k PSL_height put
+  } for
+} def
+%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
+/PSL_curved_path_labels
+{ /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_clippath psl_bits 4 and 4 eq def
+  /PSL_strokeline false def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_clippath {clipsave N clippath} if
+  /psl_k 0 def
+  /psl_p 0 def
+  0 1 PSL_n_paths1
+  { /psl_kk exch def
+    /PSL_n PSL_path_n  psl_kk get def
+    /PSL_m PSL_label_n psl_kk get def
+    /PSL_x PSL_path_x psl_k PSL_n getinterval def
+    /PSL_y PSL_path_y psl_k PSL_n getinterval def
+    /PSL_node PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    PSL_curved_path_label
+    /psl_k psl_k PSL_n add def
+    /psl_p psl_p PSL_m add def
+  } for
+  PSL_clippath {PSL_clip} if N
+} def
+/PSL_curved_path_label
+{
   /PSL_n1 PSL_n 1 sub def
   /PSL_m1 PSL_m 1 sub def
-  /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
   PSL_CT_addcutpoints
-  PSL_clippath PSL_firstcall and
-  {clipsave N clippath} if
-  PSL_setlinepen
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
   /k 0 def
@@ -303,22 +334,19 @@ end
     } if
   } for
   n 0 eq {PSL_CT_drawline} if
-  PSL_lastcall
-  {PSL_clippath
-    {PSL_clip} if N
-  } if
 } def
 /PSL_CT_textline
-{PSL_placetext
-  {PSL_clippath
-    {PSL_CT_clippath} {PSL_CT_placelabel} ifelse
-  } if
-  /n 0 def /k k 1 add def PSL_setlinepen
+{ PSL_fnt k get cvx exec
+  /PSL_height PSL_heights k get def
+  PSL_placetext	{PSL_CT_placelabel} if
+  PSL_clippath {PSL_CT_clippath} if
+  /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
 { /PSL_width PSL_m array def
   0 1 PSL_m1
   { /i exch def
+    PSL_fnt i get cvx exec
     PSL_width i PSL_str i get stringwidth pop put
   } for
 } def
@@ -403,14 +431,18 @@ end
 } def
 /PSL_CT_placelabel
 {
+  /PSL_just PSL_label_justify k get def
+  /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
   PSL_usebox
   {PSL_CT_clippath
     PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
-    {PSL_setboxpen S} if N
+    {V PSL_setboxpen S U} if N
   } if
-  PSL_settxtrgb PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 /PSL_CT_clippath
 {
@@ -455,7 +487,7 @@ end
 {
   /str 20 string def
   PSL_strokeline
-  {PSL_CT_placeline PSL_setlinepen S} if
+  {PSL_CT_placeline S} if
   /PSL_seg PSL_seg 1 add def
   /n 1 def
 } def
@@ -463,93 +495,120 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-/PSL_straight_text_labels
+%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
+/PSL_draw_path_lines
 {
-  /bits exch def
-  /PSL_clippath bits 1 and 0 eq def
-  /PSL_rounded bits 16 and 16 eq def
-  /PSL_fillbox bits 128 and 128 eq def
-  /PSL_drawbox bits 256 and 256 eq def
-  /PSL_m1 PSL_m 1 sub def
-  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
-  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  V
+  /psl_start 0 def
+  0 1 PSL_n_paths1
+  { /psl_k exch def
+    /PSL_n PSL_path_n psl_k get def
+    /PSL_n1 PSL_n 1 sub def
+    PSL_path_pen psl_k get cvx exec
+    N
+    PSL_path_x psl_start get PSL_path_y psl_start get M
+    1 1 PSL_n1
+    { /psl_i exch def
+      /psl_kk psl_i psl_start add def
+      PSL_path_x psl_kk get PSL_path_y psl_kk get L
+    } for
+    S
+    /psl_start psl_start PSL_n add def
+  } for
+  U
+} def
+%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
+/PSL_straight_path_labels
+{
+  /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
-  PSL_clippath
-  {PSL_ST_clippath}
-  {PSL_usebox {PSL_ST_clippath} if
-    PSL_ST_placelabel
-  } ifelse
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_usebox
+    {  PSL_rounded
+        {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
+      ifelse
+      PSL_fillbox {V PSL_setboxrgb fill U} if
+      PSL_drawbox {V PSL_setboxpen S U} if
+      N
+    } if
+    PSL_placetext {PSL_ST_place_label} if
+  } for
 } def
-/PSL_ST_placelabel
-{PSL_settxtrgb
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    V PSL_txt_x k get PSL_txt_y k get T
-    PSL_angle k get R
-    /BoxW PSL_str k get stringwidth pop def
-    BoxW PSL_justx mul PSL_justy M
-    PSL_str k get show
+/PSL_straight_path_clip
+{
+  /psl_bits exch def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  N clipsave clippath
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_rounded
+      {PSL_ST_textbox_round}
+      {PSL_ST_textbox_rect}
+    ifelse
+  } for
+  PSL_clip N
+} def
+/PSL_ST_prepare_text
+{
+  /psl_xp PSL_txt_x psl_k get def
+  /psl_yp PSL_txt_y psl_k get def
+  /psl_label PSL_label_str psl_k get def
+  PSL_label_font psl_k get cvx exec
+  /PSL_height PSL_heights psl_k get def
+  /psl_boxH PSL_height PSL_gap_y 2 mul add def
+  /PSL_just PSL_label_justify psl_k get def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
+  /PSL_justy PSL_just 4 idiv 2 div neg def
+  /psl_SW psl_label stringwidth pop def
+  /psl_boxW psl_SW PSL_gap_x 2 mul add def
+  /psl_x0 psl_SW PSL_justx mul def
+  /psl_y0 PSL_justy PSL_height mul def
+  /psl_angle PSL_label_angle psl_k get def
+} def
+/PSL_ST_textbox_rect
+{
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  PSL_gap_x neg PSL_gap_y neg M
+  0 psl_boxH D psl_boxW 0 D 0 psl_boxH neg D P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_textbox_round
+{
+  /psl_BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
+  /psl_xd PSL_gap_x psl_BoxR sub def
+  /psl_yd PSL_gap_y psl_BoxR sub def
+  /psl_xL PSL_gap_x neg def
+  /psl_yB PSL_gap_y neg def
+  /psl_yT psl_boxH psl_yB add def
+  /psl_H2 PSL_height psl_yd 2 mul add def
+  /psl_W2 psl_SW psl_xd 2 mul add def
+  /psl_xR psl_xL psl_boxW add def
+  /psl_x0 psl_SW PSL_justx mul def
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  psl_xL psl_yd M
+  psl_xL psl_yT psl_xR psl_yT psl_BoxR arct psl_W2 0 D
+  psl_xR psl_yT psl_xR psl_yB psl_BoxR arct 0 psl_H2 neg D
+  psl_xR psl_yB psl_xL psl_yB psl_BoxR arct psl_W2 neg 0 D
+  psl_xL psl_yB psl_xL psl_yd psl_BoxR arct P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_place_label
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G show
     U
-  } for
-} def
-/PSL_ST_clippath
-{N
-  PSL_usebox not {clipsave clippath} if
-  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
-  PSL_usebox
-  {PSL_fillbox
-    {V PSL_setboxrgb fill U} if
-    PSL_drawbox
-    {PSL_setboxpen S} if N
-  }
-  {PSL_clip
-  } ifelse
-  N
-} def
-/PSL_ST_clippath_rect
-{
-  /BoxH PSL_height PSL_gap_y 2 mul add def
-  /DelY BoxH BoxH 0 3 array astore def
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    /MAT PSL_angle k get matrix R def
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
-    /x0 0 BoxW PSL_justx mul add def
-    /y0 0 PSL_justy add PSL_gap_y sub def
-    /DelX 0 BoxW BoxW 3 array astore def
-    x0 y0 MAT transform
-    /dy exch def /dx exch def
-    xp dx add yp dy add M
-    0 1 2
-    {
-      /ii exch def
-      x0 DelX ii get add y0 DelY ii get add MAT transform
-      /dy exch def /dx exch def
-      xp dx add yp dy add L
-    } for P
-  } for
-} def
-/PSL_ST_clippath_round
-{
-  /PSL_justy2 PSL_just 4 idiv 2 div neg def
-  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
-  /BoxH PSL_height PSL_gap_y 2 mul add def
-  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
-    /x0 BoxW PSL_justx mul def
-    xp yp T PSL_angle k get R x0 y0 T
-    BoxR 0 M
-    BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct P
-    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
-  } for
 } def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
@@ -587,184 +646,512 @@ clipsave
 3600 0 D
 0 3958 D
 -3600 0 D
-PSL_eoclip N
-/PSL_setlinepen {4 W 0 A [] 0 B} def
+PSL_clip N
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
-/PSL_settxtrgb {0 A} def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-150 F0
-/PSL_m 7 def
-/PSL_txt_x
-1486.08
-2140.84
-3180.14
-1537.15
-2381.72
-1536.30
-3063.30
-7 array astore def
-/PSL_txt_y
-992.38
-1077.21
-266.36
-1079.65
-1438.65
-1207.29
-553.49
-7 array astore def
-/PSL_angle
-338.55
-41.74
-313.66
-344.27
-318.85
-342.08
-305.69
-7 array astore def
-/PSL_str
-(-3000)
-(-3000)
-(-3000)
-(-2000)
-(-2000)
-(-1000)
-(-1000)
-7 array astore def
-/PSL_just 6 def
+/PSL_path_pen [
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+] def
+/PSL_label_justify [ 6 6 6 6 6 6 6 ] def
+/PSL_label_font [
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-(-3000) sH /PSL_height edef
-0 PSL_straight_text_labels
-4 W
+/PSL_label_angle [ 338.55 41.74 313.66 344.27 318.85 342.08 305.69 ] def
+/PSL_label_str [
+	(-3000)
+	(-3000)
+	(-3000)
+	(-2000)
+	(-2000)
+	(-1000)
+	(-1000)
+] def
+/PSL_label_n [ 0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	1 0 0 0 0 0 0 0 1 0 
+	0 0 0 0 0 0 1 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 2 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 1 0 0 0 
+	1 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 ] def
+/PSL_n_paths 268 def
+/PSL_n_labels 7 def
+/PSL_txt_x [ 1486 2141 3180 1537 2382 1536 3063 ] def
+/PSL_txt_y [ 992 1077 266 1080 1439 1207 553 ] def
+/PSL_txt_n [ 7 ] def
+PSL_set_label_heights
+2 PSL_straight_path_labels
+V
+4 PSL_straight_path_clip
+PSL_path_pen 0 get cvx exec
 180 1810 M
 6 -4 D
 -6 -3 D
 -4 3 D
-P S
+4 4 D
+S
+PSL_path_pen 1 get cvx exec
 180 1817 M
 16 -11 D
 -16 -11 D
 -12 11 D
-P S
+12 11 D
+S
+PSL_path_pen 2 get cvx exec
 480 1616 M
 5 -6 D
 -5 -6 D
 -4 6 D
-P S
+4 6 D
+S
+PSL_path_pen 3 get cvx exec
 180 1824 M
 27 -18 D
 -27 -18 D
 -19 18 D
-P S
+19 18 D
+S
+PSL_path_pen 4 get cvx exec
 360 1676 M
 0 -1 D
-P S
+0 1 D
+S
+PSL_path_pen 5 get cvx exec
 480 1624 M
 11 -14 D
 -11 -15 D
 -10 15 D
-P S
-12 W
+10 14 D
+S
+PSL_path_pen 6 get cvx exec
 180 1831 M
 37 -25 D
 -37 -25 D
 -27 25 D
-P S
+27 25 D
+S
+PSL_path_pen 7 get cvx exec
 360 1687 M
 9 -12 D
 -9 -14 D
 -8 14 D
-P S
+8 12 D
+S
+PSL_path_pen 8 get cvx exec
 480 1633 M
 18 -23 D
 -18 -24 D
 -15 24 D
-P S
-4 W
+15 23 D
+S
+PSL_path_pen 9 get cvx exec
 180 1838 M
 48 -32 D
 -48 -33 D
 -34 33 D
-P S
+34 32 D
+S
+PSL_path_pen 10 get cvx exec
 360 1699 M
 18 -24 D
 -18 -28 D
 -17 28 D
-P S
+17 24 D
+S
+PSL_path_pen 11 get cvx exec
 480 1642 M
 25 -32 D
 -25 -33 D
 -21 33 D
-P S
+21 32 D
+S
+PSL_path_pen 12 get cvx exec
 180 1845 M
 58 -39 D
 -58 -40 D
 -42 40 D
-P S
+42 39 D
+S
+PSL_path_pen 13 get cvx exec
 360 1710 M
 27 -35 D
 -27 -41 D
 -25 41 D
-P S
+25 35 D
+S
+PSL_path_pen 14 get cvx exec
 480 1650 M
 31 -40 D
 -31 -41 D
 -27 41 D
-P S
+27 40 D
+S
+PSL_path_pen 15 get cvx exec
 180 1853 M
 60 -30 D
 21 -17 D
 -21 -18 D
 -60 -30 D
 -49 48 D
-P S
+49 47 D
+S
+PSL_path_pen 16 get cvx exec
 360 1722 M
 36 -47 D
 -36 -55 D
 -33 55 D
-P S
+33 47 D
+S
+PSL_path_pen 17 get cvx exec
 480 1659 M
 38 -49 D
 -38 -50 D
 -32 50 D
-P S
+32 49 D
+S
+PSL_path_pen 18 get cvx exec
 3060 370 M
 60 -41 D
 0 -11 D
 -60 -24 D
 -8 24 D
-P S
-12 W
+8 52 D
+S
+PSL_path_pen 19 get cvx exec
 300 2226 M
 46 -24 D
 -46 -11 D
 -8 11 D
-P S
+8 24 D
+S
+PSL_path_pen 20 get cvx exec
 420 2129 M
 18 -59 D
 -18 -10 D
 -8 10 D
-P S
+8 59 D
+S
+PSL_path_pen 21 get cvx exec
 180 1860 M
 60 -17 D
 47 -37 D
 -47 -41 D
 -60 -14 D
 -57 55 D
-P S
+57 54 D
+S
+PSL_path_pen 22 get cvx exec
 360 1733 M
 45 -58 D
 -41 -65 D
 -4 -14 D
 -10 14 D
 -31 65 D
-P S
+41 58 D
+S
+PSL_path_pen 23 get cvx exec
 480 1668 M
 45 -58 D
 -45 -59 D
 -38 59 D
-P S
+38 58 D
+S
+PSL_path_pen 24 get cvx exec
 3060 404 M
 60 -14 D
 5 -8 D
@@ -775,13 +1162,15 @@ P S
 -17 24 D
 -14 64 D
 8 64 D
-P S
-4 W
+23 22 D
+S
+PSL_path_pen 25 get cvx exec
 60 2738 M
 3 -3 D
 33 -67 D
 -36 -43 D
 S
+PSL_path_pen 26 get cvx exec
 300 2275 M
 60 -37 D
 23 -36 D
@@ -801,7 +1190,9 @@ S
 -60 19 D
 -25 37 D
 14 66 D
-P S
+11 7 D
+S
+PSL_path_pen 27 get cvx exec
 60 1981 M
 24 -43 D
 -4 -66 D
@@ -842,6 +1233,7 @@ P S
 -33 -48 D
 -27 -21 D
 S
+PSL_path_pen 28 get cvx exec
 60 1813 M
 7 -7 D
 46 -65 D
@@ -875,18 +1267,24 @@ S
 -23 53 D
 -37 30 D
 S
+PSL_path_pen 29 get cvx exec
 2220 1545 M
 0 -1 D
-P S
+0 1 D
+S
+PSL_path_pen 30 get cvx exec
 300 1435 M
 38 -21 D
 -38 -31 D
 -34 31 D
-P S
+34 21 D
+S
+PSL_path_pen 31 get cvx exec
 60 1308 M
 28 -24 D
 -28 -45 D
 S
+PSL_path_pen 32 get cvx exec
 60 1165 M
 60 -2 D
 24 -9 D
@@ -904,15 +1302,18 @@ S
 -60 -19 D
 -60 34 D
 S
+PSL_path_pen 33 get cvx exec
 87 831 M
 33 55 D
 46 -55 D
 S
+PSL_path_pen 34 get cvx exec
 240 735 M
 45 -33 D
 15 -29 D
 20 29 D
 S
+PSL_path_pen 35 get cvx exec
 240 666 M
 39 -28 D
 -7 -64 D
@@ -925,18 +1326,22 @@ S
 -32 -26 D
 7 -64 D
 S
+PSL_path_pen 36 get cvx exec
 468 638 M
 12 -47 D
 7 -17 D
 -1 -128 D
 4 -64 D
 S
+PSL_path_pen 37 get cvx exec
 600 542 M
 16 -96 D
 -16 -22 D
 -30 22 D
 9 64 D
-P S
+21 32 D
+S
+PSL_path_pen 38 get cvx exec
 240 482 M
 25 -36 D
 -25 -17 D
@@ -945,12 +1350,14 @@ P S
 -3 -64 D
 11 -64 D
 S
+PSL_path_pen 39 get cvx exec
 371 318 M
 19 64 D
 30 56 D
 19 8 D
 36 64 D
 S
+PSL_path_pen 40 get cvx exec
 3060 429 M
 60 -31 D
 10 -16 D
@@ -963,18 +1370,23 @@ S
 -35 63 D
 -2 64 D
 6 64 D
-P S
+48 47 D
+S
+PSL_path_pen 41 get cvx exec
 379 191 M
 41 -56 D
 S
+PSL_path_pen 42 get cvx exec
 1422 64 M
 18 20 D
 18 -20 D
 S
+PSL_path_pen 43 get cvx exec
 3081 64 M
 39 16 D
 5 -16 D
 S
+PSL_path_pen 44 get cvx exec
 60 2749 M
 60 -76 D
 9 -5 D
@@ -986,6 +1398,7 @@ S
 -25 28 D
 -35 44 D
 S
+PSL_path_pen 45 get cvx exec
 60 2308 M
 60 -20 D
 60 14 D
@@ -1042,6 +1455,7 @@ S
 -44 -56 D
 -9 -9 D
 S
+PSL_path_pen 46 get cvx exec
 60 2227 M
 60 -10 D
 60 30 D
@@ -1073,41 +1487,56 @@ S
 -9 30 D
 -60 23 D
 S
+PSL_path_pen 47 get cvx exec
 120 1909 M
 42 -37 D
 -42 -16 D
 -13 16 D
-P S
+13 37 D
+S
+PSL_path_pen 48 get cvx exec
 540 1883 M
 9 -11 D
 -9 -16 D
 -37 16 D
-P S
+37 11 D
+S
+PSL_path_pen 49 get cvx exec
 300 1703 M
 3 -28 D
 -3 -24 D
 -25 24 D
-P S
+25 28 D
+S
+PSL_path_pen 50 get cvx exec
 420 1667 M
 11 -57 D
 -11 -46 D
 -27 46 D
-P S
+27 57 D
+S
+PSL_path_pen 51 get cvx exec
 2220 1556 M
 14 -11 D
 -14 -18 D
 -14 18 D
-P S
+14 11 D
+S
+PSL_path_pen 52 get cvx exec
 540 1454 M
 45 -40 D
 -45 -20 D
 -33 20 D
-P S
+33 40 D
+S
+PSL_path_pen 53 get cvx exec
 600 1061 M
 35 -36 D
 -35 -26 D
 -23 26 D
-P S
+23 36 D
+S
+PSL_path_pen 54 get cvx exec
 660 601 M
 19 -27 D
 41 -44 D
@@ -1116,7 +1545,9 @@ P S
 -60 -23 D
 -34 47 D
 14 64 D
-P S
+20 27 D
+S
+PSL_path_pen 55 get cvx exec
 744 638 M
 36 -36 D
 60 -7 D
@@ -1126,9 +1557,11 @@ P S
 -6 -7 D
 -54 -39 D
 S
+PSL_path_pen 56 get cvx exec
 327 574 M
 33 -44 D
 S
+PSL_path_pen 57 get cvx exec
 3014 64 M
 -8 63 D
 -6 16 D
@@ -1149,19 +1582,25 @@ S
 12 -9 D
 17 -54 D
 S
+PSL_path_pen 58 get cvx exec
 960 426 M
 34 -44 D
 -34 -12 D
 -6 12 D
-P S
+6 44 D
+S
+PSL_path_pen 59 get cvx exec
 300 334 M
 17 -16 D
 -17 -26 D
 -25 26 D
-P S
+25 16 D
+S
+PSL_path_pen 60 get cvx exec
 60 300 M
 16 18 D
 S
+PSL_path_pen 61 get cvx exec
 751 318 M
 29 -44 D
 60 -15 D
@@ -1174,14 +1613,17 @@ S
 -25 12 D
 -35 26 D
 S
+PSL_path_pen 62 get cvx exec
 720 88 M
 60 -12 D
 37 -12 D
 S
+PSL_path_pen 63 get cvx exec
 1401 64 M
 39 43 D
 40 -43 D
 S
+PSL_path_pen 64 get cvx exec
 60 2759 M
 60 -75 D
 25 -16 D
@@ -1274,10 +1716,12 @@ S
 20 -8 D
 -42 -63 D
 S
+PSL_path_pen 65 get cvx exec
 60 2539 M
 4 -5 D
 -4 -7 D
 S
+PSL_path_pen 66 get cvx exec
 60 2451 M
 57 17 D
 3 2 D
@@ -1286,6 +1730,7 @@ S
 -27 -35 D
 -60 -24 D
 S
+PSL_path_pen 67 get cvx exec
 180 2210 M
 60 -7 D
 12 -67 D
@@ -1294,7 +1739,9 @@ S
 -60 -3 D
 -24 24 D
 14 132 D
-P S
+10 8 D
+S
+PSL_path_pen 68 get cvx exec
 300 1977 M
 27 -39 D
 33 -44 D
@@ -1305,36 +1752,48 @@ P S
 -44 18 D
 -16 11 D
 -31 55 D
-P S
+31 39 D
+S
+PSL_path_pen 69 get cvx exec
 2100 1874 M
 1 -2 D
 -1 -5 D
 -4 5 D
-P S
+4 2 D
+S
+PSL_path_pen 70 get cvx exec
 420 1636 M
 5 -26 D
 -5 -21 D
 -12 21 D
-P S
+12 26 D
+S
+PSL_path_pen 71 get cvx exec
 2220 1566 M
 28 -21 D
 -28 -35 D
 -28 35 D
-P S
+28 21 D
+S
+PSL_path_pen 72 get cvx exec
 720 1107 M
 60 15 D
 58 -33 D
 -58 -47 D
 -60 32 D
 -18 15 D
-P S
+18 18 D
+S
+PSL_path_pen 73 get cvx exec
 900 1125 M
 60 -20 D
 36 -16 D
 -36 -23 D
 -60 -3 D
 -55 26 D
-P S
+55 36 D
+S
+PSL_path_pen 74 get cvx exec
 840 661 M
 60 5 D
 60 -12 D
@@ -1355,17 +1814,23 @@ P S
 -60 -9 D
 -60 1 D
 -44 14 D
-P S
+44 23 D
+S
+PSL_path_pen 75 get cvx exec
 660 541 M
 29 -31 D
 -29 -17 D
 -12 17 D
-P S
+12 31 D
+S
+PSL_path_pen 76 get cvx exec
 1320 490 M
 7 -44 D
 -7 -7 D
 -16 7 D
-P S
+16 44 D
+S
+PSL_path_pen 77 get cvx exec
 2892 64 M
 17 63 D
 31 54 D
@@ -1389,16 +1854,21 @@ P S
 30 -20 D
 -1 -63 D
 S
+PSL_path_pen 78 get cvx exec
 900 401 M
 15 -19 D
 -15 -27 D
 -24 27 D
-P S
+24 19 D
+S
+PSL_path_pen 79 get cvx exec
 1500 418 M
 38 -36 D
 -38 -52 D
 -50 52 D
-P S
+50 36 D
+S
+PSL_path_pen 80 get cvx exec
 1094 191 M
 46 58 D
 60 5 D
@@ -1407,15 +1877,19 @@ P S
 44 -55 D
 -44 -48 D
 S
+PSL_path_pen 81 get cvx exec
 1740 217 M
 11 -26 D
 -11 -25 D
 -12 25 D
-P S
+12 26 D
+S
+PSL_path_pen 82 get cvx exec
 1020 82 M
 -33 45 D
 33 35 D
 S
+PSL_path_pen 83 get cvx exec
 2470 64 M
 50 13 D
 49 50 D
@@ -1423,31 +1897,38 @@ S
 6 -3 D
 4 -63 D
 S
+PSL_path_pen 84 get cvx exec
 2700 150 M
 47 -23 D
 -47 -23 D
 -9 23 D
-P S
+9 23 D
+S
+PSL_path_pen 85 get cvx exec
 1140 71 M
 47 -7 D
 S
+PSL_path_pen 86 get cvx exec
 1320 74 M
 40 -10 D
 S
+PSL_path_pen 87 get cvx exec
 1845 64 M
 15 24 D
 13 -24 D
 S
+PSL_path_pen 88 get cvx exec
 2311 64 M
 29 21 D
 54 -21 D
 S
+PSL_path_pen 89 get cvx exec
 2754 64 M
 6 26 D
 60 -21 D
 56 -5 D
 S
-12 W
+PSL_path_pen 90 get cvx exec
 60 2770 M
 60 -76 D
 42 -26 D
@@ -1528,41 +2009,55 @@ S
 -60 15 D
 -58 -41 D
 S
+PSL_path_pen 91 get cvx exec
 60 2435 M
 50 -34 D
 -50 -39 D
 S
+PSL_path_pen 92 get cvx exec
 1860 2142 M
 13 -6 D
 -13 -20 D
 -9 20 D
-P S
+9 6 D
+S
+PSL_path_pen 93 get cvx exec
 300 1943 M
 3 -5 D
 -3 -7 D
 -4 7 D
-P S
+4 5 D
+S
+PSL_path_pen 94 get cvx exec
 2100 1882 M
 8 -10 D
 -8 -36 D
 -26 36 D
-P S
+26 10 D
+S
+PSL_path_pen 95 get cvx exec
 2100 1745 M
 18 -70 D
 -18 -12 D
 -12 12 D
 10 66 D
-P S
+2 4 D
+S
+PSL_path_pen 96 get cvx exec
 2160 1622 M
 8 -12 D
 -8 -17 D
 -6 17 D
-P S
+6 12 D
+S
+PSL_path_pen 97 get cvx exec
 2220 1577 M
 42 -32 D
 -42 -53 D
 -42 53 D
-P S
+42 32 D
+S
+PSL_path_pen 98 get cvx exec
 2160 1159 M
 15 -5 D
 45 -22 D
@@ -1575,22 +2070,30 @@ P S
 17 65 D
 39 8 D
 52 56 D
-P S
+8 70 D
+S
+PSL_path_pen 99 get cvx exec
 780 1101 M
 20 -12 D
 -20 -16 D
 -27 16 D
-P S
+27 12 D
+S
+PSL_path_pen 100 get cvx exec
 2520 1025 M
 2 0 D
 -2 -2 D
 -1 2 D
-P S
+1 0 D
+S
+PSL_path_pen 101 get cvx exec
 2460 900 M
 8 -4 D
 -8 -11 D
 -5 11 D
-P S
+5 4 D
+S
+PSL_path_pen 102 get cvx exec
 2580 924 M
 9 -28 D
 51 -46 D
@@ -1601,22 +2104,30 @@ P S
 -47 39 D
 -41 25 D
 23 65 D
-P S
+18 28 D
+S
+PSL_path_pen 103 get cvx exec
 1260 790 M
 19 -23 D
 -19 -25 D
 -18 25 D
-P S
+18 23 D
+S
+PSL_path_pen 104 get cvx exec
 1560 810 M
 39 -43 D
 -39 -58 D
 -37 58 D
-P S
+37 43 D
+S
+PSL_path_pen 105 get cvx exec
 2280 781 M
 28 -14 D
 -28 -11 D
 -10 11 D
-P S
+10 14 D
+S
+PSL_path_pen 106 get cvx exec
 2236 64 M
 39 63 D
 -20 64 D
@@ -1671,61 +2182,85 @@ P S
 -5 -8 D
 -19 -55 D
 S
+PSL_path_pen 107 get cvx exec
 1020 639 M
 2 -1 D
 -2 -1 D
 -1 1 D
-P S
+1 1 D
+S
+PSL_path_pen 108 get cvx exec
 1800 657 M
 13 -19 D
 -13 -10 D
 -8 10 D
-P S
+8 19 D
+S
+PSL_path_pen 109 get cvx exec
 1200 605 M
 30 -31 D
 -30 -28 D
 -36 28 D
-P S
+36 31 D
+S
+PSL_path_pen 110 get cvx exec
 1980 520 M
 4 -10 D
 -4 -3 D
 -10 3 D
-P S
+10 10 D
+S
+PSL_path_pen 111 get cvx exec
 2100 520 M
 12 -10 D
 -12 -7 D
 -16 7 D
-P S
+16 10 D
+S
+PSL_path_pen 112 get cvx exec
 2520 543 M
 59 -33 D
 -59 -34 D
 -30 34 D
-P S
+30 33 D
+S
+PSL_path_pen 113 get cvx exec
 2700 524 M
 14 -14 D
 -14 -30 D
 -44 30 D
-P S
+44 14 D
+S
+PSL_path_pen 114 get cvx exec
 2280 446 M
 1 0 D
-P S
+-1 0 D
+S
+PSL_path_pen 115 get cvx exec
 2520 393 M
 12 -11 D
 -12 -17 D
 -7 17 D
-P S
+7 11 D
+S
+PSL_path_pen 116 get cvx exec
 2340 356 M
 16 -38 D
 -16 -52 D
 -25 52 D
-P S
+25 38 D
+S
+PSL_path_pen 117 get cvx exec
 2760 318 M
-P S
+S
+PSL_path_pen 118 get cvx exec
 1920 269 M
 19 -15 D
 -19 -7 D
 -10 7 D
-P S
+10 15 D
+S
+PSL_path_pen 119 get cvx exec
 1200 121 M
 -60 9 D
 -20 61 D
@@ -1734,13 +2269,16 @@ P S
 60 -13 D
 53 -29 D
 S
+PSL_path_pen 120 get cvx exec
 2520 237 M
 60 12 D
 39 -58 D
 -39 -35 D
 -60 -1 D
 -37 36 D
-P S
+37 46 D
+S
+PSL_path_pen 121 get cvx exec
 2760 246 M
 60 -51 D
 46 -68 D
@@ -1748,23 +2286,28 @@ P S
 -43 41 D
 -17 26 D
 -41 38 D
-P S
+41 55 D
+S
+PSL_path_pen 122 get cvx exec
 1815 64 M
 11 63 D
 34 31 D
 14 -31 D
 25 -63 D
 S
+PSL_path_pen 123 get cvx exec
 2640 140 M
 8 -13 D
 -8 -22 D
 -8 22 D
-P S
+8 13 D
+S
+PSL_path_pen 124 get cvx exec
 2098 64 M
 2 1 D
 5 -1 D
 S
-4 W
+PSL_path_pen 125 get cvx exec
 60 2780 M
 60 -76 D
 59 -36 D
@@ -1883,20 +2426,26 @@ S
 -27 -43 D
 -7 -20 D
 S
+PSL_path_pen 126 get cvx exec
 60 2418 M
 25 -17 D
 -25 -20 D
 S
+PSL_path_pen 127 get cvx exec
 1860 2150 M
 29 -14 D
 -29 -44 D
 -21 44 D
-P S
+21 14 D
+S
+PSL_path_pen 128 get cvx exec
 1800 2071 M
 5 -1 D
 -5 -2 D
 -2 2 D
-P S
+2 1 D
+S
+PSL_path_pen 129 get cvx exec
 2100 1891 M
 15 -19 D
 -14 -66 D
@@ -1916,47 +2465,65 @@ P S
 -12 66 D
 36 65 D
 -46 66 D
-P S
+48 19 D
+S
+PSL_path_pen 130 get cvx exec
 2340 1418 M
 6 -4 D
 -6 -13 D
 -17 13 D
-P S
+17 4 D
+S
+PSL_path_pen 131 get cvx exec
 2280 1228 M
 10 -9 D
 -10 -12 D
 -15 12 D
-P S
+15 9 D
+S
+PSL_path_pen 132 get cvx exec
 2340 971 M
 24 -11 D
 -24 -3 D
 -3 3 D
-P S
+3 11 D
+S
+PSL_path_pen 133 get cvx exec
 2280 908 M
 10 -12 D
 -10 -27 D
 -18 27 D
-P S
+18 12 D
+S
+PSL_path_pen 134 get cvx exec
 2160 876 M
 51 -45 D
 -51 -49 D
 -39 49 D
-P S
+39 45 D
+S
+PSL_path_pen 135 get cvx exec
 1560 780 M
 12 -13 D
 -12 -18 D
 -12 18 D
-P S
+12 13 D
+S
+PSL_path_pen 136 get cvx exec
 2220 769 M
 1 -2 D
 -1 -2 D
 -1 2 D
-P S
+1 2 D
+S
+PSL_path_pen 137 get cvx exec
 2400 790 M
 23 -23 D
 -23 -20 D
 -15 20 D
-P S
+15 23 D
+S
+PSL_path_pen 138 get cvx exec
 2280 706 M
 4 -4 D
 1 -64 D
@@ -1969,17 +2536,23 @@ P S
 -19 64 D
 60 25 D
 52 39 D
-P S
+8 4 D
+S
+PSL_path_pen 139 get cvx exec
 1200 580 M
 6 -6 D
 -6 -5 D
 -7 5 D
-P S
+7 6 D
+S
+PSL_path_pen 140 get cvx exec
 2760 541 M
 37 -31 D
 -37 -15 D
 -15 15 D
-P S
+15 31 D
+S
+PSL_path_pen 141 get cvx exec
 2100 448 M
 5 -2 D
 55 -57 D
@@ -1998,40 +2571,53 @@ P S
 30 38 D
 44 26 D
 1 64 D
-P S
+15 2 D
+S
+PSL_path_pen 142 get cvx exec
 2700 424 M
 26 -42 D
 -26 -26 D
 -24 26 D
-P S
+24 42 D
+S
+PSL_path_pen 143 get cvx exec
 2400 330 M
 8 -12 D
 -3 -64 D
 -5 -10 D
 -10 10 D
 3 64 D
-P S
+7 12 D
+S
+PSL_path_pen 144 get cvx exec
 1200 156 M
 -50 35 D
 50 21 D
 60 -13 D
 15 -8 D
 S
+PSL_path_pen 145 get cvx exec
 1920 195 M
 25 -4 D
 -25 -9 D
 -5 9 D
-P S
+5 4 D
+S
+PSL_path_pen 146 get cvx exec
 2580 206 M
 10 -15 D
 -10 -9 D
 -28 9 D
-P S
+28 15 D
+S
+PSL_path_pen 147 get cvx exec
 2760 207 M
 18 -16 D
 -18 -11 D
 -12 11 D
-P S
+12 16 D
+S
+PSL_path_pen 148 get cvx exec
 1985 64 M
 15 63 D
 40 29 D
@@ -2040,15 +2626,19 @@ P S
 -33 -17 D
 -43 -46 D
 S
+PSL_path_pen 149 get cvx exec
 2820 165 M
 27 -38 D
 -27 -24 D
 -26 24 D
-P S
+26 38 D
+S
+PSL_path_pen 150 get cvx exec
 1658 64 M
 22 15 D
 31 -15 D
 S
+PSL_path_pen 151 get cvx exec
 60 2791 M
 60 -76 D
 60 -38 D
@@ -2163,9 +2753,10 @@ S
 33 -64 D
 -33 -63 D
 S
+PSL_path_pen 152 get cvx exec
 60 2401 M
-0 0 D
-P S
+S
+PSL_path_pen 153 get cvx exec
 1860 2158 M
 45 -22 D
 -39 -66 D
@@ -2173,12 +2764,16 @@ P S
 -33 21 D
 33 21 D
 27 45 D
-P S
+33 22 D
+S
+PSL_path_pen 154 get cvx exec
 2340 1617 M
 12 -7 D
 -12 -8 D
 -10 8 D
-P S
+10 7 D
+S
+PSL_path_pen 155 get cvx exec
 2220 1441 M
 40 -27 D
 20 -23 D
@@ -2192,32 +2787,44 @@ P S
 -34 56 D
 -26 27 D
 -41 38 D
-P S
+41 27 D
+S
+PSL_path_pen 156 get cvx exec
 2160 852 M
 24 -21 D
 -24 -23 D
 -18 23 D
-P S
+18 21 D
+S
+PSL_path_pen 157 get cvx exec
 2820 650 M
 15 -12 D
 -15 -10 D
 -8 10 D
-P S
+8 12 D
+S
+PSL_path_pen 158 get cvx exec
 2280 577 M
 2 -3 D
 -2 -3 D
 -4 3 D
-P S
+4 3 D
+S
+PSL_path_pen 159 get cvx exec
 1200 192 M
 4 -1 D
 -4 -2 D
 -2 2 D
-P S
+2 1 D
+S
+PSL_path_pen 160 get cvx exec
 2820 139 M
 8 -12 D
 -8 -7 D
 -8 7 D
-P S
+8 12 D
+S
+PSL_path_pen 161 get cvx exec
 60 2801 M
 60 -76 D
 60 -38 D
@@ -2335,21 +2942,28 @@ P S
 -6 -37 D
 -11 -26 D
 S
+PSL_path_pen 162 get cvx exec
 1560 2476 M
 8 -8 D
 -8 -16 D
 -12 16 D
-P S
+12 8 D
+S
+PSL_path_pen 163 get cvx exec
 1620 2408 M
 11 -7 D
 -11 -6 D
 -11 6 D
-P S
+11 7 D
+S
+PSL_path_pen 164 get cvx exec
 1800 2211 M
 6 -9 D
 -6 -19 D
 -36 19 D
-P S
+36 9 D
+S
+PSL_path_pen 165 get cvx exec
 1920 2136 M
 10 -66 D
 26 -66 D
@@ -2364,12 +2978,14 @@ P S
 16 26 D
 44 30 D
 S
+PSL_path_pen 166 get cvx exec
 2340 1628 M
 29 -18 D
 -29 -18 D
 -24 18 D
-P S
-12 W
+24 18 D
+S
+PSL_path_pen 167 get cvx exec
 60 2810 M
 10 -8 D
 50 -67 D
@@ -2497,6 +3113,7 @@ P S
 17 -47 D
 -6 -63 D
 S
+PSL_path_pen 168 get cvx exec
 1560 2492 M
 60 -68 D
 39 -23 D
@@ -2504,7 +3121,9 @@ S
 -40 22 D
 -20 21 D
 -36 46 D
-P S
+36 24 D
+S
+PSL_path_pen 169 get cvx exec
 1936 2136 M
 44 -79 D
 41 -53 D
@@ -2524,12 +3143,14 @@ P S
 18 -27 D
 42 -28 D
 S
+PSL_path_pen 170 get cvx exec
 1800 2149 M
 4 -13 D
 -4 -7 D
 -41 7 D
-P S
-4 W
+41 13 D
+S
+PSL_path_pen 171 get cvx exec
 1200 2941 M
 60 7 D
 60 3 D
@@ -2546,7 +3167,9 @@ P S
 -2 67 D
 -33 63 D
 -1 4 D
-P S
+1 5 D
+S
+PSL_path_pen 172 get cvx exec
 60 2818 M
 21 -16 D
 39 -53 D
@@ -2646,6 +3269,7 @@ P S
 30 -44 D
 30 -20 D
 S
+PSL_path_pen 173 get cvx exec
 1952 2136 M
 39 -66 D
 49 -56 D
@@ -2713,11 +3337,14 @@ S
 15 -64 D
 -2 -63 D
 S
+PSL_path_pen 174 get cvx exec
 2280 1639 M
 9 -29 D
 -9 -10 D
 -15 10 D
-P S
+15 29 D
+S
+PSL_path_pen 175 get cvx exec
 1158 2869 M
 10 67 D
 -28 41 D
@@ -2749,6 +3376,7 @@ P S
 42 -62 D
 18 -12 D
 S
+PSL_path_pen 176 get cvx exec
 60 2826 M
 31 -24 D
 29 -39 D
@@ -2808,6 +3436,7 @@ S
 -13 23 D
 -47 54 D
 S
+PSL_path_pen 177 get cvx exec
 1200 2786 M
 28 -51 D
 32 -30 D
@@ -2842,6 +3471,7 @@ S
 -60 40 D
 -19 -21 D
 S
+PSL_path_pen 178 get cvx exec
 1967 2136 M
 38 -66 D
 35 -40 D
@@ -2908,11 +3538,14 @@ S
 -2 -64 D
 2 -63 D
 S
+PSL_path_pen 179 get cvx exec
 1860 2009 M
 6 -5 D
 -6 -22 D
 -10 22 D
-P S
+10 5 D
+S
+PSL_path_pen 180 get cvx exec
 1018 3004 M
 -30 67 D
 32 33 D
@@ -2921,10 +3554,12 @@ P S
 43 -33 D
 60 -7 D
 S
+PSL_path_pen 181 get cvx exec
 1080 2973 M
 57 -37 D
 -57 -59 D
 S
+PSL_path_pen 182 get cvx exec
 1264 3004 M
 56 -22 D
 60 -21 D
@@ -2946,6 +3581,7 @@ S
 18 -66 D
 6 -4 D
 S
+PSL_path_pen 183 get cvx exec
 60 2835 M
 42 -33 D
 18 -24 D
@@ -3007,6 +3643,7 @@ S
 -23 42 D
 -37 43 D
 S
+PSL_path_pen 184 get cvx exec
 1200 2750 M
 8 -15 D
 52 -49 D
@@ -3027,6 +3664,7 @@ S
 -6 -44 D
 -6 -22 D
 S
+PSL_path_pen 185 get cvx exec
 2019 2070 M
 21 -24 D
 60 -36 D
@@ -3087,6 +3725,7 @@ S
 22 -48 D
 60 -6 D
 S
+PSL_path_pen 186 get cvx exec
 1620 1991 M
 47 -53 D
 13 -13 D
@@ -3102,45 +3741,56 @@ S
 -27 -22 D
 -39 -43 D
 S
+PSL_path_pen 187 get cvx exec
 2040 1948 M
 29 -10 D
 -29 -5 D
 -16 5 D
-P S
+16 10 D
+S
+PSL_path_pen 188 get cvx exec
 1860 1683 M
 6 -8 D
 -6 -13 D
 -6 13 D
-P S
+6 8 D
+S
+PSL_path_pen 189 get cvx exec
 3180 770 M
 3 -3 D
 -3 -3 D
 -3 3 D
-P S
+3 3 D
+S
+PSL_path_pen 190 get cvx exec
 3299 64 M
 -6 63 D
 7 36 D
 60 16 D
 S
-12 W
+PSL_path_pen 191 get cvx exec
 660 3485 M
 2 -7 D
 S
+PSL_path_pen 192 get cvx exec
 991 3004 M
 -31 49 D
 -17 18 D
 17 41 D
 29 27 D
 S
+PSL_path_pen 193 get cvx exec
 1031 3139 M
 49 -29 D
 60 -52 D
 60 -8 D
 S
+PSL_path_pen 194 get cvx exec
 1080 2943 M
 11 -7 D
 -11 -11 D
 S
+PSL_path_pen 195 get cvx exec
 1305 3004 M
 15 -6 D
 60 -17 D
@@ -3149,6 +3799,7 @@ S
 30 -67 D
 35 -42 D
 S
+PSL_path_pen 196 get cvx exec
 60 2843 M
 52 -41 D
 8 -10 D
@@ -3212,6 +3863,7 @@ S
 -36 65 D
 -27 31 D
 S
+PSL_path_pen 197 get cvx exec
 1320 2617 M
 25 -16 D
 35 -48 D
@@ -3219,6 +3871,7 @@ S
 51 -45 D
 57 -88 D
 S
+PSL_path_pen 198 get cvx exec
 1629 2735 M
 46 -67 D
 37 -67 D
@@ -3230,6 +3883,7 @@ S
 7 -23 D
 53 -45 D
 S
+PSL_path_pen 199 get cvx exec
 1500 2334 M
 60 -59 D
 4 -7 D
@@ -3237,6 +3891,7 @@ S
 -5 -66 D
 12 -66 D
 S
+PSL_path_pen 200 get cvx exec
 2033 2070 M
 7 -8 D
 60 -39 D
@@ -3292,6 +3947,7 @@ S
 7 -15 D
 60 -22 D
 S
+PSL_path_pen 201 get cvx exec
 1620 1968 M
 27 -30 D
 33 -34 D
@@ -3306,21 +3962,26 @@ S
 9 -65 D
 -59 -65 D
 S
+PSL_path_pen 202 get cvx exec
 1860 1702 M
 20 -27 D
 -20 -43 D
 -21 43 D
-P S
+21 27 D
+S
+PSL_path_pen 203 get cvx exec
 3180 783 M
 15 -16 D
 -15 -16 D
 -16 16 D
-P S
+16 16 D
+S
+PSL_path_pen 204 get cvx exec
 3313 64 M
 -1 63 D
 48 33 D
 S
-4 W
+PSL_path_pen 205 get cvx exec
 628 3546 M
 32 4 D
 3 -4 D
@@ -3328,26 +3989,32 @@ S
 39 -47 D
 32 -21 D
 S
+PSL_path_pen 206 get cvx exec
 887 3274 M
 13 -29 D
 S
+PSL_path_pen 207 get cvx exec
 900 3158 M
 60 15 D
 S
+PSL_path_pen 208 get cvx exec
 900 3086 M
 3 -15 D
 57 -61 D
 4 -6 D
 S
+PSL_path_pen 209 get cvx exec
 1071 3139 M
 69 -45 D
 47 -23 D
 13 -2 D
 S
+PSL_path_pen 210 get cvx exec
 1371 3004 M
 9 -3 D
 60 -6 D
 S
+PSL_path_pen 211 get cvx exec
 60 2851 M
 69 -49 D
 51 -39 D
@@ -3403,34 +4070,43 @@ S
 8 -6 D
 60 40 D
 S
+PSL_path_pen 212 get cvx exec
 1549 2869 M
 11 -13 D
 S
+PSL_path_pen 213 get cvx exec
 1644 2735 M
 36 -49 D
 S
+PSL_path_pen 214 get cvx exec
 1320 2585 M
 38 -51 D
 S
+PSL_path_pen 215 get cvx exec
 1440 2464 M
 31 -63 D
 S
+PSL_path_pen 216 get cvx exec
 1791 2468 M
 35 -67 D
 30 -66 D
 4 -4 D
 S
+PSL_path_pen 217 get cvx exec
 1500 2310 M
 39 -42 D
 -3 -66 D
 -18 -66 D
 -18 -29 D
 S
+PSL_path_pen 218 get cvx exec
 600 2203 M
 1 -1 D
 -1 -3 D
 -3 3 D
-P S
+3 1 D
+S
+PSL_path_pen 219 get cvx exec
 2049 2070 M
 51 -34 D
 31 -32 D
@@ -3463,6 +4139,7 @@ P S
 31 -50 D
 25 -15 D
 S
+PSL_path_pen 220 get cvx exec
 1620 1946 M
 60 -63 D
 19 -11 D
@@ -3473,24 +4150,32 @@ S
 -25 -21 D
 -36 -45 D
 S
+PSL_path_pen 221 get cvx exec
 1920 1710 M
 34 -35 D
 -34 -57 D
 -26 57 D
-P S
+26 35 D
+S
+PSL_path_pen 222 get cvx exec
 1980 1433 M
 17 -19 D
 S
+PSL_path_pen 223 get cvx exec
 2760 1247 M
 13 -28 D
 -13 -33 D
 -7 33 D
-P S
+7 28 D
+S
+PSL_path_pen 224 get cvx exec
 1680 1133 M
 20 -44 D
 -20 -8 D
 -14 8 D
-P S
+14 44 D
+S
+PSL_path_pen 225 get cvx exec
 1754 1154 M
 18 -65 D
 28 -12 D
@@ -3502,6 +4187,7 @@ P S
 35 21 D
 29 44 D
 S
+PSL_path_pen 226 get cvx exec
 3044 960 M
 -19 -64 D
 19 -65 D
@@ -3522,15 +4208,19 @@ S
 18 -20 D
 42 -21 D
 S
+PSL_path_pen 227 get cvx exec
 3180 796 M
 27 -29 D
 -27 -29 D
 -29 29 D
-P S
+29 29 D
+S
+PSL_path_pen 228 get cvx exec
 3327 64 M
 12 63 D
 21 14 D
 S
+PSL_path_pen 229 get cvx exec
 545 3614 M
 55 49 D
 60 -64 D
@@ -3539,6 +4229,7 @@ S
 20 -24 D
 60 -26 D
 S
+PSL_path_pen 230 get cvx exec
 60 2860 M
 60 -30 D
 42 -28 D
@@ -3593,46 +4284,59 @@ S
 46 20 D
 14 10 D
 S
+PSL_path_pen 231 get cvx exec
 1659 2735 M
 21 -28 D
 S
+PSL_path_pen 232 get cvx exec
 1320 2539 M
 3 -5 D
 S
+PSL_path_pen 233 get cvx exec
 1440 2410 M
 5 -9 D
 S
+PSL_path_pen 234 get cvx exec
 1500 2285 M
 16 -17 D
 -16 -69 D
 S
+PSL_path_pen 235 get cvx exec
 2068 2070 M
 32 -22 D
 44 -44 D
 16 -53 D
 S
+PSL_path_pen 236 get cvx exec
 2238 1872 M
 42 -13 D
 60 -3 D
 S
+PSL_path_pen 237 get cvx exec
 1680 1788 M
 39 -47 D
 11 -66 D
 S
+PSL_path_pen 238 get cvx exec
 1860 1745 M
 3 -4 D
 -3 -3 D
 -16 3 D
-P S
+16 4 D
+S
+PSL_path_pen 239 get cvx exec
 1762 1675 M
 38 41 D
 10 -41 D
 S
+PSL_path_pen 240 get cvx exec
 1920 1691 M
 16 -16 D
 -16 -26 D
 -12 26 D
-P S
+12 16 D
+S
+PSL_path_pen 241 get cvx exec
 3000 1139 M
 -9 15 D
 -56 65 D
@@ -3651,22 +4355,28 @@ P S
 -11 65 D
 21 56 D
 S
+PSL_path_pen 242 get cvx exec
 1980 1422 M
 7 -8 D
 S
+PSL_path_pen 243 get cvx exec
 1680 1093 M
 2 -4 D
 -3 0 D
-P S
+1 4 D
+S
+PSL_path_pen 244 get cvx exec
 1775 1154 M
 12 -65 D
 13 -5 D
 15 5 D
 45 62 D
 S
+PSL_path_pen 245 get cvx exec
 1980 1131 M
 16 23 D
 S
+PSL_path_pen 246 get cvx exec
 3120 598 M
 -34 -24 D
 -26 -3 D
@@ -3680,11 +4390,14 @@ S
 11 40 D
 13 24 D
 S
+PSL_path_pen 247 get cvx exec
 3180 809 M
 39 -42 D
 -39 -42 D
 -42 42 D
-P S
+42 42 D
+S
+PSL_path_pen 248 get cvx exec
 3171 510 M
 5 -64 D
 4 -8 D
@@ -3695,29 +4408,38 @@ P S
 49 -55 D
 11 -5 D
 S
+PSL_path_pen 249 get cvx exec
 3341 64 M
 19 53 D
 S
+PSL_path_pen 250 get cvx exec
 859 3274 M
 25 -68 D
 S
+PSL_path_pen 251 get cvx exec
 720 3779 M
 37 -28 D
 S
+PSL_path_pen 252 get cvx exec
 720 3504 M
 4 -26 D
 -4 -1 D
 -1 1 D
-P S
+1 26 D
+S
+PSL_path_pen 253 get cvx exec
 840 3224 M
 4 -18 D
 S
+PSL_path_pen 254 get cvx exec
 60 2868 M
 60 -15 D
 S
+PSL_path_pen 255 get cvx exec
 1674 2735 M
 6 -8 D
 S
+PSL_path_pen 256 get cvx exec
 262 2735 M
 38 -69 D
 57 -65 D
@@ -3761,15 +4483,18 @@ S
 60 21 D
 60 23 D
 S
+PSL_path_pen 257 get cvx exec
 2087 2070 M
 13 -9 D
 56 -57 D
 4 -13 D
 S
+PSL_path_pen 258 get cvx exec
 1680 1760 M
 16 -19 D
 7 -66 D
 S
+PSL_path_pen 259 get cvx exec
 3000 1187 M
 -25 32 D
 -95 107 D
@@ -3785,6 +4510,7 @@ S
 -8 66 D
 8 21 D
 S
+PSL_path_pen 260 get cvx exec
 1359 1545 M
 21 -14 D
 51 -52 D
@@ -3795,13 +4521,16 @@ S
 60 -45 D
 60 38 D
 S
+PSL_path_pen 261 get cvx exec
 1795 1154 M
 5 -42 D
 13 42 D
 S
+PSL_path_pen 262 get cvx exec
 1980 1152 M
 2 2 D
 S
+PSL_path_pen 263 get cvx exec
 3127 638 M
 -2 64 D
 -5 9 D
@@ -3816,16 +4545,20 @@ S
 -17 27 D
 17 59 D
 S
+PSL_path_pen 264 get cvx exec
 3240 591 M
 17 -17 D
 43 -30 D
 60 -8 D
 S
+PSL_path_pen 265 get cvx exec
 3240 407 M
 32 -25 D
 -32 -8 D
 -4 8 D
-P S
+4 25 D
+S
+PSL_path_pen 266 get cvx exec
 3420 263 M
 -60 29 D
 -23 26 D
@@ -3833,35 +4566,37 @@ P S
 27 31 D
 14 64 D
 S
+PSL_path_pen 267 get cvx exec
 3355 64 M
 5 14 D
 S
 PSL_cliprestore
-9 PSL_straight_text_labels
+U
 PSL_cliprestore
+25 W
 8 W
-360 0 M 0 -83 D S
-360 3958 M 0 83 D S
-1080 0 M 0 -83 D S
-1080 3958 M 0 83 D S
-1800 0 M 0 -83 D S
-1800 3958 M 0 83 D S
-2520 0 M 0 -83 D S
-2520 3958 M 0 83 D S
-3240 0 M 0 -83 D S
-3240 3958 M 0 83 D S
-0 0 M -83 0 D S
-3600 0 M 83 0 D S
-0 767 M -83 0 D S
-3600 767 M 83 0 D S
-0 1545 M -83 0 D S
-3600 1545 M 83 0 D S
-0 2335 M -83 0 D S
-3600 2335 M 83 0 D S
-0 3139 M -83 0 D S
-3600 3139 M 83 0 D S
-0 3958 M -83 0 D S
-3600 3958 M 83 0 D S
+N 360 0 M 0 -83 D S
+N 360 3958 M 0 83 D S
+N 1080 0 M 0 -83 D S
+N 1080 3958 M 0 83 D S
+N 1800 0 M 0 -83 D S
+N 1800 3958 M 0 83 D S
+N 2520 0 M 0 -83 D S
+N 2520 3958 M 0 83 D S
+N 3240 0 M 0 -83 D S
+N 3240 3958 M 0 83 D S
+N 0 0 M -83 0 D S
+N 3600 0 M 83 0 D S
+N 0 767 M -83 0 D S
+N 3600 767 M 83 0 D S
+N 0 1545 M -83 0 D S
+N 3600 1545 M 83 0 D S
+N 0 2335 M -83 0 D S
+N 3600 2335 M 83 0 D S
+N 0 3139 M -83 0 D S
+N 3600 3139 M 83 0 D S
+N 0 3958 M -83 0 D S
+N 3600 3958 M 83 0 D S
 360 -167 M 200 F0
 (-114Ê) tc Z
 1080 -167 M (-112Ê) tc Z
@@ -3875,47 +4610,47 @@ PSL_cliprestore
 -167 3139 M (28Ê) mr Z
 -167 3958 M (30Ê) mr Z
 83 W
--42 0 M 0 767 D S
-3642 0 M 0 767 D S
+N -42 0 M 0 767 D S
+N 3642 0 M 0 767 D S
 1 A
--42 767 M 0 778 D S
-3642 767 M 0 778 D S
+N -42 767 M 0 778 D S
+N 3642 767 M 0 778 D S
 0 A
--42 1545 M 0 790 D S
-3642 1545 M 0 790 D S
+N -42 1545 M 0 790 D S
+N 3642 1545 M 0 790 D S
 1 A
--42 2335 M 0 804 D S
-3642 2335 M 0 804 D S
+N -42 2335 M 0 804 D S
+N 3642 2335 M 0 804 D S
 0 A
--42 3139 M 0 819 D S
-3642 3139 M 0 819 D S
-0 -42 M 360 0 D S
-0 3999 M 360 0 D S
+N -42 3139 M 0 819 D S
+N 3642 3139 M 0 819 D S
+N 0 -42 M 360 0 D S
+N 0 3999 M 360 0 D S
 1 A
-360 -42 M 720 0 D S
-360 3999 M 720 0 D S
+N 360 -42 M 720 0 D S
+N 360 3999 M 720 0 D S
 0 A
-1080 -42 M 720 0 D S
-1080 3999 M 720 0 D S
+N 1080 -42 M 720 0 D S
+N 1080 3999 M 720 0 D S
 1 A
-1800 -42 M 720 0 D S
-1800 3999 M 720 0 D S
+N 1800 -42 M 720 0 D S
+N 1800 3999 M 720 0 D S
 0 A
-2520 -42 M 720 0 D S
-2520 3999 M 720 0 D S
+N 2520 -42 M 720 0 D S
+N 2520 3999 M 720 0 D S
 1 A
-3240 -42 M 360 0 D S
-3240 3999 M 360 0 D S
+N 3240 -42 M 360 0 D S
+N 3240 3999 M 360 0 D S
 0 A
 8 W
--83 0 M 3766 0 D S
--83 -83 M 3766 0 D S
-3600 -83 M 0 4124 D S
-3683 -83 M 0 4124 D S
-3683 3958 M -3766 0 D S
-3683 4041 M -3766 0 D S
-0 4041 M 0 -4124 D S
--83 4041 M 0 -4124 D S
+N -83 0 M 3766 0 D S
+N -83 -83 M 3766 0 D S
+N 3600 -83 M 0 4124 D S
+N 3683 -83 M 0 4124 D S
+N 3683 3958 M -3766 0 D S
+N 3683 4041 M -3766 0 D S
+N 0 4041 M 0 -4124 D S
+N -83 4041 M 0 -4124 D S
 %%EndObject
 0 A
 FQ
@@ -3923,7 +4658,7 @@ O0
 4320 0 TM
 
 % PostScript produced by:
-%%GMT: psmask -R245/255/20/30 -I10m ship.b -JM3i -O -K -T -Glightgray -bi3 -X3.6i
+%%GMT: psmask -R245/255/20/30 -I10m ship.b -JM3i -O -K -T -Glightgray -bi3d -X3.6i
 %%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -5799,156 +6534,315 @@ clipsave
 3600 0 D
 0 3958 D
 -3600 0 D
-PSL_eoclip N
-/PSL_setlinepen {12 W 0 A [] 0 B} def
-/PSL_setboxpen {12 W 0 A [] 0 B} def
-/PSL_setboxrgb {1 A} def
-/PSL_settxtrgb {0 A} def
+PSL_clip N
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-150 F0
-/PSL_m 14 def
-/PSL_txt_x
-1419.10
-3007.46
-2151.24
-1062.44
-1797.75
-2546.47
-1165.37
-1970.41
-554.39
-2262.74
-900.08
-800.29
-1948.91
-586.21
-14 array astore def
-/PSL_txt_y
-1009.44
-484.78
-1740.98
-1398.72
-2016.71
-1466.51
-3053.67
-1444.23
-2159.13
-1932.11
-3706.64
-3143.75
-1353.58
-2625.22
-14 array astore def
-/PSL_angle
-331.04
-339.08
-320.20
-313.49
-340.84
-334.15
-338.61
-292.90
-309.05
-333.69
-289.61
-293.27
-314.39
-339.93
-14 array astore def
-/PSL_str
-(-3000)
-(-3000)
-(-2000)
-(-2000)
-(-2000)
-(-1000)
-(-1000)
-(-1000)
-(-1000)
-(0)
-(0)
-(0)
-(0)
-(0)
-14 array astore def
-/PSL_just 6 def
+/PSL_setboxpen {4 W 0 A [] 0 B} def
+/PSL_setboxrgb {1 A} def
+/PSL_path_pen [
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+] def
+/PSL_label_justify [ 6 6 6 6 6 6 6 6 6 6 
+	6 6 6 6 ] def
+/PSL_label_font [
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-(-3000) sH /PSL_height edef
-0 PSL_straight_text_labels
-4 W
+/PSL_label_angle [ 331.04 339.08 320.20 313.49 340.84 334.15 338.61 292.90 309.05 333.69 
+	289.61 293.27 314.39 339.93 ] def
+/PSL_label_str [
+	(-3000)
+	(-3000)
+	(-2000)
+	(-2000)
+	(-2000)
+	(-1000)
+	(-1000)
+	(-1000)
+	(-1000)
+	(0)
+	(0)
+	(0)
+	(0)
+	(0)
+] def
+/PSL_label_n [ 0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 1 0 1 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 2 
+	0 0 1 0 0 0 0 0 0 0 
+	0 0 0 4 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 2 3 ] def
+/PSL_n_paths 145 def
+/PSL_n_labels 14 def
+/PSL_txt_x [ 1419 3007 2151 1062 1798 2546 1165 1970 554 2263 
+	900 800 1949 586 ] def
+/PSL_txt_y [ 1009 485 1741 1399 2017 1467 3054 1444 2159 1932 
+	3707 3144 1354 2625 ] def
+/PSL_txt_n [ 14 ] def
+PSL_set_label_heights
+2 PSL_straight_path_labels
+V
+4 PSL_straight_path_clip
+PSL_path_pen 0 get cvx exec
 180 1811 M
 4 -5 D
 -4 -4 D
 -4 4 D
-P S
+4 5 D
+S
+PSL_path_pen 1 get cvx exec
 180 1819 M
 13 -13 D
 -13 -14 D
 -13 14 D
-P S
-12 W
+13 13 D
+S
+PSL_path_pen 2 get cvx exec
 180 1827 M
 22 -21 D
 -22 -23 D
 -21 23 D
-P S
-4 W
+21 21 D
+S
+PSL_path_pen 3 get cvx exec
 1432 0 M
 8 8 D
 10 -8 D
 S
+PSL_path_pen 4 get cvx exec
 180 1835 M
 31 -29 D
 -31 -32 D
 -30 32 D
-P S
+30 29 D
+S
+PSL_path_pen 5 get cvx exec
 1422 0 M
 18 18 D
 21 -18 D
 S
+PSL_path_pen 6 get cvx exec
 180 1843 M
 40 -37 D
 -40 -42 D
 -39 42 D
-P S
+39 37 D
+S
+PSL_path_pen 7 get cvx exec
 1413 0 M
 27 28 D
 31 -28 D
 S
+PSL_path_pen 8 get cvx exec
 180 1851 M
 49 -45 D
 -49 -51 D
 -47 51 D
-P S
+47 45 D
+S
+PSL_path_pen 9 get cvx exec
 3060 363 M
 60 -44 D
 0 -1 D
 -60 -31 D
 -14 31 D
-P S
-12 W
+14 45 D
+S
+PSL_path_pen 10 get cvx exec
 1403 0 M
 37 37 D
 42 -37 D
 S
+PSL_path_pen 11 get cvx exec
 420 2085 M
 10 -15 D
 -10 -21 D
 -13 21 D
-P S
+13 15 D
+S
+PSL_path_pen 12 get cvx exec
 180 1859 M
 58 -53 D
 -58 -61 D
 -56 61 D
-P S
+56 53 D
+S
+PSL_path_pen 13 get cvx exec
 300 1505 M
 60 -23 D
 15 -3 D
 -15 -5 D
 -60 -13 D
 -45 18 D
-P S
+45 26 D
+S
+PSL_path_pen 14 get cvx exec
 3060 403 M
 60 -20 D
 9 -65 D
@@ -5958,13 +6852,15 @@ P S
 -13 13 D
 -23 64 D
 15 64 D
-P S
-4 W
+21 21 D
+S
+PSL_path_pen 15 get cvx exec
 97 0 M
 -29 64 D
 -8 7 D
 -60 13 D
 S
+PSL_path_pen 16 get cvx exec
 500 0 M
 -20 16 D
 -60 8 D
@@ -5986,15 +6882,18 @@ S
 -25 -19 D
 -60 -4 D
 S
+PSL_path_pen 17 get cvx exec
 1394 0 M
 46 47 D
 53 -47 D
 S
+PSL_path_pen 18 get cvx exec
 3055 0 M
 5 39 D
 60 21 D
 7 -60 D
 S
+PSL_path_pen 19 get cvx exec
 0 2746 M
 51 -11 D
 9 -16 D
@@ -6003,10 +6902,12 @@ S
 -48 39 D
 -12 8 D
 S
+PSL_path_pen 20 get cvx exec
 0 2291 M
 56 -23 D
 -56 -21 D
 S
+PSL_path_pen 21 get cvx exec
 0 2084 M
 11 -14 D
 18 -66 D
@@ -6029,6 +6930,7 @@ S
 -60 33 D
 -60 -34 D
 S
+PSL_path_pen 22 get cvx exec
 0 1543 M
 51 -64 D
 9 -13 D
@@ -6104,12 +7006,14 @@ S
 -37 64 D
 -21 20 D
 S
+PSL_path_pen 23 get cvx exec
 0 1289 M
 60 21 D
 21 -26 D
 -21 -29 D
 -60 16 D
 S
+PSL_path_pen 24 get cvx exec
 0 1131 M
 60 46 D
 60 -15 D
@@ -6124,6 +7028,7 @@ S
 -19 -22 D
 -41 -27 D
 S
+PSL_path_pen 25 get cvx exec
 300 2238 M
 60 -10 D
 7 -26 D
@@ -6141,27 +7046,37 @@ S
 -7 15 D
 -17 51 D
 -47 66 D
-P S
+4 36 D
+S
+PSL_path_pen 26 get cvx exec
 600 1824 M
 6 -18 D
 -6 -16 D
 -18 16 D
-P S
+18 18 D
+S
+PSL_path_pen 27 get cvx exec
 300 1417 M
 7 -3 D
 -7 -23 D
 -6 23 D
-P S
+6 3 D
+S
+PSL_path_pen 28 get cvx exec
 600 962 M
 6 -2 D
 -6 -8 D
 -31 8 D
-P S
+31 2 D
+S
+PSL_path_pen 29 get cvx exec
 300 553 M
 29 -43 D
 -29 -43 D
 -37 43 D
-P S
+37 43 D
+S
+PSL_path_pen 30 get cvx exec
 3060 431 M
 60 -37 D
 6 -12 D
@@ -6172,7 +7087,9 @@ P S
 -54 55 D
 -4 64 D
 9 64 D
-P S
+49 49 D
+S
+PSL_path_pen 31 get cvx exec
 864 0 M
 -24 28 D
 -36 36 D
@@ -6262,11 +7179,13 @@ P S
 -60 31 D
 -60 24 D
 S
+PSL_path_pen 32 get cvx exec
 1385 0 M
 55 56 D
 60 -40 D
 11 -16 D
 S
+PSL_path_pen 33 get cvx exec
 3013 0 M
 -14 127 D
 -10 64 D
@@ -6285,6 +7204,7 @@ S
 12 -44 D
 8 -64 D
 S
+PSL_path_pen 34 get cvx exec
 0 2759 M
 60 -17 D
 8 -7 D
@@ -6298,6 +7218,7 @@ S
 -34 29 D
 -26 24 D
 S
+PSL_path_pen 35 get cvx exec
 0 2214 M
 60 6 D
 60 36 D
@@ -6328,10 +7249,12 @@ S
 -39 49 D
 -21 32 D
 S
+PSL_path_pen 36 get cvx exec
 0 972 M
 5 -12 D
 -5 -5 D
 S
+PSL_path_pen 37 get cvx exec
 0 583 M
 7 -9 D
 36 -64 D
@@ -6343,33 +7266,44 @@ S
 -30 -31 D
 -30 -22 D
 S
+PSL_path_pen 38 get cvx exec
 180 2483 M
 2 -15 D
 -2 -18 D
 -11 18 D
-P S
+11 15 D
+S
+PSL_path_pen 39 get cvx exec
 120 1886 M
 16 -14 D
 -16 -5 D
 -5 5 D
-P S
+5 14 D
+S
+PSL_path_pen 40 get cvx exec
 420 1647 M
 33 -37 D
 -33 -37 D
 -39 37 D
-P S
+39 37 D
+S
+PSL_path_pen 41 get cvx exec
 600 1028 M
 2 -3 D
 -2 -1 D
 -1 1 D
-P S
+1 3 D
+S
+PSL_path_pen 42 get cvx exec
 660 553 M
 60 -25 D
 16 -18 D
 -16 -27 D
 -60 -23 D
 -46 50 D
-P S
+46 43 D
+S
+PSL_path_pen 43 get cvx exec
 360 284 M
 60 12 D
 33 -42 D
@@ -6378,7 +7312,9 @@ P S
 -60 7 D
 -27 29 D
 -20 63 D
-P S
+47 30 D
+S
+PSL_path_pen 44 get cvx exec
 1168 0 M
 -33 64 D
 -55 44 D
@@ -6400,6 +7336,7 @@ P S
 -38 -30 D
 -32 -34 D
 S
+PSL_path_pen 45 get cvx exec
 1541 0 M
 -41 56 D
 -24 8 D
@@ -6497,12 +7434,14 @@ S
 -17 17 D
 -60 20 D
 S
+PSL_path_pen 46 get cvx exec
 1856 0 M
 -8 64 D
 12 45 D
 16 -45 D
 -6 -64 D
 S
+PSL_path_pen 47 get cvx exec
 2512 0 M
 -9 64 D
 17 4 D
@@ -6511,6 +7450,7 @@ S
 4 -9 D
 8 -55 D
 S
+PSL_path_pen 48 get cvx exec
 2773 0 M
 -13 39 D
 -16 25 D
@@ -6536,6 +7476,7 @@ S
 11 -63 D
 8 -64 D
 S
+PSL_path_pen 49 get cvx exec
 0 2554 M
 33 -20 D
 27 -34 D
@@ -6546,6 +7487,7 @@ S
 -60 -29 D
 -60 7 D
 S
+PSL_path_pen 50 get cvx exec
 0 538 M
 17 -28 D
 29 -64 D
@@ -6553,6 +7495,7 @@ S
 -20 -64 D
 -40 -42 D
 S
+PSL_path_pen 51 get cvx exec
 180 2187 M
 60 -13 D
 33 -38 D
@@ -6560,7 +7503,9 @@ S
 -51 -21 D
 -61 21 D
 -37 66 D
-P S
+38 51 D
+S
+PSL_path_pen 52 get cvx exec
 300 1969 M
 43 -31 D
 17 -18 D
@@ -6571,17 +7516,23 @@ P S
 -42 17 D
 -18 20 D
 -25 46 D
-P S
+25 31 D
+S
+PSL_path_pen 53 get cvx exec
 2220 1556 M
 7 -11 D
 -7 -15 D
 -10 15 D
-P S
+10 11 D
+S
+PSL_path_pen 54 get cvx exec
 1020 1357 M
 10 -8 D
 -10 -48 D
 -21 48 D
-P S
+21 8 D
+S
+PSL_path_pen 55 get cvx exec
 720 1112 M
 60 4 D
 60 -10 D
@@ -6592,47 +7543,65 @@ P S
 -60 -28 D
 -60 9 D
 -26 33 D
-P S
+26 23 D
+S
+PSL_path_pen 56 get cvx exec
 840 647 M
 27 -9 D
 -27 -5 D
 -8 5 D
-P S
+8 9 D
+S
+PSL_path_pen 57 get cvx exec
 960 692 M
 48 -54 D
 -48 -31 D
 -51 31 D
-P S
+51 54 D
+S
+PSL_path_pen 58 get cvx exec
 1260 576 M
 11 -2 D
 -11 -1 D
 -4 1 D
-P S
+4 2 D
+S
+PSL_path_pen 59 get cvx exec
 660 525 M
 26 -15 D
 -26 -17 D
 -16 17 D
-P S
+16 15 D
+S
+PSL_path_pen 60 get cvx exec
 1020 537 M
 21 -27 D
 -21 -22 D
 -15 22 D
-P S
+15 27 D
+S
+PSL_path_pen 61 get cvx exec
 1080 450 M
 6 -4 D
 -6 -5 D
 -3 5 D
-P S
+3 4 D
+S
+PSL_path_pen 62 get cvx exec
 420 271 M
 13 -17 D
 -13 -32 D
 -41 32 D
-P S
+41 17 D
+S
+PSL_path_pen 63 get cvx exec
 1740 228 M
 12 -37 D
 -12 -17 D
 -24 17 D
-P S
+24 37 D
+S
+PSL_path_pen 64 get cvx exec
 1200 128 M
 60 12 D
 74 -13 D
@@ -6640,18 +7609,23 @@ P S
 -60 -43 D
 -60 32 D
 -11 31 D
-P S
+11 1 D
+S
+PSL_path_pen 65 get cvx exec
 2700 147 M
 19 -20 D
 -19 -33 D
 -11 33 D
-P S
+11 20 D
+S
+PSL_path_pen 66 get cvx exec
 2340 72 M
 16 -8 D
 -16 -32 D
 -11 32 D
-P S
-12 W
+11 8 D
+S
+PSL_path_pen 67 get cvx exec
 1581 0 M
 18 64 D
 21 28 D
@@ -6748,6 +7722,7 @@ P S
 -27 26 D
 -60 23 D
 S
+PSL_path_pen 68 get cvx exec
 1830 0 M
 -10 64 D
 2 63 D
@@ -6757,6 +7732,7 @@ S
 6 -31 D
 12 -33 D
 S
+PSL_path_pen 69 get cvx exec
 2242 0 M
 -22 45 D
 -14 19 D
@@ -6816,6 +7792,7 @@ S
 1 -63 D
 9 -64 D
 S
+PSL_path_pen 70 get cvx exec
 0 2515 M
 42 -47 D
 18 -22 D
@@ -6823,32 +7800,42 @@ S
 -47 -40 D
 -60 -5 D
 S
+PSL_path_pen 71 get cvx exec
 0 490 M
 19 -44 D
 17 -64 D
 -31 -64 D
 -5 -5 D
 S
+PSL_path_pen 72 get cvx exec
 2100 1708 M
 9 -33 D
 -9 -5 D
 -4 5 D
-P S
+4 33 D
+S
+PSL_path_pen 73 get cvx exec
 2220 1574 M
 18 -29 D
 -18 -39 D
 -26 39 D
-P S
+26 29 D
+S
+PSL_path_pen 74 get cvx exec
 2460 474 M
 9 -28 D
 -9 -10 D
 -18 10 D
-P S
+18 28 D
+S
+PSL_path_pen 75 get cvx exec
 2340 343 M
 16 -25 D
 -16 -40 D
 -16 40 D
-P S
+16 25 D
+S
+PSL_path_pen 76 get cvx exec
 2760 259 M
 3 -5 D
 57 -34 D
@@ -6857,7 +7844,9 @@ P S
 -60 -31 D
 -45 48 D
 43 63 D
-P S
+2 5 D
+S
+PSL_path_pen 77 get cvx exec
 1200 191 M
 60 55 D
 60 -48 D
@@ -6865,15 +7854,18 @@ P S
 -5 -5 D
 -60 -25 D
 -61 30 D
-P S
+1 0 D
+S
+PSL_path_pen 78 get cvx exec
 2520 208 M
 60 9 D
 19 -26 D
 -19 -14 D
 -60 3 D
 -33 11 D
-P S
-4 W
+33 17 D
+S
+PSL_path_pen 79 get cvx exec
 1635 0 M
 19 64 D
 26 18 D
@@ -6882,6 +7874,7 @@ P S
 60 -16 D
 5 -26 D
 S
+PSL_path_pen 80 get cvx exec
 2018 0 M
 -28 64 D
 -6 63 D
@@ -6892,6 +7885,7 @@ S
 -6 -7 D
 -30 -64 D
 S
+PSL_path_pen 81 get cvx exec
 3177 0 M
 -9 64 D
 12 76 D
@@ -6992,6 +7986,7 @@ S
 -36 35 D
 -60 27 D
 S
+PSL_path_pen 82 get cvx exec
 0 2491 M
 21 -23 D
 39 -49 D
@@ -6999,27 +7994,35 @@ S
 -19 -16 D
 -60 -17 D
 S
+PSL_path_pen 83 get cvx exec
 0 424 M
 12 -42 D
 -12 -23 D
 S
+PSL_path_pen 84 get cvx exec
 1860 2138 M
 4 -2 D
 -4 -9 D
 -6 9 D
-P S
+6 2 D
+S
+PSL_path_pen 85 get cvx exec
 1800 2074 M
 5 -4 D
 -5 -2 D
 -4 2 D
-P S
+4 4 D
+S
+PSL_path_pen 86 get cvx exec
 2100 1773 M
 10 -32 D
 30 -66 D
 -40 -25 D
 -17 25 D
 -12 66 D
-P S
+29 32 D
+S
+PSL_path_pen 87 get cvx exec
 2160 1641 M
 23 -31 D
 37 -17 D
@@ -7028,17 +8031,23 @@ P S
 -42 63 D
 -18 43 D
 -13 22 D
-P S
+13 31 D
+S
+PSL_path_pen 88 get cvx exec
 2280 1205 M
 53 -51 D
 -53 -21 D
 -18 21 D
-P S
+18 51 D
+S
+PSL_path_pen 89 get cvx exec
 2400 781 M
 11 -14 D
 -11 -10 D
 -10 10 D
-P S
+10 14 D
+S
+PSL_path_pen 90 get cvx exec
 2160 659 M
 60 29 D
 51 -50 D
@@ -7047,12 +8056,16 @@ P S
 -60 11 D
 -4 5 D
 -7 64 D
-P S
+11 21 D
+S
+PSL_path_pen 91 get cvx exec
 2760 531 M
 16 -21 D
 -16 -8 D
 -10 8 D
-P S
+10 21 D
+S
+PSL_path_pen 92 get cvx exec
 2100 406 M
 60 14 D
 37 -38 D
@@ -7064,32 +8077,43 @@ P S
 -8 23 D
 -4 64 D
 49 64 D
-P S
+23 24 D
+S
+PSL_path_pen 93 get cvx exec
 2700 398 M
 10 -16 D
 -10 -11 D
 -10 11 D
-P S
+10 16 D
+S
+PSL_path_pen 94 get cvx exec
 1260 208 M
 20 -17 D
 -20 -10 D
 -19 10 D
-P S
+19 17 D
+S
+PSL_path_pen 95 get cvx exec
 1860 228 M
 85 -37 D
 -25 -13 D
 -60 10 D
 -9 3 D
-P S
+9 37 D
+S
+PSL_path_pen 96 get cvx exec
 2760 221 M
 34 -30 D
 -34 -23 D
 -21 23 D
-P S
+21 30 D
+S
+PSL_path_pen 97 get cvx exec
 1677 0 M
 3 9 D
 7 -9 D
 S
+PSL_path_pen 98 get cvx exec
 3196 0 M
 -15 64 D
 52 63 D
@@ -7211,10 +8235,12 @@ S
 -46 44 D
 -60 29 D
 S
+PSL_path_pen 99 get cvx exec
 0 2467 M
 52 -66 D
 -52 -22 D
 S
+PSL_path_pen 100 get cvx exec
 1860 2149 M
 25 -13 D
 -25 -52 D
@@ -7223,22 +8249,30 @@ S
 -38 19 D
 38 37 D
 25 29 D
-P S
+35 13 D
+S
+PSL_path_pen 101 get cvx exec
 2220 1454 M
 40 -40 D
 -40 -50 D
 -49 50 D
-P S
+49 40 D
+S
+PSL_path_pen 102 get cvx exec
 2280 1358 M
 51 -9 D
 -51 -15 D
 -12 15 D
-P S
+12 9 D
+S
+PSL_path_pen 103 get cvx exec
 2340 1333 M
 15 -49 D
 -15 -3 D
 -8 3 D
-P S
+8 49 D
+S
+PSL_path_pen 104 get cvx exec
 3217 0 M
 2 64 D
 21 24 D
@@ -7361,10 +8395,12 @@ P S
 -28 13 D
 -32 17 D
 S
+PSL_path_pen 105 get cvx exec
 0 2431 M
 24 -30 D
 -24 -10 D
 S
+PSL_path_pen 106 get cvx exec
 1800 2208 M
 4 -6 D
 56 -42 D
@@ -7379,18 +8415,23 @@ S
 11 37 D
 41 29 D
 -9 66 D
-P S
+28 6 D
+S
+PSL_path_pen 107 get cvx exec
 2400 1619 M
 4 -9 D
 -4 -15 D
 -18 15 D
-P S
+18 9 D
+S
+PSL_path_pen 108 get cvx exec
 2220 1425 M
 11 -11 D
 -11 -14 D
 -13 14 D
-P S
-12 W
+13 11 D
+S
+PSL_path_pen 109 get cvx exec
 3239 0 M
 10 64 D
 24 63 D
@@ -7509,16 +8550,21 @@ P S
 -68 63 D
 -60 31 D
 S
+PSL_path_pen 110 get cvx exec
 1560 2486 M
 18 -18 D
 -18 -33 D
 -31 33 D
-P S
+31 18 D
+S
+PSL_path_pen 111 get cvx exec
 1620 2418 M
 28 -17 D
 -28 -16 D
 -27 16 D
-P S
+27 17 D
+S
+PSL_path_pen 112 get cvx exec
 1740 2245 M
 60 -19 D
 19 -24 D
@@ -7538,13 +8584,16 @@ P S
 -41 66 D
 2 66 D
 5 66 D
-P S
+37 43 D
+S
+PSL_path_pen 113 get cvx exec
 2400 1635 M
 12 -25 D
 -12 -42 D
 -48 42 D
-P S
-4 W
+48 25 D
+S
+PSL_path_pen 114 get cvx exec
 3265 0 M
 3 64 D
 22 63 D
@@ -7694,6 +8743,7 @@ P S
 -8 6 D
 -60 32 D
 S
+PSL_path_pen 115 get cvx exec
 1260 2947 M
 44 -11 D
 16 -16 D
@@ -7707,7 +8757,9 @@ S
 -28 67 D
 -20 67 D
 -4 67 D
-P S
+57 11 D
+S
+PSL_path_pen 116 get cvx exec
 2340 1632 M
 60 19 D
 20 -41 D
@@ -7715,12 +8767,16 @@ P S
 -5 2 D
 -55 43 D
 -26 22 D
-P S
+26 22 D
+S
+PSL_path_pen 117 get cvx exec
 1980 1549 M
 10 -4 D
 -10 -28 D
 -4 28 D
-P S
+4 4 D
+S
+PSL_path_pen 118 get cvx exec
 3291 0 M
 -4 64 D
 13 38 D
@@ -7901,16 +8957,21 @@ P S
 -23 18 D
 -60 30 D
 S
+PSL_path_pen 119 get cvx exec
 2040 1567 M
 19 -22 D
 -19 -4 D
 -5 4 D
-P S
+5 22 D
+S
+PSL_path_pen 120 get cvx exec
 2340 1553 M
 11 -8 D
 -11 -18 D
 -6 18 D
-P S
+6 8 D
+S
+PSL_path_pen 121 get cvx exec
 3310 0 M
 -5 64 D
 14 63 D
@@ -8104,12 +9165,14 @@ P S
 -38 29 D
 -60 30 D
 S
+PSL_path_pen 122 get cvx exec
 720 3411 M
 2 -1 D
 -2 -1 D
 -1 1 D
-P S
-12 W
+1 1 D
+S
+PSL_path_pen 123 get cvx exec
 3325 0 M
 -6 64 D
 14 63 D
@@ -8311,17 +9374,21 @@ P S
 -55 26 D
 -5 7 D
 S
+PSL_path_pen 124 get cvx exec
 720 3431 M
 30 -21 D
 -30 -17 D
 -15 17 D
-P S
+15 21 D
+S
+PSL_path_pen 125 get cvx exec
 1860 1697 M
 20 -22 D
 -20 -19 D
 -22 19 D
-P S
-4 W
+22 22 D
+S
+PSL_path_pen 126 get cvx exec
 3340 0 M
 -8 64 D
 15 63 D
@@ -8517,31 +9584,42 @@ P S
 -31 15 D
 -29 42 D
 S
+PSL_path_pen 127 get cvx exec
 420 3937 M
 6 -48 D
 -6 -24 D
 -6 24 D
-P S
+6 48 D
+S
+PSL_path_pen 128 get cvx exec
 660 3507 M
 19 -29 D
 -19 -15 D
 -31 15 D
-P S
+31 29 D
+S
+PSL_path_pen 129 get cvx exec
 720 3451 M
 58 -41 D
 -58 -33 D
 -29 33 D
-P S
+29 41 D
+S
+PSL_path_pen 130 get cvx exec
 900 3279 M
 31 -5 D
 -31 -8 D
 -3 8 D
-P S
+3 5 D
+S
+PSL_path_pen 131 get cvx exec
 2760 1234 M
 9 -15 D
 -9 -25 D
 -7 25 D
-P S
+7 15 D
+S
+PSL_path_pen 132 get cvx exec
 3355 0 M
 -9 64 D
 14 60 D
@@ -8550,6 +9628,7 @@ P S
 60 -1 D
 60 -21 D
 S
+PSL_path_pen 133 get cvx exec
 3600 150 M
 -24 41 D
 -36 14 D
@@ -8736,6 +9815,7 @@ S
 -44 67 D
 -9 10 D
 S
+PSL_path_pen 134 get cvx exec
 531 3958 M
 -33 -69 D
 -18 -21 D
@@ -8748,11 +9828,13 @@ S
 38 69 D
 -1 69 D
 S
+PSL_path_pen 135 get cvx exec
 67 3958 M
 -7 -11 D
 -53 -58 D
 -7 -5 D
 S
+PSL_path_pen 136 get cvx exec
 480 3628 M
 60 -2 D
 60 43 D
@@ -8771,12 +9853,16 @@ S
 -19 13 D
 -41 54 D
 -15 14 D
-P S
+15 14 D
+S
+PSL_path_pen 137 get cvx exec
 1920 1614 M
 1 -4 D
 -1 -1 D
 -5 1 D
-P S
+5 4 D
+S
+PSL_path_pen 138 get cvx exec
 3379 0 M
 -17 64 D
 58 13 D
@@ -8784,6 +9870,7 @@ P S
 60 -31 D
 29 -32 D
 S
+PSL_path_pen 139 get cvx exec
 3600 230 M
 -60 12 D
 -60 2 D
@@ -8894,6 +9981,7 @@ S
 64 69 D
 22 69 D
 S
+PSL_path_pen 140 get cvx exec
 0 3748 M
 60 10 D
 60 -5 D
@@ -9012,17 +10100,20 @@ S
 -22 34 D
 -38 43 D
 S
+PSL_path_pen 141 get cvx exec
 720 3564 M
 21 -18 D
 -21 -18 D
 -10 18 D
-P S
-12 W
+10 18 D
+S
+PSL_path_pen 142 get cvx exec
 3407 0 M
 13 29 D
 60 -12 D
 25 -17 D
 S
+PSL_path_pen 143 get cvx exec
 3600 290 M
 -60 5 D
 -60 -4 D
@@ -9113,6 +10204,7 @@ S
 -20 69 D
 -27 69 D
 S
+PSL_path_pen 144 get cvx exec
 360 3364 M
 60 24 D
 60 12 D
@@ -9230,33 +10322,35 @@ S
 35 36 D
 26 68 D
 28 68 D
-P S
+31 22 D
+S
 PSL_cliprestore
-9 PSL_straight_text_labels
+U
 PSL_cliprestore
+25 W
 8 W
-360 0 M 0 -83 D S
-360 3958 M 0 83 D S
-1080 0 M 0 -83 D S
-1080 3958 M 0 83 D S
-1800 0 M 0 -83 D S
-1800 3958 M 0 83 D S
-2520 0 M 0 -83 D S
-2520 3958 M 0 83 D S
-3240 0 M 0 -83 D S
-3240 3958 M 0 83 D S
-0 0 M -83 0 D S
-3600 0 M 83 0 D S
-0 767 M -83 0 D S
-3600 767 M 83 0 D S
-0 1545 M -83 0 D S
-3600 1545 M 83 0 D S
-0 2335 M -83 0 D S
-3600 2335 M 83 0 D S
-0 3139 M -83 0 D S
-3600 3139 M 83 0 D S
-0 3958 M -83 0 D S
-3600 3958 M 83 0 D S
+N 360 0 M 0 -83 D S
+N 360 3958 M 0 83 D S
+N 1080 0 M 0 -83 D S
+N 1080 3958 M 0 83 D S
+N 1800 0 M 0 -83 D S
+N 1800 3958 M 0 83 D S
+N 2520 0 M 0 -83 D S
+N 2520 3958 M 0 83 D S
+N 3240 0 M 0 -83 D S
+N 3240 3958 M 0 83 D S
+N 0 0 M -83 0 D S
+N 3600 0 M 83 0 D S
+N 0 767 M -83 0 D S
+N 3600 767 M 83 0 D S
+N 0 1545 M -83 0 D S
+N 3600 1545 M 83 0 D S
+N 0 2335 M -83 0 D S
+N 3600 2335 M 83 0 D S
+N 0 3139 M -83 0 D S
+N 3600 3139 M 83 0 D S
+N 0 3958 M -83 0 D S
+N 3600 3958 M 83 0 D S
 360 -167 M 200 F0
 (-114Ê) tc Z
 1080 -167 M (-112Ê) tc Z
@@ -9270,47 +10364,47 @@ PSL_cliprestore
 -167 3139 M (28Ê) mr Z
 -167 3958 M (30Ê) mr Z
 83 W
--42 0 M 0 767 D S
-3642 0 M 0 767 D S
+N -42 0 M 0 767 D S
+N 3642 0 M 0 767 D S
 1 A
--42 767 M 0 778 D S
-3642 767 M 0 778 D S
+N -42 767 M 0 778 D S
+N 3642 767 M 0 778 D S
 0 A
--42 1545 M 0 790 D S
-3642 1545 M 0 790 D S
+N -42 1545 M 0 790 D S
+N 3642 1545 M 0 790 D S
 1 A
--42 2335 M 0 804 D S
-3642 2335 M 0 804 D S
+N -42 2335 M 0 804 D S
+N 3642 2335 M 0 804 D S
 0 A
--42 3139 M 0 819 D S
-3642 3139 M 0 819 D S
-0 -42 M 360 0 D S
-0 3999 M 360 0 D S
+N -42 3139 M 0 819 D S
+N 3642 3139 M 0 819 D S
+N 0 -42 M 360 0 D S
+N 0 3999 M 360 0 D S
 1 A
-360 -42 M 720 0 D S
-360 3999 M 720 0 D S
+N 360 -42 M 720 0 D S
+N 360 3999 M 720 0 D S
 0 A
-1080 -42 M 720 0 D S
-1080 3999 M 720 0 D S
+N 1080 -42 M 720 0 D S
+N 1080 3999 M 720 0 D S
 1 A
-1800 -42 M 720 0 D S
-1800 3999 M 720 0 D S
+N 1800 -42 M 720 0 D S
+N 1800 3999 M 720 0 D S
 0 A
-2520 -42 M 720 0 D S
-2520 3999 M 720 0 D S
+N 2520 -42 M 720 0 D S
+N 2520 3999 M 720 0 D S
 1 A
-3240 -42 M 360 0 D S
-3240 3999 M 360 0 D S
+N 3240 -42 M 360 0 D S
+N 3240 3999 M 360 0 D S
 0 A
 8 W
--83 0 M 3766 0 D S
--83 -83 M 3766 0 D S
-3600 -83 M 0 4124 D S
-3683 -83 M 0 4124 D S
-3683 3958 M -3766 0 D S
-3683 4041 M -3766 0 D S
-0 4041 M 0 -4124 D S
--83 4041 M 0 -4124 D S
+N -83 0 M 3766 0 D S
+N -83 -83 M 3766 0 D S
+N 3600 -83 M 0 4124 D S
+N 3683 -83 M 0 4124 D S
+N 3683 3958 M -3766 0 D S
+N 3683 4041 M -3766 0 D S
+N 0 4041 M 0 -4124 D S
+N -83 4041 M 0 -4124 D S
 %%EndObject
 0 A
 FQ
@@ -9318,35 +10412,36 @@ O0
 -4320 4500 TM
 
 % PostScript produced by:
-%%GMT: psmask -R245/255/20/30 -I10m ship_10m.b -bi3 -JM3i -B2 -BWSne -O -K -X-3.6i -Y3.75i
+%%GMT: psmask -R245/255/20/30 -I10m ship_10m.b -bi3d -JM3i -B2 -BWSne -O -K -X-3.6i -Y3.75i
 %%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+25 W
 8 W
-360 0 M 0 -83 D S
-360 3958 M 0 83 D S
-1080 0 M 0 -83 D S
-1080 3958 M 0 83 D S
-1800 0 M 0 -83 D S
-1800 3958 M 0 83 D S
-2520 0 M 0 -83 D S
-2520 3958 M 0 83 D S
-3240 0 M 0 -83 D S
-3240 3958 M 0 83 D S
-0 0 M -83 0 D S
-3600 0 M 83 0 D S
-0 767 M -83 0 D S
-3600 767 M 83 0 D S
-0 1545 M -83 0 D S
-3600 1545 M 83 0 D S
-0 2335 M -83 0 D S
-3600 2335 M 83 0 D S
-0 3139 M -83 0 D S
-3600 3139 M 83 0 D S
-0 3958 M -83 0 D S
-3600 3958 M 83 0 D S
+N 360 0 M 0 -83 D S
+N 360 3958 M 0 83 D S
+N 1080 0 M 0 -83 D S
+N 1080 3958 M 0 83 D S
+N 1800 0 M 0 -83 D S
+N 1800 3958 M 0 83 D S
+N 2520 0 M 0 -83 D S
+N 2520 3958 M 0 83 D S
+N 3240 0 M 0 -83 D S
+N 3240 3958 M 0 83 D S
+N 0 0 M -83 0 D S
+N 3600 0 M 83 0 D S
+N 0 767 M -83 0 D S
+N 3600 767 M 83 0 D S
+N 0 1545 M -83 0 D S
+N 3600 1545 M 83 0 D S
+N 0 2335 M -83 0 D S
+N 3600 2335 M 83 0 D S
+N 0 3139 M -83 0 D S
+N 3600 3139 M 83 0 D S
+N 0 3958 M -83 0 D S
+N 3600 3958 M 83 0 D S
 360 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-114Ê) tc Z
@@ -9361,47 +10456,47 @@ O0
 -167 3139 M (28Ê) mr Z
 -167 3958 M (30Ê) mr Z
 83 W
--42 0 M 0 767 D S
-3642 0 M 0 767 D S
+N -42 0 M 0 767 D S
+N 3642 0 M 0 767 D S
 1 A
--42 767 M 0 778 D S
-3642 767 M 0 778 D S
+N -42 767 M 0 778 D S
+N 3642 767 M 0 778 D S
 0 A
--42 1545 M 0 790 D S
-3642 1545 M 0 790 D S
+N -42 1545 M 0 790 D S
+N 3642 1545 M 0 790 D S
 1 A
--42 2335 M 0 804 D S
-3642 2335 M 0 804 D S
+N -42 2335 M 0 804 D S
+N 3642 2335 M 0 804 D S
 0 A
--42 3139 M 0 819 D S
-3642 3139 M 0 819 D S
-0 -42 M 360 0 D S
-0 3999 M 360 0 D S
+N -42 3139 M 0 819 D S
+N 3642 3139 M 0 819 D S
+N 0 -42 M 360 0 D S
+N 0 3999 M 360 0 D S
 1 A
-360 -42 M 720 0 D S
-360 3999 M 720 0 D S
+N 360 -42 M 720 0 D S
+N 360 3999 M 720 0 D S
 0 A
-1080 -42 M 720 0 D S
-1080 3999 M 720 0 D S
+N 1080 -42 M 720 0 D S
+N 1080 3999 M 720 0 D S
 1 A
-1800 -42 M 720 0 D S
-1800 3999 M 720 0 D S
+N 1800 -42 M 720 0 D S
+N 1800 3999 M 720 0 D S
 0 A
-2520 -42 M 720 0 D S
-2520 3999 M 720 0 D S
+N 2520 -42 M 720 0 D S
+N 2520 3999 M 720 0 D S
 1 A
-3240 -42 M 360 0 D S
-3240 3999 M 360 0 D S
+N 3240 -42 M 360 0 D S
+N 3240 3999 M 360 0 D S
 0 A
 8 W
--83 0 M 3766 0 D S
--83 -83 M 3766 0 D S
-3600 -83 M 0 4124 D S
-3683 -83 M 0 4124 D S
-3683 3958 M -3766 0 D S
-3683 4041 M -3766 0 D S
-0 4041 M 0 -4124 D S
--83 4041 M 0 -4124 D S
+N -83 0 M 3766 0 D S
+N -83 -83 M 3766 0 D S
+N 3600 -83 M 0 4124 D S
+N 3683 -83 M 0 4124 D S
+N 3683 3958 M -3766 0 D S
+N 3683 4041 M -3766 0 D S
+N 0 4041 M 0 -4124 D S
+N -83 4041 M 0 -4124 D S
 clipsave
 300 3992 M
 30 0 D
@@ -9961,7 +11056,7 @@ clipsave
 -60 0 D
 0 32 D
 30 32 D
-PSL_eoclip N
+PSL_clip N
 %%EndObject
 0 A
 FQ
@@ -9980,156 +11075,315 @@ clipsave
 3600 0 D
 0 3958 D
 -3600 0 D
-PSL_eoclip N
-/PSL_setlinepen {12 W 0 A [] 0 B} def
-/PSL_setboxpen {12 W 0 A [] 0 B} def
-/PSL_setboxrgb {1 A} def
-/PSL_settxtrgb {0 A} def
+PSL_clip N
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-150 F0
-/PSL_m 14 def
-/PSL_txt_x
-1419.10
-3007.46
-2151.24
-1062.44
-1797.75
-2546.47
-1165.37
-1970.41
-554.39
-2262.74
-900.08
-800.29
-1948.91
-586.21
-14 array astore def
-/PSL_txt_y
-1009.44
-484.78
-1740.98
-1398.72
-2016.71
-1466.51
-3053.67
-1444.23
-2159.13
-1932.11
-3706.64
-3143.75
-1353.58
-2625.22
-14 array astore def
-/PSL_angle
-331.04
-339.08
-320.20
-313.49
-340.84
-334.15
-338.61
-292.90
-309.05
-333.69
-289.61
-293.27
-314.39
-339.93
-14 array astore def
-/PSL_str
-(-3000)
-(-3000)
-(-2000)
-(-2000)
-(-2000)
-(-1000)
-(-1000)
-(-1000)
-(-1000)
-(0)
-(0)
-(0)
-(0)
-(0)
-14 array astore def
-/PSL_just 6 def
+/PSL_setboxpen {4 W 0 A [] 0 B} def
+/PSL_setboxrgb {1 A} def
+/PSL_path_pen [
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+] def
+/PSL_label_justify [ 6 6 6 6 6 6 6 6 6 6 
+	6 6 6 6 ] def
+/PSL_label_font [
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-(-3000) sH /PSL_height edef
-0 PSL_straight_text_labels
-4 W
+/PSL_label_angle [ 331.04 339.08 320.20 313.49 340.84 334.15 338.61 292.90 309.05 333.69 
+	289.61 293.27 314.39 339.93 ] def
+/PSL_label_str [
+	(-3000)
+	(-3000)
+	(-2000)
+	(-2000)
+	(-2000)
+	(-1000)
+	(-1000)
+	(-1000)
+	(-1000)
+	(0)
+	(0)
+	(0)
+	(0)
+	(0)
+] def
+/PSL_label_n [ 0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 1 0 1 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 2 
+	0 0 1 0 0 0 0 0 0 0 
+	0 0 0 4 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 2 3 ] def
+/PSL_n_paths 145 def
+/PSL_n_labels 14 def
+/PSL_txt_x [ 1419 3007 2151 1062 1798 2546 1165 1970 554 2263 
+	900 800 1949 586 ] def
+/PSL_txt_y [ 1009 485 1741 1399 2017 1467 3054 1444 2159 1932 
+	3707 3144 1354 2625 ] def
+/PSL_txt_n [ 14 ] def
+PSL_set_label_heights
+2 PSL_straight_path_labels
+V
+4 PSL_straight_path_clip
+PSL_path_pen 0 get cvx exec
 180 1811 M
 4 -5 D
 -4 -4 D
 -4 4 D
-P S
+4 5 D
+S
+PSL_path_pen 1 get cvx exec
 180 1819 M
 13 -13 D
 -13 -14 D
 -13 14 D
-P S
-12 W
+13 13 D
+S
+PSL_path_pen 2 get cvx exec
 180 1827 M
 22 -21 D
 -22 -23 D
 -21 23 D
-P S
-4 W
+21 21 D
+S
+PSL_path_pen 3 get cvx exec
 1432 0 M
 8 8 D
 10 -8 D
 S
+PSL_path_pen 4 get cvx exec
 180 1835 M
 31 -29 D
 -31 -32 D
 -30 32 D
-P S
+30 29 D
+S
+PSL_path_pen 5 get cvx exec
 1422 0 M
 18 18 D
 21 -18 D
 S
+PSL_path_pen 6 get cvx exec
 180 1843 M
 40 -37 D
 -40 -42 D
 -39 42 D
-P S
+39 37 D
+S
+PSL_path_pen 7 get cvx exec
 1413 0 M
 27 28 D
 31 -28 D
 S
+PSL_path_pen 8 get cvx exec
 180 1851 M
 49 -45 D
 -49 -51 D
 -47 51 D
-P S
+47 45 D
+S
+PSL_path_pen 9 get cvx exec
 3060 363 M
 60 -44 D
 0 -1 D
 -60 -31 D
 -14 31 D
-P S
-12 W
+14 45 D
+S
+PSL_path_pen 10 get cvx exec
 1403 0 M
 37 37 D
 42 -37 D
 S
+PSL_path_pen 11 get cvx exec
 420 2085 M
 10 -15 D
 -10 -21 D
 -13 21 D
-P S
+13 15 D
+S
+PSL_path_pen 12 get cvx exec
 180 1859 M
 58 -53 D
 -58 -61 D
 -56 61 D
-P S
+56 53 D
+S
+PSL_path_pen 13 get cvx exec
 300 1505 M
 60 -23 D
 15 -3 D
 -15 -5 D
 -60 -13 D
 -45 18 D
-P S
+45 26 D
+S
+PSL_path_pen 14 get cvx exec
 3060 403 M
 60 -20 D
 9 -65 D
@@ -10139,13 +11393,15 @@ P S
 -13 13 D
 -23 64 D
 15 64 D
-P S
-4 W
+21 21 D
+S
+PSL_path_pen 15 get cvx exec
 97 0 M
 -29 64 D
 -8 7 D
 -60 13 D
 S
+PSL_path_pen 16 get cvx exec
 500 0 M
 -20 16 D
 -60 8 D
@@ -10167,15 +11423,18 @@ S
 -25 -19 D
 -60 -4 D
 S
+PSL_path_pen 17 get cvx exec
 1394 0 M
 46 47 D
 53 -47 D
 S
+PSL_path_pen 18 get cvx exec
 3055 0 M
 5 39 D
 60 21 D
 7 -60 D
 S
+PSL_path_pen 19 get cvx exec
 0 2746 M
 51 -11 D
 9 -16 D
@@ -10184,10 +11443,12 @@ S
 -48 39 D
 -12 8 D
 S
+PSL_path_pen 20 get cvx exec
 0 2291 M
 56 -23 D
 -56 -21 D
 S
+PSL_path_pen 21 get cvx exec
 0 2084 M
 11 -14 D
 18 -66 D
@@ -10210,6 +11471,7 @@ S
 -60 33 D
 -60 -34 D
 S
+PSL_path_pen 22 get cvx exec
 0 1543 M
 51 -64 D
 9 -13 D
@@ -10285,12 +11547,14 @@ S
 -37 64 D
 -21 20 D
 S
+PSL_path_pen 23 get cvx exec
 0 1289 M
 60 21 D
 21 -26 D
 -21 -29 D
 -60 16 D
 S
+PSL_path_pen 24 get cvx exec
 0 1131 M
 60 46 D
 60 -15 D
@@ -10305,6 +11569,7 @@ S
 -19 -22 D
 -41 -27 D
 S
+PSL_path_pen 25 get cvx exec
 300 2238 M
 60 -10 D
 7 -26 D
@@ -10322,27 +11587,37 @@ S
 -7 15 D
 -17 51 D
 -47 66 D
-P S
+4 36 D
+S
+PSL_path_pen 26 get cvx exec
 600 1824 M
 6 -18 D
 -6 -16 D
 -18 16 D
-P S
+18 18 D
+S
+PSL_path_pen 27 get cvx exec
 300 1417 M
 7 -3 D
 -7 -23 D
 -6 23 D
-P S
+6 3 D
+S
+PSL_path_pen 28 get cvx exec
 600 962 M
 6 -2 D
 -6 -8 D
 -31 8 D
-P S
+31 2 D
+S
+PSL_path_pen 29 get cvx exec
 300 553 M
 29 -43 D
 -29 -43 D
 -37 43 D
-P S
+37 43 D
+S
+PSL_path_pen 30 get cvx exec
 3060 431 M
 60 -37 D
 6 -12 D
@@ -10353,7 +11628,9 @@ P S
 -54 55 D
 -4 64 D
 9 64 D
-P S
+49 49 D
+S
+PSL_path_pen 31 get cvx exec
 864 0 M
 -24 28 D
 -36 36 D
@@ -10443,11 +11720,13 @@ P S
 -60 31 D
 -60 24 D
 S
+PSL_path_pen 32 get cvx exec
 1385 0 M
 55 56 D
 60 -40 D
 11 -16 D
 S
+PSL_path_pen 33 get cvx exec
 3013 0 M
 -14 127 D
 -10 64 D
@@ -10466,6 +11745,7 @@ S
 12 -44 D
 8 -64 D
 S
+PSL_path_pen 34 get cvx exec
 0 2759 M
 60 -17 D
 8 -7 D
@@ -10479,6 +11759,7 @@ S
 -34 29 D
 -26 24 D
 S
+PSL_path_pen 35 get cvx exec
 0 2214 M
 60 6 D
 60 36 D
@@ -10509,10 +11790,12 @@ S
 -39 49 D
 -21 32 D
 S
+PSL_path_pen 36 get cvx exec
 0 972 M
 5 -12 D
 -5 -5 D
 S
+PSL_path_pen 37 get cvx exec
 0 583 M
 7 -9 D
 36 -64 D
@@ -10524,33 +11807,44 @@ S
 -30 -31 D
 -30 -22 D
 S
+PSL_path_pen 38 get cvx exec
 180 2483 M
 2 -15 D
 -2 -18 D
 -11 18 D
-P S
+11 15 D
+S
+PSL_path_pen 39 get cvx exec
 120 1886 M
 16 -14 D
 -16 -5 D
 -5 5 D
-P S
+5 14 D
+S
+PSL_path_pen 40 get cvx exec
 420 1647 M
 33 -37 D
 -33 -37 D
 -39 37 D
-P S
+39 37 D
+S
+PSL_path_pen 41 get cvx exec
 600 1028 M
 2 -3 D
 -2 -1 D
 -1 1 D
-P S
+1 3 D
+S
+PSL_path_pen 42 get cvx exec
 660 553 M
 60 -25 D
 16 -18 D
 -16 -27 D
 -60 -23 D
 -46 50 D
-P S
+46 43 D
+S
+PSL_path_pen 43 get cvx exec
 360 284 M
 60 12 D
 33 -42 D
@@ -10559,7 +11853,9 @@ P S
 -60 7 D
 -27 29 D
 -20 63 D
-P S
+47 30 D
+S
+PSL_path_pen 44 get cvx exec
 1168 0 M
 -33 64 D
 -55 44 D
@@ -10581,6 +11877,7 @@ P S
 -38 -30 D
 -32 -34 D
 S
+PSL_path_pen 45 get cvx exec
 1541 0 M
 -41 56 D
 -24 8 D
@@ -10678,12 +11975,14 @@ S
 -17 17 D
 -60 20 D
 S
+PSL_path_pen 46 get cvx exec
 1856 0 M
 -8 64 D
 12 45 D
 16 -45 D
 -6 -64 D
 S
+PSL_path_pen 47 get cvx exec
 2512 0 M
 -9 64 D
 17 4 D
@@ -10692,6 +11991,7 @@ S
 4 -9 D
 8 -55 D
 S
+PSL_path_pen 48 get cvx exec
 2773 0 M
 -13 39 D
 -16 25 D
@@ -10717,6 +12017,7 @@ S
 11 -63 D
 8 -64 D
 S
+PSL_path_pen 49 get cvx exec
 0 2554 M
 33 -20 D
 27 -34 D
@@ -10727,6 +12028,7 @@ S
 -60 -29 D
 -60 7 D
 S
+PSL_path_pen 50 get cvx exec
 0 538 M
 17 -28 D
 29 -64 D
@@ -10734,6 +12036,7 @@ S
 -20 -64 D
 -40 -42 D
 S
+PSL_path_pen 51 get cvx exec
 180 2187 M
 60 -13 D
 33 -38 D
@@ -10741,7 +12044,9 @@ S
 -51 -21 D
 -61 21 D
 -37 66 D
-P S
+38 51 D
+S
+PSL_path_pen 52 get cvx exec
 300 1969 M
 43 -31 D
 17 -18 D
@@ -10752,17 +12057,23 @@ P S
 -42 17 D
 -18 20 D
 -25 46 D
-P S
+25 31 D
+S
+PSL_path_pen 53 get cvx exec
 2220 1556 M
 7 -11 D
 -7 -15 D
 -10 15 D
-P S
+10 11 D
+S
+PSL_path_pen 54 get cvx exec
 1020 1357 M
 10 -8 D
 -10 -48 D
 -21 48 D
-P S
+21 8 D
+S
+PSL_path_pen 55 get cvx exec
 720 1112 M
 60 4 D
 60 -10 D
@@ -10773,47 +12084,65 @@ P S
 -60 -28 D
 -60 9 D
 -26 33 D
-P S
+26 23 D
+S
+PSL_path_pen 56 get cvx exec
 840 647 M
 27 -9 D
 -27 -5 D
 -8 5 D
-P S
+8 9 D
+S
+PSL_path_pen 57 get cvx exec
 960 692 M
 48 -54 D
 -48 -31 D
 -51 31 D
-P S
+51 54 D
+S
+PSL_path_pen 58 get cvx exec
 1260 576 M
 11 -2 D
 -11 -1 D
 -4 1 D
-P S
+4 2 D
+S
+PSL_path_pen 59 get cvx exec
 660 525 M
 26 -15 D
 -26 -17 D
 -16 17 D
-P S
+16 15 D
+S
+PSL_path_pen 60 get cvx exec
 1020 537 M
 21 -27 D
 -21 -22 D
 -15 22 D
-P S
+15 27 D
+S
+PSL_path_pen 61 get cvx exec
 1080 450 M
 6 -4 D
 -6 -5 D
 -3 5 D
-P S
+3 4 D
+S
+PSL_path_pen 62 get cvx exec
 420 271 M
 13 -17 D
 -13 -32 D
 -41 32 D
-P S
+41 17 D
+S
+PSL_path_pen 63 get cvx exec
 1740 228 M
 12 -37 D
 -12 -17 D
 -24 17 D
-P S
+24 37 D
+S
+PSL_path_pen 64 get cvx exec
 1200 128 M
 60 12 D
 74 -13 D
@@ -10821,18 +12150,23 @@ P S
 -60 -43 D
 -60 32 D
 -11 31 D
-P S
+11 1 D
+S
+PSL_path_pen 65 get cvx exec
 2700 147 M
 19 -20 D
 -19 -33 D
 -11 33 D
-P S
+11 20 D
+S
+PSL_path_pen 66 get cvx exec
 2340 72 M
 16 -8 D
 -16 -32 D
 -11 32 D
-P S
-12 W
+11 8 D
+S
+PSL_path_pen 67 get cvx exec
 1581 0 M
 18 64 D
 21 28 D
@@ -10929,6 +12263,7 @@ P S
 -27 26 D
 -60 23 D
 S
+PSL_path_pen 68 get cvx exec
 1830 0 M
 -10 64 D
 2 63 D
@@ -10938,6 +12273,7 @@ S
 6 -31 D
 12 -33 D
 S
+PSL_path_pen 69 get cvx exec
 2242 0 M
 -22 45 D
 -14 19 D
@@ -10997,6 +12333,7 @@ S
 1 -63 D
 9 -64 D
 S
+PSL_path_pen 70 get cvx exec
 0 2515 M
 42 -47 D
 18 -22 D
@@ -11004,32 +12341,42 @@ S
 -47 -40 D
 -60 -5 D
 S
+PSL_path_pen 71 get cvx exec
 0 490 M
 19 -44 D
 17 -64 D
 -31 -64 D
 -5 -5 D
 S
+PSL_path_pen 72 get cvx exec
 2100 1708 M
 9 -33 D
 -9 -5 D
 -4 5 D
-P S
+4 33 D
+S
+PSL_path_pen 73 get cvx exec
 2220 1574 M
 18 -29 D
 -18 -39 D
 -26 39 D
-P S
+26 29 D
+S
+PSL_path_pen 74 get cvx exec
 2460 474 M
 9 -28 D
 -9 -10 D
 -18 10 D
-P S
+18 28 D
+S
+PSL_path_pen 75 get cvx exec
 2340 343 M
 16 -25 D
 -16 -40 D
 -16 40 D
-P S
+16 25 D
+S
+PSL_path_pen 76 get cvx exec
 2760 259 M
 3 -5 D
 57 -34 D
@@ -11038,7 +12385,9 @@ P S
 -60 -31 D
 -45 48 D
 43 63 D
-P S
+2 5 D
+S
+PSL_path_pen 77 get cvx exec
 1200 191 M
 60 55 D
 60 -48 D
@@ -11046,15 +12395,18 @@ P S
 -5 -5 D
 -60 -25 D
 -61 30 D
-P S
+1 0 D
+S
+PSL_path_pen 78 get cvx exec
 2520 208 M
 60 9 D
 19 -26 D
 -19 -14 D
 -60 3 D
 -33 11 D
-P S
-4 W
+33 17 D
+S
+PSL_path_pen 79 get cvx exec
 1635 0 M
 19 64 D
 26 18 D
@@ -11063,6 +12415,7 @@ P S
 60 -16 D
 5 -26 D
 S
+PSL_path_pen 80 get cvx exec
 2018 0 M
 -28 64 D
 -6 63 D
@@ -11073,6 +12426,7 @@ S
 -6 -7 D
 -30 -64 D
 S
+PSL_path_pen 81 get cvx exec
 3177 0 M
 -9 64 D
 12 76 D
@@ -11173,6 +12527,7 @@ S
 -36 35 D
 -60 27 D
 S
+PSL_path_pen 82 get cvx exec
 0 2491 M
 21 -23 D
 39 -49 D
@@ -11180,27 +12535,35 @@ S
 -19 -16 D
 -60 -17 D
 S
+PSL_path_pen 83 get cvx exec
 0 424 M
 12 -42 D
 -12 -23 D
 S
+PSL_path_pen 84 get cvx exec
 1860 2138 M
 4 -2 D
 -4 -9 D
 -6 9 D
-P S
+6 2 D
+S
+PSL_path_pen 85 get cvx exec
 1800 2074 M
 5 -4 D
 -5 -2 D
 -4 2 D
-P S
+4 4 D
+S
+PSL_path_pen 86 get cvx exec
 2100 1773 M
 10 -32 D
 30 -66 D
 -40 -25 D
 -17 25 D
 -12 66 D
-P S
+29 32 D
+S
+PSL_path_pen 87 get cvx exec
 2160 1641 M
 23 -31 D
 37 -17 D
@@ -11209,17 +12572,23 @@ P S
 -42 63 D
 -18 43 D
 -13 22 D
-P S
+13 31 D
+S
+PSL_path_pen 88 get cvx exec
 2280 1205 M
 53 -51 D
 -53 -21 D
 -18 21 D
-P S
+18 51 D
+S
+PSL_path_pen 89 get cvx exec
 2400 781 M
 11 -14 D
 -11 -10 D
 -10 10 D
-P S
+10 14 D
+S
+PSL_path_pen 90 get cvx exec
 2160 659 M
 60 29 D
 51 -50 D
@@ -11228,12 +12597,16 @@ P S
 -60 11 D
 -4 5 D
 -7 64 D
-P S
+11 21 D
+S
+PSL_path_pen 91 get cvx exec
 2760 531 M
 16 -21 D
 -16 -8 D
 -10 8 D
-P S
+10 21 D
+S
+PSL_path_pen 92 get cvx exec
 2100 406 M
 60 14 D
 37 -38 D
@@ -11245,32 +12618,43 @@ P S
 -8 23 D
 -4 64 D
 49 64 D
-P S
+23 24 D
+S
+PSL_path_pen 93 get cvx exec
 2700 398 M
 10 -16 D
 -10 -11 D
 -10 11 D
-P S
+10 16 D
+S
+PSL_path_pen 94 get cvx exec
 1260 208 M
 20 -17 D
 -20 -10 D
 -19 10 D
-P S
+19 17 D
+S
+PSL_path_pen 95 get cvx exec
 1860 228 M
 85 -37 D
 -25 -13 D
 -60 10 D
 -9 3 D
-P S
+9 37 D
+S
+PSL_path_pen 96 get cvx exec
 2760 221 M
 34 -30 D
 -34 -23 D
 -21 23 D
-P S
+21 30 D
+S
+PSL_path_pen 97 get cvx exec
 1677 0 M
 3 9 D
 7 -9 D
 S
+PSL_path_pen 98 get cvx exec
 3196 0 M
 -15 64 D
 52 63 D
@@ -11392,10 +12776,12 @@ S
 -46 44 D
 -60 29 D
 S
+PSL_path_pen 99 get cvx exec
 0 2467 M
 52 -66 D
 -52 -22 D
 S
+PSL_path_pen 100 get cvx exec
 1860 2149 M
 25 -13 D
 -25 -52 D
@@ -11404,22 +12790,30 @@ S
 -38 19 D
 38 37 D
 25 29 D
-P S
+35 13 D
+S
+PSL_path_pen 101 get cvx exec
 2220 1454 M
 40 -40 D
 -40 -50 D
 -49 50 D
-P S
+49 40 D
+S
+PSL_path_pen 102 get cvx exec
 2280 1358 M
 51 -9 D
 -51 -15 D
 -12 15 D
-P S
+12 9 D
+S
+PSL_path_pen 103 get cvx exec
 2340 1333 M
 15 -49 D
 -15 -3 D
 -8 3 D
-P S
+8 49 D
+S
+PSL_path_pen 104 get cvx exec
 3217 0 M
 2 64 D
 21 24 D
@@ -11542,10 +12936,12 @@ P S
 -28 13 D
 -32 17 D
 S
+PSL_path_pen 105 get cvx exec
 0 2431 M
 24 -30 D
 -24 -10 D
 S
+PSL_path_pen 106 get cvx exec
 1800 2208 M
 4 -6 D
 56 -42 D
@@ -11560,18 +12956,23 @@ S
 11 37 D
 41 29 D
 -9 66 D
-P S
+28 6 D
+S
+PSL_path_pen 107 get cvx exec
 2400 1619 M
 4 -9 D
 -4 -15 D
 -18 15 D
-P S
+18 9 D
+S
+PSL_path_pen 108 get cvx exec
 2220 1425 M
 11 -11 D
 -11 -14 D
 -13 14 D
-P S
-12 W
+13 11 D
+S
+PSL_path_pen 109 get cvx exec
 3239 0 M
 10 64 D
 24 63 D
@@ -11690,16 +13091,21 @@ P S
 -68 63 D
 -60 31 D
 S
+PSL_path_pen 110 get cvx exec
 1560 2486 M
 18 -18 D
 -18 -33 D
 -31 33 D
-P S
+31 18 D
+S
+PSL_path_pen 111 get cvx exec
 1620 2418 M
 28 -17 D
 -28 -16 D
 -27 16 D
-P S
+27 17 D
+S
+PSL_path_pen 112 get cvx exec
 1740 2245 M
 60 -19 D
 19 -24 D
@@ -11719,13 +13125,16 @@ P S
 -41 66 D
 2 66 D
 5 66 D
-P S
+37 43 D
+S
+PSL_path_pen 113 get cvx exec
 2400 1635 M
 12 -25 D
 -12 -42 D
 -48 42 D
-P S
-4 W
+48 25 D
+S
+PSL_path_pen 114 get cvx exec
 3265 0 M
 3 64 D
 22 63 D
@@ -11875,6 +13284,7 @@ P S
 -8 6 D
 -60 32 D
 S
+PSL_path_pen 115 get cvx exec
 1260 2947 M
 44 -11 D
 16 -16 D
@@ -11888,7 +13298,9 @@ S
 -28 67 D
 -20 67 D
 -4 67 D
-P S
+57 11 D
+S
+PSL_path_pen 116 get cvx exec
 2340 1632 M
 60 19 D
 20 -41 D
@@ -11896,12 +13308,16 @@ P S
 -5 2 D
 -55 43 D
 -26 22 D
-P S
+26 22 D
+S
+PSL_path_pen 117 get cvx exec
 1980 1549 M
 10 -4 D
 -10 -28 D
 -4 28 D
-P S
+4 4 D
+S
+PSL_path_pen 118 get cvx exec
 3291 0 M
 -4 64 D
 13 38 D
@@ -12082,16 +13498,21 @@ P S
 -23 18 D
 -60 30 D
 S
+PSL_path_pen 119 get cvx exec
 2040 1567 M
 19 -22 D
 -19 -4 D
 -5 4 D
-P S
+5 22 D
+S
+PSL_path_pen 120 get cvx exec
 2340 1553 M
 11 -8 D
 -11 -18 D
 -6 18 D
-P S
+6 8 D
+S
+PSL_path_pen 121 get cvx exec
 3310 0 M
 -5 64 D
 14 63 D
@@ -12285,12 +13706,14 @@ P S
 -38 29 D
 -60 30 D
 S
+PSL_path_pen 122 get cvx exec
 720 3411 M
 2 -1 D
 -2 -1 D
 -1 1 D
-P S
-12 W
+1 1 D
+S
+PSL_path_pen 123 get cvx exec
 3325 0 M
 -6 64 D
 14 63 D
@@ -12492,17 +13915,21 @@ P S
 -55 26 D
 -5 7 D
 S
+PSL_path_pen 124 get cvx exec
 720 3431 M
 30 -21 D
 -30 -17 D
 -15 17 D
-P S
+15 21 D
+S
+PSL_path_pen 125 get cvx exec
 1860 1697 M
 20 -22 D
 -20 -19 D
 -22 19 D
-P S
-4 W
+22 22 D
+S
+PSL_path_pen 126 get cvx exec
 3340 0 M
 -8 64 D
 15 63 D
@@ -12698,31 +14125,42 @@ P S
 -31 15 D
 -29 42 D
 S
+PSL_path_pen 127 get cvx exec
 420 3937 M
 6 -48 D
 -6 -24 D
 -6 24 D
-P S
+6 48 D
+S
+PSL_path_pen 128 get cvx exec
 660 3507 M
 19 -29 D
 -19 -15 D
 -31 15 D
-P S
+31 29 D
+S
+PSL_path_pen 129 get cvx exec
 720 3451 M
 58 -41 D
 -58 -33 D
 -29 33 D
-P S
+29 41 D
+S
+PSL_path_pen 130 get cvx exec
 900 3279 M
 31 -5 D
 -31 -8 D
 -3 8 D
-P S
+3 5 D
+S
+PSL_path_pen 131 get cvx exec
 2760 1234 M
 9 -15 D
 -9 -25 D
 -7 25 D
-P S
+7 15 D
+S
+PSL_path_pen 132 get cvx exec
 3355 0 M
 -9 64 D
 14 60 D
@@ -12731,6 +14169,7 @@ P S
 60 -1 D
 60 -21 D
 S
+PSL_path_pen 133 get cvx exec
 3600 150 M
 -24 41 D
 -36 14 D
@@ -12917,6 +14356,7 @@ S
 -44 67 D
 -9 10 D
 S
+PSL_path_pen 134 get cvx exec
 531 3958 M
 -33 -69 D
 -18 -21 D
@@ -12929,11 +14369,13 @@ S
 38 69 D
 -1 69 D
 S
+PSL_path_pen 135 get cvx exec
 67 3958 M
 -7 -11 D
 -53 -58 D
 -7 -5 D
 S
+PSL_path_pen 136 get cvx exec
 480 3628 M
 60 -2 D
 60 43 D
@@ -12952,12 +14394,16 @@ S
 -19 13 D
 -41 54 D
 -15 14 D
-P S
+15 14 D
+S
+PSL_path_pen 137 get cvx exec
 1920 1614 M
 1 -4 D
 -1 -1 D
 -5 1 D
-P S
+5 4 D
+S
+PSL_path_pen 138 get cvx exec
 3379 0 M
 -17 64 D
 58 13 D
@@ -12965,6 +14411,7 @@ P S
 60 -31 D
 29 -32 D
 S
+PSL_path_pen 139 get cvx exec
 3600 230 M
 -60 12 D
 -60 2 D
@@ -13075,6 +14522,7 @@ S
 64 69 D
 22 69 D
 S
+PSL_path_pen 140 get cvx exec
 0 3748 M
 60 10 D
 60 -5 D
@@ -13193,17 +14641,20 @@ S
 -22 34 D
 -38 43 D
 S
+PSL_path_pen 141 get cvx exec
 720 3564 M
 21 -18 D
 -21 -18 D
 -10 18 D
-P S
-12 W
+10 18 D
+S
+PSL_path_pen 142 get cvx exec
 3407 0 M
 13 29 D
 60 -12 D
 25 -17 D
 S
+PSL_path_pen 143 get cvx exec
 3600 290 M
 -60 5 D
 -60 -4 D
@@ -13294,6 +14745,7 @@ S
 -20 69 D
 -27 69 D
 S
+PSL_path_pen 144 get cvx exec
 360 3364 M
 60 24 D
 60 12 D
@@ -13411,9 +14863,10 @@ S
 35 36 D
 26 68 D
 28 68 D
-P S
+31 22 D
+S
 PSL_cliprestore
-9 PSL_straight_text_labels
+U
 PSL_cliprestore
 %%EndObject
 0 A
@@ -13446,136 +14899,320 @@ clipsave
 3600 0 D
 0 3958 D
 -3600 0 D
-PSL_eoclip N
-/PSL_setlinepen {4 W 0 A [] 0 B} def
+PSL_clip N
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
-/PSL_settxtrgb {0 A} def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-150 F0
-/PSL_m 9 def
-/PSL_txt_x
-1419.10
-3007.46
-2151.24
-1062.44
-1797.75
-2546.47
-1165.37
-1970.41
-1511.95
-9 array astore def
-/PSL_txt_y
-1009.44
-484.78
-1740.98
-1398.72
-2016.71
-1466.51
-3053.67
-1444.23
-1201.85
-9 array astore def
-/PSL_angle
-331.04
-339.08
-320.20
-313.49
-340.84
-334.15
-338.61
-306.02
-335.69
-9 array astore def
-/PSL_str
-(-3000)
-(-3000)
-(-2000)
-(-2000)
-(-2000)
-(-1000)
-(-1000)
-(-1000)
-(-1000)
-9 array astore def
-/PSL_just 6 def
+/PSL_path_pen [
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(12 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+	(4 W 0 A [] 0 B)
+] def
+/PSL_label_justify [ 6 6 6 6 6 6 6 6 6 ] def
+/PSL_label_font [
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+	(0 A 150 F0)
+] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-(-3000) sH /PSL_height edef
-0 PSL_straight_text_labels
-4 W
+/PSL_label_angle [ 331.04 339.08 320.20 313.49 340.84 334.15 338.61 306.02 335.69 ] def
+/PSL_label_str [
+	(-3000)
+	(-3000)
+	(-2000)
+	(-2000)
+	(-2000)
+	(-1000)
+	(-1000)
+	(-1000)
+	(-1000)
+] def
+/PSL_label_n [ 0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 1 0 1 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 2 
+	0 0 1 0 0 0 0 0 0 0 
+	0 0 0 3 1 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 0 0 0 0 0 0 0 0 
+	0 0 ] def
+/PSL_n_paths 162 def
+/PSL_n_labels 9 def
+/PSL_txt_x [ 1419 3007 2151 1062 1798 2546 1165 1970 1512 ] def
+/PSL_txt_y [ 1009 485 1741 1399 2017 1467 3054 1444 1202 ] def
+/PSL_txt_n [ 9 ] def
+PSL_set_label_heights
+2 PSL_straight_path_labels
+V
+4 PSL_straight_path_clip
+PSL_path_pen 0 get cvx exec
 180 1811 M
 4 -5 D
 -4 -4 D
 -4 4 D
-P S
+4 5 D
+S
+PSL_path_pen 1 get cvx exec
 180 1819 M
 13 -13 D
 -13 -14 D
 -13 14 D
-P S
-12 W
+13 13 D
+S
+PSL_path_pen 2 get cvx exec
 180 1827 M
 22 -21 D
 -22 -23 D
 -21 23 D
-P S
-4 W
+21 21 D
+S
+PSL_path_pen 3 get cvx exec
 1432 0 M
 8 8 D
 10 -8 D
 S
+PSL_path_pen 4 get cvx exec
 180 1835 M
 31 -29 D
 -31 -32 D
 -30 32 D
-P S
+30 29 D
+S
+PSL_path_pen 5 get cvx exec
 1422 0 M
 18 18 D
 21 -18 D
 S
+PSL_path_pen 6 get cvx exec
 180 1843 M
 40 -37 D
 -40 -42 D
 -39 42 D
-P S
+39 37 D
+S
+PSL_path_pen 7 get cvx exec
 1413 0 M
 27 28 D
 31 -28 D
 S
+PSL_path_pen 8 get cvx exec
 180 1851 M
 49 -45 D
 -49 -51 D
 -47 51 D
-P S
+47 45 D
+S
+PSL_path_pen 9 get cvx exec
 3060 363 M
 60 -44 D
 0 -1 D
 -60 -31 D
 -14 31 D
-P S
-12 W
+14 45 D
+S
+PSL_path_pen 10 get cvx exec
 1403 0 M
 37 37 D
 42 -37 D
 S
+PSL_path_pen 11 get cvx exec
 420 2085 M
 10 -15 D
 -10 -21 D
 -13 21 D
-P S
+13 15 D
+S
+PSL_path_pen 12 get cvx exec
 180 1859 M
 58 -53 D
 -58 -61 D
 -56 61 D
-P S
+56 53 D
+S
+PSL_path_pen 13 get cvx exec
 300 1505 M
 60 -23 D
 15 -3 D
 -15 -5 D
 -60 -13 D
 -45 18 D
-P S
+45 26 D
+S
+PSL_path_pen 14 get cvx exec
 3060 403 M
 60 -20 D
 9 -65 D
@@ -13585,13 +15222,15 @@ P S
 -13 13 D
 -23 64 D
 15 64 D
-P S
-4 W
+21 21 D
+S
+PSL_path_pen 15 get cvx exec
 97 0 M
 -29 64 D
 -8 7 D
 -60 13 D
 S
+PSL_path_pen 16 get cvx exec
 500 0 M
 -20 16 D
 -60 8 D
@@ -13613,15 +15252,18 @@ S
 -25 -19 D
 -60 -4 D
 S
+PSL_path_pen 17 get cvx exec
 1394 0 M
 46 47 D
 53 -47 D
 S
+PSL_path_pen 18 get cvx exec
 3055 0 M
 5 39 D
 60 21 D
 7 -60 D
 S
+PSL_path_pen 19 get cvx exec
 0 2746 M
 51 -11 D
 9 -16 D
@@ -13630,10 +15272,12 @@ S
 -48 39 D
 -12 8 D
 S
+PSL_path_pen 20 get cvx exec
 0 2291 M
 56 -23 D
 -56 -21 D
 S
+PSL_path_pen 21 get cvx exec
 0 2084 M
 11 -14 D
 18 -66 D
@@ -13656,6 +15300,7 @@ S
 -60 33 D
 -60 -34 D
 S
+PSL_path_pen 22 get cvx exec
 0 1543 M
 51 -64 D
 9 -13 D
@@ -13731,12 +15376,14 @@ S
 -37 64 D
 -21 20 D
 S
+PSL_path_pen 23 get cvx exec
 0 1289 M
 60 21 D
 21 -26 D
 -21 -29 D
 -60 16 D
 S
+PSL_path_pen 24 get cvx exec
 0 1131 M
 60 46 D
 60 -15 D
@@ -13751,6 +15398,7 @@ S
 -19 -22 D
 -41 -27 D
 S
+PSL_path_pen 25 get cvx exec
 300 2238 M
 60 -10 D
 7 -26 D
@@ -13768,27 +15416,37 @@ S
 -7 15 D
 -17 51 D
 -47 66 D
-P S
+4 36 D
+S
+PSL_path_pen 26 get cvx exec
 600 1824 M
 6 -18 D
 -6 -16 D
 -18 16 D
-P S
+18 18 D
+S
+PSL_path_pen 27 get cvx exec
 300 1417 M
 7 -3 D
 -7 -23 D
 -6 23 D
-P S
+6 3 D
+S
+PSL_path_pen 28 get cvx exec
 600 962 M
 6 -2 D
 -6 -8 D
 -31 8 D
-P S
+31 2 D
+S
+PSL_path_pen 29 get cvx exec
 300 553 M
 29 -43 D
 -29 -43 D
 -37 43 D
-P S
+37 43 D
+S
+PSL_path_pen 30 get cvx exec
 3060 431 M
 60 -37 D
 6 -12 D
@@ -13799,7 +15457,9 @@ P S
 -54 55 D
 -4 64 D
 9 64 D
-P S
+49 49 D
+S
+PSL_path_pen 31 get cvx exec
 864 0 M
 -24 28 D
 -36 36 D
@@ -13889,11 +15549,13 @@ P S
 -60 31 D
 -60 24 D
 S
+PSL_path_pen 32 get cvx exec
 1385 0 M
 55 56 D
 60 -40 D
 11 -16 D
 S
+PSL_path_pen 33 get cvx exec
 3013 0 M
 -14 127 D
 -10 64 D
@@ -13912,6 +15574,7 @@ S
 12 -44 D
 8 -64 D
 S
+PSL_path_pen 34 get cvx exec
 0 2759 M
 60 -17 D
 8 -7 D
@@ -13925,6 +15588,7 @@ S
 -34 29 D
 -26 24 D
 S
+PSL_path_pen 35 get cvx exec
 0 2214 M
 60 6 D
 60 36 D
@@ -13955,10 +15619,12 @@ S
 -39 49 D
 -21 32 D
 S
+PSL_path_pen 36 get cvx exec
 0 972 M
 5 -12 D
 -5 -5 D
 S
+PSL_path_pen 37 get cvx exec
 0 583 M
 7 -9 D
 36 -64 D
@@ -13970,33 +15636,44 @@ S
 -30 -31 D
 -30 -22 D
 S
+PSL_path_pen 38 get cvx exec
 180 2483 M
 2 -15 D
 -2 -18 D
 -11 18 D
-P S
+11 15 D
+S
+PSL_path_pen 39 get cvx exec
 120 1886 M
 16 -14 D
 -16 -5 D
 -5 5 D
-P S
+5 14 D
+S
+PSL_path_pen 40 get cvx exec
 420 1647 M
 33 -37 D
 -33 -37 D
 -39 37 D
-P S
+39 37 D
+S
+PSL_path_pen 41 get cvx exec
 600 1028 M
 2 -3 D
 -2 -1 D
 -1 1 D
-P S
+1 3 D
+S
+PSL_path_pen 42 get cvx exec
 660 553 M
 60 -25 D
 16 -18 D
 -16 -27 D
 -60 -23 D
 -46 50 D
-P S
+46 43 D
+S
+PSL_path_pen 43 get cvx exec
 360 284 M
 60 12 D
 33 -42 D
@@ -14005,7 +15682,9 @@ P S
 -60 7 D
 -27 29 D
 -20 63 D
-P S
+47 30 D
+S
+PSL_path_pen 44 get cvx exec
 1168 0 M
 -33 64 D
 -55 44 D
@@ -14027,6 +15706,7 @@ P S
 -38 -30 D
 -32 -34 D
 S
+PSL_path_pen 45 get cvx exec
 1541 0 M
 -41 56 D
 -24 8 D
@@ -14124,12 +15804,14 @@ S
 -17 17 D
 -60 20 D
 S
+PSL_path_pen 46 get cvx exec
 1856 0 M
 -8 64 D
 12 45 D
 16 -45 D
 -6 -64 D
 S
+PSL_path_pen 47 get cvx exec
 2512 0 M
 -9 64 D
 17 4 D
@@ -14138,6 +15820,7 @@ S
 4 -9 D
 8 -55 D
 S
+PSL_path_pen 48 get cvx exec
 2773 0 M
 -13 39 D
 -16 25 D
@@ -14163,6 +15846,7 @@ S
 11 -63 D
 8 -64 D
 S
+PSL_path_pen 49 get cvx exec
 0 2554 M
 33 -20 D
 27 -34 D
@@ -14173,6 +15857,7 @@ S
 -60 -29 D
 -60 7 D
 S
+PSL_path_pen 50 get cvx exec
 0 538 M
 17 -28 D
 29 -64 D
@@ -14180,6 +15865,7 @@ S
 -20 -64 D
 -40 -42 D
 S
+PSL_path_pen 51 get cvx exec
 180 2187 M
 60 -13 D
 33 -38 D
@@ -14187,7 +15873,9 @@ S
 -51 -21 D
 -61 21 D
 -37 66 D
-P S
+38 51 D
+S
+PSL_path_pen 52 get cvx exec
 300 1969 M
 43 -31 D
 17 -18 D
@@ -14198,17 +15886,23 @@ P S
 -42 17 D
 -18 20 D
 -25 46 D
-P S
+25 31 D
+S
+PSL_path_pen 53 get cvx exec
 2220 1556 M
 7 -11 D
 -7 -15 D
 -10 15 D
-P S
+10 11 D
+S
+PSL_path_pen 54 get cvx exec
 1020 1357 M
 10 -8 D
 -10 -48 D
 -21 48 D
-P S
+21 8 D
+S
+PSL_path_pen 55 get cvx exec
 720 1112 M
 60 4 D
 60 -10 D
@@ -14219,47 +15913,65 @@ P S
 -60 -28 D
 -60 9 D
 -26 33 D
-P S
+26 23 D
+S
+PSL_path_pen 56 get cvx exec
 840 647 M
 27 -9 D
 -27 -5 D
 -8 5 D
-P S
+8 9 D
+S
+PSL_path_pen 57 get cvx exec
 960 692 M
 48 -54 D
 -48 -31 D
 -51 31 D
-P S
+51 54 D
+S
+PSL_path_pen 58 get cvx exec
 1260 576 M
 11 -2 D
 -11 -1 D
 -4 1 D
-P S
+4 2 D
+S
+PSL_path_pen 59 get cvx exec
 660 525 M
 26 -15 D
 -26 -17 D
 -16 17 D
-P S
+16 15 D
+S
+PSL_path_pen 60 get cvx exec
 1020 537 M
 21 -27 D
 -21 -22 D
 -15 22 D
-P S
+15 27 D
+S
+PSL_path_pen 61 get cvx exec
 1080 450 M
 6 -4 D
 -6 -5 D
 -3 5 D
-P S
+3 4 D
+S
+PSL_path_pen 62 get cvx exec
 420 271 M
 13 -17 D
 -13 -32 D
 -41 32 D
-P S
+41 17 D
+S
+PSL_path_pen 63 get cvx exec
 1740 228 M
 12 -37 D
 -12 -17 D
 -24 17 D
-P S
+24 37 D
+S
+PSL_path_pen 64 get cvx exec
 1200 128 M
 60 12 D
 74 -13 D
@@ -14267,18 +15979,23 @@ P S
 -60 -43 D
 -60 32 D
 -11 31 D
-P S
+11 1 D
+S
+PSL_path_pen 65 get cvx exec
 2700 147 M
 19 -20 D
 -19 -33 D
 -11 33 D
-P S
+11 20 D
+S
+PSL_path_pen 66 get cvx exec
 2340 72 M
 16 -8 D
 -16 -32 D
 -11 32 D
-P S
-12 W
+11 8 D
+S
+PSL_path_pen 67 get cvx exec
 1581 0 M
 18 64 D
 21 28 D
@@ -14375,6 +16092,7 @@ P S
 -27 26 D
 -60 23 D
 S
+PSL_path_pen 68 get cvx exec
 1830 0 M
 -10 64 D
 2 63 D
@@ -14384,6 +16102,7 @@ S
 6 -31 D
 12 -33 D
 S
+PSL_path_pen 69 get cvx exec
 2242 0 M
 -22 45 D
 -14 19 D
@@ -14443,6 +16162,7 @@ S
 1 -63 D
 9 -64 D
 S
+PSL_path_pen 70 get cvx exec
 0 2515 M
 42 -47 D
 18 -22 D
@@ -14450,32 +16170,42 @@ S
 -47 -40 D
 -60 -5 D
 S
+PSL_path_pen 71 get cvx exec
 0 490 M
 19 -44 D
 17 -64 D
 -31 -64 D
 -5 -5 D
 S
+PSL_path_pen 72 get cvx exec
 2100 1708 M
 9 -33 D
 -9 -5 D
 -4 5 D
-P S
+4 33 D
+S
+PSL_path_pen 73 get cvx exec
 2220 1574 M
 18 -29 D
 -18 -39 D
 -26 39 D
-P S
+26 29 D
+S
+PSL_path_pen 74 get cvx exec
 2460 474 M
 9 -28 D
 -9 -10 D
 -18 10 D
-P S
+18 28 D
+S
+PSL_path_pen 75 get cvx exec
 2340 343 M
 16 -25 D
 -16 -40 D
 -16 40 D
-P S
+16 25 D
+S
+PSL_path_pen 76 get cvx exec
 2760 259 M
 3 -5 D
 57 -34 D
@@ -14484,7 +16214,9 @@ P S
 -60 -31 D
 -45 48 D
 43 63 D
-P S
+2 5 D
+S
+PSL_path_pen 77 get cvx exec
 1200 191 M
 60 55 D
 60 -48 D
@@ -14492,15 +16224,18 @@ P S
 -5 -5 D
 -60 -25 D
 -61 30 D
-P S
+1 0 D
+S
+PSL_path_pen 78 get cvx exec
 2520 208 M
 60 9 D
 19 -26 D
 -19 -14 D
 -60 3 D
 -33 11 D
-P S
-4 W
+33 17 D
+S
+PSL_path_pen 79 get cvx exec
 1635 0 M
 19 64 D
 26 18 D
@@ -14509,6 +16244,7 @@ P S
 60 -16 D
 5 -26 D
 S
+PSL_path_pen 80 get cvx exec
 2018 0 M
 -28 64 D
 -6 63 D
@@ -14519,6 +16255,7 @@ S
 -6 -7 D
 -30 -64 D
 S
+PSL_path_pen 81 get cvx exec
 3177 0 M
 -9 64 D
 12 76 D
@@ -14619,6 +16356,7 @@ S
 -36 35 D
 -60 27 D
 S
+PSL_path_pen 82 get cvx exec
 0 2491 M
 21 -23 D
 39 -49 D
@@ -14626,27 +16364,35 @@ S
 -19 -16 D
 -60 -17 D
 S
+PSL_path_pen 83 get cvx exec
 0 424 M
 12 -42 D
 -12 -23 D
 S
+PSL_path_pen 84 get cvx exec
 1860 2138 M
 4 -2 D
 -4 -9 D
 -6 9 D
-P S
+6 2 D
+S
+PSL_path_pen 85 get cvx exec
 1800 2074 M
 5 -4 D
 -5 -2 D
 -4 2 D
-P S
+4 4 D
+S
+PSL_path_pen 86 get cvx exec
 2100 1773 M
 10 -32 D
 30 -66 D
 -40 -25 D
 -17 25 D
 -12 66 D
-P S
+29 32 D
+S
+PSL_path_pen 87 get cvx exec
 2160 1641 M
 23 -31 D
 37 -17 D
@@ -14655,17 +16401,23 @@ P S
 -42 63 D
 -18 43 D
 -13 22 D
-P S
+13 31 D
+S
+PSL_path_pen 88 get cvx exec
 2280 1205 M
 53 -51 D
 -53 -21 D
 -18 21 D
-P S
+18 51 D
+S
+PSL_path_pen 89 get cvx exec
 2400 781 M
 11 -14 D
 -11 -10 D
 -10 10 D
-P S
+10 14 D
+S
+PSL_path_pen 90 get cvx exec
 2160 659 M
 60 29 D
 51 -50 D
@@ -14674,12 +16426,16 @@ P S
 -60 11 D
 -4 5 D
 -7 64 D
-P S
+11 21 D
+S
+PSL_path_pen 91 get cvx exec
 2760 531 M
 16 -21 D
 -16 -8 D
 -10 8 D
-P S
+10 21 D
+S
+PSL_path_pen 92 get cvx exec
 2100 406 M
 60 14 D
 37 -38 D
@@ -14691,32 +16447,43 @@ P S
 -8 23 D
 -4 64 D
 49 64 D
-P S
+23 24 D
+S
+PSL_path_pen 93 get cvx exec
 2700 398 M
 10 -16 D
 -10 -11 D
 -10 11 D
-P S
+10 16 D
+S
+PSL_path_pen 94 get cvx exec
 1260 208 M
 20 -17 D
 -20 -10 D
 -19 10 D
-P S
+19 17 D
+S
+PSL_path_pen 95 get cvx exec
 1860 228 M
 85 -37 D
 -25 -13 D
 -60 10 D
 -9 3 D
-P S
+9 37 D
+S
+PSL_path_pen 96 get cvx exec
 2760 221 M
 34 -30 D
 -34 -23 D
 -21 23 D
-P S
+21 30 D
+S
+PSL_path_pen 97 get cvx exec
 1677 0 M
 3 9 D
 7 -9 D
 S
+PSL_path_pen 98 get cvx exec
 3196 0 M
 -15 64 D
 52 63 D
@@ -14838,10 +16605,12 @@ S
 -46 44 D
 -60 29 D
 S
+PSL_path_pen 99 get cvx exec
 0 2467 M
 52 -66 D
 -52 -22 D
 S
+PSL_path_pen 100 get cvx exec
 1860 2149 M
 25 -13 D
 -25 -52 D
@@ -14850,22 +16619,30 @@ S
 -38 19 D
 38 37 D
 25 29 D
-P S
+35 13 D
+S
+PSL_path_pen 101 get cvx exec
 2220 1454 M
 40 -40 D
 -40 -50 D
 -49 50 D
-P S
+49 40 D
+S
+PSL_path_pen 102 get cvx exec
 2280 1358 M
 51 -9 D
 -51 -15 D
 -12 15 D
-P S
+12 9 D
+S
+PSL_path_pen 103 get cvx exec
 2340 1333 M
 15 -49 D
 -15 -3 D
 -8 3 D
-P S
+8 49 D
+S
+PSL_path_pen 104 get cvx exec
 3217 0 M
 2 64 D
 21 24 D
@@ -14988,10 +16765,12 @@ P S
 -28 13 D
 -32 17 D
 S
+PSL_path_pen 105 get cvx exec
 0 2431 M
 24 -30 D
 -24 -10 D
 S
+PSL_path_pen 106 get cvx exec
 1800 2208 M
 4 -6 D
 56 -42 D
@@ -15006,18 +16785,23 @@ S
 11 37 D
 41 29 D
 -9 66 D
-P S
+28 6 D
+S
+PSL_path_pen 107 get cvx exec
 2400 1619 M
 4 -9 D
 -4 -15 D
 -18 15 D
-P S
+18 9 D
+S
+PSL_path_pen 108 get cvx exec
 2220 1425 M
 11 -11 D
 -11 -14 D
 -13 14 D
-P S
-12 W
+13 11 D
+S
+PSL_path_pen 109 get cvx exec
 3239 0 M
 10 64 D
 24 63 D
@@ -15136,16 +16920,21 @@ P S
 -68 63 D
 -60 31 D
 S
+PSL_path_pen 110 get cvx exec
 1560 2486 M
 18 -18 D
 -18 -33 D
 -31 33 D
-P S
+31 18 D
+S
+PSL_path_pen 111 get cvx exec
 1620 2418 M
 28 -17 D
 -28 -16 D
 -27 16 D
-P S
+27 17 D
+S
+PSL_path_pen 112 get cvx exec
 1740 2245 M
 60 -19 D
 19 -24 D
@@ -15165,13 +16954,16 @@ P S
 -41 66 D
 2 66 D
 5 66 D
-P S
+37 43 D
+S
+PSL_path_pen 113 get cvx exec
 2400 1635 M
 12 -25 D
 -12 -42 D
 -48 42 D
-P S
-4 W
+48 25 D
+S
+PSL_path_pen 114 get cvx exec
 3265 0 M
 3 64 D
 22 63 D
@@ -15321,6 +17113,7 @@ P S
 -8 6 D
 -60 32 D
 S
+PSL_path_pen 115 get cvx exec
 1260 2947 M
 44 -11 D
 16 -16 D
@@ -15334,7 +17127,9 @@ S
 -28 67 D
 -20 67 D
 -4 67 D
-P S
+57 11 D
+S
+PSL_path_pen 116 get cvx exec
 2340 1632 M
 60 19 D
 20 -41 D
@@ -15342,12 +17137,16 @@ P S
 -5 2 D
 -55 43 D
 -26 22 D
-P S
+26 22 D
+S
+PSL_path_pen 117 get cvx exec
 1980 1549 M
 10 -4 D
 -10 -28 D
 -4 28 D
-P S
+4 4 D
+S
+PSL_path_pen 118 get cvx exec
 3291 0 M
 -4 64 D
 13 38 D
@@ -15528,16 +17327,21 @@ P S
 -23 18 D
 -60 30 D
 S
+PSL_path_pen 119 get cvx exec
 2040 1567 M
 19 -22 D
 -19 -4 D
 -5 4 D
-P S
+5 22 D
+S
+PSL_path_pen 120 get cvx exec
 2340 1553 M
 11 -8 D
 -11 -18 D
 -6 18 D
-P S
+6 8 D
+S
+PSL_path_pen 121 get cvx exec
 3310 0 M
 -5 64 D
 14 63 D
@@ -15731,12 +17535,14 @@ P S
 -38 29 D
 -60 30 D
 S
+PSL_path_pen 122 get cvx exec
 720 3411 M
 2 -1 D
 -2 -1 D
 -1 1 D
-P S
-12 W
+1 1 D
+S
+PSL_path_pen 123 get cvx exec
 3325 0 M
 -6 64 D
 14 63 D
@@ -15876,6 +17682,7 @@ P S
 17 -21 D
 33 -65 D
 S
+PSL_path_pen 124 get cvx exec
 0 2876 M
 5 -7 D
 55 -26 D
@@ -15937,17 +17744,21 @@ S
 63 10 D
 37 65 D
 S
+PSL_path_pen 125 get cvx exec
 720 3431 M
 30 -21 D
 -30 -17 D
 -15 17 D
-P S
+15 21 D
+S
+PSL_path_pen 126 get cvx exec
 1860 1697 M
 20 -22 D
 -20 -19 D
 -22 19 D
-P S
-4 W
+22 22 D
+S
+PSL_path_pen 127 get cvx exec
 3340 0 M
 -8 64 D
 15 63 D
@@ -16080,6 +17891,7 @@ P S
 63 -64 D
 31 -65 D
 S
+PSL_path_pen 128 get cvx exec
 0 2911 M
 29 -42 D
 31 -15 D
@@ -16142,31 +17954,42 @@ S
 60 18 D
 27 45 D
 S
+PSL_path_pen 129 get cvx exec
 420 3937 M
 6 -48 D
 -6 -24 D
 -6 24 D
-P S
+6 48 D
+S
+PSL_path_pen 130 get cvx exec
 660 3507 M
 19 -29 D
 -19 -15 D
 -31 15 D
-P S
+31 29 D
+S
+PSL_path_pen 131 get cvx exec
 720 3451 M
 58 -41 D
 -58 -33 D
 -29 33 D
-P S
+29 41 D
+S
+PSL_path_pen 132 get cvx exec
 900 3279 M
 31 -5 D
 -31 -8 D
 -3 8 D
-P S
+3 5 D
+S
+PSL_path_pen 133 get cvx exec
 2760 1234 M
 9 -15 D
 -9 -25 D
 -7 25 D
-P S
+7 15 D
+S
+PSL_path_pen 134 get cvx exec
 3355 0 M
 -9 64 D
 14 60 D
@@ -16175,6 +17998,7 @@ P S
 60 -1 D
 60 -21 D
 S
+PSL_path_pen 135 get cvx exec
 3600 150 M
 -24 41 D
 -36 14 D
@@ -16241,6 +18065,7 @@ S
 -60 63 D
 -22 39 D
 S
+PSL_path_pen 136 get cvx exec
 531 3958 M
 -33 -69 D
 -18 -21 D
@@ -16253,11 +18078,13 @@ S
 38 69 D
 -1 69 D
 S
+PSL_path_pen 137 get cvx exec
 67 3958 M
 -7 -11 D
 -53 -58 D
 -7 -5 D
 S
+PSL_path_pen 138 get cvx exec
 0 2946 M
 9 -10 D
 44 -67 D
@@ -16317,6 +18144,7 @@ S
 60 12 D
 14 23 D
 S
+PSL_path_pen 139 get cvx exec
 480 3628 M
 60 -2 D
 60 43 D
@@ -16335,7 +18163,9 @@ S
 -19 13 D
 -41 54 D
 -15 14 D
-P S
+15 14 D
+S
+PSL_path_pen 140 get cvx exec
 1200 2668 M
 -60 59 D
 -15 8 D
@@ -16365,6 +18195,7 @@ P S
 22 -26 D
 38 -51 D
 S
+PSL_path_pen 141 get cvx exec
 1260 2618 M
 24 -17 D
 37 -67 D
@@ -16397,14 +18228,18 @@ S
 20 -26 D
 18 -39 D
 S
+PSL_path_pen 142 get cvx exec
 1920 1614 M
 1 -4 D
 -1 -1 D
 -5 1 D
-P S
+5 4 D
+S
+PSL_path_pen 143 get cvx exec
 3569 0 M
 -29 32 D
 S
+PSL_path_pen 144 get cvx exec
 3600 230 M
 -60 12 D
 -60 2 D
@@ -16461,6 +18296,7 @@ S
 -60 22 D
 -27 21 D
 S
+PSL_path_pen 145 get cvx exec
 620 3958 M
 -22 -69 D
 -64 -69 D
@@ -16482,6 +18318,7 @@ S
 11 -5 D
 60 -13 D
 S
+PSL_path_pen 146 get cvx exec
 0 3748 M
 60 10 D
 60 -5 D
@@ -16503,6 +18340,7 @@ S
 -11 -67 D
 -5 -48 D
 S
+PSL_path_pen 147 get cvx exec
 0 2979 M
 38 -43 D
 22 -34 D
@@ -16511,11 +18349,14 @@ S
 50 -51 D
 10 -8 D
 S
+PSL_path_pen 148 get cvx exec
 720 3564 M
 21 -18 D
 -21 -18 D
 -10 18 D
-P S
+10 18 D
+S
+PSL_path_pen 149 get cvx exec
 1081 3274 M
 59 -71 D
 60 -25 D
@@ -16524,6 +18365,7 @@ P S
 68 -45 D
 60 -26 D
 S
+PSL_path_pen 150 get cvx exec
 840 3060 M
 20 -56 D
 40 -70 D
@@ -16532,17 +18374,21 @@ S
 53 -50 D
 28 -17 D
 S
+PSL_path_pen 151 get cvx exec
 1555 2936 M
 5 -9 D
 60 -74 D
 S
+PSL_path_pen 152 get cvx exec
 1140 2689 M
 22 -21 D
 S
+PSL_path_pen 153 get cvx exec
 1674 2735 M
 6 -11 D
 60 -64 D
 S
+PSL_path_pen 154 get cvx exec
 298 2668 M
 62 -70 D
 69 -64 D
@@ -16583,11 +18429,13 @@ S
 51 -49 D
 9 -17 D
 S
+PSL_path_pen 155 get cvx exec
 1840 2601 M
 20 -28 D
 42 -39 D
 18 -94 D
 S
+PSL_path_pen 156 get cvx exec
 1380 2411 M
 14 -10 D
 36 -66 D
@@ -16603,10 +18451,12 @@ S
 60 -12 D
 20 -21 D
 S
+PSL_path_pen 157 get cvx exec
 1920 2268 M
 -6 67 D
 6 40 D
 S
+PSL_path_pen 158 get cvx exec
 1975 2202 M
 5 -3 D
 52 -63 D
@@ -16617,6 +18467,7 @@ S
 5 -9 D
 60 -77 D
 S
+PSL_path_pen 159 get cvx exec
 1609 1806 M
 11 -27 D
 60 -21 D
@@ -16632,42 +18483,45 @@ S
 47 -60 D
 2 -5 D
 S
+PSL_path_pen 160 get cvx exec
 1782 1154 M
 18 -21 D
 60 14 D
 60 1 D
 60 6 D
 S
+PSL_path_pen 161 get cvx exec
 3362 64 M
 58 13 D
 59 -13 D
 S
 PSL_cliprestore
-9 PSL_straight_text_labels
+U
 PSL_cliprestore
+25 W
 8 W
-360 0 M 0 -83 D S
-360 3958 M 0 83 D S
-1080 0 M 0 -83 D S
-1080 3958 M 0 83 D S
-1800 0 M 0 -83 D S
-1800 3958 M 0 83 D S
-2520 0 M 0 -83 D S
-2520 3958 M 0 83 D S
-3240 0 M 0 -83 D S
-3240 3958 M 0 83 D S
-0 0 M -83 0 D S
-3600 0 M 83 0 D S
-0 767 M -83 0 D S
-3600 767 M 83 0 D S
-0 1545 M -83 0 D S
-3600 1545 M 83 0 D S
-0 2335 M -83 0 D S
-3600 2335 M 83 0 D S
-0 3139 M -83 0 D S
-3600 3139 M 83 0 D S
-0 3958 M -83 0 D S
-3600 3958 M 83 0 D S
+N 360 0 M 0 -83 D S
+N 360 3958 M 0 83 D S
+N 1080 0 M 0 -83 D S
+N 1080 3958 M 0 83 D S
+N 1800 0 M 0 -83 D S
+N 1800 3958 M 0 83 D S
+N 2520 0 M 0 -83 D S
+N 2520 3958 M 0 83 D S
+N 3240 0 M 0 -83 D S
+N 3240 3958 M 0 83 D S
+N 0 0 M -83 0 D S
+N 3600 0 M 83 0 D S
+N 0 767 M -83 0 D S
+N 3600 767 M 83 0 D S
+N 0 1545 M -83 0 D S
+N 3600 1545 M 83 0 D S
+N 0 2335 M -83 0 D S
+N 3600 2335 M 83 0 D S
+N 0 3139 M -83 0 D S
+N 3600 3139 M 83 0 D S
+N 0 3958 M -83 0 D S
+N 3600 3958 M 83 0 D S
 360 -167 M 200 F0
 (-114Ê) tc Z
 1080 -167 M (-112Ê) tc Z
@@ -16681,47 +18535,47 @@ PSL_cliprestore
 -167 3139 M (28Ê) mr Z
 -167 3958 M (30Ê) mr Z
 83 W
--42 0 M 0 767 D S
-3642 0 M 0 767 D S
+N -42 0 M 0 767 D S
+N 3642 0 M 0 767 D S
 1 A
--42 767 M 0 778 D S
-3642 767 M 0 778 D S
+N -42 767 M 0 778 D S
+N 3642 767 M 0 778 D S
 0 A
--42 1545 M 0 790 D S
-3642 1545 M 0 790 D S
+N -42 1545 M 0 790 D S
+N 3642 1545 M 0 790 D S
 1 A
--42 2335 M 0 804 D S
-3642 2335 M 0 804 D S
+N -42 2335 M 0 804 D S
+N 3642 2335 M 0 804 D S
 0 A
--42 3139 M 0 819 D S
-3642 3139 M 0 819 D S
-0 -42 M 360 0 D S
-0 3999 M 360 0 D S
+N -42 3139 M 0 819 D S
+N 3642 3139 M 0 819 D S
+N 0 -42 M 360 0 D S
+N 0 3999 M 360 0 D S
 1 A
-360 -42 M 720 0 D S
-360 3999 M 720 0 D S
+N 360 -42 M 720 0 D S
+N 360 3999 M 720 0 D S
 0 A
-1080 -42 M 720 0 D S
-1080 3999 M 720 0 D S
+N 1080 -42 M 720 0 D S
+N 1080 3999 M 720 0 D S
 1 A
-1800 -42 M 720 0 D S
-1800 3999 M 720 0 D S
+N 1800 -42 M 720 0 D S
+N 1800 3999 M 720 0 D S
 0 A
-2520 -42 M 720 0 D S
-2520 3999 M 720 0 D S
+N 2520 -42 M 720 0 D S
+N 2520 3999 M 720 0 D S
 1 A
-3240 -42 M 360 0 D S
-3240 3999 M 360 0 D S
+N 3240 -42 M 360 0 D S
+N 3240 3999 M 360 0 D S
 0 A
 8 W
--83 0 M 3766 0 D S
--83 -83 M 3766 0 D S
-3600 -83 M 0 4124 D S
-3683 -83 M 0 4124 D S
-3683 3958 M -3766 0 D S
-3683 4041 M -3766 0 D S
-0 4041 M 0 -4124 D S
--83 4041 M 0 -4124 D S
+N -83 0 M 3766 0 D S
+N -83 -83 M 3766 0 D S
+N 3600 -83 M 0 4124 D S
+N 3683 -83 M 0 4124 D S
+N 3683 3958 M -3766 0 D S
+N 3683 4041 M -3766 0 D S
+N 0 4041 M 0 -4124 D S
+N -83 4041 M 0 -4124 D S
 %%EndObject
 0 A
 FQ
@@ -17737,7 +19591,7 @@ clipsave
 3600 0 D
 0 3958 D
 -3600 0 D
-PSL_eoclip N
+PSL_clip N
 17 W
 V
 O1

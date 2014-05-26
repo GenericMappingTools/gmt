@@ -34,13 +34,10 @@
 
 #define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbcdfghipstxy" GMT_OPT("EZMm")
 
-#define CLIP_STEXT	-1	/* Undo one level of textclipping and plot current straight text */
-#define CLIP_CTEXT	-2	/* Undo one level of textclipping and plot current curved text */
-
 struct PSCLIP_CTRL {
 	struct C {	/* -C */
 		bool active;
-		int n;	/* Number of levels to undo [1], or CLIP_STEXT, or CLIP_CTEXT */
+		int n;	/* Number of levels to undo [1] */
 	} C;
 	struct N {	/* -N */
 		bool active;
@@ -70,7 +67,7 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psclip -C[s|c|a|<n>] [-K] [-O]  OR\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psclip -C[a|<n>] [-K] [-O]  OR\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tpsclip <table> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-N] [-O] [-P] [-T] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT);
@@ -78,10 +75,8 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-path; no file is needed.  -R, -J are not required (unless -B is used).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Terminate polygon clipping; append how many clip levels to restore or a for all [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to plot text previously used to build a curved clip path set (restores 1 level).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to plot text previously used to build a straight-text clip path set (restores 1 level).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-paths; no file is needed.  -R, -J are not required (unless -B is used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Terminates all clipping; optionally append how many clip levels to restore [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -120,17 +115,15 @@ int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT
 
 			case 'C':	/* Turn clipping off */
 				Ctrl->C.active = true;
-				Ctrl->C.n = 1;
+				Ctrl->C.n = PSL_ALL_CLIP;
 				switch (opt->arg[0]) {
-					case 's': Ctrl->C.n = CLIP_STEXT; break;
-					case 'c': Ctrl->C.n = CLIP_CTEXT; break;
 					case 'a': Ctrl->C.n = PSL_ALL_CLIP; break;
-					case '\0': Ctrl->C.n = 1; break;	/* Default anyway */
+					case '\0': Ctrl->C.n = PSL_ALL_CLIP; break;	/* Default anyway */
 					default:
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[s|c|a|<n>]\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[<n>]\n");
 							n_errors++;
 						}
 						break;
@@ -169,23 +162,13 @@ int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT
 void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n)
 {
 	switch (n) {
-		case CLIP_STEXT:
-			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
-			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed straight text\n");
-			break;
-		case CLIP_CTEXT:
-			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
-			PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed curved text\n");
-			break;
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore ALL polygon clip levels\n");
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore ALL clip levels\n");
 			break;
 		default:
 			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore %d polygon clip levels\n", n);
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore %d clip levels\n", n);
 			break;
 	}
 }
