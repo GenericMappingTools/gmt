@@ -60,6 +60,9 @@ The fastest way to get up and running is this:
 2. In your .bashrc or .[t]csrh or wherever you are maintaining your PATH
     or path variable, remove any directories you have added that contain
     GMT, and add the new path $HOME/this\_gmt/bin (might be $home for csh users).
+    Make sure this path appears before any others that might contain a GMT
+    installation, such as those used by package managers (e.g., /sw/bin for
+    fink, /opt/local/bin for Macports, etc.).
 
 3. Make the new path take effect (quit/restart terminal, logout/login, etc).
 
