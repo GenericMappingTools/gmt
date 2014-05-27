@@ -6925,6 +6925,7 @@ uint64_t GMT_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 			case GMT_VANGRINTEN:
 				do_circle = GMT->current.map.is_world;
 			case GMT_LAMB_AZ_EQ:
+			case GMT_AZ_EQDIST:
 			case GMT_ORTHO:
 			case GMT_GNOMONIC:
 			case GMT_STEREO:
@@ -6958,14 +6959,6 @@ uint64_t GMT_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 						work_x[i] = GMT->current.proj.r * (1.0 + c);
 						work_y[i] = GMT->current.proj.r * (1.0 + s);
 					}
-				}
-				break;
-			case GMT_AZ_EQDIST:
-				da = TWO_PI / np;
-				for (i = 0; i < np; i++) {
-					sincos (i * da, &s, &c);
-					work_x[i] = GMT->current.proj.r * (1.0 + c);
-					work_y[i] = GMT->current.proj.r * (1.0 + s);
 				}
 				break;
 			case GMT_MOLLWEIDE:
