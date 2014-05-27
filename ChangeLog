@@ -3,6 +3,11 @@
 -----------------------------------------------------------------------------------------
 
 2014-05-26	pwessel
+	* gmt_map.c:		The map region clip path for -JE/e was hardwired to a full
+				circle and did not care about -R setting.
+				When -R...r and -Je?E was given the search for enclosing
+				geographic boundaries failed when either the S or N pole
+				was the projection's antipole.
 	* gmt_plot.c, pslib.?, pstext.c, psclip.c:	New handling of PSL clipping for quoted text
 				lines (contours) and text.  No more different clip off types
 				in psclip.

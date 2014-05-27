@@ -4858,6 +4858,7 @@ bool gmt_map_init_polyconic (struct GMT_CTRL *GMT) {
 void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north) {
 	double dx, dy, w, e, s, n, x, y, lat, *lon = NULL;
 	unsigned int i, j, k;
+	bool test_pole[2] = {true, true};
 
 	/* Search for extreme lon/lat coordinates by matching along the rectangular boundary */
 
@@ -4885,8 +4886,14 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 
 	/* Then check if one or both poles are inside map; then the above wont be correct */
 
-	if (!GMT_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
-	if (!GMT_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
+	if (GMT->current.proj.projection == GMT_AZ_EQDIST) {	/* Must be careful since if a pole equals an antipode we get NaNs as coordinates */
+		GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, -90.0, &x, &y);
+		if (GMT_is_dnan (x) && GMT_is_dnan (y)) test_pole[0] = false;
+		GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, +90.0, &x, &y);
+		if (GMT_is_dnan (x) && GMT_is_dnan (y)) test_pole[1] = false;
+	}
+	if (test_pole[0] && !GMT_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
+	if (test_pole[1] && !GMT_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
 
 	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
 	n += 0.1;	if (n > 90.0) n = 90.0;		/* But dont go crazy beyond the pole */
@@ -6947,6 +6954,7 @@ uint64_t GMT_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 			case GMT_VANGRINTEN:
 				do_circle = GMT->current.map.is_world;
 			case GMT_LAMB_AZ_EQ:
+			case GMT_AZ_EQDIST:
 			case GMT_ORTHO:
 			case GMT_GNOMONIC:
 			case GMT_STEREO:
@@ -6980,14 +6988,6 @@ uint64_t GMT_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 						work_x[i] = GMT->current.proj.r * (1.0 + c);
 						work_y[i] = GMT->current.proj.r * (1.0 + s);
 					}
-				}
-				break;
-			case GMT_AZ_EQDIST:
-				da = TWO_PI / np;
-				for (i = 0; i < np; i++) {
-					sincos (i * da, &s, &c);
-					work_x[i] = GMT->current.proj.r * (1.0 + c);
-					work_y[i] = GMT->current.proj.r * (1.0 + s);
 				}
 				break;
 			case GMT_MOLLWEIDE:
