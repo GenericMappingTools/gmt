@@ -615,7 +615,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
 	
-	size_t n_alloc = 0, old_alloc = 0;
+	size_t n_alloc = 0;
 
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
@@ -666,7 +666,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	if (Ctrl->G.mode) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
+	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 	
 	PSL = GMT_plotinit (GMT, options);
 
