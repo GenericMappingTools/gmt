@@ -83,8 +83,11 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
-double GMT_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
-int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
+EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
+EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
+EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
+EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
+EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 
 #define GMT_ELLIPSE_APPROX 72
 
@@ -3623,10 +3626,6 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	char **txt = NULL, **pen = NULL, buffer[GMT_BUFSIZ] = {""}, **fonts = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	void *A1 = NULL, *A2 = NULL;
-	EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
-	EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
-	EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
-	EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 
 	form = mode;					/* Which actions to take */
 	if (G->box & 4) form |= PSL_TXT_ROUND;		/* Want round box shape */
@@ -4038,13 +4037,13 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 
-	if (GMT->current.ps.nclip != PSL->current.nclip)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Module was expected to change clip level by %d, but clip level changed by %d\n", GMT->current.ps.nclip, PSL->current.nclip);
-
 	if (abs (GMT->current.ps.nclip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
-		GMT->current.ps.clip_level = 0;
+		GMT->current.ps.clip_level = GMT->current.ps.nclip = PSL->current.nclip = 0;
 	else
 		GMT->current.ps.clip_level += GMT->current.ps.nclip;
+
+	if (GMT->current.ps.nclip != PSL->current.nclip)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Module was expected to change clip level by %d, but clip level changed by %d\n", GMT->current.ps.nclip, PSL->current.nclip);
 
 	if (!GMT->common.K.active) {
 		if (GMT->current.ps.clip_level > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d external clip operations were not terminated!\n", GMT->current.ps.clip_level);

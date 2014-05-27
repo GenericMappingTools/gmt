@@ -660,7 +660,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		GMT->current.setting.proj_length_unit = S.u;
 	}
 
-	if (S.G.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
+	if (S.G.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 	
 	PSL = GMT_plotinit (GMT, options);
 	if (Ctrl->T.active) {
