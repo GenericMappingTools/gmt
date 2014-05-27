@@ -629,8 +629,10 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		yn = n;
 	}
 	nx = GMT_linear_array (GMT, w, e, dval, GMT->current.map.frame.axis[GMT_X].phase, &x);
-	for (i = 0; i < nx - idup; i++) 
+	for (i = 0; i < nx - idup; i++)  {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw meridian = %g from %g to %g\n", x[i], ys, yn);
 		gmt_map_lonline (GMT, PSL, x[i], ys, yn);
+	}
 	if (nx) GMT_free (GMT, x);
 
 	if (cap) {	/* Also draw the polar cap(s) */
@@ -741,8 +743,10 @@ void gmt_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	}
 	else
 		ny = GMT_linear_array (GMT, s, n, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
-	for (i = 0; i < ny; i++) 
+	for (i = 0; i < ny; i++) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw parallel = %g from %g to %g\n", y[i], w, e);
 		gmt_map_latline (GMT, PSL, y[i], w, e);
+	}
 	if (ny) GMT_free (GMT, y);
 
 }
