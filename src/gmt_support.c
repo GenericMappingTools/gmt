@@ -3435,9 +3435,9 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
 				G->clearance_flag = ((strchr (txt_a, '%')) ? 1 : 0);
 				if (G->clearance_flag) {	/* Chop off percentage sign(s) and read as unitless values */
-					if ((L = strlen (txt_a)) && txt_a[L-1] == '%') txt_a[L-1] = '\0';
+					if ((L = (unsigned int)strlen (txt_a)) && txt_a[L-1] == '%') txt_a[L-1] = '\0';
 					G->clearance[GMT_X] = atof (txt_a);
-					if (k == 2 && (L = strlen (txt_b)) && txt_b[L-1] == '%') txt_b[L-1] = '\0';
+					if (k == 2 && (L = (unsigned int)strlen (txt_b)) && txt_b[L-1] == '%') txt_b[L-1] = '\0';
 					G->clearance[GMT_Y] = (k == 2) ? atof (txt_b) : G->clearance[GMT_X];
 				}
 				else {	/* Deal with units */

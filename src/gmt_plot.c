@@ -3643,7 +3643,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 			L = G->segment[seg];	/* Pointer to current segment */
 			//if (!L->annot || L->n_labels == 0) continue;
 			n_segments++;			/* Number of segments */
-			n_points += L->n;		/* Total number of points in all segments so far */
+			n_points += (unsigned int)L->n;		/* Total number of points in all segments so far */
 			n_labels += L->n_labels;	/* Number of labels so far */
 		}	
 
@@ -3666,7 +3666,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		for (seg = m = this_seg = 0; seg < G->n_segments; seg++) {	/* Process all segments, skip those without labels */
 			L = G->segment[seg];	/* Pointer to current segment */
 			//if (!L->annot || L->n_labels == 0) continue;
-			npoints_per_segment[this_seg] = L->n;	/* Points along this segment path */
+			npoints_per_segment[this_seg] = (int)L->n;	/* Points along this segment path */
 			if (this_seg > 0) first_point_in_segment += npoints_per_segment[this_seg-1];		/* First point id in combined path */
 			GMT_memcpy (&xpath[first_point_in_segment], L->x, L->n, double);	/* Append this segment path to the combined path array */
 			GMT_memcpy (&ypath[first_point_in_segment], L->y, L->n, double);

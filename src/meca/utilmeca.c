@@ -153,7 +153,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 	PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 
 	GMT_setfill (GMT, F, outline);
-	if (fabs (N_axis.dip) < EPSIL) {
+	if (fabs (pos_NP1_NP2) < EPSIL) {
 		/* pure normal or inverse fault (null axis strike is determined
 		   with + or - 180 degrees. */
  		/* first nodal plane part */
@@ -1514,3 +1514,13 @@ void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, doubl
 	else
 		PSL_plotline (PSL, axe, aye, npoints - 1, PSL_MOVE + PSL_STROKE);
 }
+
+#ifdef DEBUG
+int dump_meca (st_me meca)
+{
+	fprintf (stderr, "\nNodal plane NP1: str = %g dip = %g rake = %g\n", meca.NP1.str, meca.NP1.dip, meca.NP1.rake);
+	fprintf (stderr, "Nodal plane NP2: str = %g dip = %g rake = %g\n", meca.NP2.str, meca.NP2.dip, meca.NP2.rake);
+	fprintf (stderr, "Magnitude = %g exponent = %d\n", meca.moment.mant, meca.moment.exponent);
+	fprintf (stderr, "magms = %g\n", meca.magms);
+}
+#endif
