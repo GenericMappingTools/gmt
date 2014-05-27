@@ -364,11 +364,15 @@ EXTERN_MSC int PSL_defunits (struct PSL_CTRL *PSL, const char *param, double val
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 EXTERN_MSC char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], char *pattern, double offset);
 
-/* Other deep level routines that could be useful */
+/* Other deep level routines that are useful */
 EXTERN_MSC int psl_ix (struct PSL_CTRL *PSL, double value);
 EXTERN_MSC int psl_iy (struct PSL_CTRL *PSL, double value);
 EXTERN_MSC int psl_iz (struct PSL_CTRL *PSL, double value);
 EXTERN_MSC int psl_ip (struct PSL_CTRL *PSL, double value);
+EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
+EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
+EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
+EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 
 /* Used indirectly by macro PSL_free and FORTRAN wrapper PSL_free_ . */
 EXTERN_MSC int PSL_free_nonmacro (void *addr);
