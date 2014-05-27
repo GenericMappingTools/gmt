@@ -84,10 +84,6 @@
 #include "gmt_internals.h"
 
 EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
-EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
-EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
-EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
-EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 
 #define GMT_ELLIPSE_APPROX 72
 
