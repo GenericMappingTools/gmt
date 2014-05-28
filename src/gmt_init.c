@@ -2153,7 +2153,7 @@ unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg)
 	for (dir = first; dir <= last; dir++) {
 		GMT->common.d.active[dir] = true;
 		GMT->common.d.nan_proxy[dir] = atof (c);
-
+		GMT->common.d.is_zero[dir] = doubleAlmostEqualZero (0.0, GMT->common.d.nan_proxy[dir]);
 	}
 	return (GMT_NOERROR);
 }

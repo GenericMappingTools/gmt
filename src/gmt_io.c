@@ -270,6 +270,17 @@ void GMT_set_tableheader (struct GMT_CTRL *GMT, int direction, bool true_false)
 	GMT->current.setting.io_header[direction] = true_false;
 }
 
+bool GMT_z_input_is_nan_proxy (struct GMT_CTRL *GMT, unsigned int col, double value)
+{	/* Handles non-proxy checking for input z values.  If the input value equals
+	 * the non_proxy then we return true so the value can be replaced by a NaN.
+	 */
+	if (!GMT->common.d.active[GMT_IN]) return false;	/* Not active */
+	if (col != GMT_Z) return false;				/* Not the z column */
+	
+	if (GMT->common.d.is_zero[GMT_IN]) return doubleAlmostEqualZero (0.0, value);	/* Change to NaN if value is zero */
+	return doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], value);		/* Change to NaN if value ~nan_proxy */
+}
+
 int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Process a binary record to determine what kind of record it is. Return values:
 	 * 0 = regular record; 1 = segment header (all NaNs); 2 = skip this record
@@ -281,7 +292,7 @@ int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
 		if (!GMT_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
-			if (GMT->common.d.active[GMT_IN] && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
+			if (GMT_z_input_is_nan_proxy (GMT, col_no, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
 			else	/* Still clean, so skip to next column */
 				continue;
@@ -1447,7 +1458,7 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 			else				/* Default column order */
 				col_pos = col_no;
 			n_convert = GMT_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val);
-			if (GMT->common.d.active[GMT_IN] && n_convert != GMT_IS_NAN && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], val))	/* Input matched no-data setting, so change to NaN */
+			if (n_convert != GMT_IS_NAN && GMT_z_input_is_nan_proxy (GMT, col_pos, val))	/* Input matched no-data setting, so change to NaN */
 				n_convert = GMT_IS_NAN;
 			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
 				if (GMT->current.setting.io_nan_records || !GMT->current.io.skip_if_NaN[col_pos]) {	/* This field (or all fields) can be NaN so we pass it on */

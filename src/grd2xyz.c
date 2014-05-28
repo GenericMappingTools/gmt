@@ -309,9 +309,9 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 				gmt_ij = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
 				d_value = G->data[gmt_ij];
 				if ((io.x_missing && io.gmt_i == io.x_period) || (io.y_missing && io.gmt_j == 0)) continue;
-				if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (d_value))	/* Input matched no-data setting, so change to NaN */
+				if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (d_value))	/* Grid node is NaN and -d was set, so change to nan-proxy */
 					d_value = GMT->common.d.nan_proxy[GMT_OUT];
-				else if (GMT->common.d.active[GMT_IN] && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], d_value))
+				else if (GMT_z_input_is_nan_proxy (GMT, GMT_Z, d_value))	/* The inverse: Grid node is nan-proxy and -di was set, so change to NaN */
 					d_value = GMT->session.d_NaN;
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, &d_value);
 				if (write_error == 0) n_suppressed++;	/* Bad value caught by -s[r] */
@@ -422,19 +422,19 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 			}
 
 			GMT_grd_loop (GMT, G, row, col, ij) {
-				if (Ctrl->C.mode == 2) {
+				if (Ctrl->C.mode == 2) {	/* Write index, z */
 					out[GMT_X] = (double)GMT_IJ0 (G->header, row, col);
 					out[GMT_Y] = G->data[ij];
 					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (out[GMT_Y]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Y] = GMT->common.d.nan_proxy[GMT_OUT];
-					else if (GMT->common.d.active[GMT_IN] && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], out[GMT_Y]))
+					else if (GMT_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Y]))
 						out[GMT_Y] = GMT->session.d_NaN;
 				}
 				else {
 					out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
 					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (out[GMT_Z]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Z] = GMT->common.d.nan_proxy[GMT_OUT];
-					else if (GMT->common.d.active[GMT_IN] && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], out[GMT_Z]))
+					else if (GMT_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Z]))
 						out[GMT_Z] = GMT->session.d_NaN;
 				}
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */

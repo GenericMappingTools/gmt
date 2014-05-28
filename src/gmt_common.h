@@ -126,6 +126,7 @@ struct GMT_COMMON {
 	} c;
 	struct d {	/* -d[i][o]<nan_proxy> */
 		bool active[2];
+		bool is_zero[2];
 		double nan_proxy[2];
 	} d;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */

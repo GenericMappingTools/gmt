@@ -510,7 +510,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	/* Here we will read either x,y,z or z data, using -R -I [-r] for sizeing */
 	
-	no_data_f = (!GMT->common.d.active[GMT_IN]) ? GMT->session.f_NaN : (float)GMT->common.d.nan_proxy[GMT_IN];
+	no_data_f = (GMT->common.d.active[GMT_IN]) ? (float)GMT->common.d.nan_proxy[GMT_IN] : GMT->session.f_NaN;
 	
 	/* Set up and allocate output grid [note: zero padding specificied] */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -530,7 +530,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && GMT_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing */
+	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && GMT_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
 
 	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
 		zcol = GMT_X;
@@ -582,7 +582,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 				Return (EXIT_FAILURE);
 			}
 			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
-			Grid->data[gmt_ij] = (GMT->common.d.active[GMT_IN] && doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
+			Grid->data[gmt_ij] = (GMT_z_input_is_nan_proxy (GMT, GMT_Z, in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
 			ij++;
 		}
 		else {	/* Get x, y, z */
