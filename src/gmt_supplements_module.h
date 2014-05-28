@@ -43,6 +43,7 @@ EXTERN_MSC int GMT_gravfft (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdgravmag3d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdredpol (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdseamount (void *API, int mode, void *args);
+EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_pssegyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pssegy (void *API, int mode, void *args);
 EXTERN_MSC int GMT_segy2grd (void *API, int mode, void *args);

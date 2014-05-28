@@ -48,6 +48,7 @@ struct Gmt_moduleinfo g_supplements_module[] = {
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe"},
 	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP"},
 	{"grdseamount", "potential", "Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry"},
+	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies"},
 	{"pssegyz", "segy", "Plot a SEGY file on a map in 3-D"},
 	{"pssegy", "segy", "Plot a SEGY file on a map"},
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid"},
