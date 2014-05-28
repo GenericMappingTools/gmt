@@ -656,6 +656,8 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
+	GMT_set_cartesian (GMT, GMT_OUT);	/* Since no coordinates are written */
+
 	if (Ctrl->T.active) {	/* Determine the best contour value and return the corresponding information for that contour only */
 		c = ors_find_kink (GMT, height, n_contours, Ctrl->T.mode);
 		out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
