@@ -17,25 +17,25 @@ echo 0 0 $r $h | gmt grdseamount -R-511000/511000/-511000/511000 -I2000 -Cd -Glo
 # Because the grid representation of a disc is not exact (the disc is built from lots of prisms)
 # we compute the ratio of the exact and approximate volumes and adjust the flexure for this difference.
 # Do this by counting number of nonzero entries, multiply by prism volumes dx*dx*h
-grdmath load.nc 0 NAN = tmp.nc
-n_nan=`grdinfo -M tmp.nc -C | cut -f16`
-disc_vol_grid=`gmtmath -Q 512 512 MUL $n_nan SUB 2000 2000 MUL MUL $h MUL =`
-disc_vol_exact=`gmtmath -Q $r $r MUL PI MUL $h MUL =`
-scale=`gmtmath -Q $disc_vol_exact $disc_vol_grid DIV =`
+gmt grdmath load.nc 0 NAN = tmp.nc
+n_nan=`gmt grdinfo -M tmp.nc -C | cut -f16`
+disc_vol_grid=`gmt math -Q 512 512 MUL $n_nan SUB 2000 2000 MUL MUL $h MUL =`
+disc_vol_exact=`gmt math -Q $r $r MUL PI MUL $h MUL =`
+scale=`gmt math -Q $disc_vol_exact $disc_vol_grid DIV =`
 # Traditional rhoi = rhol
 gmt gravfft load.nc -Gflex_a.nc -Q -Nf+l -T$Te/$rhol/$rhom/$rhow       
-z0=`echo -511000 -511000 | grdtrack -Gflex_a.nc -o2`
-grdmath flex_a.nc $z0 SUB = flex_a.nc
+z0=`echo -511000 -511000 | gmt grdtrack -Gflex_a.nc -o2`
+gmt grdmath flex_a.nc $z0 SUB = flex_a.nc
 # Approximate rhoi < rhol
 gmt gravfft load.nc -Gflex_c.nc -Q -Nf+l -T$Te/$rhol/$rhom/$rhow/$rhoi
-z0=`echo -511000 -511000 | grdtrack -Gflex_c.nc -o2`
-grdmath flex_c.nc $z0 SUB = flex_c.nc
+z0=`echo -511000 -511000 | gmt grdtrack -Gflex_c.nc -o2`
+gmt grdmath flex_c.nc $z0 SUB = flex_c.nc
 gmt grdtrack -Gflex_a.nc+Uk -Gflex_c.nc+Uk -ELM/RM > result.txt
 # Plot the exact single-domain case
-psxy -R0/256/-1100/50 -JX6i/4i -Xc -P -Bafg10000 flex_analytical.txt -i0,1 -Sc0.04i -Ggreen -K > $ps
-psxy -R -J -O -K result.txt -i0,2s$scale -W0.25p,red >> $ps
+gmt psxy -R0/256/-1100/50 -JX6i/4i -Xc -P -Bafg10000 flex_analytical.txt -i0,1 -Sc0.04i -Ggreen -K > $ps
+gmt psxy -R -J -O -K result.txt -i0,2s$scale -W0.25p,red >> $ps
 # Plot the exact double-domain data and the approximations
-psxy -R -J -O -K -Bafg10000 flex_analytical.txt -i0,2 -Sc0.04i -Ggreen -Y4.75i >> $ps
-psxy -R -J -O -K flex_analytical.txt -i0,3 -W0.25p >> $ps
-psxy -R -J -O -K result.txt -i0,3s$scale -W0.25p,red,- >> $ps
-psxy -R -J -O -T >> $ps
+gmt psxy -R -J -O -K -Bafg10000 flex_analytical.txt -i0,2 -Sc0.04i -Ggreen -Y4.75i >> $ps
+gmt psxy -R -J -O -K flex_analytical.txt -i0,3 -W0.25p >> $ps
+gmt psxy -R -J -O -K result.txt -i0,3s$scale -W0.25p,red,- >> $ps
+gmt psxy -R -J -O -T >> $ps

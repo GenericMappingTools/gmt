@@ -26,8 +26,8 @@ gmt grdvolume t.nc $2 -L-1
 testcase () {
 makegrd -R0/2/0/2
 makegrd "-R0/3/0/3 -r"
-makegrd "-R0/2/0/2 -N0"
-makegrd "-R0/3/0/3 -r -N0"
+makegrd "-R0/2/0/2 -di0"
+makegrd "-R0/3/0/3 -r -di0"
 makegrd -R0/2/0/2 "-C0/0.8/0.4"
 }
 

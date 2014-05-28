@@ -2,7 +2,7 @@
 # $Id$
 ps=ops.ps
 # Create a unit spike at (0,0)
-echo 0 0 1 | gmt xyz2grd -GA.grd -R-2/2/-2/2 -I1 -N0
+echo 0 0 1 | gmt xyz2grd -GA.grd -R-2/2/-2/2 -I1 -di0
 gmt grdmath A.grd CURV = B.grd
 gmt grdmath A.grd D2DX2 = C.grd
 gmt grdmath A.grd D2DY2 = D.grd

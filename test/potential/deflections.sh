@@ -8,7 +8,7 @@ order=2
 #    as in Fig 3. of Marks & Smith, 2007 [GRL], with R_base = 35 km,
 # R_top = 10 km, height = 3751 m, depth = -5084 m, density d_rho = 2800-1030
 # = 1670 kg/m^3, so the flattening is 10/25 = 0.4.
-echo "0	0	25	3751" | gmt grdseamount -R-256/256/-256/256 -I1 -r -C -Gsmt.nc -T0.4 -Z-5084
+echo "0	0	25	3751" | gmt grdseamount -R-256/256/-256/256 -I1 -r -C -Gsmt.nc -F0.4 -Z-5084
 # BL Plot the bathymetry
 gmt makecpt -Crainbow -T-5100/-1000/200 -Z > t.cpt
 gmt grdimage smt.nc -R-100/100/-100/100 -JX3i -P -Bag -BWSne -Ct.cpt -K > $ps
