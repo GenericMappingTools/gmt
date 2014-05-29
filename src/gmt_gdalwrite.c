@@ -184,18 +184,21 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 
 		/* Be respectful to data type registration */
 		if (registration == 0)
-			GDALSetMetadataItem(hDstDS, "GDALMD_AREA_OR_POINT", "Point", NULL);
+			GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Point", NULL);
 		else
-			GDALSetMetadataItem(hDstDS, "GDALMD_AREA_OR_POINT", "Area", NULL);
+			GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Area", NULL);
 	}
 
 	/* This was the only trick I found to set a "projection". */
-	if (is_geog || projWKT) {
+	if (is_geog || projWKT || !strcasecmp(pszFormat,"GTiff")) {
 		hSRS = OSRNewSpatialReference(NULL);
 		if (is_geog && !projWKT)	/* Only thing we know is that it is Geog */
 			OSRSetFromUserInput(hSRS, "+proj=latlong +datum=WGS84");
-		else				/* Even if is_geog == true, use the WKT string */ 
+		else if (projWKT)				/* Even if is_geog == true, use the WKT string */ 
 			OSRSetFromUserInput(hSRS, projWKT);
+		else
+			OSRSetFromUserInput(hSRS, "LOCAL_CS[\"Unknown\"]");		/* Need a SRS for AREA_OR_POINT to be taken into account in GeoTiff */
+
 		OSRExportToWkt(hSRS, &pszSRS_WKT);
 		OSRDestroySpatialReference(hSRS);
 		GDALSetProjection(hDstDS, pszSRS_WKT);
