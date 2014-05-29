@@ -113,7 +113,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 			sEntry.c2 = (short)(ptr[i+nColors] * 255); 
 			sEntry.c3 = (short)(ptr[i+2*nColors] * 255); 
 			sEntry.c4 = (short)255; 
-			GDALSetColorEntry( hColorTable, i, &sEntry ); 
+			GDALSetColorEntry(hColorTable, i, &sEntry); 
 		}
 	}
 
@@ -129,9 +129,9 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 
 		hSRS_2 = OSRNewSpatialReference(NULL);
 
-		if( OSRImportFromProj4( hSRS_2, prhs->P.ProjectionRefPROJ4) == CE_None ) {
+		if (OSRImportFromProj4(hSRS_2, prhs->P.ProjectionRefPROJ4) == CE_None) {
 			char	*pszPrettyWkt = NULL;
-			OSRExportToPrettyWkt( hSRS_2, &pszPrettyWkt, false );
+			OSRExportToPrettyWkt(hSRS_2, &pszPrettyWkt, false);
 			projWKT = pszPrettyWkt;
 		}
 		else {
@@ -139,41 +139,32 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 					prhs->P.ProjectionRefPROJ4);
 		}
 
-		OSRDestroySpatialReference( hSRS_2 );
+		OSRDestroySpatialReference(hSRS_2);
 	}
 
 	pfnProgress = GDALDummyProgress;
 
 	GDALAllRegister();
 
-	hDriver = GDALGetDriverByName( "MEM" );		/* Intrmediary MEM diver to use as arg to GDALCreateCopy method */
-	hDriverOut = GDALGetDriverByName( pszFormat );	/* The true output format driver */
+	hDriver = GDALGetDriverByName("MEM");		/* Intrmediary MEM diver to use as arg to GDALCreateCopy method */
+	hDriverOut = GDALGetDriverByName(pszFormat);	/* The true output format driver */
     
-	if( hDriverOut == NULL ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gdalwrite: Output driver %s not recognized\n", pszFormat );
+	if (hDriverOut == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gdalwrite: Output driver %s not recognized\n", pszFormat);
 		/* The following is s bit idiot. The loop should only be executed is verbose so requires */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The following format drivers are configured and support output:\n" );
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The following format drivers are configured and support output:\n");
 		for (i = 0; i < GDALGetDriverCount(); i++) {
 			hDriver = GDALGetDriver(i);
-			if ( GDALGetMetadataItem( hDriver, GDAL_DCAP_CREATE, NULL ) != NULL || 
-			     GDALGetMetadataItem( hDriver, GDAL_DCAP_CREATECOPY, NULL ) != NULL )
+			if (GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE, NULL) != NULL || 
+			     GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATECOPY, NULL) != NULL)
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "  %s: %s\n", 
-					GDALGetDriverShortName( hDriver ), GDALGetDriverLongName( hDriver ) );
+					GDALGetDriverShortName(hDriver), GDALGetDriverLongName(hDriver));
 		}
 		GDALDestroyDriverManager();
 		return(-1);
 	}
 
-	/* Use compression with GeoTiff driver */
-	if (!strcasecmp(pszFormat,"GTiff")) {
-		papszOptions = CSLAddString( papszOptions, "COMPRESS=DEFLATE" ); 
-		/* tiles are less efficient in small grids (padding) and are not
-		 * supported everywhere, when nx < tile_width || ny < tile_height */
-		if ( nx > 3 * GDAL_TILE_SIZE && ny > 3 * GDAL_TILE_SIZE )
-			papszOptions = CSLAddString( papszOptions, "TILED=YES" );
-	}
-
-	hDstDS = GDALCreate( hDriver, "mem", nx, ny, n_bands, typeCLASS, NULL );
+	hDstDS = GDALCreate(hDriver, "mem", nx, ny, n_bands, typeCLASS, NULL);
 
 	if (hDstDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
@@ -181,18 +172,33 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 		if (papszOptions != NULL) CSLDestroy (papszOptions);
 		return(-1);
 	}
-	GDALSetGeoTransform( hDstDS, adfGeoTransform ); 
+	GDALSetGeoTransform(hDstDS, adfGeoTransform); 
+
+	/* Use compression with GeoTiff driver */
+	if (!strcasecmp(pszFormat,"GTiff")) {
+		papszOptions = CSLAddString(papszOptions, "COMPRESS=DEFLATE"); 
+		/* tiles are less efficient in small grids (padding) and are not
+		 * supported everywhere, when nx < tile_width || ny < tile_height */
+		if (nx > 3 * GDAL_TILE_SIZE && ny > 3 * GDAL_TILE_SIZE)
+			papszOptions = CSLAddString(papszOptions, "TILED=YES");
+
+		/* Be respectful to data type registration */
+		if (registration == 0)
+			GDALSetMetadataItem(hDstDS, "GDALMD_AREA_OR_POINT", "Point", NULL);
+		else
+			GDALSetMetadataItem(hDstDS, "GDALMD_AREA_OR_POINT", "Area", NULL);
+	}
 
 	/* This was the only trick I found to set a "projection". */
 	if (is_geog || projWKT) {
-		hSRS = OSRNewSpatialReference( NULL );
+		hSRS = OSRNewSpatialReference(NULL);
 		if (is_geog && !projWKT)	/* Only thing we know is that it is Geog */
-			OSRSetFromUserInput( hSRS, "+proj=latlong +datum=WGS84" );
+			OSRSetFromUserInput(hSRS, "+proj=latlong +datum=WGS84");
 		else				/* Even if is_geog == true, use the WKT string */ 
-			OSRSetFromUserInput( hSRS, projWKT );
-		OSRExportToWkt( hSRS, &pszSRS_WKT );
-		OSRDestroySpatialReference( hSRS );
-		GDALSetProjection( hDstDS, pszSRS_WKT );
+			OSRSetFromUserInput(hSRS, projWKT);
+		OSRExportToWkt(hSRS, &pszSRS_WKT);
+		OSRDestroySpatialReference(hSRS);
+		GDALSetProjection(hDstDS, pszSRS_WKT);
 	}
 
 	for (i = 0; i < n_bands; i++) {
@@ -203,13 +209,13 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 		   GMT_gdal_write_grd and adapt the line stride here (last GDALRasterIO argument).
 		   Thanks to Even Roualt, see: 
 		   osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
-		hBand = GDALGetRasterBand( hDstDS, i+1 ); 
-		if( i == 1 && hColorTable != NULL ) {
-			if (GDALSetRasterColorTable( hBand, hColorTable ) == CE_Failure)
+		hBand = GDALGetRasterBand(hDstDS, i+1); 
+		if (i == 1 && hColorTable != NULL) {
+			if (GDALSetRasterColorTable(hBand, hColorTable) == CE_Failure)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\tERROR creating Color Table");
-			GDALDestroyColorTable( hColorTable );
+			GDALDestroyColorTable(hColorTable);
 		}
-		switch( typeCLASS ) {
+		switch (typeCLASS) {
 			case GDT_Byte:
 				if (rint(prhs->nan_value) == prhs->nan_value)
 					/* Only set NoData if nan_value contains an integer value */
@@ -221,11 +227,11 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 					for (nn = 0; nn < nx*ny; nn++) {
 						outByte[nn] = tmpByte[nn*n_bands + i];
 					}
-					GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0 );
+					GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0);
 				}
 				else
 					/* Here 'data' was converted to uchar in gmt_customio.c/GMT_gdal_write_grd */
-					GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0 );
+					GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0);
 				break;
 			case GDT_UInt16:
 			case GDT_Int16:
@@ -234,12 +240,12 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 				if (rint(prhs->nan_value) == prhs->nan_value)
 					/* Only set NoData if nan_value contains an integer value */
 					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0 );
+				GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0);
 				break;
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 
-				              prhs->nXSizeFull * n_byteOffset );
+				GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 
+				              prhs->nXSizeFull * n_byteOffset);
 				break;
 		}
 
@@ -248,10 +254,10 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 
 	}
 
-	hOutDS = GDALCreateCopy( hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL );
-	if ( hOutDS != NULL ) GDALClose( hOutDS );
+	hOutDS = GDALCreateCopy(hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL);
+	if (hOutDS != NULL) GDALClose(hOutDS);
 
-	GDALClose( hDstDS );
+	GDALClose(hDstDS);
 	GDALDestroyDriverManager();
 	if (outByte) GMT_free(GMT, outByte);
 	if (papszOptions != NULL) CSLDestroy (papszOptions);

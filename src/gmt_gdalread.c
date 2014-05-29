@@ -40,7 +40,8 @@ int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 	if (hDataset == NULL)
 		return (GMT_GRDIO_BAD_VAL);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s reads with GDAL driver %s\n", header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s reads with GDAL driver %s\n",
+	            header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
 	GDALDestroyDriverManager();
 	header->type = GMT_GRID_IS_GD;
@@ -50,25 +51,25 @@ int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
-	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
-	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
-	int	nPixelSize, nBands, i, nReqBands = 0;
-	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
-	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
-	int	n, m, incStep = 1;
-	bool	do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
-	bool	metadata_only;
-	bool	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
-	bool	fliplr, got_R = false, got_r = false, error = false;
-	int	*whichBands = NULL, *rowVec = NULL, *colVec = NULL;
-	int	off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
+	int     nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
+	int     complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
+	int     nPixelSize, nBands, i, nReqBands = 0;
+	int     anSrcWin[4], xOrigin = 0, yOrigin = 0;
+	int     jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
+	int	    n, m, incStep = 1;
+	bool    do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
+	bool   	metadata_only;
+	bool   	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
+	bool   	fliplr, got_R = false, got_r = false, error = false;
+	int    *whichBands = NULL, *rowVec = NULL, *colVec = NULL;
+	int     off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
 	unsigned int nn, mm;
-	size_t n_alloc;
+	size_t  n_alloc;
 	//int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	unsigned char *tmp = NULL;
-	double	adfMinMax[2];
-	double	dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
-	double	z_min = 1e50, z_max = -1e50;
+	double  adfMinMax[2];
+	double  dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
+	double  z_min = 1e50, z_max = -1e50;
 	GDALDatasetH	hDataset;
 	GDALRasterBandH	hBand;
 	GDALDriverH	hDriver;
@@ -218,17 +219,18 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		GDALGetGeoTransform(hDataset, adfGeoTransform);
 
 		if (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
+			            "The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose(hDataset);
 			GDALDestroyDriverManager();
 			return (-1);
 		}
 
 		if (got_R) {	/* Region in map coordinates */
-			anSrcWin[0] = (int) ((dfULX - adfGeoTransform[0]) / adfGeoTransform[1] + 0.001);
-			anSrcWin[1] = (int) ((dfULY - adfGeoTransform[3]) / adfGeoTransform[5] + 0.001);
-			anSrcWin[2] = (int) ((dfLRX - dfULX) / adfGeoTransform[1] + 0.5);
-			anSrcWin[3] = (int) ((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
+			anSrcWin[0] = (int)((dfULX - adfGeoTransform[0]) / adfGeoTransform[1] + 0.001);
+			anSrcWin[1] = (int)((dfULY - adfGeoTransform[3]) / adfGeoTransform[5] + 0.001);
+			anSrcWin[2] = (int)((dfLRX - dfULX) / adfGeoTransform[1] + 0.5);
+			anSrcWin[3] = (int)((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
 			if (GDAL_VERSION_NUM < 1700 && !strcmp(format,"netCDF")) {
 				/* PATCH against the old GDAL bugs of reading netCDF files */
 				anSrcWin[1] = GDALGetRasterYSize(hDataset) - (anSrcWin[1] + anSrcWin[3]) - 1;
@@ -245,7 +247,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 			|| anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
 			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
-					GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
+			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
 			GDALDestroyDriverManager();
 			return (-1);
 		}
@@ -370,6 +372,9 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 			   So we'll check for the "Area" keyword and if found we will respect it and set grid to pix reg */
 			if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) && 
 				!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
+				pixel_reg = true;
+			else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) && 
+				!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
 				pixel_reg = true;
 		}
 
@@ -883,6 +888,9 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 		if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) && 
 			!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
 			pixel_reg = 1;
+		else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) && 
+			!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
+			pixel_reg = 1;
 
 		Ctrl->hdr[6] = pixel_reg;
 		Ctrl->hdr[7] = adfGeoTransform[1];
@@ -898,15 +906,6 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 			Ctrl->hdr[0] = dfULX;	Ctrl->hdr[1] = dfLRX;
 			Ctrl->hdr[2] = dfLRY;	Ctrl->hdr[3] = dfULY;
 		}
-
-#if 0
-		/* This chunk should give us info if a GeoTiff GRID (not image) file is grid registered but I lack one
-		   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
-		   (where all this (re)started) not only is bugged as does not carry the AREA_OR_POINT metadata */
-		if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) && 
-			!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Point"))
-			fprintf(stderr, "IT's point\n");
-#endif
 	}
 
 	GDALClose (hDataset);
