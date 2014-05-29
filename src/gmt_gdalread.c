@@ -364,11 +364,12 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		if (i == 0) {
 			pixel_reg = (GDALGetRasterDataType(hBand) == GDT_Byte);
 			
-			/* This chunk should give us info if a GeoTiff GRID (not image) file is grid registered but I lack one
+			/* This test should give us info if a GeoTiff GRID (not image) file is grid registered but I lack one
 			   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
 			   (where all this (re)started) not only is bugged as does not carry the AREA_OR_POINT metadata.
 			   So we'll check for the "Area" keyword and if found we will respect it and set grid to pix reg */
-			if (!pixel_reg && !strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
+			if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) && 
+				!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
 				pixel_reg = true;
 		}
 
@@ -875,11 +876,12 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 			Ctrl->hdr[5] = z_max;
 		}
 
-		/* This chunk should give us info if a GeoTiff GRID (not image) file is grid registered but I lack one
+		/* This test should give us info if a GeoTiff GRID (not image) file is grid registered but I lack one
 		   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
 		   (where all this (re)started) not only is bugged as does not carry the AREA_OR_POINT metadata.
 		   So we'll check for the "Area" keyword and if found we will respect it and set grid to pix reg */
-		if (!pixel_reg && !strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
+		if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) && 
+			!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
 			pixel_reg = 1;
 
 		Ctrl->hdr[6] = pixel_reg;
