@@ -78,8 +78,9 @@ struct PSHISTOGRAM_CTRL {
 	struct S {	/* -S */
 		bool active;
 	} S;
-	struct W {	/* -W<width> */
+	struct W {	/* -W<width>[+l|h|b] */
 		bool active;
+		unsigned int mode;
 		double inc;
 	} W;
 	struct Z {	/* -Z<type> */
@@ -101,6 +102,11 @@ enum Pshistogram_loc {
 	PSHISTOGRAM_L1,
 	PSHISTOGRAM_LMS};
 
+enum Pshistogram_extreme {
+	PSHISTOGRAM_LEFT = 1,
+	PSHISTOGRAM_RIGHT,
+	PSHISTOGRAM_BOTH};
+
 struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	double yy0, yy1;
 	double box_width;
@@ -110,6 +116,7 @@ struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	uint64_t *boxh;
 	bool center_box, cumulative;
 	unsigned int hist_type;
+	enum Pshistogram_extreme extremes;
 };
 
 void *New_pshistogram_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -159,9 +166,15 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 
 	for (i = 0; i < n; i++) {
 		sbox = lrint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
-		if (sbox < 0) continue;
+		if (sbox < 0) {	/* Extreme value left of first bin; check if -E is used */
+			if ((F->extremes & PSHISTOGRAM_LEFT) == 0) continue;	/* No, we skip this value */
+			sbox = 0;	/* Put in first bin */
+		}
 		ibox = (uint64_t)sbox;
-		if (ibox >= F->n_boxes) continue;
+		if (ibox >= F->n_boxes) {	/* Extreme value right of last bin; check if -E is used */
+			if ((F->extremes & PSHISTOGRAM_RIGHT) == 0) continue;	/* No, we skip this value */
+			ibox = F->n_boxes - 1;	/* Put in last bin */
+		}
 		F->boxh[ibox]++;
 		F->n_counted++;
 	}
@@ -374,7 +387,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pshistogram [<table>] %s -W<width> [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", GMT_Jx_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pshistogram [<table>] %s -W<width>[+l|h|b] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", GMT_Jx_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] [%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [%s] [%s] [-Z[0-5]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT,
@@ -383,7 +396,8 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Option (API, "JXZ");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set the bin width.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set the bin width.  Append +l|h|b to include extreme values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the first, last, or both bins [skip].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Plot horizontal bars [Default is vertical].\n");
@@ -484,7 +498,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 							break;
 					}
 				}
-				break;		
+				break;
 			case 'F':
 				Ctrl->F.active = true;
 				break;
@@ -541,7 +555,20 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				Ctrl->W.inc = atof (opt->arg);
+				if ((c = strchr (opt->arg, '+'))) {
+					if (c[1] == 'l') Ctrl->W.mode = PSHISTOGRAM_LEFT;
+					else if (c[1] == 'h') Ctrl->W.mode = PSHISTOGRAM_RIGHT;
+					else if (c[1] == 'b') Ctrl->W.mode = PSHISTOGRAM_BOTH;
+					else if (c[1]) {
+						n_errors++;
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -W: Modifier +%s unrecognized.\n", c[1]);
+					}
+					c[0] = '\0';
+					Ctrl->W.inc = atof (opt->arg);
+					c[0] = '+';
+				}
+				else
+					Ctrl->W.inc = atof (opt->arg);
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
@@ -604,6 +631,13 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	if (GMT_compat_check (GMT, 4)) {	/* Must see if -E was given and temporarily change it */
+		struct GMT_OPTION *opt = NULL;
+		for (opt = options; opt->next; opt = opt->next) {
+			if (opt->option == 'E' && (opt->arg[0] == '\0' || opt->arg[0] == 'l' || opt->arg[0] == 'h'))
+				opt->option = '@';	/* Temporary turn -E[l|h] into -Q[l|h] */
+		}
+	}
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pshistogram_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pshistogram_parse (GMT, Ctrl, options))) Return (error);
@@ -616,6 +650,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	F.box_width  = Ctrl->W.inc;
 	F.cumulative = Ctrl->Q.active;
 	F.center_box = Ctrl->F.active;
+	F.extremes = Ctrl->W.mode;
 	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
 	if (GMT->common.R.active) GMT_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 

@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pshistogram** [ *table* ] **-Jx**\ \|\ **X**\ *parameters*
-**-W**\ *bin_width* [ **-A** ]
+**-W**\ *bin_width*\ [**+l**\|**h**\|**b**] [ **-A** ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cptfile* ] [ **-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
 [ **-F** ] [ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
@@ -52,8 +52,14 @@ Required Arguments
 
 **-Jx**
     *xscale[/yscale]* (Linear scale(s) in distance unit/data unit).
-**-W**\ *bin_width*
+**-W**\ *bin_width*\ [**+l**\|**h**\|**b**]
     Sets the bin width used for histogram calculations.
+    The modifiers specify the handling of extreme values that fall outside the range
+    set by **-R**.  By default these values are ignored.  Use **+b** to let
+    these values be included in the first or last bins.  To only include
+    extreme values below first bin into the first bin, use **+l**, and to
+    only include extreme values above the last bin into that last bin, use
+    **+h**.
 
 Optional Arguments
 ------------------
