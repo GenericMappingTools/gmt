@@ -1771,7 +1771,10 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	to_GDALW->driver = strdup(driver);
 	to_GDALW->P.ProjectionRefPROJ4 = NULL;
 	to_GDALW->flipud = 0;
-	to_GDALW->geog = 0;
+	if (GMT_is_geographic (GMT, GMT_IN))
+		to_GDALW->geog = 1;
+	else
+		to_GDALW->geog = 0;
 	to_GDALW->nx = width_out;
 	to_GDALW->ny = height_out;
 	to_GDALW->nXSizeFull = header->mx;
