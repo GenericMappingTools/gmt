@@ -58,8 +58,9 @@ struct PSXYZ_CTRL {
 	struct L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N */
+	struct N {	/* -N[r|c] */
 		bool active;
+		unsigned int mode;
 	} N;
 	struct Q {	/* -Q */
 		bool active;
@@ -75,6 +76,12 @@ struct PSXYZ_CTRL {
 	} W;
 };
 
+enum Psxys_cliptype {
+	PSXYZ_CLIP_REPEAT 	= 0,
+	PSXYZ_CLIP_NO_REPEAT,
+	PSXYZ_NO_CLIP_REPEAT,
+	PSXYZ_NO_CLIP_NO_REPEAT};
+
 struct PSXYZ_DATA {
 	int symbol, outline;
 	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-fucntions, 4 = x-base in units, 8 y-base in units */
@@ -86,6 +93,8 @@ struct PSXYZ_DATA {
 	struct GMT_CUSTOM_SYMBOL *custom;
 };
 
+EXTERN_MSC double GMT_half_map_width (struct GMT_CTRL *GMT, double y);
+
 void *New_psxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXYZ_CTRL *C;
 
@@ -96,6 +105,7 @@ void *New_psxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new c
 	C->W.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	C->A.step = GMT->current.setting.map_line_step;
+	C->N.mode = PSXYZ_CLIP_REPEAT;
 	return (C);
 }
 
@@ -113,7 +123,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxyz [<table>] %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>] [-K] [-L] [-N] [-O]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>] [-K] [-L] [-N[c|r]] [-O]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q] [-S[<symbol>][<size>[<unit>]][/size_y]]\n\t[%s] [%s] [-W[+|-][<pen>]]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_c_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -133,8 +143,10 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside and plot repeating symbols].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do NOT sort symbols based on distance to viewer before plotting.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  Choose between\n",
@@ -163,6 +175,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     axes in km, and convert azimuths based on map projection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If projection is linear then we scale the axes by the map scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SE- for a degenerate ellipse (circle) with only diameter in km given.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     in column 4, or append a fixed diameter in km to -SE- instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: Direction, x- and y-dimensions in columns 4-6.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions in km and convert azimuths based on map projection.\n");
@@ -271,6 +284,13 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'N':	/* Do not clip to map */
 				Ctrl->N.active = true;
+				if (opt->arg[0] == 'r') Ctrl->N.mode = PSXYZ_NO_CLIP_REPEAT;
+				else if (opt->arg[0] == 'c') Ctrl->N.mode = PSXYZ_CLIP_NO_REPEAT;
+				else if (opt->arg[0] == '\0') Ctrl->N.mode = PSXYZ_NO_CLIP_NO_REPEAT;
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Unrecognized argument %s\n", opt->arg);
+					n_errors++;
+				}
 				break;
 			case 'Q':	/* Do not sort symbols based on distance */
 				Ctrl->Q.active = true;
@@ -503,11 +523,10 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 
 	GMT_map_basemap (GMT);
 
-	if (GMT->current.proj.z_pars[0] == 0.0 && (!Ctrl->N.active || (!not_line && GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])))) {
+	if (GMT->current.proj.z_pars[0] == 0.0 && ((Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_CLIP_NO_REPEAT) || (!not_line && GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])))) {
 		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		clip_set = true;
 	}
-	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = true;
 
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);		/* Set the required font */
@@ -553,8 +572,18 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		unsigned int n_warn[3] = {0, 0, 0}, warn;
+		bool periodic = false;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
+		double xpos[2], width;
+		
+		/* Determine if we need to worry about repeating periodic symbols */
+		if ((Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN)) {
+			/* Only do this for projection where west and east are split into two separate repeating boundaries */
+			periodic = (GMT_IS_CYLINDRICAL (GMT) || GMT_IS_MISC (GMT));
+		}
+		periodic = ((Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN));
+		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
@@ -563,7 +592,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		}
 		GMT_set_meminc (GMT, GMT_BIG_CHUNK);	/* Only a sizeable amount of PSXZY_DATA structures when we initially allocate */
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
-		if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) p_in = in2;
+		if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required <= 1) p_in = in2;
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
@@ -652,8 +681,13 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || GMT_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].z = GMT_z_to_zz (GMT, in[GMT_Z]);
 
-			if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) {	/* Degenerate ellipses */
-				in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+			if (S.symbol == GMT_SYMBOL_ELLIPSE) {	/* Ellipses */
+				if (S.n_required == 0) {	/* Degenerate ellipses, Got diameter via S.size_x */
+					in2[ex2] = in2[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
+				}
+				else if (S.n_required == 1) {	/* Degenerate ellipses, expect single diameter via input */
+					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+				}
 			}
 
 			if (S.base_set == 2) {	/* Got base from input column */
@@ -852,135 +886,148 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 				GMT_setpen (GMT, &data[i].p);
 			}
 
-			switch (data[i].symbol) {
-				case GMT_SYMBOL_NONE:
-					break;
-				case GMT_SYMBOL_BARX:
-					if (!Ctrl->N.active) in[GMT_X] = MAX (GMT->common.R.wesn[XLO], MIN (data[i].x, GMT->common.R.wesn[XHI]));
-					if (data[i].flag & 4) {
-						GMT_geo_to_xy (GMT, data[i].x, data[i].y - 0.5 * data[i].dim[0], &x_1, &y_1);
-						GMT_geo_to_xy (GMT, data[i].x, data[i].y + 0.5 * data[i].dim[0], &x_2, &y_2);
-						data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
-					}
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					PSL_plotbox (PSL, data[i].x, data[i].y - 0.5 * data[i].dim[0], data[i].dim[2], data[i].y + 0.5 * data[i].dim[0]);
-					break;
-				case GMT_SYMBOL_BARY:
-					if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (data[i].y, GMT->common.R.wesn[YHI]));
-					if (data[i].flag & 4) {
-						GMT_geo_to_xy (GMT, data[i].x - 0.5 * data[i].dim[0], data[i].y, &x_1, &y_1);
-						GMT_geo_to_xy (GMT, data[i].x + 0.5 * data[i].dim[0], data[i].y, &x_2, &y_2);
-						data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
-					}
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					PSL_plotbox (PSL, data[i].x - 0.5 * data[i].dim[0], data[i].y, data[i].x + 0.5 * data[i].dim[0], data[i].dim[2]);
-					break;
-				case GMT_SYMBOL_COLUMN:
-					dim[2] = fabs (data[i].z - data[i].dim[2]);
-					if (data[i].flag & 4) {
-						GMT_geo_to_xy (GMT, data[i].x - data[i].dim[0], data[i].y, &x_1, &y_1);
-						GMT_geo_to_xy (GMT, data[i].x + data[i].dim[0], data[i].y, &x_2, &y_2);
-						dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
-					}
-					else
+			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
+			 * at the other periodic boundary.  We try to handle this below */
+			
+			xpos[0] = data[i].x;
+			if (periodic) {
+				width = 2.0 * GMT_half_map_width (GMT, data[i].y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
+				if (data[i].x < GMT->current.map.half_width)     /* Might reappear at right edge */
+					xpos[1] = xpos[0] + width;	/* Outside the right edge */
+				else      /* Might reappear at left edge */
+			              xpos[1] = xpos[0] - width;         /* Outside the left edge */
+			}
+			for (item = 0; item < n_times; item++) {	/* Plot symbols once or twice, depending on periodic (see above) */
+				switch (data[i].symbol) {
+					case GMT_SYMBOL_NONE:
+						break;
+					case GMT_SYMBOL_BARX:
+						if (!Ctrl->N.active) in[GMT_X] = MAX (GMT->common.R.wesn[XLO], MIN (xpos[item], GMT->common.R.wesn[XHI]));
+						if (data[i].flag & 4) {
+							GMT_geo_to_xy (GMT, xpos[item], data[i].y - 0.5 * data[i].dim[0], &x_1, &y_1);
+							GMT_geo_to_xy (GMT, xpos[item], data[i].y + 0.5 * data[i].dim[0], &x_2, &y_2);
+							data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
+						}
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						PSL_plotbox (PSL, xpos[item], data[i].y - 0.5 * data[i].dim[0], data[i].dim[2], data[i].y + 0.5 * data[i].dim[0]);
+						break;
+					case GMT_SYMBOL_BARY:
+						if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (data[i].y, GMT->common.R.wesn[YHI]));
+						if (data[i].flag & 4) {
+							GMT_geo_to_xy (GMT, xpos[item] - 0.5 * data[i].dim[0], data[i].y, &x_1, &y_1);
+							GMT_geo_to_xy (GMT, xpos[item] + 0.5 * data[i].dim[0], data[i].y, &x_2, &y_2);
+							data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
+						}
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						PSL_plotbox (PSL, xpos[item] - 0.5 * data[i].dim[0], data[i].y, xpos[item] + 0.5 * data[i].dim[0], data[i].dim[2]);
+						break;
+					case GMT_SYMBOL_COLUMN:
+						dim[2] = fabs (data[i].z - data[i].dim[2]);
+						if (data[i].flag & 4) {
+							GMT_geo_to_xy (GMT, xpos[item] - data[i].dim[0], data[i].y, &x_1, &y_1);
+							GMT_geo_to_xy (GMT, xpos[item] + data[i].dim[0], data[i].y, &x_2, &y_2);
+							dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
+						}
+						else
+							dim[0] = data[i].dim[0];
+						if (data[i].flag & 8) {
+							GMT_geo_to_xy (GMT, xpos[item], data[i].y - data[i].dim[1], &x_1, &y_1);
+							GMT_geo_to_xy (GMT, xpos[item], data[i].y + data[i].dim[1], &x_2, &y_2);
+							dim[1] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
+						}
+						else
+							dim[1] = data[i].dim[1];
+						column3D (GMT, PSL, xpos[item], data[i].y, (data[i].z + data[i].dim[2]) / 2.0, dim, rgb, data[i].outline);
+						break;
+					case GMT_SYMBOL_CUBE:
+						if (data[i].flag & 4) {
+							GMT_geo_to_xy (GMT, xpos[item] - data[i].dim[0], data[i].y, &x_1, &y_1);
+							GMT_geo_to_xy (GMT, xpos[item] + data[i].dim[0], data[i].y, &x_2, &y_2);
+							dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
+						}
+						else
+							dim[0] = data[i].dim[0];
+						dim[1] = dim[2] = dim[0];
+						column3D (GMT, PSL, xpos[item], data[i].y, data[i].z, dim, rgb, data[i].outline);
+						break;
+					case GMT_SYMBOL_CROSS:
+					case GMT_SYMBOL_PLUS:
+					case GMT_SYMBOL_DOT:
+					case GMT_SYMBOL_XDASH:
+					case GMT_SYMBOL_YDASH:
+					case GMT_SYMBOL_STAR:
+					case GMT_SYMBOL_CIRCLE:
+					case GMT_SYMBOL_SQUARE:
+					case GMT_SYMBOL_HEXAGON:
+					case GMT_SYMBOL_PENTAGON:
+					case GMT_SYMBOL_OCTAGON:
+					case GMT_SYMBOL_TRIANGLE:
+					case GMT_SYMBOL_INVTRIANGLE:
+					case GMT_SYMBOL_DIAMOND:
+					case GMT_SYMBOL_RECT:
+					case GMT_SYMBOL_RNDRECT:
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, data[i].symbol);
+						break;
+					case GMT_SYMBOL_ELLIPSE:
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						if (data[i].flag & 2)
+							GMT_geo_ellipse (GMT, xpos[item], data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
+						else
+							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_ELLIPSE);
+						break;
+					case GMT_SYMBOL_ROTRECT:
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						if (data[i].flag & 2)
+							GMT_geo_rectangle (GMT, xpos[item], data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
+						else
+							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_ROTRECT);
+						break;
+					case GMT_SYMBOL_TEXT:
+						if (fill_active && !data[i].outline)
+							PSL_setcolor (PSL, data[i].f.rgb, PSL_IS_FILL);
+						else if (!fill_active)
+							PSL_setfill (PSL, GMT->session.no_rgb, data[i].outline);
+						(void) GMT_setfont (GMT, &S.font);
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, 0.0, PSL_MC, data[i].outline);
+						free ((void*)data[i].string);
+						break;
+					case GMT_SYMBOL_VECTOR:
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_VECTOR);
+						break;
+					case GMT_SYMBOL_GEOVECTOR:
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						S.v = data[i].v;	/* Update vector attributes from saved values */
+						warn = GMT_geo_vector (GMT, xpos[item], data[i].y, data[i].dim[0], data[i].dim[1], &data[i].p, &S);
+						n_warn[warn]++;
+						break;
+					case GMT_SYMBOL_MARC:
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_MARC);
+						break;
+					case GMT_SYMBOL_WEDGE:
+						data[i].dim[0] *= 0.5;
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);
+						break;
+					case GMT_SYMBOL_ZDASH:
+						GMT_xyz_to_xy (GMT, xpos[item], data[i].y, data[i].z, &x_1, &y_1);
+						GMT_plane_perspective (GMT, -1, 0.0);
+						PSL_plotsymbol (PSL, x_1, y_1, data[i].dim, PSL_YDASH);
+						break;
+					case GMT_SYMBOL_CUSTOM:
+						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 						dim[0] = data[i].dim[0];
-					if (data[i].flag & 8) {
-						GMT_geo_to_xy (GMT, data[i].x, data[i].y - data[i].dim[1], &x_1, &y_1);
-						GMT_geo_to_xy (GMT, data[i].x, data[i].y + data[i].dim[1], &x_2, &y_2);
-						dim[1] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
-					}
-					else
-						dim[1] = data[i].dim[1];
-					column3D (GMT, PSL, data[i].x, data[i].y, (data[i].z + data[i].dim[2]) / 2.0, dim, rgb, data[i].outline);
-					break;
-				case GMT_SYMBOL_CUBE:
-					if (data[i].flag & 4) {
-						GMT_geo_to_xy (GMT, data[i].x - data[i].dim[0], data[i].y, &x_1, &y_1);
-						GMT_geo_to_xy (GMT, data[i].x + data[i].dim[0], data[i].y, &x_2, &y_2);
-						dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
-					}
-					else
-						dim[0] = data[i].dim[0];
-					dim[1] = dim[2] = dim[0];
-					column3D (GMT, PSL, data[i].x, data[i].y, data[i].z, dim, rgb, data[i].outline);
-					break;
-				case GMT_SYMBOL_CROSS:
-				case GMT_SYMBOL_PLUS:
-				case GMT_SYMBOL_DOT:
-				case GMT_SYMBOL_XDASH:
-				case GMT_SYMBOL_YDASH:
-				case GMT_SYMBOL_STAR:
-				case GMT_SYMBOL_CIRCLE:
-				case GMT_SYMBOL_SQUARE:
-				case GMT_SYMBOL_HEXAGON:
-				case GMT_SYMBOL_PENTAGON:
-				case GMT_SYMBOL_OCTAGON:
-				case GMT_SYMBOL_TRIANGLE:
-				case GMT_SYMBOL_INVTRIANGLE:
-				case GMT_SYMBOL_DIAMOND:
-				case GMT_SYMBOL_RECT:
-				case GMT_SYMBOL_RNDRECT:
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, data[i].symbol);
-					break;
-				case GMT_SYMBOL_ELLIPSE:
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					if (data[i].flag & 2)
-						GMT_geo_ellipse (GMT, data[i].x, data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
-					else
-						PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, PSL_ELLIPSE);
-					break;
-				case GMT_SYMBOL_ROTRECT:
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					if (data[i].flag & 2)
-						GMT_geo_rectangle (GMT, data[i].x, data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
-					else
-						PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, PSL_ROTRECT);
-					break;
-				case GMT_SYMBOL_TEXT:
-					if (fill_active && !data[i].outline)
-						PSL_setcolor (PSL, data[i].f.rgb, PSL_IS_FILL);
-					else if (!fill_active)
-						PSL_setfill (PSL, GMT->session.no_rgb, data[i].outline);
-					(void) GMT_setfont (GMT, &S.font);
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					PSL_plottext (PSL, data[i].x, data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, 0.0, PSL_MC, data[i].outline);
-					free ((void*)data[i].string);
-					break;
-				case GMT_SYMBOL_VECTOR:
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, PSL_VECTOR);
-					break;
-				case GMT_SYMBOL_GEOVECTOR:
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					S.v = data[i].v;	/* Update vector attributes from saved values */
-					warn = GMT_geo_vector (GMT, data[i].x, data[i].y, data[i].dim[0], data[i].dim[1], &data[i].p, &S);
-					n_warn[warn]++;
-					break;
-				case GMT_SYMBOL_MARC:
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, PSL_MARC);
-					break;
-				case GMT_SYMBOL_WEDGE:
-					data[i].dim[0] *= 0.5;
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, PSL_WEDGE);
-					break;
-				case GMT_SYMBOL_ZDASH:
-					GMT_xyz_to_xy (GMT, data[i].x, data[i].y, data[i].z, &x_1, &y_1);
-					GMT_plane_perspective (GMT, -1, 0.0);
-					PSL_plotsymbol (PSL, x_1, y_1, data[i].dim, PSL_YDASH);
-					break;
-				case GMT_SYMBOL_CUSTOM:
-					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
-					dim[0] = data[i].dim[0];
-					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
-						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - data[i].dim[j]) : data[i].dim[j];
-					}
-					if (!S.custom->start) S.custom->start = (get_rgb) ? 4 : 3;
-					GMT_draw_custom_symbol (GMT, data[i].x, data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
-					GMT_free (GMT, data[i].custom);
-					break;
+						for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
+							dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - data[i].dim[j]) : data[i].dim[j];
+						}
+						if (!S.custom->start) S.custom->start = (get_rgb) ? 4 : 3;
+						GMT_draw_custom_symbol (GMT, xpos[item], data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
+						GMT_free (GMT, data[i].custom);
+						break;
+				}
 			}
 		}
 		PSL_command (GMT->PSL, "U\n");

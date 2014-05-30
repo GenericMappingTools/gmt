@@ -8798,7 +8798,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
 
-	if (!strncmp (text, "E-", 2U) || !strncmp (text, "e-", 2U)) {	/* Special degenerate ellipse symbol, remove the - to avoid parsing issues */
+	if (!strncmp (text, "E-", 2U)) {	/* Special degenerate geographic ellipse symbol, remove the - to avoid parsing issues */
 		degenerate = true;
 		if (text[2]) strcpy (diameter, &text[2]);	/* Gave circle diameter on command line */
 		text[1] = 0;
@@ -8843,27 +8843,6 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			decode_error = (n != 1);
 		}
 	}
-#if 0	/* Original code */
-	else if (text[0] == 'l') {	/* Letter symbol is special case */
-		strncpy (text_cp, text, GMT_LEN256);	/* Copy for processing later */
-		if ((c = strchr (text_cp, '%'))) {	/* Gave font name or number, too */
-			*c = ' ';	/* Make the % a space */
-			c++;		/* Go to next character */
-			if (GMT_getfont (GMT, c, &p->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sl contains bad font (set to %s)\n", GMT_putfont (GMT, p->font));
-		}
-		if (text[1] == '/') {	/* No size given */
-			symbol_type = 'l';
-			if (p->size_x == 0.0) p->size_x = p->given_size_x;
-			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			col_off++;
-		}
-		else {
-			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, p->string);
-			p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
-			decode_error = (n != 3);
-		}
-	}
-#endif
 	else if (text[0] == 'k') {	/* Custom symbol spec */
 		for (j = (int)strlen (text); j > 0 && text[j] != '/'; --j);
 		if (j == 0) {	/* No slash, i.e., no symbol size given */
@@ -9078,18 +9057,9 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'e':
 			p->symbol = GMT_SYMBOL_ELLIPSE;
-			if (degenerate) {	/* Degenerate ellipse = circle */
-				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
-					p->size_x = p->size_y = GMT_to_inch (GMT, diameter);	/* In inches now */
-				}
-				else {	/* Must read from data file */
-					p->n_required = 1;	/* Only expect diameter */
-				}
-			}
-			else {	/* Expect angle in degrees, then major and major axes in plot units */
-				p->n_required = 3;
-				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
-			}
+			/* Expect angle in degrees, then major and major axes in plot units */
+			p->n_required = 3;
+			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
 			check = false;
 			break;
 
@@ -9183,10 +9153,15 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = GMT_SYMBOL_INVTRIANGLE;
 			break;
 		case 'J':	/* Expect dimensions in km to be scaled based on -J */
+			p->symbol = GMT_SYMBOL_ROTRECT;
 			p->convert_angles = 1;
+			/* Get all three from file */
+			p->n_required = 3;
 			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
 			p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
 			p->nondim_col[p->n_nondim++] = 4 + mode;
+			check = false;
+			break;
 		case 'j':
 			p->symbol = GMT_SYMBOL_ROTRECT;
 			p->n_required = 3;

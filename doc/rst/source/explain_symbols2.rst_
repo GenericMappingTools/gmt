@@ -64,6 +64,8 @@
         plot-distance units. An exception occurs for a linear projection in
         which we assume the ellipse axes are given in the same units as **-R**.
 	For degenerate ellipses (circles) with diameter given in km, use **-SE-**.
+	The diameter is excepted to be given in column 4.  Alternatively, append
+	the desired diameter in km to **-SE-** and this fixed diameter is used instead.
 
     **-Sf**
         **f**\ ront.
