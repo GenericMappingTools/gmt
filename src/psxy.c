@@ -756,7 +756,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
 			periodic = (GMT_IS_CYLINDRICAL (GMT) || GMT_IS_MISC (GMT));
 		}
-		periodic = ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN));
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
