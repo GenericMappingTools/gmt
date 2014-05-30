@@ -297,9 +297,9 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off plotting of repeating symbols for periodic maps.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside and plot repeating symbols].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  Choose between\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -487,9 +487,9 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'N':		/* Do not skip points outside border */
 				Ctrl->N.active = true;
-				if (opt->arg[0] == 'r') Ctrl->N.mode = PSXY_NO_CLIP_NO_REPEAT;
+				if (opt->arg[0] == 'r') Ctrl->N.mode = PSXY_NO_CLIP_REPEAT;
 				else if (opt->arg[0] == 'c') Ctrl->N.mode = PSXY_CLIP_NO_REPEAT;
-				else if (opt->arg[0] == '\0') Ctrl->N.mode = PSXY_NO_CLIP_REPEAT;
+				else if (opt->arg[0] == '\0') Ctrl->N.mode = PSXY_NO_CLIP_NO_REPEAT;
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Unrecognized argument %s\n", opt->arg);
 					n_errors++;
@@ -746,12 +746,16 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		Return (error);
 	}
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		bool periodic;
+		bool periodic = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width;
 
 		/* Determine if we need to worry about repeating periodic symbols */
+		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN)) {
+			/* Only do this for projection where west and east are split into two separate repeating boundaries */
+			periodic = (GMT_IS_CYLINDRICAL (GMT) || GMT_IS_MISC (GMT));
+		}
 		periodic = ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN));
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
@@ -762,7 +766,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		}
 		PSL_command (GMT->PSL, "V\n");
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
-		if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) p_in = in2;
+		if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required <= 1) p_in = in2;
 		do {	/* Keep returning records until we reach EOF */
 			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -885,8 +889,13 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				GMT_setpen (GMT, &current_pen);
 			}
 			
-			if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) {	/* Degenerate ellipses */
-				in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+			if (S.symbol == GMT_SYMBOL_ELLIPSE) {	/* Ellipses */
+				if (S.n_required == 0) {	/* Degenerate ellipses, Got diameter via S.size_x */
+					in2[ex2] = in2[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
+				}
+				else if (S.n_required == 1) {	/* Degenerate ellipses, expect single diameter via input */
+					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+				}
 			}
 
 			if (S.base_set == 2) {

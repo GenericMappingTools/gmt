@@ -8780,7 +8780,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len;
 	bool check = true, degenerate = false;
 	unsigned int ju;
-	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, *c = NULL;
+	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
 	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
@@ -8798,8 +8798,9 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
 
-	if (!strcmp (text, "E-") || !strcmp (text, "e-")) {	/* Special degenerate ellipse symbol, remove the - to avoid parsing issues */
+	if (!strncmp (text, "E-", 2U) || !strncmp (text, "e-", 2U)) {	/* Special degenerate ellipse symbol, remove the - to avoid parsing issues */
 		degenerate = true;
+		if (text[2]) strcpy (diameter, &text[2]);	/* Gave circle diameter on command line */
 		text[1] = 0;
 	}
 	if (!text[0]) {	/* No symbol or size given */
@@ -9059,8 +9060,13 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = GMT_SYMBOL_ELLIPSE;
 			p->convert_angles = 1;
 			if (degenerate) {	/* Degenerate ellipse = circle */
-				p->n_required = 1;	/* Only expect diameter */
-				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Since diamger is in km, not inches or cm etc */
+				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
+					p->size_x = p->size_y = atof (diameter);	/* In km */
+				}
+				else {	/* Must read from data file */
+					p->n_required = 1;	/* Only expect diameter */
+					p->nondim_col[p->n_nondim++] = 2 + mode;	/* Since diameter is in km, not inches or cm etc */
+				}
 			}
 			else {
 				p->n_required = 3;
@@ -9073,7 +9079,12 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'e':
 			p->symbol = GMT_SYMBOL_ELLIPSE;
 			if (degenerate) {	/* Degenerate ellipse = circle */
-				p->n_required = 1;	/* Only expect diameter */
+				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
+					p->size_x = p->size_y = GMT_to_inch (GMT, diameter);	/* In inches now */
+				}
+				else {	/* Must read from data file */
+					p->n_required = 1;	/* Only expect diameter */
+				}
 			}
 			else {	/* Expect angle in degrees, then major and major axes in plot units */
 				p->n_required = 3;
