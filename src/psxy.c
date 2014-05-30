@@ -8,7 +8,7 @@
  *	it under the terms of the GNU Lesser General Public License as published by
  *	the Free Software Foundation; version 3 or any later version.
  *
- *	This program is distributed in the hope that it will be useful,
+ *	This program is distrdeibuted in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
@@ -328,6 +328,8 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: Direction, x- and y-dimensions in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions in km and convert azimuths based on map projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SJ- for a degenerate rectangle (square w/no rotation) with only diameter in km given\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     in column 3, or append a fixed diameter in km to -SJ- instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     For linear projection we scale dimensions by the map scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fronts: Give <tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If <tickgap> is negative it means the number of gaps instead.\n");
@@ -766,7 +768,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		}
 		PSL_command (GMT->PSL, "V\n");
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
-		if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required <= 1) p_in = in2;
+		if ((S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT) && S.n_required <= 1) p_in = in2;
 		do {	/* Keep returning records until we reach EOF */
 			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -889,11 +891,11 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				GMT_setpen (GMT, &current_pen);
 			}
 			
-			if (S.symbol == GMT_SYMBOL_ELLIPSE) {	/* Ellipses */
-				if (S.n_required == 0) {	/* Degenerate ellipses, Got diameter via S.size_x */
+			if (S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT) {	/* Ellipses and rectangles */
+				if (S.n_required == 0) {	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
 					in2[ex2] = in2[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
 				}
-				else if (S.n_required == 1) {	/* Degenerate ellipses, expect single diameter via input */
+				else if (S.n_required == 1) {	/* Degenerate ellipse or rectangle, expect single diameter via input */
 					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 				}
 			}

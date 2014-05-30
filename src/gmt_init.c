@@ -8798,7 +8798,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
 
-	if (!strncmp (text, "E-", 2U)) {	/* Special degenerate geographic ellipse symbol, remove the - to avoid parsing issues */
+	if (!strncmp (text, "E-", 2U) || !strncmp (text, "J-", 2U)) {	/* Special degenerate geographic ellipse and rectangle symbols, remove the - to avoid parsing issues */
 		degenerate = true;
 		if (text[2]) strcpy (diameter, &text[2]);	/* Gave circle diameter on command line */
 		text[1] = 0;
@@ -9155,11 +9155,21 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'J':	/* Expect dimensions in km to be scaled based on -J */
 			p->symbol = GMT_SYMBOL_ROTRECT;
 			p->convert_angles = 1;
-			/* Get all three from file */
-			p->n_required = 3;
-			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
-			p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
-			p->nondim_col[p->n_nondim++] = 4 + mode;
+			if (degenerate) {	/* Degenerate rectangle = square with zero angle */
+				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
+					p->size_x = p->size_y = atof (diameter);	/* In km */
+				}
+				else {	/* Must read diameter from data file */
+					p->n_required = 1;	/* Only expect diameter */
+					p->nondim_col[p->n_nondim++] = 2 + mode;	/* Since diameter is in km, not inches or cm etc */
+				}
+			}
+			else {	/* Get all three from file */
+				p->n_required = 3;
+				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+				p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
+				p->nondim_col[p->n_nondim++] = 4 + mode;
+			}
 			check = false;
 			break;
 		case 'j':
