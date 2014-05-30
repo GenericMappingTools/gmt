@@ -20,7 +20,7 @@ Synopsis
 [ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
 [ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ] 
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N** ] 
+[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N**\ [**c**\ \|\ **r**] ] 
 [ **-O** ] [ **-P** ] 
 [ **-S**\ [*symbol*][\ *size*\ [**u**] ]
 [ |SYN_OPT-U| ]
@@ -137,10 +137,13 @@ Optional Arguments
     the headers will use the implied color for polygon fill [Default is
     polygon pen color].
 
-**-N**
+**-N**\ [**c**\ \|\ **r**]
     Do NOT skip symbols that fall outside map border [Default plots points
     inside border only]. The option does not apply to lines and polygons
-    which are always clipped to the map region. 
+    which are always clipped to the map region. For periodic (360-longitude)
+    maps we must plot symbols twice in case they are clipped by the repeating
+    boundary. Use **-Nr** to turn off plotting of such repeating symbols, or
+    use **-Nc** to retain clipping but turn off plotting of repeating symbols.
 
 .. include:: explain_-O.rst_
 

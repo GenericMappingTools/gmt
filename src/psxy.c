@@ -66,8 +66,9 @@ struct PSXY_CTRL {
 	struct L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N */
+	struct N {	/* -N[r|c] */
 		bool active;
+		unsigned int mode;
 	} N;
 	struct S {	/* -S */
 		bool active;
@@ -84,11 +85,21 @@ struct PSXY_CTRL {
 };
 
 #define EBAR_CAP_WIDTH		7.0	/* Error bar cap width */
-#define EBAR_NONE		0
-#define EBAR_NORMAL		1
-#define EBAR_ASYMMETRICAL	2
-#define EBAR_WHISKER		3
-#define EBAR_NOTCHED_WHISKER	4
+
+enum Psxy_ebartype {
+	EBAR_NONE		= 0,
+	EBAR_NORMAL		= 1,
+	EBAR_ASYMMETRICAL	= 2,
+	EBAR_WHISKER		= 3,
+	EBAR_NOTCHED_WHISKER	= 4};
+
+enum Psxy_cliptype {
+	PSXY_CLIP_REPEAT 	= 0,
+	PSXY_CLIP_NO_REPEAT,
+	PSXY_NO_CLIP_REPEAT,
+	PSXY_NO_CLIP_NO_REPEAT};
+
+EXTERN_MSC double GMT_half_map_width (struct GMT_CTRL *GMT, double y);
 
 void *New_psxy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXY_CTRL *C;
@@ -100,6 +111,7 @@ void *New_psxy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new co
 	C->E.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	C->E.size = EBAR_CAP_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
+	C->N.mode = PSXY_CLIP_REPEAT;
 	return (C);
 }
 
@@ -284,7 +296,9 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off plotting of repeating symbols for periodic maps.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  Choose between\n",
@@ -473,6 +487,13 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'N':		/* Do not skip points outside border */
 				Ctrl->N.active = true;
+				if (opt->arg[0] == 'r') Ctrl->N.mode = PSXY_NO_CLIP_NO_REPEAT;
+				else if (opt->arg[0] == 'c') Ctrl->N.mode = PSXY_CLIP_NO_REPEAT;
+				else if (opt->arg[0] == '\0') Ctrl->N.mode = PSXY_NO_CLIP_REPEAT;
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Unrecognized argument %s\n", opt->arg);
+					n_errors++;
+				}
 				break;
 			case 'S':		/* Get symbol [and size] */
 				Ctrl->S.active = true;
@@ -519,7 +540,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 
 int GMT_psxy (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psxy task */
-	bool polygon, penset_OK = true, not_line, old_is_world;
+	bool polygon, penset_OK = true, not_line, old_is_world, set_clip;
 	bool get_rgb, read_symbol, clip_set = false, fill_active;
 	bool error_x = false, error_y = false, def_err_xy = false;
 	bool default_outline, outline_active, geovector = false;
@@ -612,7 +633,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	Ctrl->E.size *= 0.5;	/* Since we draw half-way in either direction */
 
-
 	if (Ctrl->C.active) {
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
@@ -683,14 +703,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 #endif
 	if (S.symbol != GMT_SYMBOL_LINE) {	/* Only set clip if plotting symbols */
 		/* Unless -N except special case of 360-range conical (which is periodic but do not touch at w=e) do we clip */
-		if (!Ctrl->N.active || (GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {
+		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_CLIP_NO_REPEAT) || (GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {
 			GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 			clip_set = true;
 		}
 	}
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);	/* Set the required font */
-	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = true;	/* So we can see ellipses that have centers outside -R */
+	//if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = true;	/* So we can see ellipses that have centers outside -R */
 	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set && GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set && GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
 	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
@@ -726,8 +746,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		Return (error);
 	}
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		unsigned int n_warn[3] = {0, 0, 0}, warn;
+		bool periodic;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
+		double xpos[2], width;
+
+		/* Determine if we need to worry about repeating periodic symbols */
+		periodic = ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN));
+		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
@@ -870,7 +896,19 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			if (S.read_size) S.size_x = in[ex1];	/* Got size from input column */
 			dim[0] = S.size_x;
 
-			switch (S.symbol) {
+			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
+			 * at the other periodic boundary.  We try to handle this below */
+			
+			xpos[0] = plot_x;
+			if (periodic) {
+				width = 2.0 * GMT_half_map_width (GMT, plot_y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
+				if (plot_x < GMT->current.map.half_width)     /* Might reappear at right edge */
+					xpos[1] = xpos[0] + width;	/* Outside the right edge */
+				else      /* Might reappear at left edge */
+			              xpos[1] = xpos[0] - width;         /* Outside the left edge */
+			}
+			for (item = 0; item < n_times; item++) {	/* Plot symbols once or twice, depending on periodic (see above) */
+				switch (S.symbol) {
 				case GMT_SYMBOL_NONE:
 					break;
 				case GMT_SYMBOL_BARX:
@@ -913,14 +951,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				case GMT_SYMBOL_TRIANGLE:
 				case GMT_SYMBOL_INVTRIANGLE:
 				case GMT_SYMBOL_DIAMOND:
-					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_RNDRECT:
 					dim[2] = in[ex3];
 				case GMT_SYMBOL_RECT:
 					dim[0] = in[ex1];
 					dim[1] = in[ex2];
-					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_ROTRECT:
 				case GMT_SYMBOL_ELLIPSE:
@@ -929,14 +967,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						GMT_flip_angle_d (GMT, &dim[0]);
 						dim[1] = p_in[ex2];
 						dim[2] = p_in[ex3];
-						PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
 					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
 						GMT_flip_angle_d (GMT, &dim[0]);
 						dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
 						dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
-						PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
 					else if (S.symbol == GMT_SYMBOL_ELLIPSE)	/* Got axis in km */
 						GMT_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
@@ -949,7 +987,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					else if (!Ctrl->G.active)
 						PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
 					(void) GMT_setfont (GMT, &S.font);
-					PSL_plottext (PSL, plot_x, plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_active);
+					PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_active);
 					break;
 				case GMT_SYMBOL_VECTOR:
 					GMT_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
@@ -971,12 +1009,12 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					else {	/* Compute tip coordinates from tail and length */
 						GMT_flip_angle_d (GMT, &direction);
 						sincosd (direction, &s, &c);
-						x_2 = plot_x + length * c;
+						x_2 = xpos[item] + length * c;
 						y_2 = plot_y + length * s;
 						justify = GMT_vec_justify (S.v.status);	/* Return justification as 0-2 */
 						if (justify) {	/* Meant to center the vector at center (1) or tip (2) */
-							dx = justify * 0.5 * (x_2 - plot_x);	dy = justify * 0.5 * (y_2 - plot_y);
-							plot_x -= dx;		plot_y -= dy;
+							dx = justify * 0.5 * (x_2 - xpos[item]);	dy = justify * 0.5 * (y_2 - plot_y);
+							xpos[item] -= dx;		plot_y -= dy;
 							x_2 -= dx;		y_2 -= dy;
 						}
 					}
@@ -993,7 +1031,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
 					dim[5] = GMT->current.setting.map_vector_shape;
 					dim[6] = (double)S.v.status;
-					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */
@@ -1015,7 +1053,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width, dim[5] = s * S.v.v_width;
 					dim[6] = GMT->current.setting.map_vector_shape;
 					dim[7] = (double)S.v.status;
-					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_WEDGE:
 					if (!S.convert_angles) {
@@ -1032,15 +1070,16 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						dim[1] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex2+S.read_size]);
 					}
 					dim[0] *= 0.5;
-					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_CUSTOM:
 					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
 						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size+j]) : in[ex1+S.read_size+j];
 					}
 					if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
-					GMT_draw_custom_symbol (GMT, plot_x, plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
+					GMT_draw_custom_symbol (GMT, xpos[item], plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
 					break;
+			}
 			}
 		} while (true);
 		PSL_command (GMT->PSL, "U\n");
