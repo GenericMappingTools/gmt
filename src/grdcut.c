@@ -76,6 +76,7 @@ void *New_grdcut_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->N.value = GMT->session.f_NaN;
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
+	C->Z.mode = NAN_IS_IGNORED;
 	return (C);
 }
 
@@ -108,7 +109,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Sn to set all nodes in the subset outside the circle to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   all values outside this region are outside the range [-inf/+inf].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zn to consider NaNs outside so resulting grid is NaN-free.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zn to consider NaNs to be outside the range.  The resulting grid will be NaN-free.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs inrange instead [Default just ignores NaNs in decision].\n");
 	GMT_Option (API, "f,.");
 	
@@ -194,6 +195,29 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int *side)
+{	/* Looo around current perimeter and count # of nans, return sum and pass back which side had most nans */
+	unsigned int col, row, sum = 0, k;
+	uint64_t node;
+	
+	GMT_memset (count, 4, unsigned int);	/* Reset count */
+	*side = 0;
+	/* South count: */
+	for (col = col0, node = GMT_IJP (G->header, row1, col); col <= col1; col++, node++) if (GMT_is_fnan (G->data[node])) count[0]++;
+	/* East count: */
+	for (row = row0, node = GMT_IJP (G->header, row, col1); row <= row1; row++, node += G->header->mx) if (GMT_is_fnan (G->data[node])) count[1]++;
+	/* North count: */
+	for (col = col0, node = GMT_IJP (G->header, row0, col); col <= col1; col++, node++) if (GMT_is_fnan (G->data[node])) count[2]++;
+	/* West count: */
+	for (row = row0, node = GMT_IJP (G->header, row, col0); row <= row1; row++, node += G->header->mx) if (GMT_is_fnan (G->data[node])) count[3]++;
+	for (k = 0; k < 4; k++) {	/* TIme to sum up and determine side with most NaNs */
+		sum += count[k];
+		if (k && count[k] > count[*side]) *side = k;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Nans found: W = %d E = %d S = %d N = %d\n", count[3], count[1], count[0], count[2]);
+	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdcut_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -236,57 +260,32 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
-		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
+		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col, sum, side, count[4];
 		bool go;
 		
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */
 		}
-		if (Ctrl->Z.mode == NAN_IS_SKIPPED) {	/* Must scan in from outside to the inside, 1 perimeter at the time */
-			bool done = false, check_w = true, check_e = true, check_s = true, check_n = true;
+		if (Ctrl->Z.mode == NAN_IS_SKIPPED) {	/* Must scan in from outside to the inside, one side at the time, remove side with most Nans */
 			row1 = G->header->ny - 1;	col1 = G->header->nx - 1;
-			while (!done) {	/* Keep checking perimeter rows and cols */
-				if (check_w) {	/* See if we can eliminate the xmin column as having a NaN value */
-					for (row = row0, node = GMT_IJP (G->header, row, col0), go = false; !go && row <= row1; row++, node += G->header->mx) {
-						if (GMT_is_fnan (G->data[node])) go = true;
-					}
-					if (go && col0 < col1) col0++;	/* Need to move in from xmin */
-					else check_w = false;		/* Done shrinking from this side */
-				}
-				if (check_e) {	/* See if we can eliminate the xmax column as having a NaN value */
-					for (row = row0, node = GMT_IJP (G->header, row, col1), go = false; !go && row <= row1; row++, node += G->header->mx) {
-						if (GMT_is_fnan (G->data[node])) go = true;
-					}
-					if (go && col1 > col0) col1--;	/* Need to move in from xmin */
-					else check_e = false;		/* Done shrinking from this side */
-				}
-				if (check_s) {	/* See if we can eliminate the ymin row as having a NaN value */
-					for (col = col0, node = GMT_IJP (G->header, row1, col), go = false; !go && col <= col1; col++, node++) {
-						if (GMT_is_fnan (G->data[node])) go = true;
-					}
-					if (go && row1 > row0) row1--;	/* Need to move in from ymin */
-					else check_s = false;		/* Done shrinking from this side */
-				}
-				if (check_n) {	/* See if we can eliminate the ymax row as having a NaN value */
-					for (col = col0, node = GMT_IJP (G->header, row0, col), go = false; !go && col <= col1; col++, node++) {
-						if (GMT_is_fnan (G->data[node])) go = true;
-					}
-					if (go && row0 < row1) row0++;	/* Need to move in from ymax */
-					else check_n = false;		/* Done shrinking from this side */
-				}
-				done = (!(check_w || check_e || check_s || check_n));	/* Done when no more sides to move inward */
+			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side);	/* Initial border count */
+			while (sum) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
+				if (side == 3 && col0 < col1)      col0++;	/* Need to move in from the left */
+				else if (side == 1 && col1 > col0) col1--;	/* Need to move in from the right */
+				else if (side == 0 && row1 > row0) row1--;	/* Need to move up from the bottom */
+				else if (side == 2 && row0 < row1) row0++;	/* Need to move down from the top */
+				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side);
 			}
 			if (col0 == col1 || row0 == row1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Zn is empty!\n");
 				Return (EXIT_FAILURE);
 			}
 		}
-		else {
+		else {	/* Here NaNs are either ignored (NAN_IS_IGNORED) or consider to be within range (NAN_IS_INRANGE) */
 			for (row = 0, go = true; go && row < G->header->ny; row++) {	/* Scan from ymax towards ymin */
 				for (col = 0, node = GMT_IJP (G->header, row, 0); go && col < G->header->nx; col++, node++) {
 					if (GMT_is_fnan (G->data[node])) {
 						if (Ctrl->Z.mode == NAN_IS_INRANGE) go = false;	/* Must stop since this NaN value defines the inner box */
-						else if (Ctrl->Z.mode == NAN_IS_SKIPPED) break;	/* Cannot have NaN in row so skip to next row */
 					}
 					else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
 						go = false;
@@ -301,7 +300,6 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 				for (col = 0, node = GMT_IJP (G->header, row, 0); go && col < G->header->nx; col++, node++) {
 					if (GMT_is_fnan (G->data[node])) {
 						if (Ctrl->Z.mode == NAN_IS_INRANGE) go = false;	/* Must stop since this NaN value defines the inner box */
-						else if (Ctrl->Z.mode == NAN_IS_SKIPPED) break;	/* Cannot have NaN in row so skip to next row */
 					}
 					else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
 						go = false;
@@ -312,7 +310,6 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 				for (row = row0, node = GMT_IJP (G->header, row0, col); go && row <= row1; row++, node += G->header->mx) {
 					if (GMT_is_fnan (G->data[node])) {
 						if (Ctrl->Z.mode == NAN_IS_INRANGE) go = false;	/* Must stop since this NaN value defines the inner box */
-						else if (Ctrl->Z.mode == NAN_IS_SKIPPED) break;	/* Cannot have NaN in row so skip to next col */
 					}
 					else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
 						go = false;
@@ -323,7 +320,6 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 				for (row = row0, node = GMT_IJP (G->header, row0, col); go && row <= row1; row++, node += G->header->mx) {
 					if (GMT_is_fnan (G->data[node])) {
 						if (Ctrl->Z.mode == NAN_IS_INRANGE) go = false;	/* Must stop since this NaN value defines the inner box */
-						else if (Ctrl->Z.mode == NAN_IS_SKIPPED) break;	/* Cannot have NaN in row so skip to next col */
 					}
 					else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
 						go = false;
