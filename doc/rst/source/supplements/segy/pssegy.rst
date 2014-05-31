@@ -20,12 +20,14 @@ Synopsis
 [ **-B**\ *bias* ]
 [ **-C**\ *clip* ]
 [ **-E**\ *error* ] [ **-I** ] [ **-K** ] [ **-L**\ *nsamp* ]
-[ **-M**\ *ntrace* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-S**\ *header* ]
+[ **-M**\ *ntrace* ] [ **-N** ] [ **-O** ] [ **-P** ]
+[ **-Q**\ *<mode><value>* ]
+[ **-S**\ *header* ]
 [ **-T**\ *filename* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-X**\ *scale* ] [ **-Y**\ *sample_int* ] 
-[ **-Z** ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 
@@ -110,6 +112,16 @@ Optional Arguments
 .. include:: ../../explain_-O.rst_
 .. include:: ../../explain_-P.rst_
 
+**-Q**\ *<mode><value>*
+    Can be used to change 4 different settings:
+       **-Qb**\ *<bias>* to bias scaled traces (-B-0.1 subtracts 0.1 from values)
+
+       **-Qu**\ *<redvel>* to apply reduction velocity (-ve removes reduction already present)
+
+       **-Qx**\ *<mult>* to multiply trace locations by *mult*
+
+       **-Qy**\ *<dy>* to override sample interval in reel header.
+
 **-S**\ *header*
     Read trace locations from trace headers: header is either c for CDP,
     o for offset, or b<num> to read a long starting at byte <num> in the
@@ -128,10 +140,8 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-X**\ *scale*
-    Multiply trace locations by scale before plotting.
-**-Y**\ *sample_int*
-    Override sample interval in reel header.
+.. include:: ../../explain_-XY.rst_
+
 **-Z**
     Do not plot traces with zero rms amplitude.
 
