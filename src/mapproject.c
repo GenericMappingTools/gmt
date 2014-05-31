@@ -43,7 +43,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>JRVbdfghios" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>JRVbdfghiops" GMT_OPT("HMm")
 
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -848,6 +848,10 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 				if (Ctrl->C.shift) {
 					out[GMT_X] += Ctrl->C.easting;
 					out[GMT_Y] += Ctrl->C.northing;
+				}
+				if (GMT->current.proj.three_D) {
+					double xx = out[GMT_X], yy = out[GMT_Y];
+					GMT_xyz_to_xy (GMT, xx, yy, GMT_z_to_zz (GMT, in[GMT_Z]), &out[GMT_X], &out[GMT_Y]);
 				}
 			}
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
