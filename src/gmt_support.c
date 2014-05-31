@@ -3730,6 +3730,8 @@ int gmt_code_to_lonlat (struct GMT_CTRL *GMT, char *code, double *lon, double *l
 				break;
 		}
 	}
+	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized location code %s\n", code);
+
 	return (error);
 }
 

@@ -114,10 +114,8 @@ Optional Arguments
     minimum and maximum locations in the grid (only available if only
     one grid is given). Instead of two coordinates you can specify an
     origin and one of **+a**, **+o**, or **+r**. You may append 
-    **+i**\ *inc*\ [**u**] to set the sampling interval (append appropriate
-    unit); if not given then we default to half the minimum grid interval,
-    and if geographic we select great circle distances in km as the default
-    unit and method. The **+a** sets the azimuth of a profile of given
+    **+i**\ *inc*\ [**u**] to set the sampling interval; if not given then we default to half the minimum grid interval.
+    The **+a** sets the azimuth of a profile of given
     length starting at the given origin, while **+o** centers the profile
     on the origin; both require **+l**. For circular sampling specify
     **+r** to define a circle of given radius centered on the origin;
@@ -125,6 +123,9 @@ Optional Arguments
     the desired number of points, while **+l**\ *length* gives the
     total length of the profile. Append **+d** to output the along-track
     distances after the coordinates.  Note: No track file will be read.
+    Also note that only one distance unit can be chosen.  Giving different units
+    will result in an error.  If no units are specified we default to
+    great circle distances in km (if geographic).
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
@@ -251,7 +252,15 @@ erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 
    ::
 
-    grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.d
+    grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
+
+To sample the grid data.nc along a line from the lower left to the upper
+right corner, using a grid spacing of 1 km, and output distances as well,
+try
+
+   ::
+
+    grdtrack -ELB/RT+i1k+d -Gdata.nc > profiles.txt
 
 See Also
 --------
