@@ -2,6 +2,19 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-05-30	pwessel
+	* grdtrack.c:		Did not properly handle the distance units specified in -E.
+				Now we pre-scan for units to ensure that only ONE unit is used
+				for the various distance options, then apply that unit in the
+				distance calculations throughout.  Results will use that unit.
+				If no unit is specified we default to km (geographic) or user
+				unit (Cartesian).  Also required some changes in gmt_support.c
+				Response to forum message # 689.
+
+2014-05-29	pwessel
+	* gmt_plot.c:		The length of the map scale bar was incorrectly calculated
+				for some oblique projections.  Issue #569.
+
 2014-05-26	pwessel
 	* gmt_map.c:		The map region clip path for -JE/e was hardwired to a full
 				circle and did not care about -R setting.

@@ -3739,7 +3739,8 @@ double gmt_determine_endpoint (struct GMT_CTRL *GMT, double x0, double y0, doubl
 	sincosd (az, &s_az, &c_az);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical solution */
 		double s0, c0, s_d, c_d;
-		double d = (length / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get spherical degrees */
+		double d = (length / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen unit to meter or degree */
+		if (!GMT->current.map.dist[GMT_MAP_DIST].arc) d /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
 		sincosd (y0, &s0, &c0);
 		sincosd (d, &s_d, &c_d);
 		*x1 = x0 + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
@@ -3759,7 +3760,8 @@ double gmt_determine_endpoints (struct GMT_CTRL *GMT, double x[], double y[], do
 	length /= 2.0;	/* Going half-way in each direction */
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical solution */
 		double s0, c0, s_d, c_d;
-		double d = (length / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get spherical degrees */
+		double d = (length / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen unit to meter or degree */
+		if (!GMT->current.map.dist[GMT_MAP_DIST].arc) d /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
 		sincosd (y[0], &s0, &c0);
 		sincosd (d, &s_d, &c_d);
 		x[1] = x[0] + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
@@ -3785,8 +3787,10 @@ uint64_t gmt_determine_circle (struct GMT_CTRL *GMT, double x0, double y0, doubl
 	double d_angle = 360.0 / n;
 
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical solution */
-		double R[3][3], v[3], v_prime[3];
-		double lat = 90.0 - (r / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get small circle latitude about NP */
+		double R[3][3], v[3], v_prime[3], lat;
+		double colat = (r / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen unit to meter or degree */
+		if (!GMT->current.map.dist[GMT_MAP_DIST].arc) colat /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
+		lat = 90.0 - colat;	/* Get small circle latitude about NP */
 		/* Set up small circle in local coordinates, convert to Cartesian, rotate, and covert to geo */
 		/* Rotation pole is 90 away from x0, at equator, and rotates by 90-y0 degrees */
 		GMT_make_rot_matrix (GMT, x0 + 90.0, 0.0, 90.0 - y0, R);
@@ -3815,13 +3819,13 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	 * If project is true then we convert to plot units.
 	 * If get_distances is true then add a column with distances. We also do this if +d is added to args.
 	 */
-	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	unsigned int n_cols, np = 0, k, kk, s, pos = 0, pos2 = 0, this_mode, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	enum GMT_profmode p_mode;
 	int n, error = 0;
 	double L, az = 0.0, length = 0.0, r = 0.0;
 	size_t n_alloc = GMT_SMALL_CHUNK, len;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
-	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
+	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, d_unit;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
@@ -3833,6 +3837,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	T->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 	n_cols = (get_distances) ? 3 :2;
 	T->n_columns = n_cols;
+	
 	while (!error && (GMT_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
 		S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		GMT_alloc_segment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
@@ -3847,16 +3852,16 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 			while ((GMT_strtok (modifiers, "+", &pos2, p2))) {
 				switch (p2[0]) {
 					case 'a':	az = atof (&p2[1]);	p_mode |= GMT_GOT_AZIM;		break;
-					case 'i':	step = atof (&p2[1]);	p_mode |= GMT_GOT_INC;		break;
-					case 'l':	length = atof (&p2[1]);	p_mode |= GMT_GOT_LENGTH;	break;
+					case 'd':	/* Already processed up front to set n_cols*/		break;
 					case 'n':	np = atoi (&p2[1]);	p_mode |= GMT_GOT_NP;		break;
 					case 'o':	az = atof (&p2[1]);	p_mode |= GMT_GOT_ORIENT;	break;
+					case 'i':	step = atof (&p2[1]);	p_mode |= GMT_GOT_INC;		break;
+					case 'l':	length = atof (&p2[1]);	p_mode |= GMT_GOT_LENGTH;	break;
 					case 'r':	r = atof (&p2[1]);	p_mode |= GMT_GOT_RADIUS;	break;
-					case 'd':	/* ALready processed up front to set n_cols*/		break;
 					default:	error++;	break;
 				}
 			}
-			/* Some sanity checking */
+			/* Some sanity checking to make correct combos of modifiers are given */
 			if (((p_mode & GMT_GOT_AZIM) || (p_mode & GMT_GOT_ORIENT)) && (p_mode & GMT_GOT_LENGTH) == 0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Modifiers +a and +o requires +l<length>\n", option);
 				error++;
@@ -3930,11 +3935,16 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 		}
 		else if (p_mode & GMT_GOT_RADIUS) {	/* Got center and a radius; determine circular path */
 			double x0, y0;
-			/* Determine np from the +codes */
+			/* Determine np from the +i<inc> if +n was not set */
 			x0 = S->coord[GMT_X][0];	y0 = S->coord[GMT_Y][0];
 			if (p_mode & GMT_GOT_INC) {
-				step = (step / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get degrees */
-				L = (GMT_is_geographic (GMT, GMT_IN)) ? sind (y0) * 360.0 : 2.0 * M_PI * r;
+				double colat = (r / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen radius unit to meter or degree */
+				if (!GMT->current.map.dist[GMT_MAP_DIST].arc) colat /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
+				/* colat is the radius in spherical degrees (if geographic) */
+				step = (step / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen unit to meter or degree */
+				if (!GMT->current.map.dist[GMT_MAP_DIST].arc) step /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
+				/* If geographic then the length of the circle is 360 degeres of longitude scaled by the sine of the colatitude */
+				L = (GMT_is_geographic (GMT, GMT_IN)) ? sind (colat) * 360.0 : 2.0 * M_PI * r;
 				np = urint (L / step);
 			}
 			S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], np, double);

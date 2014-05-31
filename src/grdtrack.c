@@ -415,6 +415,57 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsigned int *mode)
+{	/* Examine the -E<args> option and determine the distance unit and mode. */
+	unsigned int k, kk, s, pos = 0, pos2 = 0, len, error = 0;
+	char p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit, l_unit[3];
+
+	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
+	
+	*mode = (GMT_is_geographic (GMT, GMT_IN)) ? 2 : 0;	/* Great circle or Cartesian */
+	*unit = 0;	/* Initially not set */
+	while (!error && (GMT_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
+		k = s = 0;	len = strlen (p);
+		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char> that may take a unit, if any */
+			if ((p[k] == '+') && (p[k+1] && strchr ("ilr", p[k+1]))) s = k;
+			k++;
+		}
+		if (s == 0) continue;	/* No modifier with unit specification; go to next line */
+		GMT_memset (l_unit, 3, char);	/* Clean register */
+		strcpy (modifiers, &p[s]);
+		pos2 = 0;
+		while ((GMT_strtok (modifiers, "+", &pos2, p2))) {
+			switch (p2[0]) {
+				case 'i':	/* Increment along line */
+					if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[0] = p2[strlen(p2)-1];	break;
+				case 'l':	/* Length of line */
+					if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[1] = p2[strlen(p2)-1];	break;
+				case 'r':	/* Radius of circular ring */
+					if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[2] = p2[strlen(p2)-1];	break;
+			}
+		}
+		/* Some sanity checking to make sure only one unit is given for all lines */
+		for (k = 0; k < 3; k++) {
+			if (l_unit[k] == 0) continue;	/* Not set, skip to next */
+			for (kk = k + 1; kk < 3; kk++) {
+				if (l_unit[kk] == 0) continue;	/* Not set, skip to next */
+				if (l_unit[k] != l_unit[kk]) error++;
+			}
+			this_unit = l_unit[k];
+		}
+		if (this_unit) {	/* Got a unit */
+			if (*unit && this_unit != *unit)	/* Got a different unit that before */
+				error++;
+			else
+				*unit = this_unit;	/* Set default unit if not specified as part of the modifiers */
+		}
+	}
+	if (*unit == 0) *unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';	/* Default is km or Cartesian if nothing is specified */
+	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E:  All lines must have the same distance units\n");
+	
+	return (error);
+}
+
 int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, bool img, double x_in, double y_in, double value[])
 {
 	unsigned int g, n_in, n_set;
@@ -630,7 +681,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 
 	GC = GMT_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
-	value = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double);
 	
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GC[g].type = Ctrl->G.type[g];
@@ -665,17 +715,29 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		double xyz[2][3];
 		uint64_t dim[4] = {1, 0, 0, 3};
 		
+		if (get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
+			for (g = 0; g < Ctrl->G.n_grids; g++) {	/* Free up the grids */
+				if (Ctrl->G.type[g] == 0 && GMT_Destroy_Data (API, &GC[g].G) != GMT_OK) {
+					Return (API->error);
+				}
+				else
+					GMT_free_grid (GMT, &GC[g].G, true);
+			}
+			GMT_free (GMT, GC);
+			Return (EXIT_FAILURE);
+		}
+		GMT_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
+		
 		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		GMT_free_table (GMT, Din->table[0], Din->alloc_mode);	/* Since we will add our own below */
-		if (Ctrl->E.unit == 0) {	/* Was not set via -E; default to Cartesian or km (great circle dist) */
-			Ctrl->E.unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';
-			Ctrl->E.mode = (GMT_is_geographic (GMT, GMT_IN)) ? 2 : 0;
-			/* Set default spacing to half the min grid spacing; convert to km if geographic */
-			Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
-			if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->E.step *= GMT->current.proj.DIST_KM_PR_DEG;
+		/* Set default spacing to half the min grid spacing: */
+		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
+		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
+			if (!GMT->current.map.dist[GMT_MAP_DIST].arc) Ctrl->E.step *= GMT->current.proj.DIST_M_PR_DEG;	/* Convert from degrees to meters or from min/secs to degrees */
+			Ctrl->E.step *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scale to chosen unit */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Default sampling interval in -E is %g %c.\n", Ctrl->E.step, Ctrl->E.unit);
 		}
-		GMT_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);
-		if (Ctrl->G.n_grids == 1) {
+		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			GMT_grd_minmax (GMT, GC[0].G, xyz);
 			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, GMT_TRACK_FILL, xyz);
 		}
@@ -684,6 +746,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */
 	}
 	
+	value = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double);
+
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
 		uint64_t tbl, col, row, seg, n_cols = Ctrl->G.n_grids;
 		struct GMT_DATASET *Dtmp = NULL;
