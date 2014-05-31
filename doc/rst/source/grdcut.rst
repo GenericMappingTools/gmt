@@ -63,13 +63,15 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 **-Z**\ [**n**\ \|\ **r**]\ *min/max*
-    Determine the new rectangular region so that all nodes outside this
+    Determine the new rectangular region so that all nodes *outside* this
     region are also outside the given *z*-range [-inf/+inf]. To indicate
     no limit on min or max, specify a hyphen (-). Normally, any NaNs
-    encountered are simply skipped. Use **-Zn** to consider a NaN to be
-    outside the *z*-range so resulting grid is NaN-free, or **-Zr** to
-    consider NaNs to be within the data range [Default simply skips NaNs
-    when making the range decision.
+    encountered are simply skipped and not considered in the decision.
+    Use **-Zn** to consider a NaN to be outside the *z*-range.  This means
+    the new subset will be NaN-free.  Alternatively, use **-Zr** to
+    consider NaNs to be within the data range.  In this case we stop
+    shrinking the boundaries once a NaN is found [Default simply skips NaNs
+    when making the range decision].
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

@@ -2644,7 +2644,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	unsigned int n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
 	unsigned int n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
 	enum GMT_enum_units unit;
-	double dlon, x1, x2, y1, y2, a0, tx, ty, off, f_len, a_len, x_left, x_right, bar_length, x_label, y_label;
+	double x1, x2, y1, y2, tx, ty, off, f_len, a_len, x_left, x_right, bar_length, x_label, y_label;
 	double XL, YL, XR, YR, dist, scl;
 	double base, d_base, width, half, bar_width, dx, dx_f, dx_a;
 	char txt[GMT_LEN256] = {""}, *this_label = NULL;
@@ -2676,20 +2676,6 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 		GMT_geo_to_xy (GMT, ms->lon, ms->lat, &ms->x0, &ms->y0);
 	}
 
-#if 0
-	if (GMT->current.proj.projection == GMT_OBLIQUE_MERC) {	/* Set latitude to the oblique latitude */
-		a0 = fabs (GMT_great_circle_dist_degree (GMT, GMT->current.proj.o_pole_lon, GMT->current.proj.o_pole_lat, ms->scale_lon, ms->scale_lat));	/* Colatitude */
-		if (a0 > 90.0) a0 = 180.0 - 90.0;	/* Flip hemisphere */
-		ms->scale_lat = 90.0 - a0;
-	}
-
-	/* Get longitudinal degree length corresponding to this km length at the latitude of scale */
-	dlon = 0.5 * bar_length / (GMT->current.proj.DIST_KM_PR_DEG * cosd (ms->scale_lat));
-	GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian - dlon, ms->scale_lat, &x1, &y1);
-	GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian + dlon, ms->scale_lat, &x2, &y2);
-#endif
-	/* New approach to get correct lengtscale regardless of projection */
-	
 	/* 1. Pick a reasonably small dx, e.g., 5% of map width */
 	dx = 0.05 * GMT->current.map.width;
 	/* 2. Compute test x1, x2 to either side of x0, y0 */
