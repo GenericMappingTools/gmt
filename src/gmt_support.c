@@ -3821,13 +3821,13 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	 * If project is true then we convert to plot units.
 	 * If get_distances is true then add a column with distances. We also do this if +d is added to args.
 	 */
-	unsigned int n_cols, np = 0, k, kk, s, pos = 0, pos2 = 0, this_mode, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	enum GMT_profmode p_mode;
 	int n, error = 0;
 	double L, az = 0.0, length = 0.0, r = 0.0;
 	size_t n_alloc = GMT_SMALL_CHUNK, len;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
-	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, d_unit;
+	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
