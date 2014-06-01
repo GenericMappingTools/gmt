@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77list** *NGDC-ids* **-F**\ *columns*\ [,*logic*][:\ *bittests*]
+**mgd77list** *NGDC-ids* **-F**\ *columns*\ [,\ *logic*][:\ *bittests*]
 [ **-A**\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code* ]
 [ **-C**\ **f**\ \|\ **g**\ \|\ **e** ]
 [ **-D**\ **A**\ \|\ **a**\ *startdate* ]
@@ -42,8 +42,8 @@ information such as leg-id, time and position, geophysical observables
 such as gravity, magnetics, and bathymetry, and control codes and
 corrections such as Eotvos and diurnal corrections. The MGD77+ extended
 netCDF files may also contain additional user columns (for a listing of
-available columns, use **mgd77info** **-C**, and to learn how to add
-your own custom columns, see **mgd77manage**). The user may extract any
+available columns, use :doc:`mgd77info` **-C**, and to learn how to add
+your own custom columns, see :doc:`mgd77manage`). The user may extract any
 combination of these parameters, any of 8 computed quantities (distance,
 heading, course-change, velocity, Carter correction, Eotvos correction
 and gravity and magnetic global reference fields), calendar sub-units of
@@ -60,143 +60,146 @@ Required Arguments
 .. include:: explain_ncid.rst_
 
 
-**-F**\ *columns*\ [,*logic*][:\ *bittests*]
+**-F**\ *columns*\ [,\ *logic*][:\ *bittests*]
     The required *columns* string must be a comma-separated list of
     parameter abbreviations given in the desired output order. Any
     parameters given in UPPER case must not be NaN in a record for
     output to occur. Unless specified separately, the output format (if
-    ASCII) is controlled by the GMT parameter **FORMAT\_FLOAT\_OUT**.
+    ASCII) is controlled by the GMT parameter :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`.
     The available column abbreviations for information stored in the
     files (some columns may be NaN) are:
-**recno**
-    The record number counter.
-**drt**
-    The digital record type, usually 3 or 5 (for Y2K-compliant cruises).
-**id**
-    The survey ID string (leg name).
-**ngdcid**
-    The 8-character NGDC cruise ID string (usually the file prefix).
-**time**
-    Choose between Absolute calendar time (**atime**, the default) in
-    the format dictated by the GMT parameters **FORMAT\_DATE\_OUT** and
-    **FORMAT\_CLOCK\_OUT**, Relative time (**rtime**) in the format
-    dictated by the GMT parameters **FORMAT\_FLOAT\_OUT** and
-    **TIME\_SYSTEM** (or **TIME\_EPOCH** and **TIME\_UNIT**)), or
-    Fractional year (**ytime**) in the format dictated by
-    **FORMAT\_FLOAT\_OUT**.
-**lon**
-    Longitude in the format dictated by the GMT parameter
-    **FORMAT\_GEO\_OUT**.
-**lat**
-    Longitude in the format dictated by the GMT parameter
-    **FORMAT\_GEO\_OUT**.
-**twt**
-    Two-Way Travel time (in s).
-**depth**
-    Corrected bathymetry (in m, positive below sealevel).
-**mtf1**
-    Magnetic Total Field intensity from sensor 1 (in nTesla).
-**mtf2**
-    Magnetic Total Field intensity from sensor 2 (in nTesla).
-**mag**
-    Residual magnetic anomaly (in nTesla).
-**gobs**
-    Observed gravity (in mGal).
-**faa**
-    Free-air gravity anomaly (in mGal).
-**ptc**
-    Position Type Code (1 = fix, 3 = interpolated, 9 = unspecified).
-**bcc**
-    Bathymetric Correction Code, indicating the procedure used to
-    convert travel time to depth. (01-55 = Matthews' zone used to
-    correct the depth, 59 = Matthews' corrections used but the zones is
-    unspecified in the data record, 60 = S. Kuwahara formula for T-S, 61
-    = Wilson formula for T-S, 62 = Del Grosso formula for T-S, 63 =
-    Carter's tables, 88 = Other, described in header sections, 99 =
-    unspecified).
-**btc**
-    Bathymetric Type Code, indicating how the bathymetry value was
-    obtained (1 = observed, 3 = interpolated, 9 = unspecified).
-**msens**
-    Magnetic sensor for used to evaluate the residual field (1 = 1st or
-    leading sensor, 2 = 2nd or trailing sensor, 9 = unspecified).
-**msd**
-    Depth (or altitude) of the magnetic sensor (in m, positive below
-    sealevel).
-**diur**
-    Magnetic diurnal correction (in nTesla).
-**eot**
-    Eotvos correction (in mGal).
-**sln**
-    Seismic Line Number string.
-**sspn**
-    Seismic Shot Point Number string.
-**nqc**
-    Navigation Quality Code (5 = suspected, by source institution, 6 =
-    suspected, by NGDC, 9 = no problems identified).
 
-    In addition, the following derived navigational quantities can be
-    requested:
+    **recno**
+        The record number counter.
+    **drt**
+        The digital record type, usually 3 or 5 (for Y2K-compliant cruises).
+    **id**
+        The survey ID string (leg name).
+    **ngdcid**
+        The 8-character NGDC cruise ID string (usually the file prefix).
+    **time**
+        Choose between Absolute calendar time (**atime**, the default) in
+        the format dictated by the GMT parameters :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and
+        :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`, Relative time (**rtime**) in the format
+        dictated by the GMT parameters :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` and
+        :ref:`TIME_SYSTEM <TIME_SYSTEM>` (or :ref:`TIME_EPOCH <TIME_EPOCH>` and :ref:`TIME_UNIT <TIME_UNIT>`)), or
+        Fractional year (**ytime**) in the format dictated by
+        :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`.
+    **lon**
+        Longitude in the format dictated by the GMT parameter
+        :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`.
+    **lat**
+        Longitude in the format dictated by the GMT parameter
+        :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`.
+    **twt**
+        Two-Way Travel time (in s).
+    **depth**
+        Corrected bathymetry (in m, positive below sealevel).
+    **mtf1**
+        Magnetic Total Field intensity from sensor 1 (in nTesla).
+    **mtf2**
+        Magnetic Total Field intensity from sensor 2 (in nTesla).
+    **mag**
+        Residual magnetic anomaly (in nTesla).
+    **gobs**
+        Observed gravity (in mGal).
+    **faa**
+        Free-air gravity anomaly (in mGal).
+    **ptc**
+        Position Type Code (1 = fix, 3 = interpolated, 9 = unspecified).
+    **bcc**
+        Bathymetric Correction Code, indicating the procedure used to
+        convert travel time to depth. (01-55 = Matthews' zone used to
+        correct the depth, 59 = Matthews' corrections used but the zones is
+        unspecified in the data record, 60 = S. Kuwahara formula for T-S, 61
+        = Wilson formula for T-S, 62 = Del Grosso formula for T-S, 63 =
+        Carter's tables, 88 = Other, described in header sections, 99 =
+        unspecified).
+    **btc**
+        Bathymetric Type Code, indicating how the bathymetry value was
+        obtained (1 = observed, 3 = interpolated, 9 = unspecified).
+    **msens**
+        Magnetic sensor for used to evaluate the residual field (1 = 1st or
+        leading sensor, 2 = 2nd or trailing sensor, 9 = unspecified).
+    **msd**
+        Depth (or altitude) of the magnetic sensor (in m, positive below
+        sealevel).
+    **diur**
+        Magnetic diurnal correction (in nTesla).
+    **eot**
+        Eotvos correction (in mGal).
+    **sln**
+        Seismic Line Number string.
+    **sspn**
+        Seismic Shot Point Number string.
+    **nqc**
+        Navigation Quality Code (5 = suspected, by source institution, 6 =
+        suspected, by NGDC, 9 = no problems identified).
 
-**year**
-    The year of each record.
-**month**
-    The month of each record.
-**day**
-    The day of the month of each record.
-**hour**
-    The hour of each record.
-**min**
-    The minutes of each record.
-**sec**
-    The decimal seconds of each record.
-**dist**
-    Along-track distance from start of leg. For method of calculation,
-    see **-C** [spherical great circle distances], and for distance
-    units, see **-N** [km].
-**az**
-    Ship azimuth (heading) measured clockwise from north (in degrees).
-**cc**
-    Ship course change (change in heading) measured clockwise from north
-    (in degrees).
-**vel**
-    Ship speed; see **-N** for units [m/s].
+    In addition, the following derived navigational quantities can be requested:
+
+    **year**
+        The year of each record.
+    **month**
+        The month of each record.
+    **day**
+        The day of the month of each record.
+    **hour**
+        The hour of each record.
+    **min**
+        The minutes of each record.
+    **sec**
+        The decimal seconds of each record.
+    **dist**
+        Along-track distance from start of leg. For method of calculation,
+        see **-C** [spherical great circle distances], and for distance
+        units, see **-N** [km].
+    **az**
+        Ship azimuth (heading) measured clockwise from north (in degrees).
+    **cc**
+        Ship course change (change in heading) measured clockwise from north
+        (in degrees).
+    **vel**
+        Ship speed; see **-N** for units [m/s].
 
     Finally, the following computed quantities can be requested:
 
-**weight**
-    Weight assigned to this data set (see **-W**).
-**carter**
-    Carter depth correction, if **twt** is present in file (in m). Sign:
-    Correction is to be added to uncorrected depths to yield a corrected
-    depth.
-**igrf**
-    International geomagnetic reference field (total field) (in nTesla).
-**ngrav**
-    International Gravity reference Field ("normal gravity") (in mGal).
-    Field is selected based on the parameter Gravity Theoretical Formula
-    Code in the cruise's MGD77 header. If this is not set or is invalid
-    we default to the IGF 1980. Alternatively, specify the field
-    directly using **-Af** (see that option for more details).
-**ceot**
-    Calculated Eotvos correction from navigation, using E =
-    7.5038 \* V \* cos(lat) \* sin(az) + 0.004154 \* V^2
-    (in mGal). Sign: Correction is to be added to uncorrected faa to
-    yield a corrected faa.
+    **weight**
+        Weight assigned to this data set (see **-W**).
+    **carter**
+        Carter depth correction, if **twt** is present in file (in m). Sign:
+        Correction is to be added to uncorrected depths to yield a corrected
+        depth.
+    **igrf**
+        International geomagnetic reference field (total field) (in nTesla).
+    **ngrav**
+        International Gravity reference Field ("normal gravity") (in mGal).
+        Field is selected based on the parameter Gravity Theoretical Formula
+        Code in the cruise's MGD77 header. If this is not set or is invalid
+        we default to the IGF 1980. Alternatively, specify the field
+        directly using **-Af** (see that option for more details).
+    **ceot**
+        Calculated Eotvos correction from navigation, using E =
+        7.5038 \* V \* cos(lat) \* sin(az) + 0.004154 \* V^2
+        (in mGal). Sign: Correction is to be added to uncorrected faa to
+        yield a corrected faa.
 
     The following short-hand flags are also recognized:
 
-**all**
-    This returns all data columns in the file.
-**mgd77**
-    This results in all 27 MGD77 fields being written out in the offical
-    MGD77 order.
-**geo**
-    This limits the output to 10 fields (**time**, **lon**, **lat** plus
-    the seven geophysical observations **twt**, **depth**, **mtf1**,
-    **mtf2**, **mag**, **gobs**, and **faa**). By appending **+** to
-    either of these set we will also append **dist**, **azim**, **cc**,
-    **vel**, and **weight** as listed above.
+    **mgd77**
+        This results in all 27 MGD77 fields being written out in the offical MGD77 order.
+    **mgd77t**
+        The full set of all 26 columns in the MGD77T specification.
+    **geo**
+        This limits the output to 10 fields (**time**, **lon**, **lat** plus
+        the seven geophysical observations **twt**, **depth**, **mtf1**,
+        **mtf2**, **mag**, **gobs**, and **faa**). By appending **+** to
+        either of these set we will also append **dist**, **azim**, **cc**,
+        **vel**, and **weight** as listed above.
+    **all**
+        This returns all data columns in the file.
+    **allt**
+        As mgd77t but with time items written as a date-time string.
 
     As an option, logical tests may be added for any of the observations
     by appending ,\ *logic*, which is itself composed of one or more
@@ -221,7 +224,7 @@ Required Arguments
     terms. This compares specific bitflags only for each listed column.
     Here, + means the chosen bit must be 1 (ON) whereas - means it must
     be 0 (OFF). All bit tests given must be passed. By default, MGD77+
-    files that have the special **MGD77\_flags** column present will use
+    files that have the special **MGD77_flags** column present will use
     those flags, and observations associated with ON-bits (meaning they
     are flagged as bad) will be set to NaN; append : with no trailing
     information to turn this behavior off (i.e., no bit flags will be
@@ -261,20 +264,20 @@ Optional Arguments
     (presumably) corrected **depth** using the Carter correction
     formula. Select from
 
-    **-Ac1**\ [,*v*] returns difference between U(\ **twt**, *v*) and **depth** [Default].
+    **-Ac1**\ [,\ *v*] returns difference between U(\ **twt**, *v*) and **depth** [Default].
 
-    **-Ac2**\ [,*v*] returns difference between U(\ **twt**, *v*) and Carter (**twt**).
+    **-Ac2**\ [,\ *v*] returns difference between U(\ **twt**, *v*) and Carter (**twt**).
 
-    **-Ac4**\ [,*v*] returns difference between (assumed uncorrected) **depth** and Carter (TU(**depth**)).
+    **-Ac4**\ [,\ *v*] returns difference between (assumed uncorrected) **depth** and Carter (TU(**depth**)).
 
-    **-Ac8**\ [,*v*] returns difference between U(TC(\ **depth**), *v*) and **depth**.
+    **-Ac8**\ [,\ *v*] returns difference between U(TC(\ **depth**), *v*) and **depth**.
 
 **-Ad**
     Determines how the **depth** column output is obtained:
 
     **-Ad1** returns **depth** as stored in the data set [Default].
 
-    **-Ad2**\ [,*v*] returns calculated uncorrected depth U(\ **twt**, *v*).
+    **-Ad2**\ [,\ *v*] returns calculated uncorrected depth U(\ **twt**, *v*).
 
     **-Ad4** returns calculated corrected depth C(\ **twt**).
 
@@ -287,18 +290,18 @@ Optional Arguments
     preferred *field* (1-4) to select 1 (Heiskanen 1924), 2 (IGF 1930),
     3 (IGF 1967) or 4 (IGF 1980). Select from
 
-    **-Af1**\ [,*field*] returns **faa** as stored in the data set
+    **-Af1**\ [,\ *field*] returns **faa** as stored in the data set
     [Default]. Optionally, sets the IGF *field* to use if you also have
     requested **ngrav** as an output column in **-F**.
 
-    **-Af2**\ [,*field*] returns the difference between **gobs** and
+    **-Af2**\ [,\ *field*] returns the difference between **gobs** and
     **ngrav** (with optional *field* directive).
 
-    **-Af4**\ [,*field*] returns the combination of **gobs** + **eot** -
+    **-Af4**\ [,\ *field*] returns the combination of **gobs** + **eot** -
     **ngrav** (with optional *field* directive).
 
-    **-Af8**\ [,*field*] returns the combination of **gobs** +
-    **pred\_eot** - **ngrav** (with optional *field* directive).
+    **-Af8**\ [,\ *field*] returns the combination of **gobs** +
+    **pred_eot** - **ngrav** (with optional *field* directive).
 
 **-Am**
     Determines how the **mag** column output is obtained. There may be
@@ -322,10 +325,10 @@ Optional Arguments
     accomplished by reinterpolating the total magnetic field to what it
     would have had if it was measured at the ship's position (remember,
     it probably was measured <offset> meters behind). Due to this
-    interpolation step, bad navigation namely too many repeated points
+    interpolation step, bad navigation, namely too many repeated points,
     may cause troubles. Measures are taken to minimize this effect but
     they aren't 100% full prof. The interpolation method is controlled
-    by the gmtdefaults GMT\_INTERPOLANT. Append **e** for meter, **f**
+    by the gmtdefaults GMT_INTERPOLANT. Append **e** for meter, **f**
     for feet, **k** for km, **m** for miles, **n** for nautical miles,
     or **u** for survey feet [Default is e (meters)].
 
@@ -366,7 +369,7 @@ Optional Arguments
 **-L**\ [*corrtable*\ ]
     Apply optimal corrections to columns where such corrections are
     available. Append the correction table to use [Default uses the
-    correction table mgd77\_corrections.txt in the **$MGD77\_HOME**
+    correction table mgd77_corrections.txt in the **$MGD77_HOME**
     directory]. For the format of this file, see CORRECTIONS below.
 **-n**
     Issue a segment header record with cruise ID for each cruise.
@@ -466,7 +469,7 @@ cruises.lis:
 
     gmt mgd77list ‘cat cruises.lis‘ -F"depth,DEPTH>9000,BTC!=1" > really_deep.d
 
-To extract dist, faa, and grav12\_2 from records whose depths are
+To extract dist, faa, and grav12_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
 all the MGD77+ netCDF files whose cruise ids are listed in the file
 cruises.lis, we try

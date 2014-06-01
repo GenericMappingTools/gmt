@@ -18,7 +18,7 @@ Synopsis
 [ **-N**\ [*nodata*] ]
 [ **-S**\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ [**n**\ \|\ **r**]\ *min/max* ]
+[ **-Z**\ [\ **n**\ \|\ **r**]\ *min/max* ]
 [ |SYN_OPT-f| ]
 
 |No-spaces|
@@ -62,14 +62,14 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-Z**\ [**n**\ \|\ **r**]\ *min/max*
+**-Z**\ [\ **n**\ \|\ **r**]\ *min/max*
     Determine the new rectangular region so that all nodes *outside* this
     region are also outside the given *z*-range [-inf/+inf]. To indicate
     no limit on min or max, specify a hyphen (-). Normally, any NaNs
     encountered are simply skipped and not considered in the decision.
-    Use **-Zn** to consider a NaN to be outside the *z*-range.  This means
-    the new subset will be NaN-free.  Alternatively, use **-Zr** to
-    consider NaNs to be within the data range.  In this case we stop
+    Use **-Zn** to consider a NaN to be outside the *z*-range. This means
+    the new subset will be NaN-free. Alternatively, use **-Zr** to
+    consider NaNs to be within the data range. In this case we stop
     shrinking the boundaries once a NaN is found [Default simply skips NaNs
     when making the range decision].
 
