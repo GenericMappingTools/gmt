@@ -270,10 +270,22 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 		if (Ctrl->Z.mode == NAN_IS_SKIPPED) {	/* Must scan in from outside to the inside, one side at the time, remove side with most Nans */
 			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side);	/* Initial border count */
 			while (sum) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
-				if (side == 3 && col0 < col1)      col0++;	/* Need to move in from the left */
-				else if (side == 1 && col1 > col0) col1--;	/* Need to move in from the right */
-				else if (side == 0 && row1 > row0) row1--;	/* Need to move up from the bottom */
-				else if (side == 2 && row0 < row1) row0++;	/* Need to move down from the top */
+				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
+					col0++;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off a leftmost column\n");
+				} 
+				else if (side == 1 && col1 > col0) {	/* Need to move in from the right */
+					col1--;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off rightmost column\n");
+				}
+				else if (side == 0 && row1 > row0) {	/* Need to move up from the bottom */
+					row1--;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off bottom row\n");
+				}
+				else if (side == 2 && row0 < row1) {	/* Need to move down from the top */
+					row0++;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off top row\n");
+				}
 				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side);
 			}
 			if (col0 == col1 || row0 == row1) {
