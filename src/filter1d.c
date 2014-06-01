@@ -298,8 +298,9 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 				Ctrl->N.active = true;
 				if (GMT_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
 					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
+						int sval0;
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
-						if (sscanf (opt->arg, "%*s/%d", &sval) != 2) {
+						if (sscanf (opt->arg, "%d/%d", &sval0, &sval) != 2) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 							++n_errors;
 						}
