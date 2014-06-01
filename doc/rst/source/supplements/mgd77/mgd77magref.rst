@@ -18,6 +18,7 @@ Synopsis
 [ **-D**\ *Dstfile* ] [ **-E**\ *f107file* ] [ **-F**\ *flags* ]
 [ **-G** ] [ **-Sc**\ \|\ **l**\ *low/high* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-:| ]
@@ -64,7 +65,12 @@ Optional Arguments
     ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/. But since
     this site is now also outdated, we now get the DST indices from 
     http://wdc.kugi.kyoto-u.ac.jp/dstae/index.html However, for the most recent
-    dates those indices are "Quick Look" (the best are the "Definitive" type)
+    dates those indices are "Quick Look" (the best are the "Definitive" type).
+    Because the *F10.7* from the MONTHPLT.ABS file mentioned above are apparently
+    no being updated, we found another place where they are, which is:
+    ftp://ftp.ngdc.noaa.gov/STP/space-weather/solar-data/solar-features/
+    solar-radio/noontime-flux/penticton/penticton_absolute/listings/
+    listing_drao_noontime-flux-absolute_monthly.txt 
 
 **-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**]
     Adjusts how the input record is interpreted. Append **+a** to set a
@@ -181,6 +187,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is reflected by **-F**]. 
 .. include:: ../../explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-d.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
