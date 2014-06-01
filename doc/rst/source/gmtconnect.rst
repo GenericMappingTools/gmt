@@ -15,7 +15,7 @@ Synopsis
 
 **gmtconnect** [ *table* ] [ **-C**\ [*closed*] ]
 [ **-D**\ [*template*] ] [ **-L**\ [*linkfile*] ]
-[ **-Q**\ [*template*] ] [ **-T**\ *cutoff*\ [*unit*][/\ *nn\_dist*] ]
+[ **-Q**\ [*template*] ] [ **-T**\ [*cutoff*\ [*unit*][/\ *nn\_dist*]] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -90,13 +90,15 @@ Optional Arguments
     specifier that can format an character (C or O for closed or open,
     respectively). [Default is gmtconnect_list.txt].
 
-**-T**\ *cutoff*\ [*unit*][/\ *nn\_dist*]
+**-T**\ [*cutoff*\ [*unit*][/\ *nn\_dist*]]
     Specifies the separation tolerance in the data coordinate units [0];
     append distance unit (see UNITS). If two lines has end-points that
     are closer than this cutoff they will be joined. Optionally, append
     /*nn_dist* which adds the requirement that a link will only be made
     if the second closest connection exceeds the *nn_dist*. The latter
-    distance must be given in the same units as *cutoff*. 
+    distance must be given in the same units as *cutoff*.  However, if
+    no arguments are given then we close every polygon regardless of
+    the gap between first and last point.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

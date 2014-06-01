@@ -58,7 +58,7 @@ struct GMTCONNECT_CTRL {
 		bool active;
 		char *file;
 	} Q;
-	struct T {	/* -T<cutoff[unit][/<nn_dist]> */
+	struct T {	/* -T[<cutoff[unit][/<nn_dist>]] */
 		bool active[2];
 		int mode;
 		double dist[2];
@@ -118,7 +118,7 @@ static int GMT_gmtconnect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconnect [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<listfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T%s[/<nn_dist>] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t-T[%s[/<nn_dist>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -138,6 +138,7 @@ static int GMT_gmtconnect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two lines has endpoints closer than this cutoff they will be joined.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <nn_dist> which adds the requirement that the second closest\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <nn_dist> (must be in the same units as <cutoff>).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no arguments are given the we close all polygons regardless of the gaps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Used with -D to write names of files to a list.  Optionally give listfile name [gmtconnect_list.txt].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
 	GMT_Option (API, "a,bi2,bo,d,f,g,h,i,o,s,:,.");
@@ -195,12 +196,16 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 				break;
 			case 'T':	/* Set threshold distance */
 				Ctrl->T.active[0] = true;
-				n = sscanf (opt->arg, "%[^/]/%s", A, B);
-				Ctrl->T.mode = GMT_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
-				if (n == 2) {
-					Ctrl->T.dist[1] = atof (B);
-					Ctrl->T.active[1] = true;
+				if (opt->arg[0]) {
+					n = sscanf (opt->arg, "%[^/]/%s", A, B);
+					Ctrl->T.mode = GMT_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
+					if (n == 2) {
+						Ctrl->T.dist[1] = atof (B);
+						Ctrl->T.active[1] = true;
+					}
 				}
+				else
+					Ctrl->T.dist[0] = DBL_MAX;
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
