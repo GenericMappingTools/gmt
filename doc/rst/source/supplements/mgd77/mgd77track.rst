@@ -73,10 +73,10 @@ Optional Arguments
         **e** Geodesic distances on current GMT ellipsoid.
 **-Da**\ *startdate*
     Do not plot data collected before *startdate*
-    (yyyy-mm-ddBD(T)[hh:mm:ss]) [Default is first day].
+    (yyyy-mm-dd\ **T**\ [hh:mm:ss]) [Default is first day].
 **-Db**\ *stopdate*
     Do not plot data collected after *stopdate*
-    (yyyy-mm-ddBD(T)[hh:mm:ss]). [Default is last day].
+    (yyyy-mm-dd\ **T**\ [hh:mm:ss]). [Default is last day].
 **-F**
     Do not apply the error bit flags if present in a MGD77+ file
     [Default will apply these flags upon reading the data].
