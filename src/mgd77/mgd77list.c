@@ -878,20 +878,23 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 		MGD77_carter_init (GMT, &Carter);	/* Initialize Carter machinery */
 	}
 	need_depth = ((Ctrl->A.code[ADJ_CT] & (1 | 3 | 8)) || (Ctrl->A.code[ADJ_DP] & 1));
-	if (need_depth) {	/* Need depth*/
+	if (need_depth) {                   /* Need depth*/
 		 if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) strcat (fx_setting, ",depth"), n_sub++;	/* Must append depth to requested list */
 	}
-	if (Ctrl->A.code[ADJ_GR] > 1) {	/* Need gobs */
+	if (Ctrl->A.code[ADJ_GR] > 1) {     /* Need gobs */
 		 if (MGD77_Get_Column (GMT, "gobs", &M) == MGD77_NOT_SET) strcat (fx_setting, ",gobs"), n_sub++;	/* Must append gobs to requested list */
 	}
-	if (Ctrl->A.code[ADJ_GR] == 3) {	/* Need eot */
+	if (Ctrl->A.code[ADJ_GR] == 3) {    /* Need eot */
 		 if (MGD77_Get_Column (GMT, "eot", &M) == MGD77_NOT_SET) strcat (fx_setting, ",eot"), n_sub++;	/* Must append eot to requested list */
 	}
-	if (Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.cable_adjust) {	/* Need mtf1,2, and msens */
+	if (Ctrl->A.code[ADJ_MG] > 1) {     /* Need mtf1,2, and msens */
 		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
 		 if (MGD77_Get_Column (GMT, "mtf2", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf2"), n_sub++;	/* Must append mtf2 to requested list */
 		 if (MGD77_Get_Column (GMT, "msens", &M) == MGD77_NOT_SET) strcat (fx_setting, ",msens"), n_sub++;	/* Must append msens to requested list */
 	}
+	else if (Ctrl->A.cable_adjust)
+		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
+
 	/* If logical tests are specified we must make sure the required columns are included as auxillary */
 	for (kk = 0; kk < M.n_constraints; kk++) {
 		if (MGD77_Get_Column (GMT, M.Constraint[kk].name, &M) != MGD77_NOT_SET) continue;	/* OK, already included */
