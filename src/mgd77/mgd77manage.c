@@ -809,6 +809,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 				for (col = k; col < In.n_out_columns; col++) {	/* Move remaining columns over */
 					D->values[col] = D->values[col+1];
 					strcpy (In.desired_column[col], In.desired_column[col+1]);
+					free(In.desired_column[col]);	/* Need to free and realloc because next var name might be longer */
+					In.desired_column[col] = strdup(In.desired_column[col+1]);
 					In.order[col].set = In.order[col+1].set;
 					In.order[col].item = In.order[col+1].item;
 				}
