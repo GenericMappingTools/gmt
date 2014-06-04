@@ -1829,19 +1829,30 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 					MGD77_nc_status (GMT, nc_def_var (F->nc_id, H->info[set].col[id].abbrev, H->info[set].col[id].type, 1, dims, &var_id));	/* Define an array variable */
 				}
 			}
-			if (H->info[set].col[id].name && strcmp (H->info[set].col[id].name, H->info[set].col[id].abbrev)) MGD77_nc_status (GMT, nc_put_att_text   (F->nc_id, var_id, "long_name", strlen (H->info[set].col[id].name), H->info[set].col[id].name));
-			if (H->info[set].col[id].units) MGD77_nc_status (GMT, nc_put_att_text   (F->nc_id, var_id, "units", strlen (H->info[set].col[id].units), H->info[set].col[id].units));
-			if (!H->info[set].col[id].constant) MGD77_nc_status (GMT, nc_put_att_double   (F->nc_id, var_id, "actual_range", NC_DOUBLE, 2U, H->info[set].col[id].limit));
-			if (H->info[set].col[id].comment) MGD77_nc_status (GMT, nc_put_att_text   (F->nc_id, var_id, "comment", strlen (H->info[set].col[id].comment), H->info[set].col[id].comment));
-			if (set == MGD77_M77_SET && (!strcmp (H->info[set].col[id].abbrev, "depth") || !strcmp (H->info[set].col[id].abbrev, "msd"))) MGD77_nc_status (GMT, nc_put_att_text   (F->nc_id, var_id, "positive", 4U, "down"));
+			if (H->info[set].col[id].name && strcmp (H->info[set].col[id].name, H->info[set].col[id].abbrev))
+				MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, var_id, "long_name", strlen (H->info[set].col[id].name), H->info[set].col[id].name));
+			if (H->info[set].col[id].units)
+				MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, var_id, "units", strlen (H->info[set].col[id].units), H->info[set].col[id].units));
+			if (!H->info[set].col[id].constant)
+				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "actual_range", NC_DOUBLE, 2U, H->info[set].col[id].limit));
+			if (H->info[set].col[id].comment)
+				MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, var_id, "comment", strlen (H->info[set].col[id].comment), H->info[set].col[id].comment));
+			if (set == MGD77_M77_SET && (!strcmp (H->info[set].col[id].abbrev, "depth") || !strcmp (H->info[set].col[id].abbrev, "msd")))
+				MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, var_id, "positive", 4U, "down"));
 			if (!(set == MGD77_M77_SET && id == time_id)) {	/* Time coordinate value cannot have missing values */
-				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "_FillValue", H->info[set].col[id].type, 1U, &MGD77_NaN_val[H->info[set].col[id].type]));
-				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "missing_value", H->info[set].col[id].type, 1U, &MGD77_NaN_val[H->info[set].col[id].type]));
+				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "_FillValue",
+				                 H->info[set].col[id].type, 1U, &MGD77_NaN_val[H->info[set].col[id].type]));
+				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "missing_value",
+				                 H->info[set].col[id].type, 1U, &MGD77_NaN_val[H->info[set].col[id].type]));
 			}
-			if (H->info[set].col[id].factor != 1.0) MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1U, &H->info[set].col[id].factor));
-			if (H->info[set].col[id].offset != 0.0) MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1U, &H->info[set].col[id].offset));
-			if (H->info[set].col[id].corr_factor  != 1.0) MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "corr_factor", NC_DOUBLE, 1U, &H->info[set].col[id].corr_factor));
-			if (H->info[set].col[id].corr_offset != 0.0) MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "corr_offset", NC_DOUBLE, 1U, &H->info[set].col[id].corr_offset));
+			if (H->info[set].col[id].factor != 1.0)
+				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "scale_factor", NC_DOUBLE, 1U, &H->info[set].col[id].factor));
+			if (H->info[set].col[id].offset != 0.0)
+				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "add_offset", NC_DOUBLE, 1U, &H->info[set].col[id].offset));
+			if (H->info[set].col[id].corr_factor  != 1.0)
+				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "corr_factor", NC_DOUBLE, 1U, &H->info[set].col[id].corr_factor));
+			if (H->info[set].col[id].corr_offset != 0.0)
+				MGD77_nc_status (GMT, nc_put_att_double (F->nc_id, var_id, "corr_offset", NC_DOUBLE, 1U, &H->info[set].col[id].corr_offset));
 			H->info[set].col[id].var_id = var_id;
 			entry++;
 		}
@@ -4044,9 +4055,13 @@ void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 {	/* Free memory used by MGD77 machinery */
 	unsigned int i;
 	if (F->MGD77_HOME) GMT_free (GMT, F->MGD77_HOME);
-	for (i = 0; i < F->n_MGD77_paths; i++) GMT_free (GMT, F->MGD77_datadir[i]);
-	if (F->MGD77_datadir) GMT_free (GMT, F->MGD77_datadir);
-	for (i = 0; i < F->n_out_columns; i++) if (F->desired_column[i]) free ((void *)F->desired_column[i]);
+	for (i = 0; i < F->n_MGD77_paths; i++)
+		GMT_free (GMT, F->MGD77_datadir[i]);
+	if (F->MGD77_datadir)
+		GMT_free (GMT, F->MGD77_datadir);
+	for (i = 0; i < MGD77_MAX_COLS; i++)
+		if (F->desired_column[i])
+			free ((void *)F->desired_column[i]);
 	if (F->desired_column) GMT_free (GMT, F->desired_column);
 }
 
