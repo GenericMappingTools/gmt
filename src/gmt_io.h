@@ -177,7 +177,7 @@ struct GMT_CLOCK_IO {
 
 struct GMT_DATE_IO {
 	bool skip;			/* Only true if a format string was pass as NULL */
-	unsigned int T_pos;		/* String position of the expected 'T' marker (INPUT only) */
+	bool watch;			/* Only true if input format has month last and is monthname */
 	int item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string (-ve if unused) */
 	int item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string (-ve if unused) */
 	bool Y2K_year;		/* true if we have 2-digit years */

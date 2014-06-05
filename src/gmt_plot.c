@@ -3247,7 +3247,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
-	char *c = NULL, user_text[GMT_LEN256] = {""};
+	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL *f = NULL, *current_fill = fill;
 	struct GMT_PEN save_pen, *p = NULL, *current_pen = pen;
@@ -3628,7 +3628,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	uint64_t k, m, seg;
 	unsigned int n_segments = 0, n_points = 0, n_labels = 0, first_point_in_segment = 0, this_seg;
 	double *angle = NULL, *xpath = NULL, *ypath = NULL, *xtxt = NULL, *ytxt = NULL;
-	char **txt = NULL, **pen = NULL, buffer[GMT_BUFSIZ] = {""}, **fonts = NULL;
+	char **txt = NULL, **pen = NULL, **fonts = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	void *A1 = NULL, *A2 = NULL;
 
