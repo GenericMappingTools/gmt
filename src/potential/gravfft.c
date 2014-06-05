@@ -444,7 +444,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 
 int GMT_gravfft (void *V_API, int mode, void *args) {
 
-	unsigned int i, k, n;
+	unsigned int k, n;
 	int error = 0;
 	uint64_t m;
 	char	format[64] = {""}, buffer[256] = {""};
