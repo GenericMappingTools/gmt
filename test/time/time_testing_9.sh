@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 # Test various input date formats
-cat << EOF > tt9.result
+cat << EOF > tt9.answer
 9.00820793434
 9.00820793434
 9.00820793434

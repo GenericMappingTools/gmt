@@ -1960,7 +1960,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 	char *name[2] = {"straight", "curved"}, *ext[2] = {"clip", "labels"};
 
 	if (mode & 1) {	/* Lay down PSL variables */
-		int i = 0, j, k, n, n_labels = 0;
+		int i = 0, n_labels = 0;
 
 		if (n_segments <= 0) return (PSL_NO_ERROR);	/* Nothing to do yet */
 		if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
