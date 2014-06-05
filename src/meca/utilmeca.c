@@ -1522,5 +1522,6 @@ int dump_meca (st_me meca)
 	fprintf (stderr, "Nodal plane NP2: str = %g dip = %g rake = %g\n", meca.NP2.str, meca.NP2.dip, meca.NP2.rake);
 	fprintf (stderr, "Magnitude = %g exponent = %d\n", meca.moment.mant, meca.moment.exponent);
 	fprintf (stderr, "magms = %g\n", meca.magms);
+	return (0);
 }
 #endif
