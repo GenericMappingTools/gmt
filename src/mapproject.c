@@ -138,8 +138,8 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]]\n\t[-G[-|+][<lon0>/<lat0>/][<unit>][+|-]", GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, " [-I] [-L<ltable>[/[+|-]<unit>]][+] [-N[a|c|g|m]]\n\t[-Q[e|d]] [-S] [-T[h]<from>[/<to>] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_d_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -190,7 +190,7 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <from> = - means WGS-84.  If /<to> is not given we assume WGS-84.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -T can be used as pre- or post- (-I) processing for -J -R.\n");
-	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,s,:,.");
+	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,p,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -387,6 +387,8 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 	/* Can only do one of -A, -G and -L */
 	n_errors += GMT_check_condition (GMT, (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active) > 1, "Syntax error: Can only specify one of -A, -G and -L\n");
 	n_errors += GMT_check_condition (GMT, geodetic_calc && Ctrl->I.active, "Syntax error: -A, -G, and -L cannot work with -I\n");
+	/* Can only do -p for forward projection */
+	n_errors += GMT_check_condition (GMT, GMT->common.p.active && Ctrl->I.active, "Syntax error: -p cannot work with -I\n");
 	/* Must have -J */
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && (Ctrl->G.mode || Ctrl->L.active) && Ctrl->G.unit == 'C', "Syntax error: Must specify -J option with selected form of -G or -L when unit is C\n");
 	if (!GMT->common.R.active && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
