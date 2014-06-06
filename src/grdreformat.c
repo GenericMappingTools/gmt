@@ -149,9 +149,8 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	unsigned int hmode, type[2];
-
 	char fname[2][GMT_BUFSIZ];
-
+	char   command[GMT_GRID_COMMAND_LEN320] = {""};
 	struct GMT_GRID *Grid = NULL;
 	struct GRDREFORMAT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -196,8 +195,10 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->IO.file[0][0] == '=') strcpy (fname[0], "<stdin>");
 		if (Ctrl->IO.file[1][0] == '=') strcpy (fname[1], "<stdout>");
-		GMT_Report (API, GMT_MSG_VERBOSE, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
-		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_Report (API, GMT_MSG_NORMAL, "No grd header will be written\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Translating file %s (format %s)\nto file %s (format %s)\n",
+		            fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
+		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n')
+			GMT_Report (API, GMT_MSG_NORMAL, "No grd header will be written\n");
 	}
 
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->IO.file[0], NULL)) == NULL) {	/* Get header only */
@@ -223,12 +224,26 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 
 	Grid->header->type = type[1];
 
+	/* When converting from netcdf to netcdf, we will keep the old command, so we need to make a copy of it now */
+	command[0] = '\n';	command[1] = '\t';
+	strcat(command, "(old cmd) ");
+	strcat(command, Grid->header->command);
+
 	GMT_grd_init (GMT, Grid->header, options, true);
 
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->IO.file[1], Grid) != GMT_OK) {
-		Return (API->error);
+	if (!GMT->common.R.active && ((type[0] >= GMT_GRID_IS_CB && type[0] <= GMT_GRID_IS_CD)  ||	/* That is, from netCDF to netCDF */
+	                              (type[0] >= GMT_GRID_IS_NB && type[0] <= GMT_GRID_IS_ND)) &&
+	                             ((type[1] >= GMT_GRID_IS_CB && type[1] <= GMT_GRID_IS_CD)  ||
+	                              (type[1] >= GMT_GRID_IS_NB && type[1] <= GMT_GRID_IS_ND)) ) {
+		/* Do nothing, which means the new grid will keep the command string of the old grid */
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_COMMAND, command, Grid))
+			Return (API->error);
 	}
+	else if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
+		Return (API->error);
+
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->IO.file[1], Grid) != GMT_OK)
+		Return (API->error);
 
 	Return (GMT_OK);
 }
