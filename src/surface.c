@@ -1792,6 +1792,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	remove_planar_trend (&C);
 	key = rescale_z_values (GMT, &C);
 	
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_OK) Return (API->error);
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		GMT_free (GMT, C.data);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
