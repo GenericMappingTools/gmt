@@ -266,7 +266,7 @@ char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 void psl_defunits_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
 void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node);
 void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, double *y, int npath, int *n);
-void psl_set_attr_arrays (struct PSL_CTRL *PSL, const char *prefix, int *node, double *angle, char **txt, int npath, int *n, int *m);
+void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int *m);
 void psl_set_real_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
 psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int nbits);
 int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int ncolors);
@@ -1904,7 +1904,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	return (PSL_NO_ERROR);
 }
 
-void psl_remove_spaces (struct PSL_CTRL *PSL, char *label[], int n_labels, int m[])
+void psl_remove_spaces (char *label[], int n_labels, int m[])
 {
 	int i, k, j, n_tot = n_labels;
 	
@@ -1965,7 +1965,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		if (n_segments <= 0) return (PSL_NO_ERROR);	/* Nothing to do yet */
 		if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
 
-		if (justify < 0) psl_remove_spaces (PSL, label, n_segments, nlabel_per_seg);	/* Strip leading and trailing spaces */
+		if (justify < 0) psl_remove_spaces (label, n_segments, nlabel_per_seg);	/* Strip leading and trailing spaces */
 		for (i = 0; i < n_segments; i++) n_labels += nlabel_per_seg[i];	/* Count number of labels */
 		justify = abs (justify);
 
@@ -1977,7 +1977,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		/* Set PSL arrays and constants for this set of lines and labels */
 		if (curved)	/* Set PSL array for curved baselines [also used to draw lines if selected] */
 			psl_set_reducedpath_arrays (PSL, x, y, n_segments, np, nlabel_per_seg, arg1);
-		psl_set_attr_arrays (PSL, "label", (curved) ? arg1 : NULL, angle, label, n_segments, np, nlabel_per_seg);
+		psl_set_attr_arrays (PSL, (curved) ? arg1 : NULL, angle, label, n_segments, nlabel_per_seg);
 		psl_set_int_array   (PSL, "label_n", nlabel_per_seg, n_segments);
 		PSL_definteger (PSL, "PSL_n_paths", n_segments);
 		PSL_definteger (PSL, "PSL_n_labels", n_labels);
@@ -4152,7 +4152,7 @@ void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, d
 	psl_set_int_array (PSL, txt, n, npath);
 }
 
-void psl_set_attr_arrays (struct PSL_CTRL *PSL, const char *prefix, int *node, double *angle, char **txt, int npath, int *n, int *m)
+void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int *m)
 {	/* This function sets PSL arrays for attributes needed to place contour labels and quoted text labels.
 	 * node:	specifies where along each segments there should be labels [NULL if not curved text]
 	 * angle:	specifies angle of text for each item.
