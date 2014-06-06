@@ -904,6 +904,7 @@ int GMT_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER 
 	 */
 
 	int err;	/* Implied by GMT_err_trap */
+	unsigned int nx, ny;
 	double scale, offset;
 	float invalid;
 
@@ -931,8 +932,25 @@ int GMT_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER 
 	header->grdtype = gmt_get_grdtype (GMT, header);
 
 	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 0), file);
+	nx = header->nx;	ny = header->ny;	/* Save copy */
 	GMT_set_grddim (GMT, header);	/* Set all integer dimensions and xy_off */
 
+	/* Sanity check for grid that may have been created oddly.  Inspired by
+	 * Geomapapp output where -R was set to outside of pixel boundaries insteda
+	 * of standard -R settings, yet with node_offset = gridline... */
+	
+	if (abs (header->nx - nx) == 1 && abs (header->ny - ny) == 1) {
+       		header->nx = nx;    header->ny = ny;
+ 		if (header->registration == GMT_GRID_PIXEL_REG) {
+ 			header->registration = GMT_GRID_NODE_REG;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Grid has wrong registration type. Switching from pixel to gridline registration\n");
+		}
+		else {
+ 			header->registration = GMT_GRID_PIXEL_REG;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Grid has wrong registration type. Switching from gridline to pixel registration\n");
+		}
+	}
+	
 	/* unpack z-range: */
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;

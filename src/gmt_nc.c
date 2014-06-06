@@ -424,14 +424,15 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy)))
 			gmt_nc_check_step (GMT, header->nx, xy, header->x_units, header->name);
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
+			/* If actual range differs from end-points of vector then we have a pixel grid */
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
 			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ? GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
 		}
-		else if (!j) {
+		else if (!j) {	/* Got node vector, so default to gridline registration */
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
 			header->registration = GMT_GRID_NODE_REG;
 		}
-		else {
+		else {	/* Lacks x-vector entirely so set to point numbers, and gridline registration */
 			header->wesn[XLO] = 0.0, header->wesn[XHI] = (double) header->nx-1;
 			header->registration = GMT_GRID_NODE_REG;
 		}

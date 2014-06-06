@@ -426,7 +426,7 @@ unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsig
 	*mode = (GMT_is_geographic (GMT, GMT_IN)) ? 2 : 0;	/* Great circle or Cartesian */
 	*unit = 0;	/* Initially not set */
 	while (!error && (GMT_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
-		k = s = 0;	len = strlen (p);
+		k = s = 0;	len = (unsigned int)strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char> that may take a unit, if any */
 			if ((p[k] == '+') && (p[k+1] && strchr ("ilr", p[k+1]))) s = k;
 			k++;
