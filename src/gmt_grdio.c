@@ -939,11 +939,11 @@ int GMT_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER 
        		header->nx = nx;    header->ny = ny;
  		if (header->registration == GMT_GRID_PIXEL_REG) {
  			header->registration = GMT_GRID_NODE_REG;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid has wrong registration type. Switching from pixel to gridline registration\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Grid has wrong registration type. Switching from pixel to gridline registration\n");
 		}
 		else {
  			header->registration = GMT_GRID_PIXEL_REG;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid has wrong registration type. Switching from gridline to pixel registration\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Grid has wrong registration type. Switching from gridline to pixel registration\n");
 		}
 	}
 	
