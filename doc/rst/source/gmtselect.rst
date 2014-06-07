@@ -225,7 +225,10 @@ Note On Segments
 
 Segment headers in the input files are copied to output if one or more
 records from a segment passes the test. Selection is always done point
-by point, not by segment.
+by point, not by segment.  That means only points from a segment that
+pass the test will be included in the output.  If you wish to clip the lines
+and include the new boundary points at the segment ends you must use
+gmtspatial instead.
 
 Examples
 --------

@@ -15,7 +15,7 @@ Synopsis
 
 **gmtspatial** [ *table* ] [ **-A**\ [**a**\ *min_dist*][*unit*]] [ **-C** ]
 [ **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
-[ **-E**\ **+**\ \|\ **-** ] [ **-I**\ [**e**\ \|\ **i**] ]
+[ **-E**\ **+**\ \|\ **-** ] [ **-F**\ [**l**]] [ **-I**\ [**e**\ \|\ **i**] ]
 [ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
 [ **-Q**\ [**+h**\ ][**+l**\ ][**+p**\ ][*unit*\ ]] ]
 [ |SYN_OPT-R| ]
@@ -95,6 +95,10 @@ Optional Arguments
 **-E**\ **+**\ \|\ **-** ]
     Reset the handedness of all polygons to match the given **+**
     (counter-clockwise) or **-** (clockwise). Implies **-Q+**.
+
+**-F**\ [**l**]
+   Force input data to be polygons, i.e., close them explicitly if not
+   already closed.  Alternatively, use **Fl** to treat them as lines.
 
 **-I**\ [**e**\ \|\ **i**]
     Determine the intersection locations between all pairs of polygons.
