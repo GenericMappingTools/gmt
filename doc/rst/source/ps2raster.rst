@@ -18,7 +18,7 @@ Synopsis
 [ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ]
 [ **-G**\ *ghost_path* ] [ **-I** ] [ **-L**\ *listfile* ] [ **-P** ]
 [ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
-[ **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t** ]
+[ **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s** \|\ **t** ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**+g**][**+k**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*] ]
 
@@ -28,7 +28,7 @@ Description
 -----------
 
 **ps2raster** converts one or more PostScript files to other formats
-(BMP, EPS, JPEG, PDF, PNG, PPM, TIFF) using GhostScript. Input file
+(BMP, EPS, JPEG, PDF, PNG, PPM, SVG, TIFF) using GhostScript. Input file
 names are read from the command line or from a file that lists them. The
 size of the resulting images is determined by the BoundingBox (or
 HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
@@ -133,12 +133,12 @@ Optional Arguments
     Print to standard error the GhostScript command after it has been executed.
     This option also prevent all intermediate files from being removed.
 
-**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t**
+**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s** \|\ **t**
     Sets the output format, where **b** means BMP, **e** means EPS,
     **E** means EPS with PageSize command, **f** means PDF, **F** means
     multi-page PDF, **j** means JPEG, **g** means PNG, **G** means
     transparent PNG (untouched regions are transparent), **m** means
-    PPM, and **t** means TIFF [default is JPEG]. For **bjgt** you can
+    PPM, **s** means SVG, and **t** means TIFF [default is JPEG]. For **bjgt** you can
     append - to get a grayscale image only. The EPS format can be
     combined with any of the other formats. For example, **-Tef**
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
@@ -244,10 +244,10 @@ optional HiResBoundingBox to add more precision in sizing. The **-A**
 option calculates both and writes both to the EPS file used in the
 rasterization (and output if **-Te** is set).
 
-Although PDF is also a vector format, the **-E** option has an effect on
+Although PDF and SVG are also vector formats, the **-E** option has an effect on
 the resolution of pattern fills and fonts that are stored as bitmaps in
 the document. **ps2raster** therefore uses a larger default resolution
-when creating PDF files. In order to obtain high-quality PDF files, the
+when creating PDF and SVG files. In order to obtain high-quality PDF or SVG files, the
 */prepress* options are in effect, allowing only loss-less DEFLATE
 compression of raster images embedded in the PostScript file.
 

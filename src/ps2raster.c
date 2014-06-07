@@ -49,25 +49,29 @@ void GMT_str_toupper (char *string);
 	int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C);
 #endif
 
-#define N_GS_DEVICES		12	/* Number of supported GS output devices */
-#define GS_DEV_EPS		0
-#define GS_DEV_PDF		1
-#define GS_DEV_JPG		2
-#define GS_DEV_PNG		3
-#define GS_DEV_PPM		4
-#define GS_DEV_TIF		5
-#define GS_DEV_BMP		6
-#define GS_DEV_TPNG		7	/* PNG with transparency */
-#define GS_DEV_JPGG		8	/* These are grayscale versions */
-#define GS_DEV_PNGG		9
-#define GS_DEV_TIFG		10
-#define GS_DEV_BMPG		11
+enum GMT_GS_Devices {
+	GS_DEV_EPS = 0,
+	GS_DEV_PDF,
+	GS_DEV_SVG,
+	GS_DEV_JPG,
+	GS_DEV_PNG,
+	GS_DEV_PPM,
+	GS_DEV_TIF,
+	GS_DEV_BMP,
+	GS_DEV_TPNG,      /* PNG with transparency */
+	GS_DEV_JPGG,      /* These are grayscale versions */
+	GS_DEV_PNGG,
+	GS_DEV_TIFG,
+	GS_DEV_BMPG,
+	N_GS_DEVICES};	/* Number of supported GS output devices */
 
-#define KML_GROUND_ABS		0
-#define KML_GROUND_REL		1
-#define KML_ABS				2
-#define KML_SEAFLOOR_REL	3
-#define KML_SEAFLOOR_ABS	4
+enum GMT_KML_Elevation {
+	KML_GROUND_ABS = 0,
+	KML_GROUND_REL,
+	KML_ABS,
+	KML_SEAFLOOR_REL,
+	KML_SEAFLOOR_ABS,
+	N_KML_ELEVATIONS};
 
 #define add_to_list(list,item) { if (list[0]) strcat (list, " "); strcat (list, item); }
 
@@ -342,7 +346,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s|S<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -405,6 +409,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (transparent where nothing is plotted).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   j means JPEG.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, t, append - to get a grayscale image [24-bit color].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The EPS format can be combined with any of the other formats.\n");
@@ -575,6 +580,9 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 						case 'm':	/* PPM */
 							Ctrl->T.device = GS_DEV_PPM;
 							break;
+						case 's':	/* SVG */
+							Ctrl->T.device = GS_DEV_SVG;
+							break;
 						case 't':	/* TIFF */
 							Ctrl->T.device = (grayscale) ? GS_DEV_TIFG : GS_DEV_TIF;
 							break;
@@ -685,11 +693,12 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
 			cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
-	char *device[N_GS_DEVICES] = {"", "pdfwrite", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
+	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
 	char *device_options[N_GS_DEVICES] = {
 		/* extra options to pass to individual drivers */
 		"",
 		"", /* pdfwrite */
+		"", /* svg */
 		"-dJPEGQ=90", /* jpeg */
 		"", /* png16m */
 		"", /* ppmraw */
@@ -700,8 +709,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		"", /* pnggray */
 		"-sCompression=lzw", /* tiffgray */
 		""}; /* bmpgray */
-	char *ext[N_GS_DEVICES] = {".eps", ".pdf", ".jpg", ".png", ".ppm", ".tif", ".bmp", ".png", ".jpg", ".png", ".tif", ".bmp"};
-	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
+	char *ext[N_GS_DEVICES] = {".eps", ".pdf", ".svg", ".jpg", ".png", ".ppm", ".tif", ".bmp", ".png", ".jpg", ".png", ".tif", ".bmp"};
+	char *RefLevel[N_KML_ELEVATIONS] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 #ifdef WIN32
 	char at_sign[2] = "@";
 #else

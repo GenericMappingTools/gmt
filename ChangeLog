@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-06-07	pwessel
+	* ps2raster.c:		Added new device -Ts for SVG (scalable vector graphics).
+
 2014-05-30	pwessel
 	* grdtrack.c:		Did not properly handle the distance units specified in -E.
 				Now we pre-scan for units to ensure that only ONE unit is used
