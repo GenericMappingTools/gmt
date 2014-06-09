@@ -857,24 +857,24 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			for (tbl = 0; tbl < Dout->n_tables; tbl++) {
 				T = Dout->table[tbl];
 				M = Stack->table[0]->segment[tbl];	/* Current stack */
-				for (k = 0; k < Ctrl->G.n_grids; k++) {
+				for (k = 0; k < Ctrl->G.n_grids; k++) {	/* Reset arrays and extremes */
 					stack[k] = GMT_memory (GMT, NULL, T->n_segments, double);
 					stacked_hi[k] = -DBL_MAX;
 					stacked_lo[k] = +DBL_MAX;
-					stacked_n[k] = 0;
 				}
-				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = GMT_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);
-				for (row = 0; row < n_rows; row++) {	/* For each row to stack across all segments */
+				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = GMT_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);	/* Ned temp array for these methods */
+				for (row = 0; row < n_rows; row++) {	/* For each row to stack across all segments, per data grid */
+					GMT_memset (stacked_n, Ctrl->G.n_grids, uint64_t);	/* Reset counts for new stack */
 					for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) {	/* Collect sampled values across all profiles for same row into temp array */
-							if (GMT_is_dnan (T->segment[seg]->coord[col][row])) continue;
+							if (GMT_is_dnan (T->segment[seg]->coord[col][row])) continue;	/* Must skip any NaN entries in any profile */
 							stack[k][stacked_n[k]] = T->segment[seg]->coord[col][row];
 							if (stack[k][stacked_n[k]] > stacked_hi[k]) stacked_hi[k] = stack[k][stacked_n[k]];
 							if (stack[k][stacked_n[k]] < stacked_lo[k]) stacked_lo[k] = stack[k][stacked_n[k]];
-							stacked_n[k]++;	/* Number of segments with non-NaN entries so far */
+							stacked_n[k]++;	/* Number of segments with non-NaN entries so far for this grid */
 						}
 					}
-					switch (Ctrl->S.mode) {	/* Compute stacked value */
+					switch (Ctrl->S.mode) {	/* Compute stacked value per grid */
 						case STACK_MEAN:   for (k = 0; k < Ctrl->G.n_grids; k++) stacked_val[k] = GMT_mean_and_std (GMT, stack[k], stacked_n[k], &stacked_dev[k]); break;
 						case STACK_MEDIAN: for (k = 0; k < Ctrl->G.n_grids; k++) GMT_median (GMT, stack[k], stacked_n[k], stacked_lo[k], stacked_hi[k], 0.5*(stacked_lo[k]+stacked_hi[k]), &stacked_val[k]); break;
 						case STACK_MODE:   for (k = 0; k < Ctrl->G.n_grids; k++) GMT_mode (GMT, stack[k], stacked_n[k], stacked_n[k]/2, 0, GMT_mode_selection, &GMT_n_multiples, &stacked_val[k]); break;
