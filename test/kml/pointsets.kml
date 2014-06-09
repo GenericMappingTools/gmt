@@ -2355,7 +2355,7 @@
 			</IconStyle>
 		</Style>
 		<Folder>
-			<name>./pointsets.txt</name>
+			<name>pointsets.txt</name>
 			<Folder>
 				<name>Point Set 0</name>
 				<Placemark>

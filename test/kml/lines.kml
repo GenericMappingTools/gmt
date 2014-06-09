@@ -1578,7 +1578,7 @@
 			</LineStyle>
 		</Style>
 		<Folder>
-			<name>./lines.txt</name>
+			<name>lines.txt</name>
 			<Placemark>
 				<name>Line 0</name>
 				<styleUrl>#st-x-5</styleUrl>

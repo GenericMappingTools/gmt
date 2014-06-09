@@ -5,7 +5,7 @@
 ps=imgmap.ps
 IMG=topo.15.1.img
 if [ -f /tmp/gmt/$IMG ]; then # use one placed/linked from /tmp
-	# PW: Run (cd /tmp/gmt; ln -s /Volumes/MacNutHD3/UH/RESOURCES/DATA/img/topo.15.1.img topo.15.1.img) before make check
+	# PW: Run (mkdir -p /tmp/gmt; cd /tmp/gmt; ln -s /Volumes/MacNutRAID/UH/RESOURCES/DATA/img/topo.15.1.img topo.15.1.img) before make check
 	IMG=/tmp/gmt/topo.15.1.img
 else
 	OK=`gmt gmtwhich -C $IMG`
