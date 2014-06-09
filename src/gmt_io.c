@@ -3224,7 +3224,10 @@ int GMT_init_z_io (struct GMT_CTRL *GMT, char format[], bool repeat[], enum GMT_
 /* GMT_z_input and GMT_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
 void * GMT_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 {
-	if ((*status = GMT->current.io.read_item (GMT, fp, *n, GMT->current.io.curr_rec)) == GMT_DATA_READ_ERROR) return (NULL);
+	if ((*status = GMT->current.io.read_item (GMT, fp, *n, GMT->current.io.curr_rec)) == GMT_DATA_READ_ERROR) {
+		GMT->current.io.status = GMT_IO_EOF;
+		return (NULL);
+	}
 	return (GMT->current.io.curr_rec);
 }
 
