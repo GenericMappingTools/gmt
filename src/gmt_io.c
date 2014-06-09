@@ -677,8 +677,10 @@ int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 		uint64_t col;
 		char type = (GMT->common.b.type[direction]) ? GMT->common.b.type[direction] : 'd';
 		for (col = GMT->common.b.ncol[direction]; col < expected; col++) {
-			GMT->current.io.fmt[direction][col].io = GMT_get_io_ptr (GMT, direction, GMT->common.b.swab[direction], type);
-			GMT->current.io.fmt[direction][col].type = GMT_get_io_type (GMT, type);
+			if (!GMT->current.io.fmt[direction][col].io) {
+				GMT->current.io.fmt[direction][col].io = GMT_get_io_ptr (GMT, direction, GMT->common.b.swab[direction], type);
+				GMT->current.io.fmt[direction][col].type = GMT_get_io_type (GMT, type);
+			}
 		}
 		GMT->common.b.ncol[direction] = expected;
 	}
