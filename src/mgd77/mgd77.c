@@ -4059,10 +4059,12 @@ void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 		GMT_free (GMT, F->MGD77_datadir[i]);
 	if (F->MGD77_datadir)
 		GMT_free (GMT, F->MGD77_datadir);
-	for (i = 0; i < MGD77_MAX_COLS; i++)
-		if (F->desired_column[i])
-			free ((void *)F->desired_column[i]);
-	if (F->desired_column) GMT_free (GMT, F->desired_column);
+	if (F->desired_column) {
+		for (i = 0; i < MGD77_MAX_COLS; i++)
+			if (F->desired_column[i])
+				free ((void *)F->desired_column[i]);
+		GMT_free (GMT, F->desired_column);
+	}
 }
 
 void MGD77_Cruise_Explain (struct GMT_CTRL *GMT)

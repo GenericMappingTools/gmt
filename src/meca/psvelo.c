@@ -134,7 +134,7 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify arrow head attributes:");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify arrow head attributes:\n");
 	GMT_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by sigscale. (Se and Sw only)i\n");

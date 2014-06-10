@@ -3,7 +3,7 @@
 #
 # This is original Figure 3 script from
 # Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package,
-# Computers & Geosciences, 36, 348–354.
+# Computers & Geosciences, 36, 348-354.
 # Here used as a test for the x2sys suite.
 
 ps=x2sys_3.ps

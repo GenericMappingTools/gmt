@@ -1478,9 +1478,9 @@ void GMT_cumpoisson (struct GMT_CTRL *GMT, double k, double mu, double *prob) {
 
 double GMT_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *std)
 {	/* Return the standard deviation of the non-NaN values in x */
-	uint64_t k, m;
+	uint64_t k, m = 0;
 	double dx, mean = 0.0, sum2 = 0.0;
-	for (k = m = 0; k < n; k++) {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+	for (k = 0; k < n; k++) {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 		if (GMT_is_dnan (x[k])) continue;
 		m++;
 		dx = x[k] - mean;
@@ -1500,8 +1500,8 @@ int GMT_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 	int iteration = 0;
 	bool finished = false;
 
-	if (n == 0) {
-		*med = m_initial;
+	if (n == 0) {	/* No data, so no defined median */
+		*med = GMT->session.d_NaN;
 		return (1);
 	}
 	if (n == 1) {
@@ -1610,6 +1610,8 @@ double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint
 	uint64_t k;
 	double weight_half = 0.0, weight_count;
 
+	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mode */
+
 	/* First sort data on z */
 
 	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
@@ -1636,6 +1638,8 @@ double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64
 
 	double top, bottom, wsum, p, p_max, mode;
 	uint64_t i, j;
+
+	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mode */
 
 	/* First sort data on z */
 	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
@@ -1679,7 +1683,10 @@ int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 	unsigned int multiplicity;
 	double mid_point_sum = 0.0, length, short_length = DBL_MAX, this_mode;
 
-	if (n == 0) return (0);
+	if (n == 0) {	/* No data, so no defined mode */
+		*mode_est = GMT->session.d_NaN;
+		return (0);
+	}
 	if (n == 1) {
 		*mode_est = x[0];
 		return (0);
@@ -1734,7 +1741,10 @@ int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sor
 	unsigned int multiplicity;
 	double mid_point_sum = 0.0, length, short_length = FLT_MAX, this_mode;
 
-	if (n == 0) return (0);
+	if (n == 0) {	/* No data, so no defined mode */
+		*mode_est = GMT->session.d_NaN;
+		return (0);
+	}
 	if (n == 1) {
 		*mode_est = x[0];
 		return (0);
@@ -1787,8 +1797,13 @@ int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sor
 void GMT_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, double *scale)
 {
 	uint64_t i;
-	double med, *dev = GMT_memory (GMT, NULL, n, double);
+	double med, *dev = NULL;
 
+	if (n == 0) {	/* No data, so cannot define MAD */
+		*scale = GMT->session.d_NaN;
+		return;
+	}
+	dev = GMT_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	GMT_sort_array (GMT, dev, n, GMT_DOUBLE);
 	for (i = n; i > 1 && GMT_is_dnan (dev[i-1]); i--);
@@ -1803,9 +1818,14 @@ void GMT_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 void GMT_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, double *scale)
 {
 	uint64_t i;
-	float *dev = GMT_memory (GMT, NULL, n, float);
+	float *dev = NULL;
 	double med;
 
+	if (n == 0) {	/* No data, so cannot define MAD */
+		*scale = GMT->session.d_NaN;
+		return;
+	}
+	dev = GMT_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = (float) fabs (x[i] - location);
 	GMT_sort_array (GMT, dev, n, GMT_FLOAT);
 	for (i = n; i > 1 && GMT_is_fnan (dev[i-1]); i--);
@@ -1832,6 +1852,7 @@ double GMT_extreme (struct GMT_CTRL *GMT, double x[], uint64_t n, double x_defau
 	uint64_t i, k;
 	double x_select = GMT->session.d_NaN;
 
+	if (n == 0) return (x_select);	/* No data, so no defined extreme value */
 	for (i = k = 0; i < n; i++) {
 		if (kind == -1 && x[i] > 0.0) continue;
 		if (kind == +1 && x[i] < 0.0) continue;
@@ -1889,6 +1910,7 @@ double GMT_corrcoeff (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, un
 	uint64_t i, n_use;
 	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
 
+	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined correlation */
 	if (mode == 0) {
 		for (i = n_use = 0; i < n; i++) {
 			if (GMT_is_dnan (x[i]) || GMT_is_dnan (y[i])) continue;
@@ -1924,6 +1946,7 @@ double GMT_corrcoeff_f (struct GMT_CTRL *GMT, float *x, float *y, uint64_t n, un
 	uint64_t i, n_use;
 	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
 
+	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined correlation */
 	if (mode == 0) {
 		for (i = n_use = 0; i < n; i++) {
 			if (GMT_is_fnan (x[i]) || GMT_is_fnan (y[i])) continue;
@@ -1958,6 +1981,7 @@ double GMT_quantile (struct GMT_CTRL *GMT, double *x, double q, uint64_t n)
 	uint64_t i_f;
 	double p, f, df;
 
+	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined quantile */
 	if (q == 0.0) return (x[0]);			/* 0% quantile == min(x) */
 	while (n > 1 && GMT_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
 	if (n < 1) return (GMT->session.d_NaN);		/* Need at least 1 point to do something */
@@ -1980,6 +2004,7 @@ double GMT_quantile_f (struct GMT_CTRL *GMT, float *x, double q, uint64_t n)
 	uint64_t i_f;
 	double p, f, df;
 
+	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined quantile */
 	if (q == 0.0) return ((double)x[0]);		/* 0% quantile == min(x) */
 	while (n > 1 && GMT_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
 	if (n < 1) return (GMT->session.d_NaN);		/* Need at least 1 point to do something */

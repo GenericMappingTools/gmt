@@ -693,8 +693,10 @@ int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 		uint64_t col;
 		char type = (GMT->common.b.type[direction]) ? GMT->common.b.type[direction] : 'd';
 		for (col = GMT->common.b.ncol[direction]; col < expected; col++) {
-			GMT->current.io.fmt[direction][col].io = GMT_get_io_ptr (GMT, direction, GMT->common.b.swab[direction], type);
-			GMT->current.io.fmt[direction][col].type = GMT_get_io_type (GMT, type);
+			if (!GMT->current.io.fmt[direction][col].io) {
+				GMT->current.io.fmt[direction][col].io = GMT_get_io_ptr (GMT, direction, GMT->common.b.swab[direction], type);
+				GMT->current.io.fmt[direction][col].type = GMT_get_io_type (GMT, type);
+			}
 		}
 		GMT->common.b.ncol[direction] = expected;
 	}
@@ -704,7 +706,7 @@ int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 		GMT_io_banner (GMT, direction);
 		GMT->common.b.o_delay = false;
 	}
-	if (direction == GMT_IN && GMT->common.i.active && GMT->common.i.n_cols > expected)
+	if (direction == GMT_IN && expected && GMT->common.i.active && GMT->common.i.n_cols > expected)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Number of %s columns required [%" PRIu64 "] is less that implied by -i [%" PRIu64 "]\n", mode[GMT_IN], expected, GMT->common.i.n_cols);
 	return (GMT_OK);
 }
@@ -3246,7 +3248,10 @@ int GMT_init_z_io (struct GMT_CTRL *GMT, char format[], bool repeat[], enum GMT_
 /* GMT_z_input and GMT_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
 void * GMT_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 {
-	if ((*status = GMT->current.io.read_item (GMT, fp, *n, GMT->current.io.curr_rec)) == GMT_DATA_READ_ERROR) return (NULL);
+	if ((*status = GMT->current.io.read_item (GMT, fp, *n, GMT->current.io.curr_rec)) == GMT_DATA_READ_ERROR) {
+		GMT->current.io.status = GMT_IO_EOF;
+		return (NULL);
+	}
 	return (GMT->current.io.curr_rec);
 }
 

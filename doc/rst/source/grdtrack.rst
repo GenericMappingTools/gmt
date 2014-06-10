@@ -148,7 +148,7 @@ Optional Arguments
     *file* [grdtrack\_stacked_profile.txt]. **+c**\ *fact* : Compute
     envelope on stacked profile as +/- *fact*\ \*\ *deviation* [2].
     Notes: (1) Deviations depend on *method* and are st.dev (**a**), L1
-    scale (**e** and **p**), or half-range (upper-lower)/2. (2) The
+    scale (**m** and **p**), or half-range (upper-lower)/2. (2) The
     stacked profile file contains 1 plus groups of 4-6 columns, one
     group for each sampled grid. The first column holds cross distance,
     while the first 4 in a group hold stacked value, deviation, min

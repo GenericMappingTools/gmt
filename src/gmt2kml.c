@@ -866,7 +866,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 			if (!strcmp (T->file[GMT_IN], "<stdin>"))
 				kml_print (API, N, "<name>stdin</name>\n");
 			else
-				kml_print (API, N, "<name>%s</name>\n", T->file[GMT_IN]);
+				kml_print (API, N, "<name>%s</name>\n", GMT_basename (T->file[GMT_IN]));
 		}
 		for (seg = 0; seg < T->n_segments; seg++) {	/* Process each segment in this table */
 			pnt_nr = 0;
