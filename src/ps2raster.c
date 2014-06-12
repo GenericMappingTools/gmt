@@ -148,6 +148,9 @@ struct PS2RASTER_CTRL {
 		char *foldername;	/* Name of KML folder */
 		double altitude;
 	} W;
+	struct PS2R_Z { /* -Z */
+		bool active;
+	} Z;
 };
 
 int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
@@ -457,6 +460,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +u<URL> prepands this URL to the name of the image referenced in the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     KML [local file].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Remove input PostScript file(s) after successful conversion.\n");
 
 	return (EXIT_FAILURE);
 }
@@ -598,6 +602,9 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 			case 'W':	/* Save world file */
 				n_errors = parse_GE_settings (GMT, opt->arg, Ctrl);
 				break;
+
+			case 'Z':
+				Ctrl->Z.active = true;
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -1406,6 +1413,13 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			}
 
 		}
+
+		/* Remove input file, if requested */
+		if (Ctrl->Z.active) {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", ps_file);
+			remove (ps_file);
+		}
+
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done.\n");
 
 		if (!Ctrl->S.active) {
@@ -1500,7 +1514,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not find the Proj4 command in the PS file. No conversion performed.\n");
 		}
 
-		else if ( Ctrl->W.kml ) {	/* Write a basic kml file */
+		else if (Ctrl->W.kml) {	/* Write a basic kml file */
 			char kml_file[GMT_BUFSIZ] = "";
 			if (Ctrl->D.active)
 				sprintf (kml_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
