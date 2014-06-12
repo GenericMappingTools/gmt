@@ -221,6 +221,10 @@ Optional Arguments
     projected coordinates and the rest of the line has the regular proj4
     string for this projection.
 
+**-Z**
+    Remove the input PostScript file(s) after the conversion.
+    The input file(s) will **not** be removed in case of failures.
+
 .. include:: explain_help.rst_
 
 Notes
