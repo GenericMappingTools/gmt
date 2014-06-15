@@ -576,10 +576,11 @@ FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
 int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction)
 {	/* Write verbose message about binary record i/o format */
 	static const char *gmt_direction[2] = {"Input", "Output"};
-	char message[GMT_LEN256] = {""}, skip[GMT_LEN64] = {""};
+	char *message = NULL, skip[GMT_LEN64] = {""};
 	char *letter = "-cuhHiIlLfditTn", s[2] = {0, 0};	/* letter order matches the type order in GMT_enum_type */
 	uint64_t col;
 	uint64_t n_bytes;
+	size_t alloc = GMT_LEN256, m_len = 0, len;
 
 	//if (GMT->current.setting.verbose < GMT_MSG_VERBOSE) return GMT_OK;	/* Not in verbose mode anyway */
 	if (!GMT->common.b.active[direction]) return GMT_OK;	/* Not using binary i/o */
@@ -595,25 +596,44 @@ int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of output columns set by -o exceeds those set by -bo!\n");
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
+	message = GMT_memory (GMT, NULL, alloc, char);
 	for (col = 0; col < GMT->common.b.ncol[direction]; col++) {	/* For each binary column of data */
 		if (GMT->current.io.fmt[direction][col].skip < 0) {	/* Must skip n_bytes BEFORE reading this column */
 			n_bytes = -GMT->current.io.fmt[direction][col].skip;
 			sprintf (skip, "%" PRIu64 "x", n_bytes);
+			len = strlen (skip);
+			if ((m_len+len) >= alloc) {
+				alloc += GMT_LEN256;
+				message = GMT_memory (GMT, message, alloc, char);
+			}
 			strcat (message, skip);
+			m_len += len;
 		}
 		if (GMT->current.io.fmt[direction][col].type == 0) {	/* Still not set, use the default type */
 			GMT->current.io.fmt[direction][col].type = GMT_get_io_type (GMT, GMT->common.b.type[direction]);
 			GMT->current.io.fmt[direction][col].io   = GMT_get_io_ptr (GMT, direction, GMT->common.b.swab[direction], GMT->common.b.type[direction]);
 		}
 		s[0] = letter[GMT->current.io.fmt[direction][col].type];	/* Get data type code... */
+		if ((m_len+1) >= alloc) {
+			alloc += GMT_LEN256;
+			message = GMT_memory (GMT, message, alloc, char);
+		}
+		m_len++;
 		strcat (message, s);					/* ...and append to message */
 		if (GMT->current.io.fmt[direction][col].skip > 0) {	/* Must skip n_bytes AFTER reading this column */
 			n_bytes = GMT->current.io.fmt[direction][col].skip;
 			sprintf (skip, "%" PRIu64 "x", n_bytes);
+			len = strlen (skip);
+			if ((m_len+len) >= alloc) {
+				alloc += GMT_LEN256;
+				message = GMT_memory (GMT, message, alloc, char);
+			}
 			strcat (message, skip);
+			m_len += len;
 		}
 	}
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s %d columns via binary records using format %s\n", gmt_direction[direction], GMT->common.b.ncol[direction], message);
+	GMT_free (GMT, message);
 	return GMT_OK;
 }
 
