@@ -133,7 +133,7 @@ Optional Arguments
     Print to standard error the GhostScript command after it has been executed.
     This option also prevent all intermediate files from being removed.
 
-**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s** \|\ **t**
+**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s**\ \|\ **t**
     Sets the output format, where **b** means BMP, **e** means EPS,
     **E** means EPS with PageSize command, **f** means PDF, **F** means
     multi-page PDF, **j** means JPEG, **g** means PNG, **G** means
