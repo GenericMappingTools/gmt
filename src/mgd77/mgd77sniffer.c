@@ -2966,8 +2966,8 @@ int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int 
 	/* Then loop over all the ship, cruise pairs */
 	*extreme=0;
 	for (j = 0; j < nclean; j++) {
-		/* Need to skip ship values that are outside of acceptable range */
-		if (orig[j] >= min && orig[j] <= max) {
+		/* Need to skip ship and grid values that are outside of acceptable range */
+		if (orig[j] >= min && orig[j] <= max && new[j] >= min && new[j] <= max) {
 			ship_bin = urint ((orig[j] - min)/delta);
 			grid_bin = urint ((new_val[j] - min)/delta);
 			bin2d[ship_bin][grid_bin]++;    /* Add up # of pairs in this bin */
