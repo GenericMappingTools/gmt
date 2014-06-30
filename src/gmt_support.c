@@ -1327,7 +1327,24 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	}
 	if (!strcmp (line, "dashed")) strcpy (line, "-");	/* Accepted "dashed" to mean - */
 	if (!strcmp (line, "dotted")) strcpy (line, ".");	/* Accepted "dotted" to mean . */
-	
+	if (!strcmp (line, "a")) {	/* Old GMT4 "a" style */
+		if (GMT_compat_check (GMT, 4))
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Pen-style \"a\" is deprecated, use \"dashed\" or \"-\" instead\n");
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad pen-style %s\n", line);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		}
+		strcpy (line, "-");	/* Accepted GMT4 style "a" to mean - */
+	}
+	else if (!strcmp (line, "o")) {	/* Old GMT4 "o" style */
+		if (GMT_compat_check (GMT, 4))
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Pen-style \"o\" is deprecated, use \"dotted\" or \".\" instead\n");
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad pen-style %s\n", line);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		}
+		strcpy (line, ".");	/* Accepted GMT4 style "a" to mean - */
+	}
 	n = (int)strlen (line) - 1;
 	if (strchr (GMT_DIM_UNITS, line[n]))	/* Separate unit given to style string */
 		unit = GMT_unit_lookup (GMT, line[n], GMT->current.setting.proj_length_unit);
