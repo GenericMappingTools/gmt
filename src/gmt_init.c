@@ -853,7 +853,7 @@ void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t             (3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1,\n");
 	GMT_message (GMT, "\t             (4) any valid color name.\n");
 	GMT_message (GMT, "\t   <style> = (1) pattern of dashes (-) and dots (.), scaled by <width>.\n");
-	GMT_message (GMT, "\t             (2) a for dashed, o for dotted lines, scaled by <width>.\n");
+	GMT_message (GMT, "\t             (2) \"dashed\", \"dotted\", or \"solid\".\n");
 	GMT_message (GMT, "\t             (3) <pattern>:<offset>; <pattern> holds lengths (default unit points)\n");
 	GMT_message (GMT, "\t                 of any number of lines and gaps separated by underscores.\n");
 	GMT_message (GMT, "\t                 <offset> shifts elements from start of the line [0].\n");

@@ -1320,6 +1320,14 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	char tmp[GMT_LEN256] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
 
 	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing to do */
+	if (!strcmp (line, "solid")) {	/* Used to override any other default style */
+		P->offset = 0.0;
+		P->style[0] = '\0';
+		 return (GMT_NOERROR);
+	}
+	if (!strcmp (line, "dashed")) strcpy (line, "-");	/* Accepted "dashed" to mean - */
+	if (!strcmp (line, "dotted")) strcpy (line, ".");	/* Accepted "dotted" to mean . */
+	
 	n = (int)strlen (line) - 1;
 	if (strchr (GMT_DIM_UNITS, line[n]))	/* Separate unit given to style string */
 		unit = GMT_unit_lookup (GMT, line[n], GMT->current.setting.proj_length_unit);
