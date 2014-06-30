@@ -1319,14 +1319,14 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	double width;
 	char tmp[GMT_LEN256] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
 
-	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing to do */
+	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing to do as no style given.  Note we do not reset any existing style here; use solid to do so */
 	if (!strcmp (line, "solid")) {	/* Used to override any other default style */
 		P->offset = 0.0;
 		P->style[0] = '\0';
 		 return (GMT_NOERROR);
 	}
-	if (!strcmp (line, "dashed")) strcpy (line, "-");	/* Accepted "dashed" to mean - */
-	if (!strcmp (line, "dotted")) strcpy (line, ".");	/* Accepted "dotted" to mean . */
+	if (!strcmp (line, "dashed")) strcpy (line, "-");	/* Accept "dashed" to mean - */
+	if (!strcmp (line, "dotted")) strcpy (line, ".");	/* Accept "dotted" to mean . */
 	if (!strcmp (line, "a")) {	/* Old GMT4 "a" style */
 		if (GMT_compat_check (GMT, 4))
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Pen-style \"a\" is deprecated, use \"dashed\" or \"-\" instead\n");
@@ -1403,7 +1403,7 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 		P->style[strlen(P->style)-1] = '\0';	/* Chop off trailing space */
 	}
 	if (n_dash >= 11) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Pen attributes contain more than 11 dashes (limit for PostScript setdash operator)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Pen attributes contain more than 11 items (limit for PostScript setdash operator)!\n");
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	return (GMT_NOERROR);
