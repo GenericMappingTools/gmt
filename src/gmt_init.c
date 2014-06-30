@@ -7244,6 +7244,9 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 			GMT_memcpy (GMT->current.map.frame.axis[i].unit, workspace, GMT_LEN64, char);
 		}
 		
+		if (out3[0] == '\0') continue;	/* No intervals */
+		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		
 		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
 			error += gmt_decode_tinfo (GMT, i, 'c', out3, &GMT->current.map.frame.axis[i]);
@@ -7531,6 +7534,9 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		
 		/* Now parse the annotation/tick info string */
 
+		if (orig_string[0] == '\0') continue;	/* Got nothing */
+		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		
 		GMT_memset (string, GMT_BUFSIZ, char);
 		strcpy (string, orig_string);	/* Make a copy of string as it gets messed with below */
 		if (string[0] == 'c')		/* Special custom annotation information given via file */
