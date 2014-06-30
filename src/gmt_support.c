@@ -1315,7 +1315,7 @@ int gmt_getpenwidth (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 }
 
 int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
-	unsigned int i, n, pos, unit = GMT_PT;
+	unsigned int i, n, pos, unit = GMT_PT, n_dash = 0;
 	double width;
 	char tmp[GMT_LEN256] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
 
@@ -1371,6 +1371,7 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 		while ((GMT_strtok (P->style, " ", &pos, ptr))) {
 			sprintf (tmp, "%g ", (atof (ptr) * GMT->session.u2u[unit][GMT_PT]));
 			strcat (string, tmp);
+			n_dash++;
 		}
 		string[strlen (string) - 1] = 0;
 		if (strlen (string) >= GMT_PEN_LEN) {
@@ -1387,13 +1388,23 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 			if (line[i] == '-') { /* Dash */
 				sprintf (tmp, "%g %g ", 8.0 * width, 4.0 * width);
 				strcat (P->style, tmp);
+				n_dash += 2;
 			}
 			else if (line[i] == '.') { /* Dot */
 				sprintf (tmp, "%g %g ", width, 4.0 * width);
 				strcat (P->style, tmp);
+				n_dash += 2;
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Pen attributes not using just - and . for dashes and dots. Offending character --> %c\n", line[i]);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 		}
 		P->style[strlen(P->style)-1] = '\0';	/* Chop off trailing space */
+	}
+	if (n_dash >= 11) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Pen attributes contain more than 11 dashes (limit for PostScript setdash operator)!\n");
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	return (GMT_NOERROR);
 }
