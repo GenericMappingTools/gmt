@@ -29,5 +29,5 @@ do
    done
 done
 
-gmt psxy lines.dat -R -J -Sqxdistances.xyp:+f8p,Helvetica,black+gwhite+Lh+u" km"+v -W0.5p,red -O >> $ps
+gmt psxy lines.dat -R -J -Sqxdistances.xyp:+f8p,Helvetica,black+gwhite+Lh+u" km"+v -W0.5p,green -O >> $ps
 

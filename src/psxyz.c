@@ -503,10 +503,15 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 
 	GMT_map_basemap (GMT);
 
-	if (GMT->current.proj.z_pars[0] == 0.0 && (!Ctrl->N.active || (!not_line && GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])))) {
-		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-		clip_set = true;
+	if (GMT->current.proj.z_pars[0] == 0.0) {	/* Only consider clipping if there is no z scaling */
+		if ((GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
+			/* Special case of 360-range conical (which is periodic but do not touch at w=e) so we must clip to ensure nothing is plotted in the gap between west and east border */
+			clip_set = true;
+		}
+		else if (not_line && !Ctrl->N.active)	/* Only set clip if plotting symbols and -N not used */
+			clip_set = true;
 	}
+	if (clip_set) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = true;
 
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
