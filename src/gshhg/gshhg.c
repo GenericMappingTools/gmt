@@ -6,35 +6,10 @@
  * PROGRAM:	gshhg.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
  * CREATED:	JAN. 28, 1996
+ * DATE:	JULY 1, 2014
  * PURPOSE:	To extract ASCII data from the binary GSHHG shoreline data
  *		as described in the 1996 Wessel & Smith JGR Data Analysis Note.
- * VERSION:	1.1 (Byte flipping added)
- *		1.2 18-MAY-1999:
- *		   Explicit binary open for DOS systems
- *		   POSIX.1 compliant
- *		1.3 08-NOV-1999: Released under GNU GPL
- *		1.4 05-SEPT-2000: Made a GMT supplement; FLIP no longer needed
- *		1.5 14-SEPT-2004: Updated to deal with latest GSHHG database (1.3)
- *		1.6 02-MAY-2006: Updated to deal with latest GSHHG database (1.4)
- *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
- *		1.8 31-MAR-2007: Updated to deal with latest GSHHG database (1.5)
- *		1.9 27-AUG-2007: Handle line data as well as polygon data
- *		1.10 15-FEB-2008: Updated to deal with latest GSHHG database (1.6)
- *		1.11 15-JUN-2009: Now contains information on container polygon,
- *				the polygons ancestor in the full resolution, and
- *				a flag to tell if a lake is a riverlake.
- *				Updated to deal with latest GSHHG database (2.0)
- *		1.12 24-MAY-2010: Deal with 2.1 format.
- *		1.13 15-JUL-2011: Now contains improved area information (2.2.0),
- *				 and revised greenwich flags (now 2-bit; see gshhg.h).
- *				 Also added -A and -G as suggested by José Luis García Pallero,
- *				 as well as -Qe|i to control river-lake output, and -N to
- *				 get a particular level.
- *		1.14 15-APR-2012:  	Data version is now 2.2.1. [no change to format]
- *		1.15 1-JAN-2013:   	Data version is now 2.2.2. [no change to format]
- *		1.16 1-JUL-2013:   	Data version is now 2.2.3. [no change to format]
- *		1.17 1-NOV-2013.	Data version is now 2.2.4. [no change to format]
- *		1.18 1-FEB-2014:   	Data version is now 2.3.0. [no change to format but levels 5,6 added for Antarctica]
+ * VERSION:	1-JUL-2014.  For use with GSHHG version 2.3.1
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -52,7 +27,7 @@
 #define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHS or WDBII data files"
 
 #include "gmt_dev.h"
-#include "gshhg.h"
+#include "gmt_gshhg.h"
 
 #define GMT_PROG_OPTIONS "-:Vbo"
 
@@ -232,8 +207,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 
 	FILE *fp = NULL;
 
-	struct POINT p;
-	struct GSHHG h;
+	struct GSHHG_POINT p;
+	struct GSHHG_HEADER h;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TEXTSET *X = NULL;
 	struct GMT_DATASEGMENT **T = NULL;
@@ -307,7 +282,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		D->table[0]->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
-	n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);
+	n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);
 
 	while (n_read == 1) {
 		n_seg++;
@@ -344,8 +319,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = false;	/* Skip if riverlake/not riverlake (-Q) */
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
-			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
-			n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);	/* Get the next GSHHG header */
+			fseek (fp, (off_t)(h.n * sizeof(struct GSHHG_POINT)), SEEK_CUR);
+			n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);	/* Get the next GSHHG header */
 			continue;	/* Back to top of loop */
 		}
 		
@@ -380,7 +355,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 			TX->record[seg_no] = strdup (header);
 			TX->n_rows++;
-			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
+			fseek (fp, (off_t)(h.n * sizeof(struct GSHHG_POINT)), SEEK_CUR);
 		}
 		else {	/* Return the data points also */
 			/* Place the header in the output data structure */
@@ -395,7 +370,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			/* Allocate h.n number of data records */
 			GMT_alloc_segment (GMT, T[seg_no], dim[GMT_ROW], dim[GMT_COL], true);
 			for (row = 0; row < h.n; row++) {
-				if (fread (&p, sizeof (struct POINT), 1U, fp) != 1) {
+				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
 					Return (EXIT_FAILURE);
 				}
@@ -410,7 +385,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		}
 		seg_no++;
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
-		n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);	/* Get the next GSHHG header */
+		n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);	/* Get the next GSHHG header */
 	}
 	GMT_fclose (GMT, fp);
 	
