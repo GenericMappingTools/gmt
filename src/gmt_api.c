@@ -309,6 +309,7 @@ typedef size_t (*p_func_size_t) (uint64_t row, uint64_t col, size_t dim);
 #ifdef DEBUG
 void GMTAPI_Set_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *obj)
 {	/* This is mostly for debugging and may go away or remain under DEBUG */
+	GMT_Report (API, GMT_MSG_DEBUG, "Set_Object for family: %d\n", obj->family);
 	switch (obj->family) {
 		case GMT_IS_GRID:	obj->G = obj->data; break;
 		case GMT_IS_DATASET:	obj->D = obj->data; break;
@@ -672,6 +673,7 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 {
 	double off = 0.5 * registration;
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
+	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_init_matrix called: reg = %d mode = %d\n", registration, mode);
 	if ((mode & GMT_VIA_OUTPUT) && dim == NULL && range == NULL && inc == NULL) return (GMT_NOERROR);	/* OK for creating blank container for output */
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
@@ -692,6 +694,7 @@ int GMTAPI_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 {
 	if (dim == NULL) return (GMT_PTR_IS_NULL);	/* number of columns not provided */
 	if (dim[0] == 0) return (GMT_VALUE_NOT_SET);
+	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_init_vector called: reg = %d\n", registration);
 	if (range == NULL || (range[XLO] == range[XHI])) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
 		V->n_rows = dim[1];	/* If so, n_rows is passed via dim[1] */
@@ -722,6 +725,7 @@ double * GMTAPI_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_MATRI
 	unsigned int min, max;
 	uint64_t k, n;
 
+	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_matrix_coord called: dim = %d\n", dim);
 	if (M->n_layers <= 1 && dim == GMT_Z) return (NULL);	/* No z-dimension */
 	n = (dim == GMT_X) ? M->n_columns : ((dim == GMT_Y) ? M->n_rows : M->n_layers);
 	min = 2*dim, max = 2*dim + 1;
@@ -736,6 +740,7 @@ double * GMTAPI_vector_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_VECTO
 {	/* Allocate and compute coordinates for a vector, if equidistantly defined */
 	unsigned int k;
 	double *coord = NULL, off, inc;
+	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_vector_coord called: dim = %d\n", dim);
 	if (V->range[0] == 0.0 && V->range[1] == 0.0) return (NULL);	/* Not an equidistant vector */
 	coord = GMT_memory (API->GMT, NULL, V->n_rows, double);
 	off = 0.5 * V->registration;
@@ -752,7 +757,7 @@ void GMTAPI_grdheader_to_info (struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_o
 	GMT_memcpy (M_obj->range, h->wesn, 4, double);
 }
 
-void GMTAPI_info_to_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_obj)
+void GMTAPI_info_to_grdheader (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_obj)
 {	/* Unpacks the necessary items into the grid header from the matrix parameters */
 	h->nx = (unsigned int)M_obj->n_columns;
 	h->ny = (unsigned int)M_obj->n_rows;
@@ -1207,7 +1212,7 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 	return (object_ID);
 }
 
-bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL *API, int family, int geometry)
+bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL * GMT_UNUSED(API), int family, int geometry)
 {	/* Sanity check that geometry and family are compatible; note they may be -1 hence int */
 	bool problem = false;
 	if (geometry == GMT_NOTSET || family == GMT_NOTSET) return false;	/* No errors if nothing to check */
@@ -5372,7 +5377,7 @@ void * GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned 
 #endif
 
 /* Convenience function to get grid or image node */
-int64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col)
+int64_t GMT_Get_Index (void * GMT_UNUSED(V_API), struct GMT_GRID_HEADER *header, int row, int col)
 {	/* V_API not used but all API functions take V_API so no exceptions! */
 	return (GMT_IJP (header, row, col));
 }
@@ -5633,7 +5638,7 @@ void * GMT_FFT_Parse_ (char *option, unsigned int *dim, char *args, int *length)
 }
 #endif
 
-struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, unsigned int mode, void *v_info)
+struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_1d (struct GMTAPI_CTRL * GMT_UNUSED(API), struct GMT_DATASET * GMT_UNUSED(D), unsigned int GMT_UNUSED(mode), void * GMT_UNUSED(v_info))
 {
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 
@@ -5804,7 +5809,7 @@ double GMTAPI_FFT_wavenumber_2d (uint64_t k, unsigned int mode, struct GMT_FFT_W
 	return (wave);
 }
 
-double GMT_FFT_Wavenumber (void *V_API, uint64_t k, unsigned int mode, void *v_K)
+double GMT_FFT_Wavenumber (void * GMT_UNUSED(V_API), uint64_t k, unsigned int mode, void *v_K)
 {	/* Lets you specify which 1-D or 2-D wavenumber you want */
 	struct GMT_FFT_WAVENUMBER *K = gmt_get_fftwave_ptr (v_K);
 	if (K->dim == 2) return (GMTAPI_FFT_wavenumber_2d (k, mode, K));
@@ -5818,7 +5823,7 @@ double GMT_FFT_Wavenumber_ (uint64_t *k, unsigned int *mode, void *v_K)
 }
 #endif
 
-int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
+int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER * GMT_UNUSED(K))
 {	/* The 1-D FFT operating on DATASET segments */
 	int status = 0;
 	uint64_t seg, row, tbl, last = 0, col = 0;

@@ -852,28 +852,28 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	return (n_use);
 }
 
-double GMT_dot3v (struct GMT_CTRL *GMT, double *a, double *b)
+double GMT_dot3v (struct GMT_CTRL *GMT_UNUSED(GMT), double *a, double *b)
 {
 	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y] + a[GMT_Z]*b[GMT_Z]);
 }
 
-double GMT_dot2v (struct GMT_CTRL *GMT, double *a, double *b)
+double GMT_dot2v (struct GMT_CTRL *GMT_UNUSED(GMT), double *a, double *b)
 {
 	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y]);
 }
 
-double GMT_mag3v (struct GMT_CTRL *GMT, double *a)
+double GMT_mag3v (struct GMT_CTRL *GMT_UNUSED(GMT), double *a)
 {
 	return (d_sqrt(a[GMT_X]*a[GMT_X] + a[GMT_Y]*a[GMT_Y] + a[GMT_Z]*a[GMT_Z]));
 }
 
-void GMT_add3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
+void GMT_add3v (struct GMT_CTRL *GMT_UNUSED(GMT), double *a, double *b, double *c)
 {	/* C = A + B */
 	int k;
 	for (k = 0; k < 3; k++) c[k] = a[k] + b[k];
 }
 
-void GMT_sub3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
+void GMT_sub3v (struct GMT_CTRL *GMT_UNUSED(GMT), double *a, double *b, double *c)
 {	/* C = A - B */
 	int k;
 	for (k = 0; k < 3; k++) c[k] = a[k] - b[k];
@@ -891,7 +891,7 @@ void GMT_normalize3v (struct GMT_CTRL *GMT, double *a)
 	}
 }
 
-void GMT_normalize2v (struct GMT_CTRL *GMT, double *a)
+void GMT_normalize2v (struct GMT_CTRL *GMT_UNUSED(GMT), double *a)
 {
 	double r_length;
 	r_length = hypot (a[GMT_X], a[GMT_Y]);
@@ -902,21 +902,21 @@ void GMT_normalize2v (struct GMT_CTRL *GMT, double *a)
 	}
 }
 
-void GMT_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
+void GMT_cross3v (struct GMT_CTRL *GMT_UNUSED(GMT), double *a, double *b, double *c)
 {
 	c[GMT_X] = a[GMT_Y] * b[GMT_Z] - a[GMT_Z] * b[GMT_Y];
 	c[GMT_Y] = a[GMT_Z] * b[GMT_X] - a[GMT_X] * b[GMT_Z];
 	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
 }
 
-void GMT_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3])
+void GMT_matrix_vect_mult (struct GMT_CTRL *GMT_UNUSED(GMT), unsigned int dim, double a[3][3], double b[3], double c[3])
 {	/* c = A * b for 2 or 3 D */
 	unsigned int i, j;
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
 }
 
-void GMT_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3])
+void GMT_make_rot_matrix2 (struct GMT_CTRL *GMT_UNUSED(GMT), double E[3], double w, double R[3][3])
 {	/* Based on Cox and Hart, 1986 */
 /*	E	Euler pole in in cartesian coordinates
  *	w	angular rotation in degrees
@@ -964,7 +964,7 @@ void GMT_make_rot_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double
 }
 
 
-void GMT_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, bool degrees)
+void GMT_geo_to_cart (struct GMT_CTRL *GMT_UNUSED(GMT), double lat, double lon, double *a, bool degrees)
 {
 	/* Convert geographic latitude and longitude (lat, lon)
 	   to a 3-vector of unit length (a). If degrees = true,
@@ -982,7 +982,7 @@ void GMT_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, b
 	a[GMT_Y] = clat * slon;
 }
 
-void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a, bool degrees)
+void GMT_cart_to_geo (struct GMT_CTRL *GMT_UNUSED(GMT), double *lat, double *lon, double *a, bool degrees)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (lat, lon). If degrees = true, the output coordinates
@@ -998,7 +998,7 @@ void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a,
 	}
 }
 
-void GMT_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a, bool degrees)
+void GMT_polar_to_cart (struct GMT_CTRL *GMT_UNUSED(GMT), double r, double theta, double *a, bool degrees)
 {
 	/* Convert polar (cylindrical) coordinates r, theta
 	   to a 2-vector of unit length (a). If degrees = true,
@@ -1010,7 +1010,7 @@ void GMT_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a,
 	a[GMT_Y] *= r;
 }
 
-void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *a, bool degrees)
+void GMT_cart_to_polar (struct GMT_CTRL *GMT_UNUSED(GMT), double *r, double *theta, double *a, bool degrees)
 {
 	/* Convert a 2-vector (a) of unit length into polar (cylindrical)
 	   coordinates (r, theta). If degrees = true, the output coordinates
@@ -1425,7 +1425,7 @@ uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64
 	return (n_out);
 }
 
-int GMT_chol_dcmp (struct GMT_CTRL *GMT, double *a, double *d, double *cond, int nr, int n) {
+int GMT_chol_dcmp (struct GMT_CTRL *GMT_UNUSED(GMT), double *a, double *d, double *cond, int nr, int n) {
 
 	/* Given a, a symmetric positive definite matrix
 	of size n, and row dimension nr, compute a lower
@@ -1481,7 +1481,7 @@ int GMT_chol_dcmp (struct GMT_CTRL *GMT, double *a, double *d, double *cond, int
 	return (0);
 }
 
-void GMT_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n, int nerr, bool donly) {
+void GMT_chol_recover (struct GMT_CTRL *GMT_UNUSED(GMT), double *a, double *d, int nr, int n, int nerr, bool donly) {
 
 	/* Given a, a symmetric positive definite matrix of row dimension nr,
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find
@@ -1531,7 +1531,7 @@ void GMT_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n
 	return;
 }
 
-void GMT_chol_solv (struct GMT_CTRL *GMT, double *a, double *x, double *y, int nr, int n) {
+void GMT_chol_solv (struct GMT_CTRL *GMT_UNUSED(GMT), double *a, double *x, double *y, int nr, int n) {
 	/* Given an n by n linear system ax = y, with a a symmetric, 
 	positive-definite matrix, y a known vector, and x an unknown
 	vector, this routine finds x, if a holds the lower-triangular

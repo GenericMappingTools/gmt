@@ -126,14 +126,3 @@ struct MGD77_MAG_RF {
 	int start;          /* Model start year           */
 	int end;            /* Model end year             */
 };
-
-/* Local functions */
-void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[], unsigned int bilinear, double threshold);
-unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, unsigned int n_grid, unsigned int n);
-void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned int col);
-void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col);
-void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int gridField);
-void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, unsigned int nvalues, unsigned int n_angle, double *stats, unsigned int gridField);
-int decimate (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *fieldTest);
-double lms (struct GMT_CTRL *GMT, double *x, unsigned int n);
-double median (struct GMT_CTRL *GMT, double *x, unsigned int n);

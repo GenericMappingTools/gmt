@@ -312,7 +312,7 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	return (n);
 }
 
-void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, uint64_t np, double w, double e, double s, double n)
+void shrink_clip_contours (double *x, double *y, uint64_t np, double w, double e, double s, double n)
 {
 	/* Moves outside points to boundary.  Array length is not changed. */
 	uint64_t i;
@@ -724,7 +724,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			first = 1;
 			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &max_alloc_points)) > 0) {
 				closed = false;
-				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
+				shrink_clip_contours (x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
 				if (Ctrl->D.active && n > (uint64_t)Ctrl->Q.min) {	/* Save the contour as output data */
 					S = GMT_prepare_contour (GMT, x, y, n, GMT->session.d_NaN);
 					/* Select which table this segment should be added to */

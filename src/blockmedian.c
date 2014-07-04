@@ -155,7 +155,7 @@ int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra,
+void median_output (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra,
 	unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data)
 {
 	double weight_half, weight_count;

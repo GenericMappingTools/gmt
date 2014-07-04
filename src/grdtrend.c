@@ -266,7 +266,7 @@ void load_pstuff (double *pstuff, unsigned int n_model, double x, double y, unsi
 	return;
 }
 
-void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, unsigned int n_model, double *pstuff)
+void compute_trend (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_GRID *T, double *xval, double *yval, double *gtd, unsigned int n_model, double *pstuff)
 {	/* Find trend from a model  */
 	unsigned int row, col, k;
 	uint64_t ij;
@@ -278,7 +278,7 @@ void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, doub
 	}
 }
 
-void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
+void compute_resid (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
 {	/* Find residuals from a trend  */
 	unsigned int row, col;
 	uint64_t ij;
@@ -286,7 +286,7 @@ void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T
 	GMT_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
 
-void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model)
+void grd_trivial_model (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model)
 {
 	/* Routine to fit up elementary polynomial model of grd data, 
 	model = gtd[0] + gtd[1]*x + gtd[2]*y + gtd[3] * x * y,
@@ -327,7 +327,7 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 	return;
 }
 
-double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale)
+double compute_chisq (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_GRID *R, struct GMT_GRID *W, double scale)
 {	/* Find Chi-Squared from weighted residuals  */
 	unsigned int row, col;
 	uint64_t ij;
@@ -401,7 +401,7 @@ void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, unsigned int n_m
 	return;
 }
 
-void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, unsigned int n_model, struct GMT_GRID *W, bool weighted)
+void load_gtg_and_gtd (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, unsigned int n_model, struct GMT_GRID *W, bool weighted)
 {
 	/* Routine to load the matrix G'G (gtg) and vector G'd (gtd)
 	for the normal equations.  Routine uses indices i,j to refer
