@@ -530,6 +530,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		/* Store global attributes */
 		unsigned int row, col;
 		const int *nc_vers = netcdf_libvers();
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "netCDF Library version: %d\n", *nc_vers);
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
 		if (header->title[0]) {
 			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
