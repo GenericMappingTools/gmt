@@ -222,7 +222,7 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	return (B);
 }
 
-double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B)
+double bin_mode (struct GMT_CTRL *GMT_UNUSED(GMT), struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B)
 {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the

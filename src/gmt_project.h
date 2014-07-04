@@ -462,7 +462,8 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	char header[GMT_LEN256];	/* Plot title */
 	struct GMT_FILL fill;		/* Fill for the basemap inside, if paint == true */
 	bool plotted_header;		/* true if header has been plotted */
-	bool init;			/* true if -B was used */
+	bool init;			/* true if -B was used at all */
+	bool set;			/* true if -B was used to set any increments */
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
 	bool paint;			/* true if -B +g<fill> was used */
 	bool draw_box;			/* true if a 3-D Z-box is desired */

@@ -895,7 +895,7 @@ void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t             (3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1,\n");
 	GMT_message (GMT, "\t             (4) any valid color name.\n");
 	GMT_message (GMT, "\t   <style> = (1) pattern of dashes (-) and dots (.), scaled by <width>.\n");
-	GMT_message (GMT, "\t             (2) a for dashed, o for dotted lines, scaled by <width>.\n");
+	GMT_message (GMT, "\t             (2) \"dashed\", \"dotted\", or \"solid\".\n");
 	GMT_message (GMT, "\t             (3) <pattern>:<offset>; <pattern> holds lengths (default unit points)\n");
 	GMT_message (GMT, "\t                 of any number of lines and gaps separated by underscores.\n");
 	GMT_message (GMT, "\t                 <offset> shifts elements from start of the line [0].\n");
@@ -1456,7 +1456,7 @@ int gmt_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 	return (error);
 }
 
-bool GMT_check_region (struct GMT_CTRL *GMT, double wesn[])
+bool GMT_check_region (struct GMT_CTRL *GMT_UNUSED(GMT), double wesn[])
 {	/* If region is given then we must have w < e and s < n */
 	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
@@ -2487,22 +2487,22 @@ double gmt_abs_col_map_dist (struct GMT_CTRL *GMT, uint64_t col)
 	return (fabs (X[col][1] - X[col][0]));
 }
 
-double gmt_xy_map_dist (struct GMT_CTRL *GMT, uint64_t col)
+double gmt_xy_map_dist (struct GMT_CTRL *GMT, uint64_t GMT_UNUSED(col))
 {	/* Compute point-separation after mapping */
 	return (GMT_cartesian_dist_proj (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
-double gmt_xy_deg_dist (struct GMT_CTRL *GMT, uint64_t col)
+double gmt_xy_deg_dist (struct GMT_CTRL *GMT, uint64_t GMT_UNUSED(col))
 {
 	return (GMT_great_circle_dist_degree (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
-double gmt_xy_true_dist (struct GMT_CTRL *GMT, uint64_t col)
+double gmt_xy_true_dist (struct GMT_CTRL *GMT, uint64_t GMT_UNUSED(col))
 {
 	return (GMT_great_circle_dist_meter (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
-double gmt_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t col)
+double gmt_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t GMT_UNUSED(col))
 {
 	return (GMT_cartesian_dist (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
@@ -5847,7 +5847,7 @@ char *GMT_putcolor (struct GMT_CTRL *GMT, double *rgb)
 	return (text);
 }
 
-char *GMT_putrgb (struct GMT_CTRL *GMT, double *rgb)
+char *GMT_putrgb (struct GMT_CTRL *GMT_UNUSED(GMT), double *rgb)
 {
 	/* Creates t the string r/g/b corresponding to the RGB triplet */
 
@@ -5861,7 +5861,7 @@ char *GMT_putrgb (struct GMT_CTRL *GMT, double *rgb)
 	return (text);
 }
 
-char *GMT_putcmyk (struct GMT_CTRL *GMT, double *cmyk)
+char *GMT_putcmyk (struct GMT_CTRL *GMT_UNUSED(GMT), double *cmyk)
 {
 	/* Creates the string c/m/y/k corresponding to the CMYK quadruplet */
 
@@ -5875,7 +5875,7 @@ char *GMT_putcmyk (struct GMT_CTRL *GMT, double *cmyk)
 	return (text);
 }
 
-char *GMT_puthsv (struct GMT_CTRL *GMT, double *hsv)
+char *GMT_puthsv (struct GMT_CTRL *GMT_UNUSED(GMT), double *hsv)
 {
 	/* Creates the string h/s/v corresponding to the HSV triplet */
 
@@ -5968,7 +5968,7 @@ unsigned int GMT_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit)
 	return (unit);
 }
 
-int GMT_hash (struct GMT_CTRL *GMT, char *v, unsigned int n_hash)
+int GMT_hash (struct GMT_CTRL *GMT_UNUSED(GMT), char *v, unsigned int n_hash)
 {
 	int h;
 	assert (v!=NULL); /* We are in trouble if we get a NULL pointer here */
@@ -6106,7 +6106,7 @@ int GMT_get_datum (struct GMT_CTRL *GMT, char *name)
 	return (-1);	/* Not found */
 }
 
-bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYSTEM *time_system)
+bool GMT_get_time_system (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, struct GMT_TIME_SYSTEM *time_system)
 {
 	/* Convert TIME_SYSTEM into TIME_EPOCH and TIME_UNIT.
 	   TIME_SYSTEM can be one of the following: j2000, jd, mjd, s1985, unix, dr0001, rata
@@ -6159,7 +6159,7 @@ bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYST
 	return (false);
 }
 
-int GMT_get_char_encoding (struct GMT_CTRL *GMT, char *name)
+int GMT_get_char_encoding (struct GMT_CTRL *GMT_UNUSED(GMT), char *name)
 {
 	int i;
 
@@ -6981,7 +6981,7 @@ int gmt_strip_colonitem (struct GMT_CTRL *GMT, int axis, const char *in, const c
 	return (GMT_NOERROR);
 }
 
-void gmt_handle_atcolon (struct GMT_CTRL *GMT, char *txt, int old_p)
+void gmt_handle_atcolon (struct GMT_CTRL *GMT_UNUSED(GMT), char *txt, int old_p)
 {	/* Way = 0: Replaces @:<size>: and @:: with @^<size>^ and @^^ to avoid trouble in -B:label: parsing;
 	 * Way = 1: Restores it the way it was. */
 	int new_p;
@@ -7412,6 +7412,9 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 			GMT_memcpy (GMT->current.map.frame.axis[i].unit, workspace, GMT_LEN64, char);
 		}
 
+		if (out3[0] == '\0') continue;	/* No intervals */
+		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		
 		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
 			error += gmt_decode_tinfo (GMT, i, 'c', out3, &GMT->current.map.frame.axis[i]);
@@ -7452,7 +7455,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 /* New GMT5 functions for parsing new -B syntax */
 
-void gmt5_handle_plussign (struct GMT_CTRL *GMT, char *in, unsigned way)
+void gmt5_handle_plussign (struct GMT_CTRL *GMT_UNUSED(GMT), char *in, unsigned way)
 {	/* Way = 0: replace ++ with ASCII 1, Way = 1: Replace ASCII 1 with + */
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace pairs of ++ with a single ASCII 1 */
@@ -7703,6 +7706,9 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 		/* Now parse the annotation/tick info string */
 
+		if (orig_string[0] == '\0') continue;	/* Got nothing */
+		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		
 		GMT_memset (string, GMT_BUFSIZ, char);
 		strcpy (string, orig_string);	/* Make a copy of string as it gets messed with below */
 		if (string[0] == 'c')		/* Special custom annotation information given via file */
@@ -9491,7 +9497,7 @@ int GMT_init_scales (struct GMT_CTRL *GMT, unsigned int unit, double *fwd_scale,
 	return GMT_OK;
 }
 
-enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *GMT, char unit) {
+enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *GMT_UNUSED(GMT), char unit) {
 	/* Converts character unit (e.g., 'k') to unit number (e.g., GMT_IS_KM) */
 	enum GMT_enum_units mode;
 
@@ -10056,7 +10062,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT)
 	return (GMT_NOERROR);
 }
 
-struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
+struct GMT_CTRL *New_GMT_Ctrl (char *GMT_UNUSED(session), unsigned int pad) {	/* Allocate and initialize a new common control structure */
 	int i;
 	char path[PATH_MAX+1];
 	char *unit_name[4] = {"cm", "inch", "m", "point"};

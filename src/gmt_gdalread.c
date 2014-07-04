@@ -1091,7 +1091,7 @@ void ComputeRasterMinMax(struct GMT_CTRL *GMT, unsigned char *tmp, GDALRasterBan
 }
 
 /* -------------------------------------------------------------------- */
-int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, unsigned int n_col) {
+int gdal_decode_columns (struct GMT_CTRL * GMT_UNUSED(GMT), char *txt, int *whichBands, unsigned int n_col) {
 	unsigned int n = 0, i, start, stop, pos = 0;
 	char p[GMT_BUFSIZ];
 

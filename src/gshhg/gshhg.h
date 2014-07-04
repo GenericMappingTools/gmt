@@ -1,6 +1,6 @@
 /*	$Id$
  *
- * Include file defining structures used in gshhg.c
+ * Include file defining structures used in the binary GSHHG files
  *
  *	Copyright (c) 1996-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -38,33 +38,38 @@
  *	1-JAN-2013.   PW: Data version is now 2.2.2. [no change to format]
  *	1-JUL-2013.   PW: Data version is now 2.2.3. [no change to format]
  *	1-NOV-2013.   PW: Data version is now 2.2.4. [no change to format]
+ *	1-MAR-2014.   PW: Data version is now 2.3.0. [no change to format].  This version
+ *			  adds new Antarctica coastlines from the Atlas of the Cryosphere (AC) and
+ *			  has grounding line as Level = 5 and ice-front line as Level = 6.
+ *			  Only use one of those two Levels and consider either to be Level = 1.
+ *	1-JUL-2014.   PW: Data version is now 2.3.1. [no change to format]
+ *
+ * The format of binary GSHHG files are simply sequential:
+ * [ Item Header 0 ]
+ *   [ Point 1 ]
+ *   [ Point 2 ]
+ *   [ ....... ]
+ *   [ Point n0 ]
+ * [ Item Header 1 ]
+ *   [ Point 1 ]
+ *   [ Point 2 ]
+ *   [ ....... ]
+ *   [ Point n1 ]
+ * [ Item Header 2 ]
+ * etc etc.
+ *
+ * Each header is contained in a GSHHG_HEADER struct and each point is contained in a GSHHG_POINT struct.
+ * These two structures are defined below, together with the scalefactor that converts micro-degrees to degrees.
  */
 
 #ifndef _GSHHG
 #define _GSHHG
-#include "gmt_config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <stdint.h>
 
-#include "gmt_notposix.h"
-
-#include "common_byteswap.h"
-
-#ifndef M_PI
-#define M_PI          3.14159265358979323846
-#endif
-
-#ifndef SEEK_CUR	/* For really ancient systems */
-#define SEEK_CUR 1
-#endif
-
-#define GSHHG_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
 #define GSHHG_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
-struct GSHHG {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
+struct GSHHG_HEADER {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
 	uint32_t id;		/* Unique polygon id number, starting at 0 */
 	uint32_t n;		/* Number of points in this polygon */
 	uint32_t flag;	/* = level + version << 8 + greenwich << 16 + source << 24 + river << 25 + p << 26 */
@@ -73,7 +78,7 @@ struct GSHHG {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 9 for GSHHG release 9.
  	 * 3rd byte:	greenwich = (flag >> 16) & 3: Values: 0 if Greenwich nor Dateline are crossed,
 	 *		1 if Greenwich is crossed, 2 if Dateline is crossed, 3 if both is crossed.
-	 * 4th byte:	source = (flag >> 24) & 1: Values: 0 = CIA WDBII, 1 = WVS
+	 * 4th byte:	source = (flag >> 24) & 1: Values: 0 = CIA WDBII, 1 = WVS.  If level = 5,6 then source is instad AC
 	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and GSHHG level = 2 (or WDBII class 0)
 	 * 4th byte:	area magnitude scale p (as in 10^p) = flag >> 26.  We divide area by 10^p.
 	 */
@@ -84,35 +89,9 @@ struct GSHHG {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	int32_t ancestor;	/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
 };
 
-/* byteswap all members of GSHHG struct */
-#define GSHHG_STRUCT_N_MEMBERS 11
-static inline void bswap_GSHHG_struct (struct GSHHG *h) {
-	uint32_t unsigned32[GSHHG_STRUCT_N_MEMBERS];
-	uint32_t n;
-
-	/* since all members are 32 bit words: */
-	memcpy (&unsigned32, h, sizeof(struct GSHHG));
-
-	for (n = 0; n < GSHHG_STRUCT_N_MEMBERS; ++n)
-		unsigned32[n] = bswap32 (unsigned32[n]);
-
-	memcpy (h, &unsigned32, sizeof(struct GSHHG));
-}
-
-struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */
+struct GSHHG_POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte signed integer format */
 	int32_t x;
 	int32_t y;
 };
-
-/* byteswap members of POINT struct */
-static inline void bswap_POINT_struct (struct POINT *p) {
-	uint32_t unsigned32;
-	memcpy (&unsigned32, &p->x, sizeof(uint32_t));
-	unsigned32 = bswap32 (unsigned32);
-	memcpy (&p->x, &unsigned32, sizeof(uint32_t));
-	memcpy (&unsigned32, &p->y, sizeof(uint32_t));
-	unsigned32 = bswap32 (unsigned32);
-	memcpy (&p->y, &unsigned32, sizeof(uint32_t));
-}
 
 #endif	/* _GSHHG */

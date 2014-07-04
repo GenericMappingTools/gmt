@@ -120,7 +120,7 @@ struct X2SYS_SOLVE_CTRL {
  * col:	  The crossover number we are working on.
  */
 
-double basis_constant (double **P, int which, int col) {	/* Basis function f for a constant c*f = c*1 : == 1 */
+double basis_constant (double **GMT_UNUSED(P), int GMT_UNUSED(which), int GMT_UNUSED(col)) {	/* Basis function f for a constant c*f = c*1 : == 1 */
 	return (1.0);	/* which, col are not used here */
 }
 
@@ -148,7 +148,7 @@ double basis_sin2h (double **P, int which, int col) {	/* Basis function f for a 
 	return (sind(2.0*P[COL_H1+which][col]));
 }
 
-double basis_siny2 (double **P, int which, int col) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
+double basis_siny2 (double **P, int GMT_UNUSED(which), int col) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
 	return (pow (sind(P[COL_YY][col]), 2.0));	/* which not used since y is common to both tracks */
 }
 

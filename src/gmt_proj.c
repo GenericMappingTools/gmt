@@ -99,7 +99,7 @@ void gmt_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure -R and -J a
 
 /* LINEAR TRANSFORMATIONS */
 
-void GMT_translin (struct GMT_CTRL *GMT, double forw, double *inv)	/* Linear forward */
+void GMT_translin (struct GMT_CTRL *GMT_UNUSED(GMT), double forw, double *inv)	/* Linear forward */
 {
 	*inv = forw;
 }
@@ -117,7 +117,7 @@ void GMT_itranslind (struct GMT_CTRL *GMT, double *forw, double inv)	/* Linear i
 	*forw = inv + GMT->current.proj.central_meridian;
 }
 
-void GMT_itranslin (struct GMT_CTRL *GMT, double *forw, double inv)	/* Linear inverse */
+void GMT_itranslin (struct GMT_CTRL *GMT_UNUSED(GMT), double *forw, double inv)	/* Linear inverse */
 {
 	*forw = inv;
 }
@@ -127,7 +127,7 @@ void GMT_translog10 (struct GMT_CTRL *GMT, double forw, double *inv)	/* Log10 fo
 	*inv = d_log10 (GMT, forw);
 }
 
-void GMT_itranslog10 (struct GMT_CTRL *GMT, double *forw, double inv) /* Log10 inverse */
+void GMT_itranslog10 (struct GMT_CTRL *GMT_UNUSED(GMT), double *forw, double inv) /* Log10 inverse */
 {
 	*forw = pow (10.0, inv);
 }
@@ -1978,8 +1978,8 @@ void GMT_ihammer (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 
 /* -JV VAN DER GRINTEN PROJECTION */
 
-void GMT_vgrinten (struct GMT_CTRL *GMT, double lon0, double scale)
-{	/* Set up van der Grinten projection */
+void GMT_vgrinten (struct GMT_CTRL *GMT, double lon0, double GMT_UNUSED(scale))
+{	/* Set up van der Grinten projection; scale is unused for now(?) */
 
 	gmt_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;

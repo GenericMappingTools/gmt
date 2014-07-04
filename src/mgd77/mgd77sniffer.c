@@ -52,6 +52,320 @@
 
 bool GMT_is_gleap (int gyear);
 
+double median (struct GMT_CTRL *GMT, double *x, unsigned int n)
+{
+	double *sorted = NULL, med;
+
+	sorted = GMT_memory (GMT, NULL, n, double);
+	GMT_memcpy (sorted, x, n, double);
+	qsort ( sorted, n, sizeof(double), gmt_comp_double_asc);
+	med = (n%2) ? sorted[n/2] : 0.5*(sorted[(n-1)/2]+sorted[n/2]);
+	GMT_free (GMT, sorted);
+	return med;
+}
+
+double lms (struct GMT_CTRL *GMT, double *x, unsigned int n)
+{
+	double mode;
+	unsigned int GMT_n_multiples = 0;
+
+	GMT_mode (GMT, x, n, n/2, 1, 0, &GMT_n_multiples, &mode);
+	return mode;
+}
+
+void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, unsigned int nvalues, unsigned int n_angle, double *stats, unsigned int col)
+{
+	double da, *slp = NULL, *icept = NULL, *z = NULL, *sq_misfit = NULL, *angle = NULL, *e = NULL, emin = DBL_MAX, d;
+	unsigned int i, j = 0;
+
+	slp = GMT_memory (GMT, NULL, n_angle, double);
+	icept = GMT_memory (GMT, NULL, n_angle, double);
+	angle = GMT_memory (GMT, NULL, n_angle, double);
+	e = GMT_memory (GMT, NULL, n_angle, double);
+	z = GMT_memory (GMT, NULL, nvalues, double);
+	sq_misfit = GMT_memory (GMT, NULL, nvalues, double);
+
+	for (i=0; i < 4; i++)
+		stats[i] = 0;
+	GMT_memset (slp,   n_angle, double);
+	GMT_memset (icept, n_angle, double);
+	GMT_memset (angle, n_angle, double);
+	GMT_memset (e,     n_angle, double);
+	da = (angle1 - angle0) / (n_angle - 1);
+
+	for (i = 0; i < n_angle; i++) {
+		angle[i] = angle0 + i * da;
+		slp[i] = tan (angle[i] * M_PI / 180.0);
+		for (j = 0; j < nvalues; j++)
+			z[j] = y[j] - slp[i] * x[j];
+		if (col == MGD77_DEPTH)
+			icept[i] = 0.0;
+		else
+			icept[i] = lms (GMT, z, nvalues);
+		for (j = 0; j < nvalues; j++) {
+			d = z[j]-icept[i];
+			sq_misfit[j] = d*d;
+		}
+		e[i] = median (GMT, sq_misfit, nvalues);
+	}
+	for (i = 0; i < n_angle; i++) {
+		if (e[i] < emin || i == 0) {
+			emin = e[i];
+			j = i;
+		}
+	}
+	stats[MGD77_RLS_SLOPE] = slp[j];
+	stats[MGD77_RLS_ICEPT] = icept[j];
+	stats[MGD77_RLS_STD] = e[j];
+
+	GMT_free (GMT, slp);
+	GMT_free (GMT, icept);
+	GMT_free (GMT, angle);
+	GMT_free (GMT, e);
+	GMT_free (GMT, z);
+	GMT_free (GMT, sq_misfit);
+}
+
+void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
+{
+
+	double d_angle, limit, a, old_error, d_error, angle_0, angle_1;
+	int n_angle;
+
+	d_angle = 1.0;
+	limit = 0.1;
+	n_angle = irint ((180.0 - 2 * d_angle) / d_angle) + 1;
+	regresslms_sub (GMT, x, y, -90.0 + d_angle, 90.0 - d_angle, nvalues, n_angle, stats, col);
+	old_error = stats[MGD77_RLS_STD];
+	d_error = stats[MGD77_RLS_STD];
+
+	while (d_error > limit) {
+		d_angle = 0.1 * d_angle;
+		a = atan (stats[MGD77_RLS_SLOPE]) * 180 / M_PI;
+		angle_0 = floor (a / d_angle) * d_angle - d_angle;
+		angle_1 = angle_0 + 2.0 * d_angle;
+		regresslms_sub (GMT, x, y, angle_0, angle_1, nvalues, 21, stats, col);
+		d_error = fabs (stats[MGD77_RLS_STD] - old_error);
+		old_error = stats[MGD77_RLS_STD];
+	}
+}
+
+void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned int col)
+{
+	unsigned int i;
+	double sum_x, sum_y, sum_x2, sum_y2, sum_xy, d, ss;
+	double mean_x, mean_y, S_xx, S_xy, S_yy, y_discrepancy;
+
+	sum_x = sum_y = sum_x2 = sum_y2 = sum_xy = y_discrepancy = 0.0;
+	mean_x = mean_y = S_xx = S_xy = S_yy = ss = 0.0;
+	for (i = 0; i < n; i++) {
+		sum_x += x[i];
+		sum_y += y[i];
+		sum_x2 += x[i] * x[i];
+		sum_y2 += y[i] * y[i];
+		sum_xy += x[i] * y[i];
+		ss += (x[i] - y[i])*(x[i] - y[i]);        /* sum of squared residuals */
+	}
+
+	mean_x = sum_x / n;
+	mean_y = sum_y / n;
+
+	for (i = 0; i < n; i++) {
+		S_xx += (x[i] - mean_x) * (x[i] - mean_x);
+		S_yy += (y[i] - mean_y) * (y[i] - mean_y);
+		S_xy += (x[i] - mean_x) * (y[i] - mean_y);
+	}
+
+/*	S_xy = sum_xy - n * mean_x * mean_y;
+	S_xx = sum_x2 - n * mean_x * mean_x;
+	S_yy = sum_y2 - n * mean_y * mean_y; */
+	if (col != MGD77_DEPTH) { /* Use LMS m & b for depth (since offset forced to 0) */
+		stats[MGD77_RLS_SLOPE] = S_xy / S_xx;                                    /* Slope */
+		stats[MGD77_RLS_ICEPT] = mean_y - stats[MGD77_RLS_SLOPE] * mean_x;        /* Intercept */
+	}
+
+	for (i = 0; i < n; i++) {
+		d = y[i] - stats[MGD77_RLS_SLOPE] * x[i] - stats[MGD77_RLS_ICEPT];
+		y_discrepancy += d*d;
+	}
+	stats[MGD77_RLS_STD] = sqrt (y_discrepancy / (n-1));         /* Standard deviation */
+	stats[MGD77_RLS_SXX] = S_xx;                                 /* Sum of squares */
+	stats[MGD77_RLS_CORR] = sqrt(S_xy * S_xy / (S_xx * S_yy));   /* Correlation (r) */
+	stats[MGD77_RLS_RMS] = sqrt(ss / n);                         /* rms */
+	stats[MGD77_RLS_SUMX2] = sum_x2;                             /* Sum of x^2 */
+}
+
+void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
+{
+	unsigned int i, n;
+	double y_hat, threshold, s_0, res, *xx = NULL, *yy = NULL, corr=0.0;
+
+	regress_lms (GMT, x, y, nvalues, stats, col);
+	/* Get LMS scale and use 2.5 of it to detect regression outliers */
+	s_0 = 1.4826 * (1.0 + 5.0 / nvalues) * sqrt (stats[MGD77_RLS_STD]);
+	threshold = 2.5 * s_0;
+
+	xx = GMT_memory (GMT, NULL, nvalues, double);
+	yy = GMT_memory (GMT, NULL, nvalues, double);
+	for (i = n = 0; i < nvalues; i++) {
+		y_hat = stats[MGD77_RLS_SLOPE] * x[i] + stats[MGD77_RLS_ICEPT];
+		res = y[i] - y_hat;
+		if (fabs (res) > threshold) continue;	/* Skip outliers */
+		xx[n] = x[i];
+		yy[n] = y[i];
+		n++;
+	}
+	/* Now do LS regression on the 'good' points */
+	regress_ls (xx, yy, n, stats, col);
+	/*stats[MGD77_RLS_CORR] = GMT_corrcoeff (xx, yy, n, 0);*/
+	corr=stats[MGD77_RLS_CORR];
+	if (stats[MGD77_RLS_CORR] == 1.0) corr=stats[MGD77_RLS_CORR]-FLT_EPSILON;
+	if (n > 2) {	/* Determine if correlation is significant at 95% */
+		double t, tcrit;
+		t = corr * sqrt (n - 2.0) / sqrt (1.0 - corr * corr);
+		tcrit = GMT_tcrit (GMT, 0.95, (double)n - 2.0);
+		stats[MGD77_RLS_SIG] = (double)(t > tcrit);	/* 1.0 if significant, 0.0 otherwise */
+	}
+	else
+		stats[MGD77_RLS_SIG] = GMT->session.d_NaN;
+
+	GMT_free (GMT, xx);
+	GMT_free (GMT, yy);
+}
+
+/* Read Grid Header (from Smith & Wessel grdtrack.c) */
+void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[]) {
+
+	if (strlen (info->fname) == 0) return;	/* No name */
+
+	if (info->format == 0) {	/* GMT geographic grid with header */
+		if ((info->G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, info->fname, NULL)) == NULL) {	/* Get header only */
+			return;
+		}
+
+		/* Get grid dimensions */
+		info->one_or_zero = (info->G->header->registration) ? 0 : 1;
+		info->nx = urint ( (info->G->header->wesn[XHI] - info->G->header->wesn[XLO]) / info->G->header->inc[GMT_X]) + info->one_or_zero;
+		info->ny = urint ( (info->G->header->wesn[YHI] - info->G->header->wesn[YLO]) / info->G->header->inc[GMT_Y]) + info->one_or_zero;
+
+		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, info->fname, info->G) == NULL) {	/* Get subset */
+			return;
+		}
+	}
+	else {	/* Read a Mercator grid Sandwell/Smith style */
+		if ((info->G = GMT_create_grid (GMT)) == NULL) return;
+		GMT_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, true);
+	}
+	info->mx = info->G->header->nx + 4;
+}
+
+/* Sample Grid at Cruise Locations (from Smith & Wessel grdtrack.c) */
+unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, unsigned int n_grid, unsigned int n) {
+
+	unsigned int rec, pts = 0;
+	double MGD77_NaN = GMT->session.d_NaN, x, y;
+
+	/* Get grid values at cruise locations */
+	for (rec = 0; rec < n; rec++) {
+
+		if (info->format == 1)	{/* Mercator IMG grid - get Mercator coordinates x,y */
+			GMT_geo_to_xy (GMT, D[rec].number[MGD77_LONGITUDE], D[rec].number[MGD77_LATITUDE], &x, &y);
+			if (x > info->G->header->wesn[XHI]) x -= 360.0;
+		}
+		else {		/* Regular geographic grd, just copy lon,lat to x,y */
+			x = D[rec].number[MGD77_LONGITUDE];
+			y = D[rec].number[MGD77_LATITUDE];
+			/* Adjust cruise longitude if necessary; We know cruise is between +/-180 */
+			if (info->G->header->wesn[XLO] >= 0.0 && D[rec].number[MGD77_LONGITUDE] < 0.0)
+				GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &x);	/* Adjust to 0-360 range */
+		}
+		g[n_grid][rec] = MGD77_NaN;	/* Default value if we are outside the grid domain */
+		if (y < info->G->header->wesn[YLO] || y > info->G->header->wesn[YHI]) continue;	/* Outside latitude range */
+
+		if (GMT_x_is_lon (GMT, GMT_IN)) {
+			while (x > info->G->header->wesn[XHI]) x -= 360.0;
+			while (x < info->G->header->wesn[XLO]) x += 360.0;
+		}
+
+		/* If point is outside grd area, shift it using periodicity or skip if not periodic. */
+		while ((x < info->G->header->wesn[XLO]) && (info->G->header->nxp > 0)) x += (info->G->header->inc[GMT_X] * info->G->header->nxp);
+		if (x < info->G->header->wesn[XLO]) continue;  /* West of our area */
+
+		while ((x > info->G->header->wesn[XHI]) && (info->G->header->nxp > 0)) x -= (info->G->header->inc[GMT_X] * info->G->header->nxp);
+		if (x > info->G->header->wesn[XHI]) continue;  /* East of our area */
+
+		/* Get the value from the grid - it could be NaN */
+		g[n_grid][rec] = GMT_get_bcr_z (GMT, info->G, x, y);
+		pts++;
+	}
+	return (pts);
+}
+
+/* Decimation benefits marine gravity due to amplitude differences */
+/* between ship and satellite data and also broadens confidence  */
+/* intervals for any ship grid comparisons by reducing excessive */
+/* number of degrees of freedom */
+/* Then create arrays for passing to RLS */
+int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *GMT_UNUSED(fieldTest)) {
+
+	unsigned int n, j, k, npts, ship_bin, grid_bin;
+	int **bin2d = NULL;
+	double *dorig, *dnew = NULL;
+#ifdef DUMP_DECIMATE
+	char buffer[GMT_BUFSIZ] = {""};
+#endif
+
+	/* Create a 2-D bin table */
+	n = urint ((max - min)/delta) + 1;
+	bin2d = GMT_memory (GMT, NULL, n, int *);
+	for (j = 0; j < n; j++)
+		bin2d[j] = GMT_memory (GMT, NULL, n, int);
+
+	/* Then loop over all the ship, cruise pairs */
+	*extreme=0;
+	for (j = 0; j < nclean; j++) {
+		/* Need to skip ship and grid values that are outside of acceptable range */
+		if (orig[j] >= min && orig[j] <= max && new_val[j] >= min && new_val[j] <= max) {
+			ship_bin = urint ((orig[j] - min)/delta);
+			grid_bin = urint ((new_val[j] - min)/delta);
+			bin2d[ship_bin][grid_bin]++;    /* Add up # of pairs in this bin */
+		}
+		else *extreme=*extreme+1;
+	}
+
+	/* Then find how many binned pairs we got */
+	for (ship_bin = npts = 0; ship_bin < n; ship_bin++) {
+		for (grid_bin = 0; grid_bin < n; grid_bin++) {
+			if (bin2d[ship_bin][grid_bin] > 0)
+				npts++;
+		}
+	}
+
+	dorig = GMT_memory (GMT, NULL, npts, double);
+	dnew = GMT_memory (GMT, NULL, npts, double);
+
+	for (ship_bin = k = 0; ship_bin < n; ship_bin ++) {
+		for (grid_bin = 0; grid_bin < n; grid_bin ++) {
+			if (bin2d[ship_bin][grid_bin]) {
+				dorig[k] = min + ship_bin * delta;
+				dnew[k] = min + grid_bin * delta;
+#ifdef DUMP_DECIMATE
+				sprintf(buffer,"%s\torig:\t%f\tnew:\t%f\n",fieldTest,dorig[k],dnew[k]);
+				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+#endif
+				k++;	/* Count number of non-empty bins */
+			}
+		}
+	}
+
+	*dec_orig = dorig;
+	*dec_new = dnew;
+
+	for (j = 0; j < n; j++)	GMT_free (GMT, bin2d[j]);
+	GMT_free (GMT, bin2d);
+	return npts;
+}
+
 int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -782,7 +1096,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	for (i = 0; i < n_grids; i++) {
 		if (!simulate)
 			/* Open and store grid file */
-			read_grid (GMT, &this_grid[i], GMT->common.R.wesn, GMT->common.n.interpolant, GMT->common.n.threshold);
+			read_grid (GMT, &this_grid[i], GMT->common.R.wesn);
 	}
 
 	if (n_grids) {
@@ -2692,318 +3006,4 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	MGD77_end (GMT, &Out);
 
 	bailout (GMT_OK);
-}
-
-void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
-{
-	unsigned int i, n;
-	double y_hat, threshold, s_0, res, *xx = NULL, *yy = NULL, corr=0.0;
-
-	regress_lms (GMT, x, y, nvalues, stats, col);
-	/* Get LMS scale and use 2.5 of it to detect regression outliers */
-	s_0 = 1.4826 * (1.0 + 5.0 / nvalues) * sqrt (stats[MGD77_RLS_STD]);
-	threshold = 2.5 * s_0;
-
-	xx = GMT_memory (GMT, NULL, nvalues, double);
-	yy = GMT_memory (GMT, NULL, nvalues, double);
-	for (i = n = 0; i < nvalues; i++) {
-		y_hat = stats[MGD77_RLS_SLOPE] * x[i] + stats[MGD77_RLS_ICEPT];
-		res = y[i] - y_hat;
-		if (fabs (res) > threshold) continue;	/* Skip outliers */
-		xx[n] = x[i];
-		yy[n] = y[i];
-		n++;
-	}
-	/* Now do LS regression on the 'good' points */
-	regress_ls (xx, yy, n, stats, col);
-	/*stats[MGD77_RLS_CORR] = GMT_corrcoeff (xx, yy, n, 0);*/
-	corr=stats[MGD77_RLS_CORR];
-	if (stats[MGD77_RLS_CORR] == 1.0) corr=stats[MGD77_RLS_CORR]-FLT_EPSILON;
-	if (n > 2) {	/* Determine if correlation is significant at 95% */
-		double t, tcrit;
-		t = corr * sqrt (n - 2.0) / sqrt (1.0 - corr * corr);
-		tcrit = GMT_tcrit (GMT, 0.95, (double)n - 2.0);
-		stats[MGD77_RLS_SIG] = (double)(t > tcrit);	/* 1.0 if significant, 0.0 otherwise */
-	}
-	else
-		stats[MGD77_RLS_SIG] = GMT->session.d_NaN;
-
-	GMT_free (GMT, xx);
-	GMT_free (GMT, yy);
-}
-
-void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned int col)
-{
-	unsigned int i;
-	double sum_x, sum_y, sum_x2, sum_y2, sum_xy, d, ss;
-	double mean_x, mean_y, S_xx, S_xy, S_yy, y_discrepancy;
-
-	sum_x = sum_y = sum_x2 = sum_y2 = sum_xy = y_discrepancy = 0.0;
-	mean_x = mean_y = S_xx = S_xy = S_yy = ss = 0.0;
-	for (i = 0; i < n; i++) {
-		sum_x += x[i];
-		sum_y += y[i];
-		sum_x2 += x[i] * x[i];
-		sum_y2 += y[i] * y[i];
-		sum_xy += x[i] * y[i];
-		ss += (x[i] - y[i])*(x[i] - y[i]);        /* sum of squared residuals */
-	}
-
-	mean_x = sum_x / n;
-	mean_y = sum_y / n;
-
-	for (i = 0; i < n; i++) {
-		S_xx += (x[i] - mean_x) * (x[i] - mean_x);
-		S_yy += (y[i] - mean_y) * (y[i] - mean_y);
-		S_xy += (x[i] - mean_x) * (y[i] - mean_y);
-	}
-
-/*	S_xy = sum_xy - n * mean_x * mean_y;
-	S_xx = sum_x2 - n * mean_x * mean_x;
-	S_yy = sum_y2 - n * mean_y * mean_y; */
-	if (col != MGD77_DEPTH) { /* Use LMS m & b for depth (since offset forced to 0) */
-		stats[MGD77_RLS_SLOPE] = S_xy / S_xx;                                    /* Slope */
-		stats[MGD77_RLS_ICEPT] = mean_y - stats[MGD77_RLS_SLOPE] * mean_x;        /* Intercept */
-	}
-
-	for (i = 0; i < n; i++) {
-		d = y[i] - stats[MGD77_RLS_SLOPE] * x[i] - stats[MGD77_RLS_ICEPT];
-		y_discrepancy += d*d;
-	}
-	stats[MGD77_RLS_STD] = sqrt (y_discrepancy / (n-1));         /* Standard deviation */
-	stats[MGD77_RLS_SXX] = S_xx;                                 /* Sum of squares */
-	stats[MGD77_RLS_CORR] = sqrt(S_xy * S_xy / (S_xx * S_yy));   /* Correlation (r) */
-	stats[MGD77_RLS_RMS] = sqrt(ss / n);                         /* rms */
-	stats[MGD77_RLS_SUMX2] = sum_x2;                             /* Sum of x^2 */
-}
-
-void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
-{
-
-	double d_angle, limit, a, old_error, d_error, angle_0, angle_1;
-	int n_angle;
-
-	d_angle = 1.0;
-	limit = 0.1;
-	n_angle = irint ((180.0 - 2 * d_angle) / d_angle) + 1;
-	regresslms_sub (GMT, x, y, -90.0 + d_angle, 90.0 - d_angle, nvalues, n_angle, stats, col);
-	old_error = stats[MGD77_RLS_STD];
-	d_error = stats[MGD77_RLS_STD];
-
-	while (d_error > limit) {
-		d_angle = 0.1 * d_angle;
-		a = atan (stats[MGD77_RLS_SLOPE]) * 180 / M_PI;
-		angle_0 = floor (a / d_angle) * d_angle - d_angle;
-		angle_1 = angle_0 + 2.0 * d_angle;
-		regresslms_sub (GMT, x, y, angle_0, angle_1, nvalues, 21, stats, col);
-		d_error = fabs (stats[MGD77_RLS_STD] - old_error);
-		old_error = stats[MGD77_RLS_STD];
-	}
-}
-
-void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, unsigned int nvalues, unsigned int n_angle, double *stats, unsigned int col)
-{
-	double da, *slp = NULL, *icept = NULL, *z = NULL, *sq_misfit = NULL, *angle = NULL, *e = NULL, emin = DBL_MAX, d;
-	unsigned int i, j = 0;
-
-	slp = GMT_memory (GMT, NULL, n_angle, double);
-	icept = GMT_memory (GMT, NULL, n_angle, double);
-	angle = GMT_memory (GMT, NULL, n_angle, double);
-	e = GMT_memory (GMT, NULL, n_angle, double);
-	z = GMT_memory (GMT, NULL, nvalues, double);
-	sq_misfit = GMT_memory (GMT, NULL, nvalues, double);
-
-	for (i=0; i < 4; i++)
-		stats[i] = 0;
-	GMT_memset (slp,   n_angle, double);
-	GMT_memset (icept, n_angle, double);
-	GMT_memset (angle, n_angle, double);
-	GMT_memset (e,     n_angle, double);
-	da = (angle1 - angle0) / (n_angle - 1);
-
-	for (i = 0; i < n_angle; i++) {
-		angle[i] = angle0 + i * da;
-		slp[i] = tan (angle[i] * M_PI / 180.0);
-		for (j = 0; j < nvalues; j++)
-			z[j] = y[j] - slp[i] * x[j];
-		if (col == MGD77_DEPTH)
-			icept[i] = 0.0;
-		else
-			icept[i] = lms (GMT, z, nvalues);
-		for (j = 0; j < nvalues; j++) {
-			d = z[j]-icept[i];
-			sq_misfit[j] = d*d;
-		}
-		e[i] = median (GMT, sq_misfit, nvalues);
-	}
-	for (i = 0; i < n_angle; i++) {
-		if (e[i] < emin || i == 0) {
-			emin = e[i];
-			j = i;
-		}
-	}
-	stats[MGD77_RLS_SLOPE] = slp[j];
-	stats[MGD77_RLS_ICEPT] = icept[j];
-	stats[MGD77_RLS_STD] = e[j];
-
-	GMT_free (GMT, slp);
-	GMT_free (GMT, icept);
-	GMT_free (GMT, angle);
-	GMT_free (GMT, e);
-	GMT_free (GMT, z);
-	GMT_free (GMT, sq_misfit);
-}
-
-double lms (struct GMT_CTRL *GMT, double *x, unsigned int n)
-{
-	double mode;
-	unsigned int GMT_n_multiples = 0;
-
-	GMT_mode (GMT, x, n, n/2, 1, 0, &GMT_n_multiples, &mode);
-	return mode;
-}
-
-double median (struct GMT_CTRL *GMT, double *x, unsigned int n)
-{
-	double *sorted = NULL, med;
-
-	sorted = GMT_memory (GMT, NULL, n, double);
-	GMT_memcpy (sorted, x, n, double);
-	qsort ( sorted, n, sizeof(double), gmt_comp_double_asc);
-	med = (n%2) ? sorted[n/2] : 0.5*(sorted[(n-1)/2]+sorted[n/2]);
-	GMT_free (GMT, sorted);
-	return med;
-}
-
-/* Read Grid Header (from Smith & Wessel grdtrack.c) */
-void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[], unsigned int interpolant, double threshold) {
-
-	if (strlen (info->fname) == 0) return;	/* No name */
-
-	if (info->format == 0) {	/* GMT geographic grid with header */
-		if ((info->G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, info->fname, NULL)) == NULL) {	/* Get header only */
-			return;
-		}
-
-		/* Get grid dimensions */
-		info->one_or_zero = (info->G->header->registration) ? 0 : 1;
-		info->nx = urint ( (info->G->header->wesn[XHI] - info->G->header->wesn[XLO]) / info->G->header->inc[GMT_X]) + info->one_or_zero;
-		info->ny = urint ( (info->G->header->wesn[YHI] - info->G->header->wesn[YLO]) / info->G->header->inc[GMT_Y]) + info->one_or_zero;
-
-		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, info->fname, info->G) == NULL) {	/* Get subset */
-			return;
-		}
-	}
-	else {	/* Read a Mercator grid Sandwell/Smith style */
-		if ((info->G = GMT_create_grid (GMT)) == NULL) return;
-		GMT_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, true);
-	}
-	info->mx = info->G->header->nx + 4;
-}
-
-/* Sample Grid at Cruise Locations (from Smith & Wessel grdtrack.c) */
-unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, unsigned int n_grid, unsigned int n) {
-
-	unsigned int rec, pts = 0;
-	double MGD77_NaN = GMT->session.d_NaN, x, y;
-
-	/* Get grid values at cruise locations */
-	for (rec = 0; rec < n; rec++) {
-
-		if (info->format == 1)	{/* Mercator IMG grid - get Mercator coordinates x,y */
-			GMT_geo_to_xy (GMT, D[rec].number[MGD77_LONGITUDE], D[rec].number[MGD77_LATITUDE], &x, &y);
-			if (x > info->G->header->wesn[XHI]) x -= 360.0;
-		}
-		else {		/* Regular geographic grd, just copy lon,lat to x,y */
-			x = D[rec].number[MGD77_LONGITUDE];
-			y = D[rec].number[MGD77_LATITUDE];
-			/* Adjust cruise longitude if necessary; We know cruise is between +/-180 */
-			if (info->G->header->wesn[XLO] >= 0.0 && D[rec].number[MGD77_LONGITUDE] < 0.0)
-				GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &x);	/* Adjust to 0-360 range */
-		}
-		g[n_grid][rec] = MGD77_NaN;	/* Default value if we are outside the grid domain */
-		if (y < info->G->header->wesn[YLO] || y > info->G->header->wesn[YHI]) continue;	/* Outside latitude range */
-
-		if (GMT_x_is_lon (GMT, GMT_IN)) {
-			while (x > info->G->header->wesn[XHI]) x -= 360.0;
-			while (x < info->G->header->wesn[XLO]) x += 360.0;
-		}
-
-		/* If point is outside grd area, shift it using periodicity or skip if not periodic. */
-		while ((x < info->G->header->wesn[XLO]) && (info->G->header->nxp > 0)) x += (info->G->header->inc[GMT_X] * info->G->header->nxp);
-		if (x < info->G->header->wesn[XLO]) continue;  /* West of our area */
-
-		while ((x > info->G->header->wesn[XHI]) && (info->G->header->nxp > 0)) x -= (info->G->header->inc[GMT_X] * info->G->header->nxp);
-		if (x > info->G->header->wesn[XHI]) continue;  /* East of our area */
-
-		/* Get the value from the grid - it could be NaN */
-		g[n_grid][rec] = GMT_get_bcr_z (GMT, info->G, x, y);
-		pts++;
-	}
-	return (pts);
-}
-
-/* Decimation benefits marine gravity due to amplitude differences */
-/* between ship and satellite data and also broadens confidence  */
-/* intervals for any ship grid comparisons by reducing excessive */
-/* number of degrees of freedom */
-/* Then create arrays for passing to RLS */
-int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *fieldTest) {
-
-	unsigned int n, j, k, npts, ship_bin, grid_bin;
-	int **bin2d = NULL;
-	double *dorig, *dnew = NULL;
-#ifdef DUMP_DECIMATE
-	char buffer[GMT_BUFSIZ] = {""};
-#endif
-
-	/* Create a 2-D bin table */
-	n = urint ((max - min)/delta) + 1;
-	bin2d = GMT_memory (GMT, NULL, n, int *);
-	for (j = 0; j < n; j++)
-		bin2d[j] = GMT_memory (GMT, NULL, n, int);
-
-	/* Then loop over all the ship, cruise pairs */
-	*extreme=0;
-	for (j = 0; j < nclean; j++) {
-		/* Need to skip ship and grid values that are outside of acceptable range */
-		if (orig[j] >= min && orig[j] <= max && new_val[j] >= min && new_val[j] <= max) {
-			ship_bin = urint ((orig[j] - min)/delta);
-			grid_bin = urint ((new_val[j] - min)/delta);
-			bin2d[ship_bin][grid_bin]++;    /* Add up # of pairs in this bin */
-		}
-		else *extreme=*extreme+1;
-	}
-
-	/* Then find how many binned pairs we got */
-	for (ship_bin = npts = 0; ship_bin < n; ship_bin++) {
-		for (grid_bin = 0; grid_bin < n; grid_bin++) {
-			if (bin2d[ship_bin][grid_bin] > 0)
-				npts++;
-		}
-	}
-
-	dorig = GMT_memory (GMT, NULL, npts, double);
-	dnew = GMT_memory (GMT, NULL, npts, double);
-
-	for (ship_bin = k = 0; ship_bin < n; ship_bin ++) {
-		for (grid_bin = 0; grid_bin < n; grid_bin ++) {
-			if (bin2d[ship_bin][grid_bin]) {
-				dorig[k] = min + ship_bin * delta;
-				dnew[k] = min + grid_bin * delta;
-#ifdef DUMP_DECIMATE
-				sprintf(buffer,"%s\torig:\t%f\tnew:\t%f\n",fieldTest,dorig[k],dnew[k]);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-#endif
-				k++;	/* Count number of non-empty bins */
-			}
-		}
-	}
-
-	*dec_orig = dorig;
-	*dec_new = dnew;
-
-	for (j = 0; j < n; j++)	GMT_free (GMT, bin2d[j]);
-	GMT_free (GMT, bin2d);
-	return npts;
 }

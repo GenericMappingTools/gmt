@@ -233,7 +233,7 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 	return (error);
 }
 
-int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C)
+int parse_GE_settings (struct GMT_CTRL *GMT_UNUSED(GMT), char *arg, struct PS2RASTER_CTRL *C)
 {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 

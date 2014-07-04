@@ -123,7 +123,7 @@ double d_mod(double x, double y);
 double pow_di(double ap, int bp);
 int i_dnnt(double x);
 
-int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date) {
+int MGD77_cm4field (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date) {
 
 	int c__1356 = 1356, c__13680 = 13680;
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr, jf107, cerr = 0;
@@ -1085,7 +1085,7 @@ void mseason(int ks, int ns, int ng, double d, double *t, double *e, double *g) 
     }
 }
 
-void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) {
+void iseason(int ks, int GMT_UNUSED(ns), int ng, double f, double *t, double *e, double *g) {
 	int i, j;
 	double s;
 
@@ -1667,7 +1667,7 @@ void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe
     }
 }
 
-void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, int *nmxi, int *
+void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *GMT_UNUSED(grad), int *nmni, int *nmxi, int *
 	nmne, int *nmxe, int *mmni, int *mmxi, int *mmne, int *mmxe, int *nmax, int *mmin, int *mmax, int *
 	ns, int *nsi, int *nse, int *nc, int *nci, int *nce, int *na, int *np, int *ii, int *ie, int *
 	atyp, int *dsti, int *bori, int *bkni, int *tdgi, int *dste, int *bore, int *bkne, int *tdge, int *u, int *cerr) {
@@ -1774,9 +1774,9 @@ void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, in
 }
 
 void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *h__, double *re, 
-	double *rp, double *rm, double *ro, int *nsi, int *nc, int *nci, int *np, int *ii, int *ie, int *
+	double *rp, double *rm, double *ro, int *GMT_UNUSED(nsi), int *nc, int *GMT_UNUSED(nci), int *np, int *ii, int *ie, int *
 	nmni, int *nmxi, int *nmne, int *nmxe, int *nmax, int *mmni, int *mmxi, int *mmne, int *mmxe, int *
-	mmin, int *mmax, double *theta, double *p, double *r__, double *t, int *u, double *w, double *dldc, int *cerr) {
+	mmin, int *mmax, double *theta, double *p, double *r__, double *t, int *u, double *w, double *dldc, int *GMT_UNUSED(cerr)) {
     /* Initialized data */
 
     static double roo = 0.;

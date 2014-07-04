@@ -778,7 +778,7 @@ void gmt_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	}
 }
 
-bool GMT_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int *pad)
+bool GMT_grd_pad_status (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *header, unsigned int *pad)
 {	/* Determines if this grid has padding at all (pad = NULL) OR
 	 * if pad is given, determines if the pads are different.
 	 * Return codes are:
@@ -801,7 +801,7 @@ bool GMT_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, u
 	}
 }
 
-int gmt_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P)
+int gmt_padspace (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P)
 {	/* When padding is requested it is usually used to set boundary conditions based on
 	 * two extra rows/columns around the domain of interest.  BCs like natural or periodic
 	 * can then be used to fill in the pad.  However, if the domain is taken from a grid
@@ -975,7 +975,7 @@ int GMT_write_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	return ((*GMT->session.writeinfo[header->type]) (GMT, header));
 }
 
-int GMT_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header)
+int GMT_update_grd_info (struct GMT_CTRL *GMT, char * GMT_UNUSED(file), struct GMT_GRID_HEADER *header)
 {	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 */
@@ -1078,7 +1078,7 @@ size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_
 	}
 }
 
-void GMT_grd_set_ij_inc (struct GMT_CTRL *GMT, unsigned int nx, int *ij_inc)
+void GMT_grd_set_ij_inc (struct GMT_CTRL * GMT_UNUSED(GMT), unsigned int nx, int *ij_inc)
 {	/* Set increments to the 4 nodes with ij as lower-left node, from a node at (i,j).
 	 * nx may be header->nx or header->mx depending on pad */
 	int s_nx = nx;	/* A signed version */
@@ -1320,7 +1320,7 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 	return;
 }
 
-void GMT_set_grdinc (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
+void GMT_set_grdinc (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *h)
 {
 	/* Update grid increments based on w/e/s/n, nx/ny, and registration */
 	h->inc[GMT_X] = GMT_get_inc (GMT, h->wesn[XLO], h->wesn[XHI], h->nx, h->registration);
@@ -2140,7 +2140,7 @@ int gmt_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image)
 	return (GMT_NOERROR);
 }
 
-int GMT_change_grdreg (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int registration)
+int GMT_change_grdreg (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *header, unsigned int registration)
 {
 	unsigned int old_registration;
 	double F;
@@ -2180,7 +2180,7 @@ void GMT_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *z)
 	if (n == 0) h->z_min = h->z_max = GMT->session.d_NaN;	/* No non-NaNs in the entire grid */
 }
 
-void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
+void GMT_grd_minmax (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID *Grid, double xyz[2][3])
 {	/* Determine a grid's global min and max locations and z values; return via xyz */
 	unsigned int row, col, i;
 	uint64_t ij, i_minmax[2] = {0, 0};
@@ -2442,7 +2442,7 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	return (GMT_NOERROR);
 }
 
-int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, unsigned int *pad, unsigned int complex_mode)
+int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, unsigned int *pad, unsigned int GMT_UNUSED(complex_mode))
 {	/* file:	- IGNORED -
 	 * image:	array with final image
 	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]

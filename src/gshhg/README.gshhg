@@ -7,6 +7,13 @@ Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory. It was formerly called
 GSHHS (... Shorelines instead of Geography).
 
+Version July 1, 2014
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.3.1 which restores the missing Peter I Island.
+Separated gshhg.h in to gmt_gshhg.h with program-specific support
+and gshhg.h which only defines the structures used by GSHHG.
+
 Version Feb 1, 2014
 
 No source code changes but expected to work with the latest GSHHG

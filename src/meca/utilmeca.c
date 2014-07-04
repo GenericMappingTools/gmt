@@ -593,7 +593,7 @@ void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struc
 }
 
 /***************************************************************************************/
-double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace)
+double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int GMT_UNUSED(outline), int plot_zerotrace)
 {
 	int d, b = 1, m, i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
 	int big_iso = 0;
@@ -1226,7 +1226,7 @@ void paint_ellipse (struct GMT_CTRL *GMT, double x0, double y0, double angle, do
 }
 
 /************************************************************************/
-int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, double eps2, double theta, double sscale, double v_width, double h_length, double h_width, double vector_shape,int outline,struct GMT_PEN pen)
+int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, double eps2, double theta, double sscale, double v_width, double h_length, double h_width, double vector_shape,int GMT_UNUSED(outline),struct GMT_PEN pen)
 {
 	/* make a Strain rate cross at(slat,slon) */
 
@@ -1474,7 +1474,7 @@ int trace_sigwedge (double spin, double spinsig, double sscale, double wedge_amp
 void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, double spinsig, double sscale, double wedge_amp, double t11, double t12, double t21, double t22,
 	int polygon, double *rgb,
 	int epolygon, double *ergb,
-	int outline)
+	int GMT_UNUSED(outline))
 {
 
 	/* Make a wedge at center x0,y0  */

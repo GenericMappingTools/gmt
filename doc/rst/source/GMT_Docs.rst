@@ -3772,10 +3772,11 @@ option argument, with commas separating the given attributes, e.g.,
        case-insensitive, so mixed upper and lower case can be used (like
        *DarkGreen*).
 
-    The *style* attribute controls the appearance of the line. A "."
-    yields a dotted line, whereas a dashed pen is requested with "-".
+    The *style* attribute controls the appearance of the line. Giving "dotted" or "."
+    yields a dotted line, whereas a dashed pen is requested with "dashed" or "-".
     Also combinations of dots and dashes, like ".-" for a dot-dashed
-    line, are allowed. The lengths of dots and dashes are scaled
+    line, are allowed. To override a default style and secure a solid line you can
+    specify "solid" for style.  The lengths of dots and dashes are scaled
     relative to the pen width (dots has a length that equals the pen
     width while dashes are 8 times as long; gaps between segments are 4
     times the pen width). For more detailed attributes including exact

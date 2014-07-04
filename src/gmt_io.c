@@ -333,11 +333,10 @@ int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	return (0);	/* 0 means OK regular record */
 }
 
-void * gmt_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
+void * gmt_nc_input (struct GMT_CTRL *GMT, FILE * GMT_UNUSED(fp), uint64_t *n, int *retval)
 {
 	int status, i;
 	uint64_t n_use, j;
-
 	GMT->current.io.status = 0;
 	if (*n == GMT_MAX_COLUMNS)
 		*n = GMT->current.io.ncols;
@@ -1351,7 +1350,7 @@ char *GMT_trim_segheader (struct GMT_CTRL *GMT, char *line) {
 	return (line);
 }
 
-bool GMT_is_a_NaN_line (struct GMT_CTRL *GMT, char *line)
+bool gmt_is_a_NaN_line (char *line)
 {	/* Returns true if record is NaN NaN [NaN NaN] etc */
 	unsigned int pos = 0;
 	char p[GMT_LEN256] = {""};
@@ -1368,7 +1367,7 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line)
 	 * Returns 2 if this record is a segment breaker;
 	 * Otherwise returns 0 */
 	if (GMT->current.setting.io_blankline[GMT_IN] && GMT_is_a_blank_line (line)) return (2);	/* Treat blank line as segment break */
-	if (GMT->current.setting.io_nanline[GMT_IN] && GMT_is_a_NaN_line (GMT, line)) return (2);	/* Treat NaN-records as segment break */
+	if (GMT->current.setting.io_nanline[GMT_IN] && gmt_is_a_NaN_line (line)) return (2);		/* Treat NaN-records as segment break */
 	if (line[0] == GMT->current.setting.io_seg_marker[GMT_IN]) return (1);	/* Got a regular GMT segment header */
 	return (0);	/* Not a segment header */
 }
@@ -1707,7 +1706,7 @@ bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols)
 	return (false);	/* No match, output record */
 }
 
-int gmt_x_write (struct GMT_CTRL *GMT, FILE *fp, off_t n)
+int gmt_x_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, off_t n)
 { /* Used to write n bytes of space for filler on binary output */
 	char c = ' ';
 	off_t i;
@@ -1971,7 +1970,7 @@ void GMT_lon_range_adjust (unsigned int range, double *lon)
 	}
 }
 
-void GMT_quad_reset (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, uint64_t n_items)
+void GMT_quad_reset (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_QUAD *Q, uint64_t n_items)
 {	/* Allocate and initialize the QUAD struct needed to find min/max of a set of longitudes */
 	uint64_t i;
 
@@ -1993,7 +1992,7 @@ struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *GMT, uint64_t n_items)
 	return (Q);
 }
 
-void GMT_quad_add (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, double x)
+void GMT_quad_add (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_QUAD *Q, double x)
 {	/* Update quad array for this longitude x */
 	unsigned int way, quad_no;
 	if (GMT_is_dnan (x)) return;	/* Cannot handle a NaN */
@@ -2226,7 +2225,7 @@ void GMT_write_textrecord (struct GMT_CTRL *GMT, FILE *fp, char *txt)
  * and the x,y are implicit from the -R -I arguments.
  */
 
-int gmt_A_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_A_read (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 { /* Can read one or more items from input records. Limitation is
 	 * that they must be floating point values (no dates or ddd:mm:ss) */
 	uint64_t i;
@@ -2238,7 +2237,7 @@ int gmt_A_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_a_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_a_read (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t GMT_UNUSED(n), double *d)
 { /* Only reads one item regardless of *n */
 	char line[GMT_LEN64] = {""}, *p;
 	if (!fgets (line, GMT_LEN64, fp)) {
@@ -2558,7 +2557,7 @@ int gmt_a_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_c_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_c_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write int8_t aka char */
 	uint64_t i;
@@ -2571,7 +2570,7 @@ int gmt_c_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_u_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_u_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write uint8_t aka unsigned char */
 	uint64_t i;
@@ -2584,7 +2583,7 @@ int gmt_u_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_h_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_h_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write int16_t */
 	uint64_t i;
@@ -2597,7 +2596,7 @@ int gmt_h_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_h_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_h_write_swab (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped int16_t */
 	uint64_t i;
@@ -2612,7 +2611,7 @@ int gmt_h_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_H_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_H_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write uint16_t */
 	uint64_t i;
@@ -2625,7 +2624,7 @@ int gmt_H_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_H_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_H_write_swab (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped uint16_t */
 	uint64_t i;
@@ -2638,7 +2637,7 @@ int gmt_H_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_i_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_i_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write int32_t */
 	uint64_t i;
@@ -2651,7 +2650,7 @@ int gmt_i_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_i_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_i_write_swab (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped int32_t */
 	uint64_t i;
@@ -2666,7 +2665,7 @@ int gmt_i_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_I_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_I_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write uint32_t */
 	uint64_t i;
@@ -2679,7 +2678,7 @@ int gmt_I_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_I_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_I_write_swab (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped uint32_t */
 	uint64_t i;
@@ -2692,7 +2691,7 @@ int gmt_I_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_l_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_l_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write int64_t */
 	uint64_t i;
@@ -2705,7 +2704,7 @@ int gmt_l_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_l_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_l_write_swab (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped int64_t */
 	uint64_t i;
@@ -2720,7 +2719,7 @@ int gmt_l_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_L_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_L_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write uint64_t */
 	uint64_t i;
@@ -2733,7 +2732,7 @@ int gmt_L_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_L_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_L_write_swab (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped uint64_t */
 	uint64_t i;
@@ -2746,7 +2745,7 @@ int gmt_L_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_f_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_f_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write float */
 	uint64_t i;
@@ -2758,7 +2757,7 @@ int gmt_f_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_f_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_f_write_swab (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped float */
 	uint64_t i;
@@ -2775,7 +2774,7 @@ int gmt_f_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_d_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_d_write (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write double */
 	if (GMT_fwrite (d, sizeof (double), n, fp) != n)
@@ -2783,7 +2782,7 @@ int gmt_d_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	return (GMT_OK);
 }
 
-int gmt_d_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
+int gmt_d_write_swab (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped double */
 	uint64_t i;
@@ -3284,7 +3283,7 @@ int GMT_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data)
 	return (err ? -1 : (int)n);	/* Return -1 if failed, else n items written */
 }
 
-int GMT_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G)
+int GMT_set_z_io (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_Z_IO *r, struct GMT_GRID *G)
 {
 	/* THIS SHOULD NOT BE FATAL!
 	if ((r->x_missing || r->y_missing) && G->header->registration == GMT_GRID_PIXEL_REG) return (GMT_GRDIO_RI_NOREPEAT);
@@ -3298,7 +3297,7 @@ int GMT_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G)
 	return (GMT_NOERROR);
 }
 
-void GMT_check_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G)
+void GMT_check_z_io (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_Z_IO *r, struct GMT_GRID *G)
 {
 	/* Routine to fill in the implied periodic row or column that was missing.
 	 * We must allow for padding in G->data */
@@ -4993,7 +4992,7 @@ void GMT_extract_label (struct GMT_CTRL *GMT, char *line, char *label, struct GM
 	if (!done) sscanf (&line[i], "%s", label);
 }
 
-bool GMT_parse_segment_item (struct GMT_CTRL *GMT, char *in_string, char *pattern, char *out_string)
+bool GMT_parse_segment_item (struct GMT_CTRL *GMT_UNUSED(GMT), char *in_string, char *pattern, char *out_string)
 {
 	/* Scans the in_string for the occurrence of an option switch (e.g, -L) and
 	 * if found, extracts the argument and returns it via out_string.  Function
@@ -6348,7 +6347,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	return (T);
 }
 
-void GMT_copy_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *Sout, struct GMT_DATASEGMENT *Sin)
+void GMT_copy_segment (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_DATASEGMENT *Sout, struct GMT_DATASEGMENT *Sin)
 {	/* Duplicates the segment */
 	uint64_t col;
 	for (col = 0; col < Sin->n_columns; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
@@ -6640,7 +6639,7 @@ void GMT_free_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned 
 	}
 }
 
-void GMT_null_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned int type)
+void GMT_null_univector (struct GMT_CTRL *GMT_UNUSED(GMT), union GMT_UNIVECTOR *u, unsigned int type)
 {	/* Here we just set the type pointer to NULL as it was pointing to external memory */
 	if (!u) return;	/* Nothing to deal with */
 	switch (type) {
@@ -6692,7 +6691,7 @@ int GMT_alloc_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned 
 	return (error);
 }
 
-int GMT_duplicate_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u_out, union GMT_UNIVECTOR *u_in, unsigned int type, uint64_t n_rows)
+int GMT_duplicate_univector (struct GMT_CTRL *GMT_UNUSED(GMT), union GMT_UNIVECTOR *u_out, union GMT_UNIVECTOR *u_in, unsigned int type, uint64_t n_rows)
 {
 	/* Allocate space for one univector according to data type */
 	switch (type) {
@@ -6820,7 +6819,7 @@ void GMT_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_mat
 	GMT_free (GMT, *M);
 }
 
-bool GMT_not_numeric (struct GMT_CTRL *GMT, char *text)
+bool GMT_not_numeric (struct GMT_CTRL *GMT_UNUSED(GMT), char *text)
 {
 	/* true if text cannot represent a valid number  However,
 	 * false does not therefore mean we have a valid number because

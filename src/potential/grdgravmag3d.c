@@ -1018,8 +1018,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
-                           struct BODY_VERTS **body_verts, unsigned int face) {
+int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *GMT_UNUSED(Ctrl), struct BODY_DESC *body_desc, struct BODY_VERTS **body_verts, unsigned int face) {
 /*
 		__________________________________________
 		|                                        |
@@ -1085,9 +1084,8 @@ int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl,
 	return(0);
 }
 
-/* -----------------------------------------------------------------------------------*/
-int grdgravmag3d_body_set_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
-		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
+int grdgravmag3d_body_set_tri(struct GMT_CTRL *GMT_UNUSED(GMT), struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
+		struct BODY_DESC *GMT_UNUSED(body_desc), struct BODY_VERTS *body_verts, double *x, double *y,
 		double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i) {
 
 	/* Allocate and fill the body_desc structure with the description on how to

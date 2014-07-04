@@ -334,7 +334,7 @@ void move_model_a_to_b_2d (double *model_a, double *model_b, unsigned int n_mode
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp)
+void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT_UNUSED(GMT), struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp)
 {	/* mp is row dimension of gtg  */
 
 	uint64_t i;
