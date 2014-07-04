@@ -43,12 +43,31 @@
  *			  has grounding line as Level = 5 and ice-front line as Level = 6.
  *			  Only use one of those two Levels and consider either to be Level = 1.
  *	1-JUL-2014.   PW: Data version is now 2.3.1. [no change to format]
+ *
+ * The format of binary GSHHG files are simply sequential:
+ * [ Item Header 0 ]
+ *   [ Point 1 ]
+ *   [ Point 2 ]
+ *   [ ....... ]
+ *   [ Point n0 ]
+ * [ Item Header 1 ]
+ *   [ Point 1 ]
+ *   [ Point 2 ]
+ *   [ ....... ]
+ *   [ Point n1 ]
+ * [ Item Header 2 ]
+ * etc etc.
+ *
+ * Each header is contained in a GSHHG_HEADER struct and each point is contained in a GSHHG_POINT struct.
+ * These two structures are defined below, together with the scalefactor that converts micro-degrees to degrees.
  */
 
 #ifndef _GSHHG
 #define _GSHHG
 
 #include <stdint.h>
+
+#define GSHHG_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
 struct GSHHG_HEADER {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
 	uint32_t id;		/* Unique polygon id number, starting at 0 */

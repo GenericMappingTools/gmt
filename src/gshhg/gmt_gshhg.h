@@ -43,30 +43,24 @@
 #endif
 
 #define GSHHG_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
-#define GSHHG_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
 /* byteswap all members of GSHHG struct */
 #define GSHHG_STRUCT_N_MEMBERS 11
-static inline void bswap_GSHHG_struct (struct GSHHG *h) {
+static inline void bswap_GSHHG_struct (struct GSHHG_HEADER *h) {
 	uint32_t unsigned32[GSHHG_STRUCT_N_MEMBERS];
 	uint32_t n;
 
 	/* since all members are 32 bit words: */
-	memcpy (&unsigned32, h, sizeof(struct GSHHG));
+	memcpy (&unsigned32, h, sizeof(struct GSHHG_HEADER));
 
 	for (n = 0; n < GSHHG_STRUCT_N_MEMBERS; ++n)
 		unsigned32[n] = bswap32 (unsigned32[n]);
 
-	memcpy (h, &unsigned32, sizeof(struct GSHHG));
+	memcpy (h, &unsigned32, sizeof(struct GSHHG_HEADER));
 }
 
-struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */
-	int32_t x;
-	int32_t y;
-};
-
-/* byteswap members of POINT struct */
-static inline void bswap_POINT_struct (struct POINT *p) {
+/* byteswap members of GSHHG_POINT struct */
+static inline void bswap_POINT_struct (struct GSHHG_POINT *p) {
 	uint32_t unsigned32;
 	memcpy (&unsigned32, &p->x, sizeof(uint32_t));
 	unsigned32 = bswap32 (unsigned32);
