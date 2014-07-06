@@ -259,6 +259,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
+		GMT_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
+
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
 		}

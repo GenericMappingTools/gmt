@@ -91,6 +91,7 @@ Optional Arguments
 
 **-F**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
     Select painting or dumping country polygons from the Digital Chart of the World.
+    This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
     Append one or more comma-separated countries using the 2-character
     ISO 3166-1 alpha-2 convention.  To select a state of a country
     (if available), append .state, e.g, US.TX for Texas.  To specify a
