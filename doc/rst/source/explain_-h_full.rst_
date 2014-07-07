@@ -1,12 +1,15 @@
 .. _-h_full:
 
-**-h**\ [**i**\ \|\ **o**][*n*][\ **+c**][\ **+d**][\ **+r**\ *title*]
+**-h**\ [**i**\ \|\ **o**][*n*][\ **+c**][\ **+d**][\ **+r**\ *remark*][\ **+t**\ *title*]
     Input file(s) has header record(s). If used, the default number of
     header records is :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` [1]. Use **-hi** if only
     input data should have header records [Default will write out header
     records if the input data have them]. Blank lines and lines starting
     with # are always skipped. For output you may request additional headers
     to be written via the option modifiers, and use **+d** to remove existing
-    header records. If used with native binary data we
-    interpret *n* to instead mean the number of bytes to skip on input
-    or pad on output.
+    header records. Append **+c** to issue a header comment with column names to the output [none].
+    Append **+r** to add a *remark* comment to the output [none].
+    Append **+t** to add a *title* comment to the output [none].
+    These optional strings may contain \n to indicate line-breaks).
+    If used with native binary data we interpret *n* to instead mean the
+    number of bytes to skip on input or pad on output.
