@@ -22,12 +22,12 @@ Description
 -----------
 
 **x2sys_put** accepts a track bin-index file created by
-**x2sys_binlist** and adds this information about the data tracks to
+:doc:`x2sys_binlist` and adds this information about the data tracks to
 the relevant data base. You may chose to overwrite existing data with
 new information for older tracks (**-F**) and even completely remove
 information for certain tracks (**-D**). The x2sys *TAG* must match the
 tag encoded in the *info.tbf* file. To inquire about tracks in the data
-base, use **x2sys_get**.
+base, use :doc:`x2sys_get`.
 
 Required Arguments
 ------------------
@@ -74,7 +74,7 @@ the tracks that have been added to the system; it is named
 *TAG*\ \_index.b and is in native binary format. It contains information
 on which tracks cross each of the bins, and what data sets were observed
 while crossing the bin. The bins are defined by the **-R** and **-I**
-options passed to **x2sys_init** when the *TAG* was first initiated.
+options passed to :doc:`x2sys_init` when the *TAG* was first initiated.
 Both data base files are stored in the **$X2SYS_HOME**/*TAG* directory.
 Do not attempt to edit these files by hand.
 

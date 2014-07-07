@@ -33,7 +33,7 @@ files can be of any format, which must be described and passed with the
 the track goes and is used by the data archivist to build an x2sys track
 data base for miscellaneous track queries, such as when needing to
 determine which tracks should be compared in a crossover analysis. You
-must run **x2sys_init** to initialize the tag before you can run the
+must run :doc:`x2sys_init` to initialize the tag before you can run the
 indexing.
 
 Required Arguments
@@ -49,7 +49,7 @@ Optional Arguments
     Calculate the length of trackline segments per bin [Default skips
     this step]. The length fragments are given as the 5th output column
     (after the *flags*). The length units are obtained via the TAB
-    setting (see **x2sys_init**).
+    setting (see :doc:`x2sys_init`).
 **-E**
     Convert geographic data to a cylindrical equal-area projection prior
     to binning. Basically, we apply the projection

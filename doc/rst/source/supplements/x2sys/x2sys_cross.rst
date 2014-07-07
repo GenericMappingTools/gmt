@@ -49,8 +49,8 @@ Optional Arguments
 **-A**\ *combi.lis*
     Only process the pair-combinations found in the file *combi.lis*
     [Default process all possible combinations among the specified
-    files]. The file *combi.lis* created by x2sys_get -L option
-**-C**\ [*runtimes*\ ]
+    files]. The file *combi.lis* created by :doc:`x2sys_get` -L option
+**-C**\ [*runtimes*]
     Compute and append the processing run-time for each pair to the
     progress message. Append a filename to save these run-times to file.
     The idea here is to use the knowledge of run-times to split the main
@@ -115,7 +115,7 @@ Remarks
 The COEs found are printed out to standard output in ASCII format
 (unless **-bo** is set). When ASCII is chosen,
 the output format depends on whether or not old-style XOVER output
-(**-L**) has been selected [See the :manpage:`x_over(1)` man page for more
+(**-L**) has been selected [See the :manpage:`x_over` man page for more
 details]. If ASCII, then the first record contains the name of the tag
 used, the second records specifies the exact command line used for this
 run, and the third record contains the names of each column. For each
@@ -184,4 +184,4 @@ See Also
 :doc:`x2sys_put`,
 :doc:`x2sys_report`,
 :doc:`x2sys_solve`,
-:manpage:`x_over(1)`
+:manpage:`x_over`
