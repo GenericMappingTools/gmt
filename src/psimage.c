@@ -442,12 +442,13 @@ int GMT_psimage (void *V_API, int mode, void *args)
 			I->header->n_bands = 3;
 		}
 		else if (I->header->n_bands == 4) { /* RGBA image, with a color map */
+			uint64_t n4, j4;
 			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, I->data, (int)I->header->nm, &r, &g, &b);
-			for (j = n = 0; j < 4 * I->header->nm; j++) { /* Reduce image from 32- to 24-bit */
-				if (has_trans && I->data[j+3] == 0)
-					I->data[n++] = r, I->data[n++] = g, I->data[n++] = b, j+=3;
+			for (j4 = n4 = 0; j4 < 4 * I->header->nm; j4++) { /* Reduce image from 32- to 24-bit */
+				if (has_trans && I->data[j4+3] == 0)
+					I->data[n4++] = r, I->data[n4++] = g, I->data[n4++] = b, j4 += 3;
 				else
-					I->data[n++] = I->data[j++], I->data[n++] = I->data[j++], I->data[n++] = I->data[j++];
+					I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++];
 			}
 			I->header->n_bands = 3;
 		}

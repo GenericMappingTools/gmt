@@ -214,11 +214,11 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	 * mode = GMT_DCW_DUMP		: Dump the polygons
 	 * mode = GMT_DCW_EXTRACT	: Return a dataset structure
 	 */
-	int ks, j = 0, retval, ncid, xvarid, yvarid, id;
+	int item, ks, retval, ncid, xvarid, yvarid, id;
 	int64_t first, last;
 	size_t np, max_np = 0U, n_alloc;
 	uint64_t k, seg, n_segments;
-	unsigned int n_items = 0, pos = 0, kk, tbl = 0, *order = NULL;
+	unsigned int n_items = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
 	bool done, new_set, want_state, continent = false, outline, fill;
@@ -329,12 +329,12 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		k = ks;
 		if (want_state) {
-			if ((j = gmt_dcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
+			if ((item = gmt_dcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Country %s does not have states (skipped)\n", code);
 				continue;
 			}
-			sprintf (TAG, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[j].code);
-			sprintf (msg, "Extract data for %s (%s)\n", GMT_DCW_state[j].name, GMT_DCW_country[k].name);
+			sprintf (TAG, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);
+			sprintf (msg, "Extract data for %s (%s)\n", GMT_DCW_state[item].name, GMT_DCW_country[k].name);
 		}
 		else {
 			sprintf (TAG, "%s", GMT_DCW_country[k].code);

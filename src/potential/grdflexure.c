@@ -149,7 +149,7 @@ double transfer_elastic (double k, struct RHEOLOGY *R)
 	return (transfer_fn); 
 }
 
-void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
+void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER * GMT_UNUSED(K), struct RHEOLOGY *R) {
 	/* Do the isostatic response function convolution in the Freq domain.
 	   All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
 	   densities in kg/m**3, Te in m, etc.
@@ -206,7 +206,7 @@ double relax_time_2 (double k, struct RHEOLOGY *R)
 	return (tau);
 }
 
-void setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R)
+void setup_fv2 (struct GMT_CTRL * GMT_UNUSED(GMT), struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER * GMT_UNUSED(K), struct RHEOLOGY *R)
 {	/* Setup function for 2-layer viscous mantle beneath elastic plate */
 	R->t0 = R->time_yr * (86400*365.25);	/* Convert to seconds */
 	R->nu_ratio = Ctrl->F.nu_a / Ctrl->F.nu_m;
@@ -224,7 +224,7 @@ double transfer_fv2 (double k, struct RHEOLOGY *R)
 	return (phi_fv2); 
 }
 
-void setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R)
+void setup_fv (struct GMT_CTRL * GMT_UNUSED(GMT), struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER * GMT_UNUSED(K), struct RHEOLOGY *R)
 {	/* Setup function for 1-layer viscous mantle beneath elastic plate */
 	R->t0 = R->time_yr * (86400*365.25);	/* Convert to seconds */
 	R->dens_ratio = (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom;
@@ -250,7 +250,7 @@ double transfer_fv (double k, struct RHEOLOGY *R)
 	return (phi_fv);
 }
 
-void setup_ve (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R)
+void setup_ve (struct GMT_CTRL * GMT_UNUSED(GMT), struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER * GMT_UNUSED(K), struct RHEOLOGY *R)
 {
 	R->c = 1.0 / (Ctrl->M.maxwell_t * (86400*365.25));	/* Convert to seconds */
 }

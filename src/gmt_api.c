@@ -673,7 +673,7 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 {
 	double off = 0.5 * registration;
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
-	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a matrix for handing external %s\n", GMT_direction[direction]);
+	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a matrix for handing external %s [mode = %u]\n", GMT_direction[direction], mode);
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
@@ -695,7 +695,6 @@ int GMTAPI_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a vector for handing external %s\n", GMT_direction[direction]);
 	if (dim == NULL) return (GMT_PTR_IS_NULL);	/* number of columns not provided */
 	if (dim[0] == 0) return (GMT_VALUE_NOT_SET);
-	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_init_vector called: reg = %d\n", registration);
 	if (range == NULL || (range[XLO] == range[XHI])) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
 		V->n_rows = dim[1];	/* If so, n_rows is passed via dim[1], unless it is GMT_OUT when it is zero */
@@ -726,7 +725,6 @@ double * GMTAPI_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_MATRI
 	unsigned int min, max;
 	uint64_t k, n;
 
-	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_matrix_coord called: dim = %d\n", dim);
 	if (M->n_layers <= 1 && dim == GMT_Z) return (NULL);	/* No z-dimension */
 	n = (dim == GMT_X) ? M->n_columns : ((dim == GMT_Y) ? M->n_rows : M->n_layers);
 	min = 2*dim, max = 2*dim + 1;
@@ -1037,7 +1035,7 @@ void GMTAPI_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, 
 	P->header[P->n_headers++] = strdup (txt);
 }
 
-enum GMT_enum_method GMTAPI_split_via_method (struct GMTAPI_CTRL *API, enum GMT_enum_method method, unsigned int *via)
+enum GMT_enum_method GMTAPI_split_via_method (struct GMTAPI_CTRL * GMT_UNUSED(API), enum GMT_enum_method method, unsigned int *via)
 {	/* Split a combined method/via enum into two array indices for use with GMT_method[] and GMT_via[] */
 	enum GMT_enum_method m;
 	switch (method) {

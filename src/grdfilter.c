@@ -265,7 +265,7 @@ struct GRDFILTER_BIN_MODE_INFO *grdfilter_bin_setup (struct GMT_CTRL *GMT, doubl
 	return (B);
 }
 
-double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B)
+double GMT_histmode (struct GMT_CTRL * GMT_UNUSED(GMT), double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B)
 {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning unweighted data with the specified width. We check if we find more
@@ -273,7 +273,7 @@ double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILT
 
 	double value = 0.0;
 	uint64_t i;
-	unsigned int n_modes = 0, mode_count = 0;
+	unsigned int n_modes = 0, mode_count = 0, ubin;
 	int bin, mode_bin = 0;
 	bool done;
 
@@ -295,18 +295,18 @@ double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILT
 	
 	/* Here we found more than one mode and must choose according to settings */
 	
-	for (bin = 0, done = false; !done && bin < B->n_bins; bin++) {	/* Loop over bin counts */
-		if (B->icount[bin] < mode_count) continue;	/* Not one of the modes */
+	for (ubin = 0, done = false; !done && ubin < B->n_bins; ubin++) {	/* Loop over bin counts */
+		if (B->icount[ubin] < mode_count) continue;	/* Not one of the modes */
 		switch (B->mode_choice) {
 			case GRDFILTER_MODE_KIND_LOW:	/* Pick lowest mode; we are done */
-				value = ((bin + B->min) + B->o_offset) * B->width;
+				value = ((ubin + B->min) + B->o_offset) * B->width;
 				done = true;
 				break;
 			case GRDFILTER_MODE_KIND_AVE:		/* Get the average of the modes */
-				value += ((bin + B->min) + B->o_offset) * B->width;
+				value += ((ubin + B->min) + B->o_offset) * B->width;
 				break;
 			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
-			 	value = ((bin + B->min) + B->o_offset) * B->width;
+			 	value = ((ubin + B->min) + B->o_offset) * B->width;
 				break;
 		}
 	}
@@ -323,7 +323,7 @@ double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, ui
 
 	double value = 0.0, mode_count = 0.0;
 	uint64_t i;
-	unsigned int n_modes = 0;
+	unsigned int n_modes = 0, ubin;
 	int bin, mode_bin = 0;
 	bool done;
 
@@ -345,18 +345,18 @@ double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, ui
 	
 	/* Here we found more than one mode and must choose according to settings */
 	
-	for (bin = 0, done = false; !done && bin < B->n_bins; bin++) {	/* Loop over bin counts */
-		if (B->fcount[bin] < mode_count) continue;	/* Not one of the modes */
+	for (ubin = 0, done = false; !done && ubin < B->n_bins; ubin++) {	/* Loop over bin counts */
+		if (B->fcount[ubin] < mode_count) continue;	/* Not one of the modes */
 		switch (B->mode_choice) {
 			case GRDFILTER_MODE_KIND_LOW:	/* Pick lowest mode; we are done */
-				value = ((bin + B->min) + B->o_offset) * B->width;
+				value = ((ubin + B->min) + B->o_offset) * B->width;
 				done = true;
 				break;
 			case GRDFILTER_MODE_KIND_AVE:		/* Get the average of the modes */
-				value += ((bin + B->min) + B->o_offset) * B->width;
+				value += ((ubin + B->min) + B->o_offset) * B->width;
 				break;
 			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
-			 	value = ((bin + B->min) + B->o_offset) * B->width;
+			 	value = ((ubin + B->min) + B->o_offset) * B->width;
 				break;
 		}
 	}
@@ -805,8 +805,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #endif
 	uint64_t ij_in, ij_out, ij_wt;
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, par[GRDFILTER_N_PARS];
-	double x_out, wt_sum, last_median = 0.0, this_estimate = 0.0;
-	double y_shift = 0.0, x_fix = 0.0, y_fix = 0.0, max_lat;
+	double x_out, wt_sum, last_median = 0.0;
+	double x_fix = 0.0, y_fix = 0.0, max_lat;
 	double merc_range, *weight = NULL, *x_shift = NULL;
 	double wesn[4], inc[2];
 
@@ -1268,11 +1268,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 /* ----------------------------------------------------------------------------------------------------- */
 void threaded_function (struct THREAD_STRUCT *t) {
 
-	bool same_grid = false;
 	bool visit_check = false, go_on, get_weight_sum = true;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out, n_span;
 	unsigned int one_or_zero = 1, GMT_n_multiples = 0;
-	int tid = 0, col_in, row_in, ii, jj, row_origin, error = 0;
+	int tid = 0, col_in, row_in, ii, jj, row_origin;
 #ifdef DEBUG
 	unsigned int n_conv = 0;
 #endif
