@@ -95,6 +95,15 @@ write the reduced lines to file new_xylines.d, run
 
     gmt gmtsimplify xylines.d -T0.45 > new_xylines.d
 
+Notes
+-----
+
+There is a slight difference in how gmtsimplify processes lines versus
+closed polygons.  Segments that are explicitly closed will be considered
+polygons, otherwise we treat them as line segments.  Hence, segments
+recognized as polygons may reduce to a 3-point polygon with no area;
+these are suppressed from the output.
+
 Bugs
 ----
 

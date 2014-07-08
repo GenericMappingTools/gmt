@@ -361,7 +361,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg];
 			S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg];
 			/* If input segment is a closed polygon then the simplified segment must have at least 4 points, else 3 is enough */
-			poly = (GMT_polygon_is_open (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows));
+			poly = (!GMT_polygon_is_open (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows));
 			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 			GMT_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_OUT]->n_columns, false);	/* Reallocate to get correct n_rows */
