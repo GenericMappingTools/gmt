@@ -280,7 +280,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 {
 	int error;
 	bool geo, poly;
-	uint64_t tbl, col, row, seg, np_out, ns_in = 0, ns_out = 0, n_min, *index = NULL;
+	uint64_t tbl, col, row, seg, np_out, ns_in = 0, ns_out = 0, *index = NULL;
 	
 	double tolerance;
 	
