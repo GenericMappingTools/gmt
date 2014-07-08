@@ -6098,10 +6098,10 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 {
 	/* Reads an entire data set into a single table in memory with any number of segments */
 
-	bool ascii, close_file = false, header = true, no_segments, first_seg = true, poly, check_geometry;
+	bool ascii, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false, pol_check, check_geometry;
 	int status;
 	uint64_t n_expected_fields;
-	uint64_t n_read = 0, row = 0, seg = 0, col;
+	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0;
 	size_t n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, line[GMT_LEN64] = {""};
 	double d, *in = NULL;
@@ -6126,7 +6126,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	if (!ascii) GMT_setmode (GMT, GMT_IN);
 #endif
 
-	check_geometry = ((*geometry & GMT_IS_POLY) && (*geometry & GMT_IS_LINE));	/* Have to determine if these are closed polygons or not */
+	pol_check = check_geometry = ((*geometry & GMT_IS_POLY) && (*geometry & GMT_IS_LINE));	/* Have to determine if these are closed polygons or not */
 	poly = (((*geometry & GMT_IS_POLY) || *geometry == GMT_IS_MULTIPOLYGON) && (*geometry & GMT_IS_LINE) == 0);	/* To enable polar cap assessment in i/o */
 
 	/* Determine input source */
@@ -6265,8 +6265,10 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 			n_read++;
 		}
 
+		if (pol_check) this_is_poly = (!GMT_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row));	/* true if this segment is closed polygon */
+		if (this_is_poly) n_poly_seg++;
 		if (check_geometry) {	/* Determine if dealing with closed polygons or lines based on first segment only */
-			if (!GMT_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row)) poly = true;
+			if (this_is_poly) poly = true;
 			check_geometry = false;	/* Done with one-time checking */
 			*geometry = (poly) ? GMT_IS_POLY : GMT_IS_LINE;	/* Update the geometry setting */
 		}
@@ -6329,6 +6331,9 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	}
 	else
 		seg++;
+	if (check_geometry && poly && n_poly_seg != seg) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Table contains mix of polygons (%" PRIu64 ") and lines (%" PRIu64 ")\n", n_poly_seg, n_poly_seg - seg);
+	}
 	T->segment = GMT_memory (GMT, T->segment, seg, struct GMT_DATASEGMENT *);
 	T->n_segments = seg;
 	T->n_columns = T->segment[0]->n_columns;

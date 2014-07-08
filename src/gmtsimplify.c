@@ -279,8 +279,8 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 int GMT_gmtsimplify (void *V_API, int mode, void *args)
 {
 	int error;
-	bool geo;
-	uint64_t tbl, col, row, seg, np_out, *index = NULL;
+	bool geo, poly;
+	uint64_t tbl, col, row, seg, np_out, ns_in = 0, ns_out = 0, *index = NULL;
 	
 	double tolerance;
 	
@@ -318,7 +318,8 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 	/* Now we are ready to take on some input values */
 	/* Allocate memory and read in all the files; each file can have many lines */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE|GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	/* We read as lines even though some/all segments could be polygons. */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -359,18 +360,21 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg];
 			S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg];
+			/* If input segment is a closed polygon then the simplified segment must have at least 4 points, else 3 is enough */
+			poly = (!GMT_polygon_is_open (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows));
 			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
-
 			GMT_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_OUT]->n_columns, false);	/* Reallocate to get correct n_rows */
 			for (row = 0; row < np_out; row++) for (col = 0; col < S[GMT_IN]->n_columns; col++) {
 				S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
 			}
 			GMT_free (GMT, index);
-			if (np_out == 2 && S[GMT_OUT]->coord[GMT_X][0] == S[GMT_OUT]->coord[GMT_X][1] && S[GMT_OUT]->coord[GMT_Y][0] == S[GMT_OUT]->coord[GMT_Y][1]) {
+			if ((poly && np_out < 4) || (np_out == 2 && S[GMT_OUT]->coord[GMT_X][0] == S[GMT_OUT]->coord[GMT_X][1] && S[GMT_OUT]->coord[GMT_Y][0] == S[GMT_OUT]->coord[GMT_Y][1])) {
 				S[GMT_OUT]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped since nothing was returned */
 				np_out = 0;	/* Say nothing was returned */
 			}
+			ns_in++;		/* Input segment with points */
+			if (np_out) ns_out++;	/* Output segment with points */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, np_out);
 		}
 	}
@@ -378,6 +382,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
+	GMT_Report (API, GMT_MSG_VERBOSE, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns_in, ns_out);
 	
 	Return (GMT_OK);
 }
