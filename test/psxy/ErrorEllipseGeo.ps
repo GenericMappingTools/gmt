@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13146 [64-bit] Document from psxy
+%%Title: GMT v5.1.2_r13317 [64-bit] Document from psxy
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 12:33:48 2014
+%%CreationDate: Mon Jul  7 17:49:28 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -193,6 +193,7 @@
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
+    /ydepth exch def
     /textheight exch def
     /just exch def
     /offset exch def
@@ -200,7 +201,7 @@
     /pathdist 0 def
     /setdist offset def
     /charcount 0 def
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
     V flattenpath
 	{movetoproc} {linetoproc}
 	{curvetoproc} {closepathproc}
@@ -432,6 +433,8 @@ end
 {
   /PSL_just PSL_label_justify k get def
   /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
   PSL_usebox
   {PSL_CT_clippath
     PSL_fillbox
@@ -439,7 +442,7 @@ end
     PSL_drawbox
     {V PSL_setboxpen S U} if N
   } if
-  PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 /PSL_CT_clippath
 {
@@ -530,8 +533,8 @@ end
     PSL_ST_prepare_text
     PSL_usebox
     {  PSL_rounded
-        {PSL_ST_textbox_rect}
         {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
       ifelse
       PSL_fillbox {V PSL_setboxrgb fill U} if
       PSL_drawbox {V PSL_setboxpen S U} if
@@ -554,7 +557,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip
+  PSL_clip N
 } def
 /PSL_ST_prepare_text
 {
@@ -604,7 +607,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label show
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -650,7 +653,29 @@ O1
 -48 31 D
 -56 24 D
 -65 17 D
-7128 10 D
+-48 6 D
+0 -1017 D
+69 101 D
+44 69 D
+40 68 D
+71 132 D
+29 64 D
+24 62 D
+20 59 D
+15 58 D
+8 55 D
+3 53 D
+-5 51 D
+-13 47 D
+-21 44 D
+FO
+0 2722 M
+0 -44 D
+0 44 D
+FO
+7200 2722 M
+0 154 D
+-24 4 D
 -79 0 D
 -84 -10 D
 -88 -19 D
@@ -700,25 +725,13 @@ O1
 66 71 D
 62 71 D
 58 72 D
-54 72 D
--7149 71 D
-48 71 D
-44 69 D
-40 68 D
-71 132 D
-29 64 D
-24 62 D
-20 59 D
-15 58 D
-8 55 D
-3 53 D
--5 51 D
--13 47 D
--21 44 D
+84 113 D
+0 863 D
 FO
 /FO {fs os}!
 FO
 U
+25 W
 0 A
 8 W
 N 800 0 M 0 -83 D S
