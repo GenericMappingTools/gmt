@@ -139,6 +139,7 @@ Optional Arguments
     
 .. include:: explain_-icols.rst_
 
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code

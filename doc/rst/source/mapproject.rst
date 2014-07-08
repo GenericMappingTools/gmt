@@ -178,6 +178,7 @@ Optional Arguments
 
 .. include:: explain_-ocols.rst_
 
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-s.rst_
