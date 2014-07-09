@@ -262,6 +262,8 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	n_read = n_pitched = 0;	/* Initialize counters */
 	weight = 1.0;		/* Set the default point weight */
 	use_weight = (Ctrl->W.weighted[GMT_IN] && Ctrl->S.mode != 3);	/* Do not use weights if -Sn was set */
+
+	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
 	
 	/* Read the input data */
 
@@ -317,6 +319,8 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 		zw[node].a[BLK_Z] += weighted_z;	/* Sum up the weighted values */
 		n_pitched++;				/* Number of points actually used */
 	} while (true);
+
+	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
