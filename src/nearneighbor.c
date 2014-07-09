@@ -263,7 +263,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
 	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	bool wrap_180, replicate_x, replicate_y;
-	size_t n_alloc = GMT_CHUNK;
+	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 
 	uint64_t ij, ij0, kk, n, n_read, n_almost, n_none, n_set, n_filled;
 

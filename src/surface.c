@@ -1375,7 +1375,7 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	size_t n_alloc;
 	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, r_dx, r_dy, zmin = DBL_MAX, zmax = -DBL_MAX;
 
-	n_alloc = GMT_CHUNK;
+	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	x = GMT_memory (GMT, NULL, n_alloc, double);
 	y = GMT_memory (GMT, NULL, n_alloc, double);
 	z = GMT_memory (GMT, NULL, n_alloc, double);
@@ -1725,7 +1725,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 
 	GMT_memset (&C, 1, struct SURFACE_INFO);
 	GMT_memset (&GMT_Surface_Global, 1, struct SURFACE_GLOBAL);
-	C.n_alloc = GMT_CHUNK;
+	C.n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	C.z_scale = C.r_z_scale = 1.0;
 	C.mode_type[0] = 'I';
 	C.mode_type[1] = 'D';	/* D means include data points when iterating */

@@ -342,6 +342,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 			Return (API->error);	/* Enables data input and sets access mode */
 		}
 
+		GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
+
 		n_alloc = 0;
 		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		n_alloc = 0;
@@ -413,6 +415,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}
+		GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 	}
 
 	/* OK, time to create and work on the distance grid */

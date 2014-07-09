@@ -268,6 +268,8 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
+	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
+
 	GMT_malloc4 (GMT, xx, yy, zz, ww, GMT_CHUNK, &n_alloc, double);
 	n = 0;
 	w_min = DBL_MAX;	w_max = -DBL_MAX;
@@ -299,6 +301,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 
 	n_alloc = n;
 	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
+	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Do spherical interpolation using %" PRIu64 " points\n", n);
 

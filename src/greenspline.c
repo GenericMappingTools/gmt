@@ -1386,7 +1386,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	n_alloc = GMT_CHUNK;
+	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	X = GMT_memory (GMT, NULL, n_alloc, double *);
 	n_cols = (Ctrl->W.active) ? dimension + 1 : dimension;	/* So X[k][dimension] holds the weight if -W is active */
 	for (k = 0; k < n_alloc; k++) X[k] = GMT_memory (GMT, NULL, n_cols, double);

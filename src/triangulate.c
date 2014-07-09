@@ -312,7 +312,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	}
 
 	triplets[GMT_IN] = (n_input == 3);
-	n_alloc = GMT_CHUNK;
+	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	xx = GMT_memory (GMT, NULL, n_alloc, double);
 	yy = GMT_memory (GMT, NULL, n_alloc, double);
 	if (triplets[GMT_IN]) zz = GMT_memory (GMT, NULL, n_alloc, double);
