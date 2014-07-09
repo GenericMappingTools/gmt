@@ -1019,7 +1019,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 
 /* -----------------------------------------------------------------*/
 int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
-                           struct BODY_VERTS **body_verts, unsigned int face) {
+                               struct BODY_VERTS **body_verts, unsigned int face) {
 /*
 		__________________________________________
 		|                                        |
@@ -1067,7 +1067,7 @@ int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, s
 }
 
 /* -----------------------------------------------------------------------------------*/
-int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
+int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *GMT_UNUSED(Ctrl), struct BODY_DESC *body_desc,
                                  struct BODY_VERTS **body_verts, unsigned int face) {
 
 	if (face != 0 && face != 5) return(0);
@@ -1773,3 +1773,4 @@ c    a,b,c:  the three direction cosines.
 	*b = cos(xincl) * sin(xdecl-xazim);
 	*c = sin(xincl);
 }
+

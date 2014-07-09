@@ -514,6 +514,8 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	sid_col = (Ctrl->W.weighted[GMT_IN]) ? 4 : 3;	/* Column with integer source id [if -Es is set] */
 	n_read = n_pitched = 0;	/* Initialize counters */
 
+	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
+
 	/* Read the input data */
 	is_integer = true;	/* Until proven otherwise */
 
@@ -566,6 +568,8 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 
 		n_pitched++;
 	} while (true);
+
+	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
