@@ -189,7 +189,7 @@ int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, doub
 
 	uint64_t i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
 	uint64_t dim[4] = {1, 0, 0, 0};
-	size_t n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK;
+	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC, p_alloc = GMT_TINY_CHUNK;
 
 	char segment_header[GMT_BUFSIZ];
 
@@ -549,6 +549,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
+	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
 	n_alloc = 0;
 	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 	n_alloc = 0;
@@ -604,6 +605,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	n_alloc = n;
 	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 	GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
+	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 
 	if (Ctrl->D.active && n_dup) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %d duplicate points in segments\n", n_dup);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Do Voronoi construction using %d points\n", n);

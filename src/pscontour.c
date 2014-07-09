@@ -720,7 +720,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	if (GMT->common.J.active && GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	n_alloc = GMT_CHUNK;
+	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	x = GMT_memory (GMT, NULL, n_alloc, double);
 	y = GMT_memory (GMT, NULL, n_alloc, double);
 	z = GMT_memory (GMT, NULL, n_alloc, double);

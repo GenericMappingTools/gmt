@@ -374,7 +374,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 	
 	n_data = 0;	/* Initialize variables */
 	lonsum = latsum = 0.0;
-	n_alloc = GMT_CHUNK;
+	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	data = GMT_memory (GMT, NULL, n_alloc, struct FITCIRCLE_DATA);
 	sprintf (format, "%s%s%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 

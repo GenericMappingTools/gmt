@@ -79,7 +79,7 @@ struct TREND2D_DATA {
 int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, int weighted_input, double **work)
 {
 	uint64_t i;
-	size_t n_alloc = GMT_CHUNK;
+	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
 
 	*data = GMT_memory (GMT, NULL, n_alloc, struct TREND2D_DATA);
