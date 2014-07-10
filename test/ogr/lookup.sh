@@ -30,21 +30,21 @@ cat << EOF > ogr.txt
 26.4 37.6
 24.3 35
 EOF
-psxy ogr.txt -R22/28/31/38 -JM6i -W1p -Baf -A -aG=gmtrgb -P > $ps
+gmt psxy ogr.txt -R22/28/31/38 -JM6i -W1p -Baf -A -aG=gmtrgb -P > $ps
 #
 # For test to fail, orig was made with
-cat << EOF > ogr.txt
-> -G110/186/103
-22.3 32
-24.2 32.3
-26.0 34.7
-24.4 34.6
-22.3 32
-> -Glightblue
-24.3 35
-26.2 36.3
-27.8 37.7
-26.4 37.6
-24.3 35
-EOF
-psxy ogr.txt -R22/28/31/38 -JM6i -W1p -Baf -A -Gred -P > $ps
+#cat << EOF > ogr.txt
+#> -G110/186/103
+#22.3 32
+#24.2 32.3
+#26.0 34.7
+#24.4 34.6
+#22.3 32
+#> -Glightblue
+#24.3 35
+#26.2 36.3
+#27.8 37.7
+#26.4 37.6
+#24.3 35
+#EOF
+#gmt psxy ogr.txt -R22/28/31/38 -JM6i -W1p -Baf -A -Gred -P > $ps
