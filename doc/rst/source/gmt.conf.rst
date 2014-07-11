@@ -423,7 +423,7 @@ fonts can be found in the :doc:`gmt` man page.
     (**-V**) Determines the level of verbosity used by GMT
     programs. Choose among 6 levels; each level adds to the verbosity of
     the lower levels: **q**\ uiet, **n**\ normal (errors and warnings),
-    **c**\ ompatibility warnings, (v)erbose progress reports, (l)ong
+    **c**\ ompatibility warnings, **v**\ erbose progress reports, **l**\ ong
     verbose progress reports, **d**\ ebugging messages [c].
 
 .. _I/O Parameters:
