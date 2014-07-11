@@ -346,12 +346,14 @@ void * gmt_nc_input (struct GMT_CTRL *GMT, FILE * GMT_UNUSED(fp), uint64_t *n, i
 	uint64_t n_use = 0, col;
 	
 	GMT->current.io.status = GMT_IO_DATA_RECORD;
-	if (*n == GMT_MAX_COLUMNS) {	/* First time we get here, set columns and read the entire file and do all scalings */
+	if (*n == GMT_MAX_COLUMNS) {	/* Set columns if not known yet */
+		*n = GMT->current.io.ncols;			/* Number of requested columns */
+	}
+	if (GMT->current.io.nrec == 0) {	/* First record, read the entire file and do all scalings */
 		uint64_t k, row;
 		int v;
 		size_t start[2] = {0, 0}, count[2] = {0, 1};	/* count[1] = 1 since we only want one column from any 2-D variable */
 		count[0] = GMT->current.io.ndim;		/* Read all records from every selected column */
-		*n = GMT->current.io.ncols;			/* Number of requested columns */
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Specified number of output columns */
 		for (v = 0, col = 0; v < GMT->current.io.nvars && col < n_use; ++v) {	/* For each named variable v ... */
 			for (k = 0; k < GMT->current.io.count[v][1]; ++col, ++k) {	/* For each column in variable v [typically 1 unless 2-D array] */
