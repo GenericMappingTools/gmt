@@ -188,7 +188,7 @@ int GMT_fclose (struct GMT_CTRL *GMT, FILE *stream)
 		GMT->current.io.ncid = GMT->current.io.nvars = 0;
 		GMT->current.io.ndim = GMT->current.io.nrec = 0;
 		GMT->current.io.input = GMT->session.input_ascii;
-		//GMT_free_tmp_arrays (GMT);	/* Free up pre-allocated vectors */
+		GMT_free_tmp_arrays (GMT);	/* Free up pre-allocated vectors */
 		return (0);
 	}
 	/* Regular file */
@@ -335,73 +335,35 @@ int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 }
 
 void * gmt_nc_input (struct GMT_CTRL *GMT, FILE * GMT_UNUSED(fp), uint64_t *n, int *retval)
-{
-	int status, i;
-	uint64_t n_use, j;
-	GMT->current.io.status = 0;
-	if (*n == GMT_MAX_COLUMNS)
-		*n = GMT->current.io.ncols;
-	else if (*n > GMT->current.io.ncols) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_nc_input is asking for %d columns, but file has only %" PRIu64 "\n", *n, GMT->current.io.ncols);
-		GMT->current.io.status = GMT_IO_MISMATCH;
-	}
-	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
-		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);
-		gmt_update_prev_rec (GMT, n_use);
-
-		if (GMT->current.io.nrec == GMT->current.io.ndim) {
-			GMT->current.io.status = GMT_IO_EOF;
-			*retval = -1;
-			return (NULL);
-		}
-		for (i = 0, j = 0; i < GMT->current.io.nvars && j < n_use; ++i) {
-			unsigned n;
-			GMT->current.io.t_index[i][0] = GMT->current.io.nrec;
-			nc_get_vara_double (GMT->current.io.ncid, GMT->current.io.varid[i], GMT->current.io.t_index[i], GMT->current.io.count[i], &GMT->current.io.curr_rec[j]);
-			for (n = 0; n < GMT->current.io.count[i][1]; ++n, ++j) {
-				if (GMT->current.io.curr_rec[j] == GMT->current.io.missing_value[i])
-					GMT->current.io.curr_rec[j] = GMT->session.d_NaN;
-				else
-					GMT->current.io.curr_rec[j] = GMT->current.io.curr_rec[j] * GMT->current.io.scale_factor[i] + GMT->current.io.add_offset[i];
-				gmt_convert_col (GMT->current.io.col[GMT_IN][i], GMT->current.io.curr_rec[j]);
-			}
-		}
-		GMT->current.io.nrec++;
-		GMT->current.io.rec_no++;
-		status = gmt_process_binary_input (GMT, n_use);
-		if (status == 1) { *retval = 0; return (NULL); }		/* A segment header */
-	} while (status == 2);	/* Continue reading when record is to be skipped */
-	if (gmt_gap_detected (GMT)) {
-		*retval = gmt_set_gap (GMT);
-		return (GMT->current.io.curr_rec);
-	}
-	GMT->current.io.pt_no++;
-	*retval = (int)*n;
-	return (GMT->current.io.curr_rec);
-}
-
-#if 0
-void * gmt_nc_input_new (struct GMT_CTRL *GMT, FILE * GMT_UNUSED(fp), uint64_t *n, int *retval)
 {	/* netCDF tables contain information about the number of records, so we can use a
 	 * faster startegy: When file is opened, determine number of rows and columns and
 	 * preallocate all the column vectors.  Then, when we ask for the first data record
 	 * we read the entire data set.  We then simply return the values corresponding to
-	 * the current row.
+	 * the current row.  Note some variables may be 2-D and we then consider them as a
+	 * stack of 1-D columns to loop over.
 	 */
-	int status, col;
-	uint64_t n_use, row;
-	GMT->current.io.status = 0;
-	if (*n == GMT_MAX_COLUMNS) {	/* First time we get here, set columns and read the entire file and do the scalings */
-		size_t start[1] = {0}, count[1] = GMT->current.io.ndim;
-		*n = GMT->current.io.ncols;
-		for (i = 0, col = 0; i < GMT->current.io.nvars && col < n_use; ++i, ++col) {
-			nc_get_vara_double (GMT->current.io.ncid, GMT->current.io.varid[i], start, count, GMT->hidden.mem_coord[col]);
-			for (row = 0; row < GMT->current.io.ndim; ++row) {	/* Loop over every row */
-				if (GMT->hidden.mem_coord[col][row] == GMT->current.io.missing_value[col])
-					GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
-				else
-					GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][row] * GMT->current.io.scale_factor[col] + GMT->current.io.add_offset[col];
-				gmt_convert_col (GMT->current.io.col[GMT_IN][col], GMT->hidden.mem_coord[col][row]);
+	int status;
+	uint64_t n_use = 0, col;
+	
+	GMT->current.io.status = GMT_IO_DATA_RECORD;
+	if (*n == GMT_MAX_COLUMNS) {	/* First time we get here, set columns and read the entire file and do all scalings */
+		uint64_t k, row;
+		int v;
+		size_t start[2] = {0, 0}, count[2] = {0, 1};	/* count[1] = 1 since we only want one column from any 2-D variable */
+		count[0] = GMT->current.io.ndim;		/* Read all records from every selected column */
+		*n = GMT->current.io.ncols;			/* Number of requested columns */
+		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Specified number of output columns */
+		for (v = 0, col = 0; v < GMT->current.io.nvars && col < n_use; ++v) {	/* For each named variable v ... */
+			for (k = 0; k < GMT->current.io.count[v][1]; ++col, ++k) {	/* For each column in variable v [typically 1 unless 2-D array] */
+				start[1] = k;	/* k'th column in 2-D array or the only column [k = 0] in 1-D array */
+				nc_get_vara_double (GMT->current.io.ncid, GMT->current.io.varid[v], start, count, GMT->hidden.mem_coord[col]);	/* Read column */
+				for (row = 0; row < GMT->current.io.ndim; ++row) {	/* Loop over all records (rows) to do scaling */
+					if (GMT->hidden.mem_coord[col][row] == GMT->current.io.missing_value[v])	/* Nan proxy detected */
+						GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
+					else	/* Regular translation */
+						GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][row] * GMT->current.io.scale_factor[v] + GMT->current.io.add_offset[v];
+					gmt_convert_col (GMT->current.io.col[GMT_IN][v], GMT->hidden.mem_coord[col][row]);	/* Any additional user scalings */
+				}
 			}
 		}
 		/* OK, everything is read into memory; below we simply return the items from each array at the given record number */
@@ -412,24 +374,23 @@ void * gmt_nc_input_new (struct GMT_CTRL *GMT, FILE * GMT_UNUSED(fp), uint64_t *
 	}
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);
-		gmt_update_prev_rec (GMT, n_use);
+		gmt_update_prev_rec (GMT, n_use);	/* Copy current record to previous record before getting the new current record */
 
-		if (GMT->current.io.nrec == GMT->current.io.ndim) {	/* Reading past last record means EOF */
+		if (GMT->current.io.nrec == GMT->current.io.ndim) {	/* Reading past last record means EOF for netCDF files */
 			GMT->current.io.status = GMT_IO_EOF;
 			*retval = -1;
 			return (NULL);
 		}
-		/* Just get values from this row in the mem_coord arrays */
-		for (i = 0, col = 0; i < GMT->current.io.nvars && col < n_use; ++i) {
+		/* Just get values from current row in the mem_coord arrays */
+		for (col = 0; col < GMT->current.io.ncols; ++col)
 			GMT->current.io.curr_rec[col] = GMT->hidden.mem_coord[col][GMT->current.io.nrec];
-		}
 		/* Increment record counters */
 		GMT->current.io.nrec++;
 		GMT->current.io.rec_no++;
-		status = gmt_process_binary_input (GMT, n_use);
+		status = gmt_process_binary_input (GMT, n_use);	/* Determine if a header record, data record, or record to skip */
 		if (status == 1) { *retval = 0; return (NULL); }	/* Found a segment header, meaning all columns were NaN */
-	} while (status == 2);	/* Continue reading when record is to be skipped */
-	if (gmt_gap_detected (GMT)) {
+	} while (status == 2);	/* Continue reading when a record is to be skipped */
+	if (gmt_gap_detected (GMT)) {	/* The -g is in effect and was triggered due to a user-specified gap criteria */
 		*retval = gmt_set_gap (GMT);
 		return (GMT->current.io.curr_rec);
 	}
@@ -437,7 +398,6 @@ void * gmt_nc_input_new (struct GMT_CTRL *GMT, FILE * GMT_UNUSED(fp), uint64_t *
 	*retval = (int)*n;
 	return (GMT->current.io.curr_rec);
 }
-#endif
 
 int GMT_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *name, char *text, size_t textlen)
 {	/* This function is a replacement for nc_get_att_text that avoids overflow of text
@@ -613,7 +573,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 	GMT->current.io.input = gmt_nc_input;
 	tmp_pointer = (size_t)(-GMT->current.io.ncid);
 	
-	// GMT_prep_tmp_arrays (GMT, GMT->current.io.ndim, GMT->current.io.nvars);	/* Preallocate arrays for all netcdf vectors */
+	GMT_prep_tmp_arrays (GMT, GMT->current.io.ndim, GMT->current.io.nvars);	/* Preallocate arrays for all netcdf vectors */
 	
 	return ((FILE *)tmp_pointer);
 }
@@ -1661,7 +1621,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *st
 
 	strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);
 
-	GMT->current.io.status = 0;
+	GMT->current.io.status = GMT_IO_DATA_RECORD;
 	GMT->current.io.pt_no++;	/* Got a valid text record */
 	*n = 1ULL;			/* We always return 1 item as there are no columns */
 	*status = 1;
@@ -1729,7 +1689,7 @@ void * gmt_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 	unsigned int status;
 	uint64_t n_use, n_read;
 
-	GMT->current.io.status = 0;
+	GMT->current.io.status = GMT_IO_DATA_RECORD;
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);
 		gmt_update_prev_rec (GMT, n_use);
