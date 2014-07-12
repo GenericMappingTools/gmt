@@ -352,12 +352,16 @@ void * gmt_nc_input (struct GMT_CTRL *GMT, FILE * GMT_UNUSED(fp), uint64_t *n, i
 	if (GMT->current.io.nrec == 0) {	/* First record, read the entire file and do all scalings */
 		uint64_t k, row;
 		int v;
-		size_t start[2] = {0, 0}, count[2] = {0, 1};	/* count[1] = 1 since we only want one column from any 2-D variable */
-		count[0] = GMT->current.io.ndim;		/* Read all records from every selected column */
+		size_t start[5], count[5];
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Specified number of output columns */
 		for (v = 0, col = 0; v < GMT->current.io.nvars && col < n_use; ++v) {	/* For each named variable v ... */
+			/* Copy info from current.io. t_index is generally {0,0,0,0,0}, count is generally {ndim,1,1,1,1}. For 2D array: count is {ndim,ncol,1,1,1} */
+			for (k = 0; k < 5; ++k) {
+				start[k] = GMT->current.io.t_index[v][k];
+				count[k] = GMT->current.io.count[v][k];
+			}
 			for (k = 0; k < GMT->current.io.count[v][1]; ++col, ++k) {	/* For each column in variable v [typically 1 unless 2-D array] */
-				start[1] = k;	/* k'th column in 2-D array or the only column [k = 0] in 1-D array */
+				start[1] = k, count[1] = 1;	/* Read only k'th column in 2-D array or the only column [k = 0] in 1-D array */
 				nc_get_vara_double (GMT->current.io.ncid, GMT->current.io.varid[v], start, count, GMT->hidden.mem_coord[col]);	/* Read column */
 				for (row = 0; row < GMT->current.io.ndim; ++row) {	/* Loop over all records (rows) to do scaling */
 					if (GMT->hidden.mem_coord[col][row] == GMT->current.io.missing_value[v])	/* Nan proxy detected */
@@ -507,7 +511,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 		}
 		if (ndims - in < 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "NetCDF variable %s has %" PRIuS " dimensions, cannot specify more than %d indices; ignoring remainder\n", varname, ndims, ndims-1);
-			for (j = in; j < ndims; j++) GMT->current.io.t_index[i][j] = 1;
+			for (j = in; j < ndims; j++) GMT->current.io.t_index[i][j] = 0;
 		}
 		if (ndims - in > 2)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "NetCDF variable %s has %" PRIuS " dimensions, showing only 2\n", varname, ndims);
@@ -519,7 +523,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "NetCDF variable %s has different dimension (%" PRIuS ") from others (%" PRIuS ")\n", varname, n, GMT->current.io.ndim);
 			GMT_exit (GMT, EXIT_FAILURE); return NULL;
 		}
-		GMT->current.io.ndim = n;
+		GMT->current.io.count[i][0] = GMT->current.io.ndim = n;
 		if (dimids[1] >= 0 && ndims - in > 1) {
 			nc_inq_dimlen(GMT->current.io.ncid, dimids[1], &n);
 		}
@@ -541,8 +545,8 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 		}
 
 		/* Get scales, offsets and missing values */
-		if (nc_get_att_double(GMT->current.io.ncid, GMT->current.io.varid[i], "scale_factor", &GMT->current.io.scale_factor[i])) GMT->current.io.scale_factor[i] = 1.0;
-		if (nc_get_att_double(GMT->current.io.ncid, GMT->current.io.varid[i], "add_offset", &GMT->current.io.add_offset[i])) GMT->current.io.add_offset[i] = 0.0;
+		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "scale_factor", &GMT->current.io.scale_factor[i])) GMT->current.io.scale_factor[i] = 1.0;
+		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "add_offset", &GMT->current.io.add_offset[i])) GMT->current.io.add_offset[i] = 0.0;
 		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "_FillValue", &GMT->current.io.missing_value[i]) &&
 		    nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "missing_value", &GMT->current.io.missing_value[i])) GMT->current.io.missing_value[i] = GMT->session.d_NaN;
 
@@ -575,7 +579,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 	GMT->current.io.input = gmt_nc_input;
 	tmp_pointer = (size_t)(-GMT->current.io.ncid);
 	
-	GMT_prep_tmp_arrays (GMT, GMT->current.io.ndim, GMT->current.io.nvars);	/* Preallocate arrays for all netcdf vectors */
+	GMT_prep_tmp_arrays (GMT, GMT->current.io.ndim, GMT->current.io.ncols);	/* Preallocate arrays for all netcdf vectors */
 	
 	return ((FILE *)tmp_pointer);
 }
