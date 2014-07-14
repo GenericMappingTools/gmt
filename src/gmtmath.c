@@ -3763,10 +3763,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "tables do not cover the same domain!\n");
 					Return (EXIT_FAILURE);
 				}
-				if (T_in != I) {
-					if (GMT_Destroy_Data (API, &F) != GMT_OK) {
-						Return (API->error);
-					}
+				if (T_in != I && GMT_Destroy_Data (API, &F) != GMT_OK) {
+					Return (API->error);
 				}
 			}
 			nstack++;
