@@ -3648,7 +3648,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 				}
 				if ((label = gmtmath_setlabel (GMT, opt->arg)) == NULL) Return (EXIT_FAILURE);
 				if ((k = gmtmath_find_stored_item (recall, n_stored, label)) != -1) {
-					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
+					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 				}
 				else {	/* Need new named storage place; use GMT_duplicate_dataset/GMT_free_dataset since no point adding to registered resources since internal use only */
@@ -3682,7 +3682,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 						stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 						stack[nstack]->alloc_mode = 1;
 					}
-					for (j = 0; j < n_columns; j++) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
+					for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
 					GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "@%s ", recall[k]->label);
@@ -3717,7 +3717,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					stack[nstack]->alloc_mode = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "T ");
-				for (j = 0; j < n_columns; j++) load_column (stack[nstack]->D, j, info.T, COL_T);
+				for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_T);
 				GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_t_MATRIX) {	/* Need to set up matrix of normalized t-values */
@@ -3730,35 +3730,41 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					stack[nstack]->alloc_mode = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Tn ");
-				for (j = 0; j < n_columns; j++) load_column (stack[nstack]->D, j, info.T, COL_TN);
+				for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TN);
 				GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_FILE) {		/* Filename given */
+				struct GMT_DATASET *F = NULL;
+				struct GMT_DATATABLE *T_in = NULL;
+				if (!stack[nstack]->D) {
+					stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
+					stack[nstack]->alloc_mode = 1;
+				}
 				if (!strcmp (opt->arg, "STDIN")) {	/* stdin file */
+					T_in = I;
 					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "<stdin> ");
-					if (!stack[nstack]->D) {
-						stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-						stack[nstack]->alloc_mode= 1;
-					}
-					for (j = 0; j < n_columns; j++) load_column (stack[nstack]->D, j, I, j);
-					GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 				}
 				else {
 					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s ", opt->arg);
-					if ((stack[nstack]->D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
+					if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", opt->arg);
 						Return (API->error);
 					}
-					if (Ctrl->N.ncol > stack[nstack]->D->n_columns) GMT_adjust_dataset (GMT, stack[nstack]->D, Ctrl->N.ncol);	/* Add more input columns */
-					stack[nstack]->alloc_mode = 2;
+					if (Ctrl->N.ncol > F->n_columns) GMT_adjust_dataset (GMT, F, Ctrl->N.ncol);	/* Add more input columns */
+					T_in = F->table[0];	/* Only one table since only a single file */
 				}
+				for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, T_in, j);
+				GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 				if (!same_size (stack[nstack]->D, Template)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "tables not of same size!\n");
 					Return (EXIT_FAILURE);
 				}
-				else if (!(Ctrl->T.notime || same_domain (stack[nstack]->D, Ctrl->N.tcol, info.T))) {
+				else if (!Ctrl->C.cols[Ctrl->N.tcol] && !(Ctrl->T.notime || same_domain (stack[nstack]->D, Ctrl->N.tcol, info.T))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "tables do not cover the same domain!\n");
 					Return (EXIT_FAILURE);
+				}
+				if (T_in != I && GMT_Destroy_Data (API, &F) != GMT_OK) {
+					Return (API->error);
 				}
 			}
 			nstack++;
