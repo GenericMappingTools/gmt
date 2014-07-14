@@ -1174,16 +1174,17 @@ void gmt_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w
 
 	GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
 
-#if 0	
 	if (GMT->current.map.frame.side[W_SIDE] && GMT->current.map.frame.side[E_SIDE] && GMT->current.map.frame.side[S_SIDE] && GMT->current.map.frame.side[N_SIDE]) {
-		/* Want the entire boundary so use a single path */
-		np = GMT_graticule_path (GMT, &xx, &yy, 1, w, e, s, n);
-		GMT_geo_line (GMT, xx, yy, np);
+		/* Want the entire boundary so use a single path to void notches at corners */
+		np = GMT_graticule_path (GMT, &xx, &yy, 1, false, w, e, s, n);
+		for (i = 0; i < np; i++) 
+			GMT_geo_to_xy (GMT, xx[i], yy[i], &xx[i], &yy[i]);
+		PSL_plotline (PSL, xx, yy, (int)np, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 		GMT_free (GMT, xx);
 		GMT_free (GMT, yy);
 		return;
 	}
-#endif	
+
 	/* Just do the sides that were requested */
 
 	if (GMT->current.map.frame.side[W_SIDE]) {	/* West */
@@ -2639,7 +2640,7 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 		lon[n] = lon[0];	lat[n] = lat[0];	/* Close polygon */
 	}
 	else	/* Got geographic coordinates */
-		np = GMT_graticule_path (GMT, &lon, &lat, 1, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
+		np = GMT_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
 	GMT_alloc_segment (GMT, S, 0, 2, true);	/* Just get empty array pointers */
 	S->coord[GMT_X] = lon;	S->coord[GMT_Y] = lat;
 	S->n_rows = np;

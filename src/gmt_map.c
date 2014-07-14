@@ -5993,8 +5993,11 @@ uint64_t *GMT_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 
 /*  Routines to add pieces of parallels or meridians */
 
-uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int dir, double w, double e, double s, double n)
-{	/* Returns the path of a graticule (box of meridians and parallels) */
+uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int dir, bool check, double w, double e, double s, double n)
+{	/* Returns the path of a graticule (box of meridians and parallels).
+	 * dir determines if we go counter-clockwise or clockwise.
+	 * check, if true, forces a straddle check at the end for geographic data.
+	*/
 	size_t n_alloc = 0;
 	uint64_t np = 0;
 	double *xx = NULL, *yy = NULL;
@@ -6070,7 +6073,7 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 		GMT_malloc2 (GMT, xx, yy, 0, &n_alloc, double);
 	}
 
-	if (GMT_x_is_lon (GMT, GMT_IN)) {
+	if (check && GMT_x_is_lon (GMT, GMT_IN)) {
 		bool straddle;
 		uint64_t i;
 		straddle = (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0);

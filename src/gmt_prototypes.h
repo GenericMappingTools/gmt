@@ -291,7 +291,7 @@ EXTERN_MSC double GMT_azim_to_angle (struct GMT_CTRL *GMT, double lon, double la
 EXTERN_MSC uint64_t GMT_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np, double **x, double **y);
 EXTERN_MSC uint64_t GMT_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, int pen_flag, int *pen);
 EXTERN_MSC uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n);
-EXTERN_MSC uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int dir, double w, double e, double s, double n);
+EXTERN_MSC uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int dir, bool check, double w, double e, double s, double n);
 EXTERN_MSC int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *O, bool inverse);
 EXTERN_MSC int GMT_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE *O, bool inverse);
 EXTERN_MSC uint64_t GMT_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *donut);

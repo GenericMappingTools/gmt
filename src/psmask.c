@@ -772,7 +772,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 				for (col = 0; col < Grid->header->nx; col++, ij++) {
 					if (grd[ij] == 0) continue;
 
-					np = GMT_graticule_path (GMT, &xx, &yy, 1, grd_x0[col] - inc2[GMT_X], grd_x0[col] + inc2[GMT_X], y_bot, y_top);
+					np = GMT_graticule_path (GMT, &xx, &yy, 1, true, grd_x0[col] - inc2[GMT_X], grd_x0[col] + inc2[GMT_X], y_bot, y_top);
 					plot_n = GMT_clip_to_map (GMT, xx, yy, np, &xp, &yp);
 					GMT_free (GMT, xx);
 					GMT_free (GMT, yy);
