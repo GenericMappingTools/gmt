@@ -6022,7 +6022,7 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 
 		/* SOUTH BORDER */
 
-		if (GMT_is_geographic (GMT, GMT_IN) && s == -90.0) {	/* No path, just a point */
+		if (GMT_is_geographic (GMT, GMT_IN) && s == -90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
 			GMT_malloc2 (GMT, xx, yy, 1U, &n_alloc, double);
 			xx[0] = px1;	yy[0] = -90.0;
 		}
@@ -6042,7 +6042,7 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 
 		/* NORTH BORDER */
 
-		if (GMT_is_geographic (GMT, GMT_IN) && n == 90.0) {	/* No path, just a point */
+		if (GMT_is_geographic (GMT, GMT_IN) && n == 90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
 			add = 0;
 			GMT_malloc2 (GMT, xtmp, ytmp, 1U, &add, double);
 			xtmp[0] = px3;	ytmp[0] = +90.0;

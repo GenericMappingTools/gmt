@@ -1173,7 +1173,8 @@ void gmt_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w
 	double *xx = NULL, *yy = NULL;
 
 	GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
-	
+
+#if 0	
 	if (GMT->current.map.frame.side[W_SIDE] && GMT->current.map.frame.side[E_SIDE] && GMT->current.map.frame.side[S_SIDE] && GMT->current.map.frame.side[N_SIDE]) {
 		/* Want the entire boundary so use a single path */
 		np = GMT_graticule_path (GMT, &xx, &yy, 1, w, e, s, n);
@@ -1182,7 +1183,7 @@ void gmt_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w
 		GMT_free (GMT, yy);
 		return;
 	}
-	
+#endif	
 	/* Just do the sides that were requested */
 
 	if (GMT->current.map.frame.side[W_SIDE]) {	/* West */
