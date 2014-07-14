@@ -16,7 +16,7 @@ Synopsis
 **gmtconvert** [ *table* ] [ **-A** ] [ **-C**\ [**+l**\ *min*\ ][\ **+u**\ *max*\ ][**+i**]]
 [ **-D**\ [*template*] ]
 [ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
-[ **-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ [**~**\ ]*selection* ]
+[ **-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ [**~**\ ]\ *selection*]
 [ **-S**\ [**~**\ ]\ *"search string"* \|
 **-S**\ [**~**\ ]/\ *regexp*/[**i**\ ] ]
 [ **-T** ]
@@ -108,10 +108,10 @@ Optional Arguments
 **-N**
     Do not write records that only contain NaNs in every field [Default writes all records].
 
-**-Q**\ [**~**\ ]*selection*
+**-Q**\ [**~**]\ *selection*
     Only write segments whose number is included in *selection* and skip
     all others. Cannot be used with **-S**. The *selection* syntax is
-    *range*[,*range*,...] where each *range* of items is either a single
+    *range*\ [,\ *range*,...] where each *range* of items is either a single
     segment *number*, a range of segment numbers *start-stop*, or a range with
     stepped increments given via *start:step:stop*.   A leading **~** will
     invert the selection and write all segments but the ones listed.  Instead
