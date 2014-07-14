@@ -753,17 +753,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	if (Ctrl->F.mode == EVENT || Ctrl->F.mode == SPAN) GMT->current.io.col_type[GMT_IN][t1_col] = GMT->current.io.col_type[GMT_OUT][t1_col] = GMT_IS_ABSTIME;
 	if (Ctrl->F.mode == SPAN)  GMT->current.io.col_type[GMT_IN][t2_col] = GMT->current.io.col_type[GMT_OUT][t2_col] = GMT_IS_ABSTIME;
 
-	if (!Ctrl->T.folder) {
-		sprintf (buffer, "%s Features", name[Ctrl->F.mode]);
-		Ctrl->T.folder = strdup (buffer);
-	}
-	if (GMT->common.O.active || GMT->common.K.active) use_folder = true;	/* When at least one or -O, -K is used */
-	if (GMT->common.O.active) {
-		N++;	/* Due to the extra folder tag */
-		kml_print (API, N++, "<%s>\n", Document[KML_FOLDER]);
-		kml_print (API, N, "<name>%s</name>\n", Ctrl->T.folder);
-	}
-	else {
+	if (!GMT->common.O.active) {
 		/* Create KML header */
 		kml_print (API, 0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		kml_print (API, 0, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
@@ -772,12 +762,9 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 			kml_print (API, N, "<name>%s</name>\n", Ctrl->T.title);
 		if (Ctrl->Z.invisible) kml_print (API, N, "<visibility>0</visibility>\n");
 		if (Ctrl->Z.open) kml_print (API, N, "<open>1</open>\n");
-		if (use_folder) {
-			kml_print (API, N++, "<%s>\n", Document[KML_FOLDER]);
-			kml_print (API, N, "<name>%s</name>\n", Ctrl->T.folder);
-		}
 	}
 
+	/* Apparently, for Google Maps (not Google Earth), styles need to be outside any <Folder></Folder> pair, so we do them first */
 	process_id = (int) getpid();
 	kml_print (API, N++, "<Style id=\"st-%d-0\">\n", process_id);	/* Default style unless -C is used, use PID to get unique style ID in case of layer-caking -O -K */
 
@@ -822,6 +809,19 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		kml_print (API, --N, "</Style>\n");
 	}
 	index = -4;	/* Default style unless -C changes things */
+
+	/* Now start the data within a <Folder> */
+	if (!Ctrl->T.folder) {
+		sprintf (buffer, "%s Features", name[Ctrl->F.mode]);
+		Ctrl->T.folder = strdup (buffer);
+	}
+	if (GMT->common.O.active || GMT->common.K.active) use_folder = true;	/* When at least one or -O, -K is used */
+	if (GMT->common.O.active) N++;	/* Due to the extra folder tag */
+	if (use_folder) {
+		kml_print (API, N++, "<%s>\n", Document[KML_FOLDER]);
+		kml_print (API, N, "<name>%s</name>\n", Ctrl->T.folder);
+	}
+
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
 		char line[GMT_BUFSIZ];
 		FILE *fp = NULL;
