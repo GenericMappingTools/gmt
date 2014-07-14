@@ -249,13 +249,19 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				break;
 			case 'C':	/* Near a point test */
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'f' && GMT_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
-					opt->arg[0] = '-';
-					fix = true;
+				if (opt->arg[0] == 'f') {
+					if (GMT_compat_check (GMT, 4)) {	/* Allow old-style quick-mode specification */
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
+						opt->arg[0] = '-';
+						fix = true;
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
+						n_errors++;
+					}
 				}
 				for (j = 0; opt->arg[j] && opt->arg[j] != '/'; j++);
-				if (opt->arg[j]) {
+				if (opt->arg[j]) {	/* Found a file name */
 					Ctrl->C.file = strdup (&opt->arg[j+1]);
 					opt->arg[j] = '\0';	/* Chop off the /filename part */
 					Ctrl->C.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->C.dist), &(Ctrl->C.unit));
@@ -265,7 +271,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
 					n_errors++;
 				}
-				if (fix) opt->arg[0] = 'f';
+				if (fix) opt->arg[0] = 'f';	/* Just to leave the original args unaltered */
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
