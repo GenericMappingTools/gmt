@@ -436,7 +436,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	bool inside, need_header = false, shuffle, just_copy_record = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 
-	uint64_t k, row, seg, n_read = 0, n_pass = 0;
+	uint64_t k, row, seg, n_read = 0, n_pass = 0, n_output = 0;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
@@ -631,6 +631,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		}
 	}
 	
+	/* Specify input and output expected columns */
+	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
+
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -670,6 +673,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		}
 		
 		/* Data record to process */
+
+		if (n_output == 0) {
+			GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN));
+			n_output = GMT_get_cols (GMT, GMT_OUT);
+		}
 
 		n_read++;
 		if (n_read%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64 "records\r", n_read, n_pass);
