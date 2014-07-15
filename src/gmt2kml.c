@@ -493,6 +493,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 	n_errors += GMT_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error: -N+ not valid for lines and polygons\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Syntax error: -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option.\n");
+	n_errors += GMT_check_condition (GMT, (GMT->common.b.active[GMT_IN] || GMT->common.i.active) && (Ctrl->N.mode == GET_COL_LABEL || Ctrl->N.mode == GET_LABEL), "Syntax error: Cannot use -N- or -N+ when -b or -i are used.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -669,10 +670,10 @@ bool crossed_dateline (double this_x, double last_x)
 
 int GMT_gmt2kml (void *V_API, int mode, void *args)
 {
-	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act;
+	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act, no_text;
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
 
-	uint64_t row, seg;
+	uint64_t row, seg, n_tables, n_segments, n_rows;
 	size_t L = 0;
 	int set_nr = 0, index, N = 1, error = 0, process_id;
 
@@ -680,13 +681,14 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};
 	char *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
 	char text[GMT_LEN256] = {""};
+	char **file = NULL, *label = NULL, *header = NULL;
 
 	double rgb[4], out[5], last_x;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_TEXTSET *Din = NULL;
-	struct GMT_TEXTTABLE *T = NULL;
+	struct GMT_DATASET *Dd = NULL;
+	struct GMT_TEXTSET *Dt = NULL;
 	struct GMT2KML_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -710,10 +712,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if (GMT->common.b.active[GMT_IN]) {	/* Probably also when user uses the -i option to select columns */
-		GMT_Message (API, GMT_TIME_NONE, "Cannot yet use binary data files; pipe in via gmtconvert for now\n");
-		Return (EXIT_FAILURE);
-	}
+	no_text = (GMT->common.b.active[GMT_IN] || GMT->common.i.active);	/* Must read as data table so no text columns are expected or considered */
 
 	/* gmt2kml only applies to geographic data so we do a -fg implicitly here */
 	GMT_set_geographic (GMT, GMT_IN);
@@ -745,7 +744,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	strcpy (GMT->current.setting.io_col_separator, ",");		/* Specify comma-separated output */
 	GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;		/* Want -180/+180 longitude output format */
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Make sure we use enough decimals */
-	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;
+	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;		/* This is a cryptic way to determine if there are 2,3 or 4 columns... */
 	get_z = (Ctrl->C.active || Ctrl->A.get_alt);
 	if (get_z) n_coord++;
 	t1_col = 2 + get_z;
@@ -837,56 +836,90 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		kml_print (API, --N, "</description>\n");
 	}
 
-	/* If binary input then call GMT_gmtconvert to handle that and read in as ascii, else do as below.
-	   Or open as GMT_IS_DATASET if binary and TEXTSET otherwise, then handle the differenes below
-	   by setting n_tables = (binary) ? D->n_tables : T->n_tables; same for nsegments, then
-	   final ifs on parsing text record or using coord as is. */
+	/* If binary input or the user selected input columns with -i then call open file as GMT_IS_DATASET;
+	   TEXTSET otherwise, then handle the differenes below n_tables = (binary) ? Dd->n_tables : Dt->n_tables;
+	   same for n_segments, and n_rows, then additional if-test on parsing text record or using coord as is. */
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
-		Return (API->error);
+	if (no_text) {	/* Treat input as a data set (no texts) */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if ((Dd = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
+		n_tables = Dd->n_tables;
 	}
-	if ((Din = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-		Return (API->error);
+	else {	/* Free-form text record, parse coordinates when required */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if ((Dt = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
+		n_tables = Dt->n_tables;
 	}
-	if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
+	if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line */
 		place_region_tag (API, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 		first = false;
 	}
 	else if (Ctrl->R2.automatic) {	/* Issue Region tag */
 		double wesn[4];
-		if (get_data_region (GMT, Din, wesn)) Return (EXIT_FAILURE);
+		if (no_text) {	/* This information is part of the dataset header and obtained during reading */
+			wesn[XLO] = Dd->min[GMT_X];	wesn[XHI] = Dd->max[GMT_X];
+			wesn[YLO] = Dd->min[GMT_Y];	wesn[YHI] = Dd->max[GMT_Y];
+		}
+		else {	/* Must slog through the textset the hard way */
+			if (get_data_region (GMT, Dt, wesn)) Return (EXIT_FAILURE);
+		}
 		place_region_tag (API, wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 	}
 	set_nr = pnt_nr = 0;
 
-	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		T = Din->table[tbl];	/* Current table */
-		if (T->file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
+	for (tbl = 0; tbl < n_tables; tbl++) {
+		if (no_text) {	/* Assign dataset n_segments and pointer to file names */
+			n_segments = Dd->table[tbl]->n_segments;
+			file = Dd->table[tbl]->file;
+		}
+		else {	/* Assign textset n_segments and pointer to file names */
+			n_segments = Dt->table[tbl]->n_segments;
+			file = Dt->table[tbl]->file;
+		}
+		if (file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
 			kml_print (API, N++, "<Folder>\n");
-			if (!strcmp (T->file[GMT_IN], "<stdin>"))
+			if (!strcmp (file[GMT_IN], "<stdin>"))
 				kml_print (API, N, "<name>stdin</name>\n");
 			else
-				kml_print (API, N, "<name>%s</name>\n", GMT_basename (T->file[GMT_IN]));
+				kml_print (API, N, "<name>%s</name>\n", GMT_basename (file[GMT_IN]));
 		}
-		for (seg = 0; seg < T->n_segments; seg++) {	/* Process each segment in this table */
+		for (seg = 0; seg < n_segments; seg++) {	/* Process each segment in this table */
 			pnt_nr = 0;
+			if (no_text) {	/* Assign dataset n_rows and pointers to label and header */
+				n_rows = Dd->table[tbl]->segment[seg]->n_rows;
+				label = Dd->table[tbl]->segment[seg]->label;
+				header = Dd->table[tbl]->segment[seg]->header;
+			}
+			else {	/* Assign textset n_rows and pointers to label and header */
+				n_rows = Dt->table[tbl]->segment[seg]->n_rows;
+				label = Dt->table[tbl]->segment[seg]->label;
+				header = Dt->table[tbl]->segment[seg]->header;
+			}
 
 			/* Only point sets will be organized in folders as lines/polygons are single entities */
 			if (Ctrl->F.mode < LINE) {	/* Meaning point-types, not lines or polygons */
 				kml_print (API, N++, "<Folder>\n");
-				if (T->segment[seg]->label)
-					kml_print (API, N, "<name>%s</name>\n", T->segment[seg]->label);
+				if (label)
+					kml_print (API, N, "<name>%s</name>\n", label);
 				else
 					kml_print (API, N, "<name>%s Set %d</name>\n", name[Ctrl->F.mode], set_nr);
 				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
-					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", buffer) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
+					act = (GMT_parse_segment_item (GMT, header, "-D", buffer) || GMT_parse_segment_item (GMT, header, "-T", buffer));
 				else
-					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
+					act = (GMT_parse_segment_item (GMT, header, "-T", buffer));
 				if (act)
 					kml_print (API, N, "<description>%s</description>\n", description);
 			}
 			else {	/* Line or polygon means we lay down the placemark first*/
-				if (Ctrl->C.active && GMT_parse_segment_item (GMT, T->segment[seg]->header, "-Z", description)) {
+				if (Ctrl->C.active && GMT_parse_segment_item (GMT, header, "-Z", description)) {
 					double z_val = atof (description);
 					index = GMT_get_index (GMT, P, z_val);
 				}
@@ -897,20 +930,20 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 					kml_print (API, 0, Ctrl->N.fmt, (int)set_nr);
 					kml_print (API, 0, "</name>\n");
 				}
-				else if (T->segment[seg]->label)
-					kml_print (API, N, "<name>%s</name>\n", T->segment[seg]->label);
+				else if (label)
+					kml_print (API, N, "<name>%s</name>\n", label);
 				else
 					kml_print (API, N, "<name>%s %d</name>\n", name[Ctrl->F.mode], set_nr);
 				description[0] = 0;
 				do_description = false;
-				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) {
+				if (GMT_parse_segment_item (GMT, header, "-I", buffer)) {
 					do_description = true;
 					strcat (description, buffer);
 				}
 				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
-					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", buffer) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
+					act = (GMT_parse_segment_item (GMT, header, "-D", buffer) || GMT_parse_segment_item (GMT, header, "-T", buffer));
 				else
-					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
+					act = (GMT_parse_segment_item (GMT, header, "-T", buffer));
 				if (act) {
 					if (do_description) strcat (description, " ");
 					strcat (description, buffer);
@@ -927,61 +960,74 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 				}
 				kml_print (API, N++, "<coordinates>\n");
 			}
-			for (row = 0; row < T->segment[seg]->n_rows; row++) {
-				switch (n_coord) {	/* Sort out input coordinates from remaining items which may be text */
-					case 2:	/* Just lon, lat, label */
-						sscanf (T->segment[seg]->record[row], "%s %s %[^\n]", C[ix], C[iy], extra);
-						break;
-					case 3:	/* Just lon, lat, a, extra */
-						sscanf (T->segment[seg]->record[row], "%s %s %s %[^\n]", C[ix], C[iy], C[2], extra);
-						break;
-					case 4:	/* Just lon, lat, a, b, extra */
-						sscanf (T->segment[seg]->record[row], "%s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], extra);
-						break;
-					case 5:	/* Just lon, lat, z, t1, t2, extra */
-						sscanf (T->segment[seg]->record[row], "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], extra);
-						break;
-				}
-				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
-					GMT_Message (API, GMT_TIME_NONE, "Error: Could not decode longitude from %s\n", C[GMT_X]);
-					Return (EXIT_FAILURE);
-				}
-				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
-					Return (EXIT_FAILURE);
-				}
-				if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
-				pos = 0;
-				if (get_z) {
-					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
-						Return (EXIT_FAILURE);
-					}
-					if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
-					out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
-				}
-				if (Ctrl->F.mode == EVENT) {
-					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time event from %s\n", C[t1_col]);
-						Return (EXIT_FAILURE);
+			for (row = 0; row < n_rows; row++) {
+				if (no_text) {	/* Data values only, just copy as is */
+					unsigned int col;
+					for (col = 0; col < n_coord; col++)
+						out[col] = Dd->table[tbl]->segment[seg]->coord[col][row];
+					if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
+					pos = 0;
+					if (get_z) {
+						if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
+						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
 					}
 				}
-				else if (Ctrl->F.mode == SPAN) {
-					if (!(strcmp (C[t1_col], "NaN")))
-						out[t1_col] = GMT->session.d_NaN;
-					else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
+				else {	/* Parse text records separately */
+					switch (n_coord) {	/* Sort out input coordinates from remaining items which may be text */
+						case 2:	/* Just lon, lat, label */
+							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %[^\n]", C[ix], C[iy], extra);
+							break;
+						case 3:	/* Just lon, lat, a, extra */
+							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %s %[^\n]", C[ix], C[iy], C[2], extra);
+							break;
+						case 4:	/* Just lon, lat, a, b, extra */
+							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], extra);
+							break;
+						case 5:	/* Just lon, lat, z, t1, t2, extra */
+							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], extra);
+							break;
+					}
+					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
+						GMT_Message (API, GMT_TIME_NONE, "Error: Could not decode longitude from %s\n", C[GMT_X]);
 						Return (EXIT_FAILURE);
 					}
-					if (!(strcmp (C[t2_col], "NaN")))
-						out[t2_col] = GMT->session.d_NaN;
-					else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], GMT_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
+					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
 						Return (EXIT_FAILURE);
+					}
+					if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
+					if (get_z) {
+						if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
+							Return (EXIT_FAILURE);
+						}
+						if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
+						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
+					}
+					if (Ctrl->F.mode == EVENT) {
+						if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time event from %s\n", C[t1_col]);
+							Return (EXIT_FAILURE);
+						}
+					}
+					else if (Ctrl->F.mode == SPAN) {
+						if (!(strcmp (C[t1_col], "NaN")))
+							out[t1_col] = GMT->session.d_NaN;
+						else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
+							Return (EXIT_FAILURE);
+						}
+						if (!(strcmp (C[t2_col], "NaN")))
+							out[t2_col] = GMT->session.d_NaN;
+						else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], GMT_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
+							Return (EXIT_FAILURE);
+						}
 					}
 				}
 				if (Ctrl->F.mode < LINE && GMT_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
 
+				pos = 0;
 				if (Ctrl->F.mode < LINE) {	/* Print the information for this point */
 					kml_print (API, N++, "<Placemark>\n");
 					if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
@@ -996,10 +1042,10 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 						kml_print (API, 0, Ctrl->N.fmt, pnt_nr);
 						kml_print (API, 0, "</name>\n");
 					}
-					else if (T->segment[seg]->label && T->segment[seg]->n_rows > 1)
-						kml_print (API, N, "<name>%s %" PRIu64 "</name>\n", T->segment[seg]->label, row);
-					else if (T->segment[seg]->label)
-						kml_print (API, N, "<name>%s</name>\n", T->segment[seg]->label);
+					else if (label && n_rows > 1)
+						kml_print (API, N, "<name>%s %" PRIu64 "</name>\n", label, row);
+					else if (label)
+						kml_print (API, N, "<name>%s</name>\n", label);
 					else
 						kml_print (API, N, "<name>%s %d</name>\n", name[Ctrl->F.mode], pnt_nr);
 					if (Ctrl->L.n_cols) {
@@ -1078,7 +1124,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 			}
 			set_nr++;
 		}
-		if (T->file[GMT_IN]) kml_print (API, --N, "</Folder>\n");
+		if (file[GMT_IN]) kml_print (API, --N, "</Folder>\n");
 	}
 	if (use_folder) kml_print (API, --N, "</%s>\n", Document[KML_FOLDER]);
 	if (!GMT->common.K.active) {
@@ -1090,5 +1136,5 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	Return (GMT_OK);
+	Return (GMT_OK);	/* Garbage collection will free Dd or Dt */
 }
