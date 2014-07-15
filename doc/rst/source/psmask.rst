@@ -80,6 +80,7 @@ Optional Arguments
     Mark end of existing clip path. No input file is needed. Implicitly
     sets **-O**. Also supply **-X** and **-Y** settings if you have
     moved since the clip started.
+
 **-D**\ *dumpfile*
     Dump the (x,y) coordinates of each clipping polygon to one or more
     output files (or *stdout* if *template* is not given). No plotting
@@ -89,9 +90,6 @@ Optional Arguments
     file (*template*). The files are ASCII unless
     **-bo** is used. See **-Q** to exclude small
     polygons from consideration. 
-
-.. |Add_perspective| unicode:: 0x20 .. just an invisible code
-.. include:: explain_perspective.rst_
 
 **-G**\ *fill*
     Paint the clip polygons (or tiles) with a selected fill [Default is no fill]. 
