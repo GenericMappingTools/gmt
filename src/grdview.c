@@ -1001,7 +1001,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_illuminate (GMT, Intens->data[ij], fill.rgb);
 			else
 				GMT_illuminate (GMT, Ctrl->I.value, fill.rgb);
-			n = GMT_graticule_path (GMT, &xx, &yy, 1, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
+			n = GMT_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
 			GMT_setfill (GMT, &fill, Ctrl->T.outline);
 			S.coord[GMT_X] = xx;	S.coord[GMT_Y] = yy;	S.n_rows = n;
 			GMT_geo_polygons (GMT, &S);

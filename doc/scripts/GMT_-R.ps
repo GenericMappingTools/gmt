@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0b (CVS Jul  7 2011 16:20:28) [64-bit] Document from GMT_pscoast
-%%Creator: GMT
+%%Title: GMT v5.1.2_r13347 [64-bit] Document from pscoast
+%%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jul  7 17:24:58 2011
+%%CreationDate: Mon Jul 14 10:53:11 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,10 +190,10 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
+    /ydepth exch def
     /textheight exch def
     /just exch def
     /offset exch def
@@ -196,7 +201,7 @@
     /pathdist 0 def
     /setdist offset def
     /charcount 0 def
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
     V flattenpath
 	{movetoproc} {linetoproc}
 	{curvetoproc} {closepathproc}
@@ -255,24 +260,54 @@ PSL_pathtextdict begin
     U /setdist setdist charwidth add def
   } def
 end
-/PSL_curved_text_labels
-{ /bits exch def
-  /PSL_clippath bits 1 and 1 eq def
-  /PSL_placetext bits 2 and 0 eq def
-  /PSL_strokeline bits 4 and 4 eq def
-  /PSL_firstcall bits 32 and 32 eq def
-  /PSL_lastcall bits 64 and 64 eq def
-  /PSL_fillbox bits 128 and 128 eq def
-  /PSL_drawbox bits 256 and 256 eq def
+/PSL_set_label_heights
+{
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  /PSL_heights PSL_n_labels array def
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    /psl_label PSL_label_str psl_k get def
+    PSL_label_font psl_k get cvx exec
+    psl_label sH /PSL_height edef
+    PSL_heights psl_k PSL_height put
+  } for
+} def
+%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
+/PSL_curved_path_labels
+{ /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_clippath psl_bits 4 and 4 eq def
+  /PSL_strokeline false def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_clippath {clipsave N clippath} if
+  /psl_k 0 def
+  /psl_p 0 def
+  0 1 PSL_n_paths1
+  { /psl_kk exch def
+    /PSL_n PSL_path_n  psl_kk get def
+    /PSL_m PSL_label_n psl_kk get def
+    /PSL_x PSL_path_x psl_k PSL_n getinterval def
+    /PSL_y PSL_path_y psl_k PSL_n getinterval def
+    /PSL_node PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    PSL_curved_path_label
+    /psl_k psl_k PSL_n add def
+    /psl_p psl_p PSL_m add def
+  } for
+  PSL_clippath {PSL_clip} if N
+} def
+/PSL_curved_path_label
+{
   /PSL_n1 PSL_n 1 sub def
   /PSL_m1 PSL_m 1 sub def
-  /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
   PSL_CT_addcutpoints
-  PSL_clippath PSL_firstcall and
-  {clipsave N clippath} if
-  PSL_setlinepen
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
   /k 0 def
@@ -299,22 +334,19 @@ end
     } if
   } for
   n 0 eq {PSL_CT_drawline} if
-  PSL_lastcall
-  {PSL_clippath
-    {PSL_clip} if N
-  } if
 } def
 /PSL_CT_textline
-{PSL_placetext
-  {PSL_clippath
-    {PSL_CT_clippath} {PSL_CT_placelabel} ifelse
-  } if
-  /n 0 def /k k 1 add def PSL_setlinepen
+{ PSL_fnt k get cvx exec
+  /PSL_height PSL_heights k get def
+  PSL_placetext	{PSL_CT_placelabel} if
+  PSL_clippath {PSL_CT_clippath} if
+  /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
 { /PSL_width PSL_m array def
   0 1 PSL_m1
   { /i exch def
+    PSL_fnt i get cvx exec
     PSL_width i PSL_str i get stringwidth pop put
   } for
 } def
@@ -399,14 +431,18 @@ end
 } def
 /PSL_CT_placelabel
 {
+  /PSL_just PSL_label_justify k get def
+  /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
   PSL_usebox
   {PSL_CT_clippath
     PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
-    {PSL_setboxpen S} if N
+    {V PSL_setboxpen S U} if N
   } if
-  PSL_settxtrgb PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 /PSL_CT_clippath
 {
@@ -451,7 +487,7 @@ end
 {
   /str 20 string def
   PSL_strokeline
-  {PSL_CT_placeline PSL_setlinepen S} if
+  {PSL_CT_placeline S} if
   /PSL_seg PSL_seg 1 add def
   /n 1 def
 } def
@@ -459,93 +495,120 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-/PSL_straight_text_labels
+%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
+/PSL_draw_path_lines
 {
-  /bits exch def
-  /PSL_clippath bits 1 and 0 eq def
-  /PSL_rounded bits 16 and 16 eq def
-  /PSL_fillbox bits 128 and 128 eq def
-  /PSL_drawbox bits 256 and 256 eq def
-  /PSL_m1 PSL_m 1 sub def
-  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
-  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  V
+  /psl_start 0 def
+  0 1 PSL_n_paths1
+  { /psl_k exch def
+    /PSL_n PSL_path_n psl_k get def
+    /PSL_n1 PSL_n 1 sub def
+    PSL_path_pen psl_k get cvx exec
+    N
+    PSL_path_x psl_start get PSL_path_y psl_start get M
+    1 1 PSL_n1
+    { /psl_i exch def
+      /psl_kk psl_i psl_start add def
+      PSL_path_x psl_kk get PSL_path_y psl_kk get L
+    } for
+    S
+    /psl_start psl_start PSL_n add def
+  } for
+  U
+} def
+%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
+/PSL_straight_path_labels
+{
+  /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
-  PSL_clippath
-  {PSL_ST_clippath}
-  {PSL_usebox {PSL_ST_clippath} if
-    PSL_ST_placelabel
-  } ifelse
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_usebox
+    {  PSL_rounded
+        {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
+      ifelse
+      PSL_fillbox {V PSL_setboxrgb fill U} if
+      PSL_drawbox {V PSL_setboxpen S U} if
+      N
+    } if
+    PSL_placetext {PSL_ST_place_label} if
+  } for
 } def
-/PSL_ST_placelabel
-{PSL_settxtrgb
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    V PSL_txt_x k get PSL_txt_y k get T
-    PSL_angle k get R
-    /BoxW PSL_str k get stringwidth pop def
-    BoxW PSL_justx mul PSL_justy M
-    PSL_str k get show
+/PSL_straight_path_clip
+{
+  /psl_bits exch def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  N clipsave clippath
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_rounded
+      {PSL_ST_textbox_round}
+      {PSL_ST_textbox_rect}
+    ifelse
+  } for
+  PSL_clip N
+} def
+/PSL_ST_prepare_text
+{
+  /psl_xp PSL_txt_x psl_k get def
+  /psl_yp PSL_txt_y psl_k get def
+  /psl_label PSL_label_str psl_k get def
+  PSL_label_font psl_k get cvx exec
+  /PSL_height PSL_heights psl_k get def
+  /psl_boxH PSL_height PSL_gap_y 2 mul add def
+  /PSL_just PSL_label_justify psl_k get def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
+  /PSL_justy PSL_just 4 idiv 2 div neg def
+  /psl_SW psl_label stringwidth pop def
+  /psl_boxW psl_SW PSL_gap_x 2 mul add def
+  /psl_x0 psl_SW PSL_justx mul def
+  /psl_y0 PSL_justy PSL_height mul def
+  /psl_angle PSL_label_angle psl_k get def
+} def
+/PSL_ST_textbox_rect
+{
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  PSL_gap_x neg PSL_gap_y neg M
+  0 psl_boxH D psl_boxW 0 D 0 psl_boxH neg D P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_textbox_round
+{
+  /psl_BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
+  /psl_xd PSL_gap_x psl_BoxR sub def
+  /psl_yd PSL_gap_y psl_BoxR sub def
+  /psl_xL PSL_gap_x neg def
+  /psl_yB PSL_gap_y neg def
+  /psl_yT psl_boxH psl_yB add def
+  /psl_H2 PSL_height psl_yd 2 mul add def
+  /psl_W2 psl_SW psl_xd 2 mul add def
+  /psl_xR psl_xL psl_boxW add def
+  /psl_x0 psl_SW PSL_justx mul def
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  psl_xL psl_yd M
+  psl_xL psl_yT psl_xR psl_yT psl_BoxR arct psl_W2 0 D
+  psl_xR psl_yT psl_xR psl_yB psl_BoxR arct 0 psl_H2 neg D
+  psl_xR psl_yB psl_xL psl_yB psl_BoxR arct psl_W2 neg 0 D
+  psl_xL psl_yB psl_xL psl_yd psl_BoxR arct P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_place_label
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G show
     U
-  } for
-} def
-/PSL_ST_clippath
-{N
-  PSL_usebox not {clipsave clippath} if
-  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
-  PSL_usebox
-  {PSL_fillbox
-    {V PSL_setboxrgb fill U} if
-    PSL_drawbox
-    {PSL_setboxpen S} if N
-  }
-  {PSL_clip
-  } ifelse
-  N
-} def
-/PSL_ST_clippath_rect
-{
-  /BoxH PSL_height PSL_gap_y 2 mul add def
-  /DelY BoxH BoxH 0 3 array astore def
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    /MAT PSL_angle k get matrix R def
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
-    /x0 0 BoxW PSL_justx mul add def
-    /y0 0 PSL_justy add PSL_gap_y sub def
-    /DelX 0 BoxW BoxW 3 array astore def
-    x0 y0 MAT transform
-    /dy exch def /dx exch def
-    xp dx add yp dy add M
-    0 1 2
-    {
-      /ii exch def
-      x0 DelX ii get add y0 DelY ii get add MAT transform
-      /dy exch def /dx exch def
-      xp dx add yp dy add L
-    } for P
-  } for
-} def
-/PSL_ST_clippath_round
-{
-  /PSL_justy2 PSL_just 4 idiv 2 div neg def
-  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
-  /BoxH PSL_height PSL_gap_y 2 mul add def
-  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
-    /x0 BoxW PSL_justx mul def
-    xp yp T PSL_angle k get R x0 y0 T
-    BoxR 0 M
-    BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct P
-    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
-  } for
 } def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
@@ -572,8 +635,9 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R-90/-70/18/35.819 -JM2i -P -Dl -Glightbrown -Wthinnest -Ba10g5WsEN -K
+%%GMT: pscoast -R-90/-70/18/35.819 -JM2i -P -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN -K
 %%PROJ: merc -90.00000000 -70.00000000 18.00000000 35.81900000 -1113194.908 1113194.908 2024351.426 4250737.610 +proj=merc +lon_0=-80 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -748,18 +812,6 @@ FO
 -25 17 D
 19 -17 D
 140 0 D
-859 2222 M
-9 -11 D
--8 -26 D
--14 4 D
-11 6 D
--5 8 D
--16 -1 D
--17 17 D
-40 -17 D
-2 13 D
--12 6 D
-10 1 D
 914 2126 M
 24 -39 D
 -48 -3 D
@@ -772,6 +824,18 @@ FO
 28 -25 D
 -9 18 D
 6 -5 D
+859 2222 M
+9 -11 D
+-8 -26 D
+-14 4 D
+11 6 D
+-5 8 D
+-16 -1 D
+-17 17 D
+40 -17 D
+2 13 D
+-12 6 D
+10 1 D
 736 2199 M
 9 -9 D
 -19 -28 D
@@ -782,14 +846,6 @@ FO
 14 -12 D
 0 13 D
 1 0 D
-1142 2073 M
-13 -13 D
-21 6 D
-6 -17 D
--29 7 D
--17 21 D
-6 -5 D
-0 1 D
 628 1682 M
 13 -1 D
 -27 -11 D
@@ -798,25 +854,33 @@ FO
 7 -21 D
 19 14 D
 -2 -10 D
+1142 2073 M
+13 -13 D
+21 6 D
+6 -17 D
+-29 7 D
+-17 21 D
+6 -5 D
+0 1 D
+1032 2150 M
+20 2 D
+2 -14 D
+-40 9 D
+18 3 D
 298 2258 M
 42 -12 D
 32 -29 D
 -58 33 D
 -38 -3 D
 22 11 D
-1032 2150 M
-20 2 D
-2 -14 D
--40 9 D
-18 3 D
-422 1988 M
-4 -25 D
--8 33 D
-4 -8 D
 456 2075 M
 -7 -20 D
 -8 -1 D
 15 21 D
+422 1988 M
+4 -25 D
+-8 33 D
+4 -8 D
 FO
 1034 1729 M
 9 11 D
@@ -826,26 +890,10 @@ FO
 -5 -13 D
 3 -9 D
 FO
-1146 1895 M
--6 6 D
--10 -13 D
-16 7 D
-FO
-27 1579 M
-7 -4 D
-4 11 D
--11 -7 D
-FO
-225 1606 M
--24 -2 D
-30 2 D
--6 0 D
-FO
-82 1580 M
-8 0 D
-1 9 D
--9 -8 D
-0 -1 D
+1056 1802 M
+4 -12 D
+4 18 D
+-8 -6 D
 FO
 1062 1814 M
 13 10 D
@@ -857,18 +905,34 @@ FO
 95 8 D
 -58 -4 D
 FO
-1056 1802 M
-4 -12 D
-4 18 D
--8 -6 D
+225 1606 M
+-24 -2 D
+30 2 D
+-6 0 D
 FO
-1048 1804 M
-8 -1 D
--8 1 D
+1146 1895 M
+-6 6 D
+-10 -13 D
+16 7 D
 FO
-1146 1899 M
-2 10 D
--2 -10 D
+27 1579 M
+7 -4 D
+4 11 D
+-11 -7 D
+FO
+82 1580 M
+8 0 D
+1 9 D
+-9 -8 D
+0 -1 D
+FO
+512 1588 M
+11 -6 D
+-11 6 D
+FO
+77 1579 M
+7 0 D
+-7 0 D
 FO
 1155 1919 M
 -4 7 D
@@ -899,10 +963,6 @@ FO
 6 1 D
 -6 -1 D
 FO
-1107 1899 M
-4 -6 D
--4 6 D
-FO
 33 1592 M
 8 1 D
 -8 0 D
@@ -912,13 +972,9 @@ FO
 13 -1 D
 -13 1 D
 FO
-512 1588 M
-11 -6 D
--11 6 D
-FO
-77 1579 M
-7 0 D
--7 0 D
+1048 1804 M
+8 -1 D
+-8 1 D
 FO
 1038 1572 M
 -14 73 D
@@ -1049,6 +1105,13 @@ S
 -25 17 D
 19 -17 D
 S
+1034 1729 M
+9 11 D
+1 0 D
+2 11 D
+-10 0 D
+-5 -13 D
+P S
 677 1572 M
 -3 5 D
 21 6 D
@@ -1057,35 +1120,15 @@ S
 23 4 D
 21 -14 D
 S
-1034 1729 M
-9 11 D
-1 0 D
-2 11 D
--10 0 D
--5 -13 D
-P S
 17 1572 M
 14 24 D
 -8 -11 D
 -7 8 D
 -16 -9 D
 S
-1146 1895 M
--6 6 D
--10 -13 D
-P S
-27 1579 M
-7 -4 D
-4 11 D
-P S
-225 1606 M
--24 -2 D
-30 2 D
-P S
-82 1580 M
-8 0 D
-1 9 D
--9 -8 D
+1056 1802 M
+4 -12 D
+4 18 D
 P S
 1062 1814 M
 13 10 D
@@ -1095,15 +1138,28 @@ P S
 -37 -4 D
 95 8 D
 P S
-1056 1802 M
-4 -12 D
-4 18 D
+225 1606 M
+-24 -2 D
+30 2 D
 P S
-1048 1804 M
-8 -1 D
+1146 1895 M
+-6 6 D
+-10 -13 D
 P S
-1146 1899 M
-2 10 D
+27 1579 M
+7 -4 D
+4 11 D
+P S
+82 1580 M
+8 0 D
+1 9 D
+-9 -8 D
+P S
+512 1588 M
+11 -6 D
+P S
+77 1579 M
+7 0 D
 P S
 1155 1919 M
 -4 7 D
@@ -1127,9 +1183,6 @@ P S
 91 1578 M
 6 1 D
 P S
-1107 1899 M
-4 -6 D
-P S
 33 1592 M
 8 1 D
 -8 0 D
@@ -1137,11 +1190,8 @@ P S
 179 1601 M
 13 -1 D
 P S
-512 1588 M
-11 -6 D
-P S
-77 1579 M
-7 0 D
+1048 1804 M
+8 -1 D
 P S
 64 1572 M
 3 8 D
@@ -1151,18 +1201,6 @@ S
 -4 7 D
 2 -7 D
 S
-859 2222 M
-9 -11 D
--8 -26 D
--14 4 D
-11 6 D
--5 8 D
--16 -1 D
--17 17 D
-40 -17 D
-2 13 D
--12 6 D
-P S
 914 2126 M
 24 -39 D
 -48 -3 D
@@ -1174,6 +1212,18 @@ P S
 1 13 D
 28 -25 D
 -9 18 D
+P S
+859 2222 M
+9 -11 D
+-8 -26 D
+-14 4 D
+11 6 D
+-5 8 D
+-16 -1 D
+-17 17 D
+40 -17 D
+2 13 D
+-12 6 D
 P S
 997 1572 M
 -3 6 D
@@ -1196,14 +1246,6 @@ S
 14 -12 D
 0 13 D
 P S
-1142 2073 M
-13 -13 D
-21 6 D
-6 -17 D
--29 7 D
--17 21 D
-6 -5 D
-P S
 628 1682 M
 13 -1 D
 -27 -11 D
@@ -1212,24 +1254,32 @@ P S
 7 -21 D
 19 14 D
 P S
-298 2258 M
-42 -12 D
-32 -29 D
--58 33 D
--38 -3 D
+1142 2073 M
+13 -13 D
+21 6 D
+6 -17 D
+-29 7 D
+-17 21 D
+6 -5 D
 P S
 1032 2150 M
 20 2 D
 2 -14 D
 -40 9 D
 P S
-422 1988 M
-4 -25 D
--8 33 D
+298 2258 M
+42 -12 D
+32 -29 D
+-58 33 D
+-38 -3 D
 P S
 456 2075 M
 -7 -20 D
 -8 -1 D
+P S
+422 1988 M
+4 -25 D
+-8 33 D
 P S
 1200 2030 M
 -8 -8 D
@@ -1321,15 +1371,35 @@ FO
 -8 27 D
 -1 0 D
 FO
+1560 2233 M
+-13 -5 D
+52 8 D
+-39 -3 D
+FO
 1440 2118 M
 5 -6 D
 10 34 D
 -15 -28 D
 FO
-1560 2233 M
--13 -5 D
-52 8 D
--39 -3 D
+1613 2224 M
+33 39 D
+-33 -39 D
+FO
+1539 2225 M
+7 3 D
+-7 -3 D
+FO
+1647 2263 M
+8 8 D
+-8 -8 D
+FO
+1227 1964 M
+4 6 D
+-4 -6 D
+FO
+1680 2290 M
+28 17 D
+-28 -17 D
 FO
 1536 2226 M
 5 4 D
@@ -1355,26 +1425,6 @@ FO
 1665 2280 M
 11 9 D
 -11 -9 D
-FO
-1539 2225 M
-7 3 D
--7 -3 D
-FO
-1647 2263 M
-8 8 D
--8 -8 D
-FO
-1227 1964 M
-4 6 D
--4 -6 D
-FO
-1680 2290 M
-28 17 D
--28 -17 D
-FO
-1613 2224 M
-33 39 D
--33 -39 D
 FO
 1200 1936 M
 16 18 D
@@ -1455,13 +1505,28 @@ S
 8 53 D
 -8 27 D
 P S
+1560 2233 M
+-13 -5 D
+52 8 D
+P S
 1440 2118 M
 5 -6 D
 10 34 D
 P S
-1560 2233 M
--13 -5 D
-52 8 D
+1613 2224 M
+33 39 D
+P S
+1539 2225 M
+7 3 D
+P S
+1647 2263 M
+8 8 D
+P S
+1227 1964 M
+4 6 D
+P S
+1680 2290 M
+28 17 D
 P S
 1536 2226 M
 5 4 D
@@ -1481,21 +1546,6 @@ P S
 P S
 1665 2280 M
 11 9 D
-P S
-1539 2225 M
-7 3 D
-P S
-1647 2263 M
-8 8 D
-P S
-1227 1964 M
-4 6 D
-P S
-1680 2290 M
-28 17 D
-P S
-1613 2224 M
-33 39 D
 P S
 1200 2045 M
 4 -12 D
@@ -1693,21 +1743,29 @@ FO
 6 11 D
 -16 7 D
 7 4 D
+999 1503 M
+17 -28 D
+-3 -13 D
+-14 15 D
+0 26 D
 1110 1188 M
 17 -33 D
 -17 -34 D
 -42 38 D
 42 30 D
 0 -1 D
-999 1503 M
-17 -28 D
--3 -13 D
--14 15 D
-0 26 D
-1049 1222 M
--4 -18 D
--5 16 D
-9 2 D
+986 1404 M
+4 -12 D
+-16 12 D
+12 0 D
+1052 1002 M
+7 -13 D
+-16 18 D
+9 -5 D
+1077 1396 M
+8 -18 D
+-12 26 D
+4 -8 D
 1050 1294 M
 8 -26 D
 -19 23 D
@@ -1718,35 +1776,27 @@ FO
 -10 0 D
 2 14 D
 12 -6 D
+1049 1222 M
+-4 -18 D
+-5 16 D
+9 2 D
 1035 1335 M
 3 -19 D
 -9 11 D
 6 8 D
-986 1404 M
-4 -12 D
--16 12 D
-12 0 D
-1077 1396 M
-8 -18 D
--12 26 D
-4 -8 D
-1052 1002 M
-7 -13 D
--16 18 D
-9 -5 D
 1031 1278 M
 -4 -7 D
 4 7 D
-1093 1436 M
-28 -48 D
--28 48 D
+1029 1306 M
+7 -7 D
+-7 7 D
 1049 1338 M
 -7 -5 D
 7 6 D
 0 -1 D
-1029 1306 M
-7 -7 D
--7 7 D
+1093 1436 M
+28 -48 D
+-28 48 D
 FO
 537 1572 M
 25 -23 D
@@ -1842,50 +1892,22 @@ FO
 -19 11 D
 23 -21 D
 FO
-360 309 M
-1 -23 D
-32 43 D
--24 -6 D
--9 -14 D
-FO
 1175 637 M
 -2 6 D
 -17 -12 D
 18 -1 D
 1 7 D
 FO
-1010 460 M
-9 -4 D
-18 14 D
--27 -9 D
-0 -1 D
+360 309 M
+1 -23 D
+32 43 D
+-24 -6 D
+-9 -14 D
 FO
-1018 854 M
--5 4 D
--3 -3 D
-4 -6 D
+960 457 M
 4 5 D
-FO
-938 1121 M
-15 -25 D
--3 18 D
--12 7 D
-FO
-629 1530 M
-7 9 D
--31 -21 D
-24 12 D
-FO
-1137 1297 M
-44 -110 D
--58 167 D
-14 -57 D
-FO
-967 462 M
-4 -5 D
-10 8 D
--14 -2 D
-0 -1 D
+-19 -9 D
+15 4 D
 FO
 313 443 M
 17 0 D
@@ -1893,10 +1915,11 @@ FO
 -34 -12 D
 1 -1 D
 FO
-960 457 M
-4 5 D
--19 -9 D
-15 4 D
+967 462 M
+4 -5 D
+10 8 D
+-14 -2 D
+0 -1 D
 FO
 1082 651 M
 23 4 D
@@ -1913,163 +1936,32 @@ FO
 -7 28 D
 -3 -7 D
 FO
-1027 1009 M
+1010 460 M
 9 -4 D
--9 4 D
-FO
-945 1089 M
-13 2 D
--20 4 D
-7 -6 D
-FO
-577 1525 M
-14 1 D
--14 -1 D
-FO
-1127 665 M
-17 -6 D
--17 6 D
-FO
-1032 862 M
-8 -11 D
--8 11 D
-FO
-1096 665 M
-19 -3 D
--19 3 D
-FO
-1080 927 M
-1 9 D
--1 -9 D
-FO
-1163 655 M
-9 -6 D
--9 6 D
-FO
-982 839 M
-10 4 D
--10 -4 D
-FO
-1025 517 M
-19 -5 D
--19 5 D
-FO
-1086 671 M
-10 -3 D
--10 3 D
-FO
-1017 856 M
-6 -4 D
--6 4 D
-FO
-76 1544 M
-10 -5 D
--10 5 D
-FO
-1065 860 M
-12 4 D
--12 -4 D
-FO
-1004 527 M
-4 -9 D
--4 9 D
-FO
-869 1265 M
-2 -9 D
--2 9 D
-FO
-787 500 M
-11 1 D
--11 -1 D
-FO
-741 608 M
-8 4 D
--8 -3 D
+18 14 D
+-27 -9 D
 0 -1 D
 FO
-1124 655 M
-6 0 D
--6 1 D
-0 -1 D
+1018 854 M
+-5 4 D
+-3 -3 D
+4 -6 D
+4 5 D
 FO
-899 471 M
-6 -1 D
--6 2 D
-0 -1 D
+1137 1297 M
+44 -110 D
+-58 167 D
+14 -57 D
 FO
-942 844 M
-6 -3 D
--6 4 D
-0 -1 D
+629 1530 M
+7 9 D
+-31 -21 D
+24 12 D
 FO
-1111 878 M
-6 5 D
--6 -4 D
-0 -1 D
-FO
-1124 649 M
-5 2 D
--5 -2 D
-FO
-1121 885 M
-5 6 D
--5 -6 D
-FO
-386 439 M
--3 9 D
-2 -9 D
-1 0 D
-FO
-815 485 M
-3 -7 D
--3 7 D
-FO
-1044 512 M
-7 1 D
--7 0 D
-0 -1 D
-FO
-933 1110 M
-3 -6 D
--3 6 D
-FO
-93 1497 M
-7 4 D
--7 -3 D
-0 -1 D
-FO
-108 1505 M
-7 7 D
--7 -7 D
-FO
-1111 650 M
-6 2 D
--6 -2 D
-FO
-88 1564 M
-5 3 D
--5 -3 D
-FO
-877 1223 M
-12 -15 D
--12 15 D
-FO
-896 581 M
-1 10 D
--1 -10 D
-FO
-666 559 M
-9 0 D
--9 1 D
-0 -1 D
-FO
-1020 1011 M
-7 -3 D
--7 3 D
-FO
-1188 644 M
-7 -4 D
--7 4 D
+938 1121 M
+15 -25 D
+-3 18 D
+-12 7 D
 FO
 1144 655 M
 12 2 D
@@ -2153,13 +2045,167 @@ FO
 10 5 D
 -10 -5 D
 FO
+80 1559 M
+8 11 D
+-8 -11 D
+FO
 392 407 M
 -3 7 D
 3 -7 D
 FO
-80 1559 M
-8 11 D
--8 -11 D
+945 1089 M
+13 2 D
+-20 4 D
+7 -6 D
+FO
+1127 665 M
+17 -6 D
+-17 6 D
+FO
+1032 862 M
+8 -11 D
+-8 11 D
+FO
+1027 1009 M
+9 -4 D
+-9 4 D
+FO
+1096 665 M
+19 -3 D
+-19 3 D
+FO
+1080 927 M
+1 9 D
+-1 -9 D
+FO
+1163 655 M
+9 -6 D
+-9 6 D
+FO
+982 839 M
+10 4 D
+-10 -4 D
+FO
+1025 517 M
+19 -5 D
+-19 5 D
+FO
+1086 671 M
+10 -3 D
+-10 3 D
+FO
+1017 856 M
+6 -4 D
+-6 4 D
+FO
+76 1544 M
+10 -5 D
+-10 5 D
+FO
+1065 860 M
+12 4 D
+-12 -4 D
+FO
+1004 527 M
+4 -9 D
+-4 9 D
+FO
+877 1223 M
+12 -15 D
+-12 15 D
+FO
+896 581 M
+1 10 D
+-1 -10 D
+FO
+1020 1011 M
+7 -3 D
+-7 3 D
+FO
+666 559 M
+9 0 D
+-9 1 D
+0 -1 D
+FO
+1188 644 M
+7 -4 D
+-7 4 D
+FO
+869 1265 M
+2 -9 D
+-2 9 D
+FO
+787 500 M
+11 1 D
+-11 -1 D
+FO
+741 608 M
+8 4 D
+-8 -3 D
+0 -1 D
+FO
+1124 655 M
+6 0 D
+-6 1 D
+0 -1 D
+FO
+899 471 M
+6 -1 D
+-6 2 D
+0 -1 D
+FO
+942 844 M
+6 -3 D
+-6 4 D
+0 -1 D
+FO
+1111 878 M
+6 5 D
+-6 -4 D
+0 -1 D
+FO
+1124 649 M
+5 2 D
+-5 -2 D
+FO
+1121 885 M
+5 6 D
+-5 -6 D
+FO
+386 439 M
+-3 9 D
+2 -9 D
+1 0 D
+FO
+815 485 M
+3 -7 D
+-3 7 D
+FO
+1044 512 M
+7 1 D
+-7 0 D
+0 -1 D
+FO
+933 1110 M
+3 -6 D
+-3 6 D
+FO
+93 1497 M
+7 4 D
+-7 -3 D
+0 -1 D
+FO
+108 1505 M
+7 7 D
+-7 -7 D
+FO
+1111 650 M
+6 2 D
+-6 -2 D
+FO
+88 1564 M
+5 3 D
+-5 -3 D
 FO
 766 505 M
 9 -3 D
@@ -2431,55 +2477,29 @@ P S
 -10 -6 D
 -6 12 D
 S
-360 309 M
-1 -23 D
-32 43 D
--24 -6 D
-P S
 1175 637 M
 -2 6 D
 -17 -12 D
 18 -1 D
 P S
-1010 460 M
-9 -4 D
-18 14 D
--27 -9 D
+360 309 M
+1 -23 D
+32 43 D
+-24 -6 D
 P S
-1018 854 M
--5 4 D
--3 -3 D
-4 -6 D
-P S
-0 1466 M
-6 5 D
--6 -4 D
-S
-938 1121 M
-15 -25 D
--3 18 D
-P S
-629 1530 M
-7 9 D
--31 -21 D
-P S
-1137 1297 M
-44 -110 D
--58 167 D
-P S
-967 462 M
-4 -5 D
-10 8 D
--14 -2 D
+960 457 M
+4 5 D
+-19 -9 D
 P S
 313 443 M
 17 0 D
 16 13 D
 -34 -12 D
 P S
-960 457 M
-4 5 D
--19 -9 D
+967 462 M
+4 -5 D
+10 8 D
+-14 -2 D
 P S
 1082 651 M
 23 4 D
@@ -2493,131 +2513,31 @@ P S
 10 -21 D
 -7 28 D
 P S
-1027 1009 M
-9 -4 D
-P S
-945 1089 M
-13 2 D
--20 4 D
-P S
-577 1525 M
-14 1 D
-P S
-136 1572 M
-3 -23 D
-3 13 D
--4 10 D
-S
-1127 665 M
-17 -6 D
-P S
-1032 862 M
-8 -11 D
-P S
-1096 665 M
-19 -3 D
-P S
-1080 927 M
-1 9 D
-P S
-1163 655 M
-9 -6 D
-P S
-982 839 M
-10 4 D
-P S
-1025 517 M
-19 -5 D
-P S
-1086 671 M
-10 -3 D
-P S
-1017 856 M
-6 -4 D
-P S
-76 1544 M
-10 -5 D
-P S
-1065 860 M
-12 4 D
-P S
-1004 527 M
-4 -9 D
-P S
-869 1265 M
-2 -9 D
-P S
-787 500 M
-11 1 D
-P S
-741 608 M
-8 4 D
--8 -3 D
-P S
-1124 655 M
-6 0 D
--6 1 D
-P S
-899 471 M
-6 -1 D
--6 2 D
-P S
-942 844 M
-6 -3 D
--6 4 D
-P S
-1111 878 M
+0 1466 M
 6 5 D
 -6 -4 D
+S
+1010 460 M
+9 -4 D
+18 14 D
+-27 -9 D
 P S
-1124 649 M
-5 2 D
+1018 854 M
+-5 4 D
+-3 -3 D
+4 -6 D
 P S
-1121 885 M
-5 6 D
+1137 1297 M
+44 -110 D
+-58 167 D
 P S
-386 439 M
--3 9 D
-2 -9 D
+629 1530 M
+7 9 D
+-31 -21 D
 P S
-815 485 M
-3 -7 D
-P S
-1044 512 M
-7 1 D
--7 0 D
-P S
-933 1110 M
-3 -6 D
-P S
-93 1497 M
-7 4 D
--7 -3 D
-P S
-108 1505 M
-7 7 D
-P S
-1111 650 M
-6 2 D
-P S
-88 1564 M
-5 3 D
-P S
-877 1223 M
-12 -15 D
-P S
-896 581 M
-1 10 D
-P S
-666 559 M
-9 0 D
--9 1 D
-P S
-1020 1011 M
-7 -3 D
-P S
-1188 644 M
-7 -4 D
+938 1121 M
+15 -25 D
+-3 18 D
 P S
 1144 655 M
 12 2 D
@@ -2683,11 +2603,134 @@ P S
 83 1560 M
 10 5 D
 P S
+80 1559 M
+8 11 D
+P S
 392 407 M
 -3 7 D
 P S
-80 1559 M
-8 11 D
+945 1089 M
+13 2 D
+-20 4 D
+P S
+136 1572 M
+3 -23 D
+3 13 D
+-4 10 D
+S
+1127 665 M
+17 -6 D
+P S
+1032 862 M
+8 -11 D
+P S
+1027 1009 M
+9 -4 D
+P S
+1096 665 M
+19 -3 D
+P S
+1080 927 M
+1 9 D
+P S
+1163 655 M
+9 -6 D
+P S
+982 839 M
+10 4 D
+P S
+1025 517 M
+19 -5 D
+P S
+1086 671 M
+10 -3 D
+P S
+1017 856 M
+6 -4 D
+P S
+76 1544 M
+10 -5 D
+P S
+1065 860 M
+12 4 D
+P S
+1004 527 M
+4 -9 D
+P S
+877 1223 M
+12 -15 D
+P S
+896 581 M
+1 10 D
+P S
+1020 1011 M
+7 -3 D
+P S
+666 559 M
+9 0 D
+-9 1 D
+P S
+1188 644 M
+7 -4 D
+P S
+869 1265 M
+2 -9 D
+P S
+787 500 M
+11 1 D
+P S
+741 608 M
+8 4 D
+-8 -3 D
+P S
+1124 655 M
+6 0 D
+-6 1 D
+P S
+899 471 M
+6 -1 D
+-6 2 D
+P S
+942 844 M
+6 -3 D
+-6 4 D
+P S
+1111 878 M
+6 5 D
+-6 -4 D
+P S
+1124 649 M
+5 2 D
+P S
+1121 885 M
+5 6 D
+P S
+386 439 M
+-3 9 D
+2 -9 D
+P S
+815 485 M
+3 -7 D
+P S
+1044 512 M
+7 1 D
+-7 0 D
+P S
+933 1110 M
+3 -6 D
+P S
+93 1497 M
+7 4 D
+-7 -3 D
+P S
+108 1505 M
+7 7 D
+P S
+1111 650 M
+6 2 D
+P S
+88 1564 M
+5 3 D
 P S
 766 505 M
 9 -3 D
@@ -2723,20 +2766,28 @@ S
 6 11 D
 -16 7 D
 P S
+999 1503 M
+17 -28 D
+-3 -13 D
+-14 15 D
+P S
 1110 1188 M
 17 -33 D
 -17 -34 D
 -42 38 D
 42 30 D
 P S
-999 1503 M
-17 -28 D
--3 -13 D
--14 15 D
+986 1404 M
+4 -12 D
+-16 12 D
 P S
-1049 1222 M
--4 -18 D
--5 16 D
+1052 1002 M
+7 -13 D
+-16 18 D
+P S
+1077 1396 M
+8 -18 D
+-12 26 D
 P S
 1050 1294 M
 8 -26 D
@@ -2748,38 +2799,30 @@ P S
 -10 0 D
 2 14 D
 P S
+1049 1222 M
+-4 -18 D
+-5 16 D
+P S
 1035 1335 M
 3 -19 D
 -9 11 D
-P S
-986 1404 M
-4 -12 D
--16 12 D
-P S
-1077 1396 M
-8 -18 D
--12 26 D
-P S
-1052 1002 M
-7 -13 D
--16 18 D
-P S
-1031 1278 M
--4 -7 D
-P S
-1093 1436 M
-28 -48 D
 P S
 247 452 M
 -15 2 D
 16 -2 D
 P S
+1031 1278 M
+-4 -7 D
+P S
+1029 1306 M
+7 -7 D
+P S
 1049 1338 M
 -7 -5 D
 7 6 D
 P S
-1029 1306 M
-7 -7 D
+1093 1436 M
+28 -48 D
 P S
 1691 252 M
 4 4 D
@@ -2985,15 +3028,15 @@ FO
 6 -14 D
 60 11 D
 FO
-1457 507 M
-21 -13 D
-8 15 D
--26 11 D
--4 15 D
--15 3 D
--3 10 D
--3 -17 D
-22 -24 D
+1920 565 M
+-35 -36 D
+35 21 D
+15 20 D
+0 32 D
+-19 -5 D
+-1 -10 D
+19 -11 D
+-14 -11 D
 FO
 1440 1127 M
 -43 -5 D
@@ -3005,15 +3048,15 @@ FO
 -2 11 D
 -12 -4 D
 FO
-1920 565 M
--35 -36 D
-35 21 D
-15 20 D
-0 32 D
--19 -5 D
--1 -10 D
-19 -11 D
--14 -11 D
+1457 507 M
+21 -13 D
+8 15 D
+-26 11 D
+-4 15 D
+-15 3 D
+-3 10 D
+-3 -17 D
+22 -24 D
 FO
 2040 562 M
 -16 5 D
@@ -3022,6 +3065,14 @@ FO
 13 -10 D
 7 6 D
 -33 11 D
+FO
+1708 855 M
+44 -55 D
+-16 -14 D
+29 -1 D
+-40 65 D
+-17 6 D
+0 -1 D
 FO
 2182 487 M
 -12 -7 D
@@ -3044,49 +3095,17 @@ FO
 22 5 D
 -41 14 D
 FO
-1708 855 M
-44 -55 D
--16 -14 D
-29 -1 D
--40 65 D
--17 6 D
-0 -1 D
-FO
-2160 503 M
--5 -15 D
-21 -4 D
--6 17 D
--10 2 D
-FO
-2206 479 M
--5 -13 D
-21 -9 D
-1 16 D
--17 6 D
+2117 477 M
+27 7 D
+-15 -3 D
+-9 10 D
+-3 -14 D
 FO
 1356 578 M
 18 -14 D
 33 -1 D
 -13 16 D
 -38 -1 D
-FO
-1855 767 M
--4 -7 D
-10 0 D
-4 23 D
--10 -16 D
-FO
-2040 451 M
--9 -6 D
-2 -11 D
-17 10 D
--10 7 D
-FO
-2117 477 M
-27 7 D
--15 -3 D
--9 10 D
--3 -14 D
 FO
 1400 559 M
 25 -20 D
@@ -3100,55 +3119,79 @@ FO
 -15 -7 D
 25 -4 D
 FO
-1414 1164 M
-0 -8 D
-5 12 D
--5 -4 D
+2160 503 M
+-5 -15 D
+21 -4 D
+-6 17 D
+-10 2 D
+FO
+2206 479 M
+-5 -13 D
+21 -9 D
+1 16 D
+-17 6 D
+FO
+1855 767 M
+-4 -7 D
+10 0 D
+4 23 D
+-10 -16 D
+FO
+2040 451 M
+-9 -6 D
+2 -11 D
+17 10 D
+-10 7 D
 FO
 1283 990 M
 8 0 D
 -7 3 D
 -1 -3 D
 FO
-1452 1111 M
-4 -6 D
-5 8 D
--9 -2 D
-FO
-1486 492 M
-21 -12 D
--16 18 D
--5 -6 D
-FO
-1480 738 M
-5 -9 D
-11 11 D
--16 -2 D
-FO
-1244 610 M
-40 -24 D
--33 26 D
--7 -2 D
+1440 790 M
+16 0 D
+8 10 D
+-24 -10 D
 FO
 1462 811 M
 16 0 D
 -3 11 D
 -13 -11 D
 FO
-1440 790 M
-16 0 D
-8 10 D
--24 -10 D
+1244 610 M
+40 -24 D
+-33 26 D
+-7 -2 D
 FO
-1806 724 M
-14 -5 D
-5 8 D
--19 -3 D
+1480 738 M
+5 -9 D
+11 11 D
+-16 -2 D
 FO
 1320 364 M
 -8 3 D
 12 -8 D
 -4 5 D
+FO
+1486 492 M
+21 -12 D
+-16 18 D
+-5 -6 D
+FO
+1414 1164 M
+0 -8 D
+5 12 D
+-5 -4 D
+FO
+1452 1111 M
+4 -6 D
+5 8 D
+-9 -2 D
+FO
+1806 724 M
+14 -5 D
+5 8 D
+-19 -3 D
 FO
 1683 844 M
 10 -3 D
@@ -3211,10 +3254,6 @@ FO
 8 1 D
 -8 0 D
 0 -1 D
-FO
-1457 1105 M
-4 5 D
--4 -5 D
 FO
 1450 1115 M
 7 2 D
@@ -3648,14 +3687,14 @@ P S
 -4 -12 D
 6 -14 D
 P S
-1457 507 M
-21 -13 D
-8 15 D
--26 11 D
--4 15 D
--15 3 D
--3 10 D
--3 -17 D
+1920 565 M
+-35 -36 D
+35 21 D
+15 20 D
+0 32 D
+-19 -5 D
+-1 -10 D
+19 -11 D
 P S
 1440 1127 M
 -43 -5 D
@@ -3666,14 +3705,14 @@ P S
 107 21 D
 -2 11 D
 P S
-1920 565 M
--35 -36 D
-35 21 D
-15 20 D
-0 32 D
--19 -5 D
--1 -10 D
-19 -11 D
+1457 507 M
+21 -13 D
+8 15 D
+-26 11 D
+-4 15 D
+-15 3 D
+-3 10 D
+-3 -17 D
 P S
 2040 562 M
 -16 5 D
@@ -3681,6 +3720,13 @@ P S
 34 0 D
 13 -10 D
 7 6 D
+P S
+1708 855 M
+44 -55 D
+-16 -14 D
+29 -1 D
+-40 65 D
+-17 6 D
 P S
 2182 487 M
 -12 -7 D
@@ -3700,42 +3746,15 @@ P S
 10 -14 D
 22 5 D
 P S
-1708 855 M
-44 -55 D
--16 -14 D
-29 -1 D
--40 65 D
--17 6 D
-P S
-2160 503 M
--5 -15 D
-21 -4 D
--6 17 D
-P S
-2206 479 M
--5 -13 D
-21 -9 D
-1 16 D
+2117 477 M
+27 7 D
+-15 -3 D
+-9 10 D
 P S
 1356 578 M
 18 -14 D
 33 -1 D
 -13 16 D
-P S
-1855 767 M
--4 -7 D
-10 0 D
-4 23 D
-P S
-2040 451 M
--9 -6 D
-2 -11 D
-17 10 D
-P S
-2117 477 M
-27 7 D
--15 -3 D
--9 10 D
 P S
 1400 559 M
 25 -20 D
@@ -3747,45 +3766,65 @@ P S
 -21 5 D
 -15 -7 D
 P S
-1414 1164 M
-0 -8 D
-5 12 D
+2160 503 M
+-5 -15 D
+21 -4 D
+-6 17 D
+P S
+2206 479 M
+-5 -13 D
+21 -9 D
+1 16 D
+P S
+1855 767 M
+-4 -7 D
+10 0 D
+4 23 D
+P S
+2040 451 M
+-9 -6 D
+2 -11 D
+17 10 D
 P S
 1283 990 M
 8 0 D
 -7 3 D
 P S
-1452 1111 M
-4 -6 D
-5 8 D
-P S
-1486 492 M
-21 -12 D
--16 18 D
-P S
-1480 738 M
-5 -9 D
-11 11 D
-P S
-1244 610 M
-40 -24 D
--33 26 D
+1440 790 M
+16 0 D
+8 10 D
 P S
 1462 811 M
 16 0 D
 -3 11 D
 P S
-1440 790 M
-16 0 D
-8 10 D
+1244 610 M
+40 -24 D
+-33 26 D
 P S
-1806 724 M
-14 -5 D
-5 8 D
+1480 738 M
+5 -9 D
+11 11 D
 P S
 1320 364 M
 -8 3 D
 12 -8 D
+P S
+1486 492 M
+21 -12 D
+-16 18 D
+P S
+1414 1164 M
+0 -8 D
+5 12 D
+P S
+1452 1111 M
+4 -6 D
+5 8 D
+P S
+1806 724 M
+14 -5 D
+5 8 D
 P S
 1683 844 M
 10 -3 D
@@ -3833,9 +3872,6 @@ P S
 1292 590 M
 8 1 D
 -8 0 D
-P S
-1457 1105 M
-4 5 D
 P S
 1450 1115 M
 7 2 D
@@ -4443,6 +4479,8 @@ P S
 2191 62 M
 13 -1 D
 P S
+25 W
+4 W
 0 0 M
 0 2400 D
 S
@@ -4471,16 +4509,16 @@ S
 2400 0 D
 S
 8 W
-0 0 M 0 -60 D S
-0 2400 M 0 60 D S
-1200 0 M 0 -60 D S
-1200 2400 M 0 60 D S
-2400 0 M 0 -60 D S
-2400 2400 M 0 60 D S
-0 252 M -60 0 D S
-2400 252 M 60 0 D S
-0 1572 M -60 0 D S
-2400 1572 M 60 0 D S
+N 0 0 M 0 -60 D S
+N 0 2400 M 0 60 D S
+N 1200 0 M 0 -60 D S
+N 1200 2400 M 0 60 D S
+N 2400 0 M 0 -60 D S
+N 2400 2400 M 0 60 D S
+N 0 252 M -60 0 D S
+N 2400 252 M 60 0 D S
+N 0 1572 M -60 0 D S
+N 2400 1572 M 60 0 D S
 0 2543 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 (-90š) bc Z
@@ -4492,25 +4530,21 @@ S
 2543 1572 M (30š) ml Z
 25 W
 0 0 M
-0 2400 D
-S
-2400 0 M
-0 2400 D
-S
-0 0 M
 2400 0 D
+0 2400 D
+-2400 0 D
+0 -2400 D
 S
-0 2400 M
-2400 0 D
-S
+%%EndObject
 0 A
 FQ
 O0
 0 -600 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT
+%%GMT: pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT
 %%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -4523,31 +4557,37 @@ V MU 0 0 M 150 F0 (a\)) FP 150 F2 ( ) FP 150 F1 (\035R) FP 150 F2 (xmin/xmax/ymi
 150 F2 ( ) Z
 150 F1 (\035R) Z
 150 F2 (xmin/xmax/ymin/ymax) Z
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Sc0.1 -Wthinner
+%%GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Sc0.1 -Wthinner
 %%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 8 W
+V
 O1
 60 0 1800 Sc
 60 1200 600 Sc
 60 1200 3000 Sc
 60 2400 1800 Sc
+U
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Wthinner
+%%GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Wthinner
 %%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -4564,14 +4604,16 @@ S
 2400 1800 M
 -1140 -1620 D
 S
+%%EndObject
 0 A
 FQ
 O0
 3300 600 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R-90/20/-65.5327/29.4248r -JOc280/20/22/69/2 -O -Dl -Glightbrown -Wthinnest -Ba10g5WsEN -K -X2.75 -Y0.5
-%%PROJ: omerc 269.90000000 294.56730000 13.58504992 35.97448399 -1003319.942 1017207.821 1246230.969 3266754.263 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: pscoast -R-90/20/-65.5327/29.4248r -JOc280/20/22/69/2 -O -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN -K -X2.75 -Y0.5
+%%PROJ: omerc 269.90000000 294.56730000 13.58504992 35.97448399 -1003319.691 1017207.567 1246230.658 3266753.448 +unavailable +a=6371007.181 +b=6371007.180918
+%%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -4683,18 +4725,6 @@ O0
 25 10 D
 72 29 D
 37 15 D
-89 2231 M
-12 -6 D
-3 -28 D
--15 -2 D
-8 10 D
--7 6 D
--15 -8 D
--23 10 D
-45 0 D
--4 12 D
--14 2 D
-10 4 D
 178 2162 M
 38 -27 D
 -43 -22 D
@@ -4707,14 +4737,18 @@ O0
 36 -13 D
 -16 14 D
 8 -3 D
-414 2203 M
-18 -6 D
-18 14 D
-12 -14 D
--30 -6 D
--25 14 D
-8 -2 D
--1 0 D
+89 2231 M
+12 -6 D
+3 -28 D
+-15 -2 D
+8 10 D
+-7 6 D
+-15 -8 D
+-23 10 D
+45 0 D
+-4 12 D
+-14 2 D
+10 4 D
 80 1629 M
 14 4 D
 -22 -21 D
@@ -4723,6 +4757,14 @@ O0
 14 -17 D
 13 20 D
 1 -10 D
+414 2203 M
+18 -6 D
+18 14 D
+12 -14 D
+-30 -6 D
+-25 14 D
+8 -2 D
+-1 0 D
 279 2232 M
 19 10 D
 7 -12 D
@@ -4737,10 +4779,10 @@ FO
 0 -14 D
 7 -7 D
 FO
-490 2036 M
--8 3 D
--5 -16 D
-13 13 D
+442 1911 M
+8 -11 D
+-3 19 D
+-5 -8 D
 FO
 443 1925 M
 8 15 D
@@ -4748,18 +4790,14 @@ FO
 4 -14 D
 1 0 D
 FO
-442 1911 M
-8 -11 D
--3 19 D
--5 -8 D
+490 2036 M
+-8 3 D
+-5 -16 D
+13 13 D
 FO
-433 1910 M
-8 2 D
--8 -2 D
-FO
-489 2040 M
--3 9 D
-3 -9 D
+7 1495 M
+12 -2 D
+-12 2 D
 FO
 489 2062 M
 -7 5 D
@@ -4773,13 +4811,9 @@ FO
 8 -2 D
 -8 2 D
 FO
-452 2024 M
-6 -5 D
--6 5 D
-FO
-7 1495 M
-12 -2 D
--12 2 D
+433 1910 M
+8 2 D
+-8 -2 D
 FO
 517 1682 M
 -43 65 D
@@ -4862,6 +4896,12 @@ S
 -31 6 D
 25 -10 D
 S
+450 1832 M
+5 15 D
+-2 10 D
+-10 -4 D
+0 -14 D
+P S
 170 1542 M
 -5 3 D
 18 15 D
@@ -4870,30 +4910,21 @@ S
 20 13 D
 26 -6 D
 S
-450 1832 M
-5 15 D
--2 10 D
--10 -4 D
-0 -14 D
-P S
-490 2036 M
--8 3 D
--5 -16 D
+442 1911 M
+8 -11 D
+-3 19 D
 P S
 443 1925 M
 8 15 D
 -13 -1 D
 4 -14 D
 P S
-442 1911 M
-8 -11 D
--3 19 D
+490 2036 M
+-8 3 D
+-5 -16 D
 P S
-433 1910 M
-8 2 D
-P S
-489 2040 M
--3 9 D
+7 1495 M
+12 -2 D
 P S
 489 2062 M
 -7 5 D
@@ -4904,23 +4935,8 @@ P S
 443 1864 M
 8 -2 D
 P S
-452 2024 M
-6 -5 D
-P S
-7 1495 M
-12 -2 D
-P S
-89 2231 M
-12 -6 D
-3 -28 D
--15 -2 D
-8 10 D
--7 6 D
--15 -8 D
--23 10 D
-45 0 D
--4 12 D
--14 2 D
+433 1910 M
+8 2 D
 P S
 178 2162 M
 38 -27 D
@@ -4934,6 +4950,18 @@ P S
 36 -13 D
 -16 14 D
 P S
+89 2231 M
+12 -6 D
+3 -28 D
+-15 -2 D
+8 10 D
+-7 6 D
+-15 -8 D
+-23 10 D
+45 0 D
+-4 12 D
+-14 2 D
+P S
 477 1666 M
 -5 5 D
 -4 27 D
@@ -4945,14 +4973,6 @@ P S
 15 -36 D
 8 -2 D
 S
-414 2203 M
-18 -6 D
-18 14 D
-12 -14 D
--30 -6 D
--25 14 D
-8 -2 D
-P S
 80 1629 M
 14 4 D
 -22 -21 D
@@ -4960,6 +4980,14 @@ P S
 -10 22 D
 14 -17 D
 13 20 D
+P S
+414 2203 M
+18 -6 D
+18 14 D
+12 -14 D
+-30 -6 D
+-25 14 D
+8 -2 D
 P S
 279 2232 M
 19 10 D
@@ -5038,6 +5066,9 @@ P S
 8 -11 D
 -2 -4 D
 S
+0 0 M
+0 0 D
+FO
 302 110 M
 -7 21 D
 8 44 D
@@ -5230,21 +5261,30 @@ FO
 1 13 D
 -18 0 D
 6 7 D
+506 1600 M
+27 -20 D
+2 -14 D
+-19 9 D
+-10 25 D
 737 1338 M
 29 -26 D
 -3 -39 D
 -55 21 D
 28 44 D
 1 0 D
-506 1600 M
-27 -20 D
-2 -14 D
--19 9 D
--10 25 D
-665 1347 M
-2 -19 D
--11 13 D
-9 6 D
+532 1500 M
+9 -11 D
+-21 6 D
+12 5 D
+753 1133 M
+13 -10 D
+-23 12 D
+10 -1 D
+0 -1 D
+623 1528 M
+15 -15 D
+-22 20 D
+7 -5 D
 638 1418 M
 17 -23 D
 -28 15 D
@@ -5254,37 +5294,28 @@ FO
 -10 -4 D
 -4 15 D
 14 -2 D
+665 1347 M
+2 -19 D
+-11 13 D
+9 6 D
 606 1451 M
 10 -16 D
 -12 7 D
 2 9 D
-532 1500 M
-9 -11 D
--21 6 D
-12 5 D
-623 1528 M
-15 -15 D
--22 20 D
-7 -5 D
-753 1133 M
-13 -10 D
--23 12 D
-10 -1 D
-0 -1 D
 626 1394 M
 -1 -8 D
 0 9 D
 1 -1 D
+612 1421 M
+10 -4 D
+-10 4 D
+619 1460 M
+-5 -7 D
+5 7 D
 623 1573 M
 -1 0 D
 47 -36 D
 -46 36 D
-619 1460 M
--5 -7 D
-5 7 D
-612 1421 M
-10 -4 D
--10 4 D
 FO
 36 1488 M
 33 -12 D
@@ -5315,49 +5346,22 @@ FO
 30 -13 D
 0 1 D
 FO
-336 186 M
-9 -22 D
-16 54 D
--21 -14 D
--4 -18 D
-FO
 1017 820 M
 -4 6 D
 -13 -19 D
 18 6 D
 -1 7 D
 FO
-923 581 M
-10 0 D
-13 20 D
--23 -19 D
-0 -1 D
+336 186 M
+9 -22 D
+16 54 D
+-21 -14 D
+-4 -18 D
 FO
-778 974 M
--6 2 D
--2 -3 D
-6 -5 D
-2 6 D
-FO
-596 1206 M
-24 -19 D
--9 16 D
--15 3 D
-FO
-140 1483 M
-3 12 D
--22 -32 D
-19 20 D
-FO
-720 1455 M
-87 -91 D
--123 141 D
-36 -50 D
-FO
-879 567 M
-7 -4 D
-6 12 D
--13 -8 D
+874 559 M
+2 7 D
+-14 -17 D
+12 10 D
 FO
 240 303 M
 17 7 D
@@ -5365,10 +5369,10 @@ FO
 -29 -25 D
 1 0 D
 FO
-874 559 M
-2 7 D
--14 -17 D
-12 10 D
+879 567 M
+7 -4 D
+6 12 D
+-13 -8 D
 FO
 919 798 M
 22 14 D
@@ -5385,150 +5389,32 @@ FO
 -17 24 D
 0 -8 D
 FO
-726 1130 M
-11 0 D
--11 0 D
-FO
-615 1176 M
-13 8 D
--21 -4 D
-8 -4 D
-FO
-93 1459 M
-13 7 D
--14 -7 D
-1 0 D
-FO
-959 830 M
-18 1 D
--18 -1 D
-FO
-788 988 M
-13 -8 D
--13 8 D
-FO
-928 818 M
-20 5 D
--20 -5 D
-FO
-810 1070 M
--2 9 D
-2 -9 D
-FO
-998 833 M
-11 -2 D
--11 2 D
-FO
-749 946 M
-8 8 D
--8 -8 D
-FO
-916 643 M
-20 3 D
--20 -2 D
+923 581 M
+10 0 D
+13 20 D
+-23 -19 D
 0 -1 D
 FO
-916 820 M
-11 1 D
--11 -1 D
+778 974 M
+-6 2 D
+-2 -3 D
+6 -5 D
+2 6 D
 FO
-777 976 M
-7 -2 D
--8 2 D
-1 0 D
+720 1455 M
+87 -91 D
+-123 141 D
+36 -50 D
 FO
-822 998 M
-10 9 D
--10 -9 D
+140 1483 M
+3 12 D
+-22 -32 D
+19 20 D
 FO
-891 645 M
-8 -7 D
--9 8 D
-1 -1 D
-FO
-473 1319 M
-6 -8 D
--6 8 D
-FO
-687 536 M
-11 5 D
--11 -5 D
-FO
-601 626 M
-6 7 D
--6 -7 D
-FO
-959 819 M
-6 2 D
--6 -2 D
-FO
-809 550 M
-6 1 D
--7 0 D
-1 -1 D
-FO
-708 935 M
-6 -1 D
--7 2 D
-1 -1 D
-FO
-859 1034 M
-5 7 D
--5 -7 D
-FO
-962 813 M
-4 4 D
--5 -4 D
-1 0 D
-FO
-867 1045 M
-3 8 D
--4 -8 D
-1 0 D
-FO
-314 325 M
--6 9 D
-5 -9 D
-1 0 D
-FO
-720 532 M
-6 -6 D
--6 6 D
-FO
-936 646 M
-7 3 D
--7 -2 D
-0 -1 D
-FO
-596 1193 M
-5 -4 D
--6 4 D
-1 0 D
-FO
-949 809 M
-5 4 D
--5 -4 D
-FO
-497 1281 M
-18 -9 D
--18 9 D
-FO
-764 658 M
--3 10 D
-3 -10 D
-FO
-545 549 M
-9 3 D
--9 -2 D
-0 -1 D
-FO
-719 1129 M
-7 0 D
--7 0 D
-FO
-1028 833 M
-7 -1 D
--7 1 D
+596 1206 M
+24 -19 D
+-9 16 D
+-15 3 D
 FO
 980 826 M
 10 6 D
@@ -5608,6 +5494,146 @@ FO
 -6 6 D
 6 -5 D
 0 -1 D
+FO
+615 1176 M
+13 8 D
+-21 -4 D
+8 -4 D
+FO
+959 830 M
+18 1 D
+-18 -1 D
+FO
+788 988 M
+13 -8 D
+-13 8 D
+FO
+726 1130 M
+11 0 D
+-11 0 D
+FO
+928 818 M
+20 5 D
+-20 -5 D
+FO
+810 1070 M
+-2 9 D
+2 -9 D
+FO
+998 833 M
+11 -2 D
+-11 2 D
+FO
+749 946 M
+8 8 D
+-8 -8 D
+FO
+916 643 M
+20 3 D
+-20 -2 D
+0 -1 D
+FO
+916 820 M
+11 1 D
+-11 -1 D
+FO
+777 976 M
+7 -2 D
+-8 2 D
+1 0 D
+FO
+822 998 M
+10 9 D
+-10 -9 D
+FO
+891 645 M
+8 -7 D
+-9 8 D
+1 -1 D
+FO
+497 1281 M
+18 -9 D
+-18 9 D
+FO
+764 658 M
+-3 10 D
+3 -10 D
+FO
+719 1129 M
+7 0 D
+-7 0 D
+FO
+545 549 M
+9 3 D
+-9 -2 D
+0 -1 D
+FO
+1028 833 M
+7 -1 D
+-7 1 D
+FO
+473 1319 M
+6 -8 D
+-6 8 D
+FO
+687 536 M
+11 5 D
+-11 -5 D
+FO
+601 626 M
+6 7 D
+-6 -7 D
+FO
+959 819 M
+6 2 D
+-6 -2 D
+FO
+809 550 M
+6 1 D
+-7 0 D
+1 -1 D
+FO
+708 935 M
+6 -1 D
+-7 2 D
+1 -1 D
+FO
+859 1034 M
+5 7 D
+-5 -7 D
+FO
+962 813 M
+4 4 D
+-5 -4 D
+1 0 D
+FO
+867 1045 M
+3 8 D
+-4 -8 D
+1 0 D
+FO
+314 325 M
+-6 9 D
+5 -9 D
+1 0 D
+FO
+720 532 M
+6 -6 D
+-6 6 D
+FO
+936 646 M
+7 3 D
+-7 -2 D
+0 -1 D
+FO
+596 1193 M
+5 -4 D
+-6 4 D
+1 0 D
+FO
+949 809 M
+5 4 D
+-5 -4 D
 FO
 665 533 M
 10 1 D
@@ -5826,50 +5852,28 @@ S
 -23 4 D
 30 -13 D
 P S
-336 186 M
-9 -22 D
-16 54 D
--21 -14 D
-P S
 1017 820 M
 -4 6 D
 -13 -19 D
 18 6 D
 P S
-923 581 M
-10 0 D
-13 20 D
--23 -19 D
+336 186 M
+9 -22 D
+16 54 D
+-21 -14 D
 P S
-778 974 M
--6 2 D
--2 -3 D
-6 -5 D
-P S
-596 1206 M
-24 -19 D
--9 16 D
-P S
-140 1483 M
-3 12 D
--22 -32 D
-P S
-720 1455 M
-87 -91 D
--123 141 D
-P S
-879 567 M
-7 -4 D
-6 12 D
+874 559 M
+2 7 D
+-14 -17 D
 P S
 240 303 M
 17 7 D
 11 18 D
 -29 -25 D
 P S
-874 559 M
-2 7 D
--14 -17 D
+879 567 M
+7 -4 D
+6 12 D
 P S
 919 798 M
 22 14 D
@@ -5883,117 +5887,27 @@ P S
 17 -16 D
 -17 24 D
 P S
-726 1130 M
-11 0 D
+923 581 M
+10 0 D
+13 20 D
+-23 -19 D
 P S
-615 1176 M
-13 8 D
--21 -4 D
+778 974 M
+-6 2 D
+-2 -3 D
+6 -5 D
 P S
-93 1459 M
-13 7 D
--14 -7 D
+720 1455 M
+87 -91 D
+-123 141 D
 P S
-959 830 M
-18 1 D
+140 1483 M
+3 12 D
+-22 -32 D
 P S
-788 988 M
-13 -8 D
-P S
-928 818 M
-20 5 D
-P S
-810 1070 M
--2 9 D
-P S
-998 833 M
-11 -2 D
-P S
-749 946 M
-8 8 D
-P S
-916 643 M
-20 3 D
--20 -2 D
-P S
-916 820 M
-11 1 D
-P S
-777 976 M
-7 -2 D
--8 2 D
-P S
-822 998 M
-10 9 D
-P S
-891 645 M
-8 -7 D
--9 8 D
-P S
-473 1319 M
-6 -8 D
-P S
-687 536 M
-11 5 D
-P S
-601 626 M
-6 7 D
-P S
-959 819 M
-6 2 D
-P S
-809 550 M
-6 1 D
--7 0 D
-P S
-708 935 M
-6 -1 D
--7 2 D
-P S
-859 1034 M
-5 7 D
-P S
-962 813 M
-4 4 D
--5 -4 D
-P S
-867 1045 M
-3 8 D
--4 -8 D
-P S
-314 325 M
--6 9 D
-5 -9 D
-P S
-720 532 M
-6 -6 D
-P S
-936 646 M
-7 3 D
--7 -2 D
-P S
-596 1193 M
-5 -4 D
--6 4 D
-P S
-949 809 M
-5 4 D
-P S
-497 1281 M
-18 -9 D
-P S
-764 658 M
--3 10 D
-P S
-545 549 M
-9 3 D
--9 -2 D
-P S
-719 1129 M
-7 0 D
-P S
-1028 833 M
-7 -1 D
+596 1206 M
+24 -19 D
+-9 16 D
 P S
 980 826 M
 10 6 D
@@ -6057,6 +5971,114 @@ P S
 -6 6 D
 6 -5 D
 P S
+615 1176 M
+13 8 D
+-21 -4 D
+P S
+959 830 M
+18 1 D
+P S
+788 988 M
+13 -8 D
+P S
+726 1130 M
+11 0 D
+P S
+928 818 M
+20 5 D
+P S
+810 1070 M
+-2 9 D
+P S
+998 833 M
+11 -2 D
+P S
+749 946 M
+8 8 D
+P S
+916 643 M
+20 3 D
+-20 -2 D
+P S
+916 820 M
+11 1 D
+P S
+777 976 M
+7 -2 D
+-8 2 D
+P S
+822 998 M
+10 9 D
+P S
+891 645 M
+8 -7 D
+-9 8 D
+P S
+497 1281 M
+18 -9 D
+P S
+764 658 M
+-3 10 D
+P S
+719 1129 M
+7 0 D
+P S
+545 549 M
+9 3 D
+-9 -2 D
+P S
+1028 833 M
+7 -1 D
+P S
+473 1319 M
+6 -8 D
+P S
+687 536 M
+11 5 D
+P S
+601 626 M
+6 7 D
+P S
+959 819 M
+6 2 D
+P S
+809 550 M
+6 1 D
+-7 0 D
+P S
+708 935 M
+6 -1 D
+-7 2 D
+P S
+859 1034 M
+5 7 D
+P S
+962 813 M
+4 4 D
+-5 -4 D
+P S
+867 1045 M
+3 8 D
+-4 -8 D
+P S
+314 325 M
+-6 9 D
+5 -9 D
+P S
+720 532 M
+6 -6 D
+P S
+936 646 M
+7 3 D
+-7 -2 D
+P S
+596 1193 M
+5 -4 D
+-6 4 D
+P S
+949 809 M
+5 4 D
+P S
 665 533 M
 10 1 D
 -11 -1 D
@@ -6089,20 +6111,29 @@ S
 1 13 D
 -18 0 D
 P S
+506 1600 M
+27 -20 D
+2 -14 D
+-19 9 D
+P S
 737 1338 M
 29 -26 D
 -3 -39 D
 -55 21 D
 28 44 D
 P S
-506 1600 M
-27 -20 D
-2 -14 D
--19 9 D
+532 1500 M
+9 -11 D
+-21 6 D
 P S
-665 1347 M
-2 -19 D
--11 13 D
+753 1133 M
+13 -10 D
+-23 12 D
+10 -1 D
+P S
+623 1528 M
+15 -15 D
+-22 20 D
 P S
 638 1418 M
 17 -23 D
@@ -6113,39 +6144,30 @@ P S
 -10 -4 D
 -4 15 D
 P S
+665 1347 M
+2 -19 D
+-11 13 D
+P S
 606 1451 M
 10 -16 D
 -12 7 D
 P S
-532 1500 M
-9 -11 D
--21 6 D
-P S
-623 1528 M
-15 -15 D
--22 20 D
-P S
-753 1133 M
-13 -10 D
--23 12 D
-10 -1 D
+172 288 M
+-16 -4 D
 P S
 626 1394 M
 -1 -8 D
 0 9 D
 P S
-623 1573 M
--1 0 D
-47 -36 D
-P S
-172 288 M
--16 -4 D
+612 1421 M
+10 -4 D
 P S
 619 1460 M
 -5 -7 D
 P S
-612 1421 M
-10 -4 D
+623 1573 M
+-1 0 D
+47 -36 D
 P S
 1682 639 M
 2 5 D
@@ -6353,16 +6375,15 @@ FO
 12 -11 D
 55 36 D
 FO
-1347 802 M
-26 -5 D
-2 18 D
--31 1 D
--9 13 D
--16 -3 D
--7 9 D
-3 -18 D
-32 -16 D
-0 1 D
+1784 1045 M
+-21 -50 D
+27 35 D
+6 26 D
+-12 32 D
+-17 -13 D
+3 -11 D
+23 -3 D
+-9 -16 D
 FO
 1083 1409 M
 -40 -22 D
@@ -6374,15 +6395,16 @@ FO
 -6 9 D
 -10 -8 D
 FO
-1784 1045 M
--21 -50 D
-27 35 D
-6 26 D
--12 32 D
--17 -13 D
-3 -11 D
-23 -3 D
--9 -16 D
+1347 802 M
+26 -5 D
+2 18 D
+-31 1 D
+-9 13 D
+-16 -3 D
+-7 9 D
+3 -18 D
+32 -16 D
+0 1 D
 FO
 1904 1090 M
 -17 -1 D
@@ -6391,6 +6413,14 @@ FO
 18 -5 D
 4 10 D
 -38 -3 D
+FO
+1456 1248 M
+66 -37 D
+-11 -20 D
+29 10 D
+-66 49 D
+-18 -1 D
+0 -1 D
 FO
 2077 1073 M
 -9 -12 D
@@ -6414,49 +6444,17 @@ FO
 20 14 D
 -47 -2 D
 FO
-1456 1248 M
-66 -37 D
--11 -20 D
-29 10 D
--66 49 D
--18 -1 D
-0 -1 D
-FO
-2049 1080 M
-0 -17 D
-23 5 D
--12 14 D
--11 -2 D
-FO
-2105 1074 M
-0 -14 D
-24 -1 D
--5 16 D
--19 -1 D
+2017 1036 M
+24 18 D
+-14 -9 D
+-13 6 D
+3 -15 D
 FO
 1219 832 M
 24 -6 D
 33 12 D
 -19 11 D
 -38 -17 D
-FO
-1637 1220 M
-0 -9 D
-9 5 D
--6 24 D
--3 -20 D
-FO
-1950 979 M
--7 -10 D
-7 -10 D
-13 17 D
--13 3 D
-FO
-2017 1036 M
-24 18 D
--14 -9 D
--13 6 D
-3 -15 D
 FO
 1270 831 M
 33 -9 D
@@ -6470,25 +6468,49 @@ FO
 -12 -12 D
 26 5 D
 FO
-1042 1434 M
-3 -7 D
-1 14 D
--4 -7 D
+2049 1080 M
+0 -17 D
+23 5 D
+-12 14 D
+-11 -2 D
+FO
+2105 1074 M
+0 -14 D
+24 -1 D
+-5 16 D
+-19 -1 D
+FO
+1637 1220 M
+0 -9 D
+9 5 D
+-6 24 D
+-3 -20 D
+FO
+1950 979 M
+-7 -10 D
+7 -10 D
+13 17 D
+-13 3 D
 FO
 984 1212 M
 8 3 D
 -8 0 D
 0 -3 D
 FO
-1101 1398 M
-7 -5 D
-1 10 D
--8 -5 D
+1218 1076 M
+16 6 D
+3 14 D
+-19 -20 D
 FO
-1382 798 M
-25 -4 D
--22 12 D
--3 -8 D
+1231 1106 M
+16 6 D
+-8 10 D
+-8 -16 D
+FO
+1096 820 M
+49 -7 D
+-43 13 D
+-6 -6 D
 FO
 1278 1040 M
 9 -6 D
@@ -6496,30 +6518,30 @@ FO
 -15 -8 D
 0 -1 D
 FO
-1096 820 M
-49 -7 D
--43 13 D
--6 -6 D
+1268 605 M
+-10 0 D
+15 -3 D
+-5 3 D
 FO
-1231 1106 M
-16 6 D
--8 10 D
--8 -16 D
+1382 798 M
+25 -4 D
+-22 12 D
+-3 -8 D
 FO
-1218 1076 M
-16 6 D
-3 14 D
--19 -20 D
+1042 1434 M
+3 -7 D
+1 14 D
+-4 -7 D
+FO
+1101 1398 M
+7 -5 D
+1 10 D
+-8 -5 D
 FO
 1606 1157 M
 16 1 D
 2 9 D
 -18 -10 D
-FO
-1268 605 M
--10 0 D
-15 -3 D
--5 3 D
 FO
 1436 1227 M
 11 1 D
@@ -6582,10 +6604,6 @@ FO
 1151 820 M
 7 4 D
 -7 -4 D
-FO
-1108 1394 M
-2 6 D
--2 -6 D
 FO
 1098 1400 M
 5 6 D
@@ -7027,15 +7045,14 @@ P S
 1 -14 D
 12 -11 D
 P S
-1347 802 M
-26 -5 D
-2 18 D
--31 1 D
--9 13 D
--16 -3 D
--7 9 D
-3 -18 D
-32 -16 D
+1784 1045 M
+-21 -50 D
+27 35 D
+6 26 D
+-12 32 D
+-17 -13 D
+3 -11 D
+23 -3 D
 P S
 1083 1409 M
 -40 -22 D
@@ -7046,14 +7063,15 @@ P S
 96 64 D
 -6 9 D
 P S
-1784 1045 M
--21 -50 D
-27 35 D
-6 26 D
--12 32 D
--17 -13 D
-3 -11 D
-23 -3 D
+1347 802 M
+26 -5 D
+2 18 D
+-31 1 D
+-9 13 D
+-16 -3 D
+-7 9 D
+3 -18 D
+32 -16 D
 P S
 1904 1090 M
 -17 -1 D
@@ -7061,6 +7079,13 @@ P S
 33 13 D
 18 -5 D
 4 10 D
+P S
+1456 1248 M
+66 -37 D
+-11 -20 D
+29 10 D
+-66 49 D
+-18 -1 D
 P S
 2077 1073 M
 -9 -12 D
@@ -7081,42 +7106,15 @@ P S
 16 -10 D
 20 14 D
 P S
-1456 1248 M
-66 -37 D
--11 -20 D
-29 10 D
--66 49 D
--18 -1 D
-P S
-2049 1080 M
-0 -17 D
-23 5 D
--12 14 D
-P S
-2105 1074 M
-0 -14 D
-24 -1 D
--5 16 D
+2017 1036 M
+24 18 D
+-14 -9 D
+-13 6 D
 P S
 1219 832 M
 24 -6 D
 33 12 D
 -19 11 D
-P S
-1637 1220 M
-0 -9 D
-9 5 D
--6 24 D
-P S
-1950 979 M
--7 -10 D
-7 -10 D
-13 17 D
-P S
-2017 1036 M
-24 18 D
--14 -9 D
--13 6 D
 P S
 1270 831 M
 33 -9 D
@@ -7128,46 +7126,66 @@ P S
 -23 -3 D
 -12 -12 D
 P S
-1042 1434 M
-3 -7 D
-1 14 D
+2049 1080 M
+0 -17 D
+23 5 D
+-12 14 D
+P S
+2105 1074 M
+0 -14 D
+24 -1 D
+-5 16 D
+P S
+1637 1220 M
+0 -9 D
+9 5 D
+-6 24 D
+P S
+1950 979 M
+-7 -10 D
+7 -10 D
+13 17 D
 P S
 984 1212 M
 8 3 D
 -8 0 D
 P S
-1101 1398 M
-7 -5 D
-1 10 D
+1218 1076 M
+16 6 D
+3 14 D
 P S
-1382 798 M
-25 -4 D
--22 12 D
+1231 1106 M
+16 6 D
+-8 10 D
+P S
+1096 820 M
+49 -7 D
+-43 13 D
 P S
 1278 1040 M
 9 -6 D
 6 15 D
 -15 -8 D
 P S
-1096 820 M
-49 -7 D
--43 13 D
+1268 605 M
+-10 0 D
+15 -3 D
 P S
-1231 1106 M
-16 6 D
--8 10 D
+1382 798 M
+25 -4 D
+-22 12 D
 P S
-1218 1076 M
-16 6 D
-3 14 D
+1042 1434 M
+3 -7 D
+1 14 D
+P S
+1101 1398 M
+7 -5 D
+1 10 D
 P S
 1606 1157 M
 16 1 D
 2 9 D
-P S
-1268 605 M
--10 0 D
-15 -3 D
 P S
 1436 1227 M
 11 1 D
@@ -7215,9 +7233,6 @@ P S
 P S
 1151 820 M
 7 4 D
-P S
-1108 1394 M
-2 6 D
 P S
 1098 1400 M
 5 6 D
@@ -7820,6 +7835,8 @@ P S
 0 1 D
 13 4 D
 P S
+25 W
+4 W
 677 0 M
 -61 163 D
 -58 155 D
@@ -7969,15 +7986,15 @@ S
 34 15 D
 S
 8 W
-0 0 M -20 56 D S
-1364 0 M 21 -56 D S
-395 2400 M -24 55 D S
-2400 906 M 23 -55 D S
-1767 2400 M -24 55 D S
-0 0 M -56 -20 D S
-2400 928 M 56 23 D S
-0 1474 M -56 -22 D S
-2188 2400 M 55 24 D S
+N 0 0 M -20 56 D S
+N 1364 0 M 21 -56 D S
+N 395 2400 M -24 55 D S
+N 2400 906 M 23 -55 D S
+N 1767 2400 M -24 55 D S
+N 0 0 M -56 -20 D S
+N 2400 928 M 56 23 D S
+N 0 1474 M -56 -22 D S
+N 2188 2400 M 55 24 D S
 338 2532 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V -66.6 R (-80š) mr Z U
@@ -7988,19 +8005,21 @@ V -66.6 R (-80š) mr Z U
 2319 2458 M V 24 R (30š) ml Z U
 25 W
 2 setlinecap
-0 0 M 0 2400 D S
-2400 0 M 0 2400 D S
-0 0 M 2400 0 D S
-0 2400 M 2400 0 D S
+N 0 0 M 0 2400 D S
+N 2400 0 M 0 2400 D S
+N 0 0 M 2400 0 D S
+N 0 2400 M 2400 0 D S
 0 setlinecap
+%%EndObject
 0 A
 FQ
 O0
 0 -600 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT
+%%GMT: pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT
 %%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -8014,29 +8033,35 @@ V MU 0 0 M 150 F0 (b\)) FP 150 F2 ( ) FP 150 F1 (\035R) FP 150 F2 (xlleft/ylleft
 150 F1 (\035R) Z
 150 F2 (xlleft/ylleft/xuright/yuright ) Z
 150 F1 (r) Z
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Sc0.1 -Wthinner
+%%GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Sc0.1 -Wthinner
 %%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 8 W
+V
 O1
 60 0 600 Sc
 60 2400 3000 Sc
+U
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/2/-0.5/2 -Jx1i -O -N -Wthinner
+%%GMT: psxy -R0/2/-0.5/2 -Jx1i -O -N -Wthinner
 %%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -8053,6 +8078,7 @@ S
 2400 3000 M
 -444 -2820 D
 S
+%%EndObject
 %%PageTrailer
 U
 showpage

@@ -3346,7 +3346,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
 	unsigned int j, nstack = 0, n_stored = 0, kk;
 	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false;
-	bool read_stdin = false, t_check_required = true, touched_t_col = false, done;
+	bool read_stdin = false, t_check_required = true, touched_t_col = false, done, no_C = true;
 	uint64_t use_t_col = 0, row, n_records, n_rows = 0, n_columns = 0, seg;
 	
 	uint64_t dim[4] = {1, 1, 0, 0};
@@ -3608,6 +3608,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 		if (strchr ("AEINQSTVbfghios-" GMT_OPT("FHMm"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
+			no_C = false;
 			if (decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
 			continue;
 		}
@@ -3648,7 +3649,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 				}
 				if ((label = gmtmath_setlabel (GMT, opt->arg)) == NULL) Return (EXIT_FAILURE);
 				if ((k = gmtmath_find_stored_item (recall, n_stored, label)) != -1) {
-					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
+					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 				}
 				else {	/* Need new named storage place; use GMT_duplicate_dataset/GMT_free_dataset since no point adding to registered resources since internal use only */
@@ -3682,7 +3683,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 						stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 						stack[nstack]->alloc_mode = 1;
 					}
-					for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
+					for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
 					GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "@%s ", recall[k]->label);
@@ -3717,7 +3718,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					stack[nstack]->alloc_mode = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "T ");
-				for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_T);
+				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_T);
 				GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_t_MATRIX) {	/* Need to set up matrix of normalized t-values */
@@ -3730,7 +3731,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					stack[nstack]->alloc_mode = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Tn ");
-				for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TN);
+				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TN);
 				GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_FILE) {		/* Filename given */
@@ -3753,7 +3754,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					if (Ctrl->N.ncol > F->n_columns) GMT_adjust_dataset (GMT, F, Ctrl->N.ncol);	/* Add more input columns */
 					T_in = F->table[0];	/* Only one table since only a single file */
 				}
-				for (j = 0; j < n_columns; j++) if (!Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, T_in, j);
+				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, T_in, j);
 				GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 				if (!same_size (stack[nstack]->D, Template)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "tables not of same size!\n");

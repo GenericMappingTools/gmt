@@ -250,13 +250,19 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				break;
 			case 'C':	/* Near a point test */
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'f' && GMT_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
-					opt->arg[0] = '-';
-					fix = true;
+				if (opt->arg[0] == 'f') {
+					if (GMT_compat_check (GMT, 4)) {	/* Allow old-style quick-mode specification */
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
+						opt->arg[0] = '-';
+						fix = true;
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
+						n_errors++;
+					}
 				}
 				for (j = 0; opt->arg[j] && opt->arg[j] != '/'; j++);
-				if (opt->arg[j]) {
+				if (opt->arg[j]) {	/* Found a file name */
 					Ctrl->C.file = strdup (&opt->arg[j+1]);
 					opt->arg[j] = '\0';	/* Chop off the /filename part */
 					Ctrl->C.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->C.dist), &(Ctrl->C.unit));
@@ -266,7 +272,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
 					n_errors++;
 				}
-				if (fix) opt->arg[0] = 'f';
+				if (fix) opt->arg[0] = 'f';	/* Just to leave the original args unaltered */
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -431,7 +437,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	bool inside, need_header = false, shuffle, just_copy_record = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 
-	uint64_t k, row, seg, n_read = 0, n_pass = 0;
+	uint64_t k, row, seg, n_read = 0, n_pass = 0, n_output = 0;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
@@ -626,6 +632,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		}
 	}
 	
+	/* Specify input and output expected columns */
+	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
+
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -665,6 +674,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		}
 		
 		/* Data record to process */
+
+		if (n_output == 0) {
+			GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN));
+			n_output = GMT_get_cols (GMT, GMT_OUT);
+		}
 
 		n_read++;
 		if (n_read%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64 "records\r", n_read, n_pass);

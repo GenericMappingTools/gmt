@@ -6015,8 +6015,11 @@ uint64_t *GMT_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 
 /*  Routines to add pieces of parallels or meridians */
 
-uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int dir, double w, double e, double s, double n)
-{	/* Returns the path of a graticule (box of meridians and parallels) */
+uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int dir, bool check, double w, double e, double s, double n)
+{	/* Returns the path of a graticule (box of meridians and parallels).
+	 * dir determines if we go counter-clockwise or clockwise.
+	 * check, if true, forces a straddle check at the end for geographic data.
+	*/
 	size_t n_alloc = 0;
 	uint64_t np = 0;
 	double *xx = NULL, *yy = NULL;
@@ -6044,7 +6047,7 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 
 		/* SOUTH BORDER */
 
-		if (GMT_is_geographic (GMT, GMT_IN) && s == -90.0) {	/* No path, just a point */
+		if (GMT_is_geographic (GMT, GMT_IN) && s == -90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
 			GMT_malloc2 (GMT, xx, yy, 1U, &n_alloc, double);
 			xx[0] = px1;	yy[0] = -90.0;
 		}
@@ -6064,7 +6067,7 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 
 		/* NORTH BORDER */
 
-		if (GMT_is_geographic (GMT, GMT_IN) && n == 90.0) {	/* No path, just a point */
+		if (GMT_is_geographic (GMT, GMT_IN) && n == 90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
 			add = 0;
 			GMT_malloc2 (GMT, xtmp, ytmp, 1U, &add, double);
 			xtmp[0] = px3;	ytmp[0] = +90.0;
@@ -6092,7 +6095,7 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 		GMT_malloc2 (GMT, xx, yy, 0, &n_alloc, double);
 	}
 
-	if (GMT_x_is_lon (GMT, GMT_IN)) {
+	if (check && GMT_x_is_lon (GMT, GMT_IN)) {
 		bool straddle;
 		uint64_t i;
 		straddle = (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0);

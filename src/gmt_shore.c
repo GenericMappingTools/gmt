@@ -998,7 +998,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 	p = GMT_memory (GMT, NULL, p_alloc, struct GMT_GSHHS_POL);
 
 	if (completely_inside && use_this_level) {	/* Must include path of this bin's outline as our first polygon, e.g., there may be no segments here but we are in the middle of a continent (or lake) */
-		p[0].n = (int)GMT_graticule_path (GMT, &p[0].lon, &p[0].lat, dir, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
+		p[0].n = (int)GMT_graticule_path (GMT, &p[0].lon, &p[0].lat, dir, true, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
 		p[0].level = (c->node_level[0] == 2 && c->flag == GSHHS_NO_LAKES) ? 1 : c->node_level[0];	/* Any corner will do */
 		p[0].fid = p[0].level;	/* Override: Assumes no riverlake is that big to contain an entire bin */
 		p[0].interior = false;

@@ -81,7 +81,8 @@ Optional Arguments
     allowed. **-C** (no arguments) resets the default action of using
     all columns except time column (see **-N**). **-Ca** selects all
     columns, including time column, while **-Cr** reverses (toggles) the
-    current choices.
+    current choices.  When **-C** is in effect it also controls which
+    columns from a file will be placed on the stack.
 **-E**\ *eigen*
     Sets the minimum eigenvalue used by operators LSQFIT and SVDFIT [1e-7].
     Smaller eigenvalues are set to zero and will not be considered in the
