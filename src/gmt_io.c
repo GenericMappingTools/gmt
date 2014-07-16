@@ -539,6 +539,23 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 	return ((FILE *)tmp_pointer);
 }
 
+bool GMT_input_is_bin (struct GMT_CTRL *GMT, const char *filename)
+{
+	FILE *fd = NULL;
+
+	if (GMT->common.b.active[GMT_IN]) return true;	/* Clearly a binary file */
+	if (GMT_compat_check (GMT, 4) && GMT->common.b.varnames[0]) return true;	/* Definitely netCDF */
+	if (!filename)  return false;			/* Cannot be netCDF without a filename */
+	if (strchr (filename, '?'))  return true;	/* Definitely netCDF */
+	/* Might still be netCDF; try to open it */
+	fd = gmt_nc_fopen (GMT, filename, "r");
+	if (fd) {	/* Yes, it was */
+		GMT_fclose (GMT, fd);
+		return true;
+	}
+	else return false;	/* No, must be ascii */
+}
+
 FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
 {
 	char path[GMT_BUFSIZ];

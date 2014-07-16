@@ -67,6 +67,10 @@ void GMT_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 
 struct GMT2KML_CTRL {
 	double t_transp;
+	struct In {
+		bool active;
+		char *file;
+	} In;
 	struct A {	/* -A */
 		bool active;
 		bool get_alt;
@@ -159,6 +163,7 @@ void *New_gmt2kml_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	if (C->In.file) free (C->In.file);	
 	if (C->C.file) free (C->C.file);
 	if (C->D.file) free (C->D.file);
 	if (C->I.file) free (C->I.file);
@@ -266,7 +271,10 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+					n_errors++;
+				else if (n_files == 0)	/* Just keep name of first file */
+					Ctrl->In.file = strdup (opt->arg);
 				n_files++;
 				break;
 
@@ -712,7 +720,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	no_text = (GMT->common.b.active[GMT_IN] || GMT->common.i.active);	/* Must read as data table so no text columns are expected or considered */
+	no_text = (GMT_input_is_bin (GMT, Ctrl->In.file) || GMT->common.i.active);	/* Must read as data table so no text columns are expected or considered */
 
 	/* gmt2kml only applies to geographic data so we do a -fg implicitly here */
 	GMT_set_geographic (GMT, GMT_IN);
