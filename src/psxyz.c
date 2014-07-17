@@ -732,13 +732,38 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					data[n].dim[2] = (GMT_is_dnan (S.base)) ? 0.0 : GMT_z_to_zz (GMT, S.base);
 					break;
 				case GMT_SYMBOL_RNDRECT:
+					if (GMT_is_dnan (in[ex3])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
+						continue;
+					}
 					data[n].dim[2] = in[ex3];	/* radius */
 				case GMT_SYMBOL_RECT:
+					if (GMT_is_dnan (in[ex1])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle width = NaN near line %d\n", n_total_read);
+						continue;
+					}
+					dim[1] = in[ex2];
+					if (GMT_is_dnan (in[ex2])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle height = NaN near line %d\n", n_total_read);
+						continue;
+					}
 					data[n].dim[0] = in[ex1];	/* x-dim */
 					data[n].dim[1] = in[ex2];	/* y-dim */
 					break;
 				case GMT_SYMBOL_ELLIPSE:
 				case GMT_SYMBOL_ROTRECT:
+					if (GMT_is_dnan (p_in[ex1])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
+						continue;
+					}
+					if (GMT_is_dnan (p_in[ex2])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
+						continue;
+					}
+					if (GMT_is_dnan (p_in[ex3])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
+						continue;
+					}
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
 						data[n].dim[0] = p_in[ex1];	/* direction */
 						data[n].dim[1] = p_in[ex2];
@@ -779,6 +804,14 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 						data[n].dim[0] = 90.0 - in[ex1+S.read_size];
 					else	/* Convert geo azimuth to map direction */
 						data[n].dim[0] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
+					if (GMT_is_dnan (data[n].dim[0])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector azimuth = NaN near line %d\n", n_total_read);
+						continue;
+					}
+					if (GMT_is_dnan (in[ex2+S.read_size])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector length = NaN near line %d\n", n_total_read);
+						continue;
+					}
 					data[n].dim[1] = in[ex2+S.read_size];	/* length */
 					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
@@ -814,6 +847,14 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+					if (GMT_is_dnan (in[ex1+S.read_size])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Geovector azimuth = NaN near line %d\n", n_total_read);
+						continue;
+					}
+					if (GMT_is_dnan (in[ex2+S.read_size])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Geovector length = NaN near line %d\n", n_total_read);
+						continue;
+					}
 					data[n].dim[0] = in[ex1+S.read_size];	/* direction */
 					data[n].dim[1] = in[ex2+S.read_size];	/* length */
 					data[n].x = in[GMT_X];			/* Revert to longitude and latitude */
@@ -827,6 +868,10 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					data[n].dim[1] = in[ex2+S.read_size];	/* Start direction in degrees */
 					data[n].dim[2] = in[ex3+S.read_size];	/* Stop direction in degrees */
 					length = fabs (data[n].dim[2]-data[n].dim[1]);	/* Arc length in degrees */
+					if (GMT_is_dnan (length)) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Math angle arc length = NaN near line %d\n", n_total_read);
+						continue;
+					}
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 					data[n].dim[3] = s * S.v.h_length;	/* Length of (shrunk) vector head */
 					data[n].dim[4] = s * S.v.h_width;	/* Width of (shrunk) vector head */
@@ -835,6 +880,14 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					data[n].dim[7] = (double)S.v.status;	/* Vector tributes */
 					break;
 				case GMT_SYMBOL_WEDGE:
+					if (GMT_is_dnan (in[ex1+S.read_size])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Wedge start angle = NaN near line %d\n", n_total_read);
+						continue;
+					}
+					if (GMT_is_dnan (in[ex2+S.read_size])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Wedge stop angle = NaN near line %d\n", n_total_read);
+						continue;
+					}
 					if (!S.convert_angles) {
 						data[n].dim[1] = in[ex1+S.read_size];			/* Start direction in degrees */
 						data[n].dim[2] = in[ex2+S.read_size];			/* Stop direction in degrees */
