@@ -408,7 +408,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'R':	/* Region setting */
-				Ctrl->R2.active = true;
+				Ctrl->R2.active = GMT->common.R.active = true;
 				if (opt->arg[0] == 'a')	/* Get args from data domain */
 					Ctrl->R2.automatic = true;
 				else if (opt->arg[0])
@@ -793,7 +793,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 		get_rgb_lookup (GMT, P, index, rgb);	/* For -3, -2, -1 we get the back, fore, nan colors */
 		kml_print (API, N++, "<Style id=\"st-%d-%d\">\n", process_id, index + 4); /* +4 to make the first style ID = 1 */
 		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */
-			set_iconstyle (API, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
+			set_iconstyle (API, rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 		else if (Ctrl->F.mode == LINE)	/* Line style only */
 			set_linestyle (API, &Ctrl->W.pen, rgb, N);
 		else {	/* Polygons */
