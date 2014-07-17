@@ -1534,7 +1534,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	 */
 
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID;
-	unsigned int geometry;
+	unsigned int geometry, n_used = 0;
 	bool allocate = false, update = false, all_D, use_GMT_io, greenwich = true, via;
 	size_t n_alloc;
 	uint64_t row, seg, col, ij;
@@ -1614,7 +1614,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				break;
 
 			case GMT_IS_DUPLICATE:	/* Duplicate the input dataset */
-				if (n_alloc > 1) return_null (API, GMT_ONLY_ONE_ALLOWED);
+				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
 				if ((Din_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from GMT_DATASET memory location\n");
 				GMT_free (API->GMT, D_obj->table);	/* Free up what we allocated earlier since GMT_alloc_dataset does it all */
@@ -1623,7 +1623,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				break;
 
 			case GMT_IS_REFERENCE:	/* Just pass memory location, so free up what we allocated first */
-				if (n_alloc > 1) return_null (API, GMT_ONLY_ONE_ALLOWED);
+				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from GMT_DATASET memory location\n");
 				GMT_free (API->GMT, D_obj->table);	/* Free up what we allocated up front since we just wish to pass the pointer */
 				GMT_free (API->GMT, D_obj);
@@ -1733,6 +1733,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 		}
 #endif
 		S_obj->status = GMT_IS_USED;	/* Mark as read */
+		n_used++;	/* Number of items actually processed */
 	}
 	if (D_obj->n_tables == 0) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
 		D_obj->table = GMT_memory (API->GMT, D_obj->table, 1, struct GMT_DATATABLE *);
@@ -1938,6 +1939,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 	 */
 
 	int item, first_item = 0, last_item, this_item = GMT_NOTSET, new_item, new_ID;
+	unsigned int n_used = 0;
 	bool update = false, allocate = false, via;
 	size_t n_alloc;
 	uint64_t row, seg;
@@ -2002,7 +2004,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 				update = true;
 				break;
 			case GMT_IS_DUPLICATE:	/* Duplicate the input dataset */
-				if (n_alloc > 1) return_null (API, GMT_ONLY_ONE_ALLOWED);
+				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating text table from GMT_TEXTSET memory location\n");
 				GMT_free (API->GMT, T_obj->table);	/* Free up what we allocated since GMT_alloc_dataset does it all */
 				GMT_free (API->GMT, T_obj);
@@ -2010,7 +2012,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 				T_obj = GMT_duplicate_textset (API->GMT, S_obj->resource, GMT_ALLOC_NORMAL);
 				break;
 			case GMT_IS_REFERENCE:	/* Just pass memory location, so free up what we allocated first */
-				if (n_alloc > 1) return_null (API, GMT_ONLY_ONE_ALLOWED);
+				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from GMT_TEXTSET memory location\n");
 				GMT_free (API->GMT, T_obj->table);	/* Free up what we allocated since GMT_alloc_textset does it all */
 				GMT_free (API->GMT, T_obj);
@@ -2062,6 +2064,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 		}
 		S_obj->alloc_mode = T_obj->alloc_mode;	/* Clarify allocation mode for this entity */
 		S_obj->status = GMT_IS_USED;	/* Mark as read */
+		n_used++;	/* Number of items actually processed */
 	}
 
 	if (T_obj->n_tables == 0) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
