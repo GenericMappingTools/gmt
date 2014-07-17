@@ -213,6 +213,7 @@ EXTERN_MSC char **GMT_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext)
 EXTERN_MSC void GMT_free_dir_list (struct GMT_CTRL *GMT, char ***list);
 EXTERN_MSC void GMT_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns);
 EXTERN_MSC double *GMT_assign_vector (struct GMT_CTRL *GMT, uint64_t n_rows, uint64_t col);
+EXTERN_MSC bool GMT_input_is_bin (struct GMT_CTRL *GMT, const char *filename);
 
 /* gmt_memory.c: */
 
