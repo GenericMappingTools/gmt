@@ -98,6 +98,9 @@ struct ROTCONVERTER_CTRL {	/* All control options for this program (except commo
 	struct T {	/* -T */
 		bool active;
 	} T;
+	struct W {	/* -W */
+		bool active;
+	} W;
 };
 
 void *New_rotconverter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -122,7 +125,7 @@ int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-N] [-S] [-T] [%s]\n\t[%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-N] [-S] [-T] [%s] [-W]\n\t[%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
 	
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -139,10 +142,13 @@ int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Typically used to get half-rates needed for flowlines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set output file type: t for total reconstruction and s for stage rotations [Default is -Ft].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Write rotations using GPlates format [Default is spotter format].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Ensure all poles are in northern hemisphere [ Default ensures positive opening angles/rates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Ensure all poles are in southern hemisphere [ Default ensures positive opening angles/rates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles/rates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles/rates].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Transpose the result (i.e., change sign of final rotation angle).\n");
-	GMT_Option (API, "V,h,.");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Ensure all rotations have negative opening angles/rates [Default ensures positive opening angles/rates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Only one of -N, -S, -W may be used at the same time.\n");
+	GMT_Option (API, "h,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -224,6 +230,10 @@ int GMT_rotconverter_parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl
 				Ctrl->T.active = true;
 				break;
 
+			case 'W':	/* Ensure all poles reported have negative opening angles */
+				Ctrl->W.active = true;
+				break;
+
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6':
 				case '7': case '8': case '9': case '.':
 				break;	/* Probably a rotation lon/lat/angle with negative longitude */
@@ -234,7 +244,7 @@ int GMT_rotconverter_parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: Cannot specify both -N and -S!\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->S.active + Ctrl->N.active + Ctrl->W.active) > 1, "Syntax error: Specify only one of -N, -S, and -W!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "Syntax error: -E requires stage rotations on output\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error: -G requires total reconstruction rotations on output\n");
 
@@ -444,7 +454,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	
 	for (stage = 0; stage < n_a; stage++) {
 		if (Ctrl->T.active) a[stage].omega = -a[stage].omega;
-		if ((Ctrl->S.active && a[stage].lat > 0.0) || (Ctrl->N.active && a[stage].lat < 0.0) || (!(Ctrl->S.active || Ctrl->N.active) && a[stage].omega < 0.0))	/* flip to antipole */
+		if ((Ctrl->W.active && a[stage].omega > 0.0) || (Ctrl->S.active && a[stage].lat > 0.0) || (Ctrl->N.active && a[stage].lat < 0.0) || (!(Ctrl->S.active || Ctrl->N.active) && a[stage].omega < 0.0))	/* flip to antipole */
 			a[stage].lat = -a[stage].lat, a[stage].lon += 180.0, a[stage].omega = -a[stage].omega;
 		while (a[stage].lon >= 360.0) a[stage].lon -= 360.0;				/* Force geodetic longitude range */
 		while (a[stage].lon <= -180.0) a[stage].lon += 360.0;				/* Force geodetic longitude range */

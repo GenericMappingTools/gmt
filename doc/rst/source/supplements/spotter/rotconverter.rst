@@ -16,7 +16,7 @@ Synopsis
 **rotconverter** [ **+**\ \|\ **-** ] *rotA* [ **+**\ \|\ **-** *rotB* ]
 [ **+**\ \|\ **-** *rotC* ] ... [ **-A** ] [ **-D** ] [
 **-E**\ [*fact*] ] [ **-F**\ *out* ] [ **-G** ] [ **-N** ] [ **-S** ]
-[ **-T** ]
+[ **-T** ] [ **-W** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-h| ]
 
@@ -82,10 +82,19 @@ Optional Arguments
 **-T**
     Transpose the final result, i.e., change the sign of the rotation angles.
 
+**-W**
+    Ensure all output rotations have negative opening angles [Default reports positive rotation angles].
+
+
 .. |Add_-V| replace:: Report statistics of extracted rotations.
 .. include:: ../../explain_-V.rst_
 
 .. include:: ../../explain_help.rst_
+
+Limitations
+-----------
+
+Note that only one of **-N**, **-S**, and **-W** can be used at the same time.
 
 Examples
 --------
