@@ -69,7 +69,7 @@
 
     **-Sf**
         **f**\ ront.
-        **-Sf**\ *gap*\ [/*size*\ ][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*].
+        **-Sf**\ *gap*\ [/*size*\ ][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*][**+p**\ [*pen*]].
         Supply distance gap between symbols and symbol size. If *gap* is
         negative, it is interpreted to mean the number of symbols along the
         front instead. If *size* is missing it is set to 30% of the *gap*, except
@@ -80,7 +80,10 @@
         **s**\ lip, or **t**\ riangle. [Default is **f**\ ault]. Slip means
         left-lateral or right-lateral strike-slip arrows (centered is not an
         option). Append **+o**\ *offset* to offset the first symbol from the
-        beginning of the front by that amount [0]. Note: By placing **-Sf**
+        beginning of the front by that amount [0]. The chosen symbol is drawn
+	with the same pen as set for the line (i.e., via **-W**).  The use an
+	alternate pen, append **+p**\ *pen*.  To skip the outline, just use
+	**+p**.  Note: By placing **-Sf**
         options in the segment header you can change the front types on a
         segment-by-segment basis.
 

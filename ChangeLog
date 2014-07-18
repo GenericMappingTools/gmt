@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-07-17	pwessel
+	* psxy[z].c:		Added modifier +p[<pen>] to the front specification so that
+				one can specify an alternate symbol outline, or no outline
+				at all (by not specifying <pen>).
+
 2014-06-07	pwessel
 	* ps2raster.c:		Added new device -Ts for SVG (scalable vector graphics).
 

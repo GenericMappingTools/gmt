@@ -5251,6 +5251,7 @@ void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 		tmp_join = PSL->internal.line_join;	PSL_setlinejoin (PSL, 0);
 		tmp_limit = PSL->internal.miter_limit;	PSL_setmiterlimit (PSL, 0);
 	}
+	if (f->f_pen == 1) GMT_setpen (GMT, &f->pen);	/* Set alternate symbol pen */
 	i = 0;
 	while (i < n) {
 		while ((s[i] - dist) > -GMT_SMALL) {	/* Time for tick */

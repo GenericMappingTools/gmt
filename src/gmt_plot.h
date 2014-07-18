@@ -94,6 +94,8 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	double f_off;		/* Offset of first symbol from start of front in inches */
 	int f_sense;	/* Draw symbols to left (+1), centered (0), or right (-1) of line */
 	int f_symbol;	/* Which symbol to draw along the front line */
+	int f_pen;	/* -1 for no outline (+p), 0 for default outline [-1], +1 if +p<pen> was used to set separate pen for outline */
+	struct GMT_PEN pen;	/* Pen for outline of front symbol [-W] */
 };
 
 /* Note: If changes are made to GMT_enum_vecattr you must also change pslib.h: PSL_enum_vecattr */
