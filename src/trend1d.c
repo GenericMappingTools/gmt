@@ -77,7 +77,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>Vbdhis" GMT_OPT("H")
+#define GMT_PROG_OPTIONS "-:>Vbdfhis" GMT_OPT("H")
 
 #define TREND1D_N_OUTPUT_CHOICES 5
 
