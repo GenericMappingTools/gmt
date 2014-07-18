@@ -454,7 +454,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	
 	for (stage = 0; stage < n_a; stage++) {
 		if (Ctrl->T.active) a[stage].omega = -a[stage].omega;
-		if ((Ctrl->W.active && a[stage].omega > 0.0) || (Ctrl->S.active && a[stage].lat > 0.0) || (Ctrl->N.active && a[stage].lat < 0.0) || (!(Ctrl->S.active || Ctrl->N.active) && a[stage].omega < 0.0))	/* flip to antipole */
+		if ((Ctrl->W.active && a[stage].omega > 0.0) || (Ctrl->S.active && a[stage].lat > 0.0) || (Ctrl->N.active && a[stage].lat < 0.0) || (!(Ctrl->S.active || Ctrl->N.active || Ctrl->W.active) && a[stage].omega < 0.0))	/* flip to antipole */
 			a[stage].lat = -a[stage].lat, a[stage].lon += 180.0, a[stage].omega = -a[stage].omega;
 		while (a[stage].lon >= 360.0) a[stage].lon -= 360.0;				/* Force geodetic longitude range */
 		while (a[stage].lon <= -180.0) a[stage].lon += 360.0;				/* Force geodetic longitude range */
@@ -481,6 +481,9 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 			out[col++] = a[stage].t_start;
 			out[col++] = a[stage].t_stop;
 			out[col++] = a[stage].omega * a[stage].duration;
+		}
+		if (out[4] > 0.0) {
+			k = 9;
 		}
 		if (a[stage].has_cov) {
 			double K[9];
