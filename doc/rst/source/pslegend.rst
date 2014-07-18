@@ -205,9 +205,9 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
     can also be given as a justification code L, C, R which justifies the
     symbol with respect to the current column.  If no arguments are given
-    to **S** then we simply skip to the next column.  Two **psxy**
-    symbols may take special modifiers: front (**f**) and vector (**v**). 
-    You can append modifiers to the symbol and affect how the fronts and
+    to **S** then we simply skip to the next column.  Three **psxy**
+    symbols may take special modifiers: front (**f**), quoted line (**q**)  and vector (**v**). 
+    You can append modifiers to the symbol and affect how the fronts quoted lines and
     vectors are presented (see :doc:`psxy` man page for modifiers).
     **pslegend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
