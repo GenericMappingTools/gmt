@@ -120,40 +120,40 @@ struct X2SYS_SOLVE_CTRL {
  * col:	  The crossover number we are working on.
  */
 
-double basis_constant (double **GMT_UNUSED(P), int GMT_UNUSED(which), int GMT_UNUSED(col)) {	/* Basis function f for a constant c*f = c*1 : == 1 */
-	return (1.0);	/* which, col are not used here */
+double basis_constant (double **GMT_UNUSED(P), unsigned int GMT_UNUSED(which), uint64_t GMT_UNUSED(row)) {	/* Basis function f for a constant c*f = c*1 : == 1 */
+	return (1.0);	/* which, row are not used here */
 }
 
-double basis_tdrift (double **P, int which, int col) {	/* Basis function f for a linear drift rate in time c*f = c*t : t */
-	return (P[COL_T1+which][col]);	/* When this is called the time columns have been corrected for t0 (start of track) */
+double basis_tdrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in time c*f = c*t : t */
+	return (P[COL_T1+which][row]);	/* When this is called the time columns have been corrected for t0 (start of track) */
 }
 
-double basis_ddrift (double **P, int which, int col) {	/* Basis function f for a linear drift rate in dist c*f = c*d : d */
-	return (P[COL_D1+which][col]);
+double basis_ddrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in dist c*f = c*d : d */
+	return (P[COL_D1+which][row]);
 }
 
-double basis_cosh (double **P, int which, int col) {	/* Basis function f for a dependence on cos(h)  c*f = c*cos(h) : cos(h) */
-	return (cosd(P[COL_H1+which][col]));
+double basis_cosh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(h)  c*f = c*cos(h) : cos(h) */
+	return (cosd(P[COL_H1+which][row]));
 }
 
-double basis_cos2h (double **P, int which, int col) {	/* Basis function f for a dependence on cos(2*h)  c*f = c*cos(2*h) : cos(2*h) */
-	return (cosd(2.0*P[COL_H1+which][col]));
+double basis_cos2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(2*h)  c*f = c*cos(2*h) : cos(2*h) */
+	return (cosd(2.0*P[COL_H1+which][row]));
 }
 
-double basis_sinh (double **P, int which, int col) {	/* Basis function f for a dependence on sin(h)  c*f = c*sin(h) : sin(h) */
-	return (sind(P[COL_H1+which][col]));
+double basis_sinh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(h)  c*f = c*sin(h) : sin(h) */
+	return (sind(P[COL_H1+which][row]));
 }
 
-double basis_sin2h (double **P, int which, int col) {	/* Basis function f for a dependence on sin(2*h)  c*f = c*sin(2*h) : sin(2*h) */
-	return (sind(2.0*P[COL_H1+which][col]));
+double basis_sin2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(2*h)  c*f = c*sin(2*h) : sin(2*h) */
+	return (sind(2.0*P[COL_H1+which][row]));
 }
 
-double basis_siny2 (double **P, int GMT_UNUSED(which), int col) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
-	return (pow (sind(P[COL_YY][col]), 2.0));	/* which not used since y is common to both tracks */
+double basis_siny2 (double **P, unsigned int GMT_UNUSED(which), uint64_t row) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
+	return (pow (sind(P[COL_YY][row]), 2.0));	/* which not used since y is common to both tracks */
 }
 
-double basis_z (double **P, int which, int col) {	/* Basis function f for a dependence on value c*f = c*z : z */
-	return (P[COL_Z1+which][col]);
+double basis_z (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on value c*f = c*z : z */
+	return (P[COL_Z1+which][row]);
 }
 
 
@@ -341,20 +341,19 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	char **trk_list = NULL;
 	char trk[2][GMT_LEN64], t_txt[2][GMT_LEN64], z_txt[GMT_LEN64] = {""}, w_txt[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
-	int *ID[2] = {NULL, NULL}, ks, t;
+	int *ID[2] = {NULL, NULL}, ks, t, error = 0, ierror;
 	uint64_t n_par = 0, n, m, n_tracks = 0, n_active;
-	uint64_t i, p, j, k, r, s, off, row, n_COE = 0;
-	int error = 0, ierror;
+	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, *R = NULL, *col_off = NULL;
 	size_t n_alloc = GMT_CHUNK, n_alloc_t = GMT_CHUNK;
-	double *N = NULL, *a = NULL, *b = NULL, *data[N_COE_PARS], sgn, old_mean, new_mean, sw2;
-	double old_stdev, new_stdev, e_k, min_extent, max_extent, range = 0.0, Sw, Sx, Sxx;
+	double *N = NULL, *a = NULL, *b = NULL, *data[N_COE_PARS], sgn, old_mean, new_mean, sw2, C_i, C_j;
+	double old_stdev, new_stdev, e_k, min_extent, max_extent, range = 0.0, Sw, Sx, Sxx, var[N_BASIS];
 #ifdef SAVEFORLATER
 	double *start = NULL;
 #endif
 	struct X2SYS_INFO *S = NULL;
 	struct X2SYS_BIX B;
 	FILE *fp = NULL;
-	double (*basis[N_BASIS]) (double **, int, int);	/* Pointers to selected basis functions */
+	double (*basis[N_BASIS]) (double **, unsigned int, uint64_t);	/* Pointers to selected basis functions */
 	
 	struct X2SYS_SOLVE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -469,8 +468,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	n_COE = 0;
 	if (GMT->common.b.active[GMT_IN]) {	/* Binary input */
 		/* Here, first two cols have track IDs and we do not write track names */
-		int min_ID, max_ID;
-		int n_fields;
+		int min_ID, max_ID, n_fields;
 		uint64_t n_expected_fields, n_tracks2;
 		double *in = NULL;
 		char *check = NULL;
@@ -550,7 +548,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Ascii input with track names */
-		char file_TAG[GMT_LEN64] = {""}, file_column[GMT_LEN64] = {""};
+		char file_TAG[GMT_LEN64] = {""}, file_column[GMT_LEN64] = {""}, unused1[GMT_LEN64] = {""}, unused2[GMT_LEN64] = {""};
 		if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Read first line with TAG and column */
 			GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track file\n");
 			Return (EXIT_FAILURE);
@@ -564,34 +562,40 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 			if (line[0] == '#') continue;	/* Skip other comments */
 			switch (Ctrl->E.mode) {	/* Handle input differently depending on what is expected */
 				case F_IS_CONSTANT:
-					sscanf (line, "%s %s %s %s", trk[0], trk[1], z_txt, w_txt);
+					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], z_txt, w_txt, unused1, unused2);
+					if (ks != 4) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Ec expected 4 columns but found %d for crossover %" PRIu64 "\n", ks, n_COE);
 					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
 					break;
 				case F_IS_DRIFT_T:
-					sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
+					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
+					if (ks != 6) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Et expected 6 columns but found %d for crossover %" PRIu64 "\n", ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_ABSTIME, &data[COL_T1][n_COE]) == GMT_IS_NAN) data[COL_T1][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, t_txt[1], GMT_IS_ABSTIME, &data[COL_T2][n_COE]) == GMT_IS_NAN) data[COL_T2][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
+					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]    = GMT->session.d_NaN;
 					break;
 				case F_IS_DRIFT_D:
-					sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
+					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
+					if (ks != 6) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Ed expected 6 columns but found %d for crossover %" PRIu64 "\n", ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_D1][n_COE]) == GMT_IS_NAN) data[COL_D1][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_D2][n_COE]) == GMT_IS_NAN) data[COL_D2][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
+					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]  = GMT->session.d_NaN;
 					break;
 				case F_IS_GRAV1930:
-					sscanf (line, "%s %s %s %s %s", trk[0], trk[1], t_txt[0], z_txt, w_txt);
-					if (GMT_scanf (GMT, t_txt[0], GMT_IS_LAT, &data[COL_YY][n_COE]) == GMT_IS_NAN) data[COL_YY][n_COE] = GMT->session.d_NaN;
+					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], z_txt, w_txt, unused1);
+					if (ks != 5) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Eg expected 5 columns but found %d for crossover %" PRIu64 "\n", ks, n_COE);
+					if (GMT_scanf (GMT, t_txt[0], GMT_IS_LAT, &data[COL_YY][n_COE]) == GMT_IS_NAN) data[COL_YY][n_COE]  = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
 					break;
 				case F_IS_HEADING:
-					sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
+					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
+					if (ks != 6) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Eh expected 6 columns but found %d for crossover %" PRIu64 "\n", ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_H1][n_COE]) == GMT_IS_NAN) data[COL_H1][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_H2][n_COE]) == GMT_IS_NAN) data[COL_H2][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
+					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]  = GMT->session.d_NaN;
 					break;
 				case F_IS_SCALE:
-					sscanf (line, "%s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], w_txt);
+					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], w_txt, unused1);
+					if (ks != 5) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Es expected 5 columns but found %d for crossover %" PRIu64 "\n", ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_Z1][n_COE]) == GMT_IS_NAN) data[COL_Z1][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_Z2][n_COE]) == GMT_IS_NAN) data[COL_Z2][n_COE] = GMT->session.d_NaN;
 					break;
@@ -640,7 +644,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_COE, double);
 	data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_COE, double);
 	
-	normalize = (Ctrl->E.mode == F_IS_DRIFT_T || Ctrl->E.mode == F_IS_DRIFT_D);
+	normalize = (Ctrl->E.mode == F_IS_DRIFT_T || Ctrl->E.mode == F_IS_DRIFT_D);	/* Only when the linear drift term is in effect */
 	if (normalize) {	/* For numerical stability, normalize distances or times to fall in 0-1 range */
 		min_extent = DBL_MAX;	max_extent = -DBL_MAX;
 		j = (Ctrl->E.mode == F_IS_DRIFT_T) ? COL_T1 : COL_D1;	/* Which variable we are working on */
@@ -654,7 +658,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 			}
 		}
 		range = max_extent - min_extent;
-		for (k = 0; k < n_COE; k++) for (i = 0; i < 2; i++) data[j+i][k] /= range;
+		for (k = 0; k < n_COE; k++) for (i = 0; i < 2; i++) data[j+i][k] /= range;	/* Get normalized time or distance */
 	}
 
 	/* Estimate old weighted mean and std.dev */
@@ -668,18 +672,38 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	}
 	else {
 		for (k = 0, Sw = Sx = Sxx = 0.0; k < n_COE; k++) {	/* For each crossover */
-			Sw += data[COL_WW][k];
-			Sx += (data[COL_WW][k] * data[COL_COE][k]);
+			Sw  += data[COL_WW][k];
+			Sx  += (data[COL_WW][k] * data[COL_COE][k]);
 			Sxx += (data[COL_WW][k] * data[COL_COE][k] * data[COL_COE][k]);
 		}
 	}
 	old_mean = Sx / Sw;
 	old_stdev = sqrt ((n_COE * Sxx - Sx * Sx) / (Sw*Sw*(n_COE - 1.0)/n_COE));
 
+	/* Because it can happen that a track has less crossovers than n_par, we must determine R(track), the max parameters per track we can fit */
+	R = GMT_memory (GMT, NULL, n_tracks, uint64_t);		/* Number of parameter for each track p, so that 1 <= R(p) < n_par */
+	col_off = GMT_memory (GMT, NULL, n_tracks, uint64_t);	/* Since R(p) may vary, need cumulative sum of R(p) to get correct column */
+	for (k = 0; k < n_COE; k++) {	/* Count number of crossovers per track */
+		i = ID[0][k];	/* Get track # 1 ID */
+		j = ID[1][k];	/* Get track # 2 ID */
+		R[i]++;		/* Increase COE count for track i */
+		R[j]++;		/* Increase COE count for track j */
+	}
+	for (p = n = 0; p < n_tracks; p++) {	/* For each track, determine R[track], total number of parameters, and the column offsets */
+		(GMT->common.b.active[GMT_IN]) ? sprintf (trk[0], "%" PRIu64, p) : sprintf (trk[0], "%s", trk_list[p]);
+		if (R[p] < n_par)	/* Came up short */
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Track %s only has %" PRIu64 " crossings so can only solve for %" PRIu64 " of the %" PRIu64 " parameters\n", trk[0], R[p], R[p], n_par);
+		else
+			R[p] = n_par;
+		n += R[p];	/* Add up total number of unknowns across all tracks */
+		if (p) col_off[p] = col_off[p-1] + R[p-1];	/* Offset along a row given not every track may have n_par columns. Obviously, col_off[0] = 0 */
+	}
+	GMT_Report (API, GMT_MSG_VERBOSE, "Number of unknowns are %" PRIu64 " [+1 if model contains a constant]\n", n);
+	
 	/* Set up matrix and column vectors */
 
-	n = n_tracks * n_par;	/* Total number of unknowns */
 	m = (Ctrl->E.mode == F_IS_SCALE) ? n : n + 1;	/* Need extra row/column to handle Lagrange's multiplier for unknown absolute level */
+	/* Allocate arrays for N*x = b, the m x m linear system */
 	N = GMT_memory (GMT, NULL, m*m, double);
 	b = GMT_memory (GMT, NULL, m, double);
 
@@ -688,28 +712,27 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	 * is implemented by adding an extra row/column with the appropriate 0s and 1s and a Lagrange multiplier. */
 	
 	for (p = row = 0; p < n_tracks; p++) {	/* For each track */
-		for (s = 0; s < n_par; s++, row++) {	/* For each track's unknown parameter  */
+		for (s = 0; s < R[p]; s++, row++) {	/* For each of this track's unknown parameters  */
 			for (k = 0; k < n_COE; k++) {	/* For each crossover */
 				i = ID[0][k];	/* Get track # 1 ID */
 				j = ID[1][k];	/* Get track # 2 ID */
-				if (i == p) {
+				if (i == p) {		/* p equals track # 1 */
 					sgn = +1.0;	t = 0;
-				} else if (p == j) {
+				} else if (p == j) {	/* p equals track # 2 */
 					sgn = -1.0;	t = 1;
-				} else continue;
+				} else continue;	/* COE did not involve track p, goto next crossover */
 				sw2 = sgn * data[COL_WW][k] * data[COL_WW][k];
-				ks = (int)k;
-				for (r = 0, off = m * row; r < n_par; r++) {	/* For each track's parameter in f(p)  */
-					N[off+i*n_par+r] += sw2 * (basis[r](data,0,ks) * basis[s](data,t,ks));
-					N[off+j*n_par+r] -= sw2 * (basis[r](data,1,ks) * basis[s](data,t,ks));
-				}
-				b[row] += sw2 * (data[COL_COE][k] * basis[s](data,t,ks));
+				for (r = 0, row_off = m * row; r < R[i]; r++)	/* For track i's parameters in f(p)  */
+					N[row_off+col_off[i]+r] += sw2 * (basis[r](data,0,k) * basis[s](data,t,k));
+				for (r = 0, row_off = m * row; r < R[j]; r++)	/* For track j's parameters in f(p)  */
+					N[row_off+col_off[j]+r] -= sw2 * (basis[r](data,1,k) * basis[s](data,t,k));
+				b[row] += sw2 * (data[COL_COE][k] * basis[s](data,t,k));
 			}
 			if (Ctrl->E.mode != F_IS_SCALE && s == 0) N[m*row+m-1] = 1.0;	/* Augmented column entry for Lagrange multiplier */
 		}
 	}
 	if (Ctrl->E.mode != F_IS_SCALE) {	/* Augmented row for Lagrange multiplier for constants */
-		for (i = 0, off = m*n; i < n; i += n_par) N[off+i] = 1.0;
+		for (p = 0, row_off = m*n; p < n_tracks; p++) N[row_off+col_off[p]] = 1.0;
 	}
 
 #ifdef DEBUGX	
@@ -722,6 +745,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 
 	/* Get LS solution */
 
+	GMT_Report (API, GMT_MSG_VERBOSE, "Matrix equation N * a = b: (N = %d x %d)\n", m, m);
 	if ((ierror = GMT_gauss (GMT, N, b, (unsigned int)m, (unsigned int)m, true)))
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Divisions by a small number (< DBL_EPSILON) occurred in GMT_gauss()!\n");
 
@@ -733,11 +757,11 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	for (k = 0, Sw = Sx = Sxx = 0.0; k < n_COE; k++) {	/* For each crossover */
 		i = ID[0][k];	/* Get track # 1 ID */
 		j = ID[1][k];	/* Get track # 2 ID */
-		e_k = data[COL_COE][k];
-		ks = (int)k;
-		for (r = 0; r < n_par; r++) {	/* Correct crossover for track adjustments  */
-			e_k += a[j*n_par+r]*basis[r](data,1,ks) - a[i*n_par+r]*basis[r](data,0,ks);
-		}
+		for (r = 0, C_j = 0.0; r < R[j]; r++)	/* Correct adjustment for track j  */
+			C_j += a[col_off[j]+r]*basis[r](data,1,k);
+		for (r = 0, C_i = 0.0; r < R[i]; r++)	/* Correct adjustment for track i  */
+			C_i += a[col_off[i]+r]*basis[r](data,0,k);
+		e_k = data[COL_COE][k] + (C_j - C_i);	/* Adjusted crossover error */
 
 		if (Ctrl->W.unweighted_stats) {
 			Sx  += e_k;
@@ -761,27 +785,29 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	/* Write correction table */
 	
 	for (p = 0; p < n_tracks; p++) {
-		if (normalize) a[p*n_par+1] /= range;	/* Unnormalize slopes */
+		if (normalize) a[col_off[p]+1] /= range;	/* Unnormalize slopes */
 		(GMT->common.b.active[GMT_IN]) ? printf ("%" PRIu64, p) : printf ("%s", trk_list[p]);
 		printf ("\t%s", Ctrl->C.col);
+		GMT_memset (var, N_BASIS, double);	/* Reset all parameters to zero */
+		for (r = 0; r < R[p]; r++) var[r] = a[col_off[p]+r];	/* Just get the first R(p) items; the rest are set to 0 */
 		switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 			case F_IS_CONSTANT:
-				printf ("\t%g\n", a[p]);
+				printf ("\t%g\n", var[0]);
 				break;
 			case F_IS_DRIFT_T:
-				printf ("\t%g\t%g*((time-T))\n", a[p*n_par], a[p*n_par+1]);
+				printf ("\t%g\t%g*((time-T))\n", var[0], var[1]);
 				break;
 			case F_IS_DRIFT_D:
-				printf ("\t%g\t%g*((dist))\n", a[p*n_par], a[p*n_par+1]);
+				printf ("\t%g\t%g*((dist))\n", var[0], var[1]);
 				break;
 			case F_IS_GRAV1930:
-				printf ("\t%g\t%g*sin((lat))^2\n", a[p*n_par], a[p*n_par+1]);
+				printf ("\t%g\t%g*sin((lat))^2\n", var[0], var[1]);
 				break;
 			case F_IS_HEADING:
-				printf ("\t%g\t%g*cos((azim))\t%g*cos(2*(azim))\t%g*sin((azim))\t%g*sin(2*(azim))\n", a[p*n_par], a[p*n_par+1], a[p*n_par+2], a[p*n_par+3], a[p*n_par+4]);
+				printf ("\t%g\t%g*cos((azim))\t%g*cos(2*(azim))\t%g*sin((azim))\t%g*sin(2*(azim))\n", var[0], var[1], var[2], var[3], var[4]);
 				break;
 			case F_IS_SCALE:
-				printf ("\t%g*((%s))\n", 1.0 - a[p], Ctrl->C.col);
+				printf ("\t%g*((%s))\n", 1.0 - var[0], Ctrl->C.col);
 				break;
 		}
 	}
@@ -792,6 +818,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	if (data[COL_WW]) GMT_free (GMT, data[COL_WW]);
 	for (i = 0; i < 2; i++) GMT_free (GMT, ID[i]);
 	GMT_free (GMT, b);
+	GMT_free (GMT, R);
+	GMT_free (GMT, col_off);
 	x2sys_free_list (GMT, trk_list, n_tracks);
 #ifdef SAVEFORLATER
 	if (start) GMT_free (GMT, start);
