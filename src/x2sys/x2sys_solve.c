@@ -785,7 +785,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	/* Write correction table */
 	
 	for (p = 0; p < n_tracks; p++) {
-		if (normalize) a[p*n_par+1] /= range;	/* Unnormalize slopes */
+		if (normalize) a[col_off[p]+1] /= range;	/* Unnormalize slopes */
 		(GMT->common.b.active[GMT_IN]) ? printf ("%" PRIu64, p) : printf ("%s", trk_list[p]);
 		printf ("\t%s", Ctrl->C.col);
 		GMT_memset (var, N_BASIS, double);	/* Reset all parameters to zero */
