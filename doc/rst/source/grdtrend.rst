@@ -15,7 +15,7 @@ grdtrend
 
 **grdtrend** *grdfile* **-N**\ *n\_model*\ [**r**] [ **-D**\ *diff.nc* ]
 [ |SYN_OPT-R| ]
-[ **-T**\ *trend.nc* ] [ |SYN_OPT-R| ] [ **-W**\ *weight.nc* ]
+[ **-T**\ *trend.nc* ] [ **-W**\ *weight.nc* ]
 
 |No-spaces|
 
