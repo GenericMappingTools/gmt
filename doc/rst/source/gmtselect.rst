@@ -149,8 +149,9 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 **-Z**\ *min*\ [/*max*]\ [**+c**\ *col*]
-    Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range.
-    If *max* is omitted then we test if *z* equals *min* instead.
+    Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range
+    or is NaN (use **-s** to skip NaN records).
+    If *max* is omitted then we test if *z* equals *min* instead.  
     Input file must have at least three columns. To indicate no limit on
     min or max, specify a hyphen (-). If your 3rd column is absolute
     time then remember to supply **-f**\ 2T. To specify another column, append
