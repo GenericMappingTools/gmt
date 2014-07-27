@@ -523,7 +523,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		np[0] = np[1] = 0;
 	}
 
-	just_copy_record = (GMT_is_ascii_record (GMT) && !shuffle);
+	just_copy_record = (GMT_is_ascii_record (GMT) && !shuffle && !GMT->common.s.active);
 
 	/* Initiate pointer to distance calculation function */
 	if (GMT_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
@@ -694,8 +694,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		if (Ctrl->Z.active) {	/* Apply z-range test(s) */
 			for (k = 0, keep = true; keep && k < Ctrl->Z.n_tests; k++) {
 				col = Ctrl->Z.limit[k].col;			/* Shorthand notation */
-				if (GMT_is_dnan (in[col])) keep = false;	/* Cannot keep when no z-value */
-				if (Ctrl->Z.limit[k].equal)
+				if (GMT_is_dnan (in[col]))
+					keep = true;		/* Make no decision on NaNs here; see -s instead */
+				else if (Ctrl->Z.limit[k].equal)
 					inside = doubleAlmostEqualZero (in[col], Ctrl->Z.limit[k].min);
 				else
 					inside = (in[col] >= Ctrl->Z.limit[k].min && in[col] <= Ctrl->Z.limit[k].max); 

@@ -15,7 +15,7 @@ grdtrend
 
 **grdtrend** *grdfile* **-N**\ *n\_model*\ [**r**] [ **-D**\ *diff.nc* ]
 [ |SYN_OPT-R| ]
-[ **-T**\ *trend.nc* ] [ |SYN_OPT-R| ] [ **-W**\ *weight.nc* ]
+[ **-T**\ *trend.nc* ] [ **-W**\ *weight.nc* ]
 
 |No-spaces|
 
@@ -30,7 +30,7 @@ is defined by:
    m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
 
 The user must specify **-N**\ *n\_model*, the number of model parameters
-to use; thus, **-N**\ *4* fits a bilinear trend, **-N**\ *6* a quadratic
+to use; thus, **-N**\ *3* fits a bilinear trend, **-N**\ *6* a quadratic
 surface, and so on. Optionally, append **r** to the **-N** option to
 perform a robust fit. In this case, the program will iteratively
 reweight the data based on a robust scale estimate, in order to converge

@@ -2656,6 +2656,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	unsigned int i, j, jj, form;
 	unsigned int n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
 	unsigned int n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
+	int js;
 	enum GMT_enum_units unit;
 	double x1, x2, y1, y2, tx, ty, off, f_len, a_len, x_left, x_right, bar_length, x_label, y_label;
 	double XL, YL, XR, YR, dist, scl;
@@ -2712,8 +2713,8 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	x_right = ms->x0 + half;
 
 	if (ms->fancy) {	/* Fancy scale */
-		j = urint (floor (d_log10 (GMT, ms->length / 0.95)));
-		base = pow (10.0, (double)j);
+		js = irint (floor (d_log10 (GMT, ms->length / 0.95)));
+		base = pow (10.0, (double)js);
 		i = urint (ms->length / base) - 1;
 		d_base = ms->length / n_a_ticks[i];
 		dx_f = width / n_f_ticks[i];
@@ -2721,7 +2722,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 		bar_width = 0.5 * fabs (GMT->current.setting.map_scale_height);
 		f_len = 0.75 * fabs (GMT->current.setting.map_scale_height);
 		if (ms->boxdraw || ms->boxfill) {	/* Draw a rectangle beneath the scale */
-			dx = fabs (0.5 * j * 0.4 * (GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH));
+			dx = fabs (0.5 * js * 0.4 * (GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH));
 			if (ms->boxdraw) GMT_setpen (GMT, &ms->pen);
 			GMT_setfill (GMT, &ms->fill, ms->boxdraw);
 			PSL_plotbox (PSL, x_left - 2.0 * GMT->current.setting.map_annot_offset[0] - dx,

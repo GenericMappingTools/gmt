@@ -748,6 +748,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 		/* Must reduce nx,ny by 1 to exclude the extra padding for pixel grids */
 		C->Grid->header->nx--;	C->nx--;
 		C->Grid->header->ny--;	C->ny--;
+		GMT_set_grddim (GMT, C->Grid->header);	/* Reset all integer dimensions and xy_off */
 	}
 	for (i = 0; i < C->nx; i++, index += C->my) {
 		for (j = 0; j < C->ny; j++) {
@@ -1736,8 +1737,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	if (GMT->common.r.active) {		/* Pixel registration request. Use the trick of offsetting area by x_inc(y_inc) / 2 */
 		wesn[XLO] += Ctrl->I.inc[GMT_X] / 2.0;	wesn[XHI] += Ctrl->I.inc[GMT_X] / 2.0;
 		wesn[YLO] += Ctrl->I.inc[GMT_Y] / 2.0;	wesn[YHI] += Ctrl->I.inc[GMT_Y] / 2.0;
-		one++;	/* Just so we can report correct nx,ny for the grid; internally it is the same until output */
-		/* nx,ny remains the same for now but nodes are in "pixel" position.  Must reset to original wesn and reduce nx,ny by 1 when we write result */
+		/* nx,ny remain the same for now but nodes are in "pixel" position.  Must reset to original wesn and reduce nx,ny by 1 when we write result */
 	}
 	
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, wesn, Ctrl->I.inc, \
