@@ -85,6 +85,7 @@ struct GMTFLEXURE_CTRL {
 	} M;
 	struct Q {	/* Load specifier -Q<mode><args>*/
 		bool active;
+		bool set_x;
 		unsigned int mode;
 		double min, max, inc;
 		char *file;
@@ -163,9 +164,11 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 				k = (both) ? 0 : 1;	/* Offset to <bc> argument */
 				Ctrl->A.bc[side] = atoi (&opt->arg[k]);
 				if (Ctrl->A.bc[side] == BC_CLAMPED)	/* Get clamped deflection */
-					Ctrl->A.deflection[side] = atof (&opt->arg[k+2]);
-				else if (Ctrl->A.bc[side] == BC_FREE)	/* Get bending moment and shear force */
-					sscanf (&opt->arg[k+2], "%lf/%lf", &Ctrl->A.moment[side], &Ctrl->A.force[side]);
+					Ctrl->A.deflection[side] = (opt->arg[k+2]) ? atof (&opt->arg[k+2]) : 0.0;
+				else if (Ctrl->A.bc[side] == BC_FREE) {	/* Get bending moment and shear force */
+					if (opt->arg[k+2])
+						n = sscanf (&opt->arg[k+2], "%lf/%lf", &Ctrl->A.moment[side], &Ctrl->A.force[side]);
+				}
 				if (both) {	/* Copy values over from left to right */
 					Ctrl->A.bc[RIGHT] = Ctrl->A.bc[LEFT];
 					Ctrl->A.deflection[RIGHT] = Ctrl->A.deflection[LEFT];
@@ -202,8 +205,8 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 				if (!GMT_access (GMT, opt->arg, F_OK))	/* file exists */
 					Ctrl->E.file = strdup (opt->arg);
 				else {	/* Got a value */
-					GMT_Get_Value (API, opt->arg, &Ctrl->E.te);
-					if (Ctrl->E.te > 1e10) { /* Given flexural rigidity, compute Te */
+					GMT_Get_Value (API, opt->arg, &Ctrl->E.te);	/* Returns Te in m if k was appended */
+					if (Ctrl->E.te > 1e10) { /* Given flexural rigidity, compute Te in meters */
 						Ctrl->E.te = pow ((12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)) * Ctrl->E.te / Ctrl->C.E, 1.0/3.0);
 					}
 				}
@@ -230,12 +233,13 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 				Ctrl->T.active = true;
 				Ctrl->T.file = strdup (opt->arg);
 				break;
-			case 'Q':	/* Load setting */
+			case 'Q':	/* Load setting -Qn|q|t[/args] */
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
-					case '-':	Ctrl->Q.mode = NO_LOAD;
+					case 'n':	Ctrl->Q.mode = NO_LOAD;
 						if (opt->arg[1]) {	/* Gave domain info */
-							if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.min, &Ctrl->Q.max, &Ctrl->Q.inc) != 3) {
+							Ctrl->Q.set_x = true;
+							if (sscanf (&opt->arg[1], "%lf/%lf/%lf", &Ctrl->Q.min, &Ctrl->Q.max, &Ctrl->Q.inc) != 3) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unable to decode distance arguments for -Q\n");
 								n_errors++;
 							}
@@ -255,19 +259,21 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 				break;
 			case 'W':	/* Water depth */
 				Ctrl->W.active = true;
-				GMT_Get_Value (API, opt->arg, &Ctrl->W.water_depth);
+				GMT_Get_Value (API, opt->arg, &Ctrl->W.water_depth);	/* This yields water depth in meters if k was added */
 				break;
 			case 'Z':	/* Moho depth */
 				Ctrl->Z.active = true;
-				GMT_Get_Value (API, opt->arg, &Ctrl->Z.zm);
+				GMT_Get_Value (API, opt->arg, &Ctrl->Z.zm);	/* This yields Moho depth in meters if k was added */
 				break;
 			default:
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
 		}
 	}
-
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Must set density values\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error -E option: Must specify plate thickness or rigidity\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "Syntax error -Q option: Must specify load option\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Syntax error -Q option: Must specify equidistant min/max/inc setting\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->A.bc[LEFT] < BC_INFINITY || Ctrl->A.bc[LEFT] > BC_FREE) || (Ctrl->A.bc[RIGHT] < BC_INFINITY || Ctrl->A.bc[RIGHT] > BC_FREE), "Syntax error -A option: <bc> must be in 1-4 range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -276,38 +282,41 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtflexure -D<rhom>/<rhol>/<rhoi>/<rhow> -E<te> -Q<loadinfo> [-A[l|r]<bc>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtflexure -D<rhom>/<rhol>/<rhoi>/<rhow> -E<te> -Q<loadinfo> [-A[l|r]<bc>[/<args>]]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-C[p|y]<value] [-F<force>] [-S] [-T<wpre>] [%s] [-W<w0>] [-Z<zm>]\n\t[%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), moat infill, and water in kg/m^3.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), moat infill, and water (in kg/m^3).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If argument can be opened as a file it is expected to hold elastic thicknesses.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <te> can be opened as a file it is expected to hold elastic thicknesses at each load location.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Input load option. Choose among these options:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Q- indicates there is no load (only -A and -L contribute to deformation).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qq[<load>] is a file (or stdin) with (x,load) for all points. Default is no load.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qt[<load>] indicates that load file (or stdin) has topography instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qn indicates there is no load (only -A and -L contribute to deformation).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      If no file is given via -E<file> then append <min/max/inc> to set an equidistant profile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append + to inc to indicate the number of points instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qq[<load>] is a file (or stdin) with (x,load in Pa) for all points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qt[<load>] is a file (or stdin) with (x,load in m or km) for all points (see -M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Al and -Ar specify boundary conditions at the left and right end.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Four types of BC's are recognized (w = w(x) = deflection):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Al0 or -Ar0 :         'Infinity' condition, w' = w'' = 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Al1 or -Ar1 :         'Periodic' condition, w' = w''' = 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Al2/w0 or -Ar2/w0 :   'Clamped', w at end = w0, w' = 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Al3/m/f or -Ar3/m/f : 'Free', specify (m)oment and (f)orce at end\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default BCs are -Al0 -Ar0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Al and -Ar specify boundary conditions at the left and right end, respectively.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Four types of BC's are recognized (here, w = w(x) = the deflection):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Al0 or -Ar0 :         \"Infinity\" condition, w' = w'' = 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Al1 or -Ar1 :         \"Periodic\" condition, w' = w''' = 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Al2/w0 or -Ar2/w0 :   \"Clamped\", w at end = w0 [0], w' = 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Al3/m/f or -Ar3/m/f : \"Free\" condition, specify (m)oment and (f)orce at end [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default BCs are -Al0 -Ar0.  Use SI units for any optional arguments.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
-	GMT_Message (API, GMT_TIME_NONE, "\t-F specifies the uniform, horisontal stress in the plate [Pa/m].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L uses variable restoring force k(x).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F specifies the uniform, horisontal stress in the plate [Pa m].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L uses variable restoring force k(x) that depends on w(x).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mxk indicates all x-distances are in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mzk indicates all z-deflections are in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Also compute second derivatives (curvatures).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T to use file <w0> with pre-existing deflections [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Mx indicates all x-distances are in km [meters]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-deflections are in km [meters]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Also compute second derivatives (curvatures) on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T to use file <wpre> with pre-existing deflections [none].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Subarial topography will be scaled by -D to account for density differences.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive [0].\n");
 	GMT_Option (API, "h,i,o.");
 	return (EXIT_FAILURE);
 }
@@ -317,15 +326,11 @@ double te_2_d (double te)
 	return (YOUNGS_MODULUS * pow (te, 3.0) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO)));
 }
 
-/*
- *	Calculate second derivative of flexure = curvature
- */
- 
 int get_curvature (double flexure[], int n, double dist_increment, double curvature[])
-{
+{	/* Calculate central second differences of flexure = curvature */
 	int i;
 
-	dist_increment = -10./(dist_increment*dist_increment);	/* - since z points down */
+	dist_increment = -1.0/(dist_increment*dist_increment);	/* - since z points down */
 	n--;
 	for (i = 1; i < n; i++)
 		curvature[i] = (flexure[i-1] - 2.0*flexure[i] + flexure[i+1])*dist_increment;
@@ -1262,27 +1267,41 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtflexure main code ----------------------------*/
 
 	
-	if (Ctrl->Q.mode != NO_LOAD)	{	/* Load file given */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input load table data\n");
+	if (Ctrl->Q.mode == NO_LOAD) {	/* No load file given */
+		GMT_Report (API, GMT_MSG_VERBOSE, "No load file given; Flexure only determined by boundary conditions\n");
+	}
+	else {	/* Load file given */
+		char *type = (Ctrl->Q.mode == T_LOAD) ? "topography" : "pressure";
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input %s table data\n", type);
 		if ((Q = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		/* If topography given then scale to load */
 		if (Ctrl->Q.mode == T_LOAD) {
-			double scale = (Ctrl->D.rhol - Ctrl->D.rhow) * NORMAL_GRAVITY;
+			uint64_t n_subaerial = 0;
+			double scale = (Ctrl->D.rhol - Ctrl->D.rhow) * NORMAL_GRAVITY;	/* Convert load height to pressure */
+			double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);	/* Boost factor for subarial load */
 			for (tbl = 0; tbl < Q->n_tables; tbl++) {
 				for (seg = 0; seg < Q->table[tbl]->n_segments; seg++) {
 					S = Q->table[tbl]->segment[seg];	/* Current segment */
-					for (row = 0; row < S->n_rows; row++)	/* Covert to pressure */
+					for (row = 0; row < S->n_rows; row++) {	/* Covert to pressure */
+						if (Ctrl->M.active[1]) S->coord[GMT_Y][row] *= 1000;	/* Got topography in km so scale to meters */
+						if (Ctrl->W.active && S->coord[GMT_Y][row] > Ctrl->W.water_depth) {
+							S->coord[GMT_Y][row] = (float)(Ctrl->W.water_depth + (S->coord[GMT_Y][row] - Ctrl->W.water_depth) * boost);
+							n_subaerial++;
+						}
 						S->coord[GMT_Y][row] *= scale;
+					}
 				}
 			}
+			if (n_subaerial) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points were subarial so heights were scaled to the equivalent submerged case\n", n_subaerial);
 		}
 	}
 	if (Ctrl->E.file) {	/* Gave file with elastic thicknesses or rigidities */
 		double scale = (Ctrl->M.active[1]) ? 1000.0 : 1.0;	/* Either got Te in km or m */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input load table data\n");
-		if ((E = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
+		double d_min = DBL_MAX, d_max = 0.0;
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input Te or Rigidity table data\n");
+		if ((E = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		for (tbl = 0; tbl < E->n_tables; tbl++) {
@@ -1291,24 +1310,33 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				for (row = 0; row < S->n_rows; row++) {	/* Covert to pressure */
 					if (S->coord[GMT_Y][row] < 1e10) /* Got elastic thickness, convert to rigidity */
 						S->coord[GMT_Y][row] = te_2_d (scale * S->coord[GMT_Y][row]);
+					if (S->coord[GMT_Y][row] < d_min) d_min = S->coord[GMT_Y][row];
+					if (S->coord[GMT_Y][row] > d_max) d_max = S->coord[GMT_Y][row];
 				}
 			}
 		}
+		if (d_min == d_max)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Constant rigidity: %g \n", d_min);
+		else
+			GMT_Report (API, GMT_MSG_VERBOSE, "Range of rigidities: %g to %g\n", d_min, d_max);
 	}
 	if (Ctrl->Q.mode == NO_LOAD)	{	/* No load file given */
-		if (Ctrl->E.file)	/* Use info from elastic thickness file instead */
+		if (Ctrl->E.file) {	/* Use info from elastic thickness file instead */
 			Q = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, E);
+			/* Since no load given make sure the load is set to zero */
+			for (tbl = 0; tbl < Q->n_tables; tbl++) {
+				for (seg = 0; seg < Q->table[tbl]->n_segments; seg++) {
+					S = Q->table[tbl]->segment[seg];	/* Current segment */
+					GMT_memset (S->coord[GMT_Y], S->n_rows, double);
+				}
+			}
+		}
 		else {	/* No input files given, create single equidistant profile */
 			uint64_t dim[4] = {1, 1, 0, 2};
 			dim[2] = urint ((Ctrl->Q.max - Ctrl->Q.min)/Ctrl->Q.inc) + 1;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Create empty load table data\n");
 			if ((Q = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				Return (API->error);	/* An empty table */
-			}
-			if (Ctrl->M.active[0]) {	/* Used km for distances */
-				Ctrl->Q.max *= 1000.0;
-				Ctrl->Q.min *= 1000.0;
-				Ctrl->Q.inc *= 1000.0;
 			}
 			S = Q->table[0]->segment[0];	/* Only a single segment here */
 			for (row = 0; row < dim[GMT_ROW]; row++) {	/* Fill in x values */
@@ -1317,9 +1345,10 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		}
 	}
 	if (!Ctrl->E.file) {	/* Got a constant Te in m instead */
-		double scale = (Ctrl->M.active[1]) ? 1000.0 : 1.0;	/* Either got Te in km or m */
-		double d = te_2_d (scale * Ctrl->E.te);
+		double d = te_2_d (Ctrl->E.te);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Constant rigidity: %g \n", d);
 		E = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, Q);
+		/* Overwrite 2nd column with constant d below */
 		for (tbl = 0; tbl < E->n_tables; tbl++) {
 			for (seg = 0; seg < E->table[tbl]->n_segments; seg++) {
 				S = E->table[tbl]->segment[seg];	/* Current segment */
@@ -1356,26 +1385,26 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			GMT_memcpy (W->table[tbl]->segment[seg]->coord[GMT_X], S->coord[GMT_X], S->n_rows, double);
 			sprintf (msg, "BCs > ");
 			if (Ctrl->A.bc[LEFT] == BC_INFINITY) strcat (msg, "infinity at left edge + ");
-			if (Ctrl->A.bc[LEFT] == BC_PERIODIC) strcat (msg, "periodic at left edge + ");
-			if (Ctrl->A.bc[LEFT] == BC_CLAMPED) {
+			else if (Ctrl->A.bc[LEFT] == BC_PERIODIC) strcat (msg, "periodic at left edge + ");
+			else if (Ctrl->A.bc[LEFT] == BC_CLAMPED) {
 				deflection[0] = Ctrl->A.deflection[LEFT];
 				sprintf (txt, "plate clamped with deflection = %g at left edge + ", Ctrl->A.deflection[LEFT]);
 				strcat (msg, txt);
 			}
-			if (Ctrl->A.bc[LEFT] == BC_FREE) {
+			else if (Ctrl->A.bc[LEFT] == BC_FREE) {
 				deflection[0] =  -Ctrl->A.moment[LEFT];	/* Minus-sign because of the +ve gives +ve convention */
 				deflection[1] = Ctrl->A.force[LEFT];
 				sprintf (txt, "plate free with Moment = %g and Force = %g at left edge + ", Ctrl->A.moment[LEFT], Ctrl->A.force[LEFT]);
 				strcat (msg, txt);
 			}
 			if (Ctrl->A.bc[RIGHT] == BC_INFINITY) strcat (msg, "infinity at right edge.\n");
-			if (Ctrl->A.bc[RIGHT] == BC_PERIODIC) strcat (msg, "periodic at right edge.\n");
-			if (Ctrl->A.bc[RIGHT] == BC_CLAMPED) {
+			else if (Ctrl->A.bc[RIGHT] == BC_PERIODIC) strcat (msg, "periodic at right edge.\n");
+			else if (Ctrl->A.bc[RIGHT] == BC_CLAMPED) {
 				deflection[S->n_rows-1] = Ctrl->A.deflection[RIGHT];
 				sprintf (txt, "plate clamped with deflection = %g at right edge.\n", Ctrl->A.deflection[RIGHT]);
 				strcat (msg, txt);
 			}
-			if (Ctrl->A.bc[RIGHT] == BC_FREE) {
+			else if (Ctrl->A.bc[RIGHT] == BC_FREE) {
 				deflection[S->n_rows-2] = -Ctrl->A.moment[RIGHT];	/* Minus-sign because of the +ve gives +ve convention */
 				deflection[S->n_rows-1] = Ctrl->A.force[RIGHT];
 				sprintf (txt, "plate free with Moment = %g and Force = %g at right edge.\n", Ctrl->A.moment[RIGHT], Ctrl->A.force[RIGHT]);
@@ -1386,43 +1415,44 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				if (rigidity[row] > 0.0) airy = false;
 			
 			if (airy) {	/* Airy compensation */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Airy compensation\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure using Airy compensation\n");
 				for (row = 0; row < S->n_rows; row++) deflection[row] = load[row] / restore;
 			}
 			x_inc = S->coord[GMT_X][1] - S->coord[GMT_X][0];
-			if (Ctrl->M.active[1]) x_inc *= 1000.0;	/* Got x in km */
+			if (Ctrl->M.active[0]) x_inc *= 1000.0;	/* Got x in km */
 			
 			if (Ctrl->T.active) {	/* Plate has pre-existing deflection */
 				double *w0 = T->table[tbl]->segment[seg]->coord[GMT_Y];
-				GMT_Report (API, GMT_MSG_VERBOSE, "Include pre-existing flexure\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure of pre-deformed surface\n");
 				error = flx1dw0 (GMT, deflection, w0, rigidity, load, S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 			else if (Ctrl->S.active) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Variable restoring force\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure with variable restoring force\n");
 				error = flx1dk (GMT, deflection, rigidity, load, S->n_rows, x_inc, Ctrl->D.rhom, Ctrl->D.rhol, Ctrl->D.rhoi, Ctrl->D.rhow, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 			else {	/* Constant restoring force */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Constant restoring force\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure for constant restoring force\n");
 				error = flx1d (GMT, deflection, rigidity, load, S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 		
 			if (error) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "flx1d returned error = %d!\n", error);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Flexure sub-function returned error = %d!\n", error);
 				Return (API->error);
 			}
 	
-			/* Let z be positive up */
-			for (row = 0; row < S->n_rows; row++) deflection[row] = -deflection[row];
-	
-			if (Ctrl->S.active) {
+			if (Ctrl->S.active) {	/* Compute curvatures */
 				double *curvature = W->table[tbl]->segment[seg]->coord[GMT_Z];
 				get_curvature (deflection, S->n_rows, x_inc, curvature);
+			}
+
+			/* Add in Moho depth, possibly convert back to km, and let z be positive up */
+			for (row = 0; row < S->n_rows; row++) {
+				deflection[row] = -(deflection[row] + Ctrl->Z.zm);
+				if (Ctrl->M.active[1]) deflection[row] /= 1000.0;	/* m -> km */
 			}
 		}
 	}
 	
-	if (!Ctrl->E.file) GMT_Destroy_Data (API, &E);
-	if (Ctrl->Q.mode == NO_LOAD) GMT_Destroy_Data (API, &Q);
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, 0, NULL, NULL, W) != GMT_OK) {
 		Return (API->error);
 	}

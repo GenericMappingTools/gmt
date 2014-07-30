@@ -41,7 +41,7 @@ Required Arguments
 
 **-D**\ *rm*/*rl*/\ [*ri* \]/*rw*
     Sets density for mantle, load, infill (optionally, otherwise it is
-    assumed to equal the load density), and water.  If *ri@ differs from
+    assumed to equal the load density), and water.  If *ri* differs from
     *rl* then an approximate solution will be found.
 **-E**\ *Te*
     Sets the elastic plate thickness (in meter); append **k** for km.
