@@ -6,6 +6,7 @@ POTENTIAL
    :maxdepth: 1
 
    supplements/potential/gmtgravmag3d
+   supplements/potential/gmtflexure
    supplements/potential/gravfft
    supplements/potential/grdflexure
    supplements/potential/grdgravmag3d

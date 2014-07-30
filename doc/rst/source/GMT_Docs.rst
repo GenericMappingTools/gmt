@@ -313,6 +313,9 @@ We have also added a new supplement called potential that contains these five mo
 :doc:`gmtgravmag3d <supplements/potential/gmtgravmag3d>`:
     Compute the gravity/magnetic anomaly of a body by the method of Okabe.
 
+:doc:`gmtflexure <supplements/potential/gmtflexure>`:
+    Compute the flexure of a 2-D load using variable plate thickness and restoring force.
+
 :doc:`gravfft <supplements/potential/gravfft>`:
     Compute gravitational attraction of 3-D surfaces and a little more by the method of Parker.
 
