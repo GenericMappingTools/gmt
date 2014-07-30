@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtflexure** **-D**\ *rm/rl/ri/rw* **-E**\ *Te*\ [**u**]\|*D*\|*file*
-[ **-A**\ [**l**\|**r**][/*args*] ] [ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *force* ]
+**gmtflexure** **-D**\ *rm/rl/ri/rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
+[ **-A**\ [**l**\|\ **r**][/*args*] ] [ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *force* ]
 [ **-Q**\ *args*\ ][ **-S** ] [ **-T**\ *wfile*\ ]
 [ |SYN_OPT-V| ]
 [ **-W**\ *wd*] [ **-Z**\ *zm*]
@@ -36,7 +36,7 @@ Required Arguments
     Sets density for mantle, load, infill (optionally, otherwise it is
     assumed to equal the load density), and water.  If *ri@ differs from
     *rl* then an approximate solution will be found.
-**-E**\ *Te*\ [**u**]\|*D*\|*file*
+**-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     the flexural rigidity **D** (by default **D** is computed from *Te*, Young's
@@ -46,8 +46,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**l**\|**r**][/*args*]
-    Sets the boundary conditions at the **l**eft and **r**ight boundary.
+**-A**\ [**l**\|\ **r**][/*args*]
+    Sets the boundary conditions at the **l**\ eft and **r**\ ight boundary.
 
 **-Cp**\ *poisson*
     Change the current value of Poisson's ratio [0.25].
