@@ -418,7 +418,8 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 
 unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsigned int *mode)
 {	/* Examine the -E<args> option and determine the distance unit and mode. */
-	unsigned int k, kk, s, pos = 0, pos2 = 0, len, error = 0;
+	unsigned int pos = 0, pos2 = 0, error = 0;
+	size_t len, k, kk, s;
 	char p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit, l_unit[3];
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
