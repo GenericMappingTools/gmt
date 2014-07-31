@@ -7,6 +7,12 @@ Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory. It was formerly called
 GSHHS (... Shorelines instead of Geography).
 
+Version August 1, 2014
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.3.2 which corrects a series of internal cross-
+overs in the new Antarctica ice-front and grounding lines.
+
 Version July 1, 2014
 
 No source code changes but expected to work with the latest GSHHG

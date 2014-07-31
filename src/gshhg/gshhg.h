@@ -43,6 +43,7 @@
  *			  has grounding line as Level = 5 and ice-front line as Level = 6.
  *			  Only use one of those two Levels and consider either to be Level = 1.
  *	1-JUL-2014.   PW: Data version is now 2.3.1. [no change to format]
+ *	1-AUG-2014.   PW: Data version is now 2.3.2. [no change to format]
  *
  * The format of binary GSHHG files are simply sequential:
  * [ Item Header 0 ]
