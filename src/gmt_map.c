@@ -1878,6 +1878,14 @@ bool gmt_rect_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lo
 
 	if (x1 - GMT->current.proj.rect[XLO] < -GMT_CONV_LIMIT || x0 - GMT->current.proj.rect[XHI] > GMT_CONV_LIMIT) return (false);
 	if (y1 - GMT->current.proj.rect[YLO] < -GMT_CONV_LIMIT || y0 - GMT->current.proj.rect[YHI] > GMT_CONV_LIMIT) return (false);
+	if (x0 < GMT->current.proj.rect[XLO] && x1 > GMT->current.proj.rect[XHI]) {	/* Possibly a map jump but is it reasonable? */
+		/* What can happen for a small non-360 map is that points that approach being +180 degrees in longitude away and the
+		 * next point that is +181 will be seen as -179 degrees away and suddenly the x-coordinate jumps from very positive
+		 * to very negative (or the other way).  Before this attempt, the function would return true and give crossing lines
+		 * across the map.  Here we check if the change in x is a large (> 10x) multiple of the map width. This is likely
+		 * not to be fool-proof.  Works with current test scripts so we will give it a go.  Paul Wessel, 7/31/2014 */
+		if ((x1 - x0)/(GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]) > 10.0) return (false);
+	}
 	return (true);
 }
 
