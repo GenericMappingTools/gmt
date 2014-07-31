@@ -9084,6 +9084,11 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'f':	/* Fronts: -Sf<spacing>[/<size>][+r+l][+f+t+s+c+b][+o<offset>][+<pen>]	[WAS: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
 			p->symbol = GMT_SYMBOL_FRONT;
 			p->f.f_off = 0.0;	p->f.f_symbol = GMT_FRONT_FAULT;	p->f.f_sense = GMT_FRONT_CENTERED;
+			check = false;
+			if (!text[1]) {	/* No args given, must parse segment header later */
+				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
+				break;
+			}
 			strncpy (text_cp, text, GMT_LEN256);
 			if (GMT_compat_check (GMT, 4)) {
 				len = (int)strlen (text_cp) - 1;
@@ -9153,7 +9158,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 			}
-			check = false;
+			p->fq_parse = false;	/* No need to parse more later */
 			break;
 		case 'G':
 			p->size_x *= 1.05390736526;	/* To equal area of circle with same diameter */
@@ -9247,6 +9252,11 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'q':	/* Quoted lines: -Sq[d|n|l|x]<info>[:<labelinfo>] */
 			p->symbol = GMT_SYMBOL_QUOTED_LINE;
+			check = false;
+			if (!text[1]) {	/* No args given, must parse segment header later */
+				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
+				break;
+			}
 			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
 			if (colon) {	/* Gave :<labelinfo> */
 				text[colon] = 0;
@@ -9255,7 +9265,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			else
 				decode_error += GMT_contlabel_info (GMT, 'S', &text[1], &p->G);
-			check = false;
+			p->fq_parse = false;	/* No need to parse more later */
 			break;
 		case 'r':
 			p->symbol = GMT_SYMBOL_RECT;

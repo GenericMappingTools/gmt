@@ -87,10 +87,11 @@ int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
-//#define GMT_DUMPING
+#ifdef DEBUG
+//#define GMT_DUMPING	/* Uncomment this to have grd_dump be called and do something */
+#ifdef GMT_DUMPING
 void grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
 {
-#ifdef GMT_DUMPING
 	unsigned int row, col;
 	uint64_t k = 0U;
 	fprintf (stderr, "Dump [%s]:\n---------------------------------------------\n", txt);
@@ -102,8 +103,14 @@ void grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, cha
 		fprintf (stderr, "\n");
 	}
 	fprintf (stderr, "---------------------------------------------\n");
-#endif
 }
+#else	/* Just a dummy */
+void grd_dump (struct GMT_GRID_HEADER * GMT_UNUSED(header), float * GMT_UNUSED(grid), bool GMT_UNUSED(is_complex), char * GMT_UNUSED(txt))
+{
+	/* Nothing */
+}
+#endif
+#endif
 
 int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, unsigned int complex_mode, unsigned int direction)
 {	/* Checks or sets the array arrangement for a complex array */
@@ -1908,19 +1915,19 @@ void GMT_grd_pad_off (struct GMT_CTRL *GMT, struct GMT_GRID *G)
 }
 
 void grd_pad_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *h_old, float *data)
-{
+{	/* Use G for dimensions but operate on data array which points to either the real or imaginary section */
 	unsigned int row;
 	uint64_t ij_new, ij_old;
 	for (row = G->header->ny; row > 0; row--) {
 		ij_new = GMT_IJP (G->header, row-1, 0);	/* Index of start of this row's first column in new padded grid  */
 		ij_old = GMT_IJP (h_old, row-1, 0);	/* Index of start of this row's first column in old padded grid */
-		GMT_memcpy (&(G->data[ij_new]), &(G->data[ij_old]), G->header->nx, float);
+		GMT_memcpy (&(data[ij_new]), &(data[ij_old]), G->header->nx, float);
 	}
 	gmt_grd_wipe_pad (GMT, G);	/* Set pad areas to 0 */
 }
 
 void GMT_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad)
-{ /* Shift grid content from a non-padded (or differently padded) to a padded organization.
+{ 	/* Shift grid content from a non-padded (or differently padded) to a padded organization.
 	 * We check that the grid size can handle this and allocate more space if needed.
 	 * If pad matches the grid's pad then we do nothing.
 	 */
@@ -1943,18 +1950,18 @@ void GMT_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad
 	if (is_complex) size *= 2;	/* Twice the space for complex grids */
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		float *f = NULL;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extend grid via copy onto larger grid\n");
-		f = GMT_memory_aligned (GMT, NULL, size, float);		/* New, larger grid size */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extend grid via copy onto larger memory-aligned grid\n");
+		f = GMT_memory_aligned (GMT, NULL, size, float);	/* New, larger grid size */
 		GMT_memcpy (f, G->data, G->header->size, float);	/* Copy over previous grid values */
-		GMT_free_aligned (GMT, G->data);				/* Free previous aligned grid memory */
+		GMT_free_aligned (GMT, G->data);			/* Free previous aligned grid memory */
 		G->data = f;						/* Attach the new, larger aligned memory */
 		G->header->size = size;					/* Update the size */
 	}
 	/* Because G may have a pad that is nonzero (but different from pad) we need a different header structure in the macros below */
 	h = GMT_duplicate_gridheader (GMT, G->header);
 
-	GMT_grd_setpad (GMT, G->header, pad);	/* Pad is now active and set to specified dimensions */
-	GMT_set_grddim (GMT, G->header);		/* Update all dimensions to reflect the padding */
+	GMT_grd_setpad (GMT, G->header, pad);	/* G->header->pad is now set to specified dimensions in pad */
+	GMT_set_grddim (GMT, G->header);	/* Update all dimensions to reflect the new padding */
 	if (is_complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
 		grd_pad_on_sub (GMT, G, h, &G->data[size/2]);	/* Add pad around imaginary component first */
 	if (!is_complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))

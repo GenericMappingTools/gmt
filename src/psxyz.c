@@ -1140,6 +1140,13 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Segment header contained -S%s - ignored\n", s_args);
 					}
 				}
+				if (S.fq_parse) { /* Did not supply -Sf or -Sq in the segment header */
+					if (S.symbol == GMT_SYMBOL_QUOTED_LINE) /* Did not supply -Sf in the segment header */
+						GMT_Report (API, GMT_MSG_NORMAL, "Segment header did not supply enough parameters for -Sf; skipping this segment\n");
+					else
+						GMT_Report (API, GMT_MSG_NORMAL, "Segment header did not supply enough parameters for -Sq; skipping this segment\n");
+					continue;
+				}
 
 				if (Ctrl->I.active) {
 					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);

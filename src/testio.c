@@ -29,7 +29,7 @@
 
 #include "gmt_dev.h"
 
-int main (int argc, char *argv[]) {
+int main () {
 
 	int status = 0, xrow, in_ID, out_ID;
 	uint64_t row, col, ij;
