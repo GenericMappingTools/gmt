@@ -14,11 +14,13 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmtflexure** **-D**\ *rm/rl/ri/rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
-[ **-A**\ [**l**\|\ **r**][/*args*] ] [ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *force* ]
-[ **-Q**\ *args*\ ][ **-S** ] [ **-T**\ *wfile*\ ]
+[ **-A**\ [**l**\|\ **r**][/*args*] ] [ **-Cp**\ *Poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *force* ]
+[ **-Q**\ *args*\ ] [ **-S** ] [ **-T**\ *wfile*\ ]
 [ |SYN_OPT-V| ]
 [ **-W**\ *wd*] [ **-Z**\ *zm*]
-[ **-fg** ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
 
 |No-spaces|
 
@@ -27,7 +29,9 @@ Description
 
 **gmtflexure** computes the flexural response to 2-D loads using a range
 of user-selectable options, such as boundary conditions, pre-existing
-deformations, variable rigidity and restoring force, and more.
+deformations, variable rigidity and restoring force, and more.  The solutions
+are obtained using finite difference approximations to the differential
+equations.
 
 Required Arguments
 ------------------
@@ -48,17 +52,17 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**l**\|\ **r**]*bc*[/*args*]
+**-A**\ [**l**\|\ **r**]\ *bc*\ [/*args*]
     Sets the boundary conditions at the **l**\ eft and **r**\ ight boundary.
-    The *bc* can be one of four codes: 0 means the infinity condition, were
-    both the deflection and its slope is set to zero.  1 means the periodic
-    condition where both the first and third derivatives are set to zero.
-    2 means the clamped condition where *args* (if given) sets the deflection
-    value [0] (and the first derivative is set to zero).  3 means the free condition
-    where *args* is given as *moment*/*force* that specifies the end bending
+    The *bc* can be one of four codes: 0 selects the infinity condition, were
+    both the deflection and its slope are set to zero.  1 selects the periodic
+    condition where both the first and third derivatives of the deflection are set to zero.
+    2 selects the clamped condition where *args* (if given) sets the deflection
+    value [0] (and its first derivative is set to zero), while 3 selects the free condition
+    where *args* is given as *moment*/*force* which specify the end bending
     moment and vertical shear force [0/0].  Use SI units for any optional arguments.
 
-**-Cp**\ *poisson*
+**-Cp**\ *Poisson*
     Change the current value of Poisson's ratio [0.25].
 
 **-Cy**\ *Young*
@@ -67,12 +71,12 @@ Optional Arguments
 **-F**\ *force*]
     Set a constant horizontal in-plane force, in Pa m [0] 
 
-**-Q**\ *args*]
-    Sets the input load specifications. Choose among these three options:
+**-Qn**\|**q**\|**t**\ [*args*]
+    Sets the vertical load specification. Choose among these three options:
     **-Qn** means there is no input load file and that any deformation is
     simply driven by the boundary conditions set via **-A**.  If no rigidity or
     elastic thickness file is given via **-E** then you must also append *min*/*max*/*inc*
-    **Qn** to initiate the locations used for the calculations.  Append **+** to *inc*
+    to initiate the locations used for the calculations.  Append **+** to *inc*
     to indicate the number of points instead.
     **-Qq**\ [*loadfile*] is a file (or stdin if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
@@ -100,6 +104,12 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
+.. include:: ../../explain_-bi.rst_
+
+.. include:: ../../explain_-icols.rst_
+
+.. include:: ../../explain_-ocols.rst_
+
 .. include:: ../../explain_help.rst_
 
 Note on Units
@@ -108,14 +118,14 @@ Note on Units
 The **-M** option controls the units used in all input and output files.
 However, this option does *not* control values given on the command line
 to the **-E**, **-W**, and **-Z** options.  These are assumed to be in
-meters unless an optional *k* for km is appended.
+meters unless an optional **k** for km is appended.
 
-Plate Flexure
--------------
+Plate Flexure Notes
+-------------------
 
 We solve for plate flexure using a finite difference approach. This method can
 accommodate situations such as variable rigidity, restoring force that depends
-on the deflection being positive or negative, and different boundary conditions
+on the deflection being positive or negative, and different boundary conditions.
 
 Examples
 --------

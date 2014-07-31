@@ -147,15 +147,15 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grid so maximum grid height equals <norm>. Not allowed with -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only used in conjunction with -T.  Append the two modes:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <bmode> to compute either (c)umulative or (i)ncremental volume through time.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian or (l)inear flux distribution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian or (l)inear volume flux distribution.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets ad hoc scale factor for radii [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increment for sequence of calculations [one step, no time dependency].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. Unit is years; append k for kyr and M for Myr.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. Unit is year; append k for kyr and M for Myr.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time spacing, use -Tl and specify n steps instead of time increment.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies two extra input columns with start and stop time for each seamount's life span.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Q to select cumulative versus incremental loads.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Add in moho depth [0].  Not allowed for -Qi.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set the reference depth [0].  Not allowed for -Qi.\n");
 	GMT_Option (API, "V,bi,di");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is Cartesian - no units are implied; but see -D].\n");
@@ -256,7 +256,7 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 				Ctrl->N.active = true;
 				Ctrl->N.value = atof (opt->arg);
 				break;
-			case 'Q':	/* Set two modesL build mode and flux mode */
+			case 'Q':	/* Set two modes: build mode and flux mode */
 				Ctrl->Q.active = true;
 				for (k = 0; opt->arg[k]; k++) {
 					if (opt->arg[k] == 'i') Ctrl->Q.bmode = SMT_INCREMENTAL;

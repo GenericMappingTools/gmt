@@ -342,7 +342,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t       slip     : left-or right-lateral strike-slip arrows.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       triangle : diagonal square when centered, directed triangle otherwise.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +o<offset> : Plot first symbol when along-front distance is offset [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +p[<pen>]  : Alternate pen for symbol; ii no <pen> then no oultine [Outline with line pen].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +p[<pen>]  : Alternate pen for symbol outline; if no <pen> then no outline [Outline with -W pen].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Kustom: Append <symbolname> immediately after 'k'; this will look for\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or in $GMT_SHAREDIR (searched in that order).\n");

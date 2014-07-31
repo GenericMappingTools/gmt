@@ -16,7 +16,7 @@ Synopsis
 **grdseamount** [ *intable* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [*out/in*\ ] ] [ **-Cc**\|**d**\|**g**\|**p** ] [ **-D**\ [*unit*\ ] ]
+[ **-A**\ [*out/in*\ ] ] [ **-Cc**\|\ **d**\ \|\ **g**\ \|\ **p** ] [ **-D**\ [*unit*\ ] ]
 [ **-E** ] [ **-F**\ [*flattening*] ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
 [ **-N**\ *norm* ] [ **-Q**\ *bmode*/*qmode* ] [ **-S**\ *scale* ]
 [ **-T**\ [**l**]\ *t0*\ [/*t1*/*dt*] ] ] [ **-Z**\ *level* ]
@@ -31,18 +31,19 @@ Synopsis
 Description
 -----------
 
-**grdseamount** will compute the combined shape for synthetic seamounts given their shape
+**grdseamount** will compute the combined shape of multiple synthetic seamounts given their individual shape
 parameters.  We read a list with seamount locations and sizes and can evaluate either
 Gaussian, parabolic, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
 Various scaling options are available to modify the result, including an option to add in
-a background depth.  The input must contain *lon, lat, radius, height* for each seamount.
+a background depth (more complicated backgrounds may be added via **grdmath**).
+The input must contain *lon, lat, radius, height* for each seamount.
 For elliptical features (**-E**) we expect *lon, lat, azimuth, semi-major, semi-minor,
-radius, height* instead. If flattening is specified (**-T**) with no value appended
+ height* instead. If flattening is specified (**-F**) with no value appended
 then a final column with flattening is expected (cannot be used for plateaus).
 For temporal evolution of topography the **-T** option may be used, in which case the
 data file must have two final columns with the start and stop time of seamount construction.
 In this case you may choose to write out a cumulative shape or just the increments produced
-by each time step.
+by each time step (see **-Q**).
 
 Required Arguments
 ------------------
@@ -60,8 +61,8 @@ Optional Arguments
     Here, height is ignored and **-L**, **-N** and **-Z** are disallowed
 
 **-C**
-    Select shape function: choose among **c* (cone), **d** (disc), **g** (Gaussian)
-    and **p** (parabolic) shapes [Default is Gaussian].
+    Select shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
+    and **p** (parabolic) shape [Default is Gaussian].
 
 **-D**\ *unit*
     Append the unit used for horizontal distances in the input file (see UNITS).
@@ -79,7 +80,7 @@ Optional Arguments
     Specify the name of the output grid file; see GRID FILE FORMATS below).
     If **-T** is set then *grdfile* must be a filename template that contains
     a floating point format (C syntax) and we use the corresponding time
-    (in units specified in **-T**) to generate the file name.
+    (in units specified in **-T**) to generate the individual file names.
 
 **-L**\ [*cut*]
     List area, volume, and mean height for each seamount; NO grid is created.
@@ -92,8 +93,8 @@ Optional Arguments
     Only to be used in conjunction with **-T**.  Append two different modes settings:
     The *bmode* determines how we construct the surface.  Specify **c** for cumulative
     volume through time, or **i** for incremental volume added for each time slice.
-    The *qmode* determines the volume flux curve.  Give **g** for a Gaussian flux history
-    or **l** for a linear flux history.
+    The *qmode* determines the volume flux curve.  Give **g** for a Gaussian volume flux history
+    or **l** for a linear volume flux history between the start and stop times of each feature.
 
 **-S**\ *scale*
     Sets optional scale factor for radii [1].
@@ -101,15 +102,14 @@ Optional Arguments
 **-T**\ [**l**]\ *start*/*stop*/*dt*
     Specify *start*, *stop*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
-    give *start*. The unit is years; append **k** for kyr and **M** for Myr.
+    give *start*. The default unit is year; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, use **-Tl** and specify *n* steps instead of *dt*.
     We then write a separate grid file for each time step.
 
 **-Z**\ *level*
-    Add in background depth [0].
+    Set the background depth [0].
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. This option only applies
-    to xyz input files; see **-Z** for z tables. 
+.. |Add_-bi| replace:: [Default is 4 input columns]. 
 .. include:: ../../explain_-bi.rst_
 
 **-fg**

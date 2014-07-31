@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **grdflexure** *topogrd* **-D**\ *rm/rl/ri/rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
-[ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*[/*h_a*/*nu_m*] ]
+[ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*\ [/*h_a*/*nu_m*] ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-S**\ *beta* ] [ **-T**\ [**l**]\ *t0*\ [/*t1*/*dt*] ]
 [ |SYN_OPT-V| ]
@@ -63,7 +63,7 @@ Optional Arguments
 **-Cy**\ *Young*
     Change the current value of Young's modulus [7.0e10 N/m^2].
 
-**-F**\ **-F**\ *nu_a*[/*h_a*/*nu_m*]
+**-F**\ *nu_a*[/*h_a*/*nu_m*]
     Specify a firmoviscous model in conjuncton with an elastic plate
     thickness specified via **-E**.  Just give one viscosity (*nu_a*)
     for an elastic plate over a viscous half-space, or also append
@@ -85,10 +85,12 @@ Optional Arguments
     We then write a separate grid file for each time step.
 
 **-W**\ *wd*
-    Set reference depth to the undeformed flexed surface [0].
+    Set reference depth to the undeformed flexed surface in m [0].  Append **k** to indicate
+    km.
 
 **-Z**\ *zm*
-    Set the average water depth [0].
+    Specify reference depth to flexed surface (e.g., Moho) in m; append **k** for km.
+    Must be positive. [0].
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -117,8 +119,8 @@ meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject </grdproject>`.
 
-Plate Flexure
--------------
+Plate Flexure Notes
+-------------------
 
 The FFT solution to plate flexure requires the infill density to equal
 the load density.  This is typically only true directly beneath the load; beyond the load
@@ -126,7 +128,7 @@ the infill tends to be lower-density sediments or even water (or air).  Wessel [
 proposed an approximation that allows for the specification of an infill density
 different from the load density while still allowing for an FFT solution. Basically,
 the plate flexure is solved for using the infill density as the effective load density but
-the amplitudes are adjusted by a factor *A* = sqrt ((rm - ri)/(rm - rl)), which is
+the amplitudes are adjusted by the factor *A* = sqrt ((rm - ri)/(rm - rl)), which is
 the theoretical difference in amplitude due to a point load using the two different
 load densities.  The approximation is very good but breaks down for large
 loads on weak plates, a fairy uncommon situation.
@@ -148,5 +150,6 @@ References
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`grdfft </grdfft>`, :doc:`gravfft </supplements/potential/gravfft>`
+:doc:`gmt </gmt>`, :doc:`gmtflexure </supplements/potential/gmtflexure>`
+:doc:`grdfft </grdfft>`, :doc:`gravfft </supplements/potential/gravfft>`
 :doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`

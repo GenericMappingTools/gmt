@@ -317,7 +317,7 @@ int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Subarial topography will be scaled by -D to account for density differences.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive [0].\n");
-	GMT_Option (API, "h,i,o.");
+	GMT_Option (API, "h,i,o,.");
 	return (EXIT_FAILURE);
 }
 
