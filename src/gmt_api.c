@@ -5765,8 +5765,9 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | mode, NULL, G->header->name, G) == NULL)	/* Get data only */
 			return (NULL);
 	}
-	//grd_dump (G->header, G->data, false, "Read in FFT_Create");
-
+#ifdef DEBUG
+	grd_dump (G->header, G->data, false, "Read in FFT_Create");
+#endif
 	/* Make sure there are no NaNs in the grid - that is a fatal flaw */
 
 	for (node = 0, stop = false; !stop && node < G->header->size; node++) stop = GMT_is_fnan (G->data[node]);
@@ -5777,9 +5778,13 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 
 	if (F->trend_mode == GMT_FFT_REMOVE_NOT_SET) F->trend_mode = GMT_FFT_REMOVE_NOTHING;	/* Delayed default */
 	GMT_grd_detrend (GMT, G, F->trend_mode, K->coeff);	/* Detrend data, if requested */
-	//grd_dump (G->header, G->data, false, "After detrend");
+#ifdef DEBUG
+	grd_dump (G->header, G->data, false, "After detrend");
+#endif
 	gmt_fft_taper (GMT, G, F);				/* Taper data, if requested */
-	//grd_dump (G->header, G->data, false, "After Taper");
+#ifdef DEBUG
+	grd_dump (G->header, G->data, false, "After Taper");
+#endif
 	K->dim = 2;	/* 2-D FFT */
 	return (K);
 }
@@ -5855,9 +5860,13 @@ int GMTAPI_FFT_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int direction, u
 	int status;
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_IN, K);	/* Save intermediate grid, if requested, before interleaving */
 	GMT_grd_mux_demux (API->GMT, G->header, G->data, GMT_GRID_IS_INTERLEAVED);
+#ifdef DEBUG
 	grd_dump (G->header, G->data, true, "After demux");
+#endif
 	status = GMT_FFT_2D (API, G->data, G->header->mx, G->header->my, direction, mode);
-	//grd_dump (G->header, G->data, true, "After FFT");
+#ifdef DEBUG
+	grd_dump (G->header, G->data, true, "After FFT");
+#endif
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_OUT, K);	/* Save complex grid, if requested */
 	return (status);
 }

@@ -29,7 +29,7 @@
 
 #include "gmt_dev.h"
 
-int main (int argc, char *argv[]) {
+int main () {
 
 	int status = 0;				/* Status code from GMT API */
 	struct GMT_OPTION *head = NULL, *new_opt = NULL;	/* Linked list of options */
