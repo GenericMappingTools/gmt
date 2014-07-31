@@ -5216,7 +5216,7 @@ void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 		/* Watch out for longitude wraps */
 		dx = x[i] - x[i-1];
 		w = GMT_half_map_width (GMT, y[i]);
-		if (GMT->current.map.is_world && dx > w) dx = copysign (2.0 * w - fabs (dx), -dx);
+		if (GMT->current.map.is_world && fabs (dx) > w) dx = copysign (2.0 * w - fabs (dx), -dx);
 		s[i] = s[i-1] + hypot (dx, y[i] - y[i-1]);
 	}
 
