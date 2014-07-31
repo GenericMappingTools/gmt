@@ -16,7 +16,7 @@ Synopsis
 **grdseamount** [ *intable* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [*out/in*\ ] ] [ **-Cc**\|\ **d**\ \|\ **g**\ \|\ **p** ] [ **-D**\ [*unit*\ ] ]
+[ **-A**\ [*out*/*in*\ ] ] [ **-Cc**\|\ **d**\ \|\ **g**\ \|\ **p** ] [ **-D**\ [*unit*\ ] ]
 [ **-E** ] [ **-F**\ [*flattening*] ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
 [ **-N**\ *norm* ] [ **-Q**\ *bmode*/*qmode* ] [ **-S**\ *scale* ]
 [ **-T**\ [**l**]\ *t0*\ [/*t1*/*dt*] ] ] [ **-Z**\ *level* ]
@@ -36,9 +36,9 @@ parameters.  We read a list with seamount locations and sizes and can evaluate e
 Gaussian, parabolic, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
 Various scaling options are available to modify the result, including an option to add in
 a background depth (more complicated backgrounds may be added via **grdmath**).
-The input must contain *lon, lat, radius, height* for each seamount.
-For elliptical features (**-E**) we expect *lon, lat, azimuth, semi-major, semi-minor,
- height* instead. If flattening is specified (**-F**) with no value appended
+The input must contain *lon*, *lat*, *radius*, *height* for each seamount.
+For elliptical features (**-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*,
+*height* instead. If flattening is specified (**-F**) with no value appended
 then a final column with flattening is expected (cannot be used for plateaus).
 For temporal evolution of topography the **-T** option may be used, in which case the
 data file must have two final columns with the start and stop time of seamount construction.
