@@ -624,7 +624,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 		}
 		else {	/* Just return the projected locations */
 			if (Ctrl->W.active) {	/* Asked for confidence ellipses on reconstructed points */
-				if (spotter_conf_ellipse (GMT, in[GMT_X], in[GMT_Y], age, p, n_stages, Ctrl->W.mode, Ctrl->D.mode, out)) {
+				if (spotter_conf_ellipse (GMT, lon, lat, age, p, n_stages, Ctrl->W.mode, Ctrl->D.mode, out)) {
 					GMT_Report (API, GMT_MSG_VERBOSE, "Confidence ellipses only for the age of rotations.  Point with age %g skipped\n", age);
 					continue;
 				}
