@@ -49,7 +49,7 @@ struct GRDFLEXURE_CTRL {
 		bool active[2];
 		double E, nu;
 	} C;
-	struct D {	/* -D<rhom/rhol/rhoi/rhow> */
+	struct D {	/* -D<rhom/rhol[/rhoi]/rhow> */
 		bool active, approx;
 		unsigned int mode;
 		double rhom, rhol, rhoi, rhow;
@@ -328,7 +328,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: must give 3-4 density values\n");
 					n_errors++;
 				}
-				if (n == 3) {
+				if (n == 3) {	/* Assume no rhoi given, shuffle args */
 					Ctrl->D.rhow = Ctrl->D.rhoi;
 					Ctrl->D.rhoi = Ctrl->D.rhol;
 				}
@@ -433,7 +433,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>/<rhoi>/<rhow> -E<te> -G<outgrid> [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-S<beta>] [-T[l]<t0>/<t1>/<dt>|<n>]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -441,7 +441,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<topogrid> is the input grdfile with topography (load) values, in meters. If -T is used,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <topogrid> may be a filename template with a floating point format (C syntax) and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a different load file name will be set and loaded for each time step.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), moat infill, and water in kg/m^3.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), optional moat infill [same as load], and water in kg/m^3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grdfile with flexed surface.  If -T is set then <outgrid>\n");

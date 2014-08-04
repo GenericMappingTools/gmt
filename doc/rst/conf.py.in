@@ -329,7 +329,7 @@ man_pages = [
 ('supplements/mgd77/mgd77sniffer', 'mgd77sniffer', 'Along-track quality control of MGD77 cruises', '', 1),
 ('supplements/mgd77/mgd77track', 'mgd77track', 'Plot track-line map of MGD77 cruises', '', 1),
 ('supplements/misc/dimfilter', 'dimfilter', 'Directional filtering of 2-D gridded files in the space (or time) domain', '', 1),
-('supplements/potential/gmtflexure', 'gmtflexure', 'Compute flexural deformation of 2-D loads', '', 1),
+('supplements/potential/gmtflexure', 'gmtflexure', 'Compute flexural deformation of 2-D loads, forces, bending and moments', '', 1),
 ('supplements/potential/gmtgravmag3d', 'gmtgravmag3d', 'Compute the gravity/magnetic effect of a body by the method of Okabe', '', 1),
 ('supplements/potential/gravfft', 'gravfft', 'Compute gravitational attraction of 3-D surfaces in the wavenumber (or frequency) domain', '', 1),
 ('supplements/potential/grdflexure', 'grdflexure', 'Compute flexural deformation of 3-D surfaces for various rheologies', '', 1),

@@ -26,7 +26,7 @@
 
 #define THIS_MODULE_NAME	"gmtflexure"
 #define THIS_MODULE_LIB		"potential"
-#define THIS_MODULE_PURPOSE	"Compute flexural deformation of 2-D loads"
+#define THIS_MODULE_PURPOSE	"Compute flexural deformation of 2-D loads, forces, bending and moments"
 
 #include "gmt_dev.h"
 
@@ -50,7 +50,8 @@
  * distance and increment must be given on the commandline using the -T option.
  * An arbitrary horizontal stress may be imposed with the -F option. If rho_infill
  * and rho_water is different, a variable restoring force scheme is used (flx1dk)
- * rather than the fixed k(x) solution (flx1d).
+ * rather than the fixed k(x) solution (flx1d). If there is pre-existing deformation
+ * we use another solution (flx1dw0).
  * All profiles must have equidistant sampling!!
  *
  */
@@ -65,14 +66,12 @@ struct GMTFLEXURE_CTRL {
 		bool active[2];
 		double E, nu;
 	} C;
-	struct D {	/* -D<rhom/rhol/rhoi/rhow> */
-		bool active, approx;
-		unsigned int mode;
+	struct D {	/* -D<rhom/rhol[/rhoi]/rhow> */
+		bool active;
 		double rhom, rhol, rhoi, rhow;
 	} D;
 	struct E {	/* -E<te|D|>file> */
 		bool active;
-		unsigned int mode;
 		double te;
 		char *file;
 	} E;
@@ -83,7 +82,7 @@ struct GMTFLEXURE_CTRL {
 	struct M {	/* -Mx|z  */
 		bool active[2];	/* True if km, else m */
 	} M;
-	struct Q {	/* Load specifier -Q<mode><args>*/
+	struct Q {	/* Load specifier -Qn|q|t[/args] */
 		bool active;
 		bool set_x;
 		unsigned int mode;
@@ -193,12 +192,10 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: must give 3-4 density values\n");
 					n_errors++;
 				}
-				if (n == 3) {
+				if (n == 3) {	/* Assume no rhoi given, shuffle args */
 					Ctrl->D.rhow = Ctrl->D.rhoi;
 					Ctrl->D.rhoi = Ctrl->D.rhol;
 				}
-				else if (Ctrl->D.rhol != Ctrl->D.rhoi)
-					Ctrl->D.approx = true;
 				break;
 			case 'E':	/* Set elastic thickness or rigidities */
 				Ctrl->E.active = true;
@@ -282,12 +279,12 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtflexure -D<rhom>/<rhol>/<rhoi>/<rhow> -E<te> -Q<loadinfo> [-A[l|r]<bc>[/<args>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtflexure -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -Q<loadinfo> [-A[l|r]<bc>[/<args>]]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-C[p|y]<value] [-F<force>] [-S] [-T<wpre>] [%s] [-W<w0>] [-Z<zm>]\n\t[%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), moat infill, and water (in kg/m^3).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), optional moat infill [same as load], and water in kg/m^3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <te> can be opened as a file it is expected to hold elastic thicknesses at each load location.\n");
@@ -321,9 +318,9 @@ int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-double te_2_d (double te)
+double te_2_d (struct GMTFLEXURE_CTRL *Ctrl, double te)
 {	/* Convert elastic thickness to flexural rigidity */
-	return (YOUNGS_MODULUS * pow (te, 3.0) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO)));
+	return (Ctrl->C.E * pow (te, 3.0) / (12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)));
 }
 
 int get_curvature (double flexure[], int n, double dist_increment, double curvature[])
@@ -339,40 +336,9 @@ int get_curvature (double flexure[], int n, double dist_increment, double curvat
 	return (1);
 }
 
-/* flx1d will compute 1-D plate flexure for a variable rigidity case.
- * The equation is
- *	d2/dx2 (D * d2/dx2 w(x)) + T * d2/dx2 w(x) + k(x) * w(x) = p (x)
- * Various boundary conditions may be imposed by setting the
- * variables bc_left and bc_right to on of the permissable values:
- * 	0:	'infinity' condition. w' = w'' = 0.
- *	1:	'periodic'. w' = w''' = 0. (Reflection)
- *	2:	'clamped'. w = const. w' = 0. The value of w must be
- *		passed in w[i] on input, where i is 0/(n-1) for the
- *		left/right edge.
- *	3:	'free'. Moment = const, Force = const. Store M in w[i] and F in
- *		w[i+1], where i is 0/(n-2) for left/right edge.
- * The deflections are solved by forward/backward substitution to solve
- * the 5-diagonal matrix problem A*w = p using a LU-transformation (lu_solver)
- * The parameters passed are:
- *	w	: Name of array holding flexure (output)
- *	d	: Name of array holding rigidities (input)
- *	p	: Name of array holding pressures/loads (input)
- *	n	: Number of points in profile (input)
- *	dx	: Distance between points (input)
- *	k	: Restoring force term k(x) = delta_rho (x) * gravity (input)
- *	k_flag	: 0 means k[0] applies for entire profile, 1 means k[x] is an array
- *	stress	: Horisontal stress T in the plate (input). Positive = compression.
- *	bc_left : value 0 - 3. See above (input)
- *	bc_right: value 0 - 3. See above (input)
- *
- * Author:	Paul Wessel
- * Date:	5-SEP-1988
- * Revised:	5-AUG-1989	Now k is a function of x
- *
- */
- 
 int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b)
-{
+{ /* A 5-diagonal matrix problem A*w = p solved using a LU-transformation */
+
 	int i, off3, off5;
 	double new_max, old_max, *l = NULL, *u = NULL, *z = NULL;
 
@@ -467,6 +433,38 @@ int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b)
 	return (0);
 }
 
+/* flx1d will compute 1-D plate flexure for a variable rigidity case.
+ * The equation is
+ *	d2/dx2 (D * d2/dx2 w(x)) + T * d2/dx2 w(x) + k(x) * w(x) = p (x)
+ * Various boundary conditions may be imposed by setting the
+ * variables bc_left and bc_right to on of the permissable values:
+ * 	0:	'infinity' condition. w' = w'' = 0.
+ *	1:	'periodic'. w' = w''' = 0. (Reflection)
+ *	2:	'clamped'. w = const. w' = 0. The value of w must be
+ *		passed in w[i] on input, where i is 0/(n-1) for the
+ *		left/right edge.
+ *	3:	'free'. Moment = const, Force = const. Store M in w[i] and F in
+ *		w[i+1], where i is 0/(n-2) for left/right edge.
+ * The deflections are solved by forward/backward substitution to solve
+ * the 5-diagonal matrix problem A*w = p using a LU-transformation (lu_solver)
+ * The parameters passed are:
+ *	w	: Name of array holding flexure (output)
+ *	d	: Name of array holding rigidities (input)
+ *	p	: Name of array holding pressures/loads (input)
+ *	n	: Number of points in profile (input)
+ *	dx	: Distance between points (input)
+ *	k	: Restoring force term k(x) = delta_rho (x) * gravity (input)
+ *	k_flag	: 0 means k[0] applies for entire profile, 1 means k[x] is an array
+ *	stress	: Horisontal stress T in the plate (input). Positive = compression.
+ *	bc_left : value 0 - 3. See above (input)
+ *	bc_right: value 0 - 3. See above (input)
+ *
+ * Author:	Paul Wessel
+ * Date:	5-SEP-1988
+ * Revised:	5-AUG-1989	Now k is a function of x
+ *
+ */
+ 
 int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right)
 {
 	int i, row, off, ind, error;
@@ -488,9 +486,6 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	work[1] = 0.0;
 	restore = k[0] * dx_4;
 	if (bc_left == 0) {		/* 'infinity' conditions */
-		/* work[2] = 10.0 * d[0] - 4.0 * d[1] + restore - stress2;
-		work[3] = 2.0 *d[1] - 6.0 * d[0] + stress2;
-		work[4] = d[0]; */
 		work[2] = 1.0;
 		work[3] = work[4] = 0.0;
 		p[0] = 0.0;
@@ -520,10 +515,6 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	restore = k[ind] * dx_4;
 	work[5] = 0.0;
 	if (bc_left == 0) {	/* 'infinity' */
-		/* work[6] = 2.0 * d[2] - 6.0 * d[1] + stress;
-		work[7] = 10.0 * d[1] - 2.0 * d[2] - 2.0 * d[0] + restore - stress2;
-		work[8] = 2.0 * d[0] - 6.0 * d[1] + stress;
-		work[9] = d[1] + 0.5 * d[2] - 0.5 * d[0]; */
 		work[6] = 1.0;
 		work[7] = -1.0;
 		work[8] = work[9] = 0.0;
@@ -572,10 +563,6 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	restore = k[ind] * dx_4;
 	work[off+4] = 0.0;
 	if (bc_right == 0) {		/* 'infinity' */
-		/* work[off] = d[row] + 0.5 * d[row-1] - 0.5 * d[row+1];
-		work[off+1] = 2.0 * d[row+1] - 6.0 * d[row] + stress;
-		work[off+2] = 10.0 * d[row] - 2.0 * d[row-1] - 2.0 * d[row+1] + restore - stress2;
-		work[off+3] = 2.0 * d[row-1] - 6.0 * d[row] + stress; */
 		work[off] = work[off+1] = 0.0;
 		work[off+2] = -1.0;
 		work[off+3] = 1.0;
@@ -610,9 +597,6 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	restore = k[ind] * dx_4;
 	work[off+3] = work[off+4] = 0.0;
 	if (bc_right == 0) {		/* 'infinity' */
-		/* work[off] = d[row];
-		work[off+1] = 2.0 *d[row-1] - 6.0 * d[row] + stress2;
-		work[off+2] = 10.0 * d[row] - 4.0 * d[row-1] + restore - stress2; */
 		work[off] = work[off+1] = 0.0;
 		work[off+2] = 1.0;
 		p[row] = 0.0;
@@ -789,7 +773,7 @@ int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, dou
  * Author:	Paul Wessel
  * Date:	5-SEP-1988
  * Revised:	5-AUG-1989	Now k is a function of x
- * 		29-OCT-1990	Include rpe-existing deformation
+ * 		29-OCT-1990	Include pre-existing deformation
  *
  */
  
@@ -1309,7 +1293,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				S = E->table[tbl]->segment[seg];	/* Current segment */
 				for (row = 0; row < S->n_rows; row++) {	/* Covert to pressure */
 					if (S->coord[GMT_Y][row] < 1e10) /* Got elastic thickness, convert to rigidity */
-						S->coord[GMT_Y][row] = te_2_d (scale * S->coord[GMT_Y][row]);
+						S->coord[GMT_Y][row] = te_2_d (Ctrl, scale * S->coord[GMT_Y][row]);
 					if (S->coord[GMT_Y][row] < d_min) d_min = S->coord[GMT_Y][row];
 					if (S->coord[GMT_Y][row] > d_max) d_max = S->coord[GMT_Y][row];
 				}
@@ -1345,7 +1329,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		}
 	}
 	if (!Ctrl->E.file) {	/* Got a constant Te in m instead */
-		double d = te_2_d (Ctrl->E.te);
+		double d = te_2_d (Ctrl, Ctrl->E.te);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Constant rigidity: %g \n", d);
 		E = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, Q);
 		/* Overwrite 2nd column with constant d below */

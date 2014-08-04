@@ -6,7 +6,7 @@ gmtflexure
 
 .. only:: not man
 
-    gmtflexure - Compute flexural deformation of 2-D loads
+    gmtflexure - Compute flexural deformation of 2-D loads, forces, bending and moments
 
 Synopsis
 --------
