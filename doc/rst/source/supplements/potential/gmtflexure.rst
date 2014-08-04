@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtflexure** **-D**\ *rm/rl/ri/rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
+**gmtflexure** **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
 [ **-A**\ [**l**\|\ **r**][/*args*] ] [ **-Cp**\ *Poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *force* ]
 [ **-Q**\ *args*\ ] [ **-S** ] [ **-T**\ *wfile*\ ]
 [ |SYN_OPT-V| ]
@@ -36,10 +36,10 @@ equations.
 Required Arguments
 ------------------
 
-**-D**\ *rm*/*rl*/\ [*ri* \]/*rw*
+**-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
     Sets density for mantle, load, infill (optionally, otherwise it is
-    assumed to equal the load density), and water.  If *ri* differs from
-    *rl* then an approximate solution will be found.
+    assumed to equal the load density), and water.  If *ri* is not given
+    then it defaults to *rl*.
 
 **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
     Sets the elastic plate thickness (in meter); append **k** for km.
@@ -83,8 +83,6 @@ Optional Arguments
     (or stdin if not given) with (x,load in m or km, positive up); see **-M** for
     topography unit used [m].
 
-.. include:: ../../explain_fft.rst_
-
 **-S**
     Compute the curvature along with the deflections and report them via the
     third output column [none].
@@ -125,7 +123,8 @@ Plate Flexure Notes
 
 We solve for plate flexure using a finite difference approach. This method can
 accommodate situations such as variable rigidity, restoring force that depends
-on the deflection being positive or negative, and different boundary conditions.
+on the deflection being positive or negative, pre-existing deformation, and
+different boundary conditions.
 
 Examples
 --------
@@ -144,5 +143,5 @@ References
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`grdfft </grdfft>`, :doc:`gravfft </supplements/potential/gravfft>`
-:doc:`grdflexure </supplements/potential/grdflexure>`:doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`
+:doc:`gmt </gmt>`, :doc:`gravfft </supplements/potential/gravfft>`
+:doc:`grdflexure </supplements/potential/grdflexure>`:doc:`grdmath </grdmath>`

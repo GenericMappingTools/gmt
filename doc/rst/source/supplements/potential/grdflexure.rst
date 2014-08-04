@@ -13,9 +13,9 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdflexure** *topogrd* **-D**\ *rm/rl/ri/rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
+**grdflexure** *topogrd* **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
 [ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*\ [/*h_a*/*nu_m*] ]
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx*/*ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-S**\ *beta* ] [ **-T**\ [**l**]\ *t0*\ [/*t1*/*dt*] ]
 [ |SYN_OPT-V| ]
 [ **-W**\ *wd*] [ **-Z**\ *zm*]
@@ -39,10 +39,12 @@ Required Arguments
     floating point format (C syntax) and a different load file name
     will be set and loaded for each time step.
 
-**-D**\ *rm*/*rl*/\ [*ri* \]/*rw*
+**-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
     Sets density for mantle, load, infill (optionally, otherwise it is
     assumed to equal the load density), and water.  If *ri* differs from
-    *rl* then an approximate solution will be found.
+    *rl* then an approximate solution will be found.  If *ri* is not given
+    then it defaults to *rl*.
+
 **-E**\ *Te*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
