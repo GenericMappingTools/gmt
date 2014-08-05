@@ -43,6 +43,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	int prev_x_status;
 	int prev_y_status;
 	int corner;			/* Tells us which corner 1-4 or -1 if not a corner */
+	bool coastline;			/* true if we are currently plotting the coastline data in pscoast */
 	bool on_border_is_outside;		/* true if a point exactly on the map border shoud be considered outside the map */
 	bool is_world;			/* true if map has 360 degrees of longitude range */
 	bool is_world_tm;			/* true if GMT_TM map is global? */
