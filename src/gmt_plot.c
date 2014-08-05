@@ -4107,7 +4107,8 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 	if (GMT_eq (PSL->current.rgb[PSL_IS_FILL][0], -1.0)) {
 		/* Just draw optional outline, no fill, nor pattern */
 	}
-	else if (GMT_IS_AZIMUTHAL (GMT) || !GMT->current.map.is_world) {
+	//else if (GMT_IS_AZIMUTHAL (GMT) || !GMT->current.map.is_world) {	/* Testing without !is_world map to rediscover the original issue */
+	else if (GMT_IS_AZIMUTHAL (GMT)) {
 		/* Because points way outside the map might get close to the antipode we must
 		 * clip the polygon first.  The new radial clip handles this by excluding points
 		 * beyond the horizon and adding arcs along the boundary between exit points
