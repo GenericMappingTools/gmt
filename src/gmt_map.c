@@ -1593,7 +1593,7 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	inside[GMT_BOTTOM] = inside[GMT_LEFT] = gmt_inside_lower_boundary;	outside[GMT_BOTTOM] = outside[GMT_LEFT] = gmt_outside_lower_boundary;
 	border[GMT_BOTTOM] = GMT->common.R.wesn[YLO]; border[GMT_LEFT] = GMT->common.R.wesn[XLO];	border[GMT_RIGHT] = GMT->common.R.wesn[XHI];	border[GMT_TOP] = GMT->common.R.wesn[YHI];
 
-	/* Make data longitudes have no jumps */
+	/* Make data longitudes have no jumps [This is mostly for pscoast] */
 	for (i = 0; i < n; i++) {
 		if (lon[i] < border[GMT_LEFT] && (lon[i] + 360.0) <= border[GMT_RIGHT])
 			lon[i] += 360.0;
@@ -1637,6 +1637,9 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 			continue;
 		}
 		if (!GMT->current.map.coastline && side % 2) {	/* Either left or right border */
+			/* For non-periodic maps we have to be careful to position the polygon so it does
+			 * not have longitude jumps at the current border.  This does not apply to pscoast
+			 * which has special handling and hence bypasses this test */
 			for (i = 0; i < n; i++) {	/* If points is > 180 degrees from border, flip side */
 				if ((xtmp[in][i] - border[side]) > 180.0) xtmp[in][i] -= 360.0;
 				else if ((xtmp[in][i] - border[side]) < -180.0) xtmp[in][i] += 360.0;
