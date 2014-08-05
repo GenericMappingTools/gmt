@@ -103,6 +103,12 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+enum GMT_side {	/* CCW order of side in some tests */
+	GMT_BOTTOM = 0,
+	GMT_RIGHT = 1,
+	GMT_TOP = 2,
+	GMT_LEFT = 3};
+
 /* Basic error reporting when things go badly wrong. This Return macro can be
  * used in stead of regular return(code) to print out what the code is before
  * it returns.  We assume the GMT pointer is available in the function!
@@ -1320,10 +1326,10 @@ uint64_t gmt_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 
 	/* Set up function pointers.  This could be done once in GMT_begin at some point */
 
-	clipper[0] = gmt_clip_sn;	clipper[1] = gmt_clip_we; clipper[2] = gmt_clip_sn;	clipper[3] = gmt_clip_we;
-	inside[1] = inside[2] = gmt_inside_upper_boundary;	outside[1] = outside[2] = gmt_outside_upper_boundary;
-	inside[0] = inside[3] = gmt_inside_lower_boundary;		outside[0] = outside[3] = gmt_outside_lower_boundary;
-	border[0] = border[3] = 0.0;	border[1] = GMT->current.map.width;	border[2] = GMT->current.map.height;
+	clipper[GMT_BOTTOM] = gmt_clip_sn;	clipper[GMT_RIGHT] = gmt_clip_we; clipper[GMT_TOP] = gmt_clip_sn;	clipper[GMT_LEFT] = gmt_clip_we;
+	inside[GMT_RIGHT] = inside[GMT_TOP] = gmt_inside_upper_boundary;	outside[GMT_RIGHT] = outside[GMT_TOP] = gmt_outside_upper_boundary;
+	inside[GMT_BOTTOM] = inside[GMT_LEFT] = gmt_inside_lower_boundary;		outside[GMT_BOTTOM] = outside[GMT_LEFT] = gmt_outside_lower_boundary;
+	border[GMT_BOTTOM] = border[GMT_LEFT] = 0.0;	border[GMT_RIGHT] = GMT->current.map.width;	border[GMT_TOP] = GMT->current.map.height;
 
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
@@ -1582,18 +1588,19 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 
 	/* Set up function pointers.  This could be done once in GMT_begin at some point */
 
-	clipper[0] = gmt_clip_sn;	clipper[1] = gmt_clip_we; clipper[2] = gmt_clip_sn;	clipper[3] = gmt_clip_we;
-	inside[1] = inside[2] = gmt_inside_upper_boundary;	outside[1] = outside[2] = gmt_outside_upper_boundary;
-	inside[0] = inside[3] = gmt_inside_lower_boundary;	outside[0] = outside[3] = gmt_outside_lower_boundary;
-	border[0] = GMT->common.R.wesn[YLO]; border[3] = GMT->common.R.wesn[XLO];	border[1] = GMT->common.R.wesn[XHI];	border[2] = GMT->common.R.wesn[YHI];
+	clipper[GMT_BOTTOM] = gmt_clip_sn;	clipper[GMT_RIGHT] = gmt_clip_we; clipper[GMT_TOP] = gmt_clip_sn;	clipper[GMT_LEFT] = gmt_clip_we;
+	inside[GMT_RIGHT] = inside[GMT_TOP] = gmt_inside_upper_boundary;	outside[GMT_RIGHT] = outside[GMT_TOP] = gmt_outside_upper_boundary;
+	inside[GMT_BOTTOM] = inside[GMT_LEFT] = gmt_inside_lower_boundary;	outside[GMT_BOTTOM] = outside[GMT_LEFT] = gmt_outside_lower_boundary;
+	border[GMT_BOTTOM] = GMT->common.R.wesn[YLO]; border[GMT_LEFT] = GMT->common.R.wesn[XLO];	border[GMT_RIGHT] = GMT->common.R.wesn[XHI];	border[GMT_TOP] = GMT->common.R.wesn[YHI];
+#if 0
 	/* Make data longitudes have no jumps */
 	for (i = 0; i < n; i++) {
-		if (lon[i] < border[3] && (lon[i] + 360.0) <= border[1])
+		if (lon[i] < border[GMT_LEFT] && (lon[i] + 360.0) <= border[GMT_RIGHT])
 			lon[i] += 360.0;
-		else if (lon[i] > border[1] && (lon[i] - 360.0) >= border[3])
+		else if (lon[i] > border[GMT_RIGHT] && (lon[i] - 360.0) >= border[GMT_LEFT])
 			lon[i] -= 360.0;
 	}
-
+#endif
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
 	GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
@@ -1628,6 +1635,12 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 			GMT_memcpy (xtmp[out], xtmp[in], m, double);
 			GMT_memcpy (ytmp[out], ytmp[in], m, double);
 			continue;
+		}
+		if (side % 2) {	/* Either left or right border */
+			for (i = 0; i < n; i++) {	/* If points is > 180 degrees from border, flip side */
+				if ((xtmp[in][i] - border[side]) > 180.0) xtmp[in][i] -= 360.0;
+				else if ((xtmp[in][i] - border[side]) < -180.0) xtmp[in][i] += 360.0;
+			}
 		}
 		/* Must ensure we copy the very first point if it is inside the clip rectangle */
 		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
