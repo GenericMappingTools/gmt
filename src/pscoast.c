@@ -824,6 +824,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	if (need_coast_base) {
 		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 		east_border = ceil  (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
+		GMT->current.map.coastline = true;
 	}
 
 	if (!Ctrl->M.active && Ctrl->W.active) GMT_setpen (GMT, &Ctrl->W.pen[0]);
@@ -1099,6 +1100,8 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		Return (API->error);	/* Disables further data output */
 	}
 	
+	GMT->current.map.coastline = false;
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
 	Return (GMT_OK);
