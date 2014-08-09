@@ -79,7 +79,7 @@ The fastest way to get up and running is this:
 Examples
 --------
 
-To switch to GMT version 4.5.7 (assuming it was installed as such an not
+To switch to GMT version 4.5.7 (assuming it was installed as such and not
 via a package manager), try
 
     gmtswitch GMT4.5.7
