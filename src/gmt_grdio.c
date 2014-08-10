@@ -898,6 +898,64 @@ int gmt_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 	return (GMT_GRID_CARTESIAN);
 }
 
+void gmt_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid)
+{	/* Enforce before writing a grid that periodic grids with repeating columns
+	 * agree on the node values in those columns; if different replace with average.
+	 * This only affects geographic grids of 360-degree extent with gridline registration.
+	 * Also, if geographic grid with gridline registration, if the N or S pole row is present
+	 * we ensure that they all have identical values, otherwise replace by mean value */
+	int row = 0, col = 0;
+	unsigned int we_conflicts = 0, p_conflicts = 0;
+	uint64_t left = 0, right = 0, node = 0;
+
+	if (header->registration == GMT_GRID_PIXEL_REG) return;	/* Not gridline registered */
+	if (!GMT_is_geographic (GMT, GMT_OUT)) return;		/* Not geographic */
+	if (header->wesn[YLO] == -90.0) {	/* Check consistency of S pole duplicates */
+		double sum;
+		node = GMT_IJP (header, 0, 0);	/* First node at S pole */
+		sum = grid[node++];
+		p_conflicts = 0;
+		for (col = 1; col < header->nx; col++, node++) {
+			if (grid[node] != grid[node-1]) p_conflicts++;
+			sum += grid[node];
+		}
+		if (p_conflicts) {
+			float f_value = (float)(sum / header->nx);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
+			node = GMT_IJP (header, 0, 0);	/* First node at S pole */
+			for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
+		}
+	}
+	if (header->wesn[YHI] == +90.0) {	/* Check consistency of N pole duplicates */
+		double sum;
+		node = GMT_IJP (header, header->ny-1, 0);	/* First node at N pole */
+		sum = grid[node++];
+		p_conflicts = 0;
+		for (col = 1; col < header->nx; col++, node++) {
+			if (grid[node] != grid[node-1]) p_conflicts++;
+			sum += grid[node];
+		}
+		if (p_conflicts) {
+			float f_value = (float)(sum / header->nx);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
+			node = GMT_IJP (header, header->ny-1, 0);	/* First node at N pole */
+			for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
+		}
+	}
+	if (!GMT_360_RANGE (header->wesn[XLO], header->wesn[XHI])) return;	/* Not 360-degree range */
+	
+	for (row = 0; row < header->ny; row++) {
+		left = GMT_IJP (header, row, 0);	/* Left node */
+		right = left + header->nx - 1;		/* Right node */
+		if (grid[right] != grid[left]) {
+			grid[right] = grid[left];
+			we_conflicts++;
+		}
+	}
+	if (we_conflicts)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values along east boundary of grid. Values fixed by duplicating west boundary.\n", we_conflicts);
+}
+
 int GMT_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header)
 {	/* file:	File name
 	 * header:	grid structure header
@@ -1046,6 +1104,7 @@ int GMT_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *hea
 	gmt_grd_xy_scale (GMT, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
 	gmt_grd_layout (GMT, header, grid, complex_mode, GMT_OUT);	/* Deal with complex layout */
+	gmt_grd_check_consistency (GMT, header, grid);			/* Fix east repeating columns and polar values */
 	err = (*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode);
 	if (GMT->parent->leave_grid_scaled == 0) GMT_pack_grid (GMT, header, grid, k_grd_unpack); /* revert scale and offset to leave grid as it was before writing unless session originated from gm*/
 	return (err);
