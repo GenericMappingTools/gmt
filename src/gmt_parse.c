@@ -560,6 +560,33 @@ int gmt_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	return (-1);				/* Error: Cannot be both */
 }
 
+unsigned int gmt_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
+{	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<nx>/<ny> we need access
+	 * to grid increments dx/dy, usually given via a -I option.  Hence, we here
+	 * make sure that if such a -R option is given we first process -I */
+	
+	struct GMT_OPTION *opt = NULL;
+	bool got_extended_R = false;
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'R' && strlen (opt->arg) > 2 && strchr ("LCRlcr", opt->arg[0]) && strchr ("TMBtmb", opt->arg[1]))
+			got_extended_R = true;
+	}
+	if (!got_extended_R) return 0;	/* No such situation */
+	
+	/* Now look for -Idx[/dy] option */
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'I' && opt->arg[0]) {
+			if (!GMT_getinc (GMT, opt->arg, GMT->common.API_I.inc)) {	/* Successful parsing */
+				GMT->common.API_I.active = true;
+			}
+		}
+	}
+	if (GMT->common.API_I.active)
+		return 0;
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -R[L|C|R][T|M|B]<x0>/<y0>/<nx>/<ny> requires grid spacings via -I\n");
+	return 1;
+}
+
 int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *options)
 {
 	/* GMT_Parse_Common parses the option list for a program and detects the GMT common options.
@@ -571,7 +598,7 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 
 	struct GMT_OPTION *opt = NULL;
 	char list[2] = {0, 0}, critical_opt_order[] = GMT_CRITICAL_OPT_ORDER;
-	unsigned int i, n_errors = 0;
+	unsigned int i, n_errors;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
@@ -584,6 +611,8 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 
 	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmt_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
 
+	n_errors = gmt_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
+	
 	/* First parse the common options in the order they appear in GMT_CRITICAL_OPT_ORDER */
 	for (i = 0; i < strlen (critical_opt_order); i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
 		if (strchr (given_options, critical_opt_order[i]) == NULL) continue;	/* Not a selected option */

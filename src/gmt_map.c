@@ -3608,10 +3608,66 @@ bool gmt_map_init_tm (struct GMT_CTRL *GMT) {
  *	TRANSFORMATION ROUTINES FOR THE UNIVERSAL TRANSVERSE MERCATOR PROJECTION (GMT_UTM)
  */
 
+void gmt_map_set_utmzone (struct GMT_CTRL *GMT) {
+	/* When no UTM zone is given we determine the best one from midpoint of -R.
+	 * We pass back via GMT->current.proj.pars[0] the zone number.
+	 * Note that despite the funky non-standard zones around Norway
+	 * the central meridian still follows the simple 6-degree stepping.
+	 */
+	int kx, ky;
+	double clon, clat;
+	char zone[4] = {""};
+	
+	clon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (clon > 180.0) clon -= 360.0;
+	else if (clon < -180.0) clon += 360.0;
+	kx = irint (floor ((clon + 180.0) / 6.0)) + 1;	/* Best UTM zone */
+	GMT->current.proj.lon0 = -180.0 + kx * 6.0 - 3.0;	/* Best centered longitude */
+	if (GMT->common.R.wesn[YLO] > 0.0)
+		GMT->current.proj.utm_hemisphere = +1;
+	else
+		GMT->current.proj.utm_hemisphere = -1;
+	GMT->current.proj.utm_zoney = 0;
+	clat = 0.5 * (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]);
+	if (clat < -80.0) {	/* A or B */
+		zone[0] = (GMT->current.proj.lon0 < 0.0) ? 'A' : 'B';
+	}
+	else if (clat > 84.0) {	/* Y or Z */
+		zone[0] = (GMT->current.proj.lon0 < 0.0) ? 'Y' : 'Z';
+	}
+	else {	/* In the general latitude range of 1-60 zones */
+		ky = irint (floor ((clat + 80.0) / 8.0));
+		if (ky == 20) ky = 19;	/* Since band X is 12 degrees tall there is no 20 */
+		if (ky >= 11) ky += 4;		/* zone = (P-X) */
+		else if (ky >= 6) ky += 3;	/* zone = (J-N) */
+		else ky += 2;			/* zone = (C-H) */
+		GMT->current.proj.utm_zoney = 'A' + ky;
+		if (GMT->current.proj.utm_zoney == 'X') {	/* Deal with funky zone X */
+			if (clon >= 0.0 && clon < 9.0)
+				kx = 31;
+			else if (clon >= 9.0  && clon < 21.0)
+				kx = 33;
+			else if (clon >= 21.0 && clon < 33.0)
+				kx = 35;
+			else if (clon >= 33.0 && clon < 42.0)
+				kx = 37;
+		}
+		else if (GMT->current.proj.utm_zoney == 'V') {	/* Deal with funky zone V */
+			if (clon >= 3.0 && clon < 12.0)
+				kx = 32;
+		}
+		sprintf (zone, "%d%c", kx, GMT->current.proj.utm_zoney);
+	}
+	GMT->current.proj.pars[0] = (double)kx;
+	GMT->current.proj.lat0 = 0.0;
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No UTM zone given; zone %s selected\n", zone);
+}
+
 bool gmt_map_init_utm (struct GMT_CTRL *GMT) {
 	double xmin, xmax, ymin, ymax, lon0;
 
 	if (GMT->current.setting.proj_scale_factor == -1.0) GMT->current.setting.proj_scale_factor = 0.9996;	/* Select default map scale for UTM */
+	if (GMT->current.proj.pars[0] < 0.0) gmt_map_set_utmzone (GMT);	/* Determine UTM zone from -R */
 	lon0 = 180.0 + 6.0 * GMT->current.proj.pars[0] - 3.0;	/* Central meridian for this UTM zone */
 	if (lon0 >= 360.0) lon0 -= 360.0;
 	GMT->current.proj.GMT_convert_latitudes = gmt_quicktm (GMT, lon0, 10.0);

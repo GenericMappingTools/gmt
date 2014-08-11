@@ -360,6 +360,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 			GMT_message (GMT, "\t   -Ju|U<zone>/<scale>|<width> (UTM)\n");
 			GMT_message (GMT, "\t     Give zone (A,B,Y,Z, or 1-60 (negative for S hemisphere) or append GMT-X) and scale\n");
+			GMT_message (GMT, "\t     Or give -Ju|U<scale>|<width> to have the UTM zone determined from the region.\n");
 
 			GMT_message (GMT, "\t   -Jv|V[<lon0>/]<scale>|<width> (van der Grinten)\n\t     Give central meridian (opt) and scale\n");
 
@@ -438,7 +439,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 			GMT_message (GMT, "\t   -Jt|T<lon0>/[<lat0>/]<scl>|<width> (Transverse Mercator)\n");
 
-			GMT_message (GMT, "\t   -Ju|U<zone>/<scl>|<width> (UTM)\n");
+			GMT_message (GMT, "\t   -Ju|U[<zone>/]<scl>|<width> (UTM)\n");
 
 			GMT_message (GMT, "\t   -Jv|V<lon0>/<scl>|<width> (van der Grinten)\n");
 
@@ -498,6 +499,9 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t   Append r if -R specifies the coordinates of the lower left and\n");
 			GMT_message (GMT, "\t   upper right corners of a rectangular area.\n");
 			GMT_message (GMT, "\t   -Rg and -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
+			GMT_message (GMT, "\t   Or use -R<code><x0>/<y0>/<nx>/<ny> for origin and grid dimensions, where\n");
+			GMT_message (GMT, "\t     <code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right)\n");
+			GMT_message (GMT, "\t     and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).\n");
 			GMT_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
 			break;
 
@@ -1585,11 +1589,56 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 
 	if (!item || !item[0]) return (GMT_PARSE_ERROR);	/* Got nothing */
 
-	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
+	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<nx>/<ny> or -R[g|d]w/e/s/n[/z0/z1][r] */
 	length = strlen (item) - 1;
 	for (i = 0; i < length; i++) if (item[i] == '/') n_slash++;
 
 	strncpy (GMT->common.R.string, item, GMT_LEN256);	/* Verbatim copy */
+	
+	if (strchr ("LCRlcr", item[0]) && strchr ("TMBtmb", item[1])) {	/* Extended -R option using coordinate codes and grid increments */
+		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
+		double xdim, ydim, orig[2];
+		int nx, ny, just;
+		GMT_memcpy (code, item, 2, char);
+		if ((just = GMT_just_decode (GMT, code, 12)) == -99) {	/* Since justify not in correct format */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -R: Unrecognized justification code %s\n", code);
+			return (GMT_PARSE_ERROR);
+		}
+		if (sscanf (&item[2], "%[^/]/%[^/]/%d/%d", X[0], X[1], &nx, &ny) != 4) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -R%s<lon0>/<lat0>/<nx>/<ny>: Did not get 4 items\n", code);
+			return (GMT_PARSE_ERROR);
+		}
+		for (icol = GMT_X; icol <= GMT_Y; icol++) {
+			if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
+				got = GMT_scanf_arg (GMT, X[icol], GMT->current.io.col_type[GMT_IN][icol], &orig[icol]);
+				if (got & GMT_IS_GEO)
+					GMT->current.io.col_type[GMT_IN][icol] = got;
+				else if (got & GMT_IS_RATIME)
+					GMT->current.io.col_type[GMT_IN][icol] = got, GMT->current.proj.xyz_projection[icol] = GMT_TIME;
+			}
+			else {	/* Things are set, do or die */
+				expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
+				error += GMT_verify_expectations (GMT, expect_to_read, GMT_scanf (GMT, X[icol], expect_to_read, &orig[icol]), X[icol]);
+			}
+		}
+		if (error) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -R%s<lon0>/<lat0>/<nx>/<ny>: Could not parse coordinate pair\n", code);
+			return (GMT_PARSE_ERROR);
+		}
+		if (nx <= 0 || ny <= 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -R%s<lon0>/<lat0>/<nx>/<ny>: Must have positive dimensions\n", code);
+			return (GMT_PARSE_ERROR);
+		}
+		/* Finally set up -R */
+		if (!GMT->common.r.active) nx--, ny--;	/* Needed to get correct dimensions */
+		xdim = nx * GMT->common.API_I.inc[GMT_X];
+		ydim = ny * GMT->common.API_I.inc[GMT_Y];
+		GMT->common.R.wesn[XLO] = orig[GMT_X] - 0.5 * ((just%4)-1) * xdim;
+		GMT->common.R.wesn[YLO] = orig[GMT_Y] - 0.5 * (just/4) * ydim;
+		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[XLO] + xdim;
+		GMT->common.R.wesn[YHI] = GMT->common.R.wesn[YLO] + ydim;
+		return (GMT_NOERROR);
+	}
 	if ((item[0] == 'g' || item[0] == 'd') && item[1] == '\0') {	/* Check -Rd|g separately in case user has files called d or g */
 		if (item[0] == 'g') {	/* -Rg is shorthand for -R0/360/-90/90 */
 			GMT->common.R.wesn[XLO] = 0.0, GMT->common.R.wesn[XHI] = 360.0;
@@ -8473,36 +8522,42 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			break;
 
 		case GMT_UTM:	/* Universal Transverse Mercator */
-			n = sscanf (args, "%[^/]/%s", txt_a, txt_b);
-			GMT->current.proj.pars[0] = atof (txt_a);
-			switch (args[0]) {
-				case '-':	/* Enforce Southern hemisphere convention for y */
+			if (!strchr (args, '/')) {	/* No UTM zone given, must obtain from -R */
+				GMT->current.proj.pars[0] = -1.0;	/* Flag we need zone to be set later */
+				error += gmt_scale_or_width (GMT, args, &GMT->current.proj.pars[1]);
+			}
+			else {
+				n = sscanf (args, "%[^/]/%s", txt_a, txt_b); 
+				GMT->current.proj.pars[0] = atof (txt_a);
+				switch (args[0]) {
+					case '-':	/* Enforce Southern hemisphere convention for y */
+						GMT->current.proj.utm_hemisphere = -1;
+						break;
+					case '+':	/* Enforce Norther hemisphere convention for y */
+						GMT->current.proj.utm_hemisphere = +1;
+						break;
+					default:	/* Decide in gmt_map_setup based on -R */
+						GMT->current.proj.utm_hemisphere = 0;
+						break;
+				}
+				mod = (char)toupper ((int)txt_a[strlen(txt_a)-1]);	/* Check if UTM zone has a valid latitude modifier */
+				error = 0;
+				if (mod >= 'A' && mod <= 'Z') {	/* Got fully qualified UTM zone, e.g., 33N */
+					GMT->current.proj.utm_zoney = mod;
 					GMT->current.proj.utm_hemisphere = -1;
-					break;
-				case '+':	/* Enforce Norther hemisphere convention for y */
-					GMT->current.proj.utm_hemisphere = +1;
-					break;
-				default:	/* Decide in gmt_map_setup based on -R */
-					GMT->current.proj.utm_hemisphere = 0;
-					break;
-			}
-			mod = (char)toupper ((int)txt_a[strlen(txt_a)-1]);	/* Check if UTM zone has a valid latitude modifier */
-			error = 0;
-			if (mod >= 'A' && mod <= 'Z') {	/* Got fully qualified UTM zone, e.g., 33N */
-				GMT->current.proj.utm_zoney = mod;
-				GMT->current.proj.utm_hemisphere = -1;
-				if (mod >= 'N') GMT->current.proj.utm_hemisphere = +1;
-				if (mod == 'I' || mod == 'O') error++;	/* No such zones */
-			}
-			GMT->current.proj.pars[0] = fabs (GMT->current.proj.pars[0]);
-			GMT->current.proj.lat0 = 0.0;
-			k = irint (GMT->current.proj.pars[0]);
-			GMT->current.proj.lon0 = -180.0 + k * 6.0 - 3.0;
+					if (mod >= 'N') GMT->current.proj.utm_hemisphere = +1;
+					if (mod == 'I' || mod == 'O') error++;	/* No such zones */
+				}
+				GMT->current.proj.pars[0] = fabs (GMT->current.proj.pars[0]);
+				GMT->current.proj.lat0 = 0.0;
+				k = irint (GMT->current.proj.pars[0]);
+				GMT->current.proj.lon0 = -180.0 + k * 6.0 - 3.0;
 
-			error += (k < 1 || k > 60);	/* Zones must be 1-60 */
-			GMT->current.proj.utm_zonex = k;
-			error += gmt_scale_or_width (GMT, txt_b, &GMT->current.proj.pars[1]);
-			error += !(n_slashes == 1 && n == 2);
+				error += (k < 1 || k > 60);	/* Zones must be 1-60 */
+				GMT->current.proj.utm_zonex = k;
+				error += gmt_scale_or_width (GMT, txt_b, &GMT->current.proj.pars[1]);
+				error += !(n_slashes == 1 && n == 2);
+			}
 			break;
 
 		default:

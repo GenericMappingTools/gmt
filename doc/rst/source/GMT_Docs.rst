@@ -2388,7 +2388,7 @@ Data domain or map region: The **-R** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-R** option defines the map region or data domain of interest. It
-may be specified in one of three ways, two of which are shown in Figure
+may be specified in one of four ways, two of which are shown in Figure
 :ref:`Map region <gmt_region>`:
 
 #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*. This is the standard way to
@@ -2408,6 +2408,13 @@ may be specified in one of three ways, two of which are shown in Figure
    possibly the grid registration (see
    Section `Grid registration: The -r option`_).
 
+#. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
+   grids.  Here, *code* is a 2-character combination of L, C, R (for left, center,
+   or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+    indicates which point on a rectangular grid region the *x0*/*y0* coordinates
+    refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
+    via **-I** to create the corresponding region.
+   
 .. _gmt_region:
 
 .. figure:: /_images/GMT_-R.*
