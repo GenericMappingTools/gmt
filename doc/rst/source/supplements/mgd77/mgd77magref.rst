@@ -18,7 +18,6 @@ Synopsis
 [ **-D**\ *Dstfile* ] [ **-E**\ *f107file* ] [ **-F**\ *flags* ]
 [ **-G** ] [ **-Sc**\ \|\ **l**\ *low/high* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
-[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-:| ]
@@ -187,9 +186,6 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is reflected by **-F**]. 
 .. include:: ../../explain_-bo.rst_
-
-.. |Add_-d| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-d.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
