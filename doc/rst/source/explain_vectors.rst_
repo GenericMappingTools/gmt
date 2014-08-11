@@ -8,8 +8,12 @@ justification of the vector:
     **+a**\ *angle* sets the angle of the vector head apex [30].
 
     **+b** places a vector head at the beginning of the vector path [none].
+    Optionally, append **t** for a terminal line, **c** for a circle, or
+    **a** for arrow [Default].
 
     **+e** places a vector head at the end of the vector path [none].
+    Optionally, append **t** for a terminal line, **c** for a circle, or
+    **a** for arrow [Default].
 
     **+g**-\|\ *fill* turns off vector head fill (if -) or sets the vector
     head fill [Default fill is used, which may be no fill].

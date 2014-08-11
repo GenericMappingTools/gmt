@@ -72,7 +72,11 @@ extern "C" {
 /* PSL codes for vector attributes - mirroring similar codes and macros in GMT */
 
 /* Note: If changes are made to PSL_enum_vecattr you must also change gmt_plot.h: GMT_enum_vecattr */
-enum PSL_enum_vecattr {PSL_VEC_LEFT = 1,	/* Only draw left half of vector head */
+enum PSL_enum_vecattr {
+	PSL_VEC_ARROW		= 0,		/* Default head symbol is arrow */
+	PSL_VEC_TERMINAL	= 1,		/* Cross-bar normal to vector */
+	PSL_VEC_CIRCLE		= 2,		/* Circle as vector head */
+	PSL_VEC_LEFT		= 1,		/* Only draw left half of vector head */
 	PSL_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
 	PSL_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
 	PSL_VEC_END		= 8,		/* Place vector head at end of vector */
@@ -115,7 +119,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_INV			= 1,
 	PSL_OUTLINE		= 1,
 	PSL_MAX_EPS_FONTS	= 6,
-	PSL_MAX_DIMS		= 8,		/* Max number of dim arguments to PSL_plot_symbol */
+	PSL_MAX_DIMS		= 10,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
 	PSL_BUFSIZ		= 4096U};	/* To match GMT_BUFSIZ and be consistent across all platforms */
 

@@ -98,8 +98,14 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	struct GMT_PEN pen;	/* Pen for outline of front symbol [-W] */
 };
 
+/* Vector symbols */
+
 /* Note: If changes are made to GMT_enum_vecattr you must also change pslib.h: PSL_enum_vecattr */
-enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head */
+enum GMT_enum_vecattr {
+	GMT_VEC_ARROW		= 0,		/* Default head symbol is arrow */
+	GMT_VEC_TERMINAL	= 1,		/* Cross-bar normal to vector */
+	GMT_VEC_CIRCLE		= 2,		/* Circle as vector head */
+	GMT_VEC_LEFT		= 1,		/* Only draw left half of vector head */
 	GMT_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
 	GMT_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
 	GMT_VEC_END		= 8,		/* Place vector head at end of vector */
@@ -126,6 +132,7 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
 	unsigned int status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
+	unsigned int v_kind[2];	/* Type of vector heads */
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */

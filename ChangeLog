@@ -2,6 +2,20 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2014-08-10	pwessel
+	* gmt_init.c:		Allow UTM projections to not set the zone; if so then the
+				zone is automatically determined from the region
+	* gmt_map.c:		Determine best UTM zone from region if no zone is set.
+	* gmt_parse.c:		Allow new -R flavor for grid creation: -R[L|C|R][T|M|B]<x0>/<y0>/<nx>/<ny>,
+				where one specifies a fixed point relative to a rectangular
+				domain using the justification codes, and then adds the
+				dimensions of the new grid.  The grid spacings must be
+				set via the -I option.
+	* psxy[z].c:		Added optional arg to -Sv|m +b+e modifiers to set the kind
+				of arrow head to use.  Choose from t (termimal line),
+				c (circle) or a (arrow) [Default].
+	* grdvector.c:		---"---
+	
 2014-07-17	pwessel
 	* psxy[z].c:		Added modifier +p[<pen>] to the front specification so that
 				one can specify an alternate symbol outline, or no outline

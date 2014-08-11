@@ -841,6 +841,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					data[n].dim[4] = s * S.v.h_width;
 					data[n].dim[5] = GMT->current.setting.map_vector_shape;
 					data[n].dim[6] = (double)S.v.status;
+					data[n].dim[7] = (double)S.v.v_kind[0];	data[n].dim[8] = (double)S.v.v_kind[1];
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */
@@ -879,6 +880,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					data[n].dim[5] = s * S.v.v_width;	/* Thickness of (shrunk) vector */
 					data[n].dim[6] = GMT->current.setting.map_vector_shape;
 					data[n].dim[7] = (double)S.v.status;	/* Vector tributes */
+					data[n].dim[8] = (double)S.v.v_kind[0];	data[n].dim[9] = (double)S.v.v_kind[1];
 					break;
 				case GMT_SYMBOL_WEDGE:
 					if (GMT_is_dnan (in[ex1+S.read_size])) {

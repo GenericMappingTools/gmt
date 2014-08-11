@@ -973,7 +973,9 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 	GMT_message (GMT, "\t   Append length of vector head, with optional modifiers:\n");
 	GMT_message (GMT, "\t     +a<angle> to set angle of the vector head apex [30]\n");
 	GMT_message (GMT, "\t     +b to place a vector head at the beginning of the vector [none].\n");
+	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
 	GMT_message (GMT, "\t     +e to place a vector head at the end of the vector [none].\n");
+	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
 	if (mode & 8) GMT_message (GMT, "\t     +g<fill> to set head fill or use - to turn off fill [default fill].\n");
 	if (mode & 1) GMT_message (GMT, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
 	GMT_message (GMT, "\t     +l to only draw left side of vector head [both].\n");
@@ -8638,14 +8640,29 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	GMT_init_fill (GMT, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	S->v.status = 0;	/* Start with no flags turned on */
 	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;	S->v.v_stem = 0.1f;
+	S->v.v_kind[0] = S->v.v_kind[1] = GMT_VEC_ARROW;
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 
 	while ((GMT_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 		switch (p[0]) {
 			case 'a': S->v.v_angle = (float)atof (&p[1]);	break;	/* Vector head opening angle [30] */
-			case 'b': S->v.status |= GMT_VEC_BEGIN;		break;	/* Vector head at beginning point */
-			case 'e': S->v.status |= GMT_VEC_END;		break;	/* Vector head at end point */
+			case 'b':	/* Vector head at beginning point */
+				S->v.status |= GMT_VEC_BEGIN;
+				switch (p[1]) {
+					case 'c': S->v.v_kind[0] = GMT_VEC_CIRCLE;	break;
+					case 't': S->v.v_kind[0] = GMT_VEC_TERMINAL;	break;
+					default: S->v.v_kind[0] = GMT_VEC_ARROW;	break;
+				}
+				break;
+			case 'e':	/* Vector head at end point */
+				S->v.status |= GMT_VEC_END;
+				switch (p[1]) {
+					case 'c': S->v.v_kind[1] = GMT_VEC_CIRCLE;	break;
+					case 't': S->v.v_kind[1] = GMT_VEC_TERMINAL;	break;
+					default: S->v.v_kind[1] = GMT_VEC_ARROW;	break;
+				}
+				break;
 			case 'l': S->v.status |= GMT_VEC_LEFT;		break;	/* Vector head on left half only */
 			case 'q': S->v.status |= GMT_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
 			case 'r': S->v.status |= GMT_VEC_RIGHT;		break;	/* Vector head on right half only */
