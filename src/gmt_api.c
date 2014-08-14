@@ -6038,31 +6038,27 @@ int GMT_Option_ (void *V_API, char *options, int len)
 }
 #endif
 
-int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
-{	/* Message independent of verbosity, optionally with timestamp.
+char * gmt_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode)
+{	/* Optionally craft a leading timestamp.
 	 * mode = 0:	No time stamp
 	 * mode = 1:	Abs time stamp formatted via GMT_TIME_STAMP
 	 * mode = 2:	Report elapsed time since last reset.
 	 * mode = 4:	Reset elapsed time to 0, no time stamp.
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
-	time_t toc_abs;
+	time_t right_now;
 	clock_t toc, S;
-	size_t source_info_len;
 	unsigned int H, M, milli;
-	char message[4*GMT_BUFSIZ] = {""}, stamp[GMT_LEN256] = {""};
-	struct GMTAPI_CTRL *API = NULL;
-	va_list args;
+	static char stamp[GMT_LEN256] = {""};
 
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
-	API = gmt_get_api_ptr (V_API);
-	if (mode) toc = clock ();
+	if (mode == 0) return NULL;		/* no timestamp requested */
+	if (mode > 1) toc = clock ();		/* Elapsed time requested */
 	if (mode & 4) API->GMT->current.time.tic = toc;
 
 	switch (mode) {
 		case 1:
-			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&toc_abs));
+			right_now = time ((time_t *)0);
+			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&right_now));
 			break;
 		case 2:
 		case 6:
@@ -6077,9 +6073,30 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 			break;
 		default: break;
 	}
-	va_start (args, format);
+	return (stamp);
+}
+
+int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
+{	/* Message independent of verbosity, optionally with timestamp.
+	 * mode = 0:	No time stamp
+	 * mode = 1:	Abs time stamp formatted via GMT_TIME_STAMP
+	 * mode = 2:	Report elapsed time since last reset.
+	 * mode = 4:	Reset elapsed time to 0, no time stamp.
+	 * mode = 6:	Reset elapsed time and report it as well.
+	 */
+	size_t source_info_len;
+	char message[4*GMT_BUFSIZ] = {""}, *stamp = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+	va_list args;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
+	API = gmt_get_api_ptr (V_API);
+	stamp = gmt_tictoc_string (API, mode);	/* NULL or pointer to a timestamp string */
 	if (mode % 4) sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
 	source_info_len = strlen (message);
+
+	va_start (args, format);
 	vsnprintf (message + source_info_len, 4*GMT_BUFSIZ - source_info_len, format, args);
 	va_end (args);
 	assert (strlen (message) < 4*GMT_BUFSIZ);
@@ -6096,7 +6113,7 @@ int GMT_Message_ (void *V_API, unsigned int *mode, char *message, int len)
 
 int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 {	/* Message whose output depends on verbosity setting */
-	size_t source_info_len;
+	size_t source_info_len = 0;
 	char message[GMT_BUFSIZ] = {""};
 	struct GMTAPI_CTRL *API = NULL;
 	va_list args;
@@ -6106,8 +6123,14 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	API = gmt_get_api_ptr (V_API);
 	if (level > API->GMT->current.setting.verbose)
 		return 0;
-	snprintf (message, GMT_BUFSIZ, "%s: ", API->GMT->init.module_name);
-	source_info_len = strlen (message);
+	if (API->GMT->current.setting.timer_mode > GMT_NO_TIMER) {
+		char *stamp = gmt_tictoc_string (API, API->GMT->current.setting.timer_mode);	/* NULL or pointer to a timestamp string */
+		if (stamp) {
+			sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
+			source_info_len = strlen (message);	/* Update length of message from 0 */
+		}
+	}
+	snprintf (message + source_info_len, GMT_BUFSIZ-source_info_len, "%s: ", API->GMT->init.module_name);
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */

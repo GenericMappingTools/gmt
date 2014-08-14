@@ -161,6 +161,12 @@ enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
 	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
 
+/* Timer reporting modes */
+enum GMT_enum_timer {
+	GMT_NO_TIMER = 0,	/* No timer reported */
+	GMT_ABS_TIMER,		/* Report absolute time */
+	GMT_ELAPSED_TIMER};	/* Report elapsed time since start of session */
+
 /* Various line/grid/image interpolation modes */
 enum GMT_enum_track {
 	GMT_TRACK_FILL = 0,	/* Normal fix_up_path behavior: Keep all (x,y) points but add intermediate if gap > cutoff */
