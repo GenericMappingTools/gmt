@@ -227,6 +227,45 @@ enum GMT_enum_iomode {
  *==================================================================================================
  */
 
+/* Also assess number of computing cores */
+#if defined _WIN32
+#include <windows.h>
+#elif defined __APPLE__
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#else
+#include <unistd.h>
+#endif
+
+/* We like to know the number of CPUs (cores) available for a
+ * computer.  This may be needed to be passed to a -z[<cores>]
+ * option to select the number of threads for a particular job
+ * Based on ideas posted on
+ * http://stackoverflow.com/questions/150355/programmatically-
+ * find-the-number-of-cores-on-a-machine
+ */
+
+uint32_t gmt_count_cores (void) {
+	uint32_t count = 0;
+#ifdef WIN32
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo (&sysinfo);
+	count = (uint32_t)sysinfo.dwNumberOfProcessors;
+#elif MACOS
+	int nm[2] = {CTL_HW, HW_AVAILCPU};
+	size_t len = 4;
+	sysctl (nm, 2, &count, &len, NULL, 0);
+	if (count < 1) {
+		nm[1] = HW_NCPU;
+		sysctl (nm, 2, &count, &len, NULL, 0);
+		if (count < 1) count = 1;
+	}
+#else
+	count = (uint32_t)sysconf (_SC_NPROCESSORS_ONLN);
+#endif
+	return count;
+}
+
 int gmt_print_func (FILE *fp, const char *message)
 {
 	/* Just print this message to fp.  It is being used indirectly via
@@ -3332,6 +3371,8 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 		return_null (API, GMT_MEMORY_ERROR);
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session initialized GMT structure\n");
+
+	API->n_cores = gmt_count_cores ();	/* Get number of available cores */
 
 	/* Allocate memory to keep track of registered data resources */
 

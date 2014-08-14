@@ -130,6 +130,7 @@ struct GMTAPI_CTRL {
 	unsigned int pad;			/* Session default for number of rows/cols padding for grids [2] */
 	unsigned int mode;			/* 1 if called via external API (Matlab, Python) [0] */
 	unsigned int leave_grid_scaled;		/* 1 if we dont want to unpack a grid after we packed it for writing [0] */
+	unsigned int n_cores;			/* Number of available cores on this system */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
