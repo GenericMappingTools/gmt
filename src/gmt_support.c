@@ -4393,7 +4393,7 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test,
 	bool more;
 	size_t n_alloc;
 	uint64_t n = 1, m, ij0, ij_in, ij;
-	float z[5];
+	float z[5], dz;
 	double xk[5], dist1, dist2, *xx = NULL, *yy = NULL;
 	static int d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
 
@@ -4458,10 +4458,11 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test,
 			/* Skip if no zero-crossing on this edge */
 
 			if (z[this_side+1] * z[this_side] > 0.0f) continue;
+			if ((dz = z[this_side] - z[this_side+1]) == 0.0f) continue;
 
 			/* Save normalized distance along edge from corner this_side to crossing of edge this_side */
 
-			xk[this_side] = z[this_side] / (z[this_side] - z[this_side+1]);
+			xk[this_side] = z[this_side] / dz;
 
 			/* Skip if this is the entry edge of the current box (this_side == old_side) */
 
