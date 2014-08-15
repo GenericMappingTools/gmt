@@ -150,6 +150,7 @@ TIME_EPOCH			# Current epoch in use
 TIME_IS_INTERVAL		# Used to round input times to nearest interval
 TIME_INTERVAL_FRACTION		# Controls labeling of partial time intervals on maps
 TIME_LEAP_SECONDS		# Do we want to deal with leap seconds?
+TIME_REPORT			# Controls time or elapsed run-time stamp in messages
 TIME_UNIT			# Unit of time measurement
 TIME_SYSTEM			# Shortcut to setting TIME_EPOCH/UNIT [does not go in gmt.conf]
 TIME_WEEK_START			# Day a new week starts on

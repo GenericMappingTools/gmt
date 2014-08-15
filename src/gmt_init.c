@@ -4708,6 +4708,16 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 		case GMTCASE_TIME_LEAP_SECONDS:
 			error = gmt_true_false_or_error (lower_value, &GMT->current.setting.time_leap_seconds);
 			break;
+		case GMTCASE_TIME_REPORT:
+			if (!strncmp (lower_value, "none", 4U))
+				GMT->current.setting.timer_mode = GMT_NO_TIMER;
+			else if (!strncmp (lower_value, "clock", 5U))
+				GMT->current.setting.timer_mode = GMT_ABS_TIMER;
+			else if (!strncmp (lower_value, "elapsed", 7U))
+				GMT->current.setting.timer_mode = GMT_ELAPSED_TIMER;
+			else
+				error = true;
+			break;
 		case GMTCASE_TIME_UNIT:
 			GMT->current.setting.time_system.unit = lower_value[0];
 			(void) GMT_init_time_system_structure (GMT, &GMT->current.setting.time_system);
@@ -5709,6 +5719,14 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_TIME_LEAP_SECONDS:
 			sprintf (value, "%s", ft[GMT->current.setting.time_leap_seconds]);
+			break;
+		case GMTCASE_TIME_REPORT:
+			if (GMT->current.setting.timer_mode == GMT_NO_TIMER)
+				strcpy (value, "none");
+			else if (GMT->current.setting.timer_mode == GMT_ABS_TIMER)
+				strcpy (value, "clock");
+			else if (GMT->current.setting.timer_mode == GMT_ELAPSED_TIMER)
+				strcpy (value, "elapsed");
 			break;
 		case GMTCASE_TIME_UNIT:
 			value[0] = GMT->current.setting.time_system.unit;

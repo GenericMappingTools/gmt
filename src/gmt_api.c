@@ -6047,8 +6047,9 @@ char * gmt_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode)
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
 	time_t right_now;
-	clock_t toc, S;
-	unsigned int H, M, milli;
+	clock_t toc;
+	unsigned int H, M, S, milli;
+	double T;
 	static char stamp[GMT_LEN256] = {""};
 
 	if (mode == 0) return NULL;		/* no timestamp requested */
@@ -6062,14 +6063,16 @@ char * gmt_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode)
 			break;
 		case 2:
 		case 6:
-			S = (toc - (clock_t)API->GMT->current.time.tic);	/* Elapsed time in ticks */
-			milli = (unsigned)(((float)S / CLOCKS_PER_SEC - (int)(S / CLOCKS_PER_SEC)) * CLOCKS_PER_SEC);	/* millisec */
-			S /= CLOCKS_PER_SEC;	/* Elapsed time in seconds */
-			H = urint (floor (S * GMT_SEC2HR));
-			S -= H * GMT_HR2SEC_I;
-			M = urint (floor (S * GMT_SEC2MIN));
-			S -= M * GMT_MIN2SEC_I;
-			sprintf (stamp, "Elapsed time %2.2d:%2.2d:%2.2d.%2.2d", H, M, (int)S, milli);
+			T = (double)(toc - (clock_t)API->GMT->current.time.tic);	/* Elapsed time in ticks */
+			T /= CLOCKS_PER_SEC;	/* Elapsed time in seconds */
+			H = urint (floor (T * GMT_SEC2HR));
+			T -= H * GMT_HR2SEC_I;
+			M = urint (floor (T * GMT_SEC2MIN));
+			T -= M * GMT_MIN2SEC_I;
+			S = urint (floor (T));
+			T -= S;
+			milli = urint (T*1000.0);	/* Residual milli-seconds */
+			sprintf (stamp, "Elapsed time %2.2u:%2.2u:%2.2u.%3.3u", H, M, S, milli);
 			break;
 		default: break;
 	}

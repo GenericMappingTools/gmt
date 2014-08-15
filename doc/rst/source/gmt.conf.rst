@@ -1140,6 +1140,14 @@ fonts can be found in the :doc:`gmt` man page.
     **TIME_IS_INTERVAL** = off then that date is interpreted to mean
     1999-12-01T00:00:00.0 (start of December) [off].
 
+.. _TIME_REPORT:
+
+**TIME_REPORT**
+    Controls if a time-stamp should be issued at start of all progress
+    reports.  Choose among **TIMER_CLOCK** (absolute time stamp),
+    **TIMER_ELAPSED** (time since start of session), or **TIMER_NONE**
+    [Default].
+
 .. _TIME_SYSTEM:
 
 **TIME_SYSTEM**
