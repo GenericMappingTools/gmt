@@ -741,7 +741,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	/*---------------------------- This is the ps2raster main code ----------------------------*/
 
 	/* Test if GhostScript can be executed (version query) */
-	sprintf(cmd, "%s --version", Ctrl->G.file);
+	sprintf(cmd, "\'%s\' --version", Ctrl->G.file);
 	if ((fp = popen(cmd, "r")) != NULL) {
 		int n;
 		n = fscanf(fp, "%d.%d", &gsVersion.major, &gsVersion.minor);
@@ -844,7 +844,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			free (ps_names[k]);
 		}
 		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
-		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%s.pdf %s",
+		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=\'%s.pdf\' \'%s\'",
 			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, Ctrl->F.file, all_names_in);
 
 		GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd2);
@@ -920,7 +920,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Find HiResBoundingBox ...\n");
 			sprintf (BB_file, "%s/ps2raster_%dc.bb", Ctrl->D.dir, (int)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
-			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
+			sprintf (cmd, "%s%s %s %s \'%s\' 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
@@ -948,7 +948,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%d -sOutputFile=%s -f%s",
+						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%d -sOutputFile=\'%s\' -f\'%s\'",
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 							device_options[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
@@ -1333,7 +1333,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
 			}
 
-			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g%dx%d -r%d -sOutputFile=%s -f%s",
+			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g%dx%d -r%d -sOutputFile=\'%s\' -f\'%s\'",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 				device_options[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
@@ -1380,7 +1380,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
 				strcat (out_file, ext[Ctrl->T.device]);
 				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
-				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -r%d -sOutputFile=%s %s",
+				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -r%d -sOutputFile=\'%s\' \'%s\'",
 					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 					device_options[Ctrl->T.device],
 					Ctrl->E.dpi, out_file, pdf_file);
@@ -1472,10 +1472,10 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					quiet = "";
 
 #ifdef WIN32
-				sprintf (cmd, "gdal_translate -a_srs \"%s\" -co COMPRESS=LZW -co TILED=YES %s %s %s",
+				sprintf (cmd, "gdal_translate -a_srs \"%s\" -co COMPRESS=LZW -co TILED=YES %s \'%s\' \'%s\'",
 						proj4_cmd, quiet, out_file, world_file);
 #else
-				sprintf (cmd, "gdal_translate -a_srs '%s' -co COMPRESS=LZW -co TILED=YES %s %s %s",
+				sprintf (cmd, "gdal_translate -a_srs '%s' -co COMPRESS=LZW -co TILED=YES %s \'%s\' \'%s\'",
 						proj4_cmd, quiet, out_file, world_file);
 #endif
 				free(proj4_cmd);
