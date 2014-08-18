@@ -43,7 +43,7 @@
  *
  */
 
-#define GSHHG_SITE "ftp://ftp.soest.hawaii.edu/pwessel/gshhg/"
+#define GSHHG_SITE "ftp://ftp.soest.hawaii.edu/gshhg/"
 
 #define RIVERLAKE	5				/* Fill array id for riverlakes */
 #define get_level(arg) (((arg) >> 6) & 7)		/* Extract level from bit mask */
