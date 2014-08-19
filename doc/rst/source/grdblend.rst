@@ -154,6 +154,17 @@ To blend all the grids called MB\_\*.nc given them all equal weight, try
 
     gmt grdblend MB_*.nc -Gblend.nc -R<full_region> -I<dx/dy> -V
 
+Warning on large file sets
+--------------------------
+
+While grdblend can process any number of files, it works by keeping those
+files open that are being blended, and close files as soon as they are finished.
+Depending on your session, many files may remain open at the same time.
+Some operating systems set fairly modest
+default limits on how many concurrent files can be open, e.g., 256.  If you
+run into this problem then you can change this limit; see your operating system
+documentation for how to change system limits.
+
 See Also
 --------
 
