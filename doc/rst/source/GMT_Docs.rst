@@ -2411,9 +2411,9 @@ may be specified in one of four ways, two of which are shown in Figure
 #. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
    grids.  Here, *code* is a 2-character combination of L, C, R (for left, center,
    or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
-    indicates which point on a rectangular grid region the *x0*/*y0* coordinates
-    refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
-    via **-I** to create the corresponding region.
+   indicates which point on a rectangular grid region the *x0*/*y0* coordinates
+   refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
+   via **-I** to create the corresponding region.
    
 .. _gmt_region:
 
