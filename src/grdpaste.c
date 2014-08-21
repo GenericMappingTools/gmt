@@ -249,6 +249,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 		C->header->ny = A->header->ny;
 
 		if (way == 4 || fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < x_noise) {	/* A is on the left of B */
+			way = 4;
 			C->header->nx = A->header->nx + B->header->nx - one_or_zero;
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
