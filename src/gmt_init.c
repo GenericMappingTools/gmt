@@ -1779,7 +1779,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 			            "Warning -R: Given west and east values [%g %g] were adjusted so not exceed multiples of 360 [%g %g]\n", w, e, p[0], p[1]);
 		}
-#if 0	/* This causes too much trouble: Better to annoy the person wishing this to work vs annoy all those who made an honest error. We cannot be mind-readers here so we insist on e > w */
+		else if (p[0] > p[1] && GMT->common.R.oblique && !GMT->common.J.active) {	/* Used -Rw/s/e/nr for non mapping */
+			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
+		}
+#if 0	/* This causes too much trouble: Better to annoy the person wishing this to work vs annoy all those who made an honest error.  We cannot be mind-readers here so we insist on e > w */
 		else if (p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
 			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
