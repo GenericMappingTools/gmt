@@ -103,6 +103,7 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+#define GMT_CONV8_LIMIT 1.0e-4	/* Testing this, should be 1e-8 but both give issues */
 enum GMT_side {	/* CCW order of side in some tests */
 	GMT_BOTTOM = 0,
 	GMT_RIGHT = 1,
@@ -508,9 +509,10 @@ bool gmt_wesn_outside (struct GMT_CTRL *GMT, double lon, double lat)
 		while (lon > GMT->common.R.wesn[XHI] && lon - 360.0 >= GMT->common.R.wesn[XLO]) lon -= 360.0;
 	}
 
-	if (GMT->current.map.on_border_is_outside && fabs (lon - GMT->common.R.wesn[XLO]) < GMT_SMALL)
+	/* Note PW: 8-20-2014: Was GMT_SMALL instead of GMT_CONV_LIMIT.  Trying the latter */
+	if (GMT->current.map.on_border_is_outside && fabs (lon - GMT->common.R.wesn[XLO]) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_x_status = -1;
-	else if (GMT->current.map.on_border_is_outside && fabs (lon - GMT->common.R.wesn[XHI]) < GMT_SMALL)
+	else if (GMT->current.map.on_border_is_outside && fabs (lon - GMT->common.R.wesn[XHI]) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_x_status = 1;
 	else if (lon < GMT->common.R.wesn[XLO])
 		GMT->current.map.this_x_status = -2;
@@ -519,9 +521,9 @@ bool gmt_wesn_outside (struct GMT_CTRL *GMT, double lon, double lat)
 	else
 		GMT->current.map.this_x_status = 0;
 
-	if (GMT->current.map.on_border_is_outside && fabs (lat - GMT->common.R.wesn[YLO]) < GMT_SMALL)
+	if (GMT->current.map.on_border_is_outside && fabs (lat - GMT->common.R.wesn[YLO]) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_y_status = -1;
-	else if (GMT->current.map.on_border_is_outside && fabs (lat - GMT->common.R.wesn[YHI]) < GMT_SMALL)
+	else if (GMT->current.map.on_border_is_outside && fabs (lat - GMT->common.R.wesn[YHI]) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_y_status = 1;
 	else if (lat < GMT->common.R.wesn[YLO])
 		GMT->current.map.this_y_status = -2;
@@ -569,9 +571,10 @@ bool gmt_radial_outside (struct GMT_CTRL *GMT, double lon, double lat)
 
 	/* Test if point is more than horizon spherical degrees from origin.  For global maps, let all borders be "south" */
 
+	/* Note PW: 8-20-2014: Was GMT_SMALL instead of GMT_CONV_LIMIT.  Trying the latter */
 	GMT->current.map.this_x_status = 0;
 	dist = GMT_great_circle_dist_degree (GMT, lon, lat, GMT->current.proj.central_meridian, GMT->current.proj.pole);
-	if (GMT->current.map.on_border_is_outside && fabs (dist - GMT->current.proj.f_horizon) < GMT_SMALL)
+	if (GMT->current.map.on_border_is_outside && fabs (dist - GMT->current.proj.f_horizon) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_y_status = -1;
 	else if (dist > GMT->current.proj.f_horizon)
 		GMT->current.map.this_y_status = -2;
@@ -582,24 +585,25 @@ bool gmt_radial_outside (struct GMT_CTRL *GMT, double lon, double lat)
 
 bool GMT_cart_outside (struct GMT_CTRL *GMT, double x, double y)
 {	/* Expects x,y to be projected and comparing with rectangular projected domain */
-	if (GMT->current.map.on_border_is_outside && fabs (x - GMT->current.proj.rect[XLO]) < GMT_SMALL)
+	/* Note PW: 8-20-2014: The on_border_is_outside tests had GMT_SMALL instead of GMT_CONV_LIMIT.  Trying the latter */
+	if (GMT->current.map.on_border_is_outside && fabs (x - GMT->current.proj.rect[XLO]) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_x_status = -1;
-	else if (GMT->current.map.on_border_is_outside && fabs (x - GMT->current.proj.rect[XHI]) < GMT_SMALL)
+	else if (GMT->current.map.on_border_is_outside && fabs (x - GMT->current.proj.rect[XHI]) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_x_status = 1;
-	else if (x < GMT->current.proj.rect[XLO] - GMT_CONV_LIMIT)
+	else if (x < GMT->current.proj.rect[XLO] - GMT_CONV8_LIMIT)
 		GMT->current.map.this_x_status = -2;
-	else if (x > GMT->current.proj.rect[XHI] + GMT_CONV_LIMIT)
+	else if (x > GMT->current.proj.rect[XHI] + GMT_CONV8_LIMIT)
 		GMT->current.map.this_x_status = 2;
 	else
 		GMT->current.map.this_x_status = 0;
 
-	if (GMT->current.map.on_border_is_outside && fabs (y -GMT->current.proj.rect[YLO]) < GMT_SMALL)
+	if (GMT->current.map.on_border_is_outside && fabs (y -GMT->current.proj.rect[YLO]) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_y_status = -1;
-	else if (GMT->current.map.on_border_is_outside && fabs (y - GMT->current.proj.rect[YHI]) < GMT_SMALL)
+	else if (GMT->current.map.on_border_is_outside && fabs (y - GMT->current.proj.rect[YHI]) < GMT_CONV8_LIMIT)
 		GMT->current.map.this_y_status = 1;
-	else if (y < GMT->current.proj.rect[YLO] - GMT_CONV_LIMIT)
+	else if (y < GMT->current.proj.rect[YLO] - GMT_CONV8_LIMIT)
 		GMT->current.map.this_y_status = -2;
-	else if (y > GMT->current.proj.rect[YHI] + GMT_CONV_LIMIT)
+	else if (y > GMT->current.proj.rect[YHI] + GMT_CONV8_LIMIT)
 		GMT->current.map.this_y_status = 2;
 	else
 		GMT->current.map.this_y_status = 0;
@@ -629,17 +633,19 @@ void gmt_x_wesn_corner (struct GMT_CTRL *GMT, double *x)
 	else if (fabs (fmod (fabs (*x - GMT->common.R.wesn[XHI]), 360.0)) <= GMT_SMALL)
 		*x = GMT->common.R.wesn[XHI]; */
 
-	if (fabs (*x - GMT->common.R.wesn[XLO]) <= GMT_SMALL)
+	/* Note PW: 8-20-2014: Was GMT_SMALL instead of GMT_CONV_LIMIT.  Trying the latter */
+	if (fabs (*x - GMT->common.R.wesn[XLO]) <= GMT_CONV8_LIMIT)
 		*x = GMT->common.R.wesn[XLO];
-	else if (fabs (*x - GMT->common.R.wesn[XHI]) <= GMT_SMALL)
+	else if (fabs (*x - GMT->common.R.wesn[XHI]) <= GMT_CONV8_LIMIT)
 		*x = GMT->common.R.wesn[XHI];
 }
 
 void gmt_y_wesn_corner (struct GMT_CTRL *GMT, double *y)
 {
-	if (fabs (*y - GMT->common.R.wesn[YLO]) <= GMT_SMALL)
+	/* Note PW: 8-20-2014: Was GMT_SMALL instead of GMT_CONV_LIMIT.  Trying the latter */
+	if (fabs (*y - GMT->common.R.wesn[YLO]) <= GMT_CONV8_LIMIT)
 		*y = GMT->common.R.wesn[YLO];
-	else if (fabs (*y - GMT->common.R.wesn[YHI]) <= GMT_SMALL)
+	else if (fabs (*y - GMT->common.R.wesn[YHI]) <= GMT_CONV8_LIMIT)
 		*y = GMT->common.R.wesn[YHI];
 }
 
@@ -784,6 +790,7 @@ unsigned int gmt_wesn_crossing (struct GMT_CTRL *GMT, double lon0, double lat0, 
 	return (2);
 }
 
+#if 0
 void gmt_x_rect_corner (struct GMT_CTRL *GMT, double *x)
 {
 	if (fabs (*x) <= GMT_SMALL)
@@ -797,6 +804,23 @@ void gmt_y_rect_corner (struct GMT_CTRL *GMT, double *y)
 	if (fabs (*y) <= GMT_SMALL)
 		*y = 0.0;
 	else if (fabs (*y - GMT->current.proj.rect[YHI]) <= GMT_SMALL)
+		*y = GMT->current.proj.rect[YHI];
+}
+#endif
+
+void gmt_x_rect_corner (struct GMT_CTRL *GMT, double *x)
+{
+	if (fabs (*x) <= GMT_CONV8_LIMIT)
+		*x = 0.0;
+	else if (fabs (*x - GMT->current.proj.rect[XHI]) <= GMT_CONV8_LIMIT)
+		*x = GMT->current.proj.rect[XHI];
+}
+
+void gmt_y_rect_corner (struct GMT_CTRL *GMT, double *y)
+{
+	if (fabs (*y) <= GMT_CONV8_LIMIT)
+		*y = 0.0;
+	else if (fabs (*y - GMT->current.proj.rect[YHI]) <= GMT_CONV8_LIMIT)
 		*y = GMT->current.proj.rect[YHI];
 }
 
@@ -1892,8 +1916,8 @@ bool gmt_rect_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lo
 	if (x0 > x1) double_swap (x0, x1);
 	if (y0 > y1) double_swap (y0, y1);
 
-	if (x1 - GMT->current.proj.rect[XLO] < -GMT_CONV_LIMIT || x0 - GMT->current.proj.rect[XHI] > GMT_CONV_LIMIT) return (false);
-	if (y1 - GMT->current.proj.rect[YLO] < -GMT_CONV_LIMIT || y0 - GMT->current.proj.rect[YHI] > GMT_CONV_LIMIT) return (false);
+	if (x1 - GMT->current.proj.rect[XLO] < -GMT_CONV8_LIMIT || x0 - GMT->current.proj.rect[XHI] > GMT_CONV8_LIMIT) return (false);
+	if (y1 - GMT->current.proj.rect[YLO] < -GMT_CONV8_LIMIT || y0 - GMT->current.proj.rect[YHI] > GMT_CONV8_LIMIT) return (false);
 	if (x0 < GMT->current.proj.rect[XLO] && x1 > GMT->current.proj.rect[XHI]) {	/* Possibly a map jump but is it reasonable? */
 		/* What can happen for a small non-360 map is that points that approach being +180 degrees in longitude away and the
 		 * next point that is +181 will be seen as -179 degrees away and suddenly the x-coordinate jumps from very positive
@@ -1910,17 +1934,17 @@ bool gmt_wesn_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lo
 	/* Return true if either of the points (lon0,lat0) and (lon1,lat1) is inside (not on) the rectangular lon/lat boundaries */
 	if (lon0 > lon1) double_swap (lon0, lon1);
 	if (lat0 > lat1) double_swap (lat0, lat1);
-	if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV_LIMIT) {
+	if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV8_LIMIT) {
 		lon0 += 360.0;
 		lon1 += 360.0;
 	}
-	else if (lon0 - GMT->common.R.wesn[XHI] > GMT_CONV_LIMIT) {
+	else if (lon0 - GMT->common.R.wesn[XHI] > GMT_CONV8_LIMIT) {
 		lon0 -= 360.0;
 		lon1 -= 360.0;
 	}
 
-	if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV_LIMIT || lon0 - GMT->common.R.wesn[XHI] > GMT_CONV_LIMIT) return (false);
-	if (lat1 - GMT->common.R.wesn[YLO] < -GMT_CONV_LIMIT || lat0 - GMT->common.R.wesn[YHI] > GMT_CONV_LIMIT) return (false);
+	if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV8_LIMIT || lon0 - GMT->common.R.wesn[XHI] > GMT_CONV8_LIMIT) return (false);
+	if (lat1 - GMT->common.R.wesn[YLO] < -GMT_CONV8_LIMIT || lat0 - GMT->common.R.wesn[YHI] > GMT_CONV8_LIMIT) return (false);
 	return (true);
 }
 
