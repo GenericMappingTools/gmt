@@ -8059,6 +8059,8 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 		case GMT_AZ_EQDIST:	/* Azimuthal equal-distant */
 		case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
 		case GMT_GNOMONIC:	/* Gnomonic */
+			/* -Ja|A or e|e or g|G <lon0>/<lat0>[/<horizon>]/<scale>|<width> */
+	   
 			if (project == GMT_AZ_EQDIST)	/* Initialize default horizons */
 				strcpy (txt_c, "180");
 			else if (project == GMT_GNOMONIC)
@@ -8066,23 +8068,23 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			else
 				strcpy (txt_c, "90");
 			if (k >= 0) {	/* Scale entered as 1:mmmmm */
-				if (n_slashes == 2)
+				if (n_slashes == 2)	/* Got lon0/lat0/1:mmmm */
 					n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &GMT->current.proj.pars[3]);
-				else if (n_slashes == 3)
+				else if (n_slashes == 3)	/* Got lon0/lat0/lath/1:mmmm */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &GMT->current.proj.pars[3]);
 				if (GMT->current.proj.pars[3] != 0.0) GMT->current.proj.pars[3] = 1.0 / (GMT->current.proj.pars[3] * GMT->current.proj.unit);
 			}
 			else if (width_given) {
-				if (n_slashes == 2)
+				if (n_slashes == 2)	/* Got lon0/lat0/width */
 					n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
-				else if (n_slashes == 3)
+				else if (n_slashes == 3)	/* Got lon0/lat0/lath/width */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 				GMT->current.proj.pars[3] = GMT_to_inch (GMT, txt_d);
 			}
 			else {	/* Scale entered as radius/lat */
-				if (n_slashes == 3)
+				if (n_slashes == 3)	/* Got lon0/lat0/radius/lat */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_d, txt_e);
-				else if (n_slashes == 4)
+				else if (n_slashes == 4)	/* Got lon0/lat0/lat_h/radius/lat */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 				if (n == n_slashes + 1) {
 					GMT->current.proj.pars[3] = GMT_to_inch (GMT, txt_d);
