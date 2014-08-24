@@ -103,7 +103,7 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
-#define GMT_CONV8_LIMIT 1.0e-4	/* Testing this, should be 1e-8 but both give issues */
+#define GMT_CONV8_LIMIT 1.0e-8	/* Testing this, should be 1e-8 but both give issues */
 enum GMT_side {	/* CCW order of side in some tests */
 	GMT_BOTTOM = 0,
 	GMT_RIGHT = 1,

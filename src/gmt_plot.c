@@ -1920,6 +1920,20 @@ void gmt_label_trim (char *label, int stage)
 	if (strchr ("WESN", label[i])) label[i] = '\0';	/* Strip off the trailing W|E|S|N, if found */
 }
 
+double gmt_shift_gridline (struct GMT_CTRL *GMT, double lon)
+{
+	/* ONly for oblique projections: If any of the corners are exactly multiples of annotation
+	 * or tick intervals then the gridline intersection may fail (tangent or slightly outside
+	 * due to round-off).  We determine which gridlines go through the corners and shift them
+	 * a tiny bit to the inside to ensure crossings */
+	
+	if (!GMT->common.R.oblique) return 0.0;	/* Return zero if not an oblique projection */
+	
+	if (doubleAlmostEqualZero (lon, GMT->common.R.wesn_orig[XLO])) return (+GMT_SMALL);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
+	if (doubleAlmostEqualZero (lon, GMT->common.R.wesn_orig[XHI])) return (-GMT_SMALL);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
+	return 0.0;	/* Nuthin */
+}
+
 void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
 	unsigned int i, k, nx, ny, form, remove[2] = {0,0}, add;

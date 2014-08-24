@@ -79,6 +79,7 @@ struct GMT_COMMON {
 		bool active;
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
 		double wesn[6];		/* Boundaries of west, east, south, north, low-z and hi-z */
+		double wesn_orig[4];	/* Original Boundaries of west, east, south, north (oblique projection may reset wesn above) */
 		char string[GMT_LEN256];
 	} R;
 	struct U {	/* -U */
