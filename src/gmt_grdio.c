@@ -904,7 +904,7 @@ void gmt_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	 * This only affects geographic grids of 360-degree extent with gridline registration.
 	 * Also, if geographic grid with gridline registration, if the N or S pole row is present
 	 * we ensure that they all have identical values, otherwise replace by mean value */
-	int row = 0, col = 0;
+	unsigned int row = 0, col = 0;
 	unsigned int we_conflicts = 0, p_conflicts = 0;
 	uint64_t left = 0, right = 0, node = 0;
 
