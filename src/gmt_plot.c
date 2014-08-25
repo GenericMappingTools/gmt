@@ -1920,18 +1920,28 @@ void gmt_label_trim (char *label, int stage)
 	if (strchr ("WESN", label[i])) label[i] = '\0';	/* Strip off the trailing W|E|S|N, if found */
 }
 
-double gmt_shift_gridline (struct GMT_CTRL *GMT, double lon)
+#define GMT_OFF GMT_SMALL
+
+double gmt_shift_gridline (struct GMT_CTRL *GMT, double val, unsigned int type)
 {
-	/* ONly for oblique projections: If any of the corners are exactly multiples of annotation
+	/* Only for oblique projections: If any of the corners are exactly multiples of annotation
 	 * or tick intervals then the gridline intersection may fail (tangent or slightly outside
 	 * due to round-off).  We determine which gridlines go through the corners and shift them
 	 * a tiny bit to the inside to ensure crossings */
+	double shift = 0.0;
+	if (!GMT->common.R.oblique) return shift;	/* Return zero if not an oblique projection */
 	
-	if (!GMT->common.R.oblique) return 0.0;	/* Return zero if not an oblique projection */
-	
-	if (doubleAlmostEqualZero (lon, GMT->common.R.wesn_orig[XLO])) return (+GMT_SMALL);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
-	if (doubleAlmostEqualZero (lon, GMT->common.R.wesn_orig[XHI])) return (-GMT_SMALL);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
-	return 0.0;	/* Nuthin */
+	if (type == GMT_X) {
+		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XLO])) shift = +GMT_OFF * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
+		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XHI])) shift = -GMT_OFF * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
+	}
+	else {
+		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YLO])) shift = +GMT_OFF * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
+		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YHI])) shift = -GMT_OFF * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
+		
+	}
+	if (shift != 0.0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Adjusted argument %g by %g\n", val, shift);
+	return shift;
 }
 
 void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
@@ -1941,7 +1951,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	bool full_lat_range, proj_A, proj_B, annot_0_and_360 = false, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_LEN256] = {""};
 	char **label_c = NULL;
-	double *val = NULL, dx[2], dy[2], w2, s2, del;
+	double *val = NULL, dx[2], dy[2], w2, s2, del, shift = 0.0;
 
 	if (!(GMT_x_is_lon (GMT, GMT_IN) || GMT_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR)) return;	/* Annotations and header already done by gmt_linear_map_boundary */
 
@@ -2043,7 +2053,8 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 					else
 						gmt_label_trim (label, remove[GMT_X]);
 				}
-				gmt_map_symbol_ns (GMT, PSL, val[i], label, s, n, annot, k, form);
+				shift = gmt_shift_gridline (GMT, val[i], GMT_X);
+				gmt_map_symbol_ns (GMT, PSL, val[i]+shift, label, s, n, annot, k, form);
 			}
 			if (nx) GMT_free (GMT, val);
 			if (label_c) {
@@ -2096,7 +2107,8 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 					else
 						gmt_label_trim (label, remove[GMT_Y]);
 				}
-				gmt_map_symbol_ew (GMT, PSL, val[i], label, w, e, annot, k, form);
+				shift = gmt_shift_gridline (GMT, val[i], GMT_Y);
+				gmt_map_symbol_ew (GMT, PSL, val[i]+shift, label, w, e, annot, k, form);
 			}
 			if (ny) GMT_free (GMT, val);
 			if (label_c) {
