@@ -882,6 +882,32 @@ void gmt_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 	if (ny) GMT_free (GMT, y);
 }
 
+#define GMT_OFF GMT_SMALL
+
+double gmt_shift_gridline (struct GMT_CTRL *GMT, double val, unsigned int type)
+{
+	/* Only for oblique projections: If any of the corners are exactly multiples of annotation
+	 * or tick intervals then the gridline intersection may fail (tangent or slightly outside
+	 * due to round-off).  We determine which gridlines go through the corners and shift them
+	 * a tiny bit to the inside to ensure crossings */
+	double shift = 0.0;
+	if (!GMT->common.R.oblique) return shift;	/* Return zero if not an oblique projection */
+	
+	if (type == GMT_X) {
+		if (GMT_360_RANGE (val, GMT->common.R.wesn_orig[XLO])) val = GMT->common.R.wesn_orig[XLO];
+		else if (GMT_360_RANGE (val, GMT->common.R.wesn_orig[XHI])) val = GMT->common.R.wesn_orig[XHI];
+		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XLO])) shift = +GMT_OFF * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
+		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XHI])) shift = -GMT_OFF * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
+	}
+	else {
+		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YLO])) shift = +GMT_OFF * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
+		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YHI])) shift = -GMT_OFF * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
+		
+	}
+	if (shift != 0.0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Adjusted argument %g by %g\n", val, shift);
+	return shift;
+}
+
 /*	FANCY RECTANGULAR PROJECTION MAP BOUNDARY	*/
 
 void gmt_fancy_frame_offset (struct GMT_CTRL *GMT, double angle, double shift[2])
@@ -1516,12 +1542,26 @@ void gmt_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, doubl
 {
 	double angle, xl, yl, c, s, tick_length;
 	unsigned int i;
+	bool set_angle;
+
+	/* The set_angle bit trieds to handle the fact that the given angles from crossing may need an adjustment depending on
+	 * which side of a rectangular box it occurs.  There are exception for round maps, etc.  It is a bit nebulous and could
+	 * need a better explanation.  For instance, I commented out the Gnomonic case which is needed for annotations but not here, apparently */
+	set_angle = ((!GMT->common.R.oblique && !(GMT_IS_AZIMUTHAL(GMT) || GMT_IS_CONICAL(GMT))) || GMT->common.R.oblique);
+	//if (!GMT->common.R.oblique && (GMT->current.proj.projection == GMT_GENPER || GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_POLYCONIC)) set_angle = true;
+	if (!GMT->common.R.oblique && (GMT->current.proj.projection == GMT_GENPER || GMT->current.proj.projection == GMT_POLYCONIC)) set_angle = true;
 
 	for (i = 0; i < nx; i++) {
 		if (!GMT->current.proj.edge[sides[i]]) continue;
 		if (!GMT->current.map.frame.side[sides[i]]) continue;
 		if (!(GMT->current.setting.map_annot_oblique & 1) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
 		angle = ((GMT->current.setting.map_annot_oblique & 16) ? (sides[i] - 1) * 90.0 : angles[i]);
+		if (set_angle) {	/* Adjust angle to fit the range of angles relative to each side */
+			if (sides[i] == 0 && angle < 180.0) angle -= 180.0;
+			if (sides[i] == 1 && (angle > 90.0 && angle < 270.0)) angle -= 180.0;
+			if (sides[i] == 2 && angle > 180.0) angle -= 180.0;
+			if (sides[i] == 3 && (angle < 90.0 || angle > 270.0)) angle -= 180.0;
+		}
 		sincosd (angle, &s, &c);
 		tick_length = len;
 		if (GMT->current.setting.map_annot_oblique & 8) {
@@ -1819,7 +1859,7 @@ void gmt_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 {
 	unsigned int i, nx, ny;
 	bool do_x, do_y;
-	double dx, dy, *val = NULL, len;
+	double dx, dy, *val = NULL, len, shift = 0.0;
 
 	if (! (GMT->current.map.frame.axis[GMT_X].item[item].active || GMT->current.map.frame.axis[GMT_Y].item[item].active)) return;
 
@@ -1844,8 +1884,10 @@ void gmt_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			nx = GMT_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item], &val, NULL);
 		else
 			nx = GMT_linear_array (GMT, w, e, dx, GMT->current.map.frame.axis[GMT_X].phase, &val);
-		for (i = 0; i < nx; i++) 
-			gmt_map_lontick (GMT, PSL, val[i], s, n, len);
+		for (i = 0; i < nx; i++)  {
+			shift = gmt_shift_gridline (GMT, val[i], GMT_X);
+			gmt_map_lontick (GMT, PSL, val[i] + shift, s, n, len);
+		}
 		if (nx) GMT_free (GMT, val);
 	}
 
@@ -1864,8 +1906,10 @@ void gmt_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			else
 				ny = GMT_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
 		}
-		for (i = 0; i < ny; i++) 
-			gmt_map_lattick (GMT, PSL, val[i], w, e, len);
+		for (i = 0; i < ny; i++) {
+			shift = gmt_shift_gridline (GMT, val[i], GMT_Y);
+			gmt_map_lattick (GMT, PSL, val[i] + shift, w, e, len);
+		}
 		if (ny) GMT_free (GMT, val);
 	}
 
@@ -1918,30 +1962,6 @@ void gmt_label_trim (char *label, int stage)
 	label[stage] = '\0';
 	i = strlen (label) - 1;
 	if (strchr ("WESN", label[i])) label[i] = '\0';	/* Strip off the trailing W|E|S|N, if found */
-}
-
-#define GMT_OFF GMT_SMALL
-
-double gmt_shift_gridline (struct GMT_CTRL *GMT, double val, unsigned int type)
-{
-	/* Only for oblique projections: If any of the corners are exactly multiples of annotation
-	 * or tick intervals then the gridline intersection may fail (tangent or slightly outside
-	 * due to round-off).  We determine which gridlines go through the corners and shift them
-	 * a tiny bit to the inside to ensure crossings */
-	double shift = 0.0;
-	if (!GMT->common.R.oblique) return shift;	/* Return zero if not an oblique projection */
-	
-	if (type == GMT_X) {
-		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XLO])) shift = +GMT_OFF * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
-		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XHI])) shift = -GMT_OFF * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
-	}
-	else {
-		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YLO])) shift = +GMT_OFF * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
-		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YHI])) shift = -GMT_OFF * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
-		
-	}
-	if (shift != 0.0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Adjusted argument %g by %g\n", val, shift);
-	return shift;
 }
 
 void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)

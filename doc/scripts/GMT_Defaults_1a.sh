@@ -1,9 +1,10 @@
 #!/bin/bash
 #	$Id$
 #
+ps=GMT_Defaults_1a.ps
 gmt gmtset MAP_FRAME_TYPE fancy FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.1i FONT_ANNOT_PRIMARY +8p
-gmt psbasemap -X2i -R-60/-30/-10/10 -JM2.25i -Ba10f5g5 -BWSne+t"Plot Title" -P -K > GMT_Defaults_1a.ps
-gmt pstext -R -J -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> GMT_Defaults_1a.ps
+gmt psbasemap -X2i -R-60/-30/-10/10 -JM2.25i -Ba10f5g5 -BWSne+t"Plot Title" -P -K > $ps
+gmt pstext -R -J -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> $ps
 -62  -7 RT MAP_FRAME_TYPE
 -38 -14 RT MAP_ANNOT_OFFSET_PRIMARY
 -62  -3 RT MAP_TICK_LENGTH_PRIMARY
@@ -15,7 +16,7 @@ gmt pstext -R -J -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> GMT_Defaults_1a
 -62 -14 RT FORMAT_GEO_MAP
 -28  -8 LB MAP_DEGREE_SYMBOL
 EOF
-gmt psxy -R -J -O -Sv0.06i+s+e -W0.5p,blue -N -Gblue << EOF >> GMT_Defaults_1a.ps
+gmt psxy -R -J -O -Sv0.06i+s+e -W0.5p,blue -N -Gblue << EOF >> $ps
 -62 -7 -60 -5
 -37.7 -14 -31 -11
 -62 -2.75 -60.75 -0.25

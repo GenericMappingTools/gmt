@@ -7439,19 +7439,21 @@ unsigned int GMT_map_latcross (struct GMT_CTRL *GMT, double lat, double west, do
 		GMT_map_outside (GMT, lon, lat);
 		GMT_geo_to_xy (GMT, lon, lat, &this_x, &this_y);
 		if ((nx = gmt_map_crossing (GMT, lon_old, lat, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides))) {
-			if (nx == 1) X[nc].angle[0] = gmt_get_angle (GMT, lon_old, lat, lon, lat);
-			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
+			X[nc].angle[0] = gmt_get_angle (GMT, lon_old, lat, lon, lat);	/* Get angle at first crossing */
+			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;	/* If a 2nd crossing it must be really close so just add 180 */
 			if (GMT->current.map.corner > 0) {
 				X[nc].sides[0] = (GMT->current.map.corner%4 > 1) ? 1 : 3;
 				if (GMT->current.proj.got_azimuths) X[nc].sides[0] = (X[nc].sides[0] + 2) % 4;
 				GMT->current.map.corner = 0;
 			}
 		}
-		else if (GMT->current.map.is_world)
+		else if (GMT->current.map.is_world)	/* Deal with possibility of wrapping around 360 */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides);
-		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT->current.map.width) < GMT_SMALL && !GMT->current.map.is_world)
+		if (nx == 2 && fabs (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT->current.map.width) < GMT_SMALL && !GMT->current.map.is_world)
+			/* I assume this means if we have a crossing and both left and right and not worldmap then skip as something went wrong? */
 			go = false;
-		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && (gap - GMT->current.map.height) < GMT_SMALL && !GMT->current.map.is_world_tm)
+		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && fabs (gap - GMT->current.map.height) < GMT_SMALL && !GMT->current.map.is_world_tm)
+			/* I assume this means if we have a crossing and both top and bottom and it is not a global UTM map then skip as something went wrong? */
 			go = false;
 		else if (nx > 0)
 			go = true;
@@ -7497,18 +7499,20 @@ unsigned int GMT_map_loncross (struct GMT_CTRL *GMT, double lon, double south, d
 		GMT_map_outside (GMT, lon, lat);
 		GMT_geo_to_xy (GMT, lon, lat, &this_x, &this_y);
 		if ((nx = gmt_map_crossing (GMT, lon, lat_old, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides))) {
-			if (nx == 1) X[nc].angle[0] = gmt_get_angle (GMT, lon, lat_old, lon, lat);
-			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
+			X[nc].angle[0] = gmt_get_angle (GMT, lon, lat_old, lon, lat);	/* Get angle at first crossing */
+			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;	/* If a 2nd crossing it must be really close so just add 180 */
 			if (GMT->current.map.corner > 0) {
 				X[nc].sides[0] = (GMT->current.map.corner < 3) ? 0 : 2;
 				GMT->current.map.corner = 0;
 			}
 		}
-		else if (GMT->current.map.is_world)
+		else if (GMT->current.map.is_world)	/* Deal with possibility of wrapping around 360 */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides);
-		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT->current.map.width) < GMT_SMALL && !GMT->current.map.is_world)
+		if (nx == 2 && fabs (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT->current.map.width) < GMT_SMALL && !GMT->current.map.is_world)
+			/* I assume this means if we have a crossing and both left and right and not worldmap then skip as something went wrong? */
 			go = false;
-		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && (gap - GMT->current.map.height) < GMT_SMALL && !GMT->current.map.is_world_tm)
+		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && fabs (gap - GMT->current.map.height) < GMT_SMALL && !GMT->current.map.is_world_tm)
+			/* I assume this means if we have a crossing and both top and bottom and it is not a global UTM map then skip as something went wrong? */
 			go = false;
 		else if (nx > 0)
 			go = true;
