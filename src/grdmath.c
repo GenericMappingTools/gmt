@@ -170,7 +170,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\t   will be converted from degrees lon,lat into meters (Flat-earth approximation).\n"
 		"\t   Default computes derivatives in units of data/grid_distance.\n"
 		"\t-N Do not perform strict domain check if several grids are involved.\n"
-		"\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_SMALL);
+		"\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_CONV4_LIMIT);
 	GMT_Option (API, "R,V");
 	GMT_Option (API, "f,g,h,i");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE).\n");
@@ -1538,7 +1538,7 @@ void grd_IFELSE (struct GMT_CTRL *GMT_UNUSED(GMT), struct GRDMATH_INFO *info, st
 		if (!stack[prev1]->constant) b = stack[prev1]->G->data[node];
 		if (!stack[last]->constant)  c = stack[last]->G->data[node];
 
-		stack[prev2]->G->data[node] = (fabsf (a) < GMT_CONV_LIMIT) ? c : b;
+		stack[prev2]->G->data[node] = (fabsf (a) < GMT_CONV8_LIMIT) ? c : b;
 	}
 }
 
@@ -1553,7 +1553,7 @@ void grd_IN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 
 	if (stack[last]->constant) {
 		if (stack[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for IN!\n");
-		if (fabs (rint(stack[last]->factor) - stack[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for IN!\n");
+		if (fabs (rint(stack[last]->factor) - stack[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for IN!\n");
 		order = urint (fabs (stack[last]->factor));
 		if (stack[prev]->constant) {
 			b = (float)GMT_in (GMT, order, fabs (stack[prev]->factor));
@@ -1704,7 +1704,7 @@ void grd_JN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 
 	if (stack[last]->constant) {
 		if (stack[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for JN!\n");
-		if (fabs (rint(stack[last]->factor) - stack[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for JN!\n");
+		if (fabs (rint(stack[last]->factor) - stack[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for JN!\n");
 		order = urint (fabs (stack[last]->factor));
 		if (stack[prev]->constant) {
 			b = (float)jn (order, fabs (stack[prev]->factor));
@@ -1787,7 +1787,7 @@ void grd_KN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 
 	if (stack[last]->constant) {
 		if (stack[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for KN!\n");
-		if (fabs (rint(stack[last]->factor) - stack[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for KN!\n");
+		if (fabs (rint(stack[last]->factor) - stack[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for KN!\n");
 		order = urint (fabs (stack[last]->factor));
 		if (stack[prev]->constant) {
 			b = (float)GMT_kn (GMT, order, fabs (stack[prev]->factor));
@@ -2305,8 +2305,8 @@ void grd_NOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	float a = 0.0f;
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand == 0!\n");
-	if (stack[last]->constant) a = (fabs (stack[last]->factor) > GMT_CONV_LIMIT) ? 0.0f : 1.0f;
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : ((fabsf (stack[last]->G->data[node]) > GMT_CONV_LIMIT) ? 0.0f : 1.0f);
+	if (stack[last]->constant) a = (fabs (stack[last]->factor) > GMT_CONV8_LIMIT) ? 0.0f : 1.0f;
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : ((fabsf (stack[last]->G->data[node]) > GMT_CONV8_LIMIT) ? 0.0f : 1.0f);
 }
 
 void grd_NRAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3521,7 +3521,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 		info.d_grd_yn[kk] = (info.d_grd_y[kk] - off) * scale;
 		info.f_grd_yn[kk] = (float)info.d_grd_yn[kk];
 	}
-	x_noise = GMT_SMALL * info.G->header->inc[GMT_X];	y_noise = GMT_SMALL * info.G->header->inc[GMT_Y];
+	x_noise = GMT_CONV4_LIMIT * info.G->header->inc[GMT_X];	y_noise = GMT_CONV4_LIMIT * info.G->header->inc[GMT_Y];
 	info.dx = GMT_memory (GMT, NULL, info.G->header->my, double);
 
 	if (Ctrl->M.active) {	/* Use flat earth distances for gradients */

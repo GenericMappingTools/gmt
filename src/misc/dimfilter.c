@@ -477,7 +477,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 		/* We can save time by computing a weight matrix once [or once pr scanline] only
 		   if new grid spacing is multiple of old spacing */
 
-		fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_SMALL && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_SMALL);
+		fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_CONV4_LIMIT && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_CONV4_LIMIT);
 
 		if (!fast_way) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");

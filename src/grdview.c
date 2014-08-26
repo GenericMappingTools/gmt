@@ -622,7 +622,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	size_t max_alloc;
 
-	double cval, x_left, x_right, y_top, y_bottom, small = GMT_SMALL, z_ave;
+	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
 	double inc2[2], wesn[4], z_val, x_pixel_size, y_pixel_size;
 	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
 	double *x_imask = NULL, *y_imask = NULL, x_inc[4], y_inc[4], *x = NULL, *y = NULL;
@@ -775,7 +775,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		n_edges = Z->header->ny * (urint (ceil (Z->header->nx / 16.0)));
 		edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
-		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
+		small = GMT_CONV4_LIMIT * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) Return (API->error);	/* Original copy of Z grid used for contouring */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Trace and bin contours...\n");

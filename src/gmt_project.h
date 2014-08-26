@@ -30,7 +30,7 @@
 #define HALF_DBL_MAX (DBL_MAX/2.0)
 
 /* GMT_180 is used to see if a value really is exceeding it (beyond roundoff) */
-#define GMT_180	(180.0 + GMT_CONV_LIMIT)
+#define GMT_180	(180.0 + GMT_CONV8_LIMIT)
 /* GMT_WIND_LON will remove central meridian value and adjust so lon fits between -180/+180 */
 #define GMT_WIND_LON(C,lon) {lon -= C->current.proj.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
 
@@ -141,7 +141,7 @@ enum GMT_enum_units {GMT_IS_METER = 0,
 #define GMT_360_RANGE(w,e) (doubleAlmostEqual (fabs((e) - (w)), 360.0))
 #define GMT_180_RANGE(s,n) (doubleAlmostEqual (fabs((n) - (s)), 180.0))
 #define GMT_IS_POLE(y) (doubleAlmostEqual (fabs(y), 90.0))
-#define GMT_IS_ZERO(x) (fabs (x) < GMT_CONV_LIMIT)
+#define GMT_IS_ZERO(x) (fabs (x) < GMT_CONV8_LIMIT)
 
 #ifndef D2R
 #define D2R (M_PI / 180.0)

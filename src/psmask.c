@@ -614,7 +614,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		grd_x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
 		grd_y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 
-		/* Add GMT_CONV_LIMIT to ensure that special case radius = inc --> lrint(0.5) actually rounds to 1 */
+		/* Add GMT_CONV8_LIMIT to ensure that special case radius = inc --> lrint(0.5) actually rounds to 1 */
 		
 		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {

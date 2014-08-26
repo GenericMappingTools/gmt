@@ -1003,15 +1003,15 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
 			contour[n_contours] = c * Ctrl->C.interval;
-			if (Ctrl->contour.annot && (contour[n_contours] - aval) > GMT_SMALL) aval += Ctrl->A.interval;
-			cont_type[n_contours] = (fabs (contour[n_contours] - aval) < GMT_SMALL) ? 'A' : 'C';
+			if (Ctrl->contour.annot && (contour[n_contours] - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
+			cont_type[n_contours] = (fabs (contour[n_contours] - aval) < GMT_CONV4_LIMIT) ? 'A' : 'C';
 			cont_angle[n_contours] = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont_do_tick[n_contours] = (char)Ctrl->T.active;
 		}
 	}
 #if 0
 	/* PS: 4/10/2014: I commented this out as for phase grids in -180/180 range we always missed the 180 contour. */
-	if (GMT->current.map.z_periodic && n_contours > 1 && fabs (contour[n_contours-1] - contour[0] - 360.0) < GMT_SMALL) {	/* Get rid of redundant contour */
+	if (GMT->current.map.z_periodic && n_contours > 1 && fabs (contour[n_contours-1] - contour[0] - 360.0) < GMT_CONV4_LIMIT) {	/* Get rid of redundant contour */
 		n_contours--;
 	}
 #endif

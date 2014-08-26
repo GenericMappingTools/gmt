@@ -108,13 +108,13 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	mgg->lonNumCells = gmt->nx;
 	f  = gmt->inc[GMT_X] * GMT_DEG2SEC_F;
 	mgg->lonSpacing  = irint(f);
-	if (fabs (f - (double)mgg->lonSpacing) > GMT_CONV_LIMIT) return (GMT_GRDIO_GRD98_XINC);
+	if (fabs (f - (double)mgg->lonSpacing) > GMT_CONV8_LIMIT) return (GMT_GRDIO_GRD98_XINC);
 	gmt_degrees2dms(gmt->wesn[XLO], &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
 
 	mgg->latNumCells = gmt->ny;
 	f  = gmt->inc[GMT_Y] * GMT_DEG2SEC_F;
 	mgg->latSpacing  = irint(gmt->inc[GMT_Y] * GMT_DEG2SEC_F);
-	if (fabs (f - (double)mgg->latSpacing) > GMT_CONV_LIMIT) return (GMT_GRDIO_GRD98_YINC);
+	if (fabs (f - (double)mgg->latSpacing) > GMT_CONV8_LIMIT) return (GMT_GRDIO_GRD98_YINC);
 	gmt_degrees2dms(gmt->wesn[YHI], &mgg->latDeg, &mgg->latMin, &mgg->latSec);
 
 	/* Default values */

@@ -503,9 +503,9 @@ double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int
 		sum_y2 += dy * dy;
 		sum_xy += dx * dy;
 	}
-	if (sum_y2 < GMT_CONV_LIMIT)	/* Line is horizontal */
+	if (sum_y2 < GMT_CONV8_LIMIT)	/* Line is horizontal */
 		angle = 0.0;
-	else if (sum_x2 < GMT_CONV_LIMIT)	/* Line is vertical */
+	else if (sum_x2 < GMT_CONV8_LIMIT)	/* Line is vertical */
 		angle = 90.0;
 	else
 		angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);

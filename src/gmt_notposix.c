@@ -418,7 +418,7 @@ double j1 (double x)
 #define ACC 40.0
 #define BIGNO 1.0e10
 #define BIGNI 1.0e-10
-#define IS_ZERO(x) (fabs (x) < GMT_CONV_LIMIT)
+#define IS_ZERO(x) (fabs (x) < GMT_CONV8_LIMIT)
 
 /* Alternative jn coded from Numerical Recipes by Press et al */
 

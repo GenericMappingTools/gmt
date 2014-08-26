@@ -392,7 +392,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 		n_errors++;
 	}
 	else {
-		n_errors += GMT_check_condition (GMT, fabs (Ctrl->D.length) < GMT_SMALL , "Syntax error -D option: scale length must be nonzero\n");
+		n_errors += GMT_check_condition (GMT, fabs (Ctrl->D.length) < GMT_CONV4_LIMIT , "Syntax error -D option: scale length must be nonzero\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->D.width <= 0.0, "Syntax error -D option: scale width must be positive\n");
 	}
 	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
@@ -532,7 +532,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 	/* Check if steps in color map have constant width */
 	for (i = 1; i < P->n_colors && const_width; i++)
-		if (fabs (z_width[i] - z_width[0]) > GMT_SMALL) const_width = false;
+		if (fabs (z_width[i] - z_width[0]) > GMT_CONV4_LIMIT) const_width = false;
 	
 	if (ndec == 0) {	/* Not -B and no decimals are needed */
 		strncpy (format, GMT->current.setting.format_float_map, GMT_LEN256);

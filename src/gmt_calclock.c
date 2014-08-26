@@ -69,9 +69,9 @@ int64_t GMT_splitinteger (double value, int epsilon, double *doublepart) {
 	double x = floor (value / epsilon);
 	int64_t i = lrint (x);
 	*doublepart = value - x * epsilon;
-	if ((*doublepart) < GMT_SMALL)
+	if ((*doublepart) < GMT_CONV4_LIMIT)
 		*doublepart = 0.0;	/* Snap to the lower integer */
-	else if ((double)epsilon - (*doublepart) < GMT_SMALL) {
+	else if ((double)epsilon - (*doublepart) < GMT_CONV4_LIMIT) {
 		i++;			/* Snap to the higher integer */
 		*doublepart = 0.0;
 	}

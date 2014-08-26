@@ -202,8 +202,8 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 	if ((C = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, A)) == NULL) Return (API->error);	/* Just to get a header */
 	
 	one_or_zero = A->header->registration == GMT_GRID_NODE_REG;
-	x_noise = GMT_SMALL * C->header->inc[GMT_X] * 10;
-	y_noise = GMT_SMALL * C->header->inc[GMT_Y] * 10;
+	x_noise = GMT_CONV4_LIMIT * C->header->inc[GMT_X] * 10;
+	y_noise = GMT_CONV4_LIMIT * C->header->inc[GMT_Y] * 10;
 
 	common_y = (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise);
 	

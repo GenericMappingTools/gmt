@@ -86,13 +86,13 @@ unsigned int gmt_bcr_reject (struct GMT_GRID_HEADER *h, double xx, double yy)
 	if (GMT_is_dnan (xx) || GMT_is_dnan (yy)) return (2);
 
 	/* First check if the xx and yy are within the grid.
-	   16-Sep-2007: Added some slack (GMT_SMALL) here to avoid setting to NaN points
+	   16-Sep-2007: Added some slack (GMT_CONV4_LIMIT) here to avoid setting to NaN points
 	   that are really on the edge but because of rounding errors are regarded outside.
 	   Remember that we have padded the grid with 2 extra values, so this should not be
 	   a problem. */
 
-	if (xx < h->wesn[XLO] - GMT_SMALL || xx > h->wesn[XHI] + GMT_SMALL) return (1);
-	if (yy < h->wesn[YLO] - GMT_SMALL || yy > h->wesn[YHI] + GMT_SMALL) return (1);
+	if (xx < h->wesn[XLO] - GMT_CONV4_LIMIT || xx > h->wesn[XHI] + GMT_CONV4_LIMIT) return (1);
+	if (yy < h->wesn[YLO] - GMT_CONV4_LIMIT || yy > h->wesn[YHI] + GMT_CONV4_LIMIT) return (1);
 
 	return (0);	/* Good to use */
 }
@@ -240,7 +240,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 		}
 		ij += G->header->mx;
 	}
-	if ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) {
+	if ((wsum + GMT_CONV8_LIMIT - G->header->bcr_threshold) > 0.0) {
 		retval /= wsum;
 		if (GMT->common.n.truncate) {
 			if (retval < G->header->z_min) retval = G->header->z_min;
@@ -279,7 +279,7 @@ int GMT_get_bcr_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, doubl
 		}
 		ij += G->header->mx;
 	}
-	if ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) {	/* OK to evaluate result */
+	if ((wsum + GMT_CONV8_LIMIT - G->header->bcr_threshold) > 0.0) {	/* OK to evaluate result */
 		for (b = 0; b < nb; b++) {
 			retval[b] /= wsum;
 			z[b] = (unsigned char) lrint (GMT_0_255_truncate (retval[b]));

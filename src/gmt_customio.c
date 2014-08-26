@@ -547,7 +547,7 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Will try to determine if a native 4-byte grid is float or int but may be wrong.\n");
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Please append =bf (float) or =bi (integer) to avoid this situation.\n");
 				/* Naive test to see if we can decide it is a float grid */
-				if ((t_head.z_scale_factor == 1.0 && t_head.z_add_offset == 0.0) || fabs((t_head.z_min/t_head.z_scale_factor) - rint(t_head.z_min/t_head.z_scale_factor)) > GMT_CONV_LIMIT || fabs((t_head.z_max/t_head.z_scale_factor) - rint(t_head.z_max/t_head.z_scale_factor)) > GMT_CONV_LIMIT)
+				if ((t_head.z_scale_factor == 1.0 && t_head.z_add_offset == 0.0) || fabs((t_head.z_min/t_head.z_scale_factor) - rint(t_head.z_min/t_head.z_scale_factor)) > GMT_CONV8_LIMIT || fabs((t_head.z_max/t_head.z_scale_factor) - rint(t_head.z_max/t_head.z_scale_factor)) > GMT_CONV8_LIMIT)
 					header->type = GMT_GRID_IS_BF;
 				else
 					header->type = GMT_GRID_IS_BI;

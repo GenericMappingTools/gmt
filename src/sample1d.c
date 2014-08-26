@@ -412,7 +412,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 					}
 				}
 				m = row;
-				if (fabs (t_out[m-1]-last_t) < GMT_SMALL) t_out[m-1] = last_t;	/* Fix roundoff */
+				if (fabs (t_out[m-1]-last_t) < GMT_CONV4_LIMIT) t_out[m-1] = last_t;	/* Fix roundoff */
 			}
 			Sout = Tout->segment[seg];	/* Current output segment */
 			GMT_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */

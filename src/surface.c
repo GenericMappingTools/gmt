@@ -1301,7 +1301,7 @@ int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 
 	C->z_scale = sqrt (ssz / C->npoints);
 
-	if (C->z_scale < GMT_CONV_LIMIT) {
+	if (C->z_scale < GMT_CONV8_LIMIT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Input data lie exactly on a plane.\n");
 		C->r_z_scale = C->z_scale = 1.0;
 		return (1);	/* Flag to tell the main to just write out the plane */

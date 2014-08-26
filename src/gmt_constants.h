@@ -62,8 +62,8 @@
 #define M_EULER		0.577215664901532860606512	/* Euler's constant (gamma) */
 #endif
 
-#define GMT_CONV_LIMIT	1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
-#define GMT_SMALL	1.0e-4		/* Needed when results aren't exactly zero but close */
+#define GMT_CONV8_LIMIT	1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
+#define GMT_CONV4_LIMIT	1.0e-4		/* Less tight convergence limit or "close to zero" limit */
 
 /* Various allocation-length parameters */
 enum GMT_enum_length {

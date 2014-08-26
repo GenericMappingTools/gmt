@@ -535,7 +535,7 @@ double GMT_kei (struct GMT_CTRL *GMT, double x)
 
 	if (x <= 0.0) {
 		/* Zero is valid.  If near enough to zero, return kei(0)  */
-		if (x > -GMT_CONV_LIMIT) return (-0.25 * M_PI);
+		if (x > -GMT_CONV8_LIMIT) return (-0.25 * M_PI);
 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  x < 0 in GMT_kei(x)\n");
 		return (GMT->session.d_NaN);
@@ -1012,10 +1012,10 @@ double GMT_dilog (struct GMT_CTRL *GMT, double x)
 
 	double pisqon6, y, ysq, z;
 
-	if (x < -GMT_CONV_LIMIT) return (GMT->session.d_NaN);	/* Tolerate minor slop before we are outside domain */
+	if (x < -GMT_CONV8_LIMIT) return (GMT->session.d_NaN);	/* Tolerate minor slop before we are outside domain */
 
 	pisqon6 = M_PI * M_PI / 6.0;
-	if (x <= 0.0) return (pisqon6);	/* Meaning -GMT_CONV_LIMIT < x <= 0 */
+	if (x <= 0.0) return (pisqon6);	/* Meaning -GMT_CONV8_LIMIT < x <= 0 */
 
 	if (x < 0.5) {
 		y = -log (1.0 - x);

@@ -786,7 +786,7 @@ int GMT_project (void *V_API, int mode, void *args)
 					for (col = 0; col < 3; col++) x[col] = P.pole[col] * s + m[col] * c;
 					GMT_normalize3v (GMT, x);
 					radius = d_acosd (GMT_dot3v (GMT, a, x)); 
-					if (fabs (radius - fabs (Ctrl->G.colat)) < GMT_CONV_LIMIT)
+					if (fabs (radius - fabs (Ctrl->G.colat)) < GMT_CONV8_LIMIT)
 						done = true;
 					else if (radius > fabs (Ctrl->G.colat))
 						s_hi = s_mid;
@@ -847,7 +847,7 @@ int GMT_project (void *V_API, int mode, void *args)
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Generate table data\n");
 		d_along = Ctrl->L.min;
-		while ((Ctrl->L.max - d_along) > (GMT_CONV_LIMIT*Ctrl->G.inc)) {
+		while ((Ctrl->L.max - d_along) > (GMT_CONV8_LIMIT*Ctrl->G.inc)) {
 			p_data[P.n_used].a[2] = d_along;
 			p_data[P.n_used].t = NULL;	/* Initialize since that is not done by realloc */
 			p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */

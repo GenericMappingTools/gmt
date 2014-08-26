@@ -361,7 +361,7 @@ bool gmt_skip_second_annot (unsigned int item, double x, double x2[], unsigned i
 	if (item == primary) return (false);		/* Not working on secondary annotation */
 	if (!x2) return (false);			/* None given */
 
-	small = (x2[1] - x2[0]) * GMT_SMALL;
+	small = (x2[1] - x2[0]) * GMT_CONV4_LIMIT;
 	for (i = 0, found = false; !found && i < n; i++) 
 		found = (fabs (x2[i] - x) < small);
 	return (found);
@@ -461,8 +461,8 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 		if (do_tick) {
 			for (i = 0; i < nx; i++) {
-				if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;	/* Outside the range */
-				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (knots[i] < (val0 - GMT_CONV8_LIMIT) || knots[i] > (val1 + GMT_CONV8_LIMIT)) continue;	/* Outside the range */
+				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV8_LIMIT || fabs (knots[i] - val1) < GMT_CONV8_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Minor tick marks skipped when coinciding with major */
 				x = (*xyz_fwd) (GMT, knots[i]);	/* Convert to inches on the page */
 				if (horizontal)
@@ -487,8 +487,8 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			
 			for (i = 0; i < nx1; i++) {
 				if (GMT_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
-				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
+				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV8_LIMIT || fabs (knots[i] - val1) < GMT_CONV8_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (string, label_c[i], GMT_LEN256);
@@ -507,8 +507,8 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 			for (i = 0; i < nx1; i++) {
 				if (GMT_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
-				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
+				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV8_LIMIT || fabs (knots[i] - val1) < GMT_CONV8_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
 				/* Move to new anchor point */
@@ -882,8 +882,6 @@ void gmt_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 	if (ny) GMT_free (GMT, y);
 }
 
-#define GMT_OFF GMT_SMALL
-
 double gmt_shift_gridline (struct GMT_CTRL *GMT, double val, unsigned int type)
 {
 	/* Only for oblique projections: If any of the corners are exactly multiples of annotation
@@ -896,12 +894,12 @@ double gmt_shift_gridline (struct GMT_CTRL *GMT, double val, unsigned int type)
 	if (type == GMT_X) {
 		if (GMT_360_RANGE (val, GMT->common.R.wesn_orig[XLO])) val = GMT->common.R.wesn_orig[XLO];
 		else if (GMT_360_RANGE (val, GMT->common.R.wesn_orig[XHI])) val = GMT->common.R.wesn_orig[XHI];
-		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XLO])) shift = +GMT_OFF * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
-		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XHI])) shift = -GMT_OFF * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
+		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XLO])) shift = +GMT_CONV4_LIMIT * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
+		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[XHI])) shift = -GMT_CONV4_LIMIT * fabs (GMT->common.R.wesn_orig[XHI] - GMT->common.R.wesn_orig[XLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
 	}
 	else {
-		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YLO])) shift = +GMT_OFF * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
-		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YHI])) shift = -GMT_OFF * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
+		if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YLO])) shift = +GMT_CONV4_LIMIT * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly larger longitude to ensure crossing */
+		else if (doubleAlmostEqualZero (val, GMT->common.R.wesn_orig[YHI])) shift = -GMT_CONV4_LIMIT * fabs (GMT->common.R.wesn_orig[YHI] - GMT->common.R.wesn_orig[YLO]);	/* Add this to lon to get a slightly smaller longitude to ensure crossing */
 		
 	}
 	if (shift != 0.0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Adjusted argument %g by %g\n", val, shift);
@@ -945,13 +943,13 @@ void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL
 			dx = GMT_get_map_interval (GMT, T);
 			shade = (urint (floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/ dx))) % 2;
 			w1 = floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/ dx) * dx + GMT->current.map.frame.axis[GMT_X].phase;
-			nx = (w1 > e) ? -1 : irint (((e - w1) / dx + GMT_SMALL));
+			nx = (w1 > e) ? -1 : irint (((e - w1) / dx + GMT_CONV4_LIMIT));
 			for (i = 0; i <= nx; i++) {
 				shade = !shade;
 				val = w1 + i * dx;
 				v1 = MAX (val, w);
 				v2 = MIN (val + dx, e);
-				if (v2 - v1 < GMT_CONV_LIMIT) continue;
+				if (v2 - v1 < GMT_CONV8_LIMIT) continue;
 				PSL_setcolor (PSL, shade ? GMT->current.setting.map_frame_pen.rgb : GMT->PSL->init.page_rgb, PSL_IS_STROKE);
 				if (GMT->current.map.frame.side[S_SIDE]) {
 					GMT_geo_to_xy (GMT, v1, s, &x1, &y1);
@@ -989,13 +987,13 @@ void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL *
 			dx = GMT_get_map_interval (GMT, T);
 			shade = urint (floor ((w - GMT->current.map.frame.axis[GMT_X].phase) / dx)) % 2;
 			w1 = floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/dx) * dx + GMT->current.map.frame.axis[GMT_X].phase;
-			nx = (w1 > e) ? -1 : irint ((e-w1) / dx + GMT_SMALL);
+			nx = (w1 > e) ? -1 : irint ((e-w1) / dx + GMT_CONV4_LIMIT);
 			for (i = 0; i <= nx; i++) {
 				shade = !shade;
 				val = w1 + i * dx;
 				v1 = MAX (val, w);
 				v2 = MIN (val + dx, e);
-				if (v2 - v1 < GMT_CONV_LIMIT) continue;
+				if (v2 - v1 < GMT_CONV8_LIMIT) continue;
 				PSL_setcolor (PSL, shade ? GMT->current.setting.map_frame_pen.rgb : GMT->PSL->init.page_rgb, PSL_IS_STROKE);
 				if (GMT->current.map.frame.side[S_SIDE]) {
 					GMT_geo_to_xy (GMT, v2, s, &x1, &y1);
@@ -1056,13 +1054,13 @@ void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, struct PSL_CTRL
 			dy = GMT_get_map_interval (GMT, T);
 			shade = urint (floor ((s - GMT->current.map.frame.axis[GMT_Y].phase) / dy)) % 2;
 			s1 = floor((s - GMT->current.map.frame.axis[GMT_Y].phase)/dy) * dy + GMT->current.map.frame.axis[GMT_Y].phase;
-			ny = (s1 > n) ? -1 : irint ((n-s1) / dy + GMT_SMALL);
+			ny = (s1 > n) ? -1 : irint ((n-s1) / dy + GMT_CONV4_LIMIT);
 			for (i = 0; i <= ny; i++) {
 				shade = !shade;
 				val = s1 + i * dy;
 				v1 = MAX (val, s);
 				v2 = MIN (val + dy, n);
-				if (v2 - v1 < GMT_CONV_LIMIT) continue;
+				if (v2 - v1 < GMT_CONV8_LIMIT) continue;
 				PSL_setcolor (PSL, shade ? GMT->current.setting.map_frame_pen.rgb : GMT->PSL->init.page_rgb, PSL_IS_STROKE);
 				if (GMT->current.map.frame.side[W_SIDE]) {
 					GMT_geo_to_xy (GMT, w, v1, &x1, &y1);
@@ -1999,7 +1997,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		dx[1] = GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER]);
 		/* Determine if we should annotate both 0 and 360 degrees */
 
-		full_lat_range = (fabs (180.0 - fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO])) < GMT_SMALL);
+		full_lat_range = (fabs (180.0 - fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO])) < GMT_CONV4_LIMIT);
 		proj_A = (GMT->current.proj.projection == GMT_MERCATOR || GMT->current.proj.projection == GMT_OBLIQUE_MERC ||
 			GMT->current.proj.projection == GMT_WINKEL || GMT->current.proj.projection == GMT_ECKERT4 || GMT->current.proj.projection == GMT_ECKERT6 ||
 			GMT->current.proj.projection == GMT_ROBINSON || GMT->current.proj.projection == GMT_CYL_EQ || GMT->current.proj.projection == GMT_CYL_STEREO ||
@@ -2042,7 +2040,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	for (k = 0; k < 1 + add; k++) {
 		if (dx[k] > 0.0 && (GMT_x_is_lon (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR)) {	/* Annotate the S and N boundaries */
 			done_Greenwich = done_Dateline = false;
-			do_minutes = (fabs (fmod (dx[k], 1.0)) > GMT_SMALL);
+			do_minutes = (fabs (fmod (dx[k], 1.0)) > GMT_CONV4_LIMIT);
 			do_seconds = gmt_set_do_seconds (GMT, dx[k]);
 
 			if (GMT->current.map.frame.axis[GMT_X].file_custom)
@@ -2088,7 +2086,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			double *tval = NULL;
 
 			if (GMT_y_is_lat (GMT, GMT_IN)) {
-				do_minutes = (fabs (fmod (dy[k], 1.0)) > GMT_SMALL);
+				do_minutes = (fabs (fmod (dy[k], 1.0)) > GMT_CONV4_LIMIT);
 				do_seconds = gmt_set_do_seconds (GMT, dy[k]);
 				lonlat = 1;
 			}
@@ -2603,7 +2601,7 @@ void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	if ((n-i) < 2) return;
 
 	for (j = i + 1; j < n && pen[j] == PSL_DRAW; j++);	/* j == n means no PSL_MOVEs present */
-	close = (j == n) ? (hypot (x[n-1] - x[i], y[n-1] - y[i]) < GMT_SMALL) : false;
+	close = (j == n) ? (hypot (x[n-1] - x[i], y[n-1] - y[i]) < GMT_CONV4_LIMIT) : false;
 
 	/* First see if we can use the PSL_plotline call directly to save points */
 
@@ -4365,9 +4363,9 @@ void GMT_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 		c = rho / GMT->current.proj.EQ_RAD;
 		sincos (c, &sin_c, &cos_c);
 		py[i] = d_asind (cos_c * sinp + (y_prime * sin_c * cosp / rho));
-		if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
+		if ((lat - 90.0) > -GMT_CONV8_LIMIT)	/* origin in Northern hemisphere */
 			px[i] = lon + d_atan2d (x_prime, -y_prime);
-		else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
+		else if ((lat + 90.0) < GMT_CONV8_LIMIT)	/* origin in Southern hemisphere */
 			px[i] = lon + d_atan2d (x_prime, y_prime);
 		else
 			px[i] = lon + d_atan2d (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
@@ -5208,9 +5206,9 @@ void GMT_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double wid
 	c = rho / GMT->current.proj.EQ_RAD;
 	sincos (c, &sin_c, &cos_c);
 	lat_w = d_asind (cos_c * sinp + (y_prime * sin_c * cosp / rho));
-	if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
+	if ((lat - 90.0) > -GMT_CONV8_LIMIT)	/* origin in Northern hemisphere */
 		lon_w = lon + d_atan2d (x_prime, -y_prime);
-	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
+	else if ((lat + 90.0) < GMT_CONV8_LIMIT)	/* origin in Southern hemisphere */
 		lon_w = lon + d_atan2d (x_prime, y_prime);
 	else
 		lon_w = lon + d_atan2d (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
@@ -5232,9 +5230,9 @@ void GMT_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double wid
 	c = rho / GMT->current.proj.EQ_RAD;
 	sincos (c, &sin_c, &cos_c);
 	lat_h = d_asind (cos_c * sinp + (y_prime * sin_c * cosp / rho));
-	if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
+	if ((lat - 90.0) > -GMT_CONV8_LIMIT)	/* origin in Northern hemisphere */
 		lon_h = lon + d_atan2d (x_prime, -y_prime);
-	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
+	else if ((lat + 90.0) < GMT_CONV8_LIMIT)	/* origin in Southern hemisphere */
 		lon_h = lon + d_atan2d (x_prime, y_prime);
 	else
 		lon_h = lon + d_atan2d (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
@@ -5294,7 +5292,7 @@ void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 	}
 	i = 0;
 	while (i < n) {
-		while ((s[i] - dist) > -GMT_SMALL) {	/* Time for tick */
+		while ((s[i] - dist) > -GMT_CONV4_LIMIT) {	/* Time for tick */
 			if (i > 0) {
 				dx = x[i] - x[i-1];
 				dy = y[i] - y[i-1];
@@ -5303,7 +5301,7 @@ void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 				dx = x[1] - x[0];
 				dy = y[1] - y[0];
 			}
-			if (fabs (dist - s[i]) < GMT_SMALL) {
+			if (fabs (dist - s[i]) < GMT_CONV4_LIMIT) {
 				x0 = x[i];
 				y0 = y[i];
 			}

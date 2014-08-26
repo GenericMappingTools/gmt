@@ -6965,7 +6965,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 		if (GMT_verify_time_step (GMT, irint (val), unit)) {
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
-		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
+		if ((fmod (val, 1.0) > GMT_CONV8_LIMIT)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Time step interval (%g) must be an integer\n", val);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}

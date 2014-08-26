@@ -530,8 +530,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 				break;
 		}
 		range = (Ctrl->T.kind) ? 2.0 * fabs (start) : G[0]->header->z_max - G[0]->header->z_min;
-		range *= (1.0 + GMT_CONV_LIMIT);	/* To ensure the max grid values do not exceed the CPT limit due to round-off issues */
-		start -= fabs (start) * GMT_CONV_LIMIT;	/* To ensure the start of cpt is less than min value due to roundoff  */
+		range *= (1.0 + GMT_CONV8_LIMIT);	/* To ensure the max grid values do not exceed the CPT limit due to round-off issues */
+		start -= fabs (start) * GMT_CONV8_LIMIT;	/* To ensure the start of cpt is less than min value due to roundoff  */
 		Ctrl->S.inc = range / (double)(Ctrl->E.levels - 1);
 		cdf_cpt = GMT_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j].z = start + j * Ctrl->S.inc;

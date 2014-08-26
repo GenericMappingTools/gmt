@@ -2094,7 +2094,7 @@ bool GMT_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int 
 	double sec, fsec, min, fmin, step;
 
 	minus = (val < 0.0);
-	step = (fact == 0.0) ? GMT_CONV_LIMIT : 0.5 / fact;  	/* Precision desired in seconds (or minutes); else just deal with roundoff */
+	step = (fact == 0.0) ? GMT_CONV8_LIMIT : 0.5 / fact;  	/* Precision desired in seconds (or minutes); else just deal with roundoff */
 
 	if (n_items == 3) {		/* Want dd:mm:ss[.xxx] format */
 		sec = GMT_DEG2SEC_F * fabs (val) + step;	/* Convert to seconds */

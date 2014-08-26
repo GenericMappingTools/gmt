@@ -445,7 +445,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 		n_stages = spotter_init (GMT, Ctrl->E.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.mode, &Ctrl->N.t_upper);
 		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
 
-		if (fabs (Ctrl->L.d_km) > GMT_SMALL) {		/* User wants to interpolate tracks rather than project individual points */
+		if (fabs (Ctrl->L.d_km) > GMT_CONV4_LIMIT) {		/* User wants to interpolate tracks rather than project individual points */
 			make_path = true;
 			GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 			(Ctrl->L.mode) ? sprintf (type, "Flowline") : sprintf (type, "Hotspot track");
