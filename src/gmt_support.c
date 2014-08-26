@@ -228,13 +228,13 @@ void gmt_rgb_to_cmyk (double rgb[], double cmyk[])
 	cmyk[4] = rgb[3];	/* Pass transparency unchanged */
 	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - rgb[i];
 	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Default Black generation */
-	if (cmyk[3] < GMT_CONV_LIMIT) cmyk[3] = 0.0;
+	if (cmyk[3] < GMT_CONV8_LIMIT) cmyk[3] = 0.0;
 
 	/* To implement device-specific blackgeneration, supply lookup table K = BG[cmyk[3]] */
 
 	for (i = 0; i < 3; i++) {
 		cmyk[i] -= cmyk[3];		/* Default undercolor removal */
-		if (cmyk[i] < GMT_CONV_LIMIT) cmyk[i] = 0.0;
+		if (cmyk[i] < GMT_CONV8_LIMIT) cmyk[i] = 0.0;
 	}
 
 	/* To implement device-specific undercolor removal, supply lookup table u = UR[cmyk[3]] */
@@ -1226,7 +1226,7 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F)
 
 	/* Assign font size, type, and fill, if given */
 	if (!size[0] || size[0] == '-') { /* Skip */ }
-	else if ((pointsize = GMT_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_SMALL)
+	else if ((pointsize = GMT_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_CONV4_LIMIT)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Representation of font size not recognised. Using default.\n");
 	else
 		F->size = pointsize;
@@ -1351,7 +1351,7 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	if (strchr (GMT_DIM_UNITS, line[n]))	/* Separate unit given to style string */
 		unit = GMT_unit_lookup (GMT, line[n], GMT->current.setting.proj_length_unit);
 
-	width = (P->width < GMT_SMALL) ? GMT_PENWIDTH : P->width;
+	width = (P->width < GMT_CONV4_LIMIT) ? GMT_PENWIDTH : P->width;
 	if (isdigit ((int)line[0])) {	/* Specified numeric pattern will start with an integer */
 		unsigned int c_pos;
 
@@ -2489,7 +2489,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 			return (NULL);
 		}
 		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
-		noise = (zmax - zmin) * GMT_CONV_LIMIT;
+		noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 		zmin -= noise;	zmax += noise;
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
 		sprintf (buffer, "-C%s -T%g/%g/16+ -Z ->%s", master, zmin, zmax, out_string);	/* Build actual makecpt command */
@@ -3689,7 +3689,7 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 		case 'f':	/* fixed points file */
 			L->fixed = true;
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
-			if (k == 1) L->slop = GMT_CONV_LIMIT;
+			if (k == 1) L->slop = GMT_CONV8_LIMIT;
 			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = true;
@@ -4178,9 +4178,9 @@ void gmt_contlabel_angle (double x[], double y[], uint64_t start, uint64_t stop,
 		sum_y2 += dy * dy;
 		sum_xy += dx * dy;
 	}
-	if (sum_y2 < GMT_CONV_LIMIT)	/* Line is horizontal */
+	if (sum_y2 < GMT_CONV8_LIMIT)	/* Line is horizontal */
 		L->line_angle = 0.0;
-	else if (sum_x2 < GMT_CONV_LIMIT)	/* Line is vertical */
+	else if (sum_x2 < GMT_CONV8_LIMIT)	/* Line is vertical */
 		L->line_angle = 90.0;
 	else
 		L->line_angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
@@ -6363,8 +6363,8 @@ int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 	}
 	else if (GMT_grd_is_global (GMT, h)) {	/* Grid is truly global */
 		double xtest = fmod (180.0, h->inc[GMT_X]) * h->r_inc[GMT_X];
-		/* xtest should be within GMT_SMALL of zero or of one.  */
-		if (xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
+		/* xtest should be within GMT_CONV4_LIMIT of zero or of one.  */
+		if (xtest > GMT_CONV4_LIMIT && xtest < (1.0 - GMT_CONV4_LIMIT) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Warning: x_inc does not divide 180; geographic boundary condition changed to natural.\n");
 			h->nxp = h->nyp = 0;
@@ -6374,8 +6374,8 @@ int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 		else {
 			h->nxp = urint (360.0 * h->r_inc[GMT_X]);
 			h->nyp = 0;
-			h->gn = ((fabs(h->wesn[YHI] - 90.0)) < (GMT_SMALL * h->inc[GMT_Y]));
-			h->gs = ((fabs(h->wesn[YLO] + 90.0)) < (GMT_SMALL * h->inc[GMT_Y]));
+			h->gn = ((fabs(h->wesn[YHI] - 90.0)) < (GMT_CONV4_LIMIT * h->inc[GMT_Y]));
+			h->gs = ((fabs(h->wesn[YLO] + 90.0)) < (GMT_CONV4_LIMIT * h->inc[GMT_Y]));
 			if (!h->gs) h->BC[2] = GMT_BC_IS_NATURAL;
 			if (!h->gn) h->BC[3] = GMT_BC_IS_NATURAL;
 		}
@@ -8529,7 +8529,7 @@ uint64_t GMT_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 					}
 				}
 
-				if (nx > 1 && fabs (X->xnode[0][nx-1] - X->xnode[0][nx-2]) < GMT_CONV_LIMIT && fabs (X->xnode[1][nx-1] - X->xnode[1][nx-2]) < GMT_CONV_LIMIT) {
+				if (nx > 1 && fabs (X->xnode[0][nx-1] - X->xnode[0][nx-2]) < GMT_CONV8_LIMIT && fabs (X->xnode[1][nx-1] - X->xnode[1][nx-2]) < GMT_CONV8_LIMIT) {
 					/* Two consecutive crossing of the same node or really close, skip this repeat crossover */
 					nx--;
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning - Two consecutive crossovers appear to be identical, the 2nd one was skipped\n");
@@ -8586,11 +8586,11 @@ unsigned int GMT_linear_array (struct GMT_CTRL *GMT, double min, double max, dou
 
 	/* Look for first value */
 	first = irint (floor (min));
-	while (min - first > GMT_SMALL) first++;
+	while (min - first > GMT_CONV4_LIMIT) first++;
 
 	/* Look for last value */
 	last = irint (ceil (max));
-	while (last - max > GMT_SMALL) last--;
+	while (last - max > GMT_CONV4_LIMIT) last--;
 
 	n = last - first + 1;
 	if (n <= 0) return (0);
@@ -8648,14 +8648,14 @@ unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double
 	/* Find the first logarithm larger than min */
 	i = 0;
 	val[0] = (double) first;
-	while (min - val[0] > GMT_SMALL && i < nticks) {
+	while (min - val[0] > GMT_CONV4_LIMIT && i < nticks) {
 		i++;
 		val[0] = first + tvals[i];
 	}
 
 	/* Find the first logarithm larger than max */
 	n = 0;
-	while (val[n] - max < GMT_SMALL) {
+	while (val[n] - max < GMT_CONV4_LIMIT) {
 		if (i >= nticks) {
 			i -= nticks;
 			first++;
@@ -8842,7 +8842,7 @@ bool GMT_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLO
 		stop  = MIN (max, coord[1]);			/* Stop of interval,  but not beyond end of axis */
 		if ((stop - start) < (GMT->current.setting.time_interval_fraction * range)) return (true);		/* Sorry, fraction not large enough to annotate */
 		*pos = 0.5 * (start + stop);				/* Set half-way point */
-		if (((*pos) - GMT_CONV_LIMIT) < min || ((*pos) + GMT_CONV_LIMIT) > max) return (true);	/* Outside axis range */
+		if (((*pos) - GMT_CONV8_LIMIT) < min || ((*pos) + GMT_CONV8_LIMIT) > max) return (true);	/* Outside axis range */
 	}
 	else if (T->type == 'i' || T->type == 'I') {
 		if (GMT_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
@@ -8861,9 +8861,9 @@ bool GMT_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLO
 		}
 		if ((stop - start) < (GMT->current.setting.time_interval_fraction * range)) return (true);		/* Sorry, fraction not large enough to annotate */
 		*pos = 0.5 * (start + stop);				/* Set half-way point */
-		if (((*pos) - GMT_CONV_LIMIT) < min || ((*pos) + GMT_CONV_LIMIT) > max) return (true);	/* Outside axis range */
+		if (((*pos) - GMT_CONV8_LIMIT) < min || ((*pos) + GMT_CONV8_LIMIT) > max) return (true);	/* Outside axis range */
 	}
-	else if (coord[0] < (min - GMT_CONV_LIMIT) || coord[0] > (max + GMT_CONV_LIMIT))		/* Outside axis range */
+	else if (coord[0] < (min - GMT_CONV8_LIMIT) || coord[0] > (max + GMT_CONV8_LIMIT))		/* Outside axis range */
 		return (true);
 	else
 		*pos = coord[0];
@@ -8921,7 +8921,7 @@ int gmt_polar_adjust (struct GMT_CTRL *GMT, int side, double angle, double x, do
 		left = 5;
 		right = 7;
 	}
-	if ((y - y0 - GMT_SMALL) > 0.0) { /* i.e., y > y0 */
+	if ((y - y0 - GMT_CONV4_LIMIT) > 0.0) { /* i.e., y > y0 */
 		top = 2;
 		bottom = 10;
 	}
@@ -8936,7 +8936,7 @@ int gmt_polar_adjust (struct GMT_CTRL *GMT, int side, double angle, double x, do
 		low = 2 - low;
 	}
 	if (side%2) {	/* W and E border */
-		if ((y - y0 + GMT_SMALL) > 0.0)
+		if ((y - y0 + GMT_CONV4_LIMIT) > 0.0)
 			justify = (side == 1) ? left : right;
 		else
 			justify = (side == 1) ? right : left;
@@ -8971,10 +8971,10 @@ bool gmt_get_label_parameters (struct GMT_CTRL *GMT, int side, double line_angle
 	if (*text_angle > 270.0 ) *text_angle -= 360.0;
 	else if (*text_angle > 90.0) *text_angle -= 180.0;
 #else
-	if ( (*text_angle + 90.0) < GMT_CONV_LIMIT) *text_angle += 360.0;
+	if ( (*text_angle + 90.0) < GMT_CONV8_LIMIT) *text_angle += 360.0;
 	if (GMT->current.map.frame.horizontal && !(side%2)) *text_angle += 90.0;
-	if ( (*text_angle - 270.0) > GMT_CONV_LIMIT ) *text_angle -= 360.0;
-	else if ( (*text_angle - 90.0) > GMT_CONV_LIMIT) *text_angle -= 180.0;
+	if ( (*text_angle - 270.0) > GMT_CONV8_LIMIT ) *text_angle -= 360.0;
+	else if ( (*text_angle - 90.0) > GMT_CONV8_LIMIT) *text_angle -= 180.0;
 #endif
 
 	if (type == 0 && GMT->current.setting.map_annot_oblique & 2) *text_angle = 0.0;	/* Force horizontal lon annotation */

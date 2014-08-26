@@ -615,8 +615,8 @@ unsigned int spotter_backtrack (struct GMT_CTRL *GMT, double xp[], double yp[], 
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, next_x, next_y;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, *track = NULL;
 
-	bend = (d_km <= (GMT_SMALL - 1.0));
-	path = (bend || d_km > GMT_SMALL);
+	bend = (d_km <= (GMT_CONV4_LIMIT - 1.0));
+	path = (bend || d_km > GMT_CONV4_LIMIT);
 	if (time_flag >= 10) {	/* Restrict track sampling to given wesn box */
 		time_flag -= 10;
 		box_check = true;
@@ -796,8 +796,8 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[],
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, *track = NULL;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, next_x, next_y;
 
-	bend = (d_km <= (GMT_SMALL - 1.0));
-	path = (bend || d_km > GMT_SMALL);
+	bend = (d_km <= (GMT_CONV4_LIMIT - 1.0));
+	path = (bend || d_km > GMT_CONV4_LIMIT);
 	if (time_flag >= 10) {	/* Restrict track sampling to given wesn box */
 		time_flag -= 10;
 		box_check = true;
@@ -831,8 +831,8 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[],
 		while (t < tp[i]) {	/* As long as we're not back at zero age */
 			if (box_check) sideA[0] = sideB[0], sideA[1] = sideB[1];
 			stage = ns - 1;
-			while (stage && (t + GMT_CONV_LIMIT) > p[stage].t_start) stage--;
-			/* while (stage < ns && (t + GMT_CONV_LIMIT) < p[stage].t_stop) stage++; */	/* Find first applicable stage pole */
+			while (stage && (t + GMT_CONV8_LIMIT) > p[stage].t_start) stage--;
+			/* while (stage < ns && (t + GMT_CONV8_LIMIT) < p[stage].t_stop) stage++; */	/* Find first applicable stage pole */
 			if (stage == ns) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;

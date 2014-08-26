@@ -1353,7 +1353,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 							continue;
 						}
 						del_t = fabs (tvar[rec] - rec_time);
-						if (del_t > (0.06 + GMT_CONV_LIMIT)) {	/* 0.06 is finest time step in MGD77 file so we allow that much slop */
+						if (del_t > (0.06 + GMT_CONV8_LIMIT)) {	/* 0.06 is finest time step in MGD77 file so we allow that much slop */
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: %s: E77 time stamp and record number do not match record time (del_t = %g s) - skipped\n", ID, del_t);
 							continue;
 						}

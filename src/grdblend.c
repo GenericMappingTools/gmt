@@ -142,8 +142,8 @@ bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h)
 	for (side = 0; side < 4; side++) {
 		way = side / 2;
 		a = fabs (fmod (g->wesn[side] - h->wesn[side], h->inc[way]));
-		if (a < GMT_CONV_LIMIT) continue;
-		if (fabs (a - h->inc[way]) < GMT_CONV_LIMIT) continue;
+		if (a < GMT_CONV8_LIMIT) continue;
+		if (fabs (a - h->inc[way]) < GMT_CONV8_LIMIT) continue;
 		return true;
 	}
 	return false;

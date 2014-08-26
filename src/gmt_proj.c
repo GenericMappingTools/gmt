@@ -1406,7 +1406,7 @@ void GMT_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 	sincosd (tilt, &(GMT->current.proj.g_sin_tilt), &(GMT->current.proj.g_cos_tilt));
 	sincosd (twist, &(GMT->current.proj.g_sin_twist), &(GMT->current.proj.g_cos_twist));
 
-	GMT->current.proj.g_box = !(fabs (width) < GMT_SMALL);
+	GMT->current.proj.g_box = !(fabs (width) < GMT_CONV4_LIMIT);
 
 	if (width != 0.0 && height == 0) height = width;
 	if (height != 0.0 && width == 0) width = height;
@@ -1667,7 +1667,7 @@ void GMT_igenper (struct GMT_CTRL *GMT, double *lon, double *lat, double xt, dou
 
 	GMT->current.proj.g_outside = false;
 
-	if (rho < GMT_SMALL) {
+	if (rho < GMT_CONV4_LIMIT) {
 		*lat = GMT->current.proj.pole;
 		*lon = GMT->current.proj.central_meridian;
 		return;

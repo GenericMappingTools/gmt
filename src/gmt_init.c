@@ -1755,7 +1755,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 
 		i++;
 	}
-	if (GMT->common.R.oblique) double_swap (p[2], p[1]);	/* So w/e/s/n makes sense */
+	if (GMT->common.R.oblique) {
+		double_swap (p[2], p[1]);	/* So w/e/s/n makes sense */
+		GMT_memcpy (GMT->common.R.wesn_orig, p, 4, double);	/* Save these in case they get enlarged by oblique projections */
+	}
 	if (inv_project) {	/* Convert rectangular distances to geographic corner coordinates */
 		double wesn[4];
 		GMT->common.R.oblique = false;
@@ -7199,7 +7202,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 		if (GMT_verify_time_step (GMT, irint (val), unit)) {
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
-		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
+		if ((fmod (val, 1.0) > GMT_CONV8_LIMIT)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Time step interval (%g) must be an integer\n", val);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
@@ -8300,6 +8303,8 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 		case GMT_AZ_EQDIST:	/* Azimuthal equal-distant */
 		case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
 		case GMT_GNOMONIC:	/* Gnomonic */
+			/* -Ja|A or e|e or g|G <lon0>/<lat0>[/<horizon>]/<scale>|<width> */
+	   
 			if (project == GMT_AZ_EQDIST)	/* Initialize default horizons */
 				strcpy (txt_c, "180");
 			else if (project == GMT_GNOMONIC)
@@ -8307,27 +8312,33 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			else
 				strcpy (txt_c, "90");
 			if (k >= 0) {	/* Scale entered as 1:mmmmm */
-				if (n_slashes == 2)
+				if (n_slashes == 2)	/* Got lon0/lat0/1:mmmm */
 					n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &GMT->current.proj.pars[3]);
-				else if (n_slashes == 3)
+				else if (n_slashes == 3)	/* Got lon0/lat0/lath/1:mmmm */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &GMT->current.proj.pars[3]);
 				if (GMT->current.proj.pars[3] != 0.0) GMT->current.proj.pars[3] = 1.0 / (GMT->current.proj.pars[3] * GMT->current.proj.unit);
 			}
 			else if (width_given) {
-				if (n_slashes == 2)
+				if (n_slashes == 2)	/* Got lon0/lat0/width */
 					n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
-				else if (n_slashes == 3)
+				else if (n_slashes == 3)	/* Got lon0/lat0/lath/width */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 				GMT->current.proj.pars[3] = GMT_to_inch (GMT, txt_d);
 			}
 			else {	/* Scale entered as radius/lat */
-				if (n_slashes == 3)
+				if (n_slashes == 3)	/* Got lon0/lat0/radius/lat */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_d, txt_e);
-				else if (n_slashes == 4)
+				else if (n_slashes == 4)	/* Got lon0/lat0/lat_h/radius/lat */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 				if (n == n_slashes + 1) {
 					GMT->current.proj.pars[3] = GMT_to_inch (GMT, txt_d);
-					error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
+					c = atof (txt_e);
+					if (c <= -90.0 || c >= 90.0) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
+						error++;
+					}
+					else
+						error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 				}
 			}
 			error += (n != n_slashes + 1);
@@ -8347,12 +8358,24 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 					n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &GMT->current.proj.pars[3]);
 				else if (n_slashes == 3) {	/* with true scale at specified latitude */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_e, &GMT->current.proj.pars[3]);
-					error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
+					c = atof (txt_e);
+					if (c <= -90.0 || c >= 90.0) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
+						error++;
+					}
+					else
+						error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 					GMT->current.proj.pars[5] = 1.0;	/* flag for true scale case */
 				}
 				else if (n_slashes == 4) {
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_e, &GMT->current.proj.pars[3]);
-					error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
+					c = atof (txt_e);
+					if (c <= -90.0 || c >= 90.0) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
+						error++;
+					}
+					else
+						error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 					GMT->current.proj.pars[5] = 1.0;	/* flag for true scale case */
 				}
 				if (GMT->current.proj.pars[3] != 0.0) GMT->current.proj.pars[3] = 1.0 / (GMT->current.proj.pars[3] * GMT->current.proj.unit);
@@ -8371,7 +8394,13 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 				if (n == n_slashes + 1) {
 					GMT->current.proj.pars[3] = GMT_to_inch (GMT, txt_d);
-					error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
+					c = atof (txt_e);
+					if (c <= -90.0 || c >= 90.0) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
+						error++;
+					}
+					else
+						error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 				}
 			}
 			error += (n != n_slashes + 1);
@@ -8442,7 +8471,13 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			} else {
 				GMT->current.proj.pars[2] = GMT_to_inch (GMT, &(txt_arr[n-2][0]));
 				/*            GMT->current.proj.pars[3] = GMT_ddmmss_to_degree(txt_i); */
-				error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
+				c = atof (&(txt_arr[n-1][0]));
+				if (c <= -90.0 || c >= 90.0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
+					error++;
+				}
+				else
+					error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
 				if (error) GMT_message (GMT, "error in reading last lat value\n");
 			}
 			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, &(txt_arr[0][0]), GMT_IS_LON, &GMT->current.proj.pars[0]), &(txt_arr[0][0]));

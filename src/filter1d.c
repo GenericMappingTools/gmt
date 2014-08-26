@@ -457,10 +457,10 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 
 		/* align F->t_start and F->t_stop to F->t_int */
 		t_shift = F->t_int - fmod (F->t_start - F->t_start_t, F->t_int);
-		if ( fabs (t_shift - F->t_int) < GMT_SMALL ) t_shift=0; /* avoid values close to F->t_int */
+		if ( fabs (t_shift - F->t_int) < GMT_CONV4_LIMIT ) t_shift = 0.0; /* avoid values close to F->t_int */
 		F->t_start += t_shift; /* make F->t_start - F->t_start_t an integral multiple of F->t_int */
 		t_shift = fmod (F->t_stop - F->t_start_t, F->t_int);
-		if ( fabs (t_shift - F->t_int) < GMT_SMALL ) t_shift=0; /* avoid values close to F->t_int */
+		if ( fabs (t_shift - F->t_int) < GMT_CONV4_LIMIT ) t_shift = 0.0; /* avoid values close to F->t_int */
 		F->t_stop -= t_shift; /* make F->t_stop - F->t_start_t an integral multiple of F->t_int */
 	}
 	else {
@@ -470,7 +470,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		}
 		else {
 			uint64_t row;
-			double small = (F->data[F->t_col][1] - F->data[F->t_col][0]) * GMT_CONV_LIMIT;
+			double small = (F->data[F->t_col][1] - F->data[F->t_col][0]) * GMT_CONV8_LIMIT;
 			for (row = 0; (F->data[F->t_col][row] - t_0 + small) < F->half_width; ++row);
 			F->t_start = F->data[F->t_col][row];
 			for (row = F->n_rows - 1; row > 0 && (t_1 - F->data[F->t_col][row] + small) < F->half_width; --row);
@@ -564,7 +564,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	else
 		small = F->t_int;
 
-	small *= GMT_CONV_LIMIT;
+	small *= GMT_CONV8_LIMIT;
 	t_time = F->t_start;
 	left = right = 0;		/* Left/right end of filter window */
 

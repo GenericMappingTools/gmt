@@ -954,8 +954,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			GMT_memset (&cont[c], 1, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
-			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;
-			cont[c].type = (fabs (cont[c].val - aval) < GMT_SMALL) ? 'A' : 'C';
+			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
+			cont[c].type = (fabs (cont[c].val - aval) < GMT_CONV4_LIMIT) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = Ctrl->T.active;
 		}
@@ -1238,28 +1238,28 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				cont[c].L[k] = cont[c].L[cont[c].nl];
 				while (k < cont[c].nl) {	/* As long as there are more */
 					add = 0;
-					if (fabs(cont[c].L[k].x0 - this_c->begin->x) < GMT_SMALL && fabs(cont[c].L[k].y0 - this_c->begin->y) < GMT_SMALL) {	/* L matches previous */
+					if (fabs(cont[c].L[k].x0 - this_c->begin->x) < GMT_CONV4_LIMIT && fabs(cont[c].L[k].y0 - this_c->begin->y) < GMT_CONV4_LIMIT) {	/* L matches previous */
 						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x1;
 						p->y = cont[c].L[k].y1;
 						p->next = this_c->begin;
 						add = -1;
 					}
-					else if (fabs(cont[c].L[k].x1 - this_c->begin->x) < GMT_SMALL && fabs(cont[c].L[k].y1 - this_c->begin->y) < GMT_SMALL) {	/* L matches previous */
+					else if (fabs(cont[c].L[k].x1 - this_c->begin->x) < GMT_CONV4_LIMIT && fabs(cont[c].L[k].y1 - this_c->begin->y) < GMT_CONV4_LIMIT) {	/* L matches previous */
 						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x0;
 						p->y = cont[c].L[k].y0;
 						p->next = this_c->begin;
 						add = -1;
 					}
-					else if (fabs(cont[c].L[k].x0 - this_c->end->x) < GMT_SMALL && fabs(cont[c].L[k].y0 - this_c->end->y) < GMT_SMALL) {	/* L matches previous */
+					else if (fabs(cont[c].L[k].x0 - this_c->end->x) < GMT_CONV4_LIMIT && fabs(cont[c].L[k].y0 - this_c->end->y) < GMT_CONV4_LIMIT) {	/* L matches previous */
 						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x1;
 						p->y = cont[c].L[k].y1;
 						this_c->end->next = p;
 						add = 1;
 					}
-					else if (fabs(cont[c].L[k].x1 - this_c->end->x) < GMT_SMALL && fabs(cont[c].L[k].y1 - this_c->end->y) < GMT_SMALL) {	/* L matches previous */
+					else if (fabs(cont[c].L[k].x1 - this_c->end->x) < GMT_CONV4_LIMIT && fabs(cont[c].L[k].y1 - this_c->end->y) < GMT_CONV4_LIMIT) {	/* L matches previous */
 						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x0;
 						p->y = cont[c].L[k].y0;

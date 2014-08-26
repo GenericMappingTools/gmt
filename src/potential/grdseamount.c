@@ -367,7 +367,7 @@ void gaussian_area_volume_height (double a, double b, double h, double hc, doubl
 
 	c = (9.0 / 2.0) * f * f;
 	r2 = (circular) ? a * a : a * b;
-	if (fabs (hc) < GMT_CONV_LIMIT) {	/* Exact, no noise floor */
+	if (fabs (hc) < GMT_CONV8_LIMIT) {	/* Exact, no noise floor */
 		*A = M_PI * r2;
 		*V = (2.0 / 9.0) * M_PI * r2 * h * (1.0 + c);
 	}

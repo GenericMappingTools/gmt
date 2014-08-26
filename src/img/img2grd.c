@@ -447,11 +447,11 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 
 	if (toplat < wesn[YHI]) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", wesn[YHI], toplat);
-		wesn[YHI] = toplat - GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
+		wesn[YHI] = toplat - GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
 	if (botlat > wesn[YLO]) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", wesn[YLO], botlat);
-		wesn[YLO] = botlat + GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
+		wesn[YLO] = botlat + GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
 	
 	/* Re-adjust user's -R so that it falls on pixel coordinate boundaries */

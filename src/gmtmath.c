@@ -1589,7 +1589,7 @@ void table_IFELSE (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMTMATH_INFO *info, 
 		if (!S[prev2]->constant) a = T_prev2->segment[s]->coord[col][row];
 		if (!S[prev1]->constant) b = T_prev1->segment[s]->coord[col][row];
 		if (!S[last]->constant)  c = T->segment[s]->coord[col][row];
-		T_prev2->segment[s]->coord[col][row] = (fabs (a) < GMT_CONV_LIMIT) ? c : b;
+		T_prev2->segment[s]->coord[col][row] = (fabs (a) < GMT_CONV8_LIMIT) ? c : b;
 	}
 }
 
@@ -1604,7 +1604,7 @@ void table_IN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 
 	if (S[last]->constant) {
 		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for IN!\n");
-		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for IN!\n");
+		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for IN!\n");
 		order = urint (fabs (S[last]->factor));
 		if (S[prev]->constant) {
 			b = GMT_in (GMT, order, fabs (S[prev]->factor));
@@ -1757,7 +1757,7 @@ void table_JN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 
 	if (S[last]->constant) {
 		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for JN!\n");
-		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for JN!\n");
+		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for JN!\n");
 		order = urint (fabs (S[last]->factor));
 		if (S[prev]->constant) {
 			b = jn ((int)order, fabs (S[prev]->factor));
@@ -1807,7 +1807,7 @@ void table_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 
 	if (S[last]->constant) {
 		if (S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for KN!\n");
-		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for KN!\n");
+		if (fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for KN!\n");
 		order = urint (fabs (S[last]->factor));
 		if (S[prev]->constant) {
 			b = GMT_kn (GMT, order, fabs (S[prev]->factor));
@@ -2380,8 +2380,8 @@ void table_NOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand == 0!\n");
-	if (S[last]->constant) a = (fabs (S[last]->factor) > GMT_CONV_LIMIT) ? 0.0 : 1.0;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : ((fabs (T->segment[s]->coord[col][row]) > GMT_CONV_LIMIT) ? 0.0 : 1.0);
+	if (S[last]->constant) a = (fabs (S[last]->factor) > GMT_CONV8_LIMIT) ? 0.0 : 1.0;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : ((fabs (T->segment[s]->coord[col][row]) > GMT_CONV8_LIMIT) ? 0.0 : 1.0);
 }
 
 void table_NRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
@@ -3147,7 +3147,7 @@ void table_YN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
 
 	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for YN!\n");
-	if (S[last]->constant && fabs (rint(S[last]->factor) - S[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for YN!\n");
+	if (S[last]->constant && fabs (rint(S[last]->factor) - S[last]->factor) > GMT_CONV4_LIMIT) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for YN!\n");
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, argument = 0 for YN!\n");
 	if (S[last]->constant) order = urint (fabs (S[last]->factor));
 	if (S[last]->constant && S[prev]->constant) {
@@ -3491,7 +3491,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 	if (set_equidistant_t && !Ctrl->Q.active) {
 		/* Make sure the min/man/inc values harmonize */
-		switch (GMT_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_SMALL)) {
+		switch (GMT_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
 			case 1:
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T options: (max - min) is not a whole multiple of inc\n");
 				Return (EXIT_FAILURE);
@@ -3548,7 +3548,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			if (!done) {
 				for (row = 1; row < info.T->segment[seg]->n_rows && (GMT_is_dnan (info.T->segment[seg]->coord[COL_T][row-1]) || GMT_is_dnan (info.T->segment[seg]->coord[COL_T][row])); row++);	/* Find the first real two records in a row */
 				Ctrl->T.inc = (row == info.T->segment[seg]->n_rows) ? GMT->session.d_NaN : info.T->segment[seg]->coord[COL_T][row] - info.T->segment[seg]->coord[COL_T][row-1];
-				t_noise = fabs (GMT_SMALL * Ctrl->T.inc);
+				t_noise = fabs (GMT_CONV4_LIMIT * Ctrl->T.inc);
 			}
 			for (row = 1; row < info.T->segment[seg]->n_rows && !info.irregular; row++) if (fabs (fabs (info.T->segment[seg]->coord[COL_T][row] - info.T->segment[seg]->coord[COL_T][row-1]) - fabs (Ctrl->T.inc)) > t_noise) info.irregular = true;
 		}
@@ -3561,7 +3561,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
 		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->coord[COL_T][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
-		t_noise = fabs (GMT_SMALL * Ctrl->T.inc);
+		t_noise = fabs (GMT_CONV4_LIMIT * Ctrl->T.inc);
 	}
 
 	for (seg = n_records = 0; seg < info.T->n_segments; seg++) {	/* Create normalized times and possibly reverse time (-I) */
