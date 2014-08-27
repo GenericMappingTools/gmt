@@ -382,37 +382,39 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 				}
 			}
 			else {	/* Generate evenly spaced output */
+				uint64_t first_k, last_k;
+				double abs_inc;
 				if (!Ctrl->I.active) Ctrl->I.inc = S->coord[Ctrl->T.col][1] - S->coord[Ctrl->T.col][0];
 				if (Ctrl->I.active && (S->coord[Ctrl->T.col][1] - S->coord[Ctrl->T.col][0]) < 0.0 && Ctrl->I.inc > 0.0) Ctrl->I.inc = -Ctrl->I.inc;	/* For monotonically decreasing data */
-				if (!Ctrl->S.active) {
-					if (Ctrl->I.inc > 0.0) {
-						Ctrl->S.start = floor (S->coord[Ctrl->T.col][0] / Ctrl->I.inc) * Ctrl->I.inc;
-						if (Ctrl->S.start < S->coord[Ctrl->T.col][0]) Ctrl->S.start += Ctrl->I.inc;
-					}
-					else {
-						Ctrl->S.start = ceil (S->coord[Ctrl->T.col][0] / (-Ctrl->I.inc)) * (-Ctrl->I.inc);
-						if (Ctrl->S.start > S->coord[Ctrl->T.col][0]) Ctrl->S.start += Ctrl->I.inc;
-					}
+				first_k = (Ctrl->I.inc > 0.0) ? 0 : S->n_rows-1;	/* Index of point with earliest time */
+				last_k  = (Ctrl->I.inc > 0.0) ? S->n_rows-1 : 0;	/* Index of point with latest time */
+				abs_inc = fabs (Ctrl->I.inc);
+				if (!Ctrl->S.active) {	/* Set first output time */
+					Ctrl->S.start = floor (S->coord[Ctrl->T.col][first_k] / abs_inc) * abs_inc;
+					if (Ctrl->S.start < S->coord[Ctrl->T.col][first_k]) Ctrl->S.start += abs_inc;
 				}
-				last_t = (Ctrl->S.mode) ? Ctrl->S.stop : S->coord[Ctrl->T.col][S->n_rows-1];
-				m = m_alloc = lrint (fabs((last_t - Ctrl->S.start) / Ctrl->I.inc)) + 1;
+				last_t = (Ctrl->S.mode) ? Ctrl->S.stop : S->coord[Ctrl->T.col][last_k];
+				/* So here, Ctrl->S.start holds to smallest t value and last_t holds the largest t_value, regardless of inc sign */
+				m = m_alloc = lrint (fabs((last_t - Ctrl->S.start) / abs_inc)) + 1;
 				t_out = GMT_memory (GMT, t_out, m_alloc, double);
-				t_out[0] = Ctrl->S.start;
 				row = 1;
 				if (Ctrl->I.inc > 0.0) {
+					t_out[0] = Ctrl->S.start;
 					while (row < m && (tt = Ctrl->S.start + row * Ctrl->I.inc) <= last_t) {
 						t_out[row] = tt;
 						row++;
 					}
+					if (fabs (t_out[row-1]-last_t) < GMT_CONV4_LIMIT) t_out[row-1] = last_t;	/* Fix roundoff */
 				}
 				else {
-					while (row < m && (tt = Ctrl->S.start + row * Ctrl->I.inc) >= last_t) {
+					t_out[0] = last_t;
+					while (row < m && (tt = last_t + row * Ctrl->I.inc) >= Ctrl->S.start) {
 						t_out[row] = tt;
 						row++;
 					}
+					if (fabs (t_out[row-1]-Ctrl->S.start) < GMT_CONV4_LIMIT) t_out[row-1] = Ctrl->S.start;	/* Fix roundoff */
 				}
 				m = row;
-				if (fabs (t_out[m-1]-last_t) < GMT_CONV4_LIMIT) t_out[m-1] = last_t;	/* Fix roundoff */
 			}
 			Sout = Tout->segment[seg];	/* Current output segment */
 			GMT_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
