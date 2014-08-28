@@ -63,12 +63,14 @@ struct PSXY_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct L {	/* -L[+xl|r|x0][+yb|t|y0] */
+	struct L {	/* -L[+xl|r|x0][+yb|t|y0][+p<pen>] */
 		bool active;
 		bool polygon;		/* true when just -L is given */
+		bool outline;		/* true when +p<pen> is given */
 		unsigned int mode;	/* Which side for the anchor */
 		unsigned int anchor;	/* 0 not used, 1 = x anchors, 2 = y anchors */
 		double value;
+		struct GMT_PEN pen;
 	} L;
 	struct N {	/* -N[r|c] */
 		bool active;
@@ -266,7 +268,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxy [<table>] %s %s [-A[m|p]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x[+]|y[+]|X|Y][n][cap][/[+|-]<pen>]] [-G<fill>]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I<intens>] [-K] [-L] [-N[c|r]] [-O] [-P] [-S[<symbol>][<size>[unit]]]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I<intens>] [-K] [-L[+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] [-O] [-P] [-S[<symbol>][<size>[unit]]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [-W[+|-][<pen>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, \
 		GMT_c_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -299,7 +301,10 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all subheaders (not with -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.  Alternatively, append modifiers to build polygon from a line.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +xl|r|x0 to connect 1st and last point to anchor points at xmin, xmax, or x0, or\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   append +yb|t|y0 to connect 1st and last point to anchor points at ymin, ymax, or y0.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Polygon may be painted (-G) and optionally outlined via +p<pen> [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
@@ -510,7 +515,13 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				}
 				else	/* Just force a closed polygon */
 					Ctrl->L.polygon = true;
-				
+				if ((c = strstr (opt->arg, "+p"))) {	/* Want outline */
+					if (opt->arg[j] && GMT_getpen (GMT, &c[2], &Ctrl->L.pen)) {
+						GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:");
+						n_errors++;
+					}
+					Ctrl->L.outline = true;
+				}
 				break;
 			case 'N':		/* Do not skip points outside border */
 				Ctrl->N.active = true;
@@ -558,6 +569,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode && !Ctrl->C.active, "Syntax error: -E option +|-<pen> requires the -C option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->W.mode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -1272,12 +1284,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				}
 				else {	/* Plot line */
 					bool draw_line = true;
-					if (Ctrl->L.anchor) {	/* First complete polygon via anchor points and paint */
+					if (Ctrl->L.anchor) {	/* First complete polygon via anchor points and paint the area, optionally with outline */
 						uint64_t end = L->n_rows, off = 0U;
 						double value;
 						GMT_prep_tmp_arrays (GMT, end+3, 2);	/* Init or reallocate tmp vectors */
+						/* First copy the given line segment */
 						GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
 						GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
+						/* Now add 2 anchor points and explicitly close by repeating 1st point */
 						switch (Ctrl->L.mode) {
 							case XHI:	off = 1;	/* To select the x max entry */
 							case XLO:
@@ -1300,9 +1314,14 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						GMT->hidden.mem_coord[GMT_X][end+2] = L->coord[GMT_X][0];
 						GMT->hidden.mem_coord[GMT_Y][end+2] = L->coord[GMT_Y][0];
 						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end+3)) == 0) continue;
-						GMT_setfill (GMT, &current_fill, false);
+						if (Ctrl->L.outline) GMT_setpen (GMT, &Ctrl->L.pen);	/* Select separate pen for polygon outline */
+						if (Ctrl->G.active)	/* Specify the fill, possibly set outline */
+							GMT_setfill (GMT, &current_fill, Ctrl->L.outline);
+						else	/* No fill, just outline */
+							GMT_setfill (GMT, NULL, Ctrl->L.outline);
 						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n);
-						if (!Ctrl->W.active) draw_line = false;
+						if (!Ctrl->W.active) draw_line = false;	/* Did not want to actually draw the main line */
+						if (Ctrl->L.outline) GMT_setpen (GMT, &current_pen);	/* Reset the pen to what -W indicates */
 					}
 					if (draw_line) {
 						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;

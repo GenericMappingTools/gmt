@@ -20,7 +20,8 @@ Synopsis
 [ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
 [ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ] 
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N**\ [**c**\ \|\ **r**] ] 
+[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L**\ [**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
+[ **-N**\ [**c**\ \|\ **r**] ] 
 [ **-O** ] [ **-P** ] 
 [ **-S**\ [*symbol*][\ *size*\ [**u**] ]
 [ |SYN_OPT-U| ]
@@ -131,11 +132,19 @@ Optional Arguments
 
 .. include:: explain_-K.rst_
 
-**-L**
-    Force closed polygons: connect the endpoints of the line-segment(s) and
+**-L**\ [**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*]
+    With no arguments we force closed polygons: connect the endpoints of the line-segment(s) and
     draw polygons. Also, in concert with **-C** and any **-Z** settings in
     the headers will use the implied color for polygon fill [Default is
-    polygon pen color].
+    polygon pen color].  Alternatively, convert an open line segment to
+    a polygon by adding two anchor points to allow the area to one side of
+    the line to be filled.  Append **+xl** to fill area to the left all the
+    way to *xmin*, **+xr** to fill area to the right all the way to *xmax*,
+    or **+x**\ *x0* to some arbitrary location.  Likewise, to fill area below
+    or above the curve, use **+yb**, **+yt**, or **+y**\ *y0*.  The area will
+    be filled if **-G** has been set. Optionally, you can outline the entire
+    polygon by adding **+p**\ *pen*.  The original line will be drawn
+    if **-W** has been specified.
 
 **-N**\ [**c**\ \|\ **r**]
     Do NOT clip symbols that fall outside map border [Default plots points
