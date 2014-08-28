@@ -63,8 +63,12 @@ struct PSXY_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct L {	/* -L */
+	struct L {	/* -L[+xl|r|x0][+yb|t|y0] */
 		bool active;
+		bool polygon;		/* true when just -L is given */
+		unsigned int mode;	/* Which side for the anchor */
+		unsigned int anchor;	/* 0 not used, 1 = x anchors, 2 = y anchors */
+		double value;
 	} L;
 	struct N {	/* -N[r|c] */
 		bool active;
@@ -389,7 +393,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 
 	unsigned int j0, n_errors = 0;
 	int j;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -488,6 +492,25 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'L':		/* Close line segments */
 				Ctrl->L.active = true;
+				if ((c = strstr (opt->arg, "+x"))) {	/* Parse x anchors for a polygon */
+					switch (c[2]) {
+						case 'l':	Ctrl->L.mode = XLO;	break;	/* Left side anchors */
+						case 'r':	Ctrl->L.mode = XHI;	break;	/* Right side anchors */
+						default:	Ctrl->L.mode = ZLO;	Ctrl->L.value = atof (&c[2]);	break;	/* Arbitrary x anchor */
+					}
+					Ctrl->L.anchor = 1;
+				}
+				else if ((c = strstr (opt->arg, "+y"))) {	/* Parse y anchors for a polygon */
+					switch (c[2]) {
+						case 'b':	Ctrl->L.mode = YLO;	break;	/* Bottom side anchors */
+						case 't':	Ctrl->L.mode = YHI;	break;	/* Top side anchors */
+						default:	Ctrl->L.mode = ZHI;	Ctrl->L.value = atof (&c[2]);	break;	/* Arbitrary y anchor */
+					}
+					Ctrl->L.anchor = 2;
+				}
+				else	/* Just force a closed polygon */
+					Ctrl->L.polygon = true;
+				
 				break;
 			case 'N':		/* Do not skip points outside border */
 				Ctrl->N.active = true;
@@ -607,7 +630,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		S.symbol = GMT_SYMBOL_NONE;
 	/* Do we plot actual symbols, or lines */
 	not_line = (S.symbol != GMT_SYMBOL_FRONT && S.symbol != GMT_SYMBOL_QUOTED_LINE && S.symbol != GMT_SYMBOL_LINE);
-
 	if (Ctrl->E.active) {	/* Set error bar parameters */
 		j = 2;	/* Normally, error bar related columns start in column 2 */
 		if (Ctrl->E.xbar != EBAR_NONE) { xy_errors[GMT_X] = j;	j += error_cols[Ctrl->E.xbar]; error_type[GMT_X] = Ctrl->E.xbar;}
@@ -624,7 +646,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	get_rgb = (not_line && Ctrl->C.active);	/* Need to read z-vales from input data file */
 	read_symbol = (S.symbol == GMT_SYMBOL_NOT_SET);	/* Only for ASCII input */
-	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.active));
+	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	if (S.symbol == GMT_SYMBOL_DOT) penset_OK = false;	/* Dots have no outline */
 
 	current_pen = default_pen = Ctrl->W.pen;
@@ -1218,7 +1240,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				}
 				if (change & 4 && penset_OK) GMT_setpen (GMT, &current_pen);
 				if (change & 1) polygon = true;
-				if (change & 2 && !Ctrl->L.active) {
+				if (change & 2 && !Ctrl->L.polygon) {
 					polygon = false;
 					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 				}
@@ -1245,12 +1267,47 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 					S.G.line_pen = current_pen;
-					GMT_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, Ctrl->L.active, &S.G);
+					GMT_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, Ctrl->L.polygon, &S.G);
 					GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since GMT_hold_contour reallocates to fit the array */
 				}
 				else {	/* Plot line */
-					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					bool draw_line = true;
+					if (Ctrl->L.anchor) {	/* First complete polygon via anchor points and paint */
+						uint64_t end = L->n_rows, off = 0U;
+						double value;
+						GMT_prep_tmp_arrays (GMT, end+3, 2);	/* Init or reallocate tmp vectors */
+						GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
+						GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
+						switch (Ctrl->L.mode) {
+							case XHI:	off = 1;	/* To select the x max entry */
+							case XLO:
+							case ZLO:
+								value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
+								GMT->hidden.mem_coord[GMT_X][end] = GMT->hidden.mem_coord[GMT_X][end+1] = value;
+								GMT->hidden.mem_coord[GMT_Y][end] = L->coord[GMT_Y][end-1];
+								GMT->hidden.mem_coord[GMT_Y][end+1] = L->coord[GMT_Y][0];
+								break;
+							case YHI:	off = 1;	/* To select the y max entry */
+							case YLO:
+							case ZHI:
+								value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];
+								GMT->hidden.mem_coord[GMT_Y][end] = GMT->hidden.mem_coord[GMT_Y][end+1] = value;
+								GMT->hidden.mem_coord[GMT_X][end] = L->coord[GMT_X][end-1];
+								GMT->hidden.mem_coord[GMT_X][end+1] = L->coord[GMT_X][0];
+								break;
+						}
+						/* Explicitly close polygon */
+						GMT->hidden.mem_coord[GMT_X][end+2] = L->coord[GMT_X][0];
+						GMT->hidden.mem_coord[GMT_Y][end+2] = L->coord[GMT_Y][0];
+						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end+3)) == 0) continue;
+						GMT_setfill (GMT, &current_fill, false);
+						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n);
+						if (!Ctrl->W.active) draw_line = false;
+					}
+					if (draw_line) {
+						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+						GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					}
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must also draw fault crossbars */
 					GMT_setfill (GMT, &current_fill, (S.f.f_pen == -1) ? false : true);

@@ -2120,17 +2120,13 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 					else
 						trim = remove[GMT_Y];
 				}
-<<<<<<< .working
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (label, label_c[i], GMT_LEN256);
 				else
 					GMT_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, !trim, lonlat, is_world_save);
 				gmt_label_trim (label, trim);
-				gmt_map_symbol_ew (GMT, PSL, val[i], label, w, e, annot, k, form);
-=======
 				shift = gmt_shift_gridline (GMT, val[i], GMT_Y);
 				gmt_map_symbol_ew (GMT, PSL, val[i]+shift, label, w, e, annot, k, form);
->>>>>>> .merge-right.r13472
 			}
 			if (ny) GMT_free (GMT, val);
 			if (label_c) {
