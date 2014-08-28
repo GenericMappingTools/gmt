@@ -3492,7 +3492,8 @@ Section `Standardized command line options`_) given during their previous invoca
 provides a shorthand notation for complex options. For example, if a
 basemap was created with an oblique Mercator projection, specified as
 
-``-Joc170W/25:30S/33W/56:20N/1:500000``
+    ::
+     -Joc170W/25:30S/33W/56:20N/1:500000
 
 then a subsequent :doc:`psxy` command to plot
 symbols only needs to state **-J**\ o in order to activate the same
@@ -4129,6 +4130,10 @@ between three types of vectors:
 #. Geo-vectors are drawn using great circle arcs. They are specified by
    a beginning point and the azimuth and length (in km) of the vector,
    or by its beginning and end point.
+
+.. figure:: /_images/GMT_arrows.*
+   :width: 500 px
+   :align: center
 
 There are numerous attributes you can modify, including how the vector
 should be justified relative to the given point (beginning, center, or
@@ -4880,10 +4885,6 @@ of data:
 #. Geographic coordinates
 
 #. Calendar time coordinates
-
-.. figure:: /_images/GMT_arrows.*
-   :width: 500 px
-   :align: center
 
    Examples of Cartesian (left), circular (middle), and geo-vectors (right) for different
    attribute specifications. Note that both full and half arrow-heads can be specified, as well as no head at all.
@@ -7086,7 +7087,7 @@ accomplished.
    you are editing your document. This image is basically a placeholder
    for the PostScript graphics that will actually be printed.
 
--  The preferred option is to use the GMT utility
+-  However, the preferred option is to use the GMT utility
    :doc:`ps2raster`. Its **-A** option will
    figure out the tightest BoundingBox, again using ghostscript in
    the background. For example, running
@@ -9312,6 +9313,28 @@ simultaneously. This also provides the opportunity to create any other
 temporary files that the script might create in the same directory.
 
 The example below shows how *isolation mode* works.
+
+    ::
+     ps=GMT_App_P_1.ps
+     
+     # Create a temporary directory. $GMT_TMPDIR will be set to its pathname.
+     # XXXXXX is replaced by a unique random combination of characters.
+     export GMT_TMPDIR=`mktemp -d /tmp/gmt.XXXXXX`
+     
+     # These settings will be local to this script only since it writes to
+     # $GMT_TMPDIR/gmt.conf
+     gmt gmtset COLOR_MODEL rgb FONT_ANNOT_PRIMARY 14p
+     
+     # Make grid file and color map in temporary directory
+     gmt grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc
+     gmt makecpt -Crainbow -T-90/90/180 -Z > $GMT_TMPDIR/lat.cpt
+     
+     # The gmt grdimage command creates the history file $GMT_TMPDIR/gmt.history
+     gmt grdimage $GMT_TMPDIR/lat.nc -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K -nl > $ps
+     gmt pscoast -R -J -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30 >> $ps
+     
+     # Clean up all temporary files and the temporary directory
+     rm -rf $GMT_TMPDIR
 
 .. figure:: /_images/GMT_App_P_2.*
    :width: 500 px
