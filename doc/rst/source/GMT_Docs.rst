@@ -4135,6 +4135,10 @@ between three types of vectors:
    :width: 500 px
    :align: center
 
+   Examples of Cartesian (left), circular (middle), and geo-vectors (right)
+   for different attribute specifications. Note that both full and half
+   arrow-heads can be specified, as well as no head at all.
+
 There are numerous attributes you can modify, including how the vector
 should be justified relative to the given point (beginning, center, or
 end), where heads (if any) should be placed, if the head should just be
@@ -9105,6 +9109,7 @@ intersections we wish to use, the general crossing algorithm makes more
 sense:
 
     ::
+
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_5.ps
      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GXcross.txt -S10 -T:LH >> GMT_App_O_5.ps
      
@@ -9143,7 +9148,7 @@ are placed normal to the line:
     ::
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_6.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 \
-     	-T:'-+' >> GMT_App_O_6.ps
+     -T:'-+' >> GMT_App_O_6.ps
      gmt psxy -R -J -O -SqD1000k:+g+LD+an+p -Wthick transect.txt >> GMT_App_O_6.ps
      
 .. _Contour_label_6:
@@ -9170,9 +9175,10 @@ unit for the labels, choose a rounded rectangular text box, and
 inverse-video the label:
 
     ::
+
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_7.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 \
-     	-T:-+ >> GMT_App_O_7.ps
+     -T:-+ >> GMT_App_O_7.ps
      gmt psxy -R -J -O -SqD15d:+gblack+fwhite+Ld+o+u\\260 -Wthick transect.txt >> GMT_App_O_7.ps
 
 The output is presented as Figure :ref:`Contour label 7 <Contour_label_7>`.
@@ -9197,10 +9203,11 @@ those records whose distances are multiples of 1500 km and create a
 labels. This is done with **awk**.
 
     ::
-     gmt gmtconvert -i0,1,4 -Em150 transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
+ 
+    gmt gmtconvert -i0,1,4 -Em150 transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_8.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 \
-     	-T:-+ >> GMT_App_O_8.ps
+     -T:-+ >> GMT_App_O_8.ps
      gmt psxy -R -J -O -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick transect.txt >> GMT_App_O_8.ps
      
 The output is presented as Figure :ref:`Contour label 8 <Contour_label_8>`.
@@ -9226,6 +9233,7 @@ shape of the seafloor, and travel time contours with curved labels as
 well as a few quoted lines. The final script is
 
     ::
+ 
      R=-R-85/5/10/55
      gmt grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc
      gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
@@ -9239,18 +9247,18 @@ well as a few quoted lines. The final script is
      EOF
      gmt grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K -nc+t1 > GMT_App_O_9.ps
      gmt grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
-     	-GL80W/31N/17W/26N,17W/28N/17W/50N -S2 >> GMT_App_O_9.ps
+     -GL80W/31N/17W/26N,17W/28N/17W/50N -S2 >> GMT_App_O_9.ps
      gmt psxy -R -J -Wfatter,white great_NY_Canaries.txt -O -K  >> GMT_App_O_9.ps
      gmt pscoast -R -J -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick -O -K \
-     	-Glightgray -Wfaint -A500 >> GMT_App_O_9.ps
+     -Glightgray -Wfaint -A500 >> GMT_App_O_9.ps
      gmt gmtconvert great_NY_*.txt -E | gmt psxy -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
      gmt psxy -R -J -Wthick great_NY_Canaries.txt -O -K \
-     	-Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v >> GMT_App_O_9.ps
+     -Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v >> GMT_App_O_9.ps
      gmt psxy -R -J great_NY_Paris.txt -O -K -Sc0.08c -Gblack >> GMT_App_O_9.ps
      gmt psxy -R -J -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white \
-     	-O -K >> GMT_App_O_9.ps
+     -O -K >> GMT_App_O_9.ps
      cat << EOF | gmt pstext -R -J -O -K -Gwhite -Wthin -Dj0.1i/0.1i -F+f8p,Bookman-Demi+j \
-     	>> GMT_App_O_9.ps
+     >> GMT_App_O_9.ps
      74W	41N	RT	New York
      2.33E	48.87N	CT	Paris
      17W	28N	CT	Canaries
@@ -9315,6 +9323,7 @@ temporary files that the script might create in the same directory.
 The example below shows how *isolation mode* works.
 
     ::
+
      ps=GMT_App_P_1.ps
      
      # Create a temporary directory. $GMT_TMPDIR will be set to its pathname.
