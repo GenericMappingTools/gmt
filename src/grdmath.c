@@ -380,14 +380,14 @@ void grd_AND (struct GMT_CTRL * GMT_UNUSED(GMT), struct GRDMATH_INFO *info, stru
 	}
 }
 void grd_ARC (struct GMT_CTRL * GMT_UNUSED(GMT), struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: ARC 2 1 arc(A, B) A, B in radians.  */
-     /*
-       given phase values a and b each in radians on [-pi,pi] 
-       return arc(a,b) on [0 pi]
-       see eq 2.3.13 page 19, Mardia and Jupp [2000] 
-       c = pi - abs(pi-abs(a-b))
-       Kurt Feigl 2014-AUG-10
-     */
+/*OPERATOR: ARC 2 1 arc(A, B) = pi - |pi - |a-b|| for A, B in radians.  */
+	/*
+	given phase values a and b each in radians on [-pi,pi] 
+	return arc(a,b) on [0 pi]
+	see eq 2.3.13 page 19, Mardia and Jupp [2000] 
+	c = pi - abs(pi-abs(a-b))
+	Kurt Feigl 2014-AUG-10
+	*/
 {
 	uint64_t node;
 	unsigned int prev = last - 1;
@@ -398,13 +398,11 @@ void grd_ARC (struct GMT_CTRL * GMT_UNUSED(GMT), struct GRDMATH_INFO *info, stru
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 
-		/* both arguments must be in range [-pi,pi] radians */
-        if ((a >= -1.0*M_PI) && (a <= 1.0*M_PI) && (b >= -1.0*M_PI) && (b <= 1.0*M_PI)){
+		/* Both arguments must be in range [-pi,pi] radians */
+		if ((a >= -M_PI) && (a <= M_PI) && (b >= -M_PI) && (b <= M_PI))
 			stack[prev]->G->data[node] = (float)(M_PI-fabs(M_PI-fabs(a-b)));
-			}
-		else {
+		else 
 			stack[prev]->G->data[node] = GMT->session.f_NaN;  /* NaN output */
-		}
 	}
 }
 
@@ -3296,16 +3294,18 @@ Function: float roundf (float x) These functions are similar to rint, but they r
 away from zero instead of to the nearest integer (or other current rounding mode).      
 */ 
 {
-	uint64_t node;     double a;
+	uint64_t node;
+	double a;
 
 	for (node = 0; node < info->size; node++) {
-		/* argument must be finite  */
+		/* Argument must be finite  */
 
 		a = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 
 		stack[last]->G->data[node] = (float)(TWO_PI*(a/TWO_PI - rintf(a/TWO_PI)));
 	}
 }
+
 void grd_XOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: XOR 2 1 0 if A == NaN and B == NaN, NaN if B == NaN, else A.  */
 {
