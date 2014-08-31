@@ -711,6 +711,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		dim[2] = Ctrl->M.S.v.v_width, dim[3] = Ctrl->M.S.v.h_length, dim[4] = Ctrl->M.S.v.h_width;
 		dim[5] = GMT->current.setting.map_vector_shape;
 		dim[6] = (double)Ctrl->M.S.v.status;
+		dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
 		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->M.S.v.status & GMT_VEC_FILL2) GMT_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
 		for (this_mode = 0; this_mode < n_modes; this_mode++) {

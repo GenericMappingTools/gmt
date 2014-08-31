@@ -349,6 +349,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	GMT_memset (col, GMT_LEN64*12, char);
+	GMT_memset (dim, PSL_MAX_DIMS, double);
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
 	if (Ctrl->E.active) Ctrl->L.active = true;
@@ -483,6 +484,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
 					dim[5] = GMT->current.setting.map_vector_shape;
 					dim[6] = (double)Ctrl->A.S.v.status;
+					dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
 					if (Ctrl->A.S.v.status & GMT_VEC_FILL2)
 						GMT_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
 					else if (&Ctrl->G.active)

@@ -437,8 +437,6 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
 		GMT_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 	}
-	dim[6] = 0.0;
-	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
 	PSL = GMT_plotinit (GMT, options);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -471,8 +469,10 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 		col_0 = urint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
 	}
 
-	dim[5] = GMT->current.setting.map_vector_shape;	/* These do not change inside the loop */
+	dim[5] = GMT->current.setting.map_vector_shape;	/* dim[5-8] do not change inside the loop */
 	dim[6] = (double)Ctrl->Q.S.v.status;
+	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
+	
 	if (Geographic) {
 		v_width = Ctrl->Q.S.v.v_width;	h_length = Ctrl->Q.S.v.h_length;	h_width = Ctrl->Q.S.v.h_width;	
 	}

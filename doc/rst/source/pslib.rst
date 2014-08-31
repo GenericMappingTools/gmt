@@ -532,7 +532,7 @@ Here are functions used to plot various geometric symbols or constructs.
     *angle*, *width*, and *height*, with rotation relative to the
     horizontal), and PSL_VECTOR (*size* is expected to contain the 7
     parameters *x_tip*, *y_tip*, *tailwidth*, *headlength*,
-    *headwidth*, *shape*, and *status*. Here (*x_tip*,\ *y_tip*) are
+    *headwidth*, *shape*, *status*, *head1*, and *head2*. Here (*x_tip*,\ *y_tip*) are
     the coordinates to the head of the vector, while (*x*, *y*) are
     those of the tail. *shape* can take on values from 0-1 and specifies
     how far the intersection point between the base of a straight vector
@@ -552,7 +552,9 @@ Here are functions used to plot various geometric symbols or constructs.
     PSL_VEC_MARC90 (2048) = if angles subtend 90, draw straight angle
     symbol (PSL_MANGLE only). The symbol may be filled and its outline
     stroked depending on the current settings for fill and pen
-    attributes.
+    attributes.  The final two parameters *head1* and *head2* determines
+    what kind of vector head will be plotted at the two ends (if selected).
+    0 = normal vector head, 1 = circle, 2 = terminal crossbar.
 
 `Plotting Images <#toc9>`_
 --------------------------
