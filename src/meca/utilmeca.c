@@ -1241,7 +1241,7 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 	/*   v_width, h_length,h_width,vector_shape: arrow characteristics */
 
 	/* local */
-	double dx, dy, x1, x2, y1, y2, hl, hw, vw, s, c, dim[7];
+	double dx, dy, x1, x2, y1, y2, hl, hw, vw, s, c, dim[PSL_MAX_DIMS];
 
 	sincosd (theta, &s, &c);
 
