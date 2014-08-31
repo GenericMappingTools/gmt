@@ -16,7 +16,7 @@
 
 int main (int argc, char **argv) {
 	struct PSL_CTRL *PSL = NULL;
-	double Letter[2] = {612.0, 792.0}, size[7];
+	double Letter[2] = {612.0, 792.0}, size[PSL_MAX_DIMS];
 	double rgb[8][4] = {{1.0, 0.0, 0.0, 0.0}, {0.5, 0.7, 0.1, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 0.0},
 		{-3.0, -3.0, -3.0, 0.0}, {0.9, 0.9, 9.0, 0.0}, {0.5, 0.7, 0.1, 0.5}};
 	double offset[2] = {0.1, 0.1}, scales[2] = {1.0, 1.0};
@@ -36,6 +36,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	if (argc > 1) fprintf (stderr, "psldemo: No argument required\n");
 	
 	memset (&h, 0, sizeof(struct imageinfo)); /* initialize struct */
+	memset (size, 0, PSL_MAX_DIMS*sizeof(double)); /* initialize array */
 
 	size[0] = 0.3;
 

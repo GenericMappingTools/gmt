@@ -311,7 +311,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	int ix = 0, iy = 1, n_rec = 0, k, n_k, justify;
 	int des_ellipse = true, des_arrow = true, error = false;
 
-	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[7];
+	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[PSL_MAX_DIMS];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize;

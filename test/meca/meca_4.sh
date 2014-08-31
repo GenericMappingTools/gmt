@@ -20,7 +20,7 @@ gmt psvelo << EOF  -X2i -Y5i -Jm1.3i -R238.5/242/32.5/35.5 -B2 -BWeSn+tpsvelo \
 EOF
 
 # omit the shading
-gmt psvelo -Jm1.3i -R238.5/242/32.5/35.5 -Sw0.4/1.e7 -W0.25p -D2 -O -K << EOF >> $ps    
+gmt psvelo -J -R -Sw0.4/1.e7 -W0.25p -D2 -O -K << EOF >> $ps    
 # lon     lat    spin(rad/yr) spin_sigma (rad/yr)
 241.2542 34.2581  1.28E-07 1.59E-08
 242.0593 34.0773 -6.62E-08 1.74E-08
@@ -30,7 +30,7 @@ gmt psvelo -Jm1.3i -R238.5/242/32.5/35.5 -Sw0.4/1.e7 -W0.25p -D2 -O -K << EOF >>
 EOF
  
 # hit the beach
-gmt pscoast -O -R238.5/242/32.5/35.5 -Jm1.3i -W0.25p -Di -K >> $ps    
+gmt pscoast -O -R -J -W0.25p -Di -K >> $ps    
 
 
 #     The  following  should  make  big  green arrows  with blue
@@ -40,7 +40,7 @@ gmt pscoast -O -R238.5/242/32.5/35.5 -Jm1.3i -W0.25p -Di -K >> $ps
  
 # 
 gmt psvelo -Y-4.5i -R-10/10/-10/10 -Wthin,red \
-	-Se0.2/0.39/12 -B1g1 -BWeSn -Jx0.2i/0.2i -Ggreen -Eblue -L -N \
+	-Se0.2/0.39/12 -B1g1 -BWeSn -Jx0.2i -Ggreen -Eblue -L -N \
 	-A1c+p3p+e -O -K << EOF >> $ps    
 # Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
 # (deg)  (deg)    (mm/yr)        (mm/yr)
@@ -53,7 +53,7 @@ EOF
 
 # simpler colors, labeled with following font
 gmt gmtset FONT_ANNOT_PRIMARY Helvetica
-gmt psvelo -Se0.2/0.39/18 -R-10/10/-10/10 -Jx0.2i/0.2i -A0.25c+p0.25p+e -O -Umeca_4 << EOF >> $ps    
+gmt psvelo -Se0.2/0.39/18 -R -J -A0.25c+p0.25p+e -O -Umeca_4 << EOF >> $ps    
 # Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
 # (deg)  (deg)    (mm/yr)        (mm/yr)
    0.    -8.     0.0    0.0     4.0    6.0  0.100  4x6
@@ -63,4 +63,3 @@ gmt psvelo -Se0.2/0.39/18 -R-10/10/-10/10 -Jx0.2i/0.2i -A0.25c+p0.25p+e -O -Umec
    5.     0.    -6.0    4.0     6.0    4.0 -0.300  -6x4
    0.    -5.     6.0   -4.0     6.0    4.0 -0.500  6x-4
 EOF
-
