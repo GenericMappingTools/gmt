@@ -418,13 +418,13 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 
 unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsigned int *mode)
 {	/* Examine the -E<args> option and determine the distance unit and mode. */
-	unsigned int pos = 0, pos2 = 0, error = 0;
+	unsigned int id, pos = 0, pos2 = 0, error = 0, l_mode[3], this_mode = 0;
 	size_t len, k, kk, s;
-	char p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit, l_unit[3];
+	char *c = NULL, p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit, l_unit[3];
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 	
-	*mode = (GMT_is_geographic (GMT, GMT_IN)) ? 2 : 0;	/* Great circle or Cartesian */
+	*mode = (GMT_is_geographic (GMT, GMT_IN)) ? GMT_GREATCIRCLE : 0;	/* Great circle or Cartesian */
 	*unit = 0;	/* Initially not set */
 	while (!error && (GMT_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
 		k = s = 0;	len = strlen (p);
@@ -433,20 +433,24 @@ unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsig
 			k++;
 		}
 		if (s == 0) continue;	/* No modifier with unit specification; go to next line */
-		GMT_memset (l_unit, 3, char);	/* Clean register */
+		/* Here we are processing +i, +l, or +r, all of which take a distance with optional unit */
+		GMT_memset (l_unit, 3, char);		/* Clean register */
+		GMT_memset (l_mode, 3, unsigned int);	/* Clean register */
 		strcpy (modifiers, &p[s]);
 		pos2 = 0;
+		if (modifiers[2] == '+') modifiers[2] = '@';	/* Flag for + in increment which means geodesic mode [to avoid being screwed by GMT_strtok on +] */
 		while ((GMT_strtok (modifiers, "+", &pos2, p2))) {
 			switch (p2[0]) {
-				case 'i':	/* Increment along line */
-					if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[0] = p2[strlen(p2)-1];	break;
-				case 'l':	/* Length of line */
-					if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[1] = p2[strlen(p2)-1];	break;
-				case 'r':	/* Radius of circular ring */
-					if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[2] = p2[strlen(p2)-1];	break;
+				case 'i':	id = 0;	break;	/* Increment along line */
+				case 'l':	id = 1;	break;	/* Length of line */
+				case 'r':	id = 2;	break;	/* Radius of circular ring */
 			}
+			/* id points to the correct array index for i, l, r (0-2) */
+			if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[id] = p2[strlen(p2)-1];
+			if (p2[1] == '-') l_mode[id] = GMT_FLATEARTH;
+			else if (p2[1] == '@') l_mode[id] = GMT_GEODESIC;
 		}
-		/* Some sanity checking to make sure only one unit is given for all lines */
+		/* Some sanity checking to make sure only one unit and mode are given for all lines */
 		for (k = 0; k < 3; k++) {
 			if (l_unit[k] == 0) continue;	/* Not set, skip to next */
 			for (kk = k + 1; kk < 3; kk++) {
@@ -461,10 +465,28 @@ unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsig
 			else
 				*unit = this_unit;	/* Set default unit if not specified as part of the modifiers */
 		}
+		/* Now check modes */
+		for (k = 0; k < 3; k++) {
+			if (l_mode[k] == 0) continue;	/* Not set, skip to next */
+			for (kk = k + 1; kk < 3; kk++) {
+				if (l_mode[kk] == 0) continue;	/* Not set, skip to next */
+				if (l_mode[k] != l_mode[kk]) error++;
+			}
+			this_mode = l_mode[k];
+		}
+		if (this_mode)	/* Got a mode other than Cartesian */
+			*mode = this_mode;
 	}
 	if (*unit == 0) *unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';	/* Default is km or Cartesian if nothing is specified */
+	if (strchr (GMT_LEN_UNITS, *unit) && !GMT_is_geographic (GMT, GMT_IN)) {	/* Want geographic distance unit but -fg or -J not set */
+		GMT_parse_common_options (GMT, "f", 'f', "g");
+		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
+	}
 	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E:  All lines must have the same distance units\n");
-	
+	/* Process args so any i|d|l+<dist> becomes i|d|l <dist> as the + will cause trouble otherwise.  The + for geodesics have already been processed */
+	while ((c = strstr (args, "+i+"))) c[2] = ' ';
+	while ((c = strstr (args, "+d+"))) c[2] = ' ';
+	while ((c = strstr (args, "+l+"))) c[2] = ' ';
 	return (error);
 }
 
@@ -737,7 +759,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
 			if (!GMT->current.map.dist[GMT_MAP_DIST].arc) Ctrl->E.step *= GMT->current.proj.DIST_M_PR_DEG;	/* Convert from degrees to meters or from min/secs to degrees */
 			Ctrl->E.step *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scale to chosen unit */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Default sampling interval in -E is %g %c.\n", Ctrl->E.step, Ctrl->E.unit);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Default sampling interval in -E is %g %c (may be overrided by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			GMT_grd_minmax (GMT, GC[0].G, xyz);
