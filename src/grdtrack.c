@@ -483,10 +483,10 @@ unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsig
 		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
 	}
 	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E:  All lines must have the same distance units\n");
-	/* Process args so any i|d|l+<dist> becomes i|d|l <dist> as the + will cause trouble otherwise.  The + for geodesics have already been processed */
+	/* Process args so any i|l|r+<dist> becomes i|l|r <dist> as the + will cause trouble otherwise.  This + for geodesics have already been processed */
 	while ((c = strstr (args, "+i+"))) c[2] = ' ';
-	while ((c = strstr (args, "+d+"))) c[2] = ' ';
 	while ((c = strstr (args, "+l+"))) c[2] = ' ';
+	while ((c = strstr (args, "+r+"))) c[2] = ' ';
 	return (error);
 }
 
