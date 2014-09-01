@@ -484,8 +484,10 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 			lat = T->segment[seg]->coord[GMT_Y];
 			z = T->segment[seg]->coord[GMT_Z];
 			
+			if (Ctrl->C.active) for (row = 0; row < T->segment[seg]->n_rows; row++) z[row] -= Ctrl->C.value;	/* Remove center value */
+
 			GMT_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
-			zz[0] = z[0] - Ctrl->C.value;
+			zz[0] = z[0];
 			for (row = j = 1; row < T->segment[seg]->n_rows; row++) {	/* Convert to inches/cm and get distance increments */
 				GMT_geo_to_xy (GMT, lon[row], lat[row], &x_2, &y_2);
 
@@ -509,7 +511,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 				}
 				xx[j] = x_2;
 				yy[j] = y_2;
-				zz[j] = z[row] - Ctrl->C.value;
+				zz[j] = z[row];
 				if (!GMT_is_dnan (z[row])) j++;
 				if (j == n_alloc) alloc_space (GMT, &n_alloc, &xx, &yy, &zz);
 			}
