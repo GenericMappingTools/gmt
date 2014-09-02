@@ -1408,15 +1408,15 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			if (Ctrl->T.active) {	/* Plate has pre-existing deflection */
 				double *w0 = T->table[tbl]->segment[seg]->coord[GMT_Y];
 				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure of pre-deformed surface\n");
-				error = flx1dw0 (GMT, deflection, w0, rigidity, load, S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
+				error = flx1dw0 (GMT, deflection, w0, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 			else if (Ctrl->S.active) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure with variable restoring force\n");
-				error = flx1dk (GMT, deflection, rigidity, load, S->n_rows, x_inc, Ctrl->D.rhom, Ctrl->D.rhol, Ctrl->D.rhoi, Ctrl->D.rhow, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
+				error = flx1dk (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, Ctrl->D.rhom, Ctrl->D.rhol, Ctrl->D.rhoi, Ctrl->D.rhow, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 			else {	/* Constant restoring force */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure for constant restoring force\n");
-				error = flx1d (GMT, deflection, rigidity, load, S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
+				error = flx1d (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 		
 			if (error) {
@@ -1426,7 +1426,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	
 			if (Ctrl->S.active) {	/* Compute curvatures */
 				double *curvature = W->table[tbl]->segment[seg]->coord[GMT_Z];
-				get_curvature (deflection, S->n_rows, x_inc, curvature);
+				get_curvature (deflection, (int)S->n_rows, x_inc, curvature);
 			}
 
 			/* Add in Moho depth, possibly convert back to km, and let z be positive up */

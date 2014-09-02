@@ -1319,7 +1319,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 							GMT_setfill (GMT, &current_fill, Ctrl->L.outline);
 						else	/* No fill, just outline */
 							GMT_setfill (GMT, NULL, Ctrl->L.outline);
-						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n);
+						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
 						if (!Ctrl->W.active) draw_line = false;	/* Did not want to actually draw the main line */
 						if (Ctrl->L.outline) GMT_setpen (GMT, &current_pen);	/* Reset the pen to what -W indicates */
 					}
