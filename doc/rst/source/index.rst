@@ -66,3 +66,10 @@ API Reference
 |                    |
 |    api             |
 +--------------------+
+
+.. Include an hiden page with option's examples that can be referenced by individual programs
+
+.. toctree::
+   :hidden:
+
+   examples_options
