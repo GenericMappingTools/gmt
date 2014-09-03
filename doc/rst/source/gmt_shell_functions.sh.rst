@@ -135,7 +135,7 @@ functions do not work in the C shell (**csh**) or their derivatives
 2. **gmt_shell_functions.sh** were first introduced in GMT version
 4.2.2 and have since been regularly expanded with other practical
 scripting short-cuts. If you want to suggest other functions, please do
-so by mailing to the GMT mailing list: gmt-help@lists.hawaii.edu.
+so by adding a New Issue request on gmt.soest.hawaii.edu.
 
 See Also
 --------
