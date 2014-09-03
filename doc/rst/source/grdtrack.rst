@@ -126,7 +126,9 @@ Optional Arguments
     distances after the coordinates.  Note: No track file will be read.
     Also note that only one distance unit can be chosen.  Giving different units
     will result in an error.  If no units are specified we default to
-    great circle distances in km (if geographic).
+    great circle distances in km (if geographic).  If working with geographic
+    data you can prepend - (Flat Earth) or + (Geodesic) to *inc*, *length*, or *radius*
+    to change the mode of distance calculation [Great Circle].
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
