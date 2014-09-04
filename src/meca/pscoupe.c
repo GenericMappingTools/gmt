@@ -949,7 +949,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 		}
 
-		if (Ctrl->Z.active) GMT_get_rgb_from_z (GMT, CPT, depth, Ctrl->G.fill.rgb);
+		if (Ctrl->Z.active) GMT_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 
 		GMT_geo_to_xy (GMT, xy[0], xy[1], &plot_x, &plot_y);
 

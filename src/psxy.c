@@ -815,7 +815,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			}
 
 			if (get_rgb) {
-				GMT_get_rgb_from_z (GMT, P, in[GMT_Z], current_fill.rgb);
+				GMT_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
 				if (Ctrl->I.active) GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 				if (P->skip) continue;	/* Chosen cpt file indicates skip for this z */
 			}

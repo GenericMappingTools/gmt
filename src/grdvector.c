@@ -507,7 +507,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			}
 			
 			if (Ctrl->C.active) {	/* Update pen and fill color based on the vector length */
-				GMT_get_rgb_from_z (GMT, P, vec_length, Ctrl->G.fill.rgb);
+				GMT_get_fill_from_z (GMT, P, vec_length, &Ctrl->G.fill);
 				GMT_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
 				GMT_setpen (GMT, &Ctrl->W.pen);
 				if (Ctrl->Q.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);

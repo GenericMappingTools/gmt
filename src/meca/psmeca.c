@@ -619,7 +619,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 		if (new_fmt) {
 			depth = atof (col[GMT_Z]);
 			if (depth < Ctrl->D.depmin || depth > Ctrl->D.depmax) continue;
-			if (Ctrl->Z.active) GMT_get_rgb_from_z (GMT, CPT, depth, Ctrl->G.fill.rgb);
+			if (Ctrl->Z.active) GMT_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 			sscanf (string, "%s %[^\n]\n", col[last+1], event_title);
 		}
 		else
