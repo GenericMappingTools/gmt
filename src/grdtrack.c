@@ -444,7 +444,9 @@ unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsig
 				case 'i':	id = 0;	break;	/* Increment along line */
 				case 'l':	id = 1;	break;	/* Length of line */
 				case 'r':	id = 2;	break;	/* Radius of circular ring */
+				default:	id = 9; break;	/* Probably +d or some other non-distance setting to skip */
 			}
+			if (id == 9) continue;	/* Just go to next */
 			/* id points to the correct array index for i, l, r (0-2) */
 			if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[id] = p2[strlen(p2)-1];
 			if (p2[1] == '-') l_mode[id] = GMT_FLATEARTH;

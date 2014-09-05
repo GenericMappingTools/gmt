@@ -28,11 +28,25 @@ Synopsis
 **gmt** module module-options
 
 where module is the name of a GMT module and the options are those
-that pertain to that particular module.  In addition to all the regular
-module-options that the various modules support, you can also give the
-special option **=**.  It will check if that module exist and if so the
-program will exit with status of 0; otherwise the status of exit will
-be non-zero.
+that pertain to that particular module.  If no module is given then
+several other options are available:
+
+**--help**
+    List and description of GMT modules.
+
+**--version**
+    Print version and exit.
+
+**--show-datadir**
+    Show data directory and exit.
+
+**--show-bindir** 
+    Show directory of executables and exit.
+
+**=**
+    Check if that module exist and if so the
+    program will exit with status of 0; otherwise the status of exit will
+    be non-zero.
 
 GMT Overview
 ------------
