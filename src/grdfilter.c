@@ -179,14 +179,14 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 	int64_t ij;
 	double x, y, yc, y0, r, ry = 0.0, inv_x_half_width = 0.0, inv_y_half_width = 0.0;
 
-	yc = y0 = output_lat - y_off;		/* Input latitude of central point (i,j) = (0,0) */
+	yc = y0 = output_lat - y_off;		/* Input latitude of central point input grid (i,j) = (0,0) */
 	if (F->d_flag == GRDFILTER_GEO_MERCATOR) yc = IMG2LAT (yc);	/* Recover actual latitude in IMG grid at this center point */
 	if (F->rect) {
 		inv_x_half_width = 1.0 / F->x_half_width;
 		inv_y_half_width = 1.0 / F->y_half_width;
 	}
 	for (j = -F->y_half_width; j <= F->y_half_width; j++) {
-		y = y0 + ((j < 0) ? F->y[-j] : -F->y[j]);	/* y or latitude at this row */
+		y = y0 + ((j < 0) ? F->y[-j] : -F->y[j]);	/* y or latitude at this row in input grid */
 		if (F->d_flag > GRDFILTER_GEO_FLATEARTH1 && (y < F->y_min || y > F->y_max)) {		/* This filter row is outside input grid domain */
 			for (i = -F->x_half_width, ij = (j + F->y_half_width) * F->nx; i <= F->x_half_width; i++, ij++) weight[ij] = -1.0;
 			continue;	/* Done with this row */
@@ -194,14 +194,15 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 		if (F->d_flag == GRDFILTER_GEO_MERCATOR) y = IMG2LAT (y);	/* Recover actual latitudes */
 		if (F->rect) ry = inv_y_half_width * j;	/* -1 to +1 */
 		for (i = -F->x_half_width; i <= F->x_half_width; i++) {
-			x = (i < 0) ? -F->x[-i] : F->x[i];
+			x = (i < 0) ? -F->x[-i] : F->x[i];	/* Input grid x-coordinate relative to center */ 
 			ij = (j + F->y_half_width) * F->nx + i + F->x_half_width;
 			assert (ij >= 0);
 			if (F->rect) {	/* 2-D rectangular filtering; radius not used as we use x/x_half_width and ry instead */
 				weight[ij] = F->weight_func (inv_x_half_width * i, par) * F->weight_func (ry, par);
 			}
 			else {
-				r = F->radius_func (GMT, x_off, yc, x, y, par);
+				/* Use offsets x_off and y_off to account for offsets between input and output node in terms of fractional input dx/dy */
+				r = F->radius_func (GMT, x_off, yc+y_off, x, y, par);
 				weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : F->weight_func (r, par);
 #ifdef DEBUG
 				if (F->debug) weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : r;
@@ -901,7 +902,9 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		if (!fast_way) y_shift = y_out - GMT_grd_row_to_y (GMT, row_origin, Gin->header);
 
 		for (col_out = 0; col_out < Gout->header->nx; col_out++) {
-
+			if (row_out == 46 && col_out == 50) {
+				n_conv = 0;
+			}
 #ifdef DEBUG
 			if (Ctrl->A.active && col_out != Ctrl->A.COL) continue;	/* Not at our selected column for testing */
 #endif
