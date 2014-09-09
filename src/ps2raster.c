@@ -1091,7 +1091,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		transparency = false;
 		while (line_reader (GMT, &line, &line_size, fp) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
-				if (look_for_transparency && line[0] == '{' && strstr (line, " PSL_transp")) {
+				if (look_for_transparency && strstr (line, " PSL_transp")) {
 					transparency = true;		/* Yes, found transparency */
 					look_for_transparency = false;	/* No need to check anymore */
 				}
