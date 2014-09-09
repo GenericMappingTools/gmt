@@ -902,9 +902,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		if (!fast_way) y_shift = y_out - GMT_grd_row_to_y (GMT, row_origin, Gin->header);
 
 		for (col_out = 0; col_out < Gout->header->nx; col_out++) {
-			if (row_out == 46 && col_out == 50) {
-				n_conv = 0;
-			}
 #ifdef DEBUG
 			if (Ctrl->A.active && col_out != Ctrl->A.COL) continue;	/* Not at our selected column for testing */
 #endif
