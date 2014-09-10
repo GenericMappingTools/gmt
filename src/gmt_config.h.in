@@ -283,11 +283,13 @@
 #cmakedefine HAVE__BYTESWAP_ULONG /* for 32 bit */
 #cmakedefine HAVE__BYTESWAP_UINT64 /* for 64 bit */
 
+#if 0	/* PW: Commented out; see issue # 614 */
 /* Architecture type (32/64 bits) */
 #if !defined(__x86_64__) && !defined(__i386__) && SIZEOF_VOID_P == 4 /* on i386 */
 #	define __i386__ 1
 #elif !defined(__x86_64__) && !defined(__i386__) && SIZEOF_VOID_P == 8 /* on x86_64 */
 #	define __x86_64__ 1
+#endif
 #endif
 
 #if !(defined(__LP64__) || defined(__LLP64__)) && defined(__x86_64__) && \
