@@ -79,20 +79,37 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
-unsigned int gmt_bcr_reject (struct GMT_GRID_HEADER *h, double xx, double yy)
+unsigned int gmt_bcr_reject (struct GMT_GRID_HEADER *h, double *xx, double *yy)
 {
 	/* First check that xx,yy are not Nan - if so return NaN */
 
-	if (GMT_is_dnan (xx) || GMT_is_dnan (yy)) return (2);
+	if (GMT_is_dnan (*xx) || GMT_is_dnan (*yy)) return (2);
 
 	/* First check if the xx and yy are within the grid.
 	   16-Sep-2007: Added some slack (GMT_CONV4_LIMIT) here to avoid setting to NaN points
 	   that are really on the edge but because of rounding errors are regarded outside.
 	   Remember that we have padded the grid with 2 extra values, so this should not be
 	   a problem. */
+	/* 9-Sep-2014: No, it is a problem when things are outside, since at the end we loop over
+	   4 rows.  So if just outside by < GMT_CONV4_LIMIT then we move the points onto the boundary */
 
-	if (xx < h->wesn[XLO] - GMT_CONV4_LIMIT || xx > h->wesn[XHI] + GMT_CONV4_LIMIT) return (1);
-	if (yy < h->wesn[YLO] - GMT_CONV4_LIMIT || yy > h->wesn[YHI] + GMT_CONV4_LIMIT) return (1);
+	if (*xx < h->wesn[XLO]) {	/* If left of xmin... */
+		if (*xx < h->wesn[XLO] - GMT_CONV4_LIMIT) return (1); /* ...by this much then truly outside */
+		*xx = h->wesn[XLO];	/* Else we say it is on xmin border */
+	}
+	else if (*xx > h->wesn[XHI]) {	/* If right of xmax... */
+		if (*xx > h->wesn[XHI] + GMT_CONV4_LIMIT) return (1); /* ...by this much then truly outside */
+		*xx = h->wesn[XHI];	/* Else we say it is on xmax border */
+	}
+
+	if (*yy < h->wesn[YLO]) {	/* If below ymin... */
+		if (*yy < h->wesn[YLO] - GMT_CONV4_LIMIT) return (1); /* ...by this much then truly outside */
+		*yy = h->wesn[YLO];	/* Else we say it is on ymin border */
+	}
+	else if (*yy > h->wesn[YHI]) {	/* If above ymax... */
+		if (*yy > h->wesn[YHI] + GMT_CONV4_LIMIT) return (1); /* ...by this much then truly outside */
+		*yy = h->wesn[YHI];	/* Else we say it is on ymin border */
+	}
 
 	return (0);	/* Good to use */
 }
@@ -220,7 +237,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
-	if (gmt_bcr_reject (G->header, xx, yy)) return (GMT->session.d_NaN);	/* NaNs or outside */
+	if (gmt_bcr_reject (G->header, &xx, &yy)) return (GMT->session.d_NaN);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx, wy */
 
@@ -263,7 +280,7 @@ int GMT_get_bcr_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, doubl
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
-	if (gmt_bcr_reject (G->header, xx, yy)) return (1);	/* NaNs or outside */
+	if (gmt_bcr_reject (G->header, &xx, &yy)) return (1);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx wy */
 
