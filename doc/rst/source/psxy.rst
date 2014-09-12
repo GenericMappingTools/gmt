@@ -132,7 +132,9 @@ Optional Arguments
 
 .. include:: explain_-K.rst_
 
-**-L**\ [**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] :ref:`(example: ...) <psxy_ex_-L>` 
+.. include:: PSXY_OPTs_EX.rst_
+
+**-L**\ [**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |loc_OPT-L|
     With no arguments we force closed polygons: connect the endpoints of the line-segment(s) and
     draw polygons. Also, in concert with **-C** and any **-Z** settings in
     the headers will use the implied color for polygon fill [Default is
