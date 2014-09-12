@@ -100,6 +100,7 @@ int main (int argc, char *argv[]) {
 
 		if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL) {
 			/* Just wanted to know if module exists */
+			status = 1; /* Return nonzero when modules does not exist */
 			goto exit;
 		}
 

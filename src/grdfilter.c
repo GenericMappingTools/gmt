@@ -1068,8 +1068,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	if (tid == 0) {	/* First or only thread */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n",
-				Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n", Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter nx,ny = (%d %d) [These are maximum dimensions of weight array]\n", F.nx, F.ny);
 		if (Ctrl->F.quantile != 0.5)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s [using %g%% quantile].\n",
 					filter_name[filter_type], 100.0 * Ctrl->F.quantile);
