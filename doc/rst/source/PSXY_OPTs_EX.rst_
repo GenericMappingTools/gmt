@@ -1,0 +1,5 @@
+.. |loc_OPT-L| raw:: html
+
+   <a href="#" onclick="window.open('examples_options.html#psxy-ex-l', 'newwindow', 'width=400, height=250'); return false;">(example: ...)</a>
+
+.. |loc_OPT2-L| replace:: :ref:`(example: ...) <psxy_ex_-L>` 
