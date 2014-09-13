@@ -336,14 +336,21 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_solve_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
+uint64_t next_unused_track (uint64_t *cluster, uint64_t n)
+{
+	uint64_t k;
+	for (k = 0; k < n; k++) if (cluster[k] == 0) return (k);
+	return (n);
+}
+
 int GMT_x2sys_solve (void *V_API, int mode, void *args)
 {
 	char **trk_list = NULL;
 	char trk[2][GMT_LEN64], t_txt[2][GMT_LEN64], z_txt[GMT_LEN64] = {""}, w_txt[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
-	int *ID[2] = {NULL, NULL}, ks, t, error = 0, ierror;
-	uint64_t n_par = 0, n, m, n_tracks = 0, n_active, n_expected_fields;
-	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, *R = NULL, *col_off = NULL;
+	int *ID[2] = {NULL, NULL}, ks, t, error = 0, ierror, expect;
+	uint64_t n_par = 0, n, m, n_tracks = 0, n_active, n_expected_fields, n_constraints = 0;
+	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, *R = NULL, *col_off = NULL, *cluster = NULL;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC, n_alloc_t = GMT_CHUNK;
 	double *N = NULL, *a = NULL, *b = NULL, *data[N_COE_PARS], sgn, old_mean, new_mean, sw2, C_i, C_j;
 	double old_stdev, new_stdev, e_k, min_extent, max_extent, range = 0.0, Sw, Sx, Sxx, var[N_BASIS];
@@ -465,6 +472,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	}
 	
 	n_expected_fields = 2 + n_active + Ctrl->W.active;
+	expect = (int)n_expected_fields;
 
 	n_COE = 0;
 	if (GMT->common.b.active[GMT_IN]) {	/* Binary input */
@@ -474,6 +482,10 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		double *in = NULL;
 		char *check = NULL;
 		
+		if (GMT->common.b.ncol[GMT_IN] < (uint64_t)expect) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Binary file has %" PRIu64 " columns but %d is required\n", GMT->common.b.ncol[GMT_IN], expect);
+			Return (EXIT_FAILURE);	
+		}
 		min_ID = INT_MAX;	max_ID = -INT_MAX;
 		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
@@ -549,7 +561,6 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	}
 	else {	/* Ascii input with track names */
 		char file_TAG[GMT_LEN64] = {""}, file_column[GMT_LEN64] = {""}, unused1[GMT_LEN64] = {""}, unused2[GMT_LEN64] = {""};
-		int expect = (int)n_expected_fields;
 		if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Read first line with TAG and column */
 			GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track file\n");
 			Return (EXIT_FAILURE);
@@ -564,39 +575,39 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 			switch (Ctrl->E.mode) {	/* Handle input differently depending on what is expected */
 				case F_IS_CONSTANT:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], z_txt, w_txt, unused1, unused2);
-					if (ks != expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Ec expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
+					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Ec expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
 					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
 					break;
 				case F_IS_DRIFT_T:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
-					if (ks != expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Et expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
+					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Et expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_ABSTIME, &data[COL_T1][n_COE]) == GMT_IS_NAN) data[COL_T1][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, t_txt[1], GMT_IS_ABSTIME, &data[COL_T2][n_COE]) == GMT_IS_NAN) data[COL_T2][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]    = GMT->session.d_NaN;
 					break;
 				case F_IS_DRIFT_D:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
-					if (ks != expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Ed expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
+					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Ed expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_D1][n_COE]) == GMT_IS_NAN) data[COL_D1][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_D2][n_COE]) == GMT_IS_NAN) data[COL_D2][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]  = GMT->session.d_NaN;
 					break;
 				case F_IS_GRAV1930:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], z_txt, w_txt, unused1);
-					if (ks != expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Eg expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
+					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Eg expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_LAT, &data[COL_YY][n_COE]) == GMT_IS_NAN) data[COL_YY][n_COE]  = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
 					break;
 				case F_IS_HEADING:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
-					if (ks != expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Eh expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
+					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Eh expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_H1][n_COE]) == GMT_IS_NAN) data[COL_H1][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_H2][n_COE]) == GMT_IS_NAN) data[COL_H2][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]  = GMT->session.d_NaN;
 					break;
 				case F_IS_SCALE:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], w_txt, unused1);
-					if (ks != expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Es expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
+					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Es expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
 					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_Z1][n_COE]) == GMT_IS_NAN) data[COL_Z1][n_COE] = GMT->session.d_NaN;
 					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_Z2][n_COE]) == GMT_IS_NAN) data[COL_Z2][n_COE] = GMT->session.d_NaN;
 					break;
@@ -699,21 +710,91 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		n += R[p];	/* Add up total number of unknowns across all tracks */
 		if (p) col_off[p] = col_off[p-1] + R[p-1];	/* Offset along a row given not every track may have n_par columns. Obviously, col_off[0] = 0 */
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Number of unknowns are %" PRIu64 " [+1 if model contains a constant]\n", n);
 	
+	/* Determine how many extra constraints we need to add.  This is required because if the model has a constant
+	 * as part of the parameters, then we have an unconstrained absolute level.  We deal with this by requiring the sum of
+	 * the constants to be zero.  However, it may happen that not all tracks can be connected to other tracks (and thus form
+	 * independent crossing clusters) and then we need such a constraint for each cluster of tracks that intersect.  Here
+	 * we find the number of such clusters and which cluster each track belongs to. */
+	
+	if (Ctrl->E.mode != F_IS_SCALE) {	/* Constraint equations are needed when there is an offset in the model (all but the scaling model) */
+		char *C = NULL, *used = NULL;
+		uint64_t ij, g, n_in_cluster, *member = NULL;
+		
+		C = GMT_memory (GMT, NULL, n_tracks*n_tracks, double);	/* For the connectivity matrix that shows which tracks cross */
+		used = GMT_memory (GMT, NULL, n_tracks, double);	/* Array to remember which tracks we have dealt with so far */
+		cluster = GMT_memory (GMT, NULL, n_tracks, uint64_t);	/* Array to remember which cluster a track belongs to */
+		/* First build the adjacency matrix C */
+		for (k = 0; k < n_COE; k++) {	/* Identify crossing pairs (the # of crossings doesn't matter) */
+			i = ID[0][k];	/* Get track # 1 ID */
+			j = ID[1][k];	/* Get track # 2 ID */
+			ij = i * n_tracks + j;	/* Index in upper triangular matrix */
+			if (C[ij] == 0) C[ij] = C[j*n_tracks+i] = 1;	/* Make C symmetric */
+		}
+		
+		member = GMT_memory (GMT, NULL, n_tracks, uint64_t);	/* Temp array to keep all members of current cluster */
+		n_constraints = 0;
+		/* Below, cluster[] array will use counting from 1 to n_constraints, but later we reset to run from 0 instead */
+		while ((p = next_unused_track (cluster, n_tracks)) < n_tracks) {	/* Still more clusters to form */
+			n_constraints++;		/* Increment number of constraints, this will happen at least once */
+			GMT_memset (member, n_tracks, uint64_t);	/* Cluster starts off with no members */
+			member[0] = p;			/* This is the first member of this cluster */
+			cluster[p] = n_constraints;	/* So we set this cluster number right away */
+			n_in_cluster = 1;		/* It is the first member of this cluster so far */
+			for (i = 0; i < n_tracks; i++) {	/* Scan adjacency matrix for other direct members than crossed p */
+				if (cluster[i] || C[p*n_tracks+i] == 0) continue;	/* Skip those already dealt with or if no crossing */
+				member[n_in_cluster++] = i;	/* Add track #i to p's cluster */
+				cluster[i] = cluster[p];	/* And set it to same cluster id as p */
+			}
+			g = 1;	/* Start at 2nd entry since 1st (p) has already been given its direct cluster numbers */
+			while (g < n_in_cluster) {	/* Since n_in_cluster may grow we must check via a test at the top */
+				k = member[g];	/* We will examine the k't row in the adjacency matrix for tracks that crossed k */
+				for (i = 0; i < n_tracks; i++) {
+					if (cluster[i] || C[k*n_tracks+i] == 0) continue;	/* Skip those already dealt with or if no crossing */
+					member[n_in_cluster++] = i;	/* Add track #i to p's cluster */
+					cluster[i] = cluster[p];	/* And set it to same cluster */
+				}
+				g++;	/* Go to next cluster member */
+			}
+		}
+		for (g = 0; g < n_tracks; g++) cluster[g]--;	/* Shift cluster numbers to start at zero instead of 1 */
+		GMT_free (GMT, member);
+		GMT_free (GMT, C);
+		GMT_free (GMT, used);
+		
+		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+			if (n_constraints > 1) {	/* Report on the clusters */
+				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tracks are grouped into %" PRIu64 " independent clusters:\n", n, n_constraints);
+				for (k = 0; k < n_constraints; k++) {
+					for (p = i = 0; p < n_tracks; p++) if (cluster[p] == k) i++;
+					GMT_Report (API, GMT_MSG_VERBOSE, "===> Cluster # %" PRIu64 " [%" PRIu64 " tracks]:\n", k, i);
+					for (p = 0; p < n_tracks; p++) if (cluster[p] == k) {
+						(GMT->common.b.active[GMT_IN]) ? sprintf (trk[0], "%" PRIu64, p) : sprintf (trk[0], "%s", trk_list[p]);
+						GMT_Report (API, GMT_MSG_VERBOSE, "\tTrack %s\n", trk[0]);
+					}
+				}
+			}
+			else
+				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tracks form a single connected cluster\n", n);
+		}
+	}
+	
+	GMT_Report (API, GMT_MSG_VERBOSE, "Number of unknowns is %" PRIu64 " and number of constraints is %" PRIu64 "\n", n, n_constraints);
+
 	/* Set up matrix and column vectors */
 
-	m = (Ctrl->E.mode == F_IS_SCALE) ? n : n + 1;	/* Need extra row/column to handle Lagrange's multiplier for unknown absolute level */
+	m = n + n_constraints;	/* Need extra row(s)/column(s) to handle Lagrange's multiplier(s) for unknown absolute level(s) */
 	/* Allocate arrays for N*x = b, the m x m linear system */
 	N = GMT_memory (GMT, NULL, m*m, double);
 	b = GMT_memory (GMT, NULL, m, double);
 
 	/* Build A'A and A'b ==> N*x = b normal equation matrices directly since A may be too big to do A'A by multiplication.
 	 * For all corrections that involve a constant shift we must add the constraint that such shifts sum to zero; this
-	 * is implemented by adding an extra row/column with the appropriate 0s and 1s and a Lagrange multiplier. */
+	 * is implemented by adding extra rows/columns with the appropriate 0s and 1s and solve for Lagrange multipliers. */
 	
 	for (p = row = 0; p < n_tracks; p++) {	/* For each track */
 		for (s = 0; s < R[p]; s++, row++) {	/* For each of this track's unknown parameters  */
+			row_off = m * row;	/* Start of current row in N */
 			for (k = 0; k < n_COE; k++) {	/* For each crossover */
 				i = ID[0][k];	/* Get track # 1 ID */
 				j = ID[1][k];	/* Get track # 2 ID */
@@ -723,21 +804,26 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 					sgn = -1.0;	t = 1;
 				} else continue;	/* COE did not involve track p, goto next crossover */
 				sw2 = sgn * data[COL_WW][k] * data[COL_WW][k];
-				for (r = 0, row_off = m * row; r < R[i]; r++)	/* For track i's parameters in f(p)  */
+				for (r = 0; r < R[i]; r++)	/* For track i's parameters in f(p)  */
 					N[row_off+col_off[i]+r] += sw2 * (basis[r](data,0,k) * basis[s](data,t,k));
-				for (r = 0, row_off = m * row; r < R[j]; r++)	/* For track j's parameters in f(p)  */
+				for (r = 0; r < R[j]; r++)	/* For track j's parameters in f(p)  */
 					N[row_off+col_off[j]+r] -= sw2 * (basis[r](data,1,k) * basis[s](data,t,k));
 				b[row] += sw2 * (data[COL_COE][k] * basis[s](data,t,k));
 			}
-			if (Ctrl->E.mode != F_IS_SCALE && s == 0) N[m*row+m-1] = 1.0;	/* Augmented column entry for Lagrange multiplier */
+			/* Augmented column entry for Lagrange multiplier for this cluster */
+			if (n_constraints) N[row_off+n+cluster[p]] = 1.0;
 		}
 	}
-	if (Ctrl->E.mode != F_IS_SCALE) {	/* Augmented row for Lagrange multiplier for constants */
-		for (p = 0, row_off = m*n; p < n_tracks; p++) N[row_off+col_off[p]] = 1.0;
+	if (n_constraints) {	/* Append the constraint equations that each cluster's offset corrections add to zero */
+		for (k = 0, row_off = m * n; k < n_constraints; k++, row_off += m) {	/* For each cluster */
+			for (p = 0; p < n_tracks; p++) if (cluster[p] == k) N[row_off+col_off[p]] = 1.0;
+		}
+		GMT_free (GMT, cluster);
 	}
 
+	GMT_Report (API, GMT_MSG_VERBOSE, "Matrix equation N * a = b: (N = %" PRIu64 " x %" PRIu64 ")\n", m, m);
+
 #ifdef DEBUGX	
-	GMT_Message (API, GMT_TIME_NONE, "Matrix equation N * a = b: (N = %d)\n", m);
 	for (i = 0; i < m; i++) {
 		for (j = 0; j < m; j++) GMT_Message (API, GMT_TIME_NONE, "%8.2f\t", N[i*m+j]);
 		GMT_Message (API, GMT_TIME_NONE, "\t%8.2f\n", b[i]);
@@ -746,12 +832,11 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 
 	/* Get LS solution */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Matrix equation N * a = b: (N = %d x %d)\n", m, m);
 	if ((ierror = GMT_gauss (GMT, N, b, (unsigned int)m, (unsigned int)m, true)))
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Divisions by a small number (< DBL_EPSILON) occurred in GMT_gauss()!\n");
 
 	GMT_free (GMT, N);
-	a = b;	/* Convenience since the solution is called a in the notes */
+	a = b;	/* Convenience since the solution is called a in the notes and Wessel [2010] */
 
 	/* Estimate new st.dev. */
 	
@@ -774,14 +859,15 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 			Sxx += (data[COL_WW][k] * e_k * e_k);
 		}
 #ifdef DEBUGX	
-		GMT_Message (API, GMT_TIME_NONE, "COE # %d: Was %g Is %g\n", k, data[COL_COE][k], e_k);
+		GMT_Message (API, GMT_TIME_NONE, "COE # %d: Before: %g After: %g\n", k, data[COL_COE][k], e_k);
 #endif
 	}
 	if (Ctrl->W.unweighted_stats) Sw = (double)n_COE;
 	new_mean = Sx / Sw;
 	new_stdev = sqrt ((n_COE * Sxx - Sx * Sx) / (Sw*Sw*(n_COE - 1.0)/n_COE));
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Before correction, mean and st.dev.: %g %g After correction, mean and st.dev.: %g %g\n", old_mean, old_stdev, new_mean, new_stdev);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Before correction, mean and st.dev.: %g %g \n", old_mean, old_stdev);
+	GMT_Report (API, GMT_MSG_VERBOSE, "After correction, mean and st.dev. : %g %g\n", new_mean, new_stdev);
 	
 	/* Write correction table */
 	
