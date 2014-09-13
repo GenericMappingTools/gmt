@@ -96,6 +96,22 @@ Optional Arguments
 
 .. include:: ../../explain_help.rst_
 
+Notes
+-----
+
+Most of the model corrections in **-E** involve a constant offset.
+Because crossovers are differences between values, any absolute level
+will cancel out and hence the constant offsets we obtain are relative
+to an undetermined absolute level.  To obtain a solvable solution we
+add the constraint that the sum of all constant offsets equal zero.
+If the tracks form clusters in which no tracks from one cluster cross
+any track from another cluster then these are two independent data
+sets and require they own constraint equation for their offsets.  We
+determine the number of clusters and automatically add the required
+constraint equations.  If you need a particular reference track to have
+a particular offset (e.g., 0) then you can subtract the offset you
+found from every track correction and add in the desired offset.
+
 Examples
 --------
 
