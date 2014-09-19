@@ -5334,8 +5334,8 @@ every 10 and annotations only every 30 in longitude:
 Azimuthal projections
 ---------------------
 
-Lambert Azimuthal Equal-Area (**-Ja** **-JA**) :ref:`... <-Ja_full>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This projection was developed by Lambert in 1772 and is typically used
 for mapping large regions like continents and hemispheres. It is an
