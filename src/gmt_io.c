@@ -1007,6 +1007,24 @@ int GMT_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, st
 	return (GMT_NOERROR);
 }
 
+void gmt_handle_bars (struct GMT_CTRL *GMT_UNUSED(GMT), char *in, unsigned way)
+{	/* Way = 0: replace | inside quotes with ASCII 1, Way = 1: Replace ASCII 1 with | */
+	if (in == NULL || in[0] == '\0') return;	/* No string to check */
+	if (way == 0) {	/* Replace | within quotes with a single ASCII 1 */
+		char *c = in;
+		bool replace = false;
+		while (*c) {
+			if (*c == '\"' || *c == '\'')
+				replace = !replace;
+			else if (*c == '|' && replace)
+				*c = 1;
+			++c;
+		}
+	}
+	else /* way != 0: Replace single ASCII 1 with + */
+		GMT_strrepc (in, 1, '|');
+}
+
 unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record, struct GMT_OGR *S)
 {	/* Parse @D<vals> aspatial values; this is done once per feature (segment).  We store
  	 * both the text representation (value) and attempt to convert to double in dvalue.
@@ -1020,12 +1038,14 @@ unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record,
 		S->dvalue = GMT_memory (GMT, S->dvalue, S->n_aspatial, double);
 	}
 	strncpy (buffer, record, GMT_BUFSIZ); /* working copy */
+	gmt_handle_bars (GMT, buffer, 0);	/* Replace vertical bars inside quotes with ASCII 1 */
 	stringp = buffer;
 	while ( (token = strsep (&stringp, "|")) != NULL ) {
 		if (col >= S->n_aspatial) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad OGR/GMT: @D record has more items than declared by @N\n");
 			continue;
 		}
+		gmt_handle_bars (GMT, token, 1);		/* Put back any vertical bars replaced above */
 		if (S->tvalue[col]) free (S->tvalue[col]);	/* Free previous item */
 		S->tvalue[col] = strdup (token);
 		S->dvalue[col] = gmt_convert_aspatial_value (GMT, S->type[col], token);
