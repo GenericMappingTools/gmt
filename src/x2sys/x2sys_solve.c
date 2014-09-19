@@ -721,6 +721,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		char *C = NULL, *used = NULL;
 		uint64_t ij, g, n_in_cluster, *member = NULL;
 		
+		GMT_Report (API, GMT_MSG_VERBOSE, "Determine number of independent track clusters\n");
 		C = GMT_memory (GMT, NULL, n_tracks*n_tracks, double);	/* For the connectivity matrix that shows which tracks cross */
 		used = GMT_memory (GMT, NULL, n_tracks, double);	/* Array to remember which tracks we have dealt with so far */
 		cluster = GMT_memory (GMT, NULL, n_tracks, uint64_t);	/* Array to remember which cluster a track belongs to */
