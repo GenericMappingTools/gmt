@@ -5037,8 +5037,8 @@ Note that if *x*- and *y*-scaling are different and a
 appended twice: Once after the *x*-scale (before the /) and once after
 the *y*-scale.
 
-Cartesian power projection
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cartesian power projection :ref:`... <-Jx_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _GMT_pow:
 
@@ -5065,8 +5065,8 @@ transformation <GMT_pow>`)
              -Wthick -P -K sqrt.d > GMT_pow.ps
     gmt psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
 
-Linear projection with polar coordinates (**-Jp** **-JP**)
-----------------------------------------------------------
+Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
+--------------------------------------------------------------------------------
 
 .. _GMT_polar:
 
@@ -5175,8 +5175,8 @@ reference cards in Section `GMT quick reference`_. For example, **-JM**\ 15c and
 Conic projections
 -----------------
 
-Albers conic equal-area projection (**-Jb** **-JB**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Albers conic equal-area projection (**-Jb** **-JB**) :ref:`... <-Jb_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This projection, developed by Albers in 1805, is predominantly used to
 map regions of large east-west extent, in particular the United States.
@@ -5218,8 +5218,8 @@ therefore given by:
    Albers equal-area conic map projection.
 
 
-Equidistant conic projection (**-Jd** **-JD**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Equidistant conic projection (**-Jd** **-JD**) :ref:`... <-Jd_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The equidistant conic projection was described by the Greek philosopher
 Claudius Ptolemy about A.D. 150. It is neither conformal or equal-area,
@@ -5250,8 +5250,8 @@ small countries. As an example, we generate a map of Cuba:
    Equidistant conic map projection.
 
 
-Lambert conic conformal projection (**-Jl** **-JL**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lambert conic conformal projection (**-Jl** **-JL**) :ref:`... <-Jl_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This conic projection was designed by the Alsatian mathematician Johann
 Heinrich Lambert (1772) and has been used extensively for mapping of
@@ -5296,8 +5296,8 @@ standard parallels were originally selected by Adams to provide a
 maximum scale error between latitudes 30.5N and 47.5N of 0.5--1%. Some
 areas, like Florida, experience scale errors of up to 2.5%.
 
-(American) polyconic projection (**-Jpoly** **-JPoly**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(American) polyconic projection (**-Jpoly** **-JPoly**) :ref:`... <-Jpoly_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The polyconic projection, in Europe usually referred to as the American
 polyconic projection, was introduced shortly before 1820 by the
@@ -5334,8 +5334,8 @@ every 10 and annotations only every 30 in longitude:
 Azimuthal projections
 ---------------------
 
-Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lambert Azimuthal Equal-Area (**-Ja** **-JA**) :ref:`... <-Ja_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This projection was developed by Lambert in 1772 and is typically used
 for mapping large regions like continents and hemispheres. It is an
@@ -5419,8 +5419,8 @@ stereonet can be obtained by using the stereographic projection
    Equal-Area (Schmidt) and Equal-Angle (Wulff) stereo nets.
 
 
-Stereographic Equal-Angle projection (**-Js** **-JS**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Stereographic Equal-Angle projection (**-Js** **-JS**) :ref:`... <-Js_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is a conformal, azimuthal projection that dates back to the Greeks.
 Its main use is for mapping the polar regions. In the polar aspect all
@@ -5444,8 +5444,8 @@ the setting is ignored when a standard parallel has been specified since
 the scale is then implicitly given. We will look at two different types
 of maps.
 
-Polar Stereographic Map
-^^^^^^^^^^^^^^^^^^^^^^^
+Polar Stereographic Map :ref:`... <-Js_full>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In our first example we will let the projection center be at the north
 pole. This means we have a polar stereographic projection and the map
@@ -5514,8 +5514,8 @@ By choosing 0/0 as the pole, we obtain the conformal stereonet presented
 next to its equal-area cousin in the Section `Lambert Azimuthal Equal-Area (-Ja -JA)`_ on the Lambert
 azimuthal equal-area projection (Figure :ref:`Stereonets <GMT_stereonets>`).
 
-Perspective projection (**-Jg** **-JG**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Perspective projection (**-Jg** **-JG**) :ref:`... <-Jg_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The perspective projection imitates in 2 dimensions the 3-dimensional
 view of the earth from space. The implementation in GMT is very
@@ -5568,8 +5568,8 @@ looking due east is thus accomplished by the following
    View from the Space Shuttle in Perspective projection.
 
 
-Orthographic projection (**-Jg** **-JG**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Orthographic projection (**-Jg** **-JG**) :ref:`... <-Jg_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The orthographic azimuthal projection is a perspective projection from
 infinite distance. It is therefore often used to give the appearance of
@@ -5607,8 +5607,8 @@ generated by the following :doc:`pscoast` command:
    Hemisphere map using the Orthographic projection.
 
 
-Azimuthal Equidistant projection (**-Je** **-JE**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Azimuthal Equidistant projection (**-Je** **-JE**) :ref:`... <-Je_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The most noticeable feature of this azimuthal projection is the fact
 that distances measured from the center are true. Therefore, a circle
@@ -5646,8 +5646,8 @@ in this projection this point plots as the entire map perimeter:
    World map using the equidistant azimuthal projection.
 
 
-Gnomonic projection (**-Jf** **-JF**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Gnomonic projection (**-Jf** **-JF**) :ref:`... <-Je_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Gnomonic azimuthal projection is a perspective projection from the
 center onto a plane tangent to the surface. Its origin goes back to the
@@ -5697,8 +5697,8 @@ cylindrical equal-area, Miller, and cylindrical stereographic
 projections) stops. Each have a different way of spacing the meridians
 and parallels to obtain certain desirable cartographic properties.
 
-Mercator projection (**-Jm** **-JM**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mercator projection (**-Jm** **-JM**) :ref:`... <-Je_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Probably the most famous of the various map projections, the Mercator
 projection takes its name from the Flemish cartographer Gheert Cremer,
@@ -5754,8 +5754,8 @@ While this example is centered on the Dateline, one can easily choose
 another configuration with the **-R** option. A map centered on
 Greenwich would specify the region with **-R**-180/180/-70/70.
 
-Transverse Mercator projection (**-Jt** **-JT**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Transverse Mercator projection (**-Jt** **-JT**) :ref:`... <-Jt_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The transverse Mercator was invented by Lambert in 1772. In this
 projection the cylinder touches a meridian along which there is no
@@ -5817,8 +5817,8 @@ than 90.
    A global transverse Mercator map.
 
 
-Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**) :ref:`... <-Ju_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A particular subset of the transverse Mercator is the Universal
 Transverse Mercator (UTM) which was adopted by the US Army for
@@ -5858,8 +5858,8 @@ accurate for map areas that extend less than 10 away from the central
 meridian. For larger regions we use the conformal latitude in the
 general spherical formulae instead.
 
-Oblique Mercator projection (**-Jo** **-JO**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Oblique Mercator projection (**-Jo** **-JO**) :ref:`... <-Jo_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Oblique configurations of the cylinder give rise to the oblique Mercator
 projection. It is particularly useful when mapping regions of large
@@ -5919,8 +5919,8 @@ degrees about the projection center rather than the usual geographic
 coordinates. This interpretation is chosen since in general the
 parallels and meridians are not very suitable as map boundaries.
 
-Cassini cylindrical projection (**-Jc** **-JC**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cassini cylindrical projection (**-Jc** **-JC**) :ref:`... <-Jc_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This cylindrical projection was developed in 1745 by César-François
 Cassini de Thury for the survey of France. It is occasionally called
@@ -5955,8 +5955,8 @@ using the Cassini projection can be obtained by running the command:
 As with the previous projections, the user can choose between a
 rectangular boundary (used here) or a geographical (WESN) boundary.
 
-Cylindrical equidistant projection (**-Jq** **-JQ**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical equidistant projection (**-Jq** **-JQ**) :ref:`... <-Jq_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This simple cylindrical projection is really a linear scaling of
 longitudes and latitudes. The most common form is the Plate Carrée
@@ -6009,8 +6009,8 @@ Table :ref:`JQ <tbl-JQ>`.
 | Plate Carrée, Simple Cylindrical, Plain/Plane       | 0      |
 +-----------------------------------------------------+--------+
 
-Cylindrical equal-area projections (**-Jy** **-JY**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical equal-area projections (**-Jy** **-JY**) :ref:`... <-Jy_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This cylindrical projection is actually several projections, depending
 on what latitude is selected as the standard parallel. However, they are
@@ -6067,8 +6067,8 @@ can be obtained by running the command:
 As one can see there is considerable distortion at high latitudes since
 the poles map into lines.
 
-Miller Cylindrical projection (**-Jj** **-JJ**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Miller Cylindrical projection (**-Jj** **-JJ**) :ref:`... <-Jj_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This cylindrical projection, presented by Osborn Maitland Miller of the
 American Geographic Society in 1942, is neither equal nor conformal. All
@@ -6101,8 +6101,8 @@ follows:
    World map using the Miller cylindrical projection.
 
 
-Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**) :ref:`... <-Jcyl_stere_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The cylindrical stereographic projections are certainly not as notable
 as other cylindrical projections, but are still used because of their
@@ -6173,8 +6173,8 @@ In all cases, the specification of the central meridian can be skipped.
 The default is the middle of the longitude range of the plot, specified
 by the (R) option.
 
-Hammer projection (**-Jh** **-JH**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hammer projection (**-Jh** **-JH**) :ref:`... <-Jh_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The equal-area Hammer projection, first presented by the German
 mathematician Ernst von Hammer in 1892, is also known as Hammer-Aitoff
@@ -6200,8 +6200,8 @@ A view of the Pacific ocean using the Dateline as central meridian is accomplish
    World map using the Hammer projection.
 
 
-Mollweide projection (**-Jw** **-JW**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mollweide projection (**-Jw** **-JW**) :ref:`... <-Jw_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This pseudo-cylindrical, equal-area projection was developed by the
 German mathematician and astronomer Karl Brandan Mollweide in 1805.
@@ -6230,8 +6230,8 @@ An example centered on Greenwich can be generated thus:
    World map using the Mollweide projection.
 
 
-Winkel Tripel projection (**-Jr** **-JR**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Winkel Tripel projection (**-Jr** **-JR**) :ref:`... <-Jr_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In 1921, the German mathematician Oswald Winkel a projection that was to
 strike a compromise between the properties of three elements (area,
@@ -6269,8 +6269,8 @@ Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection
    World map using the Winkel Tripel projection.
 
 
-Robinson projection (**-Jn** **-JN**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Robinson projection (**-Jn** **-JN**) :ref:`... <-Jn_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Robinson projection, presented by the American geographer and
 cartographer Arthur H. Robinson in 1963, is a modified cylindrical
@@ -6300,8 +6300,8 @@ Again centered on Greenwich, the example below was created by this command:
    World map using the Robinson projection.
 
 
-Eckert IV and VI projection (**-Jk** **-JK**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Eckert IV and VI projection (**-Jk** **-JK**) :ref:`... <-Jk_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Eckert IV and VI projections, presented by the German cartographer
 Max Eckert-Greiffendorff in 1906, are pseudocylindrical equal-area
@@ -6341,8 +6341,8 @@ The same script, with **s** instead of **f**, yields the Eckert VI map:
    World map using the Eckert VI projection.
 
 
-Sinusoidal projection (**-Ji** **-JI**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sinusoidal projection (**-Ji** **-JI**) :ref:`... <-Ji_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The sinusoidal projection is one of the oldest known projections, is
 equal-area, and has been used since the mid-16th century. It has also
@@ -6399,8 +6399,8 @@ The usefulness of the interrupted sinusoidal projection is basically
 limited to display of global, discontinuous data distributions like
 hydrocarbon and mineral resources, etc.
 
-Van der Grinten projection (**-Jv** **-JV**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Van der Grinten projection (**-Jv** **-JV**) :ref:`... <-Jv_full>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Van der Grinten projection, presented by Alphons J. van der Grinten
 in 1904, is neither equal-area nor conformal. Central meridian and
