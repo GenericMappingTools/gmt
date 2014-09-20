@@ -1,75 +1,7 @@
 .. GMT documentation master file
-   Include man_pages to avoid "not included in toctree warning":
+   Uncomment the index layout that you want to use. "index_51.rst_" is the Layout used in 5.1 release
+   "index_JL.rst_" is the original (and prefered) Layout by J.L.
 
-.. toctree::
-   :hidden:
+.. include:: index_51.rst_
 
-   man_pages
-
-Man pages
-=========
-
-+-----------------+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |                 |
-|    B            |    GR           |    I            |    S            |
-|    F            |                 |    K            |    T            |
-|    GM           |                 |    M            |    X            |
-|                 |                 |    N            |                 |
-|                 |                 |    P            |                 |
-|                 |                 |    PS           |                 |
-+-----------------+-----------------+-----------------+-----------------+
-
-Supplements
------------
-
-+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |
-|    SUP_GSHHS    |    SUP_MISC     |    SUP_X2SYS    |
-|    SUP_IMGSRC   |    SUP_POTENTIAL|                 |
-|    SUP_MECA     |    SUP_SEGY     |                 |
-|    SUP_MGD77    |    SUP_SPOTTER  |                 |
-+-----------------+-----------------+-----------------+
-
-Gallery
-=======
-
-+----------------------------+
-| .. toctree::               |
-|    :maxdepth: 2            |
-|                            |
-|    Gallery                 |
-|    Users_contrib_script    |
-|    Users_contrib_symbols   |
-+----------------------------+
-
-The CookBook
-============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    cookbook        |
-+--------------------+
-
-
-API Reference
-=============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    api             |
-+--------------------+
-
-.. Include an hiden page with option's examples that can be referenced by individual programs
-
-.. toctree::
-   :hidden:
-
-   examples_options
+.. .. include:: index_JL.rst_
