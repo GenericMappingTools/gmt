@@ -44,7 +44,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->Vabdfghio" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>Vabdfghio" GMT_OPT("HMm")
 
 /* Control structure for filter1d */
 
@@ -177,8 +177,8 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -221,7 +221,7 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output timesteps from <t_min> to <t_max> by <t_inc> [Default uses input times].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to <t_inc> to indicate number of t-values to produce instead.\n");
-	GMT_Option (API, "V,bi,bo,d,f,g,h,i,o,.");
+	GMT_Option (API, "V,bi,bo,d,f,g,h,i,o,:,.");
 	
 	return (EXIT_FAILURE);
 }
