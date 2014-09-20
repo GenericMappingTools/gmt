@@ -1457,14 +1457,17 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT_UNUSED(GMT), char *track_path, cha
 	bool add_suffix;
 	char geo_path[GMT_BUFSIZ] = {""};
 
-	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it */
-		strcpy (track_path, track);
-		return (0);
-	}
-
 	/* Check if we need to append suffix */
 
 	add_suffix = strncmp (&track[strlen(track)-strlen(suffix)], suffix, strlen(suffix));	/* Need to add suffix? */
+
+	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it, possibly after appending suffix */
+		if (add_suffix)
+			sprintf (track_path, "%s.%s", track, suffix);
+		else
+			strcpy (track_path, track);
+		return (0);
+	}
 
 	/* First look in current directory */
 
