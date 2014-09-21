@@ -29,7 +29,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff000000</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-2">
@@ -38,7 +38,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffffff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-3">
@@ -47,7 +47,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff808080</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-4">
@@ -56,7 +56,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00ff00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-5">
@@ -65,7 +65,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff0000</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-6">
@@ -74,7 +74,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff0000ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-7">
@@ -83,7 +83,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffff00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-8">
@@ -92,7 +92,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffee99ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-9">
@@ -101,7 +101,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff66ddff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-10">
@@ -110,7 +110,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff006600</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-11">
@@ -119,7 +119,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff660000</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-12">
@@ -128,7 +128,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff4455aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-13">
@@ -137,7 +137,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc8800</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-14">
@@ -146,7 +146,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff11ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-15">
@@ -155,7 +155,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffeeeeff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-16">
@@ -164,7 +164,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff7700ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-17">
@@ -173,7 +173,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff99ff88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-18">
@@ -182,7 +182,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff6688</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-19">
@@ -191,7 +191,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff778855</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-20">
@@ -200,7 +200,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff440066</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-21">
@@ -209,7 +209,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00ffdd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-22">
@@ -218,7 +218,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff0088ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-23">
@@ -227,7 +227,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff006677</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-24">
@@ -236,7 +236,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff9900bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-25">
@@ -245,7 +245,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff997799</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-26">
@@ -254,7 +254,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00aa88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-27">
@@ -263,7 +263,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff663322</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-28">
@@ -272,7 +272,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff003322</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-29">
@@ -281,7 +281,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77bbaa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-30">
@@ -290,7 +290,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff22bb00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-31">
@@ -299,7 +299,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff5555ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-32">
@@ -308,7 +308,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77aaff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-33">
@@ -317,7 +317,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff001144</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-34">
@@ -326,7 +326,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaa99ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-35">
@@ -335,7 +335,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff88bb00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-36">
@@ -344,7 +344,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff9999</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-37">
@@ -353,7 +353,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffdd88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-38">
@@ -362,7 +362,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbb1100</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-39">
@@ -371,7 +371,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff000099</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-40">
@@ -380,7 +380,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff994477</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-41">
@@ -389,7 +389,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffddffbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-42">
@@ -398,7 +398,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff8899bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-43">
@@ -407,7 +407,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff4411aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-44">
@@ -416,7 +416,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff444455</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-45">
@@ -425,7 +425,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffee1199</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-46">
@@ -434,7 +434,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77ffdd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-47">
@@ -443,7 +443,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff0055aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-48">
@@ -452,7 +452,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff665500</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-49">
@@ -461,7 +461,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffccdd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-50">
@@ -470,7 +470,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff44ff99</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-51">
@@ -479,7 +479,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbb4400</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-52">
@@ -488,7 +488,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff8855bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-53">
@@ -497,7 +497,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffee66dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-54">
@@ -506,7 +506,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00ddff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-55">
@@ -515,7 +515,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff990077</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-56">
@@ -524,7 +524,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaaddff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-57">
@@ -533,7 +533,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77ff00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-58">
@@ -542,7 +542,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff0099cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-59">
@@ -551,7 +551,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff44aa55</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-60">
@@ -560,7 +560,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbbbb33</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-61">
@@ -569,7 +569,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff220022</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-62">
@@ -578,7 +578,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbbaa99</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-63">
@@ -587,7 +587,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffccff00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-64">
@@ -596,7 +596,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaaffee</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-65">
@@ -605,7 +605,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc00ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-66">
@@ -614,7 +614,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff1144dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-67">
@@ -623,7 +623,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff335577</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-68">
@@ -632,7 +632,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaa55ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-69">
@@ -641,7 +641,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff5599bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-70">
@@ -650,7 +650,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaa5500</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-71">
@@ -659,7 +659,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff335500</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-72">
@@ -668,7 +668,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff8866ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-73">
@@ -677,7 +677,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff447766</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-74">
@@ -686,7 +686,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff554488</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-75">
@@ -695,7 +695,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbb9900</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-76">
@@ -704,7 +704,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc00bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-77">
@@ -713,7 +713,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff550044</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-78">
@@ -722,7 +722,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffbb88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-79">
@@ -731,7 +731,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbb7777</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-80">
@@ -740,7 +740,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff55dd88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-81">
@@ -749,7 +749,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff8800</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-82">
@@ -758,7 +758,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff6600aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-83">
@@ -767,7 +767,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff220066</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-84">
@@ -776,7 +776,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffdd77bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-85">
@@ -785,7 +785,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff4477ee</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-86">
@@ -794,7 +794,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff66cc00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-87">
@@ -803,7 +803,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbbccbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-88">
@@ -812,7 +812,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffccbbee</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-89">
@@ -821,7 +821,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff558833</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-90">
@@ -830,7 +830,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff99dd88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-91">
@@ -839,7 +839,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff997755</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-92">
@@ -848,7 +848,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff228866</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-93">
@@ -857,7 +857,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff553355</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-94">
@@ -866,7 +866,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff003377</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-95">
@@ -875,7 +875,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff777777</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-96">
@@ -884,7 +884,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff4455</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-97">
@@ -893,7 +893,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff99bb77</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-98">
@@ -902,7 +902,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff112200</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-99">
@@ -911,7 +911,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff005544</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-100">
@@ -920,7 +920,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff22ddaa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-101">
@@ -929,7 +929,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc99dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-102">
@@ -938,7 +938,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff771188</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-103">
@@ -947,7 +947,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff22cccc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-104">
@@ -956,7 +956,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff440000</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-105">
@@ -965,7 +965,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77ddaa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-106">
@@ -974,7 +974,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff3388cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-107">
@@ -983,7 +983,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff7788ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-108">
@@ -992,7 +992,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaabbff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-109">
@@ -1001,7 +1001,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff44aaaa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-110">
@@ -1010,7 +1010,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff5500ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-111">
@@ -1019,7 +1019,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffdd4400</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-112">
@@ -1028,7 +1028,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff332200</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-113">
@@ -1037,7 +1037,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff002233</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-114">
@@ -1046,7 +1046,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff55bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-115">
@@ -1055,7 +1055,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffeeee88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-116">
@@ -1064,7 +1064,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff3300ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-117">
@@ -1073,7 +1073,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff004400</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-118">
@@ -1082,7 +1082,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff991133</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-119">
@@ -1091,7 +1091,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc66ee</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-120">
@@ -1100,7 +1100,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaa66aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-121">
@@ -1109,7 +1109,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff7777bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-122">
@@ -1118,7 +1118,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbb4477</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-123">
@@ -1127,7 +1127,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff221144</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-124">
@@ -1136,7 +1136,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff111177</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-125">
@@ -1145,7 +1145,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00aaff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-126">
@@ -1154,7 +1154,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff445544</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-127">
@@ -1163,7 +1163,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc6666</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-128">
@@ -1172,7 +1172,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaa11ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-129">
@@ -1181,7 +1181,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff11dd33</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-130">
@@ -1190,7 +1190,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff55bbff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-131">
@@ -1199,7 +1199,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffddffff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-132">
@@ -1208,7 +1208,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc2277</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-133">
@@ -1217,7 +1217,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00aa55</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-134">
@@ -1226,7 +1226,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff883333</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-135">
@@ -1235,7 +1235,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff004455</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-136">
@@ -1244,7 +1244,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffaadd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-137">
@@ -1253,7 +1253,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaaff00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-138">
@@ -1262,7 +1262,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff008800</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-139">
@@ -1271,7 +1271,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff226699</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-140">
@@ -1280,7 +1280,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff3300cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-141">
@@ -1289,7 +1289,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff55ffff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-142">
@@ -1298,7 +1298,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffeecc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-143">
@@ -1307,7 +1307,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff6655bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-144">
@@ -1316,7 +1316,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffbb00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-145">
@@ -1325,7 +1325,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff885500</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-146">
@@ -1334,7 +1334,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff6688cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-147">
@@ -1343,7 +1343,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbb88ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-148">
@@ -1352,7 +1352,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff7755</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-149">
@@ -1361,7 +1361,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffccee66</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-150">
@@ -1370,7 +1370,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffdd0044</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-151">
@@ -1379,7 +1379,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77ccdd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-152">
@@ -1388,7 +1388,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff55ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-153">
@@ -1397,7 +1397,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbb44aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-154">
@@ -1406,7 +1406,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff4499ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-155">
@@ -1415,7 +1415,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff7733dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-156">
@@ -1424,7 +1424,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff0066ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-157">
@@ -1433,7 +1433,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff779988</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-158">
@@ -1442,7 +1442,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff9944bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-159">
@@ -1451,7 +1451,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff008899</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-160">
@@ -1460,7 +1460,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff331100</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-161">
@@ -1469,7 +1469,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff885577</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-162">
@@ -1478,7 +1478,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff3344bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-163">
@@ -1487,7 +1487,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffdd00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-164">
@@ -1496,7 +1496,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc9999</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-165">
@@ -1505,7 +1505,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff77bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-166">
@@ -1514,7 +1514,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff55ee66</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-167">
@@ -1523,7 +1523,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00cc66</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-168">
@@ -1532,7 +1532,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff882255</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-169">
@@ -1541,7 +1541,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff889900</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-170">
@@ -1550,7 +1550,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaaddbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-171">
@@ -1559,7 +1559,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffee9966</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-172">
@@ -1568,7 +1568,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00ff77</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-173">
@@ -1577,7 +1577,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff775555</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-174">
@@ -1586,7 +1586,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff440088</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-175">
@@ -1595,7 +1595,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00bbee</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-176">
@@ -1604,7 +1604,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff332233</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-177">
@@ -1613,7 +1613,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff441144</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-178">
@@ -1622,7 +1622,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff447788</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-179">
@@ -1631,7 +1631,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff66aa77</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-180">
@@ -1640,7 +1640,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbbbbcc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-181">
@@ -1649,7 +1649,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbbbb88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-182">
@@ -1658,7 +1658,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffdd55ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-183">
@@ -1667,7 +1667,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff44aacc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-184">
@@ -1676,7 +1676,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaaffbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-185">
@@ -1685,7 +1685,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff777700</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-186">
@@ -1694,7 +1694,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff0088dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-187">
@@ -1703,7 +1703,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff223377</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-188">
@@ -1712,7 +1712,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77bbee</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-189">
@@ -1721,7 +1721,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff1100cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-190">
@@ -1730,7 +1730,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff665577</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-191">
@@ -1739,7 +1739,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaa99bb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-192">
@@ -1748,7 +1748,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff99bbcc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-193">
@@ -1757,7 +1757,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff88ffff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-194">
@@ -1766,7 +1766,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff338800</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-195">
@@ -1775,7 +1775,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff1166dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-196">
@@ -1784,7 +1784,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff44bb88</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-197">
@@ -1793,7 +1793,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff11aabb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-198">
@@ -1802,7 +1802,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff4477cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-199">
@@ -1811,7 +1811,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff663377</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-200">
@@ -1820,7 +1820,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffeeccbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-201">
@@ -1829,7 +1829,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff003399</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-202">
@@ -1838,7 +1838,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff99dd11</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-203">
@@ -1847,7 +1847,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff333311</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-204">
@@ -1856,7 +1856,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff5544cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-205">
@@ -1865,7 +1865,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff000022</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-206">
@@ -1874,7 +1874,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff6633ee</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-207">
@@ -1883,7 +1883,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff220099</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-208">
@@ -1892,7 +1892,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff8800cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-209">
@@ -1901,7 +1901,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff55ccbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-210">
@@ -1910,7 +1910,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff554433</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-211">
@@ -1919,7 +1919,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff224444</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-212">
@@ -1928,7 +1928,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff33cc</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-213">
@@ -1937,7 +1937,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffeeffdd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-214">
@@ -1946,7 +1946,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff66ffbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-215">
@@ -1955,7 +1955,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff333366</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-216">
@@ -1964,7 +1964,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff225533</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-217">
@@ -1973,7 +1973,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc9966</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-218">
@@ -1982,7 +1982,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff55ff00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-219">
@@ -1991,7 +1991,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff337744</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-220">
@@ -2000,7 +2000,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff777799</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-221">
@@ -2009,7 +2009,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff7777dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-222">
@@ -2018,7 +2018,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff338888</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-223">
@@ -2027,7 +2027,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbb77dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-224">
@@ -2036,7 +2036,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc88aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-225">
@@ -2045,7 +2045,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff66aa44</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-226">
@@ -2054,7 +2054,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff8800ee</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-227">
@@ -2063,7 +2063,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff884455</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-228">
@@ -2072,7 +2072,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbbff77</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-229">
@@ -2081,7 +2081,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77cc55</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-230">
@@ -2090,7 +2090,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff8866aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-231">
@@ -2099,7 +2099,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff88ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-232">
@@ -2108,7 +2108,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff334411</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-233">
@@ -2117,7 +2117,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff0077</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-234">
@@ -2126,7 +2126,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff00ffff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-235">
@@ -2135,7 +2135,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc7711</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-236">
@@ -2144,7 +2144,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaa00aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-237">
@@ -2153,7 +2153,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff4466ff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-238">
@@ -2162,7 +2162,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff22ffbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-239">
@@ -2171,7 +2171,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffdd5555</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-240">
@@ -2180,7 +2180,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff88ffbb</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-241">
@@ -2189,7 +2189,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffff88aa</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-242">
@@ -2198,7 +2198,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff33aa00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-243">
@@ -2207,7 +2207,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff556699</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-244">
@@ -2216,7 +2216,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff556677</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-245">
@@ -2225,7 +2225,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff55ffdd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-246">
@@ -2234,7 +2234,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff113355</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-247">
@@ -2243,7 +2243,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffaa9966</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-248">
@@ -2252,7 +2252,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff553300</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-249">
@@ -2261,7 +2261,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff887733</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-250">
@@ -2270,7 +2270,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff662200</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-251">
@@ -2279,7 +2279,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffbbcc00</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-252">
@@ -2288,7 +2288,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff77ee55</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-253">
@@ -2297,7 +2297,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffffaa22</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-254">
@@ -2306,7 +2306,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffccaaff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-255">
@@ -2315,7 +2315,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ffcc22dd</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-256">
@@ -2324,7 +2324,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff882200</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-257">
@@ -2333,7 +2333,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff44ddff</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-258">
@@ -2342,7 +2342,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff113300</color>
 			</IconStyle>
 		</Style>
 		<Style id="st-x-259">
@@ -2351,7 +2351,7 @@
 					<href>http://maps.google.com/mapfiles/kml/pal4/icon57.png</href>
 				</Icon>
 				<scale>1</scale>
-				<color>ff80c0ff</color>
+				<color>ff666644</color>
 			</IconStyle>
 		</Style>
 		<Folder>

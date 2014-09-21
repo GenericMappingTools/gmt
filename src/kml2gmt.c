@@ -245,18 +245,21 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 		
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
+		name[0] = description[0] = 0;
 		if (fmode == POINT) {	/* Process the single point */
+			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point");
+		}
+		else {
+			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next feature");
+		}
+		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
+		
+		if (fmode == POINT && strstr (line, "</coordinates>")) {	/* Process the single point */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
-			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point\n");
-			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 		else {
-			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next feature\n");
-			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
-			
-			name[0] = description[0] = 0;
 			while (fscanf (fp, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z])) {
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
