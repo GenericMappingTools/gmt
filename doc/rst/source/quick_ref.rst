@@ -1,5 +1,5 @@
-#########
-Quick Ref
-#########
+##############
+Module Purpose
+##############
 
 .. include:: quick_ref.rst_
