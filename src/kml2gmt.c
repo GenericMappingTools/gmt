@@ -203,7 +203,10 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		if (strstr (line, "<Placemark")) scan = true;
+		if (strstr (line, "<Placemark")) {	/* New Placemark, reset name and description */
+			scan = true;
+			name[0] = description[0] = 0;
+		}
 		if (strstr (line, "</Placemark")) scan = false;
 		if (!scan) continue;
 		if (strstr (line, "<Point")) fmode = POINT;
@@ -245,7 +248,6 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 		
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
-		name[0] = description[0] = 0;
 		if (fmode == POINT) {	/* Process the single point */
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point");
 		}
