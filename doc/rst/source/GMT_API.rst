@@ -255,7 +255,7 @@ only.
        size_t                 n_alloc;      /* The current allocation length of tables */
        unsigned int           geometry;     /* The geometry of this dataset */
        unsigned int           alloc_level;  /* The level it was allocated at */
-       enum GMT_enum_dest     io_mode;      /* -1 means write OGR format (requires proper -a),
+       enum GMT_enum_dest     io_mode;      /*-1 means write OGR format (requires proper -a),
                                                0 means write everything to one destination [Default],
                                                1 means use table->file[GMT_OUT] to write separate table,
                                                2 means use segment->file[GMT_OUT] to write separate segments.
@@ -288,6 +288,84 @@ GMT grids expect this type of variable.
        unsigned int            alloc_level; /* The level it was allocated at */
        enum GMT_enum_alloc     alloc_mode;  /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
        void                   *extra;       /* Row-by-row machinery information [NULL] */
+   };
+
+.. code-block:: c
+
+   struct GMT_GRID_HEADER {
+       /* Variables we document for the API:
+        * They are copied verbatim to the native grid header and must be 4-byte unsigned ints. */
+       uint32_t nx;                          /* Number of columns */
+       uint32_t ny;                          /* Number of rows */
+       uint32_t registration;                /* GMT_GRID_NODE_REG (0) for node grids, GMT_GRID_PIXEL_REG (1) for pixel grids */
+
+       /* == The types of the following 12 elements must not be changed.
+        * == They are also copied verbatim to the native grid header. */
+       double wesn[4];                         /* Min/max x and y coordinates */
+       double z_min;                           /* Minimum z value */
+       double z_max;                           /* Maximum z value */
+       double inc[2];                          /* x and y increment */
+       double z_scale_factor;                  /* grd values must be multiplied by this */
+       double z_add_offset;                    /* After scaling, add this */
+       char   x_units[GMT_GRID_UNIT_LEN80];    /* units in x-direction */
+       char   y_units[GMT_GRID_UNIT_LEN80];    /* units in y-direction */
+       char   z_units[GMT_GRID_UNIT_LEN80];    /* grid value units */
+       char   title[GMT_GRID_TITLE_LEN80];     /* name of data set */
+       char   command[GMT_GRID_COMMAND_LEN320];/* name of generating command */
+       char   remark[GMT_GRID_REMARK_LEN160];  /* comments re this data set */
+       /* == End of "untouchable" header.       */
+
+       /* ---- Variables "hidden" from the API ----
+        * This section is flexible.  It is not copied to any grid header
+        * or stored in any file. It is considered private */
+       unsigned int type;               /* Grid format */
+       unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
+       unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
+       unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
+       size_t       nm;                 /* Number of data items in this grid (nx * ny) [padding is excluded] */
+       size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
+       size_t       n_alloc;            /* Bytes allcoated for this grid */
+       unsigned int trendmode;          /* Holds status for detrending of grids. 0 if not detrended, 1 if mean, 2 if mid-value, and 3 if LS plane removed */
+       unsigned int arrangement;        /* Holds status for complex grid as how the read/imag is placed in the grid (interleaved, R only, etc.) */
+       unsigned int n_bands;            /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
+       unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
+       unsigned int BC[4];              /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
+       unsigned int grdtype;            /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
+       char name[GMT_GRID_NAME_LEN256]; /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
+       char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
+       const char  *ProjRefPROJ4;       /* To store a referencing system string in PROJ.4 format */
+       const char  *ProjRefWKT;         /* To store a referencing system string in WKT format */
+       int          row_order;          /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
+       int          z_id;               /* NetCDF: id of z field */
+       int          ncid;               /* NetCDF: file ID */
+       int          xy_dim[2];          /* NetCDF: dimension order of x and y; normally {1, 0} */
+       size_t       t_index[3];         /* NetCDF: index of higher coordinates */
+       size_t       data_offset;        /* NetCDF: distance from the beginning of the in-memory grid */
+       unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
+       float        nan_value;          /* Missing value as stored in grid file */
+       double       xy_off;             /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
+       double       r_inc[2];           /* Reciprocal incs, i.e. 1/inc */
+       char         flags[4];           /* Flags used for ESRI grids */
+       char        *pocket;             /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
+       double       bcr_threshold;      /* sum of cardinals must >= threshold in bilinear; else NaN */
+       unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
+       unsigned int bcr_n;              /* Width of the interpolation function */
+       unsigned int nxp;                /* if X periodic, nxp > 0 is the period in pixels  */
+       unsigned int nyp;                /* if Y periodic, nxp > 0 is the period in pixels  */
+       unsigned int no_BC;              /* If true we skip BC stuff entirely */
+       unsigned int gn;                 /* true if top    edge will be set as N pole  */
+       unsigned int gs;                 /* true if bottom edge will be set as S pole  */
+       unsigned int is_netcdf4;         /* true if netCDF-4/HDF5 format */
+       size_t       z_chunksize[2];     /* chunk size (lat,lon) */
+       unsigned int z_shuffle;          /* if shuffle filter is turned on */
+       unsigned int z_deflate_level;    /* if deflate filter is in use */
+       unsigned int z_scale_autoadust;  /* if z_scale_factor should be auto-detected */
+       unsigned int z_offset_autoadust; /* if z_add_offset should be auto-detected */
+                                        /* xy_*[] is separate settings for GMT_IN and GMT_OUT */
+       unsigned int xy_adjust[2];       /* 1 if +u<unit> was parsed and scale set, 3 if xy has been adjusted, 0 otherwise */
+       unsigned int xy_mode[2];         /* 1 if +U<unit> was parsed, 0 otherwise */
+       unsigned int xy_unit[2];         /* Unit enum specified via +u<unit> */
+       double       xy_unit_to_meter[2];/* Scale, given xy_unit, to convert xy from <unit> to meters */
    };
 
 GMT images
