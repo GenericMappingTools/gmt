@@ -34,9 +34,9 @@ GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 src="@GMT_SOURCE_DIR@/test/${script_dir}"
 
 # choose awk
-if type gawk 2>&1 >/dev/null ; then
+if type gawk >/dev/null 2>&1 ; then
   export AWK=gawk
-elif type nawk 2>&1 >/dev/null ; then
+elif type nawk >/dev/null 2>&1 ; then
   export AWK=nawk
 else
   export AWK=awk
