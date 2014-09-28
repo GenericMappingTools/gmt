@@ -3460,7 +3460,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
 		if (GMT->common.R.active && Ctrl->I.active) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -R, -I when grid files are specified\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -I together with -R<gridfile>\n");
 			Return (EXIT_FAILURE);
 		}
 		else if  (GMT->common.r.active) {
@@ -3548,7 +3548,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YINC] = info.G->header->inc[GMT_Y];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NY] = info.G->header->ny;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, " ");
+	GMT_Report (API, GMT_MSG_VERBOSE, "");
 
 	nstack = 0;
 
