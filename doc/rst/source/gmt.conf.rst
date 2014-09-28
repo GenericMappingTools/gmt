@@ -121,15 +121,6 @@ fonts can be found in the :doc:`gmt` man page.
 **DIR_GSHHG**
     Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
 
-**DIR_TMP**
-    Session temp dir. Overrides the value of the environment variable **$GMT_TMPDIR**
-    (see :ref:`Directory parameters` and :ref:`Isolation mode <Isolation mode>` in the
-    CookBook).
-
-**DIR_USER**
-    Session user dir. Overrides the value of the environment variable **$GMT_USERDIR**
-    (see :ref:`Directory parameters` in the CookBook).
-
 .. _FONT Parameters:
 
 **FONT**
@@ -384,8 +375,8 @@ fonts can be found in the :doc:`gmt` man page.
     FFTW can "learn" how to optimally compute Fourier transforms on the
     current hardware and OS by computing several FFTs and measuring
     their execution time. This so gained "Wisdom" will be stored in and
-    reloaded from the file fftw_wisdom_<hostname> in DIR_USER or, if
-    DIR_USER is not writable, in the current directory. To use this
+    reloaded from the file fftw_wisdom_<hostname> in $GMT_USERDIR or, if
+    $GMT_USERDIR is not writable, in the current directory. To use this
     feature append *planner_flag*, which can be one of *measure*,
     *patient*, and *exhaustive*; see FFTW reference for details. The
     default FFTW planner flag is *estimate*, i.e., pick a (probably

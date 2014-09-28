@@ -4651,28 +4651,6 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->session.GSHHGDIR = strdup (value);
 			}
 			break;
-		case GMTCASE_DIR_TMP:
-			if (*value) {
-				/* Replace the session temp dir from the environment, if any */
-				if (GMT->session.TMPDIR) {
-					if ((strcmp (GMT->session.TMPDIR, value) == 0))
-						break; /* stop here if string in place is equal */
-					free (GMT->session.TMPDIR);
-				}
-				GMT->session.TMPDIR = strdup (value);
-			}
-			break;
-		case GMTCASE_DIR_USER:
-			if (*value) {
-				/* Replace the session user dir from the environment, if any */
-				if (GMT->session.USERDIR) {
-					if ((strcmp (GMT->session.USERDIR, value) == 0))
-						break; /* stop here if string in place is equal */
-					free (GMT->session.USERDIR);
-				}
-				GMT->session.USERDIR = strdup (value);
-			}
-			break;
 
 		/* TIME GROUP */
 
@@ -4762,6 +4740,8 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 		case GMTCASE_Y_AXIS_LENGTH:
 			/* Setting ignored: x- and/or y scale are required inputs on -J option */
 		case GMTCASE_COLOR_IMAGE:
+		case GMTCASE_DIR_TMP:
+		case GMTCASE_DIR_USER:
 			GMT_COMPAT_WARN;
 			/* Setting ignored, now always adobe image */
 			if (!GMT_compat_check (GMT, 4))	error = gmt_badvalreport (GMT, keyword);
@@ -5693,12 +5673,6 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			/* Force update of session.GSHHGDIR before copying the string */
 			GMT_shore_adjust_res (GMT, 'c');
 			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_LEN256);
-			break;
-		case GMTCASE_DIR_TMP:
-			strncpy (value, (GMT->session.TMPDIR) ? GMT->session.TMPDIR : "", GMT_LEN256);
-			break;
-		case GMTCASE_DIR_USER:
-			strncpy (value, (GMT->session.USERDIR) ? GMT->session.USERDIR : "", GMT_LEN256);
 			break;
 
 		/* TIME GROUP */
@@ -7489,7 +7463,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 		if (out3[0] == '\0') continue;	/* No intervals */
 		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
-		
+
 		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
 			error += gmt_decode_tinfo (GMT, i, 'c', out3, &GMT->current.map.frame.axis[i]);
@@ -7783,7 +7757,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 		if (orig_string[0] == '\0') continue;	/* Got nothing */
 		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
-		
+
 		GMT_memset (string, GMT_BUFSIZ, char);
 		strcpy (string, orig_string);	/* Make a copy of string as it gets messed with below */
 		if (string[0] == 'c')		/* Special custom annotation information given via file */
@@ -8304,7 +8278,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 		case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
 		case GMT_GNOMONIC:	/* Gnomonic */
 			/* -Ja|A or e|e or g|G <lon0>/<lat0>[/<horizon>]/<scale>|<width> */
-	   
+
 			if (project == GMT_AZ_EQDIST)	/* Initialize default horizons */
 				strcpy (txt_c, "180");
 			else if (project == GMT_GNOMONIC)
