@@ -22,7 +22,7 @@ gmt grd2cpt v3.nc -Crainbow -E16 -Z > t.cpt
 gmt grdgradient v1.nc -Nt0.75 -A45 -Gvint.nc
 gmt grdimage v1.nc -Ivint.nc -JG90/30/5i -P -K -Bg -Ct.cpt -X3i -Y1.1i > %ps%
 echo 4 4.5 L = 30 | gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N >> %ps%
-gmt psscale -Ct.cpt -O -K -D1.25i/-0.2i/5.5i/0.1ih -Bxaf -By+lm >> %ps%
+gmt psscale --FORMAT_FLOAT_MAP="%'g" -Ct.cpt -O -K -D1.25i/-0.2i/5.5i/0.1ih -Bxaf -By+lm >> %ps%
 gmt grdgradient v2.nc -Nt0.75 -A45 -Gvint.nc
 gmt grdimage v2.nc -Ivint.nc -JG -O -K -Bg -Ct.cpt -X-1.25i -Y1.9i >> %ps%
 echo 4 4.5 L = 90 | gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N >> %ps%

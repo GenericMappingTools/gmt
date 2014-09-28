@@ -68,6 +68,7 @@
  *  gmt_rgb_to_xyz          Convert RGB to CIELAB XYZ
  *  GMT_sample_cpt          Resamples the current cpt table based on new z-array
  *  gmt_smooth_contour      Use Akima's spline to smooth contour
+ *  GMT_sprintf_float       Make formatted string from float, while checking for %-apostrophe
  *  gmt_trace_contour       Function that trace the contours in GMT_contours
  *  gmt_polar_adjust        Adjust label justification for polar projection
  *  gmt_xyz_to_rgb          Convert CIELAB XYZ to RGB
@@ -3894,7 +3895,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	T->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 	n_cols = (get_distances) ? 3 :2;
 	T->n_columns = n_cols;
-	
+
 	while (!error && (GMT_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
 		S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		GMT_alloc_segment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
@@ -4998,6 +4999,14 @@ char * GMT_make_filename (struct GMT_CTRL *GMT_UNUSED(GMT), char *template, unsi
 	return (strdup (file));
 }
 
+void GMT_sprintf_float (char *string, char *format, double x)
+{	/* Determines if %-apostrophe is used in the format for a float. It so, use LC_NUMERIC=en_US */
+	char *use_locale = strstr (format, "%'");
+	if (use_locale) setlocale (LC_NUMERIC, "en_US");
+	sprintf (string, format, x);
+	if (use_locale) setlocale (LC_NUMERIC, "C");
+}
+
 bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_label, char *label, double this_dist, double this_value_dist, uint64_t xl, uint64_t fj, struct GMT_CONTOUR *G)
 {	/* Determines if the proposed label passes various tests.  Return true if we should go ahead and add this label to the list */
 	bool label_OK = true;
@@ -5033,15 +5042,15 @@ bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_labe
 		case GMT_LABEL_IS_PDIST:
 			if (G->spacing) {	/* Distances are even so use special contour format */
 				GMT_get_format (GMT, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit], G->unit, NULL, format);
-				sprintf (this_label, format, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
+				GMT_sprintf_float (this_label, format, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
 			}
 			else {
-				sprintf (this_label, GMT->current.setting.format_float_map, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
+				GMT_sprintf_float (this_label, GMT->current.setting.format_float_map, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
 			}
 			break;
 
 		case GMT_LABEL_IS_MDIST:
-			sprintf (this_label, GMT->current.setting.format_float_map, this_value_dist);
+			GMT_sprintf_float (this_label, GMT->current.setting.format_float_map, this_value_dist);
 			break;
 
 		case GMT_LABEL_IS_FFILE:
@@ -8880,7 +8889,7 @@ int GMT_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLO
 #if 0
 			GMT_near_zero_roundoff_fixer_upper (&coord, T->parent);	/* Try to adjust those ~0 "gcc -O" values to exact 0 */
 #endif
-			sprintf (string, format, coord);
+			GMT_sprintf_float (string, format, coord);
 			break;
 		case GMT_LOG10:
 			sprintf (string, "%ld", lrint (d_log10 (GMT, coord)));
@@ -9095,7 +9104,7 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, level, type;
 	bool zero_fix = false;
-	char hemi[GMT_LEN16] = {""}, format[GMT_LEN64] = {""};
+	char hemi[GMT_LEN16] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -9145,10 +9154,8 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 	level = do_minutes + do_seconds;		/* 0, 1, or 2 */
 	type = (GMT->current.plot.calclock.geo.n_sec_decimals > 0) ? 1 : 0;
 
-	if (GMT->current.plot.r_theta_annot && lonlat) {	/* Special check for the r in r-theta (set in )*/
-		sprintf (format, "%s", GMT->current.setting.format_float_map);
-		sprintf (label, format, val);
-	}
+	if (GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta (set in )*/
+		GMT_sprintf_float (label, GMT->current.setting.format_float_map, val);
 	else if (GMT->current.plot.calclock.geo.decimal)
 		sprintf (label, GMT->current.plot.calclock.geo.x_format, val, hemi);
 	else {
