@@ -92,6 +92,7 @@ EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS
 size_t GMT_n_annotations[4] = {0, 0, 0, 0};
 size_t GMT_alloc_annotations[4] = {0, 0, 0, 0};
 double *GMT_x_annotation[4] = {NULL, NULL, NULL, NULL}, *GMT_y_annotation[4] = {NULL, NULL, NULL, NULL};
+void ellipsoid_name_convert (char *inname, char outname[]);
 
 /* Get bitmapped 600 dpi GMT glyph for timestamp.  The glyph is a 90 x 220 pixel 1-bit image
    and it is here represented as ceil (220 / 8) * 90 = 2520 bytes */
@@ -3832,10 +3833,11 @@ void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 
 char *GMT_export2proj4 (struct GMT_CTRL *GMT) {
 	char *pStrOut = NULL;
-	char szProj4[512];
+	char szProj4[512], proj4_ename[16];
 	double scale_factor, false_easting = 0.0, false_northing = 0.0, a, b, f;
 
 	scale_factor = GMT->current.setting.proj_scale_factor;
+	if (scale_factor < 0) scale_factor = 1;
 	szProj4[0] = 0;
 
 	switch (GMT->current.proj.projection) {
@@ -3845,24 +3847,30 @@ char *GMT_export2proj4 (struct GMT_CTRL *GMT) {
 		if (GMT->current.proj.utm_hemisphere < 0) sprintf (szProj4, " +south");
 		break;
 	case GMT_MERCATOR:
-		sprintf (szProj4, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
+		sprintf (szProj4, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[0] >= -360 ? GMT->current.proj.pars[0] : 0, scale_factor, false_easting, false_northing);
 		break;
 	case GMT_CYL_EQ:
-		sprintf (szProj4, "+proj=cea +lon_0=%.16g +lat_ts=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=cea +lon_0=%.16g +lat_ts=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_CYL_EQDIST:
-		sprintf (szProj4, "+proj=eqc +lat_ts=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], 0.0, GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=eqc +lat_ts=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], 0.0, GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_CYL_STEREO:
 		break;
 	case GMT_MILLER:
-		sprintf (szProj4, "+proj=mill +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A", GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=mill +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_TM:
-		sprintf (szProj4, "+proj=tmerc +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
+		sprintf (szProj4, "+proj=tmerc +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
 		break;
 	case GMT_CASSINI:
-		sprintf (szProj4, "+proj=cass +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=cass +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_OBLIQUE_MERC:
 		sprintf (szProj4, "+unavailable");
@@ -3875,33 +3883,41 @@ char *GMT_export2proj4 (struct GMT_CTRL *GMT) {
 
 	/* Conic projections */
 	case GMT_ALBERS:
-		sprintf (szProj4, "+proj=aea +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=aea +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECONIC:
-		sprintf (szProj4, "+proj=eqdc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=eqdc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_LAMBERT:
-		sprintf (szProj4, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_POLYCONIC:
-		sprintf (szProj4, "+proj=poly +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=poly +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 
 	/* Azimuthal projections */
 	case GMT_STEREO:
-		sprintf (szProj4, "+proj=stere +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
+		sprintf (szProj4, "+proj=stere +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
 		break;
 	case GMT_LAMB_AZ_EQ:
-		sprintf (szProj4, "+proj=laea +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=laea +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ORTHO:
 		sprintf (szProj4, "+unavailable");
 		break;
 	case GMT_AZ_EQDIST:
-		sprintf (szProj4, "+proj=aeqd +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=aeqd +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_GNOMONIC:
-		sprintf (szProj4, "+proj=gnom +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=gnom +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_GENPER:
 		sprintf (szProj4, "+unavailable");
@@ -3912,25 +3928,31 @@ char *GMT_export2proj4 (struct GMT_CTRL *GMT) {
 
 	/* Misc projections */
 	case GMT_MOLLWEIDE:
-		sprintf (szProj4, "+proj=moll +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=moll +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_HAMMER:
 		sprintf (szProj4, "+unavailable");
 		break;
 	case GMT_SINUSOIDAL:
-		sprintf (szProj4, "+proj=sinu +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=sinu +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_VANGRINTEN:
-		sprintf (szProj4, "+proj=vandg +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A", GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=vandg +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
+			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ROBINSON:
-		sprintf (szProj4, "+proj=robin +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=robin +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECKERT4:
-		sprintf (szProj4, "+proj=eck4 +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=eck4 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECKERT6:
-		sprintf (szProj4, "+proj=eck6 +lon_0=%.16g +x_0=%.16g +y_0=%.16g", GMT->current.proj.pars[0], false_easting, false_northing);
+		sprintf (szProj4, "+proj=eck6 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_WINKEL:
 		 printf (szProj4, "+unavailable");
@@ -3945,10 +3967,102 @@ char *GMT_export2proj4 (struct GMT_CTRL *GMT) {
 	a = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius;
 	f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening;
 	b = a * (1 - f);
-	sprintf (szProj4+strlen(szProj4), " +a=%.3f +b=%.6f", a, b);
+	sprintf(szProj4+strlen(szProj4), " +a=%.3f +b=%.6f", a, b);
+	ellipsoid_name_convert(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
+	sprintf(szProj4+strlen(szProj4), " +ellps=%s", proj4_ename);
 
 	pStrOut = strdup(szProj4);
 	return (pStrOut);
+}
+
+void ellipsoid_name_convert (char *inname, char outname[]) {
+	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
+	if (!strcmp(inname, "WGS-84"))
+		sprintf(outname, "WGS84");
+	else if (!strcmp(inname, "WGS-72"))
+		sprintf(outname, "WGS72");
+	else if (!strcmp(inname, "WGS-66"))
+		sprintf(outname, "WGS66");
+	else if (!strcmp(inname, "WGS-60"))
+		sprintf(outname, "WGS60");
+	else if (!strcmp(inname, "Airy"))
+		sprintf(outname, "airy");
+	else if (!strcmp(inname, "Airy-Ireland"))
+		sprintf(outname, "mod_airy");
+	else if (!strcmp(inname, "Andrae"))
+		sprintf(outname, "andrae");
+	else if (!strcmp(inname, "APL4.9"))
+		sprintf(outname, "APL4.9");
+	else if (!strcmp(inname, "Australian"))
+		sprintf(outname, "aust_SA");
+	else if (!strcmp(inname, "Bessel"))
+		sprintf(outname, "bessel");
+	else if (!strcmp(inname, "Bessel-Namibia"))
+		sprintf(outname, "bess_nam");
+	else if (!strcmp(inname, "Clarke-1866"))
+		sprintf(outname, "clark66");
+	else if (!strcmp(inname, "Clarke-1880"))
+		sprintf(outname, "clark80");
+	else if (!strcmp(inname, "CPM"))
+		sprintf(outname, "CPM");
+	else if (!strcmp(inname, "Delambre"))
+		sprintf(outname, "delmbr");
+	else if (!strcmp(inname, "Engelis"))
+		sprintf(outname, "engelis");
+	else if (!strcmp(inname, "Everest-1830"))
+		sprintf(outname, "evrst30");
+	else if (!strcmp(inname, "Everest-1830-Kertau"))
+		sprintf(outname, "evrst48");
+	else if (!strcmp(inname, "Everest-1830-Kalianpur"))
+		sprintf(outname, "evrst56");
+	else if (!strcmp(inname, "Everest-1830-Timbalai"))
+		sprintf(outname, "evrstSS");
+	else if (!strcmp(inname, "Fischer-1960"))
+		sprintf(outname, "fschr60");
+	else if (!strcmp(inname, "Fischer-1960-SouthAsia"))
+		sprintf(outname, "fschr60m");
+	else if (!strcmp(inname, "Fischer-1968"))
+		sprintf(outname, "fschr68");
+	else if (!strcmp(inname, "GRS-80"))
+		sprintf(outname, "GRS80");
+	else if (!strcmp(inname, "GRS-67"))
+		sprintf(outname, "GRS67");
+	else if (!strcmp(inname, "Helmert-1906"))
+		sprintf(outname, "helmert");
+	else if (!strcmp(inname, "Hough"))
+		sprintf(outname, "hough");
+	else if (!strcmp(inname, "Hayford-1909"))
+		sprintf(outname, "intl");
+	else if (!strcmp(inname, "International-1967"))
+		sprintf(outname, "new_intl");
+	else if (!strcmp(inname, "MERIT-83"))
+		sprintf(outname, "MERIT");
+	else if (!strcmp(inname, "Krassovsky"))
+		sprintf(outname, "krass");
+	else if (!strcmp(inname, "Kaula"))
+		sprintf(outname, "kaula");
+	else if (!strcmp(inname, "NWL-9D"))
+		sprintf(outname, "NWL9D");
+	else if (!strcmp(inname, "IAG-75"))
+		sprintf(outname, "IAU76 ");
+	else if (!strcmp(inname, "Lerch"))
+		sprintf(outname, "lerch");
+	else if (!strcmp(inname, "Maupertius"))
+		sprintf(outname, "mprts");
+	else if (!strcmp(inname, "Modified-Fischer-1960"))
+		sprintf(outname, "SEasia ");
+	else if (!strcmp(inname, "SGS-85"))
+		sprintf(outname, "SGS85");
+	else if (!strcmp(inname, "Plessis"))
+		sprintf(outname, "plessis");
+	else if (!strcmp(inname, "Walbeck"))
+		sprintf(outname, "walbeck");
+	else if (!strcmp(inname, "Sphere"))
+		sprintf(outname, "sphere");
+	else if (!strcmp(inname, "FlatEarth"))
+		sprintf(outname, "sphere");
+	else
+		sprintf(outname, "unnamed");
 }
 
 struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
@@ -4002,7 +4116,8 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	/* Add title font if a title was used */
 	if (GMT->current.map.frame.header[0]) fno[id++] = GMT->current.setting.font_title.id;
 	/* Add the label font if labels were used */
-	if (GMT->current.map.frame.axis[GMT_X].label[0] || GMT->current.map.frame.axis[GMT_Y].label[0] || GMT->current.map.frame.axis[GMT_Z].label[0]) fno[id++] = GMT->current.setting.font_label.id;
+	if (GMT->current.map.frame.axis[GMT_X].label[0] || GMT->current.map.frame.axis[GMT_Y].label[0] || GMT->current.map.frame.axis[GMT_Z].label[0])
+		fno[id++] = GMT->current.setting.font_label.id;
 	/* Always add annotation fonts */
 	fno[id++] = GMT->current.setting.font_annot[0].id;
 	fno[id++] = GMT->current.setting.font_annot[1].id;
@@ -4019,7 +4134,8 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
-	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation, GMT->common.O.active, GMT->current.setting.ps_color_mode, GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, title, fno);
+	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation, GMT->common.O.active, GMT->current.setting.ps_color_mode,
+	               GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
 
@@ -4068,7 +4184,9 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			strcat (GMT->current.ps.map_logo_label, opt->arg);
 		}
 	}
-	if (GMT->current.setting.map_logo) gmt_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
+	if (GMT->current.setting.map_logo)
+		gmt_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
+
 	PSL_settransparencymode (PSL, GMT->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
 	/* Enforce chosen line parameters */
 	k = GMT->PSL->internal.line_cap;	GMT->PSL->internal.line_cap = -1; PSL_setlinecap (PSL, k);
