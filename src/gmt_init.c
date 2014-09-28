@@ -1646,7 +1646,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			GMT->common.R.wesn[XLO] = 0.0, GMT->common.R.wesn[XHI] = 360.0;
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 		}
-		else {			/* -Rd is shorthand for -R-180/+180/-90/90 */
+		else {			/* -Rd is shorthand for -R-180/180/-90/90 */
 			GMT->common.R.wesn[XLO] = -180.0, GMT->common.R.wesn[XHI] = 180.0;
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		}
@@ -1673,6 +1673,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		if (!inv_project) {	/* Got grid with degrees */
 			GMT_memcpy (GMT->common.R.wesn, GMT->current.io.grd_info.grd.wesn, 4, double);
+#if 0
+			/* Next bit removed because of issue #592. Should not change the boundaries of the grid */
 			if (GMT->current.io.grd_info.grd.registration == GMT_GRID_NODE_REG && doubleAlmostEqualZero (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO] + GMT->current.io.grd_info.grd.inc[GMT_X], 360.0)) {
 				/* Geographic grid with gridline registration that does not contain the repeating column, but is still 360 range */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG,
@@ -1682,6 +1684,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 				else
 					GMT->common.R.wesn[XLO] = GMT->common.R.wesn[XHI] - 360.0;
 			}
+#endif
 			GMT->common.R.wesn[ZLO] = GMT->current.io.grd_info.grd.z_min;	GMT->common.R.wesn[ZHI] = GMT->current.io.grd_info.grd.z_max;
 			GMT->current.io.grd_info.active = true;
 			return (GMT_NOERROR);
