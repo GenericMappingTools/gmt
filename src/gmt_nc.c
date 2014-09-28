@@ -548,6 +548,47 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		else
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
 
+#ifdef HAVE_GDAL
+		/* If we have projection information create a container variable named "grid_mapping" with an attribute
+		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */ 
+		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
+			int id[1], dim[1];
+
+			if (header->ProjRefWKT == NULL) {				/* Must convert from proj4 string to WKT */
+				OGRSpatialReferenceH hSRS = OSRNewSpatialReference(NULL); 
+
+				if (!strncmp(header->ProjRefPROJ4, "+unavailable", 4)) {		/* Silently jump out of here */
+					OSRDestroySpatialReference(hSRS);
+					goto L100;
+				}
+				GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "Proj4 string to be converted to WKT:\n\t%s\n", header->ProjRefPROJ4);
+				if (OSRImportFromProj4(hSRS, header->ProjRefPROJ4) == CE_None) {
+					char *pszPrettyWkt = NULL;
+					OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
+					header->ProjRefWKT = strdup(pszPrettyWkt);
+					CPLFree(pszPrettyWkt);
+					GMT_Report(GMT->parent, GMT_MSG_LONG_VERBOSE, "WKT converted from proj4 string:\n%s\n", header->ProjRefWKT);
+				}
+				else {
+					header->ProjRefWKT = NULL;
+					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_nc_grd_info failed to convert the proj4 string\n%s\n to WKT\n", 
+							header->ProjRefPROJ4);
+				}
+				OSRDestroySpatialReference(hSRS);
+			}
+
+			if (header->ProjRefWKT != NULL) {			/* It may be NULL if the above conversion failed */
+				if (nc_inq_varid(ncid, "grid_mapping", &id[0]) != NC_NOERR) {
+					GMT_err_trap(nc_def_dim(ncid, "grid_mapping", 12U, &dim[0])); 
+					GMT_err_trap(nc_def_var(ncid, "grid_mapping", NC_CHAR,  1, dim, &id[0]));
+				}
+				GMT_err_trap(nc_put_att_text(ncid, id[0], "spatial_ref", strlen(header->ProjRefWKT), header->ProjRefWKT));
+				GMT_err_trap(nc_put_att_text(ncid, z_id, "grid_mapping", 12U, "grid_mapping"));	/* Create attrib in z variable */
+			}
+		}
+L100:
+#endif
+
 		/* Avoid NaN increments */
 		if (GMT_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
 		if (GMT_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
