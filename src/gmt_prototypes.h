@@ -89,7 +89,7 @@ EXTERN_MSC void GMT_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, doub
 EXTERN_MSC void GMT_grd_set_ij_inc (struct GMT_CTRL *GMT, unsigned int nx, int *ij_inc);
 EXTERN_MSC double * GMT_grd_coord (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, int dir);
 #ifdef HAVE_GDAL
-EXTERN_MSC int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, 
+EXTERN_MSC int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
 int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I);
 #endif
@@ -275,6 +275,7 @@ EXTERN_MSC struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, e
 EXTERN_MSC unsigned int GMT_gcd_euclid (unsigned int a, unsigned int b);
 EXTERN_MSC unsigned int GMT_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny, struct GMT_SURFACE_SUGGESTION **S);
 EXTERN_MSC int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int in_dim[], unsigned int out_dim[]);
+EXTERN_MSC void GMT_sprintf_float (char *string, char *format, double x);
 
 /* gmt_calclock.c: */
 

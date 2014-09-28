@@ -111,9 +111,9 @@ struct PSSCALE_CTRL {
 void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSCALE_CTRL *C;
 	unsigned int k;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
 	C->N.dpi = 600.0;
@@ -131,7 +131,7 @@ void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deall
 	if (C->C.file) free (C->C.file);
 	if (C->E.text) free (C->E.text);
 	if (C->Z.file) free (C->Z.file);
-	GMT_free (GMT, C);	
+	GMT_free (GMT, C);
 }
 
 int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
@@ -197,7 +197,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "c,p");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -307,7 +307,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 						Ctrl->I.min = atof (txt_a);
 						Ctrl->I.max = atof (txt_b);
 					}
-				} 
+				}
 				break;
 			case 'L':
 				Ctrl->L.active = true;
@@ -533,7 +533,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	/* Check if steps in color map have constant width */
 	for (i = 1; i < P->n_colors && const_width; i++)
 		if (fabs (z_width[i] - z_width[0]) > GMT_CONV4_LIMIT) const_width = false;
-	
+
 	if (ndec == 0) {	/* Not -B and no decimals are needed */
 		strncpy (format, GMT->current.setting.format_float_map, GMT_LEN256);
 		fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
@@ -553,7 +553,6 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	else	/* Auto mode */
 		use_image = (!P->has_pattern && gap <= 0.0 && (equi || const_width || P->is_continuous));
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar will be plotted using %s\n", method[use_image]);
-	
 
 	if ((gap >= 0.0 || interval_annot) && !P->is_continuous) {	/* Want to center annotations for discrete colortable, using lower z0 value */
 		center = (interval_annot || gap >= 0.0);
@@ -619,7 +618,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 	if (Ctrl_T.active) {	/* Place rectangle behind the color bar */
 		double x_center, y_center, dim[2] = {1.0,0.0}, u_off = 0.0, v_off = 0.0;
-			
+
 		GMT_setfill (GMT, &Ctrl_T.fill, Ctrl_T.do_pen);
 		GMT_setpen (GMT, &Ctrl_T.pen);
 		annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]);	/* Allow for space between bar and annotations */
@@ -744,7 +743,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		if ((flip & 1) == (flip & 2) / 2) y_label = y_base + dir * label_off;
 
 		PSL_setlinecap (PSL, PSL_BUTT_CAP);	/* Butt cap required for outline of triangle */
-		
+
 		if (extend & (reverse + 1)) {	/* Add color triangle on left side */
 			xp[0] = xp[2] = xleft - gap;	xp[1] = xleft - gap - e_length;
 			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
@@ -854,7 +853,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 							do_annot = false;
 					}
 					else
-						sprintf (text, format, P->range[i].z_low);
+						GMT_sprintf_float (text, format, P->range[i].z_low);
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[0].size, text, 0.0, -this_just, form);
 				}
 				else
@@ -877,7 +876,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 							do_annot = false;
 					}
 					else
-						sprintf (text, format, P->range[i].z_high);
+						GMT_sprintf_float (text, format, P->range[i].z_high);
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[0].size, text, 0.0, -this_just, form);
 				}
 				else
@@ -938,7 +937,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		if (center && interval_annot) {
 			sprintf (text, "%ld - %ld", lrint (floor (P->range[0].z_low)), lrint (ceil (P->range[0].z_high)));
 			sprintf (test, "%ld - %ld", lrint (floor (P->range[P->n_colors-1].z_low)), lrint (ceil (P->range[P->n_colors-1].z_high)));
-			off = ((MAX ((int)strlen (text), (int)strlen (test)) + 2*ndec) * GMT_DEC_SIZE - 0.4 + 
+			off = ((MAX ((int)strlen (text), (int)strlen (test)) + 2*ndec) * GMT_DEC_SIZE - 0.4 +
 				((ndec > 0) ? 2*GMT_PER_SIZE : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
@@ -1018,7 +1017,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use GMT_xy_axis to draw a y-axis based on x parameters. */
 			void (*tmp) (struct GMT_CTRL *, double, double *) = NULL;
 			char *custum;
-			
+
 			A = &GMT->current.map.frame.axis[GMT_X];
 			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
@@ -1105,7 +1104,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 						this_just = l_justify;
 					}
 					else
-						sprintf (text, format, P->range[i].z_high);
+						GMT_sprintf_float (text, format, P->range[i].z_high);
 					if (!cpt_auto_fmt) this_just = l_justify;
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[0].size, text, -90.0, -this_just, form);
 				}
@@ -1196,7 +1195,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		Ctrl->L.active = Ctrl->L.interval = true;
 		GMT_Report (API, GMT_MSG_VERBOSE, "CPT is for categorical data.\n");
 	}
-	
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "  CPT range from %g to %g\n", P->range[0].z_low, P->range[P->n_colors-1].z_high);
 
 	if (Ctrl->Q.active) {	/* Take log of all z values */
@@ -1210,7 +1209,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 			P->range[i].i_dz = 1.0 / (P->range[i].z_high - P->range[i].z_low);
 		}
 	}
-	
+
 	if (Ctrl->E.mode && Ctrl->E.length == 0.0) Ctrl->E.length = Ctrl->D.width * 0.5;
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
@@ -1283,8 +1282,8 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
 	PSL_setorigin (PSL, Ctrl->D.x, Ctrl->D.y, 0.0, PSL_FWD);
-	
-	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode, 
+
+	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode,
 		GMT->current.map.frame.draw, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
 		Ctrl->L.interval, Ctrl->M.active, Ctrl->T);

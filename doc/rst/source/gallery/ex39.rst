@@ -10,6 +10,9 @@ We use the coefficients to evaluate the grids and make perspective globes
 of the different resolutions.  The key tool
 used here is :doc:`sph2grd </sph2grd>`.
 
+Note that we use a special format in :doc:`psscale </psscale>` so that the
+annotations will include the separators for the thousands.
+
 .. literalinclude:: /_verbatim/example_39.txt
    :language: bash
 
