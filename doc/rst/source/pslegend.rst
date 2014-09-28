@@ -77,6 +77,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading.
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. include:: explain_-K.rst_

@@ -14,8 +14,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdproject** *in_grdfile* **-G**\ *out_grdfile* **-J**\ *parameters*
-[ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ] ] [ **-C**\ [*dx/dy*] ] [
-**-D**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
+[ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**] ] [ **-C**\ [*dx/dy*] ] [
+**-D**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
 ] [ **-E**\ *dpi* ] [ **-I** ] [ **-Mc**\ \|\ **i**\ \|\ **p** ] [
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -55,6 +55,7 @@ Required Arguments
 **-G**\ *out_grdfile*
     Specify the name of the output grid file. (See GRID FILE FORMATS below.) 
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 Optional Arguments

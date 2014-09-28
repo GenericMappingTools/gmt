@@ -84,6 +84,7 @@ Required Arguments
     upper case C or A will have tickmarks. In all cases the contour
     values have the same units as the grid. 
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 Optional Arguments

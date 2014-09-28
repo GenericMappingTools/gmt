@@ -51,6 +51,7 @@ Required Arguments
     2-D gridded data set to be imaged (the relief of the surface). (See
     GRID FILE FORMAT below.) 
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. include:: explain_-Jz.rst_

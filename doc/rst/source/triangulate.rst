@@ -76,6 +76,7 @@ Optional Arguments
     grid output (see **-G**). Append **m** to indicate arc minutes or
     **s** to indicate arc seconds. 
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 **-M**

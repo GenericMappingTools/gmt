@@ -114,7 +114,8 @@ Optional Arguments
     (and **-A**, **-D**).
 
     **z** select records NOT within the range specified by **-Z**.
-     
+ 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 **-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile*

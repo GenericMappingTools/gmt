@@ -66,6 +66,7 @@ Required Arguments
     Remember to supply
     **-X** and **-Y** settings if you have moved since the clip started.
     
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code

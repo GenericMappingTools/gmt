@@ -15,7 +15,9 @@ Synopsis
 
 **grdedit** *grid* [ **-A** ]
 [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
-[ **-E** ] [ **-N**\ *table* ]
+[ **-E** ]
+[ **-J**\ *parameters* ]
+[ **-N**\ *table* ]
 [ |SYN_OPT-R| ]
 [ **-S** ] [ **-T** ]
 [ |SYN_OPT-V| ]
@@ -45,14 +47,14 @@ Required Arguments
 *grid*
     Name of the 2-D grid file to modify. (See GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+`Optional Arguments`_
+---------------------
 
 **-A**
-    If necessary, adjust the file's *x\_inc*, *y\_inc* to be compatible
+    If necessary, adjust the file's *x_inc*, *y_inc* to be compatible
     with its domain (or a new domain set with **-R**). Older grid files
     (i.e., created prior to GMT 3.1) often had excessive slop in
-    *x\_inc*, *y\_inc* and an adjustment is necessary. Newer files are
+    *x_inc*, *y_inc* and an adjustment is necessary. Newer files are
     created correctly.
 **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark*
     Give values for *xname*, *yname*, *zname*, *scale*, *offset*,
@@ -65,13 +67,18 @@ Required Arguments
 **-E**
     Transpose the grid and exchange the *x* and *y* information.
     Incompatible with the other options.
+
+.. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
+    metadata in netCDF grids. This metadata will be reconized by GDAL.
+.. include:: explain_-J.rst_
+
 **-N**\ *table*
     Read the ASCII (or binary; see **-bi**) file
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values. 
 
 .. |Add_-R| replace:: The new w/e/s/n values will
-    replace those in the grid, and the *x\_inc*, *y\_inc* values are
+    replace those in the grid, and the *x_inc*, *y_inc* values are
     adjusted, if necessary.
 .. include:: explain_-R.rst_
 

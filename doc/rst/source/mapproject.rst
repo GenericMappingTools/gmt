@@ -56,6 +56,7 @@ read (latitude,longitude) files.
 Required Arguments
 ------------------
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. |Add_-R| replace:: Special case for the UTM

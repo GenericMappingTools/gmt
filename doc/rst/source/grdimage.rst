@@ -75,6 +75,7 @@ Required Arguments
     2-D gridded data set (or red, green, blue grids) to be imaged (See
     GRID FILE FORMATS below.) 
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 Optional Arguments

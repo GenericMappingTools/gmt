@@ -56,6 +56,7 @@ PostScript code is written to standard output.
 Required Arguments
 ------------------
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
