@@ -89,7 +89,8 @@ int GMT_grdproject_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdproject <ingrid> -G<outgrid> %s [-A[%s|%s]] [-C[<dx>/<dy>]]\n", GMT_J_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdproject <ingrid> -G<outgrid> %s [-A[%s|%s]] [-C[<dx>/<dy>]]\n",
+	             GMT_J_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s] [-E<dpi>] [-I] [-M%s]\n", GMT_inc_OPT, GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_r_OPT);
 
@@ -208,7 +209,8 @@ int GMT_grdproject_parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->M.active + Ctrl->A.active) == 2, "Syntax error: Can specify only one of -A and -M\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0), "Syntax error -D option: Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0),
+	                                 "Syntax error -D option: Must specify positive increment(s)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -341,11 +343,11 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
 
-	if (Ctrl->I.active) {	/* Must flip the column types since in is Cartesian and out is geographic */
+	if (Ctrl->I.active) {			/* Must flip the column types since in is Cartesian and out is geographic */
 		GMT_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		GMT_set_cartesian (GMT, GMT_IN);
 	}
-	
+
 	xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
 	xmax = (Ctrl->C.active) ? GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XHI];
 	ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
@@ -376,7 +378,8 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 		ymax += Ctrl->C.northing;
 	}
 
-	sprintf (format, "(%s/%s/%s/%s)", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	sprintf (format, "(%s/%s/%s/%s)", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+	                                  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	if (Ctrl->I.active) {	/* Transforming from rectangular projection to geographical */
 
@@ -444,9 +447,11 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 			Rect->header->wesn[YHI] += GMT->current.proj.origin[GMT_Y];
 		}
 		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
-		
+
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
+
+		Geo->header->ProjRefPROJ4 = "+proj=longlat +no_defs";	/* HOWEVER, this may be quite incorrect for we are ignoring the DATUM */
 
 		GMT_grd_project (GMT, Rect, Geo, true);
 
@@ -527,6 +532,8 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
 		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80);
 		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80);
+
+		Rect->header->ProjRefPROJ4 = GMT_export2proj4(GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
