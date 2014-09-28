@@ -38,7 +38,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:RVbdfhi" GMT_OPT("H")
+#define GMT_PROG_OPTIONS "-:JRVbdfhi" GMT_OPT("H")
 
 struct GRDEDIT_CTRL {
 	struct In {
@@ -90,7 +90,7 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdedit <grid> [-A] [%s]\n", GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [%s] [-N<table>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [%s] [%s] [GMT_J_OPT] [-N<table>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n", GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -106,8 +106,8 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Will rotate entire grid to coincide with new borders in -R.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle header from grid-line to pixel-registered grid or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and expands -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
-	GMT_Option (API, "V,bi3,di,f,h,i,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and expands  -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
+	GMT_Option (API, "J,V,bi3,di,f,h,i,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -167,15 +167,19 @@ int GMT_grdedit_parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->A.active, "Syntax error -S option: Incompatible with -A\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->N.active || Ctrl->S.active || 
-			Ctrl->T.active), "Syntax error -E option: Incompatible with -A, -D, -N, -S, and -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->T.active, "Syntax error -S option: Incompatible with -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error -S option: Incompatible with -N\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->A.active,
+	                                 "Syntax error -S option: Incompatible with -A\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active &&
+	                                 (Ctrl->A.active || Ctrl->D.active || Ctrl->N.active || Ctrl->S.active || Ctrl->T.active),
+	                                 "Syntax error -E option: Incompatible with -A, -D, -N, -S, and -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->T.active,
+	                                 "Syntax error -S option: Incompatible with -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, 
+	                                 "Syntax error -S option: Incompatible with -N\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !GMT->common.R.active, 
-					"Syntax error -S option: Must also specify -R\n");
+	                                 "Syntax error -S option: Must also specify -R\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]), 
-					"Syntax error -S option: -R longitudes must span exactly 360 degrees\n");
+	                                 "Syntax error -S option: -R longitudes must span exactly 360 degrees\n");
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	if (Ctrl->N.active) {
 		n_errors += GMT_check_binary_io (GMT, 3);
@@ -241,6 +245,13 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Editing parameters for grid %s\n", Ctrl->In.file);
 
 	/* Decode grd information given, if any */
+
+	if (GMT->common.J.active)		/* Convert the GMT -J<...> into a proj4 string and save it in the header */
+#ifdef HAVE_GDAL
+		G->header->ProjRefPROJ4 = GMT_export2proj4(GMT);
+#else
+		GMT_Report(API, GMT_MSG_NORMAL, "-J option to set grid's referencing system is only availabe for builds that link with GDAL\n");
+#endif
 
 	if (Ctrl->D.active) {
 		double scale_factor, add_offset;
@@ -377,9 +388,9 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->T.active) {	/* Grid-line <---> Pixel toggling of the header */
 			GMT_change_grdreg (GMT, G->header, 1 - G->header->registration);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Toggled registration mode in file %s from %s to %s\n", 
+			GMT_Report (API, GMT_MSG_VERBOSE, "Toggled registration mode in file %s from %s to %s\n",
 				Ctrl->In.file, registration[1-G->header->registration], registration[G->header->registration]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Reset region in file %s to %g/%g/%g/%g\n", 
+			GMT_Report (API, GMT_MSG_VERBOSE, "Reset region in file %s to %g/%g/%g/%g\n",
 				Ctrl->In.file, G->header->wesn[XLO], G->header->wesn[XHI], G->header->wesn[YLO], G->header->wesn[YHI]);
 		}
 		if (GMT->common.R.active) {
