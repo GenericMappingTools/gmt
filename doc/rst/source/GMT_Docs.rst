@@ -3555,13 +3555,14 @@ are simply data records whose fields are all set to NaN; see Appendix
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
 will look in two other directories pointed to by the
-:ref:`directory parameters <DIR Parameters>` **DIR_DATA** and
-**DIR_USER** or by the environmental parameters **GMT_USERDIR** and
-**GMT_DATADIR** (if set). They may be set by the user to point to
+:ref:`directory parameters <DIR Parameters>` **DIR_DATA**
+or by the environmental parameters **$GMT_USERDIR** and
+**$GMT_DATADIR** (if set). They may be set by the user to point to
 directories that contain data sets of general use, thus eliminating the
 need to specify a full path to these files. Usually, the **DIR_DATA**
 directory will hold data sets of a general nature (tables, grids),
-whereas the **DIR_USER** directory may hold miscellaneous data sets more
+whereas the **$GMT_USERDIR** directory (its default value is $HOME/.gmt)
+may hold miscellaneous data sets more
 specific to the user; this directory also stores GMT defaults and other
 configuration files. See :ref:`directory parameters <DIR Parameters>`
 for details. Program output is always written to the current directory
@@ -4769,13 +4770,13 @@ skipped during reading; see Section `Data gap detection: The -g option`_ for det
 Directory parameters
 --------------------
 
-GMT versions prior to GMT 5 relied on several environment variables
+GMT versions prior to GMT 5 relied solely on several environment variables
 ($GMT_SHAREDIR, $GMT_DATADIR, $GMT_USERDIR, and $GMT_TMPDIR), pointing
 to folders with data files and program settings. Beginning with version
-5, these locations are configurable with the :doc:`gmtset` utility.
-The environment variables are still supported but are overridden by the
-:ref:`directory parameters <DIR Parameters>` DIR_DATA, DIR_USER, and
-DIR_TMP in :doc:`gmt.conf`.
+5, some of these locations are now (also or exclusively) configurable
+with the :doc:`gmtset` utility.
+When an environment variable has an equivalent parameter in the :doc:`gmt.conf` file,
+then the parameter setting will take precedence over the environment variable.
 
 Variable $GMT_SHAREDIR
     was sometimes required in previous GMT versions to locate the GMT
@@ -4796,20 +4797,30 @@ Variable $GMT_DATADIR and parameter DIR_DATA
     name that ends in a trailing slash (/) will be searched recursively
     (not under Windows).
 
-Variable $GMT_USERDIR and parameter DIR_USER
+Variable $GMT_USERDIR
     may point to a directory where the user places custom configuration
     files (e.g., an alternate ``coastline.conf`` file, preferred default
     settings in ``gmt.conf``, custom symbols and color palettes, math
     macros for :doc:`gmtmath` and :doc:`grdmath`, and shorthands for
-    gridfile extensions via ``gmt_io``). Users may also place their own
+    gridfile extensions via ``gmt_io``). When $GMT_USERDIR is not defined,
+    then the default value $HOME/.gmt will be assumed. Users may also place their own
     data files in this directory as GMT programs will search for files
-    given on the command line in both DIR_DATA and DIR_USER.
+    given on the command line in both DIR_DATA and $GMT_USERDIR.
 
-Variable $GMT_TMPDIR and parameter DIR_TMP
+Variable $GMT_TMPDIR
     may indicate the location, where GMT will write its state parameters
-    via the two files ``gmt.history`` and ``gmt.conf``. If DIR_TMP is not
+    via the two files ``gmt.history`` and ``gmt.conf``. If $GMT_TMPDIR is not
     set, these files are written to the current directory. See Section
     `Isolation mode`_ for more information.
+
+Parameter DIR_DCW
+    specifies where to look for the optional Digital Charts of the World
+    database (for country coloring or selections).
+
+Parameter DIR_GSHHG
+    specifies where to look for the required
+    Global Self-consistent Hierarchical High-resolution Geography database.
+
 
 Note that files whose full path is given will never be searched for in
 any of these directories.
@@ -5435,7 +5446,7 @@ center of projection. The requirements are
 
 -  Scale as 1:xxxxx (true scale at pole), slat/1:xxxxx (true scale at
    standard parallel slat), or radius/latitude where radius is distance
-   on map in inches from projection center to a particular 
+   on map in inches from projection center to a particular
    oblique latitude (**-Js**), or simply map width (**-JS**).
 
 A default map scale factor of 0.9996 will be applied by default
@@ -5590,7 +5601,7 @@ To specify the orthographic projection the same options **-Jg** or
    to the edge (<= 90, default is 90).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in inches from projection center to a particular 
+   map in inches from projection center to a particular
    oblique latitude (**-Jg**), or map width (**-JG**).
 
 Our example of a perspective view centered on 75W/40N can therefore be
@@ -5626,7 +5637,7 @@ To specify the azimuthal equidistant projection you must supply:
    to the edge (<= 180, default is 180).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in inches from projection center to a particular 
+   map in inches from projection center to a particular
    oblique latitude (**-Je**), or map width (**-JE**).
 
 Our example of a global view centered on 100W/40N can therefore be
@@ -9018,7 +9029,7 @@ We now exercise the option for specifying exactly how many labels each
 contour line should have:
 
     ::
-    
+
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_2.ps
      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T:LH >> GMT_App_O_2.ps
 
@@ -9045,7 +9056,7 @@ contour closest to our fixed points and within the given maximum
 distance will host the label.
 
     ::
-    
+
      cat << EOF > fix.txt
      80      -8.5
      55      -7.5
@@ -9078,7 +9089,7 @@ between the contour lines and a well-placed straight line segment. The
 **-Gl** or **-GL** algorithms work well in those cases:
 
     ::
-    
+
       gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_4.ps
       gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T:LH >> GMT_App_O_4.ps
 
@@ -9112,7 +9123,7 @@ sense:
 
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_5.ps
      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GXcross.txt -S10 -T:LH >> GMT_App_O_5.ps
-     
+
 .. _Contour_label_5:
 
 .. figure:: /_images/GMT_App_O_5.*
@@ -9150,7 +9161,7 @@ are placed normal to the line:
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 \
      -T:'-+' >> GMT_App_O_6.ps
      gmt psxy -R -J -O -SqD1000k:+g+LD+an+p -Wthick transect.txt >> GMT_App_O_6.ps
-     
+
 .. _Contour_label_6:
 
 .. figure:: /_images/GMT_App_O_6.*
@@ -9203,13 +9214,13 @@ those records whose distances are multiples of 1500 km and create a
 labels. This is done with **awk**.
 
     ::
- 
+
     gmt gmtconvert -i0,1,4 -Em150 transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_8.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 \
      -T:-+ >> GMT_App_O_8.ps
      gmt psxy -R -J -O -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick transect.txt >> GMT_App_O_8.ps
-     
+
 The output is presented as Figure :ref:`Contour label 8 <Contour_label_8>`.
 
 .. _Contour_label_8:
@@ -9233,7 +9244,7 @@ shape of the seafloor, and travel time contours with curved labels as
 well as a few quoted lines. The final script is
 
     ::
- 
+
      R=-R-85/5/10/55
      gmt grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc
      gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
@@ -9325,23 +9336,23 @@ The example below shows how *isolation mode* works.
     ::
 
      ps=GMT_App_P_1.ps
-     
+
      # Create a temporary directory. $GMT_TMPDIR will be set to its pathname.
      # XXXXXX is replaced by a unique random combination of characters.
      export GMT_TMPDIR=`mktemp -d /tmp/gmt.XXXXXX`
-     
+
      # These settings will be local to this script only since it writes to
      # $GMT_TMPDIR/gmt.conf
      gmt gmtset COLOR_MODEL rgb FONT_ANNOT_PRIMARY 14p
-     
+
      # Make grid file and color map in temporary directory
      gmt grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc
      gmt makecpt -Crainbow -T-90/90/180 -Z > $GMT_TMPDIR/lat.cpt
-     
+
      # The gmt grdimage command creates the history file $GMT_TMPDIR/gmt.history
      gmt grdimage $GMT_TMPDIR/lat.nc -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K -nl > $ps
      gmt pscoast -R -J -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30 >> $ps
-     
+
      # Clean up all temporary files and the temporary directory
      rm -rf $GMT_TMPDIR
 

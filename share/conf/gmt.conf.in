@@ -20,8 +20,6 @@ COLOR_HSV_MAX_V			= 1
 DIR_DATA			=
 DIR_DCW				= @DCW_INSTALL_PATH@
 DIR_GSHHG			= @GSHHG_INSTALL_PATH@
-DIR_TMP				=
-DIR_USER			=
 #
 # FONT Parameters
 #
