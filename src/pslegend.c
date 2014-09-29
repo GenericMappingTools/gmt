@@ -38,17 +38,17 @@
 #define FRAME_RADIUS	6.0	/* In points */
 
 struct PSLEGEND_CTRL {
-	struct C {	/* -C<dx>/<dy> */
+	struct PSLEGND_C {	/* -C<dx>/<dy> */
 		bool active;
 		double dx, dy;
 	} C;
-	struct D {	/* -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] */
+	struct PSLEGND_D {	/* -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] */
 		bool active;
 		struct GMT_ANCHOR *anchor;
 		double width, height, dx, dy;
 		int justify;
 	} D;
-	struct F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSLEGND_F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		bool debug;			/* If true we draw guide lines */
 		unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
@@ -59,7 +59,7 @@ struct PSLEGEND_CTRL {
 		struct GMT_FILL fill;		/* Frame fill */
 		struct GMT_FILL sfill;		/* Background shade */
 	} F;
-	struct L {	/* -L<spacing> */
+	struct PSLEGND_L {	/* -L<spacing> */
 		bool active;
 		double spacing;
 	} L;
@@ -644,8 +644,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	}
 	else
-		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height given as %g %s; estimated height is %g %s.\n", scl*Ctrl->D.height, scl*height,
-			GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height given as %g %s; estimated height is %g %s.\n",
+		            scl*Ctrl->D.height, GMT->session.unit_name[GMT->current.setting.proj_length_unit],
+		            scl*height, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
