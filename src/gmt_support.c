@@ -77,6 +77,7 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
+#include <locale.h>
 
 enum GMT_profmode {
 	GMT_GOT_AZIM	= 1,
