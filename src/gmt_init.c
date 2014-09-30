@@ -6710,6 +6710,12 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
 
 	/* Now fix things that were allocated separately */
+	if (Ccopy->session.n_user_media) {
+		GMT->session.n_user_media = Ccopy->session.n_user_media;
+		GMT->session.user_media = GMT_memory (GMT, NULL, Ccopy->session.n_user_media, struct GMT_MEDIA);
+		GMT->session.user_media_name = GMT_memory (GMT, NULL, Ccopy->session.n_user_media, char *);
+		for (i = 0; i < Ccopy->session.n_user_media; i++) GMT->session.user_media_name[i] = strdup (Ccopy->session.user_media_name[i]);
+	}
 
 	gmt_free_user_media (Ccopy);		/* Free user-specified media formats */
 
