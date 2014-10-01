@@ -123,6 +123,8 @@ enum GMT_enum_vecattr {
 	GMT_VEC_MARC90		= 8192,		/* Matharc only: if angles subtend 90, draw straight angle symbol */
 	GMT_VEC_SCALE		= 32768};	/* Not needed in pslib: If not set we determine the required inch-to-degree scale */
 
+/* Make sure the next three macros are in sync with any changes to GMT_enum_vecattr above! */
+
 #define GMT_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
 #define GMT_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */
 #define GMT_vec_side(status) ((status&3) ? 2*(status&3)-3 : 0)	/* Return side selection as 0,-1,+1 */
@@ -146,6 +148,8 @@ struct GMT_VECT_ATTR {
 	struct GMT_FILL fill;	/* Fill for head [USED IN PSROSE] */
 };
 
+#define GMT_MAX_SYMBOL_COLS	6	/* Maximum number of columns required for the most complicated symbol input */
+
 struct GMT_SYMBOL {
 	/* Voodoo: If next line is not the first member in this struct, psxy -Sl<size>/Text will have corrupt 'Text'
 		   in non-debug binaries compiled with VS2010 */
@@ -168,7 +172,7 @@ struct GMT_SYMBOL {
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
-	unsigned int nondim_col[6];	/* Which columns has angles or km for this symbol */
+	unsigned int nondim_col[GMT_MAX_SYMBOL_COLS];	/* Which columns has angles or km for this symbol */
 
 	/* These apply to bar|column symbols */
 

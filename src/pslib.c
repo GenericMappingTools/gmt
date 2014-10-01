@@ -2901,6 +2901,10 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 				if (side != +sign[i]) {	/* Need right side of arrow head */
 					xr = (r2 + head_half_width) * cb;	yr = (r2 + head_half_width) * sb;	/* Outer flank coordinates */
 					psl_get_origin (xt, yt, xr, yr, r2, &xo, &yo, &bo1, &bo2);
+					if (i == 0 && bo2 > bo1)
+						bo2 -= 360.0;
+					else if (i == 1 && bo1 > bo2)
+						bo1 -= 360.0;
 					PSL_plotarc (PSL, xo, yo, r2, bo2, bo1, PSL_MOVE);	/* Draw the arrow arc from tip to outside flank */
 					A = D2R * (tangle[i]);	sa = sin (A);	ca = cos (A);
 					xv = r2 * ca - xr;	yv = r2 * sa - yr;	/* Back point coordinates */
@@ -2912,6 +2916,10 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 				if (side != -sign[i]) {	/* Need left side of arrow head */
 					xl = (r2 - head_half_width) * cb;	yl = (r2 - head_half_width) * sb;	/* Inner flank coordinates */
 					psl_get_origin (xt, yt, xl, yl, r2, &xi, &yi, &bi1, &bi2);
+					if (i == 0 && bi1 < bi2)
+						bi1 += 360.0;
+					else if (i == 1 && bi1 > bi2)
+						bi1 -= 360.0;
 					PSL_plotarc (PSL, xi, yi, r2, bi1, bi2, PSL_DRAW);		/* Draw the arrow arc from tip to outside flank */
 				}
 				else {	/* Draw from center back reduced by shape to tip */

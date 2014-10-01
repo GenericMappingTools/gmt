@@ -3364,6 +3364,8 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 	API->do_not_exit = mode & 1;	/* if set, then API_exit & GMT_exit are simply a return; otherwise they call exit */
 	API->mode = mode & 2;		/* if false|0 then we dont list read and write as modules */
 	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we same some CPU */
+	if (session)
+		API->session_tag = strdup (GMT_basename (session));	/* Only used in reporting and error messages */
 
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
 	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
@@ -3382,10 +3384,8 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 	/* Set the unique Session parameters */
 
 	API->session_ID = GMTAPI_session_counter++;		/* Guarantees each session ID will be unique and sequential from 0 up */
-	if (session) {
-		API->session_tag = strdup (GMT_basename (session));	/* Only used in reporting and error messages */
+	if (session)
 		API->GMT->init.module_name = API->session_tag;	/* So non-modules can report name of program, */
-	}
 	else
 		API->GMT->init.module_name = unknown; /* or unknown */
 
@@ -6133,7 +6133,7 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 			source_info_len = strlen (message);	/* Update length of message from 0 */
 		}
 	}
-	snprintf (message + source_info_len, GMT_BUFSIZ-source_info_len, "%s: ", API->GMT->init.module_name);
+	snprintf (message + source_info_len, GMT_BUFSIZ-source_info_len, "%s: ", (API->GMT->init.module_name) ? API->GMT->init.module_name : API->session_tag);
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */
