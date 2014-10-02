@@ -13,8 +13,8 @@ gmt psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 1.5	0.5	0	30	1i	v0.2i+jc+b
 2.5	0.5	0	30	1i	v0.2i+jc+e+p-
 3.5	0.5	0	30	1i	v0.2i+jc+b+e+p1p,blue
-4.5	0.5	0	30	1i	v0.2i+jc+b+l
-5.5	0.5	0	30	1i	v0.2i+jc+e+r
+4.5	0.5	0	30	1i	v0.2i+jc+bl
+5.5	0.5	0	30	1i	v0.2i+jc+er
 EOF
 # Beginning justified vectors
 gmt psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
@@ -22,8 +22,8 @@ gmt psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
 1.1	1.2	0	30	1i	v0.2i+jb+b
 2.1	1.2	0	30	1i	v0.2i+jb+e+gorange
 3.1	1.2	0	30	1i	v0.2i+jb+b+e+g-
-4.1	1.2	0	30	1i	v0.2i+jb+b+l
-5.1	1.2	0	30	1i	v0.2i+jb+e+r
+4.1	1.2	0	30	1i	v0.2i+jb+bl
+5.1	1.2	0	30	1i	v0.2i+jb+er
 EOF
 # End justified vectors
 gmt psxyz -R -J -O -K -W1p -S -p155/35 << EOF >> $ps
@@ -31,8 +31,8 @@ gmt psxyz -R -J -O -K -W1p -S -p155/35 << EOF >> $ps
 1.9	2.8	0	30	1i	v0.2i+je+b
 2.9	2.8	0	30	1i	v0.2i+je+e
 3.9	2.8	0	30	1i	v0.2i+je+b+e
-4.9	2.8	0	30	1i	v0.2i+je+b+l
-5.9	2.8	0	30	1i	v0.2i+je+e+r
+4.9	2.8	0	30	1i	v0.2i+je+bl
+5.9	2.8	0	30	1i	v0.2i+je+er
 EOF
 # Then with -SV and Mercator
 gmt gmtset MAP_VECTOR_SHAPE 1
@@ -43,8 +43,8 @@ gmt psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 1.5	0.5	0	60	1i	V0.2i+jc+b
 2.5	0.5	0	60	1i	V0.2i+jc+e+p-
 3.5	0.5	0	60	1i	V0.2i+jc+b+e+p1p,blue
-4.5	0.5	0	60	1i	V0.2i+jc+b+l
-5.5	0.5	0	60	1i	V0.2i+jc+e+r
+4.5	0.5	0	60	1i	V0.2i+jc+bl
+5.5	0.5	0	60	1i	V0.2i+jc+er
 EOF
 # Beginning justified vectors
 gmt psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
@@ -52,8 +52,8 @@ gmt psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
 1.1	1.2	0	60	1i	V0.2i+jb+b
 2.1	1.2	0	60	1i	V0.2i+jb+e+gorange
 3.1	1.2	0	60	1i	V0.2i+jb+b+e+g-
-4.1	1.2	0	60	1i	V0.2i+jb+b+l
-5.1	1.2	0	60	1i	V0.2i+jb+e+r
+4.1	1.2	0	60	1i	V0.2i+jb+bl
+5.1	1.2	0	60	1i	V0.2i+jb+er
 EOF
 # End justified vectors
 gmt psxyz -R -J -O -W1p -S -p155/35 << EOF >> $ps
@@ -61,6 +61,6 @@ gmt psxyz -R -J -O -W1p -S -p155/35 << EOF >> $ps
 1.9	2.8	0	60	1i	V0.2i+je+b
 2.9	2.8	0	60	1i	V0.2i+je+e
 3.9	2.8	0	60	1i	V0.2i+je+b+e
-4.9	2.8	0	60	1i	V0.2i+je+b+l
-5.9	2.8	0	60	1i	V0.2i+je+e+r
+4.9	2.8	0	60	1i	V0.2i+je+bl
+5.9	2.8	0	60	1i	V0.2i+je+er
 EOF
