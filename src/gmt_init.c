@@ -2803,7 +2803,7 @@ int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file)
 	fclose (fp);
 	gmt_verify_encodings (GMT);
 
-	if (error) GMT_message (GMT, "Warning: %d conversion errors in file %s!\n", error, file);
+	if (error) GMT_message (GMT, "Warning: %d GMT Defaults conversion errors in file %s!\n", error, file);
 
 	return (GMT_NOERROR);
 }
@@ -2828,13 +2828,14 @@ unsigned int GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			param = opt->arg;
 		else {					/* This must be value */
 			n_errors += gmt_setparameter (GMT, param, opt->arg);
-			param = NULL;
+			param = NULL;	/* Get ready for next parameter */
 		}
 	}
 
-	n_errors += (param != NULL);	/* param should be NULL */
+	if (param != NULL)	/* param should be NULL unless no value were added */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Last GMT Defaults parameter from command options had no value\n");
 
-	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL, " %d conversion errors\n", n_errors);
+	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL, " %d GMT Defaults conversion errors from command options\n", n_errors);
 	return (n_errors);
 }
 
@@ -5584,7 +5585,7 @@ int GMT_savedefaults (struct GMT_CTRL *GMT, char *file)
 	fclose (fpi);
 	if (fpo != GMT->session.std[GMT_OUT]) fclose (fpo);
 
-	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %d conversion errors while writing gmt.conf\n", error);
+	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %d GMT Defaults conversion errors while writing gmt.conf\n", error);
 
 	return (0);
 }
