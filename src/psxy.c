@@ -63,12 +63,12 @@ struct PSXY_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct L {	/* -L[+xl|r|x0][+yb|t|y0][+p<pen>] */
+	struct L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
 		bool active;
 		bool polygon;		/* true when just -L is given */
 		bool outline;		/* true when +p<pen> is given */
 		unsigned int mode;	/* Which side for the anchor */
-		unsigned int anchor;	/* 0 not used, 1 = x anchors, 2 = y anchors */
+		unsigned int anchor;	/* 0 not used, 1 = x anchors, 2 = y anchors, 3 = +/-dy, 4 = -dy1, +dy2 */
 		double value;
 		struct GMT_PEN pen;
 	} L;
@@ -104,6 +104,13 @@ enum Psxy_cliptype {
 	PSXY_CLIP_NO_REPEAT,
 	PSXY_NO_CLIP_REPEAT,
 	PSXY_NO_CLIP_NO_REPEAT};
+
+enum Psxy_poltype {
+	PSXY_POL_X 		= 0,
+	PSXY_POL_Y,
+	PSXY_POL_SYMM_DEV,
+	PSXY_POL_ASYMM_DEV,
+	PSXY_POL_ASYMM_ENV};
 
 EXTERN_MSC double GMT_half_map_width (struct GMT_CTRL *GMT, double y);
 
@@ -268,7 +275,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxy [<table>] %s %s [-A[m|p]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x[+]|y[+]|X|Y][n][cap][/[+|-]<pen>]] [-G<fill>]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I<intens>] [-K] [-L[+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] [-O] [-P] [-S[<symbol>][<size>[unit]]]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I<intens>] [-K] [-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] [-O] [-P] [-S[<symbol>][<size>[unit]]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [-W[+|-][<pen>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, \
 		GMT_c_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -302,6 +309,9 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.  Alternatively, append modifiers to build polygon from a line.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to build symmetrical envelope around y(x) using deviations dy(x) from col 3.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +D to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 3-4.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from cols 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +xl|r|x0 to connect 1st and last point to anchor points at xmin, xmax, or x0, or\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   append +yb|t|y0 to connect 1st and last point to anchor points at ymin, ymax, or y0.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Polygon may be painted (-G) and optionally outlined via +p<pen> [no outline].\n");
@@ -497,13 +507,19 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'L':		/* Close line segments */
 				Ctrl->L.active = true;
-				if ((c = strstr (opt->arg, "+x"))) {	/* Parse x anchors for a polygon */
+				if ((c = strstr (opt->arg, "+b")))	/* Build asymmetric polygon from lower and upper bounds */
+					Ctrl->L.anchor = PSXY_POL_ASYMM_ENV;
+				else if ((c = strstr (opt->arg, "+d")))	/* Build symmetric polygon from deviations about y(x) */
+					Ctrl->L.anchor = PSXY_POL_SYMM_DEV;
+				else if ((c = strstr (opt->arg, "+D")))	/* Build asymmetric polygon from deviations about y(x) */
+					Ctrl->L.anchor = PSXY_POL_ASYMM_DEV;
+				else if ((c = strstr (opt->arg, "+x"))) {	/* Parse x anchors for a polygon */
 					switch (c[2]) {
 						case 'l':	Ctrl->L.mode = XLO;	break;	/* Left side anchors */
 						case 'r':	Ctrl->L.mode = XHI;	break;	/* Right side anchors */
 						default:	Ctrl->L.mode = ZLO;	Ctrl->L.value = atof (&c[2]);	break;	/* Arbitrary x anchor */
 					}
-					Ctrl->L.anchor = 1;
+					Ctrl->L.anchor = PSXY_POL_X;
 				}
 				else if ((c = strstr (opt->arg, "+y"))) {	/* Parse y anchors for a polygon */
 					switch (c[2]) {
@@ -511,7 +527,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 						case 't':	Ctrl->L.mode = YHI;	break;	/* Top side anchors */
 						default:	Ctrl->L.mode = ZHI;	Ctrl->L.value = atof (&c[2]);	break;	/* Arbitrary y anchor */
 					}
-					Ctrl->L.anchor = 2;
+					Ctrl->L.anchor = PSXY_POL_Y;
 				}
 				else	/* Just force a closed polygon */
 					Ctrl->L.polygon = true;
@@ -677,7 +693,9 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		}
 		if (get_rgb) n_cols_start++;
 	}
-
+	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
+	if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols_start += 2;
+	
 	/* For most symbols, the data columns beyond two will be dimensions that either have the units appended (e.g., 2c)
 	 * or they are assumed to be in the current measure unit (PROJ_LENGTH_UNIT).  We therefore set the in_col_type to be
 	 * GMT_IS_DIMENSION for these so that unit conversions are handled correctly.  However, some symbols also require
@@ -1283,37 +1301,71 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since GMT_hold_contour reallocates to fit the array */
 				}
 				else {	/* Plot line */
+					uint64_t end;
 					bool draw_line = true;
-					if (Ctrl->L.anchor) {	/* First complete polygon via anchor points and paint the area, optionally with outline */
-						uint64_t end = L->n_rows, off = 0U;
-						double value;
-						GMT_prep_tmp_arrays (GMT, end+3, 2);	/* Init or reallocate tmp vectors */
-						/* First copy the given line segment */
-						GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
-						GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
-						/* Now add 2 anchor points and explicitly close by repeating 1st point */
-						switch (Ctrl->L.mode) {
-							case XHI:	off = 1;	/* To select the x max entry */
-							case XLO:
-							case ZLO:
-								value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
-								GMT->hidden.mem_coord[GMT_X][end] = GMT->hidden.mem_coord[GMT_X][end+1] = value;
-								GMT->hidden.mem_coord[GMT_Y][end] = L->coord[GMT_Y][end-1];
-								GMT->hidden.mem_coord[GMT_Y][end+1] = L->coord[GMT_Y][0];
-								break;
-							case YHI:	off = 1;	/* To select the y max entry */
-							case YLO:
-							case ZHI:
-								value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];
-								GMT->hidden.mem_coord[GMT_Y][end] = GMT->hidden.mem_coord[GMT_Y][end+1] = value;
-								GMT->hidden.mem_coord[GMT_X][end] = L->coord[GMT_X][end-1];
-								GMT->hidden.mem_coord[GMT_X][end+1] = L->coord[GMT_X][0];
-								break;
+					if (Ctrl->L.anchor) {	/* Build a polygon in one of several ways */
+						if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) {	/* Build envelope around y(x) from delta y values in 1 or 2 extra columns */
+							uint64_t k, n, col = (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) ? 3 : 2;
+							end = 2 * L->n_rows;
+							GMT_prep_tmp_arrays (GMT, end, 2);	/* Init or reallocate tmp vectors */
+							/* First go in positive x direction and build part of envelope */
+							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
+							for (k = 0; k < L->n_rows; k++)
+								GMT->hidden.mem_coord[GMT_Y][k] = L->coord[GMT_Y][k] - fabs (L->coord[2][k]);
+							/* Then go in negative x direction and build rest of envelope */
+							for (k = n = L->n_rows; k > 0; k--, n++) {
+								GMT->hidden.mem_coord[GMT_X][n] = L->coord[GMT_X][k-1];
+								GMT->hidden.mem_coord[GMT_Y][n] = L->coord[GMT_Y][k-1] + fabs (L->coord[col][k-1]);
+							}
 						}
-						/* Explicitly close polygon */
-						GMT->hidden.mem_coord[GMT_X][end+2] = L->coord[GMT_X][0];
-						GMT->hidden.mem_coord[GMT_Y][end+2] = L->coord[GMT_Y][0];
-						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end+3)) == 0) continue;
+						else if (Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) {	/* Build envelope around y(x) from low and high 2 extra columns */
+							uint64_t k, n;
+							end = 2 * L->n_rows;
+							GMT_prep_tmp_arrays (GMT, end, 2);	/* Init or reallocate tmp vectors */
+							/* First go in positive x direction and build part of envelope */
+							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
+							for (k = 0; k < L->n_rows; k++)
+								GMT->hidden.mem_coord[GMT_Y][k] = L->coord[2][k];
+							/* Then go in negative x direction and build rest of envelope */
+							for (k = n = L->n_rows; k > 0; k--, n++) {
+								GMT->hidden.mem_coord[GMT_X][n] = L->coord[GMT_X][k-1];
+								GMT->hidden.mem_coord[GMT_Y][n] = L->coord[3][k-1];
+							}
+						}
+						else {	/* First complete polygon via anchor points and paint the area, optionally with outline */
+							uint64_t off = 0U;
+							double value;
+							end = L->n_rows;
+							GMT_prep_tmp_arrays (GMT, end+3, 2);	/* Init or reallocate tmp vectors */
+							/* First copy the given line segment */
+							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
+							GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
+							/* Now add 2 anchor points and explicitly close by repeating 1st point */
+							switch (Ctrl->L.mode) {
+								case XHI:	off = 1;	/* To select the x max entry */
+								case XLO:
+								case ZLO:
+									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
+									GMT->hidden.mem_coord[GMT_X][end] = GMT->hidden.mem_coord[GMT_X][end+1] = value;
+									GMT->hidden.mem_coord[GMT_Y][end] = L->coord[GMT_Y][end-1];
+									GMT->hidden.mem_coord[GMT_Y][end+1] = L->coord[GMT_Y][0];
+									break;
+								case YHI:	off = 1;	/* To select the y max entry */
+								case YLO:
+								case ZHI:
+									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];
+									GMT->hidden.mem_coord[GMT_Y][end] = GMT->hidden.mem_coord[GMT_Y][end+1] = value;
+									GMT->hidden.mem_coord[GMT_X][end] = L->coord[GMT_X][end-1];
+									GMT->hidden.mem_coord[GMT_X][end+1] = L->coord[GMT_X][0];
+									break;
+							}
+							/* Explicitly close polygon */
+							GMT->hidden.mem_coord[GMT_X][end+2] = L->coord[GMT_X][0];
+							GMT->hidden.mem_coord[GMT_Y][end+2] = L->coord[GMT_Y][0];
+							end += 3;
+						}
+						/* Project and get ready */
+						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end)) == 0) continue;
 						if (Ctrl->L.outline) GMT_setpen (GMT, &Ctrl->L.pen);	/* Select separate pen for polygon outline */
 						if (Ctrl->G.active)	/* Specify the fill, possibly set outline */
 							GMT_setfill (GMT, &current_fill, Ctrl->L.outline);
