@@ -97,30 +97,6 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 };
 
 /* Note: If changes are made to GMT_enum_vecattr you must also change pslib.h: PSL_enum_vecattr */
-#if 0
-enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head */
-	GMT_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
-	GMT_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
-	GMT_VEC_END		= 8,		/* Place vector head at end of vector */
-	GMT_VEC_HEADS		= 12,		/* Mask for either head end */
-	GMT_VEC_JUST_B		= 0,		/* Align vector beginning at (x,y) */
-	GMT_VEC_JUST_C		= 16,		/* Align vector center at (x,y) */
-	GMT_VEC_JUST_E		= 32,		/* Align vector end at (x,y) */
-	GMT_VEC_JUST_S		= 64,		/* Align vector center at (x,y) */
-	GMT_VEC_ANGLES		= 128,		/* Got start/stop angles instead of az, length */
-	GMT_VEC_POLE		= 256,		/* Got pole of small/great circle */
-	GMT_VEC_OUTLINE		= 512,		/* Draw vector head outline using default pen */
-	GMT_VEC_OUTLINE2	= 1024,		/* Draw vector head outline using supplied v_pen */
-	GMT_VEC_FILL		= 2048,		/* Fill vector head using default fill */
-	GMT_VEC_FILL2		= 4096,		/* Fill vector head using supplied v_fill) */
-	GMT_VEC_MARC90		= 8192,		/* Matharc only: if angles subtend 90, draw straight angle symbol */
-	GMT_VEC_SCALE		= 32768};	/* Not needed in pslib: If not set we determine the required inch-to-degree scale */
-#define GMT_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
-#define GMT_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */
-#define GMT_vec_side(status) ((status&3) ? 2*(status&3)-3 : 0)	/* Return side selection as 0,-1,+1 */
-#define GMT_vec_outline(status) ((status&GMT_VEC_OUTLINE) || (status&GMT_VEC_OUTLINE2))	/* Return true if outline is currently selected */
-#define GMT_vec_fill(status) ((status&GMT_VEC_FILL) || (status&GMT_VEC_FILL2))		/* Return true if fill is currently selected */
-#endif
 
 enum GMT_enum_vecattr {GMT_VEC_BEGIN = 1,	/* Place vector head at beginning of vector. Add GMT_VEC_BEGIN_L for left only, GMT_VEC_BEGIN_R for right only */
 	GMT_VEC_END		= 2,		/* Place vector head at end of vector.  Add GMT_VEC_END_L for left only, and GMT_VEC_END_R for right only */
@@ -147,6 +123,7 @@ enum GMT_enum_vecattr {GMT_VEC_BEGIN = 1,	/* Place vector head at beginning of v
 #define GMT_vec_justify(status) ((status>>6)&3)			/* Return justification as 0-3 */
 #define GMT_vec_head(status) ((status)&3)			/* Return head selection as 0-3 */
 #define GMT_vec_side(status,head) (((status>>(2+2*head))&3) ? 2*((status>>(2+2*head))&3)-3 : 0)	/* Return side selection for this head as 0,-1,+1 */
+
 #define GMT_vec_outline(status) ((status&GMT_VEC_OUTLINE) || (status&GMT_VEC_OUTLINE2))	/* Return true if outline is currently selected */
 #define GMT_vec_fill(status) ((status&GMT_VEC_FILL) || (status&GMT_VEC_FILL2))		/* Return true if fill is currently selected */
 

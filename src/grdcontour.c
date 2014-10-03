@@ -186,9 +186,9 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -A to force all to become A].\n");
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotation label information. [Default is no annoted contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotation label settings [Default is no annoted contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give annotation interval OR - to disable all contour annotations\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   implied by the informatino provided in -C.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   implied by the information provided in -C.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively prepend + to annotation interval to plot that as a single contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
 	GMT_label_syntax (API->GMT, 5, 0);
