@@ -254,6 +254,20 @@ linear map, use
 
     gmt psxy misc.d -R0/100/-50/100 -JX6i -S -Ccpt -B20 > map.ps
 
+If you need to place vectors on a plot you can choose among
+straight Cartesian vectors, math circular vectors, or geo-vectors (these
+form small or great circles on the Earth).  These can have optional heads at either
+end, and heads may be the traditional arrow, a circle, or a terminal cross-line.
+To place a few vectors with
+a circle at the start location and an arrow head at the end, try
+
+   ::
+
+    gmt psxy -R0/50/-50/50 -JX6i -Sv0.15i+bc+ea -Gyellow -W0.5p -Baf << EOF > map.ps
+    10 10 45 2i
+    30 -20 0 1.5i
+    EOF
+
 Segment Header Parsing
 ----------------------
 
