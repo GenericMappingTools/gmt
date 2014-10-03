@@ -971,19 +971,22 @@ void GMT_dist_syntax (struct GMT_CTRL *GMT, char option, char *string)
 void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 {	/* Use mode to control which options are displayed */
 	GMT_message (GMT, "\t   Append length of vector head, with optional modifiers:\n");
+	GMT_message (GMT, "\t   [Left and right are defined by looking from start to end of vector]\n");
 	GMT_message (GMT, "\t     +a<angle> to set angle of the vector head apex [30]\n");
 	GMT_message (GMT, "\t     +b to place a vector head at the beginning of the vector [none].\n");
 	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
+	GMT_message (GMT, "\t       For arrow, append l|r to only draw left or right side of this head [both sides].\n");
 	GMT_message (GMT, "\t     +e to place a vector head at the end of the vector [none].\n");
 	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
+	GMT_message (GMT, "\t       For arrow, append l|r to only draw left or right side of this head [both sides].\n");
 	if (mode & 8) GMT_message (GMT, "\t     +g<fill> to set head fill or use - to turn off fill [default fill].\n");
 	if (mode & 1) GMT_message (GMT, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
-	GMT_message (GMT, "\t     +l to only draw left side of vector head [both].\n");
+	GMT_message (GMT, "\t     +l to only draw left side of all specified vector heads [both sides].\n");
 	GMT_message (GMT, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
 	GMT_message (GMT, "\t     +o[<plon/plat>] sets pole [north pole] for great or small circles; only give length via input.\n");
 	if (mode & 4) GMT_message (GMT, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
 	GMT_message (GMT, "\t     +q if start and stop opening angle is given instead of (azimuth,length) on input.\n");
-	GMT_message (GMT, "\t     +r to only draw right side of vector head [both].\n");
+	GMT_message (GMT, "\t     +r to only draw right side of all specified vector heads [both sides].\n");
 	if (mode & 2) GMT_message (GMT, "\t     +s if (x,y) coordinates of tip is given instead of (azimuth,length) on input.\n");
 }
 
@@ -2972,7 +2975,7 @@ int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file)
 	fclose (fp);
 	gmt_verify_encodings (GMT);
 
-	if (error) GMT_message (GMT, "Warning: %d conversion errors in file %s!\n", error, file);
+	if (error) GMT_message (GMT, "Warning: %d GMT Defaults conversion errors in file %s!\n", error, file);
 
 	return (GMT_NOERROR);
 }
@@ -2997,13 +3000,14 @@ unsigned int GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			param = opt->arg;
 		else {					/* This must be value */
 			n_errors += gmt_setparameter (GMT, param, opt->arg);
-			param = NULL;
+			param = NULL;	/* Get ready for next parameter */
 		}
 	}
 
-	n_errors += (param != NULL);	/* param should be NULL */
+	if (param != NULL)	/* param should be NULL unless no value were added */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Last GMT Defaults parameter from command options had no value\n");
 
-	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL, " %d conversion errors\n", n_errors);
+	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL, " %d GMT Defaults conversion errors from command options\n", n_errors);
 	return (n_errors);
 }
 
@@ -5812,7 +5816,7 @@ int GMT_savedefaults (struct GMT_CTRL *GMT, char *file)
 	fclose (fpi);
 	if (fpo != GMT->session.std[GMT_OUT]) fclose (fpo);
 
-	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %d conversion errors while writing gmt.conf\n", error);
+	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %d GMT Defaults conversion errors while writing gmt.conf\n", error);
 
 	return (0);
 }
@@ -8689,22 +8693,34 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 			case 'b':	/* Vector head at beginning point */
 				S->v.status |= GMT_VEC_BEGIN;
 				switch (p[1]) {
+					case 'a': S->v.v_kind[0] = GMT_VEC_ARROW;	/* Explicitly selected arrow head, must check for other modifiers */
+		  	  			if (p[2] == 'l') S->v.status |= GMT_VEC_BEGIN_L;	/* Only left  half of head requested */
+		  	  			else if (p[2] == 'r') S->v.status |= GMT_VEC_BEGIN_R;	/* Only right half of head requested */
+						break;
 					case 'c': S->v.v_kind[0] = GMT_VEC_CIRCLE;	break;
 					case 't': S->v.v_kind[0] = GMT_VEC_TERMINAL;	break;
-					default: S->v.v_kind[0] = GMT_VEC_ARROW;	break;
+			  	 	case 'l': S->v.v_kind[0] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_BEGIN_L;	break;	/* Only left  half of head requested */
+			  	  	case 'r': S->v.v_kind[0] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_BEGIN_R;	break;	/* Only right half of head requested */
+					default:  S->v.v_kind[0] = GMT_VEC_ARROW;	break;
 				}
 				break;
 			case 'e':	/* Vector head at end point */
 				S->v.status |= GMT_VEC_END;
 				switch (p[1]) {
+					case 'a': S->v.v_kind[1] = GMT_VEC_ARROW;	/* Explicitly selected arrow head, must check for other modifiers */
+		  	  			if (p[2] == 'l') S->v.status |= GMT_VEC_END_L;		/* Only left  half of head requested */
+		  	  			else if (p[2] == 'r') S->v.status |= GMT_VEC_END_R;	/* Only right half of head requested */
+						break;
 					case 'c': S->v.v_kind[1] = GMT_VEC_CIRCLE;	break;
 					case 't': S->v.v_kind[1] = GMT_VEC_TERMINAL;	break;
-					default: S->v.v_kind[1] = GMT_VEC_ARROW;	break;
+			  	 	case 'l': S->v.v_kind[1] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_L;	break;	/* Only left  half of head requested */
+			  	  	case 'r': S->v.v_kind[1] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_R;	break;	/* Only right half of head requested */
+					default:  S->v.v_kind[1] = GMT_VEC_ARROW;	break;
 				}
 				break;
-			case 'l': S->v.status |= GMT_VEC_LEFT;		break;	/* Vector head on left half only */
+			case 'l': S->v.status |= (GMT_VEC_BEGIN_L + GMT_VEC_END_L);	break;	/* Obsolete modifier for left halfs at active heads */
 			case 'q': S->v.status |= GMT_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
-			case 'r': S->v.status |= GMT_VEC_RIGHT;		break;	/* Vector head on right half only */
+			case 'r': S->v.status |= (GMT_VEC_BEGIN_R + GMT_VEC_END_R);	break;	/* Obsolete modifier for right halfs at active heads */
 			case 's': S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
 			case 'j':	/* Vector justification */
 				if (symbol == 'm') {

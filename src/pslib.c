@@ -2845,10 +2845,10 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 * add 4 to param[6] if you want to use a straight angle
 	 * symbol if the opening is 90.  */
 
-	int i, side, heads, outline, fill, sign[2] = {+1, -1};
+	int i, side[2], heads, outline, fill, sign[2] = {+1, -1};
 	unsigned int status, kind[2];
 	double head_arc_length, head_half_width, arc_width, da, da_c, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape;
-	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift, circ_r, xx[2], yy[2];
+	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift[2] = {0.0, 0.0}, circ_r, xx[2], yy[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
 	status = (unsigned int)lrint (param[7]);
@@ -2864,7 +2864,6 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	head_half_width = 0.5 * param[4];	  /* Head half-width in inch */
 	arc_width = param[5];			  /* Arc width in inch */
 	shape = param[6];			  /* Vector head shape (0-1) */
-	side = PSL_vec_side (status);		  /* -1 = left-only, +1 = right-only, 0 = normal head */
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
@@ -2872,17 +2871,22 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 
 	da = head_arc_length * 180.0 / (M_PI * r);	/* Angle corresponding to the arc length */
 	da_c = circ_r * 180.0 / (M_PI * r);	/* Angle corresponding to the circle length */
-	/* rshift kicks in when we want a half-arrow head.  In that case we dont want it to be
-	 * exactly half since the vector line will then stick out 1/2 line thickness.  So we adjust
-	 * for this half-thickness by adding/subtracting from the radius accordingly, using r2 */
-	rshift = 0.5 * side * arc_width;
 
 	for (i = 0; i < 2; i++) {	/* Possibly shorten angular arc if arrow heads take up space */
+		side[i] = PSL_vec_side (status, i);		  /* -1 = left-only, +1 = right-only, 0 = normal head for this end */
 		tangle[i] = angle[i];	/* Angle if no head is present */
 		off[i] = (kind[i] == PSL_VEC_ARROW) ? sign[i]*da*(1.0-0.5*shape) : 0.0;		/* Arc length from tip to backstop */
 		if ((heads & (i+1)) && side && kind[i] == PSL_VEC_CIRCLE) off[i] -= 0.5 * sign[i] * da_c;
 		if (heads & (i+1)) tangle[i] += off[i];	/* Change arc angle by headlength or half-circle arc */
 	}
+	side[0] = -side[0];	/* Because of it was initially implemented */
+	/* rshift kicks in when we want a half-arrow head.  In that case we dont want it to be
+	 * exactly half since the vector line will then stick out 1/2 line thickness.  So we adjust
+	 * for this half-thickness by adding/subtracting from the radius accordingly, using r2,
+	 * but only if the two heads agree. */
+	rshift[0] = 0.5 * side[0] * arc_width;
+	rshift[1] = 0.5 * side[1] * arc_width;
+
 	PSL_setlinewidth (PSL, arc_width * PSL_POINTS_PER_INCH);
 	PSL_plotarc (PSL, 0.0, 0.0, r, tangle[0], tangle[1], PSL_MOVE | PSL_STROKE);	/* Draw the (possibly shortened) arc */
 	if (heads) {	/* Will draw at least one head */
@@ -2892,19 +2896,20 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	for (i = 0; i < 2; i++) {	/* For both ends */
 		if ((heads & (i+1)) == 0) continue;	/* No arrow head at this angle */
 		A = D2R * angle[i];	sa = sin (A);	ca = cos (A);
-		r2 = r + sign[i] * rshift;
+		r2 = r + sign[i] * rshift[i];
 		xt = r2 * ca;	yt = r2 * sa;	/* Tip coordinates */
 		switch (kind[i]) {
 			case PSL_VEC_ARROW:
 				B = D2R * (angle[i] + sign[i] * da);	sb = sin (B);	cb = cos (B);
 				PSL_command (PSL, "V\n");	/* Do this inside gsave/resore since we are clipping */
-				if (side != +sign[i]) {	/* Need right side of arrow head */
+				if (side[i] != +sign[i]) {	/* Need right side of arrow head */
 					xr = (r2 + head_half_width) * cb;	yr = (r2 + head_half_width) * sb;	/* Outer flank coordinates */
 					psl_get_origin (xt, yt, xr, yr, r2, &xo, &yo, &bo1, &bo2);
 					if (i == 0 && bo2 > bo1)
 						bo2 -= 360.0;
 					else if (i == 1 && bo1 > bo2)
 						bo1 -= 360.0;
+
 					PSL_plotarc (PSL, xo, yo, r2, bo2, bo1, PSL_MOVE);	/* Draw the arrow arc from tip to outside flank */
 					A = D2R * (tangle[i]);	sa = sin (A);	ca = cos (A);
 					xv = r2 * ca - xr;	yv = r2 * sa - yr;	/* Back point coordinates */
@@ -2913,7 +2918,7 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 				else {	/* Draw from tip to center back reduced by shape */
 					PSL_plotarc (PSL, 0.0, 0.0, r2, angle[i], tangle[i], PSL_MOVE);
 				}
-				if (side != -sign[i]) {	/* Need left side of arrow head */
+				if (side[i] != -sign[i]) {	/* Need left side of arrow head */
 					xl = (r2 - head_half_width) * cb;	yl = (r2 - head_half_width) * sb;	/* Inner flank coordinates */
 					psl_get_origin (xt, yt, xl, yl, r2, &xi, &yi, &bi1, &bi2);
 					if (i == 0 && bi1 < bi2)
@@ -2929,9 +2934,9 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 				break;
 			case PSL_VEC_CIRCLE:
 				PSL_command (PSL, "V\n");	/* Do this inside gsave/resore since we are clipping */
-				if (side == -1)	/* Need left side */
+				if (side[i] == -1)	/* Need left side */
 					PSL_plotarc (PSL, xt, yt, circ_r, angle[i]+90.0, angle[i]+270.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
-				else if (side == +1)	/* Need right side */
+				else if (side[i] == +1)	/* Need right side */
 					PSL_plotarc (PSL, xt, yt, circ_r, angle[i]-90.0, angle[i]+90.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
 				else
 					PSL_plotarc (PSL, xt, yt, circ_r, 0.0, 360.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
@@ -2940,10 +2945,10 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 			case PSL_VEC_TERMINAL:
 				xt = r * ca;	yt = r * sa;	/* Tip coordinates */
 		 		xx[0] = xx[1] = xt;	yy[0] = yy[1] = yt;
-				if (side == -1)	{	/* Need left side */
+				if (side[i] == -1)	{	/* Need left side */
 				 	xx[0] = (r-head_half_width) * ca;	yy[0] = (r-head_half_width) * sa;
 				}
-				else if (side == +1) {	/* Need right side */
+				else if (side[i] == +1) {	/* Need right side */
 				 	xx[1] = (r+head_half_width) * ca;	yy[1] = (r+head_half_width) * sa;
 				}
 				else {
@@ -2970,8 +2975,8 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 */
 
 	double angle, xtip, ytip, r, tailwidth, headlength, headwidth, headshape, length_inch;
-	double xx[4], yy[4], off[2], yshift;
-	int length, asymmetry, n, heads, outline, fill;
+	double xx[4], yy[4], off[2], yshift[2];
+	int length, asymmetry[2], n, heads, outline, fill;
 	unsigned int status, kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
@@ -2991,15 +2996,16 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
-	asymmetry = PSL_vec_side (status);		  /* -1 = left-only, +1 = right-only, 0 = normal head */
+	asymmetry[0] = -PSL_vec_side (status, 0);		  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
+	asymmetry[1] = PSL_vec_side (status, 1);		  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
 	r = sqrt (headlength * headwidth / M_PI);	/* Same area as vector head */
 	
 	PSL_command (PSL, "V %d %d T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 	xx[0] = (heads & 1) ? off[0] : 0.0;
 	xx[1] = (heads & 2) ? length_inch - off[1] : length_inch;
-	if (heads & 1 && asymmetry && kind[0] == PSL_VEC_CIRCLE) xx[0] = -r;
-	if (heads & 2 && asymmetry && kind[1] == PSL_VEC_CIRCLE) xx[1] += r;
+	if (heads & 1 && asymmetry[0] && kind[0] == PSL_VEC_CIRCLE) xx[0] = -r;
+	if (heads & 2 && asymmetry[1] && kind[1] == PSL_VEC_CIRCLE) xx[1] += r;
 	PSL_plotsegment (PSL, xx[0], 0.0, xx[1], 0.0);				/* Draw vector line body */
 
 	if (heads == 0) {	/* No heads requested */
@@ -3007,28 +3013,30 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		return (PSL_NO_ERROR);
 	}
 
-	yshift = 0.5 * asymmetry * tailwidth;
+	/* Must switch assymetry for start head since implemented backwards */
+	yshift[0] = 0.5 * asymmetry[0] * tailwidth;
+	yshift[1] = 0.5 * asymmetry[1] * tailwidth;
 
 	if (heads & 1) {	/* Need head at beginning, pointing backwards */
 		switch (kind[0]) {
 			case PSL_VEC_ARROW:
-				xx[0] = 0.0; yy[0] = -yshift;	n = 1;	/* Vector tip */
-				if (asymmetry != +1) {	/* Need left side */
+				xx[0] = 0.0; yy[0] = -yshift[0];	n = 1;	/* Vector tip */
+				if (asymmetry[0] != +1) {	/* Need left side */
 					xx[n] = headlength; yy[n++] = -headwidth;
 				}
-				if (asymmetry || headshape != 0.0) {	/* Need center back of head */
-					xx[n] = 0.5 * (2.0 - headshape) * headlength; yy[n++] = -yshift;
+				if (asymmetry[0] || headshape != 0.0) {	/* Need center back of head */
+					xx[n] = 0.5 * (2.0 - headshape) * headlength; yy[n++] = -yshift[0];
 				}
-				if (asymmetry != -1) {	/* Need right side */
+				if (asymmetry[0] != -1) {	/* Need right side */
 					xx[n] = headlength; yy[n++] = headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				break;
 			case PSL_VEC_CIRCLE:
-				if (asymmetry == -1)	/* Need left side */
+				if (asymmetry[0] == -1)	/* Need left side */
 					PSL_plotarc (PSL, 0.0, 0.0, r, 0.0, 180.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
-				else if (asymmetry == +1)	/* Need right side */
+				else if (asymmetry[0] == +1)	/* Need right side */
 					PSL_plotarc (PSL, 0.0, 0.0, r, 180.0, 360.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
 				else
 					PSL_plotarc (PSL, 0.0, 0.0, r, 0.0, 360.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
@@ -3036,9 +3044,9 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				break;
 			case PSL_VEC_TERMINAL:
 				xx[0] = xx[1] = yy[0] = yy[1] = 0.0;	/* Terminal line */
-				if (asymmetry == -1)	/* Left side */
+				if (asymmetry[0] == -1)	/* Left side */
 					yy[1] = headwidth;
-				else if (asymmetry == +1)	/* Right side */
+				else if (asymmetry[0] == +1)	/* Right side */
 					yy[1] = -headwidth;
 				else {
 					yy[0] = -headwidth;
@@ -3047,6 +3055,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
 				break;
 		}
+
 	}
 	PSL_command (PSL, "U\n");
 	if (heads & 2) {	/* Need head at end, pointing forwards */
@@ -3054,23 +3063,23 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 		switch (kind[1]) {
 			case PSL_VEC_ARROW:
-				xx[0] = 0.0; yy[0] = yshift;	n = 1;	/* Vector tip */
-				if (asymmetry != +1) {	/* Need left side */
+				xx[0] = 0.0; yy[0] = yshift[1];	n = 1;	/* Vector tip */
+				if (asymmetry[1] != +1) {	/* Need left side */
 					xx[n] = -headlength; yy[n++] = headwidth;
 				}
-				if (asymmetry || headshape != 0.0) {	/* Need center back of head */
-					xx[n] = -0.5 * (2.0 - headshape) * headlength; yy[n++] = yshift;
+				if (asymmetry[1] || headshape != 0.0) {	/* Need center back of head */
+					xx[n] = -0.5 * (2.0 - headshape) * headlength; yy[n++] = yshift[1];
 				}
-				if (asymmetry != -1) {	/* Need right side */
+				if (asymmetry[1] != -1) {	/* Need right side */
 					xx[n] = -headlength; yy[n++] = -headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s U\n", dump[fill], line[outline]);
 				break;	/* Finalize, then reset outline parameter */
 			case PSL_VEC_CIRCLE:
-				if (asymmetry == -1)	/* Need left side */
+				if (asymmetry[1] == -1)	/* Need left side */
 					PSL_plotarc (PSL, 0.0, 0.0, r, 0.0, 180.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
-				else if (asymmetry == +1)	/* Need right side */
+				else if (asymmetry[1] == +1)	/* Need right side */
 					PSL_plotarc (PSL, 0.0, 0.0, r, 180.0, 360.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
 				else
 					PSL_plotarc (PSL, 0.0, 0.0, r, 0.0, 360.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
@@ -3078,9 +3087,9 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				break;
 			case PSL_VEC_TERMINAL:
 				xx[0] = xx[1] = yy[0] = yy[1] = 0.0;	/* Terminal line */
-				if (asymmetry == -1)	/* Left side */
+				if (asymmetry[1] == -1)	/* Left side */
 					yy[1] = headwidth;
-				else if (asymmetry == +1)	/* Right side */
+				else if (asymmetry[1] == +1)	/* Right side */
 					yy[1] = -headwidth;
 				else {
 					yy[0] = -headwidth;
