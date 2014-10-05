@@ -8,8 +8,8 @@ grdreformat
 
     grdreformat - Convert between different grid formats
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -162,7 +162,7 @@ fails you may append the =\ *id* suffix to the filename *ingrdfile*.
 | **gd**   | Import/export through GDAL                                    |
 +----------+---------------------------------------------------------------+
 
-Gmt Standard Netcdf Files
+GMT Standard Netcdf Files
 -------------------------
 
 The standard format used for grdfiles is based on netCDF and conforms to
