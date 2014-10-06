@@ -71,14 +71,9 @@ Optional Arguments
     RMS value at each node, respectively. Append **n** to simply count
     the number of data points that were assigned to each node. Append
     **z** to sum multiple values that belong to the same node.
-**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark*
-    Give values for *xname*, *yname*, *zname*, *scale*, *offset*,
-    *invalid*, *title*, and *remark*. To leave some of these values untouched,
-    leave field blank. Empty fields in the end may be skipped. Alternatively,
-    to allow "/" to be part of one of the values, use any non-alphanumeric
-    character (and not the equal sign) as separator by both starting and ending
-    with it. For example:
-    **-D**:*xname*:*yname*:*zname*:*scale*:*offset*:*invalid*:*title*:*remark*:
+
+.. include:: explain_-D.rst_
+
 **-N**\ *nodata*
     No data. Set nodes with no input xyz triplet to this value [Default
     is NaN]. For z-tables, this option is used to replace z-values that

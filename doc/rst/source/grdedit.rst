@@ -53,14 +53,9 @@ Required Arguments
     (i.e., created prior to GMT 3.1) often had excessive slop in
     *x\_inc*, *y\_inc* and an adjustment is necessary. Newer files are
     created correctly.
-**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark*
-    Give values for *xname*, *yname*, *zname*, *scale*, *offset*,
-    *invalid*, *title*, and *remark*. To leave some of these values untouched,
-    leave field blank. Empty fields in the end may be skipped. Alternatively,
-    to allow "/" to be part of one of the values, use any non-alphanumeric
-    character (and not the equal sign) as separator by both starting and ending
-    with it. For example:
-    **-D**:*xname*:*yname*:*zname*:*scale*:*offset*:*invalid*:*title*:*remark*:
+
+.. include:: explain_-D.rst_
+
 **-E**
     Transpose the grid and exchange the *x* and *y* information.
     Incompatible with the other options.
