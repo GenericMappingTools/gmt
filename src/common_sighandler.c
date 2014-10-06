@@ -75,20 +75,24 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #elif defined(SIZEOF_GREG_T)
 # ifdef __x86_64__
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_RIP])
-# elif defined(__arm__)
-#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
 # elif defined(__aarch64__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.pc)
-# elif defined(__powerpc__) || defined(__powerpc64__)
-#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.regs->nip)
+# elif defined( __arm__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
+# elif defined(__s390__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.psw.addr)
 # else
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_EIP])
 # endif
 #else
 # ifdef __x86_64__
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.rip)
-# elif defined( __arm__)
+# elif defined(__aarch64__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.pc)
+# elif defined(__arm__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
+# elif defined(__powerpc__) || defined(__powerpc64__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.regs->nip)
 # else
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.eip)
 # endif
