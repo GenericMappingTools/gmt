@@ -73,7 +73,7 @@ Optional Arguments
     the number of data points that were assigned to each node. Append
     **z** to sum multiple values that belong to the same node.
 
-.. include:: explain_-D.rst_
+.. include:: explain_-D_cap.rst_
 
 **-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You

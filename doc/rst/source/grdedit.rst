@@ -47,8 +47,8 @@ Required Arguments
 *grid*
     Name of the 2-D grid file to modify. (See GRID FILE FORMATS below).
 
-`Optional Arguments`_
----------------------
+Optional Arguments
+------------------
 
 **-A**
     If necessary, adjust the file's *x_inc*, *y_inc* to be compatible
@@ -57,7 +57,7 @@ Required Arguments
     *x_inc*, *y_inc* and an adjustment is necessary. Newer files are
     created correctly.
 
-.. include:: explain_-D.rst_
+.. include:: explain_-D_cap.rst_
 
 **-E**
     Transpose the grid and exchange the *x* and *y* information.
