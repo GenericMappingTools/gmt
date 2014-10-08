@@ -44,17 +44,17 @@ Required Arguments
 *grid*
     Name of the 2-D grid file to modify. (See GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**
-    If necessary, adjust the file's *x\_inc*, *y\_inc* to be compatible
+    If necessary, adjust the file's *x_inc*, *y_inc* to be compatible
     with its domain (or a new domain set with **-R**). Older grid files
     (i.e., created prior to GMT 3.1) often had excessive slop in
-    *x\_inc*, *y\_inc* and an adjustment is necessary. Newer files are
+    *x_inc*, *y_inc* and an adjustment is necessary. Newer files are
     created correctly.
 
-.. include:: explain_-D.rst_
+.. include:: explain_-D_cap.rst_
 
 **-E**
     Transpose the grid and exchange the *x* and *y* information.
