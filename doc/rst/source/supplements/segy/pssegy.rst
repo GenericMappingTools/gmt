@@ -65,6 +65,7 @@ Required Arguments
 *SEGYfile*
     Seismic data set to be imaged
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code

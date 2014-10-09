@@ -59,6 +59,7 @@ defined in (-u^s, -u, s) system.
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
 
 .. |Add_-Rgeo| replace:: If frame is defined from cross-section parameters

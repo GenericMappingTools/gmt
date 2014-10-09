@@ -68,6 +68,7 @@ Optional Arguments
 
     **c** Cubic spline interpolation.
 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
 
 **-Qe**\ \|\ **i**
