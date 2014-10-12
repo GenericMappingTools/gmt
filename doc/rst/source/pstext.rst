@@ -166,7 +166,9 @@ Optional Arguments
     which may be **l**\ (eft), **c**\ (enter), **r**\ (ight), or
     **j**\ (ustified). The segment header is followed by one or more
     lines with paragraph text. Text may contain the escape sequences
-    discussed above. Separate paragraphs with a blank line.
+    discussed above. Separate paragraphs with a blank line.  Note that
+    here, the justification set via **-F+j** applies to the box alignment
+    since the text justification is set by *parjust*.
 **-N**
     Do NOT clip text at map boundaries [Default will clip]. 
 
