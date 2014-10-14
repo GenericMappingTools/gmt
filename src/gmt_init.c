@@ -6555,7 +6555,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
-
+	gmt_free_user_media (GMT);
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);
 #ifdef MEMDEBUG
