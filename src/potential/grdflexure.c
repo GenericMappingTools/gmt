@@ -490,6 +490,8 @@ struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options,
 		GMT_Report (API, GMT_MSG_VERBOSE, "Error reading the data of file %s - file skipped\n", file);
 		return NULL;
 	}
+	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
+	(void) GMT_set_outgrid (API->GMT, file, Orig, &Grid);
 	if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
 		uint64_t node, n_subaerial = 0;
 		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
@@ -501,8 +503,6 @@ struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options,
 		}
 		if (n_subaerial) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were subarial so heights were scaled for the equivalent submerged case\n", n_subaerial);
 	}
-	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
-	(void) GMT_set_outgrid (API->GMT, file, Orig, &Grid);
 	/* From here we address the grid via Grid; we are done with using the address Orig directly. */
 	G = GMT_memory (GMT, NULL, 1, struct FLX_GRID);	/* Allocate a Flex structure */
 	G->K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
@@ -681,7 +681,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	for (t = 0; t < Ctrl->T.n_times; t++) {	/* Free up grid structures */
 		if (G[t] == NULL) continue;	/* Quietly skip containers with no grids */
 		GMT_Destroy_Data (API, &G[t]->Grid);
-		GMT_free (GMT, G[t]->K->info);
+		// GMT_free (GMT, G[t]->K->info);
 		GMT_free (GMT, G[t]->K);
 		GMT_free (GMT, G[t]);
 	}
