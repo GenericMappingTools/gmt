@@ -474,9 +474,9 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 		if (!outside[side]) continue;
 		extend++;
 		if (Ctrl->N.active)
-			GMT_Report (API, GMT_MSG_NORMAL, "Requested subset exceeds data domain on the %s side - nodes in the extra area will be initialized to %g\n", name[type][side], Ctrl->N.value);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Requested subset exceeds data domain on the %s side - nodes in the extra area will be initialized to %g\n", name[type][side], Ctrl->N.value);
 		else
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Requested subset exceeds data domain on the %s side - truncated to match grid bounds\n", name[type][side]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Requested subset exceeds data domain on the %s side - truncated to match grid bounds\n", name[type][side]);
 	}
 
 	/* Make sure output grid is kosher */
