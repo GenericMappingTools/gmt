@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
-[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density* ] [ **-E**\ *n\_terms* ]
+[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density* ] [ **-E**\ *n_terms* ]
 [ **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-Q** ] [ **-T**\ *te/rl/rm/rw*\ [**+m**] ]
@@ -72,7 +72,7 @@ Optional Arguments
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
     do not use **-T**. It also implicitly sets **-N+h**.
-**-E**\ *n\_terms*
+**-E**\ *n_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 3]
 **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
@@ -268,7 +268,7 @@ geographic and we want wavelengths instead of frequency:
 
     gmt gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
 
-To compute the gravity theoretical admittance of a LFB along a 1000 km
+To compute the gravity theoretical admittance of a LFB along a 2000 km
 long profile using the same parameters as above
 
    ::

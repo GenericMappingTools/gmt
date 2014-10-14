@@ -100,6 +100,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The WESN you specify must be within the WESN of the input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If in doubt, run grdinfo first and check range of old file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to initialize nodes outside current region [Default is NaN].\n");
