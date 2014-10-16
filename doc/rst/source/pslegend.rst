@@ -184,6 +184,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     **pslegend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
+    Note that for a line segment you should use the horizontal dash symbol (**-**).
     If just a single size if given then **pslegend** will provide reasonable
     arguments to plot the symbol  (See `Defaults`_).
     Alternatively, combine the required
