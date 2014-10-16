@@ -179,7 +179,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     no *fill* or outline (*pen*) is required. When plotting just a
     symbol, without text, *dx2* and *text* can be omitted. Three **psxy**
     symbols may take special modifiers: front (**f**), quoted line (**q**) and vector (**v**). 
-    You can append modifiers to the symbol and affect how the fronts quoted lines and
+    You can append modifiers to the symbol and affect how the fronts, quoted lines and
     vectors are presented (see :doc:`psxy` man page for modifiers).
     **pslegend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
