@@ -19,7 +19,7 @@ Synopsis
 [ **-C**\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ] [ **-N**\ *nodata* ]
 [ **-Q** ] [ **-Z**\ *scale* ]
 [ |SYN_OPT-V| ]
-[ **-W** ]
+[ **-W**\ [**z**] ]
 [ |SYN_OPT-f| ]
 [ **-r** ]
 
@@ -101,9 +101,9 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**
-    Do not blend, just output the weights used for each node. This
-    option is valid when only one input grid is provided [Default makes the blend].
+**-W**\ [**z**]
+    Do not blend, just output the weights used for each node [Default makes the blend].
+    Append **z** to write the weight*z sum instead.
 
 **-Z**\ *scale*
     Scale output values by *scale* before writing to file. [1]. 

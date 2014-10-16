@@ -80,8 +80,9 @@ struct GRDBLEND_CTRL {
 		bool active;
 		double scale;
 	} Z;
-	struct W {	/* -W */
+	struct W {	/* -W[z] */
 		bool active;
+		unsigned int mode;	/* 1 if -Wz was given */
 	} W;
 };
 
@@ -451,7 +452,7 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u]\n\t[-N<nodata>] [-Q] [%s] [-W] [-Z<scale>] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -480,7 +481,8 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Grdraster-compatible output without leading grd header [Default writes GMT grid file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Output grid must be in one of the native binary formats.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Write out weights only (only applies to a single input file) [make blend grid].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Write out weight-sum only [make blend grid].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append z to write weight-sum w times z instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply z-values by this scale before writing to file [1].\n");
 	GMT_Option (API, "f,r,.");
 	
@@ -554,6 +556,7 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 				break;
 			case 'W':	/* Write weights instead */
 				Ctrl->W.active = true;
+				if (opt->arg[0] == 'z') Ctrl->W.mode = 1;
 				break;
 			case 'Z':	/* z-multiplier */
 				Ctrl->Z.active = true;
@@ -579,7 +582,7 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 
 int GMT_grdblend (void *V_API, int mode, void *args)
 {
-	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final;
+	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case;
 	int status, pcol, err, error;
 	bool reformat, wrap_x, write_all_at_once = false;
 	
@@ -655,10 +658,6 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 
 	if (status < 0) Return (EXIT_FAILURE);	/* Something went wrong in init_blend_job */
 	n_blend = status;
-	if (Ctrl->W.active && n_blend > 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -W option: Only applies when there is a single input grid file\n");
-		Return (EXIT_FAILURE);
-	}
 	if (!Ctrl->W.active && n_blend == 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Only 1 grid found; no blending will take place\n");
 	}
@@ -696,6 +695,8 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	
 	if (Ctrl->Z.active) GMT_Report (API, GMT_MSG_VERBOSE, "Output data will be scaled by %g\n", Ctrl->Z.scale);
 
+	out_case = (Ctrl->W.active) ? 1 + Ctrl->W.mode : 0;
+	
 	Grid->header->z_min = DBL_MAX;	Grid->header->z_max = -DBL_MAX;	/* These will be updated in the loop below */
 	wrap_x = (GMT_is_geographic (GMT, GMT_OUT));	/* Periodic geographic grid */
 	if (wrap_x) nx_360 = urint (360.0 * Grid->header->r_inc[GMT_X]);
@@ -750,12 +751,18 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 			}
 
 			if (m) {	/* OK, at least one grid contributed to an output value */
-				if (!Ctrl->W.active) {		/* Want output z blend */
-					z[col] = (float)((w == 0.0) ? 0.0 : z[col] / w);	/* Get weighted average z */
-					if (Ctrl->Z.active) z[col] *= (float)Ctrl->Z.scale;		/* Apply the global scale here */
+				switch (out_case) {
+					case 0: /* Blended average */
+						z[col] = (float)((w == 0.0) ? 0.0 : z[col] / w);	/* Get weighted average z */
+						if (Ctrl->Z.active) z[col] *= (float)Ctrl->Z.scale;	/* Apply the global scale here */
+						break;
+					case 1:	/* Just weights */
+						z[col] = (float)w;				/* Only interested in the weights */
+						break;
+					case 2:	/* w*z = sum of z */
+						z[col] = (float)(z[col] * w);
+						break;
 				}
-				else		/* Get the weight only */
-					z[col] = (float)w;				/* Only interested in the weights */
 				n_fill++;						/* One more cell filled */
 				if (z[col] < Grid->header->z_min) Grid->header->z_min = z[col];	/* Update the extrema for output grid */
 				if (z[col] > Grid->header->z_max) Grid->header->z_max = z[col];
