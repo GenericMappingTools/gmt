@@ -31,16 +31,16 @@ where module is the name of a GMT module and the options are those
 that pertain to that particular module.  If no module is given then
 several other options are available:
 
-**--help**
+**-**\ **-help**
     List and description of GMT modules.
 
-**--version**
+**-**\ **-version**
     Print version and exit.
 
-**--show-datadir**
+**-**\ **-show-datadir**
     Show data directory and exit.
 
-**--show-bindir** 
+**-**\ **-show-bindir** 
     Show directory of executables and exit.
 
 **=**
