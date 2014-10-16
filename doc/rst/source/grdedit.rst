@@ -15,7 +15,7 @@ Synopsis
 
 **grdedit** *grid* [ **-A** ]
 [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
-[ **-E** ]
+[ **-E**\ [**-r**\ |\ **+r**\ \| **t**] ]
 [ **-J**\ *parameters* ]
 [ **-N**\ *table* ]
 [ |SYN_OPT-R| ]
@@ -38,8 +38,8 @@ any]. As an option, global, geographical grids (with 360 degrees
 longitude range) can be rotated in the east-west direction, and
 individual nodal values can be replaced from a table of *x*, *y*, *z*
 values. **grdedit** only operates on files containing a grdheader. Note:
-If it is important to retain the original data you should work on a copy
-of that file. 
+If it is important to retain the original data you should use **-G**
+to save the modified grid to a new file. 
 
 Required Arguments
 ------------------
@@ -59,9 +59,12 @@ Optional Arguments
 
 .. include:: explain_-D_cap.rst_
 
-**-E**
-    Transpose the grid and exchange the *x* and *y* information.
-    Incompatible with the other options.
+**-E**\ [**-r**\ |\ **+r**\ \| **t**]
+    Transform the grid in one of three ways and in the process interchange the *x* and *y* information:
+    (1) **E-r** will rotate the grid 90 degrees counter-clockwise (CCW),
+    (2) **E+r** will rotate the grid 90 degrees clockwise (CW), and
+    (3) **Et** will transpose the grid [Default].
+    Incompatible with the other options (except **-G**).
 
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be reconized by GDAL.
@@ -142,6 +145,13 @@ this information, run
    ::
 
     gmt grdedit junk.nc -fg
+
+To rotate the grid oblique.nc 90 degrees counter-clockwise and write out
+the rotated grid to a new file, run
+
+   ::
+
+    gmt grdedit oblique.nc -E+r -Goblique_rot.nc
 
 See Also
 --------
