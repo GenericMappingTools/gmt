@@ -15,7 +15,7 @@ Synopsis
 
 **grdedit** *grid* [ **-A** ]
 [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
-[ **-E**\ [**-r**\ |\ **+r**\ \| **t**] ]
+[ **-E**\ [**a**\ |\ **h**\ |\ **l**\ \| **r** |\ **t**\ \| **v**] ]
 [ **-G**\ *outgrid* ]
 [ **-J**\ *parameters* ]
 [ **-N**\ *table* ]
@@ -60,11 +60,15 @@ Optional Arguments
 
 .. include:: explain_-D_cap.rst_
 
-**-E**\ [**-r**\ |\ **+r**\ \| **t**]
-    Transform the grid in one of three ways and in the process interchange the *x* and *y* information:
-    (1) **E-r** will rotate the grid 90 degrees counter-clockwise (CCW),
-    (2) **E+r** will rotate the grid 90 degrees clockwise (CW), and
-    (3) **Et** will transpose the grid [Default].
+**-E**\ [**a**\ |\ **h**\ |\ **l**\ \| **r** |\ **t**\ \| **v**]
+    Transform the grid in one of six ways and in (for **l**\ \| **r** |\ **t**)
+    interchange the *x* and *y* information:
+    (1) **Ea** will rotate the grid around 180 degrees,
+    (2) **Eh** will flip the grid horizontally (left-to-right),
+    (3) **El** will rotate the grid 90 degrees counter-clockwise (left),
+    (4) **Er** will rotate the grid 90 degrees clockwise (right),
+    (5) **Et** will transpose the grid [Default],
+    (6) **Ev** will flip the grid vertically (to-to-bottom),
     Incompatible with the other options (except **-G**).
 
 **-G**\ *outgrid*
@@ -156,7 +160,7 @@ the rotated grid to a new file, run
 
    ::
 
-    gmt grdedit oblique.nc -E+r -Goblique_rot.nc
+    gmt grdedit oblique.nc -El -Goblique_rot.nc
 
 See Also
 --------

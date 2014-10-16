@@ -52,9 +52,10 @@ struct GRDEDIT_CTRL {
 		bool active;
 		char *information;
 	} D;
-	struct E {	/* -E[-|+r] */
+	struct E {	/* -E[a|h|l|r|t|v] */
 		bool active;
-		int mode;	/* -1 rotate -90 degrees, 0 = transpose, +1 = rotate +90 degrees */
+		char mode;	/* l rotate 90 degrees left (CCW), t = transpose, r = rotate 90 degrees right (CW) */
+				/* a rotate around (180), h flip grid horizontally (FLIPLR), v flip grid vertically (FLIPUD) */
 	} E;
 	struct G {
 		bool active;
@@ -96,7 +97,7 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdedit <grid> [-A] [%s]\n", GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[-r|+r|t]] [-G<outgrid>] [-N<table>] [%s] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [-N<table>] [%s] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n", GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -105,10 +106,13 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information; leave field blank to get default value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Tranpose or rotate the entire grid (this will exchange x and y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -E-r Rotate grid 90 degrees clockwise.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -E+r Rotate grid 90 degrees counter-clockwise.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Et Transpose grid [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Tranpose or rotate the entire grid (this may exchange x and y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  a Rotate grid around 180 degrees.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  h Flip grid left-to-right (as grdmath FLIPLR).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  l Rotate grid 90 degrees left (counter-clockwise).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  r Rotate grid 90 degrees right (clockwise).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  t Transpose grid [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  v Flip grid top-to-bottom (as grdmath FLIPUD).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Tranpose the entire grid (this will exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify new output grid file [Default updates given grid file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
@@ -158,9 +162,14 @@ int GMT_grdedit_parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct G
 				break;
 			case 'E':	/* Transpose or rotate grid */
 				Ctrl->E.active = true;
-				if (!strncmp (opt->arg, "-r", 2)) Ctrl->E.mode = -1;
-				else if (!strncmp (opt->arg, "+r", 2) || opt->arg[0] == 'r') Ctrl->E.mode = +1;
-				else Ctrl->E.mode = 0;
+				if (opt->arg[0] == '\0')	/* Default transpose */
+					Ctrl->E.mode = 't';
+				else if (strchr ("ahlrtv", opt->arg[0]))
+					Ctrl->E.mode = opt->arg[0];
+				else {
+					n_errors++;
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax Error -E: Unrecognized modifier %c\n", opt->arg[0]);
+				}
 				break;
 			case 'G':	/* Separate output grid file */
 				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
@@ -368,7 +377,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " new data points, updated %" PRIu64 ".\n", n_data, n_use);
 	}
-	else if (Ctrl->E.active) {	/* Transpose the matrix and exchange x and y info */
+	else if (Ctrl->E.active) {	/* Transpose, flip, or rotate the matrix and possibly exchange x and y info */
 		struct GMT_GRID_HEADER *h_tr = NULL;
 		uint64_t ij, ij_tr;
 		float *a_tr = NULL;
@@ -378,42 +387,62 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 
 		switch (Ctrl->E.mode) {
-			case -1: /* Rotate grid 90 CW */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Rotate grid 90 degrees ClockWise (CW)\n");
+			case 'a': /* Rotate grid around 180 degrees */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Rotate grid around 180 degrees\n");
 				break;
-			case 0: 	/* Transpose grid */
+			case 'h': /* Flip grid horizontally */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Flip grid horizontally (FLIPLR)\n");
+				break;
+			case 'l': /* Rotate grid 90 CW */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Rotate grid 90 degrees left (Counter-Clockwise)\n");
+				break;
+			case 't': 	/* Transpose grid */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Transpose grid\n");
 				break;
-			case +1: /* Rotate grid 90 CCW */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Rotate grid 90 degrees Counter-ClockWise (CCW)\n");
+			case 'r': /* Rotate grid 90 CCW */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Rotate grid 90 degrees right (Clockwise)\n");
+				break;
+			case 'v': /* Flip grid vertically */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Flip grid vertically (FLIPUD)\n");
 				break;
 		}
 		
 		h_tr = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 		GMT_memcpy (h_tr, G->header, 1, struct GMT_GRID_HEADER);	/* First make a copy of header */
-		h_tr->wesn[XLO] = G->header->wesn[YLO];
-		h_tr->wesn[XHI] = G->header->wesn[YHI];
-		h_tr->inc[GMT_X] = G->header->inc[GMT_Y];
-		strncpy (h_tr->x_units, G->header->y_units, GMT_GRID_UNIT_LEN80);
-		h_tr->wesn[YLO] = G->header->wesn[XLO];
-		h_tr->wesn[YHI] = G->header->wesn[XHI];
-		h_tr->inc[GMT_Y] = G->header->inc[GMT_X];
-		strncpy (h_tr->y_units, G->header->x_units, GMT_GRID_UNIT_LEN80);
-		GMT_set_grddim (GMT, h_tr);	/* Recompute nx, ny, mx, size, etc */
+		if (strchr ("ltr", Ctrl->E.mode)) {	/* These operators interchange x and y */
+			h_tr->wesn[XLO] = G->header->wesn[YLO];
+			h_tr->wesn[XHI] = G->header->wesn[YHI];
+			h_tr->inc[GMT_X] = G->header->inc[GMT_Y];
+			strncpy (h_tr->x_units, G->header->y_units, GMT_GRID_UNIT_LEN80);
+			h_tr->wesn[YLO] = G->header->wesn[XLO];
+			h_tr->wesn[YHI] = G->header->wesn[XHI];
+			h_tr->inc[GMT_Y] = G->header->inc[GMT_X];
+			strncpy (h_tr->y_units, G->header->x_units, GMT_GRID_UNIT_LEN80);
+			GMT_set_grddim (GMT, h_tr);	/* Recompute nx, ny, mx, size, etc */
+		}
 
 		/* Now transpose the matrix */
 
 		a_tr = GMT_memory (GMT, NULL, G->header->size, float);
 		GMT_grd_loop (GMT, G, row, col, ij) {
 			switch (Ctrl->E.mode) {
-				case -1: /* Rotate 90 CW */
-					ij_tr = GMT_IJP (h_tr, col, G->header->ny-row);
+				case 'a': /* Rotate grid around 180 degrees */
+					ij_tr = GMT_IJP (h_tr, G->header->ny-1-row, G->header->nx-1-col);
 					break;
-				case 0: 	/* Transpose */
+				case 'h': /* Flip horizontally (FLIPLR) */
+					ij_tr = GMT_IJP (h_tr, row, G->header->nx-1-col);
+					break;
+				case 'l': /* Rotate 90 CCW */
+					ij_tr = GMT_IJP (h_tr, G->header->nx-1-col, row);
+					break;
+				case 'r': /* Rotate 90 CW */
+					ij_tr = GMT_IJP (h_tr, col, G->header->ny-1-row);
+					break;
+				case 't': 	/* Transpose */
 					ij_tr = GMT_IJP (h_tr, col, row);
 					break;
-				case +1: /* Rotate 90 CCW */
-					ij_tr = GMT_IJP (h_tr, G->header->nx-col, row);
+				case 'v': /* Flip vertically (FLIPUD) */
+					ij_tr = GMT_IJP (h_tr, G->header->ny-1-row, col);
 					break;
 			}
 			a_tr[ij_tr] = G->data[ij];
