@@ -162,6 +162,12 @@ int GMT_grdedit_parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct G
 				else if (!strncmp (opt->arg, "+r", 2) || opt->arg[0] == 'r') Ctrl->E.mode = +1;
 				else Ctrl->E.mode = 0;
 				break;
+			case 'G':	/* Separate output grid file */
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
+				break;
 			case 'N':	/* Replace nodes */
 				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN)))
 					Ctrl->N.file = strdup (opt->arg);

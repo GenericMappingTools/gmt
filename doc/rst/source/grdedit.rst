@@ -16,6 +16,7 @@ Synopsis
 **grdedit** *grid* [ **-A** ]
 [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
 [ **-E**\ [**-r**\ |\ **+r**\ \| **t**] ]
+[ **-G**\ *outgrid* ]
 [ **-J**\ *parameters* ]
 [ **-N**\ *table* ]
 [ |SYN_OPT-R| ]
@@ -65,6 +66,10 @@ Optional Arguments
     (2) **E+r** will rotate the grid 90 degrees clockwise (CW), and
     (3) **Et** will transpose the grid [Default].
     Incompatible with the other options (except **-G**).
+
+**-G**\ *outgrid*
+    Normally, grdedit will overwrite the existing grid with the modified grid.
+    Use **-G** to write the modified grid to the file *outgrid* instead.
 
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be reconized by GDAL.
