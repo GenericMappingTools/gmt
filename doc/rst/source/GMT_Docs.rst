@@ -627,7 +627,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    (for instances, the volume of water from a bathymetry grid).
 
 *  :doc:`greenspline` has an improved **-C** option to control how many eigenvalues are used
-   in the fitting, and **--Sl** adds a linear (or bilinear) spline.
+   in the fitting, and **-Sl** adds a linear (or bilinear) spline.
 
 *  :doc:`makecpt` has a new **-F** option to
    specify output color representation, e.g., to output the CPT table in
