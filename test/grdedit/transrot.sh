@@ -10,7 +10,7 @@ gmt grdedit w.nc -Gt.nc -Et -V
 gmt grdimage t.nc -Ct.cpt -J -Baf -BWSne+tTRANSPOSE -Y-7.5i -O -K >> $ps
 # grid after 90 CCW rotation
 gmt grdedit w.nc -Gp.nc -E+r -V
-gmt grdimage p.nc -Ct.cpt -J -O -K -Baf -BWSne+t"90\232 CCW" -X2.363632i >> $ps
+gmt grdimage p.nc -Ct.cpt -J -O -K -Baf -BWSne+t"90\312 CCW" -X2.363632i >> $ps
 # grid after 90 CW rotation
 gmt grdedit w.nc -Gm.nc -E-r -V
-gmt grdimage m.nc -Ct.cpt -J -O -Baf -BWSne+t"90\232 CW" -X2.363632i >> $ps
+gmt grdimage m.nc -Ct.cpt -J -O -Baf -BWSne+t"90\312 CW" -X2.363632i >> $ps
