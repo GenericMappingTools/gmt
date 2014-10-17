@@ -155,7 +155,7 @@ Optional Arguments
     with the **-B** option is that it creates a frame and very likely
     its annotations. That introduces pixels outside the map data extent,
     and therefore the map extents estimation will be wrong. To avoid
-    this problem use --MAP_FRAME_TYPE=inside option which plots all
+    this problem use -\ -MAP_FRAME_TYPE=inside option which plots all
     annotations and ticks inside the image and therefore does not
     compromise the coordinate computations. Pay attention also to the
     cases when the plot has any of the sides with whites only because
@@ -209,12 +209,19 @@ Optional Arguments
     **ps2raster** requires by manually editing a line into the
     PostScript file, prefixed with %%PROJ.
 
-    For example the command ``gmt pscoast -JM0/12c -R-10/-4/37/43
-    -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps`` adds this comment line
+    For example the command
+    
+   ::
+    
+        gmt pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
 
-    %%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
-    4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0
-    +a=6378137.0 +b=6356752.314245
+    adds this comment line
+
+   ::
+
+        %%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
+        4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0
+        +a=6378137.0 +b=6356752.314245
 
     where 'merc' is the keyword for the coordinate conversion; the 2 to
     5th elements contain the map limits, 6 to 9th the map limits in

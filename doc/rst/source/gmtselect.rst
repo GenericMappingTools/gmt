@@ -264,7 +264,8 @@ origin.d for a certain projection, try
 
    ::
 
-    gmt gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2
+    gmt gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c \
+    --PROJ_LENGTH_UNIT=cm > subset2
 
 .. include:: explain_gshhs.rst_
 
