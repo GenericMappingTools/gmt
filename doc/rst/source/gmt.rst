@@ -123,7 +123,6 @@ programs. No space between the option flag and the associated arguments.
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi_full.rst_
 
-.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo_full.rst_
 
 .. include:: explain_-c_full.rst_
