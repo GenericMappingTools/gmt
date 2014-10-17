@@ -160,12 +160,16 @@ Sometimes the (x,y) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 
-    awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz \| more
+   ::
+
+    awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
 
 (note that output is in radians; on some machines you need "nawk" to do
 this). Then if these numbers jump around a lot, you may do this:
 
-    awk '{ print NR, $0 }' yourdata.xyz \| filter1d -Fb5 -N4/0
+   ::
+
+    awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 \
     --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 
 and plot this data set instead.
