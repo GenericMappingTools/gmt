@@ -83,7 +83,7 @@ struct GRDFLEXURE_CTRL {
 		bool active, log;
 		unsigned int n_times;
 		double start, end, inc;	/* Time ago, so start > end */
-		double time;	/* The current time in a sequence */
+		double *time;	/* The current time in a sequence */
 		double scale;	/* Scale factor from user time to year */
 		char unit;	/* Either M (Myr), k (kyr), or blank (y) */
 	} T;
@@ -138,6 +138,7 @@ void Free_grdflexure_Ctrl (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *C) {	/*
 	if (C->In.file) free (C->In.file);	
 	if (C->G.file) free (C->G.file);	
 	if (C->N.info) GMT_free (GMT, C->N.info);
+	if (C->T.time) GMT_free (GMT, C->T.time);
 	GMT_free (GMT, C);	
 }
 
@@ -391,10 +392,15 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 					if (Ctrl->T.end > Ctrl->T.start) double_swap (Ctrl->T.start, Ctrl->T.end);	/* Enforce that old time is larger */
 					Ctrl->T.n_times = (Ctrl->T.log) ? irint (Ctrl->T.inc) : lrint ((Ctrl->T.start - Ctrl->T.end) / Ctrl->T.inc) + 1;
 					if (Ctrl->T.log) Ctrl->T.inc = (log10 (Ctrl->T.start) - log10 (Ctrl->T.end)) / (Ctrl->T.n_times - 1);	/* Convert n to inc_logt */
+					Ctrl->T.time = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);	/* Array with times */
+					for (k = 0; k < Ctrl->T.n_times; k++)
+						Ctrl->T.time[k] = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - k * Ctrl->T.inc) : Ctrl->T.start - k * Ctrl->T.inc;	/* In units of user's choice */
 				}
 				else {
 					Ctrl->T.end = Ctrl->T.start;	Ctrl->T.inc = 1.0;	/* This will give one time in the series */
 					Ctrl->T.n_times = 1;
+					Ctrl->T.time = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);	/* Array with one time */
+					Ctrl->T.time[0] = Ctrl->T.start;
 				}					
 				break;
 			case 'W':	/* Water depth */
@@ -561,7 +567,6 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	int error;
 	bool retain_original;
 	float *orig_load = NULL;
-	double user_time;
 	char file[GMT_LEN256] = {""};
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
@@ -603,8 +608,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	if (Ctrl->In.many) {	/* Must read in a new load grid, possibly one for each time increment */
 		G = GMT_memory (GMT, NULL, Ctrl->T.n_times, struct FLX_GRID *);	/* Allocate grid array structure */
 		for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each time step there may be a load file */
-			user_time = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - t * Ctrl->T.inc) : Ctrl->T.start - t * Ctrl->T.inc;	/* In units of user's choice */
-			sprintf (file, Ctrl->In.file, user_time);
+			sprintf (file, Ctrl->In.file, Ctrl->T.time[t]);
 			G[t] = Prepare_Load (GMT, options, Ctrl, file);
 			K = G[t]->K;	/* We only need one pointer to get to wavenumbers; this just ensures we keep one */
 		}
@@ -631,9 +635,8 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		
 		/* 4a. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
-			user_time = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - t * Ctrl->T.inc) : Ctrl->T.start - t * Ctrl->T.inc;	/* In units of user's choice */
-			R->time_yr = user_time * Ctrl->T.scale;		/* Now in years */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating flexural deformation for time %g\n", user_time);
+			R->time_yr = Ctrl->T.time[t] * Ctrl->T.scale;		/* Now in years */
+			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating flexural deformation for time %g\n", Ctrl->T.time[t]);
 		}
 		
 		if (retain_original) GMT_memset (Out->data, Out->header->size, float);	/* Reset output grid to zero; not necessary when we only get here once */
@@ -661,8 +664,8 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->T.active) { /* Separate output grid since many time steps */
 			char remark[GMT_GRID_REMARK_LEN160] = {""};
-			sprintf (file, Ctrl->G.file, user_time);
-			sprintf (remark, "Solution for t = %g", user_time);
+			sprintf (file, Ctrl->G.file, Ctrl->T.time[t]);
+			sprintf (remark, "Solution for t = %g", Ctrl->T.time[t]);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remark, Out))
 				Return (API->error);
 		}
