@@ -1244,6 +1244,8 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 	double dx, dy, x1, x2, y1, y2, hl, hw, vw, s, c, dim[PSL_MAX_DIMS];
 
 	GMT_memset (dim, PSL_MAX_DIMS, double);
+	GMT_setpen (GMT, &pen);			/* Pen for segment line */
+	PSL_setfill (GMT->PSL, pen.rgb, 0);	/* Same color for arrow head fill with no outline */
 	sincosd (theta, &s, &c);
 
 	/*  extension component */
@@ -1273,8 +1275,7 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
 	dim[5] = vector_shape, dim[6] = GMT_VEC_END | GMT_VEC_FILL;
-	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
-	PSL_plotsymbol (GMT->PSL, x1, x2, dim, PSL_VECTOR);
+	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* second, extensional arrow in opposite direction */
 
@@ -1299,13 +1300,12 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* compression component */
 	dx = eps2 * s;
 	dy = eps2 * c;
-
+	dim[6] = GMT_VEC_BEGIN | GMT_VEC_FILL;
 	trace_arrow (GMT, slon, slat, dx, dy, sscale, &x1, &y1, &x2, &y2);
 
 	if (eps2 > 0.0) {
@@ -1328,7 +1328,6 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* second, compressional arrow in opposite direction */
@@ -1356,7 +1355,6 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	return 0;
