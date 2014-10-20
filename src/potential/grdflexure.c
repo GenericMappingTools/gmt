@@ -294,7 +294,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 
 	unsigned int k, n_errors = 0, n_files = 0;
 	int n;
-	char A[GMT_LEN16] = {""}, B[GMT_LEN16] = {""}, C[GMT_LEN16] = {""};
+	char A[GMT_LEN16] = {""}, B[GMT_LEN16] = {""}, C[GMT_LEN16] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -378,30 +378,51 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				break;
 			case 'T':	/* Time lattice */
 				Ctrl->T.active = true;
-				k = (opt->arg[0] == 'l') ? 1 : 0;
-				Ctrl->T.log = (k == 1);
-				n = sscanf (&opt->arg[k], "%[^/]/%[^/]/%s", A, B, C);
-				if (!(n == 3 || n == 1)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must give -T<t0> or -T[l]t0[u]/t1[u]/dt[u]\n");
-					n_errors++;
+				if ((p = strstr (opt->arg, "+l"))) {
+					Ctrl->T.log = true;
+					p[0] = '\0';	/* Chop off the modifier */
 				}
-				Ctrl->T.start = smt_get_age (A, &Ctrl->T.unit, &Ctrl->T.scale);
-				if (n == 3) {
-					Ctrl->T.end = smt_get_age (B, &Ctrl->T.unit, &Ctrl->T.scale);
-					Ctrl->T.inc = smt_get_age (C, &Ctrl->T.unit, &Ctrl->T.scale);
-					if (Ctrl->T.end > Ctrl->T.start) double_swap (Ctrl->T.start, Ctrl->T.end);	/* Enforce that old time is larger */
-					Ctrl->T.n_times = (Ctrl->T.log) ? irint (Ctrl->T.inc) : lrint ((Ctrl->T.start - Ctrl->T.end) / Ctrl->T.inc) + 1;
-					if (Ctrl->T.log) Ctrl->T.inc = (log10 (Ctrl->T.start) - log10 (Ctrl->T.end)) / (Ctrl->T.n_times - 1);	/* Convert n to inc_logt */
-					Ctrl->T.time = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);	/* Array with times */
-					for (k = 0; k < Ctrl->T.n_times; k++)
-						Ctrl->T.time[k] = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - k * Ctrl->T.inc) : Ctrl->T.start - k * Ctrl->T.inc;	/* In units of user's choice */
+				if (GMT_check_filearg (GMT, 'T', opt->arg, GMT_IN)) {	/* Gave a file with times */
+					struct GMT_DATASET *Tin = NULL;
+					if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Error reading time file %s\n", opt->arg);
+						n_errors++;
+					}
+					else {	/* Read the file successfully */
+						Ctrl->T.time = GMT_memory (GMT, NULL, Tin->n_records, double);	/* Array with times */
+						for (k = Ctrl->T.n_times = 0; k < Tin->table[0]->n_segments; k++) {	/* Read in from possibly more than one segment */
+							GMT_memcpy (&Ctrl->T.time[Ctrl->T.n_times], Tin->table[0]->segment[k]->coord[GMT_X], Tin->table[0]->segment[k]->n_rows, double);
+							Ctrl->T.n_times += Tin->table[0]->segment[k]->n_rows;
+						}
+						if (GMT_Destroy_Data (API, &Tin) != GMT_OK) {
+							n_errors++;
+						}
+					}
 				}
-				else {
-					Ctrl->T.end = Ctrl->T.start;	Ctrl->T.inc = 1.0;	/* This will give one time in the series */
-					Ctrl->T.n_times = 1;
-					Ctrl->T.time = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);	/* Array with one time */
-					Ctrl->T.time[0] = Ctrl->T.start;
-				}					
+				else {	/* Give times directly */
+					n = sscanf (opt->arg, "%[^/]/%[^/]/%s", A, B, C);
+					if (!(n == 3 || n == 1)) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must give -T<tfile>, -T<t0> or -T<t0>[u]/<t1>[u]/<dt>[u][+l]\n");
+						n_errors++;
+					}
+					Ctrl->T.start = smt_get_age (A, &Ctrl->T.unit, &Ctrl->T.scale);
+					if (n == 3) {	/* Gave an equidistant range of times */
+						Ctrl->T.end = smt_get_age (B, &Ctrl->T.unit, &Ctrl->T.scale);
+						Ctrl->T.inc = smt_get_age (C, &Ctrl->T.unit, &Ctrl->T.scale);
+						if (Ctrl->T.end > Ctrl->T.start) double_swap (Ctrl->T.start, Ctrl->T.end);	/* Enforce that old time is larger */
+						Ctrl->T.n_times = (Ctrl->T.log) ? irint (Ctrl->T.inc) : lrint ((Ctrl->T.start - Ctrl->T.end) / Ctrl->T.inc) + 1;
+						if (Ctrl->T.log) Ctrl->T.inc = (log10 (Ctrl->T.start) - log10 (Ctrl->T.end)) / (Ctrl->T.n_times - 1);	/* Convert n to inc_logt */
+						Ctrl->T.time = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);	/* Array with times */
+						for (k = 0; k < Ctrl->T.n_times; k++)
+							Ctrl->T.time[k] = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - k * Ctrl->T.inc) : Ctrl->T.start - k * Ctrl->T.inc;	/* In units of user's choice */
+					}
+					else {	/* Gave a single time */
+						Ctrl->T.end = Ctrl->T.start;	Ctrl->T.inc = 1.0;	/* This will give one time in the series */
+						Ctrl->T.n_times = 1;
+						Ctrl->T.time = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);	/* Array with one time */
+						Ctrl->T.time[0] = Ctrl->T.start;
+					}
+				}				
 				break;
 			case 'W':	/* Water depth */
 				Ctrl->W.active = true;
@@ -440,7 +461,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-S<beta>] [-T[l]<t0>/<t1>/<dt>|<n>]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>|<n>[+l]]]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -461,7 +482,8 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify starved moat fraction in 0-1 range (1 = fully filled, 0 = no infill) [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. unit is years; append k for kyr and M for Myr.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, use -Tl and specify n steps instead of time increment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, append +l and specify n steps instead of time increment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To read a list of times from the first column in a file instead, use -T<tfile>.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Subarial topography will be scaled by -D to account for density differences.\n");
