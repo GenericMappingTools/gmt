@@ -86,7 +86,7 @@ Optional Arguments
     specification with format [*size*,][\ *font*,][*color*\ ] where
     *size* is text size in points, *font* is the font to use, and
     *color* sets the font color. To draw outline fonts you append
-    =\ *pen* to the filo. The *angle* is measured in degrees
+    =\ *pen* to the font specification. The *angle* is measured in degrees
     counter-clockwise from horizontal, and *justify* sets the alignment.
     If *font* is not an integer, then it is taken to be a text string
     with the desired fontname (see **-L** for available fonts). The
@@ -137,7 +137,8 @@ Optional Arguments
     gets the *x_min*, *y_max* from the **-R** string and plots the text
     at the Upper Left corner of the map.  Normally, the text to be plotted
     comes from the data record.  Instead, use **+h** or **+l** to select the
-    text as the most recent segment header or segment label, respectively.
+    text as the most recent segment header or segment label, respectively in
+    a multisegment input file.
 
 **-G**\ *color*
     Sets the shade or color used for filling the text box [Default is no
