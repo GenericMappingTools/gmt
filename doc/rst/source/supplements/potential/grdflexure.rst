@@ -15,7 +15,7 @@ Synopsis
 
 **grdflexure** *topogrd* **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
 [ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*\ [/*h_a*/*nu_m*] ]
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx*/*ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx*/*ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-S**\ *beta* ] [ **-T**\ *t0*\ [/*t1*/*dt*\ \|\ *n*]\ [**+l**] ]
 [ |SYN_OPT-V| ]
 [ **-W**\ *wd*] [ **-Z**\ *zm*]
@@ -48,7 +48,7 @@ Required Arguments
 **-E**\ *Te*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
-    the flexural rigidity D (by default D is computed from *Re*, Young's
+    the flexural rigidity D (by default D is computed from *Te*, Young's
     modulus, and Poisson's ratio; see **-C** to change these values).
 **-G**\ *outfile*
     Specify the name of the output grid file; see GRID FILE FORMATS below).
@@ -65,7 +65,7 @@ Optional Arguments
 **-Cy**\ *Young*
     Change the current value of Young's modulus [7.0e10 N/m^2].
 
-**-F**\ *nu_a*[/*h_a*/*nu_m*]
+**-F**\ *nu_a*\ [\ /*h_a*/*nu_m*]
     Specify a firmoviscous model in conjuncton with an elastic plate
     thickness specified via **-E**.  Just give one viscosity (*nu_a*)
     for an elastic plate over a viscous half-space, or also append
@@ -149,6 +149,9 @@ for a 10 km thick plate with typical densities, try
 References
 ----------
 
+Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
+J. Geophys. Res., 106(B9), 19,431-19,441,
+`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/110.1029/2000JB000083>`_
 
 See Also
 --------
