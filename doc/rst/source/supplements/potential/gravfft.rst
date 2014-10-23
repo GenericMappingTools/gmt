@@ -19,7 +19,7 @@ Synopsis
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-Q** ] [ **-T**\ *te/rl/rm/rw*\ [**+m**] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ *zm*\ [*zl*] ]
+[ **-W**\ *wd*] [ **-Z**\ *zm*\ [*zl*] ]
 [ **-fg** ]
 
 |No-spaces|
@@ -27,15 +27,20 @@ Synopsis
 Description
 -----------
 
-**gravfft** can be used into two main modes. First one computes the
-gravity/geoid response of a bathymetry file. It will take the 2-D
-forward FFT of a bathymetry grid and compute it's gravity/geoid response
-using full Parker's method applied to the chosen model. The available
+**gravfft** can be used into three main modes. Mode 1: Simply
+compute the geopotential due to the surface given in the topo.grd file.
+Requires a density contrast (**-D**) and possibly a different observation
+level (**-W**).  It will take the 2-D
+forward FFT of the grid and 
+use the full Parker's method up to the chosen terms.  Mode 2: Compute the
+geopotential response due to flexure of the topography file. It will take the 2-D
+forward FFT of the grid and use the  full Parker's method applied to the chosen
+isostatic model.  The available
 models are the "loading from top", or elastic plate model, and the
 "loading from below" which accounts for the plate's response to a
 sub-surface load (appropriate for hot spot modeling - if you believe
 them). In both cases, the model parameters are set with **-T** and
-**-Z** options. Second mode computes the admittance or coherence between
+**-Z** options. Mode 3: compute the admittance or coherence between
 two grids. The output is the average in the radial direction.
 Optionally, the model admittance may also be calculated. The horizontal
 dimensions of the grdfiles are assumed to be in meters. Geographical
@@ -45,7 +50,7 @@ this to meters using :doc:`grdedit </grdedit>` or scale the output with
 :doc:`grdmath </grdmath>`.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
-are doing.
+are doing; see the examples for further guidance.
 
 Required Arguments
 ------------------
@@ -98,8 +103,8 @@ Optional Arguments
     three) from **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**.
     **w** writes wavelength instead of wavenumber, **k**
     selects km for wavelength unit [m], **c** computes coherence instead of
-    admittance, **b** writes a forth column with "loading from below"
-    theoretical admittance, and **t** writes a forth column with "elastic
+    admittance, **b** writes a fourth column with "loading from below"
+    theoretical admittance, and **t** writes a fourth column with "elastic
     plate" theoretical admittance.
 
 .. include:: ../../explain_fft.rst_
@@ -123,6 +128,9 @@ Optional Arguments
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
+**-W**\ *wd*
+    Set water depth (or observation height) relative to topography [0].  Append **k** to indicate
+    km.
 **-Z**\ *zm*\ [*zl*]
     Moho [and swell] average compensation depths. For the "load from
     top" model you only have to provide *zm*, but for the "loading from

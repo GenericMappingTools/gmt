@@ -99,6 +99,10 @@ struct GRAVFFT_CTRL {
 		double rho_mc;		/* mantle-crust density contrast */
 		double rho_mw;		/* mantle-water density contrast */
 	} T;
+	struct GRVF_W {	/* Water depth/observation level */
+		bool active;
+		double water_depth;	/* Reference water depth [0] */
+	} W;
 	struct GRVF_Z {
 		bool active;
 		double zm;		/* mean Moho depth (given by user) */
@@ -312,6 +316,10 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 					override_mode = GMT_FFT_REMOVE_MID;		/* Leave trend alone and remove mid value */
 				}
 				break;
+			case 'W':	/* Water depth */
+				Ctrl->W.active = true;
+				GMT_Get_Value (API, opt->arg, &Ctrl->W.water_depth);
+				break;
 			case 'Z':
 				Ctrl->Z.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.zm, &Ctrl->Z.zl);
@@ -382,7 +390,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
-	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -432,9 +440,10 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t   If an optional infill density <ri> != <rl> is appended we find an approximate solution.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   Optionaly, append +m to write a grid with the Moho's geopotential effect\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   (see -F) from model selected by -T.\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t-W Specify water depth (or observation level) in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-Z Specify Moho [and swell] average compensation depths.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, ".");
 	return (EXIT_FAILURE);
 }
@@ -554,6 +563,13 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 * we are done with using the addresses Orig[k] directly. */
+
+	if (Ctrl->W.active) {	/* Need to adjust for a different observation level relative to topo.grd */
+		unsigned int row, col;
+		GMT_Report (API, GMT_MSG_VERBOSE, "Remove %g m from topography grid %s\n", Ctrl->W.water_depth, Ctrl->In.file[0]);
+		GMT_grd_loop (GMT, Grid[0], row, col, m)
+			Grid[0]->data[m] -= (float)Ctrl->W.water_depth;
+	}
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
 		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */

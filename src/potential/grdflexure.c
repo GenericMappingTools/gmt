@@ -426,7 +426,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				break;
 			case 'W':	/* Water depth */
 				Ctrl->W.active = true;
-				Ctrl->W.water_depth = atof (opt->arg);
+				GMT_Get_Value (API, opt->arg, &Ctrl->W.water_depth);
 				break;
 			case 'Z':	/* Moho depth */
 				Ctrl->Z.active = true;
