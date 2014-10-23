@@ -569,6 +569,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Remove %g m from topography grid %s\n", Ctrl->W.water_depth, Ctrl->In.file[0]);
 		GMT_grd_loop (GMT, Grid[0], row, col, m)
 			Grid[0]->data[m] -= (float)Ctrl->W.water_depth;
+		Grid[0]->header->z_min -= (float)Ctrl->W.water_depth;
+		Grid[0]->header->z_max -= (float)Ctrl->W.water_depth;
 	}
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
