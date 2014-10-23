@@ -139,8 +139,12 @@
 #set (UNITS "US")
 
 # Enable building of shared libraries [TRUE] (disable to use static libraries;
-# not recommended):
+# not recommended): on non-x86 architectures uncomment the next option as well):
 #set (BUILD_SHARED_LIBS FALSE)
+
+# Create position independent code on all targets [auto] (needed for static
+# build on non-x86:
+#set (CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 # Build GMT shared lib with supplemental modules [TRUE]:
 #set (BUILD_SUPPLEMENTS FALSE)
