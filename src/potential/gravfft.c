@@ -233,6 +233,10 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR -E option: n_terms must be <= 10\n");
 					n_errors++;
 				}
+				else if (Ctrl->E.n_terms <= 0) {
+					GMT_Report (API, GMT_MSG_NORMAL, "WARNING -E option: n_terms were 0 or nonsense. Reset to 3\n");
+					Ctrl->E.n_terms = 3;
+				}
 				break;
 			case 'F':
 				Ctrl->F.active = true;
