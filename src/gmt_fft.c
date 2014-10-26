@@ -965,9 +965,11 @@ int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 	vDSP_ctoz (dsp_complex, 2, &GMT->current.fft.dsp_split_complex_2d, 1, n_xy);
 
 	/* complex: */
-	vDSP_fft2d_zip (GMT->current.fft.setup_2d, &GMT->current.fft.dsp_split_complex_2d, 1, 0, log2ny, log2nx, fft_direction);
+	/* PW note 10/26/2014: We used to pass log2ny, log2nx to vDSP_fft2d_zipbut that gave bad results for nx != ny.
+	 * I assume this is because Accelerate expects columns but we pass rows. Now matches KISS, FFTW, etc. */
+	vDSP_fft2d_zip (GMT->current.fft.setup_2d, &GMT->current.fft.dsp_split_complex_2d, 1, 0, log2nx, log2ny, fft_direction);
 	/* real:
-	vDSP_fft2d_zrip (setup, &GMT->current.fft.dsp_split_complex_2d, 1, 0, log2ny, log2nx, fft_direction); */
+	vDSP_fft2d_zrip (setup, &GMT->current.fft.dsp_split_complex_2d, 1, 0, log2nx, log2ny, fft_direction); */
 
 	vDSP_ztoc (&GMT->current.fft.dsp_split_complex_2d, 1, dsp_complex, 2, n_xy);
 
