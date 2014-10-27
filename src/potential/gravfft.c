@@ -63,7 +63,7 @@ struct GRAVFFT_CTRL {
 		unsigned int n_pt;
 		double theor_inc;
 	} C;
-	struct GRVF_D {	/* -D[<scale>|g] */
+	struct GRVF_D {	/* -D[<scale>] */
 		bool active;
 	} D;
 	struct GRVF_E {	/* -E */
@@ -392,7 +392,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>]\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f|F|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
@@ -425,6 +425,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t-E number of terms used in Parker's expansion [Default = 3].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-F Specify desired geopotential field:\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   f = Free-air anomalies (mGal) [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t   F = As f, but adjust zero-level so.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   g = Geoid anomalies (m).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   e = East deflections of the vertical (micro-radian).\n");
@@ -461,7 +462,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	int error = 0;
 	uint64_t m;
 	char	format[64] = {""}, buffer[256] = {""};
-	float	*topo = NULL, *raised = NULL;
+	float	slab_gravity = 0.0f, *topo = NULL, *raised = NULL;
 	double	delta_pt, freq;
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL}, *Orig[2] = {NULL, NULL};
@@ -584,6 +585,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
 
 	Ctrl->misc.z_level = fabs (FFT_info[0]->coeff[0]);	/* Need absolute value or level removed for uppward continuation */
+	GMT_Report (API, GMT_MSG_VERBOSE, "Level used for upward continuation: %g\n", Ctrl->misc.z_level);
 
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
 
@@ -606,13 +608,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
-		GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Forward FFT...\n");
 		if (GMT_FFT (API, Grid[0], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[0])) {
 			Return (EXIT_FAILURE);
 		}
 
 		do_isostasy__ (GMT, Grid[0], Ctrl, K);
 		
+		GMT_Report (API, GMT_MSG_VERBOSE, "Inverse FFT...\n");
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
 
@@ -647,18 +650,17 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_memcpy (topo,   Grid[0]->data, Grid[0]->header->size, float);
+	GMT_memcpy (topo, Grid[0]->data, Grid[0]->header->size, float);
 	/* Manually interleave this copy of topo [and hence raised] since we will call FFT repeatedly */
 	GMT_grd_mux_demux (API->GMT, Grid[0]->header, topo, GMT_GRID_IS_INTERLEAVED);
-	GMT_memcpy (raised, topo, Grid[0]->header->size, float);
+	GMT_memcpy (raised,  topo, Grid[0]->header->size, float);
 	GMT_memset (Grid[0]->data, Grid[0]->header->size, float);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating for term = 1");
 
 	for (n = 1; n <= Ctrl->E.n_terms; n++) {
 
-		if (n > 1) GMT_Report (API, GMT_MSG_VERBOSE, "-%d", n);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating Parker for term = %d\n", n);
 
-		if (n > 1)	/* n == 1 was initialized via the GMT_memcpy */
+		if (n > 1)	/* n == 1 was initialized via the GMT_memcpy above */
 			for (m = 0; m < Grid[0]->header->size; m++)
 				raised[m] = (float)pow(topo[m], (double)n);
 
@@ -675,10 +677,11 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "It SHOULDN'T pass here\n");
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, " Inverse FFT...");
-
 	if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 		Return (EXIT_FAILURE);
+
+	/* Manually demux back since we may do loops below */
+	GMT_grd_mux_demux (API->GMT, Grid[0]->header, Grid[0]->data, GMT_GRID_IS_SERIAL);
 
 	if (!doubleAlmostEqual (scale_out, 1.0))
 		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
@@ -687,6 +690,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		case GRAVFFT_FAA:
 			strcpy (Grid[0]->header->title, "Gravity anomalies");
 			strcpy (Grid[0]->header->z_units, "mGal");
+			slab_gravity = 1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST * (Ctrl->W.water_depth - Ctrl->misc.z_level);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
+			for (m = 0; m < Grid[0]->header->size; m++)
+				Grid[0]->data[m] += slab_gravity;
 			break;
 		case GRAVFFT_GEOID:
 			strcpy (Grid[0]->header->title, "Geoid anomalies");
@@ -708,7 +715,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	sprintf (Grid[0]->header->remark, "Parker expansion of order %d", Ctrl->E.n_terms);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "write_output...");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Write Output...\n");
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) GMT_free (GMT, FFT_info[k]);
 	GMT_free (GMT, raised);
@@ -721,7 +728,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_free (GMT, topo);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (EXIT_SUCCESS);
 }
