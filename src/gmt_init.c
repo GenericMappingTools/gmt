@@ -10489,7 +10489,7 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 
 bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction)
 {	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
-	 * exists and is readable. Otherwise wre return false. */
+	 * exists and is readable. Otherwise we return false. */
 	unsigned int k = 0;
 	char message[GMT_LEN16] = {""};
 	if (option == GMT_OPT_INFILE)

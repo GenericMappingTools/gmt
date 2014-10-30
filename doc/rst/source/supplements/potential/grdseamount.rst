@@ -18,7 +18,7 @@ Synopsis
 |SYN_OPT-R|
 [ **-A**\ [*out*/*in*\ ] ] [ **-Cc**\|\ **d**\ \|\ **g**\ \|\ **p** ] [ **-D**\ [*unit*\ ] ]
 [ **-E** ] [ **-F**\ [*flattening*] ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
-[ **-N**\ *norm* ] [ **-Q**\ *bmode*/*qmode* ] [ **-S**\ *scale* ]
+[ **-M**\ *list* ] [ **-N**\ *norm* ] [ **-Q**\ *bmode*/*qmode* ] [ **-S**\ *scale* ]
 [ **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**] ] [ **-Z**\ *level* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -85,6 +85,10 @@ Optional Arguments
 **-L**\ [*cut*]
     List area, volume, and mean height for each seamount; NO grid is created.
     Optionally, append the noise-floor cutoff level below which we ignore area and volume [0].
+
+**-M**\ *list*
+    Write the names of all grids that were created to the text file *list*.
+    Requires **-T**.
 
 **-N**\ *norm*
     Normalize grid so maximum grid height equals *norm*.

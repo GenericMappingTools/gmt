@@ -15,6 +15,7 @@ Synopsis
 
 **grdflexure** *topogrd* **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
 [ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*\ [/*h_a*/*nu_m*] ]
+[ **-L**\ *list* ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx*/*ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-S**\ *beta* ] [ **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**] ]
 [ |SYN_OPT-V| ]
@@ -73,6 +74,13 @@ Optional Arguments
     asthenospheric and the latter that of the lower mantle 
 
 .. include:: ../../explain_fft.rst_
+
+**-L**\ *list*
+    Write the names of all grids that were created to the text file *list*.
+    Requires **-T**.
+
+**-M**\ *tm*
+    Set the Maxwell time *tm* for the viscoelastic model.
 
 **-S**\ *beta*
     Specify a starved moat fraction in the 0-1 range, where 1 means the moat is fully

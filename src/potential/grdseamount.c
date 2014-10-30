@@ -75,6 +75,10 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int mode;
 		double value;
 	} L;
+	struct M {	/* -M<outlist> */
+		bool active;
+		char *file;
+	} M;
 	struct N {	/* -N<norm> */
 		bool active;
 		double value;
@@ -123,6 +127,7 @@ void *New_grdseamount_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 void Free_grdseamount_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->G.file) free (C->G.file);	
+	if (C->M.file) free (C->M.file);	
 	if (C->T.time) GMT_free (GMT, C->T.time);
 	GMT_free (GMT, C);	
 }
@@ -132,7 +137,7 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-N<norm>] [-Q<bmode><fmode>] [-S<r_scale>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-M<list>] [-N<norm>] [-Q<bmode><fmode>] [-S<r_scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[l]<t0>/<t1>/<dt>|<n>] [-Z<base>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n",
 		GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
@@ -156,6 +161,8 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List area, volume, and mean height for each seamount; NO grid is created.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append the noise-floor cutoff level [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Give filename for output table with names of all grids produced.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename is given then we write the list to stdout.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grid so maximum grid height equals <norm>. Not allowed with -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only used in conjunction with -T.  Append the two modes:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <bmode> to compute either (c)umulative or (i)ncremental volume through time.\n");
@@ -257,6 +264,10 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 					Ctrl->L.value = atof (opt->arg);
 				}
 				break;
+			case 'M':	/* Output file name with list of generated grids */
+				Ctrl->M.active = true;
+				if (opt->arg[0]) Ctrl->M.file = strdup (opt->arg);
+				break;
 			case 'N':	/* Normalization to max height */
 				Ctrl->N.active = true;
 				Ctrl->N.value = atof (opt->arg);
@@ -298,6 +309,7 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file or template\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Syntax error option -Z: Cannot be used with -Qi\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Filename template must contain format specifier when -T is used\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Syntax error -M option: Requires time information via -T\n");
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
 	n_errors += GMT_check_binary_io (GMT, n_expected_fields);
@@ -437,6 +449,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_TEXTSET *L = NULL;
 	struct GRDSEAMOUNT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -525,6 +538,13 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		t1_col = n_expected_fields - 1;
 	}
 	
+	if (Ctrl->M.active) {	/* Must create textset to hold names of all output grids */
+		uint64_t dim[3] = {1, 1, Ctrl->T.n_times};
+		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "Error creating text set for file %s\n", Ctrl->M.file);
+			Return (EXIT_FAILURE);
+		}
+	}
 	/* Calculate the area, volume, height for each shape; if -L then also write the results */
 	
 	for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
@@ -600,7 +620,6 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = (float)Ctrl->Z.value;
 	}
 	data = GMT_memory (GMT, NULL, Grid->header->size, float);	/* tmp */
-
 
 	for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each time step (or just once) */
 
@@ -801,6 +820,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			gmt_modeltime_name (GMT, file, Ctrl->G.file, Ctrl->T.time[t]);
 		else
 			strcpy (file, Ctrl->G.file);
+		if (Ctrl->M.active) L->table[0]->segment[0]->record[t] = strdup (file);
+		
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
 			double n_scl = Ctrl->N.value / max;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
@@ -815,6 +836,11 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		GMT_memcpy (Grid->data, data, Grid->header->size, float);
 	}
 	
+	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_OK) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Error writing list of grid files to %s\n", Ctrl->M.file);
+		Return (API->error);
+	}
+
 	//for (ij = 0; ij < n_smts; ij++) fprintf (stderr, "Smt %d: V = %g Stacked V = %g h = %g Stacked h = %g\n", (int)ij, V[ij], V_sum[ij], h[ij], h_sum[ij]);
 	if (d_col) GMT_free (GMT, d_col);
 	GMT_free (GMT, V);

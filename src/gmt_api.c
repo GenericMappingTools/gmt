@@ -5595,7 +5595,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	/* Get here when F->nx and F->ny are set to the values we will use.  */
 
 	gmt_fourt_stats (GMT, F->nx, F->ny, factors, &edummy, &worksize, &tdummy);
-	GMT_Report (API, GMT_MSG_VERBOSE, " Grid dimension %d %d\tFFT dimension %d %d\n", G->header->nx, G->header->ny, F->nx, F->ny);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions (ny by nx): %d x %d\tFFT dimensions: %d x %d\n", G->header->ny, G->header->nx, F->ny, F->nx);
 
 	/* Put the data in the middle of the padded array */
 

@@ -74,6 +74,10 @@ struct GRDFLEXURE_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct L {	/* -L<outlist> */
+		bool active;
+		char *file;
+	} L;
 	struct M {	/* -M<maxwell_t>  */
 		bool active;
 		double maxwell_t;	/* Maxwell time */
@@ -142,6 +146,7 @@ void Free_grdflexure_Ctrl (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *C) {	/*
 	if (!C) return;
 	if (C->In.file) free (C->In.file);	
 	if (C->G.file) free (C->G.file);	
+	if (C->L.file) free (C->L.file);	
 	if (C->N.info) GMT_free (GMT, C->N.info);
 	if (C->T.time) GMT_free (GMT, C->T.time);
 	GMT_free (GMT, C);	
@@ -212,7 +217,6 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 			return 0;
 		}
 		s_time = gmt_get_modeltime (A, &s_unit, &s_scale);
-		fprintf (stderr, "stime = %g s_unit = %c s_scale = %g\n", s_time, s_unit, s_scale);
 		if (n == 3) {	/* Gave an equidistant range of times */
 			e_time = gmt_get_modeltime (B, &e_unit, &e_scale);
 			i_time = gmt_get_modeltime (C, &i_unit, &i_scale);
@@ -513,6 +517,10 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				else
 					n_errors++;
 				break;
+			case 'L':	/* Output file name with list of generated grids */
+				Ctrl->L.active = true;
+				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
+				break;
 			case 'M':	/* Viscoelastic maxwell time */
 				Ctrl->M.active = true;
 				Ctrl->M.maxwell_t = atof (opt->arg);
@@ -557,6 +565,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Syntax error -M option: Requires time information via -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->E.active, "Syntax error -F option: Requires elastic thickness via -E\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && !Ctrl->E.active, "Syntax error -M option: Requires elastic thickness via -E\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !Ctrl->T.active, "Syntax error -L option: Requires time information via -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Filename template must contain format specified\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Syntax error: Load template given but -T not specified\n");
 
@@ -567,7 +576,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>|<n>[+l]]]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-L<list>] [-M<tm>] [-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>|<n>[+l]]]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -585,6 +594,9 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Give filename for output table with names of all grids produced.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename is given then we write the list to stdout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Set Maxwell time for visco-elastic flexure.\n");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify starved moat fraction in 0-1 range (1 = fully filled, 0 = no infill) [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
@@ -642,7 +654,7 @@ struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options,
 	G = GMT_memory (GMT, NULL, 1, struct FLX_GRID);	/* Allocate a Flex structure */
 	G->K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
 	/* Do the forward FFT */
-	GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Forward FFT\n");
 	if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, G->K)) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Error taking the FFT of %s - file skipped\n", file);
 		return NULL;
@@ -702,6 +714,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	struct RHEOLOGY *R = NULL;
 	struct FLX_GRID **G = NULL;
 	struct GMT_GRID *Out = NULL;
+	struct GMT_TEXTSET *L = NULL;
 	struct GRDFLEXURE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -760,6 +773,14 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	/* Here, G[t] contains all the input load grids, ready to go as H(kx,ky) */
 	
+	if (Ctrl->L.active) {	/* Must create textset to hold names of all output grids */
+		uint64_t dim[3] = {1, 1, Ctrl->T.n_times};
+		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "Error creating text set for file %s\n", Ctrl->L.file);
+			Return (EXIT_FAILURE);
+		}
+	}
+
 	for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each time step (i.e., at least once) */
 		
 		/* 4a. SET THE CURRENT TIME VALUE (IF USED) */
@@ -783,7 +804,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 		
 		/* 4c. TAKE THE INVERSE FFT TO GET w(x,y) */
-		GMT_Report (API, GMT_MSG_VERBOSE, "inverse FFT...\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Inverse FFT\n");
 		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
 
@@ -808,8 +829,17 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_OK) {
 				Return (API->error);
 		}
+		if (Ctrl->L.active) {
+			L->table[0]->segment[0]->record[t] = strdup (file);
+			L->table[0]->segment[0]->n_rows++;
+		}
 	}
 	
+	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_OK) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Error writing list of grid files to %s\n", Ctrl->L.file);
+		Return (API->error);
+	}
+
 	/* 5. FREE ALL GRIDS AND ARRAYS */
 	for (t = 0; t < Ctrl->T.n_times; t++) {	/* Free up grid structures */
 		if (G[t] == NULL) continue;	/* Quietly skip containers with no grids */
@@ -820,7 +850,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	GMT_free (GMT, G);
 	GMT_free (GMT, R);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (EXIT_SUCCESS);
 }

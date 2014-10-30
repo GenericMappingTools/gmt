@@ -164,6 +164,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is an multicolumn ASCII file with (x, y) in the first two columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the name of a more 2-D binary data set to sample.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See below if the file is a Sandwell/Smith Mercator grid (IMG format).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -G+l<list> to pass a list of file names.\n");
 	GMT_img_syntax (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeat -G for as many grids as you wish to sample.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -219,6 +220,35 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
+int gmt_process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *Ctrl, unsigned int ng)
+{	/* Handle processing of a single file argument.  Return 1 if successful, 0 if error */
+	int j;
+	unsigned int n_errors = 0;
+	char line[GMT_BUFSIZ] = {""};
+	Ctrl->G.scale[ng] = 1.0;
+	if (strchr (record, ',') && !strchr (record, '?')) {	/* IMG grid file with required parameters */
+		if ((j = sscanf (record, "%[^,],%lf,%d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
+			return (0);
+		}
+		else if (GMT_check_filearg (GMT, '<', record, GMT_IN))
+			Ctrl->G.file[ng] = strdup (line);
+		else
+			return (0);
+		Ctrl->G.type[ng] = 1;
+		n_errors += GMT_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Syntax error -G: mode must be in 0-3 range\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
+		if (n_errors) return (0);
+	}
+	else {	/* Regular grid file */
+		if (GMT_check_filearg (GMT, '<', record, GMT_IN))
+			Ctrl->G.file[ng] = strdup (record);
+		else
+			return (0);
+	}
+	return 1;
+}
+
 int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
@@ -229,7 +259,7 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 
 	int j, mode;
 	unsigned int pos, n_errors = 0, ng = 0, n_files = 0, n_units = 0, n_modes = 0;
-	char line[GMT_BUFSIZ] = {""}, ta[GMT_LEN64] = {""}, tb[GMT_LEN64] = {""};
+	char ta[GMT_LEN64] = {""}, tb[GMT_LEN64] = {""};
 	char tc[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *c = NULL, X;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -299,31 +329,39 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 				if (ng == MAX_GRIDS) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids (max = %d)\n", MAX_GRIDS);
 					n_errors++;
+					break;
+				}
+				if ((c = strstr (opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
+					struct GMT_TEXTSET *Tin = NULL;
+					char *record = NULL;
+					uint64_t seg, row;
+					if ((Tin = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &c[2], NULL)) == NULL) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Error reading time file %s\n", &c[2]);
+						n_errors++;
+					}
+					if ((Tin->n_records + ng) > MAX_GRIDS) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
+						n_errors++;
+					}
+					else {
+						for (seg = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
+							for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++) {
+								record = Tin->table[0]->segment[seg]->record[row];
+								if (gmt_process_one (GMT, record, Ctrl, ng) == 0)
+									n_errors++;
+								else
+									ng++;
+							}
+						}
+					}
 				}
 				else {
-					Ctrl->G.active = true;
-					Ctrl->G.scale[ng] = 1.0;
-					if (strchr (opt->arg, ',') && !strchr (opt->arg, '?')) {	/* IMG grid file with required parameters */
-						if ((j = sscanf (opt->arg, "%[^,],%lf,%d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
-							n_errors++;
-						}
-						else if (GMT_check_filearg (GMT, '<', line, GMT_IN))
-							Ctrl->G.file[ng] = strdup (line);
-						else
-							n_errors++;
-						Ctrl->G.type[ng] = 1;
-						n_errors += GMT_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Syntax error -G: mode must be in 0-3 range\n");
-						n_errors += GMT_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
-					}
-					else {	/* Regular grid file */
-						if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
-							Ctrl->G.file[ng] = strdup (opt->arg);
-						else
-							n_errors++;
-					}
-					ng++;
+					if (gmt_process_one (GMT, opt->arg, Ctrl, ng) == 0)
+						n_errors++;
+					else
+						ng++;
 				}
+				Ctrl->G.active = true;
 				break;
 			case 'L':	/* GMT4 Sets BCs */
 				if (GMT_compat_check (GMT, 4)) {
