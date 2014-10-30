@@ -33,6 +33,14 @@
 #define FLUX_GAUSSIAN	0
 #define FLUX_LINEAR	1
 
+struct GMT_MODELTIME {	/* Hold info about modeling time */
+	double value;	/* Time in year */
+	double scale;	/* Scale factor from year to given user unit */
+	char unit;	/* Either M (Myr), k (kyr), or blank (implies y) */
+	unsigned int u;	/* For labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
+	
+};
+
 struct GRDSEAMOUNT_CTRL {
 	struct A {	/* -A[<out>/<in>] */
 		bool active;
@@ -83,15 +91,18 @@ struct GRDSEAMOUNT_CTRL {
 	struct T {	/* -T[l]<t0>[u]/<t1>[u]/<d0>[u]|n  */
 		bool active, log;
 		unsigned int n_times;
-		double start, end, inc;	/* Time ago, so start > end */
-		double scale;	/* Scale factor from user time to year */
-		char unit;	/* Either M (Myr), k (kyr), or blank (y) */
+		struct GMT_MODELTIME *time;	/* The current sequence of times */
 	} T;
 	struct Z {	/* -Z<base> */
 		bool active;
 		double value;
 	} Z;
 };
+
+EXTERN_MSC double gmt_get_modeltime (char *A, char *unit, double *scale);
+EXTERN_MSC unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, struct GMT_MODELTIME **T_array);
+EXTERN_MSC char *gmt_modeltime_unit (unsigned int u);
+EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME T);
 
 void *New_grdseamount_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDSEAMOUNT_CTRL *C = NULL;
@@ -112,6 +123,7 @@ void *New_grdseamount_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 void Free_grdseamount_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->G.file) free (C->G.file);	
+	if (C->T.time) GMT_free (GMT, C->T.time);
 	GMT_free (GMT, C);	
 }
 
@@ -150,9 +162,10 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian or (l)inear volume flux distribution.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets ad hoc scale factor for radii [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increment for sequence of calculations [one step, no time dependency].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. Unit is year; append k for kyr and M for Myr.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time spacing, use -Tl and specify n steps instead of time increment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. unit is years; append k for kyr and M for Myr.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, append +l and specify n steps instead of time increment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To read a list of times from the first column in a file instead, use -T<tfile>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies two extra input columns with start and stop time for each seamount's life span.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Q to select cumulative versus incremental loads.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set the reference depth [0].  Not allowed for -Qi.\n");
@@ -162,18 +175,6 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "h,i,r,:,.");
 	
 	return (EXIT_FAILURE);
-}
-
-double smt_get_age (char *A, char *unit, double *scale)
-{	/* Convert age[k|m] to years, return unit and scale needed to convert given unit to year */
-	size_t k = strlen (A) - 1;
-	*scale = 1.0;
-	*unit = 0;
-	switch (A[k]) {
-		case 'k': *scale = 1.0e3; *unit = A[k]; A[k] = '\0'; break;
-		case 'M': *scale = 1.0e6; *unit = A[k]; A[k] = '\0'; break;
-	}
-	return (atof (A) * (*scale));
 }
 
 int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options)
@@ -187,7 +188,6 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	unsigned int n_errors = 0, n_expected_fields, k;
 	int n;
 	char T1[GMT_LEN32] = {""}, T2[GMT_LEN32] = {""};
-	char A[GMT_LEN16] = {""}, B[GMT_LEN16] = {""}, C[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -202,9 +202,14 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 			case 'A':	/* Mask option */
 				Ctrl->A.active = true;
 				if (opt->arg[0]) {
-					sscanf (opt->arg, "%[^/]/%s", T1, T2);
-					Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : (float)atof (T1);
-					Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (float)atof (T2);
+					if ((n = sscanf (opt->arg, "%[^/]/%s", T1, T2)) == 2) {
+						Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : (float)atof (T1);
+						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (float)atof (T2);
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -A: Must specify two values\n");
+						n_errors++;
+					}
 				}
 				break;
 			case 'C':	/* Shape option */
@@ -271,26 +276,8 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 				break;
 			case 'T':	/* Time grid */
 				Ctrl->T.active = true;
-				k = (opt->arg[0] == 'l') ? 1 : 0;
-				Ctrl->T.log = (k == 1);
-				n = sscanf (&opt->arg[k], "%[^/]/%[^/]/%s", A, B, C);
-				if (!(n == 3 || n == 1)) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -T option: Must give -T<t0> or -T[l]t0[u]/t1[u]/dt[u]\n");
+				if ((Ctrl->T.n_times = gmt_modeltime_array (GMT, opt->arg, &Ctrl->T.log, &Ctrl->T.time)) == 0)
 					n_errors++;
-				}
-				Ctrl->T.start = smt_get_age (A, &Ctrl->T.unit, &Ctrl->T.scale);
-				if (n == 3) {
-					Ctrl->T.end = smt_get_age (B, &Ctrl->T.unit, &Ctrl->T.scale);
-					Ctrl->T.inc = smt_get_age (C, &Ctrl->T.unit, &Ctrl->T.scale);
-					if (Ctrl->T.end > Ctrl->T.start) double_swap (Ctrl->T.start, Ctrl->T.end);	/* Enforce that old time is larger */
-					Ctrl->T.n_times = (Ctrl->T.log) ? irint (Ctrl->T.inc) : lrint ((Ctrl->T.start - Ctrl->T.end) / Ctrl->T.inc) + 1;
-					if (Ctrl->T.log) Ctrl->T.inc = (log10 (Ctrl->T.start) - log10 (Ctrl->T.end)) / (Ctrl->T.n_times - 1);	/* Convert n to inc_logt */
-				}
-				else {
-					Ctrl->T.end = Ctrl->T.start;	Ctrl->T.inc = 1.0;	/* This will give one time in the series */
-					Ctrl->T.n_times = 1;
-					if (Ctrl->T.start < 1.0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -T option: Now controls time; did you mean old truncation level (see -F)\n");	
-				}					
 				break;
 			case 'Z':	/* Background relief level */
 				Ctrl->Z.active = true;
@@ -545,9 +532,6 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
 				if (Ctrl->T.active) {	/* Force start and stop times to be multiples of the increment */
-					S->coord[t0_col][rec] = rint (S->coord[t0_col][rec] / Ctrl->T.inc) * Ctrl->T.inc;
-					S->coord[t1_col][rec] = rint (S->coord[t1_col][rec] / Ctrl->T.inc) * Ctrl->T.inc;
-					if (S->coord[t0_col][rec] == S->coord[t1_col][rec]) S->coord[t1_col][rec] -= Ctrl->T.inc;	/* In case of a life-space < T.inc */
 					if (S->coord[t0_col][rec] < S->coord[t1_col][rec]) double_swap (S->coord[t0_col][rec], S->coord[t1_col][rec]);	/* Ensure start time is always larger */
 				}
 				for (col = 0; col < n_expected_fields; col++) out[col] = S->coord[col][rec];	/* Copy of record before any scalings */
@@ -622,8 +606,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 
 		/* 1. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
-			this_user_time = (Ctrl->T.log) ? pow (10.0, log10 (Ctrl->T.start) - t * Ctrl->T.inc) : Ctrl->T.start - t * Ctrl->T.inc;	/* In units of user's choice */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating bathymetry for time %g\n", this_user_time);
+			this_user_time = Ctrl->T.time[t].value;	/* In years */
+			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating bathymetry for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 		}
 		if (Ctrl->Q.bmode == SMT_INCREMENTAL) GMT_memset (Grid->data, Grid->header->size, float);	/* Wipe clean for next increment */
 		max = -DBL_MAX;
@@ -814,7 +798,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		}
 		/* Time to write the grid */
 		if (Ctrl->T.active)
-			sprintf (file, Ctrl->G.file, this_user_time);
+			gmt_modeltime_name (GMT, file, Ctrl->G.file, Ctrl->T.time[t]);
 		else
 			strcpy (file, Ctrl->G.file);
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
@@ -824,7 +808,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		}
 
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-		GMT_memcpy (data, Grid->data, Grid->header->size, float);	/* THis will go away once gmt_nc.c is fixed to leave array alone */
+		GMT_memcpy (data, Grid->data, Grid->header->size, float);	/* This will go away once gmt_nc.c is fixed to leave array alone */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Grid) != GMT_OK) {
 			Return (API->error);
 		}
