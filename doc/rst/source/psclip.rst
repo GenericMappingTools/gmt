@@ -15,6 +15,7 @@ Synopsis
 
 **psclip** [ *table* ] **-J**\ *parameters*
 |SYN_OPT-Rz|
+[ **-A**\ [**m**\ \|\ **p**] ]
 [ |SYN_OPT-B| ]
 **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-N** ] [ **-O** ]
 [ **-P** ] [ **-T** ]
@@ -80,6 +81,13 @@ Optional Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+
+**-A**\ [**m**\ \|\ **p**]
+    By default line segments are connected as great circle arcs. To connect them as
+    straight lines, use the **-A** flag. Alternatively, add **m** to connect
+    the line by first following a meridian, then a parallel. Or append **p**
+    to start following a parallel, then a meridian. (This can be practical
+    to connect lines along parallels, for example). 
 
 .. include:: explain_-B.rst_
 

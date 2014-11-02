@@ -19,9 +19,9 @@ gmt pscoast -R -J -O -K -Dc -A5000 -Gc >> %ps%
 gmt grdimage lon.nc -J -Clon.cpt -O -K -nl >> %ps%
 gmt pscoast -R -J -O -K -Q >> %ps%
 gmt pscoast -R -J -O -K -Dc -A5000 -Wthinnest >> %ps%
-echo 0 20 10TH INTERNATIONAL | gmt pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> %ps%
+echo 0 20 12TH INTERNATIONAL | gmt pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> %ps%
 echo 0 -10 GMT CONFERENCE | gmt pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> %ps%
-echo 0 -30 Honolulu, Hawaii, April 1, 2013 | gmt pstext -R -J -O -K -F+f18p,Helvetica-Bold,green=thinnest >> %ps%
+echo 0 -30 Honolulu, Hawaii, April 1, 2015 | gmt pstext -R -J -O -K -F+f18p,Helvetica-Bold,green=thinnest >> %ps%
 
 REM Then show example of color patterns and placing a PostScript image
 
@@ -37,9 +37,9 @@ gmt pscoast -R -J -O -K -Dc -A5000 -Gc >> %ps%
 gmt grdimage lat.nc -J -Clat.cpt -O -K -nl >> %ps%
 gmt pscoast -R -J -O -K -Q >> %ps%
 gmt pscoast -R -J -O -K -Dc -A5000 -Wthinnest >> %ps%
-echo 0 20 10TH INTERNATIONAL | gmt pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> %ps%
+echo 0 20 12TH INTERNATIONAL | gmt pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> %ps%
 echo 0 -10 GMT CONFERENCE | gmt pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> %ps%
-echo 0 -30 Honolulu, Hawaii, April 1, 2013 | gmt pstext -R -J -O -F+f18p,Helvetica-Bold,green=thinnest >> %ps%
+echo 0 -30 Honolulu, Hawaii, April 1, 2015 | gmt pstext -R -J -O -F+f18p,Helvetica-Bold,green=thinnest >> %ps%
 
 del l*.nc
 del l*.cpt

@@ -127,9 +127,10 @@ Optional Arguments
 
 **-W**
     Do not interpolate the input color table but pick the output colors
-    starting at the beginning of the map. This is particularly useful in
-    combination with a categorical color table. Cannot be used in
-    combination with **-Z**.
+    starting at the beginning of the color table, until colors for all
+    intervals are assigned. This is particularly useful in combination
+    with a categorical color table, like "categorical". Cannot be used
+    in combination with **-Z**.
 **-Z**
     Creates a continuous cpt file [Default is discontinuous, i.e.,
     constant colors for each interval]. 

@@ -419,6 +419,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
 		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, bool);
 	}
+	if (Ctrl->E.active) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Enable segment headers */
 	
 	last_col = s->n_out_columns - 1;	/* column number of last output column */
 	
@@ -440,7 +441,10 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 			for (k = 0; k < s->n_out_columns; k++) adj_col[k] = x2sys_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
 		}
 
-		if (Ctrl->E.active) GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], s->n_fields);
+		if (Ctrl->E.active) {	/* Insert a segment header between files */
+			sprintf (GMT->current.io.segment_header, "%s\n", trk_name[trk_no]);
+			GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], s->n_fields);
+		}
 
 		cumulative_dist = 0.0;
 		for (row = 0; row < p.n_rows; row++) {	/* Process all records in this file */

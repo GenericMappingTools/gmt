@@ -35,6 +35,11 @@
 #define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbcdfghipstxy" GMT_OPT("EZMm")
 
 struct PSCLIP_CTRL {
+	struct A {	/* -A[m|p|step] */
+		bool active;
+		unsigned int mode;
+		double step;
+	} A;
 	struct C {	/* -C */
 		bool active;
 		int n;	/* Number of levels to undo [1] */
@@ -67,7 +72,7 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psclip -C[a|<n>] [-K] [-O]  OR\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psclip -C[a|<n>] [-A[m|p]] [-K] [-O]  OR\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tpsclip <table> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-N] [-O] [-P] [-T] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT);
@@ -80,6 +85,9 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting line segments as great circle arcs, i.e., use\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   straight lines unless m or p is appended to first follow meridian\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then parallel, or vice versa.\n");
 	GMT_Option (API, "<,B-,K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
 	GMT_Option (API, "O,P");
@@ -113,6 +121,16 @@ int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* Turn off draw_arc mode */
+				Ctrl->A.active = true;
+				switch (opt->arg[0]) {
+					case 'm': Ctrl->A.mode = 1; break;
+					case 'p': Ctrl->A.mode = 2; break;
+#ifdef DEBUG
+					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature */
+#endif
+				}
+				break;
 			case 'C':	/* Turn clipping off */
 				Ctrl->C.active = true;
 				Ctrl->C.n = PSL_ALL_CLIP;
@@ -231,15 +249,20 @@ int GMT_psclip (void *V_API, int mode, void *args)
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
 		unsigned int tbl;
-		bool first = !Ctrl->N.active;
-		uint64_t row, seg;
+		bool first = !Ctrl->N.active, duplicate;
+		uint64_t row, seg, np;
 		double *x = NULL, *y = NULL;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
+		if ((Ctrl->A.active && Ctrl->A.mode == 0) || !GMT_is_geographic (GMT, GMT_IN)) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
+#ifdef DEBUG
+		/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
+		if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
+#endif
+
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
-
 		if (!Ctrl->T.active) {
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
 				Return (API->error);	/* Register data input */
@@ -247,27 +270,34 @@ int GMT_psclip (void *V_API, int mode, void *args)
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
+			duplicate = (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY || GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
 
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];		/* Current segment */
-					if (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY) {	/* Cannot store results in the read-only input array */
-						x = GMT_memory (GMT, NULL, S->n_rows, double);
-						y = GMT_memory (GMT, NULL, S->n_rows, double);
+					np = S->n_rows;
+					if (duplicate) {	/* Must operate on local copy */
+						GMT_prep_tmp_arrays (GMT, S->n_rows, 2);
+						GMT_memcpy (GMT->hidden.mem_coord[GMT_X], S->coord[GMT_X], np, double);
+						GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], S->coord[GMT_Y], np, double);
+						if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse */
+							np = GMT_fix_up_path (GMT, &GMT->hidden.mem_coord[GMT_X], &GMT->hidden.mem_coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
+							if (np > GMT->hidden.mem_rows) GMT->hidden.mem_rows = np;	/* Since it got reallocated */
+						}
+						x = GMT->hidden.mem_coord[GMT_X];
+						y = GMT->hidden.mem_coord[GMT_Y];
 					}
-					else {	/* Reuse input arrays */
-						x = S->coord[GMT_X];	y = S->coord[GMT_Y];	/* Short hand for x,y columns */
+					else {
+						x = S->coord[GMT_X];
+						y = S->coord[GMT_Y];
 					}
 
-					for (row = 0; row < S->n_rows; row++) {
-						GMT_geo_to_xy (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], &x0, &y0);
+					for (row = 0; row < np; row++) {	/* Apply map projection */
+						GMT_geo_to_xy (GMT, x[row], y[row], &x0, &y0);
 						x[row] = x0; y[row] = y0;
 					}
-					PSL_beginclipping (PSL, x, y, (int)S->n_rows, GMT->session.no_rgb, first);
+					PSL_beginclipping (PSL, x, y, (int)np, GMT->session.no_rgb, first);
 					first = 0;
-					if (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY) {	/* Free temp arrays */
-						GMT_free (GMT, x);	GMT_free (GMT, y);
-					}
 				}
 			}
 			if (GMT_Destroy_Data (API, &D) != GMT_OK) {
