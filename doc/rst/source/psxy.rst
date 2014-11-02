@@ -79,7 +79,7 @@ Optional Arguments
     straight lines, use the **-A** flag. Alternatively, add **m** to draw
     the line by first following a meridian, then a parallel. Or append **p**
     to start following a parallel, then a meridian. (This can be practical
-    to draw a lines along parallels, for example). 
+    to draw a line along parallels, for example). 
 
 .. include:: explain_-B.rst_
 

@@ -4168,6 +4168,7 @@ void gmt_contlabel_angle (double x[], double y[], uint64_t start, uint64_t stop,
 		L->line_angle = 90.0;
 	else
 		L->line_angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
+	fprintf (stderr, "Lineangle = %g\n", L->line_angle);
 	this_angle_type = G->angle_type;
 	if (this_angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
 		if (GMT_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
