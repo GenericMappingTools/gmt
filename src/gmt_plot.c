@@ -1191,7 +1191,9 @@ void gmt_rounded_framecorners (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	}
 }
 
-void gmt_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
+#if 0
+/* Nov-11-2014 PW: For reference until we know there are no side effects with the new one below /*
+void gmt_wesn_map_boundary_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
 	uint64_t i, np = 0;
 	double *xx = NULL, *yy = NULL;
@@ -1242,6 +1244,54 @@ void gmt_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w
 		PSL_plotline (PSL, xx, yy, (int)np, PSL_MOVE + PSL_STROKE);
 		GMT_free (GMT, xx);
 		GMT_free (GMT, yy);
+	}
+}
+#endif
+
+void gmt_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
+{	/* Draw 0-4 boundary sides.  If more than 1 then ensure we draw a continuous line to
+	 * avoid notches at sharp corners. */
+	uint64_t i, n_sides = 0, np = 0, n_set = 0;
+	int this, next = -1, flag;
+	double lonstart[4] = {w, e, e, w}, lonstop[4] = {e, e, w, w};
+	double latstart[4] = {s, s, n, n}, latstop[4] = {s, n, n, s};
+	double *xx = NULL, *yy = NULL;
+
+	GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
+
+	/* Determine how many sides are requested and find first side to be skipped (if any) */
+	
+	for (this = S_SIDE; this <= W_SIDE; this++) {
+		if (GMT->current.map.frame.side[this]) n_sides++;
+		else if (next == -1) next = this;
+	}
+	if (n_sides == 0) return;	/* Nuthin' to do */
+	
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_wesn_map_boundary n_sides = %" PRIu64 "\n", n_sides);	
+	this = next;		/* First side to be skipped (== -1 if none to be skipped) */
+	flag = PSL_MOVE;	/* Need to move to the start of the line the first time */
+	while (n_set < n_sides) {	/* While more sides need to be plotted we loop counter-clockwise */
+		this++;		/* Go to next side (this will be S_SIDE if all 4 sides should be plotted) */
+		if (this > W_SIDE) this = S_SIDE;	/* Wrap around */
+		if (!GMT->current.map.frame.side[this]) {	/* Side to be skipped */
+			flag = PSL_MOVE;	/* Need to move to the start of the new line after the gap */
+			continue;
+		}
+		/* Get coordinates for this border */
+		np = GMT_map_path (GMT, lonstart[this], latstart[this], lonstop[this], latstop[this], &xx, &yy);
+		for (i = 0; i < np; i++) /* Project to inches */
+			GMT_geo_to_xy (GMT, xx[i], yy[i], &xx[i], &yy[i]);
+		next = this + 1;	/* Find ID of next side */
+		if (next > W_SIDE) next = S_SIDE;	/* Wrap around */
+		if (!GMT->current.map.frame.side[next]) flag |= PSL_STROKE;	/* Must stroke line since a gap follows */
+		else if (n_sides == 4 && this == W_SIDE) flag |= (PSL_STROKE+PSL_CLOSE);	/* Must close and stroke line since no gaps */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_wesn_map_boundary doing side %d with flag = %d\n", this, flag);	
+		
+		PSL_plotline (PSL, xx, yy, (int)np, flag);
+		GMT_free (GMT, xx);
+		GMT_free (GMT, yy);
+		n_set++;
+		flag = 0;
 	}
 }
 
@@ -1375,17 +1425,17 @@ void gmt_conic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 		return;
 	}
 
-	if (!GMT->current.proj.north_pole && s <= -90.0) /* Cannot have southern boundary */
-		GMT->current.map.frame.side[S_SIDE] = 0;
-	if (GMT->current.proj.north_pole && n >= 90.0) /* Cannot have northern boundary */
-		GMT->current.map.frame.side[N_SIDE] = 0;
-
 	if (!(GMT->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		gmt_wesn_map_boundary (GMT, PSL, w, e, s, n);
 		return;
 	}
 
 	/* Here draw fancy map boundary */
+
+	if (!GMT->current.proj.north_pole && s <= -90.0) /* Cannot have southern boundary */
+		GMT->current.map.frame.side[S_SIDE] = 0;
+	if (GMT->current.proj.north_pole && n >= 90.0) /* Cannot have northern boundary */
+		GMT->current.map.frame.side[N_SIDE] = 0;
 
 	fat_pen = fabs (GMT->current.setting.map_frame_width) * GMT->session.u2u[GMT_INCH][GMT_PT];
 	if (GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
@@ -1433,12 +1483,11 @@ void gmt_ellipse_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 		gmt_rect_map_boundary (GMT, PSL, 0.0, 0.0, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI]);
 		return;
 	}
+	gmt_wesn_map_boundary (GMT, PSL, w, e, s, n);	/* Draw outline first, then turn off non-existant sides */
 	if (GMT->common.R.wesn[YLO] <= -90.0) /* Cannot have southern boundary */
 		GMT->current.map.frame.side[S_SIDE] = 0;
 	if (GMT->common.R.wesn[YHI] >= 90.0) /* Cannot have northern boundary */
 		GMT->current.map.frame.side[N_SIDE] = 0;
-
-	gmt_wesn_map_boundary (GMT, PSL, w, e, s, n);
 }
 
 void gmt_basic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
@@ -1492,6 +1541,7 @@ void gmt_circle_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 void gmt_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
 	uint64_t i, nr;
+	int close = 0;
 	double a, da;
 	double xx[2], yy[2];
 
@@ -1505,8 +1555,10 @@ void gmt_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 		if (GMT_IS_ZERO (s))
 			GMT->current.map.frame.side[S_SIDE] = 0;		/* No donuts, please */
 	}
-	if (GMT_360_RANGE (w, e) || doubleAlmostEqualZero (e, w))
+	if (GMT_360_RANGE (w, e) || doubleAlmostEqualZero (e, w)) {
 		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
+		close = PSL_CLOSE;
+	}
 	nr = GMT->current.map.n_lon_nodes;
 	while (nr > GMT->current.plot.n_alloc) GMT_get_plot_array (GMT);
 	da = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / (nr - 1);
@@ -1515,14 +1567,14 @@ void gmt_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 			a = GMT->common.R.wesn[XLO] + i * da;
 			GMT_geo_to_xy (GMT, a, GMT->common.R.wesn[YHI], &GMT->current.plot.x[i], &GMT->current.plot.y[i]);
 		}
-		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE + PSL_STROKE);
+		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE + PSL_STROKE + close);
 	}
 	if (GMT->current.map.frame.side[S_SIDE]) {
 		for (i = 0; i < nr; i++) {
 			a = GMT->common.R.wesn[XLO] + i * da;
 			GMT_geo_to_xy (GMT, a, GMT->common.R.wesn[YLO], &GMT->current.plot.x[i], &GMT->current.plot.y[i]);
 		}
-		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE + PSL_STROKE);
+		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE + PSL_STROKE + close);
 	}
 	if (GMT->current.map.frame.side[E_SIDE]) {
 		GMT_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &xx[0], &yy[0]);
