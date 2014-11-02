@@ -250,8 +250,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 	if (!Ctrl->C.active) {	/* Start new clip_path */
 		unsigned int tbl;
 		bool first = !Ctrl->N.active, duplicate;
-		uint64_t row, seg, np;
-		double *x = NULL, *y = NULL;
+		uint64_t row, seg;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
@@ -270,34 +269,27 @@ int GMT_psclip (void *V_API, int mode, void *args)
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			duplicate = (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY || GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
-
+			duplicate = (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
-					S = D->table[tbl]->segment[seg];		/* Current segment */
-					np = S->n_rows;
-					if (duplicate) {	/* Must operate on local copy */
-						GMT_prep_tmp_arrays (GMT, S->n_rows, 2);
-						GMT_memcpy (GMT->hidden.mem_coord[GMT_X], S->coord[GMT_X], np, double);
-						GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], S->coord[GMT_Y], np, double);
-						if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse */
-							np = GMT_fix_up_path (GMT, &GMT->hidden.mem_coord[GMT_X], &GMT->hidden.mem_coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
-							if (np > GMT->hidden.mem_rows) GMT->hidden.mem_rows = np;	/* Since it got reallocated */
-						}
-						x = GMT->hidden.mem_coord[GMT_X];
-						y = GMT->hidden.mem_coord[GMT_Y];
+					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */
+					if (duplicate) {	/* Must duplicate externally allocated segment since it needs to be resampled below */
+						GMT_Report (API, GMT_MSG_DEBUG, "Must duplicate external memory polygon\n");
+						S = GMT_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 					}
-					else {
-						x = S->coord[GMT_X];
-						y = S->coord[GMT_Y];
+					if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse */
+						S->n_rows = GMT_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
+						GMT_Report (API, GMT_MSG_DEBUG, "Resample polygon, now has %d points\n", S->n_rows);
 					}
 
-					for (row = 0; row < np; row++) {	/* Apply map projection */
-						GMT_geo_to_xy (GMT, x[row], y[row], &x0, &y0);
-						x[row] = x0; y[row] = y0;
+					for (row = 0; row < S->n_rows; row++) {	/* Apply map projection */
+						GMT_geo_to_xy (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], &x0, &y0);
+						S->coord[GMT_X][row] = x0; S->coord[GMT_Y][row] = y0;
 					}
-					PSL_beginclipping (PSL, x, y, (int)np, GMT->session.no_rgb, first);
+					PSL_beginclipping (PSL, S->coord[GMT_X], S->coord[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);
 					first = 0;
+					if (duplicate)	/* Free duplicate segment */
+						GMT_free_segment (GMT, &S, GMT_ALLOCATED_BY_GMT);
 				}
 			}
 			if (GMT_Destroy_Data (API, &D) != GMT_OK) {
