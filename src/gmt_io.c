@@ -6736,7 +6736,7 @@ int gmt_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V)
 	if (!V) return (GMT_PTR_IS_NULL);			/* Nothing to allocate to */
 	if (V->n_columns == 0) return (GMT_PTR_IS_NULL);	/* No columns specified */
 	if (V->n_rows == 0) return (GMT_N_COLS_NOT_SET);	/* No rows specified */
-	if (V->data) return (GMT_PTR_IS_NULL);			/* Array of columns have not been allocated */
+	if (!V->data) return (GMT_PTR_IS_NULL);			/* Array of columns have not been allocated */
 	for (col = 0; col < V->n_columns; col++) {
 		if ((error = GMT_alloc_univector (GMT, &V->data[col], V->type[col],  V->n_rows)) != GMT_OK) return (error);
 	}
