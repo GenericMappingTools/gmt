@@ -80,6 +80,7 @@ Optional Arguments
     Implies reading data table(s) from given command-line files or standard input.
     We use the last data column to determine the data range; use **-i** to
     select another column, and use **-bi** if your data table is native binary.
+    This z-range information is used instead of providing the **-T** option.
     We create a linear color table by dividing the table data z-range into
     *nlevels* equidistant slices.  If *nlevels* is not given it defaults to
     the number of levels in the chosen CPT file.
@@ -159,6 +160,13 @@ To make a GEBCO look-alike cpt file for bathymetry, run
    ::
 
     gmt makecpt -Cgebco > my_gebco.cpt
+
+To create a 24-level rainbow color table suitable for plotting the depths in
+the data table depths.txt (with lon, lat, depths), run
+
+   ::
+
+    gmt makecpt -Cgebco depths.txt -i2 -Z -E24 > my_depths.cpt
 
 Bugs
 ----
