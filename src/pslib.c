@@ -4084,7 +4084,6 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
 	int i, j, k, p, ii, kk, this_i, this_j, last_i, last_j, i_offset = 0, k_offset = 0, n_skipped, ntot = 0, new_tot = 0, *new_n = NULL;
 	char *use = NULL;
-
 	if (x == NULL && y == NULL) return;	/* No path */
 	for (p = 0; p < npath; p++) ntot += n[p];	/* Determine total number of points */
 	/* Since we need dx/dy from these we preprocess to avoid any nasty surprises with repeat points */
@@ -4097,12 +4096,12 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 			i = ii + i_offset;	/* Index into concatenated x,y arrays */
 			this_i = 100 * psl_ix (PSL, x[i]);	/* Simulates the digits written by a %.2lf format */
 			this_j = 100 * psl_iy (PSL, y[i]);
-			if (this_i != last_i && this_j != last_j) {	/* Not a repeat point, use it */
+			if (this_i == last_i && this_j == last_j)	/* Repeat point, skip it */
+				n_skipped++;
+			else {	/* Not a repeat point, use it */
 				use[i] = true;
 				j++;
 			}
-			else	/* Repeat point, skip it */
-				n_skipped++;
 			kk = k + k_offset;	/* Index into concatenated node array */
 			if (k < m[p] && node[kk] == ii && n_skipped) {	/* Adjust node pointer since we are removing points and upsetting the node order */
 				node[kk++] -= n_skipped;
@@ -4183,6 +4182,7 @@ void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char *
 	if (curved) {	/* Curved text has node array and m[] array */
 		PSL_comment (PSL, "Set array with nodes of PSL_path_x|y for text placement:\n");
 		psl_set_int_array (PSL, "label_node", node, nlab);
+		fprintf (stderr, "node[0] = %d\n", node[0]);
 		PSL_comment (PSL, "Set array with number of labels per line segment:\n");
 		psl_set_int_array (PSL, "label_n", m, npath);
 	}
