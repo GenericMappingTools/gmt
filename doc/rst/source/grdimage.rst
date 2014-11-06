@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdimage** *grd\_z* \| *grd\_r grd\_g grd\_b*
+**grdimage** *grd_z* \| *grd_r grd_g grd_b*
 [ **-A**\ *out_img*\ **=**\ *driver* ] [ **-C**\ *cptfile* ]
 [ **-D**\ [**r**\ ] ] **-J**\ *parameters*
 [ |SYN_OPT-U| ]
@@ -45,8 +45,8 @@ green, and blue components directly (all must be in the 0-255 range).
 Optionally, illumination may be added by providing a file with
 intensities in the (-1,+1) range. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
-**grdgradient** and, optionally, modified by **grdmath** or
-**grdhisteq**. Yet as a third alternative available when GMT is build
+:doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
+:doc:`grdhisteq`. Yet as a third alternative available when GMT is build
 with GDAL support the grd_z file can be an image referenced or not
 (than see **-Dr**). In this case the images can be illuminated with the
 file provided via the **-I** option. Here if image has no coordinates
@@ -71,7 +71,7 @@ A (color) PostScript file is output.
 Required Arguments
 ------------------
 
-*grd\_z* \| *grd\_r grd\_g grd\_b*
+*grd_z* \| *grd_r grd_g grd_b*
     2-D gridded data set (or red, green, blue grids) to be imaged (See
     GRID FILE FORMATS below.) 
 
@@ -105,7 +105,7 @@ Optional Arguments
     is a valid file syntax. Note, however, that to use it this way you
     must not be blocked by a proxy. If you are, chances are good that it
     can work by setting the environmental variable
-    *http_proxy* with the value 'your\_proxy:port' Append
+    *http_proxy* with the value 'your_proxy:port' Append
     **r** to use the region specified by **-R** to apply to the image.
     For example, if you have used **-Rd** then the image will be
     assigned the limits of a global domain. The interest of this mode is
