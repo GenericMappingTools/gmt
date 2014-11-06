@@ -4182,7 +4182,6 @@ void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char *
 	if (curved) {	/* Curved text has node array and m[] array */
 		PSL_comment (PSL, "Set array with nodes of PSL_path_x|y for text placement:\n");
 		psl_set_int_array (PSL, "label_node", node, nlab);
-		fprintf (stderr, "node[0] = %d\n", node[0]);
 		PSL_comment (PSL, "Set array with number of labels per line segment:\n");
 		psl_set_int_array (PSL, "label_n", m, npath);
 	}
