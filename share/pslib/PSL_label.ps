@@ -231,7 +231,7 @@ end
     /PSL_m PSL_label_n psl_kk get def				% Get the number of labels for this line segment
     /PSL_x PSL_path_x psl_k PSL_n getinterval def		% Get the subset that is the current line segment x-coordinates
     /PSL_y PSL_path_y psl_k PSL_n getinterval def		% Get the subset that is the current line segment y-coordinates
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def	% Get the subset of note values for current line segment
+    /PSL_node PSL_label_node psl_p PSL_m getinterval def	% Get the subset of node values for current line segment
     /PSL_angle PSL_label_angle psl_p PSL_m getinterval def	% Get the subset of angle values for current line segment
     /PSL_str PSL_label_str psl_p PSL_m getinterval def		% Get the subset of string values for current line segment
     /PSL_fnt PSL_label_font psl_p PSL_m getinterval def		% Get the subset of font settings for current line segment
@@ -240,7 +240,7 @@ end
     /psl_p psl_p PSL_m add def					% Go to next segment start index for nodes
   } for  % The loop over segments
   			
-  PSL_clippath {PSL_clip} if N			% Activate clip path and return
+  PSL_clippath {PSL_eoclip} if N			% Activate clip path and return
 
 } def
 
@@ -486,6 +486,9 @@ end
       /psl_kk psl_i psl_start add def			% Equivalent index in concatenated array of all segments
       PSL_path_x psl_kk get PSL_path_y psl_kk get L	% Draw to next point
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def	% Difference between first and last x coordinate
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def	% Difference between first and last y coordinate
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if	% Explicitly close the path
     S							% Stroke this path
     /psl_start psl_start PSL_n add def			% Go to next segment and update start index for path
   } for
@@ -541,7 +544,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip N					% Set the new clip path, increment clip counter and clear path
+  PSL_eoclip N					% Set the new clip path, increment clip counter and clear path
 } def
 
 /PSL_ST_prepare_text		% Compute various dimensions and coordinates for one label
