@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13469 [64-bit] Document from grdcontour
+%%Title: GMT v5.2.0_r13664 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Aug 25 07:14:23 2014
+%%CreationDate: Thu Nov  6 13:10:49 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -299,7 +299,7 @@ end
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -513,6 +513,9 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
@@ -557,7 +560,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip N
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -636,7 +639,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour tmp.nc -JQ0/7i -P -K -A10 -C5 -Baf -Y6.5i -Xc
-%%PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015114.352 20015114.352 -10007557.176 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015114.352 20015114.352 -10007557.176 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -4249,7 +4252,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rd -JQ0/7i -O -K -SE
-%%PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015114.352 20015114.352 -10007557.176 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015114.352 20015114.352 -10007557.176 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -4332,7 +4335,151 @@ O1
 -36 7 D
 -37 4 D
 P S
+4900 3115 M
+-37 -2 D
+-37 -4 D
+-36 -7 D
+-35 -10 D
+-33 -12 D
+-31 -14 D
+-28 -17 D
+-26 -19 D
+-23 -20 D
+-20 -23 D
+-17 -23 D
+-14 -25 D
+-11 -26 D
+-9 -26 D
+-5 -27 D
+-2 -27 D
+0 -27 D
+3 -27 D
+5 -27 D
+8 -26 D
+10 -26 D
+12 -25 D
+15 -24 D
+16 -22 D
+18 -22 D
+20 -20 D
+21 -18 D
+47 -33 D
+25 -13 D
+52 -21 D
+55 -12 D
+29 -4 D
+28 -1 D
+28 1 D
+56 9 D
+28 7 D
+52 21 D
+25 13 D
+47 33 D
+21 18 D
+20 20 D
+18 22 D
+16 22 D
+15 24 D
+12 25 D
+10 26 D
+8 26 D
+5 27 D
+3 27 D
+0 27 D
+-2 27 D
+-5 27 D
+-9 26 D
+-11 26 D
+-14 25 D
+-17 23 D
+-20 23 D
+-23 20 D
+-26 19 D
+-28 17 D
+-31 14 D
+-33 12 D
+-35 10 D
+-36 7 D
+-37 4 D
+P S
 0 1 0 C
+233 1015 M
+-39 -1 D
+-40 -3 D
+-39 -4 D
+-39 -6 D
+-38 -8 D
+-38 -9 D
+8400 984 M
+-37 -11 D
+-37 -12 D
+-36 -14 D
+-34 -16 D
+-34 -17 D
+-32 -18 D
+-30 -20 D
+-29 -21 D
+-27 -22 D
+-26 -23 D
+-22 -24 D
+-21 -25 D
+-17 -25 D
+-14 -26 D
+-11 -27 D
+-7 -27 D
+-2 -27 D
+4 -27 D
+8 -27 D
+16 -27 D
+23 -26 D
+30 -24 D
+40 -24 D
+49 -21 D
+59 -19 D
+69 -17 D
+78 -13 D
+40 -5 D
+0 399 M
+46 -6 D
+92 -6 D
+95 -2 D
+96 2 D
+92 6 D
+86 11 D
+78 13 D
+69 17 D
+59 19 D
+49 21 D
+39 24 D
+31 24 D
+23 26 D
+15 27 D
+9 27 D
+3 27 D
+-2 27 D
+-6 27 D
+-11 27 D
+-14 26 D
+-18 25 D
+-20 25 D
+-23 24 D
+-25 23 D
+-27 22 D
+-29 21 D
+-31 20 D
+-32 18 D
+-33 17 D
+-35 16 D
+-35 14 D
+-37 12 D
+-37 11 D
+-38 9 D
+-39 8 D
+-39 6 D
+-39 4 D
+-39 3 D
+-40 1 D
+S
 233 1015 M
 -39 -1 D
 -40 -3 D
@@ -4487,6 +4634,82 @@ S
 512 19 D
 909 8 D
 S
+3383 4165 M
+910 -8 D
+512 -19 D
+286 -22 D
+189 -24 D
+141 -24 D
+115 -24 D
+99 -25 D
+90 -24 D
+83 -23 D
+78 -24 D
+75 -23 D
+72 -22 D
+70 -22 D
+69 -21 D
+68 -21 D
+67 -20 D
+66 -20 D
+65 -19 D
+65 -17 D
+65 -18 D
+64 -16 D
+64 -15 D
+64 -15 D
+63 -13 D
+64 -13 D
+63 -11 D
+64 -11 D
+63 -9 D
+64 -9 D
+63 -7 D
+63 -6 D
+63 -6 D
+64 -4 D
+63 -2 D
+63 -2 D
+63 -1 D
+64 1 D
+63 2 D
+63 2 D
+63 4 D
+64 6 D
+63 6 D
+63 7 D
+63 9 D
+64 9 D
+63 11 D
+64 11 D
+63 13 D
+57 12 D
+0 3698 M
+7 1 D
+64 15 D
+64 15 D
+64 16 D
+65 18 D
+65 17 D
+65 19 D
+66 20 D
+67 20 D
+67 21 D
+69 21 D
+71 22 D
+72 22 D
+75 23 D
+78 24 D
+83 23 D
+89 24 D
+100 25 D
+115 24 D
+141 24 D
+188 24 D
+287 22 D
+512 19 D
+909 8 D
+S
 U
 PSL_cliprestore
 %%EndObject
@@ -4497,7 +4720,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rd -JQ0/7i -O -K -Sx0.1i -W1p
-%%PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015114.352 20015114.352 -10007557.176 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015114.352 20015114.352 -10007557.176 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -4512,8 +4735,11 @@ PSL_clip N
 V
 O1
 60 4900 2800 Sx
+60 -3500 2800 Sx
 60 233 700 Sx
+60 8633 700 Sx
 60 7583 3920 Sx
+60 -817 3920 Sx
 U
 PSL_cliprestore
 %%EndObject
@@ -4524,7 +4750,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psbasemap -Rt.nc -JM3i -O -K -Baf -Y-4i
-%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -4663,7 +4889,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JM3i -O -K -Ss0.02i -Gcyan -N
-%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -5345,7 +5571,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JM3i -O -K -Ss0.02i -Gorange -N
-%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -5534,7 +5760,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour t.nc -JM3i -O -K -A10 -C5 -Gd2i
-%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -5695,7 +5921,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JM3i -O -K -SE -W1p,red
-%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -5777,7 +6003,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JM3i -O -K -Sx0.1i -W1p
-%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 15.00000000 45.00000000 17.00000000 43.00000000 -1667926.196 1667926.196 1918678.319 5306035.168 +proj=merc +lon_0=30 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -5802,7 +6028,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psbasemap -Rt.nc -JM3i -O -K -Baf -X4i
-%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -5903,7 +6129,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JM3i -O -K -Ss0.02i -Gcyan -N
-%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
@@ -7093,7 +7319,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JM3i -O -K -Ss0.02i -Gorange -N
-%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
@@ -7422,7 +7648,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour t.nc -JM3i -O -K -A10 -C5 -Gd2i
-%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
@@ -7611,7 +7837,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JM3i -O -K -SE -W1p,green
-%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
@@ -7695,7 +7921,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JM3i -O -K -Sx0.1i -W1p
-%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: merc 163.00000000 217.00000000 -73.00000000 -47.00000000 -3002267.153 3002267.153 -12109928.675 -5935433.189 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
@@ -7720,7 +7946,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psbasemap -Rt.nc -JQ0/7i -O -K -Baf -X-4i -Y-1.5i
-%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
@@ -7853,7 +8079,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JQ0/7i -O -K -Ss0.02i -Gcyan -N
-%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
@@ -11721,7 +11947,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JQ0/7i -O -K -Ss0.02i -Gorange -N
-%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
@@ -17273,7 +17499,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour t.nc -JQ0/7i -O -K -A10 -C5 -Gd2i
-%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
@@ -17425,7 +17651,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JQ0/7i -O -K -SE -W1p,blue
-%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
@@ -17509,6 +17735,75 @@ O1
 512 19 D
 909 9 D
 S
+3383 549 M
+910 -9 D
+512 -19 D
+286 -22 D
+189 -24 D
+141 -24 D
+115 -24 D
+99 -24 D
+90 -24 D
+83 -24 D
+78 -23 D
+75 -23 D
+72 -23 D
+70 -22 D
+69 -21 D
+68 -21 D
+67 -20 D
+66 -19 D
+65 -19 D
+65 -18 D
+65 -17 D
+64 -17 D
+64 -15 D
+64 -14 D
+63 -14 D
+64 -13 D
+63 -11 D
+64 -11 D
+63 -9 D
+64 -9 D
+63 -7 D
+63 -6 D
+35 -3 D
+7864 0 M
+36 3 D
+63 6 D
+63 7 D
+63 9 D
+64 9 D
+63 11 D
+64 11 D
+63 13 D
+57 12 D
+0 81 M
+7 2 D
+64 14 D
+64 15 D
+64 17 D
+65 17 D
+65 18 D
+65 19 D
+66 19 D
+67 20 D
+67 21 D
+69 21 D
+71 22 D
+72 23 D
+75 23 D
+78 23 D
+83 24 D
+89 24 D
+100 24 D
+115 24 D
+141 24 D
+188 24 D
+287 22 D
+512 19 D
+909 9 D
+S
 U
 PSL_cliprestore
 %%EndObject
@@ -17519,7 +17814,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JQ0/7i -O -K -Sx0.1i -W1p
-%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_21
 0 setlinecap
 0 setlinejoin
@@ -17534,6 +17829,7 @@ PSL_clip N
 V
 O1
 60 7583 303 Sx
+60 -817 303 Sx
 U
 PSL_cliprestore
 %%EndObject
@@ -17544,7 +17840,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rt.nc -JQ0/7i -O -T
-%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%PROJ: eqc -180.00000000 180.00000000 65.00000000 90.00000000 -20015114.352 20015114.352 7227680.183 10007557.176 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=unnamed
 %%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin

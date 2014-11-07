@@ -70,8 +70,9 @@ struct GRAVFFT_CTRL {
 		bool active;
 		unsigned int n_terms;
 	} E;
-	struct GRVF_F {	/* -F[f|g|e|n|v] */
+	struct GRVF_F {	/* -F[f[+]|g|e|n|v] */
 		bool active;
+		bool slab;
 		unsigned int mode;
 	} F;
 	struct GRVF_G {	/* -G<outfile> */
@@ -245,7 +246,9 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 					case 'v': Ctrl->F.mode = GRAVFFT_VGG; 	     break;
 					case 'e': Ctrl->F.mode = GRAVFFT_DEFL_EAST;  break;
 					case 'n': Ctrl->F.mode = GRAVFFT_DEFL_NORTH; break;
-					default:  Ctrl->F.mode = GRAVFFT_FAA; 	     break;	/* FAA */
+					default:  Ctrl->F.mode = GRAVFFT_FAA; 	   /* FAA */
+					 	if (opt->arg[1] == '+') Ctrl->F.slab = true;
+						break;
 				}
 				break;
 			case 'G':
@@ -392,7 +395,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f|F|g|v|n|e]] [-I<wbctk>]\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f[+]|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
@@ -425,7 +428,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t-E number of terms used in Parker's expansion [Default = 3].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-F Specify desired geopotential field:\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   f = Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   F = As f, but adjust zero-level so.\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t       Append + to adjust for implied slab correction [none].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   g = Geoid anomalies (m).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   e = East deflections of the vertical (micro-radian).\n");
@@ -690,10 +693,12 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		case GRAVFFT_FAA:
 			strcpy (Grid[0]->header->title, "Gravity anomalies");
 			strcpy (Grid[0]->header->z_units, "mGal");
-			slab_gravity = 1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST * (Ctrl->W.water_depth - Ctrl->misc.z_level);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
-			for (m = 0; m < Grid[0]->header->size; m++)
-				Grid[0]->data[m] += slab_gravity;
+			if (Ctrl->F.slab) {	/* Do the slab adjustment */
+				slab_gravity = 1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST * fabs (Ctrl->W.water_depth - Ctrl->misc.z_level);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
+				for (m = 0; m < Grid[0]->header->size; m++)
+					Grid[0]->data[m] += slab_gravity;
+			}
 			break;
 		case GRAVFFT_GEOID:
 			strcpy (Grid[0]->header->title, "Geoid anomalies");

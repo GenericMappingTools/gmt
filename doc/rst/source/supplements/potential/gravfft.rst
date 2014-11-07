@@ -15,7 +15,7 @@ Synopsis
 
 **gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
 [ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density* ] [ **-E**\ *n_terms* ]
-[ **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
+[ **-F**\ [**f**\ [**+**]\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-Q** ] [ **-T**\ *te/rl/rm/rw*\ [**+m**] ]
 [ |SYN_OPT-V| ]
@@ -80,10 +80,12 @@ Optional Arguments
 **-E**\ *n_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 3]
-**-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
+**-F**\ [**f**\ [**+**]\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
-       **f** = Free-air anomalies (mGal) [Default].
+       **f** = Free-air anomalies (mGal) [Default].  Append **+** to add
+       in the slab implied when removing the mean value from the topography.
+       This requires zero topograhy to mean no mass anomaly.
 
        **g** = Geoid anomalies (m).
 

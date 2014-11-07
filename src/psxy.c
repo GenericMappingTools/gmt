@@ -106,7 +106,7 @@ enum Psxy_cliptype {
 	PSXY_NO_CLIP_NO_REPEAT};
 
 enum Psxy_poltype {
-	PSXY_POL_X 		= 0,
+	PSXY_POL_X 		= 1,
 	PSXY_POL_Y,
 	PSXY_POL_SYMM_DEV,
 	PSXY_POL_ASYMM_DEV,

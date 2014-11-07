@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r13209 [64-bit] Document from grdcontour
+%%Title: GMT v5.2.0_r13664 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue May 27 15:23:26 2014
+%%CreationDate: Thu Nov  6 13:11:40 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -299,7 +299,7 @@ end
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -513,6 +513,9 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
@@ -557,7 +560,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip N
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -636,7 +639,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour smt.nc+Uk -Jx0.01i -Xc -P -A1 -GlLM/RM -Bafg -K -Z0.001
-%%PROJ: xy 0.00000000 600.00000000 0.00000000 400.00000000 0.000 600.000 0.000 400.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 600.00000000 0.00000000 400.00000000 0.000 600.000 0.000 400.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -1213,7 +1216,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour flex_e.nc+Uk -Jx0.01i -O -K -C0.2 -A1 -Z0.001 -GlLM/RM -Bafg '-BWsNE+tElastic Plate Flexure, T@-e@- = 5 km' -Y4.4i
-%%PROJ: xy 0.00000000 600.00000000 0.00000000 400.00000000 0.000 600.000 0.000 400.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 600.00000000 0.00000000 400.00000000 0.000 600.000 0.000 400.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -3157,7 +3160,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -Rk0/600/0/400 -Jx0.01i -O -T
-%%PROJ: xy 0.00000000 600000.00000000 0.00000000 400000.00000000 0.000 600000.000 0.000 400000.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 600000.00000000 0.00000000 400000.00000000 0.000 600000.000 0.000 400000.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
