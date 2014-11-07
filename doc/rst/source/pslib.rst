@@ -452,7 +452,8 @@ set prior to calling these functions; see CHANGING SETTINGS above.
     be PSL_MOVE + PSL_STROKE (3). The line is
     drawn using the current pen attributes. Add PSL_CLOSE
     (8) to *type* to close the first and last point
-    by the PostScript operators.
+    by the PostScript operators; this is done automatically if the
+    first and last point are equal.
 
 **long PSL_plotpoint** (**struct PSL_CTRL** *\*P*, **double** *x*,
 **double** *y*, **long** *type*)
