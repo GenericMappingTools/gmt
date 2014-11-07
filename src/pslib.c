@@ -14,6 +14,7 @@
  *
  *--------------------------------------------------------------------*/
 /* 			PSL: PostScript Light
+ *
  * PSL is a library of plot functions that create PostScript.
  * All the routines write their output to the same plotting file,
  * which can be dumped to a Postscript output device (laserwriters).
@@ -38,6 +39,7 @@
  *	It is NOT sufficient to pass, for example, "string(1:string_length)".
  *
  * List of API functions:
+ *
  * PSL_beginaxes
  * PSL_beginclipping	: Clips plot outside the specified polygon
  * PSL_beginlayer	: Place begin object group DSC comment.
@@ -170,7 +172,6 @@
 #define PS_LANGUAGE_LEVEL       2
 #define PSL_Version             "5.0"
 #define PSL_SMALL               1.0e-10
-#define PSL_MAX_L1_PATH         1000    /* Max path length in Level 1 implementations */
 #define PSL_PAGE_HEIGHT_IN_PTS  842     /* A4 height */
 #define PSL_PEN_LEN		128	/* Style length string */
 
@@ -178,8 +179,8 @@
  *			PSL FUNCTION MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#define PSL_s255(s) (s * 255.0)							/* Conversion from 0-1 to 0-255 range */
-#define PSL_u255(s) ((unsigned char)rint(PSL_s255(s)))						/* Conversion from 0-1 to 0-255 range */
+#define PSL_s255(s) (s * 255.0)								/* Conversion from 0-1 to 0-255 range */
+#define PSL_u255(s) ((unsigned char)rint(PSL_s255(s)))					/* Conversion from 0-1 to 0-255 range */
 #define PSL_t255(t) PSL_u255(t[0]),PSL_u255(t[1]),PSL_u255(t[2])			/* ... same for triplet */
 #define PSL_q255(q) PSL_u255(q[0]),PSL_u255(q[1]),PSL_u255(q[2]),PSL_u255(q[3])		/* ... same for quadruplet */
 #define PSL_YIQ(rgb) (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2])			/* How B/W TV's convert RGB to Gray */
@@ -199,7 +200,7 @@
 #define PSL_SYMBOL_FONT		12
 #define PSL_CHUNK		2048
 
-struct PSL_WORD {
+struct PSL_WORD {	/* Used for type-setting text */
 	int font_no;
 	int flag;
 	int index;
@@ -210,7 +211,7 @@ struct PSL_WORD {
 };
 
 struct PSL_COLOR {
-	double rgb[4];
+	double rgb[4];	/* r/g/b plus alpha (PDF only) */
 };
 
 /* Special macros and structure for color(sic) maps-> */
@@ -302,7 +303,7 @@ const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
 struct PSL_CTRL *New_PSL_Ctrl (char *session)
 {
 	struct PSL_CTRL *PSL = NULL;
-	int i;
+	unsigned int i;
 
 	/* Initialize the PSL structure */
 
@@ -324,7 +325,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	 * If sharedir, userdir are NULL and search == 1 then we look for environmental parameters
 	 * 		PSL_SHAREDIR and PSL_USERDIR; otherwise we assign then from the args (even if NULL).
 	 */
-	int i;
+	unsigned int i;
 	char *this_c = NULL;
 
 	/* Initialize the PSL structure to default values unless already set */
@@ -555,8 +556,7 @@ int PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, int n, double
 	 *        1 = start new clipping path (more follows)
 	 *        2 = end clipping path (this is the last segment)
 	 *        3 = this is the complete clipping path (start to end)
-	 * XXX    Add another 4 to omit the newpath and keep it open for more addition (or stroking).
-	 * XXX    I do not know which program uses this.
+	 * 	  Add 4 to omit use even-odd clipping [nonzero-winding rule].
 	 */
 
 	if (flag & 1) {	/* First segment in (possibly multi-segmented) clip-path */
@@ -951,7 +951,7 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
 	/* If polygon is to be closed, we can drop the end point matching the first point
 	 * (but only if this segment runs start to finish)
 	 */
-	if (n > 1 && type & PSL_MOVE && type & PSL_CLOSE && ix[0] == ix[n-1] && iy[0] == iy[n-1]) n--;
+	if (n > 1 && (type & PSL_MOVE) && (type & PSL_CLOSE) && (ix[0] == ix[n-1] && iy[0] == iy[n-1])) n--;
 
 	if (type & PSL_MOVE) {
 		PSL_command (PSL, "%d %d M\n", ix[0], iy[0]);
@@ -1507,10 +1507,10 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 
 	font = old_font = PSL->current.font_no;
 	orig_size = size = fontsize;
-	small_size = size * 0.7;
-	scap_size = size * 0.85;
-	ustep = 0.35 * size;
-	dstep = 0.25 * size;
+	small_size = size * 0.7;	/* Sub-script/Super-script set at 70% of font size */
+	scap_size = size * 0.85;	/* Small caps set at 85% of font size */
+	ustep = 0.35 * size;		/* Super-script baseline raised 35% of font size */
+	dstep = 0.25 * size;		/* Sub-script baseline lowered 25% of font size */
 	sub = super = small = false;
 
 	tempstring = PSL_memory (PSL, NULL, strlen(string)+1, char);	/* Since strtok steps on it */
@@ -2003,10 +2003,11 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		if (curved) 	/* The coordinates are in the PSL already so use PLS function */
 			PSL_command (PSL, "PSL_draw_path_lines N\n");
 		else {	/* Must draw lines here instead */
-			int k, offset = 0;
+			int k, offset = 0, flag = 0;
 			for (k = 0; k < n_segments; k++) {	/* Draw each segment line */
+				flag = (x[offset] == x[offset+np[k]-1] && y[offset] == y[offset+np[k]-1]) ? PSL_CLOSE : 0;
 				PSL_command (PSL, "PSL_path_pen %d get cvx exec\n", k);	/* Set this segment's pen */
-				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE + PSL_STROKE);
+				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE + PSL_STROKE + flag);
 				offset += np[k];
 			}
 		}

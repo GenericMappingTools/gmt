@@ -720,9 +720,10 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind)
 {
-	/* Contour/line specifications in *contour and psxy[z]
+	/* Contour/line syntax specifications in *contour and psxy[z]
 	 * indent is the number of spaces to indent after the TAB.
-	 * kind = 0 for *contour and 1 for psxy[z]
+	 * this amount depends on the hierarchy of where the options appear.
+	 * kind = 0 for *contour and 1 for psxy[z] (quoted lines).
 	 */
 
 	unsigned int i;
@@ -750,20 +751,20 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 		GMT_message (GMT, "%s   h Use segment header labels (via -Lstring).\n", pad);
 		GMT_message (GMT, "%s   n Use the current segment number (starting at 0).\n", pad);
 		GMT_message (GMT, "%s   N Use current file number / segment number (starting at 0/0).\n", pad);
-		GMT_message (GMT, "%s   x Like h, but us headers in file with crossing lines instead.\n", pad);
+		GMT_message (GMT, "%s   x Like h, but use headers in file with crossing lines instead.\n", pad);
 	}
 	GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis).\n", pad);
 	GMT_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
-	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox  [Default is no outline].\n", pad);
+	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox [Default is no outline].\n", pad);
 	GMT_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);
 	GMT_message (GMT, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
 	GMT_message (GMT, "%s +t[<file>] saves (x y label) to <file> [%s_labels.txt].\n", pad, type[kind]);
-	GMT_message (GMT, "%s   use +T to save (x y angle label) instead\n", pad);
-	GMT_message (GMT, "%s +u<unit> to append unit to all labels.\n", pad);
+	GMT_message (GMT, "%s   use +T to save (x y angle label) instead.\n", pad);
+	GMT_message (GMT, "%s +u<unit> will append <unit> to all labels.\n", pad);
 	if (kind == 0) GMT_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
 	GMT_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
-	GMT_message (GMT, "%s +w sets how many (x,y) points to use for angle calculation [10].\n", pad);
-	GMT_message (GMT, "%s +=<prefix> to give all labels a prefix.\n", pad);
+	GMT_message (GMT, "%s +w sets how many (x,y) points to use for smooth angle calculation [10].\n", pad);
+	GMT_message (GMT, "%s +=<prefix> to give all labels a prefix [none].\n", pad);
 }
 
 void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind)
@@ -782,9 +783,9 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
 	GMT_message (GMT, "%sd<dist>[%s] or D<dist>[%s]  [Default is d%g%c].\n", pad, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
 	GMT_message (GMT, "%s   d: Give distance between labels with specified map unit in %s.\n", pad, GMT_DIM_UNITS_DISPLAY);
-	GMT_message (GMT, "%s   D: Specify geographic distance between labels in %s,\n", pad, GMT_LEN_UNITS_DISPLAY);
+	GMT_message (GMT, "%s   D: Specify geographic distance between labels in %s.\n", pad, GMT_LEN_UNITS_DISPLAY);
 	GMT_message (GMT, "%s   The first label appears at <frac>*<dist>; change by appending /<frac> [0.25].\n", pad);
-	GMT_message (GMT, "%sf<file.d> reads file <file.d> and places labels at locations\n", pad);
+	GMT_message (GMT, "%sf<ffile> reads file <ffile> and places labels at fixed locations\n", pad);
 	GMT_message (GMT, "%s   that match individual points along the %ss.\n", pad, type[kind]);
 	GMT_message (GMT, "%sl|L<line1>[,<line2>,...] Give start and stop coordinates for\n", pad);
 	GMT_message (GMT, "%s   straight line segments.  Labels will be placed where these\n", pad);
@@ -793,7 +794,7 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	GMT_message (GMT, "%s   2-character XY key that uses the \"pstext\"-style justification\n", pad);
 	GMT_message (GMT, "%s   format to specify a point on the map as [LCR][BMT].\n", pad);
 	if (kind == 0) {
-		GMT_message (GMT, "%s   In addition, you can use Z-, Z+ to mean the global\n", pad);
+		GMT_message (GMT, "%s   In addition, you can use Z-, Z+ to select the global\n", pad);
 		GMT_message (GMT, "%s   minimum and maximum locations in the grid.\n", pad);
 	}
 	GMT_message (GMT, "%s   L Let point pairs define great circles [Straight lines].\n", pad);
@@ -804,9 +805,9 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	GMT_message (GMT, "%s   N+1 places a single label at the end of the %s.\n", pad, type[kind]);
 	GMT_message (GMT, "%s   Append /<min_dist> to enforce a minimum spacing between\n", pad);
 	GMT_message (GMT, "%s   consecutive labels [0]\n", pad);
-	GMT_message (GMT, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places\n", pad);
+	GMT_message (GMT, "%sx|X<xfile> reads the multi-segment file <xfile> and places\n", pad);
 	GMT_message (GMT, "%s   labels at intersections between %ss and lines in\n", pad, type[kind]);
-	GMT_message (GMT, "%s   <xfile.d>.  Use X to resample the lines first.\n", pad);
+	GMT_message (GMT, "%s   <xfile>.  Use X to resample the lines first.\n", pad);
 	GMT_message (GMT, "%s   For all options, append +r<radius>[unit] to specify minimum\n", pad);
 	GMT_message (GMT, "%s   radial separation between labels [0]\n", pad);
 }
@@ -818,7 +819,7 @@ void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error)
 	GMT_message (GMT, "\t   Full syntax is <xinc>[%s|+][=][/<yinc>[%s|+][=]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	GMT_message (GMT, "\t   For geographic regions in degrees you can optionally append units from this list:\n");
 	GMT_message (GMT, "\t   (d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.\n");
-	GMT_message (GMT, "\t   Append = to adjust the region to fit increments [Adjust increment to fit domain].\n");
+	GMT_message (GMT, "\t   Append = to adjust the region to fit increments [Adjust increment to fit region].\n");
 	GMT_message (GMT, "\t   Alternatively, specify number of nodes by appending +. Then, the increments\n");
 	GMT_message (GMT, "\t   are calculated from the given domain and node-registration settings\n");
 	GMT_message (GMT, "\t   (see Appendix B for details).  Note: If -R<grdfile> was used then\n");
