@@ -934,7 +934,8 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
 	 * PSL_DRAW   (0) : Draw a line segment
 	 * PSL_MOVE   (1) : Move to a new anchor point (x[0], y[0]) first
 	 * PSL_STROKE (2) : Stroke the line
-	 * PSL_CLOSE  (8) : Close the line back to the beginning of this segment
+	 * PSL_CLOSE  (8) : Close the line back to the beginning of this segment, this is done automatically
+	 *                  when the first and last point are the same and PSL_MOVE is on.
 	 */
 	int i, i0 = 0, *ix = NULL, *iy = NULL;
 
@@ -948,10 +949,11 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
 
 	n = psl_shorten_path (PSL, x, y, n, ix, iy);
 
-	/* If polygon is to be closed, we can drop the end point matching the first point
+	/* If first and last point are the same, close the polygon and drop the last point
 	 * (but only if this segment runs start to finish)
 	 */
-	if (n > 1 && (type & PSL_MOVE) && (type & PSL_CLOSE) && (ix[0] == ix[n-1] && iy[0] == iy[n-1])) n--;
+
+	if (n > 1 && (type & PSL_MOVE) && (ix[0] == ix[n-1] && iy[0] == iy[n-1])) {n--; type |= PSL_CLOSE;}
 
 	if (type & PSL_MOVE) {
 		PSL_command (PSL, "%d %d M\n", ix[0], iy[0]);
@@ -2002,12 +2004,11 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_comment (PSL, "Draw the text line segments:\n");
 		if (curved) 	/* The coordinates are in the PSL already so use PLS function */
 			PSL_command (PSL, "PSL_draw_path_lines N\n");
-		else {	/* Must draw lines here instead */
-			int k, offset = 0, flag = 0;
+		else {	/* Must draw lines here instead with PSL_plotline */
+			int k, offset = 0;
 			for (k = 0; k < n_segments; k++) {	/* Draw each segment line */
-				flag = (x[offset] == x[offset+np[k]-1] && y[offset] == y[offset+np[k]-1]) ? PSL_CLOSE : 0;
 				PSL_command (PSL, "PSL_path_pen %d get cvx exec\n", k);	/* Set this segment's pen */
-				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE + PSL_STROKE + flag);
+				PSL_plotline (PSL, &x[offset], &y[offset], np[k], PSL_MOVE + PSL_STROKE);
 				offset += np[k];
 			}
 		}
