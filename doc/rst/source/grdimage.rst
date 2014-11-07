@@ -15,8 +15,7 @@ Synopsis
 
 **grdimage** *grd_z* \| *grd_r grd_g grd_b*
 [ **-A**\ *out_img*\ **=**\ *driver* ] [ **-C**\ *cptfile* ]
-[ **-D**\ [**r**\ ] ] **-J**\ *parameters*
-[ |SYN_OPT-U| ]
+[ **-D**\ [**r**\ ] ] [ **Ei**\ [\|\ *dpi*] ] **-J**\ *parameters*
 [ **-G**\ [**f**\ \|\ **b**]\ *color* ] [ **-I**\ *intensfile*\ \|\ *intensity* ]
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-M** ] [ **-N** ]
 [ **-O** ] [ **-P** ] [ **-Q** ]
@@ -112,7 +111,7 @@ Optional Arguments
     assigned the limits of a global domain. The interest of this mode is
     that you can project a raw image (an image without referencing
     coordinates).
-**-Ei**\ [\|*dpi*]
+**-Ei**\ [\|\ *dpi*]
     Sets the resolution of the projected grid that will be created if a
     map projection other than Linear or Mercator was selected [100]. By
     default, the projected grid will be of the same size (rows and
