@@ -239,6 +239,11 @@ struct PSL_CTRL {
 		double rgb[3][4];		/* Current stroke, fill, and fs fill rgb	*/
 		double offset;			/* Current setdash offset			*/
 		double fontsize;		/* Current font size				*/
+		double subsupsize;		/* Fractional size of super/sub-scripts		*/
+		double scapssize;		/* Fractional size of small caps		*/
+		double sub_down;		/* Fractional fontsize shift down for subscript */
+		double sup_up[2];		/* Fractional fontsize shift up for superscript */
+						/* [0] is for lower-case, [1] is for uppercase  */
 		int nclip;			/* Clip depth 					*/
 		int font_no;		/* Current font number				*/
 		int outline;		/* Current outline				*/
@@ -350,6 +355,7 @@ EXTERN_MSC int PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double 
 EXTERN_MSC int PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 EXTERN_MSC int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline);
 EXTERN_MSC int PSL_setfont (struct PSL_CTRL *PSL, int font_no);
+EXTERN_MSC int PSL_setfontdims (struct PSL_CTRL *PSL, double supsub, double scaps, double sup_lc, double sup_uc, double sdown);
 EXTERN_MSC int PSL_setformat (struct PSL_CTRL *PSL, int n_decimals);
 EXTERN_MSC int PSL_setlinecap (struct PSL_CTRL *PSL, int cap);
 EXTERN_MSC int PSL_setlinejoin (struct PSL_CTRL *PSL, int join);

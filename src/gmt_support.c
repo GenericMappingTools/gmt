@@ -3416,6 +3416,7 @@ void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	G->transparent = true;
 	G->spacing = true;
 	G->half_width = 5;
+	//G->half_width = UINT_MAX;	/* Auto */
 	G->label_dist_spacing = 4.0;	/* Inches */
 	G->label_dist_frac = 0.25;	/* Fraction of above head start for closed labels */
 	G->box = 2;			/* Rect box shape is Default */
@@ -4141,7 +4142,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	return (error);
 }
 
-void gmt_contlabel_angle (double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+void gmt_contlabel_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
 {
 	int64_t j, sstart, sstop, nn;
 	int this_angle_type, half = G->half_width;
@@ -4180,6 +4181,61 @@ void gmt_contlabel_angle (double x[], double y[], uint64_t start, uint64_t stop,
 		if (L->angle < 0.0) L->angle += 360.0;
 		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
 	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Ave: Label Line angle = %g start/stop = %d/%d atan2d (%g, %g) Label angle = %g\n", L->line_angle, (int)start, (int)stop, sum_xy, sum_x2, L->angle);
+}
+
+void gmt_contlabel_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+{
+	int this_angle_type;
+	double dx, dy;
+
+	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
+		if (start > 0)
+			start--;
+		else if (stop < (n-1))
+			stop++;
+	}
+	if (stop >= n) stop = n-1;
+	dx = x[stop] - x[start];
+	dy = y[stop] - y[start];
+	L->line_angle =  d_atan2d (dy, dx);
+	this_angle_type = G->angle_type;
+	if (this_angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
+		if (GMT_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
+			this_angle_type = 0;
+		else
+			L->angle = cangle;
+	}
+	if (this_angle_type != 2) {	/* Must base label angle on the contour angle */
+		L->angle = L->line_angle + this_angle_type * 90.0;	/* May add 90 to get normal */
+		if (L->angle < 0.0) L->angle += 360.0;
+		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vec: Label Line angle = %g start/stop = %d/%d atan2d (%g, %g) Label angle = %g\n", L->line_angle, (int)start, (int)stop, dy, dx, L->angle);
+}
+
+void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+{
+	gmt_contlabel_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
+#if 0
+	if (G->nudge_flag == 2 || G->half_width == 0) {	/* Want line-angle to follow line */
+		gmt_contlabel_angle_line (GMT, x, y, start, stop, cangle, n, L, G);
+	}
+	else if (G->half_width == UINT_MAX) {	/* Automatic width specification */
+		/* Try to come up with a number that is small for short lines and grow slowly for larger lines */
+		G->half_width = MAX (1, lrint (ceil (log10 (0.25*n))));
+		G->half_width *= G->half_width;	/* New guess at half-width */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Automatic label-averaging half_width = %d [n = %d]\n", G->half_width, (int)n);
+		if (G->half_width == 1)
+			gmt_contlabel_angle_line (GMT, x, y, start, stop, cangle, n, L, G);
+		else
+			gmt_contlabel_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
+		G->half_width = UINT_MAX;	/* Rest back to auto */
+	}
+	else {	/* Go width the selected half-width */
+		gmt_contlabel_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
+	}
+#endif
 }
 
 int gmt_sort_label_struct (const void *p_1, const void *p_2)
@@ -5189,7 +5245,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE || G->label_type == GMT_LABEL_IS_PDIST));
 						new_label->node = i - 1;
-						gmt_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
+						gmt_contlabel_angle (GMT, xx, yy, i - 1, i, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
@@ -5256,7 +5312,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
 						new_label->node = (j == 0) ? 0 : j - 1;
-						gmt_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
+						gmt_contlabel_angle (GMT, xx, yy, new_label->node, j, cangle, nn, new_label, G);
 						if (G->number_placement) new_label->end = e_val;
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
@@ -5308,7 +5364,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					}
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, line_no, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
-						gmt_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
+						gmt_contlabel_angle (GMT, xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
@@ -5346,7 +5402,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					this_value_dist = value_dist[start];
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, j, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
-						gmt_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
+						gmt_contlabel_angle (GMT, xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;

@@ -96,7 +96,7 @@ Optional Arguments
     *labelinfo* controls the specifics of the label formatting and consists
     of a concatenated string made up of any of the following control arguments:
 
-.. include:: explain_labelinfo.rst_
+.. include:: explain_clabelinfo.rst_
 
 .. include:: explain_-B.rst_
 

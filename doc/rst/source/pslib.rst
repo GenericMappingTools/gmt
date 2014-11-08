@@ -343,6 +343,17 @@ affect the current state of parameters such as line and fill attributes.
     GothicBBB-Medium-EUC-H, and 38 = GothicBBB-Medium-EUC-V. If *fontnr*
     is outside this range, it is reset to 0.
 
+**long PSL_setfontdims** (**struct PSL_CTRL** *\*P*, **double** *supsub*,
+**double** *scaps*, **double** *sup*, **double** *sdown*)
+
+    Changes the settings for a variety of relative font sizes and shifts
+    pertaining to sub-scripts, super-scripts, and small caps.  Default
+    settings are given in brackets.  Here, *supsub* sets the relative size
+    of sub- and super-scripts [0.58], *scaps* sets the relative size of
+    small caps [0.8], *sup* indicates the upward baseline shift for placement
+    of super-scripts [0.33], while *sdown* sets the downward baseline shift
+    for sub-scripts [0.33].
+
 **long PSL_setformat** (**struct PSL_CTRL** *\*P*, **long** *n_decimals*)
 
     Sets the number of decimals to be used when writing color or gray
