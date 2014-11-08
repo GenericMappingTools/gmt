@@ -4320,7 +4320,7 @@ void GMT_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 		GMT_free (GMT, L->name);
 		GMT_free (GMT, L);
 	}
-	GMT_free (GMT, G->segment);
+	if (G->segment) GMT_free (GMT, G->segment);
 	GMT_free_table (GMT, G->xp, GMT_ALLOCATED_BY_GMT);
 	if (G->f_n) {	/* Array for fixed points */
 		GMT_free (GMT, G->f_xy[GMT_X]);
