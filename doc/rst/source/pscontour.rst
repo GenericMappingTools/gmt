@@ -17,10 +17,10 @@ Synopsis
 |SYN_OPT-Rz|
 [ **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ **-D**\ [*template*] ] 
+[ **-D**\ [*template*] ] [ **-E**\ *indexfile* ]
 [ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
 [ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] 
-[ **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *indexfile* ]
+[ **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ]
 [ **-S**\ [\ *p*\ \|\ *t*] ]
 [ **-T**\ [\ **+\|-**][\ *gap/length*][\ **:**\ [\ *labels*]] ]
 [ |SYN_OPT-U| ] 
@@ -115,6 +115,11 @@ Optional Arguments
 
 .. include:: explain_contdump.rst_
 
+**-E**\ *indexfile*
+    Give name of file with network information. Each record must contain
+    triplets of node numbers for a triangle [Default computes these
+    using Delaunay triangulation (see **triangulate**)].
+
 **-G**
 
 .. include:: explain_contlabel.rst_
@@ -137,10 +142,8 @@ Optional Arguments
 
 .. include:: explain_-P.rst_
 
-**-Q**\ *indexfile*
-    Give name of file with network information. Each record must contain
-    triplets of node numbers for a triangle [Default computes these
-    using Delaunay triangulation (see **triangulate**)].
+**-Q**\ *cut*
+    Do not draw contours with less than *cut* number of points [Draw all contours]. 
 
 **-S**\ [\ *p*\ \|\ *t*]
     Skip all input *xyz* points that fall outside the region [Default
@@ -177,7 +180,7 @@ Optional Arguments
 
 .. include:: explain_-XY.rst_
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-Q**). 
+.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-E**). 
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is 3 output columns]. 
