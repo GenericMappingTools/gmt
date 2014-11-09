@@ -943,15 +943,19 @@ void gmt_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G)
 
 void update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, size_t length, char string[])
 {	/* Place desired text in string (fixed size array) which can hold up to length bytes */
+	size_t lim;
 	static char buffer[GMT_BUFSIZ];
 	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 	GMT_memset (buffer, GMT_BUFSIZ, char);	/* Start with a clean slate */
-	if ((mode & GMT_COMMENT_IS_OPTION) == 0 && (mode & GMT_COMMENT_IS_RESET) == 0 && string[0]) strcat (buffer, string);	/* Use old text is we are not resetting */
+	if ((mode & GMT_COMMENT_IS_OPTION) == 0 && (mode & GMT_COMMENT_IS_RESET) == 0 && string[0]) strncat (buffer, string, length-1);	/* Use old text if we are not resetting */
+	lim = length - strlen (buffer) - 1;	/* Remaining characters that we can use */
 	if (mode & GMT_COMMENT_IS_OPTION) {	/* Must start with module name since it is not part of the option args */
-		strcat (buffer, API->GMT->init.module_name);
-		strcat (buffer, " ");
+		strncat (buffer, API->GMT->init.module_name, lim);
+		lim = length - strlen (buffer) - 1;	/* Remaining characters that we can use */
+		strncat (buffer, " ", lim);
 	}
-	strcat (buffer, txt);			/* Append new text */
+	lim = length - strlen (buffer) - 1;	/* Remaining characters that we can use */
+	strncat (buffer, txt, lim);		/* Append new text */
 	GMT_memset (string, length, char);	/* Wipe string completely */
 	strncpy (string, buffer, length);	/* Only copy over max length bytes */
 	if (mode & GMT_COMMENT_IS_OPTION) GMT_free (API->GMT, txt);
@@ -992,6 +996,7 @@ void GMTAPI_matrix_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *ar
 /* Also used in gmt_io.c and prototyped in gmt_internals.h: */
 char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg)
 {
+	size_t lim;
 	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 	static char buffer[GMT_BUFSIZ];
 	GMT_memset (buffer, GMT_BUFSIZ, char);
@@ -1002,7 +1007,8 @@ char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void 
 		strcat (buffer, " ");
 	}
 	if (mode & GMT_COMMENT_IS_REMARK) strcat (buffer, " Remark : ");
-	strcat (buffer, txt);
+	lim = GMT_BUFSIZ - strlen (buffer) - 1;	/* Max characters left */
+	strncat (buffer, txt, lim);
 	if (mode & GMT_COMMENT_IS_OPTION) GMT_free (API->GMT, txt);
 	return (buffer);
 }

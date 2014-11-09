@@ -108,7 +108,7 @@
         plot-distance units. An exception occurs for a linear projection in
         which we assume the dimensions are given in the same units as **-R**.
 
-**-Sk**
+    **-Sk**
         **k**\ ustom symbol. Append <name>/*size*, and we will look for a
         definition file called <name>.def in (1) the current
         directory or (2) in ~/.gmt or (3) in
