@@ -429,7 +429,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if	% Only calculate new angle if not duplicates
     /sina angle sin def
     /cosa angle cos def
