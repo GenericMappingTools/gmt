@@ -4218,7 +4218,7 @@ void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 {
 	gmt_contlabel_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
 #if 0
-	if (G->nudge_flag == 2 || G->half_width == 0) {	/* Want line-angle to follow line */
+	if ((G->nudge_flag == 2 && G->half_width == UINT_MAX ) || G->half_width == 0) {	/* Want line-angle to follow line */
 		gmt_contlabel_angle_line (GMT, x, y, start, stop, cangle, n, L, G);
 	}
 	else if (G->half_width == UINT_MAX) {	/* Automatic width specification */
