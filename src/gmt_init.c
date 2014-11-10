@@ -4066,7 +4066,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			break;
 		case GMTCASE_PS_VERBOSE:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
-				GMT_COMPAT_CHANGE ("PS_VERBOSE");
+				GMT_COMPAT_CHANGE ("PS_COMMENTS");
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_PS_COMMENTS:
