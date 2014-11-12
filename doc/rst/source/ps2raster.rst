@@ -71,6 +71,7 @@ Optional Arguments
     Use the **-A+r** to round the HighRes BoundingBox instead of using the `ceil` function.
     This is going against Adobe Law but can be useful when creating very small images
     where the difference of one pixel might matter.
+    If **-V** is used we also report the dimensions of the illustration.
 
 **-C**\ *gs_option*
     Specify a single, custom option that will be passed on to

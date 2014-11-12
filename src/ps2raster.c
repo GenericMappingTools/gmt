@@ -985,6 +985,11 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 						break;
 					}
 					got_BB = got_HRBB = true;
+					GMT_Report (API, GMT_MSG_VERBOSE, "Figure dimensions: Width: %g points [%g %s]  Height: %g points [%g %s]\n",
+						x1-x0,
+						(x1-x0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit], API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit],
+						y1-y0,
+						(y1-y0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit], API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 				}
 			}
 			if (fpb != NULL) /* don't close twice */
