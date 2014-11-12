@@ -267,7 +267,7 @@ EXTERN_MSC void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G,
 EXTERN_MSC int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G);
 EXTERN_MSC int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[2][3]);
 EXTERN_MSC void GMT_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
-EXTERN_MSC void GMT_hold_contour (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, struct GMT_CONTOUR *G);
+EXTERN_MSC void GMT_hold_contour (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, bool contour, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_x_free (struct GMT_CTRL *GMT, struct GMT_XOVER *X);
 EXTERN_MSC int GMT_init_track (struct GMT_CTRL *GMT, double y[], uint64_t n, struct GMT_XSEGMENT **S);
 EXTERN_MSC uint64_t GMT_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t sa[], struct GMT_XSEGMENT A[], uint64_t na, double xb[], double yb[], uint64_t sb[], struct GMT_XSEGMENT B[], uint64_t nb, bool internal, bool geo, struct GMT_XOVER *X);

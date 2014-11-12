@@ -1390,7 +1390,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 						save[n_save].cval = cont[c].val;
 						n_save++;
 					}
-					GMT_hold_contour (GMT, &xp, &yp, m, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, &Ctrl->contour);
+					GMT_hold_contour (GMT, &xp, &yp, m, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, true, &Ctrl->contour);
 				}
 
 				GMT_free (GMT, xp);

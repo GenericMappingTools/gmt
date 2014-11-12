@@ -3417,8 +3417,7 @@ void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	sprintf (G->label_file, "%s_labels.txt", G->line_name);
 	G->transparent = true;
 	G->spacing = true;
-	G->half_width = 5;
-	//G->half_width = UINT_MAX;	/* Auto */
+	G->half_width = UINT_MAX;	/* Auto */
 	G->label_dist_spacing = 4.0;	/* Inches */
 	G->label_dist_frac = 0.25;	/* Fraction of above head start for closed labels */
 	G->box = 2;			/* Rect box shape is Default */
@@ -3605,7 +3604,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				G->curved_text = true;
 				break;
 
-			case 'w':	/* Angle filter width [Default is 10 points] */
+			case 'w':	/* Angle filter width [Default is auto] */
 				G->half_width = atoi (&p[1]) / 2;
 				break;
 
@@ -4232,10 +4231,8 @@ void gmt_contlabel_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uin
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vec: Label Line angle = %g start/stop = %d/%d atan2d (%g, %g) Label angle = %g\n", L->line_angle, (int)start, (int)stop, dy, dx, L->angle);
 }
 
-void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, bool contour, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
 {
-	gmt_contlabel_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
-#if 0
 	if ((G->nudge_flag == 2 && G->half_width == UINT_MAX ) || G->half_width == 0) {	/* Want line-angle to follow line */
 		gmt_contlabel_angle_line (GMT, x, y, start, stop, cangle, n, L, G);
 	}
@@ -4248,12 +4245,15 @@ void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 			gmt_contlabel_angle_line (GMT, x, y, start, stop, cangle, n, L, G);
 		else
 			gmt_contlabel_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
-		G->half_width = UINT_MAX;	/* Rest back to auto */
+		G->half_width = UINT_MAX;	/* Reset back to auto */
 	}
 	else {	/* Go width the selected half-width */
 		gmt_contlabel_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
 	}
-#endif
+	if (contour) {	/* Limit line_angle to -90/+90 */
+		if (L->line_angle > +90.0) L->line_angle -= 180.0;
+		if (L->line_angle < -90.0) L->line_angle += 180.0;
+	}
 }
 
 int gmt_sort_label_struct (const void *p_1, const void *p_2)
@@ -5162,7 +5162,7 @@ void gmt_place_label (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *txt, stru
 	}
 }
 
-void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, struct GMT_CONTOUR *G)
+void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, bool contour, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches */
 	uint64_t i, j, start = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
@@ -5263,7 +5263,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE || G->label_type == GMT_LABEL_IS_PDIST));
 						new_label->node = i - 1;
-						gmt_contlabel_angle (GMT, xx, yy, i - 1, i, cangle, nn, new_label, G);
+						gmt_contlabel_angle (GMT, xx, yy, i - 1, i, cangle, nn, contour, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
@@ -5336,7 +5336,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 								strcat (new_label->label, G->crossect_tag[i]);
 						}
 						new_label->node = (j == 0) ? 0 : j - 1;
-						gmt_contlabel_angle (GMT, xx, yy, new_label->node, j, cangle, nn, new_label, G);
+						gmt_contlabel_angle (GMT, xx, yy, new_label->node, j, cangle, nn, contour, new_label, G);
 						if (G->number_placement) new_label->end = e_val;
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
@@ -5388,7 +5388,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					}
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, line_no, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
-						gmt_contlabel_angle (GMT, xx, yy, left, right, cangle, nn, new_label, G);
+						gmt_contlabel_angle (GMT, xx, yy, left, right, cangle, nn, contour, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
@@ -5426,7 +5426,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					this_value_dist = value_dist[start];
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, j, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
-						gmt_contlabel_angle (GMT, xx, yy, start, start, cangle, nn, new_label, G);
+						gmt_contlabel_angle (GMT, xx, yy, start, start, cangle, nn, contour, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
@@ -5462,17 +5462,18 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 	*yyy = yy;
 }
 
-void GMT_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, struct GMT_CONTOUR *G)
+void GMT_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, bool contour, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches.
 	 * This function just makes sure that the xxx/yyy are continuous and do not have map jumps.
 	 * If there are jumps we find them and call the main gmt_hold_contour_sub for each segment
+	 * contour is true for contours and false for quoted lines.
 	 */
 
 	uint64_t seg, first, n, *split = NULL;
 	double *xs = NULL, *ys = NULL, *xin = NULL, *yin = NULL;
 
 	if ((split = GMT_split_line (GMT, xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
-		gmt_hold_contour_sub (GMT, xxx, yyy, nn, zval, label, ctype, cangle, closed, G);
+		gmt_hold_contour_sub (GMT, xxx, yyy, nn, zval, label, ctype, cangle, closed, contour, G);
 		return;
 	}
 
@@ -5485,7 +5486,7 @@ void GMT_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_
 		ys = GMT_memory (GMT, NULL, n, double);
 		GMT_memcpy (xs, &xin[first], n, double);
 		GMT_memcpy (ys, &yin[first], n, double);
-		gmt_hold_contour_sub (GMT, &xs, &ys, n, zval, label, ctype, cangle, closed, G);
+		gmt_hold_contour_sub (GMT, &xs, &ys, n, zval, label, ctype, cangle, closed, contour, G);
 		GMT_free (GMT, xs);
 		GMT_free (GMT, ys);
 		first = n;	/* First point in next segment */

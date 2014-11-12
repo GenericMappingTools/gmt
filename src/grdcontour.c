@@ -1197,7 +1197,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 					}
 					else
 						cont_label[0] = '\0';
-					GMT_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont_type[c], cont_angle[c], closed == cont_is_closed, &Ctrl->contour);
+					GMT_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont_type[c], cont_angle[c], closed == cont_is_closed, true, &Ctrl->contour);
 					GMT_free (GMT, xp);
 					GMT_free (GMT, yp);
 				}
