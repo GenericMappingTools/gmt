@@ -694,7 +694,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			strcpy (Grid[0]->header->title, "Gravity anomalies");
 			strcpy (Grid[0]->header->z_units, "mGal");
 			if (Ctrl->F.slab) {	/* Do the slab adjustment */
-				slab_gravity = 1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST * fabs (Ctrl->W.water_depth - Ctrl->misc.z_level);
+				slab_gravity = (float) (1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST * 
+				                        fabs (Ctrl->W.water_depth - Ctrl->misc.z_level));
 				GMT_Report (API, GMT_MSG_VERBOSE, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
 				for (m = 0; m < Grid[0]->header->size; m++)
 					Grid[0]->data[m] += slab_gravity;

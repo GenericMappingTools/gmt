@@ -192,7 +192,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 			return 0;
 		}
 		/* Read the file successfully */
-		n_times = Tin->n_records;
+		n_times = (unsigned int)Tin->n_records;
 		T = GMT_memory (GMT, NULL, n_times, struct GMT_MODELTIME);	/* Array with times */
 		for (seg = 0, k = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, k++) {
