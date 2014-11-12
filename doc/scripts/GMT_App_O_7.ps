@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13154 [64-bit] Document from pscoast
+%%Title: GMT v5.2.0_r13683 [64-bit] Document from pscoast
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon May 26 11:11:27 2014
+%%CreationDate: Wed Nov 12 06:51:07 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -291,15 +291,15 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -307,6 +307,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +344,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +368,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +494,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -513,6 +541,9 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
@@ -557,7 +588,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip N
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -636,7 +667,7 @@ O0
 
 % PostScript produced by:
 %%GMT: pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P
-%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -667,7 +698,7 @@ O0
 16 9 D
 552 0 D
 0 -294 D
--527 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 15 -12 -12 -10 -8 1 -7 6 -20 -6 -25 8 32 14 7 231 1585 SP
@@ -691,7 +722,7 @@ FO
 -12 -7 D
 -16 -3 D
 0 -90 D
-51 0 D
+P
 FO
 -26 0 16 9 10 0 3 0 1734 SP
 15 -12 -12 -10 -8 1 -7 6 -20 -6 -25 8 32 14 7 231 1585 SP
@@ -726,7 +757,7 @@ FO
 2 -11 D
 -361 0 D
 0 294 D
-231 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 1518 1449 M
@@ -771,7 +802,7 @@ FO
 5 -21 D
 3 0 D
 2 -11 D
-1 0 D
+P
 FO
 {0.941 1 1 C} FS
 -578 0 0 -294 574 0 -6 24 2 2 -3 -1 5 19 -1 11 -7 17 -6 29 11 49 9 14 12 1735 1579 SP
@@ -851,7 +882,7 @@ FO
 4 -12 D
 -494 0 D
 0 294 D
-450 0 D
+P
 FO
 3 2 -3 5 2 2891 1638 SP
 2 4 -2 18 2 2891 1591 SP
@@ -952,7 +983,7 @@ FO
 5 -19 D
 -4 -9 D
 4 -12 D
-1 0 D
+P
 FO
 -10 -11 1 9 -5 6 8 -1 -6 5 1 12 5 3 4 -5 -3 7 2 -1 2 6 4 -1 -1 -6 13 2476 1625 SP
 -4 1 1 13 6 3 -5 -1 2 11 11 -22 -2 -5 -3 5 -5 -23 -4 14 10 2473 1566 SP
@@ -1032,7 +1063,7 @@ FO
 -8 17 D
 61 0 D
 0 -294 D
--194 0 D
+P
 FO
 13 -11 -8 10 -1 1 3 3267 1449 SP
 12 -10 -9 10 2 3257 1449 SP
@@ -1111,7 +1142,7 @@ FO
 8 5 D
 20 -13 D
 -294 0 D
-0 125 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 7 -7 -5 0 -4 -5 -5 4 0 8 1 14 4 -3 7 3122 1452 SP
@@ -1188,7 +1219,7 @@ FO
 -23 16 D
 -7 1 D
 28 -32 D
--1 0 D
+P
 FO
 2 9 -8 14 -10 5 -4 -2 -7 14 -16 4 -8 8 6 -11 4 1 -2 -1 2 -10 13 -1 11 -24 13 3124 1634 SP
 {0.871 0.722 0.529 C} FS
@@ -1339,7 +1370,7 @@ FO
 6 -14 D
 8 5 D
 20 -13 D
-72 0 D
+P
 FO
 -6 10 6 15 2 2891 1613 SP
 -1 14 1 3 2 2891 1574 SP
@@ -1417,7 +1448,7 @@ FO
 -23 16 D
 -7 1 D
 28 -32 D
--1 0 D
+P
 FO
 2 9 -8 14 -10 5 -4 -2 -7 14 -16 4 -8 8 6 -11 4 1 -2 -1 2 -10 13 -1 11 -24 13 3124 1634 SP
 {0.871 0.722 0.529 C} FS
@@ -1473,7 +1504,7 @@ FO
 2 3 D
 6 -12 D
 0 -117 D
--57 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 3990 1449 M
@@ -1517,7 +1548,7 @@ FO
 0 -9 D
 -2 6 D
 -7 -8 D
-21 0 D
+P
 FO
 1 -1 5 -11 2 3 -1 -10 -7 5 5 4047 1580 SP
 {0.941 1 1 C} FS
@@ -1671,7 +1702,7 @@ FO
 -5 10 D
 490 0 D
 0 -294 D
--250 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 4336 1523 M
@@ -1708,7 +1739,7 @@ FO
 -3 -8 D
 -10 -5 D
 10 -5 D
-0 -10 D
+P
 FO
 4163 1475 M
 12 11 D
@@ -1741,7 +1772,7 @@ FO
 -8 -15 D
 3 -7 D
 -3 -12 D
-5 0 D
+P
 FO
 4302 1507 M
 -2 -4 D
@@ -1770,7 +1801,7 @@ FO
 -5 1 D
 1 -5 D
 -9 12 D
-5 -33 D
+P
 FO
 4091 1625 M
 2 -16 D
@@ -1796,7 +1827,7 @@ FO
 9 0 D
 3 -12 D
 8 -2 D
-6 -11 D
+P
 FO
 4279 1554 M
 3 -4 D
@@ -1819,7 +1850,7 @@ FO
 -2 -3 D
 13 -2 D
 3 -6 D
-1 0 D
+P
 FO
 1 11 4 1 0 6 4 -3 4 4 10 -8 -6 -8 0 -16 -4 -2 -5 6 10 4295 1684 SP
 -1 3 -2 -3 6 -5 -5 -7 0 -9 -6 -5 -3 3 5 26 4 3 9 4163 1574 SP
@@ -1928,7 +1959,7 @@ FO
 7 2 D
 -7 8 D
 -5 10 D
--85 0 D
+P
 FO
 -10 7 -3 -6 -7 9 0 4 4 0 8 -2 2 4 6 -2 8 4047 1566 SP
 4336 1523 M
@@ -1965,7 +1996,7 @@ FO
 -3 -8 D
 -10 -5 D
 10 -5 D
-0 -10 D
+P
 FO
 4163 1475 M
 12 11 D
@@ -1998,7 +2029,7 @@ FO
 -8 -15 D
 3 -7 D
 -3 -12 D
-5 0 D
+P
 FO
 4302 1507 M
 -2 -4 D
@@ -2027,7 +2058,7 @@ FO
 -5 1 D
 1 -5 D
 -9 12 D
-5 -33 D
+P
 FO
 4091 1625 M
 2 -16 D
@@ -2053,7 +2084,7 @@ FO
 9 0 D
 3 -12 D
 8 -2 D
-6 -11 D
+P
 FO
 4279 1554 M
 3 -4 D
@@ -2076,7 +2107,7 @@ FO
 -2 -3 D
 13 -2 D
 3 -6 D
-1 0 D
+P
 FO
 1 11 4 1 0 6 4 -3 4 4 10 -8 -6 -8 0 -16 -4 -2 -5 6 10 4295 1684 SP
 -1 3 -2 -3 6 -5 -5 -7 0 -9 -6 -5 -3 3 5 26 4 3 9 4163 1574 SP
@@ -2139,7 +2170,7 @@ FO
 0 -367 D
 -579 0 D
 0 577 D
-361 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 8 -24 3 -46 7 -35 -5 -9 3 20 -5 2 2 -15 -10 -28 3 -13 -6 -3 10 1735 1390 SP
@@ -2164,7 +2195,7 @@ FO
 -14 3 D
 -3 9 D
 20 30 D
--172 0 D
+P
 FO
 1 2 0 -2 2 1517 1449 SP
 {0.941 1 1 C} FS
@@ -2191,7 +2222,7 @@ FO
 578 0 D
 0 -577 D
 -578 0 D
-0 367 D
+P
 FO
 -3 -3 -4 -15 4 -5 -7 -6 7 -6 -13 8 -7 -2 23 -13 8 1735 1432 SP
 {0.871 0.722 0.529 C} FS
@@ -2223,7 +2254,7 @@ FO
 -4 11 D
 -34 31 D
 -12 -3 D
-0 -4 D
+P
 FO
 {0.941 1 1 C} FS
 2807 1449 M
@@ -2346,7 +2377,7 @@ FO
 18 -8 D
 -561 0 D
 0 577 D
-494 0 D
+P
 FO
 49 0 0 15 -9 21 5 3 0 5 -9 4 -18 -9 -9 2 -7 41 -2 3 10 2891 1364 SP
 {0.871 0.722 0.529 C} FS
@@ -2417,7 +2448,7 @@ FO
 2 -5 D
 18 -8 D
 17 0 D
-0 152 D
+P
 FO
 2 -2 -2 -1 2 2891 1028 SP
 2891 1364 M
@@ -2484,7 +2515,7 @@ FO
 13 -7 D
 2 -8 D
 3 0 D
-0 113 D
+P
 FO
 1 2 0 -2 2 2807 1449 SP
 3 0 -4 1 2 5 -5 1 1 -3 -12 12 -1 -3 -3 2 -2 6 10 1 14 -12 16 -4 6 -8 -6 -3 0 -6 -12 8 16 2660 1032 SP
@@ -2671,7 +2702,7 @@ FO
 12 -15 D
 -7 2 D
 0 -2 D
--265 0 D
+P
 FO
 -2 2 2 -3 2 2891 1025 SP
 {0.871 0.722 0.529 C} FS
@@ -2721,7 +2752,7 @@ FO
 2 -3 D
 -2 2 D
 0 -152 D
-220 0 D
+P
 FO
 -3 -1 -2 1 2 3156 872 SP
 3469 969 M
@@ -2746,7 +2777,7 @@ FO
 -7 2 D
 0 -2 D
 48 0 D
-0 97 D
+P
 FO
 2 1 2 -1 2 3271 1449 SP
 -11 6 5 5 13 -11 3 3260 1449 SP
@@ -2849,7 +2880,7 @@ FO
 2 -9 D
 -5 2 D
 -5 8 D
-0 -113 D
+P
 FO
 5 8 8 1 4 -3 -5 -6 -5 5 2 -6 10 -1 6 -10 -15 -13 -8 14 10 3374 1101 SP
 -4 -4 -16 11 1 8 10 -6 16 0 10 -4 -6 -5 2 -11 -9 10 -6 -2 10 3049 929 SP
@@ -3092,7 +3123,7 @@ FO
 -8 -1 D
 6 -7 D
 -1 -5 D
--10 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 3903 872 M
@@ -3289,7 +3320,7 @@ FO
 -3 -8 D
 -17 1 D
 0 -97 D
-434 0 D
+P
 FO
 -2 -1 -1 1 2 4029 872 SP
 8 0 -1 -5 6 -7 -8 -1 3 -7 -3 -8 -5 -1 7 4047 901 SP
@@ -3316,7 +3347,7 @@ FO
 3 -4 D
 -1 12 D
 15 4 D
--21 0 D
+P
 FO
 {0.941 1 1 C} FS
 4504 872 M
@@ -3458,7 +3489,7 @@ FO
 0 9 D
 250 0 D
 0 -577 D
--121 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 4336 1209 M
@@ -3593,7 +3624,7 @@ FO
 5 -2 D
 1 -22 D
 15 -15 D
-39 -15 D
+P
 FO
 -7 -11 6 -7 -3 -12 -7 3 -3 13 7 7 1 9 7 4439 1101 SP
 -6 2 -1 7 -6 3 0 7 8 -1 1 -11 6 -4 7 4359 1083 SP
@@ -3660,7 +3691,7 @@ FO
 0 -11 D
 -3 -1 D
 0 -29 D
-4 0 D
+P
 FO
 4504 872 M
 -1 1 D
@@ -3700,7 +3731,7 @@ FO
 5 -12 D
 7 -3 D
 -2 -17 D
-12 0 D
+P
 FO
 0 9 6 -8 0 -1 3 4369 1449 SP
 -1 5 4 4 -5 2 2 5 5 -2 13 9 14 0 1 0 8 -2 4 -9 -12 -12 11 4278 1449 SP
@@ -3839,7 +3870,7 @@ FO
 5 -2 D
 1 -22 D
 15 -15 D
-39 -15 D
+P
 FO
 -7 -11 6 -7 -3 -12 -7 3 -3 13 7 7 1 9 7 4439 1101 SP
 -6 2 -1 7 -6 3 0 7 8 -1 1 -11 6 -4 7 4359 1083 SP
@@ -4071,7 +4102,7 @@ FO
 34 -8 D
 0 -122 D
 -578 0 D
-0 425 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 3278 699 M
@@ -4106,7 +4137,7 @@ FO
 27 -9 D
 5 -8 D
 14 1 D
--3 5 D
+P
 FO
 1 6 14 4 -2 -6 4 -7 -3 -6 5 2 -7 -9 -1 -13 -19 1 -2 6 -3 -4 -11 9 -2 6 7 9 -1 7 12 6 16 3353 685 SP
 -5 -8 0 6 -9 -6 -7 7 6 11 4 -5 4 7 2 -10 5 -1 9 3136 843 SP
@@ -4166,7 +4197,7 @@ FO
 25 0 D
 1 -3 D
 34 -8 D
-0 59 D
+P
 FO
 6 -5 -6 -7 2 3469 773 SP
 3421 872 M
@@ -4195,7 +4226,7 @@ FO
 -3 -6 D
 5 -6 D
 0 76 D
--48 0 D
+P
 FO
 -10 12 -5 -4 -9 10 9 1 8 -7 11 4 5 -2 -4 -6 0 -8 9 3151 872 SP
 2891 842 M
@@ -4308,7 +4339,7 @@ FO
 -2 2 D
 14 1 D
 -220 0 D
-0 -30 D
+P
 FO
 -10 7 -3 8 12 4 1 -11 4 2891 719 SP
 3278 699 M
@@ -4343,7 +4374,7 @@ FO
 27 -9 D
 5 -8 D
 14 1 D
--3 5 D
+P
 FO
 1 6 14 4 -2 -6 4 -7 -3 -6 5 2 -7 -9 -1 -13 -19 1 -2 6 -3 -4 -11 9 -2 6 7 9 -1 7 12 6 16 3353 685 SP
 -5 -8 0 6 -9 -6 -7 7 6 11 4 -5 4 7 2 -10 5 -1 9 3136 843 SP
@@ -4570,7 +4601,7 @@ FO
 12 -3 D
 16 -13 D
 -575 0 D
-0 122 D
+P
 FO
 -2 -2 -3 -16 5 -5 3 3469 796 SP
 -5 7 -4 -1 -1 -6 3 4039 872 SP
@@ -4625,7 +4656,7 @@ FO
 5 -9 D
 -6 -3 D
 0 -8 D
-16 -5 D
+P
 FO
 2 -17 -13 -11 -12 -1 -15 7 4 12 10 15 -5 5 8 1 -3 -5 4 0 2 7 1 -3 17 -3 4 3 10 -5 -1 -5 -9 1 17 3816 367 SP
 -15 6 -15 14 5 6 15 4 10 10 -2 5 7 0 -2 -10 14 -12 18 -3 9 -18 -33 4 12 3758 401 SP
@@ -4676,7 +4707,7 @@ FO
 8 9 D
 4 -1 D
 0 321 D
--8 0 D
+P
 FO
 3469 796 M
 5 -5 D
@@ -4792,7 +4823,7 @@ FO
 6 11 D
 -1 2 D
 -434 0 D
-0 -76 D
+P
 FO
 3469 416 M
 14 -2 D
@@ -4851,7 +4882,7 @@ FO
 -6 -6 D
 -12 6 D
 -12 -2 D
-0 -59 D
+P
 FO
 3874 347 M
 8 0 D
@@ -4903,7 +4934,7 @@ FO
 5 -9 D
 -6 -3 D
 0 -8 D
-16 -5 D
+P
 FO
 2 -17 -13 -11 -12 -1 -15 7 4 12 10 15 -5 5 8 1 -3 -5 4 0 2 7 1 -3 17 -3 4 3 10 -5 -1 -5 -9 1 17 3816 367 SP
 -15 6 -15 14 5 6 15 4 10 10 -2 5 7 0 -2 -10 14 -12 18 -3 9 -18 -33 4 12 3758 401 SP
@@ -5140,7 +5171,7 @@ FO
 22 -2 D
 5 -8 D
 0 -378 D
--311 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 4208 584 M
@@ -5169,7 +5200,7 @@ FO
 -10 10 D
 2 4 D
 -12 -10 D
--5 -27 D
+P
 FO
 0 5 -4 3 3 8 5 0 -1 -10 4 8 5 -4 6 4 -3 -17 -4 -2 5 -14 -3 -5 -18 -8 -4 2 -2 19 4 2 16 4204 584 SP
 7 -2 -3 -3 -9 0 4 6 -4 1 -1 -5 -3 1 1 -5 -5 3 -5 -6 -8 5 17 9 4 10 3 -3 6 3 11 -3 16 4233 380 SP
@@ -5218,7 +5249,7 @@ FO
 0 -13 D
 -5 -4 D
 0 -5 D
-60 0 D
+P
 FO
 4625 700 M
 -27 13 D
@@ -5249,7 +5280,7 @@ FO
 0 10 D
 22 -2 D
 5 -8 D
-0 28 D
+P
 FO
 16 -8 -16 -5 2 4625 769 SP
 -6 18 -12 22 -13 13 12 -3 0 -5 12 -5 8 -17 13 -10 -2 -13 9 4492 872 SP
@@ -5366,7 +5397,7 @@ FO
 -2 32 D
 2 5 D
 -4 0 D
-0 -321 D
+P
 FO
 4047 362 M
 8 4 D
@@ -5412,7 +5443,7 @@ FO
 -5 -8 D
 -2 4 D
 -5 -5 D
-0 -22 D
+P
 FO
 4208 584 M
 -2 -10 D
@@ -5440,7 +5471,7 @@ FO
 -10 10 D
 2 4 D
 -12 -10 D
--5 -27 D
+P
 FO
 0 5 -4 3 3 8 5 0 -1 -10 4 8 5 -4 6 4 -3 -17 -4 -2 5 -14 -3 -5 -18 -8 -4 2 -2 19 4 2 16 4204 584 SP
 7 -2 -3 -3 -9 0 4 6 -4 1 -1 -5 -3 1 1 -5 -5 3 -5 -6 -8 5 17 9 4 10 3 -3 6 3 11 -3 16 4233 380 SP
@@ -5740,7 +5771,7 @@ FO
 3 -2 D
 0 -104 D
 -579 0 D
-0 378 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 4874 526 M
@@ -5788,7 +5819,7 @@ FO
 -2 -3 D
 12 -4 D
 -7 -7 D
-1 -6 D
+P
 FO
 4683 852 M
 6 2 D
@@ -5821,7 +5852,7 @@ FO
 -3 2 D
 5 0 D
 5 -10 D
-12 -5 D
+P
 FO
 4691 411 M
 6 -1 D
@@ -5842,7 +5873,7 @@ FO
 -4 -10 D
 5 -3 D
 -8 1 D
-2 -17 D
+P
 FO
 4 -4 5 -20 5 7 10 -9 -4 8 11 -14 -14 4 -3 -2 -6 4 -7 -2 -18 20 -11 3 13 6 9 -3 14 4972 805 SP
 -10 -20 -6 -1 4 -1 -6 -13 -14 -15 -29 -9 -24 13 4 14 5 3 -1 9 14 6 12 12 29 2 13 5088 388 SP
@@ -6106,7 +6137,7 @@ FO
 11 5 D
 21 -1 D
 4 3 D
-0 330 D
+P
 FO
 -21 -7 -6 10 7 5 -8 5 11 0 10 3 7 -3 7 4625 756 SP
 -1 1 -19 -2 -15 10 -4 15 -9 3 -2 23 49 -21 1 -1 8 4625 672 SP
@@ -6155,7 +6186,7 @@ FO
 -2 -3 D
 12 -4 D
 -7 -7 D
-1 -6 D
+P
 FO
 4683 852 M
 6 2 D
@@ -6188,7 +6219,7 @@ FO
 -3 2 D
 5 0 D
 5 -10 D
-12 -5 D
+P
 FO
 4691 411 M
 6 -1 D
@@ -6209,7 +6240,7 @@ FO
 -4 -10 D
 5 -3 D
 -8 1 D
-2 -17 D
+P
 FO
 4 -4 5 -20 5 7 10 -9 -4 8 11 -14 -14 4 -3 -2 -6 4 -7 -2 -18 20 -11 3 13 6 9 -3 14 4972 805 SP
 -10 -20 -6 -1 4 -1 -6 -13 -14 -15 -29 -9 -24 13 4 14 5 3 -1 9 14 6 12 12 29 2 13 5088 388 SP
@@ -6307,7 +6338,7 @@ FO
 3 2 D
 21 -29 D
 -442 0 D
-0 104 D
+P
 FO
 -2 -5 2 2 2 5204 408 SP
 5782 731 M
@@ -6400,7 +6431,7 @@ FO
 -7 -1 D
 0 134 D
 578 0 D
-0 -141 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 -2 3 7 0 3 4 2 -6 -6 -2 3 -7 -4 -1 -28 0 -15 6 0 -6 -4 3 1 3 9 0 4 7 12 0 15 5608 745 SP
@@ -6558,7 +6589,7 @@ FO
 6 -7 D
 3 2 D
 21 -29 D
-127 0 D
+P
 FO
 5782 571 M
 -6 -6 D
@@ -6584,7 +6615,7 @@ FO
 14 1 D
 13 -14 D
 23 1 D
-0 61 D
+P
 FO
 1 0 2 -3 -3 -1 3 5782 731 SP
 -2 3 7 0 3 4 2 -6 -6 -2 3 -7 -4 -1 -28 0 -15 6 0 -6 -4 3 1 3 9 0 4 7 12 0 15 5608 745 SP
@@ -6665,7 +6696,7 @@ FO
 14 -16 D
 10 0 D
 0 -12 D
--506 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 5955 636 M
@@ -6694,7 +6725,7 @@ FO
 -2 7 D
 5 6 D
 -6 16 D
--1 0 D
+P
 FO
 6071 514 M
 12 -6 D
@@ -6719,7 +6750,7 @@ FO
 -3 0 D
 -2 -11 D
 2 -10 D
-16 -17 D
+P
 FO
 -10 0 -2 14 -10 1 -7 13 2 6 5 -1 -1 4 3 -8 11 -4 0 -4 -4 1 5 -7 19 4 0 -7 -5 -1 -5 -11 16 6209 411 SP
 14 -10 -2 -8 -33 17 -10 16 -12 9 -9 -2 -1 5 9 3 5 -5 13 1 6 -4 11 6186 452 SP
@@ -6782,7 +6813,7 @@ FO
 7 5 D
 -6 3 D
 -4 -2 D
--1 -72 D
+P
 FO
 -1 0 -2 6 3 1 3 5782 309 SP
 5955 636 M
@@ -6811,7 +6842,7 @@ FO
 -2 7 D
 5 6 D
 -6 16 D
--1 0 D
+P
 FO
 6071 514 M
 12 -6 D
@@ -6836,7 +6867,7 @@ FO
 -3 0 D
 -2 -11 D
 2 -10 D
-16 -17 D
+P
 FO
 -10 0 -2 14 -10 1 -7 13 2 6 5 -1 -1 4 3 -8 11 -4 0 -4 -4 1 5 -7 19 4 0 -7 -5 -1 -5 -11 16 6209 411 SP
 14 -10 -2 -8 -33 17 -10 16 -12 9 -9 -2 -1 5 9 3 5 -5 13 1 6 -4 11 6186 452 SP
@@ -7029,7 +7060,7 @@ FO
 -4 0 D
 0 -1 D
 -290 0 D
-0 291 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 3 -9 -14 -4 -20 -17 -2 2 5 7 -5 2 1 4 9 3 2 5 12 2 10 4221 244 SP
@@ -7183,7 +7214,7 @@ FO
 -4 0 D
 0 -1 D
 288 0 D
-0 87 D
+P
 FO
 8 7 20 2 7 7 1 0 11 5 20 0 -4 -11 -14 -7 11 -2 0 -1 10 4254 294 SP
 -46 0 -2 1 5 9 17 8 16 -4 10 -11 6 4047 291 SP
@@ -7363,7 +7394,7 @@ FO
 0 207 D
 579 0 D
 0 -294 D
--262 0 D
+P
 FO
 {0.871 0.722 0.529 C} FS
 4683 215 M
@@ -7393,7 +7424,7 @@ FO
 -3 -5 D
 -4 1 D
 1 -11 D
--3 9 D
+P
 FO
 4626 190 M
 34 -3 D
@@ -7417,7 +7448,7 @@ FO
 -2 -3 D
 -5 3 D
 1 -6 D
--4 -1 D
+P
 FO
 4996 59 M
 2 -7 D
@@ -7440,7 +7471,7 @@ FO
 -9 -2 D
 4 -6 D
 -13 -3 D
-0 -10 D
+P
 FO
 4942 0 M
 -4 4 D
@@ -7614,7 +7645,7 @@ FO
 -5 2 D
 -14 -11 D
 0 -87 D
-317 0 D
+P
 FO
 4683 215 M
 -6 3 D
@@ -7643,7 +7674,7 @@ FO
 -3 -5 D
 -4 1 D
 1 -11 D
--3 9 D
+P
 FO
 4626 190 M
 34 -3 D
@@ -7667,7 +7698,7 @@ FO
 -2 -3 D
 -5 3 D
 1 -6 D
--4 -1 D
+P
 FO
 4996 59 M
 2 -7 D
@@ -7690,7 +7721,7 @@ FO
 -9 -2 D
 4 -6 D
 -13 -3 D
-0 -10 D
+P
 FO
 {0.941 1 1 C} FS
 5511 0 M
@@ -7798,7 +7829,7 @@ FO
 -9 -4 D
 9 -1 D
 0 -261 D
--271 0 D
+P
 FO
 9 0 -1 1 -8 4 3 5782 289 SP
 {0.871 0.722 0.529 C} FS
@@ -7882,7 +7913,7 @@ FO
 9 -20 D
 -5 -17 D
 7 -31 D
-212 0 D
+P
 FO
 2 -1 7 0 -9 -4 3 5782 266 SP
 5782 289 M
@@ -7906,7 +7937,7 @@ FO
 10 -9 D
 2 5 D
 3 -1 D
-0 20 D
+P
 FO
 {0.941 1 1 C} FS
 5782 261 M
@@ -7934,7 +7965,7 @@ FO
 3 -5 D
 0 -201 D
 -578 0 D
-0 261 D
+P
 FO
 -5 -2 5 -1 2 5782 269 SP
 -5 2 -3 -2 2 5850 294 SP
@@ -7959,7 +7990,7 @@ FO
 -16 -3 D
 -1 4 D
 -34 7 D
-0 -20 D
+P
 FO
 -28 11 -5 7 13 2 -1 -4 12 -2 0 -4 5 1 6 -8 8 5965 214 SP
 %%EndObject
@@ -7970,7 +8001,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour geoid.nc -JM5.3i -O -K -B20f10 -BWSne -C10 '-A20+d+u m+f8p' -Gl50/10S/160/10S -S10 -T:-+
-%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -8054,7 +8085,7 @@ S
 ] def
 /PSL_gap_x 20 def
 /PSL_gap_y 20 def
-/PSL_label_angle [ 83.52 326.51 334.47 295.39 311.25 318.79 324.92 328.87 317.26 ] def
+/PSL_label_angle [ 83.16 326.56 334.19 295.25 311.07 318.92 324.94 328.89 317.03 ] def
 /PSL_label_str [
 	(-60 m)
 	(-60 m)
@@ -8128,8 +8159,7 @@ PSL_path_pen 0 get cvx exec
 22 25 D
 7 4 D
 30 21 D
-19 12 D
-S
+P S
 PSL_path_pen 1 get cvx exec
 1561 1688 M
 46 3 D
@@ -8214,8 +8244,7 @@ PSL_path_pen 1 get cvx exec
 57 29 D
 38 15 D
 45 11 D
-31 6 D
-S
+P S
 PSL_path_pen 2 get cvx exec
 2004 1743 M
 24 -29 D
@@ -9563,8 +9592,7 @@ PSL_path_pen 25 get cvx exec
 12 7 D
 4 1 D
 0 1 D
-34 11 D
-S
+P S
 PSL_cliprestore
 U
 PSL_cliprestore
@@ -9653,18 +9681,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R50/160/-15/15 -JM5.3i -O -SqD15d:+gblack+fwhite+Ld+o+u\260 -Wthick transect.d
-%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%GMT: psxy -R50/160/-15/15 -JM5.3i -O -SqD15d:+gblack+fwhite+Ld+o+u\260 -Wthick transect.txt
+%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-6360 0 D
-0 1743 D
--6360 0 D
-PSL_clip N
 1 A
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
@@ -9681,7 +9703,7 @@ PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reenco
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 351.26 351.10 351.54 352.54 ] def
+/PSL_label_angle [ 351.26 351.10 351.54 352.55 ] def
 /PSL_label_str [
 	(15\260)
 	(30\260)
@@ -9709,7 +9731,6 @@ PSL_path_pen 0 get cvx exec
 32 -4 D
 S
 162 PSL_straight_path_labels
-PSL_cliprestore
 %%EndObject
 %%PageTrailer
 U

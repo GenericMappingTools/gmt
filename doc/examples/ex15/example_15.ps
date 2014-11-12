@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13658M [64-bit] Document from grdcontour
+%%Title: GMT v5.2.0_r13683 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Nov  6 17:59:53 2014
+%%CreationDate: Wed Nov 12 06:50:32 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -291,10 +291,10 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
@@ -307,6 +307,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +344,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +368,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +494,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -639,7 +667,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour ship.nc -JM3i -P -B2 -BWSne -C250 -A1000 -Gd2i -K
-%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -935,7 +963,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 338.55 41.74 313.66 344.27 318.85 342.08 305.69 ] def
+/PSL_label_angle [ 337.35 47.13 326.49 342.99 316.75 342.83 308.73 ] def
 /PSL_label_str [
 	(-3000)
 	(-3000)
@@ -4527,7 +4555,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psmask -R245/255/20/30 -I10m ship.b -JM3i -O -K -T -Glightgray -bi3d -X3.6i
-%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -6392,7 +6420,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour ship.nc -JM3i -B2 -BWSne -C250 -L-8000/0 -A1000 -Gd2i -O -K
-%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -6573,8 +6601,8 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 331.04 339.08 320.20 313.49 340.84 334.15 338.61 292.90 309.05 333.69 
-	289.61 293.27 314.39 339.93 ] def
+/PSL_label_angle [ 330.45 344.41 314.70 311.74 13.87 340.87 336.21 295.17 310.01 336.17 
+	289.66 291.50 310.79 338.31 ] def
 /PSL_label_str [
 	(-3000)
 	(-3000)
@@ -10194,7 +10222,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psmask -R245/255/20/30 -I10m ship_10m.b -bi3d -JM3i -B2 -BWSne -O -K -X-3.6i -Y3.75i
-%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -10560,7 +10588,7 @@ clipsave
 0 137 D
 -60 0 D
 0 104 D
-30 34 D
+P
 0 3649 M
 90 0 D
 0 -137 D
@@ -10584,31 +10612,31 @@ clipsave
 0 68 D
 -120 0 D
 0 509 D
-30 35 D
+P
 1020 3172 M
 30 0 D
 0 -67 D
 -60 0 D
 0 34 D
-30 33 D
+P
 1140 3172 M
 30 0 D
 0 -67 D
 -60 0 D
 0 34 D
-30 33 D
+P
 1800 2434 M
 30 0 D
 0 -66 D
 -60 0 D
 0 33 D
-30 33 D
+P
 420 2235 M
 30 0 D
 0 -66 D
 -60 0 D
 0 33 D
-30 33 D
+P
 120 2169 M
 30 0 D
 0 -66 D
@@ -10616,55 +10644,55 @@ clipsave
 0 -66 D
 -120 0 D
 0 99 D
-30 33 D
+P
 1680 1971 M
 30 0 D
 0 -66 D
 -60 0 D
 0 33 D
-30 33 D
+P
 2400 1708 M
 30 0 D
 0 -65 D
 -60 0 D
 0 32 D
-30 33 D
+P
 180 1316 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 240 1252 M
 30 0 D
 0 -65 D
 -60 0 D
 0 32 D
-30 33 D
+P
 2880 1122 M
 30 0 D
 0 -65 D
 -60 0 D
 0 32 D
-30 33 D
+P
 180 1057 M
 30 0 D
 0 -65 D
 -60 0 D
 0 33 D
-30 32 D
+P
 360 1057 M
 30 0 D
 0 -65 D
 -60 0 D
 0 33 D
-30 32 D
+P
 2760 1057 M
 30 0 D
 0 -65 D
 -60 0 D
 0 33 D
-30 32 D
+P
 180 928 M
 90 0 D
 0 -129 D
@@ -10672,7 +10700,7 @@ clipsave
 0 64 D
 -60 0 D
 0 33 D
-30 32 D
+P
 540 928 M
 30 0 D
 0 -65 D
@@ -10680,25 +10708,25 @@ clipsave
 0 -64 D
 -120 0 D
 0 97 D
-30 32 D
+P
 660 928 M
 30 0 D
 0 -65 D
 -60 0 D
 0 33 D
-30 32 D
+P
 3060 928 M
 30 0 D
 0 -65 D
 -60 0 D
 0 33 D
-30 32 D
+P
 1860 799 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 420 735 M
 90 0 D
 0 -193 D
@@ -10706,7 +10734,7 @@ clipsave
 0 64 D
 -60 0 D
 0 96 D
-30 33 D
+P
 660 735 M
 90 0 D
 0 -65 D
@@ -10716,19 +10744,19 @@ clipsave
 0 64 D
 -60 0 D
 0 32 D
-30 33 D
+P
 2700 735 M
 30 0 D
 0 -65 D
 -60 0 D
 0 32 D
-30 33 D
+P
 3000 670 M
 30 0 D
 0 -128 D
 -60 0 D
 0 96 D
-30 32 D
+P
 3120 606 M
 30 0 D
 0 -192 D
@@ -10738,67 +10766,67 @@ clipsave
 0 64 D
 60 0 D
 0 32 D
-30 32 D
+P
 1500 542 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 3300 542 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 300 478 M
 90 0 D
 0 -64 D
 -120 0 D
 0 32 D
-30 32 D
+P
 480 478 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 840 478 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 1440 478 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 900 350 M
 30 0 D
 0 -191 D
 -60 0 D
 0 159 D
-30 32 D
+P
 1260 350 M
 30 0 D
 0 -127 D
 -60 0 D
 0 95 D
-30 32 D
+P
 1680 350 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 3300 350 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 1500 286 M
 30 0 D
 0 -63 D
@@ -10812,31 +10840,31 @@ clipsave
 0 64 D
 -60 0 D
 0 95 D
-30 32 D
+P
 1320 223 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 2160 223 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 2820 223 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 1380 159 M
 30 0 D
 0 -64 D
 -60 0 D
 0 32 D
-30 32 D
+P
 PSL_clip N
 %%EndObject
 0 A
@@ -10846,7 +10874,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour ship.nc -JM3i -C250 -A1000 -L-8000/0 -Gd2i -O -K
-%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -11027,8 +11055,8 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 331.04 339.08 320.20 313.49 340.84 334.15 338.61 292.90 309.05 333.69 
-	289.61 293.27 314.39 339.93 ] def
+/PSL_label_angle [ 330.45 344.41 314.70 311.74 13.87 340.87 336.21 295.17 310.01 336.17 
+	289.66 291.50 310.79 338.31 ] def
 /PSL_label_str [
 	(-3000)
 	(-3000)
@@ -14583,7 +14611,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour ship_clipped.nc -JM3i -B2 -BWSne -C250 -A1000 -L-8000/0 -Gd2i -O -K -X3.6i
-%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -14775,7 +14803,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 331.04 339.08 320.20 313.49 340.84 334.15 338.61 306.02 335.69 ] def
+/PSL_label_angle [ 330.45 344.41 314.70 311.74 13.87 340.87 336.21 301.87 332.95 ] def
 /PSL_label_str [
 	(-3000)
 	(-3000)
@@ -18192,7 +18220,7 @@ O0
 
 % PostScript produced by:
 %%GMT: pscoast -R245/255/20/30 -JM3i -O -K -Ggray -Wthinnest
-%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -18310,17 +18338,17 @@ O0
 106 -59 D
 115 -261 D
 3 1 D
-0 487 D
+P
 331 3114 M
 4 -35 D
 -5 34 D
-1 1 D
+P
 {0.745 A} FS
 FO
 1800 2763 M
 -17 6 D
 17 -12 D
-0 6 D
+P
 FO
 809 3958 M
 1 -35 D
@@ -18349,7 +18377,7 @@ FO
 87 -59 D
 102 -13 D
 0 1178 D
--991 0 D
+P
 FO
 507 3752 M
 26 -83 D
@@ -18358,7 +18386,7 @@ FO
 -72 13 D
 9 33 D
 -59 70 D
--22 -29 D
+P
 FO
 1014 1909 M
 10 121 D
@@ -18367,7 +18395,7 @@ FO
 6 -34 D
 42 -44 D
 -68 118 D
-23 34 D
+P
 FO
 898 3546 M
 -29 -52 D
@@ -18375,7 +18403,7 @@ FO
 23 86 D
 -30 109 D
 -68 -22 D
--15 -77 D
+P
 FO
 1557 1938 M
 27 -50 D
@@ -18383,95 +18411,95 @@ FO
 -19 54 D
 -45 29 D
 13 -40 D
-1 0 D
+P
 FO
 1591 2866 M
 -5 37 D
 -4 -40 D
 26 -13 D
--17 16 D
+P
 FO
 1236 1687 M
 0 1 D
 -38 -3 D
 77 -10 D
--39 12 D
+P
 FO
 1079 1753 M
 106 -90 D
 -15 55 D
--91 35 D
+P
 FO
 1374 2334 M
 -10 -79 D
 46 107 D
 -36 -27 D
-0 -1 D
+P
 FO
 1655 1748 M
 25 -47 D
 9 43 D
 -34 5 D
-0 -1 D
+P
 FO
 883 3430 M
 -24 5 D
 2 -25 D
 23 20 D
--1 0 D
+P
 FO
 653 2623 M
 -30 -6 D
 47 -18 D
 -16 24 D
--1 0 D
+P
 FO
 1038 2079 M
 -2 -31 D
 9 83 D
--7 -52 D
+P
 FO
 794 3379 M
 -41 38 D
-41 -38 D
+P
 FO
 1514 2181 M
 -7 33 D
-7 -33 D
+P
 FO
 1652 1770 M
 16 -16 D
 -16 17 D
-0 -1 D
+P
 FO
 1413 2213 M
 12 -19 D
--12 19 D
+P
 FO
 1044 2191 M
 2 -53 D
--2 53 D
+P
 FO
 1546 2059 M
 -13 -18 D
-13 18 D
+P
 FO
 530 3586 M
 14 -25 D
 -12 25 D
--2 0 D
+P
 FO
 1332 2369 M
 13 14 D
--13 -14 D
+P
 FO
 291 3027 M
 -21 12 D
-21 -12 D
+P
 FO
 1345 2259 M
 7 -18 D
--7 18 D
+P
 FO
 0 3703 M
 12 -4 D
@@ -18800,7 +18828,7 @@ P S
 179 0 D
 0 3958 D
 -1800 0 D
-0 -1178 D
+P
 1887 3692 M
 20 3 D
 19 -72 D
@@ -18811,7 +18839,7 @@ P S
 -86 1 D
 14 -81 D
 -49 183 D
--2 2 D
+P
 1844 3192 M
 44 -60 D
 -31 -66 D
@@ -18820,65 +18848,65 @@ P S
 16 -22 D
 30 34 D
 -33 56 D
-1 2 D
+P
 3350 1048 M
 40 -182 D
 48 -53 D
 -13 -31 D
 -81 179 D
 4 87 D
-2 0 D
+P
 2084 2908 M
 66 -79 D
 22 22 D
 -14 -32 D
 -45 10 D
 -30 77 D
-1 2 D
+P
 3430 747 M
 26 -35 D
 -21 6 D
 -7 -35 D
-2 64 D
+P
 3464 2969 M
 -28 -33 D
 -84 14 D
 109 16 D
-3 3 D
+P
 3166 1188 M
 73 -48 D
 -3 -36 D
--70 84 D
+P
 3568 2213 M
 30 -39 D
 -16 -17 D
--14 56 D
+P
 3471 851 M
 19 -19 D
 -41 8 D
 21 8 D
-1 3 D
+P
 3279 1097 M
 24 -19 D
 -28 -3 D
 5 20 D
--1 2 D
+P
 2331 2625 M
 -19 -85 D
-19 85 D
+P
 3562 698 M
 32 -17 D
 -33 17 D
-1 0 D
+P
 3259 1095 M
 1 -20 D
 -2 19 D
-1 1 D
+P
 FO
 1800 2757 M
 21 -15 D
 -21 21 D
-0 -6 D
+P
 FO
 1800 1113 M
 55 3 D
@@ -18891,75 +18919,75 @@ FO
 3 51 D
 -37 -21 D
 -25 52 D
-0 -487 D
+P
 FO
 1873 1600 M
 -47 94 D
 13 -74 D
-34 -20 D
+P
 FO
 2498 1937 M
 -29 20 D
 32 -89 D
--3 69 D
+P
 FO
 2448 1938 M
 -43 50 D
 84 -124 D
--41 74 D
+P
 FO
 2015 2190 M
 88 -30 D
 -26 33 D
--62 -3 D
+P
 FO
 3046 627 M
 -44 22 D
 46 -60 D
--2 38 D
+P
 FO
 2025 2198 M
 28 0 D
 -28 1 D
-0 -1 D
+P
 FO
 3063 562 M
 48 -5 D
 -48 6 D
-0 -1 D
+P
 FO
 2248 2083 M
 78 -25 D
 -78 26 D
-0 -1 D
+P
 FO
 2385 2013 M
 39 -17 D
 -39 18 D
-0 -1 D
+P
 FO
 3145 495 M
 15 12 D
 -15 -11 D
-0 -1 D
+P
 FO
 2102 2176 M
 21 -12 D
 -21 13 D
-0 -1 D
+P
 FO
 2235 2095 M
 20 -2 D
--20 2 D
+P
 FO
 2069 2469 M
 4 27 D
--4 -27 D
+P
 FO
 2160 2110 M
 72 -25 D
 -73 26 D
-1 -1 D
+P
 FO
 1800 2780 M
 9 -1 D
@@ -19189,7 +19217,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -R245/255/20/30 -JM3i -O -K -Sa0.15i -Wthick -i11,12
-%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -19214,7 +19242,7 @@ O0
 
 % PostScript produced by:
 %%GMT: pstext -R0/3/0/4 -Jx1i -F+f24p,Helvetica-Bold+jCB -O -N
-%%PROJ: xy 0.00000000 3.00000000 0.00000000 4.00000000 0.000 3.000 0.000 4.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 3.00000000 0.00000000 4.00000000 0.000 3.000 0.000 4.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin

@@ -4238,7 +4238,7 @@ void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 	}
 	else if (G->half_width == UINT_MAX) {	/* Automatic width specification */
 		/* Try to come up with a number that is small for short lines and grow slowly for larger lines */
-		G->half_width = MAX (1, lrint (ceil (log10 (0.25*n))));
+		G->half_width = MAX (1, lrint (ceil (log10 (0.3333333333*n))));
 		G->half_width *= G->half_width;	/* New guess at half-width */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Automatic label-averaging half_width = %d [n = %d]\n", G->half_width, (int)n);
 		if (G->half_width == 1)

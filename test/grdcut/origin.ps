@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r13664 [64-bit] Document from grdcontour
+%%Title: GMT v5.2.0_r13683 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Nov  6 13:10:49 2014
+%%CreationDate: Wed Nov 12 06:50:33 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -291,10 +291,10 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
@@ -307,6 +307,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +344,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +368,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +494,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -737,9 +765,9 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 44.36 51.55 279.32 297.68 315.32 84.58 329.75 314.17 343.45 356.87 
-	353.84 11.53 83.52 0.00 90.00 0.00 90.00 45.13 45.13 11.20 
-	11.20 ] def
+/PSL_label_angle [ 51.76 51.20 278.99 297.83 315.51 83.51 329.98 314.34 343.30 356.88 
+	353.90 11.59 83.38 0.00 90.00 0.00 90.00 44.85 44.85 11.27 
+	11.27 ] def
 /PSL_label_str [
 	(10)
 	(20)
@@ -811,8 +839,7 @@ PSL_path_pen 0 get cvx exec
 3 23 D
 7 24 D
 14 23 D
-23 23 D
-S
+P S
 PSL_path_pen 1 get cvx exec
 4107 2314 M
 23 9 D
@@ -862,8 +889,7 @@ PSL_path_pen 1 get cvx exec
 24 27 D
 23 20 D
 23 15 D
-24 12 D
-S
+P S
 PSL_path_pen 2 get cvx exec
 4083 2430 M
 24 8 D
@@ -918,8 +944,7 @@ PSL_path_pen 2 get cvx exec
 23 19 D
 23 16 D
 47 24 D
-23 9 D
-S
+P S
 PSL_path_pen 3 get cvx exec
 4060 2546 M
 47 12 D
@@ -989,8 +1014,7 @@ PSL_path_pen 3 get cvx exec
 31 21 D
 42 23 D
 44 18 D
-23 8 D
-S
+P S
 PSL_path_pen 4 get cvx exec
 4037 2661 M
 46 11 D
@@ -1065,8 +1089,7 @@ PSL_path_pen 4 get cvx exec
 23 13 D
 47 21 D
 65 23 D
-5 1 D
-S
+P S
 PSL_path_pen 5 get cvx exec
 4013 2777 M
 70 14 D
@@ -1152,8 +1175,7 @@ PSL_path_pen 5 get cvx exec
 47 23 D
 46 19 D
 47 16 D
-23 6 D
-S
+P S
 PSL_path_pen 6 get cvx exec
 4013 2898 M
 70 11 D
@@ -1244,8 +1266,7 @@ PSL_path_pen 6 get cvx exec
 47 22 D
 70 26 D
 70 20 D
-23 5 D
-S
+P S
 PSL_path_pen 7 get cvx exec
 3990 3013 M
 23 5 D
@@ -1336,8 +1357,7 @@ PSL_path_pen 7 get cvx exec
 70 32 D
 47 18 D
 70 21 D
-70 16 D
-S
+P S
 PSL_path_pen 8 get cvx exec
 3967 3129 M
 70 11 D
@@ -1432,8 +1452,7 @@ PSL_path_pen 8 get cvx exec
 59 23 D
 73 23 D
 88 22 D
-24 4 D
-S
+P S
 PSL_path_pen 9 get cvx exec
 3943 3246 M
 70 10 D
@@ -1536,8 +1555,7 @@ PSL_path_pen 9 get cvx exec
 82 30 D
 58 18 D
 70 17 D
-70 14 D
-S
+P S
 PSL_path_pen 10 get cvx exec
 3920 3362 M
 70 10 D
@@ -1640,8 +1658,7 @@ PSL_path_pen 10 get cvx exec
 70 26 D
 117 34 D
 117 24 D
-23 3 D
-S
+P S
 PSL_path_pen 11 get cvx exec
 3897 3480 M
 70 8 D
@@ -1765,8 +1782,7 @@ PSL_path_pen 11 get cvx exec
 108 32 D
 93 21 D
 96 17 D
-21 3 D
-S
+P S
 PSL_path_pen 12 get cvx exec
 3850 3595 M
 117 12 D
@@ -1893,8 +1909,7 @@ PSL_path_pen 12 get cvx exec
 51 14 D
 112 25 D
 93 16 D
-47 7 D
-S
+P S
 PSL_path_pen 13 get cvx exec
 3803 3711 M
 94 10 D
@@ -2029,8 +2044,7 @@ PSL_path_pen 13 get cvx exec
 70 17 D
 93 19 D
 93 15 D
-70 9 D
-S
+P S
 PSL_path_pen 14 get cvx exec
 3733 3827 M
 94 9 D
@@ -2149,8 +2163,7 @@ PSL_path_pen 14 get cvx exec
 93 22 D
 140 25 D
 117 16 D
-46 5 D
-S
+P S
 PSL_path_pen 15 get cvx exec
 3640 3944 M
 140 11 D
@@ -2269,8 +2282,7 @@ PSL_path_pen 15 get cvx exec
 117 22 D
 116 17 D
 117 14 D
-70 6 D
-S
+P S
 PSL_path_pen 16 get cvx exec
 3430 4061 M
 163 9 D
@@ -2393,8 +2405,7 @@ PSL_path_pen 16 get cvx exec
 116 19 D
 117 14 D
 140 13 D
-70 5 D
-S
+P S
 PSL_path_pen 17 get cvx exec
 2123 4200 M
 4154 0 D
@@ -2404,8 +2415,7 @@ PSL_path_pen 17 get cvx exec
 -4154 0 D
 -23 23 D
 0 4154 D
-23 23 D
-S
+P S
 PSL_path_pen 18 get cvx exec
 8400 117 M
 -233 1 D
@@ -4070,10 +4080,12 @@ PSL_path_pen 51 get cvx exec
 S
 PSL_path_pen 52 get cvx exec
 8400 2100 M
-S
+0 0 D
+P S
 PSL_path_pen 53 get cvx exec
 0 2100 M
-S
+0 0 D
+P S
 PSL_cliprestore
 U
 PSL_cliprestore
@@ -5788,7 +5800,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 305.39 299.72 ] def
+/PSL_label_angle [ 305.20 299.68 ] def
 /PSL_label_str [
 	(40)
 	(50)
@@ -7676,7 +7688,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 5.17 21.79 ] def
+/PSL_label_angle [ 4.87 22.01 ] def
 /PSL_label_str [
 	(110)
 	(120)
