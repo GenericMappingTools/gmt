@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_constants.h
+ * \brief Definitions of constants used throught GMT.
+ */
+
 #ifndef _GMT_CONSTANTS_H
 #define _GMT_CONSTANTS_H
 
@@ -65,7 +70,7 @@
 #define GMT_CONV8_LIMIT	1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_CONV4_LIMIT	1.0e-4		/* Less tight convergence limit or "close to zero" limit */
 
-/* Various allocation-length parameters */
+/*! Various allocation-length parameters */
 enum GMT_enum_length {
 	GMT_TINY_CHUNK  = 8U,
 	GMT_SMALL_CHUNK = 64U,
@@ -81,14 +86,14 @@ enum GMT_enum_length {
 	GMT_MIN_MEMINC  = 1U,        /* E.g., 16 kb of 8-byte doubles */
 	GMT_MAX_MEMINC  = 67108864U};   /* E.g., 512 Mb of 8-byte doubles */
 
-/* The four plot length units [m just used internally] */
+/*! The four plot length units [m just used internally] */
 enum GMT_enum_unit {
 	GMT_CM = 0,
 	GMT_INCH,
 	GMT_M,
 	GMT_PT};
 
-/* Handling of swap/no swap in i/o */
+/*! Handling of swap/no swap in i/o */
 enum GMT_swap_direction {
 	k_swap_none = 0,
 	k_swap_in,
@@ -134,7 +139,7 @@ enum GMT_swap_direction {
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
-/* Various options for FFT calculations [Default is 0] */
+/*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */
 	k_fft_accelerate,  /* Select Accelerate Framework vDSP FFT [OS X only] */
@@ -144,12 +149,12 @@ enum FFT_implementations {
 	k_n_fft_algorithms /* Number of FFT implementations available in GMT */
 };
 
-/* Various algorithms for triangulations */
+/*! Various algorithms for triangulations */
 enum GMT_enum_tri {
 	GMT_TRIANGLE_WATSON = 0, /* Select Watson's algorithm */
 	GMT_TRIANGLE_SHEWCHUK};  /* Select Shewchuk's algorithm */
 
-/* Various 1-D interpolation modes */
+/*! Various 1-D interpolation modes */
 enum GMT_enum_spline {
 	GMT_SPLINE_LINEAR = 0, /* Linear spline */
 	GMT_SPLINE_AKIMA,      /* Akima spline */
@@ -161,13 +166,13 @@ enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
 	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
 
-/* Timer reporting modes */
+/*! Timer reporting modes */
 enum GMT_enum_timer {
 	GMT_NO_TIMER = 0,	/* No timer reported */
 	GMT_ABS_TIMER,		/* Report absolute time */
 	GMT_ELAPSED_TIMER};	/* Report elapsed time since start of session */
 
-/* Various line/grid/image interpolation modes */
+/*! Various line/grid/image interpolation modes */
 enum GMT_enum_track {
 	GMT_TRACK_FILL = 0,	/* Normal fix_up_path behavior: Keep all (x,y) points but add intermediate if gap > cutoff */
 	GMT_TRACK_FILL_M,	/* Fill in, but navigate via meridians (y), then parallels (x) */
@@ -181,7 +186,7 @@ enum GMT_enum_bcr {
 	BCR_BSPLINE,          /* B-spline */
 	BCR_BICUBIC};         /* Bicubic spline */
 
-/* Various grid/image boundary conditions */
+/*! Various grid/image boundary conditions */
 enum GMT_enum_bc {
 	GMT_BC_IS_NOTSET = 0, /* BC not yet set */
 	GMT_BC_IS_NATURAL,    /* Use natural BC */

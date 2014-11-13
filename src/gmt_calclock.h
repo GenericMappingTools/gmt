@@ -27,6 +27,11 @@
  *
  */
 
+/*!
+ * \file gmt_calclock.h
+ * \brief Conversions between [calendar, clock] and time
+ */
+
 #pragma once
 #ifndef _GMT_CALCLOCK_H
 #define _GMT_CALCLOCK_H

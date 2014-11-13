@@ -26,6 +26,11 @@
  *
  */
 
+/*!
+ * \file gmt_synopsis.h
+ * \brief Macros for presenting variations of GMT common options in program synopsis.
+ */
+
 #ifndef GMT_SYNOPSIS_H
 #define GMT_SYNOPSIS_H
 

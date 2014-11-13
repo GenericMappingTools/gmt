@@ -23,6 +23,11 @@
  * Version: 5
  */
 
+/*!
+ * \file common_byteswap.h
+ * \brief Inline functions for byteswapping
+ */
+
 #pragma once
 #ifndef _COMMON_BYTESWAP_H
 #define _COMMON_BYTESWAP_H

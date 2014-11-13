@@ -16,10 +16,15 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/*!
+ * \file gmt_plot.h
+ * \brief 
+ */
+
 #ifndef _GMT_PLOT_H
 #define _GMT_PLOT_H
 
-/* Identifier for GMT_plane_perspective. The others come from GMT_io.h */
+/*! Identifier for GMT_plane_perspective. The others come from GMT_io.h */
 
 #define GMT_ZW	3
 
@@ -74,7 +79,7 @@
 
 #define GMT_DOT_SIZE 0.005	/* Size of a "dot" on a GMT PS map [in inches] */
 
-/* FRONT symbols */
+/*! FRONT symbols */
 
 enum GMT_enum_front {GMT_FRONT_FAULT = 0,
 	GMT_FRONT_TRIANGLE,
@@ -82,13 +87,14 @@ enum GMT_enum_front {GMT_FRONT_FAULT = 0,
 	GMT_FRONT_CIRCLE,
 	GMT_FRONT_BOX};
 
-/* Direction of FRONT symbols: */
+/*! Direction of FRONT symbols: */
 
 enum GMT_enum_frontdir {GMT_FRONT_RIGHT = -1,
 	GMT_FRONT_CENTERED,
 	GMT_FRONT_LEFT};
 
-struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
+/*! A sub-symbol for symbols along a front */
+struct GMT_FRONTLINE {
 	double f_gap;		/* Gap between front symbols in inches */
 	double f_len;		/* Length of front symbols in inches */
 	double f_off;		/* Offset of first symbol from start of front in inches */

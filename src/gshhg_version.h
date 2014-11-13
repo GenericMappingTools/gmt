@@ -23,6 +23,11 @@
  * Version: 5
  */
 
+/*!
+ * \file gshhg_version.h
+ * \brief 
+ */
+
 #ifndef _GMT_GSHHG_VERSION_H
 #define _GMT_GSHHG_VERSION_H
 

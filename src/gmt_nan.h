@@ -30,6 +30,11 @@
  * Ver:		5 API
  */
 
+/*!
+ * \file gmt_nan.h
+ * \brief Machine-dependent macros for generation and testing of NaNs
+ */
+
 #ifndef _GMT_NAN_H
 #define _GMT_NAN_H
 

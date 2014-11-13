@@ -17,6 +17,11 @@
  *--------------------------------------------------------------------*/
 /* Include file for sph supplement */
 
+/*!
+ * \file gmt_sph.h
+ * \brief Include file for sph supplement.
+ */
+
 #define DELAUNAY	0
 #define VORONOI		1
 #define INTERPOLATE	2

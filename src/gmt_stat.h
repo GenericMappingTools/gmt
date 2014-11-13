@@ -16,6 +16,11 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/*!
+ * \file gmt_stat.h
+ * \brief Declaration of misc statistical and special functions. 
+ */
+
 #ifndef _GMT_STAT_H
 #define _GMT_STAT_H
 

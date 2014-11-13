@@ -17,12 +17,16 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-/*
+/**
+ * \file gmt.h
+ * \brief Include file for users who wish to develop custom applications 
+ *
  * Include file for users who wish to develop custom applications that
  * require building blocks from the GMT Application Program Interface
  * library (the GMT API), which also depends on the GMT Core library.
  * For complete documentation, see the GMT API docs.
- *
+ */
+/*
  * Author: 	Paul Wessel
  * Date:	10-JUN-2013
  * Version:	5 API
@@ -82,21 +86,26 @@ extern "C" {
  */
 
 /* 22 Primary API functions */
-EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
-EXTERN_MSC void * GMT_Create_Data	(void *API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *wesn, double *inc, unsigned int registration, int pad, void *data);
+EXTERN_MSC void * GMT_Create_Session(char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
+EXTERN_MSC void * GMT_Create_Data	(void *API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[],
+                                     double *wesn, double *inc, unsigned int registration, int pad, void *data);
 EXTERN_MSC void * GMT_Get_Data		(void *API, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC void * GMT_Read_Data		(void *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
+EXTERN_MSC void * GMT_Read_Data		(void *API, unsigned int family, unsigned int method, unsigned int geometry,
+                                     unsigned int mode, double wesn[], char *input, void *data);
 EXTERN_MSC void * GMT_Retrieve_Data	(void *API, int object_ID);
-EXTERN_MSC void * GMT_Duplicate_Data	(void *API, unsigned int family, unsigned int mode, void *data);
+EXTERN_MSC void * GMT_Duplicate_Data(void *API, unsigned int family, unsigned int mode, void *data);
 EXTERN_MSC void * GMT_Get_Record	(void *API, unsigned int mode, int *retval);
 EXTERN_MSC int GMT_Destroy_Session	(void *API);
-EXTERN_MSC int GMT_Register_IO		(void *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
-EXTERN_MSC int GMT_Init_IO		(void *API, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
+EXTERN_MSC int GMT_Register_IO		(void *API, unsigned int family, unsigned int method, unsigned int geometry,
+                                     unsigned int direction, double wesn[], void *resource);
+EXTERN_MSC int GMT_Init_IO		(void *API, unsigned int family, unsigned int geometry, unsigned int direction,
+                                     unsigned int mode, unsigned int n_args, void *args);
 EXTERN_MSC int GMT_Begin_IO		(void *API, unsigned int family, unsigned int direction, unsigned int header);
 EXTERN_MSC int GMT_Status_IO		(void *API, unsigned int mode);
 EXTERN_MSC int GMT_End_IO		(void *API, unsigned int direction, unsigned int mode);
 EXTERN_MSC int GMT_Put_Data		(void *API, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC int GMT_Write_Data		(void *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
+EXTERN_MSC int GMT_Write_Data		(void *API, unsigned int family, unsigned int method, unsigned int geometry,
+                                     unsigned int mode, double wesn[], char *output, void *data);
 EXTERN_MSC int GMT_Destroy_Data		(void *API, void *object);
 EXTERN_MSC int GMT_Put_Record		(void *API, unsigned int mode, void *record);
 EXTERN_MSC int GMT_Encode_ID		(void *API, char *string, int object_ID);

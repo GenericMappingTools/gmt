@@ -27,6 +27,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_symbol.h
+ * \brief Miscellaneous definitions and structures related to symbols 
+ */
+
 #ifndef _GMT_SYMBOLS_H
 #define _GMT_SYMBOLS_H
 
@@ -59,7 +64,8 @@ struct GMT_CUSTOM_SYMBOL {
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
-struct GMT_MAP_INSERT {	/* Used to plot a map insert box in psbasemap */
+/*! Plot a map insert box in psbasemap */
+struct GMT_MAP_INSERT {
 	/* -D[unit]xmin/xmax/ymin/ymax|width[/height][+c<clon>/<clat>][+p<pen>][+g<fill>] */
 	bool center;		/* Gave center of insert */
 	bool plot;		/* true if we want to draw the insert */
@@ -74,7 +80,8 @@ struct GMT_MAP_INSERT {	/* Used to plot a map insert box in psbasemap */
 	struct GMT_PEN pen;	/* Pen for insert */
 };
 
-struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
+/*! Plot a map scale in psbasemap and pscoast */
+struct GMT_MAP_SCALE {
 	double lon, lat;	/* Location of top/mid point of scale on the map in lon/lat space */
 	double x0, y0;		/* Location of top/mid point of scale on the map in inches x/y */
 	double scale_lon;	/* Point where scale should apply */
@@ -94,7 +101,8 @@ struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	struct GMT_PEN pen;	/* Pen to use for background rectangle */
 };
 
-struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoast */
+/*! Plot a map direction "rose" in psbasemap and pscoast */
+struct GMT_MAP_ROSE {
 	double lon, lat;	/* Location of center point of rose on the map in lon/lat space */
 	double x0, y0;		/* Location of center point of scale on the map in inches x/y */
 	double size;		/* Diameter of the rose in measure units */

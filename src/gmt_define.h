@@ -16,6 +16,11 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/*!
+ * \file gmt_define.h
+ * \brief 
+ */
+
 #ifndef _GMT_DEFINE_H
 #define _GMT_DEFINE_H
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id$
+ *	$Id $
  *
  *	Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -16,6 +16,11 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/*!
+ * \file gmt_memory.h
+ * \brief 
+ */
+
 #ifndef _GMT_MEMORY_H
 #define _GMT_MEMORY_H
 
@@ -24,7 +29,7 @@ enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 	GMT_INITIAL_MEM_ROW_ALLOC	= 2097152U	/* 2^21 */	
 };
 
-/* Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
+/*! Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
 #if defined (DEBUG) || defined (MEMDEBUG)
 #define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE_FUNC)
 #else
@@ -35,7 +40,7 @@ enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 #define GMT_malloc3(C,a,b,c,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = GMT_malloc(C,b,n,&__k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
 #define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = GMT_malloc(C,b,n,&__k,type); __k = (__kp) ? *__kp : 0U; c = GMT_malloc(C,c,n,&__k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
 
-/* Convenience macro for GMT_memory_func */
+/*! Convenience macro for GMT_memory_func */
 #if defined (DEBUG) || defined (MEMDEBUG)
 #define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),false,__SOURCE_LINE_FUNC)
 #define GMT_memory_aligned(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),true,__SOURCE_LINE_FUNC)
@@ -44,7 +49,7 @@ enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 #define GMT_memory_aligned(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),true,__func__)
 #endif
 
-/* Convenience macro for GMT_free_func */
+/*! Convenience macro for GMT_free_func */
 #if defined (DEBUG) || defined (MEMDEBUG)
 #define GMT_free(C,ptr) (GMT_free_func(C,ptr,false,__SOURCE_LINE_FUNC),(ptr)=NULL)
 #define GMT_free_aligned(C,ptr) (GMT_free_func(C,ptr,true,__SOURCE_LINE_FUNC),(ptr)=NULL)

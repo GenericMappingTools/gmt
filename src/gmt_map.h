@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_map.h
+ * \brief 
+ */
+
 #ifndef _GMT_MAP_H
 #define _GMT_MAP_H
 

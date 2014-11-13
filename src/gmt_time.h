@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_time.h
+ * \brief Definitions of structures dealing with time.
+ */
+
 #ifndef _GMT_TIME_H
 #define _GMT_TIME_H
 

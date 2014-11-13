@@ -16,12 +16,17 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/*!
+ * \file gmt_gdalread.h
+ * \brief Define structures to interface with gdalread|write
+ */
+
 #include <gdal.h>
 #include <ogr_srs_api.h>
 #include <cpl_string.h>
 #include <cpl_conv.h>
 
-/* Structure to control which options are transmited to GMT_gdalwrite */
+/*! Structure to control which options are transmited to GMT_gdalwrite */
 struct GDALWRITE_CTRL {
 	char *driver;		/* The GDAL diver name */
 	char *type;			/* Data type */
@@ -50,7 +55,7 @@ struct GDALWRITE_CTRL {
 	} P;
 };
 
-/* Structure to control which options are transmited to GMT_gdalread */
+/*! Structure to control which options are transmited to GMT_gdalread */
 struct GDALREAD_CTRL {
 	struct GD_B {	/* Band selection */
 		int active;
@@ -108,17 +113,17 @@ struct GDALREAD_CTRL {
 	} mini_hdr;
 };
 
-/* Structure to hold metadata info in a per bands basis read */
+/*! Structure to hold metadata info in a per bands basis read */
 struct GDAL_BAND_FNAMES {
-	char		*DataType;
-	int	XSize;
-	int	YSize;
-	double		nodata;
-	double		MinMax[2];
-	double		ScaleOffset[2];
+	char   *DataType;
+	int     XSize;
+	int     YSize;
+	double  nodata;
+	double  MinMax[2];
+	double  ScaleOffset[2];
 };
 
-/* Structure with the output data transmited by GMT_gdalread */
+/*! Structure with the output data transmited by GMT_gdalread */
 struct GD_CTRL {
 	/* active is true if the option has been activated */
 	struct UInt8 {			/* Declare byte pointer */

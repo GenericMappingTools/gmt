@@ -16,7 +16,11 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-/* This code is included into the three blockm*_func.c files which each
+/**
+ * \file block_subs.h
+ * \brief Code included into the three blockm*_func.c files 
+ *
+ * This code is included into the three blockm*_func.c files which each
  * will define their names (e.g., BLOCKMEAN).  That definition controls
  * the names of the functions defined below.
  */
@@ -35,7 +39,8 @@
 #define FREE_BLK Free_blockmode_Ctrl
 #endif
 
-struct BLOCK_CTRL {	/* All control options for this program (except common args) */
+/*! All control options for this program (except common args) */
+struct BLOCK_CTRL {
 	struct C {	/* -C */
 		bool active;
 	} C;
@@ -140,13 +145,16 @@ enum GMT_enum_blks {BLK_Z	= 0,
 	BLK_H		= 2,
 	BLK_G		= 3};
 
-struct BLK_PAIR {	/* Used for weighted mean location */
-	double a[2];	/* a[0] = x, a[1] = y */
+/*! Used for weighted mean location */
+struct BLK_PAIR {
+	double a[2];	/*!< a[0] = x, a[1] = y */
 };
 
-struct BLK_SLHG {	/* Holds std, low, high, and sigma^2 values */
-	double a[4];	/* a[0] = w.std, a[1] = min, a[2] = max, a[3] = sigma^2 */
+/*! Holds std, low, high, and sigma^2 values */
+struct BLK_SLHG {
+	double a[4];	/*!< a[0] = w.std, a[1] = min, a[2] = max, a[3] = sigma^2 */
 };
+
 #else	/* Only used by blockmedian and blockmode */
 #define BLK_DO_EXTEND3	1
 #define BLK_DO_EXTEND4	2
@@ -156,18 +164,20 @@ struct BLK_SLHG {	/* Holds std, low, high, and sigma^2 values */
 
 enum GMT_enum_blks {BLK_Z	= 2,
 		BLK_W		= 3};
+
 struct BLK_DATA {
-	double a[4];		/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
-	uint64_t ij;	/* Grid index for data value */
+	double a[4];		/*!< a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
+	uint64_t ij;	/*!< Grid index for data value */
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
-	uint64_t src_id;	/* Source id [Data record] on input */
+	uint64_t src_id;	/*!< Source id [Data record] on input */
 #endif
 };
 #endif
 
 /* Declaring the standard functions to allocate and free the program Ctrl structure */
 
-void * NEW_BLK (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+/*! Allocate and initialize a new control structure */
+void *NEW_BLK (struct GMT_CTRL *GMT) {
 	struct BLOCK_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
@@ -182,7 +192,8 @@ void * NEW_BLK (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control
 	return (C);
 }
 
-void FREE_BLK (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */
+/*! Deallocate control structure */
+void FREE_BLK (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }

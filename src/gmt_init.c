@@ -16,40 +16,42 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------
  *
- * gmt_init.c contains code which is used by all GMT programs
- *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	5
- *
+ */
+
+/**
+ * \file gmt_init.c
+ * \brief gmt_init.c contains code which is used by all GMT programs
  *
  * The PUBLIC functions are:
  *
- *	GMT_explain_options		Prints explanations for the common options
- *	GMT_parse_common_options	Interprets common options, such as -B, -R, --
- *	GMT_getdefaults			Initializes the GMT global parameters
- *	GMT_putdefaults			Dumps the GMT global parameters
- *	GMT_hash_init			Initializes a hash
- *	GMT_hash_lookup			Key - id lookup using hashing
- *	GMT_hash			Key - id lookup using hashing
- *	GMT_begin			Gets history and init parameters
- *	GMT_end				Cleans up and returns
- *	gmt_history			Read and update the gmt.history file
- *	GMT_putcolor			Encode color argument into textstring
- *	GMT_putrgb			Encode color argument into r/g/b textstring
- *	GMT_puthsv			Encode color argument into h-s-v textstring
+ *	GMT_explain_options		Prints explanations for the common options\n
+ *	GMT_parse_common_options	Interprets common options, such as -B, -R, --\n
+ *	GMT_getdefaults			Initializes the GMT global parameters\n
+ *	GMT_putdefaults			Dumps the GMT global parameters\n
+ *	GMT_hash_init			Initializes a hash\n
+ *	GMT_hash_lookup			Key - id lookup using hashing\n
+ *	GMT_hash			Key - id lookup using hashing\n
+ *	GMT_begin			Gets history and init parameters\n
+ *	GMT_end				Cleans up and returns\n
+ *	gmt_history			Read and update the gmt.history file\n
+ *	GMT_putcolor			Encode color argument into textstring\n
+ *	GMT_putrgb			Encode color argument into r/g/b textstring\n
+ *	GMT_puthsv			Encode color argument into h-s-v textstring\n
  *	GMT_putcmyk			Encode color argument into c/m/y/k textstring
  *
  * The INTERNAL functions are:
  *
- *	GMT_loaddefaults		Reads the GMT global parameters from gmt.conf
- *	GMT_savedefaults		Writes the GMT global parameters to gmt.conf
- *	GMT_parse_?_option		Decode the one of the common options
- *	gmt_setparameter		Sets a default value given keyword,value-pair
- *	gmt_setshorthand		Reads and initializes the suffix shorthands
- *	GMT_get_ellipsoid		Returns ellipsoid id based on name
- *	gmt_scanf_epoch			Get user time origin from user epoch string
- *	GMT_init_time_system_structure  Does what it says
+ *	GMT_loaddefaults		Reads the GMT global parameters from gmt.conf\n
+ *	GMT_savedefaults		Writes the GMT global parameters to gmt.conf\n
+ *	GMT_parse_?_option		Decode the one of the common options\n
+ *	gmt_setparameter		Sets a default value given keyword,value-pair\n
+ *	gmt_setshorthand		Reads and initializes the suffix shorthands\n
+ *	GMT_get_ellipsoid		Returns ellipsoid id based on name\n
+ *	gmt_scanf_epoch			Get user time origin from user epoch string\n
+ *	GMT_init_time_system_structure  Does what it says\n
  */
 
 #include "gmt_dev.h"
@@ -115,29 +117,33 @@ static char *GMT_just_string[12] = {	/* Strings to specify justification */
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 
+/*! whether to ignore/read/write history file gmt.history */
 enum history_mode {
-	/* whether to ignore/read/write history file gmt.history */
-	k_history_off = 0,
-	k_history_read,
-	k_history_write
+	/*! 0 */	k_history_off = 0,
+	/*! 1 */	k_history_read,
+	/*! 2 */	k_history_write
 };
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
-void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
-{
-	/* The function print to stderr a short explanation for each of the options listed by
-	 * the variable <options>.  Only the common parameter options are covered.
-	 * NOte: The cases below do not directly correspond to the common option letters,
-	 * although in some cases they do (e.g., case 'B' explains -B).  For instance, to
-	 * display the help for the -r (registration setting for grid) option we use case F.
-	 * Part of this is historic and part is multiple flavor of output for same option.
-	 * However, GMT_explain_options is not called directly but via GMT_Option which
-	 * do accept a list of comma-separated options and there are the normal GMT common
-	 * option letters, sometimes with modifiers, and it translate between those and the
-	 * crazy cases below.
-	 * Remaining cases for additional options: A,H,L,M,N,T,W,e,m,q,u,v,w
-	 */
+/*!
+	\brief Print to stderr a short explanation for each of the options listed by the variable <options>
+	\param GMT ...
+	\param options ...
+
+ * The function print to stderr a short explanation for each of the options listed by
+ * the variable <options>. Only the common parameter options are covered.
+ * Note: The cases below do not directly correspond to the common option letters,
+ * although in some cases they do (e.g., case 'B' explains -B). For instance, to
+ * display the help for the -r (registration setting for grid) option we use case F.
+ * Part of this is historic and part is multiple flavor of output for same option.
+ * However, GMT_explain_options is not called directly but via GMT_Option which
+ * do accept a list of comma-separated options and there are the normal GMT common
+ * option letters, sometimes with modifiers, and it translate between those and the
+ * crazy cases below.\n
+ * Remaining cases for additional options: A,H,L,M,N,T,W,e,m,q,u,v,w
+ */
+void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = "qncvld";
 	double s;
@@ -386,7 +392,8 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 		case 'j':	/* Condensed version of J */
 
 			GMT_message (GMT, "\t-J Select map proJection. (<scale> in %s/degree, <width> in %s)\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			             GMT->session.unit_name[GMT->current.setting.proj_length_unit],
+			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			GMT_message (GMT, "\t   Append h for map height, or +|- for max|min map dimension.\n");
 			GMT_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is set.\n\n");
 
@@ -554,7 +561,8 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 		case 'x':	/* Just linear -Jx|X allowed for this program */
 
 			GMT_message (GMT, "\t-Jx|X for linear projection.  Scale in %s/units (or width in %s).\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			             GMT->session.unit_name[GMT->current.setting.proj_length_unit],
+			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			GMT_message (GMT, "\t    Use / to specify separate x/y scaling.\n");
 			GMT_message (GMT, "\t    If -JX is used then give axes lengths in %s rather than scales.\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
@@ -746,8 +754,12 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 	}
 }
 
-void GMT_GSHHG_syntax (struct GMT_CTRL *GMT, char option)
-{	/* GSHHG subset specification */
+/*! GSHHG subset specification */
+/*!
+	\param GMT ...
+	\param option ...
+*/
+void GMT_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
  	GMT_message (GMT, "\t-%c Place limits on coastline features from the GSHHG data base.\n", option);
 	GMT_message (GMT, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
 	GMT_message (GMT, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
@@ -759,13 +771,13 @@ void GMT_GSHHG_syntax (struct GMT_CTRL *GMT, char option)
 	GMT_message (GMT, "\t   Append +p<percent> to exclude features whose size is < <percent>%% of the full-resolution feature [use all].\n");
 }
 
-void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind)
-{
-	/* Contour/line specifications in *contour and psxy[z]
-	 * indent is the number of spaces to indent after the TAB.
-	 * kind = 0 for *contour and 1 for psxy[z]
-	 */
-
+/*! Contour/line specifications in *contour and psxy[z] */
+/*!
+	\param GMT ...
+	\param indent The number of spaces to indent after the TAB
+	\param kind  kind = 0 for *contour and 1 for psxy[z]
+*/
+void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind) {
 	unsigned int i;
 	char pad[16], *type[2] = {"Contour", "Line"};
 
@@ -811,12 +823,13 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	GMT_message (GMT, "%s +=<prefix> to give all labels a prefix.\n", pad);
 }
 
-void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind)
-{
-	/* Contour/line label placement specifications in *contour and psxy[z]
-	 * indent is the number of spaces to indent after the TAB.
-	 * kind = 0 for *contour and 1 for psxy[z]
-	 */
+/*! Contour/line label placement specifications in *contour and psxy[z] */
+/*!
+	\param GMT ...
+	\param indent The number of spaces to indent after the TAB
+	\param kind  kind = 0 for *contour and 1 for psxy[z]
+*/
+void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind) {
 	unsigned int i;
 	double gap;
 	char pad[16];
@@ -857,8 +870,14 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	GMT_message (GMT, "%s   radial separation between labels [0]\n", pad);
 }
 
+/*! Widely used in most programs that need grid increments to be set */
+/*!
+	\param GMT ...
+	\param option ...
+	\param error ...
+*/
 void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error)
-{	/* Widely used in most programs that need grid increments to be set */
+{
 	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
 	GMT_message (GMT, "\t   Full syntax is <xinc>[%s|+][=][/<yinc>[%s|+][=]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
@@ -871,6 +890,11 @@ void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error)
 	GMT_message (GMT, "\t   both -R and -I have been set; use -I to override those values.\n");
 }
 
+/*! .
+	\param GMT ...
+	\param option ...
+	\param string ...
+*/
 void GMT_fill_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
@@ -885,6 +909,11 @@ void GMT_fill_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].\n");
 }
 
+/*! .
+	\param GMT ...
+	\param option ...
+	\param string ...
+*/
 void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
@@ -906,6 +935,11 @@ void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
 }
 
+/*! .
+	\param GMT ...
+	\param option ...
+	\param string ...
+*/
 void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
@@ -917,6 +951,11 @@ void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
 }
 
+/*! .
+	\param GMT ...
+	\param option ...
+	\param string ...
+*/
 void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {	/* Only called in psbasemap.c for now */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);

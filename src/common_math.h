@@ -23,6 +23,11 @@
  * Version: 5
  */
 
+/*!
+ * \file common_math.h
+ * \brief declares shared math functions
+ */
+
 #pragma once
 #ifndef _COMMON_MATH_H
 #define _COMMON_MATH_H

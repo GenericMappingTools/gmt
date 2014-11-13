@@ -25,10 +25,15 @@
  *
  */
 
+/*!
+ * \file gmt_customio.h
+ * \brief Include file for gmt_customio functions.
+ */
+
 #ifndef GMT_CUSTOMIO_H
 #define GMT_CUSTOMIO_H
 
-/* Definition for Sun rasterfiles [THESE MUST REMAIN int32_t]  */
+/*! Definition for Sun rasterfiles [THESE MUST REMAIN int32_t]  */
 struct rasterfile {
 	int32_t magic;     /* magic number */
 	int32_t width;     /* width (pixels) of image */

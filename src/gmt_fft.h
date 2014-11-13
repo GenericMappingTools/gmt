@@ -24,6 +24,11 @@
  *
  */
 
+/*!
+ * \file gmt_fft.h
+ * \brief Structures in support of FFT use.
+ */
+
 #ifndef GMT_FFT_H
 #define GMT_FFT_H
 #ifdef __APPLE__ /* Accelerate framework */
@@ -56,7 +61,8 @@ enum GMT_FFT_DIMSET {
 	GMT_FFT_LIST,
 	GMT_FFT_QUERY};
 
-struct GMT_FFT_WAVENUMBER {	/* Holds parameters needed to calculate kx, ky, kr */
+/*! Holds parameters needed to calculate kx, ky, kr */
+struct GMT_FFT_WAVENUMBER {
 	int nx2, ny2;
 	unsigned int dim;	/* FFT dimension as setup by Init */
 	double delta_kx, delta_ky;

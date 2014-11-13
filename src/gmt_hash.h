@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_hash.h
+ * \brief Definition of the structure used for hashing
+ */
+
 #ifndef _GMT_HASH_H
 #define _GMT_HASH_H
 
@@ -39,7 +44,8 @@
  */
 #define GMT_HASH_MAXDEPTH	16
 
-struct GMT_HASH {	/* Used to relate text keywords to array indices */
+/*! Used to relate text keywords to array indices */
+struct GMT_HASH {
 	unsigned int id[GMT_HASH_MAXDEPTH];	/* Indices of corresponding keyword with identical hash value */
 	unsigned int n_id;			/* Number of hash entries for this item */
 	char *key[GMT_HASH_MAXDEPTH];		/* Name of these entries */

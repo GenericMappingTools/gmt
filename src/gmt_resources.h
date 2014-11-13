@@ -27,6 +27,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_resources.h
+ * \brief Definitions for the GMT 5 resources (GMT_GRID, GMT_DATASET etc...)
+ */
+
 #ifndef _GMT_RESOURCES_H
 #define _GMT_RESOURCES_H
 
@@ -40,7 +45,7 @@
  * the variables are accessible just like the "public" ones.
  */
 
-/* These are the 5 methods for i/o; used as arguments in the API that expects a "method" */
+/*! These are the 5 methods for i/o; used as arguments in the API that expects a "method" */
 
 enum GMT_enum_method {
 	GMT_IS_FILE = 0,	/* Entity is a filename */
@@ -60,7 +65,7 @@ enum GMT_enum_via {
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
 	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
 
-/* These are the 5 families of data types, + a coordinate array + 2 help containers for vector and matrix */
+/*! These are the 5 families of data types, + a coordinate array + 2 help containers for vector and matrix */
 enum GMT_enum_family {
 	GMT_IS_DATASET = 0,	/* Entity is data table */
 	GMT_IS_TEXTSET,		/* Entity is a Text table */
@@ -71,7 +76,7 @@ enum GMT_enum_family {
 	GMT_IS_MATRIX,		/* Entity is user matrix */
 	GMT_IS_COORD};		/* Entity is a double coordinate array */
 
-/* These are modes for handling comments */
+/*! These are modes for handling comments */
 enum GMT_enum_comment {
 	GMT_COMMENT_IS_TEXT	= 0,	/* Comment is a text string */
 	GMT_COMMENT_IS_OPTION	= 1U,	/* Comment is a linked list of GMT_OPTION structures */

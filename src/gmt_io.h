@@ -28,19 +28,24 @@
  *
  */
 
+/*!
+ * \file gmt_io.h
+ * \brief  
+ */
+
 #ifndef _GMT_IO_H
 #define _GMT_IO_H
 
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
 
-/* Three different i/o status: unused, actively using, or used */
+/*! Three different i/o status: unused, actively using, or used */
 enum GMT_enum_status {
 	GMT_IS_UNUSED = 0,	/* We have not yet read from/written to this resource */
 	GMT_IS_USING,		/* Means we have started reading from/writing to this file */
 	GMT_IS_USED};		/* Means we are done reading from/writing to this file */
 
-/* THere are three GMT/OGR status values */
+/*! There are three GMT/OGR status values */
 enum GMT_ogr_status {
 	GMT_OGR_UNKNOWN = -1,	/* We have not parsed enough records to know yet */
 	GMT_OGR_FALSE,		/* This is NOT a GMT/OGR file */
@@ -58,16 +63,15 @@ enum GMT_enum_ogr {
 	GMT_IS_MULTILINESTRING,
 	GMT_IS_MULTIPOLYGON};
 
-/* Codes for aspatial assocation with segment header options: */
-
+/*! Codes for aspatial assocation with segment header options: */
 enum GMT_enum_segopt {
-	GMT_IS_D = -1,	/* -D */
-	GMT_IS_G = -2,			/* -G */
-	GMT_IS_I = -3,			/* -I */
-	GMT_IS_L = -4,			/* -L */
-	GMT_IS_T = -5,			/* -T */
-	GMT_IS_W = -6,			/* -W */
-	GMT_IS_Z = -7};			/* -Z */
+	/*! -D */	GMT_IS_D = -1,
+	/*! -G */	GMT_IS_G = -2,
+	/*! -I */	GMT_IS_I = -3,
+	/*! -L */	GMT_IS_L = -4,
+	/*! -T */	GMT_IS_T = -5,
+	/*! -W */	GMT_IS_W = -6,
+	/*! -Z */	GMT_IS_Z = -7};
 
 /* Macros to simplify check for return status */
 #define GMT_REC_IS_TABLE_HEADER(C)	(C->current.io.status & GMT_IO_TABLE_HEADER)
@@ -87,11 +91,10 @@ enum GMT_enum_segopt {
 /* Determine if current binary table has header */
 #define GMT_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.setting.io_header[dir] && GMT->current.setting.io_n_header_items)
 
-/* Types of possible column entries in a file: */
-
+/*! Types of possible column entries in a file: */
 enum GMT_col_enum {
 	GMT_IS_NAN   =   0,	/* Returned by GMT_scanf routines when read fails */
-	GMT_IS_FLOAT		=   1,	/* Generic (double) data type, no special format */
+	GMT_IS_FLOAT	=   1,	/* Generic (double) data type, no special format */
 	GMT_IS_LAT		=   2,
 	GMT_IS_LON		=   4,
 	GMT_IS_GEO		=   6,	/* data type is either Lat or Lon */
@@ -104,20 +107,18 @@ enum GMT_col_enum {
 	GMT_IS_STRING		= 256,	/* An text argument [internally used, not via -f]  */
 	GMT_IS_UNKNOWN		= 512};	/* Input type is not knowable without -f */
 
-/* Various ways to report longitudes */
-
+/*! Various ways to report longitudes */
 enum GMT_lon_enum {
 	GMT_IS_GIVEN_RANGE 			= 0,	/* Report lon as is */
-	GMT_IS_0_TO_P360_RANGE			= 1,	/* Report 0 <= lon <= 360 */
+	GMT_IS_0_TO_P360_RANGE		= 1,	/* Report 0 <= lon <= 360 */
 	GMT_IS_0_TO_P360			= 2,	/* Report 0 <= lon < 360 */
-	GMT_IS_M360_TO_0_RANGE			= 3,	/* Report -360 <= lon <= 0 */
+	GMT_IS_M360_TO_0_RANGE		= 3,	/* Report -360 <= lon <= 0 */
 	GMT_IS_M360_TO_0			= 4,	/* Report -360 < lon <= 0 */
-	GMT_IS_M180_TO_P180_RANGE		= 5,	/* Report -180 <= lon <= +180 */
+	GMT_IS_M180_TO_P180_RANGE	= 5,	/* Report -180 <= lon <= +180 */
 	GMT_IS_M180_TO_P180			= 6,	/* Report -180 <= lon < +180 */
-	GMT_IS_M180_TO_P270_RANGE		= 7};	/* Report -180 <= lon < +270 [GSHHG only] */
+	GMT_IS_M180_TO_P270_RANGE	= 7};	/* Report -180 <= lon < +270 [GSHHG only] */
 
-/* How to handle NaNs in records */
-
+/*! How to handle NaNs in records */
 enum GMT_io_nan_enum {
 	GMT_IO_NAN_OK = 0,	/* NaNs are fine; just ouput the record as is */
 	GMT_IO_NAN_SKIP,	/* -s[cols]	: Skip records with z == NaN in selected cols [z-col only] */

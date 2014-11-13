@@ -7,6 +7,11 @@
 
 /* gmt_module.h declares structures needed by the various modules libraries. */
 
+/*!
+ * \file gmt_sharedlibs.h
+ * \brief Structures needed by the various modules libraries. 
+ */
+
 #pragma once
 #ifndef _GMT_MODULE_H
 #define _GMT_MODULE_H
@@ -21,7 +26,7 @@ extern "C" {
 #include <dlfcn.h>
 #endif
 
-/* Info for each GMT shared library. This array is filled out when parsing GMT_CUSTOM_LIBS at end of GMT_Create_Session */
+/*! Info for each GMT shared library. This array is filled out when parsing GMT_CUSTOM_LIBS at end of GMT_Create_Session */
 
 struct Gmt_libinfo {
 	char *name;	/* Library tag name [without leading "lib" and extension], e.g. "gmt", "gmtsuppl" */

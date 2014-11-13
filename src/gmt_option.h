@@ -25,6 +25,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_option.h
+ * \brief Definitions for the GMT_OPTION structure.
+ */
+
 #ifndef _GMT_OPTION_H
 #define _GMT_OPTION_H
 
@@ -32,7 +37,7 @@
 /*=============== GMT_OPTION Public Declaration ============== */
 /*============================================================ */
 
-/* Macros for the common GMT options used in a program's usage synopsis */
+/*! Macros for the common GMT options used in a program's usage synopsis */
 
 #define GMT_B_OPT	"-B<args>"
 #define GMT_I_OPT	"-I<xinc>[<unit>][=|+][/<yinc>[<unit>][=|+]]"
@@ -60,17 +65,17 @@
 #define GMT_x_OPT	"-x<threads>"
 #define GMT_colon_OPT	"-:[i|o]"
 
-/* Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */
+/*! Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */
 
 #define GMT_FFT_OPT "[f|q|s|<nx>/<ny>][+a|d|l][+e|m|n][+t<width>][+w<suffix>][+z[p]]"
 
-/* Macros for printing a tic/toc elapsed time message*/
+/*! Macros for printing a tic/toc elapsed time message*/
 
 #define GMT_tic(C) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_RESET,"");}
 #define GMT_toc(C,...) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_ELAPSED, \
 		"(%s) | %s\n", C->init.module_name, __VA_ARGS__);}
 
-/* These are the 5 named option codes */
+/*! These are the 5 named option codes */
 enum GMT_enum_opt {
 	GMT_OPT_USAGE =     '?',	/* Command-line option for full usage */
 	GMT_OPT_SYNOPSIS =  '^',	/* Command-line option for synopsis */
@@ -78,7 +83,7 @@ enum GMT_enum_opt {
 	GMT_OPT_INFILE =    '<',	/* Command-line option for input file */
 	GMT_OPT_OUTFILE =   '>'};	/* Command-line option for output file */
 
-/* This struct is used to pass program options in/out of GMT modules */
+/*! This struct is used to pass program options in/out of GMT modules */
 
 struct GMT_OPTION {              /* Structure for a single GMT command option */
 	char option;                 /* 1-char command line -<option> (e.g. D in -D) identifying the option (* if file) */

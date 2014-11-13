@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_types.h
+ * \brief Definitions of special types used by GMT.
+ */
+
 #ifndef _GMT_TYPES_H
 #define _GMT_TYPES_H
 #ifdef HAVE_STDBOOL_H_

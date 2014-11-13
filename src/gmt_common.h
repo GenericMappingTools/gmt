@@ -23,11 +23,16 @@
  * Date:	01-JAN-2011
  * Version:	5 API
  */
+
+/*!
+ * \file gmt_common.h
+ * \brief Holds current selections for the family of common GMT options
+ */
  
 #ifndef _GMT_COMMON_H
 #define _GMT_COMMON_H
 
-/* Constants related to detecting data gaps which should be treated as segment boundaries */
+/*! Constants related to detecting data gaps which should be treated as segment boundaries */
 enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current column value exceeds <gap> */
 	GMT_POSGAP_IN_COL,			/* Check if current minus previous column value exceeds <gap> */
 	GMT_ABSGAP_IN_COL,			/* Check if |current minus previous column value| exceeds <gap> */
@@ -45,8 +50,8 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 #define GMT_SHORTHAND_OPTIONS	"BJRXxYcp"	/* All of the shorthand options */
 #define GMT_CRITICAL_OPT_ORDER "-VJfrRb"	/* If given options among these must be parsed first and in this order */
 
+/*! Structure with all information given via the common GMT command-line options -R -J .. */
 struct GMT_COMMON {
-	/* Structure with all information given via the common GMT command-line options -R -J .. */
 	struct synopsis {	/* \0 (zero) or ^ */
 		bool active;
 		bool extended;	/* + to also show non-common options */

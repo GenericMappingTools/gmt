@@ -27,6 +27,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_grd.h
+ * \brief Definition for a GMT-SYSTEM Version >= 2 grd file 
+ */
+
 #ifndef _GMT_GRID_H
 #define _GMT_GRID_H
 
@@ -42,7 +47,8 @@ enum GMT_enum_grdtype {
 	GMT_GRID_GEOGRAPHIC_MORE360		/* x is longitude, and range exceeds 360 degrees */
 };
 
-enum GMT_enum_grdlayout {	/* Grid layout for complex grids */
+/*! Grid layout for complex grids */
+enum GMT_enum_grdlayout {
 	GMT_GRID_IS_SERIAL = 0,		/* Grid is RRRRRR...[IIIIII...] */
 	GMT_GRID_IS_INTERLEAVED = 1};	/* Grid is RIRIRIRI... - required layout for FFT */
 
@@ -60,8 +66,8 @@ enum GMT_enum_grdlayout {	/* Grid layout for complex grids */
  *   -------> x       y V 6 7 8
  */
 
+/*! Order of rows in z variable */
 enum Netcdf_row_order {
-	/* Order of rows in z variable */
 	k_nc_start_north = -1, /* The least dimension (i.e., lat or y) decreases */
 	k_nc_start_south = 1   /* The least dimension (i.e., lat or y) increases */
 };
@@ -96,38 +102,38 @@ enum GMT_enum_wesnIDs {
 #define GMT_col_to_x(C,col,x0,x1,dx,off,nx) (((int)(col) == (int)((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
 #define GMT_row_to_y(C,row,y0,y1,dy,off,ny) (((int)(row) == (int)((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
 
-/* The follow macros simplify using the 4 above macros when all info is in the struct header h. */
+/*! The follow macros simplify using the 4 above macros when all info is in the struct header h. */
 
 #define GMT_grd_col_to_x(C,col,h) GMT_col_to_x(C,col,h->wesn[XLO],h->wesn[XHI],h->inc[GMT_X],h->xy_off,h->nx)
 #define GMT_grd_row_to_y(C,row,h) GMT_row_to_y(C,row,h->wesn[YLO],h->wesn[YHI],h->inc[GMT_Y],h->xy_off,h->ny)
 #define GMT_grd_x_to_col(C,x,h) gmt_x_to_col(x,h->wesn[XLO],h->inc[GMT_X],h->xy_off,h->nx)
 #define GMT_grd_y_to_row(C,y,h) gmt_y_to_row(y,h->wesn[YLO],h->inc[GMT_Y],h->xy_off,h->ny)
 
-/* These macros calculate the number of nodes in x or y for the increment dx, dy */
+/*! These macros calculate the number of nodes in x or y for the increment dx, dy */
 
 #define GMT_get_n(C,min,max,inc,off) (urint ((((max) - (min)) / (inc)) + 1 - (off)) )
 #define GMT_get_inc(C,min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
 
-/* The follow macros simplify using the 2 above macros when all info is in the struct header */
+/*! The follow macros simplify using the 2 above macros when all info is in the struct header */
 
 #define GMT_grd_get_nx(C,h) (GMT_get_n(C,h->wesn[XLO],h->wesn[XHI],h->inc[GMT_X],h->registration))
 #define GMT_grd_get_ny(C,h) (GMT_get_n(C,h->wesn[YLO],h->wesn[YHI],h->inc[GMT_Y],h->registration))
 
-/* The follow macros gets the full length or rows and columns when padding is considered (i.e., mx and my) */
+/*! The follow macros gets the full length or rows and columns when padding is considered (i.e., mx and my) */
 
 #define gmt_grd_get_nxpad(h,pad) ((h->nx) + pad[XLO] + pad[XHI])
 #define gmt_grd_get_nypad(h,pad) ((h->ny) + pad[YLO] + pad[YHI])
 
-/* 64-bit-safe macros to return the number of points in the grid given its dimensions */
+/*! 64-bit-safe macros to return the number of points in the grid given its dimensions */
 
 #define GMT_get_nm(C,nx,ny) (((uint64_t)(nx)) * ((uint64_t)(ny)))
 #define gmt_grd_get_nm(h) (((uint64_t)(h->nx)) * ((uint64_t)(h->ny)))
 
-/* GMT_grd_setpad copies the given pad into the header */
+/*! GMT_grd_setpad copies the given pad into the header */
 
 #define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(unsigned int))
 
-/* gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
+/*! gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
 
 #define gmt_grd_get_size(h) ((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my)
 
@@ -138,16 +144,16 @@ enum GMT_enum_wesnIDs {
  * use int64_t for signed integers, but cast final index to uint64_t.  Finally, there is
  * GMT_IJPGI which is GMT_IJP for when there are more than 1 band (it uses h->n_bands). */
 
-/* IJP macro using h and the pad info */
+/*! IJP macro using h and the pad info */
 #define GMT_IJP(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx)+(int64_t)(col)+(int64_t)h->pad[XLO]))
-/* IJ0 macro using h but ignores the pad info */
+/*! IJ0 macro using h but ignores the pad info */
 #define GMT_IJ0(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->nx)+(int64_t)(col)))
-/* IJ macro using h but treats the entire grid with pad as no-pad grid, i.e. using mx as width */
+/*! IJ macro using h but treats the entire grid with pad as no-pad grid, i.e. using mx as width */
 #define GMT_IJ(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->mx)+(int64_t)(col)))
-/* IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
+/*! IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
 #define GMT_IJPGI(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx*(int64_t)h->n_bands)+(int64_t)(col)+(int64_t)h->pad[XLO]*(int64_t)h->n_bands))
 
-/* Obtain row and col from index */
+/*! Obtain row and col from index */
 #define GMT_col(h,ij) (((ij) % h->mx) - h->pad[XLO])
 #define GMT_row(h,ij) (((ij) / h->mx) - h->pad[YHI])
 
@@ -158,13 +164,13 @@ enum GMT_enum_wesnIDs {
 #define GMT_row_loop(C,G,row) for (row = 0; (int)row < (int)G->header->ny; row++)
 #define GMT_col_loop(C,G,row,col,ij) for (col = 0, ij = GMT_IJP (G->header, row, 0); (int)col < (int)G->header->nx; col++, ij++)
 #define GMT_grd_loop(C,G,row,col,ij) GMT_row_loop(C,G,row) GMT_col_loop(C,G,row,col,ij)
-/* Just a loop over columns */
+/*! Just a loop over columns */
 #define GMT_col_loop2(C,G,col) for (col = 0; (int)col < (int)G->header->nx; col++)
-/* Loop over all nodes including the pad */
+/*! Loop over all nodes including the pad */
 #define GMT_row_padloop(C,G,row,ij) for (row = 0, ij = 0; (int)row < (int)G->header->my; row++)
 #define GMT_col_padloop(C,G,col,ij) for (col = 0; (int)col < (int)G->header->mx; col++, ij++)
 #define GMT_grd_padloop(C,G,row,col,ij) GMT_row_padloop(C,G,row,ij) GMT_col_padloop(C,G,col,ij)
-/* Just a loop over columns */
+/*! Just a loop over columns */
 #define GMT_col_padloop2(C,G,col) for (col = 0; (int)col < (int)G->header->mx; col++)
 
 /* The usage could be:
@@ -174,20 +180,20 @@ enum GMT_enum_wesnIDs {
  * For GMT_x_is_outside, see the function in gmt_support.c since we must also deal with longitude periodicity.
  */
 
-/* GMT_is_subset is true if wesn is set and wesn cuts through the grid region */
+/*! GMT_is_subset is true if wesn is set and wesn cuts through the grid region */
 #define GMT_is_subset(C,h,R) (R[XHI] > R[XLO] && R[YHI] > R[YLO] && (R[XLO] > h->wesn[XLO] || R[XHI] < h->wesn[XHI] || R[YLO] > h->wesn[YLO] || R[YHI] < h->wesn[YHI]))
-/* GMT_grd_same_region is true if two grids have the exact same regions */
+/*! GMT_grd_same_region is true if two grids have the exact same regions */
 #define GMT_grd_same_region(C,G1,G2) (G1->header->wesn[XLO] == G2->header->wesn[XLO] && G1->header->wesn[XHI] == G2->header->wesn[XHI] && G1->header->wesn[YLO] == G2->header->wesn[YLO] && G1->header->wesn[YHI] == G2->header->wesn[YHI])
-/* GMT_grd_same_inc is true if two grids have the exact same grid increments */
+/*! GMT_grd_same_inc is true if two grids have the exact same grid increments */
 #define GMT_grd_same_inc(C,G1,G2) (G1->header->inc[GMT_X] == G2->header->inc[GMT_X] && G1->header->inc[GMT_Y] == G2->header->inc[GMT_Y])
-/* GMT_grd_same_dim is true if two grids have the exact same dimensions and registrations */
+/*! GMT_grd_same_dim is true if two grids have the exact same dimensions and registrations */
 #define GMT_grd_same_shape(C,G1,G2) (G1->header->nx == G2->header->nx && G1->header->ny == G2->header->ny && G1->header->registration == G2->header->registration)
-/* GMT_y_is_outside is true if y is outside the given range */
+/*! GMT_y_is_outside is true if y is outside the given range */
 #define GMT_y_is_outside(C,y,bottom,top) ((GMT_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
-/* GMT_grd_is_global is true for a geographic grid with exactly 360-degree range (with or without repeating column) */
+/*! GMT_grd_is_global is true for a geographic grid with exactly 360-degree range (with or without repeating column) */
 #define GMT_grd_is_global(C,h) (h->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT || h->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
 
-/* GMT_grd_duplicate_column is true for geographical global grid where first and last data columns are identical */
+/*! GMT_grd_duplicate_column is true for geographical global grid where first and last data columns are identical */
 #define GMT_grd_duplicate_column(C,h,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && GMT_360_RANGE (h->wesn[XHI], h->wesn[XLO]) && h->registration == GMT_GRID_NODE_REG)
 
 #endif /* _GMT_GRID_H */

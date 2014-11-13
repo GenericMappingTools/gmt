@@ -25,6 +25,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_private.h
+ * \brief Private parts of the GMTAPI_CTRL which we will not expose to the API users 
+ */
+
 #ifndef _GMTAPI_PRIVATE_H
 #define _GMTAPI_PRIVATE_H
 

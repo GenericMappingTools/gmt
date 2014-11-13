@@ -20,8 +20,12 @@
    Authors:	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
    Date:	1-OCT-2009
    Version:	5 API
-
 */
+
+/*!
+ * \file gmt_prototypes.h
+ * \brief All low-level GMT API function prototypes.
+ */
 
 #ifndef _GMT_PROTOTYPES_H
 #define _GMT_PROTOTYPES_H

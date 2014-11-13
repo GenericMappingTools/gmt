@@ -24,6 +24,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_dcw.h
+ * \brief Definitions for using the DCW 
+ */
+
 #ifndef _GMT_DCW_H
 #define _GMT_DCW_H
 

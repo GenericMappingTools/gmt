@@ -23,6 +23,12 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_crossing.h
+ * \brief Definition of the structure for map crossings.
+ * 
+ */
+
 #ifndef _GMT_CROSSING_H
 #define _GMT_CROSSING_H
 

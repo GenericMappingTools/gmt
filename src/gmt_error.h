@@ -24,6 +24,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_error.h
+ * \brief Include file for GMT error codes
+ */
+
 #ifndef GMT_ERROR_H
 #define GMT_ERROR_H
 

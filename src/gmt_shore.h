@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_shore.h
+ * \brief Include file for gmt_shore.c
+ */
+
 #ifndef _GMT_SHORE_H
 #define _GMT_SHORE_H
 

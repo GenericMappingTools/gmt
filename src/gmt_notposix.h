@@ -27,6 +27,11 @@
  * definitions otherwise.
  */
 
+/*!
+ * \file gmt_notposix.h
+ * \brief Contains ifdefs to tell us if this system has functions not in POSIX but part of ANSI C
+ */
+
 #ifndef _GMT_NOTPOSIX_H
 #define _GMT_NOTPOSIX_H
 

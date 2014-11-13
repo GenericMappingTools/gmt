@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_defaults.h
+ * \brief Definition of the structure with default settings.
+ */
+
 #ifndef _GMT_DEFAULTS_H
 #define _GMT_DEFAULTS_H
 
@@ -30,7 +35,8 @@
  *			GMT DEFAULTS STRUCTURE DEFINITION
  *--------------------------------------------------------------------*/
 
-struct ELLIPSOID {	/* Information about a particular ellipsoid */
+/*! Information about a particular ellipsoid */
+struct ELLIPSOID {
 	/* Table taken from Snyder "Map projection - a working manual", p 12 Table 1 */
 	char name[GMT_LEN64];
 	int date;
@@ -38,7 +44,8 @@ struct ELLIPSOID {	/* Information about a particular ellipsoid */
 	double flattening;
 };
 
-struct DATUM {	/* Information about a particular datum */
+/*! Information about a particular datum */
+struct DATUM {
 	char name[GMT_LEN64];	/* Datum name */
 	char ellipsoid[GMT_LEN64];	/* Ellipsoid GMT ID name */
 	char region[GMT_LEN256];	/* Region of use */
@@ -50,7 +57,8 @@ struct gmt_encoding {
 	int code[5]; /* Codes for symbols we print. */
 };
 
-struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default parameters */
+/*! Holds all variables directly controlled by GMT Default parameters */
+struct GMT_DEFAULTS {
 	/* COLOR group [sorted by type to optimize storage] */
 	unsigned int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
 									 * Add 128 to disallow output of color names */
@@ -95,30 +103,30 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	/* IO group */
 	unsigned int io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */
 	unsigned int io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
-	size_t io_nc4_chunksize[2]; /* NetCDF chunk size (lat,lon) on output [0] */
-	unsigned int io_nc4_deflation_level;	/* NetCDF deflation level on output [0] */
-	bool io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [false] */
-	bool io_header[2];			/* Input & Output data has header records [false, false] */
-	bool io_nan_records;			/* Determines what NaNs in input records should mean (beyond skipping the record) */
-	bool io_lonlat_toggle[2];		/* true means read/write I/O as lat/lon instead of lon/lat [false,false] */
-	bool io_blankline[2];		/* true means blank lines should be treated as segment breaks [false,false] */
-	bool io_nanline[2];			/* true means lines with all NaNs should be treated as segment breaks [false,false] */
-	char io_col_separator[8];		/* Separator between output ascii data columns [tab] */
-	char io_gridfile_format[GMT_LEN64];	/* Default grid file format */
-	char io_seg_marker[2];			/* Character used to recognize and write segment headers [>,>] */
+	size_t io_nc4_chunksize[2];         /* NetCDF chunk size (lat,lon) on output [0] */
+	unsigned int io_nc4_deflation_level;/* NetCDF deflation level on output [0] */
+	bool io_gridfile_shorthand;         /* Use shorthand suffix notation for embedded grid file formats [false] */
+	bool io_header[2];                  /* Input & Output data has header records [false, false] */
+	bool io_nan_records;                /* Determines what NaNs in input records should mean (beyond skipping the record) */
+	bool io_lonlat_toggle[2];           /* true means read/write I/O as lat/lon instead of lon/lat [false,false] */
+	bool io_blankline[2];               /* true means blank lines should be treated as segment breaks [false,false] */
+	bool io_nanline[2];                 /* true means lines with all NaNs should be treated as segment breaks [false,false] */
+	char io_col_separator[8];           /* Separator between output ascii data columns [tab] */
+	char io_gridfile_format[GMT_LEN64]; /* Default grid file format */
+	char io_seg_marker[2];              /* Character used to recognize and write segment headers [>,>] */
 	/* MAP group */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
-	double map_annot_min_spacing;		/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
+	double map_annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
 	double map_frame_width;			/* Thickness of fancy map frame [5p] */
-	double map_grid_cross_size[2];		/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
+	double map_grid_cross_size[2];	/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
 	double map_label_offset;		/* Distance between lowermost annotation and top of label [8p] */
 	double map_line_step;			/* Maximum straight linesegment length for arcuate lines [0.75p] */
 	double map_logo_pos[2];			/* Where to plot timestamp relative to origin [BL/-54p/-54p] */
 	double map_origin[2];			/* x- and y-origin of plot, i.e. where lower left corner plots on paper [1i/1i] */
 	double map_polar_cap[2];		/* Latitude of polar cap and delta_lon for gridline spacing [85/90] */
 	double map_scale_height;		/* Height of map scale drawn on a map [0.075] */
-	double map_tick_length[4];			/* Length of primary and secondary major and minor tickmarks [5p/2.5p/15p/3.75p] */
+	double map_tick_length[4];		/* Length of primary and secondary major and minor tickmarks [5p/2.5p/15p/3.75p] */
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
 	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [0] */

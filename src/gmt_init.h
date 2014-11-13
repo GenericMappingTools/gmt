@@ -16,11 +16,14 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Include file for gmt_init.c
- *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	5 API
+ */
+
+/*!
+ * \file gmt_init.h
+ * \brief Include file for gmt_init.c
  */
 
 #ifndef GMT_INIT_H

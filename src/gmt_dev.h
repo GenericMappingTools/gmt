@@ -26,6 +26,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_dev.h
+ * \brief Main include file for the main development of gmt.
+ */
+
 /* Note on data type:  GMT will generally use double precision for
  * all floating point values except for grids which are held in single
  * precision floats.  All integer values are standard int (presumably

@@ -24,6 +24,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_grdio.h
+ * \brief Include file for grd i/o
+ */
+
 #ifndef GMT_GRDIO_H
 #define GMT_GRDIO_H
 
@@ -50,7 +55,7 @@ enum GMT_enum_img {
 	GMT_IMG_ITEMSIZE   = 2U      /* Size of 2 byte short ints */
 };
 
-/* Special grid format IDs */
+/*! Special grid format IDs */
 
 enum Gmt_grid_id {
 	/* DO NOT change the order because id values have grown historically.
@@ -88,12 +93,14 @@ enum Gmt_grid_id {
 
 #include "gmt_customio.h"
 
-struct GMT_GRID_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<grdfile> */
+/*! Holds any -R -I -F settings passed indirectly via -R<grdfile> */
+struct GMT_GRID_INFO {
 	struct GMT_GRID_HEADER grd;	/* Header of grid file passed via -R */
 	bool active;		/* true if initialized via -R */
 };
 
-struct GMT_GRID_ROWBYROW {	/* Holds book-keeping information needed for row-by-row actions */
+/*! Holds book-keeping information needed for row-by-row actions */
+struct GMT_GRID_ROWBYROW {
 	size_t size;		/* Bytes per item [4 for float, 1 for byte, etc] */
 	size_t n_byte;		/* Number of bytes for row */
 	unsigned int row;	/* Current row */
@@ -115,9 +122,9 @@ struct GMT_GRID_ROWBYROW {	/* Holds book-keeping information needed for row-by-r
 #undef I /* because otherwise we are in trouble with, e.g., struct GMT_IMAGE *I */
 #endif
 
+/*! Routine that scales and offsets the data in a vector */
 static inline void scale_and_offset_f (float *data, size_t length, float scale, float offset) {
-	/* Routine that scales and offsets the data in a vector
-	 *  data:   Single-precision real input vector
+	/*  data:   Single-precision real input vector
 	 *  length: The number of elements to process
 	 * This function uses the vDSP portion of the Accelerate framework if possible */
 #ifndef __APPLE__

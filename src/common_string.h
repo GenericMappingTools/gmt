@@ -23,6 +23,11 @@
  * Version: 5
  */
 
+/*!
+ * \file common_string.h
+ * \brief Prototypes of functions shared between GMT and PSL
+ */
+
 #pragma once
 #ifndef _COMMON_STRING_H
 #define _COMMON_STRING_H

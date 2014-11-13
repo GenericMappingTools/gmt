@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_colors.h
+ * \brief Miscellaneous definitions and structures related to color
+ */
+
 #ifndef _GMT_COLORS_H
 #define _GMT_COLORS_H
 

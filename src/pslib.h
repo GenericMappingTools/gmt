@@ -24,6 +24,11 @@
  * Date:	15-OCT-2009
  */
 
+/*!
+ * \file pslib.h
+ * \brief Include file that must be included by all programs using pslib 
+ */
+
 #ifndef _PSLIB_H
 #define _PSLIB_H
 

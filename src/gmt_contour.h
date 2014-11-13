@@ -24,16 +24,21 @@
    This include file defines structures and functions used.
 */
 
+/*!
+ * \file gmt_contour.h
+ * \brief Structures and variables needed for contour labels.
+ */
+
 #ifndef _GMT_CONTOUR_H
 #define _GMT_CONTOUR_H
 
-/* Various settings for contour label placements at crossing lines */
+/*! Various settings for contour label placements at crossing lines */
 enum GMT_enum_contline {
 	GMT_CONTOUR_NONE = 0,	/* No contour/line crossing  */
 	GMT_CONTOUR_XLINE,	/* Contour labels where crossing straight lines (via key points) */
 	GMT_CONTOUR_XCURVE};	/* Contour labels where crossing arbitrary lines (via file) */
 
-/* Various settings for quoted line/contour label types */
+/*! Various settings for quoted line/contour label types */
 enum GMT_enum_label {
 	GMT_LABEL_IS_NONE = 0,	/* No contour/line crossing  */
 	GMT_LABEL_IS_CONSTANT,	/* Label is constant, given by +l<label> */
@@ -45,7 +50,8 @@ enum GMT_enum_label {
 	GMT_LABEL_IS_SEG,	/* Label is computed from segment number, via +Ln */
 	GMT_LABEL_IS_FSEG};	/* Label is computed from file and segment number, via +LN */
 
-struct GMT_XOVER {		/* Structure with info on all track cross-over */
+/*! Structure with info on all track cross-over */
+struct GMT_XOVER {
 	double *x;		/* x or Longitude */
 	double *y;		/* y or Latitude */
 	double *xnode[2];	/* Decimal Node index at cross-over along track 1 and 2 */
