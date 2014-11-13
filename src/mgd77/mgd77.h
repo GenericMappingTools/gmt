@@ -16,6 +16,11 @@
  * 
  *-------------------------------------------------------------------------*/
 
+/*!
+ * \file mgd77.h
+ * \brief Include file for programs that plan to read/write MGD77[+] files.
+ */
+
 #ifndef _MGD77_H
 #define _MGD77_H
 

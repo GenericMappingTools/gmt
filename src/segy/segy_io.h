@@ -7,6 +7,11 @@
  * http://www.passcal.nmt.edu/
  ******************************************************************/
 
+/*!
+ * \file segy_io.h
+ * \brief 
+ */
+
 #ifndef SEGY_IO_H
 #define SEGY_IO_H
 

@@ -16,6 +16,11 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/*!
+ * \file okbfuns.h
+ * \brief  
+ */
+
 #ifndef OKBFUNS_H
 #define OKBFUNS_H
 

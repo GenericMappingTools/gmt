@@ -31,6 +31,11 @@
  * 
  * ------------------------------------------------------------------*/
 
+/*!
+ * \file mgd77_rls_coeffs.h
+ * \brief  
+ */
+
 #define RLS_N_DEPTH         4490
 #define RLS_N_DEPTH_ROWS    39
 #define RLS_N_FAA           1614

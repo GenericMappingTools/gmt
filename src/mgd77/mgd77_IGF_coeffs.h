@@ -4,6 +4,11 @@
  *    Copyright (c) 2005-2014 by P. Wessel
  *    See README file for copying and redistribution conditions.
  */
+
+/*!
+ * \file mgd77_IGF_coeffs.h
+ * \brief  
+ */
  
 #define MGD77_IGF24_G0	978052.0
 #define MGD77_IGF30_G0	978049.0

@@ -63,6 +63,11 @@
  * These two structures are defined below, together with the scalefactor that converts micro-degrees to degrees.
  */
 
+/*!
+ * \file gshhg.h
+ * \brief Include file defining structures used in the binary GSHHG files.
+ */
+
 #ifndef _GSHHG
 #define _GSHHG
 

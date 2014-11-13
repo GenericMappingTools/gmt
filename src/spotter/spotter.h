@@ -23,6 +23,11 @@
  *
  */
 
+/*!
+ * \file spotter.h
+ * \brief Include file for programs that link with libspotter.
+ */
+
 #include "gmt_dev.h" /* Requires GMT to compile and link */
 
 #define SPOTTER_VERSION "1.2"
@@ -36,7 +41,8 @@
 #define GPLATES_PLATES "Global_EarthByte_GPlates_Rotation_20071218.txt"
 #define GPLATES_ROTATIONS "Global_EarthByte_GPlates_Rotation_20091015.rot"
 
-struct EULER {	/* Structure with info on each Euler (stage) pole */
+/*! Structure with info on each Euler (stage) pole */
+struct EULER {
 	double lon, lat;		/* Location of Euler pole in degrees */
 	double lon_r, lat_r;		/* Location of Euler pole in radians */
 	double t_start, t_stop;		/* Stage beginning and end time in Ma */
@@ -52,14 +58,16 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 	unsigned int id[2];		/* The ID numbers for GPlates pairs */
 };
 
-struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
+/*! Structure with the nearest nodes for a single flowline */
+struct FLOWLINE {
 	uint64_t n;		/* Number of points in this flowline */
 	uint64_t ij;		/* Node in bathymetry grid where this flowline originated */
 	uint64_t *node;		/* Nodes in CVA grid covered by this flowline */
 	unsigned short *PA;		/* Predicted Ages along flowline (t = PI/250, to nearest 0.004 My) */
 };
 
-struct HOTSPOT {	/* Structure holding all the information about a hotspot */
+/*! Structure holding all the information about a hotspot */
+struct HOTSPOT {
 	/* Record is lon lat abbrev id [radius toff t_on create fit plot name] */
         double lon, lat;		/* Current location of hot spot (degrees)*/
 	char abbrev[4];			/* Max 3-char abbreviation of hotspot name */

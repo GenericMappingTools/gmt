@@ -22,6 +22,11 @@
  *
  */
 
+/*!
+ * \file gmt_imgsubs.h
+ * \brief Header file supporting the GMT supplement img.
+ */
+
 #include "gmt_dev.h"
 
 /* The following values are used to initialize the default values
@@ -47,7 +52,6 @@ struct GMT_IMG_RANGE {
 	double	minlat;
 	double	maxlat;
 	double	mpixel;
-
 };
 
 /* The following structure contains info used to set up the 

@@ -7,6 +7,11 @@
  * See README file for copying and redistribution conditions.
  */
 
+/*!
+ * \file mgd77_functions.h
+ * \brief  
+ */
+
 #ifndef _MGD77_FUNCTIONS_H
 #define _MGD77_FUNCTIONS_H
 

@@ -63,6 +63,11 @@
   This information must be conveyed via the *.def files (-D)
 ------------------------------------------------------------------*/
 
+/*!
+ * \file x2sys.h
+ * \brief Declaration for the X2SYS and XOVER structures.
+ */
+
 #include "mgd77/mgd77.h"
 #include "gmt_dev.h"
 

@@ -19,6 +19,11 @@
  *	1-JUL-2014.  For use with GSHHG version 2.3.1
  */
 
+/*!
+ * \file gmt_gshhg.h
+ * \brief Include file defining macros, functions and structures used in gshhg.c 
+ */
+
 #ifndef _GMT_GSHHG
 #define _GMT_GSHHG
 #include "gmt_config.h"
@@ -44,8 +49,8 @@
 
 #define GSHHG_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
 
-/* byteswap all members of GSHHG struct */
 #define GSHHG_STRUCT_N_MEMBERS 11
+/*! byteswap all members of GSHHG struct */
 static inline void bswap_GSHHG_struct (struct GSHHG_HEADER *h) {
 	uint32_t unsigned32[GSHHG_STRUCT_N_MEMBERS];
 	uint32_t n;
@@ -59,7 +64,7 @@ static inline void bswap_GSHHG_struct (struct GSHHG_HEADER *h) {
 	memcpy (h, &unsigned32, sizeof(struct GSHHG_HEADER));
 }
 
-/* byteswap members of GSHHG_POINT struct */
+/*! byteswap members of GSHHG_POINT struct */
 static inline void bswap_POINT_struct (struct GSHHG_POINT *p) {
 	uint32_t unsigned32;
 	memcpy (&unsigned32, &p->x, sizeof(uint32_t));

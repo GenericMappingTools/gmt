@@ -8,6 +8,11 @@
  * Edit F. Wobbe: use unsigned types for values that are known to be positive
  */
 
+/*!
+ * \file segyreel.h
+ * \brief 
+ */
+
 #pragma once
 #ifndef SEGYREEL_H
 #define SEGYREEL_H

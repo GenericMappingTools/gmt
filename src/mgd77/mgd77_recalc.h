@@ -14,6 +14,11 @@
  * been turned OFF [Default is ON].
  */
 
+/*!
+ * \file mgd77_recalc.h
+ * \brief  
+ */
+
 #define N_E77_CORR_FIELDS	5
 /* The array indices 0-3 for these 4 fields */
 #define E77_CORR_FIELD_TWT	(MGD77_COL_ADJ_TWT-1)

@@ -19,6 +19,11 @@
  * 
  *-------------------------------------------------------------------------*/
 
+/*!
+ * \file mgd77_init.h
+ * \brief Include file for mgd77.c
+ */
+
 bool MGD77_format_allowed[MGD77_N_FORMATS] = {true, true, true, true};	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
 
 char *MGD77_suffix[MGD77_N_FORMATS] = {"mgd77", "nc", "dat", "m77t"};

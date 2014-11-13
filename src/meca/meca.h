@@ -4,6 +4,11 @@
  *    See README file for copying and redistribution conditions.
  */
 
+/*!
+ * \file meca.h
+ * \brief  
+ */
+
 #include <stdio.h>
 #include <math.h>
 
