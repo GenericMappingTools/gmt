@@ -93,6 +93,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int history;     /* mode to pass information via history file gmt.history (k_history_off, k_history_read, k_history_write) */
 	double extrapolate_val[2];/* Choose between [0] = 0, 1D extrapolated vals are NaN, = 1 -> extrapolate, = 2 -> set to const stored in [1] */
 	/* IO group */
+	uint64_t n_bin_header_cols;		/* Minimum number of columns in a binary file for which the all cols == NaN means segment header [2] */
 	unsigned int io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */
 	unsigned int io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
 	size_t io_nc4_chunksize[2]; /* NetCDF chunk size (lat,lon) on output [0] */

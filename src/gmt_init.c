@@ -8840,8 +8840,14 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 			decode_error = (n != 3);
-			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
-			if ((len = (int)strlen (txt_b)) && txt_b[len-1] == 'u') p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
+			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') {
+				p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
+				txt_a[len-1] = '\0';	/* Chop off the 'u' */
+			}
+			if ((len = (int)strlen (txt_b)) && txt_b[len-1] == 'u') {
+				p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
+				txt_b[len-1] = '\0';	/* Chop off the 'u' */
+			}
 			if (p->user_unit[GMT_X]) {
 				if (gmt_get_uservalue (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return EXIT_FAILURE;
 				p->size_x = p->given_size_x;
@@ -8857,7 +8863,10 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 		else {	/* Only a single x = y size */
 			n = sscanf (text_cp, "%c%s", &symbol_type, txt_a);
-			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = p->user_unit[GMT_Y] = true;	/* Specified xwidth [=ywidth] in user units */
+			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') {
+				p->user_unit[GMT_X] = p->user_unit[GMT_Y] = true;	/* Specified xwidth [=ywidth] in user units */
+				txt_a[len-1] = '\0';	/* Chop off the 'u' */
+			}
 			if (n == 2) {	/* Gave size */
 				if (p->user_unit[GMT_X]) {
 					if (gmt_get_uservalue (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return EXIT_FAILURE;
@@ -10186,7 +10195,8 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 	/* 1. We read a multisegment header
 	   2. The -g option is set which will create gaps and thus multiple segments
 	 */
-
+	GMT->current.setting.n_bin_header_cols = 2;	/* This will change in 5.2 */
+		
 	/* Initialize the output and plot format machinery for ddd:mm:ss[.xxx] strings from the default format strings.
 	 * While this is also done in the default parameter loop it is possible that when a decimal plain format has been selected
 	 * the format_float_out string has not yet been processed.  We clear that up by processing again here. */
