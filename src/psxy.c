@@ -778,6 +778,10 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want no fill so override -G*/
 		if (S.v.status & GMT_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
 	}
+	bcol = (S.read_size) ? ex2 : ex1;
+	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_X];
+	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	
 	if (penset_OK) GMT_setpen (GMT, &current_pen);
 
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */

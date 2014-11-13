@@ -126,6 +126,16 @@ enum history_mode {
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
+int gmt_get_uservalue (struct GMT_CTRL *GMT, char *txt, int type, double *value, char *err_msg)
+{	/* Use to get a single data value of given type and exit if error, and return EXIT_FAILURE */
+	int kind;
+	if ((kind = GMT_scanf (GMT, txt, type, value)) == GMT_IS_NAN) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %s: %s\n", err_msg, txt);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+	}
+	return 0;
+}
+
 /*!
 	\brief Print to stderr a short explanation for each of the options listed by the variable <options>
 	\param GMT ...
@@ -8358,7 +8368,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 				if (n == n_slashes + 1) {
 					GMT->current.proj.pars[3] = GMT_to_inch (GMT, txt_d);
-					c = atof (txt_e);
+					if (gmt_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
 					if (c <= -90.0 || c >= 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
@@ -8384,7 +8394,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 					n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &GMT->current.proj.pars[3]);
 				else if (n_slashes == 3) {	/* with true scale at specified latitude */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_e, &GMT->current.proj.pars[3]);
-					c = atof (txt_e);
+					if (gmt_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
 					if (c <= -90.0 || c >= 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
@@ -8395,7 +8405,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 				}
 				else if (n_slashes == 4) {
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_e, &GMT->current.proj.pars[3]);
-					c = atof (txt_e);
+					if (gmt_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
 					if (c <= -90.0 || c >= 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
@@ -8420,7 +8430,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 				if (n == n_slashes + 1) {
 					GMT->current.proj.pars[3] = GMT_to_inch (GMT, txt_d);
-					c = atof (txt_e);
+					if (gmt_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
 					if (c <= -90.0 || c >= 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
@@ -8497,7 +8507,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			} else {
 				GMT->current.proj.pars[2] = GMT_to_inch (GMT, &(txt_arr[n-2][0]));
 				/*            GMT->current.proj.pars[3] = GMT_ddmmss_to_degree(txt_i); */
-				c = atof (&(txt_arr[n-1][0]));
+				if (gmt_get_uservalue (GMT, &(txt_arr[n-1][0]), GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
 				if (c <= -90.0 || c >= 90.0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 					error++;
@@ -9128,23 +9138,38 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 			decode_error = (n != 3);
-			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
-			if ((len = (int)strlen (txt_b)) && txt_b[len-1] == 'u') p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
-			if (p->user_unit[GMT_X])
-				p->size_x = p->given_size_x = atof (txt_a);
+			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') {
+				p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
+				txt_a[len-1] = '\0';	/* Chop off the 'u' */
+			}
+			if ((len = (int)strlen (txt_b)) && txt_b[len-1] == 'u') {
+				p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
+				txt_b[len-1] = '\0';	/* Chop off the 'u' */
+			}
+			if (p->user_unit[GMT_X]) {
+				if (gmt_get_uservalue (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return EXIT_FAILURE;
+				p->size_x = p->given_size_x;
+			}
 			else
 				p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
-			if (p->user_unit[GMT_Y])
-				p->size_y = p->given_size_y = atof (txt_b);
+			if (p->user_unit[GMT_Y]) {
+				if (gmt_get_uservalue (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &p->given_size_y, "-Sb|B|o|O|u|u y-size value")) return EXIT_FAILURE;
+				p->size_y = p->given_size_y;
+			}
 			else
 				p->size_y = p->given_size_y = GMT_to_inch (GMT, txt_b);
 		}
 		else {	/* Only a single x = y size */
 			n = sscanf (text_cp, "%c%s", &symbol_type, txt_a);
-			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = p->user_unit[GMT_Y] = true;	/* Specified xwidth [=ywidth] in user units */
+			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') {
+				p->user_unit[GMT_X] = p->user_unit[GMT_Y] = true;	/* Specified xwidth [=ywidth] in user units */
+				txt_a[len-1] = '\0';	/* Chop off the 'u' */
+			}
 			if (n == 2) {	/* Gave size */
-				if (p->user_unit[GMT_X])
-					p->size_x = p->size_y = p->given_size_x = p->given_size_y = atof (txt_a);
+				if (p->user_unit[GMT_X]) {
+					if (gmt_get_uservalue (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return EXIT_FAILURE;
+					p->size_x = p->size_y = p->given_size_y = p->given_size_x;
+				}
 				else
 					p->size_x = p->size_y = p->given_size_x = p->given_size_y = GMT_to_inch (GMT, txt_a);
 			}
@@ -9193,7 +9218,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
-					p->base = atof (&text[bset+1]);
+					if (gmt_get_uservalue (GMT, &text[bset+1], GMT->current.io.col_type[GMT_IN][GMT_X], &p->base, "-SB base value")) return EXIT_FAILURE;
 					p->base_set = 1;
 				}
 			}
@@ -9206,7 +9231,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 			}
 			else {
-				p->base = atof (&text[bset+1]);
+				if (gmt_get_uservalue (GMT, &text[bset+1], GMT->current.io.col_type[GMT_IN][GMT_Y], &p->base, "-Sb base value")) return EXIT_FAILURE;
 				p->base_set = 1;
 			}
 			break;
@@ -9399,7 +9424,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
-					p->base = atof (&text[bset+1]);
+					if (gmt_get_uservalue (GMT, &text[bset+1], GMT->current.io.col_type[GMT_IN][GMT_Z], &p->base, "-So|O base value")) return EXIT_FAILURE;
 					p->base_set = 1;
 				}
 			}
@@ -9910,7 +9935,9 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'Z':	/* GMT4 Backwards compatibility */
 			if (GMT_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -Z[<zlevel>] is deprecated. Use -p<azim>/<elev>[/<zlevel>] instead.\n" GMT_COMPAT_INFO);
-				if (item && item[0]) GMT->current.proj.z_level = atof (item);
+				if (item && item[0]) {
+					if (gmt_get_uservalue (GMT, item, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.proj.z_level, "-Z zlevel value")) return 1;
+				}
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -%c is not a recognized common option\n", option);
@@ -10504,7 +10531,8 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 	/* 1. We read a multisegment header
 	   2. The -g option is set which will create gaps and thus multiple segments
 	 */
-
+	GMT->current.setting.n_bin_header_cols = 2;	/* This will change in 5.2 */
+		
 	/* Initialize the output and plot format machinery for ddd:mm:ss[.xxx] strings from the default format strings.
 	 * While this is also done in the default parameter loop it is possible that when a decimal plain format has been selected
 	 * the format_float_out string has not yet been processed.  We clear that up by processing again here. */

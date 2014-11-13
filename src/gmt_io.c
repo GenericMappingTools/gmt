@@ -304,7 +304,7 @@ int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		n_NaN++;
 	}
 	if (!GMT->current.io.status) {	/* Must have n_read NaNs to qualify as segment header */
-		if (n_NaN == n_read) {
+		if (n_read >= GMT->current.setting.n_bin_header_cols && n_NaN == n_read) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected binary segment header near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
 			GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
 			GMT->current.io.segment_header[0] = '\0';
