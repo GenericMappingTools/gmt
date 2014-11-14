@@ -555,6 +555,15 @@ fonts can be found in the :doc:`gmt` man page.
     at the cost of extra processing time. This parameter does not
     apply to classic netCDF files. [3]
 
+.. _IO_SEGMENT_BINARY:
+
+**IO_SEGMENT_BINARY**
+    Determines how binary data records with all values set to NaN are
+    interpreted.  Such records are considered to be encoded segment
+    headers in binary files provided the number of columns equals or
+    exceeds the current setting of IO_SEGMENT_BINARY [2].  Specify 0
+    or "off" to deactivate the segment header determination.
+
 .. _IO_SEGMENT_MARKER:
 
 **IO_SEGMENT_MARKER**

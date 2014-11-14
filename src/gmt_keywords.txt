@@ -75,6 +75,7 @@ IO_NAN_RECORDS			# How NaNs in input should be interpreted
 IO_NC4_CHUNK_SIZE	# Chunk size (lat,lon) of netCDF output
 IO_NC4_DEFLATION_LEVEL	# Deflate level for netCDF output
 IO_LONLAT_TOGGLE		# Expect lat-lon instead of lon-lat
+IO_SEGMENT_BINARY		# Determines how binary records with NaNs are interpreted
 IO_SEGMENT_MARKER		# 1st char in segment headers for input and output
 #-------------------------------------------------------
 # MAP Group:	Map construction settings

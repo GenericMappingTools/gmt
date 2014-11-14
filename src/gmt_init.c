@@ -4456,6 +4456,20 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				error = true;
 			break;
 
+		case GMTCASE_IO_SEGMENT_BINARY:
+			if (!strcmp (lower_value, "off"))
+				GMT->current.setting.n_bin_header_cols = 0;	/* 0 means do not consider nans to mean segment header */
+			else {	/* Read the minimum columns a binary record must have to be examined for segment headers */
+				ival = atoi (value);
+				if (ival < 0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding IO_SEGMENT_BINARY: Cannot be negative.\n");
+					error = true;
+				}
+				else
+					GMT->current.setting.n_bin_header_cols = (uint64_t)ival;	/* Only do it for files with at least this many cols */
+			}
+			break;
+
 		case GMTCASE_IO_SEGMENT_MARKER:
 			if (len == 0)	/* Blank gives default */
 				GMT->current.setting.io_seg_marker[GMT_OUT] = GMT->current.setting.io_seg_marker[GMT_IN] = '>';
@@ -5542,6 +5556,13 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				strcpy (value, "out");
 			break;
 
+		case GMTCASE_IO_SEGMENT_BINARY:
+			if (GMT->current.setting.n_bin_header_cols == 0)
+				strcpy (value, "off");
+			else
+				sprintf (value, "%" PRIu64, GMT->current.setting.n_bin_header_cols);
+			break;
+			
 		case GMTCASE_IO_SEGMENT_MARKER:
 			value[0] = '\0';
 			if (GMT->current.setting.io_seg_marker[GMT_OUT] != GMT->current.setting.io_seg_marker[GMT_IN]) {
@@ -10607,7 +10628,6 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 	/* 1. We read a multisegment header
 	   2. The -g option is set which will create gaps and thus multiple segments
 	 */
-	GMT->current.setting.n_bin_header_cols = 2;	/* This will change in 5.2 */
 		
 	/* Initialize the output and plot format machinery for ddd:mm:ss[.xxx] strings from the default format strings.
 	 * While this is also done in the default parameter loop it is possible that when a decimal plain format has been selected
