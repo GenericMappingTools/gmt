@@ -15,7 +15,7 @@ Synopsis
 
 **gmtconvert** [ *table* ] [ **-A** ] [ **-D**\ [*template*] ]
 [ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
-[ **-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ [**~**\ ]*selection* ]
+[ **-I**\ [**tsr**\ ] ] [ **-Q**\ [**~**\ ]*selection* ]
 [ **-S**\ [**~**\ ]\ *"search string"* \|
 **-S**\ [**~**\ ]/\ *regexp*/[**i**\ ] ]
 [ **-T** ]
@@ -93,9 +93,6 @@ Optional Arguments
 **-L**
     Only output a listing of all segment header records and no data
     records (requires ASCII data).
-
-**-N**
-    Do not write records that only contain NaNs in every field [Default writes all records].
 
 **-Q**\ [**~**\ ]*selection*
     Only write segments whose number is included in *selection* and skip
