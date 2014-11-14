@@ -3023,8 +3023,7 @@ bool gmt_map_init_cyleq (struct GMT_CTRL *GMT) {
 /*!
  *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUIDISTANT PROJECTION (GMT_CYL_EQDIST)
  */
-bool gmt_map_init_cyleqdist (struct GMT_CTRL *GMT) {
-bool gmt_map_init_cyleqdist (struct GMT_CTRL *GMT) {
+
 bool gmt_map_init_cyleqdist (struct GMT_CTRL *GMT) {
 	double xmin, xmax, ymin, ymax;
 
