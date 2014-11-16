@@ -1522,7 +1522,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	 */
 
 	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL;
-	int dy, font, sub, super, small, old_font, last_chr, kase = PSL_LC;
+	int dy, font, sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, last_chr, kase = PSL_LC;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep;
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
@@ -1564,7 +1564,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	ustep[PSL_LC] = PSL->current.sup_up[PSL_LC] * size;	/* Super-script baseline raised by given fraction of font size for lower case*/
 	ustep[PSL_UC] = PSL->current.sup_up[PSL_UC] * size;	/* Super-script baseline raised by given fraction of font size for upper case */
 	dstep = PSL->current.sub_down * size;		/* Sub-script baseline lowered by given fraction of font size */
-	sub = super = small = false;
+	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
 
 	tempstring = PSL_memory (PSL, NULL, strlen(string)+1, char);	/* Since strtok steps on it */
 	strcpy (tempstring, string);
@@ -1588,11 +1588,13 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '~') {	/* Symbol font toggle */
+			symbol_on = !symbol_on;
 			font = (font == PSL_SYMBOL_FONT) ? old_font : PSL_SYMBOL_FONT;
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '%') {	/* Switch font option */
+			font_on = !font_on;
 			ptr++;
 			if (ptr[0] == '%')
 				font = old_font;
@@ -1605,28 +1607,29 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '-') {	/* Subscript toggle  */
-			sub = !sub;
-			size = (sub) ? small_size : fontsize;
-			dy = (sub) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
+			sub_on = !sub_on;
+			size = (sub_on) ? small_size : fontsize;
+			dy = (sub_on) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
 			PSL_command (PSL, "0 %d G ", dy);
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '+') {	/* Superscript toggle */
-			super = !super;
-			size = (super) ? small_size : fontsize;
-			dy = (super) ? psl_ip (PSL, ustep[kase]) : -psl_ip (PSL, ustep[kase]);
+			super_on = !super_on;
+			size = (super_on) ? small_size : fontsize;
+			dy = (super_on) ? psl_ip (PSL, ustep[kase]) : -psl_ip (PSL, ustep[kase]);
 			PSL_command (PSL, "0 %d G ", dy);
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '#') {	/* Small caps toggle */
-			small = !small;
-			size = (small) ? scap_size : fontsize;
+			scaps_on = !scaps_on;
+			size = (scaps_on) ? scap_size : fontsize;
 			ptr++;
-			(small) ? psl_get_uppercase (piece, ptr) : (void) strncpy (piece, ptr, 2 * PSL_BUFSIZ);
+			(scaps_on) ? psl_get_uppercase (piece, ptr) : (void) strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == ':') {	/* Font size change */
+			size_on = !size_on;
 			ptr++;
 			if (ptr[0] == ':')
 				size = fontsize = orig_size;
@@ -1640,12 +1643,14 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == ';') {	/* Color change */
+			color_on = !color_on;
 			ptr++;
 			while (*ptr != ';') ptr++;
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '_') {	/* Small caps toggle */
+			under_on = !under_on;
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
@@ -1654,7 +1659,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 		if (strlen (piece) > 0) {
 			PSL_command (PSL, "%d F%d (%s) FP ", psl_ip (PSL, size), font, piece);
 			last_chr = ptr[strlen(piece)-1];
-			if (!super) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
+			if (!super_on) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
 			//fprintf (stderr, "text = %s kase = %d\n", piece, kase);
 		}
 		ptr = strtok_r (NULL, "@", &plast);
@@ -1677,7 +1682,16 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	PSL_free (piece);
 	PSL_free (piece2);
 	PSL_free (string);
-	return (PSL_NO_ERROR);
+
+	if (sub_on) PSL_message (PSL, PSL_MSG_FATAL, "Sub-scripting not terminated [%s]\n", text);
+	if (super_on) PSL_message (PSL, PSL_MSG_FATAL, "Super-scripting not terminated [%s]\n", text);
+	if (scaps_on) PSL_message (PSL, PSL_MSG_FATAL, "Small-caps not terminated [%s]\n", text);
+	if (symbol_on) PSL_message (PSL, PSL_MSG_FATAL, "Symbol font change not terminated [%s]\n", text);
+	if (size_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-size change not terminated [%s]\n", text);
+	if (color_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-color change not terminated [%s]\n", text);
+	if (under_on) PSL_message (PSL, PSL_MSG_FATAL, "Text underline not terminated [%s]\n", text);
+		
+	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
 
 int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *text, double angle, int justify, int pmode)
@@ -1714,7 +1728,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	char *plast = NULL;
 	const char *justcmd[12] = {"", "", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap, mode = (pmode > 0);
-	int sub, super, small, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
+	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4];
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
@@ -1800,7 +1814,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	}
 
 	font = old_font = PSL->current.font_no;
-	sub = super = small = false;
+	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
 	size = orig_size = fontsize;
 	small_size = size * PSL->current.subsupsize;
 	scap_size = size * PSL->current.scapssize;
@@ -1838,11 +1852,13 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '~') {	/* Symbol font */
+			symbol_on = !symbol_on;
 			font = (font == PSL_SYMBOL_FONT) ? old_font : PSL_SYMBOL_FONT;
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '%') {	/* Switch font option */
+			font_on = !font_on;
 			ptr++;
 			if (*ptr == '%')
 				font = old_font;
@@ -1856,28 +1872,29 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '-') {	/* Subscript */
-			sub = !sub;
-			size = (sub) ? small_size : fontsize;
-			dy = (sub) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
+			sub_on = !sub_on;
+			size = (sub_on) ? small_size : fontsize;
+			dy = (sub_on) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
 			PSL_command (PSL, "0 %d G ", dy);
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '+') {	/* Superscript */
-			super = !super;
-			size = (super) ? small_size : fontsize;
-			dy = (super) ? psl_ip (PSL, ustep[kase]) : -psl_ip (PSL, ustep[kase]);
+			super_on = !super_on;
+			size = (super_on) ? small_size : fontsize;
+			dy = (super_on) ? psl_ip (PSL, ustep[kase]) : -psl_ip (PSL, ustep[kase]);
 			PSL_command (PSL, "0 %d G ", dy);
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '#') {	/* Small caps */
-			small = !small;
-			size = (small) ? scap_size : fontsize;
+			scaps_on = !scaps_on;
+			size = (scaps_on) ? scap_size : fontsize;
 			ptr++;
-			(small) ? psl_get_uppercase (piece, ptr) : (void) strncpy (piece, ptr, 2 * PSL_BUFSIZ);
+			(scaps_on) ? psl_get_uppercase (piece, ptr) : (void) strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == ':') {	/* Font size change */
+			size_on = !size_on;
 			ptr++;
 			if (ptr[0] == ':')	/* Reset size */
 				size = fontsize = orig_size;
@@ -1897,6 +1914,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		else if (ptr[0] == ';') {	/* Font color change. r/g/b in 0-255 */
 			int n_scan, k, error = false;
 			double rgb[4];
+			color_on = !color_on;
 			ptr++;
 			if (ptr[0] == ';') {	/* Reset color to previous value */
 				PSL_command (PSL, "%s ", psl_putcolor (PSL, last_rgb));
@@ -1943,6 +1961,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '_') {	/* Toggle underline */
+			under_on = !under_on;
 			n_uline++;
 			if (n_uline%2)
 				start_uline = true;
@@ -1959,7 +1978,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		if (strlen (piece) > 0) {
 			PSL_command (PSL, "%d F%d (%s) %s\n", psl_ip (PSL, size), font, piece, op[mode]);
 			last_chr = ptr[strlen(piece)-1];
-			if (!super) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
+			if (!super_on) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
 		}
 		ptr = strtok_r (NULL, "@", &plast);
 	}
@@ -1971,7 +1990,16 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	PSL_free (piece);
 	PSL_free (piece2);
 	PSL_free (string);
-	return (PSL_NO_ERROR);
+	
+	if (sub_on) PSL_message (PSL, PSL_MSG_FATAL, "Sub-scripting not terminated [%s]\n", text);
+	if (super_on) PSL_message (PSL, PSL_MSG_FATAL, "Super-scripting not terminated [%s]\n", text);
+	if (scaps_on) PSL_message (PSL, PSL_MSG_FATAL, "Small-caps not terminated [%s]\n", text);
+	if (symbol_on) PSL_message (PSL, PSL_MSG_FATAL, "Symbol font change not terminated [%s]\n", text);
+	if (size_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-size change not terminated [%s]\n", text);
+	if (color_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-color change not terminated [%s]\n", text);
+	if (under_on) PSL_message (PSL, PSL_MSG_FATAL, "Text underline not terminated [%s]\n", text);
+		
+	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
 
 void psl_remove_spaces (char *label[], int n_labels, int m[])
@@ -2339,14 +2367,14 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	unsigned int i, i1, i0, j, k, n_items, n_font_unique, n_rgb_unique;
 	size_t n_alloc, n_words = 0;
 	double old_size, last_rgb[4], rgb[4];
-	int sub, super, small, plain_word = false, under, escape;
+	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, plain_word = false, escape;
 	char *c = NULL, *clean = NULL, test_char, **text = NULL, *lastp = NULL, *copy = NULL;
 	const char *sep = " ";
 	struct PSL_WORD **word = NULL, **rgb_unique = NULL;
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
 
-	sub = super = small = under = false;
+	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
 
 	/* Break input string into words (sorta based on old pstext) */
 	n_alloc = PSL_CHUNK;
@@ -2392,7 +2420,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 			i0 = 0;
 			i1 = (int) (c - clean);
 
-			if (i1 > i0) word[k++] = psl_add_word_part (PSL, &clean[i0], i1 - i0, font, fontsize, sub, super, small, under, PSL_NO_SPACE, rgb);
+			if (i1 > i0) word[k++] = psl_add_word_part (PSL, &clean[i0], i1 - i0, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_NO_SPACE, rgb);
 			if (k == n_alloc) {
 				n_alloc <<= 1;
 				word = PSL_memory (PSL, word, n_alloc, struct PSL_WORD *);
@@ -2411,11 +2439,11 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 					case '!':	/* 2 Composite characters */
 						i1++;
 						if (clean[i1] == '\\') { /* First char is Octal code character */
-							word[k++] = psl_add_word_part (PSL, &clean[i1], 4, font, fontsize, sub, super, small, under, PSL_COMPOSITE_1, rgb);
+							word[k++] = psl_add_word_part (PSL, &clean[i1], 4, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_COMPOSITE_1, rgb);
 							i1 += 4;
 						}
 						else {	/* Regular character */
-							word[k++] = psl_add_word_part (PSL, &clean[i1], 1, font, fontsize, sub, super, small, under, PSL_COMPOSITE_1, rgb);
+							word[k++] = psl_add_word_part (PSL, &clean[i1], 1, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_COMPOSITE_1, rgb);
 							i1++;
 						}
 						if (k == n_alloc) {
@@ -2423,11 +2451,11 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 							word = PSL_memory (PSL, word, n_alloc, struct PSL_WORD *);
 						}
 						if (clean[i1] == '\\') { /* 2nd char is Octal code character */
-							word[k] = psl_add_word_part (PSL, &clean[i1], 4, font, fontsize, sub, super, small, under, PSL_COMPOSITE_2, rgb);
+							word[k] = psl_add_word_part (PSL, &clean[i1], 4, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_COMPOSITE_2, rgb);
 							i1 += 4;
 						}
 						else {	/* Regular character */
-							word[k] = psl_add_word_part (PSL, &clean[i1], 1, font, fontsize, sub, super, small, under, PSL_COMPOSITE_2, rgb);
+							word[k] = psl_add_word_part (PSL, &clean[i1], 1, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_COMPOSITE_2, rgb);
 							i1++;
 						}
 						if (!clean[i1]) word[k]->flag++;	/* New word after this composite */
@@ -2439,12 +2467,14 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 						break;
 
 					case '~':	/* Toggle symbol font */
-						font = (font == PSL_SYMBOL_FONT) ? old_font : PSL_SYMBOL_FONT;
 						i1++;
+						symbol_on = !symbol_on;
+						font = (font == PSL_SYMBOL_FONT) ? old_font : PSL_SYMBOL_FONT;
 						break;
 
 					case '%':	/* Switch font option */
 						i1++;
+						font_on = !font_on;
 						if (clean[i1] == '%') {
 							font = old_font;
 							i1++;
@@ -2459,26 +2489,27 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 
 					case '_':	/* Toggle Underline */
 						i1++;
-						under = !under;
+						under_on = !under_on;
 						break;
 
 					case '-':	/* Toggle Subscript */
 						i1++;
-						sub = !sub;
+						sub_on = !sub_on;
 						break;
 
 					case '+':	/* Toggle Subscript */
 						i1++;
-						super = !super;
+						super_on = !super_on;
 						break;
 
 					case '#':	/* Toggle Small caps */
 						i1++;
-						small = !small;
+						scaps_on = !scaps_on;
 						break;
 
 					case ':':	/* Change font size */
 						i1++;
+						size_on = !size_on;
 						if (clean[i1] == ':') {
 							fontsize = old_size;
 							i1++;
@@ -2492,6 +2523,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 
 					case ';':	/* Change font color */
 						i1++;
+						color_on = !color_on;
 						if (clean[i1] == ';') {
 							PSL_rgb_copy (rgb, last_rgb);
 							i1++;
@@ -2527,7 +2559,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 						while (clean[j] && clean[j] != '@') j++;
 						after = (clean[j]) ? PSL_NO_SPACE : 1;
 						plain_word = true;
-						word[k++] = psl_add_word_part (PSL, &clean[i1], j-i1, font, fontsize, sub, super, small, under, after, rgb);
+						word[k++] = psl_add_word_part (PSL, &clean[i1], j-i1, font, fontsize, sub_on, super_on, scaps_on, under_on, after, rgb);
 						if (k == n_alloc) {
 							n_alloc <<= 1;
 							word = PSL_memory (PSL, word, n_alloc, struct PSL_WORD *);
@@ -2546,7 +2578,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 			}
 		}
 		else {	/* Plain word, no worries */
-			word[k++] = psl_add_word_part (PSL, clean, 0, font, fontsize, sub, super, small, under, PSL_ONE_SPACE, rgb);
+			word[k++] = psl_add_word_part (PSL, clean, 0, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_ONE_SPACE, rgb);
 			if (k == n_alloc) {
 				n_alloc <<= 1;
 				word = PSL_memory (PSL, word, n_alloc, struct PSL_WORD *);
@@ -2557,6 +2589,15 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 		free (text[i]);	/* since strdup created it */
 
 	} /* End of word loop */
+	
+	if (sub_on) PSL_message (PSL, PSL_MSG_FATAL, "Sub-scripting not terminated [%s]\n", paragraph);
+	if (super_on) PSL_message (PSL, PSL_MSG_FATAL, "Super-scripting not terminated [%s]\n", paragraph);
+	if (scaps_on) PSL_message (PSL, PSL_MSG_FATAL, "Small-caps not terminated [%s]\n", paragraph);
+	if (symbol_on) PSL_message (PSL, PSL_MSG_FATAL, "Symbol font change not terminated [%s]\n", paragraph);
+	if (size_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-size change not terminated [%s]\n", paragraph);
+	if (color_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-color change not terminated [%s]\n", paragraph);
+	if (under_on) PSL_message (PSL, PSL_MSG_FATAL, "Text underline not terminated [%s]\n", paragraph);
+
 	PSL_free (text);	/* Reclaim this memory */
 	n_alloc_txt = k;	/* Number of items in word array that might have text allocations */
 	k--;			/* Index of last word */
@@ -2688,7 +2729,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 
 	psl_freewords (word, n_alloc_txt);
 	PSL_free (word);
-	return (PSL_NO_ERROR);
+	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
 
 int PSL_defunits (struct PSL_CTRL *PSL, const char *param, double value)
