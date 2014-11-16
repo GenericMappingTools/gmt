@@ -763,7 +763,7 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 		GMT_message (GMT, "%s   N Use current file number / segment number (starting at 0/0).\n", pad);
 		GMT_message (GMT, "%s   x Like h, but use headers in file with crossing lines instead.\n", pad);
 	}
-	GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis).\n", pad);
+	GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.\n", pad);
 	GMT_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
 	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox [Default is no outline].\n", pad);
 	GMT_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);

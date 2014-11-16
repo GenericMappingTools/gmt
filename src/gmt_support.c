@@ -3629,7 +3629,10 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 		}
 	}
-
+	if (G->curved_text && G->nudge_flag) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot combine +v and +n\n");
+		bad++;
+	}
 	return (bad);
 }
 

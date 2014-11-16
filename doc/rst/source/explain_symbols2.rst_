@@ -263,7 +263,7 @@
                 **c**\ \|\ **i**\ \|\ **p** to specify the units). Increments
                 are considered in the coordinate system defined by the
                 orientation of the line; use **+N** to force increments in the
-                plot x/y coordinates system [no nudging].
+                plot x/y coordinates system [no nudging]. Not allowed with **+v**.
 
             **+o**
                 Selects rounded rectangular text box [Default is rectangular].
