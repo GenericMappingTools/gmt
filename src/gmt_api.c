@@ -2506,7 +2506,9 @@ struct GMT_GRID *GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, uns
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_GRID, object_ID, GMT_IN)) == GMT_NOTSET) return_null (API, API->error);
 
 	S_obj = API->object[item];		/* Current data object */
-	/*if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
+#if 0
+	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
+#endif
 	if (S_obj->status != GMT_IS_UNUSED && S_obj->method == GMT_IS_FILE && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this file before, so fail unless overridden by mode */
 	if ((mode & both_set) == both_set) mode -= both_set;	/* Allow users to have set GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY; reset to GMT_GRID_ALL */
 	row_by_row = ((mode & GMT_GRID_ROW_BY_ROW) || (mode & GMT_GRID_ROW_BY_ROW_MANUAL));
@@ -3570,7 +3572,7 @@ int GMT_Encode_ID_ (char *filename, int *object_ID, int len)
  * calling GMT_Put_Data (all in one go).  For record-by-record output the modules will use
  * GMT_Put_Record.  This keeps data i/o in the modules uniform and simple across GMT.
  */
- 
+
  /*! . */
 int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource) {
 	/* Adds a new data object to the list of registered objects and returns a unique object ID.

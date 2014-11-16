@@ -335,9 +335,9 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 
 int GMT_grd2cpt (void *V_API, int mode, void *args)
 {
-	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood, new_file;
+	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
 	unsigned int row, col, j, cpt_flags = 0;
-	int signed_levels, error = 0;
+	int signed_levels, error = 0, new_file;
 	size_t n_alloc = GMT_TINY_CHUNK;
 
 	char CPT_file[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""}, *file = NULL, *l = NULL, **grdfile = NULL;
@@ -623,7 +623,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 
 int twocolors2cpt(struct GMTAPI_CTRL *API, char **str) {
 	/* Parse the STR char string for a start and an end color. The colors are separated by
-	   a comma as in: #ddaaff,123/23/8 
+	   a comma as in: #ddaaff,123/23/8
 	   If no comma is found, the function returns right away so it's safe to call it with STR
 	   holding the name of a true CPT file.
 	   With those two colors write a single line master CPT file. The CPT file is called "twocolors__.cpt"

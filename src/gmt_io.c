@@ -237,7 +237,7 @@ static inline void gmt_update_prev_rec (struct GMT_CTRL *GMT, uint64_t n_use) {
 }
 
 /*! Determine if two points are "far enough apart" to constitude a data gap and thus "pen up" */
-bool gmt_gap_detected (struct GMT_CTRL *GMT) {	
+bool gmt_gap_detected (struct GMT_CTRL *GMT) {
 	uint64_t i;
 
 	if (!GMT->common.g.active || GMT->current.io.pt_no == 0) return (false);	/* Not active or on first point in a segment */
@@ -294,7 +294,7 @@ void GMT_set_tableheader (struct GMT_CTRL *GMT, int direction, bool true_false) 
 bool GMT_z_input_is_nan_proxy (struct GMT_CTRL *GMT, unsigned int col, double value) {
 	if (!GMT->common.d.active[GMT_IN]) return false;	/* Not active */
 	if (col != GMT_Z) return false;				/* Not the z column */
-	
+
 	if (GMT->common.d.is_zero[GMT_IN]) return doubleAlmostEqualZero (0.0, value);	/* Change to NaN if value is zero */
 	return doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], value);		/* Change to NaN if value ~nan_proxy */
 }
@@ -363,7 +363,7 @@ void * gmt_nc_input (struct GMT_CTRL *GMT, FILE * GMT_UNUSED(fp), uint64_t *n, i
 	 */
 	int status;
 	uint64_t n_use = 0, col;
-	
+
 	GMT->current.io.status = GMT_IO_DATA_RECORD;
 	if (*n == GMT_MAX_COLUMNS) {	/* Set columns if not known yet */
 		*n = GMT->current.io.ncols;			/* Number of requested columns */
@@ -599,9 +599,9 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 
 	GMT->current.io.input = gmt_nc_input;
 	tmp_pointer = (size_t)(-GMT->current.io.ncid);
-	
+
 	GMT_prep_tmp_arrays (GMT, GMT->current.io.ndim, GMT->current.io.ncols);	/* Preallocate arrays for all netcdf vectors */
-	
+
 	return ((FILE *)tmp_pointer);
 }
 
@@ -666,7 +666,9 @@ int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction) {
 	uint64_t n_bytes;
 	size_t alloc = GMT_LEN256, m_len = 0, len;
 
-	/*if (GMT->current.setting.verbose < GMT_MSG_VERBOSE) return GMT_OK;	/* Not in verbose mode anyway */
+#if 0
+	if (GMT->current.setting.verbose < GMT_MSG_VERBOSE) return GMT_OK;	/* Not in verbose mode anyway */
+#endif
 	if (!GMT->common.b.active[direction]) return GMT_OK;	/* Not using binary i/o */
 	if (GMT->common.b.ncol[direction] == 0) {		/* Number of columns not set yet - delay message */
 		if (direction == GMT_OUT) GMT->common.b.o_delay = true;
@@ -4714,7 +4716,7 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 				strncpy (calstring, s, GMT_LEN64);
 				clocklen = 0;
 			}
-			else {	/* Regular <date>T<clock> */	
+			else {	/* Regular <date>T<clock> */
 				*p = ' ';	/* Temporarily replace T with space */
 				sscanf (s, "%s %s", calstring, clockstring);
 				clocklen = strlen (clockstring);
