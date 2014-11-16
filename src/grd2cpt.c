@@ -43,6 +43,8 @@
 
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 
+int twocolors2cpt(struct GMTAPI_CTRL *API, char **str);
+
 struct GRD2CPT_CTRL {
 	struct In {
 		bool active;
@@ -333,7 +335,7 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 
 int GMT_grd2cpt (void *V_API, int mode, void *args)
 {
-	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
+	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood, new_file;
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
@@ -376,6 +378,9 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 
 	if (Ctrl->C.active) {
+		if ((new_file = twocolors2cpt(API, &Ctrl->C.file)) < 0) {
+			Return (GMT_RUNTIME_ERROR);
+		}
 		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
 	}
 	else {	/* No table specified; set default rainbow table */
@@ -383,7 +388,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file, R_OK), "Error: Cannot find colortable %s\n", Ctrl->C.file);
+	error += GMT_check_condition (GMT, !GMT_getsharepath(GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file, R_OK),
+	                              "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
@@ -395,6 +401,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	if (Ctrl->G.active) Pin = GMT_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+
+	if (new_file) remove (strcat(Ctrl->C.file,".cpt"));		/* It was a temporary file created by twocolors2cpt() */
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
@@ -481,7 +489,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	sd /= ngood;
 	sd = sqrt (sd - mean * mean);
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		sprintf (format, "Mean and S.D. of data are %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "Mean and S.D. of data are %s %s\n",
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, mean, sd);
 	}
 
@@ -610,4 +619,94 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	GMT_free (GMT, grdfile);
 
 	Return (EXIT_SUCCESS);
+}
+
+int twocolors2cpt(struct GMTAPI_CTRL *API, char **str) {
+	/* Parse the STR char string for a start and an end color. The colors are separated by
+	   a comma as in: #ddaaff,123/23/8 
+	   If no comma is found, the function returns right away so it's safe to call it with STR
+	   holding the name of a true CPT file.
+	   With those two colors write a single line master CPT file. The CPT file is called "twocolors__.cpt"
+	   and that name is returned in STR. That is, the contents of the input STR is destroid.
+	   The two colors can be stated in three different ways:
+	   1) a single gray level in the [0 255] interval that will be repeated 3 times.
+	   2) a normal r/g/b color
+	   3) an HTML hexadecimal color as in #AB35FF (Attention that the first # character is mandatory)
+
+	   Returns -1 on error, 0 if no CPT is created (STR holds a CPT name) and 1 otherwise.
+	*/
+	int   n, n_slashes;
+	int   r1, g1, b1, r2, g2, b2;
+	char *pch = NULL;
+	char t[128] = "", tmp_file[256] = "", s2[3] = "";
+	FILE *fp = NULL;
+
+	pch = strstr(*str, ",");
+	if (!pch) return(0);
+
+	pch[0] = '\0';		/* Split the STR string in two halves, one with each color */
+
+	for (n = 0, n_slashes = 0; str[0][n]; n++)
+		if (str[0][n] == '/') n_slashes++;
+
+	if (n_slashes == 0) {
+		if (str[0][0] == '#') {
+			strncpy(s2, &str[0][1],2);		sscanf(s2, "%x", &r1);
+			strncpy(s2, &str[0][3],2);		sscanf(s2, "%x", &g1);
+			strncpy(s2, &str[0][5],2);		sscanf(s2, "%x", &b1);
+		}
+		else {
+			r1 = atoi(str[0]);		g1 = b1 = r1;
+		}
+	}
+	else if (n_slashes == 2) {
+		if (sscanf (str[0], "%d/%d/%d", &r1, &g1, &b1) != 3) {
+			GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated first color\n");
+			return(-1);
+		}
+	}
+	else {
+		GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated first color\n");
+		return(-1);
+	}
+
+	pch++;
+	for (n = 0, n_slashes = 0; pch[n]; n++)
+		if (pch[n] == '/') n_slashes++;
+
+	if (n_slashes == 0) {
+		if (pch[0] == '#') {
+			strncpy(s2, &pch[1],2);		sscanf(s2, "%x", &r2);
+			strncpy(s2, &pch[3],2);		sscanf(s2, "%x", &g2);
+			strncpy(s2, &pch[5],2);		sscanf(s2, "%x", &b2);
+		}
+		else {
+			r2 = atoi(pch);		g2 = b2 = r2;
+		}
+	}
+	else if (n_slashes == 2) {
+		if (sscanf (pch, "%d/%d/%d", &r2, &g2, &b2) != 3) {
+			GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated second color\n");
+			return(-1);
+		}
+	}
+	else {
+		GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated second color\n");
+		return(-1);
+	}
+
+	sprintf(t, "0\t%d\t%d\t%d\t1\t%d\t%d\t%d", r1, g1, b1, r2, g2, b2);
+
+	sprintf (tmp_file, "twocolors__.cpt");
+	if ((fp = fopen (tmp_file, "w")) == NULL) {
+		GMT_Report(API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
+		return(-1);
+	}
+
+	fprintf(fp, "%s\n", t);
+	fclose(fp);
+	free(*str);			/* Because it was allocated with strdup */
+	*str = strdup(tmp_file);
+
+	return (1);
 }
