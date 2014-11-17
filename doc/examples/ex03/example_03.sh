@@ -76,10 +76,10 @@ $AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg  | gmt pshistogram  -W
 #
 head -1 ship.pg > tmp
 head -1 sat.pg >> tmp
-sampr1=`gmt gmtmath tmp -Ca -Sf -o0 UPPER CEIL =`
+sampr1=`gmt gmtmath tmp -T -Ca -Sf -o0 UPPER CEIL =`
 tail -1 ship.pg > tmp
 tail -1 sat.pg >> tmp 
-sampr2=`gmt gmtmath tmp -Ca -Sf -o0 LOWER FLOOR =`
+sampr2=`gmt gmtmath tmp -T -Ca -Sf -o0 LOWER FLOOR =`
 #
 # Now we can use sampr1|2 in gmt gmtmath to make a sampling points file for gmt sample1d:
 gmt gmtmath -T$sampr1/$sampr2/1 -N1/0 T = samp.x
