@@ -628,17 +628,17 @@ int twocolors2cpt(struct GMTAPI_CTRL *API, char **str) {
 	   holding the name of a true CPT file.
 	   With those two colors write a single line master CPT file. The CPT file is called "twocolors__.cpt"
 	   and that name is returned in STR. That is, the contents of the input STR is destroid.
-	   The two colors can be stated in three different ways:
+	   The two colors can be stated in four different ways:
 	   1) a single gray level in the [0 255] interval that will be repeated 3 times.
 	   2) a normal r/g/b color
-	   3) an HTML hexadecimal color as in #AB35FF (Attention that the first # character is mandatory)
+	   3) a color name, e.g 'red'
+	   4) an HTML hexadecimal color as in #AB35FF (Attention that the first # character is mandatory)
 
 	   Returns -1 on error, 0 if no CPT is created (STR holds a CPT name) and 1 otherwise.
 	*/
-	int   n, n_slashes;
-	int   r1, g1, b1, r2, g2, b2;
 	char *pch = NULL;
-	char t[128] = "", tmp_file[256] = "", s2[3] = "";
+	char t[128] = "", tmp_file[256] = "";
+	double rgb_1[4], rgb_2[4];
 	FILE *fp = NULL;
 
 	pch = strstr(*str, ",");
@@ -646,56 +646,18 @@ int twocolors2cpt(struct GMTAPI_CTRL *API, char **str) {
 
 	pch[0] = '\0';		/* Split the STR string in two halves, one with each color */
 
-	for (n = 0, n_slashes = 0; str[0][n]; n++)
-		if (str[0][n] == '/') n_slashes++;
-
-	if (n_slashes == 0) {
-		if (str[0][0] == '#') {
-			strncpy(s2, &str[0][1],2);		sscanf(s2, "%x", &r1);
-			strncpy(s2, &str[0][3],2);		sscanf(s2, "%x", &g1);
-			strncpy(s2, &str[0][5],2);		sscanf(s2, "%x", &b1);
-		}
-		else {
-			r1 = atoi(str[0]);		g1 = b1 = r1;
-		}
-	}
-	else if (n_slashes == 2) {
-		if (sscanf (str[0], "%d/%d/%d", &r1, &g1, &b1) != 3) {
-			GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated first color\n");
-			return(-1);
-		}
-	}
-	else {
+	if (GMT_getrgb(API->GMT, str[0], rgb_1)) {
 		GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated first color\n");
 		return(-1);
 	}
-
 	pch++;
-	for (n = 0, n_slashes = 0; pch[n]; n++)
-		if (pch[n] == '/') n_slashes++;
-
-	if (n_slashes == 0) {
-		if (pch[0] == '#') {
-			strncpy(s2, &pch[1],2);		sscanf(s2, "%x", &r2);
-			strncpy(s2, &pch[3],2);		sscanf(s2, "%x", &g2);
-			strncpy(s2, &pch[5],2);		sscanf(s2, "%x", &b2);
-		}
-		else {
-			r2 = atoi(pch);		g2 = b2 = r2;
-		}
-	}
-	else if (n_slashes == 2) {
-		if (sscanf (pch, "%d/%d/%d", &r2, &g2, &b2) != 3) {
-			GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated second color\n");
-			return(-1);
-		}
-	}
-	else {
+	if (GMT_getrgb(API->GMT, pch, rgb_2)) {
 		GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated second color\n");
 		return(-1);
 	}
 
-	sprintf(t, "0\t%d\t%d\t%d\t1\t%d\t%d\t%d", r1, g1, b1, r2, g2, b2);
+	sprintf(t, "0\t%.0f\t%.0f\t%.0f\t1\t%.0f\t%.0f\t%.0f", rgb_1[0]*255, rgb_1[1]*255, rgb_1[2]*255,
+	            rgb_2[0]*255, rgb_2[1]*255, rgb_2[2]*255);
 
 	sprintf (tmp_file, "twocolors__.cpt");
 	if ((fp = fopen (tmp_file, "w")) == NULL) {
