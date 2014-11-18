@@ -43,8 +43,6 @@
 
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 
-int twocolors2cpt(struct GMTAPI_CTRL *API, char **str);
-
 struct GRD2CPT_CTRL {
 	struct In {
 		bool active;
@@ -58,7 +56,7 @@ struct GRD2CPT_CTRL {
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
@@ -337,10 +335,10 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 {
 	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
 	unsigned int row, col, j, cpt_flags = 0;
-	int signed_levels, error = 0, new_file;
+	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
 
-	char CPT_file[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""}, *file = NULL, *l = NULL, **grdfile = NULL;
+	char format[GMT_BUFSIZ] = {""}, *l = NULL, **grdfile = NULL;
 
 	double *z = NULL, wesn[4], mean, sd;
 
@@ -375,12 +373,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
-
 	if (Ctrl->C.active) {
-		if ((new_file = twocolors2cpt(API, &Ctrl->C.file)) < 0) {
-			Return (GMT_RUNTIME_ERROR);
-		}
 		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
 	}
 	else {	/* No table specified; set default rainbow table */
@@ -388,21 +381,18 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	error += GMT_check_condition (GMT, !GMT_getsharepath(GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file, R_OK),
-	                              "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;		/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 2) cpt_flags |= GMT_CPT_EXTEND_BNF;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
-	file = CPT_file;
-	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, NULL)) == NULL) {
+	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (Ctrl->G.active) Pin = GMT_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 
-	if (new_file) remove (strcat(Ctrl->C.file,".cpt"));		/* It was a temporary file created by twocolors2cpt() */
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
@@ -619,96 +609,4 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	GMT_free (GMT, grdfile);
 
 	Return (EXIT_SUCCESS);
-}
-int twocolors2cpt(struct GMTAPI_CTRL *API, char **str) {
-	/* Take comma-separated color entries and build a linear, continuous CPT table.
-	 * We check if color is valid then write the give entry verbatim.
-	 * Returns -1 on error, 0 if no CPT is created (STR holds a CPT name) and 1 otherwise.
-	*/
-	unsigned int pos = 0;
-	char *pch = NULL, last[GMT_BUFSIZ] = {""}, first[GMT_LEN64] = {""}, tmp_file[GMT_LEN256] = "";
-	double z = 0.0, rgb[4];
-	FILE *fp = NULL;
-
-	if (!(pch = strstr (*str, ","))) return(0);	/* Not 2 or more colors */
-
-	sprintf (tmp_file, "twocolors__.cpt");
-	if ((fp = fopen (tmp_file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
-		return (-1);
-	}
-
-	GMT_strtok (*str, ",", &pos, last);	/* Get first color entry */
-	strncpy (first, last, GMT_LEN64);	/* Make this the first color */
-	if (GMT_getrgb (API->GMT, first, rgb)) {
-		GMT_Report(API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", first);
-		return (-1);
-	}
-	while (GMT_strtok (*str, ",", &pos, last)) {	/* Get next color entry */
-		if (GMT_getrgb (API->GMT, last, rgb)) {
-			GMT_Report(API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", last);
-			return (-1);
-		}
-		fprintf (fp, "%g\t%s\t%g\t%s\n", z, first, z+1.0, last);
-		strncpy (first, last, GMT_LEN64);	/* Make last the new first color */
-		z += 1.0;				/* Increment z-slice values */
-	}
-	fclose (fp);
-	
-	free (*str);		/* Because it was allocated with strdup */
-	*str = strdup (tmp_file);
-
-	return (1);
-}
-
-int twocolors2cpt_JL(struct GMTAPI_CTRL *API, char **str) {
-	/* Parse the STR char string for a start and an end color. The colors are separated by
-	   a comma as in: #ddaaff,123/23/8
-	   If no comma is found, the function returns right away so it's safe to call it with STR
-	   holding the name of a true CPT file.
-	   With those two colors write a single line master CPT file. The CPT file is called "twocolors__.cpt"
-	   and that name is returned in STR. That is, the contents of the input STR is destroid.
-	   The two colors can be stated in four different ways:
-	   1) a single gray level in the [0 255] interval that will be repeated 3 times.
-	   2) a normal r/g/b color
-	   3) a color name, e.g 'red'
-	   4) an HTML hexadecimal color as in #AB35FF (Attention that the first # character is mandatory)
-
-	   Returns -1 on error, 0 if no CPT is created (STR holds a CPT name) and 1 otherwise.
-	*/
-	char *pch = NULL;
-	char t[128] = "", tmp_file[256] = "";
-	double rgb_1[4], rgb_2[4];
-	FILE *fp = NULL;
-
-	pch = strstr(*str, ",");
-	if (!pch) return(0);
-
-	pch[0] = '\0';		/* Split the STR string in two halves, one with each color */
-
-	if (GMT_getrgb(API->GMT, str[0], rgb_1)) {
-		GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated first color\n");
-		return(-1);
-	}
-	pch++;
-	if (GMT_getrgb(API->GMT, pch, rgb_2)) {
-		GMT_Report(API, GMT_MSG_NORMAL, "Baddly formated second color\n");
-		return(-1);
-	}
-
-	sprintf(t, "0\t%.0f\t%.0f\t%.0f\t1\t%.0f\t%.0f\t%.0f", rgb_1[0]*255, rgb_1[1]*255, rgb_1[2]*255,
-	            rgb_2[0]*255, rgb_2[1]*255, rgb_2[2]*255);
-
-	sprintf (tmp_file, "twocolors__.cpt");
-	if ((fp = fopen (tmp_file, "w")) == NULL) {
-		GMT_Report(API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
-		return(-1);
-	}
-
-	fprintf(fp, "%s\n", t);
-	fclose(fp);
-	free(*str);			/* Because it was allocated with strdup */
-	*str = strdup(tmp_file);
-
-	return (1);
 }

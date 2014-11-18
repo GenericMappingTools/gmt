@@ -175,6 +175,11 @@
 #	define RTLD_LAZY 1
 #endif
 
+#ifdef WIN32	/* Special for Windows */
+#	include <process.h>
+#	define getpid _getpid
+#endif
+
 /* Various functions declared elsewhere but needed here	(see gmt_module.c) */
 EXTERN_MSC void *dlopen (const char *module_name, int mode);
 EXTERN_MSC int dlclose (void *handle);
@@ -1497,6 +1502,7 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, int object_ID, 
 	 */
 
 	int item, kind;
+	char tmp_cptfile[GMT_LEN64] = {""};
 	struct GMT_PALETTE *P_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
@@ -1516,6 +1522,11 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, int object_ID, 
 			/* GMT_read_cpt will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT table from %s %s\n", GMT_method[S_obj->method], S_obj->filename);
 			if ((P_obj = GMT_read_cpt (API->GMT, S_obj->filename, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
+			sprintf (tmp_cptfile, "GMTAPI_Colors2CPT_%d.cpt", (int)getpid());
+			if (!strcmp (tmp_cptfile, S_obj->filename)) {
+				GMT_Report (API, GMT_MSG_DEBUG, "Remove temporary CPT table %s\n", S_obj->filename);
+				remove (tmp_cptfile);
+			}
 			break;
 		case GMT_IS_STREAM:
  			/* GMT_read_cpt will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
@@ -3207,6 +3218,50 @@ struct GMTAPI_DATA_OBJECT * GMTAPI_Make_DataObject (struct GMTAPI_CTRL *API, enu
 }
 
 /*! . */
+int GMTAPI_Colors2CPT (struct GMTAPI_CTRL *API, char **str) {
+	/* Take comma-separated color entries and build a linear, continuous CPT table.
+	 * We check if color is valid then write the given entries verbatim.
+	 * Returns -1 on error, 0 if no CPT is created (str presumably holds a CPT name) and 1 otherwise.
+	*/
+	unsigned int pos = 0;
+	char *pch = NULL, last[GMT_BUFSIZ] = {""}, first[GMT_LEN64] = {""}, tmp_file[GMT_LEN256] = "";
+	double z = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	FILE *fp = NULL;
+
+	if (!(pch = strchr (*str, ','))) return (0);	/* Presumably gave a regular CPT file name */
+
+	sprintf (tmp_file, "GMTAPI_Colors2CPT_%d.cpt", (int)getpid());
+	if ((fp = fopen (tmp_file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
+		return (-1);
+	}
+
+	GMT_strtok (*str, ",", &pos, last);	/* Get first color entry */
+	strncpy (first, last, GMT_LEN64);	/* Make this the first color */
+	if (GMT_getrgb (API->GMT, first, rgb)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", first);
+		return (-1);
+	}
+	while (GMT_strtok (*str, ",", &pos, last)) {	/* Get next color entry */
+		if (GMT_getrgb (API->GMT, last, rgb)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", last);
+			return (-1);
+		}
+		fprintf (fp, "%g\t%s\t%g\t%s\n", z, first, z+1.0, last);
+		strncpy (first, last, GMT_LEN64);	/* Make last the new first color */
+		z += 1.0;				/* Increment z-slice values */
+	}
+	fclose (fp);
+	
+	GMT_Report (API, GMT_MSG_DEBUG, "Converted %s to CPT file %s\n", *str, tmp_file);
+
+	free (*str);			/* Because it was allocated with strdup */
+	*str = strdup (tmp_file);	/* Pass out the temp file name */
+
+	return (1);	/* We replaced the name */
+}
+
+/*! . */
 int GMTAPI_Destroy_Coord (struct GMTAPI_CTRL *API, double **ptr) {
 	GMT_free (API->GMT, *ptr);
 	return GMT_OK;
@@ -4201,7 +4256,13 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		}
 	}
 	else if (input) {	/* Case 1: Load from a single, given source. Register it first. */
-		if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, input)) == GMT_NOTSET) return_null (API, API->error);
+		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
+		int c_err = 0;
+		char *file = strdup (input);
+		if (family == GMT_IS_CPT && (c_err = GMTAPI_Colors2CPT (API, &file)) < 0) /* Maybe converted colors to new cpt file */
+			return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
+		if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, file)) == GMT_NOTSET) return_null (API, API->error);
+		free (file);	/* Free temp CPT file name */
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */
 		if ((in_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register std??? */

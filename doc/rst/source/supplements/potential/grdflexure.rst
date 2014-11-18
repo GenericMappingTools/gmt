@@ -38,7 +38,11 @@ Required Arguments
     See GRID FILE FORMATS below).
     If **-T** is used, *topogrd* may be a filename template with a
     floating point format (C syntax) and a different load file name
-    will be set and loaded for each time step.
+    will be set and loaded for each time step.  The load times thus
+    coincide with the times given via **-T**.  Alternatively, give
+    *=flist* where *flist* is an ASCII table with one topogrd filename
+    and load time per record.  This load times can be different from
+    the output times given via **-T**.
 
 **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
     Sets density for mantle, load, infill (optionally, otherwise it is
@@ -76,8 +80,8 @@ Optional Arguments
 .. include:: ../../explain_fft.rst_
 
 **-L**\ *list*
-    Write the names of all grids that were created to the text file *list*.
-    Requires **-T**.
+    Write the names and times of all grids that were created to the text
+    file *list*. Requires **-T**.
 
 **-M**\ *tm*
     Set the Maxwell time *tm* for the viscoelastic model.
