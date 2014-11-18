@@ -620,8 +620,48 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 
 	Return (EXIT_SUCCESS);
 }
-
 int twocolors2cpt(struct GMTAPI_CTRL *API, char **str) {
+	/* Take comma-separated color entries and build a linear, continuous CPT table.
+	 * We check if color is valid then write the give entry verbatim.
+	 * Returns -1 on error, 0 if no CPT is created (STR holds a CPT name) and 1 otherwise.
+	*/
+	unsigned int pos = 0;
+	char *pch = NULL, last[GMT_BUFSIZ] = {""}, first[GMT_LEN64] = {""}, tmp_file[GMT_LEN256] = "";
+	double z = 0.0, rgb[4];
+	FILE *fp = NULL;
+
+	if (!(pch = strstr (*str, ","))) return(0);	/* Not 2 or more colors */
+
+	sprintf (tmp_file, "twocolors__.cpt");
+	if ((fp = fopen (tmp_file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
+		return (-1);
+	}
+
+	GMT_strtok (*str, ",", &pos, last);	/* Get first color entry */
+	strncpy (first, last, GMT_LEN64);	/* Make this the first color */
+	if (GMT_getrgb (API->GMT, first, rgb)) {
+		GMT_Report(API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", first);
+		return (-1);
+	}
+	while (GMT_strtok (*str, ",", &pos, last)) {	/* Get next color entry */
+		if (GMT_getrgb (API->GMT, last, rgb)) {
+			GMT_Report(API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", last);
+			return (-1);
+		}
+		fprintf (fp, "%g\t%s\t%g\t%s\n", z, first, z+1.0, last);
+		strncpy (first, last, GMT_LEN64);	/* Make last the new first color */
+		z += 1.0;				/* Increment z-slice values */
+	}
+	fclose (fp);
+	
+	free (*str);		/* Because it was allocated with strdup */
+	*str = strdup (tmp_file);
+
+	return (1);
+}
+
+int twocolors2cpt_JL(struct GMTAPI_CTRL *API, char **str) {
 	/* Parse the STR char string for a start and an end color. The colors are separated by
 	   a comma as in: #ddaaff,123/23/8
 	   If no comma is found, the function returns right away so it's safe to call it with STR
