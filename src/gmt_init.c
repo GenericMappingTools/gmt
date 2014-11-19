@@ -3403,27 +3403,42 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 /*! . */
 void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value) {
 
-	unsigned int pos = 0, col = 0, start = 0, stop = 0, k, error = 0;
-	char fmt[GMT_LEN64] = {""}, *p = NULL;
-	/* Look for multiple comma-separated format statements of type [<cols>:]<format> */
-	while ((GMT_strtok (value, ",", &pos, fmt))) {
-		if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
-			if (strchr (fmt, '-'))	/* Range of columns given. e.g., 7-9 */
-				sscanf (fmt, "%d-%d", &start, &stop);
-			else if (isdigit ((int)fmt[0]))	/* Just a single column, e.g., 3 */
-				start = stop = atoi (fmt);
-			else				/* Something bad */
-				error++;
-			p++;	/* Move to format */
-			for (k = start; k <= stop; k++, col++) {
-				if (GMT->current.io.o_format[k]) free (GMT->current.io.o_format[k]);
-				GMT->current.io.o_format[k] = strdup (p);
+	unsigned int pos = 0, col = 0, k;
+	char fmt[GMT_LEN64] = {""};
+	if (strchr (value, ',')) {
+		unsigned int start = 0, stop = 0, error = 0;
+		char *p = NULL;
+		/* Look for multiple comma-separated format statements of type [<cols>:]<format>.
+		 * Last format also becomes the default for unspecified columns */
+		while ((GMT_strtok (value, ",", &pos, fmt))) {
+			if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
+				if (strchr (fmt, '-'))	/* Range of columns given. e.g., 7-9 */
+					sscanf (fmt, "%d-%d", &start, &stop);
+				else if (isdigit ((int)fmt[0]))	/* Just a single column, e.g., 3 */
+					start = stop = atoi (fmt);
+				else				/* Something bad */
+					error++;
+				p++;	/* Move to format */
+				for (k = start; k <= stop; k++, col++) {
+					if (GMT->current.io.o_format[k]) free (GMT->current.io.o_format[k]);
+					GMT->current.io.o_format[k] = strdup (p);
+				}
 			}
 		}
-		else {	/* No columns, set the default format */
-			/* Last format without cols also becomes the default for unspecified columns */
-			strncpy (GMT->current.setting.format_float_out, fmt, GMT_LEN64);
+	}
+	else if (strchr (value, ' ')) {
+		/* Look for N space-separated format statements of type <format1> <format2> <format3> ... 
+		 * and let these apply to the first N output columns.
+		 * Last format also becomes the default for unspecified columns. */
+		k = 0;
+		while ((GMT_strtok (value, " ", &pos, fmt))) {
+			if (GMT->current.io.o_format[k]) free (GMT->current.io.o_format[k]);
+			GMT->current.io.o_format[k++] = strdup (fmt);
 		}
+	}
+	else {	/* No columns, set the default format */
+		/* Last format also becomes the default for unspecified columns */
+		strncpy (GMT->current.setting.format_float_out, value, GMT_LEN64);
 	}
 }
 
