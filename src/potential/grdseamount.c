@@ -106,7 +106,7 @@ struct GRDSEAMOUNT_CTRL {
 EXTERN_MSC double gmt_get_modeltime (char *A, char *unit, double *scale);
 EXTERN_MSC unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, struct GMT_MODELTIME **T_array);
 EXTERN_MSC char *gmt_modeltime_unit (unsigned int u);
-EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME T);
+EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME *T);
 
 void *New_grdseamount_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDSEAMOUNT_CTRL *C = NULL;
@@ -422,6 +422,61 @@ double gauss_solver (double in[], double f, double v, bool elliptical)
 	return (phi);
 }
 
+int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, char *record, int n_expected, int rec, bool map, double inv_scale, double *in)
+{
+	int ix, iy, n_conv, t_col;
+	double s_scale;
+	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], T[5][GMT_LEN64], s_unit;
+	
+	n_conv = sscanf (record, "%s %s %lg %lg %s %s %s %s %s", txt_x, txt_y, &in[2], &in[3], T[0], T[1], T[2], T[3], T[4]);
+	if (n_conv != n_expected) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error parsing record %s\n", record);
+		return 1;
+	}
+	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
+	if (GMT_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &in[ix]) == GMT_IS_NAN) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec);
+		return 1;
+	}
+	if (GMT_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &in[iy]) == GMT_IS_NAN) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec);
+		return 1;
+	}
+	if (Ctrl->E.active) {	/* Elliptical seamount axes */
+		in[4] = atof (T[0]);
+		in[5] = atof (T[1]);
+		t_col = 2;
+		if (Ctrl->F.mode == TRUNC_FILE) in[6] = atof (T[2]), t_col++;	/* Flattening given via input file */
+		if (Ctrl->T.active) {	/* Force start and stop times to be multiples of the increment */
+			in[n_expected-2] = gmt_get_modeltime (T[t_col++], &s_unit, &s_scale);
+			in[n_expected-1] = gmt_get_modeltime (T[t_col], &s_unit, &s_scale);
+		}
+	}
+	else {
+		t_col = 0;
+		if (Ctrl->F.mode == TRUNC_FILE) in[4] = atof (T[0]), t_col++;	/* Flattening given via input file */
+		if (Ctrl->T.active) {	/* Force start and stop times to be multiples of the increment */
+			in[n_expected-2] = gmt_get_modeltime (T[t_col++], &s_unit, &s_scale);
+			in[n_expected-1] = gmt_get_modeltime (T[t_col], &s_unit, &s_scale);
+		}
+	}
+	
+	if (!map) {	/* Scale horizontal units to meters */
+		in[0] *= inv_scale;
+		in[1] *= inv_scale;
+		if (Ctrl->E.active) {	/* Elliptical seamount axes */
+			in[3] *= inv_scale;
+			in[4] *= inv_scale;
+		}
+		else	/* Radius */
+			in[2] *= inv_scale;
+	}
+	
+	if (Ctrl->T.active && in[n_expected-2] < in[n_expected-1])
+		double_swap (in[n_expected-2], in[n_expected-1]);	/* Ensure start time is always larger */
+	return 0;	/* OK */	
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdseamount_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -439,7 +494,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	char unit, unit_name[8], file[GMT_LEN256] = {""};
 	
 	float *data = NULL;
-	double x, y, r, c, in[8], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
+	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
 	double add, f, max, r_km, amplitude, h_scale, z_assign, h_scl, noise, this_user_time, life_span, t_mid, v_curr, v_prev;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM, *V = NULL;
 	double fwd_scale, inv_scale, inch_to_unit, unit_to_inch, prev_user_time, h_curr, h_prev, h0, phi_prev, phi_curr;
@@ -448,8 +503,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	double (*phi_solver) (double in[], double f, double v, bool elliptical);
 	
 	struct GMT_GRID *Grid = NULL;
-	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
-	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_TEXTSET *D = NULL;	/* Pointer to GMT multisegment text table(s) */
+	struct GMT_TEXTSEGMENT *S = NULL;
 	struct GMT_TEXTSET *L = NULL;
 	struct GRDSEAMOUNT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -482,10 +537,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	}
 
 	/* Register likely data sources unless the caller has already done so */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	switch (Ctrl->C.mode) {
@@ -548,25 +603,13 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	}
 	/* Calculate the area, volume, height for each shape; if -L then also write the results */
 	
+	GMT_memset (in, 9, double);
 	for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
-				if (Ctrl->T.active) {	/* Force start and stop times to be multiples of the increment */
-					if (S->coord[t0_col][rec] < S->coord[t1_col][rec]) double_swap (S->coord[t0_col][rec], S->coord[t1_col][rec]);	/* Ensure start time is always larger */
-				}
-				for (col = 0; col < n_expected_fields; col++) out[col] = S->coord[col][rec];	/* Copy of record before any scalings */
-				if (!map) {	/* Scale horizontal units to meters */
-					S->coord[0][rec] *= inv_scale;
-					S->coord[1][rec] *= inv_scale;
-					if (Ctrl->E.active) {	/* Elliptical seamount axes */
-						S->coord[3][rec] *= inv_scale;
-						S->coord[4][rec] *= inv_scale;
-					}
-					else	/* Radius */
-						S->coord[2][rec] *= inv_scale;
-				}
-				for (col = 0; col < n_expected_fields; col++) in[col] = S->coord[col][rec];	/* To avoid massive rewrite below */
+				if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, n_smts, map, inv_scale, in)) continue;
+				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 					a = in[3];		/* Semi-major axis */
 					b = in[4];		/* Semi-minor axis */
@@ -637,8 +680,9 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
-					if (Ctrl->T.active && (this_user_time >= S->coord[t0_col][rec] || this_user_time < S->coord[t1_col][rec])) continue;	/* Outside time-range */
-					for (col = 0; col < n_expected_fields; col++) in[col] = S->coord[col][rec];	/* To avoid massive rewrite below */
+					if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, n_smts, map, inv_scale, in)) continue;
+					
+					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 					if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
@@ -646,17 +690,17 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 					/* Ok, we are inside the region - process data */
 					
 					if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
-						life_span = S->coord[t0_col][rec] - S->coord[t1_col][rec];	/* Total life span of this seamount */
+						life_span = in[t0_col] - in[t1_col];	/* Total life span of this seamount */
 						if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
-							t_mid = 0.5 * (S->coord[t0_col][rec] + S->coord[t1_col][rec]);	/* time at mid point in evolution */
+							t_mid = 0.5 * (in[t0_col] + in[t1_col]);	/* time at mid point in evolution */
 							v_curr = 0.5 * (1.0 + erf (-6.0 * (this_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at end of this time step */
 							v_prev = 0.5 * (1.0 + erf (-6.0 * (prev_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at start of this time step */
 							if (v_prev < 0.0015) v_prev = 0.0;	/* Deal with the 3-sigma truncation, i.e., throw first tail in with first slice */
 							if (v_curr > 0.9985) v_curr = 1.0;	/* Deal with the 3-sigma truncation, i.e., throw last tail in with last slice */
 						}
 						else {	/* Linear volume flux */
-							v_curr = (S->coord[t0_col][rec] - this_user_time) / life_span;	/* Normalized volume fraction at end of this time step */
-							v_prev = (S->coord[t0_col][rec] - prev_user_time) / life_span;	/* Normalized volume fraction at start of this time step */
+							v_curr = (in[t0_col] - this_user_time) / life_span;	/* Normalized volume fraction at end of this time step */
+							v_prev = (in[t0_col] - prev_user_time) / life_span;	/* Normalized volume fraction at start of this time step */
 						}
 						dV = V[n_smts] * (v_curr - v_prev);	/* Incremental volume produced */
 						V_sum[n_smts] += dV;			/* Keep track of volume sum so we can compare with truth later */
@@ -818,10 +862,18 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		}
 		/* Time to write the grid */
 		if (Ctrl->T.active)
-			gmt_modeltime_name (GMT, file, Ctrl->G.file, Ctrl->T.time[t]);
+			gmt_modeltime_name (GMT, file, Ctrl->G.file, &(Ctrl->T.time[t]));
 		else
 			strcpy (file, Ctrl->G.file);
-		if (Ctrl->M.active) L->table[0]->segment[0]->record[t] = strdup (file);
+		if (Ctrl->M.active) {
+			char record[GMT_BUFSIZ] = {""};
+			if (Ctrl->T.active)
+				sprintf (record, "%s\t%g%c", file, Ctrl->T.time[t].value * Ctrl->T.time[t].scale, Ctrl->T.time[t].unit);
+			else
+				strcpy (record, file);
+			L->table[0]->segment[0]->record[t] = strdup (record);
+			L->table[0]->segment[0]->n_rows++;
+		}
 		
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
 			double n_scl = Ctrl->N.value / max;

@@ -446,6 +446,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
 	++n_custom_libs;
 #ifdef BUILD_SHARED_LIBS
+	GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
 		API_exit (API, EXIT_FAILURE); return EXIT_FAILURE;
@@ -457,9 +458,13 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 
 	if (API->GMT->init.runtime_libdir) {	/* Successfully determined runtime dir for shared libs */
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 )
+		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 ) {
 			/* Running in build dir: search plugins in build-dir/src/plugins */
 			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_BUFSIZ-1);
+#ifdef XCODER
+			strcat (plugindir, "/Debug");	/* The Xcode plugin path for Debug */
+#endif
+		}
 		else
 #endif
 		{
@@ -469,6 +474,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			sprintf (plugindir, "%s/gmt" GMT_INSTALL_NAME_SUFFIX "/plugins", API->GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
 #endif
 		}
+		GMT_Report (API, GMT_MSG_DEBUG, "Loading GMT plugins from: %s\n", plugindir);
 		if ((list = GMT_get_dir_list (API->GMT, plugindir, extension))) {	/* Add these files to the libs */
 			k = 0;
 			while (list[k]) {
@@ -494,6 +500,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		if (API->GMT->session.CUSTOM_LIBS[k] == '/' || API->GMT->session.CUSTOM_LIBS[k] == '\\') {	/* We gave CUSTOM_LIBS as a subdirectory, add all files found inside it to shared libs list */
 			strcpy (plugindir, API->GMT->session.CUSTOM_LIBS);
 			plugindir[k] = '\0';	/* Chop off trailing slash */
+			GMT_Report (API, GMT_MSG_DEBUG, "Loading custom GMT plugins from: %s\n", plugindir);
 			if ((list = GMT_get_dir_list (API->GMT, plugindir, extension))) {	/* Add these to the libs */
 				k = 0;
 				while (list[k]) {

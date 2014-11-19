@@ -378,20 +378,20 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	width_percent = irint (F->taper_width);
 
 	if ((Grid->header->nx == F->nx && Grid->header->ny == F->ny) || F->taper_mode == GMT_FFT_EXTEND_NONE) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
 		/* But there may still be interior tapering */
 		if (F->taper_mode != GMT_FFT_EXTEND_NONE) {	/* Nothing to do since no outside pad */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
 			return;
 		}
 		if (F->taper_mode == GMT_FFT_EXTEND_NONE && width_percent == 100) {	/* No interior taper specified */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No interior tapering will be performed\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No interior tapering will be performed\n");
 			return;
 		}
 	}
 	
 	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before tapering can take place.\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Demultiplexing complex grid before tapering can take place.\n");
 		GMT_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
 	
@@ -407,7 +407,7 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	one = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundry point which we want to taper to 0 for the interior taper */
 	
 	if (width_percent == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Tapering has been disabled via +t0\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Tapering has been disabled via +t0\n");
 	}
 	if (width_percent == 100 && F->taper_mode == GMT_FFT_EXTEND_NONE) {	/* Means user set +n but did not specify +t<taper> as 100% is unreasonable for interior */
 		width_percent = 0;
@@ -507,9 +507,9 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 		}
 
 		if (F->taper_mode == GMT_FFT_EXTEND_NONE)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid margin (%s component) tapered to zero over %d %% of data width and height\n", comp[component], width_percent);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid margin (%s component) tapered to zero over %d %% of data width and height\n", comp[component], width_percent);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid (%s component) extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", comp[component], method[F->taper_mode], width_percent);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid (%s component) extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", comp[component], method[F->taper_mode], width_percent);
 	}
 }
 

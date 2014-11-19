@@ -242,8 +242,9 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 				/* Use the increment unit and scale for the array */
 				s_unit = i_unit;	s_scale = i_scale;
 				T = GMT_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
-				for (k = 0; k < n_eval_times; k++)
+				for (k = 0; k < (n_eval_times-1); k++)
 					T[k].value = s_time - k * i_time;	/* In years */
+				T[k].value = e_time;	/* In years */
 			}
 		}
 		else {	/* Gave a single time */
@@ -838,10 +839,18 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		
 		if (retain_original) GMT_memset (Out->data, Out->header->size, float);	/* Reset output grid to zero; not necessary when we only get here once */
 		
-		for (t_load = 0; t_load <= t_eval; n_load_times++) {	/* For each load already emplaced at the current output time t_eval */
+		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each load  */
 			if (Load[t_load] == NULL) continue;	/* Quietly skip times with no load */
 			if (Load[t_load]->Time && Load[t_load]->Time->value < Ctrl->T.time[t_eval].value) continue;	/* Skip future loads */
-			R->load_time_yr = (Load[t_load]->Time) ? Load[t_load]->Time->value : 0.0;	/* In years */
+			if (Load[t_load]->Time) {
+				R->load_time_yr = Load[t_load]->Time->value;	/* In years */
+				GMT_Report (API, GMT_MSG_VERBOSE, "  Accumulating flexural deformation for load emplaced at time %g %s\n",
+					Load[t_load]->Time->value * Load[t_load]->Time->scale, gmt_modeltime_unit (Load[t_load]->Time->u));
+			}
+			else {
+				R->load_time_yr = 0.0;	/* Not given, assume relative time */
+				GMT_Report (API, GMT_MSG_VERBOSE, "  Accumulating flexural deformation for load # %d emplaced at unspecified time\n", t_load);
+			}
 			/* 4b. COMPUTE THE RESPONSE DUE TO THIS LOAD */
 			if (retain_original) GMT_memcpy (orig_load, Load[t_load]->Grid->data, Load[t_load]->Grid->header->size, float);	/* Make a copy of H(kx,ky) before operations */
 			Apply_Transfer_Function (GMT, Load[t_load]->Grid, Ctrl, Load[t_load]->K, R);	/* Multiplies H(kx,ky) by transfer function, yielding W(kx,ky) */
@@ -860,12 +869,12 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		GMT_scale_and_offset_f (GMT, Out->data, Out->header->size, 1.0, -Ctrl->Z.zm);
 
 		/* 4d. WRITE OUTPUT GRID */
-		
-		if (Ctrl->T.active) { /* Separate output grid since many time steps */
+		if (Ctrl->T.active) { /* Separate output grid since there are many time steps */
 			char remark[GMT_GRID_REMARK_LEN160] = {""};
 			gmt_modeltime_name (GMT, file, Ctrl->G.file, &Ctrl->T.time[t_eval]);
-			sprintf (remark, "Solution for t = %g %s", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remark, Out))
+			sprintf (remark, "Solution for t = %g %s", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale,
+				gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK|GMT_COMMENT_IS_RESET, remark, Out))
 				Return (API->error);
 		}
 		else	/* Single output grid */
@@ -877,9 +886,9 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_OK) {
 				Return (API->error);
 		}
-		if (Ctrl->L.active) {
+		if (Ctrl->L.active) {	/* Add filename and time to list */
 			char record[GMT_BUFSIZ] = {""};
-			sprintf (record, "%s\t%g%c\n", file, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].u);
+			sprintf (record, "%s\t%g%c", file, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].unit);
 			L->table[0]->segment[0]->record[t_eval] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
@@ -891,6 +900,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	}
 
 	/* 5. FREE ALL GRIDS AND ARRAYS */
+	
 	for (t_load = 0; t_load < n_load_times; t_load++) {	/* Free up grid structures */
 		if (Load[t_load] == NULL) continue;	/* Quietly skip containers with no grids */
 		GMT_Destroy_Data (API, &Load[t_load]->Grid);

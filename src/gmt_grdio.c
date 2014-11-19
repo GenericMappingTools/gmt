@@ -2292,16 +2292,16 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	GMT_memset (coeff, 3, double);
 	
 	if (Grid->header->trendmode != GMT_FFT_REMOVE_NOTHING) {	/* Already removed the trend */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Grid has already been detrending - no action taken\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Warning: Grid has already been detrending - no action taken\n");
 		return;
 	}
 	if (mode == GMT_FFT_REMOVE_NOTHING) {	/* Do nothing */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No detrending selected\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No detrending selected\n");
 		return;
 	}
 	Grid->header->trendmode = mode;	/* Update grid header */	
 	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before detrending can take place.\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Demultiplexing complex grid before detrending can take place.\n");
 		GMT_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
 
