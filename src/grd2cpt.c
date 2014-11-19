@@ -381,8 +381,6 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
-
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;		/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 2) cpt_flags |= GMT_CPT_EXTEND_BNF;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */

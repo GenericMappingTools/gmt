@@ -80,9 +80,9 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ *out\_img*\ **=**\ *driver*
+**-A**\ *out_img*\ **=**\ *driver*
     With GDAL aware versions: save image in a raster format instead of
-    PostScript. Append *out\_img*\ **=**\ *driver* to select the file
+    PostScript. Append *out_img*\ **=**\ *driver* to select the file
     name and image format. The *driver* is the driver code name used by
     GDAL. For example, **-A**\ img.tif=GTiff will write a GeoTiff image
     if the subset of GMT syntax projections that is currently possible
@@ -92,10 +92,15 @@ Optional Arguments
 .. include:: explain_-B.rst_
 
 **-C**\ *cptfile*
-    Name of the color palette table (for *grd\_z* only). Alternatively,
+    Name of the color palette table (for *grd_z* only). Alternatively,
     supply the name of a GMT color master CPT [rainbow] and let
     **grdimage** automatically determine a 16-level continuous CPT from
     the grid's z-range.
+    Yet another option is to specify -Ccolor1,color2[,color3,...]
+    to build a linear continuous cpt from those colors automatically.  
+    In this case *color*\ **n** can be a r/g/b triplet, a color name,
+    or an HTML hexadecimal color (e.g. #aabbcc ).
+
 **-D**\ [**r**]
     Specifies that the grid supplied is an image file to be read via
     GDAL. Obviously this option will work only with GMT versions
@@ -111,18 +116,20 @@ Optional Arguments
     assigned the limits of a global domain. The interest of this mode is
     that you can project a raw image (an image without referencing
     coordinates).
+
 **-Ei**\ [\|\ *dpi*]
     Sets the resolution of the projected grid that will be created if a
     map projection other than Linear or Mercator was selected [100]. By
     default, the projected grid will be of the same size (rows and
     columns) as the input file. Specify **i** to use the PostScript
     image operator to interpolate the image at the device resolution.
+
 **-G**\ [**f**\ \|\ **b**]\ *color*
     This option only applies when the resulting image otherwise would
     consist of only two colors: black (0) and white (255). If so, this
     option will instead use the image as a transparent mask and paint
-    the mask (or its inverse, with **-Gb**) with the given color
-    combination.
+    the mask (or its inverse, with **-Gb**) with the given color combination.
+
 **-I**\ *intensfile*\ \|\ *intensity*
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere.

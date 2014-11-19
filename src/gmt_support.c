@@ -1962,9 +1962,8 @@ void GMT_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P)
 	*P = NULL;
 }
 
-/*! . */
-int GMT_list_cpt (struct GMT_CTRL *GMT, char option)
-{	/* Adds listing of available GMT cpt choices to a program's usage message */
+/*! Adds listing of available GMT cpt choices to a program's usage message */
+int GMT_list_cpt (struct GMT_CTRL *GMT, char option) {
 	FILE *fpc = NULL;
 	char buffer[GMT_BUFSIZ];
 
@@ -1980,14 +1979,15 @@ int GMT_list_cpt (struct GMT_CTRL *GMT, char option)
 	while (fgets (buffer, GMT_BUFSIZ, fpc)) if (!(buffer[0] == '#' || buffer[0] == 0)) GMT_message (GMT, "\t   %s", buffer);
 	GMT_message (GMT, "\t   -----------------------------------------------------------------\n");
 	GMT_message (GMT, "\t   [For more, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city/]\n");
+	GMT_message (GMT, "\t   Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear\n");
+	GMT_message (GMT, "\t   continuous CPT from those colors automatically.\n");
 	fclose (fpc);
 
 	return (GMT_NOERROR);
 }
 
-/*! . */
-struct CPT_Z_SCALE *gmt_cpt_parse_z_unit (struct GMT_CTRL *GMT, char *file, unsigned int GMT_UNUSED(direction))
-{	/* Decode the optional +u|U<unit> and determine scales */
+/*! Decode the optional +u|U<unit> and determine scales */
+struct CPT_Z_SCALE *gmt_cpt_parse_z_unit (struct GMT_CTRL *GMT, char *file, unsigned int GMT_UNUSED(direction)) {
 	enum GMT_enum_units u_number;
 	unsigned int mode = 0;
 	char *c = NULL;

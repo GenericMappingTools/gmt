@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grd2cpt** *grid* [ **-A**\ [**+**\ ]\ *transparency* ]
-[ **-C**\ *cptmaster* ] [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ *nlevels* ]
+[ **-C**\ *cptfile* ] [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ *nlevels* ]
 [ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-G**\ *zlo*\ /\ *zhi* ] [ **-I** ]
 [ **-L**\ *minlimit/maxlimit* ] [ **-M** ] [ **-N** ]
 [ **-Q**\ [**i**\ \|\ **o**] ]
@@ -78,10 +78,14 @@ Optional Arguments
     Prepend **+** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
 
-**-C**\ *cptmaster*
+**-C**\ *cptfile*
     Selects the master color table to use in the interpolation. Choose
     among the built-in tables (type **grd2cpt** to see the list) or give
     the name of an existing cpt file [Default gives a rainbow cpt file].
+    Yet another option is to specify -Ccolor1,color2[,color3,...]
+    to build a linear continuous cpt from those colors automatically.  
+    In this case *color*\ **n** can be a r/g/b triplet, a color name,
+    or an HTML hexadecimal color (e.g. #aabbcc ).
 
 **-D**\ [**i**\ \|\ **o**]
     Select the back- and foreground colors to match the colors for

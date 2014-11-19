@@ -50,7 +50,7 @@ struct MAKECPT_CTRL {
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
@@ -322,17 +322,13 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Prepare CPT file via the master file %s\n", Ctrl->C.file);
-	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file, R_OK), "Error: Cannot find colortable %s\n", Ctrl->C.file);
-	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	/* OK, we can now do the resampling */
 
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
-	file = CPT_file;
-
-	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, NULL)) == NULL) {
+	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (Ctrl->G.active) Pin = GMT_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */

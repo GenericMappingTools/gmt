@@ -39,7 +39,7 @@ struct PSXYZ_CTRL {
 		bool active;
 		double step;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
@@ -133,7 +133,8 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "J-Z,R3");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file to assign symbol colors based on t-value in 4th column\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on t-value in 4rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, psxyz excepts lines/polygons\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each multiheader.  Then, color is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");

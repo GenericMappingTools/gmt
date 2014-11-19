@@ -88,7 +88,11 @@ Optional Arguments
 .. include:: explain_-B.rst_
 
 **-C**\ *cptfile*
-    Give a color palette file. If **-S** is set, let symbol fill color be
+    Give a color palette file or specify -Ccolor1,color2[,color3,...]
+    to build a linear continuous cpt from those colors automatically.  
+    In this case *color*\ **n** can be a r/g/b triplet, a color name,
+    or an HTML hexadecimal color (e.g. #aabbcc ).
+    If **-S** is set, let symbol fill color be
     determined by the z-value in the third column. Additional fields are
     shifted over by one column (optional size would be 4th rather than 3rd
     field, etc.). If **-S** is not set, then **psxy** expects the user to

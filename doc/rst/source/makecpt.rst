@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**makecpt** [ **-A**\ [**+**\ ]\ *transparency* ] [ **-C**\ *table* ]
+**makecpt** [ **-A**\ [**+**\ ]\ *transparency* ] [ **-C**\ *cptfile* ]
 [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ [*nlevels*] ]
 [ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-G**\ *zlo*\ /\ *zhi* ] [ **-I** ] [ **-M** ]
 [ **-N** ] [ **-Q**\ [**i**\ \|\ **o**] ]
@@ -64,8 +64,8 @@ Optional Arguments
     Sets a constant level of transparency (0-100) for all color slices.
     Prepend **+** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
-**-C**\ *table*
-    Selects the master color table *table* to use in the interpolation.
+**-C**\ *cptfile*
+    Selects the master color table *cptfile* to use in the interpolation.
     Choose among the built-in tables (type **makecpt** to see the list)
     or give the name of an existing cpt file [Default gives a rainbow
     cpt file].

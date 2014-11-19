@@ -41,7 +41,7 @@ struct GRDIMAGE_CTRL {
 		bool do_rgb;
 		char *file[3];
 	} In;
-	struct C {	/* -C<cptfile> */
+	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
@@ -133,8 +133,10 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Aimg.tif=GTiff will write a GeoTiff image. Note: any vector elements are lost. \n");
 #endif
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb.  Optionally, instead give name of a master cpt\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb. Optionally, instead give name of a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a\n");
+    GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 #ifdef HAVE_GDAL
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Use to read an image via GDAL. Append r to equate image region to -R region.\n");
 #endif

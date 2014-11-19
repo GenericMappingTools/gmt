@@ -15,6 +15,7 @@ Synopsis
 
 **grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ **-A** ]
 [ |SYN_OPT-B| ]
+[ **-C**\ *cptfile* ]
 [ **-G**\ *fill* ]
 [ |SYN_OPT-I| ]
 [ **-K** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *parameters* ]
@@ -63,12 +64,18 @@ Optional Arguments
 .. include:: explain_-B.rst_
 
 **-C**\ [*cptfile*]
-    Use *cptfile* to assign colors based on vector length.  Alternatively,
+    Use *cptfile* to assign colors based on vector length. Alternatively,
     supply the name of a GMT color master CPT [rainbow] and let
     **grdvector** automatically determine a 16-level continuous CPT from
     the grid's z-range.
+    Yet another option is to specify -Ccolor1,color2[,color3,...]
+    to build a linear continuous cpt from those colors automatically.  
+    In this case *color*\ **n** can be a r/g/b triplet, a color name,
+    or an HTML hexadecimal color (e.g. #aabbcc ).
+
 **-G**\ *fill*
     Sets color or shade for vector interiors [Default is no fill].
+
 **-I**
     Only plot vectors at nodes every *x\_inc*, *y\_inc* apart (must be
     multiples of original grid spacing). Append **m** for arc minutes or

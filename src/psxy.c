@@ -40,7 +40,7 @@ struct PSXY_CTRL {
 		unsigned int mode;
 		double step;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
@@ -289,9 +289,10 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   straight lines unless m or p is appended to first follow meridian\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then parallel, or vice versa.\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file to assign symbol colors based on z-value in 3rd column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, psxy excepts lines/polygons\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each multiheader.  Then, color is\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on z-value in 3rd column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S. Without -S, psxy excepts lines/polygons\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each multiheader. Then, color is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset symbol or line positions by <dx>/<dy> [no offset].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Draw (symmetrical) error bars for x, y, or both.  Add cap-width [%gp].\n", EBAR_CAP_WIDTH);

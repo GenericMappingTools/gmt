@@ -115,8 +115,10 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Grids have polar (r, theta) components [Default is Cartesian (x, y) components].\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file to assign colors based on vector length.  Optionally, instead give name\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file to assign colors based on vector length. Optionally, instead give name\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of a master cpt to automatically assign 16 continuous colors over the data range [rainbow].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a linear\n");
+    GMT_Message (API, GMT_TIME_NONE, "\t   continuous cpt from those colors automatically.\n");
 	GMT_fill_syntax (API->GMT, 'G', "Select vector fill [Default is outlines only].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Plot only those nodes that are <dx>/<dy> apart [Default is all nodes].\n");
 	GMT_Option (API, "K");
@@ -125,11 +127,13 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Modify vector attributes [Default gives stick-plot].\n");
 	GMT_vector_syntax (API->GMT, 15);
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set scale for Cartesian vector lengths in data units per %s [1].\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Set scale for Cartesian vector lengths in data units per %s [1].\n",
+	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, prepend l to indicate a fixed length for all vectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors, set scale in data units per km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e., %s/unit or km/unit\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e., %s/unit or km/unit\n",
+	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes.");
@@ -285,12 +289,16 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
+	                                 "Syntax error -I option: Must specify positive increments\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Syntax error -S option: Scale must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option: Length must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0, "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active, "Syntax error -Z option: Azimuth adjustment not valid input for Cartesian data\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active), "Syntax error: Must specify at least one of -G, -W, -C\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0,
+	                                 "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active,
+	                                 "Syntax error -Z option: Azimuth adjustment not valid input for Cartesian data\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active),
+	                                 "Syntax error: Must specify at least one of -G, -W, -C\n");
 	n_errors += GMT_check_condition (GMT, n_files != 2, "Syntax error: Must specify two input grid files\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

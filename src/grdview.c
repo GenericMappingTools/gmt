@@ -66,7 +66,7 @@ struct GRDVIEW_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C<cpt> */
+	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
@@ -343,8 +343,10 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file.  Optionally, instead give name of a master cpt\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. Optionally, instead give name of a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a\n");
+    GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Use <drapegrid> rather than <topogrid> for color-coding.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use <topogrid> as the relief and drape the image on top.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Jz and -N always refers to the <topogrid>.\n");
