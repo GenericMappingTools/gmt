@@ -83,6 +83,7 @@ struct GMT_DEFAULTS {
 	char format_geo_out[GMT_LEN64];	/* Controls how degrees are written on output [000 = dd.xxxx] */
 	char format_geo_map[GMT_LEN64];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
 	char format_float_out[GMT_LEN64];	/* Default double output format [%g] */
+	char format_float_out_orig[GMT_LEN256];	/* User-specified format for all columns */
 	char format_float_map[GMT_LEN64];	/* Default double plot format [%g] */
 	char format_time[2][GMT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	char format_time_stamp[GMT_LEN256];	/* Specify the format for writing time stamps (see strftime) */

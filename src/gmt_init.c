@@ -3400,16 +3400,27 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 	return (error);
 }
 
+void gmt_reset_colformats (struct GMT_CTRL *GMT)
+{
+	unsigned int i;
+	for (i = 0; i < GMT_MAX_COLUMNS; i++) if (GMT->current.io.o_format[i]) {
+		free (GMT->current.io.o_format[i]);
+		GMT->current.io.o_format[i] = NULL;
+	}
+}
+
 /*! . */
 void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value) {
 
 	unsigned int pos = 0, col = 0, k;
 	char fmt[GMT_LEN64] = {""};
+	strncpy (GMT->current.setting.format_float_out_orig, value, GMT_LEN256);
 	if (strchr (value, ',')) {
 		unsigned int start = 0, stop = 0, error = 0;
 		char *p = NULL;
 		/* Look for multiple comma-separated format statements of type [<cols>:]<format>.
 		 * Last format also becomes the default for unspecified columns */
+		gmt_reset_colformats (GMT);	/* Wipe previous settings */
 		while ((GMT_strtok (value, ",", &pos, fmt))) {
 			if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
 				if (strchr (fmt, '-'))	/* Range of columns given. e.g., 7-9 */
@@ -3419,25 +3430,25 @@ void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value) {
 				else				/* Something bad */
 					error++;
 				p++;	/* Move to format */
-				for (k = start; k <= stop; k++, col++) {
-					if (GMT->current.io.o_format[k]) free (GMT->current.io.o_format[k]);
+				for (k = start; k <= stop; k++)
 					GMT->current.io.o_format[k] = strdup (p);
-				}
+				if (stop > col) col = stop;	/* Retain last column set */
 			}
 		}
+		strncpy (GMT->current.setting.format_float_out, GMT->current.io.o_format[col], GMT_LEN64);
 	}
 	else if (strchr (value, ' ')) {
 		/* Look for N space-separated format statements of type <format1> <format2> <format3> ... 
 		 * and let these apply to the first N output columns.
 		 * Last format also becomes the default for unspecified columns. */
+		gmt_reset_colformats (GMT);	/* Wipe previous settings */
 		k = 0;
-		while ((GMT_strtok (value, " ", &pos, fmt))) {
-			if (GMT->current.io.o_format[k]) free (GMT->current.io.o_format[k]);
+		while ((GMT_strtok (value, " ", &pos, fmt)))
 			GMT->current.io.o_format[k++] = strdup (fmt);
-		}
+		strncpy (GMT->current.setting.format_float_out, GMT->current.io.o_format[k-1], GMT_LEN64);
 	}
 	else {	/* No columns, set the default format */
-		/* Last format also becomes the default for unspecified columns */
+		gmt_reset_colformats (GMT);	/* Wipe previous settings */
 		strncpy (GMT->current.setting.format_float_out, value, GMT_LEN64);
 	}
 }
@@ -4976,7 +4987,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_FLOAT_OUT:
-			strncpy (value, GMT->current.setting.format_float_out, GMT_LEN256);
+			strncpy (value, GMT->current.setting.format_float_out_orig, GMT_LEN256);
 			break;
 		case GMTCASE_FORMAT_FLOAT_MAP:
 			strncpy (value, GMT->current.setting.format_float_map, GMT_LEN256);
@@ -6681,10 +6692,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 		free (GMT->init.history[i]);
 		GMT->init.history[i] = NULL;
 	}
-	for (i = 0; i < GMT_MAX_COLUMNS; i++) if (GMT->current.io.o_format[i]) {
-		free (GMT->current.io.o_format[i]);
-		GMT->current.io.o_format[i] = NULL;
-	}
+	gmt_reset_colformats (GMT);	/* Wipe settings */
 	for (i = 0; i < GMT->common.a.n_aspatial; i++) if (GMT->common.a.name[i]) {
 		free (GMT->common.a.name[i]);
 		GMT->common.a.name[i] = NULL;
@@ -6848,10 +6856,7 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
-	for (i = 0; i < GMT_MAX_COLUMNS; i++) if (GMT->current.io.o_format[i]) {
-		free (GMT->current.io.o_format[i]);
-		GMT->current.io.o_format[i] = NULL;
-	}
+	gmt_reset_colformats (GMT);			/* Wipe previous settings */
 
 	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 
