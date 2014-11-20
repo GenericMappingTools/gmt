@@ -477,8 +477,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	n_COE = 0;
 	if (GMT->common.b.active[GMT_IN]) {	/* Binary input */
 		/* Here, first two cols have track IDs and we do not write track names */
-		int min_ID, max_ID, n_fields, w_col = n_expected_fields - 1;
-		uint64_t n_tracks2;
+		int min_ID, max_ID, n_fields;
+		uint64_t n_tracks2, w_col = n_expected_fields - 1;
 		double *in = NULL;
 		char *check = NULL;
 		
