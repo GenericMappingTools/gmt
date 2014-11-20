@@ -285,9 +285,11 @@ char *gmt_modeltime_unit (unsigned int u)
 
 void gmt_modeltime_name (struct GMT_CTRL * GMT_UNUSED(GMT), char *file, char *format, struct GMT_MODELTIME *T)
 {	/* Creates a filename from the format.  If %s is included we scale and append time units */
-	if (strstr (format, "%s"))
+	if (strstr (format, "%s"))	/* Want unit name */
 		sprintf (file, format, T->value*T->scale, gmt_modeltime_unit (T->u));
-	else
+	else if (strstr (format, "%c"))	/* Want unit letter */
+		sprintf (file, format, T->value*T->scale, T->unit);
+	else	/* Just use time in years */
 		sprintf (file, format, T->value);
 }
 
@@ -753,7 +755,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	int error;
 	bool retain_original;
 	float *orig_load = NULL;
-	char file[GMT_LEN256] = {""};
+	char file[GMT_LEN256] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct RHEOLOGY *R = NULL;
@@ -856,10 +858,16 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->L.active) {	/* Must create a textset to hold names of all output grids */
 		uint64_t dim[3] = {1, 1, Ctrl->T.n_eval_times};
+		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error creating text set for file %s\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
 		}
+		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
+		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
+		time_fmt[j++] = Ctrl->G.file[k];
+		strcat (time_fmt, "%c");	/* Append the unit */
+		GMT_Report (API, GMT_MSG_DEBUG, "Format for time will be %s\n", time_fmt);
 	}
 
 	for (t_eval = 0; t_eval < Ctrl->T.n_eval_times; t_eval++) {	/* For each time step (i.e., at least once) */
@@ -933,8 +941,14 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 		
 		if (Ctrl->L.active) {	/* Add filename and evaluation time to list */
-			char record[GMT_BUFSIZ] = {""};
-			sprintf (record, "%s\t%g%c", file, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].unit);
+			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
+			if (Ctrl->T.active) {
+				sprintf (record, "%s\t", file);
+				sprintf (tmp, time_fmt, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].unit);
+				strcat (record, tmp);
+			}
+			else
+				sprintf (record, "%s", file);
 			L->table[0]->segment[0]->record[t_eval] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}

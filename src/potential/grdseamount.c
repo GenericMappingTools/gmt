@@ -491,7 +491,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	
 	bool map = false, periodic = false, replicate, first, empty;
 	
-	char unit, unit_name[8], file[GMT_LEN256] = {""};
+	char unit, unit_name[8], file[GMT_LEN256] = {""}, time_fmt[GMT_LEN64] = {""};
 	
 	float *data = NULL;
 	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
@@ -596,10 +596,16 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	
 	if (Ctrl->M.active) {	/* Must create textset to hold names of all output grids */
 		uint64_t dim[3] = {1, 1, Ctrl->T.n_times};
+		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Error creating text set for file %s\n", Ctrl->M.file);
 			Return (EXIT_FAILURE);
 		}
+		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
+		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
+		time_fmt[j++] = Ctrl->G.file[k];
+		strcat (time_fmt, "%c");	/* Append the unit */
+		GMT_Report (API, GMT_MSG_DEBUG, "Format for time will be %s\n", time_fmt);
 	}
 	/* Calculate the area, volume, height for each shape; if -L then also write the results */
 	
@@ -874,9 +880,12 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		else
 			strcpy (file, Ctrl->G.file);
 		if (Ctrl->M.active) {
-			char record[GMT_BUFSIZ] = {""};
-			if (Ctrl->T.active)
-				sprintf (record, "%s\t%g%c", file, Ctrl->T.time[t].value * Ctrl->T.time[t].scale, Ctrl->T.time[t].unit);
+			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
+			if (Ctrl->T.active) {
+				sprintf (record, "%s\t", file);
+				sprintf (tmp, time_fmt, Ctrl->T.time[t].value * Ctrl->T.time[t].scale, Ctrl->T.time[t].unit);
+				strcat (record, tmp);
+			}
 			else
 				strcpy (record, file);
 			L->table[0]->segment[0]->record[t_use++] = strdup (record);

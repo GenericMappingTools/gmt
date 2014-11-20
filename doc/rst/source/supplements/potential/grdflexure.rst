@@ -62,12 +62,11 @@ Required Arguments
     modulus, and Poisson's ratio; see **-C** to change these values).
 
 **-G**\ *outfile*
-    Specify the name of the output grid file; see GRID FILE FORMATS below).
-    If **-T** is set then *outfile* must be a filename template that contains
-    either (1) a floating point format (C syntax) and we use the corresponding
-    time (in years)  to generate the file name, or (2) a string format (%s) and
-    we will use the abbreviated time (in units specified in **-T**) to generate
-    the file name.
+    If **-T** is set then *grdfile* must be a filename template that contains
+    a floating point format (C syntax).  If the filename template also contains
+    either %s (for unit name) or %c (for unit letter) then we use the corresponding time
+    (in units specified in **-T**) to generate the individual file names, otherwise
+    we use time in years with no unit.
 
 Optional Arguments
 ------------------

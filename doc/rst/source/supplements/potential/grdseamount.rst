@@ -79,8 +79,10 @@ Optional Arguments
 **-G**\ *grdfile*
     Specify the name of the output grid file; see GRID FILE FORMATS below).
     If **-T** is set then *grdfile* must be a filename template that contains
-    a floating point format (C syntax) and we use the corresponding time
-    (in units specified in **-T**) to generate the individual file names.
+    a floating point format (C syntax).  If the filename template also contains
+    either %s (for unit name) or %c (for unit letter) then we use the corresponding time
+    (in units specified in **-T**) to generate the individual file names, otherwise
+    we use time in years with no unit.
 
 **-L**\ [*cut*]
     List area, volume, and mean height for each seamount; NO grid is created.
