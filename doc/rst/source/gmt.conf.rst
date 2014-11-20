@@ -289,8 +289,8 @@ fonts can be found in the :doc:`gmt` man page.
 
 **FORMAT_FLOAT_MAP**
     Format (C language printf syntax) to be used when plotting double
-    precision floating point numbers on maps. For geographic
-    coordinates, see **FORMAT_GEO_MAP**. [%.12lg].
+    precision floating point numbers along plot frames and contours.
+    For geographic coordinates, see **FORMAT_GEO_MAP**. [%.12lg].
 
 .. _FORMAT_FLOAT_OUT:
 
