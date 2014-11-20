@@ -828,7 +828,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 				break;
 			case 'F':	/* Force polygon mode */
 				Ctrl->F.active = true;
-				if (opt->arg[0] == 'l') Ctrl->F.mode = GMT_IS_LINE;
+				Ctrl->F.mode = (opt->arg[0] == 'l') ? GMT_IS_LINE : GMT_IS_POLY;
 				break;
 			case 'I':	/* Compute intersections between polygons */
 				Ctrl->I.active = true;
@@ -1004,7 +1004,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			
 	/* Read input data set */
 	
-	if (Ctrl->D.active || Ctrl->Q.active) geometry = GMT_IS_LINE;	/* May be lines, may be polygons... */
+	if (Ctrl->D.active || Ctrl->Q.active) geometry = (Ctrl->Q.mode == DO_POLY) ? GMT_IS_POLY : GMT_IS_LINE;	/* May be lines, may be polygons... */
 	else if (Ctrl->A.active) geometry = GMT_IS_POINT;	/* NN analysis involves points */
 	else if (Ctrl->F.active) geometry = Ctrl->F.mode;	/* Forcing polygon or line mode */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
@@ -1221,7 +1221,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
-			mode = GMT_IS_LINE;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which is not good for lines */
+			mode = (Ctrl->Q.mode == DO_POLY) ? GMT_IS_POLY : GMT_IS_LINE;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
 			GMT->current.io.multi_segments[GMT_OUT] = true;	/* To ensure we can write headers */
 		}
 		else {

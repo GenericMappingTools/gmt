@@ -4264,12 +4264,23 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	}
 	else if (input) {	/* Case 1: Load from a single, given source. Register it first. */
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
-		int c_err = 0;
-		char *file = strdup (input);
-		if (family == GMT_IS_CPT && (c_err = GMTAPI_Colors2CPT (API, &file)) < 0) /* Maybe converted colors to new cpt file */
-			return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
-		if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, file)) == GMT_NOTSET) return_null (API, API->error);
-		free (file);	/* Free temp CPT file name */
+		if (family == GMT_IS_CPT) { /* CPT files must be handled differently since the master files live in share/cpt and filename is missing .cpt */
+			int c_err = 0;
+			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (input);
+			if ((c_err = GMTAPI_Colors2CPT (API, &file)) < 0) { /* Maybe converted colors to new cpt file */
+				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
+			}
+			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
+				size_t len = strlen (file);
+				char *ext = (len > 4 && !strncmp (&file[len-4], ".cpt", 4U)) ? "" : ".cpt";
+				GMT_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
+			}
+			else	/* Got color list, now a temp cpt file instead */
+				strncpy (CPT_file, file, GMT_BUFSIZ);
+			free (file);	/* Free temp CPT file name */
+			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) return_null (API, API->error);
+		}
+		else if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, input)) == GMT_NOTSET) return_null (API, API->error);
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */
 		if ((in_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register std??? */
