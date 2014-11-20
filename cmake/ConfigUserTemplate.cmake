@@ -139,7 +139,7 @@
 #set (UNITS "US")
 
 # Enable building of shared libraries [TRUE] (disable to use static libraries;
-# not recommended): on non-x86 architectures uncomment the next option as well):
+# not recommended; on non-x86 architectures uncomment the next option as well):
 #set (BUILD_SHARED_LIBS FALSE)
 
 # Create position independent code on all targets [auto] (needed for static
