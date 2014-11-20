@@ -3679,7 +3679,10 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 		}
 	}
-
+	if (G->curved_text && G->nudge_flag) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot combine +v and +n\n");
+		bad++;
+	}
 	return (bad);
 }
 
@@ -5110,7 +5113,7 @@ char * GMT_make_filename (struct GMT_CTRL *GMT_UNUSED(GMT), char *template, unsi
 
 /*! . */
 void GMT_sprintf_float (char *string, char *format, double x)
-{	/* Determines if %-apostrophe is used in the format for a float. It so, use LC_NUMERIC=en_US */
+{	/* Determines if %-apostrophe is used in the format for a float. If so, use LC_NUMERIC=en_US */
 	char *use_locale = strstr (format, "%'");
 	if (use_locale) setlocale (LC_NUMERIC, "en_US");
 	sprintf (string, format, x);

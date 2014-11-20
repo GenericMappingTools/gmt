@@ -815,7 +815,7 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 		GMT_message (GMT, "%s   N Use current file number / segment number (starting at 0/0).\n", pad);
 		GMT_message (GMT, "%s   x Like h, but us headers in file with crossing lines instead.\n", pad);
 	}
-	GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis).\n", pad);
+	GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.\n", pad);
 	GMT_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
 	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox  [Default is no outline].\n", pad);
 	GMT_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);
@@ -1669,7 +1669,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	for (i = 0; i < length; i++) if (item[i] == '/') n_slash++;
 
 	strncpy (GMT->common.R.string, item, GMT_LEN256);	/* Verbatim copy */
-	
+
 	if (strchr ("LCRlcr", item[0]) && strchr ("TMBtmb", item[1])) {	/* Extended -R option using coordinate codes and grid increments */
 		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
 		double xdim, ydim, orig[2];
@@ -3438,7 +3438,7 @@ void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value) {
 		strncpy (GMT->current.setting.format_float_out, GMT->current.io.o_format[col], GMT_LEN64);
 	}
 	else if (strchr (value, ' ')) {
-		/* Look for N space-separated format statements of type <format1> <format2> <format3> ... 
+		/* Look for N space-separated format statements of type <format1> <format2> <format3> ...
 		 * and let these apply to the first N output columns.
 		 * Last format also becomes the default for unspecified columns. */
 		gmt_reset_colformats (GMT);	/* Wipe previous settings */
@@ -5588,7 +5588,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			else
 				sprintf (value, "%" PRIu64, GMT->current.setting.n_bin_header_cols);
 			break;
-			
+
 		case GMTCASE_IO_SEGMENT_MARKER:
 			value[0] = '\0';
 			if (GMT->current.setting.io_seg_marker[GMT_OUT] != GMT->current.setting.io_seg_marker[GMT_IN]) {
@@ -8733,7 +8733,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				error += gmt_scale_or_width (GMT, args, &GMT->current.proj.pars[1]);
 			}
 			else {
-				n = sscanf (args, "%[^/]/%s", txt_a, txt_b); 
+				n = sscanf (args, "%[^/]/%s", txt_a, txt_b);
 				GMT->current.proj.pars[0] = atof (txt_a);
 				switch (args[0]) {
 					case '-':	/* Enforce Southern hemisphere convention for y */
@@ -10648,7 +10648,7 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 	/* 1. We read a multisegment header
 	   2. The -g option is set which will create gaps and thus multiple segments
 	 */
-		
+
 	/* Initialize the output and plot format machinery for ddd:mm:ss[.xxx] strings from the default format strings.
 	 * While this is also done in the default parameter loop it is possible that when a decimal plain format has been selected
 	 * the format_float_out string has not yet been processed.  We clear that up by processing again here. */
