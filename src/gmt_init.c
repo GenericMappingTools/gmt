@@ -3142,7 +3142,7 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 
 void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value)
 {
-	unsigned int pos = 0, col = 0, start = 0, stop = 0, k, error = 0;
+	unsigned int pos = 0, start = 0, stop = 0, k, error = 0;
 	char fmt[GMT_LEN64] = {""}, *p = NULL;
 	/* Look for multiple comma-separated format statements of type [<cols>:]<format> */
 	while ((GMT_strtok (value, ",", &pos, fmt))) {
@@ -3154,7 +3154,7 @@ void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value)
 			else				/* Something bad */
 				error++;
 			p++;	/* Move to format */
-			for (k = start; k <= stop; k++, col++) {
+			for (k = start; k <= stop; k++) {
 				if (GMT->current.io.o_format[k]) free (GMT->current.io.o_format[k]);
 				GMT->current.io.o_format[k] = strdup (p);
 			}
