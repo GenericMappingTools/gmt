@@ -28,38 +28,46 @@ Description
 -----------
 
 **grdflexure** computes the flexural response to loads using a range
-of user-selectable rheologies.
+of user-selectable rheologies.  User may select from elastic, viscoelastic,
+or firmoviscous (with one or two viscous layers).  Temporal evolution can
+also be modeled by providing incremental load grids and specifying a
+range of model output times.
 
 Required Arguments
 ------------------
 
 *topogrd*
     2-D binary grid file with the topography of the load (in meters);
-    See GRID FILE FORMATS below).
+    See GRID FILE FORMATS below.
     If **-T** is used, *topogrd* may be a filename template with a
     floating point format (C syntax) and a different load file name
     will be set and loaded for each time step.  The load times thus
-    coincide with the times given via **-T**.  Alternatively, give
-    *=flist* where *flist* is an ASCII table with one topogrd filename
-    and load time per record.  This load times can be different from
-    the output times given via **-T**.
+    coincide with the times given via **-T** (but not all times need
+    to have a corresponding file).  Alternatively, give *topogrd* as
+    =*flist*, where *flist* is an ASCII table with one *topogrd* filename
+    and load time per record.  These load times can be different from
+    the evaluation times given via **-T**.  For load time format, see
+    **-T**.
 
 **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
-    Sets density for mantle, load, infill (optionally, otherwise it is
-    assumed to equal the load density), and water.  If *ri* differs from
+    Sets density for mantle, load, infill (optional, otherwise it is
+    assumed to equal the load density), and water or air.  If *ri* differs from
     *rl* then an approximate solution will be found.  If *ri* is not given
     then it defaults to *rl*.
 
 **-E**\ *Te*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
-    the flexural rigidity D (by default D is computed from *Te*, Young's
+    a flexural rigidity D (by default D is computed from *Te*, Young's
     modulus, and Poisson's ratio; see **-C** to change these values).
+
 **-G**\ *outfile*
     Specify the name of the output grid file; see GRID FILE FORMATS below).
     If **-T** is set then *outfile* must be a filename template that contains
-    a floating point format (C syntax) and we use the corresponding time
-    (in units specified in **-T**) to generate the file name.
+    either (1) a floating point format (C syntax) and we use the corresponding
+    time (in years)  to generate the file name, or (2) a string format (%s) and
+    we will use the abbreviated time (in units specified in **-T**) to generate
+    the file name.
 
 Optional Arguments
 ------------------
@@ -71,20 +79,24 @@ Optional Arguments
     Change the current value of Young's modulus [7.0e10 N/m^2].
 
 **-F**\ *nu_a*\ [\ /*h_a*/*nu_m*]
-    Specify a firmoviscous model in conjuncton with an elastic plate
+    Specify a firmoviscous model in conjunction with an elastic plate
     thickness specified via **-E**.  Just give one viscosity (*nu_a*)
     for an elastic plate over a viscous half-space, or also append
-    the thickness of the asthenosphere, with the first viscosity being
-    asthenospheric and the latter that of the lower mantle 
+    the thickness of the asthenosphere (*h_a*) and the lower mantle
+    viscosity (*nu_m*), with the first viscosity now being that of
+    the asthenosphere. Give viscosities in Pa*s. If used, give the
+    thickness of the asthenosphere in meter; append **k** for km.
 
 .. include:: ../../explain_fft.rst_
 
 **-L**\ *list*
-    Write the names and times of all grids that were created to the text
-    file *list*. Requires **-T**.
+    Write the names and evaluation times of all grids that were created
+    to the text file *list*. Requires **-T**.
 
 **-M**\ *tm*
-    Set the Maxwell time *tm* for the viscoelastic model.
+    Specify a viscoelastic model in conjunction with an elastic plate
+    thickness specified via **-E**.  Append the Maxwell time *tm* for the
+    viscoelastic model (in ).
 
 **-S**\ *beta*
     Specify a starved moat fraction in the 0-1 range, where 1 means the moat is fully
@@ -98,7 +110,7 @@ Optional Arguments
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a file with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).
-    We then write a separate grid file for each time step.
+    We then write a separate model grid file for each given time step.
 
 **-W**\ *wd*
     Set reference depth to the undeformed flexed surface in m [0].  Append **k** to indicate
@@ -159,8 +171,18 @@ for a 10 km thick plate with typical densities, try
 
     gmt grdflexure topo.nc -Gflex.nc -E10k -D2700/3300/1035
 
+To compute the firmoviscous response to a series of incremental loads given by
+file name and load time in the table l.lis at the single time 1 Ma using the
+specified rheological values, try
+
+::
+
+    gmt grdflexure -T1M =l.lis -D3300/2800/2800/1000 -E5k -Gflx/smt_fv_%03.1f_%s.nc -F2e20 -Nf+a
+
 References
 ----------
+
+Cathles, L. M., 1975, *The viscosity of the earth's mantle*, Princeton University Press.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
@@ -169,6 +191,7 @@ J. Geophys. Res., 106(B9), 19,431-19,441,
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`gmtflexure </supplements/potential/gmtflexure>`
-:doc:`grdfft </grdfft>`, :doc:`gravfft </supplements/potential/gravfft>`
-:doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`
+:doc:`gmt </gmt>`, :doc:`grdfft </grdfft>`,
+:doc:`gravfft </supplements/potential/gravfft>`
+:doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`,
+:doc:`grdseamount </supplements/potential/grdseamount>`

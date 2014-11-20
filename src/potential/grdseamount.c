@@ -485,11 +485,11 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	int error, scol, srow, scol_0, srow_0;
 	
 	unsigned int n_expected_fields, n_out, nx1, d_mode, row, col, row_0, col_0;
-	unsigned int max_d_col, d_row, *d_col = NULL, t, build_mode, t0_col, t1_col;
+	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col, t1_col;
 	
 	uint64_t n_smts = 0, tbl, seg, rec, ij;
 	
-	bool map = false, periodic = false, replicate, first;
+	bool map = false, periodic = false, replicate, first, empty;
 	
 	char unit, unit_name[8], file[GMT_LEN256] = {""};
 	
@@ -665,7 +665,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	}
 	data = GMT_memory (GMT, NULL, Grid->header->size, float);	/* tmp */
 
-	for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each time step (or just once) */
+	for (t = t_use = 0; t < Ctrl->T.n_times; t++) {	/* For each time step (or just once) */
 
 		/* 1. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
@@ -674,6 +674,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		}
 		if (Ctrl->Q.bmode == SMT_INCREMENTAL) GMT_memset (Grid->data, Grid->header->size, float);	/* Wipe clean for next increment */
 		max = -DBL_MAX;
+		empty = true;	/* So far, no seamounts have left a contribution */
 				
 		/* 2. VISIT ALL SEAMOUNTS */
 		for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
@@ -781,6 +782,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 						case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
 					}
 					if (build_mode == SHAPE_GAUS) h_scale *= h_scl;
+					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
 					if (d_col) GMT_free (GMT, d_col);
@@ -854,12 +856,18 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 									first = false;
 								}
 							}
+							empty = false;	/* We have made a mark on this grid */
 						}
 					}
 				}
 			}
 			prev_user_time = this_user_time;	/* Make this the previous time */
 		}
+		if (empty) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "No contribution made for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
+			continue;
+		}
+		
 		/* Time to write the grid */
 		if (Ctrl->T.active)
 			gmt_modeltime_name (GMT, file, Ctrl->G.file, &(Ctrl->T.time[t]));
@@ -871,7 +879,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 				sprintf (record, "%s\t%g%c", file, Ctrl->T.time[t].value * Ctrl->T.time[t].scale, Ctrl->T.time[t].unit);
 			else
 				strcpy (record, file);
-			L->table[0]->segment[0]->record[t] = strdup (record);
+			L->table[0]->segment[0]->record[t_use++] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
 		
@@ -888,7 +896,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		}
 		GMT_memcpy (Grid->data, data, Grid->header->size, float);
 	}
-	
+	if (Ctrl->M.active) L->table[0]->n_records = t_use;
 	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Error writing list of grid files to %s\n", Ctrl->M.file);
 		Return (API->error);
