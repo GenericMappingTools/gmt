@@ -377,16 +377,15 @@ if (BUILD_SUPPLEMENTS)
 	add_dependencies (supplib pslib) # make supplib after pslib
 	add_dependencies (supplib gmtlib) # make supplib after pslib
 
-	# SOVERSION & VERSION does not work for a MODULE, only for SHARED libs
-	# Instead we use ${GMT_LIB_SOVERSION} for the MODULE, so we can never have clashes
+	# No SOVERSION & VERSION for a MODULE, only for SHARED libs
 	target_link_libraries (supplib
 		gmtlib
 		pslib)
 
 	set_target_properties (supplib
 		PROPERTIES
-		OUTPUT_NAME supplements.${GMT_LIB_SOVERSION}
-		RUNTIME_OUTPUT_NAME supplements.${GMT_LIB_SOVERSION}
+		OUTPUT_NAME supplements
+		RUNTIME_OUTPUT_NAME supplements
 		LIBRARY_OUTPUT_DIRECTORY plugins
 		RUNTIME_OUTPUT_DIRECTORY plugins
 		PREFIX ""
