@@ -405,9 +405,13 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 
 	if (API->GMT->init.runtime_libdir) {	/* Successfully determined runtime dir for shared libs */
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 )
+		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 ) {
 			/* Running in build dir: search plugins in build-dir/src/plugins */
 			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_BUFSIZ-1);
+#ifdef XCODER
+			strcat (plugindir, "/Debug");	/* PW: The Xcode plugin path for Debug */
+#endif
+		}
 		else
 #endif
 		{
