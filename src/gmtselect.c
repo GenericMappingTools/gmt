@@ -433,7 +433,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	unsigned int base = 3, np[2] = {0, 0}, r_mode;
 	unsigned int side, col, id;
 	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX, error = 0;
-	bool inside, need_header = false, shuffle, just_copy_record = false, pt_cartesian = false;
+	bool inside = false, need_header = false, shuffle, just_copy_record = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 
 	uint64_t k, row, seg, n_read = 0, n_pass = 0, n_output = 0;

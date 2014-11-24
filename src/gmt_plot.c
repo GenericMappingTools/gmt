@@ -1192,7 +1192,7 @@ void gmt_rounded_framecorners (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 }
 
 #if 0
-/* Nov-11-2014 PW: For reference until we know there are no side effects with the new one below /*
+/* Nov-11-2014 PW: For reference until we know there are no side effects with the new one below */
 void gmt_wesn_map_boundary_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
 	uint64_t i, np = 0;
@@ -4693,7 +4693,7 @@ void gmt_plot_vector_head (struct GMT_CTRL *GMT, double *xp, double *yp, uint64_
 	 * across a periodic boundary we must check if that is the case and plot the two parts separately.
 	 * When that is the case we cannot draw the outline of the two new polygons since we wish to show
 	 * the heads as "clipped" by the boundary; hence all the rigamorole below. */
-	uint64_t start = 0, nin;
+	uint64_t start = 0, nin = 0;
 	unsigned int n_use, *pin = NULL;	/* Copy of the pen moves */
 	unsigned int cap = GMT->PSL->internal.line_cap;
 	double *xin = NULL, *yin = NULL;	/* Temp vector with possibly clipped x,y line returned by GMT_geo_to_xy_line */

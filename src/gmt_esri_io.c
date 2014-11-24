@@ -43,7 +43,9 @@ int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	if ((fp = GMT_fopen (GMT, header->name, "r")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	(void)fgets (record, GMT_BUFSIZ, fp);	/* Just get first line. Not using GMT_fgets since we may be reading a binary file */
+	if (fgets (record, GMT_BUFSIZ, fp) == NULL) {	/* Just get first line. Not using GMT_fgets since we may be reading a binary file */
+		return (GMT_GRDIO_OPEN_FAILED);
+	}
 	GMT_fclose (GMT, fp);
 	if (strncmp (record, "ncols ", 6) ) {
 		/* Failed to find "ncols"; probably a binary file */

@@ -158,7 +158,9 @@ int GMT_gmtwhich (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	if (Ctrl->D.active) getcwd (cwd, GMT_BUFSIZ);	/* Get full path, even for current dir */
+	if (Ctrl->D.active && (getcwd (cwd, GMT_BUFSIZ) == NULL)) {	/* Get full path, even for current dir */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Unable to determine current working directory!\n");
+	}
 	fmode = (Ctrl->A.active) ? R_OK : F_OK;	/* Either readable or existing files */
 		
 	for (opt = options; opt; opt = opt->next) {

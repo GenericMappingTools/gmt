@@ -6241,7 +6241,9 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	getcwd (cwd, GMT_BUFSIZ);
+	if (getcwd (cwd, GMT_BUFSIZ) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Unable to determine current working directory.\n");
+	}
 	if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		sprintf (hfile, "%s/gmt.history", GMT->session.TMPDIR);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */

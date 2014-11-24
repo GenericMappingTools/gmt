@@ -1950,7 +1950,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 
 	int item, first_item = 0, last_item, this_item = GMT_NOTSET, new_item, new_ID;
 	unsigned int n_used = 0;
-	bool update = false, allocate = false, via;
+	bool update = false, allocate = false, via = false;
 	size_t n_alloc;
 	uint64_t row, seg;
 	char *t_ptr = NULL;
@@ -6182,7 +6182,7 @@ char * gmt_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode)
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
 	time_t right_now;
-	clock_t toc, S;
+	clock_t toc = 0, S;
 	unsigned int H, M, milli;
 	static char stamp[GMT_LEN256] = {""};
 

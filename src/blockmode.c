@@ -348,7 +348,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 	   of the total sum of weights */
 
 	double top, bottom, p, p_max, mode;
-	uint64_t i, j, src;
+	uint64_t i, j, src = 0;
 
 
 	/* Do some initializations */
