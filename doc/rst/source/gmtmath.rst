@@ -617,6 +617,22 @@ solution is simply
 
     gmt gmtmath -T lsqsys.d LSQFIT = solution.d
 
+Users must be aware that when **-C** controls which columns are to be
+active the control extends to placing columns from files as well.
+Constrast the different result obtained by these very similar commands:
+
+::
+
+    echo 1 2 3 4 | gmt math STDIN -C3 1 ADD =
+    1    2    3    5
+
+versus
+
+::
+
+    echo 1 2 3 4 | gmt math -C3 STDIN 1 ADD =
+    0    0    0    5
+
 References
 ----------
 

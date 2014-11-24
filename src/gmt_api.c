@@ -1545,7 +1545,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID;
 	unsigned int geometry, n_used = 0;
-	bool allocate = false, update = false, all_D, use_GMT_io, greenwich = true, via;
+	bool allocate = false, update = false, all_D, use_GMT_io, greenwich = true, via = false;
 	size_t n_alloc;
 	uint64_t row, seg, col, ij;
 	p_func_size_t GMT_2D_to_index = NULL;
