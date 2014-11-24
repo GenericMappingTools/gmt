@@ -173,7 +173,7 @@ int GMT_grdsample_parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, stru
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input grid file\n");
+	n_errors += GMT_check_condition (GMT, (n_files != 1), "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.r.active && Ctrl->T.active && !GMT->current.io.grd_info.active, 
 					"Syntax error: Only one of -r, -T may be specified\n");
