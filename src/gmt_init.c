@@ -820,7 +820,7 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox  [Default is no outline].\n", pad);
 	GMT_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);
 	GMT_message (GMT, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
-	GMT_message (GMT, "%s +t[<file>] saves (x y label) to <file> [%s_labels.txt].\n", pad, type[kind]);
+	GMT_message (GMT, "%s +t[<file>] saves (x y label) to <file> [%s_labels.txt].\n", pad, type[kind%2]);
 	GMT_message (GMT, "%s   use +T to save (x y angle label) instead\n", pad);
 	GMT_message (GMT, "%s +u<unit> to append unit to all labels.\n", pad);
 	if (kind == 0) GMT_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
@@ -6533,7 +6533,9 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	getcwd (cwd, GMT_BUFSIZ);
+	if (getcwd (cwd, GMT_BUFSIZ) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Unable to determine current working directory.\n");		
+	}
 	if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		sprintf (hfile, "%s/gmt.history", GMT->session.TMPDIR);
 	else if (!access (cwd, W_OK))		/* Current directory is writable */
@@ -6614,7 +6616,9 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	getcwd (cwd, GMT_BUFSIZ);
+	if (getcwd (cwd, GMT_BUFSIZ) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Unable to determine current working directory.\n");
+	}
 	if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		sprintf (hfile, "%s/gmt.history", GMT->session.TMPDIR);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */

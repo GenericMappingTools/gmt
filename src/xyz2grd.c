@@ -474,10 +474,16 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->nm, float);
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids */
 		row = col = 0;
-		fscanf (fp, "%s", line);
+		if (fscanf (fp, "%s", line) != 1) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read nodata-flag or first data record from ESRI file\n");
+			Return (EXIT_FAILURE);
+		}
 		GMT_str_tolower (line);
 		if (!strcmp (line, "nodata_value")) {	/* Found the optional nodata word */
-			fscanf (fp, "%lf", &value);
+			if (fscanf (fp, "%lf", &value) != 1) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to parse nodata-flag from ESRI file\n");
+				Return (EXIT_FAILURE);
+			}
 			if (Ctrl->E.set && !doubleAlmostEqualZero (value, Ctrl->E.nodata)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Your -E%g overrides the nodata_value of %g found in the ESRI file\n", Ctrl->E.nodata, value);
 			}
@@ -560,8 +566,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	}
 
 	n_read = ij = 0;
-	if (Ctrl->Z.active) for (i = 0; i < io.skip; i++)
-		fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
+	if (Ctrl->Z.active) {
+		size_t nr = 0;
+		for (i = 0; i < io.skip; i++)
+			nr += fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
+	}
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */

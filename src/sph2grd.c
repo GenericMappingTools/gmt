@@ -225,7 +225,7 @@ int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct G
 int GMT_sph2grd (void *V_API, int mode, void *args)
 {
 	bool ortho = false, duplicate_col;
-	int error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0;
+	int error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
 	unsigned int row, col, nx, n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
 	uint64_t tbl, seg, drow, node, node_L, k;
 	char text[GMT_LEN32] = {""};
@@ -434,10 +434,10 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 		}
 		for (col = 0, node = node_L = GMT_IJP (Grid->header, row, 0); col < nx; col++, node++) {	/* For each longitude along this parallel */
 			sum = 0.0;	/* Initialize sum to zero for new output node */
-			k = (L_min) ? LM_index (L_min, 0) : 0;	/* Set start index for P_lm packed array */
+			kk = (L_min) ? LM_index (L_min, 0) : 0;	/* Set start index for P_lm packed array */
 			for (L = L_min; L <= L_max; L++) {	/* For all degrees */
-				for (M = 0; M <= L; M++, k++) {	/* For all orders <= L */
-					sum += P_lm[k] * (C[L][M] * Cosm[col][M] + S[L][M] * Sinm[col][M]);
+				for (M = 0; M <= L; M++, kk++) {	/* For all orders <= L */
+					sum += P_lm[kk] * (C[L][M] * Cosm[col][M] + S[L][M] * Sinm[col][M]);
 				}
 			}
 			Grid->data[node] = (float)sum;	/* Assign total to the grid, cast as float */

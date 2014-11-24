@@ -2309,7 +2309,8 @@ void GMT_io_binary_header (struct GMT_CTRL *GMT, FILE *fp, unsigned int dir)
 	uint64_t k;
 	char c = ' ';
 	if (dir == GMT_IN) {	/* Use fread since we dont know if input is a stream or a file */
-		for (k = 0; k < GMT->current.setting.io_n_header_items; k++) (void)GMT_fread (&c, sizeof (char), 1U, fp);
+		size_t nr = 0;
+		for (k = 0; k < GMT->current.setting.io_n_header_items; k++) nr += GMT_fread (&c, sizeof (char), 1U, fp);
 	}
 	else {
 		for (k = 0; k < GMT->current.setting.io_n_header_items; k++) GMT_fwrite (&c, sizeof (char), 1U, fp);
