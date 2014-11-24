@@ -49,9 +49,6 @@
 #define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment legnth, then they are not the same feature */
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
-#define DO_LINE	1
-#define DO_POLY	2
-
 struct DUP {
 	uint64_t point;
 	uint64_t segment;
@@ -101,9 +98,8 @@ struct GMTSPATIAL_CTRL {
 		bool active;
 		unsigned int mode;
 	} E;
-	struct F {	/* -F[l] */
+	struct F {	/* -F */
 		bool active;
-		unsigned int mode;
 	} F;
 	struct I {	/* -I[i|e] */
 		bool active;
@@ -156,7 +152,7 @@ void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->D.I.d_threshold = MIN_SEPARATION;
 	C->D.I.c_threshold = MIN_CLOSENESS;
 	C->D.I.s_threshold = MIN_SUBSET;
-	C->F.mode = GMT_IS_POLY;
+	C->Q.mode = GMT_IS_POINT;	/* Undecided on line vs poly */
 	return (C);
 }
 
@@ -691,7 +687,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   the comparison to points that project perpendicularly on to the other line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Orient all polygons to have the same handedness.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + for counter-clockwise or - for clockwise handedness.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force all input segments to become closed polygons by adding repeated point if needed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force all input segments to become closed polygons on output by adding repeated point if needed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fl instead to ensure input lines are not treated as polygons.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Compute Intersection locations between input polygon(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append e or i for external or internal crossings only [Default is both].\n");
@@ -712,8 +708,8 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   you may append unit %s [k]; otherwise it will be based on the input Cartesian data unit.\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   We also compute polygon centroid or line mid-point.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+h' to place the (area, handedness) or length result in the segment header on output\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+p' to consider all input as polygons and close them if necessary.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+l' to consider all input as lines even if closed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+p' to consider all input as polygons and close them if necessary [only closed polygons are polygons].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+l' to consider all input as lines even if closed [closed polygons are considered polygons].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default only reports results to stdout].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
@@ -828,7 +824,6 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 				break;
 			case 'F':	/* Force polygon mode */
 				Ctrl->F.active = true;
-				Ctrl->F.mode = (opt->arg[0] == 'l') ? GMT_IS_LINE : GMT_IS_POLY;
 				break;
 			case 'I':	/* Compute intersections between polygons */
 				Ctrl->I.active = true;
@@ -854,10 +849,10 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 				while (GMT_strtok (s, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'l':	/* Consider input as lines, even if closed */
-							Ctrl->Q.mode = DO_LINE;
+							Ctrl->Q.mode = GMT_IS_LINE;
 							break;
 						case 'p':		/* Consider input as polygones, close if necessary */
-							Ctrl->Q.mode = DO_POLY;
+							Ctrl->Q.mode = GMT_IS_POLY;
 							break;
 						case 'h':	/* Place result in output header */
 							Ctrl->Q.header = true;
@@ -1004,9 +999,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			
 	/* Read input data set */
 	
-	if (Ctrl->D.active || Ctrl->Q.active) geometry = (Ctrl->Q.mode == DO_POLY) ? GMT_IS_POLY : GMT_IS_LINE;	/* May be lines, may be polygons... */
+	if (Ctrl->D.active) geometry = GMT_IS_LINE|GMT_IS_POLY;	/* May be lines, may be polygons... */
+	else if (Ctrl->Q.active) geometry = Ctrl->Q.mode;	/* May be lines, may be polygons... */
 	else if (Ctrl->A.active) geometry = GMT_IS_POINT;	/* NN analysis involves points */
-	else if (Ctrl->F.active) geometry = Ctrl->F.mode;	/* Forcing polygon or line mode */
+	else if (Ctrl->F.active) geometry = GMT_IS_POLY;	/* Forcing polygon mode */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
@@ -1221,7 +1217,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
-			mode = (Ctrl->Q.mode == DO_POLY) ? GMT_IS_POLY : GMT_IS_LINE;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
+			mode = Ctrl->Q.mode;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
 			GMT->current.io.multi_segments[GMT_OUT] = true;	/* To ensure we can write headers */
 		}
 		else {
@@ -1240,8 +1236,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 				S = D->table[tbl]->segment[seg];
 				if (S->n_rows == 0) continue;
 				switch (Ctrl->Q.mode) {
-					case DO_LINE:	poly = false;	break;
-					case DO_POLY:	poly = true;	break;
+					case GMT_IS_LINE:	poly = false;	break;
+					case GMT_IS_POLY:	poly = true;	break;
 					default:
 						poly = !GMT_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);	/* Line or polygon */
 						break;
@@ -1757,7 +1753,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		}
 	}
 	
-	if (Ctrl->F.active) {	/* We read as polygons to forec closure, now write out revised data */
+	if (Ctrl->F.active) {	/* We read as polygons to force closure, now write out revised data */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 			Return (API->error);
 		}

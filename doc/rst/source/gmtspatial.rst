@@ -15,7 +15,7 @@ Synopsis
 
 **gmtspatial** [ *table* ] [ **-A**\ [**a**\ *min_dist*][*unit*]] [ **-C** ]
 [ **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
-[ **-E**\ **+**\ \|\ **-** ] [ **-F**\ [**l**]] [ **-I**\ [**e**\ \|\ **i**] ]
+[ **-E**\ **+**\ \|\ **-** ] [ **-F** ] [ **-I**\ [**e**\ \|\ **i**] ]
 [ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
 [ **-Q**\ [**+h**\ ][**+l**\ ][**+p**\ ][*unit*\ ]] ]
 [ |SYN_OPT-R| ]
@@ -97,8 +97,8 @@ Optional Arguments
     (counter-clockwise) or **-** (clockwise). Implies **-Q+**.
 
 **-F**\ [**l**]
-   Force input data to be polygons, i.e., close them explicitly if not
-   already closed.  Alternatively, use **Fl** to treat them as lines.
+   Force input data to become polygons on output, i.e., close them explicitly if not
+   already closed.
 
 **-I**\ [**e**\ \|\ **i**]
     Determine the intersection locations between all pairs of polygons.
@@ -189,25 +189,32 @@ Optional Arguments
 Example
 -------
 
-To compute the area of all geographic polygons in the multisegment file
-polygons.d, run
+To turn all lines in the multisegment file lines.txt into closed polygons,
+run
 
    ::
 
-    gmt gmtspatial polygons.d -Q > areas.d
+    gmt gmtspatial lines.txt -F > polygons.txt
+
+To compute the area of all geographic polygons in the multisegment file
+polygons.txt, run
+
+   ::
+
+    gmt gmtspatial polygons.txt -Q > areas.txt
 
 Same data, but now orient all polygons to go counter-clockwise and write
 their areas to the segment headers, run
 
    ::
 
-    gmt gmtspatial polygons.d -Q+ -E+ > areas.d
+    gmt gmtspatial polygons.txt -Q+h -E+ > areas.txt
 
-To determine the intersections between the polygons A.d and B.d, run
+To determine the intersections between the polygons A.txt and B.txt, run
 
    ::
 
-    gmt gmtspatial A.d B.d -Ce > crossovers.d
+    gmt gmtspatial A.txt B.txt -Ce > crossovers.txt
 
 See Also
 --------
