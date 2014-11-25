@@ -420,7 +420,7 @@ unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsig
 {	/* Examine the -E<args> option and determine the distance unit and mode. */
 	unsigned int id, pos = 0, pos2 = 0, error = 0, l_mode[3], this_mode = 0;
 	size_t len, k, kk, s;
-	char *c = NULL, p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit, l_unit[3];
+	char *c = NULL, p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit = 0, l_unit[3];
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 	
@@ -996,7 +996,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t n_out = 0;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
-		bool gmt_skip_output (struct GMT_CTRL *C, double *cols, int n_cols);
+		bool gmt_skip_output (struct GMT_CTRL *C, double *cols, uint64_t n_cols);
 		
 		pure_ascii = GMT_is_ascii_record (GMT);
 
