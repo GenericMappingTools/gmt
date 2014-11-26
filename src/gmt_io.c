@@ -1799,7 +1799,7 @@ bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols)
 	}
 	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);				/* Normal case; output the record */
 	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_ONE) {	/* -sa: Skip records if any NaNs are found */
-		for (c = 0; c < n_cols; c++) if (GMT_is_dnan (cols[c]))  return (true);	/* Found a NaN so we skip */
+		for (c = 0; c < n_cols; c++) if (GMT_is_dnan (cols[c])) return (true);	/* Found a NaN so we skip */
 		return (false);	/* No NaNs, output record */
 	}
 	for (c = n_nan = 0; c < GMT->current.io.io_nan_ncols; c++) {			/* Check each of the specified columns set via -s */
