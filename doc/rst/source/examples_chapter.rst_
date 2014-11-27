@@ -83,11 +83,11 @@ Creating GMT Graphics
     same page. The region of interest is the Hawaiian islands, and due to
     the oblique trend of the island chain we prefer to rotate our
     geographical data sets using an oblique Mercator projection defined by
-    the hotspot pole at (68W, 69N). We choose the point (190, 25.5) to be
+    the hotspot pole at (68ºW, 69ºN). We choose the point (190º, 25.5º) to be
     the center of our projection (e.g., the local origin), and we want to
     image a rectangular region defined by the longitudes and latitudes of
     the lower left and upper right corner of region. In our case we choose
-    (160, 20) and (220, 30) as the corners. We use
+    (160º, 20º) and (220º, 30º) as the corners. We use
     :doc:`grdimage` to make the illustration:
 
     .. literalinclude:: /_verbatim/example_02.txt
@@ -1109,7 +1109,7 @@ Creating GMT Graphics
     .. _Fig_example_31:
 
     .. figure:: /_images/example_31.*
-        
+
     Draping an image over topography
     --------------------------------
 
