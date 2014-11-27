@@ -167,7 +167,7 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 				Ctrl->E.inside = GMT_INSIDE;
 				break;
 			case 'G':	/* Output filename */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

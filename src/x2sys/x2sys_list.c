@@ -201,7 +201,7 @@ int GMT_x2sys_list_parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, st
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				if ((Ctrl->I.active = GMT_check_filearg (GMT, 'I', opt->arg, GMT_IN)))
+				if ((Ctrl->I.active = GMT_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
 					Ctrl->I.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -209,7 +209,7 @@ int GMT_x2sys_list_parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, st
 			case 'L':	/* Crossover correction table */
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
-					if (GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN))
+					if (GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET))
 						Ctrl->L.file = strdup (opt->arg);
 					else
 						n_errors++;

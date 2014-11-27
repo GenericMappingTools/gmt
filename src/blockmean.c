@@ -93,7 +93,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

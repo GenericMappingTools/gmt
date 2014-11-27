@@ -238,10 +238,10 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 			case '>':	/* Specified output file */
-				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT))
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
 					Ctrl->Out.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -308,7 +308,7 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
 							n_errors++;
 						}
-						else if (GMT_check_filearg (GMT, '<', line, GMT_IN))
+						else if (GMT_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
 							Ctrl->G.file[ng] = strdup (line);
 						else
 							n_errors++;
@@ -317,7 +317,7 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 						n_errors += GMT_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
 					}
 					else {	/* Regular grid file */
-						if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+						if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 							Ctrl->G.file[ng] = strdup (opt->arg);
 						else
 							n_errors++;

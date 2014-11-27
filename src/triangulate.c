@@ -153,7 +153,7 @@ int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -175,7 +175,7 @@ int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, 
 				Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

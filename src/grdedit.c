@@ -130,7 +130,7 @@ int GMT_grdedit_parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct G
 
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -149,7 +149,7 @@ int GMT_grdedit_parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct G
 				Ctrl->E.active = true;
 				break;
 			case 'N':	/* Replace nodes */
-				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN)))
+				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)))
 					Ctrl->N.file = strdup (opt->arg);
 				else
 					n_errors++;

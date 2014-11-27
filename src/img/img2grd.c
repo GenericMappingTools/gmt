@@ -184,7 +184,7 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (n_files++ == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -210,7 +210,7 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 				Ctrl->E.active = true;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

@@ -506,7 +506,7 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 			case '<':	/* Collect input files */
 				Ctrl->In.active = true;
 				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = GMT_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
-				if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+				if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[Ctrl->In.n++] = strdup (opt->arg);
 				else
 					n_errors++;
@@ -528,7 +528,7 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 				}
 				break;
 			case 'G':	/* Output filename */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

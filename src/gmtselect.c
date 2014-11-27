@@ -238,7 +238,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -292,7 +292,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				}
 				break;
 			case 'F':	/* Inside/outside polygon test */
-				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN)))
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
 					Ctrl->F.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -327,7 +327,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 					n_errors++;
 				}
 				else {
-					if (GMT_check_filearg (GMT, 'L', &opt->arg[j+1], GMT_IN))
+					if (GMT_check_filearg (GMT, 'L', &opt->arg[j+1], GMT_IN, GMT_IS_DATASET))
 						Ctrl->L.file = strdup (&opt->arg[j+1]);
 					else
 						n_errors++;

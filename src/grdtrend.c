@@ -175,7 +175,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -184,7 +184,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
 			case 'D':
-				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT)))
+				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->D.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -197,7 +197,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 				if (opt->arg[j]) Ctrl->N.value = atoi(&opt->arg[j]);
 				break;
 			case 'T':
-				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_OUT)))
+				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->T.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -205,7 +205,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 			case 'W':
 				Ctrl->W.active = true;
 				/* OK if this file doesn't exist; we always write to that file on output */
-				if (GMT_check_filearg (GMT, 'W', opt->arg, GMT_IN) || GMT_check_filearg (GMT, 'W', opt->arg, GMT_OUT)) 
+				if (GMT_check_filearg (GMT, 'W', opt->arg, GMT_IN, GMT_IS_GRID) || GMT_check_filearg (GMT, 'W', opt->arg, GMT_OUT, GMT_IS_GRID)) 
 					Ctrl->W.file = strdup (opt->arg);
 				else
 					n_errors++;

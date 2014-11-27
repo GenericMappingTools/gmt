@@ -215,7 +215,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -333,7 +333,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 				}
 				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';	/* Internally, this is Cartesian data and distances */
-				if (!GMT_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 			case 'N':
 				Ctrl->N.active = true;

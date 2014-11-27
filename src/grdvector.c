@@ -165,7 +165,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 			case '<':	/* Input file (only one is accepted) */
 				Ctrl->In.active = true;
 				if (n_files >= 2) break;
-				if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+				if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[n_files++] = strdup (opt->arg);
 				else
 					n_errors++;

@@ -133,7 +133,7 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -142,7 +142,7 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 			
  			case 'G':	/* Output file */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

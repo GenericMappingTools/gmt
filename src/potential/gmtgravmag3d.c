@@ -211,7 +211,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				n_files++;
 				break;
 
@@ -241,7 +241,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

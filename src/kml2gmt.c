@@ -99,7 +99,7 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;

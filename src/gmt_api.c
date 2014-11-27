@@ -3565,6 +3565,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			/* No, so presumably it is a regular file name */
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p, *file = strdup (resource);
+				bool not_url = true;
 				if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
 				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
 					char *c = strchr (file, '.');	/* The period before an extension */
@@ -3574,11 +3575,13 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 						*p = '\0';	/* Chop off any +b<band> for images at end of extension so access can work */
 					}
 				}
-				if (GMT_access (API->GMT, file, F_OK) && !GMT_check_url_name (file)) {	/* For input we can check if the file exists (except if via Web) */
+				if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
+					not_url = !GMT_check_url_name (file);
+				if (GMT_access (API->GMT, file, F_OK) && not_url) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_Report (API, GMT_MSG_NORMAL, "File %s not found\n", file);
 					return_value (API, GMT_FILE_NOT_FOUND, GMT_NOTSET);
 				}
-				if (GMT_access (API->GMT, file, R_OK) && !GMT_check_url_name (file)) {	/* Found it but we cannot read. */
+				if (GMT_access (API->GMT, file, R_OK) && not_url) {	/* Found it but we cannot read. */
 					GMT_Report (API, GMT_MSG_NORMAL, "Not permitted to read file %s\n", file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}

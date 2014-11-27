@@ -344,7 +344,7 @@ int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, stru
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;

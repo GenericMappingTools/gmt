@@ -209,7 +209,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Supplemental parameters */
@@ -263,7 +263,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
 				k = (opt->arg[0] == '+') ? 1 : 0;
-				if (!GMT_access (GMT, &opt->arg[k], F_OK) && GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN)) {	/* Was given a file (with possible leading + flag) */
+				if (!GMT_access (GMT, &opt->arg[k], F_OK) && GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
 					Ctrl->E.file  = strdup (&opt->arg[k]);
 					if (k == 1) Ctrl->E.mode = true;
 				}
@@ -283,7 +283,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 				break;
 
 			case 'F':	/* File with hotspot motion history */
-				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN)))
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
 					Ctrl->F.file = strdup (opt->arg);
 				else
 					n_errors++;

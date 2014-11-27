@@ -121,7 +121,7 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 
 			case '<':	/* Count input files */
 				n_files++;
-				if (n_files == 1 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+				if (n_files == 1 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
