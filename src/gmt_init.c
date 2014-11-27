@@ -6534,7 +6534,7 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 	/* If current directory is writable, use it; else use the home directory */
 
 	if (getcwd (cwd, GMT_BUFSIZ) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Unable to determine current working directory.\n");		
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Unable to determine current working directory.\n");
 	}
 	if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		sprintf (hfile, "%s/gmt.history", GMT->session.TMPDIR);
@@ -10675,10 +10675,11 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 }
 
 /*! . */
-bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction)
+bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family)
 {	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
 	 * exists and is readable. Otherwise we return false. */
 	unsigned int k = 0;
+	bool not_url = true;
 	char message[GMT_LEN16] = {""};
 	if (option == GMT_OPT_INFILE)
 		sprintf (message, "for input file");
@@ -10693,11 +10694,13 @@ bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	}
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
 	if (file[0] == '=') k = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
-	if (GMT_access (GMT, &file[k], F_OK)) {	/* Cannot find the file anywhere GMT looks */
+	if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
+		not_url = !GMT_check_url_name (&file[k]);
+	if (GMT_access (GMT, &file[k], F_OK) && not_url) {	/* Cannot find the file anywhere GMT looks */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, &file[k]);
 		return false;	/* Could not find this file */
 	}
-	if (GMT_access (GMT, &file[k], R_OK)) {	/* Cannot read this file (permissions?) */
+	if (GMT_access (GMT, &file[k], R_OK) && not_url) {	/* Cannot read this file (permissions?) */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, &file[k]);
 		return false;	/* Could not find this file */
 	}

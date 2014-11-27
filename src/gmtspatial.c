@@ -744,7 +744,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)) n_errors++;
+				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				n_files[GMT_IN]++;
 				break;
 			case '>':	/* Got named output file */
@@ -805,7 +805,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 							Ctrl->D.I.inside = 1;
 							break;
 						case 'f':	/* Gave a file name */
-							if (GMT_check_filearg (GMT, 'D', &p[1], GMT_IN))
+							if (GMT_check_filearg (GMT, 'D', &p[1], GMT_IN, GMT_IS_DATASET))
 								Ctrl->D.file = strdup (&p[1]);
 							else
 								n_errors++;

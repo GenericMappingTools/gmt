@@ -330,6 +330,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the rotconverter main code ----------------------------*/
 
+	GMT_memset (out, 20, double);
 	if (Ctrl->G.active) {
 		GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT_IS_FLOAT;
 		GMT->current.io.col_type[GMT_OUT][2] = GMT_IS_LAT;

@@ -44,7 +44,7 @@ struct GMT_MODELTIME {	/* Hold info about time */
 	double scale;	/* Scale factor from user time to year */
 	char unit;	/* Either M (Myr), k (kyr), or blank (implies y) */
 	unsigned int u;	/* For labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
-	
+
 };
 
 struct GRDFLEXURE_CTRL {
@@ -134,9 +134,9 @@ struct FLX_GRID {
 
 void *New_grdflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFLEXURE_CTRL *C = NULL;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GRDFLEXURE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.E = YOUNGS_MODULUS;
 	C->C.nu = POISSONS_RATIO;
@@ -148,12 +148,12 @@ void *New_grdflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_grdflexure_Ctrl (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->G.file) free (C->G.file);	
-	if (C->L.file) free (C->L.file);	
+	if (C->In.file) free (C->In.file);
+	if (C->G.file) free (C->G.file);
+	if (C->L.file) free (C->L.file);
 	if (C->N.info) GMT_free (GMT, C->N.info);
 	if (C->T.time) GMT_free (GMT, C->T.time);
-	GMT_free (GMT, C);	
+	GMT_free (GMT, C);
 }
 
 double gmt_get_modeltime (char *A, char *unit, double *scale)
@@ -274,7 +274,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 	}
 	if (*log) p[0] = '+';	/* Restore the +l modifier */
 	*T_array = T;
-	return (n_eval_times);				
+	return (n_eval_times);
 }
 
 char *gmt_modeltime_unit (unsigned int u)
@@ -298,13 +298,13 @@ double transfer_elastic_sub (double k, struct RHEOLOGY *R)
 	double k2, k4, transfer_fn;
 	k2 = k * k;	k4 = k2 * k2;
 	transfer_fn = 1.0 / (R->ce * k4 + 1.0);
-	return (transfer_fn); 
+	return (transfer_fn);
 }
 
 double transfer_elastic (double k, struct RHEOLOGY *R)
 {	/* Elastic transfer function */
 	double transfer_fn = R->scale * transfer_elastic_sub (k, R);
-	return (transfer_fn); 
+	return (transfer_fn);
 }
 
 void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER * GMT_UNUSED(K), struct RHEOLOGY *R) {
@@ -324,7 +324,7 @@ void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct G
 	/* If infill density was specified then Ctrl->D.approx will be true, in which case we will do the
 	 * approximate FFT solution of Wessel [2001, JGR]: Use rhoi instead of rhol to determine flexural wavelength
 	 * and and amplitudes but scale airy_ratio by A to compensate for the lower load weight */
-	
+
 	rho_load = Ctrl->D.rhol;
 	if (Ctrl->S.active && Ctrl->S.beta < 1.0) {	/* Treat starved infill as approximate case with different infill density */
 		Ctrl->D.approx = true;
@@ -386,7 +386,7 @@ double transfer_fv2 (double k, struct RHEOLOGY *R)
 	phi_e = transfer_elastic_sub (k, R);
 	tau = relax_time_2 (k, R);
 	phi_fv2 = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio / (tau * phi_e)));
-	return (R->scale * phi_fv2); 
+	return (R->scale * phi_fv2);
 }
 
 void setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R)
@@ -452,7 +452,7 @@ void Apply_Transfer_Function (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struc
 	uint64_t k;
 	double  mk, transfer_fn;
 	//FILE *fp = fopen ("Crap.txt", "w");
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Apply the Transfer Function\n");
 	R->setup (GMT, Ctrl, K, R);	/* Set up parameters */
 
@@ -488,7 +488,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 					Ctrl->In.list = true;
 					Ctrl->In.file = strdup (&opt->arg[1]);
 				}
-				else if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+				else if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -539,7 +539,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 					Ctrl->F.mode = FLX_FV1;
 				break;
 			case 'G':	/* Output file name or template */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -583,7 +583,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
-	
+
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file,  "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Must set density values\n");
@@ -655,8 +655,8 @@ struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options,
 		GMT_Report (API, GMT_MSG_VERBOSE, "Prepare load file %s for time %g %s\n", file, this_time->value * this_time->scale, gmt_modeltime_unit (this_time->u));
 	else
 		GMT_Report (API, GMT_MSG_VERBOSE, "Prepare load file %s\n", file);
-		
-	if (!GMT_check_filearg (GMT, '<', file, GMT_IN)) {
+
+	if (!GMT_check_filearg (GMT, '<', file, GMT_IN, GMT_IS_DATASET)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Load file %s not found - skipped\n", file);
 		return NULL;
 	}
@@ -714,9 +714,9 @@ struct RHEOLOGY *Select_Rheology (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *
 		fmode = FLX_VE;
 	else				/* Elastic */
 		fmode = FLX_E;
-		
+
 	R = GMT_memory (GMT, NULL, 1, struct RHEOLOGY);	/* Allocate rheology structure */
-	
+
 	switch (fmode) {	/* Set function pointers */
 		case FLX_E:
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected Elastic transfer function\n");
@@ -789,11 +789,11 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdflexure main code ----------------------------*/
 
 	/* 1. SELECT THE TRANSFER FUNCTION TO USE */
-	
+
 	R = Select_Rheology (GMT, Ctrl);
-	
+
 	/* 2. READ ALL INPUT LOAD GRIDS, DETREND, AND TAKE FFT */
-	
+
 	if (Ctrl->In.many) {	/* Must read in load grids, possibly one for each time increment set by -T */
 		n_load_times = Ctrl->T.n_eval_times;	/* This (or fewer) loads and times will be used */
 		Load = GMT_memory (GMT, NULL, n_load_times, struct FLX_GRID *);	/* Allocate load array structure */
@@ -836,7 +836,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		Load = GMT_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate grid array structure with one entry */
 		Load[0] = Prepare_Load (GMT, options, Ctrl, Ctrl->In.file, NULL);	/* The single load grid (no time info) */
 	}
-	
+
 	if (n_load_times > 1) {	/* Sort to ensure load array goes from old to young loads */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Sort %u loads from old to young\n", n_load_times);
 		qsort (Load, n_load_times, sizeof (struct FLX_GRID *), compare_loads);
@@ -855,7 +855,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		Out = Load[0]->Grid;
 
 	/* Here, Load[] contains all the input load grids and their laod times, ready to go as H(kx,ky) */
-	
+
 	if (Ctrl->L.active) {	/* Must create a textset to hold names of all output grids */
 		uint64_t dim[3] = {1, 1, Ctrl->T.n_eval_times};
 		unsigned int k, j;
@@ -871,15 +871,15 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	}
 
 	for (t_eval = 0; t_eval < Ctrl->T.n_eval_times; t_eval++) {	/* For each time step (i.e., at least once) */
-		
+
 		/* 4a. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
 			R->eval_time_yr = Ctrl->T.time[t_eval].value;		/* In years */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating flexural deformation for time %g %s\n", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
 		}
-		
+
 		if (retain_original) GMT_memset (Out->data, Out->header->size, float);	/* Reset output grid to zero; not necessary when we only get here once */
-		
+
 		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each load  */
 			if (Load[t_load] == NULL) continue;	/* Quietly skip times with no load */
 			if (Load[t_load]->Time && Load[t_load]->Time->value < Ctrl->T.time[t_eval].value) continue;	/* Skip future loads */
@@ -908,7 +908,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 				GMT_memcpy (Load[t_load]->Grid->data, orig_load, Load[t_load]->Grid->header->size, float);	/* Restore H(kx,ky) to what it was before operations */
 			}
 		}
-		
+
 		/* 4c. TAKE THE INVERSE FFT TO GET w(x,y) */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Inverse FFT\n");
 		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX, K))
@@ -930,7 +930,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			strcpy (file, Ctrl->G.file);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
 			Return (API->error);
-			
+
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
 			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_OK) {	/* This demuxes the grid before writing! */
 				Return (API->error);
@@ -939,7 +939,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Re-multiplexing complex grid before accumulating new increments.\n");
 			GMT_grd_mux_demux (GMT, Out->header, Out->data, GMT_GRID_IS_INTERLEAVED);
 		}
-		
+
 		if (Ctrl->L.active) {	/* Add filename and evaluation time to list */
 			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
 			if (Ctrl->T.active) {
@@ -953,14 +953,14 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			L->table[0]->segment[0]->n_rows++;
 		}
 	}
-	
+
 	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error writing list of grid files to %s\n", Ctrl->L.file);
 		Return (API->error);
 	}
 
 	/* 5. FREE ALL GRIDS AND ARRAYS */
-	
+
 	for (t_load = 0; t_load < n_load_times; t_load++) {	/* Free up grid structures */
 		if (Load[t_load] == NULL) continue;	/* Quietly skip containers with no grids */
 		GMT_Destroy_Data (API, &Load[t_load]->Grid);

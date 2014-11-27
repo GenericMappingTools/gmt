@@ -112,7 +112,7 @@ published separately, such as
    [:doc:`dimfilter <supplements/misc/dimfilter>`, **misc** supplement]
 
 -  Luis, J. F. and J. M. Miranda, Reevaluation of magnetic chrons in the
-   North Atlantic between 35N and 47N: Implications for the formation of the
+   North Atlantic between 35ºN and 47ºN: Implications for the formation of the
    Azores Triple Junction and associated plateau,
    *J. Geophys. Res.*, 113, B10105, 2008. `doi:10.1029/2007JB005573 <http://dx.doi.org/10.1029/2007JB005573>`_.
    [:doc:`grdredpol <supplements/potential/grdredpol>`, **potential** supplement]
@@ -4381,7 +4381,7 @@ nature of *f* itself.
 
 Two subsets of linear will be discussed separately; these are a polar
 (cylindrical) projection and a linear projection applied to geographic
-coordinates (with a 360 periodicity in the *x*-coordinate). We
+coordinates (with a 360º periodicity in the *x*-coordinate). We
 will show examples of all of these projections using dummy data sets
 created with :doc:`gmtmath`, a "Reverse
 Polish Notation" (RPN) calculator that operates on or creates table data:
@@ -4463,13 +4463,13 @@ Geographic coordinates
 While the Cartesian linear projection is primarily designed for regular
 floating point *x*,\ *y* data, it is sometimes necessary to plot
 geographical data in a linear projection. This poses a problem since
-longitudes have a 360 periodicity. GMT therefore needs to be informed
+longitudes have a 360º periodicity. GMT therefore needs to be informed
 that it has been given geographical coordinates even though a linear
 transformation has been chosen. We do so by adding a **g** (for
 geographical) or **d** (for degrees) directly after **-R** or by
 appending a **g** or **d** to the end of the **-Jx** (or **-JX**)
 option. As an example, we want to plot a crude world map centered on
-125E. Our command will be
+125ºE. Our command will be
 
   ::
 
@@ -4596,7 +4596,7 @@ This transformation converts polar coordinates (angle :math:`\theta` and
 radius *r*) to positions on a plot. Now :math:`x' = f(\theta,r)`
 and :math:`y' = g(\theta,r)`, hence it is similar to a regular map
 projection because *x* and *y* are coupled and *x*
-(i.e., :math:`\theta`) has a 360 periodicity. With input and output
+(i.e., :math:`\theta`) has a 360º periodicity. With input and output
 points both in the plane it is a **two-dimensional** projection. The
 transformation comes in two flavors:
 
@@ -4715,8 +4715,8 @@ that way. E.g., you can say 0.5 which means 0.5 inch/degree or 1:200000
 which means 1 inch on the map equals 200,000 inches along the standard
 parallels. The projection center defines the origin of the rectangular
 map coordinates. As an example we will make a map of the region near
-Taiwan. We choose the center of the projection to be at 125 E/20 N and
-25 N and 45 N as our two standard parallels. We desire a map that is 5
+Taiwan. We choose the center of the projection to be at 125ºE/20ºN and
+25ºN and 45ºN as our two standard parallels. We desire a map that is 5
 inches wide. The complete command needed to generate the map below is
 therefore given by:
 
@@ -4785,7 +4785,7 @@ same information as for the Albers projection, i.e.,
 -  Map scale in inch/degree or 1:xxxxx notation (**-Jl**), or map width (**-JL**).
 
 The Lambert conformal projection has been used for basemaps for all the
-48 contiguous States with the two fixed standard parallels 33N and 45N.
+48 contiguous States with the two fixed standard parallels 33ºN and 45ºN.
 We will generate a map of the continental USA using these parameters.
 Note that with all the projections you have the option of selecting a
 rectangular border rather than one defined by meridians and parallels.
@@ -4806,9 +4806,9 @@ use degrees west for longitudes. The generating commands used were
 
 
 The choice for projection center does not affect the projection but it
-indicates which meridian (here 100W) will be vertical on the map. The
+indicates which meridian (here 100ºW) will be vertical on the map. The
 standard parallels were originally selected by Adams to provide a
-maximum scale error between latitudes 30.5N and 47.5N of 0.5--1%. Some
+maximum scale error between latitudes 30.5ºN and 47.5ºN of 0.5--1%. Some
 areas, like Florida, experience scale errors of up to 2.5%.
 
 (American) polyconic projection (**-Jpoly** **-JPoly**) :ref:`... <-Jpoly_full>`
@@ -4832,7 +4832,7 @@ further away from the central meridian. As a consequence, no parallel is
 standard because conformity is lost with the lengthening of the meridians.
 
 Below we reproduce the illustration by *Snyder* [1987], with a gridline
-every 10 and annotations only every 30 in longitude:
+every 10 and annotations only every 30º in longitude:
 
    ::
 
@@ -4882,7 +4882,7 @@ way is that for this and many other projections, lines of equal
 longitude and latitude are not straight lines and are thus poor choices
 for map boundaries. Instead we require that the map boundaries be
 rectangular by defining the corners of a rectangular map boundary. Using
-0E/40S (lower left) and 60E/10S (upper right) as our corners we try
+0ºE/40ºS (lower left) and 60ºE/10ºS (upper right) as our corners we try
 
    ::
 
@@ -5010,7 +5010,7 @@ General stereographic map
 In terms of usage this projection is identical to the Lambert azimuthal
 equal-area projection. Thus, one can make both rectangular and
 hemispheric maps. Our example shows Australia using a projection pole at
-130E/30S. The command used was
+130ºE/30ºS. The command used was
 
    ::
 
@@ -5037,7 +5037,7 @@ flexible, and thus requires many input variables. Those are listed and
 explained below, with the values used in
 Figure :ref:`Perspective projection <GMT_perspective>` between brackets.
 
--  Longitude and latitude of the projection center (4E/52N).
+-  Longitude and latitude of the projection center (4ºE/52ºN).
 
 -  Altitude of the viewer above sea level in kilometers (230 km). If
    this value is less than 10, it is assumed to be the distance of the
@@ -5049,16 +5049,16 @@ Figure :ref:`Perspective projection <GMT_perspective>` between brackets.
    are looking, measured clockwise from north.
 
 -  Tilt in degrees (60). This is the viewing angle relative to zenith.
-   So a tilt of 0 is looking straight down, 60 is looking from 30 above
+   So a tilt of 0º is looking straight down, 60º is looking from 30º above
    the horizon.
 
 -  Twist in degrees (180). This is the boresight rotation (clockwise) of
-   the image. The twist of 180 in the example mimics the fact that the
+   the image. The twist of 180º in the example mimics the fact that the
    Space Shuttle flies upside down.
 
 -  Width and height of the viewpoint in degrees (60). This number
    depends on whether you are looking with the naked eye (in which case
-   you view is about 60 wide), or with binoculars, for example.
+   you view is about 60º wide), or with binoculars, for example.
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
    map in inches from projection center to a particular
@@ -5107,7 +5107,7 @@ To specify the orthographic projection the same options **-Jg** or
    map in inches from projection center to a particular
    oblique latitude (**-Jg**), or map width (**-JG**).
 
-Our example of a perspective view centered on 75W/40N can therefore be
+Our example of a perspective view centered on 75ºW/40ºN can therefore be
 generated by the following :doc:`pscoast` command:
 
    ::
@@ -5143,9 +5143,9 @@ To specify the azimuthal equidistant projection you must supply:
    map in inches from projection center to a particular
    oblique latitude (**-Je**), or map width (**-JE**).
 
-Our example of a global view centered on 100W/40N can therefore be
+Our example of a global view centered on 100ºW/40ºN can therefore be
 generated by the following :doc:`pscoast`
-command. Note that the antipodal point is 180 away from the center, but
+command. Note that the antipodal point is 180º away from the center, but
 in this projection this point plots as the entire map perimeter:
 
    ::
@@ -5185,7 +5185,7 @@ To specify the Gnomonic projection you must supply:
    oblique latitude (**-Jf**), or map width (**-JF**).
 
 Using a horizon of 60, our example of this projection centered on
-120W/35N can therefore be generated by the following :doc:`pscoast` command:
+120ºW/35ºN can therefore be generated by the following :doc:`pscoast` command:
 
    ::
 
@@ -5274,8 +5274,8 @@ Transverse Mercator projection (**-Jt** **-JT**) :ref:`... <-Jt_full>`
 The transverse Mercator was invented by Lambert in 1772. In this
 projection the cylinder touches a meridian along which there is no
 distortion. The distortion increases away from the central meridian and
-goes to infinity at 90 from center. The central meridian, each meridian
-90 away from the center, and equator are straight lines; other parallels
+goes to infinity at 90º from center. The central meridian, each meridian
+90º away from the center, and equator are straight lines; other parallels
 and meridians are complex curves. The projection is defined by
 specifying:
 
@@ -5289,7 +5289,7 @@ specifying:
 The optional latitude of origin defaults to Equator if not specified.
 Although defaulting to 1, you can change the map scale factor via the
 :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>` parameter. Our example shows a transverse
-Mercator map of south-east Europe and the Middle East with 35E as the
+Mercator map of south-east Europe and the Middle East with 35ºE as the
 central meridian:
 
    ::
@@ -5305,7 +5305,7 @@ central meridian:
 
 
 The transverse Mercator can also be used to generate a global map - the
-equivalent of the 360 Mercator map. Using the command
+equivalent of the 360º Mercator map. Using the command
 
    ::
 
@@ -5315,7 +5315,7 @@ equivalent of the 360 Mercator map. Using the command
 we made the map illustrated in Figure :ref:`Global transverse Mercator
 <GMT_TM>`. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
-arguments are interpreted to mean oblique degrees, i.e., the 360 range
+arguments are interpreted to mean oblique degrees, i.e., the 360º range
 is understood to mean the extent of the plot along the central meridian,
 while the "south" and "north" values represent how far from the central
 longitude we want the plot to extend. These values correspond to
@@ -5337,7 +5337,7 @@ Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**) :ref:`... <-Ju_
 A particular subset of the transverse Mercator is the Universal
 Transverse Mercator (UTM) which was adopted by the US Army for
 large-scale military maps. Here, the globe is divided into 60 zones
-between 84S and 84N, most of which are 6 wide. Each of these UTM zones
+between 84ºS and 84ºN, most of which are 6 wide. Each of these UTM zones
 have their unique central meridian. Furthermore, each zone is divided
 into latitude bands but these are not needed to specify the projection
 for most cases. See Figure :ref:`Universal Transverse Mercator
@@ -5443,7 +5443,7 @@ analysis that led to the development of the ellipsoidal formulae. The
 projection is neither conformal nor equal-area, and behaves as a
 compromise between the two end-members. The distortion is zero along the
 central meridian. It is best suited for mapping regions of north-south
-extent. The central meridian, each meridian 90 away, and equator are
+extent. The central meridian, each meridian 90º away, and equator are
 straight lines; all other meridians and parallels are complex curves.
 The requirements to define this projection are:
 
@@ -5451,7 +5451,7 @@ The requirements to define this projection are:
 
 -  Scale in inch/degree or as 1:xxxxx (**-Jc**), or map width (**-JC**).
 
-A detailed map of the island of Sardinia centered on the 845'E meridian
+A detailed map of the island of Sardinia centered on the 8º45'E meridian
 using the Cassini projection can be obtained by running the command:
 
    ::
@@ -5498,7 +5498,7 @@ obtained by running the command:
    :width: 500 px
    :align: center
 
-   World map using the Plate Carr\'{e}e projection.
+   World map using the Plate Carrée projection.
 
 
 Different relative scalings of longitudes and latitudes can be obtained
@@ -5510,17 +5510,17 @@ Table :ref:`JQ <tbl-JQ>`.
 
 +-----------------------------------------------------+--------+
 +=====================================================+========+
-| Grafarend and Niermann, minimum linear distortion   | 61.7   |
+| Grafarend and Niermann, minimum linear distortion   | 61.7º  |
 +-----------------------------------------------------+--------+
-| Ronald Miller Equirectangular                       | 50.5   |
+| Ronald Miller Equirectangular                       | 50.5º  |
 +-----------------------------------------------------+--------+
-| Ronald Miller, minimum continental distortion       | 43.5   |
+| Ronald Miller, minimum continental distortion       | 43.5º  |
 +-----------------------------------------------------+--------+
-| Grafarend and Niermann                              | 42     |
+| Grafarend and Niermann                              | 42º    |
 +-----------------------------------------------------+--------+
-| Ronald Miller, minimum overall distortion           | 37.5   |
+| Ronald Miller, minimum overall distortion           | 37.5º  |
 +-----------------------------------------------------+--------+
-| Plate Carrée, Simple Cylindrical, Plain/Plane       | 0      |
+| Plate Carrée, Simple Cylindrical, Plain/Plane       | 0º     |
 +-----------------------------------------------------+--------+
 
 Cylindrical equal-area projections (**-Jy** **-JY**) :ref:`... <-Jy_full>`
@@ -5545,22 +5545,22 @@ that result in known (or named) projections. These are listed in Table :ref:`JY 
 
 +-------------------+---------------------+
 +===================+=====================+
-| Balthasart        | 50                  |
+| Balthasart        | 50º                 |
 +-------------------+---------------------+
-| Gall-Peters       | 45                  |
+| Gall-Peters       | 45º                 |
 +-------------------+---------------------+
-| Hobo-Dyer         | 3730' (= 37.5)      |
+| Hobo-Dyer         | 37º30' (= 37.5º)    |
 +-------------------+---------------------+
-| Trystan Edwards   | 3724' (= 37.4)      |
+| Trystan Edwards   | 37º24' (= 37.4º)    |
 +-------------------+---------------------+
-| Caster            | 3704' (= 37.0666)   |
+| Caster            | 37º04' (= 37.0666º) |
 +-------------------+---------------------+
-| Behrman           | 30                  |
+| Behrman           | 30º                 |
 +-------------------+---------------------+
-| Lambert           | 0                   |
+| Lambert           | 0º                  |
 +-------------------+---------------------+
 
-For instance, a world map centered on the 35E meridian using the Behrman
+For instance, a world map centered on the 35ºE meridian using the Behrman
 projection (Figure :ref:`Behrman cylindrical projection <GMT_general_cyl>`)
 can be obtained by running the command:
 
@@ -5597,7 +5597,7 @@ this projection. Specify the projection by:
 
 -  Scale in inch/degree or as 1:xxxxx (**-Jj**), or map width (**-JJ**).
 
-For instance, a world map centered on the 90E meridian at a map scale of
+For instance, a world map centered on the 90ºE meridian at a map scale of
 1:400,000,000 (Figure :ref:`Miller projection <GMT_miller>`) can be obtained as
 follows:
 
@@ -5643,19 +5643,19 @@ cartographer or publication that popularized the projection
 
 +---------------------------------------------------------+-------------+
 +=========================================================+=============+
-| Miller's modified Gall                                  | 66.159467   |
+| Miller's modified Gall                                  | 66.159467º  |
 +---------------------------------------------------------+-------------+
-| Kamenetskiy's First                                     | 55          |
+| Kamenetskiy's First                                     | 55º         |
 +---------------------------------------------------------+-------------+
-| Gall's stereographic                                    | 45          |
+| Gall's stereographic                                    | 45º         |
 +---------------------------------------------------------+-------------+
-| Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second   | 30          |
+| Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second   | 30º         |
 +---------------------------------------------------------+-------------+
-| Braun's cylindrical                                     | 0           |
+| Braun's cylindrical                                     | 0º          |
 +---------------------------------------------------------+-------------+
 
 A map of the world, centered on the Greenwich meridian, using the Gall's
-stereographic projection (standard parallel is 45,
+stereographic projection (standard parallel is 45º,
 Figure :ref:`Gall's stereographic projection <GMT_gall_stereo>`),
 is obtained as follows:
 
@@ -5685,7 +5685,7 @@ approximation rather than more elaborate elliptical formulae.
 
 In all cases, the specification of the central meridian can be skipped.
 The default is the middle of the longitude range of the plot, specified
-by the (R) option.
+by the (**-R**) option.
 
 Hammer projection (**-Jh** **-JH**) :ref:`... <-Jh_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5821,7 +5821,7 @@ The Eckert IV and VI projections, presented by the German cartographer
 Max Eckert-Greiffendorff in 1906, are pseudocylindrical equal-area
 projections. Central meridian and all parallels are straight lines;
 other meridians are equally spaced elliptical arcs (IV) or sinusoids
-(VI). The scale is true along latitudes 4030' (IV) and 4916' (VI). Their
+(VI). The scale is true along latitudes 40º30' (IV) and 49º16' (VI). Their
 main use is in thematic world maps. To select Eckert IV you must use
 **-JKf** (**f** for "four") while Eckert VI is selected with **-JKs**
 (**s** for "six"). If no modifier is given it defaults to Eckert VI. In
@@ -5885,8 +5885,8 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
 To reduce distortion of shape the interrupted sinusoidal projection was
 introduced in 1927. Here, three symmetrical segments are used to cover
-the entire world. Traditionally, the interruptions are at 160W, 20W, and
-60E. To make the interrupted map we must call
+the entire world. Traditionally, the interruptions are at 160ºW, 20ºW, and
+60ºE. To make the interrupted map we must call
 :doc:`pscoast` for each segment and superpose
 the results. To produce an interrupted world map (with the traditional
 boundaries just mentioned) that is 5.04 inches wide we use the scale
@@ -6374,7 +6374,7 @@ Geographical
        "south pole condition" is used at :math:`y_{min}`, else a default
        condition is used there.
 
-    "Pole conditions" use a 180 phase-shift of the data, requiring 180
+    "Pole conditions" use a 180º phase-shift of the data, requiring 180
     modulo :math:`x_{inc} = 0`.
 
 Default
@@ -6758,7 +6758,7 @@ files to PNG.
 The **-P** option of :doc:`ps2raster` may
 also come in handy. When you have *not* supplied the **-P** option in
 your first GMT plot command, your plot will be in Landscape mode. That
-means that the plot will be rotated 90 degrees (anti-clockwise) to fit
+means that the plot will be rotated 90º (anti-clockwise) to fit
 on a Portrait mode page when coming out of the printer. The **-P**
 option of :doc:`ps2raster` will undo that
 rotation, so that you do not have to do so within your document. This
@@ -6809,7 +6809,7 @@ you will need to rotate the plot as well. For example,
 
      \includegraphics[angle=-90,width=0.8\textwidth]{myplot}
 
-will rotate the image 90 clockwise and scale it such that its width
+will rotate the image 90º clockwise and scale it such that its width
 (after rotation) will be 80% of the width of the text column.
 
 GMT graphics in **PowerPoint**
@@ -7161,7 +7161,7 @@ you, and *b* increasing up. Keep this sense of (*rgb*) as you look at the cube.
 
 Now tip the cube such that the black corner faces down and the white
 corner up. When looking from the top, you can see the hue, contoured in
-gray solid lines, running around in 360 counter-clockwise. It starts
+gray solid lines, running around in 360º counter-clockwise. It starts
 with shades of red (0), then goes through green (120) and blue (240),
 back to red.
 
@@ -8303,7 +8303,7 @@ l:
     the grid's global maximum and minimum, respectively. For example,
     the *line* **LT**/**RB** is a diagonal from the upper left to the
     lower right map corner, while **Z-**/135W/15S is a line from the
-    grid minimum to the point (135W, 15S).
+    grid minimum to the point (135ºW, 15ºS).
 
 L:
     Same as **l** except we will treat the lines given as great circle

@@ -1082,7 +1082,7 @@ int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct 
 				}
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

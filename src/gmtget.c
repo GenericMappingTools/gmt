@@ -96,7 +96,7 @@ int GMT_gmtget_parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Optional defaults file on input and output */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

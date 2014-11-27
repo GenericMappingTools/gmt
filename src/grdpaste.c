@@ -97,9 +97,9 @@ int GMT_grdpaste_parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_in == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+				if (n_in == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
-				else if (n_in == 1 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN))
+				else if (n_in == 1 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
@@ -110,7 +110,7 @@ int GMT_grdpaste_parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
  			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
