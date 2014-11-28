@@ -1667,6 +1667,11 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
+	if (to_gdalread->B.active) {
+		free(header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
+		header->pocket = NULL;
+	}
+
 	if (subset) {	/* We had a Sub-region demand */
 		header->nx = from_gdalread->RasterXsize;
 		header->ny = from_gdalread->RasterYsize;

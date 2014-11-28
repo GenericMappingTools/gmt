@@ -91,8 +91,6 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 			nn = atoi(prhs->B.bands);
 		whichBands = GMT_memory (GMT, NULL, nn, int);
 		nReqBands = gdal_decode_columns (GMT, prhs->B.bands, whichBands, nn);
-		free(prhs->B.bands);	/* This is actualy the contents of header->pocket allocated by strdup */
-		prhs->B.bands = NULL;
 	}
 	else if (prhs->f_ptr.active) {
 		/* Here we are going to read to a grid so if no band info was provided, default to read only the
