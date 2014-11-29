@@ -108,7 +108,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 
 	int error = GMT_OK;
 	unsigned int arg, first_char, n_args;
-	char option, **args = NULL, **new_args = NULL;
+	char option, **args = NULL, **new_args = NULL, *pch = NULL;
 	struct GMT_OPTION *head = NULL, *new_opt = NULL;
 	struct GMT_CTRL *G = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -144,7 +144,8 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 				new_args = GMT_memory (G, new_args, n_alloc, char *);
 			}
 		}
-		for (k = 0; txt_in[k]; k++) if (txt_in[k] == 29) txt_in[k] = '\t'; else if (txt_in[k] == 31) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
+		for (k = 0; txt_in[k]; k++)
+			if (txt_in[k] == 29) txt_in[k] = '\t'; else if (txt_in[k] == 31) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
 		args = new_args;
 		n_args = new_n_args;
 	}
@@ -173,11 +174,28 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 		else if (!strcmp(args[arg], "--help"))	/* Translate '--help' to '-?' */
 			first_char = 6, option = GMT_OPT_USAGE;
 		else if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !GMT_not_numeric (API->GMT, args[arg])) /* A negative number, most likely; convert to "file" for now */
-				first_char = 0, option = GMT_OPT_INFILE;
+			first_char = 0, option = GMT_OPT_INFILE;
 		else	/* Most likely found a regular option flag (e.g., -D45.0/3) */
 			first_char = 2, option = args[arg][1];
 
-		if ((new_opt = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL) return_null (API, error);	/* Create the new option structure given the args, or return the error */
+		if ((new_opt = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL)
+			return_null (API, error);	/* Create the new option structure given the args, or return the error */
+
+		if (option == GMT_OPT_INFILE && ((pch = strstr(new_opt->arg, "+b")) != NULL) && !strstr(new_opt->arg, "=gd")) {
+			/* Here we deal with the case that the filename has embeded a band request for gdalread, as in img.tif+b1
+			   However, the issue is that for these cases the machinery is set only to parse the request in the
+			   form of img.tif=gd+b1 so the trick is to insert the '=gd' in the filename and let go.
+			   JL 29-November 2014
+			*/
+			char t[GMT_LEN256] = {""};
+			pch[0] = '\0';
+			strcpy(t, new_opt->arg);
+			strcat(t, "=gd"); 
+			pch[0] = '+';			/* Restore what we have erased 2 lines above */
+			strcat(t, pch);
+			free(new_opt->arg);		/* free it so that we can extend it */
+			new_opt->arg = strdup(t);
+		}
 
 		head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 	}
