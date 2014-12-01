@@ -4559,7 +4559,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 		case GMTCASE_DIR_TMP:
 		case GMTCASE_DIR_USER:
 			/* Setting ignored, were active previously in GMT5 but no longer */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Warning: Parameter %s (previously introduced in GMT5) is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Warning: Parameter %s (previously introduced in GMT5) is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val]);
 			break;
 
 		default:

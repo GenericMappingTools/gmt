@@ -79,6 +79,12 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
+	if (gmt_main && (!strcmp (argv[1], "read") || !strcmp (argv[1], "write"))) {	/* Cannot call read or write module from command-line gmt.c */
+		module = argv[1];	/* Name of module that does not exist */
+		status = GMT_NOT_A_VALID_MODULE;
+		modulename_arg_n = 1;
+		goto no_such;
+	}
 
 	if ((gmt_main || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
 		/* argv[0] does not contain a valid module name, and
@@ -136,6 +142,8 @@ int main (int argc, char *argv[]) {
 		 *
 		 * gmt.c is itself not a module and hence can use fprintf (stderr, ...). Any API needing a
 		 * gmt-like application will write one separately [see mex API] */
+no_such:
+
 		fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 		fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
 		fprintf (stderr, "Supported in part by the US National Science Foundation (www.nsf.gov)\nand volunteers from around the world.\n\n");
