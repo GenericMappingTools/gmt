@@ -344,10 +344,16 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 						n_errors++;
 					}
 					else {	/* Process all the grids listed in this text table */
+						char file[GMT_BUFSIZ] = {""};
 						for (seg = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
-							for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++) {
+							for (row = 0; n_errors == 0 && row < Tin->table[0]->segment[seg]->n_rows; row++) {
 								record = Tin->table[0]->segment[seg]->record[row];
-								if (gmt_process_one (GMT, record, Ctrl, ng) == 0)
+								GMT_memset (file, GMT_BUFSIZ, char);
+								if (sscanf (record, "%s", file) != 1) {
+									GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Could not extract file namke from entry: %s\n", record);
+									n_errors++;
+								}
+								else if (gmt_process_one (GMT, file, Ctrl, ng) == 0)
 									n_errors++;
 								else
 									ng++;

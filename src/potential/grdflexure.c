@@ -118,6 +118,7 @@ struct RHEOLOGY {	/* Used to pass parameters in/out of functions */
 	double cv;		/* A constant for visous transfer functions */
 	double scale;		/* Overall scale (e.g., Airy scale) */
 	double dens_ratio;	/* (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom */
+	bool relative;		/* eval_time_yr is relative to load time [at 0] */
 	double (*transfer) (double, struct RHEOLOGY *);	/* pointer to function returning isostatic response for given k and R */
 	void (*setup) (struct GMT_CTRL *, struct GRDFLEXURE_CTRL *, struct GMT_FFT_WAVENUMBER *, struct RHEOLOGY *);	/* Init function */
 };
@@ -368,7 +369,8 @@ double relax_time_2 (double k, struct RHEOLOGY *R)
 void setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R)
 {	/* Setup function for 2-layer viscous mantle beneath elastic plate */
 	setup_elastic (GMT, Ctrl, K, R);	/* Both firmoviscous setups rely on the elastic setup */
-	R->t0 = (R->load_time_yr - R->eval_time_yr) * (86400*365.25);	/* Convert to seconds */
+	R->t0 = (R->relative) ?  R->eval_time_yr : R->load_time_yr - R->eval_time_yr;	/* Either relative to load time or both are absolute times */
+	R->t0 *= (86400*365.25);	/* Convert to seconds */
 	assert (R->t0 >= 0.0);
 	R->nu_ratio = Ctrl->F.nu_a / Ctrl->F.nu_m;
 	assert (R->nu_ratio > 0.0);
@@ -392,7 +394,8 @@ double transfer_fv2 (double k, struct RHEOLOGY *R)
 void setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R)
 {	/* Setup function for 1-layer viscous mantle beneath elastic plate */
 	setup_elastic (GMT, Ctrl, K, R);	/* Both firmoviscous setups rely on the elastic setup */
-	R->t0 = (R->load_time_yr - R->eval_time_yr) * (86400*365.25);	/* Convert to seconds */
+	R->t0 = (R->relative) ?  R->eval_time_yr : R->load_time_yr - R->eval_time_yr;	/* Either relative to load time or both are absolute times */
+	R->t0 *= (86400*365.25);	/* Convert to seconds */
 	assert (R->t0 >= 0.0);
 	R->dens_ratio = (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom;
 	assert (R->dens_ratio > 0.0);
@@ -889,6 +892,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->T.active && This_Load->Time) {	/* Has time so we can report on what is happening */
 				R->load_time_yr = This_Load->Time->value;	/* In years */
+				R->relative = false;	/* Absolute times are given */
 				if (This_Load->Time->u == Ctrl->T.time[t_eval].u) {	/* Same time units even */
 					double dt = This_Load->Time->value * This_Load->Time->scale - Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale;
 					GMT_Report (API, GMT_MSG_VERBOSE, "  Accumulating flexural deformation for load emplaced at time %g %s [Loading time = %g %s]\n",
@@ -901,7 +905,8 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 				}
 			}
 			else {
-				R->load_time_yr = 0.0;	/* Not given, assume relative time */
+				R->load_time_yr = 0.0;	/* Not given, assume R->eval_time_yr is time since loading */
+				R->relative = true;	/* Relative times are given */
 				GMT_Report (API, GMT_MSG_VERBOSE, "  Accumulating flexural deformation for load # %d emplaced at unspecified time\n", t_load);
 			}
 			/* 4b. COMPUTE THE RESPONSE DUE TO THIS LOAD */

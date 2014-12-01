@@ -19,7 +19,7 @@ cat << EOF > times.txt
 1M	black
 EOF
 rm -f flist
-while read t; do
+while read t color; do
 	gmt grdflexure smt.nc+uk -D${rhom}/${rhol}/${rhos}/${rhow} -E10k -F2e20 -Gfv_%.12g.nc -Nf+a -T$t -L >> flist
 done < times.txt
 # Get cross-sections of all solutions
@@ -46,7 +46,7 @@ drho=`gmt math -Q ${rhol} ${rhow} SUB =`
 gmt gravfft smt.nc+uk -Gsmt_grav.nc -Nf+a -Ff -E4 -D${drho} -W6k
 paste flist times.txt > flist.txt
 drho=`gmt math -Q ${rhom} ${rhos} SUB =`
-while read file t color; do
+while read file t t2 color; do
 	gmt gravfft ${file}+uk -Gflx_grav.nc -Nf+a -Ff -E2 -D${drho} -W13k
 	gmt grdtrack t.txt -Gflx_grav.nc > b.txt
 	gmt psxy -R -J -O -K -W0.25p,${color},- b.txt -i0,2 >> $ps
