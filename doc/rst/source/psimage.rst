@@ -78,6 +78,7 @@ Optional Arguments
     Draws a rectangular frame around the image with the given pen [no
     frame]. 
 
+.. |Add_-J| replace:: (Used only with **-p**)
 .. include:: explain_-J.rst_
 
 .. include:: explain_-Jz.rst_
