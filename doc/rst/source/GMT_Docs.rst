@@ -446,6 +446,16 @@ New capabilities have been implemented by introducing new GMT default settings:
 *  :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>` allows users to modify how transparency will be
    processed when converted to PDF [Normal].
 
+A few parameters have been introduced in GMT 5 in the past and have been removed again.
+Among these are:
+
+*  *DIR_USER*: was supposed to set the directory in which the user configuration files, or data are stored, but
+   this creates problems, because it needs to be known already before it is potentially set in *DIR_USER*/gmt.conf.
+   The environment variable **$GMT_USERDIR** is used for this instead.
+
+*  *DIR_TMP*: was supposed to indicate the directory in which to store temporary files. But needs to be known without
+   gmt.conf file as well. So the environment variable **$GMT_TMPDIR** is used instead.
+
 General improvements
 --------------------
 

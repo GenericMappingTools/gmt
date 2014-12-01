@@ -2508,8 +2508,8 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	return (GMT_NOERROR);
 }
 
-int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, unsigned int *pad, unsigned int GMT_UNUSED(complex_mode))
-{	/* file:	- IGNORED -
+int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, unsigned int *pad, unsigned int GMT_UNUSED(complex_mode)) {
+	/* file:	- IGNORED -
 	 * image:	array with final image
 	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of image, respectively
@@ -2532,7 +2532,7 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 	to_gdalread   = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
 	from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
 
-	if ( GMT->common.R.active ) {
+	if (GMT->common.R.active) {
 		char strR [128]; 
 		sprintf (strR, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
 							  GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
@@ -2540,7 +2540,7 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 		/*to_gdalread->R.active = true;*/	/* Wait untill we really know how to use it */
 	}
 
-	if ( I->header->pocket ) {				/* See if we have a band request */
+	if (I->header->pocket) {				/* See if we have a band request */
 		to_gdalread->B.active = true;
 		to_gdalread->B.bands = I->header->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
@@ -2557,6 +2557,11 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
+	if (to_gdalread->B.active) {
+		free(I->header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
+		I->header->pocket = NULL;
+	}
+
 	I->ColorMap = from_gdalread->ColorMap;
 	I->header->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
@@ -2569,7 +2574,7 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 	GMT_grd_setpad (GMT, I->header, pad);	/* Copy the pad to the header */
 
 	GMT_free (GMT, to_gdalread);
-	for ( i = 0; i < from_gdalread->RasterCount; ++i )
+	for (i = 0; i < from_gdalread->RasterCount; i++)
 		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (GMT, from_gdalread->band_field_names);
 	GMT_free (GMT, from_gdalread);
