@@ -16,7 +16,7 @@ Synopsis
 **splitxyz** [ *table* ] **-C**\ *course_change*
 [ **-A**\ *azimuth*/*tolerance* ] [ **-D**\ *minimum_distance* ]
 [ **-F**\ *xy\_filter*/*z\_filter* ] [ **-N**\ *template* ]
-[ **-Q**\ *flags* ] [ **-S** ] [ |SYN_OPT-V| ] [ **-Z** ]
+[ **-Q**\ *flags* ] [ **-S** ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -53,7 +53,7 @@ Optional Arguments
 
 *table*
     One or more ASCII [or binary, see **-bi**]
-    files with 3 (or 2, see **-Z**) [or 5] columns holding (x,y,z[,d,h])
+    files with 2, 3, or 5 columns holding (x,y,[z[,d,h]])
     data values. To use (x,y,z,d,h) input, sorted so that d is
     non-decreasing, specify the **-S** option; default expects (x,y,z)
     only. If no files are specified, **splitxyz** will read from
@@ -98,7 +98,7 @@ Optional Arguments
     order. Do not space between the letters. Use lower case. The output
     will be ASCII (or binary, see **-bo**)
     columns of values corresponding to *xyzdh* [Default is
-    **-Q**\ *xyzdh* (**-Q**\ *xydh* if **-Z** is set)].
+    **-Q**\ *xyzdh* (**-Q**\ *xydh* if only 2 input columns)].
 **-S**
     Both d and h are supplied. In this case, input contains x,y,z,d,h.
     [Default expects (x,y,z) input, and d,h are computed from delta x,
@@ -111,10 +111,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-Z**
-    Data have x,y only (no z-column). 
-
-.. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by **-S**, **-Z**]. 
+.. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by **-S**]. 
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**]. 

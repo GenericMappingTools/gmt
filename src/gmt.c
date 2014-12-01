@@ -79,6 +79,12 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
+	if (gmt_main && argc > 1 && (!strcmp (argv[1], "read") || !strcmp (argv[1], "write"))) {	/* Cannot call read or write module from command-line gmt.c */
+		module = argv[1];	/* Name of module that does not exist */
+		status = GMT_NOT_A_VALID_MODULE;
+		modulename_arg_n = 1;
+		goto no_such;
+	}
 
 	if ((gmt_main || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
 		/* argv[0] does not contain a valid module name, and

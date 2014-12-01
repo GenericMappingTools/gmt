@@ -64,14 +64,12 @@ struct SPLITXYZ_CTRL {
 	} N;
 	struct Q {	/* -Q[<xyzdg>] */
 		bool active;
+		bool z_selected;
 		char col[SPLITXYZ_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} Q;
 	struct S {	/* -S */
 		bool active;
 	} S;
-	struct Z {	/* -Z */
-		bool active;
-	} Z;
 };
 
 double *filterxy_setup (struct GMT_CTRL *GMT)
@@ -200,7 +198,6 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 	 */
 
 	unsigned int j, n_errors = 0, n_outputs = 0, n_files = 0;
-	bool z_selected = false;
 	char txt_a[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -268,7 +265,7 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Unrecognized output choice %c\n", Ctrl->Q.col[j]);
 							n_errors++;
 						}
-						if (opt->arg[j] == 'z') z_selected = true;
+						if (opt->arg[j] == 'z') Ctrl->Q.z_selected = true;
 						n_outputs++;
 					}
 					else {
@@ -281,7 +278,8 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 				Ctrl->S.active = true;
 				break;
 			case 'Z':
-				Ctrl->Z.active = true;
+				if (GMT_compat_check (GMT, 5)) /* Warn and pass through */
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -Z option is deprecated and not longer required.\n");
 				break;
 
 			default:	/* Report bad options */
@@ -293,11 +291,8 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 	n_errors += GMT_check_condition (GMT, Ctrl->D.value < 0.0, "Syntax error -D option: Minimum segment distance must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 0.0, "Syntax error -C option: Course change tolerance must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Syntax error -A option: Azimuth tolerance must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->S.active, "Syntax error -Z option: Cannot be used with -S option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->F.z_filter != 0.0, "Syntax error -F option: Cannot specify z-filter while using -Z option\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name, "Syntax error: Binary output requires a namestem in -N\n");
-	n_errors += GMT_check_condition (GMT, n_outputs > 0 && z_selected && Ctrl->Z.active, "Syntax error -Q option: Cannot request z if -Z have been specified\n");
-	n_errors += GMT_check_binary_io (GMT, (Ctrl->S.active) ? 5 : ((Ctrl->Z.active) ? 2 : 3));
+	n_errors += GMT_check_binary_io (GMT, (Ctrl->S.active) ? 5 : 3);
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"), "Syntax error -N: Output template must contain %%d\n");
 
@@ -312,7 +307,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
 	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0;
 	int error = 0;
-	bool ok, io_mode = 0, first = true;
+	bool ok, io_mode = 0, first = true, no_z_column;
 	uint64_t dim[4] = {1, 0, 0, 0};
 	
 	size_t n_alloc_seg = 0, n_alloc = 0;
@@ -350,8 +345,32 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	/*---------------------------- This is the splitxyz main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	GMT_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_FILE_BREAK, NULL, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 
+	GMT_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);
+	no_z_column = (D[GMT_IN]->n_columns == 2);
+	
+	if (no_z_column && Ctrl->S.active) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: The -S option requires a 3rd data column\n");
+		Return (GMT_PARSE_ERROR);
+	}
+	if (no_z_column && Ctrl->F.z_filter != 0.0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: The -F option requires a 3rd data column\n");
+		Return (GMT_PARSE_ERROR);
+	}
+	if (Ctrl->Q.z_selected && no_z_column) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Cannot request z if unless data have a 3rd column\n");
+		Return (GMT_PARSE_ERROR);
+	}
+	
 	for (k = n_outputs = 0; k < SPLITXYZ_N_OUTPUT_CHOICES && Ctrl->Q.col[k]; k++) {
 		switch (Ctrl->Q.col[k]) {
 			case 'x':
@@ -361,17 +380,17 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 				output_choice[k] = 1;
 				break;
 			case 'z':
-				if (Ctrl->Z.active) {
+				if (no_z_column) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Cannot specify z when -Z is in effect!\n");
 					Return (-1);
 				}
 				output_choice[k] = 2;
 				break;
 			case 'd':
-				output_choice[k] = 3 - Ctrl->Z.active;
+				output_choice[k] = 3 - no_z_column;
 				break;
 			case 'h':
-				output_choice[k] = 4 - Ctrl->Z.active;
+				output_choice[k] = 4 - no_z_column;
 				break;
 		}
 		n_outputs++;
@@ -380,10 +399,10 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 		GMT_set_geographic (GMT, GMT_OUT);
 
 	if (n_outputs == 0) {	/* Generate default -Q setting (all) */
-		n_outputs = 5 - Ctrl->Z.active;
+		n_outputs = 5 - no_z_column;
 		for (i = 0; i < 2; i++) output_choice[i] = i;
-		if (!Ctrl->Z.active) output_choice[2] = 2;
-		for (i = 3-Ctrl->Z.active; i < n_outputs; i++) output_choice[i] = i;
+		if (!no_z_column) output_choice[2] = 2;
+		for (i = 3-no_z_column; i < n_outputs; i++) output_choice[i] = i;
 	}
 
 	Ctrl->A.tolerance *= D2R;
@@ -398,16 +417,6 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	}
 	else
 		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
-		Return (error);
-	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
-		Return (API->error);
-	}
-	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_FILE_BREAK, NULL, NULL, NULL)) == NULL) {
-		Return (API->error);
-	}
 
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_outputs)) != GMT_OK) {
 		Return (error);
@@ -425,8 +434,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 		h_col = d_col + 1;
 	}
 	else {	/* Comes with d and az in file */
-		d_col = Ctrl->Z.active + 2;
-		h_col = Ctrl->Z.active + 3;
+		d_col = no_z_column + 2;
+		h_col = no_z_column + 3;
 	}
 	z_cols = 2;
 	S_out = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
