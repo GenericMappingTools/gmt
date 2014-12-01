@@ -231,7 +231,7 @@ int gmt_process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *C
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
 			return (0);
 		}
-		else if (GMT_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_DATASET))
+		else if (GMT_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_GRID))
 			Ctrl->G.file[ng] = strdup (line);
 		else
 			return (0);
@@ -241,7 +241,7 @@ int gmt_process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *C
 		if (n_errors) return (0);
 	}
 	else {	/* Regular grid file */
-		if (GMT_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_DATASET))
+		if (GMT_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_GRID))
 			Ctrl->G.file[ng] = strdup (record);
 		else
 			return (0);
@@ -343,7 +343,7 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
 						n_errors++;
 					}
-					else {
+					else {	/* Process all the grids listed in this text table */
 						for (seg = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 							for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++) {
 								record = Tin->table[0]->segment[seg]->record[row];

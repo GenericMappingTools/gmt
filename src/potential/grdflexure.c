@@ -695,9 +695,10 @@ struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options,
 		return NULL;
 	}
 	G->Grid = Grid;	/* Pass grid back via the grid array */
-	/* Deal with load time */
-	G->Time = GMT_memory (GMT, NULL, 1, struct GMT_MODELTIME);	/* Allocate one Model time structure */
-	if (this_time) GMT_memcpy (G->Time, this_time, 1, struct GMT_MODELTIME);	/* Just duplicate input time (unless NULL) */
+	if (this_time) {	/* Deal with load time */
+		G->Time = GMT_memory (GMT, NULL, 1, struct GMT_MODELTIME);	/* Allocate one Model time structure */
+		GMT_memcpy (G->Time, this_time, 1, struct GMT_MODELTIME);	/* Just duplicate input time (unless NULL) */
+	}
 	return (G);
 }
 
@@ -759,7 +760,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct RHEOLOGY *R = NULL;
-	struct FLX_GRID **Load = NULL;
+	struct FLX_GRID **Load = NULL, *This_Load = NULL;
 	struct GMT_GRID *Out = NULL;
 	struct GMT_TEXTSET *L = NULL;
 	struct GRDFLEXURE_CTRL *Ctrl = NULL;
@@ -842,7 +843,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		qsort (Load, n_load_times, sizeof (struct FLX_GRID *), compare_loads);
 	}
 	K = Load[0]->K;	/* We only need one pointer to get to wavenumbers as they are all the same for all grids */
-
+	
 	/* 3. DETERMINE AND POSSIBLY CREATE ONE OUTPUT GRID */
 
 	retain_original = (n_load_times > 1 || Ctrl->T.n_eval_times > 1);	/* True when we will have to loop over the loads */
@@ -881,19 +882,22 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		if (retain_original) GMT_memset (Out->data, Out->header->size, float);	/* Reset output grid to zero; not necessary when we only get here once */
 
 		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each load  */
-			if (Load[t_load] == NULL) continue;	/* Quietly skip times with no load */
-			if (Load[t_load]->Time && Load[t_load]->Time->value < Ctrl->T.time[t_eval].value) continue;	/* Skip future loads */
-			if (Load[t_load]->Time) {	/* Has time so we can report on what is happening */
-				R->load_time_yr = Load[t_load]->Time->value;	/* In years */
-				if (Load[t_load]->Time->u == Ctrl->T.time[t_eval].u) {	/* Same time units even */
-					double dt = Load[t_load]->Time->value * Load[t_load]->Time->scale - Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale;
+			This_Load = Load[t_load];	/* Short-hand for current load */
+			if (This_Load == NULL) continue;	/* Quietly skip times with no load */
+			if (Ctrl->T.active && Ctrl->T.time && This_Load->Time) {	/* Has both load time and evaluation time so can check some more */
+				if (This_Load->Time->value < Ctrl->T.time[t_eval].value) continue;	/* Skip future loads */
+			}
+			if (Ctrl->T.active && This_Load->Time) {	/* Has time so we can report on what is happening */
+				R->load_time_yr = This_Load->Time->value;	/* In years */
+				if (This_Load->Time->u == Ctrl->T.time[t_eval].u) {	/* Same time units even */
+					double dt = This_Load->Time->value * This_Load->Time->scale - Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale;
 					GMT_Report (API, GMT_MSG_VERBOSE, "  Accumulating flexural deformation for load emplaced at time %g %s [Loading time = %g %s]\n",
-						Load[t_load]->Time->value * Load[t_load]->Time->scale, gmt_modeltime_unit (Load[t_load]->Time->u),
-						dt, gmt_modeltime_unit (Load[t_load]->Time->u));
+						This_Load->Time->value * This_Load->Time->scale, gmt_modeltime_unit (This_Load->Time->u),
+						dt, gmt_modeltime_unit (This_Load->Time->u));
 				}
 				else {	/* Just state load time */
 					GMT_Report (API, GMT_MSG_VERBOSE, "  Accumulating flexural deformation for load emplaced at time %g %s\n",
-						Load[t_load]->Time->value * Load[t_load]->Time->scale, gmt_modeltime_unit (Load[t_load]->Time->u));
+						This_Load->Time->value * This_Load->Time->scale, gmt_modeltime_unit (This_Load->Time->u));
 				}
 			}
 			else {
@@ -901,11 +905,11 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "  Accumulating flexural deformation for load # %d emplaced at unspecified time\n", t_load);
 			}
 			/* 4b. COMPUTE THE RESPONSE DUE TO THIS LOAD */
-			if (retain_original) GMT_memcpy (orig_load, Load[t_load]->Grid->data, Load[t_load]->Grid->header->size, float);	/* Make a copy of H(kx,ky) before operations */
-			Apply_Transfer_Function (GMT, Load[t_load]->Grid, Ctrl, Load[t_load]->K, R);	/* Multiplies H(kx,ky) by transfer function, yielding W(kx,ky) */
+			if (retain_original) GMT_memcpy (orig_load, This_Load->Grid->data, This_Load->Grid->header->size, float);	/* Make a copy of H(kx,ky) before operations */
+			Apply_Transfer_Function (GMT, This_Load->Grid, Ctrl, This_Load->K, R);	/* Multiplies H(kx,ky) by transfer function, yielding W(kx,ky) */
 			if (retain_original) {	/* Must add this contribution to our total output grid */
-				Accumulate_Solution (GMT, Out, Load[t_load]->Grid);
-				GMT_memcpy (Load[t_load]->Grid->data, orig_load, Load[t_load]->Grid->header->size, float);	/* Restore H(kx,ky) to what it was before operations */
+				Accumulate_Solution (GMT, Out, This_Load->Grid);
+				GMT_memcpy (This_Load->Grid->data, orig_load, This_Load->Grid->header->size, float);	/* Restore H(kx,ky) to what it was before operations */
 			}
 		}
 
@@ -962,11 +966,12 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	/* 5. FREE ALL GRIDS AND ARRAYS */
 
 	for (t_load = 0; t_load < n_load_times; t_load++) {	/* Free up grid structures */
-		if (Load[t_load] == NULL) continue;	/* Quietly skip containers with no grids */
-		GMT_Destroy_Data (API, &Load[t_load]->Grid);
-		GMT_free (GMT, Load[t_load]->K);
-		GMT_free (GMT, Load[t_load]->Time);
-		GMT_free (GMT, Load[t_load]);
+		This_Load = Load[t_load];	/* Short-hand for current load */
+		if (This_Load == NULL) continue;	/* Quietly skip containers with no grids */
+		GMT_Destroy_Data (API, &This_Load->Grid);
+		GMT_free (GMT, This_Load->K);
+		if (This_Load->Time) GMT_free (GMT, This_Load->Time);
+		GMT_free (GMT, This_Load);
 	}
 	GMT_free (GMT, Load);
 	GMT_free (GMT, R);
