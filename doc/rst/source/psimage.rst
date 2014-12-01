@@ -46,7 +46,7 @@ be made transparent. The user may also choose to replicate the image
 which, when preceded by appropriate clip paths, may allow larger
 custom-designed fill patterns to be implemented (the **-Gp** mechanism
 offered in most GMT programs is limited to rasters smaller than 146
-by 146). 
+by 146).
 
 Required Arguments
 ------------------
@@ -82,9 +82,9 @@ Optional Arguments
 
 **-F**\ *pen*
     Draws a rectangular frame around the image with the given pen [no
-    frame]. 
+    frame].
 
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: (Used only with **-p**)
 .. include:: explain_-J.rst_
 
 .. include:: explain_-Jz.rst_
@@ -97,7 +97,7 @@ Optional Arguments
 **-N**\ *nx*\ [/*ny*]
     Replicate the image *nx* times horizontally and *ny* times
     vertically. If *ny* is omitted, it will be identical to *nx*
-    [Default is 1/1]. 
+    [Default is 1/1].
 
 .. include:: explain_-O.rst_
 
@@ -138,9 +138,9 @@ no effect when plotting 1-bit images or PostScript files.
 **-Gt**
     Assigns the color that is to be made transparent. Sun Raster files
     do not support transparency, so indicate here which color to be made
-    transparent. 
+    transparent.
 
-.. |Add_perspective| replace:: (Requires **-R** and **-J** for proper functioning). 
+.. |Add_perspective| replace:: (Requires **-R** and **-J** for proper functioning).
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_

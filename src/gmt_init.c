@@ -73,8 +73,8 @@
 
 #define GMT_COMPAT_INFO "Please see " GMT_TRAC_WIKI "doc/" GMT_PACKAGE_VERSION "/GMT_Docs.html#new-features-in-gmt-5 for more information.\n"
 
-#define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
-#define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
+#define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
+#define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
 #define GMT_COMPAT_OPT(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
 
 extern int gmt_geo_C_format (struct GMT_CTRL *GMT);
@@ -4877,11 +4877,14 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 		case GMTCASE_Y_AXIS_LENGTH:
 			/* Setting ignored: x- and/or y scale are required inputs on -J option */
 		case GMTCASE_COLOR_IMAGE:
-		case GMTCASE_DIR_TMP:
-		case GMTCASE_DIR_USER:
 			GMT_COMPAT_WARN;
 			/* Setting ignored, now always adobe image */
 			if (!GMT_compat_check (GMT, 4))	error = gmt_badvalreport (GMT, keyword);
+			break;
+		case GMTCASE_DIR_TMP:
+		case GMTCASE_DIR_USER:
+			/* Setting ignored, were active previously in GMT5 but no longer */
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Warning: Parameter %s (previously introduced in GMT5) is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
 			break;
 
 		default:
