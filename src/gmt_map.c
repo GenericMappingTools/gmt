@@ -255,6 +255,13 @@ void gmt_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode) {
 			GMT->current.proj.pars[0] = new_lon;
 		}
 	}
+	else if (!GMT->current.map.is_world) {	/* For reginal areas we cannot have clon > 180 away from either boundary */
+		if (fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 180.0 || fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XHI]) > 180.0) {
+			double new_lon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Central meridian for cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
+			GMT->current.proj.pars[0] = new_lon;
+		}
+	}
 }
 
 void gmt_lat_swap_init (struct GMT_CTRL *GMT)
