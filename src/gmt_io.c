@@ -4787,6 +4787,10 @@ void GMT_set_seg_minmax (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 {	/* Determine the min/max values for each column in the segment */
 	uint64_t row, col;
 
+	/* In case the creation of the segment did not allocate min/max do it now */
+	if (!S->min) S->min = GMT_memory (GMT, NULL, S->n_columns, double);
+	if (!S->max) S->max = GMT_memory (GMT, NULL, S->n_columns, double);
+	
 	for (col = 0; col < S->n_columns; col++) {
 		if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) /* Requires separate quandrant assessment */
 			GMT_get_lon_minmax (GMT, S->coord[col], S->n_rows, &(S->min[col]), &(S->max[col]));
@@ -4837,12 +4841,12 @@ void GMT_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D)
 	}
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
+		GMT_set_tbl_minmax (GMT, T);
 		for (col = 0; col < D->n_columns; col++) {
 			if (T->min[col] < D->min[col]) D->min[col] = T->min[col];
 			if (T->max[col] > D->max[col]) D->max[col] = T->max[col];
 		}
 	}
-	
 }
 
 int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PALETTE *P, bool *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  bool *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, unsigned int def_outline, struct GMT_OGR_SEG *G)
