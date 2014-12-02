@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.1_r12524M [64-bit] Document from psxy
+%%Title: GMT v5.1.2_r13760 [64-bit] Document from psxy
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Nov 16 16:45:37 2013
+%%CreationDate: Mon Dec  1 17:41:45 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -228,13 +228,11 @@
 
 /PSL_pathtext					% PSL_pathtext'' will place a string
   {PSL_pathtextdict begin			% of text along any path. It takes
-    /textheight exch def			% a string and starting offset
-    /just exch def				% a string and starting offset
-    /offset exch def				% a string and starting offset
-    /str exch def				% distance from the beginning of
-						% the path as its arguments. Note
-						% that PSL_pathtext assumes that a
-						% path has already been defined
+    /ydepth exch def                            % a string and starting offset
+    /textheight exch def			% distance from the beginning of
+    /just exch def				% the path as its arguments. Note
+    /offset exch def				% that PSL_pathtext assumes that a
+    /str exch def				% path has already been defined
 						% and after it places the text
 						% along the path, it clears the
 						% current path like the ``stroke''
@@ -251,13 +249,14 @@
 						% be more effective when a small
 						% point size font is used with
 						% sharp curves in the path.
+						
 
     /pathdist 0 def				% Initialize the distance we have
 						% travelled along the path.
     /setdist offset def				% Initialize the distance we have
 						% covered by setting characters.
     /charcount 0 def				% Initialize the character count.
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def % Compute the y-shift
     V flattenpath				% Reduce the path to a series of
 						% straight line segments. The
 						% characters will be placed along
@@ -381,62 +380,99 @@ end
 % PSL LABEL CLIP FUNCTIONS
 
 % Two main functions deals with label placement and clipping:
-% PSL_curved_text_labels: handles text that must follow curved baseline
-% PSL_straight_text_labels: handles text that has straight baseline
+% PSL_curved_path_labels: 	handles texts that must follow curved baselines
+% PSL_straight_path_labels:	handles texts that have straight baselines
 %
-% Both functions assume that these variables have been predefined (at least once):
+% Both functions assume that several variables have been predefined:
 %
-% PSL_setlinepen Function that sets the line pen attributes (width, texture, color)
-% PSL_setboxpen  Function that sets the text box pen attributes (width, texture, color)
-% PSL_setboxrgb  Function that sets the opaque text box color
-% PSL_settxtrgb	 Function that sets the font rgb
-% PSL_str	Array with all the labels
-% PSL_m		Number of labels
-% PSL_angle	The annotation angle for each label
+% First we have these two constant settings for all text boxes:
 %
-% PSL_curved_text_labels expects those labels to be placed along a single
-% line of n points, hence it assumes these are defined:
+%   PSL_setboxpen  Function that sets the text box pen attributes (width, texture, color)
+%   PSL_setboxrgb  Function that sets the opaque text box color
 %
-% PSL_n		Number of points in the path
-% PSL_x		(x,y) coordinates of the path
-% PSL_y
+% Then several arrays are placed.  Since a set of several lines segments may each
+% have many labels along them, we end up with these variables:
+%
+%   PSL_n_paths		Total number of segments
+%   PSL_path_x		x coordinates of the paths (all concatenated one after another)
+%   PSL_path_y		y coordinates of the paths (all concatenated one after another)
+%   PSL_path_n		Array with number of points per segment
+%   PSL_label_str  	Array with all the labels for all segments
+%   PSL_label_n		Array with number of labels per segment
+%   PSL_angle		The annotation angle for each label
+%
+% PSL_curved_path_labels expects those labels to be placed along several
+% lines and it needs the node numbers where to place text:
+%
 % PSL_node	Array with (x,y) node number of label position
 %
-% PSL_straight_text_labels do not need lines and hence it only expects
+% PSL_straight_path_labels are simpler and instead expects
+%
 % PSL_txt_x	(x,y) coordinates of the location of the m labels
 % PSL_txt_y
 
-% Because PSL_curved_text_labels need the entire line's coordinates we only process one line (which may
-% have multiple labels) at the time  Thus, there may be many calls to PSL_curved_text_labels,
-% one for each line, and they may build up a pretty complex clip path.
-% Subroutines of this function are called PSL_CT_*
+/PSL_set_label_heights
+{	% Create array PSL_heights with full label heights
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
+  /PSL_heights PSL_n_labels array def		% Create array with text heights
+  0 1 PSL_n_labels_minus_1			% Loop psl_k = 0 < PSL_n_labels
+  { /psl_k exch def				% Current label index psl_k
+    /psl_label PSL_label_str psl_k get def	% Current text label
+    PSL_label_font psl_k get cvx exec		% Get and set this label's font attributes
+    psl_label sH /PSL_height edef		% Compute the height of this string
+    PSL_heights psl_k PSL_height put		% Store it in the array
+  } for
+} def
 
-/PSL_curved_text_labels
-{ /bits exch def				% 4 on/of bit settings as indicated below
-  /PSL_clippath bits 1 and 1 eq def		% false inactive, true creates clippath for labels
-  /PSL_placetext bits 2 and 0 eq def		% true to place text, false to just make space
-  /PSL_strokeline bits 4 and 4 eq def		% true draws line, false skips
-  /PSL_firstcall bits 32 and 32 eq def		% true first time called, false later
-  /PSL_lastcall bits 64 and 64 eq def		% true last time called, false before
-  /PSL_fillbox bits 128 and 128 eq def		% true to paint box opaque before placing text, false gives transparent box
-  /PSL_drawbox bits 256 and 256 eq def		% true to draw box outline before placing text, false gives no outline
-  /PSL_n1 PSL_n 1 sub def			% one less is the upper limit in for loops
-  /PSL_m1 PSL_m 1 sub def			% same
+%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/PSL_curved_path_labels
+{ /psl_bits exch def				% 4 on/of bit settings as indicated below
+  /PSL_placetext psl_bits 2 and 2 eq def		% true to place text, false to just make space
+  /PSL_clippath psl_bits 4 and 4 eq def		% false inactive, true creates clippath for labels
+  /PSL_strokeline false def			% true draws line, false skips
+  /PSL_fillbox psl_bits 128 and 128 eq def		% true to paint box opaque before placing text, false gives transparent box
+  /PSL_drawbox psl_bits 256 and 256 eq def		% true to draw box outline before placing text, false gives no outline
+  /PSL_n_paths1 PSL_n_paths 1 sub def		% one less is the upper limit in for loop over the paths
   /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
+
+  PSL_clippath {clipsave N clippath} if		% Bracket with clipsave/cliprestore and start clip path
+  /psl_k 0 def
+  /psl_p 0 def
+  0 1 PSL_n_paths1
+  { /psl_kk exch def						% Index into the PSL_n PSL_m arrays
+    /PSL_n PSL_path_n  psl_kk get def				% Get the number of points in this line segment
+    /PSL_m PSL_label_n psl_kk get def				% Get the number of labels for this line segment
+    /PSL_x PSL_path_x psl_k PSL_n getinterval def		% Get the subset that is the current line segment x-coordinates
+    /PSL_y PSL_path_y psl_k PSL_n getinterval def		% Get the subset that is the current line segment y-coordinates
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def	% Get the subset of node values for current line segment
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def	% Get the subset of angle values for current line segment
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def		% Get the subset of string values for current line segment
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def		% Get the subset of font settings for current line segment
+    PSL_curved_path_label					% Operate on this segment only
+    /psl_k psl_k PSL_n add def					% Go to next segment start index for path
+    /psl_p psl_p PSL_m add def					% Go to next segment start index for nodes
+  } for  % The loop over segments
+  			
+  PSL_clippath {PSL_eoclip} if N			% Activate clip path and return
+
+} def
+
+/PSL_curved_path_label
+{	% Deals with a single line segment and its labels
+  /PSL_n1 PSL_n 1 sub def	% one less is the upper limit in for loops
+  /PSL_m1 PSL_m 1 sub def	% same
 
   PSL_CT_calcstringwidth	% Calculate the width of each label string
   PSL_CT_calclinedist		% Calculate along-track distances
+  PSL_CT_excludelabels		% Possibly eliminate labels outside of line domain
   PSL_CT_addcutpoints		% Expand path to include the cut points
 
 % Now we have the final xx/yy array and we are ready to simply lay down the lines
 % and place the text along the line where there are labels.  We will use the
 % new array PSL_xp/yp to store the final points prior to use
 
-  PSL_clippath PSL_firstcall and	% Want clipping and it is the first time called
-  {clipsave N clippath} if		% Bracket with clipsave/cliprestore and start clip path the first time - later we append
-  PSL_setlinepen			% Set line color
   /PSL_nn1 PSL_nn 1 sub def		% End index in for loop
-  /n 0 def				% Toggle: o means line, 1 means text
+  /n 0 def				% Toggle: 0 means line, 1 means text
   /k 0 def				% Index of the current text string
   /j 0 def				% Output point number counter
   /PSL_seg 0 def			% Line segment number
@@ -462,25 +498,22 @@ end
   } for
   n 0 eq {PSL_CT_drawline} if	% Finish off the last line segment
 
-  PSL_lastcall			% After last call we execute the clip path
-  {PSL_clippath
-    {PSL_clip} if N	% Clean up and return
-  } if
 } def
 
 /PSL_CT_textline
-{PSL_placetext			% If we want to place the text
-  {PSL_clippath			% Place curved text along the path just laid down
-    {PSL_CT_clippath} {PSL_CT_placelabel} ifelse
-  } if
-  /n 0 def /k k 1 add def PSL_setlinepen			% Set n back to 0, goto next label, and switch to pen color
+{ PSL_fnt k get cvx exec		% Get and set this label's font attributes
+  /PSL_height PSL_heights k get def	% Recall the height of this text
+  PSL_placetext	{PSL_CT_placelabel} if	% If we want to place the text
+  PSL_clippath {PSL_CT_clippath} if
+  /n 0 def /k k 1 add def		% Set n back to 0, goto next label
 } def
 
 /PSL_CT_calcstringwidth			% Calculate the width of each label string
-{ /PSL_width PSL_m array def	% Assign space for distance
+{ /PSL_width_tmp PSL_m array def	% Assign space for distance
   0 1 PSL_m1
   { /i exch def
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec					% Get and set this label's font attributes
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put	% Compute width and store in the array
   } for
 } def
 
@@ -501,6 +534,40 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+
+% Some labels (in particular first and last per segment) may be too long
+% to actually fit inside the length of the line.  We precalculate the
+% start and end distances for each label and those that exceed the length
+% of the line cannot be plotted and are thus skipped.  The surviving labels
+% and their information is copied to the final PSL arrays
+
+/PSL_CT_excludelabels
+{ /k 0 def				% Current cut point
+  /PSL_width PSL_m array def		% New array of distances
+  /PSL_angle PSL_m array def		% New array of angles
+  /PSL_node PSL_m array def		% New array of nodes
+  /PSL_str PSL_m array def		% New array of strings
+  /PSL_fnt PSL_m array def		% New array of fonts
+  /lastdist PSL_dist PSL_n1 get def	% Length of line 
+  0 1 PSL_m1				% For each of the m labels
+  { /i exch def						% Index for label distance
+    /dist PSL_dist PSL_node_tmp i get get def		% Recall the distance to this label center
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def	% Set the halfwidth + gap distance
+    /L_dist dist halfwidth sub def			% Distance at beginning of label gap
+    /R_dist dist halfwidth add def			% Distance at the end of label gap
+    L_dist 0 gt R_dist lastdist lt and		% Yes, label is inside line ends
+    { % These are the labels we will use
+      PSL_width k PSL_width_tmp i get put	% Copy over width
+      PSL_node k PSL_node_tmp i get put		% Copy over node
+      PSL_angle k PSL_angle_tmp i get put	% Copy over angle
+      PSL_str k PSL_str_tmp i get put		% Copy over text
+      PSL_fnt k PSL_fnt_tmp i get put		% Copy over font
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def	% New number of labels
+  /PSL_m1 PSL_m 1 sub def
 } def
 
 % Initialize an array with all the original line points plus the set of 2*m
@@ -574,14 +641,18 @@ end
 
 /PSL_CT_placelabel
 { % Places the curved text label on current segment
+  /PSL_just PSL_label_justify k get def	% Get this labels justification
+  /PSL_height PSL_heights k get def	% Recall the height of this string
+  /psl_label PSL_str k get def		% Get the current label
+  /psl_depth psl_label sd def		% Determine depth beneath baseline
   PSL_usebox		% Want to lay down box outline or fill
   {PSL_CT_clippath	% Box path now current path
     PSL_fillbox		% Want to paint box
     {V PSL_setboxrgb fill U} if
     PSL_drawbox		% Want to draw outline of box
-    {PSL_setboxpen S} if N
+    {V PSL_setboxpen S U} if N
   } if
-  PSL_settxtrgb PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 
 /PSL_CT_clippath
@@ -606,7 +677,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if	% Only calculate new angle if not duplicates
     /sina angle sin def
     /cosa angle cos def
@@ -632,7 +703,7 @@ end
   /str 20 string def
   % PSL_strokeline PSL_seg 0 eq and		% If we asked to draw lines...
   PSL_strokeline				% If we asked to draw lines...
-  {PSL_CT_placeline PSL_setlinepen S} if	% Lay down the rest of the path and stroke it
+  {PSL_CT_placeline S} if			% Lay down the rest of the path and stroke it
   /PSL_seg PSL_seg 1 add def			% Goto next segment number
   /n 1 def					% Set n to 1
 } def
@@ -642,103 +713,141 @@ end
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for	% Lay down the rest of the path
 } def
 
-% PSL_straight_text_labels deals with straight text labels w/wo textboxes (rect or rounded).
-% Because only the (x,y) location of each label is needed we can do all the labels
-% in one (or two, for clipping) call to PSL_straight_text_labels.
-% Subroutines of this function are called PSL_ST_*
+%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PSL_draw_path_lines will draw the lines that have been stored in the concatenated
+% PSL_path_x and PSL_path_y arrays using the pen attributes in the PSL_path_pen array
 
-/PSL_straight_text_labels
-{		% This will create a total clip path for all the labels in PSL_txt
-  /bits exch def				% Single bitflag argument passed
-  /PSL_clippath bits 1 and 0 eq def		% true if we want to clip, false to place text
-  /PSL_rounded bits 16 and 16 eq def		% true for rounded box shape, false gives rectangular box
-  /PSL_fillbox bits 128 and 128 eq def		% true to paint box opaque before placing text, false gives transparent box
-  /PSL_drawbox bits 256 and 256 eq def		% true to draw box outline before placing text, false gives no outline
-  /PSL_m1 PSL_m 1 sub def
-  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
-  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
+/PSL_draw_path_lines
+{	% Draws the lines already stored in the PSL_path_x|y arrays
+  /PSL_n_paths1 PSL_n_paths 1 sub def		% One less is the upper limit in for loop over the paths
+  V
+  /psl_start 0 def					% Start index of segment in concatenated path array
+  0 1 PSL_n_paths1					% Loop over all segments
+  { /psl_k exch def					% Index into the PSL arrays
+    /PSL_n PSL_path_n psl_k get def			% Get the number of points in this line segment
+    /PSL_n1 PSL_n 1 sub def				% One less is the upper limit in for loop over points
+    PSL_path_pen psl_k get cvx exec			% Get and set this line's pen
+    N							% Clean path
+    PSL_path_x psl_start get PSL_path_y psl_start get M	% Place anchor point of this segment
+    1 1 PSL_n1						% Loop over points in this segment
+    { /psl_i exch def					% Local index of next point in segment
+      /psl_kk psl_i psl_start add def			% Equivalent index in concatenated array of all segments
+      PSL_path_x psl_kk get PSL_path_y psl_kk get L	% Draw to next point
+    } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def	% Difference between first and last x coordinate
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def	% Difference between first and last y coordinate
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if	% Explicitly close the path
+    S							% Stroke this path
+    /psl_start psl_start PSL_n add def			% Go to next segment and update start index for path
+  } for
+  U
+} def
+
+%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PSL_straight_path_labels deals with straight text labels w/wo textboxes (rect or rounded).
+% Only the (x,y) location of each label is needed.
+% Use <flags> PSL_straight_path_labels to paint|draw textboxes and place text
+% Use <flags> PSL_straight_path_clip to use textboxes to define and activate clipping
+% Subroutines of these functions are called PSL_ST_*
+% Local variables are called psl_*, "global" are called PSL_*
+
+/PSL_straight_path_labels
+{	% This function will lay down (a) text box paint, (b) text box outline, and (c) text labels
+	% All of these are optionals specified by the bit flag.
+  /psl_bits exch def				% Single bitflag argument passed
+  /PSL_placetext psl_bits 2 and 2 eq def	% true to place text, false to just make space
+  /PSL_rounded psl_bits 32 and 32 eq def	% true for rounded box shape, false gives rectangular box
+  /PSL_fillbox psl_bits 128 and 128 eq def	% true to paint box opaque before placing text
+  /PSL_drawbox psl_bits 256 and 256 eq def	% true to draw box outline before placing text
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
   /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
-
-  PSL_clippath
-  {PSL_ST_clippath}
-  {PSL_usebox {PSL_ST_clippath} if
-    PSL_ST_placelabel
-  } ifelse
-} def
-
-/PSL_ST_placelabel	% Just place labels
-{PSL_settxtrgb
-  0 1 PSL_m1					% Loop over all labels
-  { /k exch def					% Current label index
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def			% Get text placement point
-    V PSL_txt_x k get PSL_txt_y k get T		% Set origin at text point
-    PSL_angle k get R				% Rotate the coordinate system to follow baseline text
-    /BoxW PSL_str k get stringwidth pop def	% Width of current label space including clearance
-    BoxW PSL_justx mul PSL_justy M		% Goto LL point on label
-    PSL_str k get show				% Place the text
-    U						% Undo damage to coordinate system
+  0 1 PSL_n_labels_minus_1			% Loop psl_k = 0 < PSL_n_labels
+  { /psl_k exch def				% Current label index psl_k
+    PSL_ST_prepare_text				% Get all dimensions, coordinates, etc. for this label
+    PSL_usebox					% If a text box is requested we go in here:
+    {  PSL_rounded				% Place text box path, either straight or rounded, on stack
+        {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
+      ifelse
+      PSL_fillbox {V PSL_setboxrgb fill U} if	% Paint it, if requested
+      PSL_drawbox {V PSL_setboxpen S U} if	% Outline it, if requested
+      N						% Done, so remove path
+    } if
+    PSL_placetext {PSL_ST_place_label} if	% Show text, if requested
   } for
 } def
 
-/PSL_ST_clippath	% Create and lay down clip path
-{N						% Start fresh
-  PSL_usebox not {clipsave clippath} if		% Set clipsave and start clip path
-  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
-  PSL_usebox
-  {PSL_fillbox
-    {V PSL_setboxrgb fill U} if
-    PSL_drawbox
-    {PSL_setboxpen S} if N
-  }
-  {PSL_clip		% Set the new clip path
-  } ifelse
-  N			% Clean up and return
+/PSL_straight_path_clip
+{	% This function will create a total clip path for all the labels in PSL_txt
+  /psl_bits exch def				% Single bit flag argument passed
+  /PSL_rounded psl_bits 32 and 32 eq def	% true for rounded box shape, false gives rectangular box
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
+
+  N clipsave clippath				% Start clip path by selecting the entire mappable area
+  0 1 PSL_n_labels_minus_1			% Loop over all labels
+  { /psl_k exch def				% Current label index psl_k
+    PSL_ST_prepare_text				% Get all dimensions, coordinates, etc. for this label
+    PSL_rounded					% Get either straight or rounded text box path
+      {PSL_ST_textbox_round}
+      {PSL_ST_textbox_rect}
+    ifelse
+  } for
+  PSL_eoclip N					% Set the new clip path, increment clip counter and clear path
 } def
 
-/PSL_ST_clippath_rect	% Create and lay down rectangular clip path
+/PSL_ST_prepare_text		% Compute various dimensions and coordinates for one label
+{ % The current label has index psl_k
+  /psl_xp PSL_txt_x psl_k get def		% Get text placement x coordinate
+  /psl_yp PSL_txt_y psl_k get def		% Get text placement y coordinate
+  /psl_label PSL_label_str psl_k get def	% Current text label
+  PSL_label_font psl_k get cvx exec		% Get and set this label's font attributes
+  /PSL_height PSL_heights psl_k get def		% Recall the height of this string
+  /psl_boxH PSL_height PSL_gap_y 2 mul add def	% Set height of current label including clearance
+  /PSL_just PSL_label_justify psl_k get def	% Get text justification (1-11)
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def % This is 0, -0.5, or -1 for relative x-shift 
+  /PSL_justy PSL_just 4 idiv 2 div neg def	% This is 0, -0.5, or -1 for relative y-shift 
+  /psl_SW psl_label stringwidth pop def		% Width of current label space
+  /psl_boxW psl_SW PSL_gap_x 2 mul add def	% Width of current label space including clearance
+  /psl_x0 psl_SW PSL_justx mul def		% (psl_x0,psl_y0) is rotated/adjusted text LL point on inside rectangle relative to psl_xp,psl_yp
+  /psl_y0 PSL_justy PSL_height mul def		%
+  /psl_angle PSL_label_angle psl_k get def	% The angle of text w.r.t. baseline
+} def
+
+/PSL_ST_textbox_rect	% Compute and place rectangular path for current label
 {
-  /BoxH PSL_height PSL_gap_y 2 mul add def	% Height of current label space including clearance
-  /DelY BoxH BoxH 0 3 array astore def		% Offsets in y from LL
-  0 1 PSL_m1					% Loop over all labels
-  { /k exch def					% Current label index
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def			% Get text placement point
-    /MAT PSL_angle k get matrix R def		% Rotate the coordinate system to follow baseline text
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def	% Width of current label space including clearance
-    /x0 0 BoxW PSL_justx mul add def		% (x0,y0) is the rotated and adjusted text LL point relative to xp,yp
-    /y0 0 PSL_justy add PSL_gap_y sub def
-    /DelX 0 BoxW BoxW 3 array astore def	% Offsets in x from LL
-    x0 y0 MAT transform
-    /dy exch def /dx exch def
-    xp dx add yp dy add M			% Start new clippath segment
-    0 1 2
-    { % Visit all 5 points and append to clippath
-      /ii exch def
-      x0 DelX ii get add y0 DelY ii get add MAT transform
-      /dy exch def /dx exch def
-      xp dx add yp dy add L			% Start new clippath segment
-    } for P
-  } for
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T	% Rotate the coordinate system to follow baseline text and make (psl_x0,psl_y0) the new origin
+  PSL_gap_x neg PSL_gap_y neg M			% Set LL anchor point for rectangular box
+  0 psl_boxH D psl_boxW 0 D 0 psl_boxH neg D P	% Draw text box going CW
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T	% Unto trans/rot above
 } def
 
-/PSL_ST_clippath_round	% Create and lay down rounded rectangular clip path
+/PSL_ST_textbox_round	% Compute and place rounded rectangular path for current label
 {
-  /PSL_justy2 PSL_just 4 idiv 2 div neg def
-  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def	% Smallest gap distance
-  /BoxH PSL_height PSL_gap_y 2 mul add def	% Height of current label space including clearance
-  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  0 1 PSL_m1					% Loop over all labels
-  { /k exch def					% Current label index
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def			% Get text placement point
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def	% Width of current label space including clearance
-    /x0 BoxW PSL_justx mul def			% (x0,y0) is the rotated and adjusted text LL point on inside rectangle relative to xp,yp
-    xp yp T PSL_angle k get R x0 y0 T		% Rotate the coordinate system to follow baseline text
-    BoxR 0 M					% Start rounded box
-    BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct P
-    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T	% Unto trans/rots
-  } for
+  /psl_BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def	% Smallest gap distance is our corner radius
+  /psl_xd PSL_gap_x psl_BoxR sub def 			% When x_gap exceeds y_gap there will be an adjustment in x, else 0
+  /psl_yd PSL_gap_y psl_BoxR sub def 			% When y_gap exceeds x_gap there will be an adjustment in y, else 0
+  /psl_xL PSL_gap_x neg def				% Left-most x coordinate of text box
+  /psl_yB PSL_gap_y neg def				% Bottom y coordinate of text box
+  /psl_yT psl_boxH psl_yB add def			% Top y coordinate of text box
+  /psl_H2 PSL_height psl_yd 2 mul add def		% Inner height when adjusting for any psl_yd offset
+  /psl_W2 psl_SW psl_xd 2 mul add def			% Inner width when adjusting for any psl_xd offset
+  /psl_xR psl_xL psl_boxW add def			% Right-most x coordinate of text box
+  /psl_x0 psl_SW PSL_justx mul def			% (psl_x0,psl_y0) is rotated/adjusted text LL point on inside rectangle relative to psl_xp,psl_yp
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T		% Rotate the coordinate system to follow baseline text and make (psl_x0,psl_y0) the new origin
+  psl_xL psl_yd M					% LL anchor point for rounded box is on lower left side just before rounded corner
+  psl_xL psl_yT psl_xR psl_yT psl_BoxR arct psl_W2 0 D	% Draw UL rounded corner and line to start of UR rounded corner
+  psl_xR psl_yT psl_xR psl_yB psl_BoxR arct 0 psl_H2 neg D	% Draw UR rounded corner and line to LR rounded corner
+  psl_xR psl_yB psl_xL psl_yB psl_BoxR arct psl_W2 neg 0 D	% Draw LR rounded corner and line to LL rounded corner
+  psl_xL psl_yB psl_xL psl_yd psl_BoxR arct P			% Draw LL rounded corner and close the clippath segment
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T	% Unto trans/rot above
+} def
+
+/PSL_ST_place_label	% Just place the current label
+{
+    V psl_xp psl_yp T psl_angle R	% Set origin at text point and rotate the coordinate system to follow baseline text
+    psl_SW PSL_justx mul psl_y0 M	% Goto LL point on label
+    psl_label dup sd neg 0 exch G show	% Place the text, adjust vertically for any depth below baseline
+    U					% Undo damage to coordinate system
 } def
 
 /PSL_nclip 0 def							% The depth of clipping in effect
@@ -959,7 +1068,7 @@ clipsave
 18 156 D
 12 176 D
 3 137 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -983,7 +1092,7 @@ V
 28 -76 D
 33 -96 D
 24 -75 D
--25 -2 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1007,7 +1116,7 @@ clipsave
 26 -25 D
 10 -11 D
 -53 15 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1047,7 +1156,7 @@ O0
 -6 118 D
 25 -1 D
 6 -117 D
--25 0 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1070,7 +1179,7 @@ clipsave
 14 36 D
 52 -112 D
 -48 27 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1126,7 +1235,7 @@ clipsave
 24 -7 D
 -131 -20 D
 29 26 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1169,7 +1278,7 @@ O0
 -113 72 D
 -156 94 D
 -93 55 D
-13 18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1192,7 +1301,7 @@ clipsave
 -112 41 D
 -57 19 D
 57 14 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1234,7 +1343,7 @@ O0
 -205 -4 D
 -194 -7 D
 -220 -11 D
--2 24 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1257,7 +1366,7 @@ clipsave
 22 -6 D
 -166 -47 D
 35 46 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1296,7 +1405,7 @@ O0
 24 -4 D
 10 -98 D
 2 -33 D
--24 4 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1319,7 +1428,7 @@ clipsave
 12 -16 D
 44 -71 D
 -48 26 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1376,7 +1485,7 @@ clipsave
 12 19 D
 27 -104 D
 -37 31 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1435,7 +1544,7 @@ clipsave
 -74 -13 D
 -53 -11 D
 24 29 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1478,7 +1587,7 @@ O0
 -8 -21 D
 -31 16 D
 -74 36 D
-9 20 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1501,7 +1610,7 @@ clipsave
 91 -77 D
 -169 40 D
 50 21 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1545,7 +1654,7 @@ O0
 -55 -75 D
 -20 -29 D
 -14 -19 D
--20 16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1567,7 +1676,7 @@ clipsave
 129 103 D
 -57 -160 D
 -15 58 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1603,7 +1712,7 @@ O0
 39 101 D
 23 -10 D
 -39 -101 D
--23 10 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1631,7 +1740,7 @@ clipsave
 13 -54 D
 6 -28 D
 -37 34 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1681,7 +1790,7 @@ O0
 16 14 D
 20 -15 D
 -75 -64 D
--20 15 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1704,7 +1813,7 @@ clipsave
 44 13 D
 -38 -90 D
 -19 43 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1759,7 +1868,7 @@ clipsave
 102 -62 D
 -104 13 D
 24 16 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1812,7 +1921,7 @@ clipsave
 -18 -33 D
 -1 42 D
 8 -13 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1846,7 +1955,7 @@ O0
 21 1 D
 15 -158 D
 10 -122 D
--22 -1 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1868,7 +1977,7 @@ clipsave
 20 174 D
 60 -169 D
 -44 36 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1904,7 +2013,7 @@ O0
 31 63 D
 20 -14 D
 -30 -63 D
--21 14 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1928,7 +2037,7 @@ clipsave
 10 -45 D
 5 -32 D
 -32 39 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1970,7 +2079,7 @@ O0
 16 -19 D
 -41 -22 D
 -27 -14 D
--16 18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -1993,7 +2102,7 @@ clipsave
 -19 -33 D
 -22 -39 D
 -14 44 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2033,7 +2142,7 @@ O0
 -3 -18 D
 -35 26 D
 -54 38 D
-3 18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2056,7 +2165,7 @@ clipsave
 55 -60 D
 -130 60 D
 34 13 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2113,7 +2222,7 @@ clipsave
 19 -93 D
 15 -82 D
 -33 48 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2159,7 +2268,7 @@ O0
 5 -173 D
 1 -111 D
 -3 -135 D
--18 -1 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2183,7 +2292,7 @@ clipsave
 31 -103 D
 19 -69 D
 -37 38 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2225,7 +2334,7 @@ O0
 17 -18 D
 -24 -14 D
 -17 -11 D
--17 19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2249,7 +2358,7 @@ clipsave
 -3 -46 D
 -1 -8 D
 -23 40 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2289,7 +2398,7 @@ O0
 67 26 D
 13 -21 D
 -67 -26 D
--13 21 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2312,7 +2421,7 @@ clipsave
 5 -2 D
 -30 -59 D
 -12 44 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2368,7 +2477,7 @@ clipsave
 28 -19 D
 -66 -16 D
 9 31 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2408,7 +2517,7 @@ O0
 13 -9 D
 -13 -135 D
 -14 -102 D
--13 9 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2432,7 +2541,7 @@ clipsave
 10 -106 D
 4 -70 D
 -22 52 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2485,7 +2594,7 @@ O0
 -20 -43 D
 -11 -21 D
 -43 -85 D
--12 12 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2509,7 +2618,7 @@ clipsave
 -9 -93 D
 -10 -81 D
 -13 56 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2550,7 +2659,7 @@ O0
 10 -19 D
 -13 12 D
 -29 22 D
--11 19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2575,7 +2684,7 @@ clipsave
 -28 15 D
 -19 9 D
 -5 22 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2635,7 +2744,7 @@ clipsave
 6 -57 D
 2 -39 D
 -18 52 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2679,7 +2788,7 @@ O0
 -17 -92 D
 -20 -86 D
 -11 -39 D
--10 19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2703,7 +2812,7 @@ clipsave
 6 -64 D
 4 -75 D
 -15 58 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2749,7 +2858,7 @@ O0
 -13 -137 D
 -16 -115 D
 -21 -127 D
--10 10 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2773,7 +2882,7 @@ clipsave
 5 -95 D
 2 -83 D
 -14 54 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2826,7 +2935,7 @@ O0
 -29 -61 D
 -66 -131 D
 -45 -80 D
--7 14 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2850,7 +2959,7 @@ clipsave
 -16 -102 D
 -13 -69 D
 -4 58 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2890,7 +2999,7 @@ O0
 -23 65 D
 12 -25 D
 21 -59 D
--10 19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2914,7 +3023,7 @@ clipsave
 33 -72 D
 20 -48 D
 -25 54 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -2960,7 +3069,7 @@ O0
 26 -128 D
 25 -153 D
 9 -71 D
--5 7 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -2985,7 +3094,7 @@ clipsave
 23 -80 D
 3 -12 D
 -17 48 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3033,7 +3142,7 @@ O0
 -8 -151 D
 -13 -139 D
 -14 -104 D
--5 8 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3057,7 +3166,7 @@ clipsave
 13 -166 D
 0 -12 D
 -9 52 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3107,7 +3216,7 @@ O0
 -31 -89 D
 -52 -131 D
 -5 -10 D
--4 10 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3131,7 +3240,7 @@ clipsave
 -17 -130 D
 -7 -48 D
 0 54 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3178,7 +3287,7 @@ O0
 -34 -129 D
 -40 -128 D
 -4 -11 D
-0 5 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3202,7 +3311,7 @@ clipsave
 -16 -106 D
 -12 -71 D
 7 47 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3246,7 +3355,7 @@ O0
 22 -44 D
 40 -89 D
 43 -104 D
--25 -3 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3269,7 +3378,7 @@ clipsave
 72 -60 D
 11 -10 D
 -54 13 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3309,7 +3418,7 @@ O0
 25 -3 D
 23 -108 D
 8 -45 D
--24 3 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3333,7 +3442,7 @@ clipsave
 48 -60 D
 17 -23 D
 -50 23 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3374,7 +3483,7 @@ O0
 23 -9 D
 -7 -18 D
 -31 -75 D
--23 10 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3399,7 +3508,7 @@ clipsave
 10 -41 D
 8 -38 D
 -37 33 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3442,7 +3551,7 @@ O0
 20 -14 D
 -21 -48 D
 -5 -12 D
--21 13 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3465,7 +3574,7 @@ clipsave
 8 3 D
 18 -76 D
 -34 38 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3508,7 +3617,7 @@ O0
 -17 -16 D
 -2 -3 D
 -10 -9 D
--17 18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3532,7 +3641,7 @@ clipsave
 4 -35 D
 1 -25 D
 -26 40 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3572,7 +3681,7 @@ O0
 20 77 D
 25 0 D
 -20 -77 D
--25 0 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3596,7 +3705,7 @@ clipsave
 9 6 D
 31 -54 D
 -43 13 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3637,7 +3746,7 @@ O0
 25 -3 D
 -6 -41 D
 -6 -46 D
--25 4 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3664,7 +3773,7 @@ clipsave
 13 -18 D
 3 -3 D
 -45 17 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3711,7 +3820,7 @@ O0
 2 8 D
 23 -9 D
 -10 -38 D
--24 9 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3735,7 +3844,7 @@ clipsave
 21 -30 D
 4 -8 D
 -41 25 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3785,7 +3894,7 @@ O0
 52 -60 D
 31 -39 D
 7 -11 D
--19 11 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3811,7 +3920,7 @@ clipsave
 19 -16 D
 13 -11 D
 -49 34 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3856,7 +3965,7 @@ O0
 -9 12 D
 24 -25 D
 19 -32 D
--17 17 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3884,7 +3993,7 @@ clipsave
 47 -53 D
 4 -5 D
 -39 41 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3933,7 +4042,7 @@ O0
 -1 -4 D
 -133 -9 D
 -36 -4 D
-2 4 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -3957,7 +4066,7 @@ clipsave
 -106 -7 D
 -71 -7 D
 42 10 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -3999,7 +4108,7 @@ O0
 1 -2 D
 -135 14 D
 -50 4 D
-0 2 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4023,7 +4132,7 @@ clipsave
 -148 17 D
 -23 2 D
 37 -1 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4071,7 +4180,7 @@ O0
 10 -19 D
 24 -54 D
 4 -7 D
--25 -4 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4094,7 +4203,7 @@ clipsave
 47 -36 D
 41 -34 D
 -55 12 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4132,7 +4241,7 @@ O0
 1 88 D
 25 1 D
 -1 -88 D
--25 -1 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4156,7 +4265,7 @@ clipsave
 37 -44 D
 9 -11 D
 -47 11 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4198,7 +4307,7 @@ O0
 0 -4 D
 -121 -11 D
 -24 -3 D
-0 4 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4222,7 +4331,7 @@ clipsave
 -127 -13 D
 -47 -6 D
 40 11 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4269,7 +4378,7 @@ O0
 55 -56 D
 6 -5 D
 46 -49 D
--22 -10 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4292,7 +4401,7 @@ clipsave
 98 -44 D
 15 -7 D
 -58 -2 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4349,7 +4458,7 @@ clipsave
 19 -24 D
 13 -19 D
 -35 4 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4394,7 +4503,7 @@ O0
 -90 -21 D
 -100 -26 D
 -78 -23 D
-8 6 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4418,7 +4527,7 @@ clipsave
 -128 -28 D
 -47 -11 D
 51 18 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4462,7 +4571,7 @@ O0
 40 -28 D
 11 -9 D
 17 -12 D
--19 -14 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4485,7 +4594,7 @@ clipsave
 -5 11 D
 118 -30 D
 -56 -13 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4540,7 +4649,7 @@ clipsave
 50 26 D
 -39 -31 D
 4 9 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4574,7 +4683,7 @@ O0
 -12 -10 D
 -63 -27 D
 -80 -39 D
-12 10 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4598,7 +4707,7 @@ clipsave
 -91 -41 D
 -60 -29 D
 51 31 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4655,7 +4764,7 @@ clipsave
 -35 87 D
 103 -23 D
 -50 -19 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4708,7 +4817,7 @@ clipsave
 -62 -71 D
 30 61 D
 6 -10 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4745,7 +4854,7 @@ O0
 13 16 D
 26 32 D
 41 46 D
-17 13 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4770,7 +4879,7 @@ clipsave
 12 31 D
 13 26 D
 17 7 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4830,7 +4939,7 @@ clipsave
 97 28 D
 16 4 D
 -43 -37 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4869,7 +4978,7 @@ O0
 -16 -16 D
 14 85 D
 2 6 D
-15 16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4894,7 +5003,7 @@ clipsave
 -11 39 D
 0 5 D
 25 8 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -4941,7 +5050,7 @@ O0
 35 68 D
 38 65 D
 28 44 D
-17 21 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -4966,7 +5075,7 @@ clipsave
 18 56 D
 5 13 D
 12 8 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5026,7 +5135,7 @@ clipsave
 3 20 D
 20 -64 D
 -19 0 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5069,7 +5178,7 @@ O0
 -2 81 D
 3 71 D
 5 51 D
-13 18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5093,7 +5202,7 @@ clipsave
 -19 38 D
 -10 24 D
 23 13 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5137,7 +5246,7 @@ O0
 25 84 D
 20 54 D
 34 79 D
-9 18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5161,7 +5270,7 @@ clipsave
 3 37 D
 5 30 D
 10 12 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5201,7 +5310,7 @@ O0
 -106 32 D
 8 24 D
 105 -33 D
--7 -23 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5226,7 +5335,7 @@ clipsave
 -8 10 D
 97 18 D
 -34 -38 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5286,7 +5395,7 @@ clipsave
 13 -32 D
 -63 3 D
 25 32 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5326,7 +5435,7 @@ O0
 -6 -16 D
 9 92 D
 11 72 D
-6 16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5350,7 +5459,7 @@ clipsave
 -4 81 D
 0 20 D
 9 0 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5398,7 +5507,7 @@ O0
 44 29 D
 116 70 D
 32 18 D
-4 -23 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5422,7 +5531,7 @@ clipsave
 39 51 D
 46 58 D
 -13 -57 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5462,7 +5571,7 @@ O0
 10 -140 D
 -11 -7 D
 -10 140 D
-11 7 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5486,7 +5595,7 @@ clipsave
 -24 92 D
 -14 60 D
 23 -23 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5533,7 +5642,7 @@ O0
 -20 129 D
 -14 128 D
 -5 89 D
-5 15 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5557,7 +5666,7 @@ clipsave
 -35 90 D
 -7 22 D
 15 -4 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5596,7 +5705,7 @@ O0
 0 3548 M
 4 -55 D
 -3 28 D
--1 27 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5623,7 +5732,7 @@ clipsave
 0 -1 D
 -1 0 D
 0 36 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5669,7 +5778,7 @@ O0
 -78 -13 D
 -3 25 D
 366 58 D
-4 -24 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5691,7 +5800,7 @@ clipsave
 -113 29 D
 98 63 D
 -17 -50 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5729,7 +5838,7 @@ O0
 -12 16 D
 26 82 D
 16 46 D
-12 -16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5751,7 +5860,7 @@ clipsave
 -61 -101 D
 16 160 D
 13 -59 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5791,7 +5900,7 @@ O0
 -14 20 D
 -47 75 D
 -12 20 D
-1 21 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5816,7 +5925,7 @@ clipsave
 -29 23 D
 -40 36 D
 15 15 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5869,7 +5978,7 @@ O0
 -7 16 D
 -4 7 D
 -9 35 D
--3 13 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5893,7 +6002,7 @@ clipsave
 -21 -11 D
 -4 -2 D
 -3 37 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -5936,7 +6045,7 @@ O0
 -10 23 D
 54 23 D
 202 86 D
-10 -23 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -5962,7 +6071,7 @@ clipsave
 35 36 D
 18 17 D
 -6 -53 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6010,7 +6119,7 @@ O0
 120 3 D
 114 7 D
 15 1 D
-7 -23 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6033,7 +6142,7 @@ clipsave
 -79 32 D
 82 44 D
 -9 -44 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6093,7 +6202,7 @@ clipsave
 -6 -7 D
 -13 -12 D
 -3 43 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6152,7 +6261,7 @@ O0
 -2 3 D
 -3 2 D
 -9 11 D
--9 22 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6179,7 +6288,7 @@ clipsave
 15 -13 D
 -34 -13 D
 -7 34 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6227,7 +6336,7 @@ O0
 -12 21 D
 205 83 D
 52 22 D
-12 -22 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6251,7 +6360,7 @@ clipsave
 40 38 D
 49 45 D
 -3 -50 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6294,7 +6403,7 @@ O0
 -8 22 D
 161 -20 D
 98 -7 D
-8 -22 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6317,7 +6426,7 @@ clipsave
 -25 12 D
 100 22 D
 -12 -36 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6358,7 +6467,7 @@ O0
 64 -61 D
 58 -53 D
 17 -14 D
--1 -14 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6382,7 +6491,7 @@ clipsave
 85 -66 D
 32 -23 D
 -29 0 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6430,7 +6539,7 @@ O0
 -61 35 D
 -40 27 D
 -29 24 D
--12 20 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6453,7 +6562,7 @@ clipsave
 47 -29 D
 -52 -11 D
 -7 31 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6495,7 +6604,7 @@ O0
 38 22 D
 46 27 D
 79 47 D
-16 -19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6518,7 +6627,7 @@ clipsave
 -18 -3 D
 76 94 D
 6 -48 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6558,7 +6667,7 @@ O0
 -5 18 D
 117 -34 D
 110 -28 D
-5 -18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6584,7 +6693,7 @@ clipsave
 120 -10 D
 9 0 D
 -22 -25 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6634,7 +6743,7 @@ O0
 114 -77 D
 118 -73 D
 10 -6 D
-0 -11 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6658,7 +6767,7 @@ clipsave
 17 -11 D
 88 -50 D
 -29 0 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6704,7 +6813,7 @@ O0
 -26 1 D
 -25 6 D
 -8 4 D
--18 17 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6728,7 +6837,7 @@ clipsave
 -8 -35 D
 -1 -4 D
 -24 32 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6770,7 +6879,7 @@ O0
 -18 16 D
 97 49 D
 91 50 D
-17 -16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6797,7 +6906,7 @@ clipsave
 6 5 D
 32 35 D
 7 -43 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6845,7 +6954,7 @@ O0
 -11 16 D
 99 -4 D
 90 -1 D
-11 -16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6869,7 +6978,7 @@ clipsave
 112 18 D
 8 2 D
 -12 -28 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6913,7 +7022,7 @@ O0
 125 -48 D
 127 -42 D
 54 -16 D
-7 -11 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -6937,7 +7046,7 @@ clipsave
 105 -33 D
 27 -7 D
 -21 -8 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -6997,7 +7106,7 @@ clipsave
 12 -10 D
 10 -7 D
 -41 26 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7039,7 +7148,7 @@ O0
 -133 -52 D
 -16 13 D
 133 52 D
-16 -13 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7063,7 +7172,7 @@ clipsave
 67 47 D
 35 25 D
 0 -36 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7105,7 +7214,7 @@ O0
 -5 12 D
 127 -12 D
 69 -4 D
-5 -11 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7129,7 +7238,7 @@ clipsave
 135 1 D
 21 1 D
 -28 -18 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7174,7 +7283,7 @@ O0
 102 -18 D
 103 -14 D
 58 -7 D
-8 -7 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7198,7 +7307,7 @@ clipsave
 103 -18 D
 38 -5 D
 -20 -6 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7240,7 +7349,7 @@ O0
 3 12 D
 145 -5 D
 85 -1 D
--3 -12 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7264,7 +7373,7 @@ clipsave
 95 5 D
 83 6 D
 -44 -21 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7308,7 +7417,7 @@ O0
 147 -11 D
 134 -4 D
 97 0 D
--3 -8 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7332,7 +7441,7 @@ clipsave
 118 -3 D
 59 0 D
 -44 -12 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7379,7 +7488,7 @@ O0
 133 -6 D
 122 -2 D
 25 1 D
--5 -3 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7403,7 +7512,7 @@ clipsave
 131 -16 D
 48 -5 D
 -47 0 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7447,7 +7556,7 @@ O0
 40 -98 D
 50 -135 D
 5 -14 D
--25 -3 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7473,7 +7582,7 @@ clipsave
 22 -20 D
 5 -6 D
 -53 14 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7535,7 +7644,7 @@ O0
 33 -35 D
 6 -5 D
 5 -6 D
--22 -10 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7558,7 +7667,7 @@ clipsave
 78 -34 D
 39 -18 D
 -58 -1 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7598,7 +7707,7 @@ O0
 19 14 D
 61 -43 D
 19 -14 D
--20 -14 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7624,7 +7733,7 @@ clipsave
 114 -29 D
 8 -3 D
 -56 -12 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7686,7 +7795,7 @@ clipsave
 -8 24 D
 101 -30 D
 -50 -17 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7724,7 +7833,7 @@ O0
 -56 14 D
 13 20 D
 55 -13 D
--12 -21 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7747,7 +7856,7 @@ clipsave
 95 17 D
 16 3 D
 -44 -35 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7785,7 +7894,7 @@ O0
 11 99 D
 25 -2 D
 -11 -99 D
--25 2 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7808,7 +7917,7 @@ clipsave
 28 50 D
 33 -117 D
 -43 30 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7848,7 +7957,7 @@ O0
 16 15 D
 127 -66 D
 28 -15 D
--17 -15 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7872,7 +7981,7 @@ clipsave
 138 -31 D
 21 -5 D
 -59 -13 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7915,7 +8024,7 @@ O0
 14 18 D
 128 -43 D
 46 -17 D
--14 -19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -7939,7 +8048,7 @@ clipsave
 93 -3 D
 63 -4 D
 -56 -24 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -7981,7 +8090,7 @@ O0
 -38 42 D
 17 17 D
 72 -78 D
--18 -18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8005,7 +8114,7 @@ clipsave
 65 -30 D
 44 -21 D
 -50 -14 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8057,7 +8166,7 @@ O0
 5 -6 D
 6 -5 D
 5 -6 D
--14 -20 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8080,7 +8189,7 @@ clipsave
 71 -27 D
 26 -10 D
 -42 -21 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8136,7 +8245,7 @@ clipsave
 30 -17 D
 -142 11 D
 41 19 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8192,7 +8301,7 @@ clipsave
 -24 -1 D
 139 74 D
 -24 -42 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8233,7 +8342,7 @@ O0
 98 -62 D
 19 -11 D
 45 -29 D
--15 -20 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8256,7 +8365,7 @@ clipsave
 -32 37 D
 153 -41 D
 -57 -18 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8299,7 +8408,7 @@ O0
 10 -18 D
 33 -52 D
 27 -44 D
--18 -16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8322,7 +8431,7 @@ clipsave
 -2 10 D
 105 -91 D
 -51 -2 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8362,7 +8471,7 @@ O0
 8 24 D
 129 -59 D
 59 -26 D
--8 -23 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8388,7 +8497,7 @@ clipsave
 -18 19 D
 125 -6 D
 -41 -32 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8439,7 +8548,7 @@ O0
 -137 80 D
 -116 66 D
 -64 34 D
-13 19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8463,7 +8572,7 @@ clipsave
 -148 49 D
 -22 7 D
 56 15 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8504,7 +8613,7 @@ O0
 1 -24 D
 -152 -6 D
 -12 -1 D
-0 24 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8526,7 +8635,7 @@ clipsave
 174 -38 D
 -173 -49 D
 38 45 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8579,7 +8688,7 @@ clipsave
 44 172 D
 46 -164 D
 -45 34 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8616,7 +8725,7 @@ O0
 -17 14 D
 14 20 D
 86 -69 D
--13 -20 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8640,7 +8749,7 @@ clipsave
 67 -28 D
 79 -31 D
 -53 -16 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8680,7 +8789,7 @@ O0
 -237 -20 D
 -2 24 D
 237 21 D
-2 -25 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8703,7 +8812,7 @@ clipsave
 112 51 D
 17 7 D
 -27 -49 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8745,7 +8854,7 @@ O0
 -253 -18 D
 -255 -22 D
 -122 -13 D
--2 25 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8768,7 +8877,7 @@ clipsave
 35 -7 D
 -164 -56 D
 32 48 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8810,7 +8919,7 @@ O0
 -228 -90 D
 -216 -88 D
 -57 -23 D
--9 23 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8832,7 +8941,7 @@ clipsave
 179 20 D
 -145 -105 D
 19 57 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8868,7 +8977,7 @@ O0
 33 117 D
 24 -7 D
 -33 -117 D
--24 7 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -8892,7 +9001,7 @@ clipsave
 12 21 D
 -4 -180 D
 -33 50 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8949,7 +9058,7 @@ clipsave
 -161 44 D
 157 49 D
 -34 -47 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -8989,7 +9098,7 @@ O0
 25 16 D
 52 31 D
 8 6 D
-12 -22 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9014,7 +9123,7 @@ clipsave
 20 23 D
 33 39 D
 -6 -58 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9068,7 +9177,7 @@ O0
 -29 -23 D
 -40 -30 D
 -9 -8 D
--16 20 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9093,7 +9202,7 @@ clipsave
 -13 -19 D
 -70 -94 D
 1 60 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9143,7 +9252,7 @@ O0
 -82 -55 D
 -21 -13 D
 -103 -68 D
--14 21 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9166,7 +9275,7 @@ clipsave
 124 42 D
 -119 -135 D
 7 60 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9205,7 +9314,7 @@ O0
 -13 -20 D
 -62 41 D
 -30 20 D
-13 21 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9227,7 +9336,7 @@ clipsave
 120 -134 D
 -170 58 D
 57 16 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9280,7 +9389,7 @@ clipsave
 -59 -157 D
 -29 172 D
 40 -45 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9317,7 +9426,7 @@ O0
 -14 21 D
 88 60 D
 49 34 D
-15 -21 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9339,7 +9448,7 @@ clipsave
 -144 -42 D
 89 117 D
 1 -56 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9379,7 +9488,7 @@ O0
 -102 -219 D
 -102 -209 D
 -28 -54 D
--21 11 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9402,7 +9511,7 @@ clipsave
 -17 -105 D
 -13 -71 D
 -24 56 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9443,7 +9552,7 @@ O0
 -74 -60 D
 -66 -52 D
 -47 -37 D
--15 19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9466,7 +9575,7 @@ clipsave
 -64 -88 D
 -42 -58 D
 2 61 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9504,7 +9613,7 @@ O0
 143 34 D
 6 -24 D
 -143 -33 D
--6 23 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9528,7 +9637,7 @@ clipsave
 -84 -46 D
 -74 -39 D
 27 53 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9572,7 +9681,7 @@ O0
 -15 -18 D
 -106 80 D
 -48 37 D
-14 18 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9594,7 +9703,7 @@ clipsave
 112 -135 D
 -166 69 D
 58 10 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9630,7 +9739,7 @@ O0
 -41 -131 D
 -23 10 D
 41 130 D
-23 -9 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9654,7 +9763,7 @@ clipsave
 -6 -7 D
 -1 152 D
 33 -49 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9697,7 +9806,7 @@ O0
 -8 -172 D
 -11 -160 D
 -4 -48 D
--22 0 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9721,7 +9830,7 @@ clipsave
 29 -139 D
 7 -35 D
 -39 39 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9766,7 +9875,7 @@ O0
 -21 -29 D
 -15 -19 D
 -14 -19 D
--18 14 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9788,7 +9897,7 @@ clipsave
 135 115 D
 -68 -166 D
 -10 57 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9845,7 +9954,7 @@ clipsave
 13 20 D
 -9 -167 D
 -32 45 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9906,7 +10015,7 @@ clipsave
 86 16 D
 -66 -51 D
 7 25 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -9938,7 +10047,7 @@ O0
 -40 -80 D
 -23 9 D
 40 80 D
-23 -9 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -9961,7 +10070,7 @@ clipsave
 -14 -13 D
 17 135 D
 30 -44 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10004,7 +10113,7 @@ O0
 59 -210 D
 37 -154 D
 16 -76 D
--18 -11 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10029,7 +10138,7 @@ clipsave
 27 -46 D
 27 -45 D
 -45 15 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10073,7 +10182,7 @@ O0
 -10 17 D
 18 16 D
 76 -127 D
--19 -16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10096,7 +10205,7 @@ clipsave
 -3 10 D
 110 -94 D
 -51 -2 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10152,7 +10261,7 @@ clipsave
 -27 -95 D
 -19 -62 D
 -18 44 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10209,7 +10318,7 @@ clipsave
 -17 -15 D
 -26 -20 D
 8 27 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10252,7 +10361,7 @@ O0
 36 23 D
 19 11 D
 81 52 D
-17 -12 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10283,7 +10392,7 @@ clipsave
 7 6 D
 13 14 D
 2 -41 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10345,7 +10454,7 @@ O0
 -60 -160 D
 -71 -169 D
 -51 -112 D
--14 7 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10368,7 +10477,7 @@ clipsave
 -22 -154 D
 -4 -23 D
 -14 49 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10410,7 +10519,7 @@ O0
 -1 -161 D
 -7 -135 D
 -1 -21 D
--19 -8 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10434,7 +10543,7 @@ clipsave
 29 -100 D
 9 -37 D
 -35 19 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10474,7 +10583,7 @@ O0
 -94 36 D
 14 19 D
 94 -35 D
--14 -20 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10496,7 +10605,7 @@ clipsave
 -86 81 D
 139 -7 D
 -51 -28 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10550,7 +10659,7 @@ clipsave
 -18 5 D
 140 27 D
 -42 -28 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10606,7 +10715,7 @@ clipsave
 -10 3 D
 94 13 D
 -26 -14 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10653,7 +10762,7 @@ O0
 -55 -68 D
 -110 -125 D
 -39 -41 D
--5 16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10677,7 +10786,7 @@ clipsave
 -44 -105 D
 -23 -52 D
 8 58 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10725,7 +10834,7 @@ O0
 -108 -78 D
 -104 -69 D
 -54 -33 D
-0 19 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10749,7 +10858,7 @@ clipsave
 -94 -107 D
 -15 -17 D
 25 55 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10807,7 +10916,7 @@ clipsave
 -48 -33 D
 -29 -19 D
 20 25 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10857,7 +10966,7 @@ clipsave
 -82 -24 D
 81 50 D
 -17 -21 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10907,7 +11016,7 @@ clipsave
 38 -19 D
 44 -19 D
 -47 -5 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -10957,7 +11066,7 @@ O0
 -30 -47 D
 -91 -131 D
 -21 -27 D
--2 13 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -10981,7 +11090,7 @@ clipsave
 -41 -110 D
 -22 -54 D
 12 55 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11028,7 +11137,7 @@ O0
 -105 -98 D
 -47 -41 D
 -40 -33 D
-3 16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -11054,7 +11163,7 @@ clipsave
 -47 -63 D
 -55 -70 D
 27 53 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11116,7 +11225,7 @@ clipsave
 -99 -47 D
 -16 -6 D
 46 37 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11172,7 +11281,7 @@ clipsave
 101 34 D
 39 15 D
 -50 -31 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11229,7 +11338,7 @@ clipsave
 133 13 D
 10 2 D
 -58 -19 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11280,7 +11389,7 @@ O0
 -32 -53 D
 -46 -69 D
 -11 -17 D
-3 14 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -11304,7 +11413,7 @@ clipsave
 -40 -106 D
 -22 -52 D
 19 55 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11359,7 +11468,7 @@ O0
 -7 -6 D
 -26 -27 D
 -13 -12 D
-8 15 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -11383,7 +11492,7 @@ clipsave
 -41 -62 D
 -49 -69 D
 33 51 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11425,7 +11534,7 @@ O0
 -20 -19 D
 -42 -23 D
 -14 -7 D
-16 16 D
+P
 FO
 %
 % Reset FO and fill the path
@@ -11450,7 +11559,7 @@ clipsave
 -19 -13 D
 -13 -9 D
 45 38 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11510,7 +11619,7 @@ clipsave
 -7 -4 D
 12 14 D
 13 5 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11562,7 +11671,7 @@ clipsave
 104 28 D
 69 21 D
 -48 -16 D
-PSL_eoclip N
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -11595,6 +11704,7 @@ PSL_cliprestore
 %
 % Clipping reduced by 1 level
 %
+25 W
 %
 % Start of basemap
 %
@@ -12895,6301 +13005,604 @@ P S
 %
 % Lat = -45
 %
-4042 142 M
-7 1 D
-7 0 D
-6 1 D
-7 0 D
-7 1 D
-7 1 D
-7 0 D
-7 1 D
-6 1 D
-7 0 D
-7 1 D
-7 1 D
-6 1 D
-7 0 D
-7 1 D
-7 1 D
-7 1 D
-6 0 D
-7 1 D
-7 1 D
-7 1 D
-6 0 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-7 0 D
-6 1 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-6 0 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-7 2 D
-6 1 D
-7 1 D
-6 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-6 1 D
-7 2 D
-6 1 D
-7 1 D
-6 1 D
-7 1 D
-6 1 D
-7 2 D
-6 1 D
-7 1 D
-6 1 D
-7 2 D
-6 1 D
-7 1 D
-6 1 D
-7 2 D
-6 1 D
-7 1 D
-6 1 D
-6 2 D
-7 1 D
-6 1 D
-7 2 D
-6 1 D
-6 1 D
-7 2 D
-6 1 D
-7 1 D
-6 2 D
-6 1 D
-7 2 D
-6 1 D
-6 1 D
-7 2 D
-6 1 D
-6 2 D
-6 1 D
-7 2 D
-6 1 D
-6 2 D
-7 1 D
-6 2 D
-6 1 D
-6 2 D
-7 1 D
-6 2 D
-6 1 D
-6 2 D
-6 1 D
-7 2 D
-6 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-7 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-12 4 D
-12 3 D
-12 4 D
-12 3 D
-12 4 D
-12 3 D
-12 4 D
-11 4 D
-12 3 D
-12 4 D
-11 4 D
-12 4 D
-11 4 D
-12 3 D
-11 4 D
-12 4 D
-11 4 D
-12 4 D
-11 4 D
-11 4 D
-11 4 D
-11 5 D
-11 4 D
-11 4 D
-11 4 D
-11 4 D
-11 5 D
-11 4 D
-11 4 D
-11 5 D
-11 4 D
-10 4 D
-11 5 D
-10 4 D
-11 5 D
-10 4 D
-11 5 D
-10 5 D
-11 4 D
-10 5 D
-10 5 D
-10 4 D
-10 5 D
-10 5 D
-10 5 D
-10 4 D
-10 5 D
-10 5 D
-10 5 D
-10 5 D
-9 5 D
-10 5 D
-10 5 D
-9 5 D
-10 5 D
-9 5 D
-10 5 D
-9 5 D
-9 5 D
-9 6 D
-9 5 D
-10 5 D
-9 5 D
-9 5 D
-9 6 D
-8 5 D
-9 5 D
-9 6 D
-9 5 D
-8 6 D
-9 5 D
-8 6 D
-9 5 D
-8 6 D
-8 5 D
-9 6 D
-8 5 D
-8 6 D
-8 6 D
-7 5 D
 1522 661 M
-8 -6 D
-8 -6 D
-8 -5 D
-8 -6 D
-8 -5 D
-9 -6 D
-8 -6 D
-9 -5 D
-8 -5 D
-9 -6 D
-8 -5 D
-9 -6 D
-9 -5 D
-9 -5 D
-8 -6 D
-9 -5 D
-9 -5 D
-9 -6 D
-10 -5 D
-9 -5 D
-9 -5 D
-9 -5 D
-10 -6 D
-9 -5 D
-9 -5 D
-10 -5 D
-9 -5 D
-10 -5 D
-10 -5 D
-9 -5 D
-10 -5 D
-10 -4 D
-10 -5 D
-10 -5 D
-10 -5 D
-10 -5 D
-10 -5 D
-10 -4 D
-10 -5 D
-10 -5 D
-11 -4 D
-10 -5 D
-10 -4 D
-11 -5 D
-10 -5 D
-11 -4 D
-10 -5 D
-11 -4 D
-11 -4 D
-10 -5 D
-11 -4 D
-11 -5 D
-11 -4 D
-11 -4 D
-11 -4 D
-11 -5 D
-11 -4 D
-11 -4 D
-11 -4 D
-11 -4 D
-11 -4 D
-12 -4 D
-11 -4 D
-11 -4 D
-12 -4 D
-11 -4 D
-12 -4 D
-11 -4 D
-12 -3 D
-12 -4 D
-11 -4 D
-12 -4 D
-12 -3 D
-11 -4 D
-12 -4 D
-12 -3 D
-12 -4 D
-12 -3 D
-12 -4 D
-12 -3 D
-6 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-7 -2 D
-6 -1 D
-6 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -2 D
-7 -1 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -2 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 0 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-7 -1 D
-6 0 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 0 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-7 0 D
-6 -1 D
-7 -1 D
-7 -1 D
-7 0 D
-7 -1 D
-6 -1 D
-7 0 D
-7 -1 D
-7 -1 D
-7 0 D
-6 -1 D
-7 -1 D
-7 0 D
-7 -1 D
-7 -1 D
-6 0 D
-7 -1 D
-7 0 D
-7 -1 D
-7 0 D
-7 -1 D
-6 -1 D
-7 0 D
-7 -1 D
-7 0 D
-7 -1 D
-7 0 D
-7 -1 D
-6 0 D
-7 -1 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-6 -1 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 -1 D
-6 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 0 D
-7 -1 D
-6 0 D
-7 0 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-6 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-6 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 0 D
-6 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 0 D
-7 1 D
-6 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-7 1 D
-7 0 D
-6 0 D
-7 1 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-7 1 D
-7 0 D
-6 1 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-7 1 D
-7 0 D
-6 1 D
-7 0 D
-7 1 D
-7 1 D
-7 0 D
-7 1 D
-7 0 D
-6 1 D
-7 0 D
-7 1 D
+57 -40 D
+61 -37 D
+17 -11 D
+102 -57 D
+99 -49 D
+103 -46 D
+131 -51 D
+102 -36 D
+130 -40 D
+140 -38 D
+113 -26 D
+103 -21 D
+110 -20 D
+126 -20 D
+175 -21 D
+164 -14 D
+138 -7 D
+145 -4 D
+194 1 D
+125 5 D
+137 9 D
+130 12 D
+128 15 D
+113 16 D
+137 24 D
+122 25 D
+138 33 D
+127 35 D
+106 33 D
+114 39 D
+141 56 D
+93 42 D
+99 49 D
+56 30 D
+55 32 D
+52 32 D
+58 39 D
+15 11 D
 S
 %
 % Lat = -30
 %
-4141 506 M
-9 1 D
-8 0 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-9 0 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-9 1 D
-8 0 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 2 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 1 D
-8 1 D
-9 2 D
-8 1 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-7 2 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-7 2 D
-8 1 D
-8 2 D
-8 2 D
-8 1 D
-7 2 D
-8 2 D
-8 2 D
-8 1 D
-7 2 D
-8 2 D
-8 1 D
-8 2 D
-7 2 D
-8 2 D
-8 2 D
-7 1 D
-8 2 D
-8 2 D
-7 2 D
-8 2 D
-8 2 D
-7 2 D
-8 2 D
-7 1 D
-8 2 D
-7 2 D
-8 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-7 2 D
-8 3 D
-7 2 D
-8 2 D
-7 2 D
-7 2 D
-8 2 D
-7 2 D
-7 3 D
-7 2 D
-8 2 D
-7 2 D
-7 2 D
-7 3 D
-8 2 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-7 2 D
-8 2 D
-7 3 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-7 2 D
-6 3 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-6 3 D
-7 2 D
-7 3 D
-7 2 D
-6 3 D
-7 2 D
-7 3 D
-6 3 D
-7 2 D
-7 3 D
-6 3 D
-7 2 D
-7 3 D
-6 3 D
-7 2 D
-6 3 D
-7 3 D
-6 2 D
-7 3 D
-6 3 D
-7 3 D
-6 2 D
-7 3 D
-6 3 D
-7 3 D
-6 2 D
-6 3 D
-7 3 D
-6 3 D
-7 3 D
-6 2 D
-6 3 D
-6 3 D
-7 3 D
-6 3 D
-6 3 D
-7 3 D
-6 2 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-7 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-5 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-5 4 D
-6 3 D
-6 3 D
-6 3 D
-5 3 D
-6 3 D
-6 3 D
-5 4 D
-6 3 D
-6 3 D
-5 3 D
-6 3 D
-5 4 D
-6 3 D
-5 3 D
-6 3 D
-5 3 D
-6 4 D
-5 3 D
-6 3 D
-5 3 D
-6 4 D
-5 3 D
-5 3 D
-6 4 D
-5 3 D
-5 3 D
-11 7 D
-10 7 D
-11 6 D
-10 7 D
-10 7 D
-11 7 D
-10 6 D
-10 7 D
-10 7 D
-10 7 D
-10 7 D
-9 7 D
-10 7 D
-10 7 D
-9 7 D
-10 7 D
-9 7 D
-9 7 D
-9 7 D
-10 7 D
-9 7 D
-9 8 D
-9 7 D
-8 7 D
-9 7 D
-9 8 D
-8 7 D
-9 7 D
-8 8 D
-9 7 D
-8 8 D
-8 7 D
-8 7 D
-8 8 D
-8 7 D
-8 8 D
-8 7 D
-8 8 D
-7 8 D
-8 7 D
-7 8 D
-7 8 D
-8 7 D
-7 8 D
-7 8 D
-7 7 D
-7 8 D
-7 8 D
-7 8 D
-6 7 D
-7 8 D
-7 8 D
-6 8 D
-6 8 D
-7 8 D
-6 8 D
-6 7 D
-6 8 D
-6 8 D
-6 8 D
-5 8 D
-3 5 D
 661 1522 M
-3 -6 D
-6 -8 D
-6 -8 D
-6 -7 D
-6 -8 D
-6 -8 D
-6 -8 D
-6 -8 D
-7 -8 D
-6 -8 D
-7 -8 D
-6 -7 D
-7 -8 D
-7 -8 D
-7 -8 D
-7 -8 D
-7 -7 D
-7 -8 D
-7 -8 D
-7 -7 D
-8 -8 D
-7 -8 D
+9 -14 D
+49 -63 D
+62 -70 D
+22 -23 D
 8 -7 D
 7 -8 D
-8 -7 D
-8 -8 D
-8 -7 D
-8 -8 D
-8 -7 D
-8 -8 D
-8 -7 D
-8 -8 D
-9 -7 D
-8 -7 D
-9 -8 D
-8 -7 D
-9 -7 D
-9 -8 D
-8 -7 D
-9 -7 D
-9 -7 D
-9 -8 D
-10 -7 D
-9 -7 D
-9 -7 D
-9 -7 D
-10 -7 D
-9 -7 D
-10 -7 D
-10 -7 D
-10 -7 D
-9 -7 D
-10 -7 D
-10 -7 D
-10 -6 D
-10 -7 D
-11 -7 D
-10 -7 D
-10 -7 D
-11 -6 D
-10 -7 D
-11 -7 D
-5 -3 D
-6 -3 D
-5 -3 D
-5 -4 D
-6 -3 D
-5 -3 D
-5 -4 D
-6 -3 D
-5 -3 D
-6 -3 D
-5 -3 D
-6 -4 D
-5 -3 D
-6 -3 D
-5 -3 D
-6 -4 D
-6 -3 D
-5 -3 D
-6 -3 D
-6 -3 D
-5 -3 D
-6 -4 D
-6 -3 D
-5 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-5 -3 D
-6 -3 D
-6 -4 D
-6 -3 D
-6 -3 D
-6 -3 D
-5 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-7 -3 D
-6 -3 D
-6 -3 D
-6 -2 D
-6 -3 D
-6 -3 D
-7 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-7 -3 D
-6 -3 D
-6 -2 D
-7 -3 D
-6 -3 D
-6 -3 D
-7 -3 D
-6 -2 D
-6 -3 D
-7 -3 D
-6 -3 D
-7 -3 D
-6 -2 D
-7 -3 D
-6 -3 D
-7 -3 D
-6 -2 D
-7 -3 D
-6 -3 D
-7 -2 D
-6 -3 D
-7 -3 D
-7 -2 D
-6 -3 D
-7 -3 D
-6 -2 D
-7 -3 D
-7 -3 D
-6 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-6 -2 D
-7 -3 D
-7 -3 D
-7 -2 D
-7 -3 D
-6 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-6 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-7 -3 D
-8 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-8 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-8 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-7 -2 D
-8 -3 D
-7 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -1 D
-8 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-8 -2 D
-7 -1 D
-8 -2 D
-8 -2 D
-8 -2 D
-7 -1 D
-8 -2 D
-8 -2 D
-8 -2 D
-7 -1 D
-8 -2 D
-8 -2 D
-8 -1 D
-7 -2 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -2 D
-8 -1 D
-7 -2 D
-8 -1 D
-8 -2 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-7 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -2 D
-9 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 0 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-9 0 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 0 D
-8 -1 D
-9 -1 D
-8 -1 D
-9 0 D
-8 -1 D
-8 -1 D
-9 0 D
-8 -1 D
-8 -1 D
-9 0 D
-8 -1 D
-9 -1 D
-8 0 D
-8 -1 D
-9 0 D
-8 -1 D
-9 0 D
-8 -1 D
-9 -1 D
-8 0 D
-8 -1 D
-9 0 D
-8 -1 D
-9 0 D
-8 -1 D
-9 0 D
-8 0 D
-8 -1 D
-9 0 D
-8 -1 D
-9 0 D
-8 0 D
-9 -1 D
-8 0 D
-9 -1 D
-8 0 D
-9 0 D
-8 -1 D
-8 0 D
-9 0 D
-8 0 D
-9 -1 D
-8 0 D
-9 0 D
-8 0 D
-9 -1 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 -1 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 -1 D
-8 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 1 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 1 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 1 D
-8 0 D
-9 0 D
-8 0 D
-8 1 D
-9 0 D
-8 0 D
-9 1 D
-8 0 D
-9 0 D
-8 1 D
-9 0 D
-8 0 D
-9 1 D
-8 0 D
-9 0 D
-8 1 D
-8 0 D
-9 1 D
-8 0 D
-9 1 D
-8 0 D
-9 1 D
-8 0 D
-8 1 D
-9 0 D
-8 1 D
-9 0 D
-8 1 D
-9 0 D
-8 1 D
-8 0 D
-9 1 D
-8 1 D
-9 0 D
-8 1 D
-8 0 D
-9 1 D
-8 1 D
-9 0 D
-8 1 D
-8 1 D
-9 1 D
-8 0 D
-8 1 D
+64 -60 D
+69 -58 D
+55 -43 D
+78 -56 D
+51 -34 D
+80 -49 D
+90 -51 D
+100 -52 D
+105 -50 D
+129 -55 D
+128 -49 D
+118 -41 D
+130 -40 D
+141 -39 D
+122 -31 D
+147 -32 D
+167 -31 D
+154 -24 D
+214 -27 D
+167 -15 D
+144 -9 D
+143 -6 D
+128 -2 D
+101 -1 D
+178 4 D
+144 7 D
+151 11 D
+117 11 D
+182 21 D
+146 22 D
+136 24 D
+111 22 D
+116 26 D
+137 34 D
+133 37 D
+115 36 D
+133 46 D
+101 39 D
+123 52 D
+75 34 D
+144 72 D
+11 7 D
+29 15 D
+11 7 D
+17 9 D
+16 10 D
+76 46 D
+82 54 D
+86 63 D
+46 36 D
+43 36 D
+81 75 D
+7 8 D
+8 7 D
+14 16 D
+8 7 D
+62 70 D
+49 63 D
+8 13 D
 S
 %
 % Lat = -15
 %
-4204 1081 M
-9 1 D
-9 0 D
-10 1 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-9 1 D
-9 1 D
-10 1 D
-9 2 D
-9 1 D
-9 1 D
-9 1 D
-9 1 D
-9 2 D
-10 1 D
-9 1 D
-9 1 D
-9 2 D
-9 1 D
-9 1 D
-9 1 D
-9 2 D
-10 1 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-8 1 D
-9 2 D
-9 2 D
-9 1 D
-9 2 D
-9 2 D
-9 1 D
-9 2 D
-8 2 D
-9 1 D
-9 2 D
-9 2 D
-9 2 D
-8 1 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-8 1 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-9 2 D
-8 1 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 3 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-8 3 D
-9 2 D
-8 2 D
-9 2 D
-8 3 D
-8 2 D
-9 2 D
-8 2 D
-8 3 D
-8 2 D
-9 2 D
-8 2 D
-8 3 D
-8 2 D
-9 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-9 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 2 D
-8 3 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-7 3 D
-8 2 D
-8 3 D
-8 3 D
-8 2 D
-7 3 D
-8 3 D
-8 3 D
-8 2 D
-7 3 D
-8 3 D
-8 3 D
-7 2 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-7 2 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-7 3 D
-8 3 D
-7 3 D
-8 2 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-7 3 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-6 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-7 3 D
-7 4 D
-6 3 D
-7 3 D
-7 4 D
-7 3 D
-6 3 D
-7 4 D
-7 3 D
-6 3 D
-7 4 D
-7 3 D
-6 4 D
-7 3 D
-6 3 D
-7 4 D
-6 3 D
-7 4 D
-6 3 D
-7 4 D
-6 3 D
-7 4 D
-6 3 D
-6 3 D
-7 4 D
-6 4 D
-7 3 D
-6 4 D
-6 3 D
-6 4 D
-7 3 D
-6 4 D
-6 3 D
-6 4 D
-7 3 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-5 3 D
-6 4 D
-6 4 D
-6 4 D
-6 3 D
-5 4 D
-6 4 D
-6 4 D
-5 4 D
-6 3 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-6 3 D
-5 4 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-5 3 D
-6 4 D
-5 4 D
-5 4 D
-6 4 D
-5 4 D
-5 4 D
-5 4 D
-6 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-4 4 D
-5 4 D
-5 4 D
-5 4 D
-5 5 D
-9 8 D
-9 8 D
-9 8 D
-10 9 D
-9 8 D
-9 8 D
-8 9 D
-9 8 D
-9 8 D
-9 9 D
-8 8 D
-8 9 D
-9 8 D
-8 9 D
-8 8 D
-8 9 D
-8 9 D
-8 8 D
-8 9 D
-7 8 D
-8 9 D
-7 9 D
-8 9 D
-7 8 D
-7 9 D
-7 9 D
-7 9 D
-7 8 D
-7 9 D
-7 9 D
-6 9 D
-7 9 D
-6 9 D
-6 9 D
-7 9 D
-6 9 D
-6 9 D
-6 9 D
-6 9 D
-5 9 D
-6 9 D
-5 9 D
-6 9 D
-5 9 D
-5 9 D
-6 9 D
-5 9 D
-5 9 D
-4 10 D
-5 9 D
-5 9 D
-4 9 D
-5 9 D
-4 9 D
-4 10 D
-4 9 D
-4 9 D
-4 9 D
-4 10 D
-4 9 D
-4 9 D
-3 10 D
-4 9 D
-3 9 D
-3 10 D
-3 9 D
-3 9 D
-1 4 D
 165 2524 M
-1 -5 D
-3 -9 D
-3 -10 D
-3 -9 D
-4 -9 D
-3 -9 D
-4 -10 D
-3 -9 D
-4 -9 D
-4 -10 D
-4 -9 D
-4 -9 D
-4 -9 D
-4 -10 D
-5 -9 D
-4 -9 D
-5 -9 D
-4 -9 D
-5 -10 D
-5 -9 D
-5 -9 D
-5 -9 D
-5 -9 D
-5 -9 D
-6 -9 D
-5 -9 D
-6 -9 D
-5 -9 D
-6 -9 D
-6 -9 D
-6 -9 D
-6 -9 D
-6 -9 D
-6 -9 D
-7 -9 D
-6 -9 D
-7 -9 D
-6 -9 D
-7 -9 D
-7 -9 D
-7 -8 D
-7 -9 D
-7 -9 D
-7 -9 D
-7 -8 D
-8 -9 D
-7 -9 D
-8 -8 D
-7 -9 D
-8 -9 D
-8 -8 D
-8 -9 D
-8 -9 D
-8 -8 D
-8 -9 D
+10 -33 D
+26 -65 D
+21 -46 D
+39 -73 D
+40 -63 D
+31 -45 D
+55 -71 D
+53 -60 D
+32 -35 D
 9 -8 D
-8 -9 D
-8 -8 D
-9 -9 D
-9 -8 D
-8 -8 D
-9 -9 D
-9 -8 D
-9 -8 D
-10 -9 D
-9 -8 D
-9 -8 D
-9 -8 D
-5 -4 D
-5 -5 D
-5 -4 D
-5 -4 D
-4 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -3 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-5 -3 D
-6 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -3 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -3 D
-5 -4 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-5 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-7 -3 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -3 D
-6 -4 D
-7 -4 D
-6 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-6 -3 D
-7 -4 D
-6 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-6 -3 D
-7 -4 D
-6 -3 D
-7 -4 D
-7 -3 D
-6 -3 D
-7 -4 D
-7 -3 D
-6 -3 D
-7 -4 D
-7 -3 D
-6 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -4 D
-6 -3 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-8 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -2 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -2 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-8 -2 D
-7 -3 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -2 D
-7 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -2 D
-7 -3 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -3 D
-8 -2 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -2 D
-9 -3 D
-8 -2 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -2 D
-8 -2 D
-9 -3 D
-8 -2 D
-8 -2 D
-9 -2 D
-8 -3 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-8 -3 D
-9 -2 D
-8 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-8 -1 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-8 -1 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-8 -1 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -1 D
-9 -2 D
-10 -1 D
-9 -2 D
-9 -1 D
-9 -1 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -1 D
-9 -1 D
-10 -2 D
-9 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-9 -2 D
-10 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -1 D
-10 0 D
-9 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 0 D
-10 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 0 D
-9 -1 D
-10 -1 D
-9 0 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 0 D
-10 -1 D
-9 -1 D
-10 0 D
-9 -1 D
-9 0 D
-10 -1 D
-9 -1 D
-10 0 D
-9 -1 D
-9 0 D
-10 -1 D
-9 0 D
-10 -1 D
-9 0 D
-9 -1 D
-10 0 D
-9 -1 D
-10 0 D
-9 -1 D
-10 0 D
-9 0 D
-9 -1 D
-10 0 D
-9 -1 D
-10 0 D
-9 0 D
-10 -1 D
-9 0 D
-9 0 D
-10 0 D
-9 -1 D
-10 0 D
-9 0 D
-10 -1 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 -1 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 -1 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-9 0 D
-10 1 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 1 D
-10 0 D
-9 0 D
-9 0 D
-10 0 D
-9 1 D
-10 0 D
-9 0 D
-10 0 D
-9 1 D
-10 0 D
-9 0 D
-10 0 D
-9 1 D
-9 0 D
-10 1 D
-9 0 D
-10 0 D
-9 1 D
-10 0 D
-9 0 D
-9 1 D
-10 0 D
-9 1 D
-10 0 D
-9 1 D
-10 0 D
-9 1 D
-9 0 D
-10 1 D
-9 0 D
-10 1 D
-9 1 D
-9 0 D
-10 1 D
-9 0 D
-10 1 D
-9 1 D
-9 0 D
-10 1 D
-9 1 D
-9 0 D
-10 1 D
-9 1 D
-9 0 D
-10 1 D
-9 1 D
-10 1 D
-9 0 D
-9 1 D
-10 1 D
-9 1 D
+25 -26 D
+54 -50 D
+61 -53 D
+86 -68 D
+70 -50 D
+28 -20 D
+87 -56 D
+54 -33 D
+50 -28 D
+70 -39 D
+113 -57 D
+97 -45 D
+144 -62 D
+82 -32 D
+131 -47 D
+134 -44 D
+156 -45 D
+142 -37 D
+216 -49 D
+186 -35 D
+126 -20 D
+137 -19 D
+175 -21 D
+159 -14 D
+169 -11 D
+150 -6 D
+142 -3 D
+104 -1 D
+209 4 D
+179 9 D
+178 13 D
+250 26 D
+164 23 D
+179 30 D
+133 26 D
+139 30 D
+85 20 D
+159 42 D
+114 34 D
+128 41 D
+116 41 D
+120 46 D
+87 36 D
+119 54 D
+102 50 D
+109 59 D
+44 25 D
+101 62 D
+41 27 D
+33 23 D
+17 11 D
+64 47 D
+110 88 D
+60 54 D
+8 9 D
+35 33 D
+8 9 D
+9 8 D
+63 69 D
+64 79 D
+56 81 D
+48 81 D
+9 19 D
+18 36 D
+28 65 D
+20 60 D
 S
 %
 % Lat = 0
 %
-4225 1827 M
-10 1 D
-9 1 D
-10 1 D
-10 1 D
-9 1 D
-10 1 D
-10 1 D
-9 1 D
-10 1 D
-9 1 D
-10 0 D
-10 2 D
-9 1 D
-10 1 D
-9 1 D
-10 1 D
-9 1 D
-10 1 D
-10 1 D
-9 1 D
-10 1 D
-9 1 D
-10 1 D
-9 2 D
-10 1 D
-9 1 D
-10 1 D
-9 1 D
-10 2 D
-9 1 D
-10 1 D
-9 1 D
-10 2 D
-9 1 D
-10 1 D
-9 1 D
-9 2 D
-10 1 D
-9 1 D
-10 2 D
-9 1 D
-10 2 D
-9 1 D
-9 1 D
-10 2 D
-9 1 D
-9 2 D
-10 1 D
-9 2 D
-9 1 D
-10 2 D
-9 1 D
-9 2 D
-10 1 D
-9 2 D
-9 1 D
-10 2 D
-9 2 D
-9 1 D
-9 2 D
-10 1 D
-9 2 D
-9 2 D
-9 1 D
-9 2 D
-10 2 D
-9 1 D
-9 2 D
-9 2 D
-9 2 D
-9 1 D
-10 2 D
-9 2 D
-9 2 D
-9 2 D
-9 1 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-10 1 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 3 D
-8 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-8 2 D
-9 3 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-9 3 D
-9 2 D
-8 2 D
-9 2 D
-9 3 D
-8 2 D
-9 2 D
-9 3 D
-8 2 D
-9 2 D
-8 3 D
-9 2 D
-8 3 D
-9 2 D
-9 2 D
-8 3 D
-9 2 D
-8 3 D
-9 2 D
-8 3 D
-9 2 D
-8 2 D
-8 3 D
-9 3 D
-8 2 D
-9 3 D
-8 2 D
-8 3 D
-9 2 D
-8 3 D
-8 2 D
-9 3 D
-8 3 D
-8 2 D
-8 3 D
-9 3 D
-8 2 D
-8 3 D
-8 3 D
-9 2 D
-8 3 D
-8 3 D
-8 2 D
-8 3 D
-8 3 D
-8 3 D
-8 2 D
-9 3 D
-8 3 D
-8 3 D
-8 3 D
-8 2 D
-8 3 D
-8 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-8 2 D
-8 3 D
-8 3 D
-8 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-7 4 D
-8 3 D
-7 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-7 4 D
-7 3 D
-8 3 D
-7 3 D
-8 3 D
-7 4 D
-7 3 D
-8 3 D
-7 3 D
-7 4 D
-8 3 D
-7 3 D
-7 3 D
-8 4 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-8 4 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 4 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 4 D
-7 3 D
-6 4 D
-7 3 D
-7 4 D
-7 3 D
-7 4 D
-7 3 D
-6 4 D
-7 4 D
-7 3 D
-6 4 D
-7 3 D
-7 4 D
-6 3 D
-7 4 D
-7 4 D
-6 3 D
-7 4 D
-6 4 D
-7 3 D
-6 4 D
-7 4 D
-6 3 D
-7 4 D
-6 4 D
-7 3 D
-6 4 D
-6 4 D
-7 4 D
-6 3 D
-6 4 D
-7 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-7 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 4 D
-6 4 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 4 D
-6 4 D
-6 4 D
-6 4 D
-6 4 D
-5 4 D
-6 4 D
-6 4 D
-6 4 D
-5 4 D
-6 4 D
-6 4 D
-5 4 D
-6 4 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-6 4 D
-6 4 D
-5 4 D
-5 4 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-5 4 D
-6 4 D
-5 5 D
-5 4 D
-6 4 D
-5 4 D
-5 4 D
-5 4 D
-6 4 D
-5 5 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 5 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 5 D
-5 4 D
-5 4 D
-5 4 D
-4 5 D
-5 4 D
-5 4 D
-5 4 D
-5 5 D
-4 4 D
-5 4 D
-5 5 D
-4 4 D
-5 4 D
-4 5 D
-5 4 D
-5 4 D
-4 5 D
-5 4 D
-9 9 D
-8 8 D
-9 9 D
-9 9 D
-8 9 D
-9 9 D
-8 9 D
-8 8 D
-9 9 D
-8 9 D
-8 9 D
-8 9 D
-7 9 D
-8 9 D
-8 9 D
-7 9 D
-7 9 D
-8 10 D
-7 9 D
-7 9 D
-7 9 D
-7 9 D
-7 9 D
-6 10 D
-7 9 D
-6 9 D
-7 9 D
-6 10 D
-6 9 D
-6 9 D
-6 9 D
-6 10 D
-6 9 D
-6 10 D
-5 9 D
-6 9 D
-5 10 D
-5 9 D
-5 10 D
-6 9 D
-5 10 D
-4 9 D
-5 10 D
-5 9 D
-4 10 D
-5 9 D
-4 10 D
-4 9 D
-4 10 D
-4 10 D
-4 9 D
-4 10 D
-4 9 D
-3 10 D
-4 10 D
-3 9 D
-4 10 D
-3 10 D
-3 9 D
-3 10 D
-3 10 D
-3 9 D
-2 10 D
-3 10 D
-2 10 D
-2 9 D
-3 10 D
-2 10 D
-2 10 D
-2 9 D
-2 10 D
-1 10 D
-2 10 D
-1 9 D
-2 10 D
-1 10 D
-1 10 D
-1 9 D
-1 10 D
-1 10 D
-1 10 D
-0 10 D
-1 9 D
-0 10 D
-1 10 D
-0 10 D
-0 10 D
-0 4 D
 0 3600 M
-0 -5 D
-0 -10 D
-0 -10 D
-1 -10 D
-0 -10 D
-1 -9 D
-0 -10 D
-1 -10 D
-1 -10 D
-1 -10 D
-1 -9 D
-1 -10 D
-1 -10 D
-2 -10 D
-1 -10 D
-2 -9 D
-2 -10 D
-1 -10 D
-2 -10 D
-2 -9 D
-3 -10 D
-2 -10 D
-2 -9 D
-3 -10 D
-2 -10 D
-3 -10 D
-3 -9 D
-2 -10 D
-3 -10 D
-4 -9 D
-3 -10 D
-3 -10 D
-3 -9 D
-4 -10 D
-4 -10 D
-3 -9 D
-4 -10 D
-4 -10 D
-4 -9 D
-4 -10 D
-4 -9 D
-5 -10 D
-4 -9 D
-5 -10 D
-4 -9 D
-5 -10 D
-5 -9 D
-5 -10 D
-5 -9 D
-5 -10 D
-6 -9 D
-5 -10 D
-5 -9 D
-6 -9 D
-6 -10 D
-5 -9 D
-6 -10 D
-6 -9 D
-6 -9 D
-7 -9 D
-6 -10 D
-6 -9 D
-7 -9 D
-6 -10 D
-7 -9 D
-7 -9 D
-7 -9 D
-7 -9 D
-7 -9 D
-7 -9 D
-7 -10 D
-8 -9 D
-7 -9 D
-8 -9 D
-8 -9 D
-7 -9 D
-8 -9 D
-8 -9 D
-8 -9 D
-8 -9 D
+2 -64 D
+9 -79 D
+9 -48 D
+23 -88 D
+32 -87 D
+35 -76 D
+20 -38 D
+45 -75 D
+45 -65 D
+57 -73 D
+55 -63 D
 9 -8 D
-8 -9 D
-9 -9 D
-8 -9 D
-9 -9 D
+34 -36 D
 9 -8 D
-8 -9 D
-9 -9 D
+17 -18 D
 5 -4 D
 4 -5 D
-5 -4 D
-5 -4 D
+10 -8 D
 4 -5 D
-5 -4 D
-4 -4 D
-5 -5 D
-5 -4 D
-5 -4 D
-4 -4 D
-5 -5 D
-5 -4 D
-5 -4 D
+43 -38 D
 4 -5 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -5 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -5 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-6 -5 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -4 D
-6 -5 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -3 D
-7 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -3 D
-7 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-7 -3 D
-6 -4 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -4 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -4 D
-6 -3 D
-7 -4 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-7 -4 D
-6 -4 D
-7 -3 D
-7 -4 D
-6 -3 D
-7 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-8 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-8 -4 D
-7 -3 D
-7 -3 D
-7 -3 D
-8 -4 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -4 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -4 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -4 D
-8 -3 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-9 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-9 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-9 -2 D
-8 -3 D
-8 -3 D
-9 -2 D
-8 -3 D
-8 -2 D
-9 -3 D
-8 -2 D
-8 -3 D
-9 -3 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -3 D
-9 -2 D
-8 -2 D
-9 -3 D
-8 -2 D
-9 -3 D
-8 -2 D
-9 -3 D
-8 -2 D
-9 -2 D
-9 -3 D
-8 -2 D
-9 -2 D
-8 -3 D
-9 -2 D
-9 -2 D
-8 -3 D
-9 -2 D
-9 -2 D
-8 -3 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -3 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -3 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-10 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-10 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-9 -2 D
-10 -1 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-10 -2 D
-9 -1 D
-9 -2 D
-10 -1 D
-9 -2 D
-9 -2 D
-9 -1 D
-10 -2 D
-9 -1 D
-9 -2 D
-10 -1 D
-9 -2 D
-9 -1 D
-10 -2 D
-9 -1 D
-9 -1 D
-10 -2 D
-9 -1 D
-10 -2 D
-9 -1 D
-9 -1 D
-10 -2 D
-9 -1 D
-10 -2 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -2 D
-10 -1 D
-9 -1 D
-10 -2 D
-9 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-9 -2 D
-10 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 -1 D
-10 -2 D
-9 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 -1 D
-10 0 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 -1 D
-10 0 D
-10 -1 D
-9 -1 D
-10 -1 D
-10 0 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 0 D
-10 -1 D
-10 -1 D
-10 0 D
-9 -1 D
-10 -1 D
-10 0 D
-9 -1 D
-10 -1 D
-10 0 D
-10 -1 D
-9 0 D
-10 -1 D
-10 0 D
-10 -1 D
-9 0 D
-10 -1 D
-10 0 D
-10 -1 D
-9 0 D
-10 -1 D
-10 0 D
-10 -1 D
-9 0 D
-10 0 D
-10 -1 D
-10 0 D
-9 -1 D
-10 0 D
-10 0 D
-10 -1 D
-10 0 D
-9 0 D
-10 0 D
-10 -1 D
-10 0 D
-10 0 D
-9 0 D
-10 -1 D
-10 0 D
-10 0 D
-10 0 D
-9 0 D
-10 0 D
-10 0 D
-10 -1 D
-9 0 D
-10 0 D
-10 0 D
-10 0 D
-10 0 D
-9 0 D
-10 0 D
-10 0 D
-10 0 D
-10 0 D
-9 0 D
-10 0 D
-10 0 D
-10 0 D
-10 0 D
-9 0 D
-10 1 D
-10 0 D
-10 0 D
-10 0 D
-9 0 D
-10 0 D
-10 1 D
-10 0 D
-10 0 D
-9 0 D
-10 0 D
-10 1 D
-10 0 D
-10 0 D
-9 1 D
-10 0 D
-10 0 D
-10 1 D
-9 0 D
-10 0 D
-10 1 D
-10 0 D
-10 0 D
-9 1 D
-10 0 D
-10 1 D
-10 0 D
-9 1 D
-10 0 D
-10 1 D
-10 0 D
-9 1 D
-10 0 D
-10 1 D
-10 0 D
-9 1 D
-10 1 D
-10 0 D
-9 1 D
-10 0 D
-10 1 D
-10 1 D
-9 0 D
-10 1 D
-10 1 D
-9 0 D
-10 1 D
-10 1 D
-9 1 D
-10 0 D
-10 1 D
-9 1 D
-10 1 D
-10 1 D
-9 1 D
-10 0 D
+91 -75 D
+54 -41 D
+114 -80 D
+60 -38 D
+56 -35 D
+13 -7 D
+84 -48 D
+116 -60 D
+91 -44 D
+110 -49 D
+91 -37 D
+23 -10 D
+133 -50 D
+130 -44 D
+150 -46 D
+137 -38 D
+149 -37 D
+207 -45 D
+194 -35 D
+169 -25 D
+132 -17 D
+144 -16 D
+184 -15 D
+204 -11 D
+167 -5 D
+205 -1 D
+167 4 D
+185 9 D
+155 11 D
+145 13 D
+162 19 D
+170 24 D
+176 30 D
+137 27 D
+117 25 D
+150 36 D
+104 28 D
+93 27 D
+125 39 D
+138 47 D
+156 59 D
+68 28 D
+160 72 D
+118 59 D
+112 62 D
+100 60 D
+101 67 D
+94 68 D
+48 37 D
+70 59 D
+4 5 D
+20 17 D
+23 21 D
+4 5 D
+10 8 D
+4 5 D
+40 39 D
+58 62 D
+38 45 D
+50 64 D
+19 28 D
+31 46 D
+34 57 D
+21 38 D
+31 66 D
+27 68 D
+22 67 D
+20 88 D
+9 68 D
+5 69 D
+0 24 D
 S
 %
 % Lat = 15
 %
-4204 2695 M
-9 0 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 0 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-9 1 D
-10 1 D
-9 2 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 1 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
-9 2 D
-9 1 D
-9 1 D
-9 1 D
-9 1 D
-10 2 D
-9 1 D
-9 1 D
-9 1 D
-9 2 D
-9 1 D
-9 1 D
-9 2 D
-10 1 D
-9 1 D
-9 2 D
-9 1 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 2 D
-9 1 D
-9 2 D
-8 1 D
-9 2 D
-9 2 D
-9 1 D
-9 2 D
-9 1 D
-9 2 D
-9 2 D
-8 2 D
-9 1 D
-9 2 D
-9 2 D
-9 1 D
-8 2 D
-9 2 D
-9 2 D
-9 2 D
-9 1 D
-8 2 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-9 1 D
-8 2 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-9 3 D
-8 2 D
-9 2 D
-8 2 D
-9 2 D
-8 2 D
-8 2 D
-9 3 D
-8 2 D
-9 2 D
-8 2 D
-8 3 D
-9 2 D
-8 2 D
-8 2 D
-8 3 D
-9 2 D
-8 2 D
-8 3 D
-8 2 D
-9 2 D
-8 3 D
-8 2 D
-8 2 D
-8 3 D
-9 2 D
-8 3 D
-8 2 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 3 D
-8 2 D
-8 3 D
-8 2 D
-8 3 D
-8 3 D
-8 2 D
-8 3 D
-7 3 D
-8 2 D
-8 3 D
-8 3 D
-8 2 D
-7 3 D
-8 3 D
-8 2 D
-8 3 D
-7 3 D
-8 3 D
-8 2 D
-7 3 D
-8 3 D
-8 3 D
-7 3 D
-8 2 D
-7 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-7 3 D
-8 2 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-8 3 D
-7 3 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-6 3 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-7 4 D
-6 3 D
-7 3 D
-7 4 D
-7 3 D
-6 3 D
-7 4 D
-7 3 D
-6 3 D
-7 4 D
-7 3 D
-6 3 D
-7 4 D
-6 3 D
-7 4 D
-6 3 D
-7 4 D
-6 3 D
-7 3 D
-6 4 D
-7 3 D
-6 4 D
-6 3 D
-7 4 D
-6 3 D
-7 4 D
-6 3 D
-6 4 D
-6 3 D
-7 4 D
-6 4 D
-6 3 D
-6 4 D
-7 3 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-6 4 D
-6 3 D
-5 4 D
-6 4 D
-6 4 D
-6 3 D
-6 4 D
-5 4 D
-6 4 D
-6 4 D
-5 3 D
-6 4 D
-6 4 D
-5 4 D
-6 4 D
-5 3 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-6 3 D
-5 4 D
-5 4 D
-6 4 D
-5 4 D
-5 4 D
-6 4 D
-5 4 D
-5 4 D
-5 4 D
-6 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-4 4 D
-5 4 D
-5 4 D
-5 4 D
-5 4 D
-9 9 D
-9 8 D
-9 8 D
-10 8 D
-9 9 D
-9 8 D
-8 8 D
-9 9 D
-9 8 D
-9 9 D
-8 8 D
-8 9 D
-9 8 D
-8 9 D
-8 8 D
-8 9 D
-8 8 D
-8 9 D
-8 9 D
-7 8 D
-8 9 D
-7 9 D
-8 8 D
-7 9 D
-7 9 D
-7 9 D
-7 8 D
-7 9 D
-7 9 D
-7 9 D
-6 9 D
-7 9 D
-6 9 D
-6 9 D
-7 9 D
-6 8 D
-6 9 D
-6 9 D
-6 9 D
-5 9 D
-6 10 D
-5 9 D
-6 9 D
-5 9 D
-5 9 D
-6 9 D
-5 9 D
-5 9 D
-4 9 D
-5 10 D
-5 9 D
-4 9 D
-5 9 D
-4 9 D
-4 10 D
-4 9 D
-4 9 D
-4 9 D
-4 10 D
-4 9 D
-4 9 D
-3 9 D
-4 10 D
-3 9 D
-3 9 D
-3 10 D
-3 9 D
-3 9 D
-3 10 D
-3 9 D
-2 10 D
-3 9 D
-2 9 D
-3 10 D
-2 9 D
-2 9 D
-2 10 D
-2 9 D
-2 10 D
-1 9 D
-2 10 D
-1 9 D
-2 9 D
-1 10 D
-1 9 D
-1 10 D
-1 9 D
-1 10 D
-1 9 D
-1 10 D
-0 9 D
-1 10 D
-0 9 D
-0 10 D
-0 9 D
-0 9 D
-0 10 D
-0 9 D
-0 10 D
--1 9 D
-0 10 D
--1 9 D
-0 10 D
--1 9 D
--1 10 D
--1 9 D
--1 10 D
--1 9 D
--1 9 D
--2 10 D
--1 9 D
--2 10 D
--2 9 D
--1 10 D
--2 9 D
--2 9 D
--2 10 D
--3 9 D
--2 10 D
--2 9 D
--3 9 D
--3 10 D
--2 9 D
--3 9 D
--2 5 D
 165 4676 M
--2 -6 D
--3 -9 D
--3 -9 D
--2 -10 D
--3 -9 D
--2 -9 D
--3 -10 D
--2 -9 D
--2 -10 D
--2 -9 D
--2 -9 D
--2 -10 D
--1 -9 D
--2 -10 D
--1 -9 D
--2 -10 D
--1 -9 D
--1 -10 D
--1 -9 D
--1 -9 D
--1 -10 D
--1 -9 D
--1 -10 D
-0 -9 D
--1 -10 D
-0 -9 D
-0 -10 D
-0 -9 D
-0 -10 D
-0 -9 D
-0 -10 D
-0 -9 D
-1 -9 D
-0 -10 D
-1 -9 D
-0 -10 D
-1 -9 D
-1 -10 D
-1 -9 D
-1 -10 D
-1 -9 D
-1 -10 D
-2 -9 D
-1 -9 D
-2 -10 D
-2 -9 D
-1 -10 D
-2 -9 D
-2 -10 D
-2 -9 D
-3 -9 D
-2 -10 D
-2 -9 D
-3 -10 D
-3 -9 D
-2 -9 D
-3 -10 D
-3 -9 D
-3 -9 D
-3 -10 D
-3 -9 D
-4 -9 D
-3 -10 D
-4 -9 D
-3 -9 D
-4 -9 D
-4 -10 D
-4 -9 D
-4 -9 D
-4 -10 D
-4 -9 D
-5 -9 D
-4 -9 D
-5 -9 D
-4 -10 D
-5 -9 D
-5 -9 D
-5 -9 D
-5 -9 D
-5 -9 D
-5 -9 D
-6 -9 D
-5 -9 D
-6 -9 D
-5 -10 D
-6 -9 D
-6 -9 D
-6 -9 D
-6 -9 D
-6 -8 D
-6 -9 D
-7 -9 D
-6 -9 D
-7 -9 D
-6 -9 D
-7 -9 D
-7 -9 D
-7 -9 D
-7 -8 D
-7 -9 D
-7 -9 D
-7 -9 D
-8 -8 D
-7 -9 D
-8 -9 D
-7 -8 D
-8 -9 D
-8 -9 D
-8 -8 D
-8 -9 D
-8 -8 D
-8 -9 D
+-13 -43 D
+-15 -66 D
+-10 -75 D
+-4 -57 D
+1 -76 D
+7 -76 D
+14 -75 D
+21 -75 D
+16 -47 D
+31 -74 D
+28 -55 D
+31 -54 D
+29 -46 D
+58 -80 D
+35 -44 D
+62 -69 D
+16 -17 D
 9 -8 D
-8 -9 D
-8 -8 D
-9 -9 D
-9 -8 D
-8 -8 D
-9 -9 D
-9 -8 D
-9 -8 D
-10 -9 D
-9 -8 D
-9 -8 D
-9 -9 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-4 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -3 D
-6 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -3 D
-6 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-6 -3 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -4 D
-5 -3 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-5 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-7 -3 D
-6 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -3 D
-7 -4 D
-6 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-6 -3 D
-7 -4 D
-6 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-6 -3 D
-7 -4 D
-7 -3 D
-6 -3 D
-7 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-7 -3 D
-6 -4 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -4 D
-6 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -2 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -2 D
-8 -3 D
-7 -3 D
-8 -3 D
-8 -3 D
-7 -2 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -2 D
-7 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -2 D
-7 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -2 D
-8 -3 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -2 D
-8 -3 D
-8 -2 D
-9 -2 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -2 D
-8 -2 D
-9 -3 D
-8 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -3 D
-8 -2 D
-9 -2 D
-8 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -3 D
-9 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -1 D
-8 -2 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -1 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-8 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-8 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -1 D
-9 -2 D
-9 -1 D
-10 -1 D
-9 -2 D
-9 -1 D
-9 -1 D
-9 -2 D
-9 -1 D
-9 -1 D
-9 -1 D
-9 -2 D
-10 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-9 -2 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-10 -2 D
-9 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 0 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 -1 D
-10 0 D
-9 -1 D
-9 -1 D
-10 -1 D
-9 0 D
-9 -1 D
-10 -1 D
-9 -1 D
-9 0 D
-10 -1 D
-9 -1 D
-9 0 D
-10 -1 D
-9 -1 D
-10 0 D
-9 -1 D
-9 -1 D
-10 0 D
-9 -1 D
-10 0 D
-9 -1 D
-9 0 D
-10 -1 D
-9 -1 D
-10 0 D
-9 -1 D
-9 0 D
-10 0 D
-9 -1 D
-10 0 D
-9 -1 D
-10 0 D
-9 -1 D
-9 0 D
-10 0 D
-9 -1 D
-10 0 D
-9 0 D
-10 -1 D
-9 0 D
-9 0 D
-10 -1 D
-9 0 D
-10 0 D
-9 0 D
-10 -1 D
-9 0 D
-10 0 D
-9 0 D
-10 -1 D
-9 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 -1 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 1 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 0 D
-9 0 D
-10 1 D
-9 0 D
-9 0 D
-10 0 D
-9 0 D
-10 1 D
-9 0 D
-10 0 D
-9 0 D
-10 1 D
-9 0 D
-10 0 D
-9 1 D
-9 0 D
-10 0 D
-9 1 D
-10 0 D
-9 0 D
-10 1 D
-9 0 D
-9 1 D
-10 0 D
-9 1 D
-10 0 D
-9 1 D
-10 0 D
-9 1 D
-9 0 D
-10 1 D
-9 0 D
-10 1 D
-9 0 D
-9 1 D
-10 1 D
-9 0 D
-10 1 D
-9 0 D
-9 1 D
-10 1 D
-9 0 D
-9 1 D
-10 1 D
-9 0 D
-9 1 D
-10 1 D
-9 1 D
-10 0 D
-9 1 D
-9 1 D
-10 1 D
-9 1 D
+25 -26 D
+54 -50 D
+37 -33 D
+110 -88 D
+70 -51 D
+23 -15 D
+98 -64 D
+48 -29 D
+13 -7 D
+81 -46 D
+72 -38 D
+67 -33 D
+55 -26 D
+84 -38 D
+124 -52 D
+38 -14 D
+129 -48 D
+142 -47 D
+163 -48 D
+151 -39 D
+103 -25 D
+157 -33 D
+142 -26 D
+144 -23 D
+156 -21 D
+157 -18 D
+177 -15 D
+150 -9 D
+161 -6 D
+113 -2 D
+133 -1 D
+208 5 D
+216 12 D
+159 13 D
+121 12 D
+174 22 D
+181 28 D
+125 23 D
+114 23 D
+197 45 D
+151 40 D
+122 36 D
+120 39 D
+116 41 D
+105 40 D
+109 45 D
+119 54 D
+127 64 D
+71 38 D
+80 47 D
+71 44 D
+58 38 D
+49 35 D
+11 7 D
+78 60 D
+74 60 D
+55 50 D
+43 42 D
+8 9 D
+9 8 D
+63 69 D
+29 35 D
+48 62 D
+43 62 D
+48 82 D
+27 55 D
+35 84 D
+21 65 D
+18 75 D
+10 66 D
+6 67 D
+-1 85 D
+-7 75 D
+-14 76 D
+-18 65 D
+-2 5 D
 S
 %
 % Lat = 30
 %
-4141 3624 M
-9 0 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 0 D
-9 1 D
-8 1 D
-8 1 D
-9 1 D
-8 0 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-9 1 D
-8 1 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-9 1 D
-8 2 D
-8 1 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-7 2 D
-8 1 D
-8 2 D
-8 1 D
-8 2 D
-8 2 D
-7 1 D
-8 2 D
-8 2 D
-8 1 D
-8 2 D
-7 2 D
-8 1 D
-8 2 D
-8 2 D
-7 2 D
-8 1 D
-8 2 D
-8 2 D
-7 2 D
-8 2 D
-8 1 D
-7 2 D
-8 2 D
-8 2 D
-7 2 D
-8 2 D
-8 1 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 2 D
-7 2 D
-8 2 D
-7 2 D
-8 2 D
-7 3 D
-7 2 D
-8 2 D
-7 2 D
-7 2 D
-7 2 D
-8 3 D
-7 2 D
-7 2 D
-7 2 D
-8 3 D
-7 2 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-8 2 D
-7 2 D
-7 3 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-7 2 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-7 2 D
-7 2 D
-7 3 D
-6 3 D
-7 2 D
-7 3 D
-7 2 D
-7 3 D
-6 2 D
-7 3 D
-7 2 D
-7 3 D
-6 3 D
-7 2 D
-7 3 D
-6 2 D
-7 3 D
-7 3 D
-6 2 D
-7 3 D
-7 3 D
-6 2 D
-7 3 D
-6 3 D
-7 2 D
-6 3 D
-7 3 D
-6 3 D
-7 2 D
-6 3 D
-7 3 D
-6 3 D
-7 2 D
-6 3 D
-6 3 D
-7 3 D
-6 2 D
-7 3 D
-6 3 D
-6 3 D
-6 3 D
-7 3 D
-6 3 D
-6 2 D
-7 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-7 3 D
-6 3 D
-6 3 D
-6 3 D
-6 2 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-6 4 D
-6 3 D
-6 3 D
-6 3 D
-5 3 D
-6 3 D
-6 3 D
-6 3 D
-6 3 D
-5 3 D
-6 3 D
-6 4 D
-6 3 D
-5 3 D
-6 3 D
-6 3 D
-5 3 D
-6 3 D
-6 4 D
-5 3 D
-6 3 D
-5 3 D
-6 3 D
-5 4 D
-6 3 D
-5 3 D
-6 3 D
-5 4 D
-6 3 D
-5 3 D
-6 3 D
-5 4 D
-5 3 D
-6 3 D
-5 4 D
-5 3 D
-11 7 D
-10 6 D
-11 7 D
-10 7 D
-10 6 D
-11 7 D
-10 7 D
-10 7 D
-10 7 D
-10 7 D
-10 7 D
-9 6 D
-10 7 D
-10 7 D
-9 7 D
-10 8 D
-9 7 D
-9 7 D
-9 7 D
-10 7 D
-9 7 D
-9 7 D
-9 8 D
-8 7 D
-9 7 D
-9 7 D
-8 8 D
-9 7 D
-8 7 D
-9 8 D
-8 7 D
-8 8 D
-8 7 D
-8 8 D
-8 7 D
-8 8 D
-8 7 D
-8 8 D
-7 7 D
-8 8 D
-7 8 D
-7 7 D
-8 8 D
-7 8 D
-7 7 D
-7 8 D
-7 8 D
-7 7 D
-7 8 D
-6 8 D
-7 8 D
-7 8 D
-6 8 D
-6 7 D
-7 8 D
-6 8 D
-6 8 D
-6 8 D
-6 8 D
-6 8 D
-5 8 D
-6 8 D
-6 8 D
-5 8 D
-6 8 D
-5 8 D
-5 8 D
-5 8 D
-5 8 D
-5 9 D
-5 8 D
-5 8 D
-5 8 D
-4 8 D
-5 8 D
-4 9 D
-4 8 D
-5 8 D
-4 8 D
-4 8 D
-4 9 D
-4 8 D
-4 8 D
-3 8 D
-4 9 D
-3 8 D
-4 8 D
-3 9 D
-3 8 D
-4 8 D
-3 9 D
-3 8 D
-3 8 D
-2 9 D
-3 8 D
-3 9 D
-2 8 D
-3 8 D
-2 9 D
-2 8 D
-2 9 D
-2 8 D
-2 8 D
-2 9 D
-2 8 D
-2 9 D
-1 8 D
-2 9 D
-1 8 D
-2 9 D
-1 8 D
-1 9 D
-1 8 D
-1 8 D
-1 9 D
-1 8 D
-0 9 D
-1 8 D
-1 9 D
-0 8 D
-0 9 D
-1 8 D
-0 9 D
-0 8 D
-0 9 D
--1 8 D
-0 9 D
-0 8 D
-0 9 D
--1 8 D
--1 9 D
-0 8 D
--1 9 D
--1 8 D
--1 9 D
--1 8 D
--1 9 D
--1 8 D
--2 8 D
--1 9 D
--2 8 D
--1 9 D
--2 8 D
--2 9 D
--2 8 D
--2 9 D
--2 8 D
--2 8 D
--2 9 D
--3 8 D
--2 9 D
--3 8 D
--2 8 D
--3 9 D
--3 8 D
--3 9 D
--3 8 D
--3 8 D
--3 9 D
--3 8 D
--4 8 D
--3 9 D
--4 8 D
--3 8 D
--4 8 D
--4 9 D
--4 8 D
--4 8 D
--4 8 D
--4 9 D
--4 8 D
--4 8 D
--5 8 D
--4 8 D
--5 9 D
--5 8 D
--4 8 D
--5 8 D
--5 8 D
--5 8 D
--6 8 D
--5 8 D
--5 8 D
--5 9 D
--6 8 D
--6 8 D
--2 2 D
 661 5678 M
--3 -3 D
--6 -8 D
--5 -8 D
--6 -8 D
--5 -8 D
--5 -9 D
--5 -8 D
--5 -8 D
--5 -8 D
--5 -8 D
--5 -8 D
--5 -8 D
--4 -8 D
--5 -9 D
--4 -8 D
--4 -8 D
--5 -8 D
--4 -8 D
--4 -9 D
--4 -8 D
--4 -8 D
--4 -9 D
--3 -8 D
--4 -8 D
--3 -8 D
--4 -9 D
--3 -8 D
--3 -8 D
--4 -9 D
--3 -8 D
--3 -8 D
--3 -9 D
--2 -8 D
--3 -9 D
--3 -8 D
--2 -8 D
--3 -9 D
--2 -8 D
--2 -9 D
--2 -8 D
--2 -8 D
--2 -9 D
--2 -8 D
--2 -9 D
--2 -8 D
--1 -9 D
--2 -8 D
--1 -8 D
--2 -9 D
--1 -8 D
--1 -9 D
--1 -8 D
--1 -9 D
--1 -8 D
--1 -9 D
-0 -8 D
--1 -9 D
--1 -8 D
-0 -9 D
-0 -8 D
--1 -9 D
-0 -8 D
-0 -9 D
-0 -8 D
-1 -9 D
-0 -8 D
-0 -9 D
-0 -8 D
-1 -9 D
-1 -8 D
-0 -9 D
-1 -8 D
-1 -8 D
-1 -9 D
-1 -8 D
-1 -9 D
-1 -8 D
-2 -9 D
-1 -8 D
-2 -9 D
-1 -8 D
-2 -9 D
-2 -8 D
-2 -8 D
-2 -9 D
-2 -8 D
-2 -9 D
-2 -8 D
-3 -9 D
-2 -8 D
-3 -8 D
-2 -9 D
-3 -8 D
-3 -8 D
-3 -9 D
-3 -8 D
-3 -9 D
-3 -8 D
-3 -8 D
-4 -9 D
-3 -8 D
-4 -8 D
-3 -8 D
-4 -9 D
-4 -8 D
-4 -8 D
-4 -8 D
-4 -9 D
-4 -8 D
-4 -8 D
-4 -8 D
-5 -9 D
-4 -8 D
-5 -8 D
-5 -8 D
-4 -8 D
-5 -8 D
-5 -8 D
-5 -9 D
-6 -8 D
-5 -8 D
-5 -8 D
-5 -8 D
-6 -8 D
-6 -8 D
-5 -8 D
-6 -8 D
-6 -8 D
-6 -8 D
-6 -8 D
-6 -8 D
-6 -8 D
-6 -7 D
-7 -8 D
-6 -8 D
-7 -8 D
-6 -8 D
-7 -8 D
-7 -7 D
-7 -8 D
-7 -8 D
-7 -8 D
-7 -7 D
-7 -8 D
-7 -8 D
+-20 -27 D
+-44 -73 D
+-30 -58 D
+-25 -58 D
+-16 -42 D
+-17 -59 D
+-15 -67 D
+-9 -68 D
+-3 -68 D
+2 -51 D
+7 -67 D
+12 -59 D
+13 -51 D
+26 -75 D
+26 -58 D
+29 -58 D
+29 -49 D
+27 -40 D
+53 -71 D
+33 -40 D
+49 -54 D
 8 -7 D
-7 -8 D
-8 -8 D
-7 -7 D
-8 -8 D
-8 -7 D
-8 -8 D
-8 -7 D
-8 -8 D
-8 -7 D
-8 -8 D
-8 -7 D
-9 -7 D
-8 -8 D
-9 -7 D
-8 -7 D
-9 -8 D
-9 -7 D
-8 -7 D
-9 -7 D
-9 -8 D
-9 -7 D
-10 -7 D
-9 -7 D
-9 -7 D
-9 -7 D
-10 -7 D
-9 -7 D
-10 -7 D
-10 -7 D
-10 -7 D
-9 -7 D
-10 -7 D
-10 -7 D
-10 -7 D
-10 -7 D
-11 -6 D
-10 -7 D
-10 -7 D
+30 -31 D
+56 -52 D
+87 -73 D
+105 -77 D
+30 -21 D
+21 -13 D
+101 -63 D
+17 -9 D
 11 -7 D
-10 -6 D
-11 -7 D
-5 -3 D
-6 -3 D
-5 -4 D
-5 -3 D
-6 -3 D
-5 -4 D
-5 -3 D
-6 -3 D
-5 -3 D
-6 -4 D
-5 -3 D
-6 -3 D
-5 -3 D
-6 -3 D
-5 -4 D
-6 -3 D
-6 -3 D
-5 -3 D
-6 -3 D
-6 -4 D
-5 -3 D
-6 -3 D
-6 -3 D
-5 -3 D
-6 -3 D
-6 -3 D
-6 -4 D
-5 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-5 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-7 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-6 -3 D
-7 -3 D
-6 -2 D
-6 -3 D
-6 -3 D
-7 -3 D
-6 -3 D
-6 -3 D
-7 -3 D
-6 -2 D
-6 -3 D
-7 -3 D
-6 -3 D
-6 -3 D
-7 -2 D
-6 -3 D
-7 -3 D
-6 -3 D
-7 -2 D
-6 -3 D
-7 -3 D
-6 -3 D
-7 -2 D
-6 -3 D
-7 -3 D
-6 -2 D
-7 -3 D
-7 -3 D
-6 -2 D
-7 -3 D
-6 -3 D
-7 -2 D
-7 -3 D
-6 -2 D
-7 -3 D
-7 -3 D
-7 -2 D
-6 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-6 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-6 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-8 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-8 -2 D
-7 -3 D
-7 -2 D
-7 -2 D
-7 -2 D
-8 -3 D
-7 -2 D
-7 -2 D
-7 -2 D
-8 -2 D
-7 -3 D
-7 -2 D
-8 -2 D
-7 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-7 -3 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -1 D
-7 -2 D
-8 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-7 -2 D
-8 -2 D
-8 -1 D
-7 -2 D
-8 -2 D
-8 -2 D
-7 -2 D
-8 -1 D
-8 -2 D
-8 -2 D
-7 -2 D
-8 -1 D
-8 -2 D
-8 -2 D
-7 -2 D
-8 -1 D
-8 -2 D
-8 -2 D
-7 -1 D
-8 -2 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -2 D
-7 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-7 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-9 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -2 D
-8 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-8 -2 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-8 -2 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 0 D
-9 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 0 D
-9 -1 D
-8 -1 D
-8 -1 D
-9 -1 D
-8 0 D
-8 -1 D
-9 -1 D
-8 -1 D
-8 0 D
-9 -1 D
-8 -1 D
-9 -1 D
-8 0 D
-8 -1 D
-9 -1 D
-8 0 D
-8 -1 D
-9 -1 D
-8 0 D
-9 -1 D
-8 0 D
-8 -1 D
-9 -1 D
-8 0 D
-9 -1 D
-8 0 D
-9 -1 D
-8 0 D
-8 -1 D
-9 0 D
-8 -1 D
-9 0 D
-8 -1 D
-9 0 D
-8 -1 D
-8 0 D
-9 -1 D
-8 0 D
-9 0 D
-8 -1 D
-9 0 D
-8 0 D
-9 -1 D
-8 0 D
-9 -1 D
-8 0 D
-8 0 D
-9 0 D
-8 -1 D
-9 0 D
-8 0 D
-9 0 D
-8 -1 D
-9 0 D
-8 0 D
-9 0 D
-8 -1 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 -1 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 1 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 0 D
-9 0 D
-8 1 D
-9 0 D
-8 0 D
-9 0 D
-8 1 D
-9 0 D
-8 0 D
-8 0 D
-9 1 D
-8 0 D
-9 0 D
-8 1 D
-9 0 D
-8 0 D
-9 1 D
-8 0 D
-9 0 D
-8 1 D
-9 0 D
-8 1 D
-8 0 D
-9 0 D
-8 1 D
-9 0 D
-8 1 D
-9 0 D
-8 1 D
-8 0 D
-9 1 D
-8 0 D
-9 1 D
-8 0 D
-9 1 D
-8 0 D
-8 1 D
-9 1 D
-8 0 D
-9 1 D
-8 1 D
-8 0 D
-9 1 D
-8 0 D
-9 1 D
-8 1 D
-8 1 D
-9 0 D
-8 1 D
-8 1 D
+86 -47 D
+139 -69 D
+75 -34 D
+125 -51 D
+95 -36 D
+111 -38 D
+152 -47 D
+149 -41 D
+130 -31 D
+133 -28 D
+135 -25 D
+113 -18 D
+98 -14 D
+99 -13 D
+158 -16 D
+160 -12 D
+118 -6 D
+161 -5 D
+186 -1 D
+178 5 D
+177 10 D
+143 12 D
+108 11 D
+197 25 D
+193 32 D
+88 17 D
+148 32 D
+122 30 D
+134 36 D
+151 47 D
+126 44 D
+134 52 D
+103 44 D
+129 61 D
+100 53 D
+56 31 D
+16 10 D
+44 26 D
+93 61 D
+68 48 D
+74 58 D
+26 21 D
+58 52 D
+55 53 D
+64 69 D
+51 63 D
+46 64 D
+49 81 D
+33 66 D
+33 83 D
+17 59 D
+15 68 D
+9 67 D
+3 68 D
+-2 51 D
+-7 68 D
+-12 59 D
+-13 51 D
+-26 75 D
+-26 58 D
+-29 57 D
+-29 49 D
+-27 41 D
+-8 10 D
 S
 %
 % Lat = 45
 %
-4042 4551 M
-7 1 D
-7 0 D
-6 1 D
-7 1 D
-7 0 D
-7 1 D
-7 1 D
-7 0 D
-6 1 D
-7 1 D
-7 0 D
-7 1 D
-6 1 D
-7 0 D
-7 1 D
-7 1 D
-7 1 D
-6 0 D
-7 1 D
-7 1 D
-7 1 D
-6 1 D
-7 0 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-7 1 D
-6 0 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-6 0 D
-7 1 D
-6 1 D
-7 1 D
-7 2 D
-6 1 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-6 1 D
-7 1 D
-6 1 D
-7 1 D
-7 1 D
-6 1 D
-7 1 D
-6 2 D
-7 1 D
-6 1 D
-7 1 D
-6 1 D
-7 1 D
-6 2 D
-7 1 D
-6 1 D
-7 1 D
-6 1 D
-7 2 D
-6 1 D
-7 1 D
-6 1 D
-7 2 D
-6 1 D
-7 1 D
-6 2 D
-6 1 D
-7 1 D
-6 1 D
-7 2 D
-6 1 D
-6 1 D
-7 2 D
-6 1 D
-7 2 D
-6 1 D
-6 1 D
-7 2 D
-6 1 D
-6 2 D
-7 1 D
-6 1 D
-6 2 D
-6 1 D
-7 2 D
-6 1 D
-6 2 D
-7 1 D
-6 2 D
-6 1 D
-6 2 D
-7 1 D
-6 2 D
-6 1 D
-6 2 D
-6 1 D
-7 2 D
-6 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-7 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-6 2 D
-6 1 D
-6 2 D
-12 4 D
-12 3 D
-12 4 D
-12 3 D
-12 4 D
-12 3 D
-12 4 D
-11 4 D
-12 3 D
-12 4 D
-11 4 D
-12 4 D
-11 4 D
-12 4 D
-11 3 D
-12 4 D
-11 4 D
-12 4 D
-11 4 D
-11 4 D
-11 5 D
-11 4 D
-11 4 D
-11 4 D
-11 4 D
-11 4 D
-11 5 D
-11 4 D
-11 4 D
-11 5 D
-11 4 D
-10 5 D
-11 4 D
-10 4 D
-11 5 D
-10 5 D
-11 4 D
-10 5 D
-11 4 D
-10 5 D
-10 5 D
-10 4 D
-10 5 D
-10 5 D
-10 5 D
-10 4 D
-10 5 D
-10 5 D
-10 5 D
-10 5 D
-9 5 D
-10 5 D
-10 5 D
-9 5 D
-10 5 D
-9 5 D
-10 5 D
-9 5 D
-9 5 D
-9 6 D
-9 5 D
-10 5 D
-9 5 D
-9 6 D
-9 5 D
-8 5 D
-9 6 D
-9 5 D
-9 5 D
-8 6 D
-9 5 D
-8 6 D
-9 5 D
-8 6 D
-8 5 D
-9 6 D
-8 5 D
-8 6 D
-8 6 D
-8 5 D
-8 6 D
-8 6 D
-8 5 D
-8 6 D
-7 6 D
-8 6 D
-8 5 D
-7 6 D
-8 6 D
-7 6 D
-7 6 D
-8 6 D
-7 6 D
-7 6 D
-7 6 D
-7 5 D
-7 6 D
-7 6 D
-7 7 D
-7 6 D
-6 6 D
-7 6 D
-6 6 D
-7 6 D
-6 6 D
-7 6 D
-6 6 D
-6 7 D
-6 6 D
-6 6 D
-6 6 D
-6 7 D
-6 6 D
-6 6 D
-6 6 D
-5 7 D
-6 6 D
-6 6 D
-5 7 D
-5 6 D
-6 7 D
-5 6 D
-5 6 D
-5 7 D
-5 6 D
-5 7 D
-5 6 D
-5 7 D
-5 6 D
-5 7 D
-4 6 D
-5 7 D
-4 6 D
-5 7 D
-4 7 D
-4 6 D
-4 7 D
-5 6 D
-4 7 D
-4 7 D
-3 6 D
-4 7 D
-4 7 D
-4 6 D
-3 7 D
-4 7 D
-3 6 D
-4 7 D
-3 7 D
-3 7 D
-3 6 D
-4 7 D
-3 7 D
-3 7 D
-2 6 D
-3 7 D
-3 7 D
-3 7 D
-2 7 D
-3 6 D
-2 7 D
-3 7 D
-2 7 D
-2 7 D
-2 7 D
-2 6 D
-2 7 D
-2 7 D
-2 7 D
-2 7 D
-1 7 D
-2 7 D
-2 7 D
-1 6 D
-1 7 D
-2 7 D
-1 7 D
-1 7 D
-1 7 D
-1 7 D
-1 7 D
-1 7 D
-1 7 D
-1 7 D
-0 7 D
-1 6 D
-0 7 D
-1 7 D
-0 7 D
-0 7 D
-0 7 D
-1 7 D
-0 7 D
-0 7 D
--1 7 D
-0 7 D
-0 7 D
-0 7 D
--1 6 D
-0 7 D
--1 7 D
--1 7 D
-0 7 D
--1 7 D
--1 7 D
--1 7 D
--1 7 D
--1 7 D
--1 7 D
--1 7 D
--2 6 D
--1 7 D
--2 7 D
--1 7 D
--2 7 D
--1 7 D
--2 7 D
--2 7 D
--2 7 D
--2 6 D
--2 7 D
--2 7 D
--2 7 D
--3 7 D
--2 7 D
--3 6 D
--2 7 D
--3 7 D
--2 7 D
--3 7 D
--3 6 D
--3 7 D
--3 7 D
--3 7 D
--3 6 D
--3 7 D
--3 7 D
--4 7 D
--3 6 D
--4 7 D
--3 7 D
--4 6 D
--3 7 D
--4 7 D
--4 6 D
--4 7 D
--4 7 D
--4 6 D
--4 7 D
--4 7 D
--5 6 D
--4 7 D
--4 6 D
--5 7 D
--4 6 D
--5 7 D
--5 6 D
--4 7 D
--5 6 D
--5 7 D
--5 6 D
--5 7 D
--5 6 D
--6 7 D
--5 6 D
--5 7 D
--6 6 D
--5 6 D
--6 7 D
--5 6 D
--6 6 D
--6 7 D
--5 6 D
--6 6 D
--6 6 D
--6 7 D
--6 6 D
--7 6 D
--6 6 D
--6 6 D
--6 7 D
--7 6 D
--6 6 D
--7 6 D
--7 6 D
--6 6 D
--7 6 D
--7 6 D
--7 6 D
--7 6 D
--7 6 D
--7 6 D
--7 6 D
--7 6 D
--7 6 D
--8 6 D
--7 6 D
--8 6 D
--7 5 D
--8 6 D
--7 6 D
--8 6 D
--8 5 D
--8 6 D
--8 6 D
--8 5 D
 1522 6539 M
--1 0 D
--8 -6 D
--8 -6 D
--8 -5 D
--8 -6 D
--7 -6 D
--8 -6 D
--8 -5 D
--7 -6 D
--8 -6 D
--7 -6 D
--7 -6 D
--8 -6 D
--7 -6 D
--7 -5 D
--7 -6 D
--7 -6 D
--7 -6 D
--7 -6 D
--7 -6 D
--7 -6 D
+-33 -23 D
+-45 -35 D
+-57 -47 D
+-14 -12 D
 -6 -7 D
--7 -6 D
--6 -6 D
--7 -6 D
--6 -6 D
--7 -6 D
--6 -6 D
--6 -7 D
--6 -6 D
--6 -6 D
--6 -6 D
--6 -6 D
--6 -7 D
--6 -6 D
--6 -6 D
--5 -7 D
--6 -6 D
--6 -6 D
--5 -7 D
--5 -6 D
--6 -7 D
--5 -6 D
--5 -6 D
--5 -7 D
--5 -6 D
--5 -7 D
--5 -6 D
--5 -7 D
--5 -6 D
--5 -7 D
--4 -6 D
--5 -7 D
--4 -6 D
--5 -7 D
--4 -7 D
--4 -6 D
--4 -7 D
--5 -6 D
--4 -7 D
--4 -7 D
--3 -6 D
--4 -7 D
--4 -7 D
--4 -6 D
--3 -7 D
--4 -7 D
--3 -6 D
--4 -7 D
--3 -7 D
--3 -7 D
--3 -6 D
--4 -7 D
--3 -7 D
--3 -7 D
--2 -6 D
--3 -7 D
--3 -7 D
--3 -7 D
--2 -7 D
--3 -6 D
--2 -7 D
--3 -7 D
--2 -7 D
--2 -7 D
--2 -7 D
--2 -6 D
--2 -7 D
--2 -7 D
--2 -7 D
--2 -7 D
--1 -7 D
--2 -7 D
--2 -7 D
--1 -6 D
--1 -7 D
--2 -7 D
--1 -7 D
--1 -7 D
--1 -7 D
--1 -7 D
--1 -7 D
--1 -7 D
--1 -7 D
--1 -6 D
-0 -7 D
--1 -7 D
-0 -7 D
--1 -7 D
-0 -7 D
-0 -7 D
-0 -7 D
--1 -7 D
-0 -7 D
-0 -7 D
-1 -7 D
-0 -7 D
-0 -7 D
-0 -6 D
-1 -7 D
-0 -7 D
-1 -7 D
-1 -7 D
-0 -7 D
-1 -7 D
-1 -7 D
-1 -7 D
-1 -7 D
-1 -7 D
-1 -7 D
-1 -6 D
-2 -7 D
-1 -7 D
-2 -7 D
-1 -7 D
-2 -7 D
-1 -7 D
-2 -7 D
-2 -7 D
-2 -6 D
-2 -7 D
-2 -7 D
-2 -7 D
-2 -7 D
-3 -7 D
-2 -6 D
-3 -7 D
-2 -7 D
-3 -7 D
-2 -7 D
-3 -7 D
-3 -6 D
-3 -7 D
-3 -7 D
-3 -7 D
-3 -6 D
-3 -7 D
-3 -7 D
-4 -7 D
-3 -6 D
-4 -7 D
-3 -7 D
-4 -6 D
-3 -7 D
-4 -7 D
-4 -6 D
-4 -7 D
-4 -7 D
-4 -6 D
-4 -7 D
-4 -7 D
-5 -6 D
-4 -7 D
-4 -6 D
-5 -7 D
-4 -6 D
-5 -7 D
-5 -6 D
-4 -7 D
-5 -6 D
-5 -7 D
-5 -6 D
-5 -7 D
-5 -6 D
+-39 -36 D
+-48 -50 D
+-11 -13 D
+-32 -38 D
+-44 -59 D
+-21 -33 D
+-9 -13 D
+-33 -60 D
+-21 -47 D
+-19 -48 D
+-21 -76 D
+-12 -75 D
+-3 -70 D
+5 -69 D
+9 -55 D
+10 -42 D
+15 -47 D
+16 -41 D
+25 -54 D
+26 -47 D
+16 -27 D
+46 -65 D
+53 -64 D
+41 -44 D
+19 -18 D
 6 -7 D
-5 -6 D
-5 -6 D
-6 -7 D
-5 -6 D
-6 -7 D
-5 -6 D
-6 -6 D
-6 -7 D
-5 -6 D
-6 -6 D
-6 -6 D
-6 -7 D
-6 -6 D
-7 -6 D
-6 -6 D
-6 -6 D
-6 -7 D
-7 -6 D
-6 -6 D
-7 -6 D
-7 -6 D
-6 -6 D
-7 -6 D
-7 -6 D
-7 -6 D
-7 -6 D
-7 -6 D
-7 -6 D
-7 -6 D
-7 -6 D
-7 -6 D
-8 -6 D
-7 -6 D
-8 -5 D
-7 -6 D
-8 -6 D
-7 -6 D
-8 -6 D
-8 -5 D
-8 -6 D
-8 -6 D
-8 -5 D
-8 -6 D
-8 -6 D
-8 -5 D
-8 -6 D
-8 -5 D
-9 -6 D
-8 -5 D
-9 -6 D
-8 -5 D
-9 -6 D
-8 -5 D
-9 -6 D
-9 -5 D
-9 -5 D
-8 -6 D
-9 -5 D
-9 -5 D
-9 -6 D
-10 -5 D
-9 -5 D
-9 -5 D
-9 -5 D
-10 -5 D
-9 -6 D
-9 -5 D
-10 -5 D
-9 -5 D
-10 -5 D
-10 -5 D
-9 -5 D
-10 -5 D
-10 -4 D
-10 -5 D
-10 -5 D
-10 -5 D
-10 -5 D
-10 -4 D
-10 -5 D
-10 -5 D
-10 -5 D
-11 -4 D
-10 -5 D
-10 -4 D
-11 -5 D
-10 -5 D
-11 -4 D
-10 -4 D
-11 -5 D
-11 -4 D
-10 -5 D
-11 -4 D
-11 -4 D
-11 -5 D
-11 -4 D
-11 -4 D
-11 -4 D
-11 -5 D
-11 -4 D
-11 -4 D
-11 -4 D
-11 -4 D
-12 -4 D
-11 -4 D
-11 -4 D
-12 -4 D
-11 -4 D
-12 -4 D
-11 -4 D
-12 -3 D
-12 -4 D
-11 -4 D
-12 -4 D
-12 -3 D
-11 -4 D
-12 -4 D
-12 -3 D
-12 -4 D
-12 -3 D
-12 -4 D
-12 -3 D
-6 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-7 -2 D
-6 -1 D
-6 -2 D
-6 -2 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -2 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -2 D
-6 -1 D
-7 -1 D
-6 -2 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-6 -2 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -2 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 0 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-7 0 D
-6 -1 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 0 D
-7 -1 D
-6 -1 D
-7 -1 D
-7 -1 D
-7 0 D
-6 -1 D
-7 -1 D
-7 0 D
-7 -1 D
-7 -1 D
-6 -1 D
-7 0 D
-7 -1 D
-7 -1 D
-7 0 D
-6 -1 D
-7 -1 D
-7 0 D
-7 -1 D
-7 0 D
-6 -1 D
-7 -1 D
-7 0 D
-7 -1 D
-7 0 D
-7 -1 D
-6 0 D
-7 -1 D
-7 -1 D
-7 0 D
-7 -1 D
-7 0 D
-7 -1 D
-6 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 -1 D
-7 0 D
-6 -1 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 -1 D
-6 0 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 0 D
-7 -1 D
-6 0 D
-7 0 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 -1 D
-7 0 D
-6 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-6 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-6 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 0 D
-7 1 D
-6 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-6 0 D
-7 1 D
-7 0 D
-7 1 D
-7 0 D
-7 0 D
-7 1 D
-7 0 D
-6 1 D
-7 0 D
-7 1 D
-7 0 D
-7 1 D
-7 0 D
-7 1 D
-6 0 D
-7 1 D
-7 0 D
-7 1 D
-7 0 D
-7 1 D
-7 0 D
-6 1 D
-7 0 D
-7 1 D
+75 -66 D
+36 -30 D
+23 -17 D
+39 -29 D
+74 -50 D
+43 -27 D
+54 -32 D
+84 -46 D
+119 -58 D
+84 -36 D
+131 -51 D
+91 -32 D
+130 -40 D
+122 -33 D
+131 -31 D
+129 -26 D
+98 -17 D
+106 -17 D
+154 -19 D
+130 -12 D
+116 -8 D
+145 -6 D
+125 -2 D
+152 1 D
+159 7 D
+171 13 D
+123 13 D
+114 15 D
+53 8 D
+79 12 D
+161 31 D
+139 32 D
+98 26 D
+120 35 D
+149 50 D
+121 47 D
+94 41 D
+100 48 D
+85 45 D
+63 37 D
+44 27 D
+58 39 D
+48 34 D
+45 35 D
+57 47 D
+59 55 D
+48 50 D
+11 13 D
+32 38 D
+44 59 D
+21 33 D
+9 13 D
+33 60 D
+21 47 D
+19 48 D
+21 76 D
+12 76 D
+3 69 D
+-3 48 D
+-8 63 D
+-15 62 D
+-13 41 D
+-19 47 D
+-22 47 D
+-26 47 D
+-16 27 D
+-46 65 D
+-31 39 D
+-45 50 D
+-18 19 D
+-19 18 D
+-6 7 D
+-75 66 D
+-44 36 D
+-54 40 D
+-8 5 D
 S
 %
 % Lat = 60

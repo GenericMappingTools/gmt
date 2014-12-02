@@ -6306,7 +6306,7 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	/* Traces the lon/lat array and returns x,y plus appropriate pen moves
 	 * Pen moves are caused by breakthroughs of the map boundary or when
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
-	uint64_t j, np;
+	uint64_t j, k, np, n_sections;
  	bool inside;
 	unsigned int sides[4];
 	unsigned int nx;
@@ -6361,6 +6361,31 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		last_x = this_x;	last_y = this_y;
 	}
 	if (np) GMT->current.plot.pen[0] = PSL_MOVE;	/* Sanity override: Gotta start off with new start point */
+	
+	/* When a line that starts and ends inside the domain exits and reenters, we end up with two pieces.
+	 * When these are plotted separately the sections are not joined properly and ugly gaps can appear, especially if
+	 * the pen width is large.  Here we try to fix this case since it happens fairly frequently */
+	
+	for (j = n_sections = k = 0; j < np; j++) if (GMT->current.plot.pen[j] == PSL_MOVE) {
+		n_sections++;
+		if (n_sections == 2) k = j;	/* Start of 2nd section */
+	}
+	if (n_sections == 2 && doubleAlmostEqualZero (GMT->current.plot.x[0], GMT->current.plot.x[np-1]) && doubleAlmostEqualZero (GMT->current.plot.y[0], GMT->current.plot.y[np-1])) {
+		double *tmp = GMT_memory (GMT, NULL, k, double);
+		/* Shuffle x-array */
+		GMT_memcpy (tmp, GMT->current.plot.x, k, double);
+		GMT_memcpy (GMT->current.plot.x, &GMT->current.plot.x[k], np-k, double);
+		GMT_memcpy (&GMT->current.plot.x[np-k], tmp, k, double);
+		/* Shuffle y-array */
+		GMT_memcpy (tmp, GMT->current.plot.y, k, double);
+		GMT_memcpy (GMT->current.plot.y, &GMT->current.plot.y[k], np-k, double);
+		GMT_memcpy (&GMT->current.plot.y[np-k], tmp, k, double);
+		/* Change PSL_MOVE to PSL_DRAW at start of 2nd section */
+		GMT->current.plot.pen[k] = PSL_DRAW;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_geo_to_xy_line: Clipping in two separate abutting lines that were joined into a single line\n");
+		GMT_free (GMT, tmp);
+	}
+	
 	return (np);
 }
 
