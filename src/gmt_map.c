@@ -6379,14 +6379,14 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	}
 	if (n_sections == 2 && doubleAlmostEqualZero (GMT->current.plot.x[0], GMT->current.plot.x[np-1]) && doubleAlmostEqualZero (GMT->current.plot.y[0], GMT->current.plot.y[np-1])) {
 		double *tmp = GMT_memory (GMT, NULL, k, double);
-		/* Shuffle x-array */
-		GMT_memcpy (tmp, GMT->current.plot.x, k, double);
-		GMT_memcpy (GMT->current.plot.x, &GMT->current.plot.x[k], np-k, double);
-		GMT_memcpy (&GMT->current.plot.x[np-k], tmp, k, double);
-		/* Shuffle y-array */
-		GMT_memcpy (tmp, GMT->current.plot.y, k, double);
-		GMT_memcpy (GMT->current.plot.y, &GMT->current.plot.y[k], np-k, double);
-		GMT_memcpy (&GMT->current.plot.y[np-k], tmp, k, double);
+		/* Shuffle x-array safely */
+		GMT_memcpy (tmp, &GMT->current.plot.x[k], np-k, double);
+		GMT_memcpy (&tmp[np-k], GMT->current.plot.x, k, double);
+		GMT_memcpy (GMT->current.plot.x, tmp, np, double);
+		/* Shuffle y-array safely */
+		GMT_memcpy (tmp, &GMT->current.plot.y[k], np-k, double);
+		GMT_memcpy (&tmp[np-k], GMT->current.plot.y, k, double);
+		GMT_memcpy (GMT->current.plot.y, tmp, np, double);
 		/* Change PSL_MOVE to PSL_DRAW at start of 2nd section */
 		GMT->current.plot.pen[k] = PSL_DRAW;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_geo_to_xy_line: Clipping in two separate abutting lines that were joined into a single line\n");
