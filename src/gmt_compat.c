@@ -37,7 +37,7 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module gmtdp is deprecated; use gmtsimplify.\n");
 		return (GMT_Call_Module (API, "gmtsimplify", mode, args));
 	}
-	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: gmtdpi\n");
+	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: gmtdp\n");
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
