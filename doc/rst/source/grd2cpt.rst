@@ -113,7 +113,7 @@ Optional Arguments
 
 **-L**\ *minlimit/maxlimit*
     Limit range of cpt file to *minlimit/maxlimit*, and don't count data
-    outside range when estimating CDF(Z). [Default uses min and max of data.]
+    outside this range when estimating CDF(Z). [Default uses min and max of data.]
 
 **-M**
     Overrule background, foreground, and NaN colors specified in the
@@ -138,8 +138,9 @@ Optional Arguments
 **-S**\ *zstart/zstop/zinc* or **-S**\ *n*
     Set steps in cpt file. Calculate entries in cpt file from *zstart*
     to *zstop* in steps of (*zinc*). Default chooses arbitrary values by
-    a crazy scheme. Use **-S**\ *n* to select *n* points from a
-    cumulative normal distribution.
+    a crazy scheme based on equidistant values for a Gaussian CDF.
+    Use **-S**\ *n* to select *n* points from such a
+    cumulative normal distribution [11].
 
 **-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=**
     Force the color table to be symmetric about zero (from -R to +R).
