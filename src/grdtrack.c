@@ -916,7 +916,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 						}
 					}
 					else if (Ctrl->S.mode >= STACK_LOWER) {	/* Use half-range as deviation */
-						for (k = 0; k < Ctrl->G.n_grids; k++) stacked_dev[k] = 0.5 * (stacked_lo[k] + stacked_hi[k]);
+						for (k = 0; k < Ctrl->G.n_grids; k++) stacked_dev[k] = 0.5 * (stacked_hi[k] - stacked_lo[k]);
 					}
 					/* Here we have everything needed to populate output arrays */
 					M->coord[0][row] = T->segment[0]->coord[2][row];	/* Copy over distance value */
