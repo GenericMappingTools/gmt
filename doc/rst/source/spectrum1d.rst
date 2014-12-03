@@ -160,6 +160,93 @@ data.g as output, use
 
     paste data.t data.g | gmt spectrum1d -S256 -D1.5 -Ndata -C
 
+Tutorial
+--------
+
+The output of spectrum1d is in units of power spectral density, and so to get units
+of data-squared you must divide by delta_t, where delta_t is the sample spacing.
+(There may be a factor of 2 pi somewhere, also. If you want to be sure of the
+normalization, you can determine a scale factor from Parseval's theorem: the sum of
+the squares of your input data should equal the sum of the squares of the outputs
+from spectrum1d, if you are simply trying to get a periodogram. [See below.])
+
+Suppose we simply take a data set, x(t), and compute the discrete Fourier transform
+(DFT) of the entire data set in one go. Call this X(f). Then suppose we form X(f)
+times the complex conjugate of X(f).
+
+P_raw(f) = X(f) * X'(f), where the ' indicates complex conjugation.
+
+P_raw is called the periodogram. The sum of the samples of the periodogram equals the
+sum of the samples of the squares of x(t), by Parseval's theorem. (If you use a DFT
+subroutine on a computer, usually the sum of P_raw equals the sum of x-squared, times M,
+where M is the number of samples in x(t).)
+
+Each estimate of X(f) is now formed by a weighted linear combination of all of the
+x(t) values. (The weights are sometimes called "twiddle factors" in the DFT literature.)
+So, no matter what the probability distribution for the x(t) values is, the probability
+distribution for the X(f) values approaches [complex] Gaussian, by the Central Limit
+Theorem. This means that the probability distribution for P_raw(f) approaches chi-squared
+with two degrees of freedom. That reduces to an exponential distribution, and the
+variance of the estimate of P_raw is proportional to the square of the mean, that is,
+the expected value of P_raw.
+
+In practice if we form P_raw, the estimates are hopelessly noisy. Thus P_raw is not useful,
+and we need to do some kind of smoothing or averaging to get a useful estimate, P_useful(f).
+
+There are several different ways to do this in the literature. One is to form P_raw and
+then smooth it. Another is to form the auto-covariance function of x(t), smooth, taper and
+shape it, and then take the Fourier transform of the smoothed, tapered and shaped auto-covariance.
+Another is to form a parametric model for the auto-correlation structure in x(t), then compute
+the spectrum of that model. This last approach is what is done in what is called the
+"maximum entropy" or "Berg" or "Box-Jenkins" or "ARMA" or "ARIMA" methods.
+
+Welch's method is a tried-and-true method. In his method, you choose a segment length,
+**-S**\ *N*, so that estimates will be made from segments of length *N*. The frequency samples
+(in cycles per delta_t unit) of your P_useful will then be at *k* /(*N* \* *delta_t*), 
+where *k* is an integer, and you will get *N* samples (since the spectrum is an even
+function of *f*, only *N*/2 of them are really useful). If the length of your entire
+data set, x(t), is *M* samples long, then the variance in your P_useful will decrease
+in proportion to *N/M*. Thus you need to choose *N* << *M* to get very low noise and
+high confidence in P_useful. There is a trade-off here; see below.
+
+There is an additional reduction in variance in that Welch's method uses a Von Hann
+spectral window on each sample of length *N*. This reduces side lobe leakage and has
+the effect of smoothing the (*N* segment) periodogram as if the X(f) had been
+convolved with [1/4, 1/2, 1/4] prior to forming P_useful. But this slightly widens
+the spectral bandwidth of each estimate, because the estimate at frequency sample *k*
+is now a little correlated with the estimate at frequency sample k+1. (Of course this
+would also happen if you simply formed P_raw and then smoothed it.)
+
+Finally, Welch's method also uses overlapped processing. Since the Von Hann window is
+large in the middle and tapers to near zero at the ends, only the middle of the segment
+of length *N* contributes much to its estimate. Therefore in taking the next segment
+of data, we move ahead in the x(t) sequence only *N*/2 points. In this way, the next
+segment gets large weight where the segments on either side of it will get little weight,
+and vice versa. This doubles the smoothing effect and ensures that (if *N* << *M*)
+nearly every point in x(t) contributes with nearly equal weight in the final answer.
+
+Welch's method of spectral estimation has been widely used and widely studied. It is very
+reliable and its statistical properties are well understood. It is highly recommended in
+such textbooks as "Random Data: Analysis and Measurement Procedures" by Bendat and Piersol.
+
+In all problems of estimating parameters from data, there is a classic trade-off between
+resolution and variance. If you want to try to squeeze more resolution out of your data
+set, then you have to be willing to accept more noise in the estimates. The same trade-off
+is evident here in Welch's method. If you want to have very low noise in the spectral
+estimates, then you have to choose *N* << *M*, and this means that you get only *N*
+samples of the spectrum, and the longest period that you can resolve is only *N* \* *delta_t*.
+So you see that reducing the noise lowers the number of spectral samples and lowers the
+longest period. Conversely, if you choose *N* approaching *M*, then you approach the
+periodogram with its very bad statistical properties, but you get lots of samples and
+a large fundamental period.
+
+The other spectral estimation methods also can do a good job. Welch's method was selected
+because the way it works, how one can code it, and its effects on statistical distributions,
+resolution, side-lobe leakage, bias, variance, etc. are all easily understood. Some of the
+other methods (e.g. Maximum Entropy) tend to hide where some of these trade-offs are
+happening inside a "black box".
+
+
 See Also
 --------
 

@@ -589,7 +589,7 @@ unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GM
 		exit (EXIT_FAILURE);
 	}
 	prev = last - 1;
-	*T = (S[last]->constant) ? NULL : S[last]->D->table[0];
+	*T = (S[last]->constant && !S[last]->D) ? NULL : S[last]->D->table[0];
 	*T_prev = S[prev]->D->table[0];
 	return prev;
 }
