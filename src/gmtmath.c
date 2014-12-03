@@ -3306,7 +3306,6 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 {
 	uint64_t seg, row;
 	unsigned int i;
-	unsigned int prev;
 	int s_arg;
 	double *roots = NULL;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
