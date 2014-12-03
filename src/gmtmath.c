@@ -1068,10 +1068,10 @@ void table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 /*OPERATOR: COL 1 1 Places column A on the stack.  */
 {
 	uint64_t s, row;
-	unsigned int k, prev;
+	unsigned int k;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
-	prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev);	/* Set up pointers and prev; exit if running out of stack */
+	(void)gmt_assign_ptrs (GMT, last, S, &T, &T_prev);	/* Set up pointers and prev; exit if running out of stack */
 
 	if (!S[last]->constant || S[last]->factor < 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument to COL must be a constant column number (0 <= k < n_col)!\n");
@@ -3311,7 +3311,7 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	double *roots = NULL;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
-	prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev);	/* Set up pointers and prev; exit if running out of stack */
+	(void)gmt_assign_ptrs (GMT, last, S, &T, &T_prev);	/* Set up pointers; exit if running out of stack */
 
 	/* Treats the chosen column (at there is only one) as f(t) and solves for t that makes f(t) == 0.
 	 * For now we only solve using a linear spline but in the future this should depend on the users
