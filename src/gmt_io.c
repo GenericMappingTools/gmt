@@ -593,7 +593,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 			GMT->current.io.add_offset[i] += GMT_DAY2SEC_F * ((time_system.rata_die - GMT->current.setting.time_system.rata_die) + (time_system.epoch_t0 - GMT->current.setting.time_system.epoch_t0));
 			GMT->current.io.add_offset[i] *= GMT->current.setting.time_system.i_scale;	/* Offset in internal time units */
 		}
-		else
+		else if (GMT->current.io.col_type[GMT_IN][i] == GMT_IS_UNKNOWN)
 			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_FLOAT;
 	}
 

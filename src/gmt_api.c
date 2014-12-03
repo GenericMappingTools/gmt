@@ -5981,14 +5981,14 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
 		char gmt_module[GMT_LEN256] = {""};	/* To form gmt_<lib>_module_show_all */
-		int (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show_all which takes one arg (the API) */
+		void (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show_all which takes one arg (the API) */
 
 		/* Here we list purpose of all the available modules in each shared library */
 		for (lib = 0; lib < API->n_shared_libs; lib++) {
 			sprintf (gmt_module, "gmt_%s_module_show_all", API->lib[lib].name);
 			*(void **) (&l_func) = gmt_get_module_func (API, gmt_module, lib);
 			if (l_func == NULL) continue;	/* Not found in this shared library */
-			status = (*l_func) (V_API);	/* Run this function */
+			(*l_func) (V_API);	/* Run this function */
 		}
 		return (status);
 	}

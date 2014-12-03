@@ -3736,8 +3736,8 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	 * mode = 32: We want rounded rectangles instead of straight rectangular boxes [straight text only].
 	 */
 	int justify = 0, form = 0, *just = NULL, *node = NULL, *nlabels_per_segment = NULL, *npoints_per_segment = NULL;
-	uint64_t k, m, seg;
-	unsigned int n_segments = 0, n_points = 0, n_labels = 0, first_point_in_segment = 0, this_seg;
+	uint64_t k, m, seg, n_points = 0;
+	unsigned int n_segments = 0, n_labels = 0, first_point_in_segment = 0, this_seg;
 	double *angle = NULL, *xpath = NULL, *ypath = NULL, *xtxt = NULL, *ytxt = NULL;
 	char **txt = NULL, **pen = NULL, **fonts = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
@@ -3761,7 +3761,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 			n_segments++;			/* Number of segments */
 			n_points += (unsigned int)L->n;		/* Total number of points in all segments so far */
 			n_labels += L->n_labels;	/* Number of labels so far */
-		}	
+		}
 
 		if (n_labels == 0) return;	/* There are no labels */
 
