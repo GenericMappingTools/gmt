@@ -57,14 +57,14 @@ REM plot legend
 gmt pslegend -R -J -Dx7.9c/12.6c/8.0c/3.4c/BL -C0.3c/0.4c -L1.2 -F+p+gwhite -O legend.txt >> %ps%
 
 REM make a PostScript and a PDF file with outlined fonts
-REM unfortunately gmt ps2raster won't be able to crop that file correctly anymore
+REM unfortunately gmt psconvert won't be able to crop that file correctly anymore
 REM use Heiko Oberdiek's pdfcrop (http://code.google.com/p/pdfcrop2/) instead
-REM or crop with gmt ps2raster -A -Te before
+REM or crop with gmt psconvert -A -Te before
 REM
 REM ps_outlined=example_outlined.ps
 REM eps_outlined=example_outlined.eps
 REM a. remove GMT logo and crop EPS:
-REM gmt ps2raster -P -Au -Te -C-sFONTPATH="${PWD}/fonts" -Fex31CropNoLogo %ps%
+REM gmt psconvert -P -Au -Te -C-sFONTPATH="${PWD}/fonts" -Fex31CropNoLogo %ps%
 REM b. make PS with outlined fonts:
 REM gs -q -sPAPERSIZE=a3 -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
 REM  -sDEVICE=pswrite -sFONTPATH="${PWD}/fonts" -sOutputFile=%ps_outlined% ex31CropNoLogo.eps
@@ -72,14 +72,14 @@ REM c. make croppepd EPS:
 REM gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dEPSCrop -sDEVICE=epswrite \
 REM  -sOutputFile=$eps_outlined %ps_outlined%
 REM d. make cropped PDF:
-REM gmt ps2raster -P -A -Tf %ps_outlined%
+REM gmt psconvert -P -A -Tf %ps_outlined%
 
 REM uncomment to do conversation to PDF and PNG
 REM you will get a PDF with subsetted TrueType/PostScript fonts embedded
 REM which you can still edit with your favorite vector graphics editor
 REM set GS_FONTPATH=fonts
-REM gmt ps2raster -P -A -Tf %ps%
-REM gmt ps2raster -P -A -Tg -E110 %ps%
+REM gmt psconvert -P -A -Tf %ps%
+REM gmt psconvert -P -A -Tg -E110 %ps%
 
 REM clean up
 del .gmt*

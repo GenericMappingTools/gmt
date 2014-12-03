@@ -20,7 +20,7 @@ grdmask grdmath grdpaste grdpmodeler grdproject grdraster grdredpol grdconvert \
 grdrotater grdsample grdseamount grdspotter grdtrack grdtrend grdvector \
 grdview grdvolume greenspline gshhg hotspotter img2grd kml2gmt makecpt \
 mapproject mgd77convert mgd77info mgd77list mgd77magref mgd77manage mgd77path \
-mgd77sniffer mgd77track minmax nearneighbor originator project ps2raster \
+mgd77sniffer mgd77track minmax nearneighbor originator project psconvert \
 psbasemap psclip pscoast pscontour pscoupe pshistogram psimage pslegend \
 psmask psmeca pspolar psrose psscale pssegy pssegyz pstext psvelo pswiggle \
 psxy psxyz rotconverter sample1d segy2grd spectrum1d sph2grd sphdistance \

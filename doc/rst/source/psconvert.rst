@@ -1,19 +1,19 @@
-.. index:: ! ps2raster
+.. index:: ! psconvert
 
 *********
-ps2raster
+psconvert
 *********
 
 .. only:: not man
 
-    ps2raster - Convert [E]PS file(s) to other formats using GhostScript
+    psconvert - Convert [E]PS file(s) to other formats using GhostScript
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**ps2raster** *psfile(s)*
+**psconvert** *psfile(s)*
 [ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
 [ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ]
 [ **-G**\ *ghost_path* ] [ **-I** ] [ **-L**\ *listfile* ] [ **-P** ]
@@ -27,7 +27,7 @@ Synopsis
 Description
 -----------
 
-**ps2raster** converts one or more PostScript files to other formats
+**psconvert** converts one or more PostScript files to other formats
 (BMP, EPS, JPEG, PDF, PNG, PPM, SVG, TIFF) using GhostScript. Input file
 names are read from the command line or from a file that lists them. The
 size of the resulting images is determined by the BoundingBox (or
@@ -106,7 +106,7 @@ Optional Arguments
     Enforce gray-shades by using ICC profiles.  GhostScript versions
     >= 9.00 change gray-shades by using ICC profiles.  GhostScript 9.05
     and above provide the '-dUseFastColor=true' option to prevent that
-    and that is what ps2raster does by default, unless option **-I** is
+    and that is what **psconvert** does by default, unless option **-I** is
     set.  Note that for GhostScript >= 9.00 and < 9.05 the gray-shade
     shifting is applied to all but PDF format.  We have no solution to
     offer other than upgrade GhostScript.
@@ -200,14 +200,14 @@ Optional Arguments
     (http://code.google.com/apis/kml/documentation/).
 
     Further notes on the creation of georeferenced rasters.
-    **ps2raster** can create a georeferenced raster image with a world
+    **psconvert** can create a georeferenced raster image with a world
     file OR uses GDAL to convert the GMT PostScript file to geotiff.
     GDAL uses Proj.4 for its projection library. To provide with the
     information it needs to do the georeferencing, GMT 4.5 embeds a
     comment near the start of the PostScript file defining the
     projection using Proj.4 syntax. Users with pre-GMT v4.5 PostScript
     files, or even non-GMT ps files, can provide the information
-    **ps2raster** requires by manually editing a line into the
+    **psconvert** requires by manually editing a line into the
     PostScript file, prefixed with %%PROJ.
 
     For example the command
@@ -243,7 +243,7 @@ results in loss of details that are available in the original
 PostScript file. Choose a resolution that is large enough for the
 application that the image will be used for. For web pages, smaller dpi
 values suffice, for Word documents and PowerPoint presentations a higher
-dpi value is recommended. **ps2raster** uses the loss-less DEFLATE
+dpi value is recommended. **psconvert** uses the loss-less DEFLATE
 compression technique when creating PDF and PNG files and LZW compression
 for TIFF images.
 
@@ -258,17 +258,17 @@ rasterization (and output if **-Te** is set).
 
 Although PDF and SVG are also vector formats, the **-E** option has an effect on
 the resolution of pattern fills and fonts that are stored as bitmaps in
-the document. **ps2raster** therefore uses a larger default resolution
+the document. **psconvert** therefore uses a larger default resolution
 when creating PDF and SVG files. In order to obtain high-quality PDF or SVG files, the
 */prepress* options are in effect, allowing only loss-less DEFLATE
 compression of raster images embedded in the PostScript file.
 
-Although **ps2raster** was developed as part of the GMT, it can be
+Although **psconvert** was developed as part of the GMT, it can be
 used to convert PostScript files created by nearly any graphics
 program. However, **-Au** is GMT-specific.
 
 See :ref:`include-gmt-graphics` of the **GMT Technical Reference and Cookbook** for more
-information on how **ps2raster** is used to produce graphics that can be
+information on how **psconvert** is used to produce graphics that can be
 inserted into other documents (articles, presentations, posters, etc.).
 
 Examples
@@ -279,19 +279,19 @@ rotating it back to normal orientation in case it was in Landscape mode:
 
    ::
 
-    gmt ps2raster psfile.ps -A -P -Tg
+    gmt psconvert psfile.ps -A -P -Tg
 
 To create a 5 cm PNG version at 300 dpi of our example_01.ps file
 
    ::
 
-    gmt ps2raster example_01.ps -A+s5c -Tg
+    gmt psconvert example_01.ps -A+s5c -Tg
 
 To create a 3 pages PDF file from 3 individual PS files
 
    ::
 
-    gmt ps2raster -TF -Fabc a.ps b.ps c.ps
+    gmt psconvert -TF -Fabc a.ps b.ps c.ps
 
 To create a simple linear map with pscoast and convert it to tif with a
 .tfw the tight BoundingBox computation.
@@ -299,7 +299,7 @@ To create a simple linear map with pscoast and convert it to tif with a
    ::
 
     gmt pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
-    gmt ps2raster cara.ps -Tt -W
+    gmt psconvert cara.ps -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
 produce a true geotiff file.
@@ -314,21 +314,21 @@ To create a Polar Stereographic geotiff file of Patagonia
    ::
 
     gmt pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
-    gmt ps2raster patagonia.ps -Tt -W+g -V
+    gmt psconvert patagonia.ps -Tt -W+g -V
 
 To create a simple KMZ file for use in Google Earth, try
 
    ::
 
     gmt grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
-    gmt ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V
+    gmt psconvert tile.ps -Tg -W+k+t"my title"+l256/-1 -V
 
 (These commands assume that GhostScript can be found in your system's path.)
 
 GhostScript Options
 -------------------
 
-Most of the conversions done in **ps2raster** are handled by
+Most of the conversions done in **psconvert** are handled by
 GhostScript. On most Unixes this program is available as **gs**; for
 Windows there is a version called **gswin32c**. GhostScript accepts a
 rich selection of command-line options that modify its behavior. Many of

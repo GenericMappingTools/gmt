@@ -85,4 +85,4 @@ For topo.11.1.img and other Sandwell/Smith altimetry-derived Mercator grids, vis
 .IR GMT (1),
 .IR img2grd (1)
 .IR img2mercgrd (1)
-.IR ps2raster (1)
+.IR psconvert (1)

@@ -79,12 +79,12 @@ gmt pslegend -R -J -Dx7.9c/12.6c/8.0c/BL \
 -C0.3c/0.4c -L1.2 -F+p+gwhite -O legend.txt >> $ps
 
 # make a PostScript and a PDF file with outlined fonts
-# unfortunately gmt ps2raster won't be able to crop that file correctly anymore
+# unfortunately gmt psconvert won't be able to crop that file correctly anymore
 # use Heiko Oberdiek's pdfcrop (http://code.google.com/p/pdfcrop2/) instead
-# or crop with gmt ps2raster -A -Te before
+# or crop with gmt psconvert -A -Te before
 #
 # a. remove GMT logo and crop EPS:
-#gmt ps2raster -P -Au -Te -C-sFONTPATH="${PWD}/fonts" -Fex31CropNoLogo $ps
+#gmt psconvert -P -Au -Te -C-sFONTPATH="${PWD}/fonts" -Fex31CropNoLogo $ps
 # b. make PS with outlined fonts:
 #gs -q -sPAPERSIZE=a3 -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
 #  -sDEVICE=pswrite -sFONTPATH="${PWD}/fonts" -sOutputFile=$ps_outlined ex31CropNoLogo.eps
@@ -92,13 +92,13 @@ gmt pslegend -R -J -Dx7.9c/12.6c/8.0c/BL \
 #gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dEPSCrop -sDEVICE=epswrite \
 #  -sOutputFile=$eps_outlined $ps_outlined
 # d. make cropped PDF:
-#gmt ps2raster -P -A -Tf $ps_outlined
+#gmt psconvert -P -A -Tf $ps_outlined
 # uncomment to do conversation to PDF and PNG
 # you will get a PDF with subsetted TrueType/PostScript fonts embedded
 # which you can still edit with your favorite vector graphics editor
 #export GS_FONTPATH="${PWD}/fonts"
-#gmt ps2raster -P -A -Tf $ps
-#gmt ps2raster -P -A -Tg -E110 $ps
+#gmt psconvert -P -A -Tf $ps
+#gmt psconvert -P -A -Tg -E110 $ps
 # clean up
 rm -f gmt.history gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
 

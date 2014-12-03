@@ -155,7 +155,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c
 	grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c grdmath.c
 	grdpaste.c grdproject.c grdraster.c grdsample.c grdconvert.c grdtrack.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c makecpt.c mapproject.c
-	gmtinfo.c nearneighbor.c project.c ps2raster.c sample1d.c spectrum1d.c
+	gmtinfo.c nearneighbor.c project.c psconvert.c sample1d.c spectrum1d.c
 	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c
 	surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
 	gmtset.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c

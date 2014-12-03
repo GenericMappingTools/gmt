@@ -71,7 +71,7 @@ function make_pdf()
 {
   pdf="${ps%.ps}.pdf"
   test -f "$ps" || return 1
-  gmt ps2raster -Tf -A -P "$ps" || ((++ERROR))
+  gmt psconvert -Tf -A -P "$ps" || ((++ERROR))
   test -f "$pdf" || ((++ERROR))
 }
 

@@ -68,11 +68,11 @@ Core modules
    mapproject
    nearneighbor
    project
-   ps2raster
    psbasemap
    psclip
    pscoast
    pscontour
+   psconvert
    pshistogram
    psimage
    pslegend

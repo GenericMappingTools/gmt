@@ -133,4 +133,4 @@ SEE ALSO
 
 :doc:`gmt </gmt>`
 :doc:`img2grd`,
-:doc:`ps2raster </ps2raster>`
+:doc:`psconvert </psconvert>`

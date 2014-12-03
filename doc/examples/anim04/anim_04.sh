@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Make DVD-res Quicktime movie of NY to Miami flight
-# GMT progs:    gmt gmtset, gmt gmtmath, gmt psbasemap, gmt pstext, gmt psxy, gmt ps2raster
+# GMT progs:    gmt gmtset, gmt gmtmath, gmt psbasemap, gmt pstext, gmt psxy, gmt psconvert
 # Unix progs:   awk, mkdir, rm, mv, echo, qt_export, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #
@@ -42,7 +42,7 @@ while read lon lat dist; do
 		gmt_cleanup .gmt
 		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
-	gmt ps2raster $$.ps -Tt -E${dpi}
+	gmt psconvert $$.ps -Tt -E${dpi}
 	mv $$.tif frames/${file}.tif
         echo "Frame ${file} completed"
 	frame=`gmt_set_framenext ${frame}`

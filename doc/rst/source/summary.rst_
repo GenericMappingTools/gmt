@@ -101,8 +101,6 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`project`        | Project table data onto lines or great circles                      |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`ps2raster`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
-+-----------------------+---------------------------------------------------------------------+
 | :doc:`psbasemap`      | Create a basemap plot                                               |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psclip`         | Use polygon files to define clipping paths                          |
@@ -110,6 +108,8 @@
 | :doc:`pscoast`        | Plot (and fill) coastlines, borders, and rivers on maps             |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`pscontour`      | Contour or image raw table data by triangulation                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psconvert`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`pshistogram`    | Plot a histogram                                                    |
 +-----------------------+---------------------------------------------------------------------+

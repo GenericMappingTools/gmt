@@ -4193,7 +4193,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	gmt_echo_command (GMT, PSL, options);
 
-	/* Create %%PROJ tag that ps2raster can use to prepare a ESRI world file */
+	/* Create %%PROJ tag that psconvert can use to prepare a ESRI world file */
 
 	this_proj = GMT->current.proj.projection;
 	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT->current.proj.proj4[k].id == this_proj) id = k;

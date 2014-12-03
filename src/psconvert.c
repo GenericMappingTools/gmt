@@ -17,11 +17,11 @@
  *--------------------------------------------------------------------*/
 /*
  *
- * Brief synopsis: ps2raster converts one or several PostScript file(s) to other formats using GhostScript.
+ * Brief synopsis: psconvert converts one or several PostScript file(s) to other formats using GhostScript.
  * It works by modifying the page size in order that the image will have a size
  * which is specified by the BoundingBox.
  * As an option, a tight BoundingBox may be computed.
- * ps2raster uses the ideas of the EPS2XXX.m from Primoz Cermelj published in MatLab Central
+ * psconvert uses the ideas of the EPS2XXX.m from Primoz Cermelj published in MatLab Central
  * and of psbbox.sh of Remko Scharroo.
  *
  *
@@ -32,7 +32,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE_NAME	"ps2raster"
+#define THIS_MODULE_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using GhostScript"
 
@@ -311,7 +311,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT_UNUSED(GMT), char *arg, struct PS2RA
 	return (error);
 }
 
-void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+void *New_psconvert_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PS2RASTER_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct PS2RASTER_CTRL);
@@ -333,7 +333,7 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* Deallocate control structure */
+void Free_psconvert_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	free (C->D.dir);
 	if (C->F.file) free (C->F.file);
@@ -346,11 +346,11 @@ void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
+int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s|S<width[u]>[/<height>[u]]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s|S<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
@@ -392,7 +392,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and that is what ps2raster does by default, unless option -I is set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and that is what psconvert does by default, unless option -I is set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to all but PDF format. We have no solution to offer other than ... upgrade GS\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
@@ -468,9 +468,9 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
-	/* This parses the options provided to ps2raster and sets parameters in CTRL.
+	/* This parses the options provided to psconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
@@ -660,7 +660,7 @@ int64_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp)
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_ps2raster_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_psconvert_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 	/* return alpha bits which are valid for the selected driver */
@@ -682,7 +682,7 @@ static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 	return alpha;
 }
 
-int GMT_ps2raster (void *V_API, int mode, void *args)
+int GMT_psconvert (void *V_API, int mode, void *args)
 {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
@@ -745,20 +745,20 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_ps2raster_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_psconvert_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_ps2raster_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_ps2raster_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_psconvert_usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_psconvert_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_ps2raster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_ps2raster_parse (GMT, Ctrl, options))) Return (error);
+	Ctrl = New_psconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_psconvert_parse (GMT, Ctrl, options))) Return (error);
 
-	/*---------------------------- This is the ps2raster main code ----------------------------*/
+	/*---------------------------- This is the psconvert main code ----------------------------*/
 
 	/* Test if GhostScript can be executed (version query) */
 	sprintf(cmd, "%s --version", Ctrl->G.file);
@@ -899,7 +899,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff, but pass any font encodings */
 			int dump = true;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Strip GMT time-stamp...\n");
-			sprintf (no_U_file, "%s/ps2raster_%db.eps", Ctrl->D.dir, (int)getpid());
+			sprintf (no_U_file, "%s/psconvert_%db.eps", Ctrl->D.dir, (int)getpid());
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				Return (EXIT_FAILURE);
@@ -938,7 +938,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		if (Ctrl->A.active) {
 			char *psfile_to_use;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Find HiResBoundingBox ...\n");
-			sprintf (BB_file, "%s/ps2raster_%dc.bb", Ctrl->D.dir, (int)getpid());
+			sprintf (BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %c%s%c 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, quote, psfile_to_use, quote, BB_file);
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
@@ -1015,7 +1015,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			}
 		}
 		else {
-			sprintf (tmp_file, "%s/ps2raster_%dd.eps", Ctrl->D.dir, (int)getpid());
+			sprintf (tmp_file, "%s/psconvert_%dd.eps", Ctrl->D.dir, (int)getpid());
 			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				continue;
@@ -1131,13 +1131,13 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 								(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
 								(south >= -90) && (north <= 90) ) {
 							proj4_cmd = strdup ("latlon");
-							GMT_Report (API, GMT_MSG_NORMAL, "Warning: An unknown ps2raster setting was found but since "
+							GMT_Report (API, GMT_MSG_NORMAL, "Warning: An unknown psconvert setting was found but since "
 									"image coordinates seem to be geographical, a linear transformation "
 									"will be used.\n");
 						}
 						else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: requested an automatic geotiff generation, but "
-									"no recognized ps2raster option was used for the PS creation.\n");
+									"no recognized psconvert option was used for the PS creation.\n");
 						}
 					}
 					else if (Ctrl->W.kml) {

@@ -658,7 +658,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    if + is appended we get a segment header with information about the
    pole for the circle. Optionally, append /*colat* in **-G** for a small circle path.
 
-*  :doc:`ps2raster` has added a **-TF** option to create multi-page PDF files. There is
+*  :doc:`psconvert` has added a **-TF** option to create multi-page PDF files. There is
    also modification to **-A** to add user-specified margins, and it automatically detects
    if transparent elements have been included (and a detour via PDF might be needed).
 
@@ -732,8 +732,8 @@ Several supplements have new features as well:
 Note: GMT 5 only produces PostScript and no longer has a setting for
 Encapsulated PostScript (EPS). We made this decision since (a) our EPS determination
 was always very approximate (no consideration of font metrics, etc.) and quite often wrong,
-and (b) :doc:`ps2raster` handles it exactly.  Hence, users who need EPS plots should
-simply process their PostScript files via :doc:`ps2raster`.
+and (b) :doc:`psconvert` handles it exactly.  Hence, users who need EPS plots should
+simply process their PostScript files via :doc:`psconvert`.
 
 Incompatibilities between GMT 5 and GMT 4
 -----------------------------------------
@@ -3209,7 +3209,7 @@ plot file. By default, GMT will produce freeform PostScript output
 with embedded printer directives. To produce Encapsulated
 PostScript (EPS) that can be imported into graphics programs such as
 **CorelDraw**, **Illustrator** or **InkScape** for further
-embellishment, simply run :doc:`ps2raster`
+embellishment, simply run :doc:`psconvert`
 **-Te**. See Appendix [app:C] for an extensive discussion of converting
 PostScript to other formats.
 
@@ -3451,7 +3451,7 @@ Reference Manual. Most printers and many PostScript viewers can
 neither print nor show transparency. They will simply ignore your
 attempt to create transparency and will plot any material as opaque.
 Ghostscript and its derivatives such as GMT's
-:doc:`ps2raster` support transparency (if
+:doc:`psconvert` support transparency (if
 compiled with the correct build option). Note: If you use **Acrobat
 Distiller** to create a PDF file you must first change some settings to
 make transparency effective: change the parameter /AllowTransparency to
@@ -6616,13 +6616,13 @@ accomplished.
    for the PostScript graphics that will actually be printed.
 
 -  However, the preferred option is to use the GMT utility
-   :doc:`ps2raster`. Its **-A** option will
+   :doc:`psconvert`. Its **-A** option will
    figure out the tightest BoundingBox, again using ghostscript in
    the background. For example, running
 
       ::
 
-       ps2raster -A -Te myplot.ps
+       gmt psconvert -A -Te myplot.ps
 
    will convert the PostScript file ``myplot.ps`` into an encapsulated
    PostScript file ``myplot.eps`` which is exactly cropped to the tightest possible
@@ -6743,14 +6743,14 @@ Including fonts.
     document. Again, ghostscript (and all converters relying on
     that engine) will not do so by default.
 
-Using :doc:`ps2raster`
+Using :doc:`psconvert`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The remedy to all the problems mentioned in the previous section is
 readily available to you in the form of the GMT utility
-:doc:`ps2raster`. It is designed to provide
+:doc:`psconvert`. It is designed to provide
 the best quality PDF and raster files using ghostscript as a
-rendering engine. The program :doc:`ps2raster` avoids anti-aliasing and
+rendering engine. The program :doc:`psconvert` avoids anti-aliasing and
 lossy compression techniques that are default to ghostscript and
 includes the fonts into the resulting PDF file to ensure portability. By
 default the fonts are rendered at 720 dots-per-inch in a PDF file and
@@ -6759,18 +6759,18 @@ option. Simply run
 
    ::
 
-    gmt ps2raster -A -P -Tf *.ps
+    gmt psconvert -A -P -Tf *.ps
 
 to convert all PostScript files to PDF while cropping it to the
 smallest possible BoundingBox. Or use the **-Tg** option to convert your
 files to PNG.
 
-The **-P** option of :doc:`ps2raster` may
+The **-P** option of :doc:`psconvert` may
 also come in handy. When you have *not* supplied the **-P** option in
 your first GMT plot command, your plot will be in Landscape mode. That
 means that the plot will be rotated 90º (anti-clockwise) to fit
 on a Portrait mode page when coming out of the printer. The **-P**
-option of :doc:`ps2raster` will undo that
+option of :doc:`psconvert` will undo that
 rotation, so that you do not have to do so within your document. This
 will only affect Landscape plots; Portrait plots will not be rotated.
 
@@ -6782,7 +6782,7 @@ GMT graphics in LaTeX
 
 Nearly all illustrations in this GMT documentation were GMT-produced
 PostScript files. They were converted to PDF files using
-:doc:`ps2raster` and then included into a
+:doc:`psconvert` and then included into a
 LaTeX document that was processed with **pdflatex** to create the PDF
 document you are reading.
 
@@ -6812,7 +6812,7 @@ look automatically for ``myplot.pdf``. If you run **latex**, it will use ``myplo
 You can scale your plot using the options ``width=``, ``height=``, or
 ``scale=``. In addition, if your original graphics was produced in
 Landscape mode (i.e., you did *not* use GMT's **-P** option: not
-while plotting, nor in :doc:`ps2raster`),
+while plotting, nor in :doc:`psconvert`),
 you will need to rotate the plot as well. For example,
 
    ::
@@ -6849,7 +6849,7 @@ GMT graphics in **PowerPoint**
 In Figure :ref:`Rendered images <Rendering>` we have attempted to include
 Figure :ref:`Example 20 <Fig_example_20>` into a PowerPoint presentation.
 First the PostScript file was converted to PDF (using
-:doc:`ps2raster`), then loaded into
+:doc:`psconvert`), then loaded into
 PowerPoint and the white background color was made transparent
 using the formatting toolbar (shown on the left side of
 Figure :ref:`Rendered images <Rendering>`). Clearly, when we let PowerPoint
@@ -7016,14 +7016,14 @@ PostScript directly and therefore have to be converted to PFA first.
 
 However, you most likely will have to tell Ghostscript where to
 find your custom fonts in order to convert your GMT-PostScript-plot
-to PDF or an image with :doc:`ps2raster`.
+to PDF or an image with :doc:`psconvert`.
 When you have used the correct PostScript-names of the fonts in ``CUSTOM_font_info.d`` you
 only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
-:doc:`ps2raster` in the usual way. Likewise
+:doc:`psconvert` in the usual way. Likewise
 you can specify Ghostscript's ``-sFONTPATH`` option on the
 command line with ``C -sFONTPATH=/path/to/fontdir``. Ghostscript,
-which is invoked by :doc:`ps2raster`, does
+which is invoked by :doc:`psconvert`, does
 not depend on file names. It will automatically find the relevant font
 files by their PostScript-names and embed and subset them in
 PDF-files. This is quite convenient as the document can be displayed and
@@ -7044,10 +7044,10 @@ way:
 
 Note, that this only works with the *pswrite* device. If you need
 outlined fonts in PDF, create the PDF from the converted
-PostScript-file. Also, :doc:`ps2raster`
+PostScript-file. Also, :doc:`psconvert`
 cannot correctly crop Ghostscript converted PostScript-files
 anymore. Use Heiko Oberdiek's instead or crop with
-:doc:`ps2raster` **-A** **-Te** before (See
+:doc:`psconvert` **-A** **-Te** before (See
 Example [sec:non-default-fonts-example]).
 
 Character encoding

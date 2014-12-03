@@ -35,7 +35,7 @@ GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 src="@GMT_SOURCE_DIR@/doc/examples/${script_dir}"
 
-# Font lookup path for Ghostscript (invoked from gm compare and ps2raster)
+# Font lookup path for Ghostscript (invoked from gm compare and psconvert)
 export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
@@ -75,7 +75,7 @@ function make_pdf()
 {
   pdf="${ps%.ps}.pdf"
   test -f "$ps" || return 1
-  gmt ps2raster -Tf -A -P "$ps" || ((++ERROR))
+  gmt psconvert -Tf -A -P "$ps" || ((++ERROR))
   test -f "$pdf" || ((++ERROR))
 }
 

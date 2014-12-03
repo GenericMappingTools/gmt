@@ -276,7 +276,7 @@ Note if any single word is wider than your chosen paragraph width then
 the paragraph width is automatically enlarged to fit the widest word.
 
 The **-N** option does not adjust the BoundingBox information so you may
-have to post-process the PostScript output with ps2raster to obtain a
+have to post-process the PostScript output with psconvert to obtain a
 correct BoundingBox.
 
 See Also
@@ -284,6 +284,6 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`,
-:doc:`ps2raster`,
+:doc:`psconvert`,
 :doc:`psbasemap`,
 :doc:`pslegend`, :doc:`psxy`

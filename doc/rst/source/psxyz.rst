@@ -248,7 +248,7 @@ combine to give the desired effect when filled; to draw outline use the
 original polygon.
 
 The **-N** option does not adjust the BoundingBox information so you may
-have to post-process the PostScript output with :doc:`ps2raster` **-A**
+have to post-process the PostScript output with :doc:`psconvert` **-A**
 to obtain the correct BoundingBox.
 
 See Also

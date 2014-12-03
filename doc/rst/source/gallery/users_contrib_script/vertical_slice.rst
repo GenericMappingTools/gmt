@@ -120,7 +120,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
   -60 -50 999
  EOF
  #
- gmt ps2raster -Tg -Qt4 -Qg4 -E300 -P mag.ps
+ gmt psconvert -Tg -Qt4 -Qg4 -E300 -P mag.ps
  #
  rm -f base.nc points.d slice.nc slice_cut.nc gmt.history gmt.conf
 

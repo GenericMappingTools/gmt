@@ -78,7 +78,7 @@ foreach (_fig ${_scripts_ps})
 			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -89,7 +89,7 @@ foreach (_fig ${_scripts_ps})
 			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 			-A -P -E150 -TG -Qg4 -Qt4 -C-dDOINTERPOLATE
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
@@ -100,7 +100,7 @@ foreach (_fig ${_scripts_ps})
 			COMMAND
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -109,7 +109,7 @@ foreach (_fig ${_scripts_ps})
 			COMMAND
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 			-A -P -E150 -TG -Qg4 -Qt4 -C-dDOINTERPOLATE
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}

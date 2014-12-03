@@ -30,6 +30,7 @@ EXTERN_MSC int GMT_gmtdp (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_grdreformat (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_minmax (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_gmtstitch (void *V_API, int mode, void *args);
+EXTERN_MSC int GMT_ps2raster (void *V_API, int mode, void *args);
 
 int GMT_gmtdp (void *V_API, int mode, void *args)
 {	/* This was the GMT4 name */
@@ -72,5 +73,16 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		return (GMT_Call_Module (API, "gmtconnect", mode, args));
 	}
 	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: gmtstitch\n");
+	return (GMT_NOT_A_VALID_MODULE);
+}
+
+int GMT_ps2raster (void *V_API, int mode, void *args)
+{	/* This was the GMT5.1 name */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (GMT_compat_check (API->GMT, 5)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module ps2raster is deprecated; use psconvert.\n");
+		return (GMT_Call_Module (API, "psconvert", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: ps2raster\n");
 	return (GMT_NOT_A_VALID_MODULE);
 }

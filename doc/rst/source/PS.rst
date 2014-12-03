@@ -5,11 +5,11 @@ PS
 .. toctree::
    :maxdepth: 1
 
-   ps2raster
    psbasemap
    psclip
    pscoast
    pscontour
+   psconvert
    pshistogram
    psimage
    pslegend
