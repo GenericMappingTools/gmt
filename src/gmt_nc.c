@@ -69,7 +69,7 @@
 /* HDF5 chunk cache: reasonable defaults assuming min. chunk size of 128x128 and type byte */
 #define NC_CACHE_SIZE       33554432 /* 32MiB */
 #define NC_CACHE_NELEMS     2053     /* prime > NC_CACHE_SIZE / (128*128*1byte) */
-#define NC_CACHE_PREEMPTION 0.75
+#define NC_CACHE_PREEMPTION 0.75f
 
 int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *header, char job);
 int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
@@ -945,10 +945,10 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 		level = GMT_MSG_LONG_VERBOSE;
 #endif
 		GMT_Report (GMT->parent, level,
-				"processing at most %" PRIuS " (%" PRIuS "x%" PRIuS ") chunks at a time (%.1f MiB)...\n",
+				"processing at most %" PRIuS " (%" PRIuS "x%" PRIuS ") chunks at a time (%.1lf MiB)...\n",
 				*n_contiguous_chunk_rows * chunks_per_row,
 				*n_contiguous_chunk_rows, chunks_per_row,
-				*n_contiguous_chunk_rows * z_size * width * chunksize[yx_dim[0]] / 1048576.0f);
+				*n_contiguous_chunk_rows * z_size * width * chunksize[yx_dim[0]] / 1048576.0);
 	}
 	else
 		*n_contiguous_chunk_rows = 0; /* all chunks fit into cache */

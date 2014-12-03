@@ -116,27 +116,27 @@ void process_cpu() {
 
 void process_mem() {
 	/* print current process memory usage */
-	float rss, vsize;
+	double rss, vsize;
 #if defined(__APPLE__)
 	struct task_basic_info t_info;
 	mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
 	if (KERN_SUCCESS != task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count))
 		return;
-	rss   = t_info.resident_size / 1024.0f;
-	vsize = t_info.virtual_size / 1024.0f;
+	rss   = t_info.resident_size / 1024.0;
+	vsize = t_info.virtual_size / 1024.0;
 
 #elif defined(__linux__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
 	FILE* fp = NULL;
 	if ( (fp = fopen( "/proc/self/statm", "r" )) == NULL )
 		return; /* Can't open */
-	if ( fscanf( fp, "%f %f", &vsize, &rss ) != 2 ) {
+	if ( fscanf( fp, "%lf %lf", &vsize, &rss ) != 2 ) {
 		fclose( fp );
 		return; /* Can't read */
 	}
 	fclose( fp );
-	rss   *= (float)sysconf( _SC_PAGESIZE) / 1024.0f;
-	vsize *= (float)sysconf( _SC_PAGESIZE) / 1024.0f;
+	rss   *= sysconf( _SC_PAGESIZE) / 1024.0;
+	vsize *= sysconf( _SC_PAGESIZE) / 1024.0;
 
 #else
 	fprintf (stderr, "\n");
