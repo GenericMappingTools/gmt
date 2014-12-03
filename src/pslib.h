@@ -272,7 +272,7 @@ struct PSL_CTRL {
 		int image_format;		/* 0 writes images in ascii, 2 uses binary	*/
 		int N_FONTS;		/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
 		int compress;		/* Compresses images with (1) RLE or (2) LZW (3) DEFLATE or (0) None */
-		unsigned deflate_level; /* Compression level for DEFLATE (1-9, default 0) */
+		int deflate_level; /* Compression level for DEFLATE (1-9, default 0) */
 		int color_mode;		/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
 		int line_cap;		/* 0, 1, or 2 for butt, round, or square [butt]	*/
 		int line_join;		/* 0, 1, or 2 for miter, arc, or bevel [miter]	*/
