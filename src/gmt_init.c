@@ -7803,6 +7803,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 
 	GMT->current.proj.unit = GMT_units[GMT_INCH];	/* No of meters in an inch */
 	n = 0;	/* Initialize with no fields found */
+	GMT_set_geographic (GMT, GMT_IN);	/* This will be overridden below if -Jx or -Jp, for instance */
 
 	switch (project) {
 		case GMT_LINEAR:	/* Linear x/y scaling */

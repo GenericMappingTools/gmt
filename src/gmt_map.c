@@ -6378,7 +6378,7 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		if (n_sections == 2) k = j;	/* Start of 2nd section */
 	}
 	if (n_sections == 2 && doubleAlmostEqualZero (GMT->current.plot.x[0], GMT->current.plot.x[np-1]) && doubleAlmostEqualZero (GMT->current.plot.y[0], GMT->current.plot.y[np-1])) {
-		double *tmp = GMT_memory (GMT, NULL, k, double);
+		double *tmp = GMT_memory (GMT, NULL, np, double);
 		/* Shuffle x-array safely */
 		GMT_memcpy (tmp, &GMT->current.plot.x[k], np-k, double);
 		GMT_memcpy (&tmp[np-k], GMT->current.plot.x, k, double);
