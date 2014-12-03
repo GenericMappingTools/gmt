@@ -13,6 +13,9 @@
 #   function gmt () { path/to/gmt "$@"; }
 #   export -f gmt
 
+# check for bash
+[ -z "$BASH_VERSION" ] && return
+
 gmt_modules="backtracker blockmean blockmedian blockmode dimfilter filter1d \
 fitcircle gmt2kml gmtconvert gmtdefaults gmtget gmtgravmag3d gmtinfo gmtmath \
 gmtselect gmtset gmtsimplify gmtspatial gmtstitch gmtvector gmtwhich gravfft \

@@ -29,4 +29,17 @@ install (PROGRAMS
 	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
 
+if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
+	install (PROGRAMS
+		gmt_completion.bash
+		DESTINATION ${GMT_DATADIR}/tools
+		COMPONENT Runtime)
+else (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
+	install (FILES
+		gmt_completion.bash
+		DESTINATION etc/bash_completion.d
+		COMPONENT Runtime
+		RENAME gmt)
+endif (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
