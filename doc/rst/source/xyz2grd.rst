@@ -203,4 +203,4 @@ See Also
 :doc:`gmt`,
 :doc:`grd2xyz`,
 :doc:`grdedit`,
-:doc:`grdreformat`
+:doc:`grdconvert`

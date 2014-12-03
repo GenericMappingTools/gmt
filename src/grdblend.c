@@ -320,8 +320,8 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				sprintf (buffer, "/tmp/grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
 				sprintf (cmd, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
-				if ((status = GMT_Call_Module (GMT->parent, "grdreformat", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdconvert %s\n", B[n].file, cmd);
+				if ((status = GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
@@ -332,7 +332,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 				return (-1);
 			}
-			if (overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdreformat changed the region */
+			if (overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdconvert changed the region */
 		}
 		if (B[n].weight < 0.0) {	/* Negative weight means invert sense of taper */
 			B[n].weight = fabs (B[n].weight);
@@ -469,7 +469,7 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\tYou must have at least 2 input grids for this mechanism to work.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the name of the final 2-D grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Only netCDF and native binary grid formats are directly supported;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   other formats will be converted via grdreformat when blending is complete.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   other formats will be converted via grdconvert when blending is complete.\n");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Clobber modes; no blending takes places as output node is determinde by the mode:\n");
@@ -825,8 +825,8 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		int status;
 		char cmd[GMT_BUFSIZ] = {""}, *V_level = "qncvld";
 		sprintf (cmd, "%s %s -V%c", outfile, Ctrl->G.file, V_level[GMT->current.setting.verbose]);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
-		if ((status = GMT_Call_Module (GMT->parent, "grdreformat", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdconvert %s\n", outfile, cmd);
+		if ((status = GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample file %s.\n", outfile);
 		}
 	}

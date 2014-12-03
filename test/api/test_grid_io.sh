@@ -17,7 +17,7 @@ function check_if_zero {
 
 rm -f fail
 # Create list of all grdformat codes
-gmt grdreformat 2>&1 | awk '{if ($2 == "=") print $1}' | egrep -v 'sd|gd' > codes.lis
+gmt grdconvert 2>&1 | awk '{if ($2 == "=") print $1}' | egrep -v 'sd|gd' > codes.lis
 while read code; do
 	echo "Try grid format $code"
 	if [ $code = "bm" ]; then	# For bits we can only store 0s and 1s

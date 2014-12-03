@@ -477,7 +477,7 @@ fonts can be found in the :doc:`gmt` man page.
     invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
     2-letter format indicator can be one of
     [**abcegnrs**][**bsifd**]. See
-    :doc:`grdreformat` and Section 4.20 of the
+    :doc:`grdconvert` and Section 4.20 of the
     GMT Technical Reference and Cookbook for more information. The
     *scale* and *offset* modifiers may be left empty to select default
     values (scale = 1, offset = 0), or you may specify *a* for

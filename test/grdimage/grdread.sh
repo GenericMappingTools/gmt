@@ -7,7 +7,7 @@
 ps=grdread.ps
 $AWK 'BEGIN{n=12;m=0;for (j=0;j<6*n;j++) {if (j%n==0) m--;print sin(m*3.14159265/6);m++}}' | \
 	gmt xyz2grd -R15/345/-75/75 -I30 -Gtmp.nc -ZTLa -fg
-gmt grdreformat tmp.nc tmp.b=bf
+gmt grdconvert tmp.nc tmp.b=bf
 gmt makecpt -Crainbow -T-1/1/0.1 > tmp.cpt
 # Read netCDF grid
 gmt grdimage -Rd -Ctmp.cpt tmp.nc -JX4i/2i -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -P -K -Y8.25i -Xc > $ps

@@ -153,7 +153,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c
 	gmtspatial.c gmtconnect.c gmtvector.c gmtwhich.c grd2cpt.c grd2rgb.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfilter.c
 	grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c grdmath.c
-	grdpaste.c grdproject.c grdraster.c grdsample.c grdreformat.c grdtrack.c
+	grdpaste.c grdproject.c grdraster.c grdsample.c grdconvert.c grdtrack.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c makecpt.c mapproject.c
 	gmtinfo.c nearneighbor.c project.c ps2raster.c sample1d.c spectrum1d.c
 	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c

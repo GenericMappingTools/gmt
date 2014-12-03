@@ -2,7 +2,7 @@
 #
 #	$Id: transparency.sh 12616 2013-12-08 13:45:00Z remko $
 
-GDAL=`gmt grdreformat 2>&1 | grep -c gd`
+GDAL=`gmt grdconvert 2>&1 | grep -c gd`
 if [ $GDAL -eq 0 ]; then exit; fi
 	
 ps=transparent_png.ps

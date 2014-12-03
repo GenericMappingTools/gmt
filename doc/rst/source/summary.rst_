@@ -49,6 +49,8 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdcontour`     | Contouring of 2-D gridded data sets                                 |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`grdconvert`     | Converts grid files into other grid formats                         |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`grdcut`         | Cut a sub-region from a grid file                                   |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdedit`        | Modify header information in a 2-D grid file                        |
@@ -74,8 +76,6 @@
 | :doc:`grdpaste`       | Paste together grid files along a common edge                       |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdproject`     | Project gridded data sets onto a new coordinate system              |
-+-----------------------+---------------------------------------------------------------------+
-| :doc:`grdreformat`    | Converts grid files into other grid formats                         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdsample`      | Resample a 2-D gridded data set onto a new grid                     |
 +-----------------------+---------------------------------------------------------------------+

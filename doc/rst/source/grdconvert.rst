@@ -1,19 +1,19 @@
-.. index:: ! grdreformat
+.. index:: ! grdconvert
 
 ***********
-grdreformat
+grdconvert
 ***********
 
 .. only:: not man
 
-    grdreformat - Convert between different grid formats
+    grdconvert - Convert between different grid formats
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdreformat** *ingrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]]]
+**grdconvert** *ingrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]]]
 *outgrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]][\ *:driver*\ [*/datatype*]]]
 [ **-N** ]
 [ |SYN_OPT-R| ]
@@ -25,7 +25,7 @@ Synopsis
 Description
 -----------
 
-**grdreformat** reads a grid file in one format and writes it out using
+**grdconvert** reads a grid file in one format and writes it out using
 another format. As an option the user may select a subset of the data to
 be written and to specify scaling, translation, and NaN-value. 
 
@@ -106,7 +106,7 @@ Although these files are still supported, their use is deprecated. To
 write other than floating point COARDS-compliant netCDF files, append
 the =\ *id* suffix to the filename *outgrdfile*.
 
-When reading files, **grdreformat** and other GMT programs will try
+When reading files, **grdconvert** and other GMT programs will try
 to automatically recognize the type of the input grid file. If this
 fails you may append the =\ *id* suffix to the filename *ingrdfile*.
 
@@ -228,34 +228,34 @@ COARDS-compliant netCDF file climate.nc:
 
    ::
 
-    gmt grdreformat climate.nc?temp[1] temp.nc -V
+    gmt grdconvert climate.nc?temp[1] temp.nc -V
 
 To create a 4-byte native floating point grid from the COARDS-compliant
 netCDF file data.nc:
 
    ::
 
-    gmt grdreformat data.nc ras_data.b4=bf -V
+    gmt grdconvert data.nc ras_data.b4=bf -V
 
 To make a 2-byte short integer file, scale it by 10, subtract 32000,
 setting NaNs to -9999, do
 
    ::
 
-    gmt grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
+    gmt grdconvert values.nc shorts.i2=bs/10/-32000/-9999 -V
 
 To create a Sun standard 8-bit rasterfile for a subset of the data file
 image.nc, assuming the range in image.nc is 0-1 and we need 0-255, run
 
    ::
 
-    gmt grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
+    gmt grdconvert image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
 
 To convert etopo2.nc to etopo2.i2 that can be used by **grdraster**, try
 
    ::
 
-    gmt grdreformat etopo2.nc etopo2.i2=bs -N -V
+    gmt grdconvert etopo2.nc etopo2.i2=bs -N -V
 
 To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
 

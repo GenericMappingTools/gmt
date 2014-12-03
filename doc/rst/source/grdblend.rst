@@ -79,7 +79,7 @@ Optional Arguments
     desired output layout implied by **-R**, **-I** (and **-r**) will
     first be resampled via **grdsample**. Also, grids that are not in
     netCDF or native binary format will first be reformatted via
-    **grdreformat**.
+    **grdconvert**.
 
 **-C**
     Clobber mode: Instead of blending, simply pick the value of one of

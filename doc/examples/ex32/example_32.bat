@@ -2,7 +2,7 @@ REM		GMT EXAMPLE 32
 REM		$Id$
 REM
 REM Purpose:	Illustrate draping of an image over topography
-REM GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview
+REM GMT progs:	grdcut, grdedit, grdgradient, grdconvert, grdtrack, grdview
 REM GMT progs:	pscoast, pstext, psxyz
 REM DOS calls:	del, echo
 REM Credits:	Original by Stephan Eickschen
@@ -11,14 +11,14 @@ REM
 echo GMT EXAMPLE 32
 set ps=example_32.ps
 
-REM Here we get and convert the flag of Europe directly from the web through grdreformat using
+REM Here we get and convert the flag of Europe directly from the web through grdconvert using
 REM GDAL support. We take into account the dimension of the flag (1000x667 pixels)
 REM for a ratio of 3x2.
 REM Because GDAL support will not be standard for most unix users, we have stored
 REM the result, euflag.nc in this directory.
 
 set Rflag=-R3/9/50/54
-REM gmt grdreformat http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1000px-Flag_of_Europe.svg.png=gd euflag.nc=ns
+REM gmt grdconvert http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1000px-Flag_of_Europe.svg.png=gd euflag.nc=ns
 REM gmt grdedit euflag.nc -fg %Rflag%
 
 REM Now get the topography for the same area from GTOPO30 and store it as topo.nc.

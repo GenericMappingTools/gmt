@@ -1127,7 +1127,7 @@ Creating GMT Graphics
     already done. First we get the EU flag directly from the web and convert
     it to a grid with values ranging from 0 to 255, where the higher values
     will become yellow and the lower values blue. This use of
-    :doc:`grdreformat` requires GDAL support.
+    :doc:`grdconvert` requires GDAL support.
     :doc:`grdedit` then adds the right grid dimension.
 
     The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
@@ -1146,7 +1146,7 @@ Creating GMT Graphics
 
     The script produces the plot in Figure :ref:`Example 32 <Fig_example_32>`. Note
     that the PNG image of the flag can be downloaded directly in the call
-    the :doc:`grdreformat`, but we have
+    the :doc:`grdconvert`, but we have
     commented that out in the example because it requires compilation with
     GDAL support. You will also see the
     :doc:`grdcut` command commented out because we

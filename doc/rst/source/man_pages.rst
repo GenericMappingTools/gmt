@@ -40,6 +40,7 @@ Core modules
    grdblend
    grdclip
    grdcontour
+   grdconvert
    grdcut
    grdedit
    grdfft
@@ -54,7 +55,6 @@ Core modules
    grdpaste
    grdproject
    grdraster
-   grdreformat
    grdsample
    grdtrack
    grdtrend

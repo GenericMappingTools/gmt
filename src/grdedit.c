@@ -263,7 +263,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	if ((G->header->type == GMT_GRID_IS_SF || G->header->type == GMT_GRID_IS_SD) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Toggling registrations not possible for Surfer grid formats\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "(Use grdreformat to convert to GMT default format and work on that file)\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "(Use grdconvert to convert to GMT default format and work on that file)\n");
 		Return (EXIT_FAILURE);
 	}
 

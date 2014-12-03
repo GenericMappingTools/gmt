@@ -153,5 +153,5 @@ See Also
 --------
 
 :doc:`gmt.conf`, :doc:`gmt`,
-:doc:`grdedit`, :doc:`grdreformat`,
+:doc:`grdedit`, :doc:`grdconvert`,
 :doc:`xyz2grd`

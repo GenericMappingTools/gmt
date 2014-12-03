@@ -16,14 +16,14 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: grdreformat.c reads a grid file in one format and outputs it in another
+ * Brief synopsis: grdconvert.c reads a grid file in one format and outputs it in another
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	5 API
  */
 
-#define THIS_MODULE_NAME	"grdreformat"
+#define THIS_MODULE_NAME	"grdconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert between different grid formats"
 
@@ -31,7 +31,7 @@
 
 #define GMT_PROG_OPTIONS "-RVf"
 
-struct GRDREFORMAT_CTRL {
+struct GRDCONVERT_CTRL {
 	struct IO {
 		bool active;
 		char *file[2];
@@ -41,31 +41,31 @@ struct GRDREFORMAT_CTRL {
 	} N;
 };
 
-void *New_grdreformat_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct GRDREFORMAT_CTRL *C;
+void *New_grdconvert_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+	struct GRDCONVERT_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDREFORMAT_CTRL);
+	C = GMT_memory (GMT, NULL, 1, struct GRDCONVERT_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	return (C);
 }
 
-void Free_grdreformat_Ctrl (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *C) {	/* Deallocate control structure */
+void Free_grdconvert_Ctrl (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->IO.file[0]) free (C->IO.file[0]);	
 	if (C->IO.file[1]) free (C->IO.file[1]);	
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdreformat_usage (struct GMTAPI_CTRL *API, int level)
+int GMT_grdconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
 	int i;
 	char **grdformats = GMT_grdformats_sorted (API->GMT);
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]]\n\t<outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]] [-N]\n\t[%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdconvert <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]]\n\t<outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]] [-N]\n\t[%s] [%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -92,9 +92,9 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdreformat_parse (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdconvert_parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
-	/* This parses the options provided to grdreformat and sets parameters in CTRL.
+	/* This parses the options provided to grdconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
@@ -143,16 +143,16 @@ int GMT_grdreformat_parse (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *Ctrl, 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdreformat_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_grdconvert_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdreformat (void *V_API, int mode, void *args)
+int GMT_grdconvert (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	unsigned int hmode, type[2];
 	char fname[2][GMT_BUFSIZ];
 	char   command[GMT_GRID_COMMAND_LEN320] = {""};
 	struct GMT_GRID *Grid = NULL;
-	struct GRDREFORMAT_CTRL *Ctrl = NULL;
+	struct GRDCONVERT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -160,20 +160,20 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdreformat_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdconvert_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdreformat_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdreformat_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdconvert_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdconvert_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdreformat_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdreformat_parse (GMT, Ctrl, options))) Return (error);
+	Ctrl = New_grdconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_grdconvert_parse (GMT, Ctrl, options))) Return (error);
 
-	/*---------------------------- This is the grdreformat main code ----------------------------*/
+	/*---------------------------- This is the grdconvert main code ----------------------------*/
 
 	if ((Grid = GMT_create_grid (API->GMT)) == NULL) Return (API->error);	/* Tmp grid only, no i/o is used */
 	GMT_grd_init (GMT, Grid->header, options, false);

@@ -23,7 +23,7 @@ if (DO_TESTS)
 		gdal genper gmt_core gmtconvert gmtmath gmtselect gmtsimplify gmtspatial
 		gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour grdcut
 		grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdlandmask
-		grdmask grdmath grdpaste grdproject grdreformat grdsample grdtrack
+		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack
 		grdtrend grdvector grdview grdvolume greenspline gshhg kml mapproject ogr
 		project psbasemap pscoast pscontour pshistogram psimage pslegend pslib
 		psrose psscale pstext psxy psxyz sample1d spectrum1d sph sph2grd splitxyz

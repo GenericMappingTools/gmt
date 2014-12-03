@@ -17,7 +17,7 @@ To avoid adding large files to this example, some steps have been
 already done. First we get the EU flag directly from the web and convert
 it to a grid with values ranging from 0 to 255, where the higher values
 will become yellow and the lower values blue. This use of
-:doc:`grdreformat </grdreformat>` requires GDAL support.
+:doc:`grdconvert </grdconvert>` requires GDAL support.
 :doc:`grdedit </grdedit>` then adds the right grid dimension.
 
 The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
@@ -36,7 +36,7 @@ symbols and names for cities.
 
 The script produces the plot in Figure [fig:example\ :sub:`3`\ 2]. Note
 that the PNG image of the flag can be downloaded directly in the call
-the :doc:`grdreformat </grdreformat>`, but we have
+the :doc:`grdconvert </grdconvert>`, but we have
 commented that out in the example because it requires compilation with
 GDAL support. You will also see the
 :doc:`grdcut </grdcut>` command commented out because we

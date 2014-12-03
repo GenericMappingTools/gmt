@@ -203,7 +203,7 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 				break;
 			case 'E':
 				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdconvert instead.\n");
 					Ctrl->E.active = true;
 					if (opt->arg[0]) {
 						Ctrl->E.nodata = atof (opt->arg);
@@ -419,7 +419,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
-	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
+	/* PW: This is now done in grdconvert since ESRI Arc Interchange is a recognized format */
 	if (Ctrl->E.active && GMT_compat_check (GMT, 4)) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
 		uint64_t n_left;
 		double value;
