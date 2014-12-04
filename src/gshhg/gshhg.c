@@ -347,8 +347,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			max_east = 180000000;	/* For line segments we always use -180/+180  */
 		}
 		else {		/* Island or lake polygon */
-			(h.container == -1) ? sprintf (container, "-") : sprintf (container, "%6d", h.container);
-			(h.ancestor == -1) ? sprintf (ancestor, "-") : sprintf (ancestor, "%6d", h.ancestor);
+			(h.container == -1) ? sprintf (container, "-1") : sprintf (container, "%6d", h.container);
+			(h.ancestor == -1) ? sprintf (ancestor, "-1") : sprintf (ancestor, "%6d", h.ancestor);
 			sprintf (header, "%6d%8d%2d%2c %.12g %.12g%11.5f%11.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
 		}
 
