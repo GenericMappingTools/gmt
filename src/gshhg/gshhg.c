@@ -203,7 +203,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 
 	double w, e, s, n, area, f_area, scale = 10.0;
 
-	char source, marker = 0, container[8] = {""}, ancestor[8] = {""}, header[GMT_BUFSIZ] = {""}, *name[2] = {"polygon", "line"};
+	char source, marker = 0, header[GMT_BUFSIZ] = {""}, *name[2] = {"polygon", "line"};
+	char west[GMT_LEN64] = {""}, east[GMT_LEN64] = {""}, south[GMT_LEN64] = {""}, north[GMT_LEN64] = {""};
 
 	FILE *fp = NULL;
 
@@ -230,7 +231,6 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 	Ctrl = New_gshhg_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gshhg_parse (GMT, Ctrl, options))) Return (error);
 	
@@ -246,6 +246,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	}
 
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+	GMT_set_geographic (GMT, GMT_IN);
+	GMT_set_geographic (GMT, GMT_OUT);
 	if (Ctrl->G.active) {
 		marker = GMT->current.setting.io_seg_marker[GMT_OUT];
 		GMT->current.setting.io_seg_marker[GMT_OUT] = '%';
@@ -341,16 +343,19 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			}
 		}
 
+		/* Format w/e/s/n for header according to users format choice */
+		GMT_ascii_format_col (GMT, west,  w, GMT_OUT, GMT_X);
+		GMT_ascii_format_col (GMT, east,  e, GMT_OUT, GMT_X);
+		GMT_ascii_format_col (GMT, south, s, GMT_OUT, GMT_Y);
+		GMT_ascii_format_col (GMT, north, n, GMT_OUT, GMT_Y);
+		
 		/* Create the segment/polygon header record */
 		if (is_line) {	/* River or border line-segment */
-			sprintf (header, "%6d%8d%3d%2c%11.5f%10.5f%10.5f%10.5f", h.id, h.n, level, source, w, e, s, n);
+			sprintf (header, "%6d%8d%3d%2c %s %s %s %s", h.id, h.n, level, source, west, east, south, north);
 			max_east = 180000000;	/* For line segments we always use -180/+180  */
 		}
-		else {		/* Island or lake polygon */
-			(h.container == -1) ? sprintf (container, "-1") : sprintf (container, "%6d", h.container);
-			(h.ancestor == -1) ? sprintf (ancestor, "-1") : sprintf (ancestor, "%6d", h.ancestor);
-			sprintf (header, "%6d%8d%2d%2c %.12g %.12g%11.5f%11.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
-		}
+		else		/* Island or lake polygon */
+			sprintf (header, "%6d%8d%2d%2c %.12g %.12g %s %s %s %s %6d %6d", h.id, h.n, level, source, area, f_area, west, east, south, north, h.container, h.ancestor);
 
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 			TX->record[seg_no] = strdup (header);
