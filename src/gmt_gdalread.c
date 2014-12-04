@@ -50,7 +50,7 @@ int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
-	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
+	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated below) */
 	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
@@ -341,7 +341,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	}
 
 	/* ------ compute two vectors indices that will be used inside loops below --------- */
-	/* In the "Preview" mode those guys bellow are different and what we need is the BufSize */
+	/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 	if (jump)
 		nX = nBufXSize,	nY = nBufYSize;
 	else
@@ -367,7 +367,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		/* If we didn't computed it yet, its time to do it now */
 		if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
 
-		/* In the "Preview" mode those guys bellow are different and what we need is the BufSize */
+		/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 		if (jump) {
 			nXSize = nBufXSize;
 			nYSize = nBufYSize;
