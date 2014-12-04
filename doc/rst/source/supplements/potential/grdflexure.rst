@@ -14,6 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **grdflexure** *topogrd* **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
+[ **-A**\ *Nx*/*Ny*/*Nxy* ]
 [ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ **-L**\ *list* ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx*/*ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
@@ -70,6 +71,11 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+**-A**\ *Nx*/*Ny*/*Nxy*
+    Specify in-plane compressional or extensional forces in the x- and y-directions,
+    as well as any shear force [no in-plane forces].  Compression is indicated by
+    negative values, while extensional forces are specified using positive values.
 
 **-Cp**\ *poisson*
     Change the current value of Poisson's ratio [0.25].

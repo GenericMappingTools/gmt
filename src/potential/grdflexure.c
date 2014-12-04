@@ -44,7 +44,6 @@ struct GMT_MODELTIME {	/* Hold info about time */
 	double scale;	/* Scale factor from user time to year */
 	char unit;	/* Either M (Myr), k (kyr), or blank (implies y) */
 	unsigned int u;	/* For labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
-
 };
 
 struct GRDFLEXURE_CTRL {
@@ -52,6 +51,10 @@ struct GRDFLEXURE_CTRL {
 		bool active, many, list;
 		char *file;
 	} In;
+	struct A {	/* -A<Nx/Ny/Nxy> In-plane forces */
+		bool active;
+		double Nx, Ny, Nxy;
+	} A;
 	struct C {	/* -Cy<E> or -Cp<poisson> */
 		bool active[2];
 		double E, nu;
@@ -115,11 +118,16 @@ struct RHEOLOGY {	/* Used to pass parameters in/out of functions */
 	double nu_ratio1;	/* The inverse ratio */
 	double h_a;		/* The thickness of the asthenosphere (m) */
 	double ce;		/* A constant for elastic transfer functions */
+	double Nx_e;		/* A constant for --"-- that is nonzero when Nx is nonzero */
+	double Ny_e;		/* A constant for --"-- that is nonzero when Ny is nonzero */
+	double Nxy_e;		/* A constant for --"-- that is nonzero when Nxy is nonzero */
 	double cv;		/* A constant for visous transfer functions */
 	double scale;		/* Overall scale (e.g., Airy scale) */
 	double dens_ratio;	/* (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom */
 	bool relative;		/* eval_time_yr is relative to load time [at 0] */
-	double (*transfer) (double, struct RHEOLOGY *);	/* pointer to function returning isostatic response for given k and R */
+	bool isotropic;		/* true when no inplane forces are set (no -A) */
+	double (*transfer) (double *, struct RHEOLOGY *);	/* pointer to function returning isostatic response for given k and R */
+	double (*tr_elastic_sub) (double *, struct RHEOLOGY *);	/* pointer to sub-function returning elastic isostatic response for given k and R */
 	void (*setup) (struct GMT_CTRL *, struct GRDFLEXURE_CTRL *, struct GMT_FFT_WAVENUMBER *, struct RHEOLOGY *);	/* Init function */
 };
 
@@ -294,17 +302,21 @@ void gmt_modeltime_name (struct GMT_CTRL * GMT_UNUSED(GMT), char *file, char *fo
 		sprintf (file, format, T->value);
 }
 
-double transfer_elastic_sub (double k, struct RHEOLOGY *R)
-{	/* Elastic transfer function */
-	double k2, k4, transfer_fn;
-	k2 = k * k;	k4 = k2 * k2;
-	transfer_fn = 1.0 / (R->ce * k4 + 1.0);
+double transfer_elastic_sub_iso (double *k, struct RHEOLOGY *R)
+{	/* Elastic transfer function (isotropic) */
+	double transfer_fn = 1.0 / (R->ce * pow (k[GMT_FFT_K_IS_KR], 4.0) + 1.0);
 	return (transfer_fn);
 }
 
-double transfer_elastic (double k, struct RHEOLOGY *R)
+double transfer_elastic_sub (double *k, struct RHEOLOGY *R)
+{	/* Elastic transfer function (general) */
+	double transfer_fn = 1.0 / (R->ce * pow (k[GMT_FFT_K_IS_KR], 4.0) + R->Nx_e * k[GMT_FFT_K_IS_KX] * k[GMT_FFT_K_IS_KX] + R->Ny_e * k[GMT_FFT_K_IS_KY] * k[GMT_FFT_K_IS_KY] + R->Nxy_e * k[GMT_FFT_K_IS_KX] * k[GMT_FFT_K_IS_KY] + 1.0);
+	return (transfer_fn);
+}
+
+double transfer_elastic (double *k, struct RHEOLOGY *R)
 {	/* Elastic transfer function */
-	double transfer_fn = R->scale * transfer_elastic_sub (k, R);
+	double transfer_fn = R->scale * R->tr_elastic_sub (k, R);
 	return (transfer_fn);
 }
 
@@ -341,8 +353,20 @@ void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct G
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Using effective load density rho_l = %g and Airy boost factor A = %g\n", rho_load, A);
 	rigidity_d = (Ctrl->C.E * Ctrl->E.te * Ctrl->E.te * Ctrl->E.te) / (12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu));
 	R->ce = rigidity_d / ( (Ctrl->D.rhom - rho_load) * NORMAL_GRAVITY);
+	if (Ctrl->A.active) {	/* Specified inplane forces */
+		R->Nx_e = Ctrl->A.Nx / ( (Ctrl->D.rhom - rho_load) * NORMAL_GRAVITY);
+		R->Ny_e = Ctrl->A.Ny / ( (Ctrl->D.rhom - rho_load) * NORMAL_GRAVITY);
+		R->Nxy_e = 2.0 * Ctrl->A.Nxy / ( (Ctrl->D.rhom - rho_load) * NORMAL_GRAVITY);
+		R->isotropic = false;
+		R->tr_elastic_sub = transfer_elastic_sub;
+	}
+	else {
+		R->isotropic = true;
+		R->tr_elastic_sub = transfer_elastic_sub_iso;
+	}
 	R->scale = -A * (rho_load - Ctrl->D.rhow)/(Ctrl->D.rhom - rho_load);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Elastic setup: R->scale = %g R->ce = %g\n", R->scale, R->ce);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Elastic setup: R->scale = %g R->ce = %g R->Nx_e = %g R->Ny_e = %g R->Nyx_e = %g\n",
+		R->scale, R->ce, R->Nx_e, R->Ny_e, R->Nxy_e);
 }
 
 double relax_time_2 (double k, struct RHEOLOGY *R)
@@ -382,11 +406,11 @@ void setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_F
 		R->t0, R->dens_ratio, R->nu_ratio, R->nu_ratio1, R->cv);
 }
 
-double transfer_fv2 (double k, struct RHEOLOGY *R)
+double transfer_fv2 (double *k, struct RHEOLOGY *R)
 {	/* Transfer function for 2-layer viscous mantle */
 	double phi_e, phi_fv2, tau;
-	phi_e = transfer_elastic_sub (k, R);
-	tau = relax_time_2 (k, R);
+	phi_e = R->tr_elastic_sub (k, R);
+	tau = relax_time_2 (k[GMT_FFT_K_IS_KR], R);
 	phi_fv2 = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio / (tau * phi_e)));
 	return (R->scale * phi_fv2);
 }
@@ -403,7 +427,7 @@ void setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FF
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "FV Setup: R->t0 = %g R->dens_ratio = %g R->cv = %g\n", R->t0, R->dens_ratio, R->cv);
 }
 
-double transfer_fv (double k, struct RHEOLOGY *R)
+double transfer_fv (double *k, struct RHEOLOGY *R)
 {
 /*	Firmoviscous response function for elastic plate over
  *	viscous half-space.  Give:
@@ -416,9 +440,9 @@ double transfer_fv (double k, struct RHEOLOGY *R)
  *	t0	- time since loading (yr)
  */
 	double phi_e, phi_fv, tau;
-	phi_e = transfer_elastic_sub (k, R);
-	tau = k * R->cv;
-	if (k == 0.0)
+	phi_e = R->tr_elastic_sub (k, R);
+	tau = k[GMT_FFT_K_IS_KR] * R->cv;
+	if (k[GMT_FFT_K_IS_KR] == 0.0)
 		phi_fv = phi_e;
 	else
 		phi_fv = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio / (tau * phi_e)));
@@ -432,7 +456,7 @@ void setup_ve (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FF
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "VE Setup: R->cv = %g, t_maxwell = %g%c\n", R->cv, Ctrl->M.maxwell_t * Ctrl->M.scale, Ctrl->M.unit);
 }
 
-double transfer_ve (double k, struct RHEOLOGY *R)
+double transfer_ve (double *k, struct RHEOLOGY *R)
 {
 /*	Viscoelastic response function for VE plate.  Give:
  *
@@ -445,7 +469,7 @@ double transfer_ve (double k, struct RHEOLOGY *R)
  */
 	double phi_e, phi_ve, tau;
 	tau = R->t0 * R->cv;
-	phi_e = transfer_elastic_sub (k, R);
+	phi_e = R->tr_elastic_sub (k, R);
 	phi_ve = 1.0 - (1.0 - phi_e) * exp (-tau * phi_e);
 	return (R->scale * phi_ve);
 }
@@ -453,7 +477,7 @@ double transfer_ve (double k, struct RHEOLOGY *R)
 void Apply_Transfer_Function (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
 	/* Do the spectral convolution for isostatic response in the Freq domain. */
 	uint64_t k;
-	double  mk, transfer_fn;
+	double  mk[3], transfer_fn;
 	//FILE *fp = fopen ("Crap.txt", "w");
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Apply the Transfer Function\n");
@@ -461,11 +485,17 @@ void Apply_Transfer_Function (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struc
 
 	/* Loop over complex grid and multiply with the real transfer function */
 	for (k = 0; k < Grid->header->size; k += 2) {
-		mk = GMT_fft_get_wave (k, K);
+		if (R->isotropic)	/* No in-plane forcing */
+			mk[GMT_FFT_K_IS_KR] = GMT_fft_get_wave (k, K);	/* Radial wavenumber */
+		else {	/* Need kx, ky, and kr */
+			mk[GMT_FFT_K_IS_KX] = GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K);		/* kx wavenumber */
+			mk[GMT_FFT_K_IS_KY] = GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K);		/* kx wavenumber */
+			mk[GMT_FFT_K_IS_KR] = hypot (mk[GMT_FFT_K_IS_KX], mk[GMT_FFT_K_IS_KY]);	/* kr wavenumber */
+		}
 		transfer_fn = R->transfer (mk, R);
 		Grid->data[k] *= (float)transfer_fn;
 		Grid->data[k+1] *= (float)transfer_fn;
-		//fprintf (fp, "%g\t%g\n", mk, transfer_fn);
+		//fprintf (fp, "%g\t%g\t%g\t%g\n", mk[0], mk[1], mk[2], transfer_fn);
 	}
 	//fclose (fp);
 }
@@ -495,6 +525,14 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
+				break;
+			case 'A':	/* In-plane forces */
+				Ctrl->A.active = true;
+				n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->A.Nx, &Ctrl->A.Ny, &Ctrl->A.Nxy);
+				if (n != 3) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: must give Nx/Ny/Nxy in-plane forces\n");
+					n_errors++;
+				}
 				break;
 			case 'C':	/* Rheology constants E and nu */
 				switch (opt->arg[0]) {
@@ -605,7 +643,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-L<list>] [-M<tm>] [-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>|<n>[+l]]]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -623,6 +661,8 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If the floating point format is followed by %c then we scale time to unit in -T and append the unit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Sets in-plane force components Nx, Ny and shear force Nxy [isotropic deformation].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Negative values mean compression, positive values mean extensional forces.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
