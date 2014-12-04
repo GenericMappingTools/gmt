@@ -46,8 +46,26 @@ endif (${srcdir} STREQUAL ${bindir})
 # Define minimum CMake version required
 cmake_minimum_required (VERSION 2.8.5)
 
-# Define project name
-project (GMT)
+# Use NEW behavior with newer CMake releases
+foreach(p
+		CMP0025 # CMake 3.0: Compiler id for Apple Clang is now AppleClang
+		)
+	if(POLICY ${p})
+		cmake_policy(SET ${p} NEW)
+	endif()
+endforeach()
+
+# Use OLD behavior with newer CMake releases
+foreach(p
+		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
+		)
+	if(POLICY ${p})
+		cmake_policy(SET ${p} OLD)
+	endif()
+endforeach()
+
+# Define project name and language
+project (GMT C)
 
 # Where to find our CMake modules (this variable is visible in subdirectories).
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"

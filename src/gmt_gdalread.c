@@ -343,7 +343,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	}
 
 	/* ------ compute two vectors indices that will be used inside loops below --------- */
-	/* In the "Preview" mode those guys bellow are different and what we need is the BufSize */
+	/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 	if (jump)
 		nX = nBufXSize,	nY = nBufYSize;
 	else
@@ -382,7 +382,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		/* If we didn't computed it yet, its time to do it now */
 		if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
 
-		/* In the "Preview" mode those guys bellow are different and what we need is the BufSize */
+		/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 		if (jump) {
 			nXSize = nBufXSize;
 			nYSize = nBufYSize;

@@ -179,7 +179,7 @@ set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 # set the RPATH to be used when installing
 if (NOT DEFINED GMT_INSTALL_RELOCATABLE)
-	set (GMT_INSTALL_RELOCATABLE TRUE)
+	set (GMT_INSTALL_RELOCATABLE FALSE)
 endif (NOT DEFINED GMT_INSTALL_RELOCATABLE)
 if (GMT_INSTALL_RELOCATABLE)
 	# make executables relocatable on supported platforms (relative RPATH)
@@ -190,7 +190,10 @@ if (GMT_INSTALL_RELOCATABLE)
 		string (REGEX REPLACE "/$" "" _rpath "${_rpath}")
 		if (APPLE)
 			# relative RPATH on osx
-			set (CMAKE_INSTALL_NAME_DIR @executable_path/${_rpath})
+			# CMP0042: CMake 3.0: MACOSX_RPATH is enabled by default
+			set (CMAKE_MACOSX_RPATH ON)
+			set (CMAKE_INSTALL_NAME_DIR @rpath)
+			set (CMAKE_INSTALL_RPATH "@rpath;@executable_path/${_rpath}")
 		else (APPLE)
 			# relative RPATH on Linux, Solaris, etc.
 			set (CMAKE_INSTALL_RPATH "\$ORIGIN/${_rpath}")
@@ -199,9 +202,17 @@ if (GMT_INSTALL_RELOCATABLE)
 else (GMT_INSTALL_RELOCATABLE)
 	# set absolute RPATH
 	if (APPLE)
+		# CMP0042: CMake 3.0: MACOSX_RPATH is enabled by default
+		set (CMAKE_MACOSX_RPATH OFF)
 		set (CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}")
 	else (APPLE)
-		set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}")
+		# the RPATH to be used when installing, but only if it's not a
+		# system directory
+		list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES
+			"${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}" isSystemDir)
+		if ("${isSystemDir}" STREQUAL "-1")
+			set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}")
+		endif ("${isSystemDir}" STREQUAL "-1")
 	endif (APPLE)
 endif (GMT_INSTALL_RELOCATABLE)
 
