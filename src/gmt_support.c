@@ -10485,7 +10485,7 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	}
 	Sx->n_rows = row;	/* Number of points in extended feature with explicit crossings */
 	if (n_split == 0) {	/* No crossings, should not have been called in the first place */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No straddling detected (bug?)\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No need to insert new points at 180\n");
 		GMT_free_segment (GMT, &Sx, GMT_ALLOCATED_BY_GMT);
 		GMT_free (GMT, pos);
 		return 0;
