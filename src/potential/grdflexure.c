@@ -336,12 +336,12 @@ void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct G
 	/*   [ri Infill density, SI units]  */
 	/* If infill density was specified then Ctrl->D.approx will be true, in which case we will do the
 	 * approximate FFT solution of Wessel [2001, JGR]: Use rhoi instead of rhol to determine flexural wavelength
-	 * and and amplitudes but scale airy_ratio by A to compensate for the lower load weight */
+	 * and amplitudes but scale airy_ratio by A to compensate for the lower load weight. */
 
 	rho_load = Ctrl->D.rhol;
 	if (Ctrl->S.active && Ctrl->S.beta < 1.0) {	/* Treat starved infill as approximate case with different infill density */
 		Ctrl->D.approx = true;
-		Ctrl->D.rhoi = Ctrl->S.beta * Ctrl->D.rhoi - Ctrl->D.rhow * (1.0 - Ctrl->S.beta);
+		Ctrl->D.rhoi = Ctrl->S.beta * Ctrl->D.rhoi + Ctrl->D.rhow * (1.0 - Ctrl->S.beta);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Starved moat with beta = %g implies an effective rho_i  = %g\n", Ctrl->S.beta, Ctrl->D.rhol);
 	}
 	if (Ctrl->D.approx) {	/* Do approximate calculation when both rhol and rhoi were set */
