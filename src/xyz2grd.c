@@ -585,7 +585,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {
 				GMT_Report (API, GMT_MSG_NORMAL, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
-				GMT_Report (API, GMT_MSG_NORMAL, "(Chances are good that you are misterpreting xyz2grd with an interpolator (see 'surface' man page))")\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
 				Return (EXIT_FAILURE);
 			}
 			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
@@ -656,7 +656,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		GMT->common.b.active[GMT_IN] = previous_bin_i;	/* Reset binary */
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
 			GMT_Report (API, GMT_MSG_NORMAL, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
-				GMT_Report (API, GMT_MSG_NORMAL, "(Chances are good that you are misterpreting xyz2grd with an interpolator (see 'surface' man page))")\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
 			Return (EXIT_FAILURE);
 		}
 		GMT_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
