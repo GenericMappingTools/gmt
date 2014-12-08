@@ -601,7 +601,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		PSL_plotsymbol (PSL, 0.0, 0.0, &dim, GMT_SYMBOL_CIRCLE);
 		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
 	}
-	if (GMT->common.B.active) {	/* Draw frame */
+	if (GMT->common.B.active[0]) {	/* Draw frame */
 		int symbol = (half_only) ? GMT_SYMBOL_WEDGE : GMT_SYMBOL_CIRCLE;
 		double dim[3];
 		struct GMT_FILL no_fill;
