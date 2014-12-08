@@ -5531,10 +5531,11 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 				/* Clip into two closed polygons.  Eventually, perhaps return more (eliminate bridges) */
 				n_split = GMT_split_poly_at_dateline (GMT, T->segment[seg], &L);
 			}
-			else {	/* Clipping just needs to add crossing points */
+			else {	/* Clipping just needs to add crossing points, unless already present */
 				/* Truncate into two or more line segments */
 				n_split = GMT_split_line_at_dateline (GMT, T->segment[seg], &L);
 			}
+			if (n_split == 0) continue;	/* Might have crossed dateline but had points exactly at 180 */
 			T->segment = GMT_memory (GMT, T->segment, n_segs + n_split - 1, struct GMT_DATASEGMENT *);	/* Allow more space for new segments */
 			GMT_free_segment (GMT, &(T->segment[seg]), D->alloc_mode);	/* Delete the old one */
 			T->segment[seg] = L[0];			/* Hook in the first replacement */
