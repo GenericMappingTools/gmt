@@ -5,8 +5,12 @@
 
 ps=spikes.ps
 
+if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then
+  _thread_opt=-x+a
+fi
+
 filter () {
-	gmt grdfilter t.nc -Gf.nc $*
+	gmt grdfilter t.nc -Gf.nc ${_thread_opt} $*
 	gmt grdmath f.nc DUP UPPER DIV = f.nc
 }
 image () {	# First 3 args for gmt grdimage; $4 is text for gmt pstext

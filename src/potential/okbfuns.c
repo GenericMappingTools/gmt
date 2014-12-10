@@ -34,7 +34,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 	unsigned int i, l, k, cnt_v = 0, n_vert;
 	bool top = true;
 	struct LOC_OR loc_or[32];
-	GMT_declare_gmutex		/* A no-op when no USE_GTHREADS */
+	GMT_declare_gmutex		/* A no-op when no HAVE_GLIB_GTHREAD */
 
 /* x_o, y_o, z_o are the coordinates of the observation point
  * rho is the body density times G constant
@@ -101,7 +101,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 				okb_mag (n_vert, km, pm, loc_or, c_tet, s_tet, c_phi, s_phi);
 		cnt_v += n_vert;
 	}
-	GMT_set_gmutex		/* A no-op when no USE_GTHREADS */
+	GMT_set_gmutex		/* A no-op when no HAVE_GLIB_GTHREAD */
 	if (is_grav) okb *= rho;
 	GMT_unset_gmutex
 	return (okb);

@@ -126,11 +126,16 @@
 # Set location of ZLIB (can be root directory or path to header file) [auto]:
 #set (ZLIB_ROOT "zlib_install_prefix")
 
-# Set location of GLIB ...:
-#set (GLIB_INCLUDE_DIR "<path-to-include-dir>")
-#set (GLIB_LIBRARY "<path-to>glib-2.0.lib")
-# Since this is an optional (and experimental) option you need to add this too
-#add_definitions(/DUSE_GTHREADS)
+# Set location of GLIB component gthread [auto].  This is an optional (and
+# experimental) option which you need to enable:
+#set (GMT_USE_THREADS TRUE)
+# If pkg-config is not installed (e.g. on Windows) you need to specify these:
+#set (GLIB_INCLUDE_DIR c:/path/to/glib-dev/include/glib-2.0)
+#set (GLIB_LIBRARIES c:/path/to/glib-dev/lib/glib-2.0.lib)
+
+# Set location of pthreads-win32 (only Windows); needs GMT_USE_THREADS:
+#set (PTHREADS_WIN32_ROOT c:/prefix/of/pthreads-win32)
+#set (GMT_USE_THREADS TRUE)
 
 ##
 ## Section 3: GMT features

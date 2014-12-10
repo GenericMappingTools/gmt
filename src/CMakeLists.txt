@@ -91,7 +91,7 @@ if (APPLE)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ACCELERATE_FRAMEWORK})
 endif (APPLE)
 
-find_package (OpenMP)
+#find_package (OpenMP) # OpenMP not used; disabled for now
 if (OPENMP_FOUND AND GMT_OPENMP)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_C_FLAGS}")
@@ -104,14 +104,51 @@ if (OPENMP_FOUND AND NOT GMT_OPENMP)
 	message (STATUS "User variable GMT_OPENMP not set: disabling OpenMP.")
 endif (OPENMP_FOUND AND NOT GMT_OPENMP)
 
-find_package (Threads)
+if (WIN32)
+	# find pthreads-win32
+	find_path (PTHREADS_INCLUDE_DIR pthread.h
+		HINTS ${PTHREADS_WIN32_ROOT}
+		PATH_SUFFIXES include)
+	find_library(PTHREADS_WIN32_LIBRARY
+		NAMES pthreadVC2
+		HINTS ${PTHREADS_WIN32_ROOT}
+		PATH_SUFFIXES lib)
+	if (PTHREADS_INCLUDE_DIR AND PTHREADS_WIN32_LIBRARY)
+		set (Threads_FOUND TRUE)
+		set (CMAKE_THREAD_LIBS_INIT ${PTHREADS_WIN32_LIBRARY})
+		mark_as_advanced (
+			CMAKE_THREAD_LIBS_INIT
+			PTHREADS_INCLUDE_DIR
+			PTHREADS_WIN32_LIBRARY)
+		message (STATUS "Found pthreads-win32: ${PTHREADS_WIN32_LIBRARY}")
+	endif (PTHREADS_INCLUDE_DIR AND PTHREADS_WIN32_LIBRARY)
+else (WIN32)
+	# find pthreads
+  set (CMAKE_THREAD_PREFER_PTHREAD TRUE)
+  find_package (Threads)
+endif (WIN32)
 
-find_package(GLIB COMPONENTS gio gobject gthread)
-#if (GLIB_FOUND)
-	set (HAVE_GLIB TRUE CACHE INTERNAL "System has GLIB")
-	include_directories (${GLIB_INCLUDE_DIR})
-	list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARY})
-#endif (GLIB_FOUND)
+# build pthreads example
+if (Threads_FOUND)
+	set (HAVE_PTHREAD TRUE CACHE INTERNAL "System has pthread.h")
+	add_executable (pthreads_example pthreads_example.c)
+	include_directories(${PTHREADS_INCLUDE_DIR})
+	target_link_libraries(pthreads_example ${CMAKE_THREAD_LIBS_INIT})
+endif (Threads_FOUND)
+
+find_package(GLIB COMPONENTS gthread)
+if (GLIB_FOUND AND GMT_USE_THREADS)
+	set (HAVE_GLIB_GTHREAD TRUE CACHE INTERNAL "System has GLIB component gthread")
+	include_directories (${GLIB_INCLUDE_DIRS})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARIES})
+endif (GLIB_FOUND AND GMT_USE_THREADS)
+if (GLIB_FOUND AND NOT GMT_USE_THREADS)
+	set (HAVE_GLIB_GTHREAD FALSE CACHE INTERNAL "User disabled threads")
+	message (STATUS "User variable GMT_USE_THREADS not set: disabling GThread.")
+endif (GLIB_FOUND AND NOT GMT_USE_THREADS)
+if (GMT_USE_THREADS AND NOT GLIB_FOUND)
+	message (FATAL_ERROR "User variable GMT_USE_THREADS set but GLIB component gthread not found.")
+endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
 # check for math and POSIX functions
 include(ConfigureChecks)
@@ -430,7 +467,6 @@ add_dependencies (gmtlib pslib) # make gmtlib after pslib
 target_link_libraries (gmtlib
 	${NETCDF_LIBRARIES}
 	${GMT_OPTIONAL_LIBRARIES}
-	${CMAKE_THREAD_LIBS_INIT}
 	pslib)
 
 if (HAVE_M_LIBRARY)

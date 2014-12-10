@@ -593,7 +593,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
 	GMT_Option (API, "V,f");
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 	GMT_Option (API, "x");
 #else
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Not available since this binary was not build with multi-threading support.\n");
@@ -824,7 +824,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	struct THREAD_STRUCT *threadArg;
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 	GThread **threads;
 #endif
 
@@ -1075,7 +1075,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 					filter_name[filter_type], 100.0 * Ctrl->F.quantile);
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 		GMT_Report (API, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", GMT->common.x.n_threads);
 #endif
 	}
@@ -1120,7 +1120,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	GMT_tic(GMT);
 
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 	if (GMT->common.x.n_threads > 1)
 		threads = GMT_memory (GMT, NULL, GMT->common.x.n_threads, GThread *);
 #endif
@@ -1158,7 +1158,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			threaded_function (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
 		}
-#ifndef USE_GTHREADS
+#ifndef HAVE_GLIB_GTHREAD
 	}
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Gout->header->ny) / GMT->common.x.n_threads);

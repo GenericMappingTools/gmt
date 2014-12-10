@@ -54,6 +54,12 @@
 /* compile with ZLIB support <zlib.h> */
 #cmakedefine HAVE_ZLIB
 
+/* compile with GLIB GThread support <glib.h> */
+#cmakedefine HAVE_GLIB_GTHREAD
+
+/* compile with pthreads support <pthread.h> */
+#cmakedefine HAVE_PTHREAD
+
 /* shared library */
 #cmakedefine BUILD_SHARED_LIBS
 
@@ -132,6 +138,11 @@
 #cmakedefine HAVE_STRTOK_S
 #cmakedefine DECLARED_STRDUP
 #cmakedefine DECLARED_STRSEP
+
+/* sysconf/sysctl */
+#cmakedefine HAVE_SC_NPROC_ONLN
+#cmakedefine HAVE_SC_NPROCESSORS_ONLN
+#cmakedefine HAVE_SYSCTL_HW_NCPU
 
 /* support for inline functions */
 #cmakedefine HAVE_C_inline

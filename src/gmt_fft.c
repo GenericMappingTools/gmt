@@ -2034,21 +2034,11 @@ int GMT_FFT_2D (void *V_API, float *data, unsigned int nx, unsigned int ny, int 
 	return status;
 }
 
-#if defined WIN32
-#include <windows.h>
-#endif
-
 void GMT_fft_initialization (struct GMT_CTRL *GMT) {
 	/* Called by GMT_begin and sets up pointers to the available FFT calls */
 #if defined HAVE_FFTW3F_THREADS
-	int n_cpu;
-#if defined WIN32
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo ( &sysinfo );
-	n_cpu = sysinfo.dwNumberOfProcessors;
-#else
-	n_cpu = (int)sysconf (_SC_NPROCESSORS_CONF);
-#endif
+	int n_cpu = GMT_get_num_processors();
+
 	if (n_cpu > 1 && !GMT->current.setting.fftwf_threads) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {

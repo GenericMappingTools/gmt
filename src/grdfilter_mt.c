@@ -567,7 +567,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 			case 'T':	/* Toggle registration */
 				Ctrl->T.active = true;
 				break;
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 			case 'z':
 				Ctrl->z.active = true;
 				if (opt->arg && opt->arg[0] == 'a')		/* Use all processors abvailable */
@@ -648,7 +648,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	struct THREAD_STRUCT *threadArg;
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 	GThread **threads;
 #endif
 
@@ -894,7 +894,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 					filter_name[filter_type], 100.0 * Ctrl->F.quantile);
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 		GMT_Report (API, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", Ctrl->z.n_threads);
 #endif
 	}
@@ -939,7 +939,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	GMT_tic(GMT);
 
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 	if (Ctrl->z.n_threads > 1)
 		threads = GMT_memory (GMT, NULL, Ctrl->z.n_threads, GThread *);
 #endif
@@ -976,7 +976,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			threaded_function (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
 		}
-#ifndef USE_GTHREADS
+#ifndef HAVE_GLIB_GTHREAD
 	}
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Gout->header->ny) / Ctrl->z.n_threads);

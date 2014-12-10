@@ -64,7 +64,7 @@ extern "C" {
 /* Include glib header and define mutex calls that are no-op when not linking against glib
    These are used only GLIB based multi-threading */
 
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 #include <glib.h>
 
 #define GMT_declare_gmutex static GMutex mutex;

@@ -38,7 +38,7 @@
 #include "okbfuns.h"
 #include "../mgd77/mgd77.h"
 
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 #include <glib.h>
 #endif
 
@@ -235,7 +235,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z z level of reference plane [Default = 0]\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 	GMT_Option (API, "x");
 #else
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Not available since this binary was not build with multi-threading support.\n");
@@ -1310,7 +1310,7 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
 
 	int i, indf;
 	struct THREAD_STRUCT *threadArg;
-#ifdef USE_GTHREADS
+#ifdef HAVE_GLIB_GTHREAD
 	GThread **threads;
 	if (GMT->common.x.n_threads > 1)
 		threads = GMT_memory (GMT, NULL, GMT->common.x.n_threads, GThread *);
@@ -1349,7 +1349,7 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
 			grdgravmag3d_calc_surf_ (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
 		}
-#ifndef USE_GTHREADS
+#ifndef HAVE_GLIB_GTHREAD
 	}
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Grid->header->ny - 1 - indf) / GMT->common.x.n_threads);

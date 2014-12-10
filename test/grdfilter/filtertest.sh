@@ -6,6 +6,10 @@
 
 ps=filtertest.ps
 
+if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then
+  _thread_opt=-x+a
+fi
+
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
 DATA="../genper/etopo10.nc" # Test on ETOP10 data
@@ -19,7 +23,7 @@ gmt set PROJ_ELLIPSOID Sphere
 lo=`gmt gmtmath -Q $D 2 DIV 0.5 SUB =`
 hi=`gmt gmtmath -Q $D 2 DIV 0.5 ADD =`
 # Run gmt grdfilter as specified
-gmt grdfilter -A${mode}${lon}/$lat -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg
+gmt grdfilter -A${mode}${lon}/$lat -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg ${_thread_opt}
 n_conv=`cat n_conv.txt`
 if [ $lat -lt 0 ]; then	# S hemisphere view
 	plat=-90
