@@ -125,6 +125,7 @@ struct GMT_CONTOUR {
 	int hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
 	bool annot;			/* true if we want labels */
 	bool isolate;		/* true if we have a limit on how close labels may appear (see below) */
+	bool segmentize;	/* true if we should segmentize input lines before plotting */
 	bool spacing;		/* true if we have spacing constraints to apply */
 	bool number;			/* true if we have constraints on the number of labels to apply */
 	bool do_interpolate;		/* true if we must resample the crossing lines */

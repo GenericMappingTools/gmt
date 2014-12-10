@@ -417,6 +417,7 @@ EXTERN_MSC struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct 
 EXTERN_MSC struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, bool alternate);
 EXTERN_MSC uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode);
 EXTERN_MSC bool GMT_crossing_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
+EXTERN_MSC struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din);
 EXTERN_MSC int GMT_err_func (struct GMT_CTRL *GMT, int err, bool fail, char *file, const char *where);
 EXTERN_MSC int64_t GMT_delaunay (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link);
 EXTERN_MSC void GMT_delaunay_free (struct GMT_CTRL *GMT, int **link);

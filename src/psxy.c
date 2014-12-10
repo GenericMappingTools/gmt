@@ -1221,7 +1221,17 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		if (S.symbol == GMT_SYMBOL_QUOTED_LINE && S.G.segmentize) {	/* Special quoted line where each point-pair should be considered a line segment */
+			struct GMT_DATASET *Dtmp = NULL;	/* Pointer to GMT multisegment table(s) */
+			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+				Return (API->error);
+			}
+			D = GMT_segmentize_data (GMT, Dtmp);	/* Segmentize the data */
+			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
+				Return (API->error);
+			}
+		}
+		else if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
 

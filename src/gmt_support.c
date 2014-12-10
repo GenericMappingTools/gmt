@@ -3691,7 +3691,7 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 {
 	/* Interpret the contour-label information string and set structure items */
 	int k, j = 0, error = 0;
-	char txt_a[GMT_LEN256] = {""}, c, *p = NULL;
+	char txt_a[GMT_LEN256] = {""}, c, arg, *p = NULL;
 
 	L->spacing = false;	/* Turn off the default since we gave an option */
 	strncpy (L->option, &txt[1], GMT_BUFSIZ);	 /* May need to process L->option later after -R,-J have been set */
@@ -3700,9 +3700,16 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 		L->isolate = true;
 		L->label_isolation = GMT_to_inch (GMT, &p[2]);
 	}
-
 	L->flag = flag;
-	switch (txt[0]) {
+	/* Special check for quoted lines */
+	if (txt[0] == 'S' || txt[0] == 's') {	/* -SqS|n should be treated as -SqN|n once file is segmentized */
+		arg = (txt[0] == 'S') ? 'N' : 'n';	/* S -> N and s -> n */
+		L->segmentize = true;
+	}
+	else
+		arg = txt[0];
+
+	switch (arg) {
 		case 'L':	/* Quick straight lines for intersections */
 			L->do_interpolate = true;
 		case 'l':
@@ -10162,6 +10169,50 @@ void GMT_cols_detrend (struct GMT_CTRL *GMT, double *t, double *x, double *y, ui
 	}
 }
 #endif
+
+/*! . */
+struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din) {
+	/* Din is a data set with any number of tables and segments and records.
+	 * On output we return pointer to new dataset in which all points in Din are used to
+	 * form 2-point line segments.  So output will have lots of segments, all of length 2,
+	 * and all these segments are placed in the first (and only) output table.
+	 *
+	 * Dout is the new data set with all the segmentized lines;
+	 */
+	uint64_t dim[4] = {1, 0, 2, 0};	/* Put everything in one table, each segment has 2 points */
+	uint64_t tbl, seg, row, col, new_seg, last_row;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
+	
+	dim[GMT_COL] = Din->n_columns;	/* Same number of columns as input dataset */
+	/* Determine how many total segments will be created */
+	for (tbl = 0; tbl < Din->n_tables; tbl++) {
+		Tin = Din->table[tbl];
+		for (seg = 0; seg < Tin->n_segments; seg++)	/* For each segment to resample */
+			dim[GMT_SEG] += Tin->segment[seg]->n_rows - 1;	/* That is how many segments will be derived from these n_rows points */
+	}
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Segmentize input data into %" PRIu64 " 2-point segment lines\n", dim[GMT_SEG]);
+	/* Allocate the dataset with one large table */
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* Our new dataset */
+	Tout = D->table[0];	/* The only table */
+	for (tbl = new_seg = 0; tbl < Din->n_tables; tbl++) {
+		Tin = Din->table[tbl];	/* Current input table */
+		for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
+			last_row = 0;
+			for (row = 1; row < Tin->segment[seg]->n_rows; row++, new_seg++) {	/* For each end point in the new 2-point segments */
+				for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
+					Tout->segment[new_seg]->coord[col][0] = Tin->segment[seg]->coord[col][last_row];	/* 1st point */
+					Tout->segment[new_seg]->coord[col][1] = Tin->segment[seg]->coord[col][row];	/* 2nd point */
+				}
+				last_row = row;
+			}
+		}
+	}
+	GMT_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
+
+	return (D);
+}
+
 
 #define SEG_DIST 2
 #define SEG_AZIM 3

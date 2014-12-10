@@ -873,6 +873,10 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	GMT_message (GMT, "%s   N+1 places a single label at the end of the %s.\n", pad, type[kind]);
 	GMT_message (GMT, "%s   Append /<min_dist> to enforce a minimum spacing between\n", pad);
 	GMT_message (GMT, "%s   consecutive labels [0]\n", pad);
+	if (kind == 1) {
+		GMT_message (GMT, "%ss|S<n_label> sets number of equidistant labels per segmentized %s.\n", pad, type[kind]);
+		GMT_message (GMT, "%s   Same as n|N but splits input lines to series of 2-point segments first.\n", pad);
+	}
 	GMT_message (GMT, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places\n", pad);
 	GMT_message (GMT, "%s   labels at intersections between %ss and lines in\n", pad, type[kind]);
 	GMT_message (GMT, "%s   <xfile.d>.  Use X to resample the lines first.\n", pad);

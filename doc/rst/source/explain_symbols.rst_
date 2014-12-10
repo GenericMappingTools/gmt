@@ -180,6 +180,10 @@
                 /*min_dist*\ [**c**\ \|\ **i**\ \|\ **p**] to enforce that a
                 minimum distance separation between successive labels is enforced.
 
+            **s**\ \|\ **S**\ *n_label*
+                Same as **n**\ \|\ **N**\ *n_label* but implies that the input data are
+		converted into a series of 2-point line segments before plotting.
+
             **x**\ \|\ **X**\ *xfile.d*
                 Reads the multisegment file *xfile.d* and places labels at the
                 intersections between the quoted lines and the lines in *xfile.d*.
