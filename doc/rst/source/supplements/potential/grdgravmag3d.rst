@@ -16,9 +16,10 @@ Synopsis
 **grdgravmag3d** *grdfile_top* [*grdfile_bot*] [ **-C**\ *density* ]
 [ **-D** ] [ **-F**\ *xy_file* ]
 [ **-G**\ *outgrid* ]
-|SYN_OPT-I|
+[ |SYN_OPT-I| ]
 [ **-L**\ *z_obs* ]
 [ **-Q**\ [\ **n**\ *n_pad*]\ \|\ [*pad_dist*]\ \|\ [<w/e/s/n>] ]
+[ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ **-Z**\ *level* ]
 [ **-fg** ]
@@ -41,11 +42,12 @@ Required Arguments
    provided then the gravity/magnetic efect of the volume between them is computed. 
 
 **-C**\ *density*
-    Sets body density in SI. This option is mutually exclusive with
-    **-H**.
+    Sets body density in SI.
+
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
     option is mutually exlusive with **-G**.
+
 **-G**\ *outgrid*
     Output the gravity anomaly at nodes of this grid file.
 
@@ -55,7 +57,7 @@ Optional Arguments
 .. include:: ../../explain_-I.rst_
 
 **-L**\ *z_obs* 
-    sets level of observation [Default = 0]. That is the height (z) at
+    Sets level of observation [Default = 0]. That is the height (z) at
     which anomalies are computed.
 
 **-Q**\ [\ **n**\ *n_pad*]\ \|\ [\ *pad_dist*]\ \|\ [<w/e/s/n>]
