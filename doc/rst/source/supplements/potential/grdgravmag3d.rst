@@ -43,19 +43,16 @@ Required Arguments
 **-C**\ *density*
     Sets body density in SI. This option is mutually exclusive with
     **-H**.
-**-F**\ *xy\_file*
+**-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
     option is mutually exlusive with **-G**.
 **-G**\ *outgrid*
     Output the gravity anomaly at nodes of this grid file.
 
-.. include:: ../../explain_-I.rst_
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-R.rst_
-
 Optional Arguments
 ------------------
+
+.. include:: ../../explain_-I.rst_
 
 **-L**\ *z_obs* 
     sets level of observation [Default = 0]. That is the height (z) at
@@ -69,6 +66,9 @@ Optional Arguments
       **-Q**\ *pad_dist* extend the region by west-pad, east+pad, etc.
 
       **-Q**\ *region* Same sintax as **-R**.
+
+.. |Add_-R| replace:: Note: this overrides the source grid region (Default: use same region as input)
+.. include:: ../../explain_-R.rst_
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
