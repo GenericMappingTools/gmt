@@ -170,6 +170,7 @@ void *New_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	C = GMT_memory (GMT, NULL, 1, struct GRDOKB_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->E.thickness = 500;
 	C->L.zobs = 0;
 	C->D.z_dir = -1;		/* -1 because Z was positive down for Okabe */
 	C->S.radius = 30000;
@@ -207,7 +208,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G name of the output grdfile.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D if z is positive down [Default positive up]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m [Default = 500 m].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H sets parameters for computation of magnetic anomaly (Can be used multiple times)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f_dec/f_dip -> geomagnetic declination/inclination\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m_int/m_dec/m_dip -> body magnetic intensity/declination/inclination\n");
@@ -219,7 +220,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     z|Z      to compute the Vertical component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     h|H      to compute the Horizontal component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t|T|f|F  to compute the total field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set anny of -H+i|+g|+r|+f|+n to do that\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set any of -H+i|+g|+r|+f|+n to do that\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L sets level of observation [Default = 0]\n");
@@ -231,7 +232,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<region> Same sintax as -R.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S search radius in km (but only in the two grids mode).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S search radius in km (but only in the two grids mode) [Default = 30 km].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z z level of reference plane [Default = 0]\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
