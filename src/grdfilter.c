@@ -179,6 +179,7 @@ struct FILTER_INFO {
 	unsigned int nx;		/* The max number of filter weights in x-direction */
 	unsigned int ny;		/* The max number of filter weights in y-direction */
 	int x_half_width;		/* Number of filter nodes to either side needed at this latitude */
+	int x_half_width_back;	/* Backup value to use in the threading function (the above may be changed per thread) */
 	int y_half_width;		/* Number of filter nodes above/below this point (ny_f/2) */
 	unsigned int d_flag;
 	bool rect;		/* For 2-D rectangular filtering */
@@ -1127,6 +1128,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	threadArg = GMT_memory (GMT, NULL, GMT->common.x.n_threads, struct THREAD_STRUCT);
 
+	F.x_half_width_back = F.x_half_width;		/* Make a copy because to be used in threaded_function */
+
 	for (i = 0; i < GMT->common.x.n_threads; i++) {
 		threadArg[i].GMT        = GMT;
 		threadArg[i].Ctrl       = Ctrl;
@@ -1273,6 +1276,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 	unsigned int n_in_median, n_nan = 0, col_out, row_out, n_span;
 	unsigned int one_or_zero = 1, GMT_n_multiples = 0;
 	int tid = 0, col_in, row_in, ii, jj, row_origin;
+	char *visit; 
 #ifdef DEBUG
 	unsigned int n_conv = 0;
 #endif
@@ -1308,6 +1312,9 @@ void threaded_function (struct THREAD_STRUCT *t) {
     struct FILTER_INFO F        = t->F;
     struct GRDFILTER_BIN_MODE_INFO *B = t->B;
 
+	visit = GMT_memory (GMT, NULL, Gin->header->nx, char);		/* We need a local copy of this becuase it's modified in this function */
+	F.x_half_width = F.x_half_width_back;		/* Reset it because it might have been changed by a previous thread */
+
 	if (slow) {
 		if (slower)		/* Spherical (weighted) median/modes requires even more work */
 			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, struct OBSERVATION);
@@ -1342,7 +1349,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 			if (y > 90.0 && (F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
 			visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */
 		}
-			
+
 		if (effort_level == 2) set_weight_matrix (GMT, &F, weight, y_out, par, x_fix, y_fix);	/* Compute new weights for this latitude */
 		if (!fast_way) y_shift = y_out - GMT_grd_row_to_y (GMT, row_origin, Gin->header);
 
@@ -1369,7 +1376,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 			for (jj = -F.y_half_width; go_on && jj <= F.y_half_width; jj++) {	/* Possible -/+ rows to consider for filter input */
 				row_in = row_origin + jj;		/* Current input data row number */
 				if (row_in < 0 || (row_in >= (int)Gin->header->ny)) continue;	/* Outside input y-range */
-				if (visit_check) GMT_memset (F.visit, Gin->header->nx, char);	/* Reset our longitude visit counter */
+				if (visit_check) GMT_memset (visit, Gin->header->nx, char);	/* Reset our longitude visit counter */
 				for (ii = -F.x_half_width; go_on && ii <= F.x_half_width; ii++) {	/* Possible -/+ columns to consider on both sides of input point */
 					col_in = col_origin[col_out] + ii;	/* Input column to consider */
 					if (spherical) {			/* Must handle wrapping around the globe */
@@ -1378,8 +1385,8 @@ void threaded_function (struct THREAD_STRUCT *t) {
 					}
 					if (col_in < 0 || (col_in >= (int)Gin->header->nx)) continue;	/* Still outside range of original input grid */
 					if (visit_check) {	/* Make sure we never include the same node twice along a given row */
-						if (F.visit[col_in]) continue;		/* Already been used */
-						F.visit[col_in] = 1;			/* Now marked as visited */
+						if (visit[col_in]) continue;		/* Already been used */
+						visit[col_in] = 1;			/* Now marked as visited */
 					}
 					ij_wt = WT_IJ (F, jj, ii);		/* Get weight array index */
 					if (weight[ij_wt] <= 0.0 && get_weight_sum) continue;	/* Negative weight [and not operator] means we are outside the filter circle */
@@ -1486,4 +1493,5 @@ void threaded_function (struct THREAD_STRUCT *t) {
 		if (slower) GMT_free (GMT, work_data);
 		else GMT_free (GMT, work_array);
 	}
+	GMT_free (GMT, visit);
 }
