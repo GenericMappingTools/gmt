@@ -179,7 +179,6 @@ struct FILTER_INFO {
 	unsigned int nx;		/* The max number of filter weights in x-direction */
 	unsigned int ny;		/* The max number of filter weights in y-direction */
 	int x_half_width;		/* Number of filter nodes to either side needed at this latitude */
-	int x_half_width_back;	/* Backup value to use in the threading function (the above may be changed per thread) */
 	int y_half_width;		/* Number of filter nodes above/below this point (ny_f/2) */
 	unsigned int d_flag;
 	bool rect;		/* For 2-D rectangular filtering */
@@ -195,7 +194,7 @@ struct FILTER_INFO {
 };
 
 struct THREAD_STRUCT {
-	bool   fast_way, spherical, slow, slower;
+	bool   fast_way, spherical, slow, slower, get_weight_sum;
 	int    *col_origin, nx_wrap;
 	unsigned int row, r_start, r_stop, effort_level, filter_type, thread_num;
 	double x_fix, y_fix, last_median;
@@ -895,6 +894,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
+	/* BECAUSE IT'S NOT TESTED LEAVE THIS (TEMP) WARNING ON TILL WE ARE SURE IT WORKS */
+	if (Ctrl->F.custom && GMT->common.x.n_threads > 1)
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Custom filter and multi-threading is not gurantied to work.\n");
+
 	/* Allocate space and determine the header for the new grid; croak if there are issues. */
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 		!one_or_zero, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
@@ -1036,11 +1039,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (visit_check) F.visit = GMT_memory (GMT, NULL, Gin->header->nx, char);
 	for (ii = 0; ii <= F.x_half_width; ii++) F.x[ii] = ii * F.dx;
 	for (jj = 0; jj <= F.y_half_width; jj++) F.y[jj] = jj * F.dy;
-	
-	weight = GMT_memory (GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
-	
+
 	if (Ctrl->F.custom) {	/* Read convolution grid from file */
 		ij_wt = 0;	wt_sum = 0.0;
+		weight = GMT_memory (GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
 		GMT_grd_loop (GMT, Fin, row_in, col_in, ij_in) { /* Just copy over to weight array while skipping the padding */
 			weight[ij_wt++] = Fin->data[ij_in];
 			wt_sum += Fin->data[ij_in];
@@ -1113,8 +1115,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	else 
 		effort_level = 3;
 	
-	if (effort_level == 1) set_weight_matrix (GMT, &F, weight, 0.0, par, x_fix, y_fix);
-	
 #ifdef DEBUG
 	if (Ctrl->A.active) for (ij_in = 0; ij_in < Gin->header->size; ij_in++) Gin->data[ij_in] = 0.0f;	/* We are using Gin to store filter weights etc instead */
 #endif
@@ -1127,8 +1127,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #endif
 
 	threadArg = GMT_memory (GMT, NULL, GMT->common.x.n_threads, struct THREAD_STRUCT);
-
-	F.x_half_width_back = F.x_half_width;		/* Make a copy because to be used in threaded_function */
 
 	for (i = 0; i < GMT->common.x.n_threads; i++) {
 		threadArg[i].GMT        = GMT;
@@ -1150,6 +1148,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
    		threadArg[i].spherical  = spherical;
    		threadArg[i].slow       = slow;
    		threadArg[i].slower     = slower;
+   		threadArg[i].get_weight_sum = get_weight_sum;
    		threadArg[i].nx_wrap    = nx_wrap;
    		threadArg[i].effort_level = effort_level;
    		threadArg[i].filter_type  = filter_type;
@@ -1182,7 +1181,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	GMT_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
 
-	GMT_free (GMT, weight);
+	if (weight) GMT_free (GMT, weight);
 	GMT_free (GMT, F.x);
 	GMT_free (GMT, F.y);
 	if (visit_check) GMT_free (GMT, F.visit);
@@ -1272,7 +1271,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 /* ----------------------------------------------------------------------------------------------------- */
 void threaded_function (struct THREAD_STRUCT *t) {
 
-	bool visit_check = false, go_on, get_weight_sum = true;
+	bool visit_check = false, go_on;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out, n_span;
 	unsigned int one_or_zero = 1, GMT_n_multiples = 0;
 	int tid = 0, col_in, row_in, ii, jj, row_origin;
@@ -1283,7 +1282,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 	uint64_t ij_in, ij_out, ij_wt;
 	double y, y_out, wt_sum, value, this_estimate = 0.0;
 	double y_shift = 0.0, lat_out, w;
-	double *work_array = NULL;
+	double *work_array = NULL, *weight = NULL;
 	struct OBSERVATION *work_data = NULL;
 
 	/* Convenience vars */
@@ -1291,13 +1290,13 @@ void threaded_function (struct THREAD_STRUCT *t) {
    	bool   spherical            = t->spherical;
    	bool   slow                 = t->slow;
    	bool   slower               = t->slower;
+   	bool   get_weight_sum       = t->get_weight_sum;
     int    *col_origin          = t->col_origin;
     int    nx_wrap              = t->nx_wrap;
     unsigned int r_start        = t->r_start;
     unsigned int r_stop         = t->r_stop;
     unsigned int effort_level   = t->effort_level;
     unsigned int filter_type    = t->filter_type;
-    double *weight              = t->weight;
     double *x_shift             = t->x_shift;
     double *par                 = t->par;
     double x_fix                = t->x_fix;
@@ -1312,8 +1311,14 @@ void threaded_function (struct THREAD_STRUCT *t) {
     struct FILTER_INFO F        = t->F;
     struct GRDFILTER_BIN_MODE_INFO *B = t->B;
 
-	visit = GMT_memory (GMT, NULL, Gin->header->nx, char);		/* We need a local copy of this becuase it's modified in this function */
-	F.x_half_width = F.x_half_width_back;		/* Reset it because it might have been changed by a previous thread */
+	/* We need a local copy of these becuase they are modified in this function */
+	visit = GMT_memory (GMT, NULL, Gin->header->nx, char);
+	if (!weight)
+		weight = GMT_memory(GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
+	else
+		weight = t->weight;	/* The F.custom case, where weights were obtained in main and allows NOT multi-threading */
+
+	if (effort_level == 1) set_weight_matrix (GMT, &F, weight, 0.0, par, x_fix, y_fix);
 
 	if (slow) {
 		if (slower)		/* Spherical (weighted) median/modes requires even more work */
@@ -1493,5 +1498,6 @@ void threaded_function (struct THREAD_STRUCT *t) {
 		if (slower) GMT_free (GMT, work_data);
 		else GMT_free (GMT, work_array);
 	}
-	GMT_free (GMT, visit);
+	GMT_free(GMT, visit);
+	GMT_free(GMT, weight);
 }
