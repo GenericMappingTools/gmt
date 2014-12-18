@@ -2542,8 +2542,6 @@ int gmt_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.x.n_threads = 1;
 	else if (GMT->common.x.n_threads < 0)
 		GMT->common.x.n_threads = MAX(GMT_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max -n but at least one */
-	else
-		GMT->common.x.n_threads = MIN(GMT_get_num_processors(), GMT->common.x.n_threads);	/* No more than maximum available */
 
 	return (GMT_NOERROR);
 }
