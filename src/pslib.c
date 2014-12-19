@@ -4001,7 +4001,7 @@ unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char 
 	while (in < *nbytes && (output->nbytes < in || output->nbytes < 512)) {
 		if (table >= 4095) {	/* Refresh code table */
 			output = psl_lzw_putcode (output, clear);
-			for (i = 0; i < ncode; i++) code[i]=0;
+			memset (code, 0, ncode * sizeof(*code));
 			table = eod + 1;
 			bmax = clear * 2;
 			output->depth = 9;
