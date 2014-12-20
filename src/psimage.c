@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: psimage reads a 1, 8, 24, or 32 bit Sun rasterfile and plots it on the page
- * Other raster formats are supported if ImageMagick's convert is found in the
+ * Other raster formats are supported if GraphicsMagick's/ImageMagick's convert is found in the
  * system path.
  *
  * Author:	Paul Wessel

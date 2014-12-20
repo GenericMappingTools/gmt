@@ -990,7 +990,7 @@ fonts can be found in the :doc:`gmt` man page.
 **PS_IMAGE_COMPRESS**
     Determines if PostScript images are compressed using the Run-Length
     Encoding scheme (rle), Lempel-Ziv-Welch compression (lzw), DEFLATE
-    compression (deflate[,level]), or not at all (none) [lzw]. When
+    compression (deflate[,level]), or not at all (none) [deflate,5]. When
     specifying deflate, the compression level (1--9) may optionally be
     appended.
 

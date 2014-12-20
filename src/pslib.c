@@ -270,7 +270,7 @@ unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char 
 psl_byte_stream_t psl_lzw_putcode (psl_byte_stream_t stream, short int incode);
 unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int depth, int compress, int encode, int mask);
-void psl_a85_encode (struct PSL_CTRL *PSL, unsigned char quad[], int nbytes);
+size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf, size_t nbytes);
 int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy);
 int psl_comp_long_asc (const void *p1, const void *p2);
 int psl_comp_rgb_asc (const void *p1, const void *p2);
@@ -2805,10 +2805,10 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 		char *null_dev = "/dev/null";
 #endif
 		sprintf (tmp_file, "PSL_TMP_%d.ras", (int)getpid());
-		/* Try imagemagick "convert" */
-		sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
-		if (system (cmd)) {	/* convert failed, try GraphicsMagic's "gm convert" */
-			sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
+		/* Try GraphicsMagick's "convert" */
+		sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
+		if (system (cmd)) {	/* convert failed, try ImageMagic's "gm convert" */
+			sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
 			if (system (cmd)) {	/* gmt convert failed, give up */
 				PSL_message (PSL, PSL_MSG_FATAL, "Automatic conversion of file %s to Sun rasterfile failed\n", file);
 				remove (tmp_file);	/* Remove the temp file */
@@ -3828,13 +3828,13 @@ void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int n
 	 * mask		= image (0), imagemask (1), or neither (2)
 	 */
 	int nbytes, i;
+	unsigned line_length = 0;
 	unsigned char *buffer1 = NULL, *buffer2 = NULL;
 	const char *kind_compress[] = {"", "/RunLengthDecode filter", "/LZWDecode filter", "/FlateDecode filter"};
 	const char *kind_mask[] = {"image", "imagemask"};
 
 	nx = abs (nx);
 	nbytes = ((int)nbits * (int)nx + 7) / (int)8 * (int)ny;
-	PSL->internal.length = 0;
 
 	/* Transform RGB stream to CMYK or Gray stream */
 	if (PSL->internal.color_mode == PSL_CMYK && nbits == 24)
@@ -3868,15 +3868,14 @@ void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int n
 		PSL_command (PSL, "\n>> %s\n", kind_mask[mask]);
 	}
 	if (encode == PSL_ASCII85) {
-		/* Write each 4-tuple as ASCII85 5-tuple */
-		for (i = 0; i < nbytes; i += 4) psl_a85_encode (PSL, &buffer2[i], nbytes-i);
-		PSL_command (PSL, "~>\n");
+		/* Convert 4-tuples to ASCII85 5-tuples and write buffer to file */
+		psl_a85_encode (PSL, buffer2, nbytes);
 	}
 	else {
 		/* Regular hexadecimal encoding */
 		for (i = 0; i < nbytes; i++) {
-			PSL_command (PSL, "%02X", buffer2[i]); PSL->internal.length += 2;
-			if (PSL->internal.length > 95) { PSL_command (PSL, "\n"); PSL->internal.length = 0; }
+			PSL_command (PSL, "%02X", buffer2[i]); line_length += 2;
+			if (line_length > 95) { PSL_command (PSL, "\n"); line_length = 0; }
 		}
 	}
 	if (mask == 2) PSL_command (PSL, "%s", kind_compress[compress]);
@@ -3886,35 +3885,77 @@ void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int n
 	if (buffer1 != buffer ) PSL_free (buffer1);
 }
 
-void psl_a85_encode (struct PSL_CTRL *PSL, unsigned char quad[], int nbytes)
+size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf, size_t nbytes)
 {
-	/* Encode 4-byte binary to 5-byte ASCII
-	 * Special cases:	#00000000 is encoded as z
-	 *			When n < 4, output only n+1 bytes */
-	int j;
-	unsigned int n = 0;	/* Was size_t but that fails under 64-bit mode */
-	unsigned char c[5];
+	/* Encode 4-byte binary data from src_buf to 5-byte ASCII85
+	 * Special cases: 0x00000000 is encoded as z
+	 * Encoded data is stored in dst_buf and written to file in
+	 * one go, which is faster than writing one char at a time.
+	 * The function returns the output buffer size. */
+	size_t dst_buf_size;
+	unsigned char *dst_buf, *dst_ptr;
+	const unsigned char *src_ptr = src_buf, *src_end = src_buf + nbytes;
+	const unsigned int max_line_len = 95; /* number of chars after which a newline is inserted */
 
-	if (nbytes < 1) return;		/* Ignore empty input */
-	nbytes = MIN (4, nbytes);	/* Limit to first four bytes */
+	if (!nbytes)
+		/* Ignore empty input */
+		return 0;
 
-	/* Wrap quad into a 4-byte integer */
-	for (j = 0; j < nbytes; j++) n += quad[j] << (24 - 8*j);
+	/* dst_buf has to be large enough to hold data + line endings */
+	dst_buf_size = nbytes * 1.25 + 1; /* output buffer is at least 1.25 times larger */
+	dst_buf_size += dst_buf_size / max_line_len + 4; /* add more space for '\n' and delimiter */
+	dst_ptr = dst_buf = PSL_memory (PSL, NULL, dst_buf_size, unsigned char); /* output buffer */
 
-	if (n == 0 && nbytes == 4) {	/* Set the only output byte to "z" */
-		nbytes = 0;
-		c[4] = 122;
+	do { /* for each quad in src_buf while src_ptr < src_end */
+		const size_t ilen = nbytes > 4 ? 4 : nbytes, olen = ilen + 1;
+		static unsigned int line_len = 0;
+		unsigned int i, n = 0;
+		int j;
+		unsigned char quintuple[5] = { 0 };
+
+		/* Wrap 4 chars into a 4-byte integer */
+		for (i = 0; i < ilen; ++i)
+			n += *src_ptr++ << (24 - 8*i);
+
+		if (n == 0 && ilen == 4) {
+			/* Set the only output byte to "z" */
+			*dst_ptr++ = 'z';
+			++line_len;
+			continue;
+		}
+
+		/* Else determine output 5-tuple */
+		for (j = 4; j >= 0; --j) {
+			quintuple[j] = (unsigned char) ((n % 85) + '!');
+			n = n / 85;
+		}
+
+		/* Copy olen bytes to dst_buf */
+		memcpy (dst_ptr, quintuple, olen);
+		line_len += olen;
+		dst_ptr += olen;
+
+		/* Insert newline when line exceeds 95 characters */
+		if (line_len + 1 > max_line_len) {
+			*dst_ptr++ = '\n';
+			line_len = 0;
+		}
+	} while (nbytes -= 4, src_ptr < src_end); /* end do */
+
+	{
+		/* Mark the end of the Adobe ASCII85-encoded string: */
+		const unsigned char delimiter[] = "~>\n";
+		memcpy (dst_ptr, delimiter, 3);
+		dst_ptr += 3;
 	}
-	else {				/* Determine output 5-tuple */
-		for (j = 0; j < 4; j++) { c[j] = (n % 85) + 33; n = n / 85; }
-		c[4] = (unsigned char)(n + 33);
-	}
 
-	/* Print out (nbytes + 1) bytes
-	 * Insert newline when line exceeds 96 characters */
-	for (j = 4; j >= 4-nbytes; j--) {
-		PSL_command (PSL, "%c", c[j]); PSL->internal.length++;
-		if (PSL->internal.length > 95) { PSL_command (PSL, "\n"); PSL->internal.length = 0; }
+	{
+		/* Write buffer to file and clean up */
+		const size_t buf_size = dst_ptr - dst_buf;
+		assert (buf_size <= dst_buf_size); /* check length */
+		fwrite (dst_buf, sizeof(char), buf_size, PSL->internal.fp);
+		PSL_free (dst_buf);
+		return buf_size;
 	}
 }
 
@@ -4088,7 +4129,7 @@ unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char 
 	while (in < *nbytes && (output->nbytes < in || output->nbytes < 512)) {
 		if (table >= 4095) {	/* Refresh code table */
 			output = psl_lzw_putcode (output, clear);
-			for (i = 0; i < ncode; i++) code[i]=0;
+			memset (code, 0, ncode * sizeof(*code));
 			table = eod + 1;
 			bmax = clear * 2;
 			output->depth = 9;

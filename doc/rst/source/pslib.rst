@@ -646,7 +646,7 @@ Here are functions used to read and plot various images.
     Encapsulated PostScript files or 1-, 8-, 24-, or 32-bit raster
     images in old, standard, run-length encoded, or RGB-style Sun
     format. Non-Sun rasters are automatically reformatted to Sun rasters
-    via a system call to ImageMagick's **convert**, if installed. The
+    via a system call to GraphicsMagick's or ImageMagick's **convert**, if installed. The
     image is returned via the *image* pointer.
 
 Plotting Text

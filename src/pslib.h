@@ -287,7 +287,6 @@ struct PSL_CTRL {
 		int line_join;		/* 0, 1, or 2 for miter, arc, or bevel [miter]	*/
 		int miter_limit;		/* Acute angle threshold 0-180; 0 means PS default [0] */
 		int ix, iy;		/* Absolute coordinates of last point		*/
-		int length;		/* Image row output byte counter		*/
 		int n_userimages;		/* Number of specified custom patterns		*/
 		int x0, y0;		/* x,y PS offsets				*/
 		FILE *fp;			/* PS output file pointer. NULL = stdout	*/

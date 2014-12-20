@@ -32,8 +32,8 @@ while [ ${frame} -lt ${n_frames} ]; do
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps
 	gmt psxy -Rus.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
 	gmt psxy -Rus.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 ${dir} 0.37"
+	[[ ${frame} -eq 0 ]] && cp $$.ps ${ps}
 	if [ $# -eq 0 ]; then
-		mv $$.ps ${ps}
 		gmt_cleanup .gmt
 		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
@@ -44,7 +44,7 @@ while [ ${frame} -lt ${n_frames} ]; do
 	frame=`gmt_set_framenext ${frame}`
 done
 # 3. Create animated GIF file and HTML for web page
-convert -delay 10 -loop 0 $$/${name_}*.tif ${name}.gif
+${GRAPHICSMAGICK:-gm} convert -delay 10 -loop 0 $$/${name_}*.tif ${name}.gif
 cat << END > ${name}.html
 <HTML>
 <TITLE>GMT shading: A tool for feature detection</TITLE>
@@ -59,7 +59,7 @@ vary the azimuth of the illumination (see arrow).  As the light-source sweeps ar
 the area over 360 degrees we notice that different features in the data
 become hightlighted.  This is because the illumination is based on data
 gradients and such derivatives will high-light short-wavelength signal.
-Again, our animation uses Imagemagick's convert tool to make an animated GIF file
+Again, our animation uses GraphicsMagick's convert tool to make an animated GIF file
 with a 0.1 second pause between the 36 frames.
 <HR>
 <I>${name}.sh: Created by ${USER} on `date`</I>

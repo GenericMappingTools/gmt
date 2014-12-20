@@ -59,8 +59,15 @@ if (_GSHHG_FILE AND NOT GSHHG_FOUND)
 		-DINCLUDE_DIRECTORIES=${NETCDF_INCLUDE_DIR}
 		-DLINK_LIBRARIES=${NETCDF_LIBRARIES}
 		COMPILE_DEFINITIONS -DSTANDALONE
+		COMPILE_OUTPUT_VARIABLE _GSHHG_VERSION_COMPILE_OUT
 		RUN_OUTPUT_VARIABLE _GSHHG_VERSION_STRING
 		ARGS ${_GSHHG_FILE} ${GSHHG_MIN_REQUIRED_VERSION})
+
+	if (NOT _COMPILED_GSHHG_VERSION OR _EXIT_GSHHG_VERSION STREQUAL FAILED_TO_RUN)
+		message(FATAL_ERROR "Cannot determine GSHHG version:\n
+		${_GSHHG_VERSION_COMPILE_OUT}\n
+		${_GSHHG_VERSION_STRING}")
+	endif ()
 
 	# check version string
 	if (_COMPILED_GSHHG_VERSION)
@@ -70,6 +77,9 @@ if (_GSHHG_FILE AND NOT GSHHG_FOUND)
 			# found GSHHG of required version or higher
 			set (GSHHG_VERSION ${GSHHG_VERSION} CACHE INTERNAL "GSHHG version")
 			get_filename_component (GSHHG_EXT ${_GSHHG_FILE} EXT)
+			if (GSHHG_EXT STREQUAL "")
+				message(FATAL_ERROR "The string literal 'GSHHG_EXT' is empty.")
+			endif()
 			set (GSHHG_EXT ${GSHHG_EXT} CACHE INTERNAL "GSHHG extension")
 		elseif (_EXIT_GSHHG_VERSION EQUAL -1)
 			# found GSHHG but version is too old
@@ -78,11 +88,6 @@ if (_GSHHG_FILE AND NOT GSHHG_FOUND)
 		endif (_EXIT_GSHHG_VERSION EQUAL 0)
 	endif (_COMPILED_GSHHG_VERSION)
 endif (_GSHHG_FILE AND NOT GSHHG_FOUND)
-
-if (GSHHG_EXT STREQUAL "")
-	message(FATAL_ERROR "unexpected: the string literal 'GSHHG_EXT' is empty - reset to .nc")
-	set (GSHHG_EXT ".nc" CACHE INTERNAL "GSHHG default extension")
-endif()
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (GSHHG DEFAULT_MSG
