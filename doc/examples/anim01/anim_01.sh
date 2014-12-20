@@ -43,8 +43,8 @@ while [ ${frame} -le ${n_frames} ]; do
 	printf "0 1.6 a = %03d" ${angle} | gmt pstext -R -J -F+f14p,Helvetica-Bold+jTL -O -K \
 		-N -Dj0.1i/0.05i >> $$.ps
 	gmt psxy -R -J -O -T >> $$.ps
+	[[ ${frame} -eq 0 ]] && cp $$.ps ${ps}
 	if [ $# -eq 0 ]; then
-		mv $$.ps ${ps}
 		gmt_cleanup .gmt
 		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
@@ -54,9 +54,8 @@ while [ ${frame} -le ${n_frames} ]; do
 	echo "Frame ${file} completed"
 	frame=`gmt_set_framenext ${frame}`
 done
-cp $$.ps t.ps
 # 3. Create animated GIF file and HTML for web page
-convert -delay 20 -loop 0 $$/${name}_*.tif ${name}.gif
+${GRAPHICSMAGICK:-gm} convert -delay 20 -loop 0 $$/${name}_*.tif ${name}.gif
 cat << END > ${name}.html
 <HTML>
 <TITLE>GMT Trigonometry: The sine movie</TITLE>
@@ -70,7 +69,7 @@ We demonstrate how the sine function <I>y = sin(a)</I> varies with <I>a</I> over
 the full 360-degree interval.  We plot a bright red circle at each
 new angle, letting previous circles turn dark red.  The underlying
 sine curve is sampled at 10 times the frame sampling rate in order to reproduce
-a smooth curve.  Our animation uses Imagemagick's convert tool to make an animated GIF file
+a smooth curve.  Our animation uses GraphicsMagick's convert tool to make an animated GIF file
 with a 0.2 second pause between frames, set to repeat forever.
 <HR>
 <I>${name}.sh: Created by ${USER} on `date`</I>

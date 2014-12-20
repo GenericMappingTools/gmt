@@ -7058,7 +7058,7 @@ Table :ref:`sundef <tbl-sundef>`.
 +---------------------+-------------------------------------------+
 
 Numerous public-domain programs exist, such as **xv** and
-**convert** (in the ImageMagick package), that will translate between
+**convert** (in the GraphicsMagick or ImageMagick package), that will translate between
 various raster file formats such as tiff, gif, jpeg, and Sun raster.
 Raster patterns may be created with GMT plotting tools by generating
 PostScript plots that can be rasterized by ghostscript and
@@ -7199,7 +7199,7 @@ the image into a presentation.
 
 The are a number of programs that will convert PostScript files to PDF
 or raster formats, like Aladdin's **pstopdf**, pbmplus' **pstoimg**,
-or ImageMagick's **convert**, most of which run ghostscript
+or GraphicsMagick's and ImageMagick's **convert**, most of which run ghostscript
 behind the scenes. The same is true for viewers like **ghostview** and
 Apple's Preview*. So a lot of the times when people report that
 their PostScript plot does not look right but prints fine, it is the
@@ -9890,8 +9890,8 @@ Finally we show an example of a polygon file:
    For an overview of color systems such as HSV, see Appendix [app:I].
 
 .. [18]
-   Convert other graphics formats to Sun ras format using ImageMagick's
-   **convert** program.
+   Convert other graphics formats to Sun ras format using GraphicsMagick's
+	 or ImageMagick's **convert** program.
 
 .. [19]
    Requires building GMT with GDAL.

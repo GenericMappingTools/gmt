@@ -2805,10 +2805,10 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 		char *null_dev = "/dev/null";
 #endif
 		sprintf (tmp_file, "PSL_TMP_%d.ras", (int)getpid());
-		/* Try imagemagick "convert" */
-		sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
-		if (system (cmd)) {	/* convert failed, try GraphicsMagic's "gm convert" */
-			sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
+		/* Try GraphicsMagick's "convert" */
+		sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
+		if (system (cmd)) {	/* convert failed, try ImageMagic's "gm convert" */
+			sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
 			if (system (cmd)) {	/* gmt convert failed, give up */
 				PSL_message (PSL, PSL_MSG_FATAL, "Automatic conversion of file %s to Sun rasterfile failed\n", file);
 				remove (tmp_file);	/* Remove the temp file */

@@ -27,30 +27,53 @@ ps=${name}.ps
 gmt project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
 frame=0
 mkdir -p frames
-gmt grdgradient USEast_Coast.nc -A90 -Nt1 -G$${_int}.nc
-gmt makecpt -Cglobe -Z > $$.cpt
-while read lon lat dist; do
+gmt grdgradient USEast_Coast.nc -A90 -Nt1 -Gint_$$.nc
+gmt makecpt -Cglobe -Z > globe_$$.cpt
+function make_frame () {
+	local frame file ID lon lat dist
+    frame=$1; lon=$2; lat=$3; dist=$4
 	file=`gmt_set_framename ${name} ${frame}`
 	ID=`echo ${frame} | $AWK '{printf "%04d\n", $1}'`
 	gmt grdimage -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
-		${REGION} -P -Y0.1i -X0.1i USEast_Coast.nc -I$${_int}.nc -C$$.cpt \
-		--PS_MEDIA=${px}ix${py}i -K > $$.ps
-	gmt psxy -R -J -O -K -W1p $$.path.d >> $$.ps
-	gmt pstext -R0/${px}/0/${py} -Jx1i -F+f14p,Helvetica-Bold+jTL -O >> $$.ps <<< "0 4.6 ${ID}"
+		${REGION} -P -Y0.1i -X0.1i USEast_Coast.nc -Iint_$$.nc -Cglobe_$$.cpt \
+		--PS_MEDIA=${px}ix${py}i -K > ${file}_$$.ps
+	gmt psxy -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
+		${REGION} -O -K -W1p $$.path.d >> ${file}_$$.ps
+	gmt pstext -R0/${px}/0/${py} -Jx1i -F+f14p,Helvetica-Bold+jTL -O >> ${file}_$$.ps <<< "0 4.6 ${ID}"
+	[[ ${frame} -eq 0 ]] && cp ${file}_$$.ps ${ps}
 	if [ $# -eq 0 ]; then
-		mv $$.ps ${ps}
 		gmt_cleanup .gmt
 		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
-	gmt ps2raster $$.ps -Tt -E${dpi}
-	mv $$.tif frames/${file}.tif
-        echo "Frame ${file} completed"
+	gmt ps2raster ${file}_$$.ps -Tt -E${dpi}
+	mv ${file}_$$.tif frames/${file}.tif
+    rm -f ${file}_$$.ps
+	echo "Frame ${file} completed"
+}
+n_jobs=0
+max_jobs=8
+while read lon lat dist; do
+	make_frame ${frame} ${lon} ${lat} ${dist} &
+	((++n_jobs))
 	frame=`gmt_set_framenext ${frame}`
-done < $$.path.d
-if [ $# -eq 0 ]; then
-	echo "anim_04.sh: Made ${frame} frames at 480x720 pixels placed in subdirectory frames"
-#	cat $$/anim_0_123456.tiff | ffmpeg -f image2pipe -c:v mjpeg -i - ${name}_movie.m4v
-#	qt_export $$/anim_0_123456.tiff --video=h263,24,100, ${name}_movie.m4v
+	if [ ${n_jobs} -ge ${max_jobs} ]; then
+		wait
+		n_jobs=0
+	fi
+done < <(head -n22 $$.path.d)
+wait
+
+file=`gmt_set_framename ${name} 0`
+
+echo "anim_04.sh: Made ${frame} frames at 480x720 pixels placed in subdirectory frames"
+# GIF animate every 10th frame
+${GRAPHICSMAGICK:-gm} convert -delay 40 -loop 0 +dither frames/${name}_*0.tif ${name}.gif
+if type -ft ${GRAPHICSMAGICK:-ffmpeg} >/dev/null 2>&1 ; then
+	# create x264 video at 25fps
+	${FFMPEG:-ffmpeg} -f image2 -r 25 -i frames/${name}_%6d.tif -vcodec libx264 -pix_fmt yuv420p ${name}.mp4
 fi
+
 # 4. Clean up temporary files
 gmt_cleanup .gmt
+
+# ex: noet ts=4 sw=4
