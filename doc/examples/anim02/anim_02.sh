@@ -44,7 +44,7 @@ while [ ${frame} -lt ${n_frames} ]; do
 	frame=`gmt_set_framenext ${frame}`
 done
 # 3. Create animated GIF file and HTML for web page
-${GRAPHICSMAGICK:-gm} convert -delay 10 -loop 0 $$/${name_}*.tif ${name}.gif
+${GRAPHICSMAGICK-gm} convert -delay 10 -loop 0 $$/${name_}*.tif ${name}.gif
 cat << END > ${name}.html
 <HTML>
 <TITLE>GMT shading: A tool for feature detection</TITLE>

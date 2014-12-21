@@ -50,11 +50,17 @@ if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 		USE_SOURCE_PERMISSIONS)
 endif (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
+if (NOT WIN32)
+	# Do not install .bat files
+	set (_exclude_bat "*.bat")
+endif (NOT WIN32)
+
 # Install target for examples
 install (DIRECTORY examples
 	DESTINATION ${GMT_DOCDIR}
 	COMPONENT Documentation
 	USE_SOURCE_PERMISSIONS
+	PATTERN "${_exclude_bat}" EXCLUDE
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX "[.](cmake|in|ps)$" EXCLUDE)

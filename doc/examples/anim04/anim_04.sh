@@ -31,7 +31,7 @@ gmt grdgradient USEast_Coast.nc -A90 -Nt1 -Gint_$$.nc
 gmt makecpt -Cglobe -Z > globe_$$.cpt
 function make_frame () {
 	local frame file ID lon lat dist
-    frame=$1; lon=$2; lat=$3; dist=$4
+	frame=$1; lon=$2; lat=$3; dist=$4
 	file=`gmt_set_framename ${name} ${frame}`
 	ID=`echo ${frame} | $AWK '{printf "%04d\n", $1}'`
 	gmt grdimage -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
@@ -47,7 +47,7 @@ function make_frame () {
 	fi
 	gmt ps2raster ${file}_$$.ps -Tt -E${dpi}
 	mv ${file}_$$.tif frames/${file}.tif
-    rm -f ${file}_$$.ps
+	rm -f ${file}_$$.ps
 	echo "Frame ${file} completed"
 }
 n_jobs=0
@@ -60,17 +60,17 @@ while read lon lat dist; do
 		wait
 		n_jobs=0
 	fi
-done < <(head -n22 $$.path.d)
+done < $$.path.d
 wait
 
 file=`gmt_set_framename ${name} 0`
 
 echo "anim_04.sh: Made ${frame} frames at 480x720 pixels placed in subdirectory frames"
 # GIF animate every 10th frame
-${GRAPHICSMAGICK:-gm} convert -delay 40 -loop 0 +dither frames/${name}_*0.tif ${name}.gif
-if type -ft ${GRAPHICSMAGICK:-ffmpeg} >/dev/null 2>&1 ; then
+${GRAPHICSMAGICK-gm} convert -delay 40 -loop 0 +dither frames/${name}_*0.tif ${name}.gif
+if type -ft ${FFMPEG-ffmpeg} >/dev/null 2>&1 ; then
 	# create x264 video at 25fps
-	${FFMPEG:-ffmpeg} -f image2 -r 25 -i frames/${name}_%6d.tif -vcodec libx264 -pix_fmt yuv420p ${name}.mp4
+	${FFMPEG-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif -vcodec libx264 -pix_fmt yuv420p ${name}.mp4
 fi
 
 # 4. Clean up temporary files
