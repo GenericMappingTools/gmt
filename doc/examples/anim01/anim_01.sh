@@ -55,7 +55,7 @@ while [ ${frame} -le ${n_frames} ]; do
 	frame=`gmt_set_framenext ${frame}`
 done
 # 3. Create animated GIF file and HTML for web page
-${GRAPHICSMAGICK:-gm} convert -delay 20 -loop 0 $$/${name}_*.tif ${name}.gif
+${GRAPHICSMAGICK-gm} convert -delay 20 -loop 0 $$/${name}_*.tif ${name}.gif
 cat << END > ${name}.html
 <HTML>
 <TITLE>GMT Trigonometry: The sine movie</TITLE>

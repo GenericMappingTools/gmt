@@ -44,7 +44,7 @@ while [ ${az} -lt 360 ]; do
         echo "Frame ${file} completed"
 	frame=`gmt_set_framenext ${frame}`
 done
-${GRAPHICSMAGICK:-gm} convert -delay 10 -loop 0 +dither $$/${name_}*.tif ${name}.gif
+${GRAPHICSMAGICK-gm} convert -delay 10 -loop 0 +dither $$/${name_}*.tif ${name}.gif
 cat << END > ${name}.html
 <HTML>
 <TITLE>GMT 3-D perspective of Iceland</TITLE>

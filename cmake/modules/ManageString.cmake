@@ -96,6 +96,9 @@
 if(NOT DEFINED _MANAGE_STRING_CMAKE_)
 	set(_MANAGE_STRING_CMAKE_ "DEFINED")
 
+	cmake_policy(SET CMP0010 NEW)
+	cmake_policy(SET CMP0011 NEW)
+
 	# STRING_ESCAPE(var str [NOESCAPE_SEMICOLON] [ESCAPE_VARIABLE])
 	macro(STRING_ESCAPE var str)
 		# ';' and '\' are tricky, need to be encoded.
