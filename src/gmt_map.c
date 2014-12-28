@@ -1911,6 +1911,23 @@ uint64_t gmt_radial_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 	return (n);
 }
 
+bool gmt_cartesian_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1)
+{
+	/* Return true if the projection of either (lon0,lat0) and (lon1,lat1) is inside (not on) the rectangular map boundary */
+	/* Here, lon,lat etc are Cartesian and not geographic coordinates, otherwise gmt_rect_overlap is used */
+	double x0, y0, x1, y1;
+
+	GMT_geo_to_xy (GMT, lon0, lat0, &x0, &y0);
+	GMT_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
+
+	if (x0 > x1) double_swap (x0, x1);
+	if (y0 > y1) double_swap (y0, y1);
+
+	if (x1 - GMT->current.proj.rect[XLO] < -GMT_CONV8_LIMIT || x0 - GMT->current.proj.rect[XHI] > GMT_CONV8_LIMIT) return (false);
+	if (y1 - GMT->current.proj.rect[YLO] < -GMT_CONV8_LIMIT || y0 - GMT->current.proj.rect[YHI] > GMT_CONV8_LIMIT) return (false);
+	return (true);
+}
+
 bool gmt_rect_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1)
 {
 	/* Return true if the projection of either (lon0,lat0) and (lon1,lat1) is inside (not on) the rectangular map boundary */
@@ -2837,7 +2854,7 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 	else {
 		GMT->current.map.outside = &gmt_rect_outside;
 		GMT->current.map.crossing = &gmt_rect_crossing;
-		GMT->current.map.overlap = &gmt_rect_overlap;
+		GMT->current.map.overlap = &gmt_cartesian_overlap;
 		GMT->current.map.clip = &gmt_rect_clip;
 	}
 	GMT->current.map.n_lat_nodes = 2;
