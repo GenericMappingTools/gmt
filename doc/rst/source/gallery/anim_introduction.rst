@@ -95,10 +95,8 @@ example.
    both free and commercial tools that can help with this conversion and
    they tend to be platform-specific. Most movie tools such as iMovie or
    MovieMaker can ingest still images and let you specify the frame
-   duration. Under OS X we prefer to use Quicktime. [1]_ Free tools
-   exist to call the Quicktime library functions from the command line
-   as we prefer to do in our scripts. Another choice is to use the free
-   `mencoder <http://www.mplayerhq.hu/>`_.  You will find yourself
+   duration. Under OS X we prefer to use Quicktime 7. [1]_ . Another choice is to use the free
+   `ffmpeg <https://ffmpeg.org/>`_ encoder.  You will find yourself
    experimenting with compression settings and movie formats so that the
    final movie has the resolution and portability you require.
 
@@ -109,5 +107,5 @@ example.
    until you are satisfied.
 
 .. [1]
-   While Quicktime is free you must upgrade to QuickTime Pro (USD 30) to
-   use the authoring functions.
+   While Quicktime 7 is free you must upgrade to QuickTime Pro (USD 30) to
+   use the authoring functions.  At some point Apple will discontinue this tool.

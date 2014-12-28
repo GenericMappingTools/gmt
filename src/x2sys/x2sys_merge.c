@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------
  *	$Id$
  *
- *      Copyright (c) 1999-2014 by J. Luis
+ *      Copyright (c) 1999-2015 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify

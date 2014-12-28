@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+# Copyright (c) 1991-2015 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -205,6 +205,11 @@
 #set (CMAKE_BUILD_TYPE Debug)
 
 # Extra debugging for developers:
+#if ( CMAKE_GENERATOR STREQUAL "Xcode" )
+##	So Xcode can find the supplemental plug-ins during debug sessions
+#	add_definitions(-DXCODER)
+#	message("Add Xcode definition for GMT")
+#endif()
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build
