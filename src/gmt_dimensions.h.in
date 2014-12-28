@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- *  Copyright (c) 1991-2014 by P. Wessel, W. H. F. Smith, R. Scharroo,
+ *  Copyright (c) 1991-2015 by P. Wessel, W. H. F. Smith, R. Scharroo,
  *  F. Wobbe, and J. Luis
  *
  * See LICENSE.TXT file for copying and redistribution conditions.

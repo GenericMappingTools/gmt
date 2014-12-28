@@ -11,7 +11,7 @@
 #  set (MAN_FILES user.1 system.2 special.4 formats.5)
 #  GMT_CREATE_MANPAGES ("${MAN_FILES}")
 #
-# Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+# Copyright (c) 1991-2015 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify

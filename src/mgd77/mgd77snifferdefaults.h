@@ -2,7 +2,7 @@
  *	$Id$	
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2014 by P. Wessel and M. T. Chandler
+ *    Copyright (c) 2004-2015 by P. Wessel and M. T. Chandler
  *	File:	mgd77snifferdefaults.h
  *
  *	Include file for mgd77sniffer
