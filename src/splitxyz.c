@@ -133,6 +133,7 @@ void *New_splitxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.azimuth = 90.0;
 	C->A.tolerance = 360.0;
+	C->C.value = 180.0;	/* Tolerate any course change */
 	return (C);
 }
 
@@ -149,7 +150,7 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: splitxyz [<table>] -C<course_change> [-A<azimuth>/<tolerance>] [-D<minimum_distance>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: splitxyz [<table>] [-A<azimuth>/<tolerance>] [-C<course_change>] [-D<minimum_distance>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<xy_filter>/<z_filter>] [-N<template>] [-Q<flags>] [-S] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -157,12 +158,12 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tGive xyz[dh]file name or read stdin.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Profile ends when change of heading exceeds <course_change>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Only write profile if mean direction is w/in +/- <tolerance>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of <azimuth> [Default = All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Profile ends when change of heading exceeds <course_change> [ignore course changes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Defaults are both widths = 0, giving no filtering.\n");
