@@ -7,6 +7,19 @@ Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory. It was formerly called
 GSHHS (... Shorelines instead of Geography).
 
+Version January 1, 2015
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.3.4 which restored Lake Maelaren in Sweden and
+reverted 11 "lakes" to islands in that lake instead.
+
+Version November 1, 2014
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.3.3 which removed the obsolete Saudi-Kuwait
+Neutral Zone diamond-shaped border and replaced with something
+resembling what Google Earth shows.
+
 Version August 1, 2014
 
 No source code changes but expected to work with the latest GSHHG
