@@ -365,8 +365,8 @@ void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct G
 		R->tr_elastic_sub = transfer_elastic_sub_iso;
 	}
 	R->scale = -A * (rho_load - Ctrl->D.rhow)/(Ctrl->D.rhom - rho_load);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Elastic setup: R->scale = %g R->ce = %g R->Nx_e = %g R->Ny_e = %g R->Nyx_e = %g\n",
-		R->scale, R->ce, R->Nx_e, R->Ny_e, R->Nxy_e);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Elastic setup: R->scale = %g D = %g R->ce = %g R->Nx_e = %g R->Ny_e = %g R->Nyx_e = %g\n",
+		R->scale, rigidity_d, R->ce, R->Nx_e, R->Ny_e, R->Nxy_e);
 }
 
 double relax_time_2 (double k, struct RHEOLOGY *R)

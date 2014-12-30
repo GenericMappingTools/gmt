@@ -2581,10 +2581,12 @@ int gmt_parse_colon_option (struct GMT_CTRL *GMT, char *item) {
 			GMT->current.setting.io_lonlat_toggle[way] = true;
 		else if (GMT->current.io.col_type[way][GMT_X] == GMT_IS_LAT && GMT->current.io.col_type[way][GMT_Y] == GMT_IS_LON)	/* Already lat/lon! */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: -:%s given but %s order already set by -f; -:%s ignored.\n", mode[way+off], dir[way], mode[way+off]);
+#if 0
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -:%s given but %s first two columns do not hold x/y or lon/lat\n", mode[way+off], dir[way]);
 			error++;
 		}
+#endif
 	}
 	if (error) GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Leave in case we had errors */
 	return (error);
