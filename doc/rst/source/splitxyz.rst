@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**splitxyz** [ *table* ] **-C**\ *course_change*
-[ **-A**\ *azimuth*/*tolerance* ] [ **-D**\ *minimum_distance* ]
+**splitxyz** [ *table* ] 
+[ **-A**\ *azimuth*/*tolerance* ] [**-C**\ *course_change*] [ **-D**\ *minimum_distance* ]
 [ **-F**\ *xy\_filter*/*z\_filter* ] [ **-N**\ *template* ]
 [ **-Q**\ *flags* ] [ **-S** ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -38,15 +38,12 @@ options to choose only those series which have a certain orientation, to
 set a minimum length for series, and to high- or low-pass filter the z
 values and/or the x,y values. **splitxyz** is a useful filter between
 data extraction and :doc:`pswiggle` plotting, and can also be used to
-divide a large x,y,z dataset into segments. The output is always in the
-ASCII format; input may be ASCII or binary (see **-bi**). 
+divide a large x,y[,z] dataset into segments. 
 
 Required Arguments
 ------------------
 
-**-C**\ *course\_change*
-    Terminate a segment when a course change exceeding *course\_change*
-    degrees of heading is detected.
+none.
 
 Optional Arguments
 ------------------
@@ -63,6 +60,9 @@ Optional Arguments
     degrees of *azimuth* in heading, measured clockwise from North, [0 -
     360]. [Default writes all acceptable segments, regardless of
     orientation].
+**-C**\ *course\_change*
+    Terminate a segment when a course change exceeding *course\_change*
+    degrees of heading is detected [ignore course changes].
 **-D**\ *minimum\_distance*
     Do not write a segment out unless it is at least *minimum\_distance*
     units long [0]
@@ -149,18 +149,18 @@ Examples
 --------
 
 Suppose you want to make a wiggle plot of magnetic anomalies on segments
-oriented approximately east-west from a cruise called cag71 in the
-region **-R**\ 300/315/12/20. You want to use a 100km low-pass filter to
+oriented approximately east-west from a NGDC-supplied cruise called JA020015 in the
+region **-R**\ 300/315/12/20. You want to use a 100 km low-pass filter to
 smooth the tracks and a 500km high-pass filter to detrend the magnetic
 anomalies. Try this:
 
    ::
 
-    gmt gmtlist cag71 -R300/315/12/20 -Fxyzdh | gmt splitxyz -A90/15 -F100/-500 \
-        -D100 -S -V -fg | gmt pswiggle -R300/315/12/20 -Jm0.6 -Ba5f1:.cag71: -T1 \
-        -W0.75p -Ggray -Z200 > cag71_wiggles.ps
+    gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt splitxyz -A90/15 -F100/-500 \
+        -D100 -S -V -fg | gmt pswiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
+        -W0.75p -Ggray -Z200 > JA020015_wiggles.ps
 
-MGD-77 users: For this application we recommend that you extract d, h
+MGD-77 users: For this application we recommend that you extract dist,azim
 from :doc:`mgd77list <supplements/mgd77/mgd77list>` rather than have
 **splitxyz** compute them separately.
 

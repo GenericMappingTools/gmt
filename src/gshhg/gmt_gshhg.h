@@ -16,7 +16,7 @@
  *
  *	Contact info: www.soest.hawaii.edu/pwessel
  *
- *	1-JUL-2014.  For use with GSHHG version 2.3.1
+ *	1-JAN-2015.  For use with GSHHG version 2.3.4
  */
 
 /*!
