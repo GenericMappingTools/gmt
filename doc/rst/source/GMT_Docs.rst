@@ -243,7 +243,7 @@ In addition, here are two established programs that have been given more suitabl
 
 New common options
 ------------------
-	
+
 We have added one new lower-case GMT common option:
 
 *  Programs that need to specify which values should represent "no data"
@@ -256,17 +256,17 @@ New default parameters
 
 There have been a few changes to the GMT Defaults parameters.  All changes
 are backwards compatible:
-	
+
 *  **FORMAT_FLOAT_MAP** now allows the use %'g to get comma-separated groupings
    when integer values are plotted.
 
 *  **FORMAT_FLOAT_OUT** can now accept a space-separated list of formats
    as shorthand for first few columns.  On output it will show the formats
    in effect for multiple columns.
-		
+
 *  **GMT_LANGUAGE** has replaced the old parameter **TIME_LANGUAGE**.
-   Related to this, the files share/time/\*.d have been moved to
-   share/localization/\*.d and now include a new section
+   Related to this, the files share/time/\*.d have been moved and renamed to
+   share/localization/\*.txt and now include a new section
    or cardinal points letter codes.
 
 *  **IO_SEGMENT_BINARY** is a new parameter that controls how binary records
@@ -318,9 +318,9 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`gmt` now has a --show-cores option that reports the available cores.
 
-*  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate 
+*  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate
    segments on output based on the number of of records it contains.
-	
+
 *  :doc:`grdblend` relaxes the **-W** restriction on only one output grid
    and adds the new mode **-Wz** to write the weight*zsum grid.
 
@@ -355,14 +355,14 @@ changes to syntax will be backwards compatible:
    We also have **-A** modifiers **+AS** to *only* plot Antarctica, **+ag** to use
    shelf ice grounding line for Antarctica coastline, and **+ai** to use ice/water
    front for Antarctica coastline [Default].
-	
+
 *  :doc:`psconvert` (apart from the name change) has several new features, such as
    reporting dimensions of the plot when **-A** and **-V** are used,
    scaling the output plots via **-A+s**\ *width*\ [**u**][/\ *height*\ [**u**]],
    and **-Z** for removing the PostScript file on exit.  In addition, we have
    added SVG as a new output vector graphics format and now handle transparency even if
    non-PDF output formats are requested.
-	
+
 *  :doc:`pscontour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and moved the
    old **-T**, **-Q** options for an index file to a new **-E** option.
 
@@ -390,7 +390,7 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
    modifiers for handling periodic plot symbols.
-	
+
 A few supplement programs have new features as well:
 
 *  :doc:`mgd77track <supplements/mgd77/mgd77track>` adds the **-Gn**\ *gap* option to
@@ -2136,7 +2136,7 @@ may be specified in one of four ways, two of which are shown in Figure
    indicates which point on a rectangular grid region the *x0*/*y0* coordinates
    refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
    via **-I** to create the corresponding region.
-   
+
 .. _gmt_region:
 
 .. figure:: /_images/GMT_-R.*
