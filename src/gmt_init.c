@@ -3133,10 +3133,10 @@ int gmt_get_language (struct GMT_CTRL *GMT)
 
 	GMT_memset (months, 12, char *);
 
-	GMT_getsharepath (GMT, "localization", GMT->current.setting.language, ".d", file, R_OK);
+	GMT_getsharepath (GMT, "localization", GMT->current.setting.language, ".txt", file, R_OK);
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Could not load language %s - revert to us (English)!\n", GMT->current.setting.language);
-		GMT_getsharepath (GMT, "localization", "us", ".d", file, R_OK);
+		GMT_getsharepath (GMT, "localization", "us", ".txt", file, R_OK);
 		if ((fp = fopen (file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find %s!\n", file);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
