@@ -21,7 +21,7 @@ Synopsis
 [ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ] 
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L**\ [**+b**\ \|\ *d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
+[ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
 [ **-N**\ [**c**\ \|\ **r**] ] 
 [ **-O** ] [ **-P** ] 
 [ **-S**\ [*symbol*][\ *size*\ [**u**] ]
@@ -140,7 +140,7 @@ Optional Arguments
 
 .. include:: PSXY_OPTs_EX.rst_
 
-**-L**\ [**+b**\ \|\ *d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |loc_OPT-L|
+**-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |loc_OPT-L|
     With no arguments we force closed polygons: connect the endpoints of the line-segment(s) and
     draw polygons. Also, in concert with **-C** and any **-Z** settings in
     the headers will use the implied color for polygon fill [Default is

@@ -71,7 +71,7 @@ Optional Arguments
 **-F**\ *force*]
     Set a constant horizontal in-plane force, in Pa m [0] 
 
-**-Qn**\|**q**\|**t**\ [*args*]
+**-Qn**\ \|\ **q**\ \|\ **t**\ [*args*]
     Sets the vertical load specification. Choose among these three options:
     **-Qn** means there is no input load file and that any deformation is
     simply driven by the boundary conditions set via **-A**.  If no rigidity or

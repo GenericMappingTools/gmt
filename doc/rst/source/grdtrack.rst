@@ -64,9 +64,10 @@ Required Arguments
     constrained points and NaN elsewhere, and (3) Img file
     with constraints coded, return 1 at constraints and 0 elsewhere, and
     optionally the max latitude in the IMG file [80.738]. You may repeat
-    **-G** as many times as you have grids you wish to sample. The grids
-    are sampled and results are output in the order given. (See GRID
-    FILE FORMAT below.)
+    **-G** as many times as you have grids you wish to sample. 
+    Alternatively, use **-G+l**\ *list* to pass a list of file names.
+    The grids are sampled and results are output in the order given.
+    (See GRID FILE FORMAT below.)
 
 Optional Arguments
 ------------------

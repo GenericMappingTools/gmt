@@ -219,14 +219,8 @@ only added to the 5.2-series.  Here is a summary of these changes:
 
 New programs
 ------------
-	There are two new programs in the potential supplements. These are
 
-:doc:`gmtflexure <supplements/potential/gmtflexure>`:
-	Compute the flexural response to a 2-D (line) load.
-
-:doc:`grdflexure <supplements/potential/grdflexure>`:
-	Compute the flexural response to a 3-D (grid) load, using a variety
-	or rheological models (elastic, viscoelastic, firmoviscous).
+There are two programs that have been given more suitable names. These are
 
 :doc:`grdconvert`
     Converts between different grid formats.
@@ -238,13 +232,22 @@ New programs
     Previously known as ps2raster (this name is recognized
     when GMT is running in compatibility mode).
 	
+In addition, two new programs have been added to the potential supplements:
+
+:doc:`gmtflexure <supplements/potential/gmtflexure>`:
+	Compute the flexural response to a 2-D (line) load.
+
+:doc:`grdflexure <supplements/potential/grdflexure>`:
+	Compute the flexural response to a 3-D (grid) load, using a variety
+	or rheological models (elastic, viscoelastic, firmoviscous).
+
 New common options
 ------------------
 	
 We have added a new lower-case GMT common option:
 
 *  Programs that need to specify which values should represent "no data"
-   can now use **-d**\ [**i**\ |\ **o**]\ *nodata*. For instance, this
+   can now use **-d**\ [**i**\ \|\ **o**]\ *nodata*. For instance, this
    option replaces the old **-N** in :doc:`grd2xyz` and :doc:`xyz2grd`
    (but are backwards compatible).
 
@@ -264,9 +267,9 @@ are backwards compatible:
 *  **TIME_REPORT** now has defaults for absolute or elapsed time stamps.
 
 *  **GMT_LANGUAGE** has replaced the old parameter **TIME_LANGUAGE**.
-   Related to this, the files share/time/*.d have been moved to
-   share/localization/*.d and now include a new section
-    or cardinal points letter codes.
+   Related to this, the files share/time/\*.d have been moved to
+   share/localization/\*.d and now include a new section
+   or cardinal points letter codes.
 
 *  **PROJ_GEODESIC** was added to control which geodesic calculation should be
    used.  Choose among Vincenty [Default], Andoyer (fast approximate geodesics),
@@ -283,7 +286,7 @@ Two of the established GMT common options have seen minor improvements:
 *  Implemented modifier **-B+n** to *not* draw the frame at all.
 
 *  Added a forth way to specify the region for a new grid via the new
-   **-R**\ [**L**|**C**|**R**][**T**|**M**|**B**]\ *x0*/*y0*/*nx*/*ny*
+   **-R**\ [**L**\ \|\ **C**\ \|\ **R**][**T**\ \|\ **M**\ \|\ **B**]\ *x0*/*y0*/*nx*/*ny*
    where you specify an anchor point and number of points in the two
    dimensions (requires **-I** to use the increments).
 
@@ -317,8 +320,6 @@ changes to syntax will be backwards compatible:
 *  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate 
    segments on output based on the number of of records it contains.
 	
-*  :doc:`gravfft` adds **-W**\ *wd* to change observation level.
-
 *  :doc:`grdblend` relaxes the **-W** restriction on only one output grid
    and adds the new mode **-Wz** to write the weight*zsum grid.
 
@@ -331,8 +332,6 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`grdgradient` adds **-Da** to compute the aspect (down-slope) direction [up-slope].
 
-*  :doc:`grdgravmag3d` adds options ?????.
-
 *  :doc:`grdmath` adds several new operators, such as **ARC** and **WRAP** for
    angular operators, **LDISTG** (for distances to GSHHG), **CDIST2** and **SDIST2**
    (to complement **LDIST2** and **PDIST2**), while **LDIST1** has been renamed
@@ -340,11 +339,11 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`grdtrack` add modifier **-G+l**\ *list* modifier to provide a list of grids.
 
-*  :doc:`grdview` implements the Waterfall plot mode via **-Qmx**\ |\ **y**.
+*  :doc:`grdview` implements the Waterfall plot mode via **-Qmx**\ \|\ **y**.
 
-*  :doc:`kml2gmt` acquires an **-F** option to control output the geometry.
+*  :doc:`kml2gmt` acquires an **-F** option to control which geometry to output.
 
-*  :doc:`makecpt` takes **-E** to determine a new set of output colors.
+*  :doc:`makecpt` takes **-E** to determine range from input data table.
 
 *  :doc:`mapproject` can be used in conjunction with the 3-D projection options to
    compute 3-D projected coordinates.
@@ -352,48 +351,54 @@ changes to syntax will be backwards compatible:
 *  :doc:`psbasemap` now takes **-A** to save plot domain polygon in geographical coordinates.
 
 *  :doc:`pscoast` can accept multiple **-F** settings to color features independently.
-	We also have **-A** modifiers **+AS** to *only* plot Antarctica, **+ag** to use
-	shelf ice grounding line for Antarctica coastline, and **+ai** to use ice/water
-	front for Antarctica coastline [Default].
+   We also have **-A** modifiers **+AS** to *only* plot Antarctica, **+ag** to use
+   shelf ice grounding line for Antarctica coastline, and **+ai** to use ice/water
+   front for Antarctica coastline [Default].
 	
-*  :doc:`psconvert` (apart from the name changes) has several new features, such as
-	reporting dimensions of the plot when **-A** and **-V** are used,
-	scaling the output plots via **-A+s**\ *width*[**u**][/*height*[**u**]],
-	and **-Z** for removing the PostScript file on exit.  In addition, we have
-	added SVG as a new output format choice and handle transparency even if
-	non-PDF output is requested.
+*  :doc:`psconvert` (apart from the name change) has several new features, such as
+   reporting dimensions of the plot when **-A** and **-V** are used,
+   scaling the output plots via **-A+s**\ *width*\ [**u**][/\ *height*\ [**u**]],
+   and **-Z** for removing the PostScript file on exit.  In addition, we have
+   added SVG as a new output format choice and now handle transparency even if
+   non-PDF output formats are requested.
 	
 *  :doc:`pscontour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and moved the
-    old **-T**, **-Q** options for an index file to **-E**.
+   old **-T**, **-Q** options for an index file to a new **-E** option.
 
-*  :doc:`pshistogram` added modifiers **-W**\ *width*[**+l**|**h**|**b**] to allow for
-   more control on what happens to points in the tails.
+*  :doc:`pshistogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
+   to allow formore control on what happens to points in the tails.
 
 *  :doc:`psimage` new uniform **-D** option to specify location of image.
 
-*  :doc:`pslegend` has many enhancements to specifying cell widths and color, as
+*  :doc:`pslegend` has many enhancements for specifying varying cell widths and color, as
    well as a new uniform **-D** option to specify location of legend.
 
 *  :doc:`psscale` new uniform **-D** option to specify location of the scale.
 
-*  :doc:`psxy` has seen considerable enhancements. We added two new quoted line (**-Sq**) modifiers:
-   **S**|**s** for treating input as consecutive two-point line segments that should be individually quoted,
-   and **+x**[*first*,*last*] for automating cross-section labeling.
+*  :doc:`psxy` has seen considerable enhancements. We added two new quoted
+   line (**-Sq**) modifiers: **S**\ \|\ **s** for treating input as consecutive
+   two-point line segments that should be individually quoted,
+   and **+x**\ [*first*,*last*] for automating cross-section labeling.
    We expanded **-N** to handle periodic, repeating symbols near the boundary,
    added a new modifier **+** to **-E** for asymmetrical error bars, and provided the
    shorthand **-SE-**\ *diameter* for degenerated ellipses (i.e., circles).
    The **-L** options has been enhanced to create envelope polygons around y(x),
-   say for confidence envelopes (modifiers **+b**|**d**|**D**), and to complete a closed
-   polygon by adding selected corners (modifiers **+xl**|**r**|*x0* or **+yb**|**t**|*y0*).
+   say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
+   polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
    Finally, custom symbols definition tests can now compare two input variables.
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
    modifiers for handling periodic plot symbols.
 	
-One supplement program has a new feature as well:
+A few supplement programs have new features as well:
 
-*  :doc:`mgd77track <supplements/mgd77/mgd77track>` adds the **-Gn**\ *inc* option to
-   decimate the trackline coordinates by only plotting every *inc* point.
+*  :doc:`mgd77track <supplements/mgd77/mgd77track>` adds the **-Gn**\ *gap* option to
+   decimate the trackline coordinates by only plotting every *gap* point.
+
+*  :doc:`gravfft <supplements/potential/gravfft>` adds **-W**\ *wd* to change
+   observation level.
+
+*  :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>` adds options ?????.
 
 New Features in GMT 5
 =====================

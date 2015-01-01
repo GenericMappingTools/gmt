@@ -139,7 +139,7 @@ Optional Arguments
     **E** means EPS with PageSize command, **f** means PDF, **F** means
     multi-page PDF, **j** means JPEG, **g** means PNG, **G** means
     transparent PNG (untouched regions are transparent), **m** means
-    PPM, and **t** means TIFF [default is JPEG]. To **bjgt** you can
+    PPM, **s** means SVG, and **t** means TIFF [default is JPEG]. To **bjgt** you can
     append **-** in order to get a grayscale image. The EPS format can be
     combined with any of the other formats. For example, **-Tef**
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
