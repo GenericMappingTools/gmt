@@ -215,12 +215,21 @@ New Features in GMT 5.2
 =======================
 
 While the GMT 5.1-series has seen bug-fixes since its release, new features were
-only added to the 5.2-series.  Here is a summary of these changes:
+only added to the 5.2-series.  Here is a summary of these changes in six key areas:
 
 New programs
 ------------
 
-There are two programs that have been given more suitable names. These are
+Two new programs have been added to the *potential* supplement:
+
+:doc:`gmtflexure <supplements/potential/gmtflexure>`:
+	Compute the elastic flexural response to a 2-D (line) load.
+
+:doc:`grdflexure <supplements/potential/grdflexure>`:
+	Compute the flexural response to a 3-D (grid) load, using a variety
+	or rheological models (elastic, viscoelastic, firmoviscous).
+
+In addition, here are two established programs that have been given more suitable names:
 
 :doc:`grdconvert`
     Converts between different grid formats.
@@ -228,23 +237,14 @@ There are two programs that have been given more suitable names. These are
     when GMT is running in compatibility mode).
 
 :doc:`psconvert`
-    Converts from PostScript to PDF, SVG, or various image formats.
+    Converts from PostScript to PDF, SVG, or various raster image formats.
     Previously known as ps2raster (this name is recognized
     when GMT is running in compatibility mode).
-	
-In addition, two new programs have been added to the potential supplements:
-
-:doc:`gmtflexure <supplements/potential/gmtflexure>`:
-	Compute the flexural response to a 2-D (line) load.
-
-:doc:`grdflexure <supplements/potential/grdflexure>`:
-	Compute the flexural response to a 3-D (grid) load, using a variety
-	or rheological models (elastic, viscoelastic, firmoviscous).
 
 New common options
 ------------------
 	
-We have added a new lower-case GMT common option:
+We have added one new lower-case GMT common option:
 
 *  Programs that need to specify which values should represent "no data"
    can now use **-d**\ [**i**\ \|\ **o**]\ *nodata*. For instance, this
@@ -257,26 +257,26 @@ New default parameters
 There have been a few changes to the GMT Defaults parameters.  All changes
 are backwards compatible:
 	
+*  **FORMAT_FLOAT_MAP** now allows the use %'g to get comma-separated groupings
+   when integer values are plotted.
+
 *  **FORMAT_FLOAT_OUT** can now accept a space-separated list of formats
    as shorthand for first few columns.  On output it will show the formats
    in effect for multiple columns.
 		
-*  **IO_SEGMENT_BINARY** is a new parameter that controls how binary records
-   with just NaNs should or should not be interpreted as segment headers.
-
-*  **TIME_REPORT** now has defaults for absolute or elapsed time stamps.
-
 *  **GMT_LANGUAGE** has replaced the old parameter **TIME_LANGUAGE**.
    Related to this, the files share/time/\*.d have been moved to
    share/localization/\*.d and now include a new section
    or cardinal points letter codes.
 
+*  **IO_SEGMENT_BINARY** is a new parameter that controls how binary records
+   with just NaNs should or should not be interpreted as segment headers.
+
 *  **PROJ_GEODESIC** was added to control which geodesic calculation should be
    used.  Choose among Vincenty [Default], Andoyer (fast approximate geodesics),
    and Rudoe (from GMT4).
 
-*  **FORMAT_FLOAT_MAP** now allows the use %'g to get comma-separated groupings
-   when integer values are plotted.
+*  **TIME_REPORT** now has defaults for absolute or elapsed time stamps.
 
 Updated common options
 ----------------------
@@ -287,8 +287,9 @@ Two of the established GMT common options have seen minor improvements:
 
 *  Added a forth way to specify the region for a new grid via the new
    **-R**\ [**L**\ \|\ **C**\ \|\ **R**][**T**\ \|\ **M**\ \|\ **B**]\ *x0*/*y0*/*nx*/*ny*
-   where you specify an anchor point and number of points in the two
-   dimensions (requires **-I** to use the increments).
+   syntax where you specify an anchor point and number of points in the two
+   dimensions (requires **-I** to use the increments).  The optional justification
+   keys specify how the anchor point relate to the grid region.
 
 General improvements
 --------------------
@@ -300,14 +301,14 @@ A few changes have affects across GMT; these are:
 
 *  Faster netCDF reading for COARDS table data (i.e., not grids).
 
-*  Tools using GSHHG can now accessinformation for both Antarctica data
+*  Tools using GSHHG can now access information for both Antarctica data
    set (ice-front and grounding line).
 
-*  Tools that specify pens may now explicity choose "solid" as an attribute,
+*  Tools that specify pens may now explicitly choose "solid" as an attribute,
    and we added "dashed" and "dotted" as alternatives to "-" and ".".
 
-*  Added two alternate vector head choices (terminal and circle) in addition
-   to the default arrow style.
+*  Added two alternative vector head choices (terminal and circle) in addition
+   to the default "arrow" style.
 
 Program-specific improvements
 -----------------------------
@@ -359,14 +360,14 @@ changes to syntax will be backwards compatible:
    reporting dimensions of the plot when **-A** and **-V** are used,
    scaling the output plots via **-A+s**\ *width*\ [**u**][/\ *height*\ [**u**]],
    and **-Z** for removing the PostScript file on exit.  In addition, we have
-   added SVG as a new output format choice and now handle transparency even if
+   added SVG as a new output vector graphics format and now handle transparency even if
    non-PDF output formats are requested.
 	
 *  :doc:`pscontour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and moved the
    old **-T**, **-Q** options for an index file to a new **-E** option.
 
 *  :doc:`pshistogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
-   to allow formore control on what happens to points in the tails.
+   to allow for more control on what happens to points in the tails.
 
 *  :doc:`psimage` new uniform **-D** option to specify location of image.
 
@@ -378,7 +379,7 @@ changes to syntax will be backwards compatible:
 *  :doc:`psxy` has seen considerable enhancements. We added two new quoted
    line (**-Sq**) modifiers: **S**\ \|\ **s** for treating input as consecutive
    two-point line segments that should be individually quoted,
-   and **+x**\ [*first*,*last*] for automating cross-section labeling.
+   and **+x**\ [*first*\ ,\ *last*] for automating cross-section labeling.
    We expanded **-N** to handle periodic, repeating symbols near the boundary,
    added a new modifier **+** to **-E** for asymmetrical error bars, and provided the
    shorthand **-SE-**\ *diameter* for degenerated ellipses (i.e., circles).
