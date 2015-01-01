@@ -63,12 +63,12 @@ Optional Arguments
 **-E**\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**]
     Transform the grid in one of six ways and (for **l**\ \|\ **r**\ \|\ **t**)
     interchange the *x* and *y* information:
-    (1) **-Ea** will rotate the grid around 180 degrees,
-    (2) **-Eh** will flip the grid horizontally (left-to-right),
-    (3) **-El** will rotate the grid 90 degrees counter-clockwise (left),
-    (4) **-Er** will rotate the grid 90 degrees clockwise (right),
-    (5) **-Et** will transpose the grid [Default],
-    (6) **-Ev** will flip the grid vertically (to-to-bottom),
+    **-Ea** will rotate the grid around 180 degrees,
+    **-Eh** will flip the grid horizontally (left-to-right),
+    **-El** will rotate the grid 90 degrees counter-clockwise (left),
+    **-Er** will rotate the grid 90 degrees clockwise (right),
+    **-Et** will transpose the grid [Default],
+    **-Ev** will flip the grid vertically (top-to-bottom).
     Incompatible with the other options (except **-G**).
 
 **-G**\ *outgrid*
