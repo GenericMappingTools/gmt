@@ -7937,6 +7937,67 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	return (error);
 }
 
+
+/*! . */
+int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_PANEL *P) {
+	unsigned int pos = 0;
+	int n_errors = 0, n;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
+	
+	if (text == NULL || text[0] == 0) return 0;	/* Blank arg */
+
+	while (GMT_getmodopt (GMT, text, "idgprs", &pos, p)) {	/* Looking for +i, +f, +p, +r, +s */
+		switch (p[0]) {
+			case 'd':	/* debug mode for developers */
+				P->debug = true;
+				break;
+			case 'i':	/* Secondary pen info */
+				P->mode |= 1;
+				if (p[1]) {	/* Gave 1-2 attributes */
+					n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
+					if (n == 2) {	/* Got both gap and pen */
+						P->gap = GMT_to_inch (GMT, txt_a);
+						if (GMT_getpen (GMT, txt_b, &P->pen2)) n_errors++;
+					}
+					else	/* Only got pen; use default gap */
+						if (GMT_getpen (GMT, txt_a, &P->pen2)) n_errors++;
+				}
+				break;
+			case 'g':	/* Set fill */
+				if (!p[1] || GMT_getfill (GMT, &p[1], &P->fill)) n_errors++;
+				P->mode |= 8;
+				break;
+			case 'p':	/* Set outline and optionally change primary pen info */
+				if (p[1] && GMT_getpen (GMT, &p[1], &P->pen1)) n_errors++;
+				P->mode |= 16;
+				break;
+			case 'r':	/* Corner radius of rounded rectangle */
+				if (p[1]) P->radius = GMT_to_inch (GMT, &p[1]);
+				P->mode |= 2;
+				break;
+			case 's':	/* Get shade settings */
+				if (p[1]) {
+					n = sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+					if (n == 3) {
+						P->dx = GMT_to_inch (GMT, txt_a);
+						P->dy = GMT_to_inch (GMT, txt_b);
+						if (GMT_getfill (GMT, txt_c, &P->sfill)) n_errors++;
+					}
+					else if (n == 1) {
+						if (GMT_getfill (GMT, txt_a, &P->sfill)) n_errors++;
+					}
+					else n_errors++;
+				}
+				P->mode |= 4;
+				break;
+			default:
+				n_errors++;
+				break;
+		}
+	}
+	return (n_errors);
+}
+
 /*! . */
 unsigned int GMT_minmaxinc_verify (struct GMT_CTRL *GMT_UNUSED(GMT), double min, double max, double inc, double slop) {
 	double range;

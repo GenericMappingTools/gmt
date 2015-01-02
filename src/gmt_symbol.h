@@ -64,6 +64,18 @@ struct GMT_CUSTOM_SYMBOL {
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
+/*! Plot a map panel behind scales, legends, images, logos */
+struct GMT_MAP_PANEL {
+	unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
+	double radius;			/* Radius for rounded corner */
+	double dx, dy;			/* Offset for background shaded rectangle (+s) */
+	double gap;			/* Space between main and secondary frame */
+	struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
+	struct GMT_FILL fill;		/* Frame fill */
+	struct GMT_FILL sfill;		/* Background shade */
+	bool debug;
+};
+
 /*! Plot a map insert box in psbasemap */
 struct GMT_MAP_INSERT {
 	/* -D[unit]xmin/xmax/ymin/ymax|width[/height][+c<clon>/<clat>][+p<pen>][+g<fill>] */

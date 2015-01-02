@@ -51,13 +51,7 @@ struct PSLEGEND_CTRL {
 	struct PSLEGND_F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		bool debug;			/* If true we draw guide lines */
-		unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
-		double radius;			/* Radius for rounded corner */
-		double dx, dy;			/* Offset for background shaded rectangle (+s) */
-		double gap;			/* Space bewteen main and secondary frame */
-		struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
-		struct GMT_FILL fill;		/* Frame fill */
-		struct GMT_FILL sfill;		/* Background shade */
+		struct GMT_MAP_PANEL panel;
 	} F;
 	struct PSLEGND_L {	/* -L<spacing> */
 		bool active;
@@ -74,13 +68,13 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	C->C.dx = C->C.dy = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_CLEARANCE;	/* 4 pt */
 	C->D.justify = PSL_TC;	/* If nothing is specified we use this justification */
-	C->F.radius = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_RADIUS;		/* 6 pt */
-	GMT_init_fill (GMT, &C->F.fill, -1.0, -1.0, -1.0);		/* Default is no fill */
-	C->F.pen1 = GMT->current.setting.map_frame_pen;
-	C->F.pen2 = GMT->current.setting.map_default_pen;
-	C->F.gap = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_GAP;	/* Default is 2p */
-	C->F.dx = C->C.dx;	C->F.dy = -C->C.dy;			/* Default is (4p, -4p) */
-	GMT_init_fill (GMT, &C->F.sfill, 0.5, 0.5, 0.5);		/* Default is gray shade if used */
+	C->F.panel.radius = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_RADIUS;		/* 6 pt */
+	GMT_init_fill (GMT, &C->F.panel.fill, -1.0, -1.0, -1.0);		/* Default is no fill */
+	C->F.panel.pen1 = GMT->current.setting.map_frame_pen;
+	C->F.panel.pen2 = GMT->current.setting.map_default_pen;
+	C->F.panel.gap = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_GAP;	/* Default is 2p */
+	C->F.panel.dx = C->C.dx;	C->F.panel.dy = -C->C.dy;			/* Default is (4p, -4p) */
+	GMT_init_fill (GMT, &C->F.panel.sfill, 0.5, 0.5, 0.5);		/* Default is gray shade if used */
 	C->L.spacing = 1.1;
 	return (C);
 }
@@ -148,10 +142,10 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos;
-	unsigned int n;
+	unsigned int n_errors = 0;
+	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -217,64 +211,16 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				pos = 0;
-				while (GMT_getmodopt (GMT, opt->arg, "idgprs", &pos, p)) {	/* Looking for +i, +f, +p, +r, +s */
-					switch (p[0]) {
-						case 'd':	/* debug mode */
-							Ctrl->F.debug = true;
-							break;
-						case 'i':	/* Secondary pen info */
-							Ctrl->F.mode |= 1;
-							if (p[1]) {	/* Gave 1-2 attributes */
-								n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
-								if (n == 2) {	/* Got both gap and pen */
-									Ctrl->F.gap = GMT_to_inch (GMT, txt_a);
-									if (GMT_getpen (GMT, txt_b, &Ctrl->F.pen2)) n_errors++;
-								}
-								else	/* Only got pen; use default gap */
-									if (GMT_getpen (GMT, txt_a, &Ctrl->F.pen2)) n_errors++;
-							}
-							break;
-						case 'g':	/* Set fill */
-							if (!p[1] || GMT_getfill (GMT, &p[1], &Ctrl->F.fill)) n_errors++;
-							Ctrl->F.mode |= 8;
-							break;
-						case 'p':	/* Set outline and optionally change primary pen info */
-							if (p[1] && GMT_getpen (GMT, &p[1], &Ctrl->F.pen1)) n_errors++;
-							Ctrl->F.mode |= 16;
-							break;
-						case 'r':	/* corner radius */
-							if (p[1]) Ctrl->F.radius = GMT_to_inch (GMT, &p[1]);
-							Ctrl->F.mode |= 2;
-							break;
-						case 's':	/* Get shade settings */
-							if (p[1]) {
-								n = sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-								if (n == 3) {
-									Ctrl->F.dx = GMT_to_inch (GMT, txt_a);
-									Ctrl->F.dy = GMT_to_inch (GMT, txt_b);
-									if (GMT_getfill (GMT, txt_c, &Ctrl->F.sfill)) n_errors++;
-								}
-								else if (n == 1) {
-									if (GMT_getfill (GMT, txt_a, &Ctrl->F.sfill)) n_errors++;
-								}
-								else n_errors++;
-							}
-							Ctrl->F.mode |= 4;
-							break;
-						default:
-							n_errors++;
-							break;
-					}
-				}
-				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.mode |= 16;	/* Draw frame if just -F is given if in compatibility mode */
+				n_errors += GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->F.panel);
+				Ctrl->F.debug = Ctrl->F.panel.debug;
+				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.panel.mode |= 16;	/* Draw frame if just -F is given if in compatibility mode */
 				break;
-			case 'G':	/* Inside legend box fill */
+			case 'G':	/* Inside legend box fill [OBSOLETE] */
 				if (GMT_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
 					Ctrl->F.active = true;
-					Ctrl->F.mode |= 8;
-					if (GMT_getfill (GMT, opt->arg, &Ctrl->F.fill)) {	/* We check syntax here */
+					Ctrl->F.panel.mode |= 8;
+					if (GMT_getfill (GMT, opt->arg, &Ctrl->F.panel.fill)) {	/* We check syntax here */
 						GMT_fill_syntax (GMT, 'F', " ");
 						n_errors++;
 					}
@@ -688,17 +634,17 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	
 	current_pen = GMT->current.setting.map_default_pen;
 
-	if (Ctrl->F.active && (Ctrl->F.mode & 8)) {	/* First place legend frame fill */
+	if (Ctrl->F.active && (Ctrl->F.panel.mode & 8)) {	/* First place legend frame fill */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Draw legend fill\n");
 		sdim[0] = Ctrl->D.width;
 		sdim[1] = Ctrl->D.height;
-		sdim[2] = Ctrl->F.radius;
-		if (Ctrl->F.mode & 4) {	/* Draw offset background shade first */
-			GMT_setfill (GMT, &Ctrl->F.sfill, false);
-			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width + Ctrl->F.dx, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height + Ctrl->F.dy, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+		sdim[2] = Ctrl->F.panel.radius;
+		if (Ctrl->F.panel.mode & 4) {	/* Draw offset background shade first */
+			GMT_setfill (GMT, &Ctrl->F.panel.sfill, false);
+			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width + Ctrl->F.panel.dx, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height + Ctrl->F.panel.dy, sdim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		}
-		GMT_setfill (GMT, &Ctrl->F.fill, false);
-		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+		GMT_setfill (GMT, &Ctrl->F.panel.fill, false);
+		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		/* Reset color */
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	}
@@ -1345,20 +1291,20 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	/* Reset the flag */
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
-	if (Ctrl->F.active && (Ctrl->F.mode & 16)) {	/* Draw legend frame box */
+	if (Ctrl->F.active && (Ctrl->F.panel.mode & 16)) {	/* Draw legend frame box */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Draw legend frame\n");
 		sdim[0] = Ctrl->D.width;
 		sdim[1] = Ctrl->D.height;
-		sdim[2] = Ctrl->F.radius;
-		GMT_setpen (GMT, &Ctrl->F.pen1);	/* Draw frame outline, without fill */
+		sdim[2] = Ctrl->F.panel.radius;
+		GMT_setpen (GMT, &Ctrl->F.panel.pen1);	/* Draw frame outline, without fill */
 		GMT_setfill (GMT, NULL, true);
-		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
-		if (Ctrl->F.mode & 1) {	/* Also draw secondary frame on the inside */
-			sdim[0] = Ctrl->D.width - 2.0 * Ctrl->F.gap;
-			sdim[1] = Ctrl->D.height- 2.0 * Ctrl->F.gap;
-			GMT_setpen (GMT, &Ctrl->F.pen2);
+		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+		if (Ctrl->F.panel.mode & 1) {	/* Also draw secondary frame on the inside */
+			sdim[0] = Ctrl->D.width - 2.0 * Ctrl->F.panel.gap;
+			sdim[1] = Ctrl->D.height- 2.0 * Ctrl->F.panel.gap;
+			GMT_setpen (GMT, &Ctrl->F.panel.pen2);
 			GMT_setfill (GMT, NULL, true);	/* No fill for inner frame */
-			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		}
 		/* Reset color */
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);

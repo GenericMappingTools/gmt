@@ -360,7 +360,7 @@ void gmt_lat_swap_init (struct GMT_CTRL *GMT)
 	W H F Smith, 10--13 May 1999.   */
 
 	/* PW notes: Projections only convert latitudes if GMT->current.proj.GMT_convert_latitudes is true.
-	 *       This is set by GMT_mapsetup if the ellipsoid is not a sphere.  Calling gmt_lat_swap_init by itself
+	 *       This is set by GMT_map_setup if the ellipsoid is not a sphere.  Calling gmt_lat_swap_init by itself
 	 *	 does not affect the mapping machinery.  Since various situations call for the use
 	 *	 of auxilliary latitudes we initialize gmt_lat_swap_init in GMT_begin.  This means
 	 *	 programs can use functions like GMT_lat_swap whenever needed.
@@ -8061,6 +8061,7 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	GMT->current.proj.GMT_convert_latitudes = false;
 	if (GMT->current.proj.gave_map_width) GMT->current.proj.units_pr_degree = false;
 
+	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 0;
 	GMT->current.map.n_lon_nodes = GMT->current.map.n_lat_nodes = 0;
 	GMT->current.map.wrap_around_check = &gmt_wrap_around_check_x;
 	GMT->current.map.jump = &gmt_map_jump_x;
