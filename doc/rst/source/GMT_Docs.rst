@@ -296,6 +296,8 @@ General improvements
 
 A few changes have affects across GMT; these are:
 
+*  Add optional multi-threading capabilities to grdfilter and the potential/grdgravmag3d
+
 *  Allow comma-separated colors instead of CPT files in options that are
    used to pass a CPT file (typically this means **-C**).
 
@@ -399,7 +401,7 @@ A few supplement programs have new features as well:
 *  :doc:`gravfft <supplements/potential/gravfft>` adds **-W**\ *wd* to change
    observation level.
 
-*  :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>` adds options ?????.
+*  :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>` adds **-H** to compute magnetic anomaly.
 
 New Features in GMT 5
 =====================
