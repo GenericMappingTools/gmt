@@ -67,7 +67,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **-F**\ [\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the legend using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
-    Add **+g**\ *fill* to fill the legend box [no fill]
+    Add **+g**\ *fill* to fill the legend box [no fill].
     Append **+i** to draw a secondary, inner border as well. We use a
     *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
     unless other values are specified. Append **+r** to draw rounded

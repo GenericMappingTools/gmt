@@ -1026,6 +1026,30 @@ void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	\param option ...
 	\param string ...
 */
+void GMT_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind)
+{	/* Called by gmtlogo, psimage, pslegend, psscale */
+	char *type[4] = {"logo", "image", "legend", "scale"};
+	assert (kind < 4);
+	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	GMT_message (GMT, "\t-%c %s\n", option, string);
+	GMT_message (GMT, "\t   Without further options: draw border around the %s panel (using MAP_FRAME_PEN)\n", type[kind]);
+	GMT_message (GMT, "\t      [Default is no border].\n");
+	GMT_message (GMT, "\t   Append +c<clearance> where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [0].\n");
+#ifdef DEBUG
+	GMT_message (GMT, "\t   Append +d to draw guide lines for debugging.\n");
+#endif
+	GMT_message (GMT, "\t   Append +g<fill> to set the fill for the %s panel [Default is no fill].\n", type[kind]);
+	GMT_message (GMT, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", GMT_FRAME_GAP);
+	GMT_message (GMT, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
+		GMT_putpen (GMT, GMT->current.setting.map_frame_pen));
+	GMT_message (GMT, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", GMT_FRAME_RADIUS);
+	GMT_message (GMT, "\t   Append +s[<dx>/<dy>/]<fill> to plot a shadow behind the %s panel [Default offset is %gp/%g].\n", type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+}
+/*! .
+	\param GMT ...
+	\param option ...
+	\param string ...
+*/
 void GMT_dist_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {	/* Used by many modules */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);

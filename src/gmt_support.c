@@ -7937,22 +7937,54 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	return (error);
 }
 
-
 /*! . */
 int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_PANEL *P) {
+	/* Gets the specifications for a rectangular panel w/optional reflection that is
+	 * used as background for legends, logos, images, and map scales. */
+	
 	unsigned int pos = 0;
 	int n_errors = 0, n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	
-	if (text == NULL || text[0] == 0) return 0;	/* Blank arg */
-
-	while (GMT_getmodopt (GMT, text, "idgprs", &pos, p)) {	/* Looking for +i, +f, +p, +r, +s */
+	/* Initialize the panel first */
+	P->radius = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_RADIUS;	/* 6 pt */
+	GMT_init_fill (GMT, &P->fill, -1.0, -1.0, -1.0);			/* Default is no fill unless specified */
+	GMT_init_fill (GMT, &P->sfill, 0.5, 0.5, 0.5);			/* Default is gray shade if used */
+	P->pen1 = GMT->current.setting.map_frame_pen;			/* Heavier pen for main outline */
+	P->pen2 = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
+	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;		/* Default is 2p */
+	/* Initialize the panel clearances */
+	P->off[XLO] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
+	for (pos = XHI; pos <= YHI; pos++) P->off[pos] = P->off[XLO];
+	P->dx = P->off[XLO];					/* Set the shadow offsets [default is (4p, -4p)] */
+	P->dy = -P->dx;
+	
+	if (text == NULL || text[0] == 0) {	/* Blank arg means draw outline with default pen */
+		P->mode = GMT_PANEL_OUTLINE;
+		return 0;
+	}
+	pos = 0;
+	while (GMT_getmodopt (GMT, text, "cidgprs", &pos, p)) {	/* Looking for +c, +i, +f, +p, +r, +s */
 		switch (p[0]) {
 			case 'd':	/* debug mode for developers */
 				P->debug = true;
 				break;
+			case 'c':	/* Clearance will expand the rectangle by specified amounts */
+				n = GMT_Get_Value (GMT->parent, &p[1], P->off);
+				if (n == 1)	/* Same round in all directions */
+					P->off[XHI] = P->off[YLO] = P->off[YHI] = P->off[XLO];
+				else if (n == 2) {	/* Separate round in x and y */
+					P->off[YLO] = P->off[YHI] = P->off[XHI];
+					P->off[XHI] = P->off[XLO];
+				}
+				else if (n != 4){
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
+					n_errors++;
+				}
+				for (n = 0; n < 4; n++) P->off[n] /= 2.54;	/* Since GMT_Get_Value returns cm */
+				break;
 			case 'i':	/* Secondary pen info */
-				P->mode |= 1;
+				P->mode |= GMT_PANEL_INNER;
 				if (p[1]) {	/* Gave 1-2 attributes */
 					n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
 					if (n == 2) {	/* Got both gap and pen */
@@ -7965,15 +7997,15 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 				break;
 			case 'g':	/* Set fill */
 				if (!p[1] || GMT_getfill (GMT, &p[1], &P->fill)) n_errors++;
-				P->mode |= 8;
+				P->mode |= GMT_PANEL_FILL;
 				break;
 			case 'p':	/* Set outline and optionally change primary pen info */
 				if (p[1] && GMT_getpen (GMT, &p[1], &P->pen1)) n_errors++;
-				P->mode |= 16;
+				P->mode |= GMT_PANEL_OUTLINE;
 				break;
 			case 'r':	/* Corner radius of rounded rectangle */
 				if (p[1]) P->radius = GMT_to_inch (GMT, &p[1]);
-				P->mode |= 2;
+				P->mode |= GMT_PANEL_ROUNDED;
 				break;
 			case 's':	/* Get shade settings */
 				if (p[1]) {
@@ -7988,7 +8020,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					}
 					else n_errors++;
 				}
-				P->mode |= 4;
+				P->mode |= GMT_PANEL_SHADOW;
 				break;
 			default:
 				n_errors++;

@@ -213,13 +213,13 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 				Ctrl->F.active = true;
 				n_errors += GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->F.panel);
 				Ctrl->F.debug = Ctrl->F.panel.debug;
-				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.panel.mode |= 16;	/* Draw frame if just -F is given if in compatibility mode */
+				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.panel.mode |= GMT_PANEL_OUTLINE;	/* Draw frame if just -F is given if in compatibility mode */
 				break;
 			case 'G':	/* Inside legend box fill [OBSOLETE] */
 				if (GMT_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
 					Ctrl->F.active = true;
-					Ctrl->F.panel.mode |= 8;
+					Ctrl->F.panel.mode |= GMT_PANEL_FILL;
 					if (GMT_getfill (GMT, opt->arg, &Ctrl->F.panel.fill)) {	/* We check syntax here */
 						GMT_fill_syntax (GMT, 'F', " ");
 						n_errors++;
@@ -634,17 +634,17 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	
 	current_pen = GMT->current.setting.map_default_pen;
 
-	if (Ctrl->F.active && (Ctrl->F.panel.mode & 8)) {	/* First place legend frame fill */
+	if (Ctrl->F.active && (Ctrl->F.panel.mode & GMT_PANEL_FILL)) {	/* First place legend frame fill */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Draw legend fill\n");
 		sdim[0] = Ctrl->D.width;
 		sdim[1] = Ctrl->D.height;
 		sdim[2] = Ctrl->F.panel.radius;
-		if (Ctrl->F.panel.mode & 4) {	/* Draw offset background shade first */
+		if (Ctrl->F.panel.mode & GMT_PANEL_SHADOW) {	/* Draw offset background shade first */
 			GMT_setfill (GMT, &Ctrl->F.panel.sfill, false);
-			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width + Ctrl->F.panel.dx, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height + Ctrl->F.panel.dy, sdim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width + Ctrl->F.panel.dx, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height + Ctrl->F.panel.dy, sdim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 		}
 		GMT_setfill (GMT, &Ctrl->F.panel.fill, false);
-		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 		/* Reset color */
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	}
@@ -1291,20 +1291,20 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	/* Reset the flag */
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
-	if (Ctrl->F.active && (Ctrl->F.panel.mode & 16)) {	/* Draw legend frame box */
+	if (Ctrl->F.active && (Ctrl->F.panel.mode & GMT_PANEL_OUTLINE)) {	/* Draw legend frame box */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Draw legend frame\n");
 		sdim[0] = Ctrl->D.width;
 		sdim[1] = Ctrl->D.height;
 		sdim[2] = Ctrl->F.panel.radius;
 		GMT_setpen (GMT, &Ctrl->F.panel.pen1);	/* Draw frame outline, without fill */
 		GMT_setfill (GMT, NULL, true);
-		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
-		if (Ctrl->F.panel.mode & 1) {	/* Also draw secondary frame on the inside */
+		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
+		if (Ctrl->F.panel.mode & GMT_PANEL_INNER) {	/* Also draw secondary frame on the inside */
 			sdim[0] = Ctrl->D.width - 2.0 * Ctrl->F.panel.gap;
 			sdim[1] = Ctrl->D.height- 2.0 * Ctrl->F.panel.gap;
 			GMT_setpen (GMT, &Ctrl->F.panel.pen2);
 			GMT_setfill (GMT, NULL, true);	/* No fill for inner frame */
-			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 		}
 		/* Reset color */
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);

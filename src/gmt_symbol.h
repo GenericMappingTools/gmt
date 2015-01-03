@@ -40,6 +40,20 @@
 #define VECTOR_HEAD_WIDTH	7.0
 #define VECTOR_HEAD_LENGTH	9.0
 
+/* PANEL attributes are used by pslegend, psscale, psimage, gmtlogo */
+
+#define GMT_FRAME_CLEARANCE	4.0	/* In points */
+#define GMT_FRAME_GAP	2.0	/* In points */
+#define GMT_FRAME_RADIUS	6.0	/* In points */
+
+enum GMT_enum_panel {
+	GMT_PANEL_INNER		= 1,
+	GMT_PANEL_ROUNDED	= 2,
+	GMT_PANEL_SHADOW	= 4,
+	GMT_PANEL_FILL		= 8,
+	GMT_PANEL_OUTLINE	= 16
+};
+	
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3], const_val[3];
 	int action, operator, var[3];	/* var[0] refers to variable on left hand side of operator, var[1] and var[2] to the right hand */
@@ -67,6 +81,7 @@ struct GMT_CUSTOM_SYMBOL {
 /*! Plot a map panel behind scales, legends, images, logos */
 struct GMT_MAP_PANEL {
 	unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
+	double off[4];			/* Extend panel by this clearance (inches) in the w/e/s/n directions [0/0/0/0] */
 	double radius;			/* Radius for rounded corner */
 	double dx, dy;			/* Offset for background shaded rectangle (+s) */
 	double gap;			/* Space between main and secondary frame */

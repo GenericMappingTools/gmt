@@ -41,10 +41,6 @@
 #define c_gmt_outline	"112/112/112"
 #define c_gmt_shadow	"92/102/132"
 
-#define FRAME_CLEARANCE	4.0	/* In points */
-#define FRAME_GAP	2.0	/* In points */
-#define FRAME_RADIUS	6.0	/* In points */
-
 /* Control structure for gmtlogo */
 
 struct GMTLOGO_CTRL {
@@ -66,17 +62,9 @@ struct GMTLOGO_CTRL {
 
 void *New_gmtlogo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTLOGO_CTRL *C;
-
+	
 	C = GMT_memory (GMT, NULL, 1, struct GMTLOGO_CTRL);
 	C->D.justify = PSL_BL;
-	C->F.panel.radius = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_RADIUS;		/* 6 pt */
-	GMT_init_fill (GMT, &C->F.panel.fill, -1.0, -1.0, -1.0);		/* Default is no fill */
-	C->F.panel.pen1 = GMT->current.setting.map_frame_pen;
-	C->F.panel.pen2 = GMT->current.setting.map_default_pen;
-	C->F.panel.gap = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_GAP;	/* Default is 2p */
-	C->F.panel.dx = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_CLEARANCE;
-	C->F.panel.dy = -C->F.panel.dx;			/* Default is (4p, -4p) */
-	GMT_init_fill (GMT, &C->F.panel.sfill, 0.5, 0.5, 0.5);		/* Default is gray shade if used */
 	C->W.width = 2.0;	/* Default width is 2" */
 	return (C);
 }
@@ -94,7 +82,7 @@ int GMT_gmtlogo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtlogo  [-D[g|j|n|x]<anchor>[/<justify>][/<dx>/<dy>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "[-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]][+d]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "[%s] [%s] [%s] [-K]\n", GMT_PANEL, GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t [-O] [-P] [-W<width>] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -109,15 +97,7 @@ int GMT_gmtlogo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate that point on the logo with <x0>/<y0> [LB].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note for -Dj: If <justify> is not given then it inherits the code use to set <x0>/<y0>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <dx>/<dy> to shift the logo from the selected anchor in the direction implied by <justify> [0/0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Without further options: draw rectangular border behind the logo (using MAP_FRAME_PEN)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      [Default is no border].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw guide lines for debugging.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<fill> to set the fill for the logo box [Default is no fill].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
-		GMT_putpen (API->GMT, API->GMT->current.setting.map_frame_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", FRAME_RADIUS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/]<fill> to plot a shadow behind the logo box [Default offset is %gp/%g].\n", FRAME_CLEARANCE, -FRAME_CLEARANCE);
+	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectanglar panel behind the logo", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set width of the GMT logo [2 inches].\n");
 	GMT_Option (API, "U,V");
@@ -164,7 +144,7 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 			case 'F':
 				Ctrl->F.active = true;
 				if (GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->F.panel)) {
-					//GMT_panel_syntax (GMT, 'FW', " ");
+					GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the logo", 0);
 					n_errors++;
 				}
 				break;
@@ -197,7 +177,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, plot_x, plot_y;
 	
-	char text[GMT_LEN64] = {""}, cmd[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""};
+	char cmd[GMT_BUFSIZ] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
 	
 	struct GMT_FONT F;
 	struct GMTLOGO_CTRL *Ctrl = NULL;	/* Control structure specific to program */
@@ -262,31 +242,36 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
+	PSL_command (PSL, "V\n");	/* Ensure the entire gmtlogo output after initialization is between gsave/grestore */
 	PSL_setorigin (PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->y, 0.0, PSL_FWD);
 
 	/* Set up linear projection with logo domain and user width */
 	scale = Ctrl->W.width / 2.0;	/* Scale relative to default size 2 inches */
 	plot_x = 0.5 * Ctrl->W.width;	plot_y = 0.25 * Ctrl->W.width;	/* Center of logo box */
 
-	if (Ctrl->F.active && (Ctrl->F.panel.mode & 8)) {	/* First place legend frame fill */
-		double dim[3];
+	if (Ctrl->F.active) {	/* First place legend frame fill */
+		double dim[3], shift[2];
+		int outline = (Ctrl->F.panel.mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Draw back panel\n");
-		dim[0] = Ctrl->W.width;
-		dim[1] = 0.5 * Ctrl->W.width;
+		dim[GMT_X] = Ctrl->W.width + Ctrl->F.panel.off[XLO] + Ctrl->F.panel.off[XHI];
+		dim[GMT_Y] = 0.5 * Ctrl->W.width + Ctrl->F.panel.off[YLO] + Ctrl->F.panel.off[YHI];
 		dim[2] = Ctrl->F.panel.radius;
-		if (Ctrl->F.panel.mode & 4) {	/* Draw offset background shade first */
+		/* In case clearances are not symmetric we need to shift the symbol accordingly */
+		shift[GMT_X] = 0.5 * (Ctrl->F.panel.off[XHI] - Ctrl->F.panel.off[XLO]);
+		shift[GMT_Y] = 0.5 * (Ctrl->F.panel.off[YHI] - Ctrl->F.panel.off[YLO]);
+		if (Ctrl->F.panel.mode & GMT_PANEL_SHADOW) {	/* Draw offset background shade first */
 			GMT_setfill (GMT, &Ctrl->F.panel.sfill, false);
-			PSL_plotsymbol (PSL, plot_x + Ctrl->F.panel.dx, plot_y + Ctrl->F.panel.dy, dim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+			PSL_plotsymbol (PSL, plot_x + shift[GMT_X] + Ctrl->F.panel.dx, plot_y + shift[GMT_Y] + Ctrl->F.panel.dy, dim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 		}
-		GMT_setpen (GMT, &Ctrl->F.panel.pen1);	/* Draw frame outline, without fill */
-		GMT_setfill (GMT, &Ctrl->F.panel.fill, (Ctrl->F.panel.mode & 16) == 16);
-		PSL_plotsymbol (PSL, plot_x, plot_y, dim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
-		if (Ctrl->F.panel.mode & 1) {	/* Also draw secondary frame on the inside */
-			dim[0] = Ctrl->W.width - 2.0 * Ctrl->F.panel.gap;
-			dim[1] = 0.5 * Ctrl->W.width - 2.0 * Ctrl->F.panel.gap;
+		GMT_setpen (GMT, &Ctrl->F.panel.pen1);	/* Draw frame outline */
+		GMT_setfill (GMT, &Ctrl->F.panel.fill, outline);
+		PSL_plotsymbol (PSL, plot_x + shift[GMT_X], plot_y + shift[GMT_Y], dim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
+		if (Ctrl->F.panel.mode & GMT_PANEL_INNER) {	/* Also draw secondary frame on the inside */
+			dim[GMT_X] -= 2.0 * Ctrl->F.panel.gap;
+			dim[GMT_Y] -= 2.0 * Ctrl->F.panel.gap;
 			GMT_setpen (GMT, &Ctrl->F.panel.pen2);
 			GMT_setfill (GMT, NULL, true);	/* No fill for inner frame */
-			PSL_plotsymbol (PSL, plot_x, plot_y, dim, (Ctrl->F.panel.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+			PSL_plotsymbol (PSL, plot_x + shift[GMT_X], plot_y + shift[GMT_Y], dim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 		}
 		/* Reset color */
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
@@ -305,11 +290,12 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 
 	/* Plot the globe via GMT_psclip & GMT_pscoast */
 
-	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi", scale * 1.55, scale * 0.225, scale * 0.220);
+	sprintf (pars, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s", c_grid, scale * 0.3, c_grid);
+	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, scale * 0.220, pars);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K", scale * 1.55, c_water, c_land);
+	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s", scale * 1.55, c_water, c_land, pars);
 	GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30 --MAP_FRAME_PEN=0.5p,gray20 --MAP_POLAR_CAP=none", scale * 1.55);
+	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none", scale * 1.55, pars);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 	
 	/* Plot the GMT letters as shadows, then full size, using GMT_psxy */
@@ -325,6 +311,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	
 	PSL_setorigin (PSL, -Ctrl->D.anchor->x, -Ctrl->D.anchor->y, 0.0, PSL_INV);
 	GMT_plane_perspective (GMT, -1, 0.0);
+	PSL_command (PSL, "U\n");	/* Ending the encapsulation for gmtlogo */
 
 	GMT_plotend (GMT);
 
