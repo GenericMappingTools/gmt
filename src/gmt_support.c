@@ -7946,17 +7946,17 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	int n_errors = 0, n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	
-	/* Initialize the panel first */
+	/* Initialize the panel settings first */
 	P->radius = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_RADIUS;	/* 6 pt */
 	GMT_init_fill (GMT, &P->fill, -1.0, -1.0, -1.0);			/* Default is no fill unless specified */
-	GMT_init_fill (GMT, &P->sfill, 0.5, 0.5, 0.5);			/* Default is gray shade if used */
+	GMT_init_fill (GMT, &P->sfill, 0.5, 0.5, 0.5);			/* Default if gray shade is used */
 	P->pen1 = GMT->current.setting.map_frame_pen;			/* Heavier pen for main outline */
 	P->pen2 = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
-	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;		/* Default is 2p */
+	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;	/* Default is 2p */
 	/* Initialize the panel clearances */
 	P->off[XLO] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 	for (pos = XHI; pos <= YHI; pos++) P->off[pos] = P->off[XLO];
-	P->dx = P->off[XLO];					/* Set the shadow offsets [default is (4p, -4p)] */
+	P->dx = P->off[XLO];	/* Set the shadow offsets [default is (4p, -4p)] */
 	P->dy = -P->dx;
 	
 	if (text == NULL || text[0] == 0) {	/* Blank arg means draw outline with default pen */
@@ -7982,6 +7982,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					n_errors++;
 				}
 				for (n = 0; n < 4; n++) P->off[n] /= 2.54;	/* Since GMT_Get_Value returns cm */
+				P->clearance = true;
 				break;
 			case 'i':	/* Secondary pen info */
 				P->mode |= GMT_PANEL_INNER;

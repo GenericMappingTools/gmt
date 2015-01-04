@@ -14,8 +14,9 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
-**-E**\ *dpi* ] [ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [/*justify*]\ [/*dx*/*dy*] ] [ **-F**\ *pen*
-] [ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [
+**-E**\ *dpi* ] [ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [/*justify*]\ [/*dx*/*dy*] ]
+[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [
 **-J**\ *parameters* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-M** ] [ **-N**\ *nx*\ [/*ny*] ] [ **-O** ] [ **-P** ] [
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**] ] [
@@ -55,8 +56,9 @@ Required Arguments
     This must be an Encapsulated PostScript (EPS) file or a raster
     image. An EPS file must contain an appropriate BoundingBox. A raster
     file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.
-    If GDAL was not configured during GMT installation then only
-    Sun raster files are supported natively.
+    Note: If GDAL was not configured during GMT installation then only
+    Sun raster files are supported natively.  You must then convert other
+    formats to Sun raster files before use.
 **-E**\ *dpi*
     Sets the dpi of the image in dots per inch, or use **-W**.
 **-W**\ [**-**]\ *width*\ [/*height*]
@@ -80,9 +82,21 @@ Optional Arguments
     Finally, you can offset the image by *dx*/*dy* away from the *anchor* point in the
     direction implied by *justify* [LB].
 
-**-F**\ *pen*
-    Draws a rectangular frame around the image with the given pen [no
-    frame].
+**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+    Without further options, draws a rectangular border around the image using
+    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    Add **+g**\ *fill* to fill the image box [no fill].
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between scale and border. 
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
+    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading.
 
 .. |Add_-J| replace:: (Used only with **-p**)
 .. include:: explain_-J.rst_
@@ -147,23 +161,13 @@ no effect when plotting 1-bit images or PostScript files.
 
 .. include:: explain_help.rst_
 
-Examples
---------
-
-To plot the image contained in the 8-bit raster file scanned_face.ras,
-scaling it to 8 by 10 cm (thereby possibly changing the aspect ratio),
-and making the white color transparent, use
-
-   ::
-
-    gmt psimage scanned_face.ras -W8c/10c -Gtwhite > image.ps
-
+:doc:`gmt`, :doc:`pslegend`,
 To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
 accordingly), and outline with a thin, blue pen, use
 
    ::
 
-    gmt psimage logo.jpg -W1i -Fthin,blue > image.ps
+    gmt psimage logo.jpg -W1i -F+pthin,blue > image.ps
 
 To include an Encapsulated PostScript file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
@@ -186,6 +190,7 @@ See Also
 --------
 
 :doc:`gmt`,
-:doc:`gmtcolors`,
+:doc:`gmtcolors`, :doc:`gmtlogo`
+:doc:`pslegend`, :doc:`psscale`
 :doc:`psxy`,
 :manpage:`convert(1)`

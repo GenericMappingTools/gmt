@@ -81,6 +81,7 @@ struct GMT_CUSTOM_SYMBOL {
 /*! Plot a map panel behind scales, legends, images, logos */
 struct GMT_MAP_PANEL {
 	unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
+	double width, height;		/* Size of panel in inches */
 	double off[4];			/* Extend panel by this clearance (inches) in the w/e/s/n directions [0/0/0/0] */
 	double radius;			/* Radius for rounded corner */
 	double dx, dy;			/* Offset for background shaded rectangle (+s) */
@@ -88,6 +89,7 @@ struct GMT_MAP_PANEL {
 	struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
 	struct GMT_FILL fill;		/* Frame fill */
 	struct GMT_FILL sfill;		/* Background shade */
+	bool clearance;			/* True when +c has been given [otherwise a module may add automatic clearance] */
 	bool debug;
 };
 

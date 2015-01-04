@@ -21,7 +21,6 @@ Synopsis
 [ **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]] ]
 [ **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]] ]
 [ **-c**\ *copies* ]
-[ **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] ]
 [ **-t**\ [*transp*] ]
 |No-spaces|
 
@@ -55,7 +54,10 @@ Optional Arguments
     Without further options, draws a rectangular border around the logo using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].
-    Append **+i** to draw a secondary, inner border as well. We use a
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between logo and border. 
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
     *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
     unless other values are specified. Append **+r** to draw rounded
     rectangular borders instead, with a 6\ **p** corner radius. You can
@@ -68,7 +70,6 @@ Optional Arguments
 
 .. include:: explain_-P.rst_
 
-.. |Add_-R| replace:: (Used only with **-p**)
 .. include:: explain_-R.rst_
 
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
@@ -87,16 +88,29 @@ Optional Arguments
 
 .. include:: explain_-c.rst_
 
-.. |Add_perspective| replace:: (Requires **-R** and **-J** for proper functioning).
-.. include:: explain_perspective.rst_
-
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
+
+Examples
+--------
+
+To plot the GMT logo at the default size as a stand-alone plot, use
+
+   ::
+
+    gmt logo -P > logo.ps
+
+To apped a GMT logo overlay in the upper right corner of the current map, but
+scaled up to be 3 inches wide and offset by 0.1 inches from the border, try
+
+   ::
+
+    gmt logo -O -K -W3i -R -J -DjTR/0.1i/0.1i >> bigmap.ps
 
 
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmtcolors`,
-:doc:`psimage`
+:doc:`gmt`, :doc:`pslegend`,
+:doc:`psimage`, :doc:`psscale`

@@ -48,9 +48,9 @@ struct PSIMAGE_CTRL {
 		bool active;
 		double dpi;
 	} E;
-	struct PSIMG_F {	/* -F<pen> */
+	struct PSIMG_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
-		struct GMT_PEN pen;
+		struct GMT_MAP_PANEL panel;
 	} F;
 	struct PSIMG_G {	/* -G[f|b|t]<rgb> */
 		bool active;
@@ -81,7 +81,6 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->F.pen = GMT->current.setting.map_default_pen;
 	C->D.justify = PSL_BL;
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
 	C->N.nx = C->N.ny = 1;
@@ -102,7 +101,8 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psimage <imagefile> [-E<dpi> or -W[-]<width>[/<height>]] [%s] [-D[g|j|n|x]<anchor>[/<justify>][/<dx>/<dy>]]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F<pen>] [-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-N<nx>[/<ny>]] [-O]\n", GMT_J_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-N<nx>[/<ny>]] [-O]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
@@ -124,7 +124,7 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate that point on the image with <x0>/<y0> [LB].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note for -Dj: If <justify> is not given then it inherits the code use to set <x0>/<y0>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <dx>/<dy> to shift the image from the selected anchor in the direction implied by <justify> [0/0].\n");
-	GMT_pen_syntax (API->GMT, 'F', "Draw a frame around the image with the given pen.");
+	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   respectively. Set <color> = - for transparency [Default is black and white].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Gt (not for 1-bit images) indicate which color to be made transparent\n");
@@ -190,8 +190,12 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 				break;
 			case 'F':	/* Specify frame pen */
 				Ctrl->F.active = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->F.pen)) {
-					GMT_pen_syntax (GMT, 'F', " ");
+				if (GMT_compat_check (GMT, 5) && opt->arg[0] != '+') /* Warn but process old -F<pen> */
+					sprintf (txt_a, "+c0+p%s", opt->arg);
+				else
+					strcpy (txt_a, opt->arg);
+				if (GMT_getpanel (GMT, opt->option, txt_a, &Ctrl->F.panel)) {
+					GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the image", 1);
 					n_errors++;
 				}
 				break;
@@ -550,6 +554,11 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
+ 	if (Ctrl->F.active) {	/* Draw frame, fill only */
+		Ctrl->F.panel.width = Ctrl->N.nx * Ctrl->W.width;	Ctrl->F.panel.height = Ctrl->N.ny * Ctrl->W.height;	
+		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel.width, 0.5 * Ctrl->F.panel.height, 1U, &Ctrl->F.panel);
+ 	}
+
 	for (row = 0; row < Ctrl->N.ny; row++) {
 		y = Ctrl->D.anchor->y + row * Ctrl->W.height;
 		if (Ctrl->N.ny > 1) GMT_Report (API, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->N.nx, row);
@@ -572,12 +581,8 @@ int GMT_psimage (void *V_API, int mode, void *args)
 						 PS_transparent * header.width, header.height, PS_interpolate * header.depth);
 		}
 	}
-
- 	if (Ctrl->F.active) {	/* Draw frame */
- 		GMT_setfill (GMT, NULL, true);
-		GMT_setpen (GMT, &Ctrl->F.pen);
- 		PSL_plotbox (PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->y, Ctrl->D.anchor->x + Ctrl->N.nx * Ctrl->W.width, Ctrl->D.anchor->y + Ctrl->N.ny * Ctrl->W.height);
- 	}
+ 	if (Ctrl->F.active)	/* Draw frame outlines */
+		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel.width, 0.5 * Ctrl->F.panel.height, 2U, &Ctrl->F.panel);
 
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);

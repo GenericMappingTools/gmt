@@ -33,10 +33,6 @@
 
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcpt"
 
-#define FRAME_CLEARANCE	4.0	/* In points */
-#define FRAME_GAP	2.0	/* In points */
-#define FRAME_RADIUS	6.0	/* In points */
-
 struct PSLEGEND_CTRL {
 	struct PSLEGND_C {	/* -C<dx>/<dy> */
 		bool active;
@@ -66,15 +62,8 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->C.dx = C->C.dy = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_CLEARANCE;	/* 4 pt */
+	C->C.dx = C->C.dy = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* 4 pt */
 	C->D.justify = PSL_TC;	/* If nothing is specified we use this justification */
-	C->F.panel.radius = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_RADIUS;		/* 6 pt */
-	GMT_init_fill (GMT, &C->F.panel.fill, -1.0, -1.0, -1.0);		/* Default is no fill */
-	C->F.panel.pen1 = GMT->current.setting.map_frame_pen;
-	C->F.panel.pen2 = GMT->current.setting.map_default_pen;
-	C->F.panel.gap = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_GAP;	/* Default is 2p */
-	C->F.panel.dx = C->C.dx;	C->F.panel.dy = -C->C.dy;			/* Default is (4p, -4p) */
-	GMT_init_fill (GMT, &C->F.panel.sfill, 0.5, 0.5, 0.5);		/* Default is gray shade if used */
 	C->L.spacing = 1.1;
 	return (C);
 }
@@ -91,12 +80,12 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]][+d]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<specfile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout information from <infofile> [or stdin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <infofile> format).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout specification from <specfile> [or stdin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <specfile> format).\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -107,24 +96,16 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx to specify <anchor> with plot coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All except -Dx require the -R and -J options to be set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append the legend box <width>. The remaining arguments are optional:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <height> is 0 or not specified then we estimate it from <infofile>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <height> is 0 or not specified then we estimate it from <specfile>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate a point on the legend box with <x0>/<y0> [TC].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: If -Dj<code> is used and <justify> not set then <justify> is set equal to <code>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append <dx>/<dy> to shift legend from selected anchor in direction implied by <justify> [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<infofile> is one or more ASCII information files with legend commands.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Without further options: draw rectangular border around the legend (using MAP_FRAME_PEN)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      [Default is no border].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw guide lines for debugging.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<fill> to set the fill for the legend box [Default is no fill].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
-		GMT_putpen (API->GMT, API->GMT->current.setting.map_frame_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", FRAME_RADIUS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/]<fill> to plot a shadow behind the legend box [Default offset is %gp/%g].\n", FRAME_CLEARANCE, -FRAME_CLEARANCE);
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", GMT_FRAME_CLEARANCE, GMT_FRAME_CLEARANCE);
+	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 	GMT_Option (API, "J-,K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
 	GMT_Option (API, "O,P,R");
@@ -167,7 +148,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
 				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {	/* Args is <width>[/<height>][/<justify>][/<dx>/<dy>] */
+				else {	/* Args are <width>[/<height>][/<justify>][/<dx>/<dy>] */
 					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 					n_errors += GMT_check_condition (GMT, n < 2, "Error: Syntax is -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
 					Ctrl->D.width = GMT_to_inch (GMT, txt_a);
@@ -211,8 +192,11 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				n_errors += GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->F.panel);
-				Ctrl->F.debug = Ctrl->F.panel.debug;
+				if (GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->F.panel)) {
+					GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
+					n_errors++;
+				}
+				Ctrl->F.debug = Ctrl->F.panel.debug;	/* Hidden +d processing; this may go away */
 				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.panel.mode |= GMT_PANEL_OUTLINE;	/* Draw frame if just -F is given if in compatibility mode */
 				break;
 			case 'G':	/* Inside legend box fill [OBSOLETE] */
@@ -634,19 +618,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	
 	current_pen = GMT->current.setting.map_default_pen;
 
-	if (Ctrl->F.active && (Ctrl->F.panel.mode & GMT_PANEL_FILL)) {	/* First place legend frame fill */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Draw legend fill\n");
-		sdim[0] = Ctrl->D.width;
-		sdim[1] = Ctrl->D.height;
-		sdim[2] = Ctrl->F.panel.radius;
-		if (Ctrl->F.panel.mode & GMT_PANEL_SHADOW) {	/* Draw offset background shade first */
-			GMT_setfill (GMT, &Ctrl->F.panel.sfill, false);
-			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width + Ctrl->F.panel.dx, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height + Ctrl->F.panel.dy, sdim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
-		}
-		GMT_setfill (GMT, &Ctrl->F.panel.fill, false);
-		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
-		/* Reset color */
-		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
+	if (Ctrl->F.active) {	/* First place legend frame fill */
+		Ctrl->F.panel.width = Ctrl->D.width;	Ctrl->F.panel.height = Ctrl->D.height;	
+		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, 1U, &Ctrl->F.panel);
 	}
 
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
@@ -1291,24 +1265,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	/* Reset the flag */
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
-	if (Ctrl->F.active && (Ctrl->F.panel.mode & GMT_PANEL_OUTLINE)) {	/* Draw legend frame box */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Draw legend frame\n");
-		sdim[0] = Ctrl->D.width;
-		sdim[1] = Ctrl->D.height;
-		sdim[2] = Ctrl->F.panel.radius;
-		GMT_setpen (GMT, &Ctrl->F.panel.pen1);	/* Draw frame outline, without fill */
-		GMT_setfill (GMT, NULL, true);
-		PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
-		if (Ctrl->F.panel.mode & GMT_PANEL_INNER) {	/* Also draw secondary frame on the inside */
-			sdim[0] = Ctrl->D.width - 2.0 * Ctrl->F.panel.gap;
-			sdim[1] = Ctrl->D.height- 2.0 * Ctrl->F.panel.gap;
-			GMT_setpen (GMT, &Ctrl->F.panel.pen2);
-			GMT_setfill (GMT, NULL, true);	/* No fill for inner frame */
-			PSL_plotsymbol (PSL, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.panel.mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
-		}
-		/* Reset color */
-		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
-	}
+	if (Ctrl->F.active)	/* Draw legend frame box */
+		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, 2U, &Ctrl->F.panel);
 	
 	/* Time to plot any symbols, text, and paragraphs we collected in the loop */
 

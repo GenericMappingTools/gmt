@@ -18,6 +18,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
 [ **-E**\ [**b**\ \|\ **f**][*length*][\ **+n**\ [*text*]] ]
+[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-G**\ *zlo*\ /\ *zhi* ]
 [ **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
 [ **-J**\ *parameters* ]
@@ -26,7 +27,6 @@ Synopsis
 [ **-P** ] [ **-Q** ]
 [ |SYN_OPT-R| ]
 [ **-S** ]
-[ **-T**\ [**+p**\ *pen*][\ **+g**\ *fill*][\ **+l**\ \|\ **r**\ \|\ **b**\ \|\ **t**\ *off*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -113,6 +113,22 @@ Optional Arguments
     barwidth]. Finally, you can plot a rectangle with the NaN color at
     the start of the bar, labeled with *text* [NaN].
 
+**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+    Without further options, draws a rectangular border around the scale using
+    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    Add **+g**\ *fill* to fill the scale box [no fill].
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between scale and border. 
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
+    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading.
+
 **-G**\ *zlo*\ /\ *zhi*
     Truncate the incoming CPT so that the lowest and highest z-levels
     are to *zlo* and *zhi*.  If one of these equal NaN then
@@ -170,15 +186,6 @@ Optional Arguments
 **-S**
     Do not separate different color intervals with black grid lines.
 
-**-T**\ [**+p**\ *pen*][\ **+g**\ *fill*][\ **+l**\ \|\ **r**\ \|\ **b**\ \|\ **t**\ *off*]
-    Place a rectangle as background to the color scale. You must specify
-    either a pen outline (with modifier **+p**\ *pen*) or a fill (with
-    modifier **+g**\ *fill*), or both. The size of the rectangle is
-    computed from **-D** and the current fontsize and offset parameters.
-    You can add (or remove) additional space on any side by appending
-    **+s**\ *off*, where **s** is one of **l**\ eft, **r**\ ight,
-    **b**\ ottom, or **t**\ op.
-
 .. include:: explain_-U.rst_
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -229,4 +236,6 @@ colors for the two methods given identical RGB values.
 See Also
 --------
 
-:doc:`gmt`, :doc:`makecpt`, :doc:`grd2cpt`
+:doc:`gmt`, :doc:`makecpt`
+:doc:`gmtlogo`, :doc:`grd2cpt`
+:doc:`psimage`, :doc:`pslegend`

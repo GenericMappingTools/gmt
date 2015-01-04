@@ -220,6 +220,10 @@ only added to the 5.2-series.  Here is a summary of these changes in six key are
 New programs
 ------------
 
+We have replaced the shell script gmtlogo with a new module
+:doc:`gmtlogo` that can be used to add the GMT logo to maps
+and posters.
+
 Two new programs have been added to the *potential* supplement:
 
 :doc:`gmtflexure <supplements/potential/gmtflexure>`:
@@ -371,12 +375,16 @@ changes to syntax will be backwards compatible:
 *  :doc:`pshistogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
    to allow for more control on what happens to points in the tails.
 
-*  :doc:`psimage` new uniform **-D** option to specify location of image.
+*  :doc:`psimage` new uniform **-D** option to specify location of image and new uniform
+   **-F** option to specify background panel and its many settings.
 
 *  :doc:`pslegend` has many enhancements for specifying varying cell widths and color, as
-   well as a new uniform **-D** option to specify location of legend.
+   well as a new uniform **-D** option to specify location of legend and new uniform
+   **-F** option to specify background panel and its many settings.
 
-*  :doc:`psscale` new uniform **-D** option to specify location of the scale.
+*  :doc:`psscale` new uniform **-D** option to specify location of the scale. We have
+   retired the **-T** option in favor of the new uniform
+   **-F** option to specify background panel and its many settings.
 
 *  :doc:`psxy` has seen considerable enhancements. We added two new quoted
    line (**-Sq**) modifiers: **S**\ \|\ **s** for treating input as consecutive

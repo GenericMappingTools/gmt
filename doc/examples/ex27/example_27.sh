@@ -35,7 +35,7 @@ gmt pscoast $R -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
 
 pos=`echo 147E 31S | gmt mapproject -R -J -Di --PROJ_ELLIPSOID=Sphere | \
 	$AWK '{printf "%si/%si\n", $1, $2}'`
-gmt psscale -D$pos/2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -T+gwhite+p1p >> $ps
+gmt psscale -D$pos/2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -F+gwhite+p1p >> $ps
 
 # Clean up
 
