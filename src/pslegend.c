@@ -198,6 +198,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 				}
 				Ctrl->F.debug = Ctrl->F.panel.debug;	/* Hidden +d processing; this may go away */
 				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.panel.mode |= GMT_PANEL_OUTLINE;	/* Draw frame if just -F is given if in compatibility mode */
+				if (!Ctrl->F.panel.clearance) GMT_memset (Ctrl->F.panel.off, 4, double);	/* No clearance is default since handled via -C */
 				break;
 			case 'G':	/* Inside legend box fill [OBSOLETE] */
 				if (GMT_compat_check (GMT, 4)) {

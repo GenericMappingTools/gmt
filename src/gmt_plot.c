@@ -3172,11 +3172,12 @@ void GMT_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 {	/* Draw a recrangular backpanel behind things like logos, scales, legends, images.
 	 * Here, (x,y) is the center-point of the panel.
 	 * mode is a bit flag that can be 1,2, or 3:
-	 * mode = 1.  Lay down fills for background (if any fills)
-	 * mode = 2.  Draw the outlines
-	 * mode = 3.  Do both. */
+	 * mode = 1.  Lay down fills for background (if any fills) but no outlines
+	 * mode = 2.  Just draw any outlines requested
+	 * mode = 3.  Do both at the same time. */
 	double dim[3];
-	int outline = (P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE;	/* Does the panel have an outline? */
+	int outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
+	struct GMT_FILL *fill = NULL;	/* Default is no fill */
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Place rectangular back panel\n");
 	dim[GMT_X] = P->width  + P->off[XLO] + P->off[XHI];	/* Rectangle width */
@@ -3185,12 +3186,14 @@ void GMT_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	/* In case clearances are not symmetric we need to shift the symbol center accordingly */
 	x += 0.5 * (P->off[XHI] - P->off[XLO]);
 	y += 0.5 * (P->off[YHI] - P->off[YLO]);
+	if (mode == 1) outline = 0;	/* Do not draw outlines (if requested) at this time */
 	if ((mode & 1) && (P->mode & GMT_PANEL_SHADOW)) {	/* Draw offset background shadow first */
 		GMT_setfill (GMT, &P->sfill, false);	/* The shadow has no outline */
 		PSL_plotsymbol (GMT->PSL, x + P->dx, y + P->dy, dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	}
 	if ((mode & 2) && outline) GMT_setpen (GMT, &P->pen1);	/* Set frame outline pen */
-	if (mode & 1) GMT_setfill (GMT, &P->fill, outline);	/* Set frame fill */
+	if (mode & 1) fill = &P->fill;		/* Select fill (which may be NULL) unless we are just doing outlines */
+	GMT_setfill (GMT, fill, outline);	/* Activate frame fill, with optional outline */
 	if (!(mode == 2 && !outline)) PSL_plotsymbol (GMT->PSL, x, y, dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	if ((mode & 2) && (P->mode & GMT_PANEL_INNER)) {	/* Also draw secondary frame on the inside */
 		dim[GMT_X] -= 2.0 * P->gap;	/* Shrink dimension of panel by the uniform gap on all sides */
