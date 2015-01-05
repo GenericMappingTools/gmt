@@ -103,7 +103,7 @@ The EOS articles on GMT are
    data, *EOS Trans. AGU*, 72(41), 445--446, 1991. `doi:10.1029/90EO00319 <http://dx.doi.org/10.1029/90EO00319>`_.
 
 
-Some GMT programs are based on algorithms we have developed and
+Some GMT modules are based on algorithms we have developed and
 published separately, such as
 
 -  Kim, S.-S., and P. Wessel, Directional median filtering for
@@ -204,8 +204,8 @@ Paul Wessel on the 20th anniversary of GMT; a link is available on the
 GMT website.
 
 The success of GMT is to a large degree due to the input of the user
-community. In fact, most of the capabilities and options in
-GMT programs originated as user requests. We would like to hear from
+community. In fact, most of the capabilities and options in the
+GMT modules originated as user requests. We would like to hear from
 you should you have any suggestions for future enhancements and
 modification. Please send your comments to the GMT help list or create
 an issue in the bug tracker
@@ -217,14 +217,14 @@ New Features in GMT 5.2
 While the GMT 5.1-series has seen bug-fixes since its release, new features were
 only added to the 5.2-series.  Here is a summary of these changes in six key areas:
 
-New programs
+New modules
 ------------
 
 We have replaced the shell script gmtlogo with a new module
 :doc:`gmtlogo` that can be used to add the GMT logo to maps
 and posters.
 
-Two new programs have been added to the *potential* supplement:
+Two new modules have been added to the *potential* supplement:
 
 :doc:`gmtflexure <supplements/potential/gmtflexure>`:
 	Compute the elastic flexural response to a 2-D (line) load.
@@ -233,7 +233,7 @@ Two new programs have been added to the *potential* supplement:
 	Compute the flexural response to a 3-D (grid) load, using a variety
 	or rheological models (elastic, viscoelastic, firmoviscous).
 
-In addition, here are two established programs that have been given more suitable names:
+In addition, here are two established modules that have been given more suitable names:
 
 :doc:`grdconvert`
     Converts between different grid formats.
@@ -319,7 +319,7 @@ A few changes have affects across GMT; these are:
 Program-specific improvements
 -----------------------------
 
-Finally, here is a list of some enhancements to individual programs.  Any
+Finally, here is a list of some enhancements to individual modules.  Any
 changes to syntax will be backwards compatible:
 
 *  :doc:`gmt` now has a --show-cores option that reports the available cores.
@@ -405,7 +405,7 @@ changes to syntax will be backwards compatible:
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
    Finally, to match :doc:`psxy` we have added the option **-T** for specifying no data input.
 
-A few supplement programs have new features as well:
+A few supplement modules have new features as well:
 
 *  :doc:`mgd77track <supplements/mgd77/mgd77track>` adds the **-Gn**\ *gap* option to
    decimate the trackline coordinates by only plotting every *gap* point.
@@ -2041,9 +2041,8 @@ Command line arguments
 ----------------------
 
 Each program requires certain arguments specific to its operation. These
-are explained in the manual pages and in the usage messages. Most
-programs are "case-sensitive"; almost all options must start with an
-upper-case letter. We have tried to choose letters of the alphabet which
+are explained in the manual pages and in the usage messages.
+We have tried to choose letters of the alphabet which
 stand for the argument so that they will be easy to remember. Each
 argument specification begins with a hyphen (except input file names;
 see below), followed by a letter, and sometimes a number or character
@@ -2057,19 +2056,19 @@ letter, and number or string. *Do* space between options. Example:
 Standardized command line options
 ---------------------------------
 
-Most of the programs take many of the same arguments like those related
+Most of the programs take many of the same arguments such as those related
 to setting the data region, the map projection, etc. The 25 switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
 to use these options. We will present these options in order of
-importance (some are use a lot more than others).
+importance (some are used a lot more than others).
 
 .. _tbl-switches:
 
 +----------+--------------------------------------------------------------------+
 +==========+====================================================================+
-| **-B**   | Define tickmarks, annotations, and labels for basemaps and axes    |
+| **-B**   | Define tick marks, annotations, and labels for basemaps and axes   |
 +----------+--------------------------------------------------------------------+
 | **-J**   | Select a map projection or coordinate transformation               |
 +----------+--------------------------------------------------------------------+
