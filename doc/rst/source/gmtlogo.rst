@@ -70,6 +70,7 @@ Optional Arguments
 
 .. include:: explain_-P.rst_
 
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code

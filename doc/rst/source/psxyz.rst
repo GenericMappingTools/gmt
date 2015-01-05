@@ -107,7 +107,7 @@ Optional Arguments
 
 .. include:: explain_-K.rst_
 
-**-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |loc_OPT-L|
+**-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*]
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
     Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 4.
     Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 4-5.
