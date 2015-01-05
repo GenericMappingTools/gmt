@@ -393,13 +393,17 @@ changes to syntax will be backwards compatible:
    We expanded **-N** to handle periodic, repeating symbols near the boundary,
    added a new modifier **+** to **-E** for asymmetrical error bars, and provided the
    shorthand **-SE-**\ *diameter* for degenerated ellipses (i.e., circles).
-   The **-L** options has been enhanced to create envelope polygons around y(x),
+   The **-L** option has been enhanced to create envelope polygons around y(x),
    say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
    Finally, custom symbols definition tests can now compare two input variables.
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
-   modifiers for handling periodic plot symbols.
+   modifiers for handling periodic plot symbols.  Likewise,
+   the **-L** option has been enhanced to create envelope polygons around y(x),
+   say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
+   polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
+   Finally, to match :doc:`psxy` we have added the option **-T** for specifying no data input.
 
 A few supplement programs have new features as well:
 

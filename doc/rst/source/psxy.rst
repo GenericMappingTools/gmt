@@ -24,7 +24,7 @@ Synopsis
 [ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
 [ **-N**\ [**c**\ \|\ **r**] ] 
 [ **-O** ] [ **-P** ] 
-[ **-S**\ [*symbol*][\ *size*\ [**u**] ]
+[ **-S**\ [*symbol*][\ *size*\ [**u**] ] [ **-T** ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**-**\ \|\ **+**][*pen*] ]
@@ -141,18 +141,13 @@ Optional Arguments
 .. include:: PSXY_OPTs_EX.rst_
 
 **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |loc_OPT-L|
-    With no arguments we force closed polygons: connect the endpoints of the line-segment(s) and
-    draw polygons. Also, in concert with **-C** and any **-Z** settings in
-    the headers will use the implied color for polygon fill [Default is
-    polygon pen color].  Alternatively, convert an open line segment to
-    a polygon by adding two anchor points to allow the area to one side of
-    the line to be filled.  Append **+xl** to fill area to the left all the
-    way to *xmin*, **+xr** to fill area to the right all the way to *xmax*,
-    or **+x**\ *x0* to some arbitrary location.  Likewise, to fill area below
-    or above the curve, use **+yb**, **+yt**, or **+y**\ *y0*.  The area will
-    be filled if **-G** has been set. Optionally, you can outline the entire
-    polygon by adding **+p**\ *pen*.  The original line will be drawn
-    if **-W** has been specified.
+    Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
+    Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 3.
+    Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 3-4.
+    Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 3-4.
+    Append **+xl**\ \|\ **r**\ \|\ *x0* to connect first and last point to anchor points at either xmin, xmax, or x0, or
+    append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either ymin, ymax, or y0.
+    Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
 
 **-N**\ [**c**\ \|\ **r**]
     Do NOT clip symbols that fall outside map border [Default plots points

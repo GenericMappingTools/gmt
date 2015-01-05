@@ -18,8 +18,10 @@ Synopsis
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ **-D**\ *dx*/*dy*\ [/*dz*] ] [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
-[ **-K** ] [ **-L** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q** ] 
-[ **-S**\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ] 
+[ **-K** ]
+[ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
+[ **-N** ] [ **-O** ] [ **-P** ] [ **-Q** ] 
+[ **-S**\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ] [ **-T** ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**-**\ \|\ **+**][*pen*] ] 
@@ -105,12 +107,15 @@ Optional Arguments
 
 .. include:: explain_-K.rst_
 
-**-L**
-    Force closed polygons: connect the endpoints of the line-segment(s) and
-    draw polygons. Also, in concert with **-C** and any **-Z** settings in
-    the headers will use the implied color for polygon fill [Default is
-    polygon pen color]. **-N** Do NOT skip symbols that fall outside map
-    border [Default plots points inside border only]. 
+**-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |loc_OPT-L|
+    Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
+    Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 4.
+    Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 4-5.
+    Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 4-5.
+    Append **+xl**\ \|\ **r**\ \|\ *x0* to connect first and last point to anchor points at either xmin, xmax, or x0, or
+    append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either ymin, ymax, or y0.
+    Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
+    All constructed polygons are assumed to have a constant z value.
 
 **-N**\ [**c**\ \|\ **r**]
     Do NOT clip symbols that fall outside map border [Default plots points
@@ -131,6 +136,14 @@ Optional Arguments
     are plotted after items in the background. 
 
 .. include:: explain_symbols2.rst_
+
+**-T**
+    Ignore all input files, including standard input. This is the same
+    as specifying /dev/null (or NUL for Windows users) as input file.
+    Use this to activate only the options that are not related to
+    plotting of lines or symbols, such as **psxyz** **-R** **-J** **-O**
+    **-T** to terminate a sequence of GMT plotting commands without
+    producing any plotting output. 
 
 .. include:: explain_-U.rst_
 

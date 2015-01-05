@@ -334,7 +334,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	unsigned char *dummy = NULL;
 
 	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, dy, d_line_half_width, d_line_hor_offset, off_ss, off_tt;
-	double v_line_ver_offset = 0.0, sdim[3] = {0.0, 0.0, 0.0}, height, az1, az2, m_az, row_height, scl;
+	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl;
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off;
 	double sum_width, h, gap, d_line_after_gap, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 
