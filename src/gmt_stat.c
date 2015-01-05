@@ -1382,7 +1382,8 @@ double GMT_Fcrit (struct GMT_CTRL *GMT, double alpha, double nu1, double nu2)
 }
 
 static inline uint64_t mix64 (uint64_t a, uint64_t b, uint64_t c) {
-	/* mix 3 64-bit values */
+	/* Mix 3 64-bit values, from lookup8.c by Bob Jenkins
+	 * (http://burtleburtle.net/bob/index.html) */
 	a -= b; a -= c; a ^= (c>>43);
 	b -= c; b -= a; b ^= (a<<9);
 	c -= a; c -= b; c ^= (b>>8);
@@ -1405,7 +1406,8 @@ double GMT_rand (struct GMT_CTRL *GMT) {
 	double random_val;
 
 	while (seed == 0) { /* repeat in case of unsigned overflow */
-		/* initialize random seed */
+		/* Initialize random seed, idea from Jonathan
+		 * Wright (http://stackoverflow.com/q/322938) */
 		seed = (unsigned) mix64 (clock(), time(NULL), getpid());
 		srand (seed);
 	}
