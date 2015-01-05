@@ -1284,13 +1284,29 @@ Creating GMT Graphics
 
     .. figure:: /_images/example_39.*
 
-    line simplification and area calculations
-    ----------------------------------------------
+    Line simplification and area calculations
+    -----------------------------------------
 
     .. literalinclude:: /_verbatim/example_40.txt
        :language: bash
 
     .. figure:: /_images/example_40.*
+
+    Advanced map legends
+    --------------------
+
+    .. literalinclude:: /_verbatim/example_41.txt
+       :language: bash
+
+    .. figure:: /_images/example_41.*
+
+    Antarctica and Stereographic Data
+    ---------------------------------
+
+    .. literalinclude:: /_verbatim/example_42.txt
+       :language: bash
+
+    .. figure:: /_images/example_42.*
 
 Creating GMT Animations
 =======================
