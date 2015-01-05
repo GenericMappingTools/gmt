@@ -652,7 +652,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				/* If a label then add space for offset and label height */
 				if (GMT->current.map.frame.axis[GMT_X].label[0]) label_off = MAX (0.0, GMT->current.setting.map_label_offset) + GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				/* If a unit then add space on the right to deal with the unit */
-				if (GMT->current.map.frame.axis[GMT_Y].label[0]) u_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_DEC_SIZE * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+				if (GMT->current.map.frame.axis[GMT_Y].label[0]) u_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_LET_SIZE * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				/* Adjust clearances for the panel */
 				if (flip & 1) panel->off[YHI] += annot_off; else panel->off[YLO] += annot_off;
 				if (flip & 2) panel->off[YHI] += label_off; else panel->off[YLO] += label_off;
@@ -672,7 +672,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				if (GMT->current.map.frame.axis[GMT_X].label[0]) label_off = MAX (0.0, GMT->current.setting.map_label_offset) + GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				/* If a unit then consider if its width exceeds the bar width; then use half the excess to adjust center and width of box, and its height to adjust the height of box */
 				if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
-					u_off = 0.5 * MAX (0.0, strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_DEC_SIZE * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH] - width);
+					u_off = 0.5 * MAX (0.0, strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_LET_SIZE * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH] - width);
 					v_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + GMT->current.setting.font_annot[0].size * FONT_HEIGHT_PRIMARY * GMT->session.u2u[GMT_PT][GMT_INCH];
 				}
 				/* Adjust clearances for the panel */
