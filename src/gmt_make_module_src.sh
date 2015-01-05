@@ -38,7 +38,7 @@ if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current di
 	LIB_STRING="GMT suppl: The official supplements to the Generic Mapping Tools"
 elif [ "$U_TAG" = "CORE" ]; then	# Just look in current dir and set LIB_STRING
 	grep "#define THIS_MODULE_LIB		" */*.c | awk -F: '{print $1}' | sort > /tmp/tmp.lis
-	LIB_STRING="GMT core: The main section of the Generic Mapping Tools"
+	LIB_STRING="GMT core: The main modules of the Generic Mapping Tools"
 else	# Just look in current dir (for user extension)
 	echo "Error: Tag must be either core or supplements"
 	exit
