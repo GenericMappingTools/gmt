@@ -25,7 +25,7 @@
 
 #define THIS_MODULE_NAME	"gmtlogo"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot the GMT logo"
+#define THIS_MODULE_PURPOSE	"Plot the GMT logo on maps"
 
 #include "gmt_dev.h"
 
