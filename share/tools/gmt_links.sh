@@ -4,21 +4,34 @@
 # J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
-# This script creates a function for each GMT module which calls the module
-# via the main GMT executable (gmt <module>).
+# This script creates, removes, or lists symbolic links for each GMT
+# module to the main GMT executable that allow users to run modules
+# directly.
 #
-# Include this file in your GMT bash script or on the command line with:
-#   source $(gmt --show-datadir)/tools/gmt_functions.sh
-# If the GMT executable is not in the search path, set an extra function:
-#   function gmt () { path/to/gmt "$@"; }
-#   export -f gmt
+# Run this script on the command line with:
+#   $(gmt --show-datadir)/tools/gmt_links.sh create|remove
+#
+# With no arguments we simply check for the links.
+#
+# It expects the GMT executable to be in the search path and that
+# you have permission to perform the changes in the bin directory.
 
 # check for bash
 [ -z "$BASH_VERSION" ] && return
 
+if [ "X$1" = "Xdelete" ]; then
+	mode=1
+elif [ "X$1" = "Xcreate" ]; then
+	mode=2
+else
+	mode=0
+fi
+bin=`gmt --show-bindir`
+cwd=`pwd`
+
 gmt_modules="backtracker blockmean blockmedian blockmode dimfilter filter1d \
-fitcircle gmt2kml gmtconnect gmtconvert gmtdefaults gmtflexure \
-gmtget gmtgravmag3d gmtinfo gmtlogo gmtmath \
+fitcircle gmt2kml gmtconnect gmtconvert gmtdefaults gmtflexure gmtget \
+gmtgravmag3d gmtinfo gmtlogo gmtmath \
 gmtselect gmtset gmtsimplify gmtspatial gmtstitch gmtvector gmtwhich gravfft \
 grd2cpt grd2rgb grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft \
 grdfilter grdflexure grdgradient grdgravmag3d grdhisteq grdimage grdinfo grdlandmask \
@@ -34,7 +47,18 @@ sphinterpolate sphtriangulate splitxyz surface trend1d trend2d triangulate \
 x2sys_binlist x2sys_cross x2sys_datalist x2sys_get x2sys_init x2sys_list \
 x2sys_merge x2sys_put x2sys_report x2sys_solve xyz2grd"
 
+cd $bin
 for module in ${gmt_modules}; do
-  eval "function ${module} () { gmt ${module} \"\$@\"; }"
-  eval "export -f ${module}"
+	if [ $mode -eq 1 ]; then	# Delete links
+		echo "rm -f $module"
+	elif [ $mode -eq 2 ]; then	# Create new links (remove old if present)
+		echo "ls -sf gmt $module"
+	else				# List what we find	
+		if [ -h $module ]; then
+			printf "Link for module %16s: %s\n" $module "Present"
+		else
+			printf "Link for module %16s: %s\n" $module "Absent"
+		fi
+	fi
 done
+cd $cwd

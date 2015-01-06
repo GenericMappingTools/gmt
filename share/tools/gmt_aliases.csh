@@ -13,16 +13,17 @@
 #   alias gmt path/to/gmt
 
 set gmt_modules = (backtracker blockmean blockmedian blockmode dimfilter \
-filter1d fitcircle gmt2kml gmtconvert gmtdefaults gmtget gmtgravmag3d gmtinfo \
+filter1d fitcircle gmt2kml gmtconnect gmtconvert gmtdefaults gmtflexure \
+gmtget gmtgravmag3d gmtinfo gmtlogo \
 gmtmath gmtselect gmtset gmtsimplify gmtspatial gmtstitch gmtvector gmtwhich \
 gravfft grd2cpt grd2rgb grd2xyz grdblend grdclip grdcontour grdcut grdedit \
-grdfft grdfilter grdgradient grdgravmag3d grdhisteq grdimage grdinfo \
+grdfft grdfilter grdflexure grdgradient grdgravmag3d grdhisteq grdimage grdinfo \
 grdlandmask grdmask grdmath grdpaste grdpmodeler grdproject grdraster \
-grdredpol grdreformat grdrotater grdsample grdseamount grdspotter grdtrack \
+grdredpol grdconvert grdrotater grdsample grdseamount grdspotter grdtrack \
 grdtrend grdvector grdview grdvolume greenspline gshhg hotspotter img2grd \
 kml2gmt makecpt mapproject mgd77convert mgd77info mgd77list mgd77magref \
 mgd77manage mgd77path mgd77sniffer mgd77track minmax nearneighbor originator \
-project ps2raster psbasemap psclip pscoast pscontour pscoupe pshistogram \
+project psconvert psbasemap psclip pscoast pscontour pscoupe pshistogram \
 psimage pslegend psmask psmeca pspolar psrose psscale pssegy pssegyz pstext \
 psvelo pswiggle psxy psxyz rotconverter sample1d segy2grd spectrum1d sph2grd \
 sphdistance sphinterpolate sphtriangulate splitxyz surface trend1d trend2d \
