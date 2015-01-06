@@ -3885,8 +3885,7 @@ void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int n
 	if (buffer1 != buffer ) PSL_free (buffer1);
 }
 
-size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf, size_t nbytes)
-{
+size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf, size_t nbytes) {
 	/* Encode 4-byte binary data from src_buf to 5-byte ASCII85
 	 * Special cases: 0x00000000 is encoded as z
 	 * Encoded data is stored in dst_buf and written to file in
@@ -3902,7 +3901,7 @@ size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf, size_
 		return 0;
 
 	/* dst_buf has to be large enough to hold data + line endings */
-	dst_buf_size = nbytes * 1.25 + 1; /* output buffer is at least 1.25 times larger */
+	dst_buf_size = (size_t)(nbytes * 1.25) + 1; /* output buffer is at least 1.25 times larger */
 	dst_buf_size += dst_buf_size / max_line_len + 4; /* add more space for '\n' and delimiter */
 	dst_ptr = dst_buf = PSL_memory (PSL, NULL, dst_buf_size, unsigned char); /* output buffer */
 
@@ -3932,7 +3931,7 @@ size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf, size_
 
 		/* Copy olen bytes to dst_buf */
 		memcpy (dst_ptr, quintuple, olen);
-		line_len += olen;
+		line_len += (unsigned int)olen;
 		dst_ptr += olen;
 
 		/* Insert newline when line exceeds 95 characters */

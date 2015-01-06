@@ -393,7 +393,7 @@ void LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w, uint6
 		GMT_free (GMT, w2);
 	}
 	else {	/* No weights supplied */
-		S = n;
+		S = (double)n;
 		S_x = GMT_sum (x, n);
 		S_y = GMT_sum (y, n);
 		GMT_prod (x, x, Q, n);
