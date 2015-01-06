@@ -51,7 +51,7 @@ function make_frame () {
 	echo "Frame ${file} completed"
 }
 n_jobs=0
-max_jobs=8
+max_jobs=$(getconf _NPROCESSORS_ONLN || echo 1)
 while read lon lat dist; do
 	make_frame ${frame} ${lon} ${lat} ${dist} &
 	((++n_jobs))
@@ -70,7 +70,7 @@ echo "anim_04.sh: Made ${frame} frames at 480x720 pixels placed in subdirectory 
 ${GRAPHICSMAGICK-gm} convert -delay 40 -loop 0 +dither frames/${name}_*0.tif ${name}.gif
 if type -ft ${FFMPEG-ffmpeg} >/dev/null 2>&1 ; then
 	# create x264 video at 25fps
-	${FFMPEG-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif -vcodec libx264 -pix_fmt yuv420p ${name}.mp4
+	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif -vcodec libx264 -pix_fmt yuv420p ${name}.mp4
 fi
 
 # 4. Clean up temporary files

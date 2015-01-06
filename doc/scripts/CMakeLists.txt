@@ -124,13 +124,11 @@ foreach (_script ${_scr_nostrip})
 	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_verbatim)
 	# Add command that triggers generator macro when output does not exist
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
-		COMMAND ${CMAKE_COMMAND}
-		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-		-D txt=${RST_BINARY_DIR}/_verbatim/${_txt}
-		-D no_strip=TRUE
-		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
-		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
+		COMMAND ${GMT_BINARY_DIR}/src/script2verbatim
+		${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+		${RST_BINARY_DIR}/_verbatim/${_txt}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS script2verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 endforeach (_script)
 
 foreach (_script ${_scr_strip})
@@ -138,12 +136,11 @@ foreach (_script ${_scr_strip})
 	list (APPEND _scripts_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
 	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_verbatim)
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
-		COMMAND ${CMAKE_COMMAND}
-		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-		-D txt=${RST_BINARY_DIR}/_verbatim/${_txt}
-		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
-		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
+		COMMAND ${GMT_BINARY_DIR}/src/script2verbatim --strip-comments
+		${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+		${RST_BINARY_DIR}/_verbatim/${_txt}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS script2verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 endforeach (_script)
 
 # Add build target

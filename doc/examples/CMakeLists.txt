@@ -94,14 +94,11 @@ foreach (_script ${_examples})
 	list (APPEND _examples_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
 
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
-		COMMAND ${CMAKE_COMMAND}
-		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-		-D txt=${RST_BINARY_DIR}/_verbatim/${_txt}
-		-D no_strip=TRUE
-		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
+		COMMAND ${GMT_BINARY_DIR}/src/script2verbatim
+		${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+		${RST_BINARY_DIR}/_verbatim/${_txt}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
+		DEPENDS script2verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 endforeach (_script ${_examples})
 
 # Add build target

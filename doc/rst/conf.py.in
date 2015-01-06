@@ -177,6 +177,11 @@ html_show_sourcelink = True
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'GMT_Docs'
 
+# Redefine supported_image_types for the HTML builder
+from sphinx.builders.html import StandaloneHTMLBuilder
+StandaloneHTMLBuilder.supported_image_types = [
+  'image/gif', 'image/jpeg', 'image/png', 'image/svg+xml'
+]
 
 # -- Options for LaTeX output --------------------------------------------------
 
