@@ -244,6 +244,7 @@ man_pages = [
 ('gmtlogo', 'gmtlogo', 'Adding a GMT graphics logo overlay to an illustration', '', 1),
 ('gmtinfo', 'gmtinfo', 'Return information about data tables', '', 1),
 ('gmtmath', 'gmtmath', 'Reverse Polish Notation (RPN) calculator for data tables', '', 1),
+('gmtregress', 'gmtregress', 'Linear regression of 1-D data sets', '', 1),
 ('gmtselect', 'gmtselect', 'Select data table subsets based on multiple spatial criteria', '', 1),
 ('gmtset', 'gmtset', 'Change individual GMT default parameters', '', 1),
 ('gmtsimplify', 'gmtsimplify', 'Line reduction using the Douglas-Peucker algorithm', '', 1),
