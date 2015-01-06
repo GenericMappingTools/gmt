@@ -139,6 +139,8 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`fitcircle`      | Finds the best-fitting great or small circle for a set of points    |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtregress`     | Perform linear regression of 1-D data sets                          |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`grdtrack`       | Sampling of 2-D gridded data set(s) along 1-D track                 |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`trend1d`        | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |

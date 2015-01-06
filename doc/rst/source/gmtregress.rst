@@ -32,10 +32,10 @@ Description
 
 **gmtregress** reads one or more data tables [or *stdin*]
 and determines the best linear regression for each segment using the chosen parameters.
-The user can choose what output components to write.  By default, the model will be evaluated at the
+The user may specify the output components.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
-the model.  Alternatively, we can perform a scan of all possible regression lines
-(a range of slope angles) and examine how the misfit **E** measure varies with the slope.
+the model.  Instead of determining the best fit we can perform a scan of all possible regression lines
+(for a range of slope angles) and examine how the chosen misfit measure varies with the slope.
 
 Required Arguments
 ------------------
@@ -51,11 +51,11 @@ Optional Arguments
 **-A**\ *min*\ /*max*\ /*inc*
     Examine all possible regression lines with slope angles between *min* and *max*,
     using steps of *inc* degrees [-90/+90/1].  For each slope the optimum intercept
-    is determined based on your **-E** and **-N** settings.  No best model is determined;
-    instead we report the four columns *angle*, *E*, *slope*, *intercept*, for
-    each input segment.
+    is determined based on your **-E** and **-N** settings.  
+    We report the four columns *angle*, *E*, *slope*, *intercept*, for
+    each input segment; the best model parameters of these are written into the segment header.
 
-**-C**\ *level*    Only output segments whose number of records matches your given criteria:
+**-C**\ *level*
     Set the confidence level (in %) to use for calculation of confidence bands on the regression [95].
     This is only used if **F** includes the column **c**.
 
@@ -68,24 +68,24 @@ Optional Arguments
 
 **-F**\ *flags*
     Append a combination of the columns you wish returned; the output order will match the order specified here.  Choose from
-    **x* (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (data minus model residual),
-    **c** (confidence interval on regression; see **-C**
+    **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
+    **c** (symmetrical confidence interval on the regression; see **-C**
     for the level), and **w** (Reweighted Least Squares weights) [**xymrcw**].
 
 **-N**\ *norm*
-    Selects the norm to use for the misfit calculation.  Choose from **1** (L-1 measure; the mean of the
-    absolute residuals), **2** (Least-squares; the mean sum of the squared residuals), or
-    **R** (LMS; The least median of the squared residuals) [**2**].  Traditional regression uses L-2
+    Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
+    absolute residuals), **2** (Least-squares; the mean of the squared residuals), or
+    **r** (LMS; The least median of the squared residuals) [**2**].  Traditional regression uses L-2
     while L-1 and in particular LMS are more robust in how they handle outliers.
 
 **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n*
-    Solve for the regression parameters and then evaluate the model at the equidistant points implied.  If
-    **-T**\ *n* is given we set *min* and *max* to the extreme *x*-values in each segment and determine *inc*
-    so that there are exactly *n* output values.
+    Solve for the regression parameters and then evaluate the model at the equidistant points implied by the arguments.  If
+    **-T**\ *n* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment and determine *inc*
+    so that there are exactly *n* output values for each segment.
 
 **-W**\ [**s**]
     Use the 3rd input column as individual weights for the regression [Default is no weights].  Append **s**
-    if the 3rd column contains data uncertainties (sigma) and we must compute the weights as 1/sigma.
+    if the 3rd column contains data uncertainties (sigma) and we must compute first the weights as 1/sigma.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

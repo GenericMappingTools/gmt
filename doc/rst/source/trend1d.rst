@@ -171,6 +171,7 @@ See Also
 
 :doc:`gmt`,
 :doc:`gmtmath`,
+:doc:`gmtregress`,
 :doc:`grdtrend`,
 :doc:`trend2d`
 

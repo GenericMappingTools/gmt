@@ -19,15 +19,16 @@
  * API functions to support the gmtconvert application.
  *
  * Author:	Paul Wessel
- * Date:	10-JAN-2015
+ * Date:	5-JAN-2015
  * Version:	5 API
  *
- * Brief synopsis: gmtregress fits y = ax + b linear regression to x,y[,w] data.
+ * Brief synopsis: gmtregress fits y = ax + b linear regression to x,y[,w] data
+ *	using a variety of misfit criteria and regression modes.
  */
 
 #define THIS_MODULE_NAME	"gmtregress"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Linear regression of 1-D data sets"
+#define THIS_MODULE_PURPOSE	"Perform linear regression of 1-D data sets"
 
 #include "gmt_dev.h"
 
@@ -774,7 +775,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 							case 'r':		/* Data minus model */
 								out[col] = dy[row] - (par[P_SLOPE] * del_x[row] + par[P_ICEPT]);	break;
 							case 'c':		/* Model confidence limit */
-								out[col] = par[P_SLOPE] * del_x[row] + par[P_ICEPT];	break;
+								out[col] = 0.0;	break;
 							case 'w':		/* Residual weights [0 or 1 if LMS] */
 								out[col] = par[P_SLOPE] * del_x[row] + par[P_ICEPT];	break;
 						}

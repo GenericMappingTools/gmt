@@ -226,8 +226,8 @@ There are two new modules in the core system:
 name but is now a regular C module that can be used to add the 
 GMT logo to maps and posters.
 
-:doc:`gmtregress` determines linear regressions in data sets using
-a variety of norms and regression modes.
+:doc:`gmtregress` determines linear regressions for data sets using
+a variety of misfit norms and regression modes.
 
 Two new modules have also been added to the *potential* supplement:
 
