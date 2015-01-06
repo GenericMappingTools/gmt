@@ -15,9 +15,9 @@ function plot_one {	# 5 args are: -E -N axes -X -Y
 	gmt psxy -R -W1p,red -J -O -K $4 $5 tmp -W1p	
 }
 # Allow outliers to be included in the analysis:
-sed -e s/#//g hertzsprung-russell.txt > data
+sed -e s/#//g "${src:-.}"/hertzsprung-russell.txt > data
 # Identify the red giants (outliers)
-grep '#' hertzsprung-russell.txt | sed -e s/#//g > giants
+grep '#' "${src:-.}"/hertzsprung-russell.txt | sed -e s/#//g > giants
 
 gmt psxy -R2.85/5.25/3.9/6.3 -JX-2i/2i -T -P -K -Xa1i -Ya1i > $ps
 # L1

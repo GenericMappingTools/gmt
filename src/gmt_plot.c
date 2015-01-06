@@ -3180,6 +3180,7 @@ void GMT_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	struct GMT_FILL *fill = NULL;	/* Default is no fill */
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Place rectangular back panel\n");
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Offsets: %g/%g/%g/%g\n", P->off[XLO], P->off[XLO], P->off[YLO], P->off[YHI]);
 	dim[GMT_X] = P->width  + P->off[XLO] + P->off[XHI];	/* Rectangle width */
 	dim[GMT_Y] = P->height + P->off[YLO] + P->off[YHI];	/* Rectangle height */
 	dim[GMT_Z] = P->radius;	/* Corner radius, or zero */

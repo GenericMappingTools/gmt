@@ -11,12 +11,12 @@ ps=regress_1.ps
 function plot_one {	# 5 args are: -E -N axes -X -Y
 	# Use negative angle since we are plotting data in regress_2.sh against -x
 	gmt regress -A-90/90/0.1 $1 $2 data | awk '{print -$1, $2}' > tmp
-	gmt psxy -R -W0.5p,blue -J -Bxa45f15g45+u\\232 -Bya1pg1 -B$3 -O -K $4 $5 tmp
+	gmt psxy -R -W0.5p,blue -J -Bxa45f15g45+u\\312 -Bya1pg1 -B$3 -O -K $4 $5 tmp
 	gmt math tmp -i0,1 DUP DUP LOWER EQ MUL = | awk '{if (NF == 2 && $2 > 0) printf "%s %s %s 0.001\n", $1, $2, $1}' | gmt psxy -R -J -O -K -Sv0.2i+s+b -Gred $4 $5 --MAP_VECTOR_SHAPE=1
 	
 }
 # Allow outliers to be included in the analysis:
-sed -e s/#//g hertzsprung-russell.txt > data
+sed -e s/#//g "${src:-.}"/hertzsprung-russell.txt > data
 gmt psxy -R-90/90/0.001/100 -JX2i/2il -T -P -K -Xa1i -Ya1i > $ps
 # L1
 plot_one -Er -N1 WSne -Xa1.1i -Ya1i >> $ps

@@ -19,8 +19,8 @@
 # run tests
 if (DO_TESTS)
 	# list of test dirs
-	set (GMT_TEST_DIRS api byteswap blockmean blockmedian filter1d fitcircle
-		gdal genper gmt_core gmtconvert gmtmath gmtselect gmtsimplify gmtspatial
+	set (GMT_TEST_DIRS api byteswap blockmean blockmedian filter1d fitcircle gdal
+		genper gmt_core gmtconvert gmtlogo gmtmath gmtregress gmtselect gmtsimplify gmtspatial
 		gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour grdcut
 		grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdlandmask
 		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack
