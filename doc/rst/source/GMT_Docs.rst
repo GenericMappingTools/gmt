@@ -220,11 +220,16 @@ only added to the 5.2-series.  Here is a summary of these changes in six key are
 New modules
 ------------
 
-We have replaced the shell script gmtlogo with a new module
-:doc:`gmtlogo` that can be used to add the GMT logo to maps
-and posters.
+There are two new modules in the core system:
 
-Two new modules have been added to the *potential* supplement:
+:doc:`gmtlogo` is modeled after the shell script with the same
+name but is now a regular C module that can be used to add the 
+GMT logo to maps and posters.
+
+:doc:`gmtregress` determines linear regressions in data sets using
+a variety of norms and regression modes.
+
+Two new modules have also been added to the *potential* supplement:
 
 :doc:`gmtflexure <supplements/potential/gmtflexure>`:
 	Compute the elastic flexural response to a 2-D (line) load.

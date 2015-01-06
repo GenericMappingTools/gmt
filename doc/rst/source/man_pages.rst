@@ -27,6 +27,7 @@ Core modules
    gmtinfo
    gmtlogo
    gmtmath
+   gmtregress
    gmtselect
    gmtset
    gmtsimplify
@@ -119,6 +120,7 @@ Supplementary modules
    supplements/mgd77/mgd77sniffer
    supplements/mgd77/mgd77track
    supplements/misc/dimfilter
+   supplements/potential/gmtflexure
    supplements/potential/gmtgravmag3d
    supplements/potential/gravfft
    supplements/potential/grdflexure
