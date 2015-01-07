@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# $Id$
+#
+# Bash script for creating videos of the animation examples.
+# The videos will optionally be included in the RST gallery.
+
+test -z "$1" && exit 1
+
+# Where the current script resides (need absolute path)
+script_name="$1"
+script_dir=$(dirname "${script_name}")
+script="@GMT_SOURCE_DIR@/doc/examples/${script_name}"
+if ! [ -x "${script}" ]; then
+  echo "error: cannot execute script ${script}." >&2
+  exit 1
+fi
+
+# choose awk
+if type gawk >/dev/null 2>&1 ; then
+  export AWK=gawk
+elif type nawk >/dev/null 2>&1 ; then
+  export AWK=nawk
+else
+  export AWK=awk
+fi
+
+# Temporary change LANG to C
+LANG=C
+
+# Define variables that are needed *within* test scripts
+GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
+GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+src="@GMT_SOURCE_DIR@/doc/examples/${script_dir}"
+
+# Font lookup path for Ghostscript (invoked from gm compare and ps2raster)
+export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
+
+# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
+unset GMT5_SHAREDIR
+export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
+export GMT_USERDIR="@GMT_BINARY_DIR@/share"
+export PATH="@GMT_SOURCE_DIR@/src:$PATH" # for gmt_shell_functions.sh
+
+# Reset error count
+ERROR=0
+
+# gmt wrapper
+function gmt()
+{
+  @GMT_BINARY_DIR@/src/gmt "$@"
+}
+
+# export function definitions to subshells
+export -f gmt
+
+set -E # Shell functions and subshells need to inherit ERR trap
+
+function on_err()
+{
+  trap - ERR SIGSEGV SIGTRAP SIGBUS # Restore trap
+  ((++ERROR))
+  echo "ERROR: ${1}:${2}" >&2 # Report error line
+  exit $ERROR
+}
+trap 'on_err "${BASH_SOURCE}" "${LINENO}"' ERR SIGSEGV SIGTRAP SIGBUS
+
+# Create a temporary directory exec_dir in the build dir
+# Then copy all of its contents (except files excluded by GLOBIGNORE)
+# Run remainder of this GMT script there
+exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_dir}"
+rm -rf "$exec_dir"
+mkdir -p "$exec_dir"
+cd "$exec_dir"
+GLOBIGNORE="*.bat:*.ps:*.sh"
+for file in "$src"/* ; do
+  test -f "$file" && ln -s "$file" .
+done
+unset GLOBIGNORE
+
+# Start with proper GMT defaults
+gmt set -Du FORMAT_TIME_STAMP "Version 5"
+
+# Now run the original script
+. "${script}" animate
+
+# vim: ft=sh

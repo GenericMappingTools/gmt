@@ -37,9 +37,9 @@ int filter (char *line, unsigned strip_comments) {
 	if ((strstr (line, "$Id:") != 0))
 		return 0;
 
-	/* filter lines with 'functions[.]sh' */
-	if ((strstr (line, "functions.sh") != 0))
-		return 0;
+	/* filter lines with 'functions[.]sh'
+	 * if ((strstr (line, "functions.sh") != 0))
+	 *   return 0; */
 
 	/* filter lines with '^[ ]*#' */
 	if (strip_comments) {
