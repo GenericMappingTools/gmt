@@ -2,7 +2,7 @@
 #               GMT ANIMATION 04
 #               $Id$
 #
-# Purpose:      Make DVD-res Quicktime movie of NY to Miami flight
+# Purpose:      Make DVD-res movie of NY to Miami flight
 # GMT progs:    gmt gmtset, gmt gmtmath, gmt psbasemap, gmt pstext, gmt psxy, gmt ps2raster
 # Unix progs:   awk, mkdir, rm, mv, echo, qt_export, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
@@ -65,15 +65,23 @@ wait
 
 file=`gmt_set_framename ${name} 0`
 
-echo "anim_04.sh: Made ${frame} frames at 480x720 pixels placed in subdirectory frames"
-# GIF animate every 10th frame
-${GRAPHICSMAGICK-gm} convert -delay 40 -loop 0 +dither frames/${name}_*0.tif ${name}.gif
+echo "Made ${frame} frames at 720x480 pixels"
+# GIF animate every 20th frame
+${GRAPHICSMAGICK-gm} convert -delay 40 -loop 0 +dither frames/${name}_*[02468]0.tif ${name}.gif
 if type -ft ${FFMPEG-ffmpeg} >/dev/null 2>&1 ; then
-	# create x264 video at 25fps
-	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif -vcodec libx264 -pix_fmt yuv420p ${name}.mp4
+	# create H.264 video at 25fps
+	echo "Creating H.264 video"
+	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif \
+		-vcodec libx264 -preset slower -crf 25 -pix_fmt yuv420p ${name}.mp4
+	# create WebM video
+	echo "Creating WebM video"
+	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif \
+		-vcodec libvpx -crf 10 -b:v 1.2M -pix_fmt yuv420p ${name}.webm
+	# create Theora video
+	echo "Creating Theora video"
+	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif \
+		-vcodec libtheora -q 4 -pix_fmt yuv420p ${name}.ogv
 fi
 
 # 4. Clean up temporary files
 gmt_cleanup .gmt
-
-# ex: noet ts=4 sw=4

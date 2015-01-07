@@ -20,8 +20,21 @@ expect to add this functionality in a future version.
 .. literalinclude:: /_verbatim/anim_04.txt
    :language: bash
 
-.. figure:: /_images/anim_04.*
-   :width: 400 px
-   :align: center
 
-   Flying over topography.
+.. Need to include the following 0 px wide dummy image for video poster
+
+.. only:: html
+
+   .. image:: /_images/anim_04.png
+      :width: 0 px
+
+.. raw:: html
+
+   <div class="figure align-center">
+     <video width="720" height="480" poster="../_images/anim_04.png" controls>
+       <source src="../_static/anim_04.mp4" type="video/mp4">
+       <source src="../_static/anim_04.webm" type="video/webm">
+       Your browser does not support the video tag.
+     </video>
+     <p class="caption">Flying over topography.</p>
+   </div>
