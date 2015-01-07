@@ -128,7 +128,7 @@ foreach (_script ${_scr_nostrip})
 		${CMAKE_CURRENT_SOURCE_DIR}/${_script}
 		${RST_BINARY_DIR}/_verbatim/${_txt}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS script2verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
+		DEPENDS script2verbatim _docs_rst_mkdir_verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 endforeach (_script)
 
 foreach (_script ${_scr_strip})
@@ -140,7 +140,7 @@ foreach (_script ${_scr_strip})
 		${CMAKE_CURRENT_SOURCE_DIR}/${_script}
 		${RST_BINARY_DIR}/_verbatim/${_txt}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS script2verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
+		DEPENDS script2verbatim _docs_rst_mkdir_verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 endforeach (_script)
 
 # Add build target
