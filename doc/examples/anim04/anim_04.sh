@@ -26,7 +26,7 @@ ps=${name}.ps
 # Set up flight path
 gmt project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
 frame=0
-mkdir -p frames
+mkdir -p $$
 gmt grdgradient USEast_Coast.nc -A90 -Nt1 -Gint_$$.nc
 gmt makecpt -Cglobe -Z > globe_$$.cpt
 function make_frame () {
@@ -46,7 +46,7 @@ function make_frame () {
 		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
 	gmt ps2raster ${file}_$$.ps -Tt -E${dpi}
-	mv ${file}_$$.tif frames/${file}.tif
+	mv ${file}_$$.tif $$/${file}.tif
 	rm -f ${file}_$$.ps
 	echo "Frame ${file} completed"
 }
@@ -67,19 +67,19 @@ file=`gmt_set_framename ${name} 0`
 
 echo "Made ${frame} frames at 720x480 pixels"
 # GIF animate every 20th frame
-${GRAPHICSMAGICK-gm} convert -delay 40 -loop 0 +dither frames/${name}_*[02468]0.tif ${name}.gif
+${GRAPHICSMAGICK-gm} convert -delay 40 -loop 0 +dither $$/${name}_*[02468]0.tif ${name}.gif
 if type -ft ${FFMPEG-ffmpeg} >/dev/null 2>&1 ; then
 	# create H.264 video at 25fps
 	echo "Creating H.264 video"
-	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif \
+	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i $$/${name}_%6d.tif \
 		-vcodec libx264 -preset slower -crf 25 -pix_fmt yuv420p ${name}.mp4
 	# create WebM video
 	echo "Creating WebM video"
-	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif \
+	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i $$/${name}_%6d.tif \
 		-vcodec libvpx -crf 10 -b:v 1.2M -pix_fmt yuv420p ${name}.webm
 	# create Theora video
 	echo "Creating Theora video"
-	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i frames/${name}_%6d.tif \
+	${FFMPEG:-ffmpeg} -loglevel warning -y -f image2 -r 25 -i $$/${name}_%6d.tif \
 		-vcodec libtheora -q 4 -pix_fmt yuv420p ${name}.ogv
 fi
 
