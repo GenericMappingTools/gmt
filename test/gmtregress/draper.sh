@@ -36,12 +36,26 @@ cat << EOF > draper.txt
 EOF
 # First plot data and basic LS fit with equation
 txt=`gmt regress -Ey -N2 -Fxm -T25/80/55 draper.txt -T0 | awk '{printf "85 13 @!y\\\\303 = %.4f %.4f x\n", $17, $15}'`
-gmt psbasemap -R20/85/6/13 -JX6i/4i -P -Xc -K -Baf -BWSne > $ps
+gmt psbasemap -R20/85/6/13 -JX6.5i/4i -P -Xc -K -Baf -BWSne > $ps
 gmt regress -Ey -N2 -Fxym draper.txt | awk '{printf "> error\n%s %s\n%s %s\n", $1, $2, $1, $3}' | psxy -R -J -O -K -W0.25p,red,- >> $ps
 gmt psxy -R -J -O -K draper.txt -Sc0.2c -Gblue >> $ps
 gmt regress -Ey -N2 -Fxm -T25/80/55 draper.txt | gmt psxy -R -J -O -K -W2p >> $ps
 echo "$txt" | gmt pstext -R -J -O -K -F+jRT+f18p -Dj0.1i >> $ps
-# Redo plot and basic LS fit but also show 95% confidence band [NOT IMPLEMENTED YET]
-gmt psxy -R -J -O -K draper.txt -Sc0.2c -Gblue -Baf -BWSne+t"Draper & Smith [1998] Regression" -Y4.5i >> $ps
-gmt regress -Ey -N2 -Fxm -T25/80/55 draper.txt | gmt psxy -R -J -O -K -W2p >> $ps
+# Redo plot and basic LS fit but also show 68%, 95% & 99% confidence band [NOT IMPLEMENTED YET]
+gmt psxy -R -J -O -K draper.txt -Sc0.2c -Gblue -Baf -BWSNe+t"Draper & Smith [1998] Regression" -Y4.75i >> $ps
+gmt regress -Ey -N2 -Fxmc -T25/80/1 -C99 draper.txt > t.txt
+gmt math t.txt 2 COL ADD = | gmt psxy -R -J -O -K -W0.25p >> $ps
+gmt math t.txt 2 COL SUB = | gmt psxy -R -J -O -K -W0.25p >> $ps
+gmt regress -Ey -N2 -Fxmc -T25/80/1 -C95 draper.txt > t.txt
+gmt math t.txt 2 COL ADD = | gmt psxy -R -J -O -K -W0.25p,- >> $ps
+gmt math t.txt 2 COL SUB = | gmt psxy -R -J -O -K -W0.25p,- >> $ps
+gmt regress -Ey -N2 -Fxmc -T25/80/1 -C68 draper.txt > t.txt
+gmt math t.txt 2 COL ADD = | gmt psxy -R -J -O -K -W0.25p,. >> $ps
+gmt math t.txt 2 COL SUB = | gmt psxy -R -J -O -K -W0.25p,. >> $ps
+gmt psxy -R -J -O -K -W2p t.txt >> $ps
+gmt pslegend -DjTR/2i/RT/0.1i/0.1i -R -J -O -K -F+p1p << EOF >> $ps
+S 0.3i - 0.5i - 0.25p   0.6i 99% Confidence
+S 0.3i - 0.5i - 0.25p,- 0.6i 95% Confidence
+S 0.3i - 0.5i - 0.25p,. 0.6i 68% Confidence
+EOF
 gmt psxy -R -J -O -T >> $ps

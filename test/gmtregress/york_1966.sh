@@ -2,7 +2,7 @@
 #       $Id$
 # Testing gmtregress on the data in York [1966]
 # York, D. (1966), Least-squares fitting of a straight line,
-#    Can. J. Phys., 44, 1079–1086.
+#    Can. J. Phys., 44, 1079-1086.
 
 # Cols 3 and 4 are weights (1/sigma)
 

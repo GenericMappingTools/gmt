@@ -73,6 +73,7 @@ struct GMTREGRESS_CTRL {
 	} E;
 	struct F {	/* 	-Fxymrcw */
 		bool active;
+		bool band;
 		unsigned int n_cols;
 		char col[GMTREGRESS_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
@@ -216,6 +217,7 @@ int GMT_gmtregress_parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, st
 							n_errors++;
 						}
 						Ctrl->F.n_cols++;
+						if (opt->arg[j] == 'c') Ctrl->F.band = true;
 					}
 					else {
 						n_errors++;
@@ -787,7 +789,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 	int error = 0;
 	
 	double *x = NULL, *U = NULL, *V = NULL, *W = NULL, *e = NULL, *w[3] = {NULL, NULL, NULL};
-	double par[GMTREGRESS_NPAR], out[6], *t = NULL;
+	double t_scale = 0.0, par[GMTREGRESS_NPAR], out[6], *t = NULL;
 	
 	char buffer[GMT_BUFSIZ], *F_default = "xymrcw";
 	
@@ -927,6 +929,9 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
 
+				if (Ctrl->F.band)	/* For confidence band given significance level */
+					t_scale = GMT_tcrit (GMT, 0.5 * (1.0 - Ctrl->C.value), n_rows - 2.0);
+
 				if (Ctrl->T.active) {	/* Evaluate the model on the chosen equidistant lattice */
 					if (Ctrl->T.got_n) {	/* Got -T<n>, so must recompute new increment for given range */
 						Ctrl->T.min = S->min[GMT_X];	Ctrl->T.max = S->max[GMT_X];
@@ -950,9 +955,9 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 							case 'y': out[col] = S->coord[GMT_Y][row]; break;	/* Input y */
 							case 'm': out[col] = model (x[row], par);  break;	/* Model prediction */
 							case 'r': out[col] = S->coord[GMT_Y][row] - model (x[row], par);	break;	/* Residual */
-							case 'c':		/* Model confidence limit [not implemented] */
-								out[col] = 0.0;	break;
-							case 'w':		/* Residual weights [0 or 1 if LMS] [not implemented] */
+							case 'c':		/* Model confidence limit  */
+								out[col] = t_scale * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));	break;
+							case 'w':	/* Residual weights [0 or 1 if LMS] [not implemented] */
 								out[col] = 0.0;	break;
 						}
 					}
