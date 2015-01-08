@@ -16,7 +16,7 @@ Synopsis
 **gmtregress** [ *table* ] [ **-A**\ *min*\ /*max*\ /*inc* ] [ **-C**\ *level* ]
 [ **Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
 [ **-F**\ *flags* ] [ **-N**\ *norm* ]
-[ **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n* ] [ **-W**\ [**s**]\ **x**\ \|\ **y**\ \|\ **xy** ]
+[ **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n* ] [ **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
@@ -81,14 +81,15 @@ Optional Arguments
 **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n*
     Solve for the regression parameters and then evaluate the model at the equidistant points implied by the arguments.  If
     **-T**\ *n* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment and determine *inc*
-    so that there are exactly *n* output values for each segment.
+    so that there are exactly *n* output values for each segment.  To skip the model evaluation, simply provide **-T**\ 0.
 
-**-W**\ [**s**]\ **x**\ \|\ **y**\ \|\ **xy**
-    Use the 3rd and possibly 4th input columns as individual weights for the regression [Default is no weights].  Use **-Ws**
-    if the column(s) contains data uncertainties (sigma) and we must compute first the weights as 1/sigma.
-    Append **x** if 3rd column contains weights for *x*, **y** if 3rd column contains weights for *y*, and
-    **xy** if the 3rd and 4th columns contain weights for *x* and *y*, respectively.  The latter situation requires
-    an orthogonal regression type.
+**-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**]
+    Specifies weighted regression and which weights are provided.
+    Append **x** if giving 1-sigma uncertainties in *x*, **y** if giving 1-sigma uncertainties in *y*, and
+    **r** if giving correlations between *x* and *y* pairs, in the order these columns appear in the input.
+    Giving both **xx** and **y** (and optionally **r**) implies an orthogonal regression.
+    We will convert uncertainties in *x* and *y* to weights via 1/sigma.
+    Use **-Ww** if the we should consider the input columns to have weights instead.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
