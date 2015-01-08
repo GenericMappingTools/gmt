@@ -572,7 +572,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 		for (k = 0; k < n; k++) e[k] = x[k] - a;	/* Final x-residuals */
 		/* For GMTREGRESS_Y|GMTREGRESS_RMA a vertical line gives Inf misfit; all others are measured horizontally.
 		 * Here we obtain this by passing e as ex but giving mode GMTREGRESS_Y instead and pass 0 as slope. */
-		E = (regression == GMTREGRESS_Y || regression == GMTREGRESS_RMA) ? GMT->session.d_NaN : misfit (GMT, e, W, n, GMTREGRESS_Y, 0.0);
+		E = (regression == GMTREGRESS_Y || regression == GMTREGRESS_RMA) ? DBL_MAX : misfit (GMT, e, W, n, GMTREGRESS_Y, 0.0);
 	}
 	else if (GMT_IS_ZERO (angle)) {	/* Horizontal line is a special case */
 		b = 0.0;
@@ -580,7 +580,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 		/* For GMTREGRESS_X|GMTREGRESS_RMA a horizontal line gives Inf misfit; all others are measured vertically.
 		 * Here we obtain this by passing e as ey but giving mode GMTREGRESS_Y instead and pass 0 as slope. */
 		for (k = 0; k < n; k++) e[k] = y[k] - a;	/* Final y-residuals */
-		E = (regression == GMTREGRESS_X || regression == GMTREGRESS_RMA) ? GMT->session.d_NaN : misfit (GMT, e, W, n, GMTREGRESS_Y, 0.0);
+		E = (regression == GMTREGRESS_X || regression == GMTREGRESS_RMA) ? DBL_MAX : misfit (GMT, e, W, n, GMTREGRESS_Y, 0.0);
 	}
 	else {	/* Not vertical, we can measure any misfit and pass the slope b */
 		b = tand (angle);				/* Regression slope */
@@ -589,7 +589,8 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 		for (k = 0; k < n; k++) e[k] -= a;		/* Final y-residuals */
 		E = misfit (GMT, e, W, n, regression, b);	/* The representative misfit */
 	}
-	par[GMTREGRESS_ANGLE] = angle;	par[GMTREGRESS_MISFT] = E; par[GMTREGRESS_SLOPE] = b;	par[GMTREGRESS_ICEPT] = a - b * par[GMTREGRESS_XMEAN];
+	if (GMT_is_dnan (E)) E = DBL_MAX;	/* If anythin goes crazy, set E to huge */
+	par[GMTREGRESS_ANGLE] = angle;	par[GMTREGRESS_MISFT] = E; par[GMTREGRESS_SLOPE] = b;	par[GMTREGRESS_ICEPT] = a;
 }
 
 #define N_ANGLE_SELECTIONS	90
@@ -616,7 +617,7 @@ void regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_
 		for (k = 0; k <= N_ANGLE_SELECTIONS; k++) {	/* Try all slopes in current sub-range */
 			angle = a_min + d_a * k;
 			regress1D_sub (GMT, U, V, W, e, n, regression, norm, angle, tpar);
-			if (tpar[GMTREGRESS_MISFT] < par[GMTREGRESS_MISFT]) GMT_memcpy (par, tpar, GMTREGRESS_NPAR, double);	/* Update best fit so far */
+			if (tpar[GMTREGRESS_MISFT] < par[GMTREGRESS_MISFT]) GMT_memcpy (par, tpar, 6U, double);	/* Update best fit so far without stepping on the means*/
 		}
 		if (par[GMTREGRESS_MISFT] <= last_E && (f = (last_E - par[GMTREGRESS_MISFT])/par[GMTREGRESS_MISFT]) < GMT_CONV8_LIMIT)
 			done = true;	/* Change is tiny so we are done */
@@ -626,6 +627,8 @@ void regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_
 			last_E = par[GMTREGRESS_MISFT];
 		}
 	}
+	/* Adjust intercept for U,V -> (x,y) */
+	par[GMTREGRESS_ICEPT] += (par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN]);
 	GMT_free (GMT, U);
 	GMT_free (GMT, V);
 	GMT_free (GMT, W);
@@ -873,6 +876,10 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			n_rows = S->n_rows;
+			if (n_rows < 3) {
+				GMT_Report (API, GMT_MSG_VERBOSE, "Segment only has < 2 points - skipped\n");
+				continue;
+			}
 
 			/* Make sure we have enough memory allocated for weights and such */
 			if (n_rows > n_alloc) {	/* Need more (first time we have nothing, then only allocated when larger) */
