@@ -15,7 +15,7 @@ Synopsis
 
 **gmtregress** [ *table* ] [ **-A**\ *min*\ /*max*\ /*inc* ] [ **-C**\ *level* ]
 [ **Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
-[ **-F**\ *flags* ] [ **-N**\ *norm* ]
+[ **-F**\ *flags* ] [ **N1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]
 [ **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n* ] [ **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -76,11 +76,13 @@ Optional Arguments
     **c** (symmetrical confidence interval on the regression; see **-C**
     for the level), and **w** (Reweighted Least Squares weights) [**xymrcw**].
 
-**-N**\ *norm*
+**N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
-    absolute residuals), **2** (Least-squares; the mean of the squared residuals), or
-    **r** (LMS; The least median of the squared residuals) [**2**].  Traditional regression uses L-2
-    while L-1 and in particular LMS are more robust in how they handle outliers.
+    absolute residuals), **2** (Least-squares; the mean of the squared residuals), 
+    **r** (LMS; The least median of the squared residuals), or **w) (RLS; reweighted least squares) [**2**].
+    Traditional regression uses L-2 while L-1 and in particular LMS are more robust in how they handle outliers.
+    RLS implies an initial LMS regression which is then used to identify outliers in the data,
+    assign these a zero weight, and then redo the regression using a L-2 norm.
 
 **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n*
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If
@@ -131,6 +133,13 @@ x, y, and model prediction with 99% confidence intervals, try
    ::
 
     gmt gmtregress points.txt -Fxymc -C99 > points_regressed.txt
+
+To do a reweighted least-squares regression on the data rough.txt and return
+x, y, model prediction and the RLS weights, try 
+
+   ::
+
+    gmt gmtregress rough.txt -Fxymw > points_regressed.txt
 
 To examine how the orthogonal LMS misfits vary with angle between 0 and 90
 in steps of 0.2 degrees for the same file, try 
