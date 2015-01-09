@@ -15,7 +15,7 @@ Synopsis
 
 **gmtregress** [ *table* ] [ **-A**\ *min*\ /*max*\ /*inc* ] [ **-C**\ *level* ]
 [ **Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
-[ **-F**\ *flags* ] [ **N1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]
+[ **-F**\ *flags* ] [ **N1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]  [ **-S**\ [**r**] ]
 [ **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n* ] [ **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -37,7 +37,9 @@ input points, but alternatively you can specify an equidistant range over which 
 the model, or turn of evaluation completely.  Instead of determining the best fit we can
 perform a scan of all possible regression lines
 (for a range of slope angles) and examine how the chosen misfit measure varies with slope.
-This is particularly useful when analyzing data with many outliers.
+This is particularly useful when analyzing data with many outliers.  Note: If you
+actually need to work with log10 of *x* or *y* you can accomplish that transformation via **-i**.
+
 
 Required Arguments
 ------------------
@@ -74,7 +76,8 @@ Optional Arguments
     Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
     **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
     **c** (symmetrical confidence interval on the regression; see **-C**
-    for the level), and **w** (Reweighted Least Squares weights) [**xymrcw**].
+    for the level), **z** (standardized residuals or *z-scores*) and **w** (outlier weights 0 or 1, for
+    **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
 
 **N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
@@ -83,6 +86,11 @@ Optional Arguments
     Traditional regression uses L-2 while L-1 and in particular LMS are more robust in how they handle outliers.
     RLS implies an initial LMS regression which is then used to identify outliers in the data,
     assign these a zero weight, and then redo the regression using a L-2 norm.
+
+**-S**\ [**r**]
+    Restricts which records will be output.  By default all data records will be output in the format specified
+    by **-F**.  Use **-S** to exclude data points identified as outliers by the regression.  Alternatively,
+    use **-Sr** to reverse this and only output the outlier records.
 
 **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n*
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If

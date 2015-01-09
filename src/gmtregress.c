@@ -33,7 +33,7 @@
 #define GMT_PROG_OPTIONS "-:>Vabdfghios"
 
 enum GMT_enum_regress {
-	GMTREGRESS_N_FARGS	= 6,
+	GMTREGRESS_N_FARGS	= 7,
 	GMTREGRESS_X		= 0,
 	GMTREGRESS_Y		= 1,
 	GMTREGRESS_XY		= 2,
@@ -51,7 +51,12 @@ enum GMT_enum_regress {
 	GMTREGRESS_XMEAN	= 6,
 	GMTREGRESS_YMEAN	= 7,
 	GMTREGRESS_NPAR		= 8,
-	GMTREGRESS_NPAR_MAIN	= 4};
+	GMTREGRESS_NPAR_MAIN	= 4,
+	GMTREGRESS_OUTPUT_GOOD  = 1,
+	GMTREGRESS_OUTPUT_BAD   = 2};
+
+#define GMTREGRESS_FARGS	"xymrczw"	/* Default -F setting */
+#define GMTREGRESS_ZSCORE_LIMIT	2.5		/* z-scores higher than this are outliers */
 
 /* Control structure for gmtregress */
 
@@ -72,7 +77,7 @@ struct GMTREGRESS_CTRL {
 		bool active;
 		unsigned int mode;
 	} E;
-	struct F {	/* 	-Fxymrcw */
+	struct F {	/* 	-Fxymrcsw */
 		bool active;
 		bool band;	/* True if c was given */
 		unsigned int n_cols;
@@ -82,6 +87,10 @@ struct GMTREGRESS_CTRL {
 		bool active;
 		unsigned int mode;
 	} N;
+	struct S {	/* 	-S[r] */
+		bool active;
+		unsigned int mode;
+	} S;
 	struct T {	/* 	-T<min>/<max>/<inc> or -T<n> */
 		bool active;
 		bool got_n;	/* True if -T<n> was given */
@@ -119,7 +128,7 @@ static int GMT_gmtregress_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtregress [<table>] [-A[<min>/<max>/<inc>]] [-C<level>] [-Ex|y|o|r] [-F<flags>] [-N1|2|r|w]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<min>/<max>/<inc> | -T<n>] [%s] [-W[w][x][y][r]] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T<min>/<max>/<inc> | -T<n>] [%s] [-W[w][x][y][r]] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -141,14 +150,18 @@ static int GMT_gmtregress_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     m : The estimated model values.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r : The estimated residuals.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c : The confidence limits (m +/- c).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     w : The reweighted Least Square weights.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note: Cannot use y|r|w with -T. With -T, x instead means locations implied by -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is xymrcw].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     z : The standardized residuals (z-scores).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     w : The outlier flag (1 or 0), or reweighted Least Square weights (for -Nw).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t         A value of 0 identifies an outlier.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Note: Cannot use y|r|z|w with -T. With -T, x instead means locations implied by -T.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is %s].\n", GMTREGRESS_FARGS);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Append desired misfit norm; choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     1 : Use the L-1 measure (mean absolute residuals).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     2 : Use L-2 measure (mean squared residuals) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r : Use robust measure (median of squared residuals).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     w : Reweighted L-2 measure (r followed by 2 after outliners are flagged).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip records identified as outliers on output.  Append r to reverse this and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   only output the outlier records.  Cannot be used with -T [output all records].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Evaluate model at the equidistant points implied by the arguments.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T<n> is given instead we reset <min> and <max> to the extreme x-values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for each segment and determine <inc> to give <n> output values per segment.\n");
@@ -173,7 +186,6 @@ int GMT_gmtregress_parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, st
 	 */
 
 	unsigned int n_errors = 0, j, k, n, col, n_files = 0;
-	bool rls = false;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -220,13 +232,12 @@ int GMT_gmtregress_parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, st
 				for (j = 0, k = 0; opt->arg[j]; j++, k++) {
 					if (k < GMTREGRESS_N_FARGS) {
 						Ctrl->F.col[k] = opt->arg[j];
-						if (!strchr ("xymrcw", opt->arg[j])) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -F option: Choose from -Fxymrcw\n");
+						if (!strchr (GMTREGRESS_FARGS, opt->arg[j])) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -F option: Choose from -F%s\n", GMTREGRESS_FARGS);
 							n_errors++;
 						}
 						Ctrl->F.n_cols++;
 						if (opt->arg[j] == 'c') Ctrl->F.band = true;
-						if (opt->arg[j] == 'w') rls = true;
 					}
 					else {
 						n_errors++;
@@ -246,6 +257,10 @@ int GMT_gmtregress_parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, st
 						n_errors++;
 						break;
 				}
+				break;
+			case 'S':	/* Restrict output records */
+				Ctrl->S.active = true;
+				Ctrl->S.mode = (opt->arg[0] == 'r') ? GMTREGRESS_OUTPUT_BAD : GMTREGRESS_OUTPUT_GOOD;
 				break;
 			case 'T':	/* Output lattice or length */
 				Ctrl->T.active = true;
@@ -282,7 +297,7 @@ int GMT_gmtregress_parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, st
 				break;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, rls && Ctrl->N.mode != GMTREGRESS_NORM_RLS, "Syntax error -F: Requesting w requires -Nw.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.active, "Syntax error -S: Cannot simultaneously specify -T.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_XY && Ctrl->W.n_weights == 1, "Syntax error -Eo: Needs errors in both x,y or neither.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_RMA && Ctrl->W.n_weights == 1, "Syntax error -Er: Needs errors in both x,y or neither.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_X && Ctrl->W.mode[GMT_Y] > 0, "Syntax error -Ex: Cannot specify errors in y.\n");
@@ -394,16 +409,16 @@ double L1_misfit (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint6
 	double f, E = 0.0;
 	f = get_scale_factor (regression, slope);
 	for (k = 0; k < n; k++) E += fabs (W[k] * ey[k]);
-	return (f * E / (n - 2));
+	return (f * E);
 }
 
 double L2_misfit (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64_t n, unsigned int regression, double slope)
-{	/* Compute L2 misfit in x|y|o|r */
+{	/* Compute L2 misfit in x|y|o|r as a chi-square-like sum */
 	uint64_t k;
 	double f, E = 0.0;
 	f = get_scale_factor (regression, slope);
 	for (k = 0; k < n; k++) E += W[k] * ey[k] * ey[k];
-	return (f * f * E / (n - 2));	/* f^2 since E was computed from squared misfits */
+	return (f * f * E);	/* f^2 since E was computed from squared misfits */
 }
 
 double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope)
@@ -415,7 +430,38 @@ double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsi
  	GMT_sort_array (GMT, ee, n, GMT_DOUBLE);
 	E = (n%2) ? ee[n/2] : 0.5 * (ee[(n-1)/2] + ee[n/2]);
 	GMT_free (GMT, ee);
-	return (1.4826 * f * f * E);	/* f^2 since E was computed from squared misfits */
+	return (f * f * E);	/* f^2 since E was computed from squared misfits */
+}
+
+double L1_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64_t n, double *GMT_UNUSED(par))
+{	/* L1 scale estimate as weighted median absolute residual */
+	uint64_t k;
+	double MAD;
+	struct OBSERVATION *ee = NULL;
+	/* Compute the (weighted) MAD */
+	ee = GMT_memory (GMT, NULL, n, struct OBSERVATION);
+	for (k = 0; k < n; k++) {
+		ee[k].weight = W[k];
+		ee[k].value  = ey[k];
+	}
+	MAD = GMT_median_weighted (GMT, ee, n, 0.5);
+	GMT_free (GMT, ee);
+	return (MAD);
+}
+
+double L2_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *GMT_UNUSED(ey), double *W, uint64_t n, double *par)
+{	/* LS scale estimate as weighted average residual */
+	double W_sum, scale;
+	W_sum = gmt_sum (W, n);
+	scale = sqrt (par[GMTREGRESS_MISFT] / W_sum);
+	return (scale);
+}
+
+double LMS_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *GMT_UNUSED(ey), double *GMT_UNUSED(W), uint64_t n, double *par)
+{	/* LMS scale estimate as per Rousseuuw & Leroy*/
+	double scale;
+	scale = 1.4826 * (1.0 + 5.0 / (n - 2.0)) * sqrt (par[GMTREGRESS_MISFT]);
+	return (scale);
 }
 
 void gmt_prod (double *x, double *y, double *xy, uint64_t n)
@@ -444,6 +490,12 @@ void gmt_add (double *x, double c, double *out, uint64_t n)
 {	/* Compute array out[i] = x[i] + c */
 	uint64_t k;
 	for (k = 0; k < n; k++) out[k] = x[k] + c;
+}
+
+void gmt_unitary (double *x, uint64_t n)
+{	/* Set unitary vectory */
+	uint64_t k;
+	for (k = 0; k < n; k++) x[k] = 1.0;
 }
 
 double gmt_demeaning (struct GMT_CTRL *GMT_UNUSED(GMT), double *X, double *Y, double *w[], uint64_t n, double *par, double *U, double *V, double *W, double *alpha, double *beta)
@@ -479,6 +531,7 @@ double gmt_demeaning (struct GMT_CTRL *GMT_UNUSED(GMT), double *X, double *Y, do
 				//fprintf (stderr, "i = %d: U[i] = %g V[i] = %g beta_i = %g\n", (int)i, U[i], V[i], beta[i]);
 			}
 		}
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Demeaning made weights from x- and y-weights\n");
 	}
 	else if (w && (w[GMT_X] || w[GMT_Y])) {	/* Not orthogonal, but have weights in x or y */
 		double *pW = (w[GMT_X]) ? w[GMT_X] : w[GMT_Y];	/* Shorthand for the (squared) weights */
@@ -488,25 +541,26 @@ double gmt_demeaning (struct GMT_CTRL *GMT_UNUSED(GMT), double *X, double *Y, do
 		par[GMTREGRESS_YMEAN] = gmt_sumprod2 (W, Y, n) / S;	/* Compute Y_mean */
 		gmt_add (X, -par[GMTREGRESS_XMEAN], U, n);		/* Compute U */
 		gmt_add (Y, -par[GMTREGRESS_YMEAN], V, n);		/* Compute V */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Demeaning made weights from %c-weights\n", (w[GMT_X]) ? 'x' : 'y');
 	}
 	else {	/* No weights, create unit array */
-		uint64_t i;
-		for (i = 0; i < n; i++) W[i] = 1.0;		/* Unit weights */
+		gmt_unitary (W, n);				/* Unit weights */
 		par[GMTREGRESS_XMEAN] = gmt_sum (X, n) / n;	/* Compute X_mean */
 		par[GMTREGRESS_YMEAN] = gmt_sum (Y, n) / n;	/* Compute X_mean */
 		gmt_add (X, -par[GMTREGRESS_XMEAN], U, n);	/* Compute U */
 		gmt_add (Y, -par[GMTREGRESS_YMEAN], V, n);	/* Compute V */
 		S = (double)n;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Demeaning made unit weights\n");
 	}
 	return (S);
 }
 
-void LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par)
+double LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par)
 {	/* Basic LS y-regression, only uses w[GMT_Y] */
 	uint64_t k;
 	double *Q = GMT_memory (GMT, NULL, n, double), *P = GMT_memory (GMT, NULL, n, double);
 	double *U = GMT_memory (GMT, NULL, n, double), *V = GMT_memory (GMT, NULL, n, double);
-	double S, S_xx, S_xy, D, *W = GMT_memory (GMT, NULL, n, double);
+	double S, S_xx, S_xy, D, scale, *W = GMT_memory (GMT, NULL, n, double);
 	
 	GMT_memset (par, GMTREGRESS_NPAR, double);
 	S = gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);	/* alpha, beta not used */
@@ -531,24 +585,28 @@ void LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uin
  	par[GMTREGRESS_SIGSL] = sqrt (S * D);
  	par[GMTREGRESS_SIGIC] = sqrt (S_xx * D);
 	/* Here we recycle Q to hold residual e */
-	for (k = 0; k < n; k++)
+	for (k = 0; k < n; k++) {
 		Q[k] = y[k] - model (x[k], par);
+		//fprintf (stderr, "e = %g W = %g\n", Q[k], W[k]);
+	}
 	par[GMTREGRESS_MISFT] = L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
+	scale = L2_scale (GMT, NULL, W, n, par);
 	GMT_free (GMT, Q);
 	GMT_free (GMT, P);
 	GMT_free (GMT, U);
 	GMT_free (GMT, V);
 	GMT_free (GMT, W);
+	return (scale);
 }
 
-void LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *par)
+double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *par)
 {	/* Basic LS xy-regression, with no errors. See York [1966] */
 	uint64_t k;
 	unsigned int p;
 	double *u = GMT_memory (GMT, NULL, n, double), *v = GMT_memory (GMT, NULL, n, double);
 	double *W = GMT_memory (GMT, NULL, n, double), *Q = GMT_memory (GMT, NULL, n, double);
-	double mean_x, mean_y, sig_x, sig_y, sum_u2, sum_v2, sum_uv, part1, part2, r, a[2], b[2], E[2];
+	double mean_x, mean_y, sig_x, sig_y, sum_u2, sum_v2, sum_uv, part1, part2, r, scale, a[2], b[2], E[2];
 	
 	mean_x = GMT_mean_and_std (GMT, x, n, &sig_x);
 	mean_y = GMT_mean_and_std (GMT, y, n, &sig_y);
@@ -580,14 +638,16 @@ void LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 	par[GMTREGRESS_SIGIC] = sqrt (pow (sig_y - sig_x * par[GMTREGRESS_SLOPE], 2.0) / n + (1.0 - r) * par[GMTREGRESS_SLOPE] * (2.0 * sig_x * sig_y + (mean_x * par[GMTREGRESS_SLOPE] * (1.0 + r) / (r * r))));
 	par[GMTREGRESS_MISFT] = E[p];
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
+	scale = L2_scale (GMT, NULL, W, n, par);
 	GMT_free (GMT, Q);
 	GMT_free (GMT, W);
+	return (scale);
 }
 
-void LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par)
+double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par)
 {	/* Basic LS RMA-regression with no weights [Reference?] */
 	uint64_t k;
-	double mx, sx, my, sy, S;
+	double mx, sx, my, sy, S, scale;
 	double *U = GMT_memory (GMT, NULL, n, double), *V = GMT_memory (GMT, NULL, n, double), *W = GMT_memory (GMT, NULL, n, double);
 	GMT_memset (par, GMTREGRESS_NPAR, double);
 	S = gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
@@ -600,9 +660,11 @@ void LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], u
 	for (k = 0; k < n; k++)
 		U[k] = y[k] - model (x[k], par);
 	par[GMTREGRESS_MISFT] = L2_misfit (GMT, U, W, n, GMTREGRESS_RMA, par[GMTREGRESS_SLOPE]);
+	scale = L2_scale (GMT, NULL, W, n, par);
 	GMT_free (GMT, U);
 	GMT_free (GMT, V);
 	GMT_free (GMT, W);
+	return (scale);
 }
 
 void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, double *e, uint64_t n, unsigned int regression, unsigned int norm, bool weighted, double angle, double *par)
@@ -645,13 +707,19 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 
 #define N_ANGLE_SELECTIONS	90
 
-void regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, unsigned int regression, unsigned int norm, double *par)
+double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, unsigned int regression, unsigned int norm, double *par)
 {	/* Solve the linear regression for a given angle, chosen misfit and norm */
 	uint64_t k;
 	bool done = false, weighted = false;
-	double a_min = -90.0, a_max = 90.0, angle, r_a, d_a, f, last_E = DBL_MAX, S, tpar[GMTREGRESS_NPAR];
+	double a_min = -90.0, a_max = 90.0, angle, r_a, d_a, f, last_E = DBL_MAX, S, scale, tpar[GMTREGRESS_NPAR];
 	double *U = GMT_memory (GMT, NULL, n, double), *V = GMT_memory (GMT, NULL, n, double);
 	double *W = GMT_memory (GMT, NULL, n, double), *e = GMT_memory (GMT, NULL, n, double);
+	double (*scl_func) (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64_t n, double *par);
+	switch (norm) {	/* Select misfit function */
+		case GMTREGRESS_NORM_L1:  scl_func = L1_scale;  break;
+		case GMTREGRESS_NORM_L2:  scl_func = L2_scale;  break;
+		case GMTREGRESS_NORM_LMS: scl_func = LMS_scale; break;
+	}
 	
 	GMT_memset (par, GMTREGRESS_NPAR, double);
 	if (regression != GMTREGRESS_XY) S = gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);	/* Do this once except for orthogonal */
@@ -679,21 +747,24 @@ void regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_
 	}
 	/* Adjust intercept from U,V -> (x,y) */
 	par[GMTREGRESS_ICEPT] += (par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN]);
+	scale = scl_func (GMT, e, W, n, par);
+	
 	GMT_free (GMT, U);
 	GMT_free (GMT, V);
 	GMT_free (GMT, W);
 	GMT_free (GMT, e);
+	return (scale);
 }
 
 #define GMTREGRESS_MAX_YORK_ITERATIONS	1000	/* Gotta have a stopper in case of bad data? */
 
-void LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par)
+double LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par)
 {
 	/* Solution to general LS orthogonal regression, per York et al. [2004] */
 	uint64_t i;
 	unsigned int n_iter = 0;
 	double *W = NULL, *U = NULL, *V = NULL, *x = NULL, *u = NULL, *alpha = NULL, *beta = NULL;
-	double b, b_old, a, W_sum, x_mean, sigma_a, sigma_b, misfit;
+	double b, b_old, a, W_sum, x_mean, sigma_a, sigma_b, misfit, scale;
 	char buffer[GMT_BUFSIZ] = {""};
 	
 	/* Allocate temporary vectors */
@@ -705,7 +776,7 @@ void LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[
 	alpha = GMT_memory (GMT, NULL, n, double);
 	beta  = GMT_memory (GMT, NULL, n, double);
 	/* Step 1: Get initial slope from basic LS y on x */
-	LSy_regress1D (GMT, X, Y, NULL, n, par);
+	(void)LSy_regress1D (GMT, X, Y, NULL, n, par);
 	b = par[GMTREGRESS_SLOPE];	/* Best slope value so far */
 	GMT_memset (par, GMTREGRESS_NPAR, double);
 	/* Step 2: Weights w(X_i) and w(Y_i) are already set in main */
@@ -736,6 +807,15 @@ void LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s\n", buffer);
 	} while (fabs (b - b_old) > GMT_CONV15_LIMIT && n_iter < GMTREGRESS_MAX_YORK_ITERATIONS);
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "York orthogonal algorithm convergence required %d iterations\n", n_iter);
+	/* Pass out the final result via par array */
+	par[GMTREGRESS_SLOPE] = b;
+	par[GMTREGRESS_ICEPT] = a;
+	par[GMTREGRESS_SIGSL] = sigma_b;
+	par[GMTREGRESS_SIGIC] = sigma_a;
+	par[GMTREGRESS_MISFT] = misfit;
+	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
+	scale = L2_scale (GMT, NULL, W, n, par);
+	
 	/* Free temporary arrays */
 	GMT_free (GMT, W);
 	GMT_free (GMT, x);
@@ -745,35 +825,32 @@ void LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[
 	GMT_free (GMT, alpha);
 	GMT_free (GMT, beta);
 	
-	/* Pass out the final result via par array */
-	par[GMTREGRESS_SLOPE] = b;
-	par[GMTREGRESS_ICEPT] = a;
-	par[GMTREGRESS_SIGSL] = sigma_b;
-	par[GMTREGRESS_SIGIC] = sigma_a;
-	par[GMTREGRESS_MISFT] = misfit;
-	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
+	return (scale);
 }
 
-void LSxy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par)
+double LSxy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par)
 {
+	double scale;
 	GMT_memset (par, GMTREGRESS_NPAR, double);
 	if (w && w[GMT_X] && w[GMT_Y])	/* Have weights in x and y [and possibly correlation coefficients as well] */
-		LSxy_regress1D_york (GMT, x, y, w, n, par);
+		scale = LSxy_regress1D_york (GMT, x, y, w, n, par);
 	else	/* Simpler case with no weights */
-		LSxy_regress1D_basic (GMT, x, y, n, par);
+		scale = LSxy_regress1D_basic (GMT, x, y, n, par);
+	return (scale);
 }
 
-char *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int norm, double *par)
+double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *par, unsigned int mode)
 {
-	/* Solves for the best regression of (x_in, y_in) given the settings. */
+	/* Solves for the best regression of (x_in, y_in) given the settings.
+	 * mode is only 1 when called to do RLS after the initial fitting. */
 	
-	unsigned int try_norm = norm;
+	uint64_t k;
+	unsigned int norm = in_norm;
 	bool flipped, rls = false;
-	double *x = NULL, *y = NULL, *ww[3] = {NULL, NULL, NULL};
-	char *rls_weights = NULL;
+	double scale, *x = NULL, *y = NULL, *z = NULL, *ww[3] = {NULL, NULL, NULL};
 	
-	if (norm == GMTREGRESS_NORM_RLS) {	/* Reweighted Least Squares means first LMS, then remove outliners, then L2 for final result */
-		try_norm = GMTREGRESS_NORM_LMS;
+	if (in_norm == GMTREGRESS_NORM_RLS) {	/* Reweighted Least Squares means first LMS, then remove outliners, then L2 for final result */
+		norm = GMTREGRESS_NORM_LMS;
 		rls = true;
 	}
 	if (regression == GMTREGRESS_X) {	/* Do x on y regression by flipping the input, then transpose par before output */
@@ -795,10 +872,10 @@ char *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w
 			switch (norm) {
 				case GMTREGRESS_NORM_L1:	/* L1 regression */
 				case GMTREGRESS_NORM_LMS:	/* LMS regression */
-					regress1D (GMT, x, y, ww, n, regression, norm, par);
+					scale = regress1D (GMT, x, y, ww, n, regression, norm, par);
 					break;
 				case GMTREGRESS_NORM_L2:	/* L2 regression y on x has analytic solution */
-					LSy_regress1D (GMT, x, y, ww, n, par);
+					scale = LSy_regress1D (GMT, x, y, ww, n, par);
 					break;
 			}
 			break;
@@ -806,7 +883,7 @@ char *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w
 			switch (norm) {
 				case GMTREGRESS_NORM_L1:	/* L1 regression */
 				case GMTREGRESS_NORM_LMS:	/* LMS regression */
-					regress1D (GMT, x, y, ww, n, regression, norm, par);
+					scale = regress1D (GMT, x, y, ww, n, regression, norm, par);
 					break;
 				case GMTREGRESS_NORM_L2:	/* L2 orthogonal regression has analytic solution */
 					LSxy_regress1D (GMT, x, y, ww, n, par);
@@ -817,10 +894,10 @@ char *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w
 			switch (norm) {
 				case GMTREGRESS_NORM_L1:	/* L1 regression */
 				case GMTREGRESS_NORM_LMS:	/* LMS regression */
-					regress1D (GMT, x, y, ww, n, regression, norm, par);
+					scale = regress1D (GMT, x, y, ww, n, regression, norm, par);
 					break;
 				case GMTREGRESS_NORM_L2:	/* L2 RMA regression has analytic solution */
-					LSRMA_regress1D (GMT, x, y, ww, n, par);
+					scale = LSRMA_regress1D (GMT, x, y, ww, n, par);
 					break;
 			}
 			break;
@@ -835,22 +912,41 @@ char *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w
 		double_swap (par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN]);
 		double_swap (par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC]);
 	}
-	if (rls) {	/* Must identify outliers and redo the regression */
-		uint64_t k;
-		double E, scale_0, e_k, w_k;
-		E = par[GMTREGRESS_MISFT] / 1.4826;	/* Recover LMS */
-		scale_0 = 1.4826 * (1.0 + 5.0 / (n - 2)) * sqrt (E);	/* Initial scale estimate */
-		rls_weights = GMT_memory (GMT, NULL, n, char);	/* Array with rls weights that are 0 or 1 */
+	if (mode == 0) {	/* Normal mode means compute z-scores */
+		double e_k;
+		z = GMT_memory (GMT, NULL, n, double);	/* Array with normalized residuals (z-scores) */
+		/* Compute z-scores */
 		for (k = 0; k < n; k++) {
 			e_k = y[k] - model (x[k], par);	/* Get residual */
-			if (fabs (e_k / scale_0) < 2.5) rls_weights[k] = 1;
-			w_k = (rls_weights[k]) ? 1.0 : 0.0;
-			if (ww && ww[GMT_X]) ww[GMT_X][k] *= w_k;
-			if (ww && ww[GMT_Y]) ww[GMT_Y][k] *= w_k;
+			z[k] = e_k / scale;
 		}
-		(void) do_regression (GMT, x_in, y_in, w, n, regression, GMTREGRESS_NORM_L2, par);
 	}
-	return (rls_weights);
+	if (rls) {	/* Must identify outliers and redo the regression, but pass back the RLS weights */
+		unsigned int col, first_col;
+		bool made[2] = {false, false};
+		double w_k, *www[3] = {NULL, NULL, NULL};
+		/* If there are no weights then we must make unitary weights so we can scale by w_k */
+		www[GMT_Z] = ww[GMT_Z];	/* Pass correlations as is if they exist */
+		first_col = (regression == GMTREGRESS_Y) ? GMT_Y : GMT_X;	/* Y-regression has errors in y, ortho may have x,y */
+		for (col = first_col; col <= GMT_Y; col++) {	/* Loop over possible error columns */
+ 			if (ww[col])	/* Have existing weights so we use those */
+				www[col] = ww[col];
+			else {	/* Must make unitary weights */
+				www[col] = GMT_memory (GMT, NULL, n, double);
+				gmt_unitary (www[col], n);
+				made[col] = true;
+			}
+		}
+		for (k = 0; k < n; k++) {
+			w_k = (fabs (z[k]) < GMTREGRESS_ZSCORE_LIMIT) ? 1.0 : 0.0;
+			if (www[GMT_X]) www[GMT_X][k] *= w_k;
+			if (www[GMT_Y]) www[GMT_Y][k] *= w_k;
+		}
+		(void) do_regression (GMT, x_in, y_in, www, n, regression, GMTREGRESS_NORM_L2, par, 1);
+		for (col = first_col; col <= GMT_Y; col++)
+			if (made[col]) GMT_free (GMT, www[col]);
+	}
+	return (z);
 }
 
 /* Must free allocated memory before returning */
@@ -866,7 +962,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 	double *x = NULL, *U = NULL, *V = NULL, *W = NULL, *e = NULL, *w[3] = {NULL, NULL, NULL};
 	double t_scale = 0.0, par[GMTREGRESS_NPAR], out[GMTREGRESS_N_FARGS], *t = NULL;
 	
-	char buffer[GMT_BUFSIZ], *F_default = "xymrcw";
+	char buffer[GMT_BUFSIZ];
 	
 	struct GMT_DATASET *Din = NULL;
 	struct GMT_DATASEGMENT *S = NULL, *Sa = NULL;
@@ -905,8 +1001,10 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 	}
 	else {	/* Work up best solution per input segment */
 		if (!Ctrl->F.active) {	/* Default is all columns */
+			char *s = GMTREGRESS_FARGS;
 			Ctrl->F.n_cols = GMTREGRESS_N_FARGS;
-			for (col = 0; col < n_columns; col++) Ctrl->F.col[col] = F_default[col];
+			for (col = 0; col < n_columns; col++) Ctrl->F.col[col] = s[col];
+			Ctrl->F.band = true;
 		}
 		n_columns = Ctrl->F.n_cols;
 	}
@@ -915,7 +1013,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 		unsigned int bad = 0;
 		if (!Ctrl->T.got_n)	/* Compute number of points given fixed range and increment */
 			Ctrl->T.n = GMT_get_n (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, 0);
-		for (col = 0; col < n_columns; col++) if (Ctrl->T.n && strchr ("yrw", (int)Ctrl->F.col[col])) {
+		for (col = 0; col < n_columns; col++) if (Ctrl->T.n && strchr ("yrzw", (int)Ctrl->F.col[col])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot choose -F%c when -T is in effect\n", (int)Ctrl->F.col[col]);
 			bad++;
 		}
@@ -1007,7 +1105,8 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 				}
 			}
 			else {	/* Here we are solving for the best regression */
-				char *rls_weights = do_regression (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, par);
+				double *z_score = do_regression (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, par, 0);
+				bool outlier;
 				/* Make segment header with the findings for best regression */
 				sprintf (buffer, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
 					par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC]);
@@ -1034,6 +1133,11 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 				
 				/* 3. Evaluate the output columns */
 				for (row = 0; row < n_t; row++) {
+					outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);
+					if (Ctrl->S.active) {	/* Restrict the records */
+						if (Ctrl->S.mode == GMTREGRESS_OUTPUT_GOOD && outlier) continue;
+						if (Ctrl->S.mode == GMTREGRESS_OUTPUT_BAD && !outlier) continue;
+					}
 					for (col = 0; col < n_columns; col++) {
 						switch (Ctrl->F.col[col]) {
 							case 'x':	/* Input (or equidistant) x */
@@ -1051,14 +1155,17 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 							case 'c':	/* Model confidence limit  */
 								out[col] = t_scale * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
 								break;
+							case 'z':	/* Standardized residuals (z-scores) */
+								out[col] = z_score[row];
+								break;
 							case 'w':	/* RLS weights [0 or 1] */
-								out[col] = (rls_weights[row]) ? 1.0 : 0.0;
+								out[col] = (outlier) ? 0.0 : 1.0;
 								break;
 						}
 					}
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this record to output */
 				}
-				if (rls_weights) GMT_free (GMT, rls_weights);
+				GMT_free (GMT, z_score);
 			}
 		}
 	}
