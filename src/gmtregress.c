@@ -304,7 +304,7 @@ double gmt_sum (double *x, uint64_t n)
 	return (S);
 }
 
-double icept (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int norm)
+double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int norm)
 {	/* Return the proper "average" intercept value given chosen norm */
 	unsigned int GMT_n_multiples = 0;
 	double X, *ee = NULL;
@@ -328,6 +328,45 @@ double icept (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int norm)
 	if (norm != GMTREGRESS_NORM_L2) GMT_free (GMT, ee);
 			
 	return (X);	
+}
+
+double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, unsigned int norm)
+{	/* Return the proper "weighted average" intercept value given chosen norm */
+	double X;
+	struct OBSERVATION *ee = NULL;
+	
+	if (norm != GMTREGRESS_NORM_L2) {	/* Need temporary space for scaled residuals */
+		uint64_t k;
+		ee = GMT_memory (GMT, NULL, n, struct OBSERVATION);
+		for (k = 0; k < n; k++) {
+			ee[k].weight = W[k];
+			ee[k].value  = e[k];
+		}
+	}
+	switch (norm) {
+		case GMTREGRESS_NORM_L1:	/* Return weighted median */
+			X = GMT_median_weighted (GMT, ee, n, 0.5);
+			break;
+		case GMTREGRESS_NORM_L2:	/* Return weighted mean */
+			X = GMT_mean_weighted (GMT, e, W, n);
+			break;
+		case GMTREGRESS_NORM_LMS:	/* Return weighted mode */
+			X = GMT_mode_weighted (GMT, ee, n);
+			break;
+	}
+	if (norm != GMTREGRESS_NORM_L2) GMT_free (GMT, ee);
+			
+	return (X);	
+}
+
+double icept (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, bool weighted, unsigned int norm)
+{	/* Return the proper "average" intercept value given chosen norm */
+	double a;
+	if (weighted)
+		a = icept_weighted (GMT, e, W, n, norm);
+	else
+		a = icept_basic (GMT, e, n, norm);
+	return (a);
 }
 
 double get_scale_factor (unsigned int regression, double slope)
@@ -560,7 +599,7 @@ void LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], u
 	GMT_free (GMT, W);
 }
 
-void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, double *e, uint64_t n, unsigned int regression, unsigned int norm, double angle, double *par)
+void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, double *e, uint64_t n, unsigned int regression, unsigned int norm, bool weighted, double angle, double *par)
 {	/* Solve the linear regression for a given angle and chosen misfit and norm to give the intercept */
 	/* x, y here are actually reduced coordinates U, V */
 	uint64_t k;
@@ -573,7 +612,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 	}
 	if (GMT_IS_ZERO (fabs (angle) - 90.0)) {	/* Vertical line is a special case */
 		b = GMT->session.d_NaN;				/* Slope is undefined */
-		a = icept (GMT, x, n, norm);			/* Determine x-intercept */
+		a = icept (GMT, x, W, n, weighted, norm);	/* Determine x-intercept */
 		for (k = 0; k < n; k++) e[k] = x[k] - a;	/* Final x-residuals */
 		/* For GMTREGRESS_Y|GMTREGRESS_RMA a vertical line gives Inf misfit; the others are measured horizontally.
 		 * We obtain E by passing e as ex but giving mode GMTREGRESS_Y instead and pass 0 as slope. */
@@ -581,7 +620,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 	}
 	else if (GMT_IS_ZERO (angle)) {	/* Horizontal line is a special case */
 		b = 0.0;
-		a = icept (GMT, y, n, norm);			/* Determine y-intercept */
+		a = icept (GMT, y, W, n, weighted, norm);	/* Determine y-intercept */
 		/* For GMTREGRESS_X|GMTREGRESS_RMA a horizontal line gives Inf misfit; the others are measured vertically.
 		 * We obtain E by passing e as ey but giving mode GMTREGRESS_Y instead and pass 0 as slope. */
 		for (k = 0; k < n; k++) e[k] = y[k] - a;	/* Final y-residuals */
@@ -590,7 +629,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 	else {	/* Not vertical|horizontal, we can measure any misfit and pass the slope b */
 		b = tand (angle);				/* Regression slope */
 		for (k = 0; k < n; k++) e[k] = y[k] - b * x[k];	/* Residuals after removing slope */
-		a = icept (GMT, e, n, norm);			/* Determine intercept */
+		a = icept (GMT, e, W, n, weighted, norm);	/* Determine intercept */
 		for (k = 0; k < n; k++) e[k] -= a;		/* Final y-residuals */
 		E = misfit (GMT, e, W, n, regression, b);	/* The representative misfit */
 	}
@@ -603,7 +642,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 void regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, unsigned int regression, unsigned int norm, double *par)
 {	/* Solve the linear regression for a given angle, chosen misfit and norm */
 	uint64_t k;
-	bool done = false;
+	bool done = false, weighted = false;
 	double a_min = -90.0, a_max = 90.0, angle, r_a, d_a, f, last_E = DBL_MAX, S, tpar[GMTREGRESS_NPAR];
 	double *U = GMT_memory (GMT, NULL, n, double), *V = GMT_memory (GMT, NULL, n, double);
 	double *W = GMT_memory (GMT, NULL, n, double), *e = GMT_memory (GMT, NULL, n, double);
@@ -611,6 +650,7 @@ void regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_
 	GMT_memset (par, GMTREGRESS_NPAR, double);
 	if (regression != GMTREGRESS_XY) S = gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);	/* Do this once except for orthogonal */
 	par[GMTREGRESS_MISFT] = DBL_MAX;
+	weighted = (regression == GMTREGRESS_X) ? (w && w[GMT_X]) : (w && w[GMT_Y]);
 	while (!done) {	/* Keep iterating an zooming in until misfit is small */
 		r_a = a_max - a_min;
 		d_a = r_a / (double)N_ANGLE_SELECTIONS;
@@ -620,7 +660,7 @@ void regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_
 				par[GMTREGRESS_SLOPE] = tand (angle);
 				S = gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
 			}
-			regress1D_sub (GMT, U, V, W, e, n, regression, norm, angle, tpar);
+			regress1D_sub (GMT, U, V, W, e, n, regression, norm, weighted, angle, tpar);
 			if (tpar[GMTREGRESS_MISFT] < par[GMTREGRESS_MISFT]) GMT_memcpy (par, tpar, GMTREGRESS_NPAR-2U, double);	/* Update best fit so far without stepping on the means*/
 		}
 		if (par[GMTREGRESS_MISFT] <= last_E && (f = (last_E - par[GMTREGRESS_MISFT])/par[GMTREGRESS_MISFT]) < GMT_CONV8_LIMIT)
@@ -911,6 +951,8 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 			if (Ctrl->A.active) {	/* Explore E vs slope only */
 				uint64_t min_row;
 				double angle, min_E = DBL_MAX, W_sum;
+				bool weighted = (Ctrl->E.mode == GMTREGRESS_X) ? (w && w[GMT_X]) : (w && w[GMT_Y]);
+				
 				/* Determine means and compute reduced coordinates U,V and return proper weights W once, unless orthogonal */
 				if (Ctrl->E.mode != GMTREGRESS_XY) W_sum = gmt_demeaning (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
 				for (row = 0; row < n_try; row++) {	/* For each slope candidate */
@@ -919,7 +961,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 						par[GMTREGRESS_SLOPE] = tand (angle);
 						W_sum = gmt_demeaning (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
 					}
-					regress1D_sub (GMT, U, V, W, e, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, angle, par);
+					regress1D_sub (GMT, U, V, W, e, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, weighted, angle, par);
 					if (par[GMTREGRESS_MISFT] < min_E) {	/* Update best fit so far */
 						min_E = par[GMTREGRESS_MISFT];
 						min_row = row;

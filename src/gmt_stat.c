@@ -1607,6 +1607,21 @@ int compare_observation (const void *a, const void *b)
 	return 0;
 }
 
+double GMT_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w, uint64_t n)
+{
+	/* Return the weighted mean of x given weights w */
+	uint64_t k;
+	double sum_xw = 0.0, sum_w = 0.0;
+	
+	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mean */
+	for (k = 0; k < n; k++) {
+		sum_w  += w[k];
+		sum_xw += x[k] * w[k];
+	}
+	if (sum_w == 0.0) return (GMT->session.d_NaN);	/* No weights, so no defined mean */
+	return (sum_xw / sum_w);
+}
+
 double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n, double quantile)
 {
 	uint64_t k;

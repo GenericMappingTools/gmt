@@ -65,6 +65,7 @@ EXTERN_MSC int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j
 EXTERN_MSC int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est);
 EXTERN_MSC double GMT_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *std);
 
+EXTERN_MSC double GMT_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w, uint64_t n);
 EXTERN_MSC double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n, double quantile);
 EXTERN_MSC double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n);
 
