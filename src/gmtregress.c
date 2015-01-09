@@ -405,7 +405,7 @@ double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsi
  	GMT_sort_array (GMT, ee, n, GMT_DOUBLE);
 	E = (n%2) ? ee[n/2] : 0.5 * (ee[(n-1)/2] + ee[n/2]);
 	GMT_free (GMT, ee);
-	return (1.4826 * f * E);
+	return (1.4826 * f * f * E);	/* f^2 since E was computed from squared misfits */
 }
 
 void gmt_prod (double *x, double *y, double *xy, uint64_t n)
