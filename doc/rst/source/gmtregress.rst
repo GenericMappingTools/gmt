@@ -32,10 +32,12 @@ Description
 
 **gmtregress** reads one or more data tables [or *stdin*]
 and determines the best linear regression for each segment using the chosen parameters.
-The user may specify the output components.  By default, the model will be evaluated at the
+The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
-the model.  Instead of determining the best fit we can perform a scan of all possible regression lines
-(for a range of slope angles) and examine how the chosen misfit measure varies with the slope.
+the model, or turn of evaluation completely.  Instead of determining the best fit we can
+perform a scan of all possible regression lines
+(for a range of slope angles) and examine how the chosen misfit measure varies with slope.
+This is particularly useful when analyzing data with many outliers.
 
 Required Arguments
 ------------------
@@ -49,25 +51,27 @@ Optional Arguments
 .. include:: explain_intables.rst_
 
 **-A**\ *min*\ /*max*\ /*inc*
+    Instead of determining a best-fit regression we explore the full range of regressions.
     Examine all possible regression lines with slope angles between *min* and *max*,
     using steps of *inc* degrees [-90/+90/1].  For each slope the optimum intercept
-    is determined based on your **-E** and **-N** settings.  
-    We report the four columns *angle*, *E*, *slope*, *intercept*, for
-    each input segment; the best model parameters of these are written into the segment header.
+    is determined based on your regression type (**-E**) and misfit norm (**-N**) settings.  
+    For each segment we report the four columns *angle*, *E*, *slope*, *intercept*, for
+    the range of specified angles. The best model parameters within this range 
+    are written into the segment header and reported in verbose mode (**-V**).
 
 **-C**\ *level*
-    Set the confidence level (in %) to use for calculation of confidence bands on the regression [95].
-    This is only used if **F** includes the column **c**.
+    Set the confidence level (in %) to use for the optional calculation of confidence bands
+    on the regression [95].  This is only used if **-F** includes the column **c**.
 
 **Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r**
     Type of linear regression, i.e., select the type of misfit we should calculate.
     Choose from **x** (regress *x* on *y*; i.e., the misfit is measured horizontally from data point to line),
-    **y** (regress *y* on *x*; i.e., the misfit is measured vertically), **o** (orthogonal regression;
+    **y** (regress *y* on *x*; i.e., the misfit is measured vertically [Default]), **o** (orthogonal regression;
     i.e., the misfit is measured from data point to nearest point on the line), or **r** (Reduced Major
     Axis regression; i.e., the misfit is the product of both vertical and horizontal misfits) [**y**].
 
 **-F**\ *flags*
-    Append a combination of the columns you wish returned; the output order will match the order specified here.  Choose from
+    Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
     **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
     **c** (symmetrical confidence interval on the regression; see **-C**
     for the level), and **w** (Reweighted Least Squares weights) [**xymrcw**].
@@ -79,17 +83,18 @@ Optional Arguments
     while L-1 and in particular LMS are more robust in how they handle outliers.
 
 **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n*
-    Solve for the regression parameters and then evaluate the model at the equidistant points implied by the arguments.  If
+    Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If
     **-T**\ *n* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment and determine *inc*
-    so that there are exactly *n* output values for each segment.  To skip the model evaluation, simply provide **-T**\ 0.
+    so that there are exactly *n* output values for each segment.  To skip the model evaluation entirely, simply provide **-T**\ 0.
 
 **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**]
-    Specifies weighted regression and which weights are provided.
-    Append **x** if giving 1-sigma uncertainties in *x*, **y** if giving 1-sigma uncertainties in *y*, and
-    **r** if giving correlations between *x* and *y* pairs, in the order these columns appear in the input.
-    Giving both **xx** and **y** (and optionally **r**) implies an orthogonal regression.
-    We will convert uncertainties in *x* and *y* to weights via 1/sigma.
-    Use **-Ww** if the we should consider the input columns to have weights instead.
+    Specifies weighted regression and which weights will be provided.
+    Append **x** if giving 1-sigma uncertainties in the *x*-observations, **y** if giving 1-sigma uncertainties in *y*, and
+    **r** if giving correlations between *x* and *y* observations, in the order these columns appear in the input (after the
+    two leading *x*, *y* columns).
+    Giving both **x** and **y** (and optionally **r**) implies an orthogonal regression.
+    We will convert uncertainties in *x* and *y* to weights via the relationship weight = 1/sigma.
+    Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -120,8 +125,8 @@ Optional Arguments
 Examples
 --------
 
-To do a standard least-squares regression on the data points.txt and return the
-x, y, model prediction, and 99% confidence intervals, try 
+To do a standard least-squares regression on the data points.txt and return
+x, y, and model prediction with 99% confidence intervals, try 
 
    ::
 
