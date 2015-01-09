@@ -359,13 +359,9 @@ double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, u
 	return (X);	
 }
 
-double icept (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, bool weighted, unsigned int norm)
+double intercept (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, bool weighted, unsigned int norm)
 {	/* Return the proper "average" intercept value given chosen norm */
-	double a;
-	if (weighted)
-		a = icept_weighted (GMT, e, W, n, norm);
-	else
-		a = icept_basic (GMT, e, n, norm);
+	double a = (weighted) ? icept_weighted (GMT, e, W, n, norm) : icept_basic (GMT, e, n, norm);
 	return (a);
 }
 
@@ -397,7 +393,7 @@ double L2_misfit (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint6
 	double f, E = 0.0;
 	f = get_scale_factor (regression, slope);
 	for (k = 0; k < n; k++) E += W[k] * ey[k] * ey[k];
-	return (f * E / (n - 2));
+	return (f * f * E / (n - 2));	/* f^2 since E was computed from squared misfits */
 }
 
 double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope)
@@ -612,7 +608,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 	}
 	if (GMT_IS_ZERO (fabs (angle) - 90.0)) {	/* Vertical line is a special case */
 		b = GMT->session.d_NaN;				/* Slope is undefined */
-		a = icept (GMT, x, W, n, weighted, norm);	/* Determine x-intercept */
+		a = intercept (GMT, x, W, n, weighted, norm);	/* Determine x-intercept */
 		for (k = 0; k < n; k++) e[k] = x[k] - a;	/* Final x-residuals */
 		/* For GMTREGRESS_Y|GMTREGRESS_RMA a vertical line gives Inf misfit; the others are measured horizontally.
 		 * We obtain E by passing e as ex but giving mode GMTREGRESS_Y instead and pass 0 as slope. */
@@ -620,7 +616,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 	}
 	else if (GMT_IS_ZERO (angle)) {	/* Horizontal line is a special case */
 		b = 0.0;
-		a = icept (GMT, y, W, n, weighted, norm);	/* Determine y-intercept */
+		a = intercept (GMT, y, W, n, weighted, norm);	/* Determine y-intercept */
 		/* For GMTREGRESS_X|GMTREGRESS_RMA a horizontal line gives Inf misfit; the others are measured vertically.
 		 * We obtain E by passing e as ey but giving mode GMTREGRESS_Y instead and pass 0 as slope. */
 		for (k = 0; k < n; k++) e[k] = y[k] - a;	/* Final y-residuals */
@@ -629,7 +625,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 	else {	/* Not vertical|horizontal, we can measure any misfit and pass the slope b */
 		b = tand (angle);				/* Regression slope */
 		for (k = 0; k < n; k++) e[k] = y[k] - b * x[k];	/* Residuals after removing slope */
-		a = icept (GMT, e, W, n, weighted, norm);	/* Determine intercept */
+		a = intercept (GMT, e, W, n, weighted, norm);	/* Determine intercept */
 		for (k = 0; k < n; k++) e[k] -= a;		/* Final y-residuals */
 		E = misfit (GMT, e, W, n, regression, b);	/* The representative misfit */
 	}
