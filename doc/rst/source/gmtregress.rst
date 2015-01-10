@@ -104,7 +104,9 @@ Optional Arguments
     two leading *x*, *y* columns).
     Giving both **x** and **y** (and optionally **r**) implies an orthogonal regression.
     We will convert uncertainties in *x* and *y* to weights via the relationship weight = 1/sigma.
-    Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.
+    Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.  Note: residuals
+    with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
+    residual (**-N1** is the exception).
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
