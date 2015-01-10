@@ -36,6 +36,10 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_SOURCE_DIR}/themes/
 		${CMAKE_CURRENT_BINARY_DIR}/_themes)
 	add_depend_to_target (docs_depends _docs_copy_rst_tree_themes)
+	add_custom_target (_docs_rst_mkdir_verbatim
+		COMMAND ${CMAKE_COMMAND} -E make_directory
+		${CMAKE_CURRENT_BINARY_DIR}/_source/_verbatim
+		DEPENDS _docs_copy_rst_tree_source)
 
 	# clean target
 	add_custom_target (_rst_clean

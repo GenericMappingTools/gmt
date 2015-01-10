@@ -28,7 +28,7 @@
 
 #define THIS_MODULE_NAME	"psbasemap"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot PostScript base maps"
+#define THIS_MODULE_PURPOSE	"Plot base maps and frames"
 
 #include "gmt_dev.h"
 
