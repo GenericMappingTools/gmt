@@ -710,8 +710,6 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 	if (GMT_is_dnan (E)) E = DBL_MAX;	/* If anything goes crazy, set E to huge, but this should not happen */
 	/* Update the new best solution; we do not change entries for U and W as well as the sigmas for slope and intercept */
 	par[GMTREGRESS_ANGLE] = angle;	par[GMTREGRESS_MISFT] = E; par[GMTREGRESS_SLOPE] = b;	par[GMTREGRESS_ICEPT] = a;
-	/* Adjust intercept from U,V -> (x,y) */
-	par[GMTREGRESS_ICEPT] += (par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN]);
 }
 
 #define N_ANGLE_SELECTIONS	90	/* Fixed number of slope angles to try between min/max slope limits */
@@ -733,8 +731,9 @@ double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint6
 		case GMTREGRESS_NORM_LMS: scl_func = LMS_scale; break;
 	}
 	
-	GMT_memset (par, GMTREGRESS_NPAR, double);	/* Reset all regression parameters */
-	if (regression != GMTREGRESS_XY) S = gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);	/* Do this once except for orthogonal */
+	GMT_memset (par,  GMTREGRESS_NPAR, double);	/* Reset all regression parameters */
+	GMT_memset (tpar, GMTREGRESS_NPAR, double);	/* Reset all test regression parameters */
+	if (regression != GMTREGRESS_XY) S = gmt_demeaning (GMT, x, y, w, n, tpar, U, V, W, NULL, NULL);	/* Do this once except for orthogonal */
 	par[GMTREGRESS_MISFT] = DBL_MAX;	/* Initally we have no fit */
 	weighted = (regression == GMTREGRESS_X) ? (w && w[GMT_X]) : (w && w[GMT_Y]);	/* true if weights were provided */
 	while (!done) {	/* Keep iterating and zooming in on smaller angle-ranges until misfit is very small */
@@ -743,24 +742,30 @@ double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint6
 		for (k = 0; k <= N_ANGLE_SELECTIONS; k++) {	/* Try all slopes in current angle range */
 			angle = a_min + d_a * k;		/* This is the current slope angle */
 			if (regression == GMTREGRESS_XY) {	/* Since W depends on slope we must recompute W each time in this loop */
-				par[GMTREGRESS_SLOPE] = tand (angle);
-				S = gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
+				tpar[GMTREGRESS_SLOPE] = tand (angle);
+				S = gmt_demeaning (GMT, x, y, w, n, tpar, U, V, W, NULL, NULL);
 			}
 			regress1D_sub (GMT, U, V, W, e, n, regression, norm, weighted, angle, tpar);	/* Solve for best intercept given this slope */
-			if (tpar[GMTREGRESS_MISFT] < par[GMTREGRESS_MISFT]) GMT_memcpy (par, tpar, GMTREGRESS_NPAR_MAIN, double);	/* Update best fit so far without stepping on the means and sigmas */
+			if (tpar[GMTREGRESS_MISFT] < par[GMTREGRESS_MISFT])
+				GMT_memcpy (par, tpar, GMTREGRESS_NPAR, double);	/* Update best fit so far without stepping on the means and sigmas */
 		}
-		if (par[GMTREGRESS_MISFT] <= last_E && (f = (last_E - par[GMTREGRESS_MISFT])/par[GMTREGRESS_MISFT]) < GMT_CONV8_LIMIT)
+		if (par[GMTREGRESS_MISFT] <= last_E && (f = (last_E - par[GMTREGRESS_MISFT])/par[GMTREGRESS_MISFT]) < GMT_CONV15_LIMIT)
 			done = true;	/* Change is tiny so we are done */
 		else {	/* Gradually zoom in on the angles with smallest misfit but allow some slack */
 			a_min = MAX (-90.0, par[GMTREGRESS_ANGLE] - 0.25 * r_a);	/* Get a range that is ~-/+ 25% of previous range */
 			a_max = MIN (+90.0, par[GMTREGRESS_ANGLE] + 0.25 * r_a);	/* Get a range that is ~-/+ 25% of previous range */
 			last_E = par[GMTREGRESS_MISFT];
 		}
+		/* Adjust intercept from U,V -> (x,y) */
 		n_iter++;
-		sprintf (buffer, "Robust iteration %d: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: --N/A-- sig_icept: --N/A--",
-			n_iter, n, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], angle, last_E, par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT]);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s\n", buffer);
+		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+			double a = par[GMTREGRESS_ICEPT] + (par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN]);
+			sprintf (buffer, "Robust iteration %u: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: --N/A-- sig_icept: --N/A--",
+				n_iter, n, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], a);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s\n", buffer);
+		}
 	}
+	par[GMTREGRESS_ICEPT] += (par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN]);
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Robust regression algorithm convergence required %d iterations\n", n_iter);
 	scale = scl_func (GMT, e, W, n, par);	/* Get final regression-scale for residuals */
 	
@@ -818,7 +823,7 @@ double LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *
 		for (i = 0; i < n; i++) V[i] = Y[i] - (a + b * X[i]);
 		misfit = L2_misfit (GMT, V, W, n, GMTREGRESS_XY, 0.0);	/* Get misfit from residuals */
 		n_iter++;
-		sprintf (buffer, "York iteration %d: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g",
+		sprintf (buffer, "York iteration %u: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g",
 			n_iter, n, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], atand (b), misfit, b, a, sigma_b, sigma_a);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s\n", buffer);
 	} while (fabs (b - b_old) > GMT_CONV15_LIMIT && n_iter < GMTREGRESS_MAX_YORK_ITERATIONS);

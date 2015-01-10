@@ -1350,7 +1350,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					if (Ctrl->L.anchor) {	/* Build a polygon in one of several ways */
 						if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) {	/* Build envelope around y(x) from delta y values in 1 or 2 extra columns */
 							uint64_t k, n, col = (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) ? 3 : 2;
-							end = 2 * L->n_rows;
+							end = 2 * L->n_rows + 1;
 							GMT_prep_tmp_arrays (GMT, end, 2);	/* Init or reallocate tmp vectors */
 							/* First go in positive x direction and build part of envelope */
 							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
@@ -1361,10 +1361,13 @@ int GMT_psxy (void *V_API, int mode, void *args)
 								GMT->hidden.mem_coord[GMT_X][n] = L->coord[GMT_X][k-1];
 								GMT->hidden.mem_coord[GMT_Y][n] = L->coord[GMT_Y][k-1] + fabs (L->coord[col][k-1]);
 							}
+							/* Explicitly close polygon */
+							GMT->hidden.mem_coord[GMT_X][end-1] = GMT->hidden.mem_coord[GMT_X][0];
+							GMT->hidden.mem_coord[GMT_Y][end-1] = GMT->hidden.mem_coord[GMT_Y][0];
 						}
 						else if (Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) {	/* Build envelope around y(x) from low and high 2 extra columns */
 							uint64_t k, n;
-							end = 2 * L->n_rows;
+							end = 2 * L->n_rows + 1;
 							GMT_prep_tmp_arrays (GMT, end, 2);	/* Init or reallocate tmp vectors */
 							/* First go in positive x direction and build part of envelope */
 							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
@@ -1375,6 +1378,9 @@ int GMT_psxy (void *V_API, int mode, void *args)
 								GMT->hidden.mem_coord[GMT_X][n] = L->coord[GMT_X][k-1];
 								GMT->hidden.mem_coord[GMT_Y][n] = L->coord[3][k-1];
 							}
+							/* Explicitly close polygon */
+							GMT->hidden.mem_coord[GMT_X][end-1] = GMT->hidden.mem_coord[GMT_X][0];
+							GMT->hidden.mem_coord[GMT_Y][end-1] = GMT->hidden.mem_coord[GMT_Y][0];
 						}
 						else {	/* First complete polygon via anchor points and paint the area, optionally with outline */
 							uint64_t off = 0U;
