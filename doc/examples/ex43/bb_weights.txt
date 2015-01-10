@@ -1,5 +1,5 @@
 # Body and brain weight for various animals
-# Table 7 in Rousseeuw & Leroy, 1984
+# Table 7 in Rousseeuw & Leroy, 1987
 # BodyWeight(kg)	BrainWeight(g)	Species
 1.350		8.100		Mountain beaver
 465.000		423.000		Cow

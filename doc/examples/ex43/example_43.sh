@@ -7,7 +7,7 @@
 # Unix progs:   grep, paste, awk, sed
 #
 
-# Data from Table 7 in Rousseeuw and Leroy, 1984.
+# Data from Table 7 in Rousseeuw and Leroy, 1987.
 ps=example_43.ps
 
 gmt regress -Ey -Nw -i0-1l bb_weights.txt > model.txt
