@@ -7981,7 +7981,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
 					n_errors++;
 				}
-				for (n = 0; n < 4; n++) P->off[n] /= 2.54;	/* Since GMT_Get_Value returns cm */
+				for (n = 0; n < 4; n++) P->off[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];	/* Since GMT_Get_Value might return cm */
 				P->clearance = true;
 				break;
 			case 'i':	/* Secondary pen info */
