@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2015-01-08	pwessel
+	* gmtregress.c		New tool for a variety of 1-D line regression.
+
 2014-12-03	pwessel
 	* grdconvert.c		The new name of grdreformat, backwards compatible.
 
