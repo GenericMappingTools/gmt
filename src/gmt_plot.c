@@ -1734,12 +1734,17 @@ void gmt_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, 
 
 void gmt_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, char *label, double south, double north, bool annot, unsigned int level, unsigned int form)
 {
-	unsigned int i, nc;
+	unsigned int i, k, nc;
 	struct GMT_XINGS *xings = NULL;
-
+	bool flip = (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT->current.io.col_type[GMT_IN][GMT_Y] != GMT_IS_LAT && GMT->current.proj.scale[GMT_Y] < 0.0);
+	/* flip deals with the problem when x is lon and geographic annotation machinery is used but y is Cartesian and upside down */
 	nc = GMT_map_loncross (GMT, lon, south, north, &xings);
-	for (i = 0; i < nc; i++)
+	for (i = 0; i < nc; i++) {
+		if (flip) for (k = 0; k < xings[i].nx; k++) {	/* Must turn sides 0 and 2 into sides 2 and 0 */
+			if ((xings[i].sides[k] % 2) == 0) xings[i].sides[k] = 2 - xings[i].sides[k];	/* Flip up and down sides */
+		}
 		gmt_map_symbol (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 0, annot, level, form);
+	}
 	if (nc) GMT_free (GMT, xings);
 }
 
