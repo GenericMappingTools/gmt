@@ -15,7 +15,7 @@ Synopsis
 
 **gmtspatial** [ *table* ] [ **-A**\ [**a**\ *min_dist*][*unit*]] [ **-C** ]
 [ **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
-[ **-E**\ **+**\ \|\ **-** ] [ **-F** ] [ **-I**\ [**e**\ \|\ **i**] ]
+[ **-E**\ **+**\ \|\ **-** ] [ **-F**\ [**l**] ] [ **-I**\ [**e**\ \|\ **i**] ]
 [ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
 [ **-Q**\ [**+h**\ ][**+l**\ ][**+p**\ ][*unit*\ ]] ]
 [ |SYN_OPT-R| ]
@@ -98,7 +98,7 @@ Optional Arguments
 
 **-F**\ [**l**]
    Force input data to become polygons on output, i.e., close them explicitly if not
-   already closed.
+   already closed.  Optionally, append **l** to force line geometry.
 
 **-I**\ [**e**\ \|\ **i**]
     Determine the intersection locations between all pairs of polygons.

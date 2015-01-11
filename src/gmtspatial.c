@@ -100,6 +100,7 @@ struct GMTSPATIAL_CTRL {
 	} E;
 	struct F {	/* -F */
 		bool active;
+		unsigned int geometry;
 	} F;
 	struct I {	/* -I[i|e] */
 		bool active;
@@ -822,8 +823,9 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 				else
 					n_errors++;
 				break;
-			case 'F':	/* Force polygon mode */
+			case 'F':	/* Force polygon or line mode */
 				Ctrl->F.active = true;
+				Ctrl->F.geometry = (opt->arg[0] == 'l') ? GMT_IS_LINE : GMT_IS_POLY;
 				break;
 			case 'I':	/* Compute intersections between polygons */
 				Ctrl->I.active = true;
@@ -1002,7 +1004,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	if (Ctrl->D.active) geometry = GMT_IS_LINE|GMT_IS_POLY;	/* May be lines, may be polygons... */
 	else if (Ctrl->Q.active) geometry = Ctrl->Q.mode;	/* May be lines, may be polygons... */
 	else if (Ctrl->A.active) geometry = GMT_IS_POINT;	/* NN analysis involves points */
-	else if (Ctrl->F.active) geometry = GMT_IS_POLY;	/* Forcing polygon mode */
+	else if (Ctrl->F.active) geometry = Ctrl->F.geometry;	/* Forcing polygon or line mode */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
