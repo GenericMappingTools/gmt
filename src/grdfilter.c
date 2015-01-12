@@ -793,6 +793,9 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#ifdef DEBUG
+	unsigned int n_conv_tot = 0;
+#endif
 
 int GMT_grdfilter (void *V_API, int mode, void *args)
 {
@@ -801,9 +804,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	unsigned int n_nan = 0, col_out, row_out, effort_level;
 	unsigned int filter_type, one_or_zero = 1, GMT_n_multiples = 0;
 	int i, tid = 0, col_in, row_in, ii, jj, *col_origin = NULL, nx_wrap = 0, error = 0;
-#ifdef DEBUG
-	unsigned int n_conv = 0;
-#endif
 	uint64_t ij_in, ij_out, ij_wt;
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, par[GRDFILTER_N_PARS];
 	double x_out, wt_sum, last_median = 0.0;
@@ -1241,7 +1241,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #ifdef DEBUG
 	if (Ctrl->A.active) {	/* Save the debug output instead */
 		FILE *fp = fopen ("n_conv.txt", "w");
-		fprintf (fp, "%d\n", n_conv);
+		fprintf (fp, "%d\n", n_conv_tot);
 		fclose (fp);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gin) != GMT_OK) {
 			Return (API->error);
@@ -1498,6 +1498,9 @@ void threaded_function (struct THREAD_STRUCT *t) {
 		if (slower) GMT_free (GMT, work_data);
 		else GMT_free (GMT, work_array);
 	}
+#ifdef DEBUG
+	n_conv_tot += n_conv;
+#endif
 	GMT_free(GMT, visit);
 	GMT_free(GMT, weight);
 }
