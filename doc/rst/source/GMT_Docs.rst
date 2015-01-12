@@ -2952,15 +2952,15 @@ Binary table i/o: The **-b** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 All GMT programs that accept table data input may read ASCII, native
-binary, or netCDF data. Native binary files may have a header section
+binary, or netCDF tables. Native binary files may have a header section
 and the **-h**\ *n* option (see Section `Header data records: The -h option`_) can be used to
-skip the first *n* bytes. The data record can be in any format, mixing
-different data types and even containing byte-swapped items. When using
+skip the first *n* bytes. The data record can be in any format, you may mix
+different data types and even byte-swap individual columns or the entire record. When using
 native binary data the user must be aware of the fact that GMT has no
 way of determining the actual number of columns in the file. You must
 therefore pass that information to GMT via the binary
-**-bi** option, where *n* is the actual number of data
-columns and **t** must be one of **c** (signed 1-byte character,
+**-bi** *n*\ **t** option, where *n* is the number of data
+columns of given type **t**, where **t** must be one of **c** (signed 1-byte character,
 int8_t), **u** (unsigned 1-byte character, uint8_t), **h** (signed
 2-byte int, int16_t), **H** (unsigned 2-byte int, uint16_t), **i**
 (signed 4-byte int, int32_t), **I** (unsigned 4-byte int, uint32_t),
@@ -2980,7 +2980,7 @@ not set]. If *n* < *m* an error is generated. Multiple segment
 files are allowed and the segment headers are assumed to be records
 where all the fields equal NaN.
 
-For binary output, use the **-bo** option; see **-bi** for further details.
+For native binary output, use the **-bo** option; see **-bi** for further details.
 
 Because of its meta data, reading netCDF tables (i.e., netCDF files
 containing 1-dimensional arrays) is quite a bit less complex than
@@ -6473,7 +6473,7 @@ slightly deviating from the standards used by GMT can also be read.
 .. _tbl-netcdf-format:
 
 +----------------------+--------------------------------------------------------------------+
-| **Atributte**        | **Description**                                                    |
+| **Attribute**        | **Description**                                                    |
 +======================+====================================================================+
 |                      | *Global attributes*                                                |
 +----------------------+--------------------------------------------------------------------+
