@@ -5059,19 +5059,28 @@ int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 * columns D, G, L, W, Z are used in the same fashion.
 	 */
 
-	unsigned int processed = 0, change = 0, col;
+	unsigned int processed = 0, change = 0, col, ogr_col;
 	char line[GMT_BUFSIZ] = {""}, *txt = NULL;
 	double z;
 	struct GMT_FILL test_fill;
 	struct GMT_PEN test_pen;
 
 	if (GMT->common.a.active) {	/* Use aspatial data instead */
+#if 0 /* Just for testing OGR stuff */
+		for (col = 0; col < GMT->current.io.OGR->n_aspatial; col++)
+			fprintf (stderr, "OGR %d: N = %s T = %d\n", col, GMT->current.io.OGR->name[col], GMT->current.io.OGR->type[col]);
+		for (col = 0; col < GMT->common.a.n_aspatial; col++)
+			fprintf (stderr, "a: %d: C = %d O = %d, N = %s\n", col, GMT->common.a.col[col], GMT->common.a.ogr[col], GMT->common.a.name[col]);
+		for (col = 0; col < G->n_aspatial; col++)
+			fprintf (stderr, "G: %d: V = %s\n", col, G->tvalue[col]);
+#endif			
 		for (col = 0; col < GMT->common.a.n_aspatial; col++) {
 			if (GMT->common.a.col[col] >= 0) continue;	/* Skip regular data column fillers */
 			if (!G && !GMT->current.io.OGR->tvalue) continue;	/* Nothing set yet */
 			if (!G && !GMT->current.io.OGR->dvalue) continue;	/* Nothing set yet */
-			txt = (G) ? G->tvalue[col] : GMT->current.io.OGR->tvalue[col];
-			z = (G) ? G->dvalue[col] : GMT->current.io.OGR->dvalue[col];
+			ogr_col = GMT->common.a.ogr[col];
+			txt = (G) ? G->tvalue[ogr_col] : GMT->current.io.OGR->tvalue[col];
+			z = (G) ? G->dvalue[ogr_col] : GMT->current.io.OGR->dvalue[col];
 			switch (GMT->common.a.col[col]) {
 				case GMT_IS_G:
 					GMT_getfill (GMT, txt, fill);

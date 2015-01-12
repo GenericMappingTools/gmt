@@ -258,20 +258,20 @@ void gmt_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode) {
 		/* Reset central meridian since cannot be 360 away from one of the boundaries since that gives xmin == xmax below */
 		if (mode == 1) {	/* Change -R to fit central meridian */
 			double w = GMT->current.proj.pars[0] - 180.0, e = GMT->current.proj.pars[0] + 180.0;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Region for global cylindrical projection had to be reset from %g/%g to %g/%g\n",
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Region for global cylindrical projection had to be reset from %g/%g to %g/%g\n",
 				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], w, e);
 			GMT->common.R.wesn[XLO] = w;	GMT->common.R.wesn[XHI] = e;
 		}
 		else {	/* Change central meridian to fit -R */
 			double new_lon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Central meridian for global cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Central meridian for global cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
 			GMT->current.proj.pars[0] = new_lon;
 		}
 	}
 	else if (!GMT->current.map.is_world) {	/* For reginal areas we cannot have clon > 180 away from either boundary */
 		if (fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 180.0 || fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XHI]) > 180.0) {
 			double new_lon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Central meridian for cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Central meridian for cylindrical projection had to be reset from %g to %g\n", GMT->current.proj.pars[0], new_lon);
 			GMT->current.proj.pars[0] = new_lon;
 		}
 	}

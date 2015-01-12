@@ -925,7 +925,7 @@ void gmt_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		}
 		if (p_conflicts) {
 			float f_value = (float)(sum / header->nx);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
 			node = GMT_IJP (header, 0, 0);	/* First node at S pole */
 			for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
 		}
@@ -941,7 +941,7 @@ void gmt_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		}
 		if (p_conflicts) {
 			float f_value = (float)(sum / header->nx);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
 			node = GMT_IJP (header, header->ny-1, 0);	/* First node at N pole */
 			for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
 		}
@@ -957,7 +957,7 @@ void gmt_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		}
 	}
 	if (we_conflicts)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values along east boundary of grid. Values fixed by duplicating west boundary.\n", we_conflicts);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: detected %u inconsistent values along periodic east boundary of grid. Values fixed by duplicating west boundary.\n", we_conflicts);
 }
 
 int GMT_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header)
