@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test that @D records after a new segment header are properly
 #   processed so metadata is used to set color, etc.  Based on
-# example in issue # 539.  Original plot faked with direct psxy plot
+# example in issue # 539.  Original plot faked with direct psxy plot.
 
 ps=lookup.ps
 
@@ -22,7 +22,7 @@ cat << EOF > ogr.txt
 24.4 34.6
 22.3 32
 >
-# @D5|43|5|Egypt|110:186:103|110/186/103|"Urbanized societies / kingdoms" 
+# @D6|41|4|Norway|173:216:230|lightblue|"Urbanized societies / kingdoms" 
 # @P
 24.3 35
 26.2 36.3
