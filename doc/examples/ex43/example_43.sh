@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate regression and outlier detection
-# GMT progs:    gmtregress, psbasemap, pstext, psxy
+# GMT progs:    gmtregress, psbasemap, pslegend, pstext, psxy
 # Unix progs:   grep, paste, awk, sed
 #
 
@@ -26,6 +26,14 @@ gmt psxy -R -J -O -K rls_line.txt -W3p >> $ps
 gmt psxy -R -J -O -K ls_line.txt -W1p,- >> $ps
 gmt psxy -R -J -O -K -Sc0.15i -Ct.cpt -Wfaint -i0,1,6 model.txt >> $ps
 awk '{print $1, $2, NR}' A | gmt pstext -R -J -O -K -F+f8p+jCM  -B0 >> $ps
+# Build legend
+cat << EOF > legend.txt
+H 18 Times-Roman Index of Animals
+D 1p
+N 7 43 7 43
+EOF
+awk -F'\t' '{printf "L - - C %d.\nL - - L %s\n", NR, $NF}' B >> legend.txt
+gmt pslegend -DjBR/2.5i/BR/0.15i/0.15i -R -J -O -K -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL=8p >> $ps
 gmt psbasemap -R0.5/28.5/-10/4 -JX6i/2i -O -K -Y-2.9i -B+glightgreen >> $ps
 gmt psxy -R -J -O -K -Gcornsilk1 -W0.25p,- << EOF >> $ps
 >
