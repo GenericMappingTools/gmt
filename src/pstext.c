@@ -40,6 +40,8 @@ bool GMT_is_a_blank_line (char *line);
 #define PSTEXT_CLIPPLOT		1
 #define PSTEXT_CLIPONLY		2
 
+#define PSTEXT_TOKEN_SEPARATORS	" \t"		/* Cannot use comma since font-specification has comma */
+
 struct PSTEXT_CTRL {
 	struct PSTEXT_A {	/* -A */
 		bool active;
@@ -58,6 +60,7 @@ struct PSTEXT_CTRL {
 	} D;
 	struct PSTEXT_F {	/* -F[+f<fontinfo>+a<angle>+j<justification>+l|h] */
 		bool active;
+		bool read_font;	/* True if we must read fonts from input file */
 		struct GMT_FONT font;
 		double angle;
 		int justify, R_justify, nread;
@@ -421,7 +424,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 							}
 							break;
 						case 'f':	/* Font info */
-							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
+							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; Ctrl->F.read_font = true; }
 							else n_errors += GMT_getfont (GMT, &p[1], &(Ctrl->F.font));
 							break;
 						case 'j':	/* Justification */
@@ -550,9 +553,9 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 	buffer[0] = '\0';	/* Initialize buffer to NULL */
 
 	if (Ctrl->Z.active) {	/* Expect z in 3rd column */
-		if (GMT_strtok (record, " \t,", &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
-		if (GMT_strtok (record, " \t,", &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
-		if (GMT_strtok (record, " \t,", &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
+		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
 		strcpy (buffer, &record[pos]);
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		if ((GMT_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
@@ -584,8 +587,8 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
 	else {
-		if (GMT_strtok (record, " \t,", &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
-		if (GMT_strtok (record, " \t,", &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
@@ -621,7 +624,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
 	char text[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, cp_line[GMT_BUFSIZ] = {""}, label[GMT_BUFSIZ] = {""};
-	char pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	char pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *token_separator = NULL;
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_LEN256] = {""}, this_font[GMT_LEN256] = {""}, just_key[5] = {""}, txt_f[GMT_LEN256] = {""};
 	int input_format_version = GMT_NOTSET;
@@ -700,6 +703,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		c_just = GMT_memory (GMT, NULL, n_alloc, int);
 		c_font = GMT_memory (GMT, NULL, n_alloc, struct GMT_FONT);
 	}
+	token_separator = (Ctrl->F.read_font) ? PSTEXT_TOKEN_SEPARATORS : GMT_TOKEN_SEPARATORS;	/* Cannot use commas if fonts are to be read */
 	
 	do {	/* Keep returning records until we have no more files */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Keep returning records until we have no more files */
@@ -749,7 +753,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					in_txt = buffer;
 				else {	/* Must pick up 1-3 attributes from data file */
 					for (k = 0; k < Ctrl->F.nread; k++) {
-						nscan += GMT_strtok (buffer, " \t", &pos, text);
+						nscan += GMT_strtok (buffer, token_separator, &pos, text);
 						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
@@ -858,7 +862,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				in_txt = buffer;
 			else {	/* Must pick up 1-3 attributes from data file */
 				for (k = 0; k < Ctrl->F.nread; k++) {
-					nscan += GMT_strtok (buffer, " \t", &pos, text);
+					nscan += GMT_strtok (buffer, token_separator, &pos, text);
 					switch (Ctrl->F.read[k]) {
 						case 'a':
 							T.paragraph_angle = atof (text);

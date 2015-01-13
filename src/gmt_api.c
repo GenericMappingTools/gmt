@@ -6287,7 +6287,7 @@ int GMT_Report_ (void *V_API, unsigned int *level, char *message, int len)
 #endif
 
 int GMT_Get_Value (void *V_API, char *arg, double par[])
-{	/* Parse any number of comma, space or slash-separated values.
+{	/* Parse any number of comma, space, tab, semi-colon or slash-separated values.
 	 * The array par must have enough space to hold all the items.
 	 * Function returns the number of items, or -1 if there was an error.
 	 * We can handle dimension units (c|i|p), distance units (d|m|s|e|f|k|M|n|u),
@@ -6316,7 +6316,7 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	GMT_memcpy (col_type_save[GMT_IN], GMT->current.io.col_type[GMT_IN],   2, unsigned int);
 	GMT_memcpy (col_type_save[GMT_OUT], GMT->current.io.col_type[GMT_OUT], 2, unsigned int);
 
-	while (GMT_strtok (arg, "/, ", &pos, p)) {	/* Loop over input aruments */
+	while (GMT_strtok (arg, GMT_TOKEN_SEPARATORS "/", &pos, p)) {	/* Loop over input aruments */
 		if ((len = strlen (p)) == 0) continue;
 		len--;	/* Position of last char, possibly a unit */
 		if (strchr (GMT_DIM_UNITS, p[len]))	/* Dimension unit (c|i|p), return distance in GMT default length unit [cm] */

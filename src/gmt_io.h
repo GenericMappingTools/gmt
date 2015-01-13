@@ -31,6 +31,8 @@
 #ifndef _GMT_IO_H
 #define _GMT_IO_H
 
+#define GMT_TOKEN_SEPARATORS	" \t,"		/* Data columns may be separated by any of these characters */
+
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
 

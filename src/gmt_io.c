@@ -1376,7 +1376,7 @@ bool gmt_is_a_NaN_line (char *line)
 	unsigned int pos = 0;
 	char p[GMT_LEN256] = {""};
 
-	while ((GMT_strtok (line, " \t,", &pos, p))) {
+	while ((GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p))) {
 		GMT_str_tolower (p);
 		if (strncmp (p, "nan", 3U)) return (false);
 	}
@@ -1491,7 +1491,7 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 		in_col = -1;					/* Since we will increment right away inside the loop */
 
 		stringp = line;
-		while (!bad_record && col_no < n_use && (token = strsepz (&stringp, " \t,")) != NULL) {	/* Get one field at the time until we run out or have issues */
+		while (!bad_record && col_no < n_use && (token = strsepz (&stringp, GMT_TOKEN_SEPARATORS)) != NULL) {	/* Get one field at the time until we run out or have issues */
 			++in_col;	/* This is the actual column number in the input file */
 			if (GMT->common.i.active) {	/* Must do special column-based processing since the -i option was set */
 				if (GMT->current.io.col_skip[in_col]) continue;		/* Just skip and not even count this column */
@@ -4481,6 +4481,10 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 	int64_t rd;
 	size_t callen, clocklen;
 
+	if (s[0] == '\"') {	/* Must handle double-quoted items */
+		callen = strlen (s) - 1;
+		if (s[callen] == '\"') { s[callen] = '\0'; s++;}	/* Strip off trailing quote and advance pointer over the first */
+	}
 	if (s[0] == 'T') {	/* Numbers cannot start with letters except for clocks, e.g., T07:0 */
 		if (!isdigit ((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk*/
 	}
@@ -6896,7 +6900,7 @@ int GMT_conv_intext2dbl (struct GMT_CTRL *GMT, char *record, unsigned int ncols)
 	unsigned int k = 0, pos = 0;
 	char p[GMT_BUFSIZ];
 
-	while (k < ncols && GMT_strtok (record, " \t,", &pos, p)) {	/* Get each field in turn and bail when done */
+	while (k < ncols && GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, p)) {	/* Get each field in turn and bail when done */
 		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) continue;	/* Numbers must be [+|-][.][<digits>] */
 		GMT_scanf (GMT, p, GMT->current.io.col_type[GMT_IN][k], &GMT->current.io.curr_rec[k]);	/* Be tolerant of errors */
 		k++;

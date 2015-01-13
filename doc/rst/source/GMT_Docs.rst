@@ -6656,11 +6656,12 @@ records that do *not* start with '#' then you must make sure to use the
 **-h** option and set the parameter :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` in the :doc:`gmt.conf` file
 (GMT default is one header record if **-h** is given; you may also use
 **-h**\ *nrecs* directly). Fields within a record must be separated by
-spaces, tabs, or commas. Each field can be an integer or floating-point
+spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
 [+\ \|\ -]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
-input strings. On output, fields will be separated by the character
+input strings. GMT is expected to handle most CVS (Comma-Separated Values)
+files, including numbers given in double quotes.  On output, fields will be separated by the character
 given by the parameter :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>`, which by default is a TAB.
 
 Optional segment header records

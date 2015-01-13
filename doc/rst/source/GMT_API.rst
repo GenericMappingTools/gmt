@@ -1800,7 +1800,7 @@ tedious to program. You can simplify this by using
     int GMT_Get_Value (void *API, char *arg, double par[]);
 
 where ``arg`` is the text item with one or more values that are
-separated by commas, spaces, or slashes, and ``par`` is an array long
+separated by commas, spaces, tabs, semi-colons, or slashes, and ``par`` is an array long
 enough to hold all the items you are parsing. The function returns the
 number of items parsed, or -1 if there is an error. For instance, assume
 the character string ``origin`` was given by the user as two geographic

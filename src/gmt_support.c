@@ -9792,7 +9792,7 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M)
 	/* Load in any gmt/grdmath macros.  These records are of the format
 	 * MACRO = ARG1 ARG2 ... ARGN [ : comments on what they do]
 	 * The comments, if present, must be preceded by :<space> to distinguish
-	 * teh flag from any dd:mm:ss or hh:mm:ss constants used in the macro. */
+	 * the flag from any dd:mm:ss or hh:mm:ss constants used in the macro. */
 
 	unsigned int n = 0, k = 0, pos = 0;
 	size_t n_alloc = 0;
@@ -9811,7 +9811,7 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M)
 		if (line[0] == '#') continue;
 		GMT_chop (line);
 		if ((c = strstr (line, ": ")))	/* This macro has comments */
-			c[0] = '\0';	/* Chop off comments */
+			c[0] = '\0';		/* Chop off the comments */
 		GMT_strstrip (line, true);	/* Remove leading and trailing whitespace */
 		sscanf (line, "%s = %[^\n]", name, args);	/* Get name and everything else */
 		if (n == n_alloc) macro = GMT_memory (GMT, macro, n_alloc += GMT_TINY_CHUNK, struct MATH_MACRO);
