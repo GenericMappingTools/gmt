@@ -1,6 +1,6 @@
 .. _-aspatial_full:
 
-**-a**\ *col*\ =\ *name*\ [*...*\ ]
+**-a**\ [*col*\ =\ ]\ *name*\ [*...*\ ]
     Control how aspatial data are handled in GMT during input and output.
     Reading OGR/GMT-formatted files. To assign certain aspatial data
     items to GMT data columns, give one or more comma-separated
@@ -10,7 +10,9 @@
     aspatial value to non-column data, you may specify *col* as **D**
     for *distance*, **G** for *fill*, **I** for *ID*, **L** for *label*,
     **T** for *text*, **W** for *pen*, and **Z** for *value* [e.g., used
-    to look-up color via a CPT].
+    to look-up color via a CPT].  If you skip the leading "*col*\ =" in
+    the argument then we supply (and automatically increment) a column
+    value starting at 2.
     Write OGR/GMT-formatted files. Give one or more comma-separated
     associations *col*\ =\ *name*\ [:*type*], To write OGR/GMT-formatted
     files, give one or more comma-separated associations

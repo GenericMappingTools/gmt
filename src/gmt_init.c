@@ -1731,7 +1731,7 @@ int gmt_parse_XY_option (struct GMT_CTRL *GMT, int axis, char *text)
 int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg)
 {	/* -a<col>=<name>[:<type>][,<col>...][+g|G<geometry>] */
 	unsigned int pos = 0;
-	int col;
+	int col, a_col = GMT_Z;
 	char p[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, A[64] = {""}, *s = NULL, *c = NULL;
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
@@ -1755,7 +1755,13 @@ int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg)
 		}
 		else
 			GMT->common.a.type[GMT->common.a.n_aspatial] = GMT_DOUBLE;
-		if (sscanf (p, "%[^=]=%s", A, name) != 2) return (GMT_PARSE_ERROR);	/* Did not get two items */
+		if (strchr (p, '=')) {	/* Got col=name */
+			if (sscanf (p, "%[^=]=%s", A, name) != 2) return (GMT_PARSE_ERROR);	/* Did not get two items */
+		}
+		else {	/* Auto-fill col as the next col starting at GMT_Z */
+			sprintf (A, "%d", a_col++);
+			strcpy (name, p);
+		}
 		switch (A[0]) {	/* Watch for different multisegment header cases */
 			case 'D': col = GMT_IS_D; break;	/* Distance flag */
 			case 'G': col = GMT_IS_G; break;	/* Color flag */
