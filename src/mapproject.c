@@ -789,12 +789,12 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 				strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
 				GMT_chop (line);	/* Chop of line feed */
 				pos = record[0] = 0;	/* Start with blank record */
-				GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
-				GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
+				GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
+				GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
 				GMT_add_to_record (GMT, record, out[x], GMT_X, 2);	/* Format our output x value */
 				GMT_add_to_record (GMT, record, out[y], GMT_Y, 2);	/* Format our output y value */
 				if (Ctrl->E.active) {
-					GMT_strtok (line, " \t,", &pos, p);		/* Returns zstring (ignore) and update pos */
+					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignore) and update pos */
 					GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 				}
 				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
@@ -913,8 +913,8 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 					strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
 					GMT_chop (line);
 					pos = record[0] = 0;	/* Start with blank record */
-					GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
-					GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
+					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
+					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
 					GMT_add_to_record (GMT, record, in[x], GMT_X, 2);	/* Format our output x value */
 					GMT_add_to_record (GMT, record, in[y], GMT_Y, 2);	/* Format our output y value */
 					if (line[pos]) {	/* Append user text */
@@ -960,12 +960,12 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 					strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
 					GMT_chop (line);
 					pos = record[0] = 0;	/* Start with blank record */
-					GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring and update pos */
-					GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring and update pos */
+					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring and update pos */
+					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring and update pos */
 					GMT_add_to_record (GMT, record, out[x], o_type[GMT_X], 2);	/* Format our output x value */
 					GMT_add_to_record (GMT, record, out[y], o_type[GMT_Y], 2);	/* Format our output y value */
 					if (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) {
-						GMT_strtok (line, " \t,", &pos, p);		/* Returns zstring (ignored) and update pos */
+						GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignored) and update pos */
 						GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 					}
 					strcat (record, &line[pos]);

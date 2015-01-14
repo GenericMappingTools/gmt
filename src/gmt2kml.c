@@ -1040,7 +1040,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 					kml_print (API, N++, "<Placemark>\n");
 					if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 					else if (Ctrl->N.mode == GET_COL_LABEL) {
-						GMT_strtok (extra, " \t,", &pos, item);
+						GMT_strtok (extra, GMT_TOKEN_SEPARATORS, &pos, item);
 						kml_print (API, N, "<name>%s</name>\n", item);
 					}
 					else if (Ctrl->N.mode == GET_LABEL)
@@ -1061,7 +1061,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 						for (col = 0; col < Ctrl->L.n_cols; col++) {
 							kml_print (API, N, "<Data name = \"%s\">\n", Ctrl->L.name[col]);
 							kml_print (API, N++, "<value>");
-							GMT_strtok (extra, " \t,", &pos, item);
+							GMT_strtok (extra, GMT_TOKEN_SEPARATORS, &pos, item);
 							L = strlen (item);
 							if (L && item[0] == '\"' && item[L-1] == '\"') {	/* Quoted string on input, remove quotes on output */
 								item[L-1] = '\0';

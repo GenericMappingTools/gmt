@@ -2020,8 +2020,8 @@ void gmt_label_trim (char *label, int stage)
 
 void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
-	unsigned int i, k, nx, ny, form, remove[2] = {0,0}, trim, add;
-	bool do_minutes, do_seconds, done_Greenwich, done_Dateline;
+	unsigned int i, k, nx, ny, last, form, remove[2] = {0,0}, trim, add;
+	bool do_minutes, do_seconds, done_Greenwich, done_Dateline, check_edges;
 	bool full_lat_range, proj_A, proj_B, annot_0_and_360 = false, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_LEN256] = {""};
 	char **label_c = NULL;
@@ -2076,6 +2076,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	dual[GMT_X] = (dx[1] > 0.0);
 	dual[GMT_Y] = (dy[1] > 0.0);
 	is_dual = (dual[GMT_X] | dual[GMT_Y]);
+	check_edges = (!GMT->common.R.oblique && (GMT->current.setting.map_frame_type & GMT_IS_INSIDE));
 
 	PSL_comment (PSL, "Map annotations\n");
 
@@ -2103,8 +2104,10 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 				nx = GMT_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER], &val, &label_c);
 			else
 				nx = GMT_linear_array (GMT, w, e, dx[k], GMT->current.map.frame.axis[GMT_X].phase, &val);
-
+			last = nx - 1;
 			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
+				if (check_edges && ((i == 0 && val[i] == w) || (i == last && val[i] == e)))
+					continue;	/* To avoid/limit clipping of annotations */
 				if (GMT_IS_ZERO (val[i]))
 					done_Greenwich = true;		/* OK, want to plot 0 */
 				if (doubleAlmostEqual (val[i], -180.0))
@@ -2167,10 +2170,14 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 					ny = GMT_linear_array (GMT, s, n, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &val);
 				tval = val;	/* Same thing */
 			}
+			last = ny - 1;
 			for (i = 0; i < ny; i++) {
 				if ((GMT->current.proj.polar || GMT->current.proj.projection == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
 					continue;
 				annot = true, trim = 0;
+				if (check_edges && ((i == 0 && val[i] == s) || (i == last && val[i] == n)))
+					continue;	/* To avoid/limit clipping of annotations */
+				
 				if (dual[GMT_Y] && k == 0) {
 					del = fmod (val[i] - s2, dy[1]);
 					if (GMT_IS_ZERO (del) || doubleAlmostEqual (del, dy[1]))
@@ -3333,7 +3340,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 		   we must scan the GMT->io.current.current_record for the col'th item and strcpy that into text.  The reason n -> col is
 		   tricky is while we may know this is the 3rd extra variable, we dont know if -C<cpt< was used or if this is psxyz, no? */
 		want_col = start + n;
-		for (col = pos = 0; col <= want_col; col++) GMT_strtok (GMT->current.io.current_record, " \t,", &pos, text);
+		for (col = pos = 0; col <= want_col; col++) GMT_strtok (GMT->current.io.current_record, GMT_TOKEN_SEPARATORS, &pos, text);
 	}
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;

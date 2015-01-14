@@ -5493,7 +5493,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 		if ((cruise_id = MGD77_Find_Cruise_ID (GMT, cruise, cruises, n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
 		if ((id = MGD77_Match_List (GMT, name, n_fields, field_names)) == MGD77_NOT_SET) continue; 		/* Not a column we are interested in at the moment */
 		pos = 0;
-		while (GMT_strtok (arguments, " ,\t", &pos, word)) {
+		while (GMT_strtok (arguments, GMT_TOKEN_SEPARATORS, &pos, word)) {
 			/* Each word p will be of the form factor*[cos|sin|exp]([<scale>](<name>[-<origin>]))[^<power>] */
 			if ((f = strchr (word, '*')) != NULL) {	/* No basis function, just a constant, the intercept term */
 				sscanf (word, "%[^*]*%s", factor, basis);
@@ -5622,7 +5622,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 		if ((id = MGD77_Match_List (GMT, name, n_fields, field_names)) == MGD77_NOT_SET) continue; 		/* Not a column we are interested in at the moment */
 		pos = 0;
 		previous = &C_table[cruise_id][id].term;
-		while (GMT_strtok (arguments, " ,\t", &pos, word)) {
+		while (GMT_strtok (arguments, GMT_TOKEN_SEPARATORS, &pos, word)) {
 			c = GMT_memory (GMT, NULL, 1, struct MGD77_CORRECTION);
 			/* Each word p will be of the form factor*[cos|sin|exp]([<scale>](<name>[-<origin>]))[^<power>] */
 			if ((f = strchr (word, '*')) == NULL) {	/* No basis function, just a constant, the intercept term */

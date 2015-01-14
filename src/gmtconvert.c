@@ -59,6 +59,7 @@ struct GMTCONVERT_CTRL {
 	} C;
 	struct D {	/* -D[<template>] */
 		bool active;
+		unsigned int mode;
 		char *name;
 	} D;
 	struct E {	/* -E */
@@ -276,6 +277,39 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 		}
 	}
 	
+	if (Ctrl->D.active) {	/* Validate the name template, if given */
+		/* Must write individual segments to separate files so create the needed name template */
+		unsigned int n_formats = 0;
+		if (!Ctrl->D.name) {	/* None give, auto-assign to segment files with extension based on binary or not */
+			Ctrl->D.name = GMT->common.b.active[GMT_OUT] ?
+				strdup ("gmtconvert_segment_%d.bin") : strdup ("gmtconvert_segment_%d.txt");
+			Ctrl->D.mode = GMT_WRITE_SEGMENT;
+		}
+		else { /* Ctrl->D.name given, need to check correct format */
+			char *p = Ctrl->D.name;
+			while ( (p = strchr (p, '%')) ) {
+				/* found %, now check format */
+				++p;	/* Skip the % sign */
+				p += strspn (p, "0123456789."); /* span past digits and decimal */
+				if ( strspn (p, "diu") == 0 ) {
+					/* No valid conversion specifier */
+					GMT_Report (API, GMT_MSG_NORMAL,
+						"Syntax error: Use of unsupported conversion specifier at position %" PRIuS " in format string '%s'.\n",
+						p - Ctrl->D.name + 1, Ctrl->D.name);
+					n_errors++;
+				}
+				++n_formats;
+			}
+			if ( n_formats == 0 || n_formats > 2 ) {	/* Incorrect number of format specifiers */
+				GMT_Report (API, GMT_MSG_NORMAL,
+					"Syntax error: Incorrect number of format specifiers in format string '%s'.\n",
+					Ctrl->D.name);
+				n_errors++;
+			}
+			/* The io_mode tells the i/o function to split tables or segments into files, if requested */
+			Ctrl->D.mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
+		}
+	}
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active), "Syntax error: -L or -S requires ASCII input data\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.min > Ctrl->C.max), "Syntax error: -C minimum records cannot exceed maximum records\n");
@@ -478,48 +512,13 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 
 	/* Now ready for output */
 
-	if (Ctrl->D.active) {
-		/* TODO: move this block to GMT_gmtconvert_parse() and replace exit() with
-		 * Return() */
-		/* Must write individual segments to separate files so create the needed template */
-		unsigned int n_formats = 0;
-		if (!Ctrl->D.name) {
-			Ctrl->D.name = GMT->common.b.active[GMT_OUT] ?
-					strdup ("gmtconvert_segment_%d.bin") : strdup ("gmtconvert_segment_%d.txt");
-			D[GMT_OUT]->io_mode = GMT_WRITE_SEGMENT;
-		}
-		else { /* Ctrl->D.name */
-			/* need to check correct format */
-			char *p = Ctrl->D.name;
-			while ( (p = strchr (p, '%')) ) {
-				/* found %, now check format */
-				++p;	/* Skip the % sign */
-				p += strspn (p, "0123456789."); /* span past digits */
-				if ( strspn (p, "diu") == 0 ) {
-					/* no valid conversion specifier */
-					GMT_Report (API, GMT_MSG_NORMAL,
-							"Syntax error: Use of unsupported conversion specifier at position %" PRIuS " in format string '%s'.\n",
-							p - Ctrl->D.name + 1, Ctrl->D.name);
-					exit (EXIT_FAILURE);
-				}
-				++n_formats;
-			}
-			if ( n_formats == 0 || n_formats > 2 ) {
-				/* Incorrect number of format specifiers */
-					GMT_Report (API, GMT_MSG_NORMAL,
-							"Syntax error: Incorrect number of format specifiers in format string '%s'.\n",
-							Ctrl->D.name);
-					exit (EXIT_FAILURE);
-			}
-			D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
-			/* The io_mode tells the i/o function to split segments into files */
-			if (Ctrl->Out.file)
-				free (Ctrl->Out.file);
-			Ctrl->Out.file = strdup (Ctrl->D.name);
-		} /* Ctrl->D.name */
+	if (Ctrl->D.active) {	/* Set composite name and io-mode */
+		if (Ctrl->Out.file)
+			free (Ctrl->Out.file);
+		Ctrl->Out.file = strdup (Ctrl->D.name);
+		D[GMT_OUT]->io_mode = Ctrl->D.mode;
 	}
-	else {
-		/* Just register output to stdout or given file via ->outfile */
+	else {	/* Just register output to stdout or given file via ->outfile */
 		if (GMT->common.a.output)
 			D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
 	}

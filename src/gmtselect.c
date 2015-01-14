@@ -158,6 +158,61 @@ int compare_x (const void *point_1, const void *point_2)
 	return (0);
 }
 
+EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
+void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out)
+{
+	unsigned int col, k;
+	size_t len;
+	char text[GMT_LEN64] = {""};
+	static int ogr[MAX_ASPATIAL], n_aspatial = 0;
+	
+	out[0] = '\0';	/* Start with nothing */
+	
+	if (n_aspatial == 0) {	/* First time */
+		for (col = 0; col < GMT->common.a.n_aspatial; col++) {	/* Loop over requested aspatial items via -a */
+			for (k = 0; k < G->n_aspatial; k++) {	/* Given the actual data... */
+				if (strcmp (GMT->common.a.name[col], G->name[k])) continue;	/* Not one of the specified items */
+				ogr[n_aspatial++] = k;
+			}
+		}
+	}
+	for (col = 0; col < n_aspatial; col++) {	/* Loop over requested aspatial items via -a */
+		k = ogr[col];
+		switch (G->type[k]) {
+			case GMT_TEXT:
+				len = strlen (G->tvalue[k]);
+				if (G->tvalue[k][0] == '\"' && G->tvalue[k][len-1] == '\"') {	/* Skip opening and closing quotes */
+					strncpy (text, &G->tvalue[k][1], len-2);
+					text[len-2] = '\0';
+				}
+				else
+					strcpy (text, G->tvalue[k]);
+				break;
+			case GMT_DOUBLE:
+			case GMT_FLOAT:
+				GMT_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
+				break;
+			case GMT_CHAR:
+			case GMT_UCHAR:
+			case GMT_INT:
+			case GMT_UINT:
+			case GMT_LONG:
+			case GMT_ULONG:
+				sprintf (text, "%ld", lrint (G->dvalue[k]));
+				break;
+			case GMT_DATETIME:
+				gmt_format_abstime_output (GMT, G->dvalue[k], text);
+				break;
+			default:
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad type passed to gmt_write_formatted_ogr_value - assumed to be double\n");
+				GMT_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
+				break;
+		}
+		strcat (out, GMT->current.setting.io_col_separator);
+		strcat (out, text);
+	}
+}
+
 int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -443,6 +498,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
+	char extra[GMT_BUFSIZ] = {""};
 
 	struct GMT_DATATABLE *pol = NULL, *line = NULL, *point = NULL;
 	struct GMT_GSHHS_POL *p[2] = {NULL, NULL};
@@ -524,7 +580,6 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	}
 
 	just_copy_record = (GMT_is_ascii_record (GMT) && !shuffle && !GMT->common.s.active);
-
 	/* Initiate pointer to distance calculation function */
 	if (GMT_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
 		if (Ctrl->C.active)
@@ -816,8 +871,13 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 			output_header = false;
 		}
 
-		if (just_copy_record)
+		if (just_copy_record) {	/* Want to (or can) do text output */
+			if (GMT->common.a.active) {	/* Add selected aspatial fields to output record */
+				gmt_ogr_to_text (GMT, GMT->current.io.OGR, extra);
+				strcat (API->GMT->current.io.current_record, extra);
+			}
 			GMT_Put_Record (API, GMT_WRITE_TEXT, NULL);
+		}
 		else
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 		n_pass++;

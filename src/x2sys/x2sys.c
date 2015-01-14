@@ -572,7 +572,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 				}
 				GMT_chop (line);	/* Remove trailing CR or LF */
 				pos = 0;
-				while ((GMT_strtok (line, " ,\t\n", &pos, p)) && k < s->n_fields) {
+				while ((GMT_strtok (line, GMT_TOKEN_SEPARATORS "\n", &pos, p)) && k < s->n_fields) {
 					if (GMT_scanf (GMT, p, G->col_type[GMT_IN][k], &data[k]) == GMT_IS_NAN) data[k] = GMT->session.d_NaN;
 					k++;;
 				}
