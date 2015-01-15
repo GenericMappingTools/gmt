@@ -7756,18 +7756,18 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		error++;
 	}
 	
-	ms->old_style = (strstr (text, "+f") || strstr (text, "+g") || strstr (text, "+p"));
-	if (ms->old_style) GMT_rgb_copy (ms->panel.fill.rgb, GMT->session.no_rgb);
+	ms->old_style = (strstr (txt_cpy, "+f") || strstr (txt_cpy, "+g") || strstr (txt_cpy, "+p"));
 	
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
-		char p[GMT_BUFSIZ];
+		char p[GMT_BUFSIZ], oldshit[GMT_LEN128] = {""};
 		unsigned int pos = 0, bad = 0;
 		while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'f':	/* Fill specification */
 					if (ms->old_style && GMT_compat_check (GMT, 4)) {	/*  Warn about old GMT 4 syntax */
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+f<fill> in map scale is deprecated, use -F panel settings instead\n");
-						if (GMT_getfill (GMT, &p[1], &ms->panel.fill)) bad++;
+						strcat (oldshit, "+g");
+						strcat (oldshit, &p[1]);
 					}
 					else
 						bad++;
@@ -7775,11 +7775,11 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 				case 'g':	/* Fill specification */
 					if (ms->old_style && GMT_compat_check (GMT, 5)) {	/* Warn about old GMT 5 syntax */
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+g<fill> in map scale is deprecated, use -F panel settings instead\n");
-						if (GMT_getfill (GMT, &p[1], &ms->panel.fill)) bad++;
+						strcat (oldshit, "+");
+						strcat (oldshit, p);
 					}
 					else
 						bad++;
-					ms->panel.mode |= GMT_PANEL_FILL;
 					break;
 
 				case 'j':	/* Label justification */
@@ -7790,11 +7790,11 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 				case 'p':	/* Pen specification */
 					if (ms->old_style && GMT_compat_check (GMT, 5)) {	/* Warn about old syntax */
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+p<pen> in map scale is deprecated, use -F panel settings instead\n");
-						if (GMT_getpen (GMT, &p[1], &ms->panel.pen1)) bad++;
+						strcat (oldshit, "+");
+						strcat (oldshit, p);
 					}
 					else
 						bad++;
-					ms->panel.mode |= GMT_PANEL_OUTLINE;
 					break;
 
 				case 'l':	/* Label specification */
@@ -7814,14 +7814,14 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		}
 		error += bad;
 		text[options] = '+';	/* Restore original string */
+		if (ms->old_style && GMT_getpanel (GMT, 'F', oldshit, &(ms->panel))) {
+			GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+			error++;
+		}
 	}
-
-	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c option:  Correct syntax\n", option);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-%c[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[%s][+l<label>][+j<just>][+p<pen>][+g<fill>][+u]\n", option, GMT_LEN_UNITS2_DISPLAY);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t  Append length distance unit from %s [k]\n", GMT_LEN_UNITS2_DISPLAY);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t  Justification can be l, r, b, or t [Default]\n");
-	}
+	if (error)
+		GMT_mapscale_syntax (GMT, 'L', " Draw a map scale centered on <lon0>/<lat0>.");
+	
 	ms->plot = true;
 	return (error);
 }
