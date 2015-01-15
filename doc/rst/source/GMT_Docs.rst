@@ -361,11 +361,16 @@ changes to syntax will be backwards compatible:
    compute 3-D projected coordinates.
 
 *  :doc:`psbasemap` now takes **-A** to save plot domain polygon in geographical coordinates.
+   The **-L** option for map scale has been revised (backwards compatible) and a
+   new uniform **-F** option to specify background panel and its many settings was added.
 
-*  :doc:`pscoast` can accept multiple **-F** settings to color features independently.
+*  :doc:`pscoast` can accept multiple **-E** settings to color features independently.
    We also have **-A** modifiers **+AS** to *only* plot Antarctica, **+ag** to use
    shelf ice grounding line for Antarctica coastline, and **+ai** to use ice/water
-   front for Antarctica coastline [Default].
+   front for Antarctica coastline [Default].  As above, the **-L** option for map scale
+   has been revised (backwards compatible) and a new uniform **-F** option to specify
+   background panel and its many settings was added.
+   
 
 *  :doc:`psconvert` (apart from the name change) has several new features, such as
    reporting dimensions of the plot when **-A** and **-V** are used,
@@ -875,7 +880,7 @@ Finally, here is a list of numerous enhancements to individual programs:
 
 *  :doc:`psclip` has added an extended **-C** option to close different types of clip paths.
 
-*  :doc:`pscoast` has added a new option **-F** which lets users specify one or more countries
+*  :doc:`pscoast` has added a new option **-E** which lets users specify one or more countries
    to paint, fill, extract, or use as plot domain (requires DCW to be installed).
 
 *  :doc:`pscontour` is now similar to :doc:`grdcontour` in the options it

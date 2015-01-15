@@ -17,8 +17,9 @@ Synopsis
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ **-A**\ [*file*] ] [ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
+[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-K** ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
-**-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**] ] ]
+[ **-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ [*label*]\ ][\ **+j**\ *just*]\ [**+u**]\ ]
 [ **-O** ] [ **-P** ]
 [ |SYN_OPT-U| ]
 [ **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]] ]
@@ -39,11 +40,7 @@ Description
 Several map projections are available, and the user may specify separate
 tickmark intervals for boundary annotation, ticking, and [optionally]
 gridlines. A simple map scale or directional rose may also be plotted.
-At least one of the options **-B**,
-**-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**],
-or
-**-T**\ [**f**\ \|\ **m**][**x**]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
-must be specified. 
+At least one of the options **-B**, **-L**, or **-T** must be specified. 
 
 Required Arguments
 ------------------
@@ -80,6 +77,24 @@ Optional Arguments
     **+c**\ *lon/lat* to specify box center.
     **+g**\ *fill* to paint a insert [no fill].
     **+p**\ *pen* to draw the insert outline [no outline].
+
+**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+    Without further options, draws a rectangular border around the map scale or rose using
+    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    Add **+g**\ *fill* to fill the logo box [no fill].
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between logo and border. 
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
+    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading.
+    Requires **-L** or **-T**.  If both **-L** or **-T**, you may repeat **-F**
+    after each of these.
 
 .. include:: explain_-Jz.rst_
 
@@ -188,7 +203,7 @@ plotted as
 
    ::
 
-    gmt psbasemap -R90/180/-50/50 -Jm0.025i -B30g30:.Mercator: -Lx1i/1i/0/5000 > mercator.ps
+    gmt psbasemap -R90/180/-50/50 -Jm0.025i -B30g30:.Mercator: -Lx1i/1i/0/5000k > mercator.ps
 
 Miller
 ~~~~~~

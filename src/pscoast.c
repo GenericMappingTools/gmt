@@ -79,9 +79,13 @@ struct PSCOAST_CTRL {
 		bool force;	/* if true, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
-	struct F {	/* -F<DWC-options> */
+	struct E {	/* -E<DWC-options> */
 		bool active;
 		struct GMT_DCW_SELECT info;
+	} E;
+	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+		bool active;
+		/* The panel struct is a member of the GMT_MAP_SCALE in -L */
 	} F;
 	struct G {	/* -G<fill> */
 		bool active;
@@ -97,7 +101,7 @@ struct PSCOAST_CTRL {
 	} I;
 	struct L {	/* -L */
 		bool active;
-		struct GMT_MAP_SCALE item;
+		struct GMT_MAP_SCALE scale;
 	} L;
 	struct M {	/* -M */
 		bool active;
@@ -119,7 +123,7 @@ struct PSCOAST_CTRL {
 	} S;
 	struct T {	/* -L */
 		bool active;
-		struct GMT_MAP_ROSE item;
+		struct GMT_MAP_ROSE rose;
 	} T;
 	struct W {	/* -W[<feature>/]<pen> */
 		bool active;
@@ -151,8 +155,8 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	for (k = 0; k < GSHHS_N_RLEVELS; k++) C->I.pen[k] = GMT->current.setting.map_default_pen;		/* Default river pens */
 	for (k = 0; k < GSHHS_N_BLEVELS; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;		/* Default border pens */
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) C->W.pen[k] = GMT->current.setting.map_default_pen;	/* Default coastline pens */
-	GMT_memset (&C->L.item, 1, struct GMT_MAP_SCALE);
-	GMT_memset (&C->T.item, 1, struct GMT_MAP_ROSE);
+	GMT_memset (&C->L.scale, 1, struct GMT_MAP_SCALE);
+	GMT_memset (&C->T.rose, 1, struct GMT_MAP_ROSE);
 
 	return (C);
 }
@@ -160,9 +164,9 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
 	unsigned int k;
 	if (!C) return;
-	if (C->F.active && C->F.info.n_items) {
-		for (k = 0; k < C->F.info.n_items; k++)
-			free ((void *)C->F.info.item[k].codes);
+	if (C->E.active && C->E.info.n_items) {
+		for (k = 0; k < C->E.info.n_items; k++)
+			free ((void *)C->E.info.item[k].codes);
 	}
 	GMT_free (GMT, C);
 }
@@ -174,7 +178,8 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s %s [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<feature>/]<fill>]\n\t[-D<resolution>][+] [%s] -G[<fill>]]\n", GMT_Rgeoz_OPT, DCW_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<feature>/]<fill>]\n\t[-D<resolution>][+] [-E%s] -G[<fill>]]\n", GMT_Rgeoz_OPT, DCW_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<feature>[/<pen>]] [%s] [-K]\n\t[-L%s]\n", GMT_Jz_OPT, GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T%s]\n\t[%s] [%s] [-W[<feature>/][<pen>]]\n", GMT_TROSE, GMT_U_OPT, GMT_V_OPT);
@@ -201,7 +206,9 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
-	GMT_DCW_option (API, 'F', 1U);
+	GMT_DCW_option (API, 'E', 1U);
+	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale or rose", 3);
+	GMT_Message (API, GMT_TIME_NONE, "\t   If using both -L and -T, you can repeat -F following each option.\n");
 	GMT_fill_syntax (API->GMT, 'G', "Paint or clip \"dry\" areas.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip paths for land areas.\n");
 	GMT_pen_syntax (API->GMT, 'I', "Draw rivers.  Specify feature and optionally append pen [Default for all levels: %s].");
@@ -227,7 +234,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "K");
 	GMT_mapscale_syntax (API->GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Dump a multisegment ASCII (or binary, see -bo) file to standard output.  No plotting occurs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify one of -F, -I, -N, or -W.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify one of -E, -I, -N, or -W.\n");
 	GMT_pen_syntax (API->GMT, 'N', "Draw boundaries.  Specify feature and optionally append pen [Default for all levels: %s].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from the features below.  Repeat the -N option as many times as needed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     1 = National boundaries.\n");
@@ -272,6 +279,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	struct GMTAPI_CTRL *API = GMT->parent;
 	struct GMT_PEN pen;
 	char *string = NULL;
+	struct GMT_MAP_PANEL *this_panel = NULL;	/* Current panel to specify */
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -309,9 +317,25 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				Ctrl->D.set = (opt->arg[0]) ? opt->arg[0] : 'l';
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
-			case 'F':	/* Select DCW items; repeatable */
+			case 'E':	/* Select DCW items; repeatable */
+				Ctrl->E.active = true;
+				n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
+				break;
+			case 'F':
+				if (GMT_compat_check (GMT, 5)) {	/* See if we got old -F for DCW stuff (now -E) */
+					if (strcmp (opt->arg, "+l") || opt->arg[0] == '=' || isupper (opt->arg[0])) {
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -F option for DCW is deprecated, use -E instead.\n");
+						Ctrl->E.active = true;
+						n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
+						continue;
+					}
+				}
 				Ctrl->F.active = true;
-				n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->F.info);
+				if (this_panel == NULL) this_panel = &(Ctrl->L.scale.panel); 
+				if (GMT_getpanel (GMT, opt->option, opt->arg, this_panel)) {
+					GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+					n_errors++;
+				}
 				break;
 			case 'G':		/* Set Gray shade, pattern, or clipping */
 				Ctrl->G.active = true;
@@ -368,7 +392,8 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.item);
+				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
+				this_panel = &(Ctrl->L.scale.panel);
 				break;
 			case 'm':
 				if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
@@ -423,7 +448,8 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				break;
 			case 'T':
 				Ctrl->T.active = true;
-				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.item);
+				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
+				this_panel = &(Ctrl->T.rose.panel);
 				break;
 			case 'W':
 				Ctrl->W.active = true;	/* Want to draw shorelines */
@@ -462,14 +488,14 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 		}
 	}
 
-	if (GMT_DCW_list (GMT, Ctrl->F.info.mode)) return 1;
+	if (GMT_DCW_list (GMT, Ctrl->E.info.mode)) return 1;
 
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
 	}
-	if (!GMT->common.R.active && Ctrl->F.active && Ctrl->M.active && !Ctrl->F.info.region) Ctrl->F.info.region = true;	/* For -M and -F with no plotting, get -R from pols */
-	if (!GMT->common.R.active && Ctrl->F.info.region) {	/* Must pick up region from chosen polygons */
-		(void) GMT_DCW_operation (GMT, &Ctrl->F.info, GMT->common.R.wesn, GMT_DCW_REGION);
+	if (!GMT->common.R.active && Ctrl->E.active && Ctrl->M.active && !Ctrl->E.info.region) Ctrl->E.info.region = true;	/* For -M and -E with no plotting, get -R from pols */
+	if (!GMT->common.R.active && Ctrl->E.info.region) {	/* Must pick up region from chosen polygons */
+		(void) GMT_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);
 		GMT->common.R.active = true;
 		if (!GMT->common.J.active && !Ctrl->M.active) {	/* No plotting or no dumping means just return the -R string */
 			char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
@@ -517,8 +543,9 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active), "Syntax error: Must choose between dumping and clipping/plotting\n");
 	n_errors += GMT_check_condition (GMT, clipping && GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0, "-JE not implemented for global clipping - I quit\n");
 	n_errors += GMT_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active), "Cannot do clipping AND draw coastlines, rivers, or borders\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->F.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->F.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M: Must specify one of -F, -I, -N, and -W\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->E.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M: Must specify one of -E, -I, -N, and -W\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active), "Syntax error: -F is only allowed with -L and -T\n");
 
 	if (Ctrl->I.active) {	/* Generate list of desired river features in sorted order */
 		for (k = Ctrl->I.n_rlevels = 0; k < GSHHS_N_RLEVELS; k++) {
@@ -684,7 +711,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		Ctrl->I.active = false;
 	}
 
-	if (!(need_coast_base || Ctrl->F.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
+	if (!(need_coast_base || Ctrl->E.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No GSHHG databases available - must abort\n");
 		Return (EXIT_FAILURE);
 	}
@@ -713,7 +740,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		else {
 			version = r.version;	title = r.title;	source = r.source;
 		}
-		if (Ctrl->F.active) {
+		if (Ctrl->E.active) {
 			sprintf (header, "# Country polygons extracted from the DCW database\n");
 			GMT_Put_Record (API, GMT_WRITE_TEXT, header);
 		}
@@ -963,7 +990,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		GMT_shore_cleanup (GMT, &c);
 	}
 
-	(void)GMT_DCW_operation (GMT, &Ctrl->F.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
+	(void)GMT_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
 
@@ -1090,8 +1117,8 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 			GMT_map_basemap (GMT);
 		}
 
-		if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.item);
-		if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.item);
+		if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.scale);
+		if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.rose);
 
 		GMT_plane_perspective (GMT, -1, 0.0);
 		GMT_plotend (GMT);

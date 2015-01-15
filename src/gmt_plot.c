@@ -3206,6 +3206,17 @@ void GMT_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr)
 		GMT_geo_to_xy (GMT, mr->lon, mr->lat, &mr->x0, &mr->y0);
 	}
 
+	if (mr->panel.mode) {	/* Place rectangle behind the map rose */
+		double x_center, y_center, dim[4] = {0.0, 0.0, 0.0, 0.0};
+
+		/* Determine center of gravity for panel */
+		x_center = mr->x0 + 0.5 * (dim[XHI] - dim[XLO]);
+		y_center = mr->y0 + 0.5 * (dim[YHI] - dim[YLO]);
+		/* Determine panel dimensions */
+		mr->panel.width = mr->size + dim[XHI] + dim[XLO];	mr->panel.height = mr->size + dim[YHI] + dim[YLO];
+		GMT_draw_map_panel (GMT, x_center, y_center, 3U, &(mr->panel));
+	}
+
 	/* Temporarily use miter to get sharp points to compass rose */
 	tmp_join = PSL->internal.line_join;	PSL_setlinejoin (PSL, 0);
 	tmp_limit = PSL->internal.miter_limit;	PSL_setmiterlimit (PSL, 0);

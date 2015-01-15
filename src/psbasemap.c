@@ -101,7 +101,8 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT defaults MAP_LINE_STEP.\n");
 	GMT_Option (API, "B");
 	GMT_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
-	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale", 3);
+	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale or rose", 3);
+	GMT_Message (API, GMT_TIME_NONE, "\t   If using both -L and -T, you can repeat -F following each option.\n");
 	GMT_Option (API, "K");
 	GMT_mapscale_syntax (API->GMT, 'L', "Draw a map scale centered on <lon0>/<lat0>.");
 	GMT_Option (API, "O,P");
@@ -123,6 +124,7 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+	struct GMT_MAP_PANEL *this_panel = NULL;	/* Current panel to specify */
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -140,7 +142,8 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->L.scale.panel)) {
+				if (this_panel == NULL) this_panel = &(Ctrl->L.scale.panel); 
+				if (GMT_getpanel (GMT, opt->option, opt->arg, this_panel)) {
 					GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
 					n_errors++;
 				}
@@ -160,10 +163,12 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = true;
 				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
+				this_panel = &(Ctrl->L.scale.panel);
 				break;
 			case 'T':	/* Draw map rose */
 				Ctrl->T.active = true;
 				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
+				this_panel = &(Ctrl->T.rose.panel);
 				break;
 
 			default:	/* Report bad options */
@@ -172,13 +177,13 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->L.active, "Syntax error: Cannot specify -F without -L\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && Ctrl->L.scale.old_style, "Syntax error: Cannot specify -F and use old-style -L settings\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->A.active || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -A, -B, -D, -L, -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Cannot use -B, -D, -L, -T with -A\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !GMT_is_geographic (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active), "Syntax error: -F is only allowed with -L and -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

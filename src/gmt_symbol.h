@@ -143,6 +143,7 @@ struct GMT_MAP_ROSE {
 	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_LEN64];	/* User-changable labels for W, E, S, N point */
 	char dlabel[GMT_LEN256];	/* Magnetic declination label */
+	struct GMT_MAP_PANEL panel;	/* Everything about optional back panel */
 };
 
 #endif	/* _GMT_SYMBOLS_H */

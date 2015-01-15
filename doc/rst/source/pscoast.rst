@@ -19,10 +19,11 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ **-C**\ [**l**\ \|\ **r**/]\ *fill* ]
 [ **-D**\ *resolution*\ [**+**] ]
-[ **-F**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]]
+[ **-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]]
+[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-G**\ *fill*\ \|\ **c** ] [ **-I**\ *river*\ [/\ *pen*] ]
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**] ] ]
+[ **-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ [*label*]\ ][\ **+j**\ *just*]\ [**+u**]\ ]
 [ **-M** ] [ **-N**\ *border*\ [/*pen*] ] [ **-O** ] [ **-P** ]
 [ **-Q** ] [ **-S**\ *fill*\ \|\ **c** ]
 [ **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]] ]
@@ -90,7 +91,7 @@ Optional Arguments
     Append **+** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
 
-**-F**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
+**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
     Select painting or dumping country polygons from the Digital Chart of the World.
     This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
     Append one or more comma-separated countries using the 2-character
@@ -107,10 +108,28 @@ Optional Arguments
     outward by adding these increments instead [no extension].
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
-    specified unless **+r**, **+R**, or **-M** is in effect, and only one **-F** option can be given.
-    You may repeat **-F** to give different groups of items separate pen/fill settings.
+    specified unless **+r**, **+R**, or **-M** is in effect, and only one **-E** option can be given.
+    You may repeat **-E** to give different groups of items separate pen/fill settings.
     If modifiers **+r** or **+R** are used and neither **-J** nor **-M** is set then
     we just print the **-R**\ *wesn* string.
+
+**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+    Without further options, draws a rectangular border around the map scale or rose using
+    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    Add **+g**\ *fill* to fill the logo box [no fill].
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between logo and border. 
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
+    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading.
+    Requires **-L** or **-T**.  If both **-L** or **-T**, you may repeat **-F**
+    after each of these.
 
 **-G**\ *fill*\ \|\ **c**
     Select filling or clipping of "dry" areas. Append the shade, color,
@@ -169,9 +188,9 @@ Optional Arguments
 **-M**
     Dumps a single multisegment ASCII (or binary, see
     **-bo**) file to standard output. No plotting
-    occurs. Specify one of **-F**, **-I**, **-N** or **-W**.
-    Note: if **-M** is used with **-F** then **-R** or the **+r** modifier
-    to **-F** are not required as we automatically determine the region
+    occurs. Specify one of **-E**, **-I**, **-N** or **-W**.
+    Note: if **-M** is used with **-E** then **-R** or the **+r** modifier
+    to **-E** are not required as we automatically determine the region
     given the selected geographic entities.
 
 **-N**\ *border*\ [/*pen*]
@@ -268,7 +287,7 @@ domain form the extents of these countries, use
 
    ::
 
-    gmt pscoast  -JM6i -P -Baf -FGB,IT,FR+gblue+p0.25p,red+r -FES,PT,GR+gyellow > map.ps
+    gmt pscoast  -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red+r -EES,PT,GR+gyellow > map.ps
 
 **pscoast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look

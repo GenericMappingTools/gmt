@@ -32,7 +32,7 @@
 #ifndef _GMT_DCW_H
 #define _GMT_DCW_H
 
-#define DCW_OPT "-F<code1,code2,...>[+l|L][+g<fill>][+p<pen>][+r|R[<incs>]]"
+#define DCW_OPT "<code1,code2,...>[+l|L][+g<fill>][+p<pen>][+r|R[<incs>]]"
 
 enum GMT_DCW_modes {
 	GMT_DCW_REGION	= 1,

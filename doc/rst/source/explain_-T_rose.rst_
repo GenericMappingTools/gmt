@@ -22,3 +22,4 @@
     respectively, while label fonts, colors and sizes follow
     **FONT_TITLE** for the four major directions and **FONT_LABEL**
     for minor directions.
+    See **-F** on how to place a panel behind the scale.
