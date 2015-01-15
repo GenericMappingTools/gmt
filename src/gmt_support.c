@@ -7656,7 +7656,13 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 
 /*! . */
 int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms) {
-	/* Pass text as &argv[i][2] */
+	/* This function parses the -L map scale syntax:
+	 * 	-L[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[e|f|M|n|k|u][+u]
+	 * The function is also backwards compatible with the previous map scale syntax:
+	 * 	-L [f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[e|f|M|n|k|u][+l<label>][+j<just>][+p<pen>][+g<fill>][+u]
+	 * The old syntax is recognized by the optional +p and +g modifiers.  If either of these are present then we know
+	 * we are looking at the old syntax and we parse those options but give warning of obsolesnce; otherwise
+	 * we do the parsing of the newer format where the background panel is handled by another options (e.g. -F in psbasemap). */
 
 	int j = 0, i, n_slash, error = 0, k = 0, options;
 	char txt_cpy[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_sx[GMT_LEN256] = {""}, txt_sy[GMT_LEN256] = {""}, txt_len[GMT_LEN256] = {""};
@@ -7669,7 +7675,6 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	GMT_memset (ms, 1, struct GMT_MAP_SCALE);
 	ms->measure = 'k';	/* Default distance unit is km */
 	ms->justify = 't';
-	GMT_rgb_copy (ms->fill.rgb, GMT->session.no_rgb);
 
 	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx) */
 	if (text[j] == 'f') ms->fancy = true, j++;
@@ -7699,10 +7704,13 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		error++;
 	i = (int)strlen (txt_len) - 1;
 	if (isalpha ((int)txt_len[i])) {	/* Letter at end of distance value */
-		if (strchr (GMT_LEN_UNITS2, (int)txt_len[i])) {	/* Gave a valid distance unit */
-			ms->measure = txt_len[i];
-			txt_len[i] = '\0';
+		ms->measure = txt_len[i];
+		if (GMT_compat_check (GMT, 4) && ms->measure == 'm') {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Distance unit m is deprecated; use M for statute miles\n");
+			ms->measure = 'M';
 		}
+		if (strchr (GMT_LEN_UNITS2, ms->measure))	/* Gave a valid distance unit */
+			txt_len[i] = '\0';
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid distance units are %s\n", option, GMT_LEN_UNITS2_DISPLAY);
 			error++;
@@ -7747,19 +7755,31 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Defining latitude is out of range\n", option);
 		error++;
 	}
+	
+	ms->old_style = (strstr (text, "+f") || strstr (text, "+g") || strstr (text, "+p"));
+	if (ms->old_style) GMT_rgb_copy (ms->panel.fill.rgb, GMT->session.no_rgb);
+	
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
 		char p[GMT_BUFSIZ];
 		unsigned int pos = 0, bad = 0;
 		while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'f':	/* Fill specification */
-					if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+f<fill> in map scale is deprecated, use +g<fill> instead\n");
+					if (ms->old_style && GMT_compat_check (GMT, 4)) {	/*  Warn about old GMT 4 syntax */
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+f<fill> in map scale is deprecated, use -F panel settings instead\n");
+						if (GMT_getfill (GMT, &p[1], &ms->panel.fill)) bad++;
+					}
 					else
 						bad++;
+					break;
 				case 'g':	/* Fill specification */
-					if (GMT_getfill (GMT, &p[1], &ms->fill)) bad++;
-					ms->boxfill = true;
+					if (ms->old_style && GMT_compat_check (GMT, 5)) {	/* Warn about old GMT 5 syntax */
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+g<fill> in map scale is deprecated, use -F panel settings instead\n");
+						if (GMT_getfill (GMT, &p[1], &ms->panel.fill)) bad++;
+					}
+					else
+						bad++;
+					ms->panel.mode |= GMT_PANEL_FILL;
 					break;
 
 				case 'j':	/* Label justification */
@@ -7768,8 +7788,13 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					break;
 
 				case 'p':	/* Pen specification */
-					if (GMT_getpen (GMT, &p[1], &ms->pen)) bad++;
-					ms->boxdraw = true;
+					if (ms->old_style && GMT_compat_check (GMT, 5)) {	/* Warn about old syntax */
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+p<pen> in map scale is deprecated, use -F panel settings instead\n");
+						if (GMT_getpen (GMT, &p[1], &ms->panel.pen1)) bad++;
+					}
+					else
+						bad++;
+					ms->panel.mode |= GMT_PANEL_OUTLINE;
 					break;
 
 				case 'l':	/* Label specification */
@@ -7982,7 +8007,6 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					n_errors++;
 				}
 				for (n = 0; n < 4; n++) P->off[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];	/* Since GMT_Get_Value might return cm */
-				P->clearance = true;
 				break;
 			case 'i':	/* Secondary pen info */
 				P->mode |= GMT_PANEL_INNER;

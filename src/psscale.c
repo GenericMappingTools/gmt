@@ -460,6 +460,13 @@ void fix_format (char *unit, char *format)
 
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
 
+bool hangs_down (char *text) {
+	/* Returns true if text contains one of the 4 lower-case letters that hangs down below the baseline */
+	size_t k;
+	for (k = 0; k < strlen (text); k++) if (strchr ("jpqy", text[k])) return true;
+	return false;
+}
+
 void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, \
 	double bit_dpi, unsigned int N_mode, unsigned int flip, bool B_set, bool equi, bool horizontal, bool logscl, bool intens, \
 	double *max_intens, bool skip_lines, unsigned int extend, \
@@ -634,55 +641,73 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	}
 
 	if (do_panel) {	/* Place rectangle behind the color bar */
-		double x_center, y_center, u_off = 0.0, v_off = 0.0;
+		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
 
 		/* Must guesstimate the width of the largest horizontal annotation */
 		sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
 		sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
-		off = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_SIZE +
-			((ndec > 0) ? GMT_PER_SIZE : 0.0))
-			* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+		off = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
+			((ndec > 0) ? GMT_PER_WIDTH : 0.0))
+			* GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+		bar_tick_len = fabs (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Length of tickmarks */
 		if (horizontal) {	/* Determine center and dimensions of horizontal background rectangle */
-			x_center = 0.5 * length; y_center = 0.5 * width;
-			panel->width = length;	panel->height = width;
-			if (!panel->clearance) {	/* Guess clearances */
-				annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]);	/* Allow for space between bar and annotations */
-				/* Extend clearance by annotation height */
-				annot_off += 1.3 * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-				/* If a label then add space for offset and label height */
-				if (GMT->current.map.frame.axis[GMT_X].label[0]) label_off = MAX (0.0, GMT->current.setting.map_label_offset) + GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
-				/* If a unit then add space on the right to deal with the unit */
-				if (GMT->current.map.frame.axis[GMT_Y].label[0]) u_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_LET_SIZE * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-				/* Adjust clearances for the panel */
-				if (flip & 1) panel->off[YHI] += annot_off; else panel->off[YLO] += annot_off;
-				if (flip & 2) panel->off[YHI] += label_off; else panel->off[YLO] += label_off;
-				panel->off[XHI] += MAX (u_off, 0.5*off);	/* The y-label is always on the right regardless of flip */
-				panel->off[XLO] += 0.5*off;	/* Half the label may extend outside */
+			/* Determine dimensions */
+			annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]);	/* Allow for space between bar and annotations */
+			/* Extend y clearance by tick length */
+			annot_off += bar_tick_len;
+			/* Extend y clearance by annotation height */
+			annot_off += GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+			/* If a label then add space for offset and label height */
+			if (GMT->current.map.frame.axis[GMT_X].label[0]) {
+				label_off = 1.0;	/* 1-letter height */
+				if (!(flip & 2) && hangs_down (GMT->current.map.frame.axis[GMT_X].label))
+					label_off += 0.3;	/* Add 30% hang below baseline */
+				label_off *= GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;	/* Scale to inches */
+				label_off += MAX (0.0, GMT->current.setting.map_label_offset);	/* Add offset */
 			}
+			/* If a unit then add space on the right to deal with the unit */
+			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
+				/* u_off is width of the label placed on the right side , while v_off, of > 0, is the extra height of the label beyond the width of the bar */
+				u_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + (0.5+strlen (GMT->current.map.frame.axis[GMT_Y].label)) * GMT_LET_WIDTH * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+				v_off = 0.5 * (GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH - width);
+			}
+			/* Adjust clearances for the panel */
+			if (flip & 1) dim[YHI] += annot_off; else dim[YLO] += annot_off;
+			if (flip & 2) dim[YHI] += label_off; else dim[YLO] += label_off;
+			dim[YHI] += 0.5 * GMT->current.setting.map_frame_pen.width / PSL_POINTS_PER_INCH;
+			if (v_off > dim[YHI]) dim[YHI] = v_off;
+			dim[XHI] += MAX (u_off, 0.5*off);	/* The y-label is always on the right regardless of flip */
+			dim[XLO] += 0.5*off;	/* Half the label may extend outside */
+			x_center = 0.5 * length + 0.5 * (dim[XHI] - dim[XLO]); y_center = 0.5 * width + 0.5 * (dim[YHI] - dim[YLO]);
+			panel->width = length + dim[XHI] + dim[XLO];	panel->height = width + dim[YHI] + dim[YLO];
 		}
 		else {	/* Determine center and dimensions of vertical background rectangle */
 			double label_off, h_off;
-			y_center = 0.5 * length; x_center = 0.5 * width;
-			panel->width = width;	panel->height = length;
-			h_off = 0.5 * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-			if (!panel->clearance) {	/* Guess clearances */
-				annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]);	/* Allow for space between bar and annotations */
-				annot_off += 1.3*off;
-				/* Increase width if there is a label */
-				if (GMT->current.map.frame.axis[GMT_X].label[0]) label_off = MAX (0.0, GMT->current.setting.map_label_offset) + GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
-				/* If a unit then consider if its width exceeds the bar width; then use half the excess to adjust center and width of box, and its height to adjust the height of box */
-				if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
-					u_off = 0.5 * MAX (0.0, strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_LET_SIZE * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH] - width);
-					v_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + GMT->current.setting.font_annot[0].size * FONT_HEIGHT_PRIMARY * GMT->session.u2u[GMT_PT][GMT_INCH];
-				}
-				/* Adjust clearances for the panel */
-				if (flip & 2) panel->off[XLO] += label_off; else panel->off[XHI] += label_off;
-				if (flip & 1) panel->off[XLO] += annot_off; else panel->off[XHI] += annot_off;
-				if (u_off > panel->off[XLO]) panel->off[XLO] = u_off;
-				if (u_off > panel->off[XHI]) panel->off[XHI] = u_off;
-				panel->off[YLO] += h_off;
-				panel->off[YHI] += v_off + h_off;
+			h_off = 0.5 * GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+			/* Determine dimensions */
+			annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]);	/* Allow for space between bar and annotations */
+			/* Extend x clearance by tick length */
+			annot_off += bar_tick_len;
+			/* Extend x clearance by annotation width */
+			annot_off += off;
+			/* Increase width if there is a label */
+			if (GMT->current.map.frame.axis[GMT_X].label[0])
+				label_off = MAX (0.0, GMT->current.setting.map_label_offset) + GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
+			/* If a unit then consider if its width exceeds the bar width; then use half the excess to adjust center and width of box, and its height to adjust the height of box */
+			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
+				/* u_off is ~half-width of the label placed on top of the vertical bar, while v_off is the extra height needed to accomodate the label */
+				u_off = 0.5 * MAX (0.0, 1.3*strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_LET_WIDTH * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH - width);
+				v_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + GMT->current.setting.font_annot[0].size * GMT_LET_HEIGHT / PSL_POINTS_PER_INCH;
 			}
+			/* Adjust clearances for the panel */
+			if (flip & 2) dim[XLO] += label_off; else dim[XHI] += label_off;
+			if (flip & 1) dim[XLO] += annot_off; else dim[XHI] += annot_off;
+			if (u_off > dim[XLO]) dim[XLO] = u_off;
+			if (u_off > dim[XHI]) dim[XHI] = u_off;
+			dim[YLO] += h_off;
+			dim[YHI] += MAX (v_off, h_off);
+			y_center = 0.5 * length + 0.5 * (dim[YHI] - dim[YLO]); x_center = 0.5 * width + 0.5 * (dim[XHI] - dim[XLO]);
+			panel->width = width + dim[XHI] + dim[XLO];	panel->height = length + dim[YHI] + dim[YLO];
 		}
 		GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
 	}
@@ -697,22 +722,22 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;
 
 	if (flip & 1) {	/* Place annotations on the opposite side */
-		justify = l_justify = (horizontal) ? 2 : 7;
+		justify = l_justify = (horizontal) ? PSL_BC : PSL_MR;
 		y_base = width;
 		dir = 1.0;
 	}
 	else {	/* Leave them on the default side */
-		justify = (horizontal) ? 10 : 7;
-		l_justify = (horizontal) ? 10 : 5;
+		justify = (horizontal) ? PSL_TC : PSL_MR;
+		l_justify = (horizontal) ? PSL_TC : PSL_ML;
 		y_base = 0.0;
 		dir = -1.0;
 	}
 	if (flip & 2) {	/* Place label on the opposite side */
-		Label_justify = 2;
+		Label_justify = PSL_BC;
 		y_label = width + GMT->current.setting.map_label_offset;
 	}
 	else {	/* Leave label on the default side */
-		Label_justify = 10;
+		Label_justify = PSL_TC;
 		y_label = -GMT->current.setting.map_label_offset;
 	}
 
@@ -764,7 +789,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 
 		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[0];
-		label_off = annot_off + GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH] + GMT->current.setting.map_label_offset;
+		label_off = annot_off + GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH] + GMT->current.setting.map_label_offset;
 		y_annot = y_base + dir * annot_off;
 		if ((flip & 1) == (flip & 2) / 2) y_label = y_base + dir * label_off;
 
@@ -963,15 +988,15 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		if (center && interval_annot) {
 			sprintf (text, "%ld - %ld", lrint (floor (P->range[0].z_low)), lrint (ceil (P->range[0].z_high)));
 			sprintf (test, "%ld - %ld", lrint (floor (P->range[P->n_colors-1].z_low)), lrint (ceil (P->range[P->n_colors-1].z_high)));
-			off = ((MAX ((int)strlen (text), (int)strlen (test)) + 2*ndec) * GMT_DEC_SIZE - 0.4 +
-				((ndec > 0) ? 2*GMT_PER_SIZE : 0.0))
+			off = ((MAX ((int)strlen (text), (int)strlen (test)) + 2*ndec) * GMT_DEC_WIDTH - 0.4 +
+				((ndec > 0) ? 2*GMT_PER_WIDTH : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
 		else {
 			sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
 			sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
-			off = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_SIZE +
-				((ndec > 0) ? GMT_PER_SIZE : 0.0))
+			off = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
+				((ndec > 0) ? GMT_PER_WIDTH : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
 

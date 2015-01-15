@@ -134,9 +134,10 @@ enum GMT_swap_direction {
 #define GMT_YR2SEC_F	(365.2425 * 86400.0)
 #define GMT_MON2SEC_F	(365.2425 * 86400.0 / 12.0)
 
-#define GMT_LET_SIZE	0.78	/* Width of an "N" compared to point size */
-#define GMT_DEC_SIZE	0.54	/* Width of a decimal number compared to point size */
-#define GMT_PER_SIZE	0.30	/* Width of a decimal point compared to point size */
+#define GMT_LET_HEIGHT	0.728	/* Height of an "N" compared to point size */
+#define GMT_LET_WIDTH	0.564	/* Width of an "N" compared to point size */
+#define GMT_DEC_WIDTH	0.54	/* Width of a decimal number compared to point size */
+#define GMT_PER_WIDTH	0.30	/* Width of a decimal point compared to point size */
 
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */

@@ -996,9 +996,10 @@ void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   Use -%cx to specify Cartesian coordinates instead.  Scale is calculated at latitude <slat>;\n", option);
 	GMT_message (GMT, "\t   optionally give longitude <slon> [Default is central longitude].  Give scale <length> and\n");
 	GMT_message (GMT, "\t   append unit from %s [km].  Use -%cf to draw a \"fancy\" scale [Default is plain].\n", GMT_LEN_UNITS2_DISPLAY, option);
-	GMT_message (GMT, "\t   By default, the label equals the distance unit and is placed on top [+jt].  Use the +l<label>\n");
-	GMT_message (GMT, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  +u sets the label as a unit.\n");
-	GMT_message (GMT, "\t   Append +p<pen> and/or +g<fill> to draw/paint a rectangle behind the scale [no rectangle].\n");
+	GMT_message (GMT, "\t   By default, the label equals the distance unit name and is placed on top [+jt].  Use the +l<label>\n");
+	GMT_message (GMT, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  +u appends units to annotations.\n");
+	GMT_message (GMT, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  For the fancy scale,\n");
+	GMT_message (GMT, "\t   +u appends units to annotations while for plain scale it uses unit abbreviation instead of name as label.\n");
 }
 
 /*! .
@@ -1034,7 +1035,7 @@ void GMT_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t   Without further options: draw border around the %s panel (using MAP_FRAME_PEN)\n", type[kind]);
 	GMT_message (GMT, "\t      [Default is no border].\n");
-	GMT_message (GMT, "\t   Append +c<clearance> where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [0].\n");
+	GMT_message (GMT, "\t   Append +c<clearance> where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp].\n", GMT_FRAME_CLEARANCE);
 #ifdef DEBUG
 	GMT_message (GMT, "\t   Append +d to draw guide lines for debugging.\n");
 #endif

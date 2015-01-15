@@ -89,7 +89,7 @@ struct GMT_MAP_PANEL {
 	struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
 	struct GMT_FILL fill;		/* Frame fill */
 	struct GMT_FILL sfill;		/* Background shade */
-	bool clearance;			/* True when +c has been given [otherwise a module may add automatic clearance] */
+	bool clearance;			/* Used by pslegend since it has the -C option as well */
 	bool debug;
 };
 
@@ -116,18 +116,16 @@ struct GMT_MAP_SCALE {
 	double scale_lon;	/* Point where scale should apply */
 	double scale_lat;	/* Point where scale should apply */
 	double length;		/* How long the scale is in measure units */
-	bool boxdraw;	/* true if we want to plot a rectangle behind the scale */
-	bool boxfill;	/* true if we want to paint/fill a rectangle behind the scale */
 	bool plot;		/* true if we want to draw the scale */
 	bool fancy;		/* true for a fancy map scale */
-	bool gave_xy;	/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	bool gave_xy;		/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	bool unit;		/* true if we should append distance unit to all annotations along the scale */
-	bool do_label;	/* true if we should plot a label for the scale */
+	bool do_label;		/* true if we should plot a label for the scale */
+	bool old_style;		/* true if we are using old syntax, pre-panel settings */
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
 	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
-	char label[GMT_LEN64];	/* Alternative user-specified label */
-	struct GMT_FILL fill;	/* Fill to use for background rectangle */
-	struct GMT_PEN pen;	/* Pen to use for background rectangle */
+	char label[GMT_LEN128];	/* Alternative user-specified label */
+	struct GMT_MAP_PANEL panel;	/* Everything about optional back panel */
 };
 
 /*! Plot a map direction "rose" in psbasemap and pscoast */
