@@ -431,12 +431,24 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		dim[2] = vector_width; dim[3] = 10.0 * vector_width; dim[4] = 5.0 * vector_width;
 		dim[5] = GMT->current.setting.map_vector_shape; dim[6] = GMT_VEC_END | GMT_VEC_FILL;
 		if (horizontal) {
-			dim[0] = 1.075 * length; dim[1] = 0.0;
-			PSL_plotsymbol (PSL, length, 0.0, dim, PSL_VECTOR);
+			double x = 0.0;
+			if (GMT->current.proj.xyz_pos[axis]) {
+				x = length;
+				dim[0] = 1.075 * length;
+			}
+			else
+				dim[0] = -0.075 * length;
+			PSL_plotsymbol (PSL, x, 0.0, dim, PSL_VECTOR);
 		}
 		else {
-			dim[0] = 0.0; dim[1] = 1.075 * length;
-			PSL_plotsymbol (PSL, 0.0, length, dim, PSL_VECTOR);
+			double y = 0.0;
+			if (GMT->current.proj.xyz_pos[axis]) {
+				y = length;
+				dim[1] = 1.075 * length;
+			}
+			else
+				dim[1] = -0.075 * length;
+			PSL_plotsymbol (PSL, 0.0, y, dim, PSL_VECTOR);
 		}
 	}
 
