@@ -1475,13 +1475,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				else
 					quiet = "";
 
-#ifdef WIN32
-				sprintf (cmd, "gdal_translate -a_srs \"%s\" -co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
-						proj4_cmd, quiet, quote, out_file, quote, quote, world_file, quote);
-#else
-				sprintf (cmd, "gdal_translate -a_srs '%s' -co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
-						proj4_cmd, quiet, quote, out_file, quote, quote, world_file, quote);
-#endif
+				sprintf (cmd, "gdal_translate -a_srs %c%s%c -co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
+						quote, proj4_cmd, quote, quiet, quote, out_file, quote, quote, world_file, quote);
 				free(proj4_cmd);
 				GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
