@@ -57,7 +57,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcdptxy" GMT_OPT("EZ")
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcdptxy" GMT_OPT("Z")
 
 
 #define LAKE	0
