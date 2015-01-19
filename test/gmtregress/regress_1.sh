@@ -5,6 +5,7 @@
 # Data is Log Temperature (x) vs Log Light Intensity (y).
 # Outliers are red giants that fall off trend; there are commented out in data,
 # so we use sed to include them in this script
+# This script shows the misfits as function of angle for various -E -N combinations.
 
 ps=regress_1.ps
 

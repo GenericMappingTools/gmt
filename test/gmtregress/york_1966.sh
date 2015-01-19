@@ -4,7 +4,7 @@
 # York, D. (1966), Least-squares fitting of a straight line,
 #    Can. J. Phys., 44, 1079-1086.
 
-# Cols 3 and 4 are weights (1/sigma)
+# Cols 3 and 4 are weights (=1/sigma)
 
 ps=york_1966.ps
 cat << EOF > york.txt
@@ -45,8 +45,7 @@ gmt psxy -R -J -O -K -Baf -BWsne+t"York [1966] Regression" -Sc0.03i -Gblue -Exy 
 gmt regress -Eo -Fxm -N2 york.txt -T-0.5/8.5/8 | gmt psxy -R -J -O -K -W0.5p,red,- >> $ps
 # Plot LSXY solution using both x- and y-errors
 gmt regress -Eo -Fxm -N2 -Wwxy york.txt -T-0.5/8.5/8 | gmt psxy -R -J -O -K -W1p,red >> $ps
-gmt pslegend -DjTR/2.55i/RT/0.1i/0.1i -R -J -O -K -F+p1p << EOF >> $ps
+gmt pslegend -DjTR/2.55i/RT/0.1i/0.1i -R -J -O -F+p1p << EOF >> $ps
 S 0.3i - 0.5i - 1p,red       0.6i LSXY using @~s@~@-y@- and @~s@~@-x@-
 S 0.3i - 0.5i - 0.5p,red,-   0.6i LSXY ignoring @~s@~@-y@- and @~s@~@-x@-
 EOF
-gmt psxy -R -J -O -T >> $ps

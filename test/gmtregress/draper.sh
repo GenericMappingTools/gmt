@@ -3,8 +3,6 @@
 # Testing gmtregress on the data in Draper & Smith [1998]
 # Applied Regression Analysis, 3rd Ed, Wiley.
 
-# Cols 3 and 4 are weights (1/sigma)
-
 ps=draper.ps
 cat << EOF > draper.txt
 # Table 1.1 in Draper & Smith, Applied Regression Analysis
@@ -41,15 +39,14 @@ gmt regress -Ey -N2 -Fxym draper.txt | awk '{printf "> error\n%s %s\n%s %s\n", $
 gmt psxy -R -J -O -K draper.txt -Sc0.2c -Gblue >> $ps
 gmt regress -Ey -N2 -Fxm -T25/80/55 draper.txt | gmt psxy -R -J -O -K -W2p >> $ps
 echo "$txt" | gmt pstext -R -J -O -K -F+jRT+f18p -Dj0.1i >> $ps
-# Redo plot and basic LS fit but also show 68%, 95% & 99% confidence band [NOT IMPLEMENTED YET]
+# Redo plot and basic LS fit but also show 68%, 95% & 99% confidence band
 gmt psbasemap -R -J -O -K -Baf -BWSNe+t"Draper & Smith [1998] Regression" -Y4.75i >> $ps
 gmt regress -Ey -N2 -Fxmc -T25/80/1 -C99 draper.txt | gmt psxy -R -J -O -K -L+d -Glightgreen >> $ps
 gmt regress -Ey -N2 -Fxmc -T25/80/1 -C95 draper.txt | gmt psxy -R -J -O -K -L+d -Glightorange >> $ps
 gmt regress -Ey -N2 -Fxmc -T25/80/1 -C68 draper.txt | gmt psxy -R -J -O -K -L+d -Glightred -W2p >> $ps
 gmt psxy -R -J -O -K draper.txt -Sc0.2c -Gblue >> $ps
-gmt pslegend -DjTR/1.65i/RT/0.1i/0.1i -R -J -O -K -F+p1p << EOF >> $ps
+gmt pslegend -DjTR/1.65i/RT/0.1i/0.1i -R -J -O -F+p1p << EOF >> $ps
 S 0.1i s 0.15i lightgreen  - 0.25i 99% Confidence
 S 0.1i s 0.15i lightorange - 0.25i 95% Confidence
 S 0.1i s 0.15i lightred    - 0.25i 68% Confidence
 EOF
-gmt psxy -R -J -O -T >> $ps
