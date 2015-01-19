@@ -14,9 +14,9 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmtregress** [ *table* ] [ **-A**\ *min*\ /*max*\ /*inc* ] [ **-C**\ *level* ]
-[ **Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
-[ **-F**\ *flags* ] [ **N1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]  [ **-S**\ [**r**] ]
-[ **-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n* ] [ **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
+[ **-Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
+[ **-F**\ *flags* ] [ **-N1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]  [ **-S**\ [**r**] ]
+[ **-T**\ *min*\ /*max*\ /*inc* \| **-T**\ *n* ] [ **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
@@ -68,7 +68,7 @@ Optional Arguments
     Set the confidence level (in %) to use for the optional calculation of confidence bands
     on the regression [95].  This is only used if **-F** includes the output column **c**.
 
-**Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r**
+**-Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r**
     Type of linear regression, i.e., select the type of misfit we should calculate.
     Choose from **x** (regress *x* on *y*; i.e., the misfit is measured horizontally from data point to regression line),
     **y** (regress *y* on *x*; i.e., the misfit is measured vertically [Default]), **o** (orthogonal regression;
@@ -82,7 +82,7 @@ Optional Arguments
     for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1, for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
 
-**N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
+**-N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
     absolute residuals), **2** (Least-squares; the mean of the squared residuals), 
     **r** (LMS; The least median of the squared residuals), or **w** (RLS; reweighted least squares: the
@@ -96,7 +96,7 @@ Optional Arguments
     by **-F**.  Use **-S** to exclude data points identified as outliers by the regression.  Alternatively,
     use **-Sr** to reverse this and only output the outlier records.
 
-**-T**\ *min*\ /*max*\ /*inc* \| **T**\ *n*
+**-T**\ *min*\ /*max*\ /*inc* \| **-T**\ *n*
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If
     **-T**\ *n* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment and determine *inc*
     so that there are exactly *n* output values for each segment.  To skip the model evaluation entirely, simply provide **-T**\ 0.
