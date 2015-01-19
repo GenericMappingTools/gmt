@@ -49,11 +49,10 @@ None
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
-   The first two columns are expected to contain the required *x* and *y* data.  Depending on
+.. |Add_intables| replace:: The first two columns are expected to contain the required *x* and *y* data.  Depending on
    your **-W** and **-E** settings we may expect an additional 1-3 columns with error estimates
    of one of both of the data coordinates, and even their correlation.
+.. include:: explain_intables.rst_
 
 **-A**\ *min*\ /*max*\ /*inc*
     Instead of determining a best-fit regression we explore the full range of regressions.
