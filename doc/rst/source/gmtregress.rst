@@ -31,7 +31,7 @@ Description
 -----------
 
 **gmtregress** reads one or more data tables [or *stdin*]
-and determines the best linear regression for each segment using the chosen parameters.
+and determines the best linear regression model *y* = *a* + *b*\ \* *x* for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
 the model, or turn of evaluation completely.  Instead of determining the best fit we can
@@ -51,6 +51,9 @@ Optional Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+   The first two columns are expected to contain the required *x* and *y* data.  Depending on
+   your **-W** and **-E** settings we may expect an additional 1-3 columns with error estimates
+   of one of both of the data coordinates, and even their correlation.
 
 **-A**\ *min*\ /*max*\ /*inc*
     Instead of determining a best-fit regression we explore the full range of regressions.
@@ -63,28 +66,29 @@ Optional Arguments
 
 **-C**\ *level*
     Set the confidence level (in %) to use for the optional calculation of confidence bands
-    on the regression [95].  This is only used if **-F** includes the column **c**.
+    on the regression [95].  This is only used if **-F** includes the output column **c**.
 
 **Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r**
     Type of linear regression, i.e., select the type of misfit we should calculate.
-    Choose from **x** (regress *x* on *y*; i.e., the misfit is measured horizontally from data point to line),
+    Choose from **x** (regress *x* on *y*; i.e., the misfit is measured horizontally from data point to regression line),
     **y** (regress *y* on *x*; i.e., the misfit is measured vertically [Default]), **o** (orthogonal regression;
-    i.e., the misfit is measured from data point to nearest point on the line), or **r** (Reduced Major
+    i.e., the misfit is measured from data point orthogonally to nearest point on the line), or **r** (Reduced Major
     Axis regression; i.e., the misfit is the product of both vertical and horizontal misfits) [**y**].
 
 **-F**\ *flags*
     Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
     **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
     **c** (symmetrical confidence interval on the regression; see **-C**
-    for the level), **z** (standardized residuals or *z-scores*) and **w** (outlier weights 0 or 1, for
+    for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1, for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
 
 **N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
     absolute residuals), **2** (Least-squares; the mean of the squared residuals), 
-    **r** (LMS; The least median of the squared residuals), or **w** (RLS; reweighted least squares) [Default is **2**].
+    **r** (LMS; The least median of the squared residuals), or **w** (RLS; reweighted least squares: the
+    mean of the squared residuals after outliers identify via LMS have been removed) [Default is **2**].
     Traditional regression uses L-2 while L-1 and in particular LMS are more robust in how they handle outliers.
-    RLS implies an initial LMS regression which is then used to identify outliers in the data,
+    As alluded to, RLS implies an initial LMS regression which is then used to identify outliers in the data,
     assign these a zero weight, and then redo the regression using a L-2 norm.
 
 **-S**\ [**r**]
@@ -101,12 +105,13 @@ Optional Arguments
     Specifies weighted regression and which weights will be provided.
     Append **x** if giving 1-sigma uncertainties in the *x*-observations, **y** if giving 1-sigma uncertainties in *y*, and
     **r** if giving correlations between *x* and *y* observations, in the order these columns appear in the input (after the
-    two leading *x*, *y* columns).
-    Giving both **x** and **y** (and optionally **r**) implies an orthogonal regression.
-    We will convert uncertainties in *x* and *y* to weights via the relationship weight = 1/sigma.
+    two required and leading *x*, *y* columns).
+    Giving both **x** and **y** (and optionally **r**) implies an orthogonal regression, otherwise giving
+    **x** requires **-Ex** and **y** requires **-Ey**.
+    We convert uncertainties in *x* and *y* to regression weights via the relationship weight = 1/sigma.
     Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.  Note: residuals
     with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
-    residual (**-N1** is the exception).
+    residual (**-N1** is the only exception).
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -137,7 +142,7 @@ Optional Arguments
 Examples
 --------
 
-To do a standard least-squares regression on the data points.txt and return
+To do a standard least-squares regression on the *x-y* data in points.txt and return
 x, y, and model prediction with 99% confidence intervals, try 
 
    ::
