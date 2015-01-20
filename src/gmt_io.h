@@ -36,7 +36,20 @@
 #ifndef _GMT_IO_H
 #define _GMT_IO_H
 
-#define GMT_TOKEN_SEPARATORS	" \t,"		/* Data columns may be separated by any of these characters */
+#ifdef HAVE_SETLOCALE
+#	include <locale.h>
+#endif
+
+static inline char* __gmt_token_separators (void) {
+	static char separators[] = ",\t ";
+#ifdef HAVE_SETLOCALE
+	struct lconv *lc = localeconv();
+	if ( (strcmp (lc->decimal_point, ",") == 0) )
+		separators[0] = ';';
+#endif
+	return separators;
+}
+#define GMT_TOKEN_SEPARATORS __gmt_token_separators() /* Data columns may be separated by any of these characters */
 
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt

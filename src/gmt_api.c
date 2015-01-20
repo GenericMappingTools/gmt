@@ -3851,6 +3851,11 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
 	if (!((mode & GMT_ADD_FILES_IF_NONE) || (mode & GMT_ADD_FILES_ALWAYS) || (mode & GMT_ADD_STDIO_IF_NONE) || (mode & GMT_ADD_STDIO_ALWAYS) || (mode & GMT_ADD_EXISTING))) return_error (API, GMT_NOT_A_VALID_MODE);
 
+#ifdef HAVE_SETLOCALE
+	/* Set locale information to be used from environment */
+	setlocale (LC_ALL, "");
+#endif
+
 	if (n_args == 0) /* Passed the head of linked option structures */
 		head = args;
 	else		/* Passed argc, argv, likely from Fortran */
@@ -5935,6 +5940,11 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	char gmt_module[GMT_LEN32] = "GMT_";
 	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
 
+#ifdef HAVE_SETLOCALE
+	/* Set default locale */
+	setlocale (LC_ALL, "C");
+#endif
+
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (module == NULL && mode != GMT_MODULE_PURPOSE) return_error (V_API, GMT_ARG_IS_NULL);
 	API = gmt_get_api_ptr (V_API);
@@ -6283,6 +6293,7 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	double value;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
+	static const char separators[] = " \t,;/";
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (arg == NULL || arg[0] == '\0') return_value (V_API, GMT_NO_PARAMETERS, GMT_NOTSET);
@@ -6294,7 +6305,7 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	GMT_memcpy (col_type_save[GMT_IN], GMT->current.io.col_type[GMT_IN],   2, unsigned int);
 	GMT_memcpy (col_type_save[GMT_OUT], GMT->current.io.col_type[GMT_OUT], 2, unsigned int);
 
-	while (GMT_strtok (arg, GMT_TOKEN_SEPARATORS "/", &pos, p)) {	/* Loop over input aruments */
+	while (GMT_strtok (arg, separators, &pos, p)) {	/* Loop over input aruments */
 		if ((len = strlen (p)) == 0) continue;
 		len--;	/* Position of last char, possibly a unit */
 		if (strchr (GMT_DIM_UNITS, p[len]))	/* Dimension unit (c|i|p), return distance in GMT default length unit [cm] */

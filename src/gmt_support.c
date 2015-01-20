@@ -5121,10 +5121,14 @@ char * GMT_make_filename (struct GMT_CTRL *GMT_UNUSED(GMT), char *template, unsi
 /*! . */
 void GMT_sprintf_float (char *string, char *format, double x)
 {	/* Determines if %-apostrophe is used in the format for a float. If so, use LC_NUMERIC=en_US */
+#ifdef HAVE_SETLOCALE
 	char *use_locale = strstr (format, "%'");
 	if (use_locale) setlocale (LC_NUMERIC, "en_US");
+#endif
 	sprintf (string, format, x);
+#ifdef HAVE_SETLOCALE
 	if (use_locale) setlocale (LC_NUMERIC, "C");
+#endif
 }
 
 /*! . */

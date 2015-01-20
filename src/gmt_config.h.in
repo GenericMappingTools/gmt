@@ -119,6 +119,7 @@
 #cmakedefine HAVE__POPEN
 #cmakedefine HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_QSORT_R_GLIBC
+#cmakedefine HAVE_SETLOCALE
 #cmakedefine HAVE__SETMODE
 #cmakedefine HAVE_SNPRINTF_
 #cmakedefine HAVE__SNPRINTF_
