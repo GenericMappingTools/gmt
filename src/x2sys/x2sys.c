@@ -297,6 +297,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s/%s.def", TAG, fname);
 	X->dist_flag = 0;	/* Cartesian distances */
+	sprintf (X->separators, "%s\n", GMT_TOKEN_SEPARATORS);
 
 	if ((fp = x2sys_fopen (GMT, line, "r")) == NULL) return (X2SYS_BAD_DEF);
 
@@ -572,7 +573,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 				}
 				GMT_chop (line);	/* Remove trailing CR or LF */
 				pos = 0;
-				while ((GMT_strtok (line, GMT_TOKEN_SEPARATORS "\n", &pos, p)) && k < s->n_fields) {
+				while ((GMT_strtok (line, s->separators, &pos, p)) && k < s->n_fields) {
 					if (GMT_scanf (GMT, p, G->col_type[GMT_IN][k], &data[k]) == GMT_IS_NAN) data[k] = GMT->session.d_NaN;
 					k++;;
 				}
@@ -666,7 +667,6 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	p->ms_rec = GMT_memory (GMT, NULL, n_alloc, uint64_t);
 	x2sys_skip_header (GMT, fp, s);
 	p->n_segments = 0;	/* So that first increment sets it to 0 */
-
 	j = 0;
 	while (!x2sys_read_record (GMT, fp, rec, s, G)) {	/* Gets the next data record */
 		if (s->multi_segment && s->ms_next && !first) p->n_segments++;
