@@ -182,6 +182,7 @@ check_symbol_exists (strsep    string.h DECLARED_STRSEP)
 
 check_symbol_exists (basename  libgen.h HAVE_BASENAME)
 check_symbol_exists (fileno    stdio.h  HAVE_FILENO)
+check_symbol_exists (setlocale locale.h HAVE_SETLOCALE)
 # Note: trailing underscore = GDAL workaround
 check_symbol_exists (snprintf  stdio.h  HAVE_SNPRINTF_)
 check_symbol_exists (vsnprintf stdio.h  HAVE_VSNPRINTF_)
