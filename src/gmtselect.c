@@ -161,10 +161,10 @@ int compare_x (const void *point_1, const void *point_2)
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
 void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out)
 {
-	unsigned int col, k;
+	unsigned int col, k, n_aspatial = 0;
 	size_t len;
 	char text[GMT_LEN64] = {""};
-	static int ogr[MAX_ASPATIAL], n_aspatial = 0;
+	static int ogr[MAX_ASPATIAL];
 	
 	out[0] = '\0';	/* Start with nothing */
 	
