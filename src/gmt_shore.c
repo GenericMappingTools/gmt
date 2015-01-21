@@ -265,7 +265,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 	/* 1. Check in GMT->session.GSHHGDIR */
 
 	if (GMT->session.GSHHGDIR) {
-		sprintf (path, "%s/%s%s", GMT->session.GSHHGDIR, stem, GSHHG_EXT);
+		sprintf (path, "%s/%s%s", GMT->session.GSHHGDIR, stem, ".nc");
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. GSHHG: GSHHGDIR set, trying %s\n", path);
 		if ( access (path, F_OK) == 0) {	/* File exists here */
 			if ( access (path, R_OK) == 0 && gshhg_require_min_version (path, version) ) {
@@ -296,7 +296,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 			while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
 				if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 				GMT_chop (dir);		/* Chop off LF or CR/LF */
-				sprintf (path, "%s/%s%s", dir, stem, GSHHG_EXT);
+				sprintf (path, "%s/%s%s", dir, stem, ".nc");
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Trying %s\n", path);
 				if ( access (path, R_OK) == 0) {	/* File can be read */
 					if ( gshhg_require_min_version (path, version) ) {
@@ -322,7 +322,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 	/* 3. Then check for the named file itself */
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Trying via sharepath\n");
-	if (GMT_getsharepath (GMT, "coast", stem, GSHHG_EXT, path, F_OK)) {
+	if (GMT_getsharepath (GMT, "coast", stem, ".nc", path, F_OK)) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Trying %s\n", path);
 		if ( access (path, R_OK) == 0) {	/* File can be read */
 			if ( gshhg_require_min_version (path, version) ) {

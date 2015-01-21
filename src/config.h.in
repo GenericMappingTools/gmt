@@ -54,7 +54,6 @@
 
 /* min required GSHHG version and its netCDF extension */
 #define GSHHG_MIN_REQUIRED_VERSION {@GSHHG_MIN_REQUIRED_VERSION_MAJOR@, @GSHHG_MIN_REQUIRED_VERSION_MINOR@, @GSHHG_MIN_REQUIRED_VERSION_PATCH@}
-#define GSHHG_EXT "@GSHHG_EXT@"
 
 /* Name of core library */
 #define GMT_CORE_LIB_NAME "@GMT_CORE_LIB_NAME@"
