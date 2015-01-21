@@ -154,15 +154,10 @@ else (EXTRA_BUILD_DIRS)
 	set (PROTO "none")
 endif (EXTRA_BUILD_DIRS)
 
-# Configure a header file to pass some of the CMake settings to the source code
-configure_file (
-	"${PROJECT_SOURCE_DIR}/config.h.in"
-	"${PROJECT_BINARY_DIR}/config.h")
-
 # Configuration done
 message(
 	"*  Options:\n"
-	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION}, ${GSHHG_EXT})\n"
+	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
 	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"

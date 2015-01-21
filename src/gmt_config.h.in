@@ -37,7 +37,7 @@
 #ifndef _GMT_CONFIG_H
 #define _GMT_CONFIG_H
 
-#include "../config.h"
+#include "config.h"
 
 
 /* which regex library <pcre.h>, <regex.h> */
