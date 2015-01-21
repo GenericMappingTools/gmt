@@ -131,6 +131,7 @@ struct X2SYS_INFO {
 	char suffix[16];		/* Suffix for these data files */
 	char fflags[GMT_BUFSIZ];	/* Text copy of selected columns */
 	char path[GMT_BUFSIZ];		/* Full path to current data file */
+	char separators[8];		/* List of characters used for column separators */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
 };
 
