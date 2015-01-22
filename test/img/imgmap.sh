@@ -3,16 +3,11 @@
 #	$Id$
 
 ps=imgmap.ps
-IMG=topo.15.1.img
-if [ -f /tmp/gmt/$IMG ]; then # use one placed/linked from /tmp
-	# PW: Run (mkdir -p /tmp/gmt; cd /tmp/gmt; ln -s /Volumes/MacNutRAID/UH/RESOURCES/DATA/img/topo.15.1.img topo.15.1.img) before make check
-	IMG=/tmp/gmt/topo.15.1.img
-else
-	OK=`gmt gmtwhich -C $IMG`
-	if [ $OK = N ]; then
-		echo "File $IMG not available for testing imgmap.sh"
-		exit
-	fi
+IMG=topo_15.1.img
+OK=`gmt gmtwhich -C $IMG`
+if [ $OK = N ]; then
+	echo "File $IMG not available for testing imgmap.sh"
+	exit
 fi
 # Get merc grid
 gmt img2grd $IMG -R180/200/-5/5 -I1m -T1 -D -S1 -Gimg.nc -M

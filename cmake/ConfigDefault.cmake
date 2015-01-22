@@ -107,6 +107,11 @@ if (NOT DEFINED GMT_RELEASE_PREFIX)
 	set (GMT_RELEASE_PREFIX ${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION})
 endif (NOT DEFINED GMT_RELEASE_PREFIX)
 
+# Default location of optional third-party files used by test suite
+# available from svn://gmtserver.soest.hawaii.edu/gmt-data
+if (NOT DEFINED GMT_TEST_DATA)
+	set (GMT_TEST_DATA ${GMT_SOURCE_DIR}/test/data)
+endif (NOT DEFINED GMT_TEST_DATA)
 
 # The GMT copyright - string version to be used in a source file.
 set (GMT_COPYRIGHT_STRING)
