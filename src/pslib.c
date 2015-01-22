@@ -833,6 +833,7 @@ int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline)
 	if (outline <= -2)
 		{ /* Skipped, no change of outline */ }
 	else if (PSL->current.outline != outline) {
+		assert (outline == 0 || outline == 1);
 		PSL_command (PSL, "O%d\n", outline);
 		PSL->current.outline = outline;
 	}
