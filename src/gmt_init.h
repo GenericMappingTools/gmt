@@ -41,6 +41,7 @@
 
 /* Extern functions */
 
+EXTERN_MSC int GMT_get_V (char arg);
 EXTERN_MSC bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family);
 EXTERN_MSC int GMT_parse_dash_option (struct GMT_CTRL *GMT, char *text);
 EXTERN_MSC struct GMT_CTRL * GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int pad);

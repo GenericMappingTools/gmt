@@ -1977,6 +1977,8 @@ int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg)
 			case 'Z': col = GMT_IS_Z; break;	/* Value flag */
 			default:
 				col = atoi (A);
+				if (col < GMT_Z)
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -a: Columns 0 and 1 are reserved for lon and lat.\n");
 				if (col < GMT_Z || col >= GMT_MAX_COLUMNS) return (GMT_PARSE_ERROR);		/* Col value out of whack */
 				break;
 		}
@@ -3013,17 +3015,26 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 }
 
 /*! . */
-int gmt_parse_V_option (struct GMT_CTRL *GMT, char arg) {
+int GMT_get_V (char arg) {
+	int mode = GMT_MSG_QUIET;
 	switch (arg) {
-		case 'q': case '0': GMT->current.setting.verbose = GMT_MSG_QUIET;   break;
-		case 'n':           GMT->current.setting.verbose = GMT_MSG_NORMAL;  break;
-		case 't':           GMT->current.setting.verbose = GMT_MSG_TICTOC;  break;
-		case 'c': case '1': GMT->current.setting.verbose = GMT_MSG_COMPAT;  break;
-		case 'v': case '2': GMT->current.setting.verbose = GMT_MSG_VERBOSE; break;
-		case 'l': case '3': GMT->current.setting.verbose = GMT_MSG_LONG_VERBOSE; break;
-		case 'd': case '4': GMT->current.setting.verbose = GMT_MSG_DEBUG;   break;
-		default: return true;
+		case 'q': case '0': mode = GMT_MSG_QUIET;   break;
+		case 'n':           mode = GMT_MSG_NORMAL;  break;
+		case 't':           mode = GMT_MSG_TICTOC;  break;
+		case 'c': case '1': mode = GMT_MSG_COMPAT;  break;
+		case 'v': case '2': case '\0': mode = GMT_MSG_VERBOSE; break;
+		case 'l': case '3': mode = GMT_MSG_LONG_VERBOSE; break;
+		case 'd': case '4': mode = GMT_MSG_DEBUG;   break;
+		default: mode = -1;
 	}
+	return mode;
+}
+
+/*! . */
+int gmt_parse_V_option (struct GMT_CTRL *GMT, char arg) {
+	int mode = GMT_get_V (arg);
+	if (mode < 0) return true;	/* Error in parsing */
+	GMT->current.setting.verbose = (unsigned int)mode;
 	return false;
 }
 

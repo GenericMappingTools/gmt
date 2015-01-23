@@ -404,6 +404,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 
 	API->lib[0].name = strdup ("core");
 	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
+	GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # 0 (core). Path = %s\n", API->lib[0].path);
 	++n_custom_libs;
 #ifdef BUILD_SHARED_LIBS
 	GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
@@ -441,6 +442,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 				API->lib[n_custom_libs].name = lib_tag (list[k]);
 				sprintf (path, "%s/%s", plugindir, list[k]);
 				API->lib[n_custom_libs].path = strdup (path);
+				GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
 				n_custom_libs++;			/* Add up entries found */
 				if (n_custom_libs == n_alloc) {		/* Allocate more memory for list */
 					n_alloc <<= 1;
@@ -467,6 +469,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 					API->lib[n_custom_libs].name = lib_tag (list[k]);
 					sprintf (path, "%s/%s", plugindir, list[k]);
 					API->lib[n_custom_libs].path = strdup (path);
+					GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
 					n_custom_libs++;		/* Add up entries found */
 					if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
 						n_alloc <<= 1;
@@ -483,6 +486,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 				API->lib[n_custom_libs].path = strdup (text);
 				libname = strdup (GMT_basename (text));		/* Last component from the pathname */
 				API->lib[n_custom_libs].name = lib_tag (libname);
+				GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
 				free (libname);
 				n_custom_libs++;		/* Add up entries found */
 				if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
@@ -3431,8 +3435,9 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 
 	struct GMTAPI_CTRL *API = NULL;
 	static char *unknown = "unknown";
-
+	
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
+	API->verbose = (mode >> 2);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & 1;	/* if set, then API_exit & GMT_exit are simply a return; otherwise they call exit */
@@ -6246,7 +6251,7 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	if (V_API == NULL) return GMT_NOERROR;		/* Not a fatal issue here */
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	API = gmt_get_api_ptr (V_API);
-	if (level > API->GMT->current.setting.verbose)
+	if (level > MAX(API->verbose, API->GMT->current.setting.verbose))
 		return 0;
 	if (API->GMT->current.setting.timer_mode > GMT_NO_TIMER) {
 		char *stamp = gmt_tictoc_string (API, API->GMT->current.setting.timer_mode);	/* NULL or pointer to a timestamp string */
