@@ -367,8 +367,8 @@ double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, u
 		uint64_t k;
 		ee = GMT_memory (GMT, NULL, n, struct OBSERVATION);
 		for (k = 0; k < n; k++) {
-			ee[k].weight = W[k];
-			ee[k].value  = e[k];
+			ee[k].weight = (float)W[k];
+			ee[k].value  = (float)e[k];
 		}
 	}
 	switch (norm) {
@@ -445,8 +445,8 @@ double L1_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64
 	/* Compute the (weighted) MAD */
 	ee = GMT_memory (GMT, NULL, n, struct OBSERVATION);
 	for (k = 0; k < n; k++) {
-		ee[k].weight = W[k];
-		ee[k].value  = ey[k];
+		ee[k].weight = (float)W[k];
+		ee[k].value  = (float)ey[k];
 	}
 	MAD = GMT_median_weighted (GMT, ee, n, 0.5);
 	GMT_free (GMT, ee);
