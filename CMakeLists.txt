@@ -154,6 +154,9 @@ else (EXTRA_BUILD_DIRS)
 	set (PROTO "none")
 endif (EXTRA_BUILD_DIRS)
 
+# Configure header file to pass some of the CMake settings to the source code
+configure_file (src/config.h.in src/config.h)
+
 # Configuration done
 message(
 	"*  Options:\n"

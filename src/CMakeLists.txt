@@ -269,7 +269,6 @@ add_custom_command (OUTPUT grdmath.h grdmath_op.h grdmath_explain.h
 add_custom_target (gen_gmt_headers DEPENDS ${GMT_GEN_HDRS})
 
 # Configure header files to pass some of the CMake settings to the source code
-configure_file (config.h.in config.h)
 configure_file (gmt_config.h.in gmt_config.h)
 configure_file (gmt_version.h.in gmt_version.h)
 configure_file (isogmt.in isogmt${GMT_INSTALL_NAME_SUFFIX} @ONLY)
