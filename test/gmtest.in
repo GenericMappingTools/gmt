@@ -47,7 +47,7 @@ fi
 unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
-export GMT_DATADIR="$src"
+export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
 
 # Reset error count
 ERROR=0
