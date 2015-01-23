@@ -121,7 +121,8 @@ int main (int argc, char *argv[]) {
 			if (!strcmp (argv[arg_n], "--help")) {
 				fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 				fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
-				fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\nand volunteers from around the world.\n");
+				fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
+				fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
 
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_PURPOSE, NULL);
 				goto exit;
@@ -154,7 +155,8 @@ no_such:
 
 		fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 		fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
-		fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\nand volunteers from around the world.\n\n");
+		fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
+		fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
 
 		fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
 		fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
