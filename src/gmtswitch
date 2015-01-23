@@ -134,7 +134,7 @@ if [ "X$1" = "XD" ]; then	# First entry is default
   line=`head -1 $home/.gmtversions`
   exists $line
   rm -f $home/this_gmt
-  ln -sf $line $home/this_gmt
+  ln -sf "$line" $home/this_gmt
 elif [ $# -eq 1 ]; then
   line=`grep $1 $home/.gmtversions`
   nl=`grep $1 $home/.gmtversions | wc -l`
@@ -150,7 +150,7 @@ elif [ $# -eq 1 ]; then
   fi
   exists $line
   rm -f $home/this_gmt
-  ln -sf $line $home/this_gmt
+  ln -sf "$line" $home/this_gmt
 else
   n=`cat $home/.gmtversions | wc -l | awk '{print $1}'`
   i=0
@@ -177,5 +177,5 @@ else
   line=`sed -n 's/#.*//;'${v}p $home/.gmtversions`
   exists $line
   rm -f $home/this_gmt
-  ln -sf $line $home/this_gmt
+  ln -sf "$line" $home/this_gmt
 fi
