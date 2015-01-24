@@ -3,7 +3,8 @@
 #
 # These functions can be used from any sh/bash script by specifying
 # . gmt_shell_functions.sh
-# in your script.  See our script template gmt_script.sh for usage.
+# in your script. Placing it in .bashrc makes the functions avaiable
+# on the command line as well.  See documentation for usage.
 #
 #----GMT SHELL FUNCTIONS--------------------
 #	Creates a unique temp directory and points GMT_TMPDIR to it
