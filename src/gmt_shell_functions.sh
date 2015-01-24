@@ -99,6 +99,11 @@ gmt_set_psfile() {
 	echo `basename $1 '.sh'`.ps
 }
 
+# Make output PDF file name based on script base name
+gmt_set_pdffile() {
+	echo `basename $1 '.sh'`.pdf
+}
+
 # For animations: Create a lexically increasing file namestem (no extension) based on prefix and frame number
 # i.e., prefix_######
 gmt_set_framename() {
