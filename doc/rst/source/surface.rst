@@ -90,7 +90,9 @@ boundary conditions in the longitude direction.
     for unconstrained [Default]. **u**\ *upper* sets the upper bound and
     can be the name of a grid file with upper bound values, a fixed
     value, **d** to set to maximum input value, or **u** for
-    unconstrained [Default].
+    unconstrained [Default]. Grid files used to set the limits may
+    contain NaNs. In the presence of NaNs, the limit of a node masked
+    with NaN is unconstrained.
 **-N**\ *max\_iterations*
     Number of iterations. Iteration will cease when *convergence\_limit*
     is reached or when number of iterations reaches *max\_iterations*.
