@@ -522,7 +522,7 @@ if (UNIX AND GMT_INSTALL_NAME_SUFFIX)
 	install (CODE "
 	execute_process (
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_gmt_wrapper_name} \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt)
+		\"${_gmt_wrapper_name}\" \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt\")
 	")
 endif (UNIX AND GMT_INSTALL_NAME_SUFFIX)
 
