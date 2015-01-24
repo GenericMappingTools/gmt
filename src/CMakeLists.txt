@@ -579,12 +579,12 @@ install (PROGRAMS
 install (CODE "
 execute_process (
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	${CMAKE_CURRENT_SOURCE_DIR}/gmtswitch
-	\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtswitch${GMT_INSTALL_NAME_SUFFIX})
+	\"${CMAKE_CURRENT_SOURCE_DIR}/gmtswitch\"
+	\"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtswitch${GMT_INSTALL_NAME_SUFFIX}\")
 execute_process (
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	${CMAKE_CURRENT_SOURCE_DIR}/gmt_shell_functions.sh
-	\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt_shell_functions${GMT_INSTALL_NAME_SUFFIX}.sh)
+	\"${CMAKE_CURRENT_SOURCE_DIR}/gmt_shell_functions.sh\"
+	\"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt_shell_functions${GMT_INSTALL_NAME_SUFFIX}.sh\")
 ")
 
 if (WIN32)
