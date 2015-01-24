@@ -135,7 +135,7 @@ fi
 
 if [ "X$1" = "XD" ]; then	# First entry is default
   line=`head -1 "$home/.gmtversions"`
-  exists $line
+  exists "$line"
   rm -f "$home/this_gmt"
   ln -sf "$line" "$home/this_gmt"
 elif [ $# -eq 1 ]; then
@@ -151,7 +151,7 @@ elif [ $# -eq 1 ]; then
     echo "Run gmtswitch without argument and choose from a menu" >&2
     exit
   fi
-  exists $line
+  exists "$line"
   rm -f "$home/this_gmt"
   ln -sf "$line" "$home/this_gmt"
 else
@@ -178,7 +178,7 @@ else
     fi
   done
   line=`sed -n 's/#.*//;'${v}p "$home/.gmtversions"`
-  exists $line
+  exists "$line"
   rm -f "$home/this_gmt"
   ln -sf "$line" "$home/this_gmt"
 fi
