@@ -128,14 +128,14 @@ if (SPHINX_FOUND)
 		# PDF
 		add_custom_target (_pdf_release
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			\"${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_API.pdf\"
-			\"${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_API.pdf\"
+			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_API.pdf
+			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_API.pdf
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			\"${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Docs.pdf\"
-			\"${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Docs.pdf\"
+			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Docs.pdf
+			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Docs.pdf
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			\"${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Manpages.pdf\"
-			\"${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages.pdf\"
+			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Manpages.pdf
+			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages.pdf
 			DEPENDS docs_pdf_shrink svn_export_release)
 		add_depend_to_target (gmt_release _pdf_release)
 		# Manpages

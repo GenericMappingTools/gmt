@@ -28,7 +28,7 @@ foreach (_fig ${_fig_fig})
 	FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_fig}
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		\"${CMAKE_CURRENT_SOURCE_DIR}/${_fig}\" \"${RST_BINARY_DIR}/_images/${_fig}\"
+		${CMAKE_CURRENT_SOURCE_DIR}/${_fig} ${RST_BINARY_DIR}/_images/${_fig}
 		DEPENDS ${_fig})
 	list (APPEND _fig_fig_out ${RST_BINARY_DIR}/_images/${_fig})
 endforeach (_fig ${_fig_fig})
