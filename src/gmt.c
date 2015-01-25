@@ -34,6 +34,7 @@
 #endif
 
 #define PROGRAM_NAME	"gmt"
+#define GMT_PAD_DEFAULT	2U
 
 /* Determine the system environmetal parameter that leads to shared libraries */
 #if defined _WIN32
@@ -47,7 +48,7 @@
 int main (int argc, char *argv[]) {
 	int status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
 	int k, v_mode = GMT_MSG_COMPAT;		/* Default verbosity */
-	bool gmt_main = false;		/* Set to true if no module specified */
+	bool gmt_main = false;			/* Set to true if no module specified */
 	unsigned int modulename_arg_n = 0;	/* Argument number in argv[] that contains module name */
 	unsigned int mode = 0;			/* Default API mode */
 	struct GMTAPI_CTRL *api_ctrl = NULL;	/* GMT API control structure */
@@ -69,10 +70,12 @@ int main (int argc, char *argv[]) {
 	sigaction (SIGSEGV, &act, NULL);
 #endif /* !(defined(WIN32) || defined(NO_SIGHANDLER)) */
 
+	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on.
+	 * Because first 2 bits of mode is used for other things we must left-shift by 2 */
 	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = GMT_get_V (argv[k][2]);
-	if (v_mode) mode += ((unsigned int)v_mode) << 2;
+	if (v_mode) mode = ((unsigned int)v_mode) << 2;	/* Left-shift the mode by 2 */
 	/* Initialize new GMT session */
-	if ((api_ctrl = GMT_Create_Session (argv[0], 2U, mode, NULL)) == NULL)
+	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
 		return EXIT_FAILURE;
 	api_ctrl->internal = true;	/* This is a proper GMT internal session (external programs will default to false) */
 	progname = strdup (GMT_basename (argv[0])); /* Last component from the pathname */

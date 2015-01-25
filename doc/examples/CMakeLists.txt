@@ -119,8 +119,8 @@ if (UNIX)
 		add_custom_command (
 			OUTPUT ${RST_BINARY_DIR}/_images/anim_${_num}.gif
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			\"${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif\"
-			\"${RST_BINARY_DIR}/_images/anim_${_num}.gif\"
+			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif
+			${RST_BINARY_DIR}/_images/anim_${_num}.gif
 			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif)
 		list (APPEND _animations ${RST_BINARY_DIR}/_images/anim_${_num}.gif)
 	endforeach ()
@@ -131,11 +131,11 @@ if (UNIX)
 		${RST_BINARY_DIR}/_images/anim_04.mp4
 		${RST_BINARY_DIR}/_images/anim_04.webm
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		\"${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.mp4\"
-		\"${RST_BINARY_DIR}/_static/anim_04.mp4\"
+		${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.mp4
+		${RST_BINARY_DIR}/_static/anim_04.mp4
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		\"${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.webm\"
-		\"${RST_BINARY_DIR}/_static/anim_04.webm\"
+		${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.webm
+		${RST_BINARY_DIR}/_static/anim_04.webm
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.gif)
 	list (APPEND _animations
 		${RST_BINARY_DIR}/_images/anim_04.mp4
