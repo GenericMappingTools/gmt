@@ -662,7 +662,6 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
-	rmode = (GMT_is_ascii_record (GMT) && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
 	x_in_max = y_in_max = x_out_max = y_out_max = -DBL_MAX;
@@ -691,6 +690,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
+	rmode = (GMT_is_ascii_record (GMT) && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
 	n = n_read_in_seg = 0;
 	do {	/* Keep returning records until we reach EOF */

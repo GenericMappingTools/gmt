@@ -578,7 +578,6 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		np[0] = np[1] = 0;
 	}
 
-	just_copy_record = (GMT_is_ascii_record (GMT) && !shuffle && !GMT->common.s.active);
 	/* Initiate pointer to distance calculation function */
 	if (GMT_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
 		if (Ctrl->C.active)
@@ -706,6 +705,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 
 	/* Now we are ready to take on some input values */
 
+	just_copy_record = (GMT_is_ascii_record (GMT) && !shuffle && !GMT->common.s.active);
 	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 	GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -C|L|F files might have turned it on [should be determined below] */
