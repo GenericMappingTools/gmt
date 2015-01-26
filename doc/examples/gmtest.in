@@ -54,21 +54,15 @@ function gmt()
     valgrind ${VALGRIND_ARGS} --log-file=valgrind_%p.log \
       --dsymutil=yes @GMT_BINARY_DIR@/src/gmt "$@"
   else
-    @GMT_BINARY_DIR@/src/gmt "$@"
+    "@GMT_BINARY_DIR@/src/gmt" "$@"
   fi
 }
 
-# gmtlogo wrapper
-function gmtlogo()
-{
-  @GMT_SOURCE_DIR@/src/gmtlogo "$@"
-}
-
 # export function definitions to subshells
-export -f gmt gmtlogo
+export -f gmt
 
 # invalidate module calls without "gmt" prefix, which would bypass gmt from build dir
-. @GMT_SOURCE_DIR@/test/invalidate_modules.sh
+. "@GMT_SOURCE_DIR@/test/invalidate_modules.sh"
 
 # Convert PS to PDF
 function make_pdf()
