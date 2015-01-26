@@ -98,6 +98,7 @@ foreach (_fig ${_scripts_ps})
 	else (WIN32)
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
+			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
@@ -107,6 +108,7 @@ foreach (_fig ${_scripts_ps})
 			DEPENDS gmt_for_img_convert ${_fig})
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 			COMMAND
+			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster
