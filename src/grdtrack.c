@@ -1042,8 +1042,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		char record[GMT_BUFSIZ];
 		bool gmt_skip_output (struct GMT_CTRL *C, double *cols, uint64_t n_cols);
 
-		pure_ascii = GMT_is_ascii_record (GMT);
-
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
@@ -1063,6 +1061,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			n_out = Ctrl->G.n_grids;
 			if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
 		}
+		
+		pure_ascii = GMT_is_ascii_record (GMT);
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
