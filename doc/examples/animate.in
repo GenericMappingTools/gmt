@@ -48,7 +48,7 @@ ERROR=0
 # gmt wrapper
 function gmt()
 {
-  @GMT_BINARY_DIR@/src/gmt "$@"
+  "@GMT_BINARY_DIR@/src/gmt" "$@"
 }
 
 # export function definitions to subshells

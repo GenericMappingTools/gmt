@@ -64,38 +64,38 @@ function valgrind_wrapper()
 # gmt wrapper
 function gmt()
 {
-  valgrind_wrapper @GMT_BINARY_DIR@/src/gmt "$@"
+  valgrind_wrapper "@GMT_BINARY_DIR@/src/gmt" "$@"
 }
 
 # gmtlogo wrapper
 function gmtlogo()
 {
-  @GMT_SOURCE_DIR@/src/gmtlogo "$@"
+  "@GMT_SOURCE_DIR@/src/gmtlogo" "$@"
 }
 
 # psldemo wrapper
 function psldemo()
 {
-  valgrind_wrapper @GMT_BINARY_DIR@/src/psldemo "$@"
+  valgrind_wrapper "@GMT_BINARY_DIR@/src/psldemo" "$@"
 }
 
 # testapi wrapper
 function testapi()
 {
-  valgrind_wrapper @GMT_BINARY_DIR@/src/testapi "$@"
+  valgrind_wrapper "@GMT_BINARY_DIR@/src/testapi" "$@"
 }
 
 # testgrdio wrapper
 function testgrdio()
 {
-  valgrind_wrapper @GMT_BINARY_DIR@/src/testgrdio "$@"
+  valgrind_wrapper "@GMT_BINARY_DIR@/src/testgrdio" "$@"
 }
 
 # export function definitions to subshells
 export -f gmt gmtlogo psldemo valgrind_wrapper
 
 # invalidate module calls without "gmt" prefix, which would bypass gmt from build dir
-. @GMT_SOURCE_DIR@/test/invalidate_modules.sh
+. "@GMT_SOURCE_DIR@/test/invalidate_modules.sh"
 
 # Convert PS to PDF
 function make_pdf()
