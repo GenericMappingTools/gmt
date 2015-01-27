@@ -85,20 +85,22 @@ Optional Arguments
     given spacing to fit the track length exactly. Finally, append
     **+l** if distances should be measured along rhumb lines
     (loxodromes). Ignored unless **-C** is used.
-**-C**\ *length*/*ds*\ [/*spacing*]
+**-C**\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
     Specify two length scales that control how the sampling is done:
     *length* sets the full length of each cross-profile, while *ds* is
-    the distance increment along each cross-profile. Optionally, append
+    the sampling spacing along each cross-profile. Optionally, append
     **/**\ *spacing* for an equidistant spacing between cross-profiles
     [Default erects cross-profiles at the input coordinates]. By
     default, all cross-profiles have the same direction. Append **+a**
     to alternate the direction of cross-profiles. Append suitable units
     to *length*; it sets the unit used for *ds* [and *spacing*] (See
-    UNITS below). The output columns will be *lon*, *lat*, *dist*,
-    *azimuth*, *z1*, *z2*, ... (sampled value for each grid)
+    UNITS below). The default unit for geographic grids is meter while
+    Cartesian grids implies the user unit.  The output columns will be
+    *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ..., *zn* (The *zi* are
+    the sampled values for each of the *n* grids)
 **-D**\ *dfile*
     In concert with **-C** we can save the (possibly resampled) original
     lines to the file *dfile* [Default only saves the cross-profiles].
