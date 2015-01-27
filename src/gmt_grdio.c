@@ -2075,7 +2075,7 @@ struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *GMT)
 	G = GMT_memory (GMT, NULL, 1, struct GMT_GRID);
 	G->header = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 	GMT_grd_init (GMT, G->header, NULL, false); /* Set default values */
-	G->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	G->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	G->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	G->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	return (G);
@@ -2108,11 +2108,11 @@ unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool f
 	if (!G) return 0;	/* Nothing to deallocate */
 	/* Only free G->data if allocated by GMT AND free_grid is true */
 	if (G->data && free_grid) {
-		if (G->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free_aligned (GMT, G->data);
+		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) GMT_free_aligned (GMT, G->data);
 		G->data = NULL;	/* This will remove reference to external memory since GMT_free_aligned would not have been called */
 	}
 	if (G->extra) gmt_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
-	//if (G->header && G->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (GMT, G->header);
+	//if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) GMT_free (GMT, G->header);
 	if (G->header) {	/* Free the header structure and anything allocated by it */
 		if (G->header->pocket) free (G->header->pocket);
 		GMT_free (GMT, G->header);
@@ -2134,9 +2134,9 @@ int GMT_set_outgrid (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, struc
 	 * Note we duplicate the grid if we must so that Out always has the input
 	 * data in it (directly or via the pointer).  */
 
-	if (GMT_File_Is_Memory (file) || G->alloc_mode == GMT_ALLOCATED_EXTERNALLY) {	/* Cannot store results in a non-GMT read-only input array */
+	if (GMT_File_Is_Memory (file) || G->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot store results in a non-GMT read-only input array */
 		*Out = GMT_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
-		(*Out)->alloc_mode = GMT_ALLOCATED_BY_GMT;
+		(*Out)->alloc_mode = GMT_ALLOC_INTERNALLY;
 		return (true);
 	}
 	/* Here we may overwrite the input grid and just pass the pointer back */

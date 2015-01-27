@@ -1882,7 +1882,7 @@ struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *GMT, uint64_t n_colors
 	P = GMT_memory (GMT, NULL, 1, struct GMT_PALETTE);
 	if (n_colors > 0) P->range = GMT_memory (GMT, NULL, n_colors, struct GMT_LUT);
 	P->n_colors = (unsigned int)n_colors;
-	P->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	P->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 
@@ -4431,7 +4431,7 @@ void GMT_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 		GMT_free (GMT, L);
 	}
 	if (G->segment) GMT_free (GMT, G->segment);
-	GMT_free_table (GMT, G->xp, GMT_ALLOCATED_BY_GMT);
+	GMT_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
 	if (G->f_n) {	/* Array for fixed points */
 		GMT_free (GMT, G->f_xy[GMT_X]);
 		GMT_free (GMT, G->f_xy[GMT_Y]);
@@ -10795,7 +10795,7 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	Sx->n_rows = row;	/* Number of points in extended feature with explicit crossings */
 	if (n_split == 0) {	/* No crossings, should not have been called in the first place */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No need to insert new points at 180\n");
-		GMT_free_segment (GMT, &Sx, GMT_ALLOCATED_BY_GMT);
+		GMT_free_segment (GMT, &Sx, GMT_ALLOC_INTERNALLY);
 		GMT_free (GMT, pos);
 		return 0;
 	}
@@ -10817,7 +10817,7 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 		if (S->ogr) GMT_duplicate_ogr_seg (GMT, L[seg], S);
 		start = pos[seg];
 	}
-	GMT_free_segment (GMT, &Sx, GMT_ALLOCATED_BY_GMT);
+	GMT_free_segment (GMT, &Sx, GMT_ALLOC_INTERNALLY);
 	GMT_free (GMT, pos);
 
 	*Lout = L;		/* Pass pointer to the array of segments */

@@ -1133,7 +1133,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 				S->coord[GMT_Y][0] = S->coord[GMT_Y][1] = S->coord[GMT_Y][4] = GMT->common.R.wesn[YLO];
 				S->coord[GMT_Y][2] = S->coord[GMT_Y][3] = GMT->common.R.wesn[YHI];
 				(void)area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, info, &geo);
-				GMT_free_segment (GMT, &S, GMT_ALLOCATED_BY_GMT);
+				GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 				d_expect = 0.5 * sqrt (info[GMT_Z]/n_points);
 				R_index = d_bar / d_expect;
 				GMT_Report (API, GMT_MSG_NORMAL, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
@@ -1554,7 +1554,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		}
 		if (same_feature) {
 			for (col = 0; col < S2->n_columns; col++) S2->coord[col] = NULL;	/* Since they were not allocated */
-			GMT_free_segment (GMT, &S2, GMT_ALLOCATED_BY_GMT);
+			GMT_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
 		}
 		for (tbl = 0; tbl < C->n_tables; tbl++) GMT_free (GMT, Info[tbl]);
 		GMT_free (GMT, Info);

@@ -269,7 +269,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			duplicate = (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
+			duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */
@@ -289,7 +289,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 					PSL_beginclipping (PSL, S->coord[GMT_X], S->coord[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);
 					first = 0;
 					if (duplicate)	/* Free duplicate segment */
-						GMT_free_segment (GMT, &S, GMT_ALLOCATED_BY_GMT);
+						GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 				}
 			}
 			if (GMT_Destroy_Data (API, &D) != GMT_OK) {

@@ -345,7 +345,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 
 	D = Din;	/* The default is to work with the input data as is */
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
-		if (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY)
+		if (D->alloc_mode == GMT_ALLOC_EXTERNALLY)
 			D = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC + GMT_ALLOC_NORMAL, Din);
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */

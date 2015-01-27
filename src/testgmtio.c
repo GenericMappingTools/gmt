@@ -52,7 +52,7 @@ int main (int argc, char *argv[]) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) exit (EXIT_FAILURE);	/* Establishes data output */
 	
 	/* 5. Read individual records until end of data set */
-	/*    The GMT_FILE_BREAK in GMT_Get_Record means we will return a special EOF marker at the end of each
+	/*    The GMT_READ_FILEBREAK in GMT_Get_Record means we will return a special EOF marker at the end of each
 	 *    data table when there are more tables to process.  The end of the last file yields the actual EOF.
 	 *    This lets us do special processing after a file has been fully read. */
 
@@ -62,7 +62,7 @@ int main (int argc, char *argv[]) {
 	
 	do {	/* Keep returning records until we reach EOF */
 		mode = GMT_WRITE_DOUBLE;	/* Normally we treat data as double precision values */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_READ_FILEBREAK, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) {	/* This check kicks in if the data has bad formatting, text etc */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Error found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "E: ");

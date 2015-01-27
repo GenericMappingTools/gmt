@@ -1254,7 +1254,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 				if (P && P->skip) continue;	/* Chosen cpt file indicates skip for this z */
 
-				duplicate = (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY && ((polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
+				duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
 				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
 					L = GMT_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 				
@@ -1436,7 +1436,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					if (S.f.f_pen == 0) GMT_setpen (GMT, &current_pen);	/* Reinstate current pen */
 				}
 				if (duplicate)	/* Free duplicate segment */
-					GMT_free_segment (GMT, &L, GMT_ALLOCATED_BY_GMT);
+					GMT_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
 			}
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {

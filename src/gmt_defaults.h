@@ -165,7 +165,7 @@ struct GMT_DEFAULTS {
 	char ps_transpmode[16];			/* Transparency mode for PDF only */
 	struct gmt_encoding ps_encoding;
 	/* TIME group */
-	enum GMT_enum_timer timer_mode;	/* Choose GMT_NO_TIMER, GMT_ABS_TIMER, GMT_ELAPSED_TIMER [GMT_NO_TIMER] */
+	enum GMT_enum_tictoc timer_mode;	/* Choose GMT_NO_TIMER, GMT_ABS_TIMER, GMT_ELAPSED_TIMER [GMT_NO_TIMER] */
 	double time_interval_fraction;		/* How much of a partial interval is needed in order to annotate it */
 	bool time_is_interval;		/* Does a time given as a month (or year or day) mean the middle of the interval? */
 	bool time_leap_seconds;		/* Do we need to worry about leap seconds? */

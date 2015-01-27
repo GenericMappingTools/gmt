@@ -1197,7 +1197,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->A.active) {	/* Free special arrays and segment used for -A experiment */
-		GMT_free_segment (GMT, &Sa, GMT_ALLOCATED_BY_GMT);
+		GMT_free_segment (GMT, &Sa, GMT_ALLOC_INTERNALLY);
 		GMT_free (GMT, U);
 		GMT_free (GMT, V);
 		GMT_free (GMT, W);

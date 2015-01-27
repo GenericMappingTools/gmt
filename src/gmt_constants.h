@@ -170,7 +170,7 @@ enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
 
 /*! Timer reporting modes */
-enum GMT_enum_timer {
+enum GMT_enum_tictoc {
 	GMT_NO_TIMER = 0,	/* No timer reported */
 	GMT_ABS_TIMER,		/* Report absolute time */
 	GMT_ELAPSED_TIMER};	/* Report elapsed time since start of session */
