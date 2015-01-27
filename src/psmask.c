@@ -51,12 +51,10 @@ struct PSMASK_CTRL {
 	struct D {	/* -D<dumpfile> */
 		bool active;
 		char *file;
-#ifdef DEBUG
-		bool debug;
-#endif
 	} D;
-	struct F {	/* -F */
+	struct F {	/* -F<way> */
 		bool active;
+		int value;
 	} F;
 	struct G {	/* -G<fill> */
 		bool active;
@@ -66,6 +64,11 @@ struct PSMASK_CTRL {
 		bool active;
 		double inc[2];
 	} I;
+	struct L {	/* -L[+|-]<file> */
+		bool active;
+		int mode;	/* -1 = set inside node to NaN, 0 as is, +1 set outside node to NaN */
+		char *file;
+	} L;
 	struct N {	/* -N */
 		bool active;
 	} N;
@@ -308,8 +311,88 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 			}
 		}
 	}	
-
+	if (n>2) {	/* Properly connect last and first point given the half-pixel steps */
+		if (n >= (*max)) {	/* Awkward, must allocate memory for one more point */
+			(*max)++;
+			*x = GMT_memory (GMT, *x, *max, double);
+			*y = GMT_memory (GMT, *y, *max, double);
+		}
+		(*x)[n-1] = (*x)[n-2];	/* Change next to last point's x-coordinate to not cut over by 0.5*dx */
+		(*x)[n] = (*x)[0];	/* Because of that, close the polygon explicitly by adding duplicate point */
+		(*y)[n] = (*y)[0];
+		n++;
+	}
 	return (n);
+}
+
+void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *grd, double *x, double *y, uint64_t n, int orient)
+{
+	/* Determine handedness of the contour and if opposite of orient reverse the contour */
+	int side[2], z_dir, k, k2;
+	bool reverse;
+	uint64_t i, j, ij_ul, ij_ur, ij_ll, ij_lr;
+	double fx[2], fy[2], dx, dy;
+
+	if (orient == 0) return;	/* Nothing to be done when no orientation specified */
+	if (n < 2) return;		/* Cannot work on a single point */
+
+	for (k = 0; k < 2; k++) {	/* Calculate fractional node numbers from left/top */
+		fx[k] = (x[k] - h->wesn[XLO]) * h->r_inc[GMT_X] - h->xy_off;
+		fy[k] = (h->wesn[YHI] - y[k]) * h->r_inc[GMT_Y] - h->xy_off;
+	}
+
+	/* Get(i,j) of the lower left node in the rectangle containing this contour segment.
+	   We use the average x and y coordinate for this to avoid any round-off involved in
+	   working on a single coordinate. The average coordinate should always be inside the
+	   rectangle and hence the floor/ceil operators will yield the LL node. */
+
+	i = lrint (floor (0.5 * (fx[0] + fx[1])));
+	j = lrint (ceil  (0.5 * (fy[0] + fy[1])));
+	ij_ll = GMT_IJP (h, j, i);     /* lower left corner  */
+	ij_lr = GMT_IJP (h, j, i+1);   /* lower right corner */
+	ij_ul = GMT_IJP (h, j-1, i);   /* upper left corner  */
+	ij_ur = GMT_IJP (h, j-1, i+1); /* upper right corner */
+
+	for (k = 0; k < 2; k++) {	/* Determine which edge the contour points lie on (0-3) */
+		/* We KNOW that for each k, either x[k] or y[k] lies EXACTLY on a gridline.  This is used
+		 * to deal with the inevitable round-off that places points slightly off the gridline.  We
+		 * pick the coordinate closest to the gridline as the one that should be exactly on the gridline */
+
+		k2 = 1 - k;	/* The other point */
+		dx = fmod (fx[k], 1.0);
+		if (dx > 0.5) dx = 1.0 - dx;	/* Fraction to closest vertical gridline */
+		dy = fmod (fy[k], 1.0);
+		if (dy > 0.5) dy = 1.0 - dy;	/* Fraction to closest horizontal gridline */
+		if (dx < dy)		/* Point is on a vertical grid line (left [3] or right [1]) */
+			side[k] = (fx[k] < fx[k2]) ? 3 : 1;	/* Simply check order of fx to determine which it is */
+		else						/* Point must be on horizontal grid line (top [2] or bottom [0]) */
+			side[k] = (fy[k] > fy[k2]) ? 0 : 2;	/* Same for fy */
+	}
+
+	switch (side[0]) {	/* Entry side: check heights of corner points.*/
+	                        /* if point to the right of the line is higher z_dir = +1 else -1 */
+		case 0:	/* Bottom: check heights of lower left and lower right nodes */
+			z_dir = (grd[ij_lr] > grd[ij_ll]) ? +1 : -1;
+			break;
+		case 1:	/* Right */
+			z_dir = (grd[ij_ur] > grd[ij_lr]) ? +1 : -1;
+			break;
+		case 2:	/* Top */
+			z_dir = (grd[ij_ul] > grd[ij_ur]) ? +1 : -1;
+			break;
+		default:/* Left */
+			z_dir = (grd[ij_ll] > grd[ij_ul]) ? +1 : -1;
+			break;
+	}
+	reverse = (z_dir != orient);
+
+	if (reverse) {	/* Must reverse order of contour */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Change orientation of closed polygon\n");
+		for (i = 0, j = n-1; i < n/2; i++, j--) {
+			double_swap (x[i], x[j]);
+			double_swap (y[i], y[j]);
+		}
+	}
 }
 
 void shrink_clip_contours (double *x, double *y, uint64_t np, double w, double e, double s, double n)
@@ -343,6 +426,7 @@ void *New_psmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 void Free_psmask_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->D.file) free (C->D.file);	
+	if (C->L.file) free (C->L.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -351,7 +435,7 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psmask <table> %s %s\n", GMT_I_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-G<fill>]\n\t[%s] [-K] [-N] [-O] [-P] [-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, GMT_RADIUS_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-G<fill>]\n\t[%s] [-K] [-L<grid>] [-N] [-O] [-P] [-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -371,6 +455,8 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
 	GMT_fill_syntax (API->GMT, 'G', "Select fill color/pattern [Default is no fill].");
 	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Save internal on/off node grid to <grid> for testing [no grid saved].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -L+ to change inside nodes to NaNs or -L- to change outside nodes to NaNs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Invert the sense of the clipping [or tiling].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not dump contours with less than <cut> points [Dump all contours].\n");
@@ -432,6 +518,20 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 				Ctrl->D.file = strdup (opt->arg);
 				if (n_plus >= 0) opt->arg[n_plus] = '+';	/* Restore it */
 				break;
+			case 'F':	/* Orient the clip contours */
+				Ctrl->F.active = true;
+				switch (opt->arg[0]) {
+					case '\0': case 'l':
+						Ctrl->F.value = -1;
+						break;
+					case 'r':
+						Ctrl->F.value = +1;
+						break;
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -F[l|r]\n");
+						break;
+				}
+				break;
 			case 'G':
 				Ctrl->G.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
@@ -445,6 +545,16 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
+				break;
+			case 'L':
+				Ctrl->L.active = true;
+				k = 1;
+				switch (opt->arg[0]) {
+					case '-': Ctrl->L.mode = -1;	break;
+					case '+': Ctrl->L.mode = +1;	break;
+					default: k = 0;	break;
+				}
+				if (opt->arg[k]) Ctrl->L.file = strdup (&opt->arg[k]);
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -460,11 +570,6 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 			case 'T':
 				Ctrl->T.active = true;
 				break;
-#ifdef DEBUG
-			case 'd':
-				Ctrl->D.debug = true;
-				break;
-#endif
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -485,6 +590,7 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->T.active, "Syntax error: -D cannot be used with -T\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.file == NULL, "Syntax error: -L requires an output gridfile name\n");
 		n_errors += GMT_check_binary_io (GMT, 2);
 	}
 
@@ -579,7 +685,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
 		GMT_map_basemap (GMT);
-		GMT_Report (API, GMT_MSG_VERBOSE, "clipping off!\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Clipping off!\n");
 	}
 	else {	/* Start new clip_path */
 		GMT_memset (inc2, 2, double);
@@ -605,7 +711,8 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		GMT_set_pad (GMT, 0U);		/* Change default pad to 0 only */
 		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
 		GMT_set_grddim (GMT, Grid->header);	/* Recompute dimensions of array */
-		grd = GMT_memory (GMT, NULL, Grid->header->size, char);
+		/* We allocate a 1-byte array separately instead of the 4-byte float array that GMT_Create_Data would have given us */
+		grd = GMT_memory (GMT, NULL, Grid->header->size, char);	/* Only need char array to store 0 and 1 */
 
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
@@ -692,21 +799,31 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		for (col = 0, ij = (Grid->header->ny-1) * Grid->header->nx; col < Grid->header->nx; col++) grd[col] = grd[col+ij] = 0;
 		for (row = 0; row < Grid->header->ny; row++) grd[row*Grid->header->nx] = grd[(row+1)*Grid->header->nx-1] = 0;
 
-#ifdef DEBUG
-		if (Ctrl->D.debug) {	/* Save a copy of the grid to psmask.nc */
+		if (Ctrl->L.active) {	/* Save a copy of the grid to file */
 			struct GMT_GRID *G = NULL;
-			char *dumpfile = "psmask.nc";
+			GMT_Report (API, GMT_MSG_VERBOSE, "Saving internal inside|outside grid to file %s\n", Ctrl->L.file);
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Grid->header->wesn, Grid->header->inc, \
-				Grid->header->registration, 0, dumpfile)) == NULL) Return (API->error);
-			for (ij = 0; ij < Grid->header->size; ij++) G->data[ij] = (float)grd[ij];
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, dumpfile, G) != GMT_OK) {
+				Grid->header->registration, 0, Ctrl->L.file)) == NULL) Return (API->error);
+			for (ij = 0; ij < Grid->header->size; ij++) {	/* Copy over the 0/1 grid */
+				switch (Ctrl->L.mode) {
+					case 0:	/* As is */
+						G->data[ij] = (float)grd[ij];
+						break;
+					case +1:	/* Replace zeros by NaNs */
+						G->data[ij] = (grd[ij] == 0) ? GMT->session.f_NaN : (float)grd[ij];
+						break;
+					case -1:	/* Replace ones by NaNs */
+						G->data[ij] = (grd[ij] == 1) ? GMT->session.f_NaN : (float)grd[ij];
+						break;
+				}
+			}
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->L.file, G) != GMT_OK) {
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 				Return (API->error);
 			}
 		}
-#endif
 		if (!Ctrl->T.active) {	/* Must trace the outline of ON/OFF values in grd */
 			uint64_t max_alloc_points = GMT_CHUNK;
 			/* Arrays holding the contour xy values; preallocate space */
@@ -725,6 +842,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &max_alloc_points)) > 0) {
 				closed = false;
 				shrink_clip_contours (x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
+				if (Ctrl->F.active) orient_contours (GMT, Grid->header, grd, x, y, n, Ctrl->F.value);
 				if (Ctrl->D.active && n > (uint64_t)Ctrl->Q.min) {	/* Save the contour as output data */
 					S = GMT_prepare_contour (GMT, x, y, n, GMT->session.d_NaN);
 					/* Select which table this segment should be added to */
@@ -811,7 +929,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		if (Ctrl->S.active) GMT_free (GMT, d_col);
 		GMT_free (GMT, grd_x0);
 		GMT_free (GMT, grd_y0);
-		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "clipping on!\n");
+		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Clipping on!\n");
 	}
 
 	GMT_set_pad (GMT, API->pad);		/* Reset default pad */

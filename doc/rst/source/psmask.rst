@@ -19,7 +19,9 @@ Synopsis
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ **-D**\ *dumpfile* ]
+[ **-F**\ [**l**\ \|\ **r**] ]
 [ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
+[ **-L**\ [**+**\ \|\ **-**]\ *nodegrid* ]
 [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ]
 [ **-S**\ *search\_radius*\ [*unit*] ] [ **-T** ]
 [ |SYN_OPT-U| ]
@@ -92,12 +94,23 @@ Optional Arguments
     **-bo** is used. See **-Q** to exclude small
     polygons from consideration. 
 
+**-F**\ [**l**\ \|\ **r**]
+    Force clip contours (polygons) to be oriented so that data points are to the
+    left (**-Fl** [Default]) or right (**-Fr**) as we move along the perimeter
+    [Default is arbitrary orientation]. Requires **-D**.
+
 **-G**\ *fill*
     Paint the clip polygons (or tiles) with a selected fill [Default is no fill]. 
 
 .. include:: explain_-Jz.rst_
 
 .. include:: explain_-K.rst_
+
+**-L**\ [**+**\ \|\ **-**]\ *nodegrid*
+    Save the internal grid with ones (data constraint) and zeros (no data) to
+    the named *nodegrid* [no grid saved].  Use **L+** to convert the no data
+    flags to NaNs before writing the grid, while **L-** will instead convert
+    the data flags to NaNs.
 
 **-N**
     Invert the sense of the test, i.e., clip regions where there is data coverage. 

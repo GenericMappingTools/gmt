@@ -315,12 +315,9 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 			case 'F':	/* Orient dump contours */
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
-					case '\0':
-					case 'l':
-					case 'L':
+					case '\0': case 'l':
 						Ctrl->F.value = -1;
 						break;
-					case 'R':
 					case 'r':
 						Ctrl->F.value = +1;
 						break;
