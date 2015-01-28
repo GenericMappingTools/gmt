@@ -69,6 +69,7 @@
 
 #define GMT_CONV15_LIMIT 1.0e-15	/* Very tight convergence limit or "close to zero" limit */
 #define GMT_CONV8_LIMIT	 1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
+#define GMT_CONV6_LIMIT	 1.0e-6		/* 1 ppm */
 #define GMT_CONV4_LIMIT	 1.0e-4		/* Less tight convergence limit or "close to zero" limit */
 
 /*! Various allocation-length parameters */
