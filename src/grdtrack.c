@@ -175,15 +175,17 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   r: Resample at equidistant locations; input points not necessarily included.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Create equidistant cross-profiles from input line segments.  Append\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <length>: Full-length of each cross profile.  Append distance unit [%s]; it also applies to <ds>, <spacing>.\n", GMT_LEN_UNITS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   <dz>: Distance interval along the cross-profiles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /<spacing> to set the spacing between cross-profiles [Default use input locations].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Create equidistant cross-profiles from input line segments. Append 2-3 parameters:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1. <length>[u]: The full-length of each cross profile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append distance unit u (%s); it also applies to <ds>, <spacing>.\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     Default unit is meter (geographic grids) or user unit (Cartesian grids).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   2. <dz>: The sampling interval along the cross-profiles, in units of u.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   3. Optionally, append /<spacing> to set the spacing between cross-profiles [Default use input locations].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a to alternate direction of cross-profiles [Default orients all the same way].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Output columns are x, y, dist, z1, z2, ...\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Output columns are x, y, dist, az, z1, z2, ...zn (n is number of grids).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default samples the grid(s) at the input data points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Save [resampled] input lines to a separate file <dfile>.  Requires -C.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Output columns are lon, lat, dist, az, z1, z2, ...\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Output columns are lon, lat, dist, az, z1, z2, ..., zn\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set quick paths based on <line1>[,<line2>,...]. Give start and stop coordinates for\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are <lon/lat> or a 2-character XY key that uses the \"pstext\"-style justification format\n");
@@ -300,12 +302,12 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 				j = sscanf (opt->arg, "%[^/]/%[^/]/%s", ta, tb, tc);
 				Ctrl->C.mode = GMT_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
 				mode = GMT_get_distance (GMT, tb, &(Ctrl->C.ds), &X);
-				if (X != Ctrl->C.unit) n_units++;
-				if (mode != Ctrl->C.mode) n_modes++;
+				if (X != 'X' && X != Ctrl->C.unit) n_units++;
+				if (mode != 0 && mode != Ctrl->C.mode) n_modes++;
 				if (j == 3) {
 					mode = GMT_get_distance (GMT, tc, &(Ctrl->C.spacing), &X);
-					if (X != Ctrl->C.unit) n_units++;
-					if (mode != Ctrl->C.mode) n_modes++;
+					if (X != 'X' && X != Ctrl->C.unit) n_units++;
+					if (mode != 0 && mode != Ctrl->C.mode) n_modes++;
 				}
 				if (Ctrl->C.alternate) *c = '+';	/* Undo truncation */
 				if (n_units) {
