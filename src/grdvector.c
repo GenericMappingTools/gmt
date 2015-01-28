@@ -445,22 +445,24 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	if (!Ctrl->C.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 	
-
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval. The new -Idx/dy must be integer multiples of the grid dx/dy */
-		double val = Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y];
+		double val = Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y];	/* Should be ~ an integer within 1 ppm */
 		d_row = urint (val);
-		if (d_row == 0 || !doubleAlmostEqualZero (d_row, val)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: New y grid spacing (%g) is not a multiple of actual grid spacing (%g)\n", Ctrl->I.inc[GMT_Y], Grid[0]->header->inc[GMT_Y]);
+		if (d_row == 0 || fabs ((d_row - val)/d_row) > GMT_CONV6_LIMIT) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: New y grid spacing (%.12lg) is not a multiple of actual grid spacing (%.12g) [within %g]\n", Ctrl->I.inc[GMT_Y], Grid[0]->header->inc[GMT_Y], GMT_CONV6_LIMIT);
 			Return (EXIT_FAILURE);
 		}
+		Ctrl->I.inc[GMT_Y] = d_row * Grid[0]->header->r_inc[GMT_Y];	/* Get exact y-increment in case of slop */
 		val = Ctrl->I.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X];
 		d_col = urint (val);
-		if (d_col == 0 || !doubleAlmostEqualZero (d_col, val)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: New x grid spacing (%g) is not a multiple of actual grid spacing (%g)\n", Ctrl->I.inc[GMT_X], Grid[0]->header->inc[GMT_X]);
+		if (d_col == 0 || fabs ((d_col - val)/d_col) > GMT_CONV6_LIMIT) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: New x grid spacing (%.12g) is not a multiple of actual grid spacing (%.12g) [within %g]\n", Ctrl->I.inc[GMT_X], Grid[0]->header->inc[GMT_X], GMT_CONV6_LIMIT);
 			Return (EXIT_FAILURE);
 		}
+		Ctrl->I.inc[GMT_X] = d_col * Grid[0]->header->r_inc[GMT_X];	/* Get exact x-increment in case of slop */
+		
 		/* Determine starting row/col for straddled access */
 		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= Ctrl->I.inc[GMT_Y];
