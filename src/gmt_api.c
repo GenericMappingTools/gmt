@@ -3726,11 +3726,6 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
 	if (!((mode & GMT_ADD_FILES_IF_NONE) || (mode & GMT_ADD_FILES_ALWAYS) || (mode & GMT_ADD_STDIO_IF_NONE) || (mode & GMT_ADD_STDIO_ALWAYS) || (mode & GMT_ADD_EXISTING))) return_error (API, GMT_NOT_A_VALID_MODE);
 
-#ifdef HAVE_SETLOCALE
-	/* Set locale information to be used from environment */
-	setlocale (LC_ALL, "");
-#endif
-
 	if (n_args == 0) /* Passed the head of linked option structures */
 		head = args;
 	else		/* Passed argc, argv, likely from Fortran */
@@ -5984,11 +5979,6 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	struct GMTAPI_CTRL *API = NULL;
 	char gmt_module[GMT_LEN32] = "GMT_";
 	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
-
-#ifdef HAVE_SETLOCALE
-	/* Set default locale */
-	setlocale (LC_ALL, "C");
-#endif
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (module == NULL && mode != GMT_MODULE_PURPOSE) return_error (V_API, GMT_ARG_IS_NULL);

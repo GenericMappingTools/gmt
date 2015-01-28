@@ -35,12 +35,12 @@
 #	include <locale.h>
 #endif
 
-static inline char* __gmt_token_separators (void) {
-	static char separators[] = ",\t ";
+static inline const char* __gmt_token_separators (void) {
+	static const char separators[] = ",; \t";
 #ifdef HAVE_SETLOCALE
 	struct lconv *lc = localeconv();
 	if ( (strcmp (lc->decimal_point, ",") == 0) )
-		separators[0] = ';';
+		return separators + 1; /* Omit comma */
 #endif
 	return separators;
 }

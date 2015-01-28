@@ -624,7 +624,8 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
 	char text[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, cp_line[GMT_BUFSIZ] = {""}, label[GMT_BUFSIZ] = {""};
-	char pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *token_separator = NULL;
+	char pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	const char *token_separator = NULL;
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_LEN256] = {""}, this_font[GMT_LEN256] = {""}, just_key[5] = {""}, txt_f[GMT_LEN256] = {""};
 	int input_format_version = GMT_NOTSET;
