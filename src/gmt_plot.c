@@ -4010,7 +4010,7 @@ char *GMT_export2proj4 (struct GMT_CTRL *GMT) {
 	/* Cylindrical projections */
 	case GMT_UTM:
 		sprintf (szProj4, "+proj=utm +zone=%d", (int)GMT->current.proj.pars[0]);
-		if (GMT->current.proj.utm_hemisphere < 0) sprintf (szProj4, " +south");
+		if (GMT->current.proj.utm_hemisphere < 0) strcat (szProj4, " +south");
 		break;
 	case GMT_MERCATOR:
 		sprintf (szProj4, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
