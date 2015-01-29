@@ -125,7 +125,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_grd.h"            /* Define grd file header structure */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
 #include "gmt_io.h"             /* Defines structures and macros for table i/o */
-#include "gmt_colors.h"         /* Defines color/shading global structure */
 #include "gmt_shore.h"          /* Defines structures used when reading shore database */
 #include "gmt_dcw.h"            /* Defines structure and functions used when using DCW polygons */
 #include "gmt_symbol.h"         /* Custom symbol functions */
