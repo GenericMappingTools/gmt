@@ -112,4 +112,10 @@
 /*! Macro to simplify assignment of one 3-vector to another */
 #define GMT_cpy3v(to,from) memcpy(to, from, 3*sizeof(double))
 
+/*! Macros for printing a tic/toc elapsed time message*/
+#define GMT_tic(C) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_RESET,"");}
+#define GMT_toc(C,...) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_ELAPSED, \
+		"(%s) | %s\n", C->init.module_name, __VA_ARGS__);}
+
+
 #endif  /* _GMT_MACROS_H */

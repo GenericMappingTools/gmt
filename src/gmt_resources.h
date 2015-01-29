@@ -678,4 +678,24 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 };
 
+/*============================================================ */
+/*=============== GMT_OPTION Public Declaration ============== */
+/*============================================================ */
+
+enum GMT_enum_opt {
+	GMT_OPT_USAGE =     '?',	/* Command-line option for full usage */
+	GMT_OPT_SYNOPSIS =  '^',	/* Command-line option for synopsis */
+	GMT_OPT_PARAMETER = '-',	/* Command-line option for GMT defaults parameter */
+	GMT_OPT_INFILE =    '<',	/* Command-line option for input file */
+	GMT_OPT_OUTFILE =   '>'};	/* Command-line option for output file */
+
+/* This struct is used to pass program options in/out of GMT modules */
+
+struct GMT_OPTION {              /* Structure for a single GMT command option */
+	char option;                 /* 1-char command line -<option> (e.g. D in -D) identifying the option (* if file) */
+	char *arg;                   /* If not NULL, contains the argument for this option */
+	struct GMT_OPTION *next;     /* Pointer to next option in a linked list */
+	struct GMT_OPTION *previous; /* Pointer to previous option in a linked list */
+};
+
 #endif /* _GMT_RESOURCES_H */
