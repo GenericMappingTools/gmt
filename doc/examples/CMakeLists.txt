@@ -34,7 +34,6 @@ foreach (_ps ${_examples})
 	if (WIN32)
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
-			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
 			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
@@ -47,7 +46,6 @@ foreach (_ps ${_examples})
 			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 			COMMAND
-			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
 			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
