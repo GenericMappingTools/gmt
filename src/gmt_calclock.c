@@ -41,7 +41,7 @@
    int gmt_nth_kday (int n, int kday, int date);
    int gmt_cal_imod (int x, int y);
    int gmt_gyear_from_rd (int date);
-   void GMT_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_gcal *cal);	Break internal time into calendar and clock struct info.
+   void GMT_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal);	Break internal time into calendar and clock struct info.
    int GMT_gmonth_length (int year,  int month);	Get the number of days in a month by Gregorian leap rule
    void gmt_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, int init);  Aux to GMT_moment_interval
 */
@@ -238,7 +238,7 @@ int64_t GMT_rd_from_iywd (struct GMT_CTRL *GMT, int iy, int iw, int id) {
 
 /* Set calendar struct data from fixed date:  */
 
-void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_gcal *gcal) {
+void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_GCAL *gcal) {
 	/* Given rata die integer day number, load calendar structure
 	   with proleptic Gregorian and ISO calendar values.  */
 	
@@ -348,7 +348,7 @@ bool GMT_iso_ywd_is_bad (int y, int w, int d) {
 	return (false);
 }
 
-void GMT_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_gcal *cal) {
+void GMT_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal) {
 
 	/* Given time in internal units, load cal and clock info in cal.
 	   Note: uses 0 through 23 for hours (no am/pm inside here).
@@ -550,11 +550,11 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 	  }
 	
 	Warning:  Current operation of GMT_gcal_from_rd() only sets the
-	calendar components of struct GMT_gcal.  That's OK for this
+	calendar components of struct GMT_GCAL.  That's OK for this
 	routine, as clock components are not used here.  However, before
 	plotting the clock corresponding to a particular time, one should
 	call a routine to break dt or sd down into a clock string, or call
-	a routine to set the clock components of struct GMT_gcal.
+	a routine to set the clock components of struct GMT_GCAL.
 		
 	*/
 	
@@ -570,10 +570,10 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 		p->dt[0] = dt_in;
 		p->sd[1] = p->sd[0];
 		p->rd[1] = p->rd[0];
-		GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
+		GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 	}
 	else {
-		GMT_memcpy (&(p->cc[0]), &(p->cc[1]), 1, struct GMT_gcal);
+		GMT_memcpy (&(p->cc[0]), &(p->cc[1]), 1, struct GMT_GCAL);
 		p->dt[0] = p->dt[1];
 		p->sd[0] = p->sd[1];
 		p->rd[0] = p->rd[1];
@@ -624,7 +624,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 					if (k) {
 						p->rd[0] -= k;	/* Floor to n'th day  */
 						GMT_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
-						GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
+						GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 					}
 					p->sd[0] = 0.0;
 					p->dt[0] = GMT_rdc2dt (GMT, p->rd[0], p->sd[0]);
@@ -650,7 +650,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 					if (k) {
 						p->rd[0] -= k;	/* Floor to n'th day  */
 						GMT_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
-						GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
+						GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 					}
 					p->sd[0] = 0.0;
 					p->dt[0] = GMT_rdc2dt (GMT, p->rd[0], p->sd[0]);
@@ -695,7 +695,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				if (k) {
 					p->rd[0] -= k;	/* Floor to n'th day of the week.  */
 					GMT_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
-					GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
+					GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 				}
 				p->sd[0] = 0.0;
 				p->dt[0] = GMT_rdc2dt (GMT, p->rd[0], p->sd[0]);
@@ -744,7 +744,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				p->cc[0].iso_w = k * p->step + 1;
 				p->rd[0] = GMT_rd_from_iywd (GMT, p->cc[0].iso_y, p->cc[0].iso_w, 1);
 				GMT_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
-				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
+				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (GMT, p->rd[0], p->sd[0]);
 				if (GMT_iso_ywd_is_bad (p->cc[0].iso_y, p->cc[0].iso_w, 1) ) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  bad ywd on floor (month) in GMT_init_moment_interval()\n");
@@ -786,7 +786,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				}
 				p->rd[0] = GMT_rd_from_gymd (GMT, p->cc[0].year, p->cc[0].month, p->cc[0].day_m);
 				GMT_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
-				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
+				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (GMT, p->rd[0], p->sd[0]);
 			}
 			/* Now get next n'th month  */
@@ -816,7 +816,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 					p->rd[0] = GMT_rd_from_gymd (GMT, p->cc[0].year, 1, 1);
 				}
 				GMT_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
-				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
+				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (GMT, p->rd[0], p->sd[0]);
 			}
 			/* Now step ahead step years, depending on calendar type:  */
@@ -847,7 +847,7 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 	int i_sec, m_sec, ap, ival[3];
 	char text[GMT_LEN16] = {""};
 	double step;
-	struct GMT_gcal calendar;
+	struct GMT_GCAL calendar;
 
 	step = 0.5 / W->f_sec_to_int / GMT->current.setting.time_system.scale;	/* Precision desired in time units */
 
@@ -923,7 +923,7 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 
 void GMT_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t)
 {	/* Assemble the annotation label given the formatting options presented */
-	struct GMT_gcal calendar;
+	struct GMT_GCAL calendar;
 
 	GMT_gcal_from_dt (GMT, t, &calendar);			/* Convert t to a complete calendar structure */
 

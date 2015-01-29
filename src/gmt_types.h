@@ -86,6 +86,40 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	double (*geodesic_az_backaz) (struct GMT_CTRL *, double, double, double, double, bool);	/* pointer to geodesic function returning azimuth or backazimuth between two points points */
 };
 
+struct GMT_GCAL {	/* (proleptic) Gregorian calendar  */
+	int year;		/* signed; negative and 0 allowed  */
+	unsigned int month;	/* Always between 1 and 12  */
+	unsigned int day_m;	/* Day of month; always in 1 - 31  */
+	unsigned int day_y;	/* Day of year; 1 thru 366  */
+	unsigned int day_w;	/* Day of week; 0 (Sun) thru 6 (Sat)  */
+	int iso_y;		/* ISO year; not necessarily == year */
+	unsigned int iso_w;	/* ISO week of iso_y; must be in 1 -- 53  */
+	unsigned int iso_d;	/* ISO day of iso_w; uses 1 (Mon) thru 7 (Sun)  */
+	unsigned int hour;	/* 00 through 23  */
+	unsigned int min;	/* 00 through 59  */
+	double sec;		/* 00 through 59.xxxx; leap not yet handled  */
+};
+
+struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
+	unsigned int y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttoff, add y100 else add y200 */
+	int y100;	/* The multiple of 100 to add to the 2-digit year if we are above the time_Y2K_offset_year */
+	int y200;	/* The multiple of 100 to add to the 2-digit year if we are below the time_Y2K_offset_year */
+};
+
+struct GMT_MOMENT_INTERVAL {
+	struct GMT_GCAL	cc[2];		
+	double dt[2];		
+	double sd[2];		/* Seconds since the start of the day.  */
+	int64_t rd[2];
+	unsigned int step;
+	char unit;
+};
+
+struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
+	struct GMT_MOMENT_INTERVAL T;
+	unsigned int direction;		/* 0 [+] to center on next interval, 1 [-] for previous interval */
+};
+
 struct GMT_TIME_CONV {		/* Holds all time-related parameters */
 	struct GMT_TRUNCATE_TIME truncate;
 	struct GMT_Y2K_FIX Y2K_fix;		/* Used to convert 2-digit years to 4-digit years */

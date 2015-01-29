@@ -596,7 +596,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	struct MGD77_ERROR *E = NULL;
 	struct tm *systemTime;
 	struct MGD77_CARTER C;
-	struct GMT_gcal cal;
+	struct GMT_GCAL cal;
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

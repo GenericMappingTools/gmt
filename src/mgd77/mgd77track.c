@@ -556,7 +556,7 @@ int bad_coordinates (double lon, double lat) {
 	return (GMT_is_dnan (lon) || GMT_is_dnan (lat));
 }
 
-extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
+extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77track_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
@@ -580,7 +580,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	struct MGD77_CONTROL M;
 	struct MGD77_DATASET *D = NULL;
 	struct MGD77TRACK_LEG_ANNOT *cruise_id = NULL;
-	struct GMT_gcal calendar;
+	struct GMT_GCAL calendar;
 	struct MGD77TRACK_ANNOT *info[2] = {NULL, NULL};
 	struct MGD77TRACK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

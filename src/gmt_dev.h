@@ -128,7 +128,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_colors.h"         /* Defines color/shading global structure */
 #include "gmt_shore.h"          /* Defines structures used when reading shore database */
 #include "gmt_dcw.h"            /* Defines structure and functions used when using DCW polygons */
-#include "gmt_calclock.h"       /* Calendar/time functions */
 #include "gmt_symbol.h"         /* Custom symbol functions */
 #include "gmt_contour.h"        /* Contour label structure and functions */
 #include "gmt_map.h"            /* extern functions defined in gmt_map.c */

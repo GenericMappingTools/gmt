@@ -1623,7 +1623,7 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), s
 	struct MGD77_DATA_RECORD MGD77Record;
 	double tz, *values[MGD77_N_DATA_FIELDS+1];
 	char *text[MGD77_N_DATA_FIELDS+1];
-	struct GMT_gcal cal;
+	struct GMT_GCAL cal;
 
 	GMT_memset (col, MGD77_N_DATA_FIELDS+1, int);
 	for (k = 0; k < F->n_out_columns; k++) {
@@ -3623,7 +3623,7 @@ void MGD77_Verify_Prep (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MG
 	C->n = irint (ymax);
 
 	if (!GMT_is_dnan (values[0][0])) {	/* We have time - obtain yyyy/mm/dd of departure and arrival days */
-		struct GMT_gcal CAL;
+		struct GMT_GCAL CAL;
 		MGD77_gcal_from_dt (GMT, F, values[0][0], &CAL);
 		C->Departure[0] = CAL.year;
 		C->Departure[1] = CAL.month;
@@ -5773,12 +5773,12 @@ void MGD77_Free_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE **CORR,
 
 double MGD77_time_to_fyear (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time) {
 	/* Convert GMT time to floating point year for use with IGRF function */
-	struct GMT_gcal cal;			/* Calendar structure needed for conversion */
+	struct GMT_GCAL cal;			/* Calendar structure needed for conversion */
 	MGD77_gcal_from_dt (GMT, F, time, &cal);		/* No adjust for TZ; this is GMT UTC time */
 	return (MGD77_cal_to_fyear (GMT, &cal));	/* Returns decimal year */
 }
 
-double MGD77_cal_to_fyear (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_gcal *cal) {
+double MGD77_cal_to_fyear (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_GCAL *cal) {
 	/* Convert GMT calendar structure to decimal year for use with IGRF/CM4 function */
 	double n_days;
 	n_days = (GMT_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
@@ -5801,7 +5801,7 @@ double MGD77_rdc2dt (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL *F, 
 	return ((f_days * GMT_DAY2SEC_F  + secs) * F->utime.i_scale);
 }
 
-void MGD77_gcal_from_dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal) {
+void MGD77_gcal_from_dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t, struct GMT_GCAL *cal) {
 
 	/* Given time in internal units, load cal and clock info in cal.
 		Note: uses 0 through 23 for hours (no am/pm inside here).
