@@ -32,6 +32,17 @@
 
 enum GMT_enum_cplx {GMT_RE = 0, GMT_IM = 1};	/* Real and imaginary indices */
 
+/*--------------------------------------------------------------------
+ *			GMT XINGS STRUCTURE DEFINITION
+ *--------------------------------------------------------------------*/
+
+struct GMT_XINGS {
+        double xx[2], yy[2];    /* Cartesian coordinates of intersection with map boundary */
+        double angle[2];        /* Angles of intersection */
+        unsigned int sides[2];	/* Side id of intersection */
+        unsigned int nx;	/* Number of intersections (1 or 2) */
+};
+
 EXTERN_MSC void GMT_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 
 EXTERN_MSC struct GMT_PALETTE * GMT_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_from, unsigned int mode);
