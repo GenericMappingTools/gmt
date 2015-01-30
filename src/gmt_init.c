@@ -3300,7 +3300,7 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 	char line[GMT_LEN256] = {""}, symbol[GMT_LEN256] = {""};
 	unsigned int code = 0, pos;
 	FILE *in = NULL;
-	struct gmt_encoding *enc = &GMT->current.setting.ps_encoding;
+	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
 
 	GMT_getsharepath (GMT, "pslib", enc->name, ".ps", line, R_OK);
 	if ((in = fopen (line, "r")) == NULL) {
