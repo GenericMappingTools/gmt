@@ -30,6 +30,11 @@
 #ifndef _GMT_INTERNALS_H
 #define _GMT_INTERNALS_H
 
+#ifdef HAVE_FFTW3F
+/* FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
+#	include <fftw3.h>
+#endif
+
 enum GMT_enum_cplx {GMT_RE = 0, GMT_IM = 1};	/* Real and imaginary indices */
 
 /*--------------------------------------------------------------------

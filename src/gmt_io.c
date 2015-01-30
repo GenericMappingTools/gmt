@@ -2004,7 +2004,7 @@ void GMT_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir)
 
 /*! . */
 void GMT_io_init (struct GMT_CTRL *GMT) {
-	/* No need to memset the structure to NULL as this is done in gmt_init.h directory.
+	/* No need to memset the structure to NULL as this is done initlally.
 	 * The assignments here are done once per GMT session as GMT_io_init is called
 	 * from GMT_begin.  Some variables may change later due to --PAR=value parsing.
 	 * GMT_io_init must be called before parsing of defaults. */

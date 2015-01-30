@@ -137,7 +137,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #endif
 
 #include "gmt_prototypes.h"     /* All GMT low-level API */
-#include "gmt_init.h"           /* extern functions defined in gmt_init.c */
 #include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
 #include "common_string.h"      /* All code shared between GMT and PSL */
 

@@ -38,7 +38,7 @@
 /* netcdf convention */
 #define GMT_NC_CONVENTION "COARDS, CF-1.5"
 
-enum GMT_enum_grdtype {
+enum GMT_enum_grdtype {	/* Used in gmt_grdio.c and gmt_nc.c */
 	/* Special cases of geographic grids with periodicity */
 	GMT_GRID_CARTESIAN=0,			/* Cartesian data, no periodicity involved */
 	GMT_GRID_GEOGRAPHIC_LESS360,		/* x is longitude, but range is < 360 degrees */
@@ -48,7 +48,7 @@ enum GMT_enum_grdtype {
 };
 
 /*! Grid layout for complex grids */
-enum GMT_enum_grdlayout {
+enum GMT_enum_grdlayout {	/* Needed by some modules */
 	GMT_GRID_IS_SERIAL = 0,		/* Grid is RRRRRR...[IIIIII...] */
 	GMT_GRID_IS_INTERLEAVED = 1};	/* Grid is RIRIRIRI... - required layout for FFT */
 
@@ -67,12 +67,12 @@ enum GMT_enum_grdlayout {
  */
 
 /*! Order of rows in z variable */
-enum Netcdf_row_order {
+enum Netcdf_row_order {	/* Used in gmt_grdio.c and gmt_nc.c */
 	k_nc_start_north = -1, /* The least dimension (i.e., lat or y) decreases */
 	k_nc_start_south = 1   /* The least dimension (i.e., lat or y) increases */
 };
 
-enum Netcdf_chunksize {
+enum Netcdf_chunksize {	/* Used in gmt_grdio.c and gmt_nc.c */
 	k_netcdf_io_classic = 0, /* netCDF classic format */
 	k_netcdf_io_chunked_auto /* netCDF 4 auto-determined optimal chunk size */
 };

@@ -150,4 +150,10 @@
 /*! Force component to be in 0 <= s <= 255 range */
 #define GMT_0_255_truncate(s) ((s < 0) ? 0 : ((s > 255) ? 255 : s))	/* Truncate to allowable 0-255 range */
 
+/*! Macros to do conversion to inches with PROJ_LENGTH_UNIT as default */
+
+#define GMT_to_inch(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_INCH)
+#define GMT_to_points(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_PT)
+
+
 #endif  /* _GMT_MACROS_H */
