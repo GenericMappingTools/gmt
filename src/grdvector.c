@@ -468,14 +468,14 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: New y grid spacing (%.12lg) is not a multiple of actual grid spacing (%.12g) [within %g]\n", Ctrl->I.inc[GMT_Y], Grid[0]->header->inc[GMT_Y], GMT_CONV6_LIMIT);
 			Return (EXIT_FAILURE);
 		}
-		Ctrl->I.inc[GMT_Y] = d_row * Grid[0]->header->r_inc[GMT_Y];	/* Get exact y-increment in case of slop */
+		Ctrl->I.inc[GMT_Y] = d_row * Grid[0]->header->inc[GMT_Y];	/* Get exact y-increment in case of slop */
 		val = Ctrl->I.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X];
 		d_col = urint (val);
 		if (d_col == 0 || fabs ((d_col - val)/d_col) > GMT_CONV6_LIMIT) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: New x grid spacing (%.12g) is not a multiple of actual grid spacing (%.12g) [within %g]\n", Ctrl->I.inc[GMT_X], Grid[0]->header->inc[GMT_X], GMT_CONV6_LIMIT);
 			Return (EXIT_FAILURE);
 		}
-		Ctrl->I.inc[GMT_X] = d_col * Grid[0]->header->r_inc[GMT_X];	/* Get exact x-increment in case of slop */
+		Ctrl->I.inc[GMT_X] = d_col * Grid[0]->header->inc[GMT_X];	/* Get exact x-increment in case of slop */
 		
 		/* Determine starting row/col for straddled access */
 		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
