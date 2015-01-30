@@ -17,6 +17,7 @@
  *--------------------------------------------------------------------*/
 
 #include "okbfuns.h"
+#include "gmt_internals.h"
 
 static double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi);
 static double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
