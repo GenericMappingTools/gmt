@@ -142,6 +142,20 @@ enum GMT_swap_direction {
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
+/*! Return codes from GMT_inonout */
+enum GMT_enum_inside {
+	GMT_OUTSIDE = 0,
+	GMT_ONEDGE,
+	GMT_INSIDE};
+
+/*! Return codes from GMT_get_anchorpoint */
+enum GMT_enum_anchor {
+	GMT_ANCHOR_NOTSET = -1,		/* -D */
+	GMT_ANCHOR_MAP,			/* -Dg */
+	GMT_ANCHOR_JUST,		/* -Dj */
+	GMT_ANCHOR_NORM,		/* -Dn */
+	GMT_ANCHOR_PLOT};		/* -Dx */
+
 /*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */

@@ -217,7 +217,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_media_size.h gmt_mgg_header2.h gmt_sharedlibs.h gmt_memory.h
 	gmt_core_module.h gmt_nan.h gmt_notposix.h gmt_pennames.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h
-	gmt_support.h gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h
+	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h
 	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h pslib.h
 	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h
 	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c
