@@ -51,6 +51,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 #define THIS_MODULE_PURPOSE	"Filter a grid in the space (or time) domain"
 
 #include "gmt_dev.h"
+#include "gmt_glib.h"
 
 #define GMT_PROG_OPTIONS "-RVfx"
 

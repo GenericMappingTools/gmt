@@ -30,24 +30,6 @@
 #ifndef _GMT_INTERNALS_H
 #define _GMT_INTERNALS_H
 
-/* Include glib header and define mutex calls that are no-op when not linking against glib
-   These are used only GLIB based multi-threading */
-
-#ifdef HAVE_GLIB_GTHREAD
-#include <glib.h>
-
-#define GMT_declare_gmutex static GMutex mutex;
-#define GMT_set_gmutex g_mutex_lock (&mutex);
-#define GMT_unset_gmutex g_mutex_unlock (&mutex);
-
-#else
-
-#define GMT_declare_gmutex
-#define GMT_set_gmutex
-#define GMT_unset_gmutex
-
-#endif
-
 #ifdef HAVE_FFTW3F
 /* FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
 #	include <fftw3.h>

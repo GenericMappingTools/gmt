@@ -17,37 +17,34 @@
  *--------------------------------------------------------------------*/
 
 /*!
- * \file okbfuns.h
- * \brief  
+ * \file gmt_glib.h
+ * \brief Include file for items using glib.
  */
 
-#ifndef OKBFUNS_H
-#define OKBFUNS_H
+/* Authors:	J. Luis
+   Date:	1-OCT-2012
+   Version:	5 API
 
-#include "gmt_dev.h"		/* Requires GMT to compile and link */
-#include "gmt_glib.h"
+*/
 
-struct BODY_VERTS {
-	double  x, y, z;
-};
+/* Include glib header and define mutex calls that are no-op when not linking against glib
+   These are used only GLIB based multi-threading */
 
-struct BODY_DESC {
-	unsigned int n_f, *n_v, *ind;
-};
+#ifndef _GMT_GLIB_H
 
-struct LOC_OR {
-	double  x, y, z;
-};
+#ifdef HAVE_GLIB_GTHREAD
+#include <glib.h>
 
-struct MAG_PARAM {
-	double	rim[3];
-} *mag_param;
+#define GMT_declare_gmutex static GMutex mutex;
+#define GMT_set_gmutex g_mutex_lock (&mutex);
+#define GMT_unset_gmutex g_mutex_unlock (&mutex);
 
-struct MAG_VAR {		/* Used when only the modulus of magnetization varies */
-	double	rk[3];
-} *mag_var;
+#else
 
-EXTERN_MSC double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, bool is_grav,
-		struct BODY_DESC bd_desc, struct BODY_VERTS *bd_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or);
+#define GMT_declare_gmutex
+#define GMT_set_gmutex
+#define GMT_unset_gmutex
 
-#endif /* OKBFUNS_H */
+#endif
+
+#endif /* HAVE_GLIB_GTHREAD */
