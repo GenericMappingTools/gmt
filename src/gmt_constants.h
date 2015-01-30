@@ -36,7 +36,6 @@
  *===================================================================================*/
 
 #include "gmt_error_codes.h"			/* All API error codes are defined here */
-#include "gmt_define.h"			/* All constant values are defined here */
 
 /*--------------------------------------------------------------------
  *			GMT CONSTANTS MACRO DEFINITIONS

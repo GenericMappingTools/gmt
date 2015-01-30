@@ -219,7 +219,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_stat.h
 	gmt_support.h gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h
 	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h pslib.h
-	s_rint.h triangle.h gmt.h gmt_resources.h gmt_define.h gmt_private.h
+	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h
 	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c
 	gmt_customio.c gmt_dcw.c gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c
 	gmt_memory.c gmt_nc.c gmt_notposix.c gmt_proj.c gmt_shore.c gmt_sph.c
@@ -555,7 +555,7 @@ string (REPLACE ".c" "" _gmt_modules "${GMT_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules} ${GMT_COMPAT_MODULES})
 
 # Install public headers
-install (FILES gmt.h gmt_define.h gmt_resources.h declspec.h
+install (FILES gmt.h gmt_resources.h declspec.h
 	DESTINATION ${GMT_INCLUDEDIR}
 	COMPONENT Runtime)
 

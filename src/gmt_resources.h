@@ -44,6 +44,29 @@
  * the variables are accessible just like the "public" ones.
  */
 
+/*! Miscellaneous settings */
+enum GMT_enum_api {
+	GMT_USAGE	= 0,	/* Want to report full program usage message */
+	GMT_SYNOPSIS	= 1,	/* Just want the synopsis of usage */
+	GMT_STR16	= 16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
+};
+
+/*! These data primitive identifiers are as follows: */
+enum GMT_enum_type {
+	GMT_CHAR = 0,  /* int8_t, 1-byte signed integer type */
+	GMT_UCHAR,     /* uint8_t, 1-byte unsigned integer type */
+	GMT_SHORT,     /* int16_t, 2-byte signed integer type */
+	GMT_USHORT,    /* uint16_t, 2-byte unsigned integer type */
+	GMT_INT,       /* int32_t, 4-byte signed integer type */
+	GMT_UINT,      /* uint32_t, 4-byte unsigned integer type */
+	GMT_LONG,      /* int64_t, 8-byte signed integer type */
+	GMT_ULONG,     /* uint64_t, 8-byte unsigned integer type */
+	GMT_FLOAT,     /* 4-byte data float type */
+	GMT_DOUBLE,    /* 8-byte data float type */
+	GMT_TEXT,      /* Arbitrarily long text string [OGR/GMT use only] */
+	GMT_DATETIME,  /* string with date/time info [OGR/GMT use only] */
+	GMT_N_TYPES};  /* The number of supported data types above */
+
 /*! These are the 5 methods for i/o; used as arguments in the API that expects a "method" */
 
 enum GMT_enum_method {
@@ -697,5 +720,6 @@ struct GMT_OPTION {              /* Structure for a single GMT command option */
 	struct GMT_OPTION *next;     /* Pointer to next option in a linked list */
 	struct GMT_OPTION *previous; /* Pointer to previous option in a linked list */
 };
+
 
 #endif /* _GMT_RESOURCES_H */

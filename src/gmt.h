@@ -57,7 +57,6 @@ extern "C" {
 
 /* Include GMT constants and resources definitions, include option struct */
 
-#include "gmt_define.h"
 #include "gmt_resources.h"
 
 /* Include glib header and define mutex calls that are no-op when not linking against glib
