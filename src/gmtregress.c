@@ -361,11 +361,11 @@ double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int no
 double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, unsigned int norm)
 {	/* Return the proper "weighted average" intercept given chosen norm */
 	double intercept;
-	struct OBSERVATION *ee = NULL;
+	struct GMT_OBSERVATION *ee = NULL;
 	
 	if (norm != GMTREGRESS_NORM_L2) {	/* Need temporary space for scaled residuals */
 		uint64_t k;
-		ee = GMT_memory (GMT, NULL, n, struct OBSERVATION);
+		ee = GMT_memory (GMT, NULL, n, struct GMT_OBSERVATION);
 		for (k = 0; k < n; k++) {
 			ee[k].weight = (float)W[k];
 			ee[k].value  = (float)e[k];
@@ -441,9 +441,9 @@ double L1_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64
 {	/* L1 regression scale estimate is weighted median absolute residual */
 	uint64_t k;
 	double MAD;
-	struct OBSERVATION *ee = NULL;
+	struct GMT_OBSERVATION *ee = NULL;
 	/* Compute the (weighted) MAD */
-	ee = GMT_memory (GMT, NULL, n, struct OBSERVATION);
+	ee = GMT_memory (GMT, NULL, n, struct GMT_OBSERVATION);
 	for (k = 0; k < n; k++) {
 		ee[k].weight = (float)W[k];
 		ee[k].value  = (float)ey[k];

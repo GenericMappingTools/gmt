@@ -41,6 +41,12 @@
  * GMT TYPE DEFINITIONS
  *--------------------------------------------------------------------*/
 
+/* for weighted mean/mode */
+struct GMT_OBSERVATION {
+	float value;
+	float weight;
+};
+
 struct GMT_DIST {	/* Holds info for a particular distance calculation */
 	bool init;	/* true if we have initialized settings for this type via GMT_init_distaz */
 	bool arc;	/* true if distances are in deg/min/sec or arc; otherwise they are e|f|k|M|n or Cartesian */

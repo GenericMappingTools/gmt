@@ -1098,7 +1098,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 	double y, y_out, wt_sum, value, this_estimate = 0.0;
 	double y_shift = 0.0, lat_out, w;
 	double *work_array = NULL;
-	struct OBSERVATION *work_data = NULL;
+	struct GMT_OBSERVATION *work_data = NULL;
 
 	/* Convenience vars */
    	bool   fast_way             = t->fast_way;
@@ -1128,7 +1128,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 
 	if (slow) {
 		if (slower)		/* Spherical (weighted) median/modes requires even more work */
-			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, struct OBSERVATION);
+			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, struct GMT_OBSERVATION);
 		else
 			work_array = GMT_memory (GMT, NULL, F.nx*F.ny, double);
 	}

@@ -1597,7 +1597,7 @@ int GMT_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 
 int compare_observation (const void *a, const void *b)
 {
-	const struct OBSERVATION *obs_1 = a, *obs_2 = b;
+	const struct GMT_OBSERVATION *obs_1 = a, *obs_2 = b;
 
 	/* Sorts observations into ascending order based on obs->value */
 	if (obs_1->value < obs_2->value)
@@ -1622,7 +1622,7 @@ double GMT_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w, uint64_t n
 	return (sum_xw / sum_w);
 }
 
-double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n, double quantile)
+double GMT_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile)
 {
 	uint64_t k;
 	double weight_half = 0.0, weight_count;
@@ -1631,7 +1631,7 @@ double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint
 
 	/* First sort data on z */
 
-	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
+	qsort (data, n, sizeof (struct GMT_OBSERVATION), compare_observation);
 
 	/* Find weight sum, then get half-value */
 
@@ -1646,7 +1646,7 @@ double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint
 	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].value + data[k+1].value) : data[k].value));
 }
 
-double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n)
+double GMT_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n)
 {
 	/* Looks for the “shortest 50%”. This means that when the cumulative weight
 	   (y) is plotted against the value (x) then the line between (xi,yi) and
@@ -1659,7 +1659,7 @@ double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mode */
 
 	/* First sort data on z */
-	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
+	qsort (data, n, sizeof (struct GMT_OBSERVATION), compare_observation);
 
 	/* Compute the total weight */
 	for (wsum = 0.0, i = 0; i < n; i++) wsum += data[i].weight;
