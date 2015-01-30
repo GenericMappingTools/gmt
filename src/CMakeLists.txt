@@ -213,7 +213,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_dev.h gmt_common.h gmt_constants.h
 	gmt_contour.h gmt_customio.h gmt_dcw.h gmt_defaults.h
 	gmt_error.h gmt_gdalread.h gmt_grd.h gmt_grdio.h gmt_hash.h
-	gmt_internals.h gmt_io.h gmt_macros.h gmt_map.h gmt_media_name.h
+	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h
 	gmt_media_size.h gmt_mgg_header2.h gmt_sharedlibs.h gmt_memory.h
 	gmt_core_module.h gmt_nan.h gmt_notposix.h gmt_pennames.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_stat.h

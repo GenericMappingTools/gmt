@@ -41,6 +41,13 @@
  * GMT TYPE DEFINITIONS
  *--------------------------------------------------------------------*/
 
+struct GMT_DIST {	/* Holds info for a particular distance calculation */
+	bool init;	/* true if we have initialized settings for this type via GMT_init_distaz */
+	bool arc;	/* true if distances are in deg/min/sec or arc; otherwise they are e|f|k|M|n or Cartesian */
+	double (*func) (struct GMT_CTRL *, double, double, double, double);	/* pointer to function returning distance between two points points */
+	double scale;	/* Scale to convert function output to desired unit */
+};
+
 struct GMT_MAP {		/* Holds all map-related parameters */
 	struct GMT_PLOT_FRAME frame;		/* Everything about the frame parameters */
 	int this_x_status;			/* Tells us what quadrant old and new points are in (-4/4) */

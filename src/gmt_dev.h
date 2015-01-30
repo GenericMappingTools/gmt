@@ -126,7 +126,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_dcw.h"            /* Defines structure and functions used when using DCW polygons */
 #include "gmt_symbol.h"         /* Custom symbol functions */
 #include "gmt_contour.h"        /* Contour label structure and functions */
-#include "gmt_map.h"            /* extern functions defined in gmt_map.c */
 #include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
 #include "gmt_memory.h"         /* extern functions defined in gmt_memory.c */
 #include "gmt_support.h"        /* extern functions defined in gmt_support.c */
