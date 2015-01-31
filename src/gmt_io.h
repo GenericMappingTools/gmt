@@ -339,13 +339,6 @@ struct GMT_PLOT_CALCLOCK {
 	struct GMT_GEO_IO geo;
 };
 
-/* Byteswap widths used with gmt_byteswap_file */
-typedef enum {
-	Int16len = 2,
-	Int32len = 4,
-	Int64len = 8
-} SwapWidth;
-
 /* For the GMT_GRID container, see gmt_grdio.h */
 
 #endif /* _GMT_IO_H */

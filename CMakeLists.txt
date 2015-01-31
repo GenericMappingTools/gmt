@@ -142,6 +142,12 @@ else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
 endif (BUILD_SUPPLEMENTS)
 
+if (BUILD_DEVELOPER)
+	set (DEVEL "yes")
+else (BUILD_DEVELOPER)
+	set (DEVEL "no")
+endif (BUILD_DEVELOPER)
+
 if (BUILD_SHARED_LIBS)
 	set (BUILD_MODE "shared")
 else (BUILD_SHARED_LIBS)
@@ -178,6 +184,7 @@ message(
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
+	"*  Build GMT Developer        : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
 	"*\n"
 	"*  Locations:\n"

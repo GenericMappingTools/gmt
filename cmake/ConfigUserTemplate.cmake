@@ -160,6 +160,10 @@
 # Build GMT shared lib with supplemental modules [TRUE]:
 #set (BUILD_SUPPLEMENTS FALSE)
 
+# Build/Install GMT Developer include files [FALSE]:
+# This installs the extra include files and configured files needed by gmt-devel
+#set (BUILD_DEVELOPER TRUE)
+
 ##
 ## Section 4: Advanced tweaking
 ##

@@ -6728,6 +6728,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 
 	if (GMT->init.runtime_bindir) {free (GMT->init.runtime_bindir); GMT->init.runtime_bindir = NULL;}
 	if (GMT->init.runtime_libdir) {free (GMT->init.runtime_libdir); GMT->init.runtime_libdir = NULL;}
+	if (GMT->init.runtime_plugindir) {free (GMT->init.runtime_plugindir); GMT->init.runtime_plugindir = NULL;}
 	free (GMT->session.SHAREDIR); GMT->session.SHAREDIR = NULL;
 	free (GMT->session.HOMEDIR); GMT->session.HOMEDIR = NULL;
 	if (GMT->session.DATADIR) {free (GMT->session.DATADIR); GMT->session.DATADIR = NULL;}

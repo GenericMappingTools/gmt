@@ -121,6 +121,13 @@ uint64_t gmt_bin_colselect (struct GMT_CTRL *GMT);
 #include <windows.h>
 #endif
 
+/* Byteswap widths used with gmt_byteswap_file */
+typedef enum {
+	Int16len = 2,
+	Int32len = 4,
+	Int64len = 8
+} SwapWidth;
+
 /*! Macro to apply columns log/scale/offset conversion on the fly */
 #define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
 

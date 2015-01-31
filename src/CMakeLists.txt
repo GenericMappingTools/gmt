@@ -559,6 +559,26 @@ install (FILES gmt.h gmt_resources.h declspec.h
 	DESTINATION ${GMT_INCLUDEDIR}
 	COMPONENT Runtime)
 
+if (BUILD_DEVELOPER)
+	# Install Developer headers [These are clean and have no #define HAVE_* configuration]
+	install (FILES pslib.h common_math.h common_string.h gmt_common.h gmt_constants.h gmt_contour.h
+		gmt_dcw.h gmt_defaults.h gmt_error.h gmt_error_codes.h gmt_fft.h gmt_gdalread.h gmt_grd.h
+		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_nan.h gmt_notposix.h gmt_plot.h
+		gmt_private.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_symbol.h gmt_synopsis.h
+		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h
+		DESTINATION ${GMT_INCLUDEDIR}
+		COMPONENT Runtime)
+	# Install Developer compatibility headers [These are clean and for plaforms missing these system headers]
+	install (FILES compat/inttypes.h compat/pstdint.h compat/qsort.c compat/qsort.h compat/stdbool.h compat/stdint.h
+		DESTINATION ${GMT_INCLUDEDIR}/compat
+		COMPONENT Runtime)
+	# Install Configured Developer headers [These are produced by cmake from *.h.in files]
+	install (FILES ${PROJECT_BINARY_DIR}/src/config.h ${PROJECT_BINARY_DIR}/src/gmt_config.h
+		${PROJECT_BINARY_DIR}/src/gmt_dimensions.h ${PROJECT_BINARY_DIR}/src/gmt_version.h
+		DESTINATION ${GMT_INCLUDEDIR}
+		COMPONENT Runtime)
+endif (BUILD_DEVELOPER)
+
 # symlink to gmt-wrapper in bindir and libdir:
 if (UNIX AND GMT_INSTALL_NAME_SUFFIX)
 	get_target_property(_gmt_wrapper_name gmt OUTPUT_NAME)

@@ -274,9 +274,6 @@ EXTERN_MSC void GMT_write_ogr_header (FILE *fp, struct GMT_OGR *G);
 EXTERN_MSC int GMT_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S);
 EXTERN_MSC char * GMT_trim_segheader (struct GMT_CTRL *GMT, char *line);
 EXTERN_MSC int GMT_alloc_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned int type, uint64_t n_rows);
-EXTERN_MSC bool gmt_byteswap_file (struct GMT_CTRL *GMT,
-		FILE *outfp, FILE *infp, const SwapWidth nbytes,
-		const uint64_t offset, const uint64_t length);
 EXTERN_MSC int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PALETTE *P, bool *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill, bool *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, unsigned int def_outline, struct GMT_OGR_SEG *G);
 EXTERN_MSC int GMT_parse_z_io (struct GMT_CTRL *GMT, char *txt, struct GMT_PARSE_Z_IO *z);
 EXTERN_MSC int GMT_init_z_io (struct GMT_CTRL *GMT, char format[], bool repeat[], enum GMT_swap_direction swab, off_t skip, char type, struct GMT_Z_IO *r);

@@ -154,6 +154,12 @@ int main (int argc, char *argv[]) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_bindir);
 				goto exit;
 			}
+
+			/* Show the directory that contains the shared plugins */
+			if (!strcmp (argv[arg_n], "--show-plugindir")) {
+				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_plugindir);
+				goto exit;
+			}
 		} /* for (arg_n = 1; arg_n < argc; ++arg_n) */
 
 		/* If we get here, we were called without a recognized modulename or option
@@ -179,6 +185,7 @@ no_such:
 		fprintf (stderr, "  --show-cores      Show number of available cores and exit.\n");
 		fprintf (stderr, "  --show-datadir    Show data directory and exit.\n");
 		fprintf (stderr, "  --show-bindir     Show directory of executables and exit.\n\n");
+		fprintf (stderr, "  --show-plugindir  Show directory of plug-ins and exit.\n\n");
 		fprintf (stderr, "if <module options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 		if (modulename_arg_n == 1) {
 			fprintf (stderr, "ERROR: No module named %s was found.  This could mean:\n", module);
