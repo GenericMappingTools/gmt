@@ -57,19 +57,13 @@
 
 #ifdef HAVE_BASENAME
 #	include <libgen.h>
-#else
-#	define basename GMT_basename
 #endif
 
 #ifdef HAVE_CTYPE_H_
 #	include <ctype.h>
 #endif
 
-#ifdef HAVE_STDBOOL_H_
-#	include <stdbool.h>
-#else
-#	include "compat/stdbool.h"
-#endif
+#include <stdbool.h>
 
 #ifdef HAVE_SYS_TYPES_H_
 #	include <sys/types.h>
@@ -96,17 +90,8 @@
 #	include <unistd.h>
 #endif
 
-#ifdef HAVE_STDINT_H_          /* VS 2010 has stdint.h */
-#	include <stdint.h>
-#else
-#	include "compat/stdint.h"    /* msinttypes for VC++ */
-#endif /* HAVE_STDINT_H_ */
-
-#ifdef HAVE_INTTYPES_H_
-#	include <inttypes.h>         /* Exact-width integer types */
-#else
-#	include "compat/inttypes.h"  /* msinttypes for VC++ */
-#endif /* HAVE_INTTYPES_H_ */
+#include <stdint.h>
+#include <inttypes.h>         /* Exact-width integer types */
 
 /* Size prefixes for printf/scanf for size_t and ptrdiff_t */
 #ifdef _MSC_VER

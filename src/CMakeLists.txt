@@ -210,7 +210,7 @@ set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
 # libgmt
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	common_runpath.h common_sighandler.c common_string.h declspec.h getopt.h
-	gmt_dev.h gmt_common.h gmt_constants.h
+	gmt_dev.h gmt_common.h gmt_constants.h  compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_dcw.h gmt_defaults.h
 	gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h
@@ -567,10 +567,6 @@ if (BUILD_DEVELOPER)
 		gmt_private.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_symbol.h gmt_synopsis.h
 		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h
 		DESTINATION ${GMT_INCLUDEDIR}
-		COMPONENT Runtime)
-	# Install Developer compatibility headers [These are clean and for plaforms missing these system headers]
-	install (FILES compat/inttypes.h compat/pstdint.h compat/qsort.c compat/qsort.h compat/stdbool.h compat/stdint.h
-		DESTINATION ${GMT_INCLUDEDIR}/compat
 		COMPONENT Runtime)
 	# Install Configured Developer headers [These are produced by cmake from *.h.in files]
 	install (FILES ${PROJECT_BINARY_DIR}/src/config.h ${PROJECT_BINARY_DIR}/src/gmt_config.h

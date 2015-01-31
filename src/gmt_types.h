@@ -30,11 +30,7 @@
 
 #ifndef _GMT_TYPES_H
 #define _GMT_TYPES_H
-#ifdef HAVE_STDBOOL_H_
-#	include <stdbool.h>
-#else
-#	include "compat/stdbool.h"
-#endif
+#include <stdbool.h>
 #include <stdint.h>
 
 /*--------------------------------------------------------------------

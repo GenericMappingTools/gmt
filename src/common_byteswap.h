@@ -33,12 +33,7 @@
 #define _COMMON_BYTESWAP_H
 
 #include "gmt_config.h"
-
-#ifdef HAVE_STDINT_H_          /* VS 2010 has stdint.h */
-#	include <stdint.h>
-#else
-#	include "compat/stdint.h"    /* msinttypes for VC++ */
-#endif /* HAVE_STDINT_H_ */
+#include <stdint.h>
 
 /*
  * Default inline functions that the compiler should optimize properly. Use

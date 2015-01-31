@@ -487,7 +487,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			unsigned int pos = 0;
 			while (GMT_strtok (API->GMT->session.CUSTOM_LIBS, ",", &pos, text)) {
 				API->lib[n_custom_libs].path = strdup (text);
-				libname = strdup (GMT_basename (text));		/* Last component from the pathname */
+				libname = strdup (basename (text));		/* Last component from the pathname */
 				API->lib[n_custom_libs].name = lib_tag (libname);
 				GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
 				free (libname);
@@ -3447,7 +3447,7 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 	API->mode = mode & 2;		/* if false|0 then we dont list read and write as modules */
 	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we same some CPU */
 	if (session)
-		API->session_tag = strdup (GMT_basename (session));	/* Only used in reporting and error messages */
+		API->session_tag = strdup (basename (session));	/* Only used in reporting and error messages */
 
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
 	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */

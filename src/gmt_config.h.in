@@ -171,17 +171,6 @@
 #cmakedefine HAVE_STDDEF_H_
 #cmakedefine HAVE_SYS_TYPES_H_
 
-#cmakedefine HAVE_INTTYPES_H_
-#ifdef HAVE_INTTYPES_H_
-	/* avoid redefining msinttypes for VC++ */
-#	define _MSC_INTTYPES_H_
-#endif
-#cmakedefine HAVE_STDINT_H_
-#ifdef HAVE_STDINT_H_
-	/* avoid redefining msinttypes for VC++ */
-#	define _MSC_STDINT_H_
-#endif
-
 /* We prefer to use extensions (e.g., strdup, sincos) when available */
 #ifdef __GNUC__
 #	define _GNU_SOURCE

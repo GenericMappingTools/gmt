@@ -42,11 +42,7 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
-#ifdef HAVE_STDBOOL_H_
-#	include <stdbool.h>
-#else
-#	include "compat/stdbool.h"
-#endif /* HAVE_STDBOOL_H_ */
+#include <stdbool.h>
 
 #include <limits.h> /* defines PATH_MAX */
 #include <stdlib.h> /* defines _MAX_PATH on WIN32 */
@@ -84,7 +80,7 @@ EXTERN_MSC char *stresep (char **stringp, const char *delim, int esc);
 
 EXTERN_MSC int match_string_in_file (const char *filename, const char *string);
 
-EXTERN_MSC char *GMT_basename(const char *path);
+EXTERN_MSC char *basename(char *path);
 
 #ifdef __cplusplus
 }

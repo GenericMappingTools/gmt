@@ -41,18 +41,8 @@ extern "C" {
 
 	/* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
-
-#ifdef HAVE_STDINT_H_       /* VS 2010 has stdint.h */
-#	include <stdint.h>
-#else
-#	include "compat/stdint.h" /* msinttypes for VC++ */
-#endif /* HAVE_STDINT_H_ */
-
-#ifdef HAVE_STDBOOL_H_
-#	include <stdbool.h>
-#else
-#	include "compat/stdbool.h"
-#endif /* HAVE_STDBOOL_H_ */
+#include <stdint.h>
+#include <stdbool.h>
 
 	/* int32_abs function that works with int32_t */
 #if defined(SIZEOF_INT) && SIZEOF_INT == 4 && defined(HAVE_ABS)
