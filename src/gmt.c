@@ -184,7 +184,7 @@ no_such:
 		fprintf (stderr, "  --version         Print version and exit.\n");
 		fprintf (stderr, "  --show-cores      Show number of available cores and exit.\n");
 		fprintf (stderr, "  --show-datadir    Show data directory and exit.\n");
-		fprintf (stderr, "  --show-bindir     Show directory of executables and exit.\n\n");
+		fprintf (stderr, "  --show-bindir     Show directory of executables and exit.\n");
 		fprintf (stderr, "  --show-plugindir  Show directory of plug-ins and exit.\n\n");
 		fprintf (stderr, "if <module options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 		if (modulename_arg_n == 1) {
