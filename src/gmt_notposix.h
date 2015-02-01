@@ -552,9 +552,4 @@
 /* define custom function */
 #endif
 
-/* If GLIBC compatible qsort_r is not available */
-#ifndef HAVE_QSORT_R_GLIBC
-#	include "compat/qsort.h"
-#endif
-
 #endif /* _GMT_NOTPOSIX_H */

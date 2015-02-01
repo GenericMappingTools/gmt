@@ -84,6 +84,12 @@
 #include "gmt_internals.h"
 #include <locale.h>
 
+/* If GLIBC compatible qsort_r is not available */
+#ifndef HAVE_QSORT_R_GLIBC
+#	include "compat/qsort.h"
+#endif
+
+
 /*! . */
 enum GMT_profmode {
 	GMT_GOT_AZIM	= 1,
