@@ -36,21 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-
-/*
- * Visual C++ only implements C90, which has no bool type. C99 added support
- * for bool via the <stdbool.h> header, but Visual C++ does not support this.
- */
-#ifndef __bool_true_false_are_defined
-#	if defined _MSC_VER
-#		define bool _Bool
-#		define true 1
-#		define false 0
-#		define __bool_true_false_are_defined 1
-#	else
-#		include <stdbool.h>
-#	endif /* _MSC_VER */
-#endif /* !__bool_true_false_are_defined */
+#include <stdbool.h>
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -73,7 +59,6 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
 	GMTAPI_FREE,		/* ipar[6] = 1 to free array after use (IN) or before filling with output (OUT), 0 to leave alone */
 	GMTAPI_NODE};		/* ipar[7] = 1 for pixel registration, 0 for node */
 #endif
-
 
 /*=====================================================================================
  *	GMT API STRUCTURE DEFINITIONS
@@ -100,7 +85,7 @@ struct GMTAPI_DATA_OBJECT {
 	enum GMT_enum_std direction;		/* GMT_IN or GMT_OUT */
 	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GRID|MATRIX|VECTOR|COORD} */
 	enum GMT_enum_family actual_family;	/* May be GMT_IS_MATRIX|VECTOR when one of the others are created via those */
-	unsigned method;		/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} or sum with enum GMT_enum_via (GMT_VIA_{NONE,VECTOR,MATRIX,OUTPUT}); using unsigned type because sum exceeds enum GMT_enum_method */
+	unsigned method;			/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} or sum with enum GMT_enum_via (GMT_VIA_{NONE,VECTOR,MATRIX,OUTPUT}); using unsigned type because sum exceeds enum GMT_enum_method */
 	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
 	void *resource;				/* Points to registered filename, memory location, etc., where data can be obtained from with GMT_Get_Data. */
