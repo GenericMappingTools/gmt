@@ -33,7 +33,7 @@ Synopsis
 Description
 -----------
 
-**project** reads arbitrary (*x*, *y*\ [,*z*]) data from standard input
+**project** reads arbitrary (*x*, *y*\ [,\ *z*]) data from standard input
 [or *infile* ] and writes to standard output any combination of (*x*,
 *y*, *z*, *p*, *q*, *r*, *s*), where (*p*, *q*) are the coordinates in
 the projection, (*r*, *s*) is the position in the (*x*, *y*) coordinate
