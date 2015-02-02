@@ -1291,7 +1291,7 @@ int GMTAPI_Get_Object (struct GMTAPI_CTRL *API, int sfamily, void *ptr)
 	 * Unless family is GMT_NOTSET the object must be of the specified family.
 	 */
 	unsigned int i;
-	enum GMT_enum_family family;
+	enum GMT_enum_family family = GMT_NOTSET;
 	int object_ID = GMT_NOTSET;	/* Not found yet */
 
 	if (sfamily != GMT_NOTSET) family = sfamily;
