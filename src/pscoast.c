@@ -625,7 +625,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	bool donut_hell = false, world_map_save, clipping;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
-	double west_border, east_border, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
+	double west_border = 0.0, east_border = 0.0, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
 	double left, right, anti_x = 0.0, anti_y = 0.0, x_0 = 0.0, y_0 = 0.0, x_c, y_c, dist;
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
