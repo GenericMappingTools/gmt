@@ -782,7 +782,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				PSL_setfill (PSL, rgb, true);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
-			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, 0.0, 7, form);
+			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, 0.0, 7, 0);
 		}
 		if (extend & (2 - reverse)) {	/* Add color triangle on right side */
 			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + e_length;
@@ -831,7 +831,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			/* Then draw annotation and frame tickmarks */
 
 			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
-			
+
 			if (!center) {
 				for (i = 0; i < P->n_colors; i++) {		/* For all z_low coordinates */
 					t_len = (all || (P->range[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
@@ -842,12 +842,12 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
 				}
 			}
-			
+
 			/* Now we place annotations */
 			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
-			
+
 			for (i = 0; i < P->n_colors; i++) {
 				xx = (reverse) ? xright - x1 : x1;
 				if (all || (P->range[i].annot & 1)) {	/* Annotate this */
@@ -890,7 +890,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				}
 			}
 		}
-		
+
 		if (label[0]) {	/* Add label */
 			form = GMT_setfont (GMT, &GMT->current.setting.font_label);
 			PSL_plottext (PSL, xleft + 0.5 * length, y_label, GMT->current.setting.font_label.size, label, 0.0, Label_justify, form);
@@ -993,7 +993,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				PSL_setfill (PSL, rgb, true);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
-			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, -90.0, 10, form);
+			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, -90.0, 10, 0);
 		}
 		if (extend & (2 - reverse)) {	/* Add color triangle at top */
 			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + e_length;
@@ -1071,7 +1071,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
-			
+
 			for (i = 0; i < P->n_colors; i++) {
 				xx = (reverse) ? xright - x1 : x1;
 				if (all || (P->range[i].annot & 1)) {
