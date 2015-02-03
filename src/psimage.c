@@ -335,14 +335,13 @@ int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int 
 
 int GMT_psimage (void *V_API, int mode, void *args)
 {
-	int i, j, k, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0, has_trans = 0;
+	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
 	unsigned int row, col;
 	bool free_GMT = false, did_gray = false;
 
 	double x, y, wesn[4];
 
-	unsigned char *picture = NULL, *buffer = NULL, colormap[4*256];
-	int r, g, b;
+	unsigned char *picture = NULL, *buffer = NULL;
 
 	char *format[2] = {"EPS", "Sun raster"};
 
@@ -353,6 +352,8 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 #ifdef HAVE_GDAL
+	int k, r,g,b, has_trans = 0;
+	unsigned char colormap[4*256];
 	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype, if GDAL is used */
 #endif
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
