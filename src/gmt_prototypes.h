@@ -525,6 +525,8 @@ EXTERN_MSC struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr);
 EXTERN_MSC void GMT_show_name_and_purpose (void *API, const char *name, const char *component, const char *purpose);
 
 /* From gmt_stat.c */
+EXTERN_MSC bool GMT_is_fnan_func (float value);
+EXTERN_MSC bool GMT_is_dnan_func (double value);
 EXTERN_MSC double GMT_bei (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_ber (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_kei (struct GMT_CTRL *GMT, double x);

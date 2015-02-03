@@ -5941,7 +5941,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	unsigned int lib;
 	struct GMTAPI_CTRL *API = NULL;
 	char gmt_module[GMT_LEN32] = "GMT_";
-	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
+	int (*p_func)(void*, int, void*) __attribute__((__may_alias__)) = NULL;       /* function pointer */
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (module == NULL && mode != GMT_MODULE_PURPOSE) return_error (V_API, GMT_ARG_IS_NULL);
@@ -5949,7 +5949,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
 		char gmt_module[GMT_LEN256] = {""};	/* To form gmt_<lib>_module_show_all */
-		void (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show_all which takes one arg (the API) */
+		void (*l_func)(void*) __attribute__((__may_alias__));       /* function pointer to gmt_<lib>_module_show_all which takes one arg (the API) */
 
 		/* Here we list purpose of all the available modules in each shared library */
 		for (lib = 0; lib < API->n_shared_libs; lib++) {

@@ -2295,3 +2295,6 @@ void GMT_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsig
 		pq[QV_IM] = a[1]*M_SQRT_PI*(A[GMT_IM] - B[GMT_IM])/2.0;
 	}
 }
+
+bool GMT_is_fnan_func (float value) { return (GMT_is_fnan (value)); }
+bool GMT_is_dnan_func (double value) { return (GMT_is_dnan (value)); }

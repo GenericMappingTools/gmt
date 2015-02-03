@@ -432,7 +432,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 				}
 				else {
 					out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
-					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (out[GMT_Z]))	/* Input matched no-data setting, so change to NaN */
+					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan_func (out[GMT_Z]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Z] = GMT->common.d.nan_proxy[GMT_OUT];
 					else if (GMT_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Z]))
 						out[GMT_Z] = GMT->session.d_NaN;
