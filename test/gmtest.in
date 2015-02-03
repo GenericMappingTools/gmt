@@ -47,6 +47,7 @@ unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
+export GMT_SRCDIR="$src"
 
 # Reset error count
 ERROR=0
@@ -214,7 +215,8 @@ export PATH="@GMT_BINARY_DIR@/src:\$PATH"
 unset GMT5_SHAREDIR
 export GMT_SHAREDIR="$GMT_SHAREDIR"
 export GMT_USERDIR="$GMT_USERDIR"
-export GMT_DATADIR="$src"
+export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
+export GMT_SRCDIR="$src"
 gmt set -Du
 . "${script}"
 EOF

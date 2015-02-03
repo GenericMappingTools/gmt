@@ -12,7 +12,7 @@ GDAL=`gmt grdreformat 2>&1 | grep -c gd`
 if [ $GDAL -eq 0 ]; then exit; fi
 
 # Use another image as test to avoid storing one for the test
-ln -fs $GMT_DATADIR/../grdimage/gdal/needle.jpg itesti.jpg
+ln -fs $GMT_SRCDIR/../grdimage/gdal/needle.jpg itesti.jpg
 ps=apicheck_I_f.ps
 testapi -If -Wf -Ti > $ps
 ps=apicheck_I_c.ps
