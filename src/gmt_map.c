@@ -1018,6 +1018,12 @@ int gmt_map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1, doubl
 	return (0);
 }
 
+int gmt_map_jump_not (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1)
+{
+	/* For Genper we believe there should not be jumps [Introduced to test issue #667] */
+	return (0);
+}
+
 #if 0
 /* NOT USED ?? */
 int gmt_ellipse_crossing (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, int *sides)
@@ -4172,6 +4178,7 @@ bool gmt_map_init_genper (struct GMT_CTRL *GMT) {
 		GMT->current.map.right_edge = &gmt_right_rect;
 		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
 		GMT->current.map.frame.horizontal = (fabs (GMT->current.proj.pars[1]) < 30.0 && fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 30.0) ? 1 : 0;
+		GMT->current.map.jump = &gmt_map_jump_not;
 		search = true;
 	}
 	else {
