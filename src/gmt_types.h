@@ -85,6 +85,12 @@ struct GMT_OBSERVATION {
 	float weight;
 };
 
+/*! For trend-fitting models */
+struct GMT_MODEL {
+	unsigned int kind;
+	unsigned int order;
+};
+
 struct GMT_DIST {	/* Holds info for a particular distance calculation */
 	bool init;	/* true if we have initialized settings for this type via GMT_init_distaz */
 	bool arc;	/* true if distances are in deg/min/sec or arc; otherwise they are e|f|k|M|n or Cartesian */

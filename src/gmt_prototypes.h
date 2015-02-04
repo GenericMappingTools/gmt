@@ -43,6 +43,7 @@ EXTERN_MSC char *GMT_strdup (struct GMT_CTRL *GMT, const char *s);
 
 EXTERN_MSC int GMT_get_V (char arg);
 EXTERN_MSC bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family);
+EXTERN_MSC int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT_MODEL *model, bool *robust);
 EXTERN_MSC int GMT_parse_dash_option (struct GMT_CTRL *GMT, char *text);
 EXTERN_MSC struct GMT_CTRL * GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int pad);
 EXTERN_MSC void GMT_end (struct GMT_CTRL *GMT);

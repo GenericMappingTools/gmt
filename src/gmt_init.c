@@ -2462,6 +2462,111 @@ int GMT_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 }
 
 /*! . */
+int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT_MODEL *model, bool *robust)
+{
+	/* Parse -N[p|f|c|s]<list-of-terms>[,[p|f|c|s]<list-of-terms>,...][+r] for trend1d, trend2d, grdtrend.
+	 * p means polynomial [Default is not specified]
+	 * c means cosine
+	 * s means sine
+	 * f means both cosine and sine
+	 * list-of-terms is either a single order (e.g., 2) or a range (e.g., 0-3)
+	 * You can give several lists separated by commas.
+	 * Indicate robust fit by appending +r
+	 * In 1-D, we add x^p, cos(2*pi*p/X), and/or sin(2*pi*p/X)
+	 * In 2-D, for polynomial an order means all p products of x^m*y^n where m+n == p
+	 *         for Fourier we add these 4 terms per order
+	 *	cos(2*pi*p*x/X), sin(2*pi*p*x/X), cos(2*pi*p*y/Y), sin(2*pi*p*y/Y)
+ 	*/
+	
+	unsigned int pos = 0, n_model = 0, part, n_parts, k, j;
+	int64_t order, start, stop, step;
+	size_t end;
+	bool got_intercept;
+	enum GMT_enum_model kind[2];
+	char p[GMT_BUFSIZ] = {""}, type, *this_range = NULL, *arg = NULL, *name = "pcs";
+	
+	if (!in_arg || !in_arg[0]) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: No arguments given!\n", option);
+		return -1;	/* No arg given */
+	}
+	arg = strdup (in_arg);
+	end = strlen (arg) - 1;
+	if (arg[end] == 'r') {
+		*robust = true;
+		arg[end] = '\0';	/* Chop off the r */
+		if (end > 0 && arg[end-1] == '+') arg[end-1] = '\0';	/* Used +r */
+	}
+	else
+		*robust = false;
+		
+	while ((GMT_strtok (arg, ",", &pos, p))) {
+		if (!strchr ("0123456789cfsp", p[0])) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function type (%c)\n", option, p[0]);
+			return -1;
+		}
+		if (isdigit (p[0])) {	/* If no type given it is polynomial p */
+			type = 'p';
+			this_range = p;
+		}
+		else {	/* Got type so step over to get range */
+			type = p[0];
+			this_range = &p[1];
+		}
+		n_parts = 1;	/* Normally just one basis function at the time but f implies both c and s */
+		switch (type) {	/* What kind of basis function? */
+			case 'p': kind[0] = GMT_POLYNOMIAL; break;
+			case 'c': kind[0] = GMT_COSINE; break;
+			case 's': kind[0] = GMT_SINE; break;
+			case 'f': kind[0] = GMT_COSINE; kind[1] = GMT_SINE; n_parts = 2; break;
+		}
+		if ((step = gmt_parse_range (GMT, this_range, &start, &stop)) != 1) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function order (%s)\n", option, this_range);
+			return -1;
+		}
+		/* Here we have range and kind */
+		
+		for (order = start; order <= stop; order++) {
+			for (part = 0; part < n_parts; part++) {
+				if (kind[part] == GMT_SINE && order == 0) {	/* Quietly skip the useless sine part for order zero */
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -%c: Ignore sine basis for 0th-order Fourier term\n", option);
+					continue;
+				}
+				model[n_model].kind = kind[part];
+				model[n_model].order = (unsigned int)order;
+				n_model++;
+				if (n_model == GMT_N_MAX_MODEL) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
+					return -1;
+				}
+			}
+		}
+	}
+	free (arg);
+	/* Make sure there are no duplicates */
+	
+	for (k = 0; k < n_model; k++) {
+		for (j = k+1; j < n_model; j++) {
+			if (model[k].kind == model[j].kind && model[k].order == model[j].order) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Basis %c%u occurs more than once!\n", option, name[model[k].kind], model[k].order);
+				return -1;
+			}
+			if (model[k].order == 0 && model[j].order == 0 && model[k].kind != model[j].kind) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: The zero-order basis (the intercept) given more than once!\n", option);
+				return -1;
+			}
+		}
+		if (model[k].order == 0) got_intercept = true;
+	}
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (!got_intercept) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -%c: No intercept term (order 0) given\n", option);
+		fprintf (stderr, "Fit %u terms.  Use a robust model?: %s\n", n_model, (*robust) ? "Yes" : "No");
+		for (k = 0; k < n_model; k++)
+			fprintf (stderr, "Model basis %d is of type %c and order %u\n", k, name[model[k].kind], model[k].order);
+	}
+	return (n_model);
+}
+
+/*! . */
 void GMT_check_lattice (struct GMT_CTRL *GMT, double *inc, unsigned int *registration, bool *active)
 {	/* Uses provided settings to initialize the lattice settings from
 	 * the -R<grdfile> if it was given; else it does nothing.

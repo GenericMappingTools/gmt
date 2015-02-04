@@ -142,6 +142,8 @@ enum GMT_swap_direction {
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
+#define GMT_N_MAX_MODEL	20	/* No more than 20 basis functions in a trend model */
+
 /*! Return codes from GMT_inonout */
 enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,
@@ -156,6 +158,11 @@ enum GMT_enum_anchor {
 	GMT_ANCHOR_NORM,		/* -Dn */
 	GMT_ANCHOR_PLOT};		/* -Dx */
 
+/*! Various types of trend model */
+enum GMT_enum_model {
+	GMT_POLYNOMIAL, GMT_COSINE, GMT_SINE
+	};
+	
 /*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */
