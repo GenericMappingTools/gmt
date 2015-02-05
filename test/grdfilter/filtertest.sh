@@ -4,6 +4,11 @@
 # filter diameter.  Specify which output you want (a|c|r|w).
 # Change args below to pick another filter.
 
+if [ "$HAVE_GMT_DEBUG_SYMBOLS" != "TRUE" ]; then
+	echo "grdfilter -A option is not available without -DDEBUG"
+	exit
+fi
+
 ps=filtertest.ps
 
 FILT=g			# Gaussian filter
