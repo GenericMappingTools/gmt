@@ -268,6 +268,15 @@ a circle at the start location and an arrow head at the end, try
     30 -20 0 1.5i
     EOF
 
+To plot vectors (red vector heads, solid stem) from the file data.txt that contains
+record of the form lon, lat, dx, dy, where dx, dy are the Cartesian
+vector components given in user units, and these user units should be converted
+to cm given the scale 3.60, try
+
+   ::
+
+    gmt psxy -R20/40/-20/0 -JM6i -Sv0.15i+e+z3.6c -Gred -W0.25p -Baf data.txt > map.ps
+
 Segment Header Parsing
 ----------------------
 

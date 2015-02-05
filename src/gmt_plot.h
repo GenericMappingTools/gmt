@@ -130,7 +130,8 @@ enum GMT_enum_vecattr {
 	GMT_VEC_FILL		= 8192,		/* Fill vector head using default fill */
 	GMT_VEC_FILL2		= 16384,	/* Fill vector head using supplied v_fill) */
 	GMT_VEC_MARC90		= 32768,	/* Matharc only: if angles subtend 90, draw straight angle symbol */
-	GMT_VEC_SCALE		= 65536};	/* Not needed in pslib: If not set we determine the required inch-to-degree scale */
+	GMT_VEC_COMPONENTS	= 65536,	/* Not needed in pslib: Got vector dx, dy Cartesian components */
+	GMT_VEC_SCALE		= 131072};	/* Not needed in pslib: If not set we determine the required inch-to-degree scale */
 
 /* Make sure the next three macros are in sync with any changes to GMT_enum_vecattr above! */
 
@@ -154,6 +155,7 @@ struct GMT_VECT_ATTR {
 	float h_width;		/* Width of vector head in inches */
 	float pole[2];		/* Longitude and latitude of geovector pole */
 	float scale;		/* Converts inches to spherical degrees */
+	float comp_scale;	/* Converts hypot (dx, dy) to inches */
 	struct GMT_PEN pen;	/* Pen for outline of head */
 	struct GMT_FILL fill;	/* Fill for head [USED IN PSROSE] */
 };

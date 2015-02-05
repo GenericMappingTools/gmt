@@ -381,7 +381,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Vectors: Direction and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SV rather than -Sv is selected, psxy will expect azimuth and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     length and convert azimuths based on the chosen map projection.\n");
-	GMT_vector_syntax (API->GMT, 3);
+	GMT_vector_syntax (API->GMT, 19);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
@@ -774,6 +774,8 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	}
+	if (S.symbol == GMT_SYMBOL_VECTOR && S.v.status & GMT_VEC_COMPONENTS)
+		GMT->current.io.col_type[GMT_IN][pos2y] = GMT_IS_FLOAT;	/* Just the users dy component, not length */
 	if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want no fill so override -G*/
@@ -1084,17 +1086,23 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					break;
 				case GMT_SYMBOL_VECTOR:
 					GMT_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
-					length = in[ex2+S.read_size];
+					if (S.v.status & GMT_VEC_COMPONENTS)	/* Read dx, dy in user units */
+						length = hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
+					else
+						length = in[ex2+S.read_size];
 					if (GMT_is_dnan (length)) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector length = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (!S.convert_angles)	/* Use direction as given */
+					if (S.v.status & GMT_VEC_COMPONENTS)	/* Read dx, dy in user units */
+						direction = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
+					else
 						direction = in[ex1+S.read_size];
+					if (S.convert_angles)	/* Convert geo azimuth to map direction */
+						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, direction);
 					else if (!GMT_is_geographic (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
-						direction = 90.0 - in[ex1+S.read_size];
-					else	/* Convert geo azimuth to map direction */
-						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
+						direction = 90.0 - direction;
+					/* else	use direction as given */
 					if (GMT_is_dnan (direction)) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector direction = NaN near line %d\n", n_total_read);
 						continue;

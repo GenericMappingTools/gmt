@@ -1064,6 +1064,14 @@ void GMT_dist_syntax (struct GMT_CTRL *GMT, char option, char *string)
 /*! Use mode to control which options are displayed */
 void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 {
+	/* Mode is composed of bit-flags to control which lines are printed.
+	 * Items without if-test are common to all vectors.
+	 * 1	= Accepts +j (not mathangle)
+	 * 2	= Accepts +s (not mathangle)
+	 * 4	= Accepts +p (not mathangle)
+	 * 8	= Accepts +g (not mathangle)
+	 * 16	= Accepts +z (not mathangle, geovector)
+	 */
 	GMT_message (GMT, "\t   Append length of vector head, with optional modifiers:\n");
 	GMT_message (GMT, "\t   [Left and right are defined by looking from start to end of vector]\n");
 	GMT_message (GMT, "\t     +a<angle> to set angle of the vector head apex [30]\n");
@@ -1082,6 +1090,8 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 	GMT_message (GMT, "\t     +q if start and stop opening angle is given instead of (azimuth,length) on input.\n");
 	GMT_message (GMT, "\t     +r to only draw right side of all specified vector heads [both sides].\n");
 	if (mode & 2) GMT_message (GMT, "\t     +s if (x,y) coordinates of tip is given instead of (azimuth,length) on input.\n");
+	if (mode & 16) GMT_message (GMT, "\t     +z if (dx,dy) vector components are given instead of (azimuth,length) on input.\n");
+	if (mode & 16) GMT_message (GMT, "\t       Append <scale>[unit] to convert components to length in given unit.\n");
 }
 
 /*! For programs that can read *.img grids */
@@ -2461,22 +2471,27 @@ int GMT_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 	return (n);
 }
 
+#if 0
 /*! . */
-int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT_MODEL *model, bool *robust)
+int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *model, bool *robust)
 {
-	/* Parse -N[p|f|c|s]<list-of-terms>[,[p|f|c|s]<list-of-terms>,...][+r] for trend1d, trend2d, grdtrend.
+	/* Parse -N[p|f|c|s][x|y]<list-of-terms>[,[p|f|c|s][x|y]<list-of-terms>,...][+r] for trend1d, trend2d, grdtrend.
 	 * p means polynomial [Default is not specified]
-	 * c means cosine
-	 * s means sine
-	 * f means both cosine and sine
+	 * c means cosine.  For 2-D you may optionaly add x|y to only add basis for that dimension [both]
+	 * s means sine.  Optionally append x|y [both]
+	 * f means both cosine and sine.    Optionally append x|y [both]
 	 * list-of-terms is either a single order (e.g., 2) or a range (e.g., 0-3)
-	 * You can give several lists separated by commas.
-	 * Indicate robust fit by appending +r
-	 * In 1-D, we add x^p, cos(2*pi*p/X), and/or sin(2*pi*p/X)
-	 * In 2-D, for polynomial an order means all p products of x^m*y^n where m+n == p
-	 *         for Fourier we add these 4 terms per order
-	 *	cos(2*pi*p*x/X), sin(2*pi*p*x/X), cos(2*pi*p*y/Y), sin(2*pi*p*y/Y)
- 	*/
+	 * Give one or more lists separated by commas.
+	 * In 1-D, we add the basis x^p, cos(2*pi*p/X), and/or sin(2*pi*p/X) depending on selection.
+	 * In 2-D, for polynomial the order means all p products of x^m*y^n where m+n == p
+	 *   To only have some of these terms you must instead specify which ones you want,
+	 *   e.g., xxxy (or x3y) and yyyx (or y3x) for just those two.
+	 *   For Fourier we add these 4 terms per order:
+	 *   cos(2*pi*p*x/X), sin(2*pi*p*x/X), cos(2*pi*p*y/Y), sin(2*pi*p*y/Y)
+	 *   To only add basis in x or y you must apped x|y after the c|s|f.
+	 * dim is either 1 (1-D) or 2 (for 2-D, grdtrend).
+ 	 * Indicate robust fit by appending +r
+	 */
 	
 	unsigned int pos = 0, n_model = 0, part, n_parts, k, j;
 	int64_t order, start, stop, step;
@@ -2489,6 +2504,10 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: No arguments given!\n", option);
 		return -1;	/* No arg given */
 	}
+	if ((strchr (in_arg, 'x') || strchr (in_arg, 'y')) && dim == 1) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Cannot use x|y for 1-D basis\n", option);
+		return -1;
+	}
 	arg = strdup (in_arg);
 	end = strlen (arg) - 1;
 	if (arg[end] == 'r') {
@@ -2498,9 +2517,9 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT
 	}
 	else
 		*robust = false;
-		
+	
 	while ((GMT_strtok (arg, ",", &pos, p))) {
-		if (!strchr ("0123456789cfsp", p[0])) {
+		if (!strchr ("0123456789cfspxy", p[0])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function type (%c)\n", option, p[0]);
 			return -1;
 		}
@@ -2517,7 +2536,10 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT
 			case 'p': kind[0] = GMT_POLYNOMIAL; break;
 			case 'c': kind[0] = GMT_COSINE; break;
 			case 's': kind[0] = GMT_SINE; break;
-			case 'f': kind[0] = GMT_COSINE; kind[1] = GMT_SINE; n_parts = 2; break;
+			case 'f': kind[0] = GMT_FOURIER; break;
+			case 'x': kind[0] = GMT_POLYNOMIAL
+			case 'y':	/* Gave specific polynomial terms */
+				
 		}
 		if ((step = gmt_parse_range (GMT, this_range, &start, &stop)) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function order (%s)\n", option, this_range);
@@ -2565,7 +2587,7 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT
 	}
 	return (n_model);
 }
-
+#endif
 /*! . */
 void GMT_check_lattice (struct GMT_CTRL *GMT, double *inc, unsigned int *registration, bool *active)
 {	/* Uses provided settings to initialize the lattice settings from
@@ -9103,6 +9125,10 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
+				break;
+			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
+				S->v.status |= GMT_VEC_COMPONENTS;
+				S->v.comp_scale = GMT_convert_units (GMT, &p[1], GMT->current.setting.proj_length_unit, GMT_INCH);
 				break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad modifier +%c\n", p[0]);

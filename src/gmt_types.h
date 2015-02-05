@@ -87,8 +87,8 @@ struct GMT_OBSERVATION {
 
 /*! For trend-fitting models */
 struct GMT_MODEL {
-	unsigned int kind;
-	unsigned int order;
+	unsigned int kind[2];
+	unsigned int order[2];
 };
 
 struct GMT_DIST {	/* Holds info for a particular distance calculation */
