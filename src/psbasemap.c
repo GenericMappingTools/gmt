@@ -86,7 +86,7 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s]\n\t[%s]\n", GMT_INSERT, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L%s]\n", GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-T%s]\n", GMT_TROSE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,

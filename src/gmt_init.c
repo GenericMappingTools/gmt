@@ -2471,12 +2471,51 @@ int GMT_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 	return (n);
 }
 
+int count_xy_terms (char *txt, int64_t *xstart, int64_t *xstop, int64_t *ystart, int64_t *ystop)
+{	/* Process things like xxxxyy, x4y2, etc and find the number of x and y items.
+	 * We return the start=stop= number of x and ystart=ystop = number of y. */
+	
+	unsigned int n[2] = {0, 0};
+	size_t len = strlen (txt), k = 0;
+	while (k < len) {
+		switch (txt[k]) {
+			case 'x':
+				if (isdigit (txt[k+1])) {	/* Gave things like x3y */
+					n[GMT_X] += atoi (&txt[k+1]);
+					k++;
+					while (txt[k] && isdigit (txt[k])) k++;	/* Wind pass the number */
+				}
+				else {	/* Just one x */
+					n[GMT_X]++;
+					k++;
+				}
+				break;
+			case 'y':
+				if (isdigit (txt[k+1])) {	/* Gave things like y3x */
+					n[GMT_Y] += atoi (&txt[k+1]);
+					k++;
+					while (txt[k] && isdigit (txt[k])) k++;	/* Wind pass the number */
+				}
+				else {	/* Just one y */
+					n[GMT_Y]++;
+					k++;
+				}
+				break;
+			default:	/* Bad args */
+				return -1;
+				break;
+		}
+	}
+	*xstart = *xstop = n[GMT_X];	/* Just a single x combo */
+	*ystart = *ystop = n[GMT_Y];	/* Just a particular y combo */
+	return 0;
+}
 #if 0
 /*! . */
-int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *model, bool *robust)
+int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *M)
 {
-	/* Parse -N[p|f|c|s][x|y]<list-of-terms>[,[p|f|c|s][x|y]<list-of-terms>,...][+r] for trend1d, trend2d, grdtrend.
-	 * p means polynomial [Default is not specified]
+	/* Parse -N[p|P|f|F|c|C|s|S|x|X|y|Y][x|y]<list-of-terms>[,...][+l<lengths>][+o<origins>][+r] for trend1d, trend2d, grdtrend.
+	 * p means polynomial.
 	 * c means cosine.  For 2-D you may optionaly add x|y to only add basis for that dimension [both]
 	 * s means sine.  Optionally append x|y [both]
 	 * f means both cosine and sine.    Optionally append x|y [both]
@@ -2494,7 +2533,7 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 	 */
 	
 	unsigned int pos = 0, n_model = 0, part, n_parts, k, j;
-	int64_t order, start, stop, step;
+	int64_t order, xstart, xstop, ystart, ystop, step, n_order;
 	size_t end;
 	bool got_intercept;
 	enum GMT_enum_model kind[2];
@@ -2508,58 +2547,193 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Cannot use x|y for 1-D basis\n", option);
 		return -1;
 	}
+	/* Deal with backwards compatibilities: -N[f]<nmodel>[r] for 1-D and -N<nmodel>[r] for 2-D */
 	arg = strdup (in_arg);
 	end = strlen (arg) - 1;
-	if (arg[end] == 'r') {
-		*robust = true;
-		arg[end] = '\0';	/* Chop off the r */
-		if (end > 0 && arg[end-1] == '+') arg[end-1] = '\0';	/* Used +r */
+	if ((isdigit (arg[0]) || (dim == 1 && end > 1 && arg[0] == 'f' && isdigit (arg[2]))) && ((arg[end] == 'r' && arg[end-1] != '+') || isdigit (arg[end])))
+		/* Old GMT4-like syntax. If compatibility allows it we rewrite using new syntax so we only have one parser below */
+		if (GMT_compat_check (GMT, 5)) {	/* Allow old-style syntax */
+			char new[GMT_BUFSIZ] = {""};
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -%c%s is deprecated; see usage for new syntax\n", option, arg);
+			if (arg[0] != 'f') new[0] = 'p';	/* So we start with f or p */			
+			if (arg[end] == 'r') {
+				arg[end] = '\0';	/* Chop off the r */
+				strcat (new, arg);
+				strcat (new, "+r");	/* Add robust flag */
+			}
+			else
+				strcat (new, arg);
+			strcpy (arg, new);	/* Place revised args */
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Old-style arguments given and chosen compatibility mode does not allow it\n", option);
+			free (arg);
+			return -1;
+		}
 	}
-	else
-		*robust = false;
-	
+	if ((c = strchr (arg, '+'))) {	/* Gave one or more modifiers */
+		pos = 0;
+		while ((GMT_strtok (c, "+", &pos, p))) {
+			switch (c[0]) {
+				case 'o':	/* Origin of axes */
+					if ((k = GMT_Get_Value (GMT->parent, &c[1], M->origin)) < 1) {
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unable to parse the +o arguments (%s)\n", option, &c[1]);
+						return -1;
+					}
+					break;
+				case 'r':
+					M->robust = true;
+					break;
+				case 'x':
+					if ((k = GMT_Get_Value (GMT->parent, &c[1], M->period)) < 1) {
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unable to parse the +x argument (%s)\n", option, &c[1]);
+						return -1;
+					}
+					break;
+				case 'y':
+					if ((k = GMT_Get_Value (GMT->parent, &c[1], &M->period[GMT_Y])) < 1) {
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unable to parse the +y argument (%s)\n", option, &c[1]);
+						return -1;
+					}
+					break;
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unrecognized modifier +%s\n", option, c);
+					return -1;
+					break;
+			}
+		}
+		c[0] = '\0';	/* Chop off modifiers in arg before processing settings */
+	}
+	pos = 0;	/* Reset position since now working on arg */
 	while ((GMT_strtok (arg, ",", &pos, p))) {
-		if (!strchr ("0123456789cfspxy", p[0])) {
+		/* Here, p will be one instance of [p|f|c|s][x|y]<list-of-terms> */
+		if (!strchr ("cfsp", p[0])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function type (%c)\n", option, p[0]);
 			return -1;
 		}
-		if (isdigit (p[0])) {	/* If no type given it is polynomial p */
-			type = 'p';
-			this_range = p;
-		}
-		else {	/* Got type so step over to get range */
-			type = p[0];
-			this_range = &p[1];
-		}
+		this_range = &p[1];
 		n_parts = 1;	/* Normally just one basis function at the time but f implies both c and s */
-		switch (type) {	/* What kind of basis function? */
-			case 'p': kind[0] = GMT_POLYNOMIAL; break;
-			case 'c': kind[0] = GMT_COSINE; break;
-			case 's': kind[0] = GMT_SINE; break;
-			case 'f': kind[0] = GMT_FOURIER; break;
-			case 'x': kind[0] = GMT_POLYNOMIAL
-			case 'y':	/* Gave specific polynomial terms */
+		special = false;
+		switch (p[0]) {	/* What kind of basis function? */
+			case 'p': kind = GMT_POLYNOMIAL; break;
+			case 'c': kind = GMT_COSINE; break;
+			case 's': kind = GMT_SINE; break;
+			case 'f': kind = GMT_FOURIER; break;
 				
 		}
-		if ((step = gmt_parse_range (GMT, this_range, &start, &stop)) != 1) {
+		if (p[1] == 'x' || p[1] == 'y')	{	/* Single building block and not all items of given order */
+			special = true;
+			count_xy_terms (&p[1], &xstart, &xstop, &ystart, &ystop);
+		else if ((step = gmt_parse_range (GMT, this_range, &xstart, &xstop)) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function order (%s)\n", option, this_range);
+			return -1;
+		}
+		
+		if (kind != GMT_POLYNOMIAL && xstart == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Cosine|Sine cannot start with order 0.  Use p0 to add a constant\n", option);
 			return -1;
 		}
 		/* Here we have range and kind */
 		
-		for (order = start; order <= stop; order++) {
-			for (part = 0; part < n_parts; part++) {
-				if (kind[part] == GMT_SINE && order == 0) {	/* Quietly skip the useless sine part for order zero */
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -%c: Ignore sine basis for 0th-order Fourier term\n", option);
-					continue;
-				}
-				model[n_model].kind = kind[part];
-				model[n_model].order = (unsigned int)order;
-				n_model++;
-				if (n_model == GMT_N_MAX_MODEL) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
-					return -1;
-				}
+		/* For the Fourier components we need to distinguish bewteen things like cos(x)*sin(y), sin(x)*cos(y), cos(x), etc.  We use these 8 type flags:
+		   0 = C- cos (x)
+		   1 = -C cos (y)
+		   2 = S- sin (x)
+		   3 = -S sin (y)
+		   4 = CC cos (x)*cos(y)
+		   5 = CS cos (x)*sin(y)
+		   6 = SC sin (x)*cos(y)
+		   7 = SS sin (x)*sin(y)
+		 */
+		for (order = xstart; order <= xstop; order++) {
+			/* For each order given in the range, or just this particular order */
+			switch (kind) {
+				case GMT_POLYNOMIAL:	/* Add one or more polynomial basis */
+					if (!special) {
+						ystart = 0;
+						ystop = (dim == 1) ? 0 : order;
+					}
+					for (k = ystart; k <= ystop; k++) {
+						M->term[n_model].kind = GMT_POLYNOMIAL;
+						M->term[n_model].order[GMT_X] = (unsigned int)(order - k);
+						M->term[n_model].order[GMT_Y] = (unsigned int)k;
+						n_model++;
+						if (n_model == GMT_N_MAX_MODEL) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
+							return -1;
+						}
+					}
+					break;
+				case GMT_FOURIER:	/* Add a Fourier basis (2 or 4 parts) */
+					if (!special) {
+						ystart = ystop = order;
+					}
+					for (i = 0; i < 2; i) {	/* Loop over cosine and sine in x */
+						for (k = 0; k < 2; k++) {	/* Loop over cosine and sine in y */
+							M->term[n_model].kind = GMT_FOURIER;
+							M->term[n_model].type = 4 + 2*i + k;	/* CC, CS, SC, SS */
+							M->term[n_model].order[GMT_X] = (unsigned int)order;
+							M->term[n_model].order[GMT_Y] = (unsigned int)ystart;
+							n_model++;
+							if (n_model == GMT_N_MAX_MODEL) {
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
+								return -1;
+							}
+						}
+					}
+					break;
+				case GMT_COSINE:	/* Add a Cosine basis (1 or 2 parts) */
+					if (!special) {
+						ystart = ystop = order;
+					}
+					/* cosine in x? */
+					if (order) {
+						M->term[n_model].kind = GMT_COSINE;
+						M->term[n_model].type = 0;	/* C- */
+						M->term[n_model].order[GMT_X] = (unsigned int)order;
+						n_model++;
+						if (n_model == GMT_N_MAX_MODEL) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
+							return -1;
+						}
+					}
+					if (ystart) {
+						M->term[n_model].kind = GMT_COSINE;
+						M->term[n_model].type = 1;	/* -C */
+						M->term[n_model].order[GMT_Y] = (unsigned int)ystart;
+						n_model++;
+						if (n_model == GMT_N_MAX_MODEL) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
+							return -1;
+						}
+					}
+					break;
+				case GMT_SINE:	/* Add a Sine basis (1 or 2 parts) */
+					if (!special) {
+						ystart = ystop = order;
+					}
+					/* sine in x? */
+					if (order) {
+						M->term[n_model].kind = GMT_SINE;
+						M->term[n_model].type = 2;	/* S- */
+						M->term[n_model].order[GMT_X] = (unsigned int)order;
+						n_model++;
+						if (n_model == GMT_N_MAX_MODEL) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
+							return -1;
+						}
+					}
+					if (ystart) {
+						M->term[n_model].kind = GMT_SINE;
+						M->term[n_model].type = 3;	/* -S */
+						M->term[n_model].order[GMT_Y] = (unsigned int)ystart;
+						n_model++;
+						if (n_model == GMT_N_MAX_MODEL) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
+							return -1;
+						}
+					}
+					break;
 			}
 		}
 	}
@@ -2568,26 +2742,26 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 	
 	for (k = 0; k < n_model; k++) {
 		for (j = k+1; j < n_model; j++) {
-			if (model[k].kind == model[j].kind && model[k].order == model[j].order) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Basis %c%u occurs more than once!\n", option, name[model[k].kind], model[k].order);
-				return -1;
-			}
-			if (model[k].order == 0 && model[j].order == 0 && model[k].kind != model[j].kind) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: The zero-order basis (the intercept) given more than once!\n", option);
+			if (M->term[k].kind == M->term[j].kind && M->term[k].order[GMT_X] == M->term[j].order[GMT_X] && M->term[k].order[GMT_Y] == M->term[j].order[GMT_Y] && M->term[k].type == M->term[j].type) {
+				if (dim == 1)
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Basis %c%u occurs more than once!\n", option, name[M->term[k].kind], M->term[k].order[GMT_X]);
+				else
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Basis %cx%uy%u occurs more than once!\n", option, name[M->term[k].kind], M->term[k].order[GMT_X], M->term[k].order[GMT_Y]);
 				return -1;
 			}
 		}
-		if (model[k].order == 0) got_intercept = true;
+		if (M->term[k].order == 0) got_intercept = true;
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		if (!got_intercept) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -%c: No intercept term (order 0) given\n", option);
+		if (!got_intercept) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -%c: No intercept term (p0) given\n", option);
 		fprintf (stderr, "Fit %u terms.  Use a robust model?: %s\n", n_model, (*robust) ? "Yes" : "No");
 		for (k = 0; k < n_model; k++)
-			fprintf (stderr, "Model basis %d is of type %c and order %u\n", k, name[model[k].kind], model[k].order);
+			fprintf (stderr, "Model basis %d is of type %c and order %u\n", k, name[M->term[k].kind], M->term[k].order);
 	}
-	return (n_model);
+	return (0);
 }
 #endif
+
 /*! . */
 void GMT_check_lattice (struct GMT_CTRL *GMT, double *inc, unsigned int *registration, bool *active)
 {	/* Uses provided settings to initialize the lattice settings from
