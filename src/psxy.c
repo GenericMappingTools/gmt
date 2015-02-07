@@ -608,7 +608,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	char *text_rec = NULL, s_args[GMT_BUFSIZ] = {""};
 
-	double direction, length, dx, dy, dim[PSL_MAX_DIMS], *in = NULL;
+	double direction, length, dx, dy, d, dim[PSL_MAX_DIMS], *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
 
 	struct GMT_PEN current_pen, default_pen;
@@ -1095,14 +1095,17 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						continue;
 					}
 					if (S.v.status & GMT_VEC_COMPONENTS)	/* Read dx, dy in user units */
-						direction = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
+						d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
 					else
-						direction = in[ex1+S.read_size];
-					if (S.convert_angles)	/* Convert geo azimuth to map direction */
-						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, direction);
+						d = in[ex1+S.read_size];
+						
+					if (!S.convert_angles)	/* Use direction as given */
+						direction = d;
 					else if (!GMT_is_geographic (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
-						direction = 90.0 - direction;
-					/* else	use direction as given */
+						direction = 90.0 - d;
+					else	/* Convert geo azimuth to map direction */
+						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
+
 					if (GMT_is_dnan (direction)) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector direction = NaN near line %d\n", n_total_read);
 						continue;

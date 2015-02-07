@@ -654,7 +654,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		bool periodic = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
-		double xpos[2], width;
+		double xpos[2], width, d;
 		
 		/* Determine if we need to worry about repeating periodic symbols */
 		if (clip_set && (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN)) {
@@ -870,15 +870,18 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					}
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+						
 					if (S.v.status & GMT_VEC_COMPONENTS)	/* Read dx, dy in user units */
-						data[n].dim[0] = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
+						d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
 					else
-						data[n].dim[0] = in[ex1+S.read_size];	/* Got direction */
-					if (S.convert_angles)	/* Use direction as given */
-						data[n].dim[0] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[0]);
+						d = in[ex1+S.read_size];	/* Got direction */
+					if (!S.convert_angles)	/* Use direction as given */
+						data[n].dim[0] = d;	/* direction */
 					else if (!GMT_is_geographic (GMT, GMT_IN))	/* Cartesian azimuth; change to direction */
-						data[n].dim[0] = 90.0 - data[n].dim[0];
-					/* else	use direction as given */
+						data[n].dim[0] = 90.0 - d;
+					else	/* Convert geo azimuth to map direction */
+						data[n].dim[0] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
+						
 					if (GMT_is_dnan (data[n].dim[0])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector azimuth = NaN near line %d\n", n_total_read);
 						continue;
