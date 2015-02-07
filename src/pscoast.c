@@ -323,7 +323,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				break;
 			case 'F':
 				if (GMT_compat_check (GMT, 5)) {	/* See if we got old -F for DCW stuff (now -E) */
-					if (strcmp (opt->arg, "+l") || opt->arg[0] == '=' || isupper (opt->arg[0])) {
+					if (strstr (opt->arg, "+l") || opt->arg[0] == '=' || isupper (opt->arg[0])) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -F option for DCW is deprecated, use -E instead.\n");
 						Ctrl->E.active = true;
 						n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
