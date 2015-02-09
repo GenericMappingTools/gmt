@@ -694,13 +694,15 @@ void GMTAPI_index_to_2D_F (int *row, int *col, size_t index, int dim, int mode)
 #endif
 
 /*! . */
-int GMTAPI_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, unsigned int mode, struct GMT_GRID *G) {
+int GMTAPI_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_GRID *G) {
+	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
 	gmt_init_grdheader (API->GMT, G->header, opt, range, inc, registration, mode);
 	return (GMT_OK);
 }
 
 /*! . */
-int GMTAPI_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, unsigned int mode, struct GMT_IMAGE *I) {
+int GMTAPI_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_IMAGE *I) {
+	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
 	gmt_init_grdheader (API->GMT, I->header, opt, range, inc, registration, mode);
 	return (GMT_OK);
 }
@@ -5211,6 +5213,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 *	   based on the dimensions already set.  This time you pass NULL/0
 	 *	   for dim, wesn,inc,registration,pad but let data be your grid|image returned
 	 *	   to you after step 1.
+	 *
 	 * By default, the created resource is consider an input resource (direction == GMT_IN).
 	 * However, for the interface containers GMT_VECTOR and GMT_MATRIX they will have their
 	 * direction set to GMT_OUT if the row-dimension is not set.
@@ -5227,6 +5230,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	if (dim == NULL && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If nothing is known then it must be output */
 
 #if 0	/* This seems wrong: Create should always CREATE data and has nothing to do with @GMTAPI@-###### */
 	if ((has_ID = GMT_File_Is_Memory (data))) {	/* In case a @GMTAPI@-###### reference is passed... */
@@ -5242,7 +5246,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
 	 			if ((new_obj = GMT_create_grid (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
-				error = GMTAPI_init_grid (API, NULL, range, inc, registration, mode, new_obj);
+				error = GMTAPI_init_grid (API, NULL, range, inc, registration, mode, def_direction, new_obj);
 				if (pad >= 0) GMT_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
 			}
 			else {	/* Already registered so has_ID must be false */
@@ -5259,7 +5263,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				if (p_data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 	 			if ((new_obj = GMT_create_image (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
-				error = GMTAPI_init_image (API, NULL, range, inc, registration, mode, new_obj);
+				error = GMTAPI_init_image (API, NULL, range, inc, registration, mode, def_direction, new_obj);
 				if (pad >= 0) GMT_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
 			}
 			else {
@@ -5286,7 +5290,6 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		 	if ((new_obj = GMT_create_palette (API->GMT, dim[0])) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
-			if (dim == NULL && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If nothing is known then it must be output */
 			n_layers = (dim == NULL || dim[0] == 0) ? 1U : dim[GMT_Z];
 		 	new_obj = GMT_create_matrix (API->GMT, n_layers, def_direction);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
