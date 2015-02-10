@@ -158,8 +158,6 @@
 #include "gmt_internals.h"
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 #include <stdarg.h>
-#include "gmt_core_module.h" 	/* Core module modes and properties */
-#include "gmt_supplements_module.h" 	/* Suppl module modes and properties */
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
