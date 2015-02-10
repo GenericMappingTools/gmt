@@ -23,7 +23,6 @@ extern "C" {
 #include "declspec.h"
 
 /* Prototypes of all modules in the GMT core library */
-#ifdef BUILD_SHARED_LIBS
 EXTERN_MSC int GMT_blockmean (void *API, int mode, void *args);
 EXTERN_MSC int GMT_blockmedian (void *API, int mode, void *args);
 EXTERN_MSC int GMT_blockmode (void *API, int mode, void *args);
@@ -106,7 +105,7 @@ EXTERN_MSC int GMT_trend2d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_triangulate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_write (void *API, int mode, void *args);
 EXTERN_MSC int GMT_xyz2grd (void *API, int mode, void *args);
-#endif
+
 /* Pretty print all modules in the GMT core library and their purposes */
 EXTERN_MSC void gmt_core_module_show_all (void *API);
 
