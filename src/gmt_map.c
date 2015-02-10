@@ -991,8 +991,20 @@ int gmt_map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1, doubl
 	if (fabs (map_half_size) < GMT_CONV4_LIMIT) return (0);
 
 	dx = x1 - x0;
-	if (dx > map_half_size)	return (-1);	/* Cross left/west boundary */
-	if (dx < (-map_half_size)) return (1);	/* Cross right/east boundary */
+	if (fabs (dx) > map_half_size) {	/* Possible jump; let's see how far apart those longitudes really are */
+		/* This test on longitudes was added to deal with issue #672, also see test/psxy/nojump.sh */
+		double last_lon, this_lon, dummy, dlon;
+		GMT_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
+		GMT_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
+		dlon = this_lon - last_lon;
+		if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
+		
+		if (fabs (dlon) < 180.0) /* Not going the long way so we judge this to be no jump */
+			return (0);
+		/* Jump it is */
+		if (dx > map_half_size)	return (-1);	/* Cross left/west boundary */
+		if (dx < (-map_half_size)) return (1);	/* Cross right/east boundary */
+	}
 	return (0);
 }
 

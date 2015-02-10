@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13646 [64-bit] Document from psxy
+%%Title: GMT v5.1.2_r14051M [64-bit] Document from psxy
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Nov  1 20:27:20 2014
+%%CreationDate: Tue Feb 10 10:08:33 2015
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -291,15 +291,15 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -307,6 +307,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +344,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +368,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +494,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -513,6 +541,9 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
@@ -557,7 +588,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip N
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -674,7 +705,7 @@ O1
 30 -11 D
 16 -4 D
 32 -3 D
-0 364 D
+P
 FO
 0 933 M
 0 -364 D
@@ -698,11 +729,11 @@ FO
 -14 8 D
 -30 11 D
 -16 4 D
--32 3 D
+P
 FO
 3600 933 M
 0 -1 D
-0 1 D
+P
 FO
 /FO {fs os}!
 FO
@@ -846,7 +877,7 @@ clipsave
 113 -16 D
 77 -9 D
 195 -14 D
-158 -3 D
+P
 PSL_clip N
 12 W
 V
@@ -879,7 +910,7 @@ O1
 -11 64 D
 -19 59 D
 -21 49 D
--34 60 D
+P
 FO
 87 1177 M
 -34 -60 D
@@ -909,7 +940,7 @@ FO
 -8 7 D
 -10 5 D
 -12 1 D
-1 2 D
+P
 FO
 3513 1177 M
 34 -60 D
@@ -931,7 +962,7 @@ FO
 -11 64 D
 -19 59 D
 -21 49 D
--34 60 D
+P
 FO
 /FO {fs os}!
 FO
@@ -1093,25 +1124,8 @@ S
 42 13 D
 S
 1800 0 M
-16 0 D
-8 0 D
-8 0 D
-7 0 D
-8 0 D
-8 0 D
-8 1 D
-8 0 D
-8 0 D
-8 0 D
-8 0 D
-8 0 D
-7 1 D
-8 0 D
-8 0 D
-8 0 D
-8 1 D
-8 0 D
-8 0 D
+103 1 D
+55 2 D
 S
 1642 3 M
 4 7 D
@@ -1161,24 +1175,8 @@ S
 -44 11 D
 S
 1958 1797 M
+-150 3 D
 -8 0 D
--8 0 D
--8 1 D
--8 0 D
--8 0 D
--8 0 D
--7 1 D
--8 0 D
--8 0 D
--8 0 D
--8 0 D
--8 0 D
--8 1 D
--8 0 D
--8 0 D
--7 0 D
--32 0 D
-1800 1800 M
 S
 1642 1797 M
 4 -7 D
@@ -1420,7 +1418,7 @@ clipsave
 155 -23 D
 124 -13 D
 160 -10 D
-149 -3 D
+P
 PSL_clip N
 12 W
 V
@@ -1455,7 +1453,7 @@ O1
 -9 73 D
 -13 48 D
 -18 50 D
--14 30 D
+P
 FO
 54 1120 M
 -23 -53 D
@@ -1486,7 +1484,7 @@ FO
 -13 6 D
 -27 7 D
 -16 0 D
-0 1 D
+P
 FO
 3546 1120 M
 23 -53 D
@@ -1506,7 +1504,7 @@ FO
 -9 73 D
 -13 48 D
 -18 50 D
--14 30 D
+P
 FO
 /FO {fs os}!
 FO
@@ -1827,6 +1825,7 @@ S
 8 W
 25 W
 1800 0 M
+P
 129 2 D
 139 8 D
 108 10 D
@@ -2020,7 +2019,7 @@ clipsave
 175 -63 D
 298 -100 D
 351 -113 D
-79 -25 D
+P
 PSL_clip N
 12 W
 V
@@ -2062,7 +2061,7 @@ O1
 -28 36 D
 -10 11 D
 -6 5 D
-0 1 D
+P
 FO
 87 1079 M
 -2 -3 D
@@ -2099,7 +2098,7 @@ FO
 -8 8 D
 -19 11 D
 -25 5 D
--15 1 D
+P
 FO
 3513 1079 M
 2 -3 D
@@ -2137,7 +2136,7 @@ FO
 -28 36 D
 -10 11 D
 -6 5 D
-0 1 D
+P
 FO
 /FO {fs os}!
 FO
@@ -2356,6 +2355,7 @@ S
 8 W
 25 W
 1800 0 M
+P
 283 90 D
 38 13 D
 210 68 D
@@ -2570,7 +2570,7 @@ O1
 3 69 D
 -3 69 D
 -14 97 D
--9 38 D
+P
 FO
 26 1117 M
 -11 -49 D
@@ -2598,7 +2598,7 @@ FO
 -28 9 D
 -15 3 D
 -16 0 D
-0 1 D
+P
 FO
 3574 1117 M
 11 -49 D
@@ -2612,7 +2612,7 @@ FO
 3 69 D
 -3 69 D
 -14 97 D
--9 38 D
+P
 FO
 /FO {fs os}!
 FO
@@ -2972,7 +2972,7 @@ O1
 -5 44 D
 -16 77 D
 -21 68 D
--9 23 D
+P
 FO
 54 1380 M
 -21 -59 D
@@ -3005,7 +3005,7 @@ FO
 -13 7 D
 -14 4 D
 -16 2 D
-1 1 D
+P
 FO
 3546 1380 M
 21 -59 D
@@ -3027,7 +3027,7 @@ FO
 -5 44 D
 -16 77 D
 -21 68 D
--9 23 D
+P
 FO
 /FO {fs os}!
 FO
@@ -3378,7 +3378,7 @@ O1
 -4 63 D
 -10 75 D
 -12 56 D
--9 34 D
+P
 FO
 35 1150 M
 -18 -74 D
@@ -3411,7 +3411,7 @@ FO
 -14 5 D
 -15 3 D
 -16 0 D
-0 1 D
+P
 FO
 3565 1150 M
 18 -74 D
@@ -3429,7 +3429,7 @@ FO
 -4 63 D
 -10 75 D
 -12 56 D
--9 34 D
+P
 FO
 /FO {fs os}!
 FO
@@ -3778,7 +3778,7 @@ O1
 -23 47 D
 -5 7 D
 -6 11 D
--2 4 D
+P
 FO
 71 1130 M
 -18 -32 D
@@ -3812,7 +3812,7 @@ FO
 -21 14 D
 -27 7 D
 -15 0 D
-0 1 D
+P
 FO
 3529 1130 M
 18 -32 D
@@ -3844,7 +3844,7 @@ FO
 -23 47 D
 -5 7 D
 -6 11 D
--2 4 D
+P
 FO
 /FO {fs os}!
 FO
@@ -4166,7 +4166,7 @@ O1
 6 81 D
 1 83 D
 -5 81 D
--2 21 D
+P
 FO
 7 1333 M
 -6 -81 D
@@ -4189,7 +4189,7 @@ FO
 -16 14 D
 -18 11 D
 -20 7 D
--22 3 D
+P
 FO
 2393 1333 M
 6 -81 D
@@ -4200,7 +4200,7 @@ FO
 2 71 D
 -1 52 D
 -5 71 D
--1 10 D
+P
 FO
 /FO {fs os}!
 FO
@@ -4296,53 +4296,58 @@ S
 -42 22 D
 S
 1200 0 M
--151 9 D
--9 2 D
--8 1 D
--8 1 D
--8 1 D
--7 1 D
--8 2 D
--6 1 D
--7 1 D
--7 1 D
+-107 5 D
+-6 0 D
 -12 2 D
+-11 1 D
+-10 1 D
+-9 1 D
+-9 1 D
+-8 1 D
+-8 2 D
+-8 1 D
+-7 1 D
+-7 1 D
+-7 1 D
+-6 1 D
+-7 2 D
+-12 2 D
+-11 2 D
 -11 3 D
 -11 2 D
--11 2 D
--10 3 D
 -10 2 D
--9 2 D
 -9 3 D
 -9 2 D
+-9 2 D
+-9 3 D
+-8 2 D
+-8 2 D
 -8 2 D
 -8 3 D
 -8 2 D
--8 2 D
--8 2 D
--7 3 D
--7 2 D
--7 2 D
 -7 2 D
 -7 3 D
+-7 2 D
+-7 2 D
+-7 2 D
+-6 3 D
 -6 2 D
 -7 2 D
 -6 2 D
 -6 3 D
 -6 2 D
--6 2 D
--12 5 D
 -11 4 D
--11 5 D
+-12 5 D
 -11 4 D
 -10 4 D
 -10 5 D
 -10 4 D
+-10 5 D
+-9 4 D
+-9 4 D
 -9 4 D
 -9 5 D
--9 4 D
--9 4 D
--2 1 D
+-1 0 D
 S
 1200 0 M
 -23 17 D
@@ -4370,53 +4375,58 @@ S
 1 0 D
 S
 1200 0 M
-151 9 D
-9 2 D
-8 1 D
-8 1 D
-8 1 D
-7 1 D
-8 2 D
-6 1 D
-7 1 D
-7 1 D
+107 5 D
+6 0 D
 12 2 D
+11 1 D
+10 1 D
+9 1 D
+9 1 D
+8 1 D
+8 2 D
+8 1 D
+7 1 D
+7 1 D
+7 1 D
+6 1 D
+7 2 D
+12 2 D
+11 2 D
 11 3 D
 11 2 D
-11 2 D
-10 3 D
 10 2 D
-9 2 D
 9 3 D
 9 2 D
+9 2 D
+9 3 D
+8 2 D
+8 2 D
 8 2 D
 8 3 D
 8 2 D
-8 2 D
-8 2 D
-7 3 D
-7 2 D
-7 2 D
 7 2 D
 7 3 D
+7 2 D
+7 2 D
+7 2 D
+6 3 D
 6 2 D
 7 2 D
 6 2 D
 6 3 D
 6 2 D
-6 2 D
-12 5 D
 11 4 D
-11 5 D
+12 5 D
 11 4 D
 10 4 D
 10 5 D
 10 4 D
+10 5 D
+9 4 D
+9 4 D
 9 4 D
 9 5 D
-9 4 D
-9 4 D
-2 1 D
+1 0 D
 S
 664 126 M
 8 9 D
@@ -4483,7 +4493,14 @@ S
 12 3 D
 6 1 D
 7 1 D
-212 19 D
+7 1 D
+6 1 D
+8 2 D
+7 1 D
+8 1 D
+8 1 D
+8 1 D
+160 11 D
 1200 2400 M
 S
 908 2111 M
@@ -4548,8 +4565,15 @@ S
 -12 3 D
 -6 1 D
 -7 1 D
-988 2381 M
-212 19 D
+-7 1 D
+-6 1 D
+-8 2 D
+-7 1 D
+-8 1 D
+-8 1 D
+-8 1 D
+-160 11 D
+1200 2400 M
 S
 664 2274 M
 8 -9 D
@@ -4584,59 +4608,58 @@ S
 25 W
 1200 0 M
 0 0 D
-172 12 D
-91 17 D
-81 21 D
-78 27 D
-44 17 D
-68 31 D
-62 33 D
-53 32 D
-67 47 D
-62 49 D
-16 15 D
-11 9 D
-48 46 D
-13 14 D
-9 8 D
-52 60 D
-50 65 D
-31 45 D
-30 51 D
-27 47 D
-39 83 D
-29 74 D
-23 74 D
-12 48 D
-15 72 D
-11 80 D
-5 78 D
-1 77 D
--5 77 D
--12 95 D
--22 101 D
--25 82 D
--23 62 D
--27 61 D
--22 45 D
--39 70 D
--44 67 D
--42 55 D
--20 25 D
--38 43 D
--44 45 D
--5 4 D
--9 10 D
--48 42 D
--49 40 D
--73 51 D
--43 27 D
--82 44 D
--83 37 D
--101 35 D
--81 21 D
--45 9 D
--218 20 D
+129 7 D
+85 12 D
+84 18 D
+90 27 D
+90 35 D
+49 23 D
+58 30 D
+54 32 D
+40 27 D
+56 40 D
+59 49 D
+26 23 D
+9 10 D
+37 36 D
+54 60 D
+27 33 D
+35 48 D
+35 52 D
+44 77 D
+32 65 D
+27 65 D
+27 77 D
+23 88 D
+13 63 D
+13 102 D
+4 82 D
+-1 78 D
+-8 88 D
+-10 65 D
+-15 73 D
+-16 59 D
+-26 76 D
+-21 53 D
+-32 69 D
+-37 68 D
+-42 66 D
+-11 15 D
+-35 48 D
+-41 50 D
+-58 61 D
+-49 47 D
+-17 14 D
+-35 29 D
+-69 51 D
+-66 42 D
+-70 38 D
+-54 26 D
+-63 26 D
+-98 32 D
+-53 14 D
+-51 10 D
+-222 21 D
 -129 -7 D
 -85 -12 D
 -84 -18 D
@@ -4687,8 +4710,8 @@ S
 63 -26 D
 98 -32 D
 53 -14 D
-43 -9 D
-230 -22 D
+51 -10 D
+222 -21 D
 P S
 %%EndObject
 0 A
@@ -4739,7 +4762,7 @@ O1
 16 -6 D
 16 -4 D
 16 -2 D
-0 701 D
+P
 FO
 0 1490 M
 0 -701 D
@@ -4766,11 +4789,11 @@ FO
 -30 21 D
 -16 6 D
 -16 4 D
--16 2 D
+P
 FO
 3600 1490 M
 0 -2 D
-0 2 D
+P
 FO
 /FO {fs os}!
 FO
