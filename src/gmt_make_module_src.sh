@@ -90,7 +90,7 @@ extern "C" {
 #include "declspec.h"
 
 /* Prototypes of all modules in the GMT ${L_TAG} library */
-#ifndef BUILD_SHARED_LIBS
+#ifdef BUILD_SHARED_LIBS
 EOF
 gawk '{printf "EXTERN_MSC int GMT_%s (void *API, int mode, void *args);\n", $1;}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_H}
 cat << EOF >> ${FILE_GMT_MODULE_H}
