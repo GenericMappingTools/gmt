@@ -16,9 +16,6 @@
  * and regenerate this file with gmt_make_module_src.sh core */
 
 #include "gmt_dev.h"
-#ifndef BUILD_SHARED_LIBS
-#include "gmt_core_module.h"
-#endif
 
 static inline struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 
