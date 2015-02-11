@@ -387,7 +387,8 @@ struct GMT_PROJ {
 
         unsigned int g_debug;
         int g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
-
+	bool windowed;
+	
 	/* Polar (cylindrical) projection */
 
 	double p_base_angle;
