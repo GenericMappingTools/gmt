@@ -1029,7 +1029,7 @@ unsigned int gmt_genper_crossing (struct GMT_CTRL *GMT, double lon1, double lat1
 	/* Don't think we should get here... */
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in gmt_genper_crossing: None of the cases matched crossing scenario");
 	return (gmt_radial_crossing (GMT, lon1, lat1, lon2, lat2, clon, clat, xx, yy, sides));
-	
+
 }
 
 int gmt_map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1)
@@ -1052,7 +1052,7 @@ int gmt_map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1, doubl
 		GMT_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
 		dlon = this_lon - last_lon;
 		if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
-		
+
 		if (fabs (dlon) < 180.0) /* Not going the long way so we judge this to be no jump */
 			return (0);
 		/* Jump it is */
@@ -1064,10 +1064,10 @@ int gmt_map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1, doubl
 
 int gmt_map_jump_not (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1)
 {
+#if 0
 	double dx, map_half_size;
 	/* For Genper we believe there should not be jumps [Introduced to test issue #667] */
-#if 0
-	/* However, it does not work for all cases.  COnsider this one
+	/* However, it does not work for all cases.  Consider this one
 	 * psbasemap -Rg -JG280.969616634/58.7193421224/2513/0/0/0/200/180/6i -Ba30f30g30/a5f5g5NWSE -P
 	 * which draws jump lines across.  I believe this is related to the fact that in this ase
 	 * the map region is a clipped circle and we have no effective way of determining which points
@@ -1524,6 +1524,7 @@ unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	struct GMT_DATASEGMENT **L = NULL;
 	bool (*inside[2]) (double, double);
 	bool (*outside[2]) (double, double);
+
 
 	inside[0] = gmt_inside_upper_boundary;	outside[0] = gmt_outside_upper_boundary;
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
@@ -6678,11 +6679,11 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		last_x = this_x;	last_y = this_y;
 	}
 	if (np) GMT->current.plot.pen[0] = PSL_MOVE;	/* Sanity override: Gotta start off with new start point */
-	
+
 	/* When a line that starts and ends inside the domain exits and reenters, we end up with two pieces.
 	 * When these are plotted separately the sections are not joined properly and ugly gaps can appear, especially if
 	 * the pen width is large.  Here we try to fix this case since it happens fairly frequently */
-	
+
 	for (j = n_sections = k = 0; j < np; j++) if (GMT->current.plot.pen[j] == PSL_MOVE) {
 		n_sections++;
 		if (n_sections == 2) k = j;	/* Start of 2nd section */
@@ -6702,7 +6703,7 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_geo_to_xy_line: Clipping in two separate abutting lines that were joined into a single line\n");
 		GMT_free (GMT, tmp);
 	}
-	
+
 	return (np);
 }
 
