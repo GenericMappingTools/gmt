@@ -84,6 +84,7 @@
 #include "gmt_internals.h"
 
 EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
+EXTERN_MSC bool GMT_genper_reset (struct GMT_CTRL *GMT, bool reset);
 
 #define GMT_ELLIPSE_APPROX 72
 
@@ -1796,7 +1797,11 @@ void gmt_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 {
 	unsigned int k, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double dx, dy, *v = NULL;
+	bool reset = false;
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Entering gmt_map_gridlines\n");
+	reset = GMT_genper_reset (GMT, reset);
+	
 	for (k = 0; k < 2; k++) {
 		if (GMT->current.setting.map_grid_cross_size[k] > 0.0) continue;
 
@@ -1843,6 +1848,8 @@ void gmt_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 
 		if (GMT->current.setting.map_grid_pen[k].style) PSL_setdash (PSL, NULL, 0);
 	}
+	reset = GMT_genper_reset (GMT, reset);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exiting gmt_map_gridlines\n");
 }
 
 void gmt_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
@@ -2038,6 +2045,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	char label[GMT_LEN256] = {""};
 	char **label_c = NULL;
 	double *val = NULL, dx[2], dy[2], w2, s2, del, shift = 0.0;
+	
 
 	if (!(GMT_x_is_lon (GMT, GMT_IN) || GMT_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR)) return;	/* Annotations and header already done by gmt_linear_map_boundary */
 

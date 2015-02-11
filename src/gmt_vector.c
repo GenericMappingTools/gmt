@@ -1037,6 +1037,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	uint64_t i, j, n_new, n_step = 0;
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
+	double dlon, lon_i;
 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
@@ -1048,17 +1049,25 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	if (step <= 0.0) step = GMT->current.map.path_step;	/* Based on GMT->current.setting.map_line_step converted to degrees */
 	if (step <= 0.0) step = 0.1;				/* Safety valve when no -J and step not set. */
 
+	/* Must be careful with connecting longitudes along a parallel since often the
+	 * longitudes might be of different sign.  E.g., first may be +115 and the second is -165.
+	 * Naive math would find a jump of -280 degrees but really it is just 80.  The test below
+	 * tries to handle these artificial jumps. */
+	
 	for (i = 1; i < n; i++) {
 
 		GMT_geo_to_cart (GMT, lat[i], lon[i], b, true);	/* End point of current arc */
 
 		if (mode == 1) {	/* First follow meridian, then parallel */
-			theta = fabs (lon[i]-lon[i-1]) * cosd (lat[i-1]);
+			dlon = lon[i]-lon[i-1];	/* Beware of jumps due to sign differences */
+			if (fabs (dlon) > 180.0) dlon += copysign (360.0, -dlon);	/* Never more than  180 to next point */
+			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
+			theta = fabs (dlon) * cosd (lat[i-1]);
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp vectors */
-				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon[i] * c;
+				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon_i * c;
 				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1];
 				n_new++;
 			}
@@ -1084,12 +1093,15 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_new++;
 			}
-			theta = fabs (lon[i]-lon[i-1]) * cosd(lat[i]);
+			dlon = lon[i]-lon[i-1];	/* Beware of jumps due to sign differences */
+			if (fabs (dlon) > 180.0) dlon += copysign (360.0, -dlon);	/* Never more than  180 to next point */
+			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
+			theta = fabs (dlon) * cosd(lat[i]);
 			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				GMT_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
-				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon[i] * c;
+				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon_i * c;
 				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i];
 				n_new++;
 			}
@@ -1130,7 +1142,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (GMT, lon);
 	GMT_free (GMT, lat);
-	GMT_eliminate_lon_jumps (GMT, GMT->hidden.mem_coord[GMT_X], n_new);
+	GMT_eliminate_lon_jumps (GMT, GMT->hidden.mem_coord[GMT_X], n_new);	/* Ensure longitudes are in the same quadrants */
 	*a_lon = GMT_assign_vector (GMT, n_new, GMT_X);
 	*a_lat = GMT_assign_vector (GMT, n_new, GMT_Y);
 	

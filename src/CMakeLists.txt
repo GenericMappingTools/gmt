@@ -592,16 +592,20 @@ install (PROGRAMS
 	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
-install (CODE "
-execute_process (
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	\"${CMAKE_CURRENT_SOURCE_DIR}/gmtswitch\"
-	\"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtswitch${GMT_INSTALL_NAME_SUFFIX}\")
-execute_process (
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	\"${CMAKE_CURRENT_SOURCE_DIR}/gmt_shell_functions.sh\"
-	\"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt_shell_functions${GMT_INSTALL_NAME_SUFFIX}.sh\")
-")
+install (PROGRAMS gmtlogo
+	RENAME gmtlogo${GMT_INSTALL_NAME_SUFFIX}
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
+
+install (PROGRAMS gmtswitch
+	RENAME gmtswitch${GMT_INSTALL_NAME_SUFFIX}
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
+
+install (PROGRAMS gmt_shell_functions.sh
+	RENAME gmt_shell_functions${GMT_INSTALL_NAME_SUFFIX}.sh
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
 
 if (WIN32)
 	install (PROGRAMS
