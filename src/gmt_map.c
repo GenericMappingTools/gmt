@@ -2093,7 +2093,7 @@ bool gmt_genperw_overlap (struct GMT_CTRL *GMT, double GMT_UNUSED(lon0), double 
 }
 
 /*! . */
-void gmt_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0) {
+void gmt_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0)
 {
 	unsigned int i, j;
 	double xmin, xmax, ymin, ymax, w, s, x, y, dlon, dlat;
