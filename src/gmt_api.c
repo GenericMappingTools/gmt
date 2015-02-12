@@ -3552,7 +3552,7 @@ int GMT_Encode_ID (void *V_API, char *filename, int object_ID) {
 	if (object_ID > GMTAPI_MAX_ID) return_error (V_API, GMT_ID_TOO_LARGE);	/* ID is too large to fit in %06d format below */
 
 	sprintf (filename, "@GMTAPI@-%06d", object_ID);	/* Place the object ID in the special GMT API format */
-	return (GMT_OK);	/* No error encountered */
+	return_error (V_API, GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
@@ -3681,6 +3681,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 
 	if (V_API == NULL) return_value (V_API, GMT_NOT_A_SESSION, GMT_NOTSET);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_OK;	/* Reset in case it has some previous error */
 	if (GMTAPI_Validate_Geometry (API, family, geometry)) return_value (API, GMT_BAD_GEOMETRY, GMT_NOTSET);
 
 	/* Check if this filename is an embedded API Object ID passed via the filename and of the right kind.  */
@@ -3855,6 +3856,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_OK;	/* Reset in case it has some previous error */
 	if (GMTAPI_Validate_Geometry (API, family, geometry)) return_error (API, GMT_BAD_GEOMETRY);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
 	if (!((mode & GMT_ADD_FILES_IF_NONE) || (mode & GMT_ADD_FILES_ALWAYS) || (mode & GMT_ADD_STDIO_IF_NONE) || (mode & GMT_ADD_STDIO_ALWAYS) || (mode & GMT_ADD_EXISTING))) return_error (API, GMT_NOT_A_VALID_MODE);
@@ -3895,6 +3897,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (V_API, GMT_NOT_A_VALID_DIRECTION);
 	if (!(family == GMT_IS_DATASET || family == GMT_IS_TEXTSET)) return_error (V_API, GMT_NOT_A_VALID_IO_ACCESS);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_OK;	/* Reset in case it has some previous error */
 	if (!API->registered[direction]) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: Warning: No %s resources registered\n", GMT_direction[direction]);
 
 	/* Must initialize record-by-record machinery for dataset or textset */
@@ -3909,7 +3912,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
 	if (direction == GMT_OUT && header == GMT_HEADER_ON && !API->GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ascii header block */
 
-	return (GMT_OK);	/* No error encountered */
+	return_error (V_API, GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
@@ -4008,7 +4011,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_End_IO: %s resource access is now disabled\n", GMT_direction[direction]);
 
-	return (GMT_OK);	/* No error encountered */
+	return_error (V_API, GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
@@ -4074,7 +4077,7 @@ int GMT_Insert_Data (void *V_API, int object_ID, void *obj) {
 
 	/* Assign data from resource and wipe resource pointer */
 	API->object[item]->data = API->object[item]->resource = obj;
-	return (GMT_NOERROR);
+	return_error (V_API, GMT_OK);	/* No error encountered */
 }
 
 /*! . */
@@ -4095,6 +4098,7 @@ void * GMT_Retrieve_Data (void *V_API, int object_ID) {
 
 	/* Determine the item in the object list that matches this object_ID */
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, GMT_NOTSET)) == GMT_NOTSET) {
 		return_null (API, API->error);
 	}
@@ -4131,6 +4135,7 @@ int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;				/* Empty object */
 		if (!API->object[i]->resource) continue;		/* Empty resource */
@@ -4165,6 +4170,7 @@ void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data) 
 
 	/* Determine the item in the object list that matches this ID and direction */
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	if (object_ID == GMT_NOTSET) {	/* Must pick up the family from the shelf */
 		family = API->shelf;
 		API->shelf = GMT_NOTSET;
@@ -4223,6 +4229,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	just_get_data = GMT_File_Is_Memory (input);
 
 	if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
@@ -4315,6 +4322,7 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 
 	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
 		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
@@ -4403,6 +4411,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 
 	if (output) {	/* Case 1: Save to a single specified destination (file or memory).  Register it first. */
 		if ((out_ID = GMTAPI_Memory_Registered (API, family, GMT_OUT, output)) != GMT_NOTSET) {
@@ -4467,6 +4476,7 @@ int GMT_Put_Data (void *V_API, int object_ID, unsigned int mode, void *data) {
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 
 	/* Determine the item in the object list that matches this ID and direction */
 	if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, GMT_OUT)) == GMT_NOTSET) return_error (API, API->error);
@@ -4525,6 +4535,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	if (retval) *retval = 0;
 	if (!API->io_enabled[GMT_IN]) return_null (API, GMT_ACCESS_NOT_ENABLED);
 
@@ -4740,6 +4751,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
 	if (!API->io_enabled[GMT_OUT]) return_error (API, GMT_ACCESS_NOT_ENABLED);
+	API->error = GMT_NOERROR;
 
 	S_obj = API->object[API->current_item[GMT_OUT]];	/* Shorthand for the data source we are working on */
 	if (S_obj->status == GMT_IS_USED) return_error (API, GMT_WRITTEN_ONCE);	/* Only allow writing of a data set once [unless we reset status] */
@@ -4960,6 +4972,7 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row) {
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	GMT = API->GMT;
 	fmt = GMT->session.grdformat[G->header->type];
 	R = gmt_get_rbr_ptr (G->extra);
@@ -5046,6 +5059,7 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row) {
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	GMT = API->GMT;
 	fmt = GMT->session.grdformat[G->header->type];
 	R = gmt_get_rbr_ptr (G->extra);
@@ -5161,7 +5175,7 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 		/* Quietly ignore these errors: GMT_PTR_IS_NULL, GMT_FREE_EXTERNAL_NOT_ALLOWED, GMT_FREE_WRONG_LEVEL as they are not considered errors here. */
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: Ignored warning %d for object %d\n", error, object_ID);
 	}
-	return (GMT_OK);	/* Returns number of items freed or an error */
+	return_error (API, GMT_OK);
 }
 
 #ifdef FORTRAN_API
@@ -5228,6 +5242,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	if (dim == NULL && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If nothing is known then it must be output */
 
 #if 0	/* This seems wrong: Create should always CREATE data and has nothing to do with @GMTAPI@-###### */
@@ -5379,6 +5394,7 @@ double * GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	if (container == NULL) return_null (V_API, GMT_ARG_IS_NULL);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 
 	switch (family) {	/* grid, image, or matrix */
 		case GMT_IS_GRID:	/* GMT grid */
@@ -5506,7 +5522,7 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, char *s
 	GMT_Message (V_API, GMT_TIME_NONE, "\t       File name will have _real/_imag inserted before the file extensions.\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\t       Append p to store polar forms instead, using _mag/_phase instead.\n");
 
-	return (GMT_NOERROR);
+	return_error (V_API, GMT_NOERROR);
 }
 
 #ifdef FORTRAN_API
@@ -5529,6 +5545,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, char *args)
 	if (dim == 0) return_null (V_API, GMT_DIM_TOO_SMALL);
 	if (dim > 2) return_null (V_API, GMT_DIM_TOO_LARGE);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	info = GMT_memory (API->GMT, NULL, 1, struct GMT_FFT_INFO);
 	info->taper_width = -1.0;				/* Not set yet */
 	info->taper_mode = GMT_FFT_EXTEND_NOT_SET;		/* Not set yet */
@@ -5875,7 +5892,7 @@ int GMT_FFT_Destroy (void *V_API, void *v_info)
 	info = gmt_get_fftinfo_ptr (v_info);
 	GMT_free (API->GMT, info->K);
 	GMT_free (API->GMT, info);
-	return (GMT_NOERROR);
+	return_error (V_API, GMT_NOERROR);
 }
 
 #ifdef FORTRAN_API
@@ -5947,6 +5964,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (module == NULL && mode != GMT_MODULE_PURPOSE) return_error (V_API, GMT_ARG_IS_NULL);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
 		char gmt_module[GMT_LEN256] = {""};	/* To form gmt_<lib>_module_show_all */
@@ -6001,6 +6019,7 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[])
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	GMT = API->GMT;
 
 	switch (option) {
@@ -6082,7 +6101,7 @@ int GMT_Get_Default (void *V_API, char *keyword, char *value)
 	API = gmt_get_api_ptr (V_API);
 	strcpy (value, GMT_putparameter (API->GMT, keyword));
 	error = (value[0] == '\0') ? GMT_OPTION_NOT_FOUND : GMT_NOERROR;
-	return (error);
+	return_error (V_API, error);
 }
 
 #ifdef FORTRAN_API
@@ -6146,7 +6165,7 @@ int GMT_Option (void *V_API, char *options)
 		}
 	}
 	GMT_explain_options (API->GMT, arg);	/* Call the underlying explain_options machinery */
-	return (GMT_NOERROR);
+	return_error (V_API, GMT_NOERROR);
 }
 
 #ifdef FORTRAN_API
@@ -6224,7 +6243,7 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	va_end (args);
 	assert (strlen (message) < 4*GMT_BUFSIZ);
 	API->print_func (API->GMT->session.std[GMT_ERR], message);	/* Do the printing */
-	return (GMT_NOERROR);
+	return_error (V_API, GMT_NOERROR);
 }
 
 #ifdef FORTRAN_API
@@ -6262,7 +6281,7 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	va_end (args);
 	assert (strlen (message) < GMT_BUFSIZ);
 	API->print_func (API->GMT->session.std[GMT_ERR], message);
-	return (GMT_NOERROR);
+	return_error (V_API, GMT_NOERROR);
 }
 
 #ifdef FORTRAN_API
@@ -6297,6 +6316,7 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (arg == NULL || arg[0] == '\0') return_value (V_API, GMT_NO_PARAMETERS, GMT_NOTSET);
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 	GMT = API->GMT;
 
 	/* Because GMT_init_distaz and possibly GMT_scanf_arg may decide to change the GMT col_type
@@ -6344,6 +6364,7 @@ int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 	struct GMT_IMAGE *I = NULL;
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	API->error = GMT_NOERROR;
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
 
 	switch (family) {
@@ -6385,11 +6406,11 @@ int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 		case GMT_IS_MATRIX:
 		case GMT_IS_COORD:
 			GMT_Report (API, GMT_MSG_VERBOSE, "No external read or write support yet for object %s\n", GMT_family[family]);
-			return_error(API ,GMT_NOT_A_VALID_FAMILY);
+			return_error(API, GMT_NOT_A_VALID_FAMILY);
 			break;
 	}
 
-	return GMT_OK;
+	return (API->error);
 }
 
 /* Here lies the very basic F77 support for grid read and write only. It is assumed that no grid padding is required */

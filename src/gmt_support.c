@@ -3951,7 +3951,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	n_cols = (get_distances) ? 3 :2;
 	T->n_columns = n_cols;
 
-	while (!error && (GMT_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
+	while (GMT_strtok (args, ",", &pos, p)) {	/* Split on each line since separated by commas */
 		S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		GMT_alloc_segment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
 		k = p_mode = s = 0;	len = strlen (p);
@@ -3984,6 +3984,11 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 				error++;
 			}
 			p[s] = '\0';	/* Chop off for now */
+			if (error) {
+				GMT_free (GMT, T->segment);
+				GMT_free (GMT, T);
+				return (NULL);
+			}
 		}
 		n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 		if (n == 1) { /* Easy, got <code> for a central point */
@@ -4038,6 +4043,12 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 				}
 			}
 		}
+		if (error) {
+			GMT_free (GMT, T->segment);
+			GMT_free (GMT, T);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Valid coordinate codes are [lcr][bmt] and z[+-]\n", option);
+			return (NULL);
+		}
 		if (p_mode & GMT_GOT_AZIM) {		/* Got center and azimuth of line; determine a suitable end point */
 			L = gmt_determine_endpoint (GMT, S->coord[GMT_X][0], S->coord[GMT_Y][0], length, az, &S->coord[GMT_X][1], &S->coord[GMT_Y][1]);
 			if (p_mode & GMT_GOT_NP) step = L / (np - 1);
@@ -4091,10 +4102,6 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 			GMT_memset (&(T->segment[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 		}
 	}
-	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Valid coordinate codes are [lcr][bmt] and z[+-]\n", option);
-		return (NULL);
-	}
 	if (T->n_segments < n_alloc) T->segment = GMT_memory (GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
 	return (T);
 }
@@ -4143,12 +4150,16 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
 		unsigned int geometry = GMT_IS_LINE;
-		G->xp = GMT_read_table (GMT, G->file, GMT_IS_FILE, false, &geometry, false);
-		for (k = 0; k < G->xp->n_segments; k++) {
-			for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
-				GMT_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
-				G->xp->segment[k]->coord[GMT_X][i] = x;
-				G->xp->segment[k]->coord[GMT_Y][i] = y;
+		if ((G->xp = GMT_read_table (GMT, G->file, GMT_IS_FILE, false, &geometry, false)) == NULL) {	/* Failure to read the file */
+			error++;
+		}
+		else {
+			for (k = 0; k < G->xp->n_segments; k++) {
+				for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
+					GMT_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
+					G->xp->segment[k]->coord[GMT_X][i] = x;
+					G->xp->segment[k]->coord[GMT_Y][i] = y;
+				}
 			}
 		}
 	}
@@ -4208,7 +4219,6 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		}
 		GMT_fclose (GMT, fp);
 	}
-	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Valid codes are [lcr][bmt] and z[+-]\n", G->flag);
 
 	return (error);
 }
