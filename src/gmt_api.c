@@ -233,10 +233,9 @@ enum GMT_enum_iomode {
 	GMT_BY_REC	= 1};	/* Means we will access the registere files on a record-by-record basis */
 
 /*! Entries into dim[] for matrix or vector */
-enumg GMT_dim {
+enum GMT_dim {
 	DIM_COL	= 0,	/* Holds the number of columns for vectors and x-nodes for matrix */
 	DIM_ROW = 1};	/* Holds the number of rows for vectors and y-nodes for matrix */
-}
 
 /*==================================================================================================
  *		PRIVATE FUNCTIONS ONLY USED BY THIS LIBRARY FILE
@@ -5320,9 +5319,9 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (dim[COL_DIM] == 0) return_null (API, GMT_N_COLS_NOT_SET);
-			if (dim[ROW_DIM] == 0 && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If only n_columns is known then it must be output */
-	 		new_obj = GMT_create_vector (API->GMT, dim[COL_DIM], def_direction);
+			if (dim[DIM_COL] == 0) return_null (API, GMT_N_COLS_NOT_SET);
+			if (dim[DIM_ROW] == 0 && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If only n_columns is known then it must be output */
+	 		new_obj = GMT_create_vector (API->GMT, dim[DIM_COL], def_direction);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			if ((API->error = GMTAPI_init_vector (API, dim, range, inc, registration, def_direction, new_obj))) {	/* Failure, must free the object */
 				struct GMT_VECTOR *V = return_address (new_obj, GMT_IS_VECTOR);	/* Get pointer to resource */
