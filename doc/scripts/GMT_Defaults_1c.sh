@@ -4,7 +4,7 @@
 ps=GMT_Defaults_1c.ps
 gmt gmtset MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p
 gmt psbasemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25iT/2.25il -Bpxa6Hf1hg6h+l"x-axis label" -Bpya1g3p+l"y-axis label" -BWSne \
-	-X2i -Bsxa1D -P -K -UL/-0.75i/-0.85i/"Dazed and Confused" --TIME_LANGUAGE=pt \
+	-X2i -Bsxa1D -P -K -UL/-0.75i/-0.85i/"Dazed and Confused" --GMT_LANGUAGE=pt \
 	--FORMAT_TIME_STAMP="2011 Jun 13 22:10:02" > $ps
 gmt pstext -R0/2.25/0/2.25 -Jx1i -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> $ps
 0.6    2.4 RB X_AXIS_LENGTH
@@ -17,7 +17,7 @@ gmt pstext -R0/2.25/0/2.25 -Jx1i -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >>
 2.1   -0.5 LM FONT_LABEL
 2.35   0.9 LB FORMAT_DATE_MAP
 2.35   0.6 LB FORMAT_CLOCK_MAP
-2.35   0.3 LB TIME_LANGUAGE
+2.35   0.3 LB GMT_LANGUAGE
 2.4   -0.27 LM FONT_ANNOT_SECONDARY
 EOF
 gmt psxy -R -J -O -Sv0.06i+s+e -N -W0.5p,blue -Gblue << EOF >> $ps
