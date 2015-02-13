@@ -585,5 +585,9 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 			}
 		}
 	}
+	if (F->codes[0] == '\0' && !(F->mode & 3)) {	/* Gave _l or +L but no codes */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: No country codes given\n", option);
+		n_errors++;
+	}
 	return (n_errors);
 }
