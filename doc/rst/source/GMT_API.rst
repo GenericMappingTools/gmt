@@ -1177,7 +1177,8 @@ and pass the ``par`` array as indicated below:
 
   **GMT_IS_MATRIX**
     An empty :ref:`GMT_MATRIX <struct-matrix>` structure is allocated. ``par[2]`` indicates
-    the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
+    the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.  Here,
+    par[0] is the number of columns while par[1] has the number of rows.
 
 For the second approach, you
 instead pass ``wesn``, ``inc``, and ``registration`` and leave ``par`` as NULL
