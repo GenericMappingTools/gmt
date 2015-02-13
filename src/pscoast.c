@@ -63,6 +63,8 @@
 #define LAKE	0
 #define RIVER	1
 
+#define NOT_REALLY_AN_ERROR -999
+
 /* Control structure for pscoast */
 
 struct PSCOAST_CTRL {
@@ -493,34 +495,38 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
 	}
-	if (!GMT->common.R.active && Ctrl->E.active && Ctrl->M.active && !Ctrl->E.info.region) Ctrl->E.info.region = true;	/* For -M and -E with no plotting, get -R from pols */
-	if (!GMT->common.R.active && Ctrl->E.info.region) {	/* Must pick up region from chosen polygons */
-		(void) GMT_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);
-		GMT->common.R.active = true;
-		if (!GMT->common.J.active && !Ctrl->M.active) {	/* No plotting or no dumping means just return the -R string */
-			char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
-			size_t i, j;
-			GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-			GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-			GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
-			GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-			/* Remove any white space due to selected formatting */
-			for (i = j = 2; i < strlen (record); i++) {
-				if (record[i] == ' ') continue;	/* Skip spaces */
-				record[j++] = record[i];
+	if (!GMT->common.R.active && Ctrl->E.active && Ctrl->M.active && !Ctrl->E.info.region) Ctrl->E.info.region = true;	/* For -M and -F with no plotting, get -R from pols */
+	if (Ctrl->E.info.region) {	/* Must pick up region from chosen polygons */
+		if (GMT->common.R.active)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning -F option: The -R option overrides the region found via -E.\n");
+		else {	/* Pick up region from chosen polygons */
+			(void) GMT_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);
+			GMT->common.R.active = true;
+			if (!GMT->common.J.active && !Ctrl->M.active) {	/* No plotting or no dumping means just return the -R string */
+				char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
+				size_t i, j;
+				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+				/* Remove any white space due to selected formatting */
+				for (i = j = 2; i < strlen (record); i++) {
+					if (record[i] == ' ') continue;	/* Skip spaces */
+					record[j++] = record[i];
+				}
+				record[j] = '\0';
+				if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+					return (API->error);
+				}
+				if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+					return (API->error);
+				}
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
+				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+					return (API->error);
+				}
+				return NOT_REALLY_AN_ERROR;	/* To return with "error" but then exit with 0 error */
 			}
-			record[j] = '\0';
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
-				return (API->error);
-			}
-			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
-				return (API->error);
-			}
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
-				return (API->error);
-			}
-			return 1;	/* To exit, basically */
 		}
 	}
 
@@ -655,7 +661,10 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
-	if ((error = GMT_pscoast_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pscoast_parse (GMT, Ctrl, options))) {
+		if (error == NOT_REALLY_AN_ERROR) Return (0);
+		Return (error);
+	}
 
 	/*---------------------------- This is the pscoast main code ----------------------------*/
 
