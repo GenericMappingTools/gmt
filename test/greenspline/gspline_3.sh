@@ -7,7 +7,7 @@ ps=gspline_3.ps
 # Figure 4 in Wessel, P. (2009), A general-purpose Green's function-based
 #	interpolator, Computers & Geosciences, 35, 1247–1254.
 
-# Create synthetic data as in Lancaster & Salkauskas using C code on the fly
+# Create synthetic data used in Lancaster & Salkauskas using C code on the fly
 
 D=0.04
 method=r
@@ -16,7 +16,7 @@ cat << EOF > ks.c
 #include <stdio.h>
 #include <math.h>
 
-main () {
+int main () {
 	double x, y, z, d, r;
 
 	while (scanf ("%lf %lf", &x, &y) != EOF) {
@@ -27,10 +27,7 @@ main () {
 			z = 2.0 * d;
 		else {
 			r = hypot (x - 1.5, y - 0.5);
-			if (r <= 0.25)
-				z = 0.5 * (cos (4.0 * M_PI * r) + 1.0);
-			else
-				z = -0.01;
+			z = (r <= 0.25) ? 0.5 * (cos (4.0 * M_PI * r) + 1.0) : -0.01;
 		}
 		printf ("%g\t%g\t%g\n", x, y, z);
 	}

@@ -3999,6 +3999,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						D_obj->n_segments = T_obj->n_segments;
 					}
 				}
+				S_obj->data = NULL;	/* Since S_obj->resources points to it too, and needed for GMT_Retrieve_Data to work */
 			}
 			if (S_obj->close_file) {	/* Close file that we opened earlier */
 				GMT_fclose (API->GMT, S_obj->fp);

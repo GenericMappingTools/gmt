@@ -286,11 +286,12 @@
             **+w**
                 Specifies how many (*x*,\ *y*) points will be used to estimate
                 label angles [Default is 10].
-            **+x**\ [*first*,*last*]
+            **+x**\ [*first*,\ *last*\ ]
                 Append the suffices *first* and *last* to the corresponding labels.
 		This modifier is only available when **-SqN2** is in effect.  Used
-		to annotate cross-sections, append two text strings separated by comma
-		[Default is ,' i.e., we just add a prime to the second label].
+		to annotate the start and end of a line (e.g., a cross-section),
+		append two text strings separated by comma
+		[Default just adds a prime to the second label].
             **+=**\ *prefix*
                 Prepends *prefix* to all line labels. If *prefix* starts with a
                 leading hyphen (-) then there will be no space between label
