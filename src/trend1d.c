@@ -74,6 +74,7 @@
 #define THIS_MODULE_NAME	"trend1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data"
+#define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
 

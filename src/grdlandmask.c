@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"grdlandmask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create a \"wet-dry\" mask grid from shoreline data base"
+#define THIS_MODULE_KEYS	"-XI,GGO"
 
 #include "gmt_dev.h"
 

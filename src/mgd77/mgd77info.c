@@ -24,6 +24,7 @@
 #define THIS_MODULE_NAME	"mgd77info"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Extract information about MGD77 files"
+#define THIS_MODULE_KEYS	">TO"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

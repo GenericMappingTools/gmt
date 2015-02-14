@@ -39,6 +39,7 @@
 #define THIS_MODULE_NAME	"psmask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Use data tables to clip or mask map areas with no coverage"
+#define THIS_MODULE_KEYS	"<DI,-Xo"
 
 #include "gmt_dev.h"
 

@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"grdproject"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformation of grids"
+#define THIS_MODULE_KEYS	"<GI,GGO"
 
 #include "gmt_dev.h"
 

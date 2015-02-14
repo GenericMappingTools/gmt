@@ -75,6 +75,7 @@
 #define THIS_MODULE_NAME	"fitcircle"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Find mean position and best-fitting great- or small-circle to points on sphere"
+#define THIS_MODULE_KEYS	"<DI,>TO"
 
 #include "gmt_dev.h"
 

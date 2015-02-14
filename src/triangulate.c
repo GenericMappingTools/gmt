@@ -35,6 +35,7 @@
 #define THIS_MODULE_NAME	"triangulate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Do optimal (Delaunay) triangulation and gridding of Cartesian table data"
+#define THIS_MODULE_KEYS	"<DI,>DO,GGo"
 
 #include "gmt_dev.h"
 

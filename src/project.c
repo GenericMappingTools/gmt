@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"project"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Project table data onto lines or great circles, generate tracks, or translate coordinates"
+#define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
 

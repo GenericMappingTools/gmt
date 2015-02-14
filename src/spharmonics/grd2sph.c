@@ -25,7 +25,9 @@
 #include "gmt_dev.h"
 
 #define THIS_MODULE_NAME	"grd2sph"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute spherical harmonic coefficients from grid"
+#define THIS_MODULE_KEYS	"<GI,>DO"
 
 #define GMT_PROG_OPTIONS "->RVbhirs"
 

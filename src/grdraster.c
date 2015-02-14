@@ -33,6 +33,7 @@
 #define THIS_MODULE_NAME	"grdraster"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract subregion from a binary raster and save as a GMT grid"
+#define THIS_MODULE_KEYS	"GGO,TDo"
 
 #include "gmt_dev.h"
 #include "common_byteswap.h"

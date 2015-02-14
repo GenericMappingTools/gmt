@@ -24,6 +24,7 @@
 #define THIS_MODULE_NAME	"mgd77sniffer"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Along-track quality control of MGD77 cruises"
+#define THIS_MODULE_KEYS	""
 
 #include "mgd77.h"
 #include "gmt_dev.h"

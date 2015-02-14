@@ -32,6 +32,7 @@
 #define THIS_MODULE_NAME	"blockmedian"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by L1 norm (spatial median)"
+#define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
 #include "block_subs.h"

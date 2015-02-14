@@ -30,6 +30,7 @@
 #define THIS_MODULE_NAME	"grdfft"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Do mathematical operations on grids in the wavenumber (or frequency) domain"
+#define THIS_MODULE_KEYS	"<GI,GGO"
 
 #include "gmt_dev.h"
 

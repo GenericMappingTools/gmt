@@ -27,6 +27,7 @@
 #define THIS_MODULE_NAME	"gmtvector"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Basic manipulation of Cartesian vectors"
+#define THIS_MODULE_KEYS	"<DI,ADI,>DO"
 
 #include "gmt_dev.h"
 

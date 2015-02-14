@@ -28,6 +28,7 @@
 #define THIS_MODULE_NAME	"psscale"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a gray-scale or color-scale on maps"
+#define THIS_MODULE_KEYS	"-XI,CCI,-Xo"
 
 #include "gmt_dev.h"
 

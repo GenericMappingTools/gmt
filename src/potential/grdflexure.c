@@ -27,6 +27,7 @@
 #define THIS_MODULE_NAME	"grdflexure"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute flexural deformation of 3-D surfaces for various rheologies"
+#define THIS_MODULE_KEYS	"<GI,GGO"
 
 #include "gmt_dev.h"
 

@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"psbasemap"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot base maps and frames"
+#define THIS_MODULE_KEYS	"<-XI,-Xo"
 
 #include "gmt_dev.h"
 

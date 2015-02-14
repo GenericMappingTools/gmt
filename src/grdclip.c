@@ -31,6 +31,7 @@
 #define THIS_MODULE_NAME	"grdclip"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Clip the range of grids"
+#define THIS_MODULE_KEYS	"<GI,GGO"
 
 #include "gmt_dev.h"
 

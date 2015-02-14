@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"pstext"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot or typeset text on maps"
+#define THIS_MODULE_KEYS	"<TI,-Xo"
 
 #include "gmt_dev.h"
 

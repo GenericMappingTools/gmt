@@ -27,6 +27,7 @@
 #define THIS_MODULE_NAME	"psxyz"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
+#define THIS_MODULE_KEYS	"<DI,CCI,-Xo"
 
 #include "gmt_dev.h"
 

@@ -26,6 +26,7 @@
 #define THIS_MODULE_NAME	"pshistogram"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
+#define THIS_MODULE_KEYS	"<DI,-Xo,>Do"
 
 #include "gmt_dev.h"
 

@@ -35,6 +35,7 @@
 #define THIS_MODULE_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using GhostScript"
+#define THIS_MODULE_KEYS	"--O"
 
 #include "gmt_dev.h"
 

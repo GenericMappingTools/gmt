@@ -31,6 +31,7 @@
 #define THIS_MODULE_NAME	"makecpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make GMT color palette tables"
+#define THIS_MODULE_KEYS	">CO"
 
 #include "gmt_dev.h"
 

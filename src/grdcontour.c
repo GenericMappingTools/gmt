@@ -28,6 +28,7 @@
 #define THIS_MODULE_NAME	"grdcontour"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make contour map using a grid"
+#define THIS_MODULE_KEYS	"<GI,CCI,-Xo"
 
 #include "gmt_dev.h"
 

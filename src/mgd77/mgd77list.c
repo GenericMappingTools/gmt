@@ -35,6 +35,7 @@
 #define THIS_MODULE_NAME	"mgd77list"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Extract data from MGD77 files"
+#define THIS_MODULE_KEYS	">DO"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

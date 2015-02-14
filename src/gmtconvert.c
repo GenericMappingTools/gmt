@@ -31,6 +31,7 @@
 #define THIS_MODULE_NAME	"gmtconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert, paste, or extract columns from data tables"
+#define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
 

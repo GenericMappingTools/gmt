@@ -35,6 +35,7 @@
 #define THIS_MODULE_NAME	"gravfft"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)"
+#define THIS_MODULE_KEYS	"<GI,GGO"
 
 #include "gmt_dev.h"
 

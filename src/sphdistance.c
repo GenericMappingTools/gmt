@@ -38,6 +38,7 @@
 #define THIS_MODULE_NAME	"sphdistance"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make grid of distances to nearest points on a sphere"
+#define THIS_MODULE_KEYS	"<DI,NDI,QDI,GGO"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"

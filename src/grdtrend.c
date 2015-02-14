@@ -84,6 +84,7 @@
 #define THIS_MODULE_NAME	"grdtrend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Fit trend surface to grids and compute residuals"
+#define THIS_MODULE_KEYS	"<GI,DGo,TGo,WGo"
 
 #include "gmt_dev.h"
 

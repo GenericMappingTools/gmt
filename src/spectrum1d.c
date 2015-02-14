@@ -39,6 +39,7 @@
 #define THIS_MODULE_NAME	"spectrum1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute auto- [and cross-] spectra from one [or two] timeseries"
+#define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
 
