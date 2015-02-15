@@ -721,5 +721,14 @@ struct GMT_OPTION {              /* Structure for a single GMT command option */
 	struct GMT_OPTION *previous; /* Pointer to previous option in a linked list */
 };
 
+/*============================================================ */
+/* struct GMT_MODULE_INFO is for API Developers only ========= */
+/*============================================================ */
+
+struct GMT_MODULE_INFO {
+	unsigned int mode;	/* 1 if module name had gmt prepended */
+	char module[32];	/* Actual module name (with prepended gmt if needed) */
+	const char *keys;	/* Pointer to module keys */
+};
 
 #endif /* _GMT_RESOURCES_H */
