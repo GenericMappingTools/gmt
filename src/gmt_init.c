@@ -9302,7 +9302,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
 				S->v.status |= GMT_VEC_COMPONENTS;
-				S->v.comp_scale = GMT_convert_units (GMT, &p[1], GMT->current.setting.proj_length_unit, GMT_INCH);
+				S->v.comp_scale = (float)GMT_convert_units (GMT, &p[1], GMT->current.setting.proj_length_unit, GMT_INCH);
 				break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad modifier +%c\n", p[0]);
