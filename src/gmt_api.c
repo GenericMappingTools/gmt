@@ -376,6 +376,9 @@ char *lib_tag (char *name) {
 	char *tag = strdup (name);
 	extension = strrchr (tag, '.'); /* last period in name */
 	*extension = '\0'; /* remove extension */
+	/* if name has the "_w32|64" prefix, remove it. But this is tricky because a user may have choosen a different prefix */
+	if (tag[strlen(tag)-4] == '_' && tag[strlen(tag)-3] == 'w')
+		tag[strlen(tag)-4] = '\0';
 	return (tag);
 }
 
