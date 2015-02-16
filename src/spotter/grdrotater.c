@@ -344,7 +344,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	
 	uint64_t ij, ij_rot, seg, rec;
 
-	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3];
+	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3], plon, plat, pw;
 	double *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 
 	struct GMT_DATASET *D = NULL;
@@ -419,12 +419,12 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 
 	if (Ctrl->E.single) {	/* Get rotation matrix R */
 		GMT_make_rot_matrix (GMT, Ctrl->E.lon, Ctrl->E.lat, Ctrl->E.w, R);	/* Make rotation matrix from rotation parameters */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", Ctrl->E.lon, Ctrl->E.lat, Ctrl->E.w);
+		plon = Ctrl->E.lon;	plat = Ctrl->E.lat;	pw = Ctrl->E.w;
 	}
 	else {
 		int n_stages;
 		struct EULER *p = NULL;			/* Pointer to array of stage poles */
-		double lon, lat, w, t_max;
+		double t_max;
 		
 		n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, true, Ctrl->E.mode, &t_max);
 		if (Ctrl->T.value > t_max) {
@@ -432,11 +432,12 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 			GMT_free (GMT, p);
 			Return (EXIT_FAILURE);
 		}
-		spotter_get_rotation (GMT, p, n_stages, Ctrl->T.value, &lon, &lat, &w);
-		GMT_make_rot_matrix (GMT, lon, lat, w, R);	/* Make rotation matrix from rotation parameters */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", lon, lat, w);
+		/* Get the single rotation that corresponds to time = Ctrl->T.value */
+		spotter_get_rotation (GMT, p, n_stages, Ctrl->T.value, &plon, &plat, &pw);
+		GMT_make_rot_matrix (GMT, plon, plat, pw, R);	/* Make rotation matrix from rotation parameters */
 		GMT_free (GMT, p);
 	}
+	GMT_Report (API, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", plon, plat, pw);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Reconstruct polygon outline\n");
 	
@@ -499,7 +500,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Interpolate reconstructed grid\n");
 
-	GMT_make_rot_matrix (GMT, Ctrl->E.lon, Ctrl->E.lat, -Ctrl->E.w, R);	/* Make inverse rotation using negative angle */
+	GMT_make_rot_matrix (GMT, plon, plat, -pw, R);	/* Make inverse rotation using negative angle */
 	
 	GMT_grd_loop (GMT, G_rot, row, col, ij_rot) {
 		G_rot->data[ij_rot] = GMT->session.f_NaN;
@@ -559,7 +560,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 
 	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
-	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->E.lon, Ctrl->E.lat, Ctrl->E.w);
+	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", plon, plat, pw);
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_rot)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_rot) != GMT_OK) {
 		Return (API->error);
