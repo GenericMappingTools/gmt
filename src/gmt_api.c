@@ -372,13 +372,13 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt) {
 /*! . */
 char *lib_tag (char *name) {
 	/* Pull out the tag from a name like <tag>[.extension] */
-	char *extension;
+	char *extension, *pch;
 	char *tag = strdup (name);
 	extension = strrchr (tag, '.'); /* last period in name */
 	*extension = '\0'; /* remove extension */
-	/* if name has the "_w32|64" prefix, remove it. But this is tricky because a user may have choosen a different prefix */
-	if (tag[strlen(tag)-4] == '_' && tag[strlen(tag)-3] == 'w')
-		tag[strlen(tag)-4] = '\0';
+	/* if name has the "_w32|64" suffix or any other suffix that starts with a '_', remove it. */
+	pch = strrchr(tag, '_');
+	if (pch) *pch = '\0';
 	return (tag);
 }
 
