@@ -6026,7 +6026,7 @@ const char * gmt_get_shared_module_info (struct GMTAPI_CTRL *API, char *module, 
 	sprintf (function, "gmt_%s_module_info", API->lib[lib_no].name);
 	/* Here the library handle is available; try to get pointer to specified module */
 	*(void **) (&func) = dlsym (API->lib[lib_no].handle, function);
-	keys = (*func) (API, module);
+	if (func) keys = (*func) (API, module);
 	return (keys);
 }
 
