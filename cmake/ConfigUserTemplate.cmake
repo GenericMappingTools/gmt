@@ -250,6 +250,7 @@
 
 # If want to rename the DLLs to something else than the default (e.g. to
 # append the bitness - Windows only)
+# WARNING: if using this option it is mandatory that the suffix starts with an underscore.
 #if (WIN32)
 # set (BITAGE 32)
 # # Detect if we are building a 32 or 64 bits version
