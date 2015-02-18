@@ -221,7 +221,7 @@ int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct G
 			case '<':	/* Input files */
 				if (opt->arg[0] == '=' && !opt->arg[1]) {
 					missing_equal = false;
-					if (opt->next && opt->next->option == GMT_OPT_INFILE) {
+					if (opt->next && (opt->next->option == GMT_OPT_INFILE || opt->next->option == GMT_OPT_OUTFILE)) {
 						Ctrl->Out.active = true;
 						if (opt->next->arg) Ctrl->Out.file = strdup (opt->next->arg);
 					}

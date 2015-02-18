@@ -281,7 +281,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 {
 	int error;
 	bool geo, poly;
-	uint64_t tbl, col, row, seg, np_out, ns_in = 0, ns_out = 0, *index = NULL;
+	uint64_t tbl, col, row, seg, np_out, ns_in = 0, ns_out = 0, n_in_tbl, *index = NULL;
 	
 	double tolerance;
 	
@@ -357,7 +357,9 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 	}
 	
 	/* Process all tables and segments */
+	D[GMT_OUT]->n_records = 0;	/* Must reset total output count */
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
+		n_in_tbl = 0;
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg];
 			S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg];
@@ -376,10 +378,12 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 			}
 			ns_in++;		/* Input segment with points */
 			if (np_out) ns_out++;	/* Output segment with points */
+			n_in_tbl += np_out;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, np_out);
 		}
+		D[GMT_OUT]->table[tbl]->n_records = n_in_tbl;	/* Reset table count */
+		D[GMT_OUT]->n_records += n_in_tbl;
 	}
-
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}

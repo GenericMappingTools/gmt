@@ -483,7 +483,7 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 				if (opt->arg[0] == '=' && opt->arg[1] == 0) {	/* No it was an = [outfile] sequence */
 					missing_equal = false;
 					opt->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
-					if (opt->next && opt->next->option == GMT_OPT_INFILE) {
+					if (opt->next && (opt->next->option == GMT_OPT_INFILE || opt->next->option == GMT_OPT_OUTFILE)) {
 						Ctrl->Out.active = true;
 						if (opt->next->arg) Ctrl->Out.file = strdup (opt->next->arg);
 						opt->next->option = GMT_OPT_OUTFILE;	/* Prevents further use later */

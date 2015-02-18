@@ -1974,7 +1974,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 		case GMT_IS_REFERENCE_VIA_MATRIX:
 			if (S_obj->resource == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource must initially have info needed to do the output */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user array location\n");
-			M_obj = GMT_duplicate_matrix (API->GMT, S_obj->resource, false);
+			M_obj = GMT_create_matrix (API->GMT, 1, GMT_OUT);
 			/* Must allocate output space */
 			M_obj->n_rows = D_obj->n_records;	/* Number of rows needed to hold the data records */
 			M_obj->n_columns = D_obj->n_columns;	/* Number of columns needed to hold the data records */
@@ -1989,6 +1989,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 				if (M_obj->dim < D_obj->n_records) return (GMTAPI_report_error (API, GMT_DIM_TOO_SMALL));
 				S_obj->n_alloc = M_obj->n_columns * M_obj->dim;	/* Get total number of elements as n_columns * dim */
 			}
+			M_obj->type = GMT_DOUBLE;
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 
@@ -2010,9 +2011,11 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 		case GMT_IS_REFERENCE_VIA_VECTOR:
 			if ((V_obj = S_obj->resource) == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource must initially have info needed to do the output */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user column arrays location\n");
-			V_obj = GMT_duplicate_vector (API->GMT, S_obj->resource, false);
+			if ((V_obj = GMT_create_vector (API->GMT, D_obj->n_columns, GMT_OUT)) == NULL)
+				return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));
 			V_obj->n_rows = D_obj->n_records;
 			if (API->GMT->current.io.multi_segments[GMT_OUT]) V_obj->n_rows += D_obj->n_segments;
+			for (col = 0; col < D_obj->n_columns; col++) V_obj->type[col] = GMT_DOUBLE;
 			if ((error = gmt_alloc_vectors (API->GMT, V_obj)) != GMT_OK) return (GMTAPI_report_error (API, error));
 			for (tbl = ij = 0; tbl < D_obj->n_tables; tbl++) {
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
