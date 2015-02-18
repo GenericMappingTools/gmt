@@ -2915,7 +2915,7 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, in
 
 	/* Check if this is a container passed from the outside to capture output */
 	if (API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
-		error = GMTAPI_destroy_data_ptr (API, API->object[item]->family, API->object[item]->data);	/* Do the dirty deed */
+		error = GMTAPI_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data);	/* Do the dirty deed */
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
 
@@ -3447,9 +3447,10 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 	 *   originating within this session.
 	 * Pad sets the default number or rows/cols used for grid padding.  GMT uses 2; users of
 	 *   the API may wish to use 0 if they have no need for BCs, etc.
-	 * The mode argument is a bitflag that controls a few things:
-	 *   bit 1 means call return and not exit
-	 *   bit 2 means we are called by an external API (e.g., Matlab, Python).
+	 * The mode argument is a bitflag that controls a few things [0, or GMT_SESSION_NORMAL]:
+	 *   bit 1 (GMT_SESSION_NOEXIT) means call return and not exit when returning from an error.
+	 *   bit 2 (GMT_SESSION_EXTERNAL) means we are called by an external API (e.g., Matlab, Python).
+	 *   We reserve the right to add future flags.
 	 * We return the pointer to the allocated API structure.
 	 * If any error occurs we report the error, set the error code via API->error, and return NULL.
 	 * We terminate each session with a call to GMT_Destroy_Session.

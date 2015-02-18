@@ -6894,16 +6894,16 @@ void GMT_free_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned 
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	if (!u) return;	/* Nothing to deallocate */
 	switch (type) {
-		case GMT_UCHAR:	GMT_free (GMT, u->uc1); break;
-		case GMT_CHAR:	GMT_free (GMT, u->sc1); break;
-		case GMT_USHORT:	GMT_free (GMT, u->ui2); break;
-		case GMT_SHORT:	GMT_free (GMT, u->si2); break;
-		case GMT_UINT:	GMT_free (GMT, u->ui4); break;
-		case GMT_INT:	GMT_free (GMT, u->si4); break;
-		case GMT_ULONG:	GMT_free (GMT, u->ui8); break;
-		case GMT_LONG:	GMT_free (GMT, u->si8); break;
-		case GMT_FLOAT:	GMT_free (GMT, u->f4);  break;
-		case GMT_DOUBLE:	GMT_free (GMT, u->f8);  break;
+		case GMT_UCHAR:		if (u->uc1) GMT_free (GMT, u->uc1); break;
+		case GMT_CHAR:		if (u->sc1) GMT_free (GMT, u->sc1); break;
+		case GMT_USHORT:	if (u->ui2) GMT_free (GMT, u->ui2); break;
+		case GMT_SHORT:		if (u->si2) GMT_free (GMT, u->si2); break;
+		case GMT_UINT:		if (u->ui4) GMT_free (GMT, u->ui4); break;
+		case GMT_INT:		if (u->si4) GMT_free (GMT, u->si4); break;
+		case GMT_ULONG:		if (u->ui8) GMT_free (GMT, u->ui8); break;
+		case GMT_LONG:		if (u->si8) GMT_free (GMT, u->si8); break;
+		case GMT_FLOAT:		if (u->f4)  GMT_free (GMT, u->f4);  break;
+		case GMT_DOUBLE:	if (u->f8)  GMT_free (GMT, u->f8);  break;
 	}
 }
 
@@ -6920,8 +6920,8 @@ void GMT_null_univector (struct GMT_CTRL *GMT_UNUSED(GMT), union GMT_UNIVECTOR *
 		case GMT_INT:	 u->si4 = NULL; break;
 		case GMT_ULONG:	 u->ui8 = NULL; break;
 		case GMT_LONG:	 u->si8 = NULL; break;
-		case GMT_FLOAT:	 u->f4 = NULL;  break;
-		case GMT_DOUBLE: u->f8 = NULL;  break;
+		case GMT_FLOAT:	 u->f4  = NULL; break;
+		case GMT_DOUBLE: u->f8  = NULL; break;
 	}
 }
 
