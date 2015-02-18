@@ -33,7 +33,7 @@
 #define THIS_MODULE_NAME	"grdgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
-#define THIS_MODULE_KEYS	"<GI,FDI,GGO"
+#define THIS_MODULE_KEYS	"<GI,FDi,GGO"
 
 #include "gmt_dev.h"
 #include "okbfuns.h"

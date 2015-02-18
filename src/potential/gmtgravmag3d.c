@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"gmtgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a body by the method of Okabe"
-#define THIS_MODULE_KEYS	"<DI,FDI,GGO"
+#define THIS_MODULE_KEYS	"<DI,FDi,GGO"
 
 #include "gmt_dev.h"
 #include "okbfuns.h"

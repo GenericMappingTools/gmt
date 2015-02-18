@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"grdpmodeler"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Evaluate a plate model on a geographic grid"
-#define THIS_MODULE_KEYS	"<GI,ETI,FDI,GGO"
+#define THIS_MODULE_KEYS	"<GI,ETI,FDi,GGO"
 
 #include "spotter.h"
 

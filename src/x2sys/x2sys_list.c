@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"x2sys_list"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Extract subset from crossover data base"
-#define THIS_MODULE_KEYS	"LTI,ITI,>DO"
+#define THIS_MODULE_KEYS	"LTi,ITi,>DO"
 
 #include "x2sys.h"
 

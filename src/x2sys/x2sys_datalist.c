@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"x2sys_datalist"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Extract content of track data files"
-#define THIS_MODULE_KEYS	"LTI,ITI,>DO"
+#define THIS_MODULE_KEYS	"LTi,ITi,>DO"
 
 #include "x2sys.h"
 
