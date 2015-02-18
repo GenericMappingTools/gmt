@@ -44,6 +44,12 @@
  * the variables are accessible just like the "public" ones.
  */
 
+/*! Session modes */
+enum GMT_enum_session {
+	GMT_SESSION_NORMAL   = 0,	/* Typical mode to GMT_Create_Session */
+	GMT_SESSION_NOEXIT   = 1,	/* Call return and not exit when error */
+	GMT_SESSION_EXTERNAL = 2};	/* Called by an external API (e.g., Matlab, Python). */
+
 /*! Miscellaneous settings */
 enum GMT_enum_api {
 	GMT_USAGE	= 0,	/* Want to report full program usage message */

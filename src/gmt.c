@@ -34,7 +34,6 @@
 #endif
 
 #define PROGRAM_NAME	"gmt"
-#define GMT_PAD_DEFAULT	2U
 
 /* Determine the system environmetal parameter that leads to shared libraries */
 #if defined _WIN32
@@ -50,7 +49,7 @@ int main (int argc, char *argv[]) {
 	int k, v_mode = GMT_MSG_COMPAT;		/* Default verbosity */
 	bool gmt_main = false;			/* Set to true if no module specified */
 	unsigned int modulename_arg_n = 0;	/* Argument number in argv[] that contains module name */
-	unsigned int mode = 0;			/* Default API mode */
+	unsigned int mode = GMT_SESSION_NORMAL;	/* Default API mode */
 	struct GMTAPI_CTRL *api_ctrl = NULL;	/* GMT API control structure */
 	char gmt_module[GMT_LEN32] = "gmt";
 	char *progname = NULL;			/* Last component from the pathname */

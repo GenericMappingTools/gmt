@@ -470,7 +470,7 @@ int main (int argc, char *argv[]) {
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_testapi (API, argc-1, (argv+1));

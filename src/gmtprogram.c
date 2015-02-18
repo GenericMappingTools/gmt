@@ -33,7 +33,7 @@ int main (int argc, char *argv[]) {
 	/* Structure containing name, purpose, Api_mode, and function pointer of this module: */
 
 	/* 1. Initializing new GMT session */
-	if ((api_ctrl = GMT_Create_Session (NULL, 2U, 0U, NULL)) == NULL)
+	if ((api_ctrl = GMT_Create_Session (NULL, GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL)
 		return EXIT_FAILURE;
 
 	/* 2. Run GMT module, or give usage message if errors arise during parsing */

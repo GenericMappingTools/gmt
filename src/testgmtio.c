@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
 	struct GMT_CTRL *GMT = NULL;
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session ("TEST", 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("TEST", GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 	GMT = API->GMT;
 
 	/* 2. Convert command line arguments to local linked option list */

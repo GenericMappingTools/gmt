@@ -71,6 +71,8 @@
 #define GMT_CONV6_LIMIT	 1.0e-6		/* 1 ppm */
 #define GMT_CONV4_LIMIT	 1.0e-4		/* Less tight convergence limit or "close to zero" limit */
 
+#define GMT_PAD_DEFAULT	2U		/* Default is 2 rows and 2 cols for grid padding */
+
 /*! Various allocation-length parameters */
 enum GMT_enum_length {
 	GMT_TINY_CHUNK  = 8U,
