@@ -1561,7 +1561,7 @@ int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) {	/* Only allow writing of a data set once, unless we override by resetting the mode */
 		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));
 	}
-
+	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;
 	switch (S_obj->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
 			/* GMT_write_cpt will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
@@ -1733,7 +1733,8 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 				if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				break;
 
-	 		case GMT_IS_DUPLICATE_VIA_MATRIX:
+		 	case GMT_IS_DUPLICATE_VIA_MATRIX:
+		 	case GMT_IS_REFERENCE_VIA_MATRIX:
 				/* Each array source becomes a separate table with a single segment */
 				if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user array location\n");
@@ -1931,6 +1932,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	if (mode >= GMT_WRITE_TABLE && !S_obj->filename) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once unless overridden by mode */
 		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));
+	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;
 	default_method = GMT_IS_FILE;
 	if (S_obj->filename)	/* Write to this file */
 		ptr = S_obj->filename;
@@ -1968,7 +1970,8 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			S_obj->resource = D_obj;			/* Set resource pointer from object to this dataset */
 			break;
 
-	 	case GMT_IS_DUPLICATE_VIA_MATRIX:
+		case GMT_IS_DUPLICATE_VIA_MATRIX:
+		case GMT_IS_REFERENCE_VIA_MATRIX:
 			if (S_obj->resource == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource must initially have info needed to do the output */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user array location\n");
 			M_obj = GMT_duplicate_matrix (API->GMT, S_obj->resource, false);
@@ -2123,7 +2126,8 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 				GMT_free (API->GMT, T_obj);
 				if ((T_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				break;
-	 		case GMT_IS_DUPLICATE_VIA_MATRIX:
+		 	case GMT_IS_DUPLICATE_VIA_MATRIX:
+		 	case GMT_IS_REFERENCE_VIA_MATRIX:
 				/* Each matrix source becomes a separate table with one segment */
 			 	if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating text table from user matrix location\n");
@@ -2209,6 +2213,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	S_obj = API->object[item];
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless overridden by mode */
 		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));
+	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;
 	default_method = GMT_IS_FILE;
 	if (S_obj->filename)	/* Write to this file */
 		dest = S_obj->filename;
@@ -2239,7 +2244,8 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			T_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = T_obj;		/* Set resource pointer from object to this textset */
 			break;
-	 	case GMT_IS_DUPLICATE_VIA_MATRIX:
+		case GMT_IS_DUPLICATE_VIA_MATRIX:
+		case GMT_IS_REFERENCE_VIA_MATRIX:
 			if ((M_obj = S_obj->resource) == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource cannot be NULL for Matrix */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating text table to user array location\n");
 			M_obj = GMT_duplicate_matrix (API->GMT, S_obj->resource, false);
@@ -2711,7 +2717,9 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_GRID, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMTAPI_report_error (API, API->error));
 
 	S_obj = API->object[item];	/* The current object whose data we will export */
-	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
+	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))
+		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
+	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;
 	row_by_row = ((mode & GMT_GRID_ROW_BY_ROW) || (mode & GMT_GRID_ROW_BY_ROW_MANUAL));
 	if (row_by_row && S_obj->method != GMT_IS_FILE) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Can only use method GMT_IS_FILE when row-by-row writing of grid is selected\n");
@@ -4231,6 +4239,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
 	int in_ID = GMT_NOTSET, item;
+	unsigned int via = 0;
 	bool just_get_data;
 	void *new_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -4239,7 +4248,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 
 	API = gmt_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
-	just_get_data = GMT_File_Is_Memory (input);
+	(void)GMTAPI_split_via_method (API, method, &via);
+	just_get_data = (GMT_File_Is_Memory (input) && via == 0);	/* Memory is passed and it is a regular GMT resource, not matrix or vector */
 
 	if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
 		if ((in_ID = GMTAPI_is_registered (API, family, geometry, GMT_IN, mode, input, data)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
@@ -4289,7 +4299,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	/* OK, try to do the importing */
 	if (in_ID != GMT_NOTSET) {	/* Make sure we select the item we just registered */
 		if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, in_ID, GMT_NOTSET)) == GMT_NOTSET) {
-				return_null (API, API->error);
+			return_null (API, API->error);
 		}
 		API->object[item]->selected = true;	/* Make sure the item we want is now selected */
 	}
@@ -6432,22 +6442,30 @@ int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 	struct GMT_PALETTE *C = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GMT_IMAGE *I = NULL;
+	bool mem[2] = {false, false};
+	enum GMT_enum_method method;
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	API->error = GMT_NOERROR;
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
-
+	mem[GMT_IN]  = GMT_File_Is_Memory (ifile);
+	mem[GMT_OUT] = GMT_File_Is_Memory (ofile);
+	
 	switch (family) {
-		case GMT_IS_DATASET:	/* Pass geometry as point since PLP or POLY would auto-close the polygons */
-			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
+		case GMT_IS_DATASET:
+			method = (mem[GMT_IN]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, method, GMT_IS_POINT, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
 				return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D->geometry, D->io_mode | GMT_IO_RESET, NULL, ofile, D) != GMT_OK)
+			method = (mem[GMT_OUT]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
+			if (GMT_Write_Data (API, GMT_IS_DATASET, method, D->geometry, D->io_mode | GMT_IO_RESET, NULL, ofile, D) != GMT_OK)
 				return (API->error);
 			break;
 		case GMT_IS_TEXTSET:
-			if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
+			method = (mem[GMT_IN]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
+			if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, method, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
 				return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, T->io_mode | GMT_IO_RESET, NULL, ofile, T) != GMT_OK)
+			method = (mem[GMT_OUT]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, method, GMT_IS_NONE, T->io_mode | GMT_IO_RESET, NULL, ofile, T) != GMT_OK)
 				return (API->error);
 			break;
 		case GMT_IS_GRID:
