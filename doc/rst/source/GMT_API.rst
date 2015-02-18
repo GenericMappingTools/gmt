@@ -2008,7 +2008,7 @@ any use for the text string, call
 
   ::
 
-    int _GMT_Destroy_Cmd (void *API, char **argv);
+    int GMT_Destroy_Cmd (void *API, char **argv);
 
 to deallocate the space used. This function returns 1 if there is
 an error (which is passed back with ``API->error``), otherwise it
