@@ -231,8 +231,8 @@ enum GMT_enum_gridindex {
 enum GMT_enum_dimindex {
         GMT_TBL = 0U,	/* Index for number of tables in dimension array */
         GMT_SEG,	/* Index for number of segments in dimension array */
-        GMT_ROW,	/* Index for number of tables in dimension array */
-        GMT_COL		/* Index for number of tables in dimension array [DATASET only] */
+        GMT_ROW,	/* Index for number of rows in dimension array */
+        GMT_COL		/* Index for number of columns in dimension array [DATASET only] */
 };
 
 enum GMT_enum_gridio {
