@@ -56,6 +56,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtinfo", "core", "Get information about data tables", "<DI,>DO"},
 	{"gmtlogo", "core", "Plot the GMT logo on maps", ""},
 	{"gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", "<DI,ADi,>DO"},
+	{"gmtread", "core", "Read GMT objects into external API", "<?I,>?O"},
 	{"gmtregress", "core", "Perform linear regression of 1-D data sets", "<DI,>DO"},
 	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria", "<DI,CDi,FDi,LDi,>DO"},
 	{"gmtset", "core", "Change individual GMT default parameters", "<TI"},
@@ -63,6 +64,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtspatial", "core", "Do geospatial operations on lines and polygons", "<DI,DDi,NDi,TDi,>DO"},
 	{"gmtvector", "core", "Basic manipulation of Cartesian vectors", "<DI,ADi,>DO"},
 	{"gmtwhich", "core", "Find full path to specified files", "<TI,>TO"},
+	{"gmtwrite", "core", "Write GMT objects from external API", "<?I,>?O"},
 	{"grd2cpt", "core", "Make linear or histogram-equalized color palette table from grid", "<GI,>CO"},
 	{"grd2rgb", "core", "Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile", "<GI"},
 	{"grd2xyz", "core", "Convert grid file to data table", "<GI,>DO"},
@@ -111,7 +113,6 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<DI,-Xo"},
 	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<DI,CCI,-Xo"},
 	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<DI,CCI,-Xo"},
-	{"read", "core", "Read GMT objects into external API", "<?I,>?O"},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<DI,NDI,>DO"},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] timeseries", "<DI,>DO"},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<DI,GGO"},
@@ -123,7 +124,6 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data", "<DI,>DO"},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", "<DI,>DO"},
 	{"triangulate", "core", "Do optimal (Delaunay) triangulation and gridding of Cartesian table data", "<DI,>DO,GGo"},
-	{"write", "core", "Write GMT objects from external API", "<?I,>?O"},
 	{"xyz2grd", "core", "Convert data table to a grid file", "<DI,SDo,GGO"},
 	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #else
@@ -140,6 +140,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtinfo", "core", "Get information about data tables", "<DI,>DO", &GMT_gmtinfo},
 	{"gmtlogo", "core", "Plot the GMT logo on maps", "", &GMT_gmtlogo},
 	{"gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", "<DI,ADi,>DO", &GMT_gmtmath},
+	{"gmtread", "core", "Read GMT objects into external API", "<?I,>?O", &GMT_gmtread},
 	{"gmtregress", "core", "Perform linear regression of 1-D data sets", "<DI,>DO", &GMT_gmtregress},
 	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria", "<DI,CDi,FDi,LDi,>DO", &GMT_gmtselect},
 	{"gmtset", "core", "Change individual GMT default parameters", "<TI", &GMT_gmtset},
@@ -147,6 +148,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtspatial", "core", "Do geospatial operations on lines and polygons", "<DI,DDi,NDi,TDi,>DO", &GMT_gmtspatial},
 	{"gmtvector", "core", "Basic manipulation of Cartesian vectors", "<DI,ADi,>DO", &GMT_gmtvector},
 	{"gmtwhich", "core", "Find full path to specified files", "<TI,>TO", &GMT_gmtwhich},
+	{"gmtwrite", "core", "Write GMT objects from external API", "<?I,>?O", &GMT_gmtwrite},
 	{"grd2cpt", "core", "Make linear or histogram-equalized color palette table from grid", "<GI,>CO", &GMT_grd2cpt},
 	{"grd2rgb", "core", "Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile", "<GI", &GMT_grd2rgb},
 	{"grd2xyz", "core", "Convert grid file to data table", "<GI,>DO", &GMT_grd2xyz},
@@ -195,7 +197,6 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<DI,-Xo", &GMT_pswiggle},
 	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<DI,CCI,-Xo", &GMT_psxyz},
 	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<DI,CCI,-Xo", &GMT_psxy},
-	{"read", "core", "Read GMT objects into external API", "<?I,>?O", &GMT_read},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<DI,NDI,>DO", &GMT_sample1d},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] timeseries", "<DI,>DO", &GMT_spectrum1d},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<DI,GGO", &GMT_sph2grd},
@@ -207,7 +208,6 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data", "<DI,>DO", &GMT_trend1d},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", "<DI,>DO", &GMT_trend2d},
 	{"triangulate", "core", "Do optimal (Delaunay) triangulation and gridding of Cartesian table data", "<DI,>DO,GGo", &GMT_triangulate},
-	{"write", "core", "Write GMT objects from external API", "<?I,>?O", &GMT_write},
 	{"xyz2grd", "core", "Convert data table to a grid file", "<DI,SDo,GGO", &GMT_xyz2grd},
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #endif

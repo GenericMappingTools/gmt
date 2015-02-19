@@ -24,7 +24,7 @@
  *
  */
 
-#define THIS_MODULE_NAME	"read"
+#define THIS_MODULE_NAME	"gmtread"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Read GMT objects into external API"
 #define THIS_MODULE_KEYS	"<?I,>?O"
