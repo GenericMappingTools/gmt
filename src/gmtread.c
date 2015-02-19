@@ -150,7 +150,7 @@ int GMT_gmtread_parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct G
 
 EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
-int GMT_read (void *V_API, int mode, void *args)
+int GMT_gmtread (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	struct GMTREAD_CTRL *Ctrl = NULL;
