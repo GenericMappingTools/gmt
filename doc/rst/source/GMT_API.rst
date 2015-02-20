@@ -1409,6 +1409,9 @@ different data types.
     processed in order. To completely specify which row to be read, use
     ``GMT_GRID_ROW_BY_ROW_MANUAL`` instead.
 
+If you need to read the same resource more than once you should add the
+bitflag GMT_IO_RESET to the given ``mode``.
+
 Import from a memory location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
