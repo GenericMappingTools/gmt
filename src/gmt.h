@@ -142,9 +142,9 @@ EXTERN_MSC int GMT_F77_readgrdinfo_	(unsigned int dim[], double wesn[], double i
 EXTERN_MSC int GMT_F77_readgrd_		(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file);
 EXTERN_MSC int GMT_F77_writegrd_	(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file);
 
-/* For API developers */
-EXTERN_MSC int GMT_Insert_Data			(void *V_API, int object_ID, void *obj);
-EXTERN_MSC const char * GMT_Get_Moduleinfo	(void *V_API, char *module);
+/* For external API developers only */
+EXTERN_MSC int GMT_Encode_Options	(void *API, char *module, char marker, struct GMT_OPTION **head, struct GMT_RESOURCE **information);
+EXTERN_MSC int GMT_Expand_Option	(void *API, struct GMT_OPTION *current, char marker, char *txt);
 
 #ifdef __cplusplus
 }

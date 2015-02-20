@@ -93,7 +93,7 @@ enum GMT_enum_via {
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
 	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
 
-/*! These are the 5 families of data types, + a coordinate array + 2 help containers for vector and matrix */
+/*! These are the 5 families of data types, + a coordinate array + 3 help containers for vector, matrix, and PS */
 enum GMT_enum_family {
 	GMT_IS_DATASET = 0,	/* Entity is data table */
 	GMT_IS_TEXTSET,		/* Entity is a Text table */
@@ -102,7 +102,8 @@ enum GMT_enum_family {
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_VECTOR,		/* Entity is set of user vectors */
 	GMT_IS_MATRIX,		/* Entity is user matrix */
-	GMT_IS_COORD};		/* Entity is a double coordinate array */
+	GMT_IS_COORD,		/* Entity is a double coordinate array */
+	GMT_IS_PS};		/* Entity is a PostScript file [API Developers only] */
 
 /*! These are modes for handling comments */
 enum GMT_enum_comment {
@@ -728,13 +729,17 @@ struct GMT_OPTION {              /* Structure for a single GMT command option */
 };
 
 /*============================================================ */
-/* struct GMT_MODULE_INFO is for API Developers only ========= */
+/* struct GMT_INFO is for API Developers only ========= */
 /*============================================================ */
 
-struct GMT_MODULE_INFO {
-	unsigned int mode;	/* 1 if module name had gmt prepended */
-	char module[32];	/* Actual module name (with prepended gmt if needed) */
-	const char *keys;	/* Pointer to module keys */
+struct GMT_RESOURCE {	/* Information related to passing resources between GMT and external API */
+	enum GMT_enum_family family;	/* GMT data family, i.e., GMT_IS_DATASET, GMT_IS_GRID, etc. */
+	enum GMT_enum_geometry geometry;/* One of the recognized GMT geometries */
+	enum GMT_enum_std direction;	/* Either GMT_IN or GMT_OUT */
+	struct GMT_OPTION *option;	/* Pointer to the corresponding module option */
+	int object_ID;			/* Object ID returned by GMT_Register_IO */
+	int pos;			/* Corresponding index into external object in|out arrays */
+	void *object;			/* Pointer to the registered GMT object */
 };
 
 #endif /* _GMT_RESOURCES_H */

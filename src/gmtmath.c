@@ -3393,6 +3393,8 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 
 	if (!txt) return (GMTMATH_ARG_IS_BAD);
 
+	if (GMT_File_Is_Memory (txt)) return GMTMATH_ARG_IS_FILE;	/* Deal with memory references first */
+	
 	/* Check if argument is operator */
 
 	if ((key = GMT_hash_lookup (GMT, txt, H, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS)) >= GMTMATH_ARG_IS_OPERATOR) return (key);
@@ -3546,10 +3548,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 				D_in = D_stdin;
 				I = D_stdin->table[0];
 			}
-			else {
-				if ((D_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
-					Return (API->error);
-				}
+			else if ((D_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL | GMT_IO_RESET, NULL, opt->arg, NULL)) == NULL) {
+				/* Read but request IO reset since the file (which may be a memory reference) will be read again later */
+				Return (API->error);
 			}
 			got_t_from_file = 1;
 		}

@@ -418,6 +418,29 @@ int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, char *arg) {
 	return (GMT_OK);	/* No error encountered */
 }
 
+/*! Replaces a marker character (e.g., $) with the replacement argument in txt. */
+int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, char marker, char *arg) {
+	char buffer[BUFSIZ] = {""};
+	size_t in = 0, out = 0;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
+	if (opt == NULL) return_error (V_API, GMT_OPTION_IS_NULL);	/* We pass NULL as the option */
+	if (arg == NULL) return_error (V_API, GMT_ARG_IS_NULL);		/* We pass NULL as the argument */
+	if ((strlen (arg) + strlen (opt->arg)) > BUFSIZ) return_error (V_API, GMT_DIM_TOO_LARGE);		/* Don't have room */
+
+	while (opt->arg[in]) {
+		if (opt->arg[in] == marker) {	/* Found the marker character */
+			strcat (&buffer[out], arg);	/* Insert the given arg instead */
+			out += strlen (arg);	/* Adjust next output location */
+		}
+		else	/* Regular text, copy one-by-one */
+			buffer[out++] = opt->arg[in];
+		in++;
+	}
+	free (opt->arg);
+	opt->arg = strdup (buffer);
+	return (GMT_NOERROR);
+}
+
 /*! Append this entry to the end of the linked list */
 struct GMT_OPTION *GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, struct GMT_OPTION *head) {
 	struct GMT_OPTION *current = NULL;
