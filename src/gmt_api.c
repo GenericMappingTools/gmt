@@ -6188,7 +6188,7 @@ const char * GMTAPI_Get_Moduleinfo (void *V_API, char *module)
 }
 
 /*! . */
-int GMT_Encode_Options (void *API, char *module, char marker, struct GMT_OPTION **head, struct GMT_RESOURCE **X) {
+int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTION **head, struct GMT_RESOURCE **X) {
 	/* This function determines which input sources and output destinations are required.
 	 * It is only meant to assist developers of external APIs such as the Matlab, Julia, Python, etc, APIs
 	 * These are the arguments:
@@ -6222,12 +6222,15 @@ int GMT_Encode_Options (void *API, char *module, char marker, struct GMT_OPTION 
 	char type = 0;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
+	struct GMTAPI_CTRL *API = NULL;
 
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return if unknown module */
-	if ((keys = GMTAPI_Get_Moduleinfo (API, module)) == NULL) {	/* Gave an unknown module */
-		GMT_Call_Module (API, NULL, GMT_MODULE_PURPOSE, NULL);	/* List available modules */
+	if ((keys = GMTAPI_Get_Moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
+		GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL);	/* List available modules */
 		return (-1);	/* Unknown module */
 	}
+
+	API = gmt_get_api_ptr (V_API);
 
 	/* First some special checks related to unusual GMT syntax or hidden modules */
 	
@@ -6301,20 +6304,44 @@ int GMT_Encode_Options (void *API, char *module, char marker, struct GMT_OPTION 
 		}
 		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
 			/* We should check if, in the case of -Lu, that "u" is not a file..."" */
-			/* This is an implicit reference and we must explicity add the missing item by adding the marker */
-			info[n_items].option    = opt;
-			info[n_items].family    = family;
-			info[n_items].geometry  = geometry;
-			info[n_items].direction = direction;
-			key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Change to lowercase i or o since option was provided, albeit implicitly */
-			info[n_items].pos = pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
-			/* Excplicitly add the missing marker ($) to the option argument */
-			sprintf (txt, "%s%c", opt->arg, marker);
-			free (opt->arg);
-			opt->arg = strdup (txt);
-			n_implicit++;
-			kind = GMT_FILE_EXPLICIT;
-			n_items++;
+			bool skip = false;
+			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
+			if (len) {	/* There is a 1-char argument given */
+				if (!GMT_access (API->GMT, opt->arg, F_OK)) {
+					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: 1-char file found to override implicit specitication\n");
+					skip = true;	/* The file actually exist */
+				}
+				else if (key[k][K_FAMILY] == 'C' && !GMT_not_numeric (API->GMT, opt->arg)) {
+					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: -C<n>, for >n> a single number overrides implicit CPT specification\n");
+					skip = true;	/* Most likely a contour specification, e.g. -C5 */
+				}
+			}
+			if (skip) {
+				kind = GMT_FILE_NONE;
+				if (k >= 0) {	/* If this was a required input|output it has now been satisfied */
+					/* Add check to make sure argument for input is an existing file! */
+					key[k][K_DIR] = tolower (key[k][K_DIR]);
+					satisfy = special_text[direction];
+				}
+				else	/* Nothing special about this option */
+					satisfy = special_text[2];
+			}
+			else {
+				/* This is an implicit reference and we must explicity add the missing item by adding the marker */
+				info[n_items].option    = opt;
+				info[n_items].family    = family;
+				info[n_items].geometry  = geometry;
+				info[n_items].direction = direction;
+				key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Change to lowercase i or o since option was provided, albeit implicitly */
+				info[n_items].pos = pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
+				/* Excplicitly add the missing marker ($) to the option argument */
+				sprintf (txt, "%s%c", opt->arg, marker);
+				free (opt->arg);
+				opt->arg = strdup (txt);
+				n_implicit++;
+				kind = GMT_FILE_EXPLICIT;
+				n_items++;
+			}
 		}
 		else {	/* No implicit file argument involved, just check if this satisfies a required option */
 			kind = GMT_FILE_NONE;
