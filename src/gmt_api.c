@@ -3427,7 +3427,7 @@ struct GMTAPI_DATA_OBJECT * GMTAPI_Make_DataObject (struct GMTAPI_CTRL *API, enu
 {	/* Simply the creation and initialization of this DATA_OBJECT structure */
 	struct GMTAPI_DATA_OBJECT *S_obj = GMT_memory (API->GMT, NULL, 1, struct GMTAPI_DATA_OBJECT);
 
-	S_obj->family = family;
+	S_obj->family = S_obj->actual_family = family;
 	S_obj->method = method;
 	S_obj->geometry = geometry;
 	S_obj->resource = resource;
