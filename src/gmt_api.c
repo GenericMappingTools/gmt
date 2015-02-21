@@ -6188,7 +6188,7 @@ const char * GMTAPI_Get_Moduleinfo (void *V_API, char *module)
 }
 
 /*! . */
-int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTION **head, struct GMT_RESOURCE **X) {
+struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTION **head, unsigned int *n) {
 	/* This function determines which input sources and output destinations are required.
 	 * It is only meant to assist developers of external APIs such as the Matlab, Julia, Python, etc, APIs
 	 * These are the arguments:
@@ -6196,13 +6196,13 @@ int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTIO
 	 *   module is the name of the GMT module. While an input arg it may grow if a prefix of "gmt" is prepended.
 	 *   marker is the character that represents a resource, typically $, but could be something else if need be.
 	 *   head is the linked list of GMT options passed for this module.  We may hook on 1-2 additional options.
-	 *   X is a returned array of structures with information about registered resources going to/from GMT.
-	 *   Number of structures is returned by the function.
+	 *   We return an array of structures with information about registered resources going to/from GMT.
+	 *   The number of structures is returned by the *n argument.
 	 * Basically, given the module we look up the keys for that module which tells us which options provide
 	 * the input and output selections and which ones are required and which ones are optional.  We then
 	 * scan the given options and if file arguments to the options listed in the keys are missing we are
 	 * to insert the given marker as the filename.  Some options may already have the marker, e.g., -G$, and
-	 * it is required for filenames on the command line that is to come from memory (jsut $).  After scanning
+	 * it is required for filenames on the command line that is to come from memory (just $).  After scanning
 	 * the options we examine the keys for any required input or output argument that have yet to be specified
 	 * explicitly.  If so we add the missing options, with filenames of marker, and append them to the end of
 	 * the option list (head).  The API developers can then use this array of encoded options in concert with
@@ -6211,8 +6211,8 @@ int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTIO
 
 	unsigned int n_keys, direction, PS, kind, pos, output_set = 0;
 	unsigned int n_items = 0, n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
-	int family;		/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
-	int geometry;		/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
+	int family;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
+	int geometry;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int k;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
@@ -6227,7 +6227,7 @@ int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTIO
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return if unknown module */
 	if ((keys = GMTAPI_Get_Moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
 		GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL);	/* List available modules */
-		return (-1);	/* Unknown module */
+		return_null (NULL, GMT_NOT_A_VALID_MODULE);	/* Unknown module */
 	}
 
 	API = gmt_get_api_ptr (V_API);
@@ -6241,7 +6241,7 @@ int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTIO
 			type = toupper (opt->arg[0]);	/* Find type and replace ? in keys with this type in uppercase (DGCIT) in GMTAPI_process_keys below */
 		if (!strchr ("DGCIT", type)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: No or bad data type given to read|write (%c)\n", type);
-			return (-2);
+			return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
 		}
 		if (!strncmp (module, "gmtwrite", 8U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
 			/* Found a -<"file" option; this is actually the output file so we reset the option */
@@ -6274,11 +6274,11 @@ int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTIO
 	}
 	if (PS == 1) {	/* No redirection of the PS to an actual file means an error */
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: No PostScript output file given\n");
-		return (-3);
+		return_null (NULL, GMT_NOT_OUTPUT_OBJECT);	/* No PS object (file) */
 	}
 	else if (PS > 2) {
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Can only specify one PostScript output file\n");
-		return (-4);
+		return_null (NULL, GMT_ONLY_ONE_ALLOWED);	/* Too many output objects */
 	}
 	n_alloc = n_explicit + n_keys;	/* Max number of registrations needed (may be just n_explicit) */
 	info = calloc (n_alloc, sizeof (struct GMT_RESOURCE));
@@ -6303,8 +6303,8 @@ int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTIO
 			n_items++;
 		}
 		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
-			/* We should check if, in the case of -Lu, that "u" is not a file..."" */
-			bool skip = false;
+			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file */
+			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
 			if (len) {	/* There is a 1-char argument given */
 				if (!GMT_access (API->GMT, opt->arg, F_OK)) {
@@ -6313,13 +6313,12 @@ int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTIO
 				}
 				else if (key[k][K_FAMILY] == 'C' && !GMT_not_numeric (API->GMT, opt->arg)) {
 					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: -C<n>, for >n> a single number overrides implicit CPT specification\n");
-					skip = true;	/* Most likely a contour specification, e.g. -C5 */
+					skip = number = true;	/* Most likely a contour specification, e.g. -C5 */
 				}
 			}
-			if (skip) {
+			if (skip) {	/* Not an explicit reference after all but a regular option */
 				kind = GMT_FILE_NONE;
-				if (k >= 0) {	/* If this was a required input|output it has now been satisfied */
-					/* Add check to make sure argument for input is an existing file! */
+				if (k >= 0 && !number) {	/* If this was a required input|output it has now been satisfied */
 					key[k][K_DIR] = tolower (key[k][K_DIR]);
 					satisfy = special_text[direction];
 				}
@@ -6379,29 +6378,32 @@ int GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTIO
 				S[direction], key[k][K_OPT], marker, LR[direction], info[n_items].pos);
 			n_items++;
 		}
-		free ((void *)key[k]);	/* Free up this key */
+		free (key[k]);	/* Free up this key */
 	}
 	/* Free up the temporary key array */
-	free ((void *)key);
+	free (key);
 
 	/* Reallocate the information structure array or remove entirely if nothing given. */
-	if (n_items && n_items < n_alloc) info = realloc ((void *)info, n_items * sizeof (struct GMT_RESOURCE));
-	else if (n_items == 0) free ((void *)info);	/* No containers used */
-
+	if (n_items && n_items < n_alloc) info = realloc (info, n_items * sizeof (struct GMT_RESOURCE));
+	else if (n_items == 0) free (info);	/* No containers used */
 
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", implicit_pos, output_pos);
 	/* Just checking that the options were properly processed */
-	text = GMT_Create_Cmd (API, *head);
 #ifdef NO_MEX
+	text = GMT_Create_Cmd (API, *head);
 	sprintf (revised_cmd, "\'%s %s\'", module, text);
+	GMT_Destroy_Cmd (API, &text);	/* Only needed it for the NO_MEX testing */
 #else
-	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Revised command before memory-substitution: %s\n", text);
+	if (GMT_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
+		text = GMT_Create_Cmd (API, *head);
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Revised command before memory-substitution: %s\n", text);
+		GMT_Destroy_Cmd (API, &text);
+	}
 #endif
-	GMT_Destroy_Cmd (API, &text);	/* Only needed it for the above verbose */
 
 	/* Pass back the info array and the number of items */
-	*X = info;
-	return (n_items);
+	*n = n_items;
+	return (info);
 }
 
 /* Parsing API: to present, examine GMT Common Option current settings and GMT Default settings */
