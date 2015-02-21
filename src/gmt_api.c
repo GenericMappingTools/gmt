@@ -6337,7 +6337,6 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	struct GMTAPI_CTRL *API = NULL;
 
 	*n = 0;	/* Initialize counter to zero in case we return prematurely */
-	API->error = GMT_NOERROR;
 	
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
 	if ((keys = GMTAPI_get_moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
@@ -6346,6 +6345,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	}
 
 	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
 
 	/* First some special checks related to unusual GMT syntax or hidden modules */
 	
