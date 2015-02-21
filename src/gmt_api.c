@@ -3540,11 +3540,11 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 		}
 		if (S_obj->data) {
 			address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
-			error = GMTAPI_destroy_data_ptr (API, S_obj->family, API->object[i]->data);	/* Do the dirty deed */
+			error = GMTAPI_destroy_data_ptr (API, S_obj->actual_family, API->object[i]->data);	/* Do the dirty deed */
 		}
 		else if (S_obj->resource) {
 			address = S_obj->resource;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
-			error = GMTAPI_destroy_data_ptr (API, S_obj->family, API->object[i]->resource);	/* Do the dirty deed */
+			error = GMTAPI_destroy_data_ptr (API, S_obj->actual_family, API->object[i]->resource);	/* Do the dirty deed */
 		}
 
 		if (error < 0) {	/* Failed to destroy this memory; that cannot be a good thing... */
