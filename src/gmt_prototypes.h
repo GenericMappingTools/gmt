@@ -524,7 +524,6 @@ EXTERN_MSC void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *thet
 /* From gmt_api.c */
 EXTERN_MSC struct GMTAPI_CTRL *GMT_get_API_ptr (struct GMTAPI_CTRL *ptr);
 EXTERN_MSC void GMT_show_name_and_purpose (void *API, const char *name, const char *component, const char *purpose);
-EXTERN_MSC const char *GMT_get_moduleinfo (void *V_API, char *module);
 
 /* From gmt_stat.c */
 EXTERN_MSC bool GMT_is_fnan_func (float value);
