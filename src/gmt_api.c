@@ -2806,7 +2806,7 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, in
 
 	/* Check if this is a container passed from the outside to capture output */
 	if (API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
-		error = GMTAPI_destroy_data_ptr (API, API->object[item]->family, API->object[item]->data);	/* Do the dirty deed */
+		error = GMTAPI_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data);	/* Do the dirty deed */
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
 
@@ -3160,11 +3160,11 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 		}
 		if (S_obj->data) {
 			address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
-			error = GMTAPI_destroy_data_ptr (API, S_obj->family, API->object[i]->data);	/* Do the dirty deed */
+			error = GMTAPI_destroy_data_ptr (API, S_obj->actual_family, API->object[i]->data);	/* Do the dirty deed */
 		}
 		else if (S_obj->resource) {
 			address = S_obj->resource;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
-			error = GMTAPI_destroy_data_ptr (API, S_obj->family, API->object[i]->resource);	/* Do the dirty deed */
+			error = GMTAPI_destroy_data_ptr (API, S_obj->actual_family, API->object[i]->resource);	/* Do the dirty deed */
 		}
 
 		if (error < 0) {	/* Failed to destroy this memory; that cannot be a good thing... */
