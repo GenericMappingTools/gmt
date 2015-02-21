@@ -2021,7 +2021,7 @@ allow you to convert between the two argument formats. They are
 
   ::
 
-    struct GMT_OPTIONS *GMT_Create_Options (void *API, int argc, void *args);
+    struct GMT_OPTION *GMT_Create_Options (void *API, int argc, void *args);
 
 This function accepts your array of text arguments (cast via a void
 pointer), allocates the necessary space, performs the conversion, and
@@ -2051,7 +2051,7 @@ The inverse function prototype is
 
   ::
 
-    char **GMT_Create_Args (void *API, int *argc, struct GMT_OPTIONS *list);
+    char **GMT_Create_Args (void *API, int *argc, struct GMT_OPTION *list);
 
 which allocates space for the text strings and performs the conversion;
 it passes back the count of the arguments via ``argc`` and returns a
@@ -2089,7 +2089,7 @@ any use for the text string, call
 
   ::
 
-    int _GMT_Destroy_Cmd (void *API, char **argv);
+    int GMT_Destroy_Cmd (void *API, char **argv);
 
 to deallocate the space used. This function returns 1 if there is
 an error (which is passed back with ``API->error``), otherwise it

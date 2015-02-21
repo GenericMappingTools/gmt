@@ -3486,84 +3486,6 @@ int GMTAPI_Destroy_Coord (struct GMTAPI_CTRL *API, double **ptr) {
 	return GMT_OK;
 }
 
-#if 0
-void GMT_Garbage_Collection_Old (struct GMTAPI_CTRL *API, int level)
-{
-	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
-	 * or for the entire session if level == GMT_NOTSET (-1) */
-
-	unsigned int i, j, n_free = 0, u_level = 0;
-	int error = GMT_NOERROR;
-	enum GMT_enum_method m;
-	void *address = NULL;
-	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
-
-	if (API->n_objects == 0) return;	/* Nothing to do */
-
-	/* Free memory allocated during data registration (e.g., via GMT_Get|Put_Data).
-	 * Because GMTAPI_Unregister_IO will delete an object and shuffle
-	 * the API->object array, reducing API->n_objects by one we must
-	 * be aware that API->n_objects changes in the loop below, hence the while loop */
-
-	i = n_free = 0;
-	if (level != GMT_NOTSET) u_level = level;
-	while (i < API->n_objects) {	/* While there are more objects to consider */
-		S_obj = API->object[i];	/* Shorthand for the the current object */
-		if (!S_obj) {		/* Skip empty object [Should not happen?] */
-			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Garbage_Collection found empty object number %d [Bug?]\n", i++);
-			continue;
-		}
-		if (!(level == GMT_NOTSET || S_obj->alloc_level == u_level)) {	/* Not the right module level (or not end of session) */
-			i++;	continue;
-		}
-		if (!S_obj->data) {	/* No memory to free (probably freed earlier); handle trashing of object after this loop */
-			i++;	continue;
-		}
-		if (S_obj->no_longer_owner) {	/* No memory to free since we passed it on; just NULL the pointers */
-			S_obj->data = S_obj->resource = NULL;
-			S_obj->alloc_level = u_level;			/* To ensure it will be Unregistered below */
-			S_obj->alloc_mode = GMT_ALLOC_INTERNALLY;	/* To ensure it will be Unregistered below */
-			i++;	continue;
-		}
-		else if (S_obj->direction == GMT_OUT && S_obj->method == GMT_IS_REFERENCE) {	/* Do not free data pointers for output memory objects */
-			S_obj->data = S_obj->resource = NULL;
-			i++;	continue;
-		}
-		/* Here we will try to free the memory pointed to by S_obj->resource */
-		m = GMTAPI_split_via_method (API, S_obj->method, NULL);
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
-			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status], (size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
-		address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
-		error = GMTAPI_destroy_data_ptr (API, S_obj->family, API->object[i]->data);	/* Do the dirty deed */
-
-		if (error < 0) {	/* Failed to destroy this memory; that cannot be a good thing... */
-			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Garbage_Collection failed to destroy memory for object % d [Bug?]\n", i++);
-			/* Skip it for now; but this is possibly a fatal error [Bug]? */
-		}
-		else  {	/* Successfully freed.  See if this address occurs more than once (e.g., both for in and output); if so just set repeated data pointer to NULL */
-			S_obj->data = NULL;
-			for (j = i; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Yes, set to NULL so we don't try to free twice */
-			n_free++;	/* Number of freed n_objects; do not increment i since GMT_Destroy_Data shuffled the array */
-		}
-		i++;	/* Go to next */
-	}
- 	if (n_free) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Garbage_Collection freed %d memory objects\n", n_free);
-
-	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o or those set to NULL above) set during this module (or session) */
-	i = 0;
-	while (i < API->n_objects) {	/* While there are more objects to consider */
-		S_obj = API->object[i];	/* Shorthand for the the current object */
-		if (S_obj && (level == GMT_NOTSET || (S_obj->alloc_level == u_level)))	/* Yes, this object was added at this level, get rid of it; do not increment i */
-			GMTAPI_Unregister_IO (API, S_obj->ID, GMT_NOTSET);	/* This shuffles the object array and reduces n_objects */
-		else
-			i++;	/* Was allocated higher up, leave alone and go to next */
-	}
-#ifdef DEBUG
-	GMT_list_API (API, "GMTAPI_Garbage_Collection");
-#endif
-}
-#endif
-
 /*! Also called in gmt_init.c and prototyped in gmt_internals.h: */
 void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
@@ -3606,8 +3528,16 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 			i++;	continue;
 		}
 		/* Here we will try to free the memory pointed to by S_obj->resource */
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
-			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[S_obj->method], GMT_status[S_obj->status], (size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
+		if (GMT_is_verbose (API->GMT, GMT_MSG_DEBUG)) {	/* Give debug feedback so some calcs are needed */
+			unsigned int via, m = S_obj->method;
+			if (m >= GMT_VIA_VECTOR) {
+				via = (m / GMT_VIA_VECTOR) - 1;
+				m -= (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
+			}
+			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
+			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status&2],
+				(size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
+		}
 		if (S_obj->data) {
 			address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
 			error = GMTAPI_destroy_data_ptr (API, S_obj->family, API->object[i]->data);	/* Do the dirty deed */
