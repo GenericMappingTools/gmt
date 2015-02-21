@@ -526,6 +526,76 @@ void GMTAPI_free_sharedlibs (struct GMTAPI_CTRL *API) {
 	API->n_shared_libs = 0;
 }
 
+/* The basic gmtread|write module meat; used by external APIs only */
+
+/*! Duplicate ifile on ofile.  Calling program is responsible to ensure correct args are passed */
+int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile) {
+	double *wesn = NULL;	/* For grid and image subsets */
+	struct GMT_DATASET *D = NULL;
+	struct GMT_TEXTSET *T = NULL;
+	struct GMT_PALETTE *C = NULL;
+	struct GMT_GRID *G = NULL;
+	struct GMT_IMAGE *I = NULL;
+	bool mem[2] = {false, false};
+	enum GMT_enum_method method;
+
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	API->error = GMT_NOERROR;
+	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
+	mem[GMT_IN]  = GMT_File_Is_Memory (ifile);
+	mem[GMT_OUT] = GMT_File_Is_Memory (ofile);
+	
+	switch (family) {
+		case GMT_IS_DATASET:
+			method = (mem[GMT_IN]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, method, GMT_IS_POINT, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
+				return (API->error);
+			method = (mem[GMT_OUT]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
+			if (GMT_Write_Data (API, GMT_IS_DATASET, method, D->geometry, D->io_mode | GMT_IO_RESET, NULL, ofile, D) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_TEXTSET:
+			method = (mem[GMT_IN]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
+			if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, method, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
+				return (API->error);
+			method = (mem[GMT_OUT]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, method, GMT_IS_NONE, T->io_mode | GMT_IO_RESET, NULL, ofile, T) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_GRID:
+			wesn = (direction == GMT_IN && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
+			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
+				return (API->error);
+			wesn = (direction == GMT_OUT && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_IO_RESET, wesn, ofile, G) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_IMAGE:
+			wesn = (direction == GMT_IN && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
+				return (API->error);
+			wesn = (direction == GMT_OUT && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_IO_RESET, wesn, ofile, I) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_CPT:
+			if ((C = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
+				return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, C->cpt_flags | GMT_IO_RESET, NULL, ofile, C) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_VECTOR:
+		case GMT_IS_MATRIX:
+		case GMT_IS_COORD:
+		case GMT_IS_PS:
+			GMT_Report (API, GMT_MSG_VERBOSE, "No external read or write support yet for object %s\n", GMT_family[family]);
+			return_error(API, GMT_NOT_A_VALID_FAMILY);
+			break;
+	}
+
+	return (API->error);
+}
+
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
 
@@ -577,6 +647,48 @@ void GMTAPI_put_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, double val
 			API->error = GMT_NOT_A_VALID_TYPE;
 			break;
 	}
+}
+
+/*! . */
+char * GMTAPI_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode)
+{	/* Optionally craft a leading timestamp.
+	 * mode = 0:	No time stamp
+	 * mode = 1:	Abs time stamp formatted via GMT_TIME_STAMP
+	 * mode = 2:	Report elapsed time since last reset.
+	 * mode = 4:	Reset elapsed time to 0, no time stamp.
+	 * mode = 6:	Reset elapsed time and report it as well.
+	 */
+	time_t right_now;
+	clock_t toc;
+	unsigned int H, M, S, milli;
+	double T;
+	static char stamp[GMT_LEN256] = {""};
+
+	if (mode == 0) return NULL;		/* no timestamp requested */
+	if (mode > 1) toc = clock ();		/* Elapsed time requested */
+	if (mode & 4) API->GMT->current.time.tic = toc;	/* Reset previous timestamp to now */
+
+	switch (mode) {	/* Form output timestamp string */
+		case 1:	/* Absolute time stamp */
+			right_now = time ((time_t *)0);
+			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&right_now));
+			break;
+		case 2:	/* Elapsed time stamp */
+		case 6:
+			T = (double)(toc - (clock_t)API->GMT->current.time.tic);	/* Elapsed time in ticks */
+			T /= CLOCKS_PER_SEC;	/* Elapsed time in seconds */
+			H = urint (floor (T * GMT_SEC2HR));
+			T -= H * GMT_HR2SEC_I;
+			M = urint (floor (T * GMT_SEC2MIN));
+			T -= M * GMT_MIN2SEC_I;
+			S = urint (floor (T));
+			T -= S;
+			milli = urint (T*1000.0);	/* Residual milli-seconds */
+			sprintf (stamp, "Elapsed time %2.2u:%2.2u:%2.2u.%3.3u", H, M, S, milli);
+			break;
+		default: break;
+	}
+	return (stamp);
 }
 
 /*! . */
@@ -6154,7 +6266,7 @@ const char * gmt_get_module_info (struct GMTAPI_CTRL *API, char *module, unsigne
 }
 
 /*! . */
-const char * GMTAPI_Get_Moduleinfo (void *V_API, char *module)
+const char * GMTAPI_get_moduleinfo (void *V_API, char *module)
 {	/* Call the specified shared module and retrieve the API developer options keys.
  	 * This function, while in the API, is only for API developers and thus has a
 	 * "undocumented" status in the API documentation.
@@ -6224,10 +6336,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
 	struct GMTAPI_CTRL *API = NULL;
 
-	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return if unknown module */
-	if ((keys = GMTAPI_Get_Moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
-		GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL);	/* List available modules */
-		return_null (NULL, GMT_NOT_A_VALID_MODULE);	/* Unknown module */
+	*n = 0;	/* Initialize counter to zero in case we return prematurely */
+	API->error = GMT_NOERROR;
+	
+	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
+	if ((keys = GMTAPI_get_moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
+		GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL);	/* List the available modules */
+		return_null (NULL, GMT_NOT_A_VALID_MODULE);	/* Unknown module code */
 	}
 
 	API = gmt_get_api_ptr (V_API);
@@ -6406,6 +6521,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	return (info);
 }
 
+#ifdef FORTRAN_API
+struct GMT_RESOURCE * GMT_Encode_Options_ (char *module, char *marker, struct GMT_OPTION **head, unsigned int *n, int len)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Encode_Options (GMT_FORTRAN, module, *marker, head, n));
+}
+#endif
+
 /* Parsing API: to present, examine GMT Common Option current settings and GMT Default settings */
 
 /*! . */
@@ -6578,48 +6700,6 @@ int GMT_Option_ (void *V_API, char *options, int len)
 #endif
 
 /*! . */
-char * gmt_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode)
-{	/* Optionally craft a leading timestamp.
-	 * mode = 0:	No time stamp
-	 * mode = 1:	Abs time stamp formatted via GMT_TIME_STAMP
-	 * mode = 2:	Report elapsed time since last reset.
-	 * mode = 4:	Reset elapsed time to 0, no time stamp.
-	 * mode = 6:	Reset elapsed time and report it as well.
-	 */
-	time_t right_now;
-	clock_t toc;
-	unsigned int H, M, S, milli;
-	double T;
-	static char stamp[GMT_LEN256] = {""};
-
-	if (mode == 0) return NULL;		/* no timestamp requested */
-	if (mode > 1) toc = clock ();		/* Elapsed time requested */
-	if (mode & 4) API->GMT->current.time.tic = toc;
-
-	switch (mode) {
-		case 1:
-			right_now = time ((time_t *)0);
-			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&right_now));
-			break;
-		case 2:
-		case 6:
-			T = (double)(toc - (clock_t)API->GMT->current.time.tic);	/* Elapsed time in ticks */
-			T /= CLOCKS_PER_SEC;	/* Elapsed time in seconds */
-			H = urint (floor (T * GMT_SEC2HR));
-			T -= H * GMT_HR2SEC_I;
-			M = urint (floor (T * GMT_SEC2MIN));
-			T -= M * GMT_MIN2SEC_I;
-			S = urint (floor (T));
-			T -= S;
-			milli = urint (T*1000.0);	/* Residual milli-seconds */
-			sprintf (stamp, "Elapsed time %2.2u:%2.2u:%2.2u.%3.3u", H, M, S, milli);
-			break;
-		default: break;
-	}
-	return (stamp);
-}
-
-/*! . */
 int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 {	/* Message independent of verbosity, optionally with timestamp.
 	 * mode = 0:	No time stamp
@@ -6636,7 +6716,7 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	API = gmt_get_api_ptr (V_API);
-	stamp = gmt_tictoc_string (API, mode);	/* NULL or pointer to a timestamp string */
+	if (mode) stamp = GMTAPI_tictoc_string (API, mode);	/* Pointer to a timestamp string */
 	if (mode % 4) sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
 	source_info_len = strlen (message);
 
@@ -6669,7 +6749,7 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	if (level > MAX(API->verbose, API->GMT->current.setting.verbose))
 		return 0;
 	if (API->GMT->current.setting.timer_mode > GMT_NO_TIMER) {
-		char *stamp = gmt_tictoc_string (API, API->GMT->current.setting.timer_mode);	/* NULL or pointer to a timestamp string */
+		char *stamp = GMTAPI_tictoc_string (API, API->GMT->current.setting.timer_mode);	/* NULL or pointer to a timestamp string */
 		if (stamp) {
 			sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
 			source_info_len = strlen (message);	/* Update length of message from 0 */
@@ -6753,76 +6833,6 @@ int GMT_Get_Value_ (char *arg, double par[], int len)
 	return (GMT_Get_Value (GMT_FORTRAN, arg, par));
 }
 #endif
-
-/* The basic gmtread|write module meat; used by external APIs only */
-
-/*! Duplicate ifile on ofile.  Calling program is responsible to ensure correct args are passed */
-int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile) {
-	double *wesn = NULL;	/* For grid and image subsets */
-	struct GMT_DATASET *D = NULL;
-	struct GMT_TEXTSET *T = NULL;
-	struct GMT_PALETTE *C = NULL;
-	struct GMT_GRID *G = NULL;
-	struct GMT_IMAGE *I = NULL;
-	bool mem[2] = {false, false};
-	enum GMT_enum_method method;
-
-	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	API->error = GMT_NOERROR;
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
-	mem[GMT_IN]  = GMT_File_Is_Memory (ifile);
-	mem[GMT_OUT] = GMT_File_Is_Memory (ofile);
-	
-	switch (family) {
-		case GMT_IS_DATASET:
-			method = (mem[GMT_IN]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
-			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, method, GMT_IS_POINT, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
-				return (API->error);
-			method = (mem[GMT_OUT]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
-			if (GMT_Write_Data (API, GMT_IS_DATASET, method, D->geometry, D->io_mode | GMT_IO_RESET, NULL, ofile, D) != GMT_OK)
-				return (API->error);
-			break;
-		case GMT_IS_TEXTSET:
-			method = (mem[GMT_IN]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
-			if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, method, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
-				return (API->error);
-			method = (mem[GMT_OUT]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, method, GMT_IS_NONE, T->io_mode | GMT_IO_RESET, NULL, ofile, T) != GMT_OK)
-				return (API->error);
-			break;
-		case GMT_IS_GRID:
-			wesn = (direction == GMT_IN && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
-			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
-				return (API->error);
-			wesn = (direction == GMT_OUT && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_IO_RESET, wesn, ofile, G) != GMT_OK)
-				return (API->error);
-			break;
-		case GMT_IS_IMAGE:
-			wesn = (direction == GMT_IN && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
-			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
-				return (API->error);
-			wesn = (direction == GMT_OUT && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
-			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_IO_RESET, wesn, ofile, I) != GMT_OK)
-				return (API->error);
-			break;
-		case GMT_IS_CPT:
-			if ((C = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
-				return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, C->cpt_flags | GMT_IO_RESET, NULL, ofile, C) != GMT_OK)
-				return (API->error);
-			break;
-		case GMT_IS_VECTOR:
-		case GMT_IS_MATRIX:
-		case GMT_IS_COORD:
-		case GMT_IS_PS:
-			GMT_Report (API, GMT_MSG_VERBOSE, "No external read or write support yet for object %s\n", GMT_family[family]);
-			return_error(API, GMT_NOT_A_VALID_FAMILY);
-			break;
-	}
-
-	return (API->error);
-}
 
 /* Here lies the very basic F77 support for grid read and write only. It is assumed that no grid padding is required */
 
