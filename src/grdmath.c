@@ -73,11 +73,12 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 
 #define FLOAT_BIT_MASK (~(127U << 25U))	/* This will be 00000001 11111111 11111111 11111111 and sets to 0 anything larger than 2^24 which is max integer in float */
 
+#define GMT_OPT_OUTFILE2	'='	/* Unlike GMT_OPT_OUTFILE this one has no restriction of just one output file */
+
 struct GRDMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct Out {	/* = <filename> */
 		bool active;
-		char *file;
 	} Out;
 	struct I {	/* -Idx[/dy] */
 		bool active;
@@ -127,7 +128,6 @@ void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_grdmath_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);
 	GMT_free (GMT, C);
 }
 
@@ -199,7 +199,7 @@ int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct G
 					missing_equal = false;
 					if (opt->next && opt->next->option == GMT_OPT_INFILE) {
 						Ctrl->Out.active = true;
-						if (opt->next->arg) Ctrl->Out.file = strdup (opt->next->arg);
+						if (opt->next->option == GMT_OPT_OUTFILE) opt->next->option = GMT_OPT_OUTFILE2;	/* See definition of this for reason */
 					}
 				}
 				break;
@@ -3258,7 +3258,7 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 	bool possible_number = false;
 	double tmp = 0.0;
 
-	if (opt->option == GMT_OPT_OUTFILE) return GRDMATH_ARG_IS_SAVE;	/* Time to save stack; arg is filename */
+	if (opt->option == GMT_OPT_OUTFILE2) return GRDMATH_ARG_IS_SAVE;	/* Time to save stack; arg is filename */
 
 	/* Check if argument is operator */
 
@@ -3423,7 +3423,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
 			if (opt->next) {
-				ptr = GMT_Make_Option (API, GMT_OPT_OUTFILE, opt->next->arg);
+				ptr = GMT_Make_Option (API, GMT_OPT_OUTFILE2, opt->next->arg);
 				opt = opt->next;	/* Now we must skip that option */
 			}
 			else {	/* Standard output */
@@ -3557,7 +3557,6 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 		/* First check if we should skip optional arguments */
 
 		if (strchr ("IMNRVbfnr-" GMT_OPT("F"), opt->option)) continue;
-		/* if (opt->option == GMT_OPT_OUTFILE) continue; */	/* We do output after the loop */
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
 
