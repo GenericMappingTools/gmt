@@ -2981,6 +2981,9 @@ void GMT_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P)
 		/* Differences used in GMT_get_rgb_from_z */
 		for (k = 0; k < 4; k++) P->range[n].rgb_diff[k] = P->range[n].rgb_high[k] - P->range[n].rgb_low[k];
 		for (k = 0; k < 4; k++) P->range[n].hsv_diff[k] = P->range[n].hsv_high[k] - P->range[n].hsv_low[k];
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d: %g to %g. R/G/B %s to %s. idz = %g diff R/G/B = %g/%g/%g\n", n,
+			P->range[n].z_low, P->range[n].z_high, GMT_putrgb (GMT, P->range[n].rgb_low), GMT_putrgb (GMT, P->range[n].rgb_high),
+			P->range[n].i_dz, P->range[n].rgb_diff[0], P->range[n].rgb_diff[1], P->range[n].rgb_diff[2]);
 	}
 	/* Set background and foreground colors to the bottom and top of the colormap, plus use default NaN color */
 	GMT_memcpy (P->patch[GMT_BGD].rgb, P->range[0].rgb_low, 4, double);
