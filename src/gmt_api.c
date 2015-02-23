@@ -1757,6 +1757,7 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, int object_ID, 
 		case GMT_IS_REFERENCE:	/* Just pass memory location, so nothing is allocated */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing CPT table from GMT_PALETTE memory location\n");
 			if ((P_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+			GMT_init_cpt (API->GMT, P_obj);	/* Make sure derived quantities are set */
 			break;
 		default:	/* Barking up the wrong tree here... */
 			GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to import CPT tables\n");
@@ -3142,6 +3143,7 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, in
 	/* Check if this is a container passed from the outside to capture output */
 	if (API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
 		error = GMTAPI_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data);	/* Do the dirty deed */
+		API->object[item]->resource = NULL;	/* Since resource == data here */
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
 
@@ -4399,7 +4401,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	}
 	else if (input) {	/* Case 1: Load from a single, given source. Register it first. */
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
-		if (family == GMT_IS_CPT) { /* CPT files must be handled differently since the master files live in share/cpt and filename is missing .cpt */
+		if (family == GMT_IS_CPT && !just_get_data) { /* CPT files must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
 			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (input);
 			if ((c_err = GMTAPI_Colors2CPT (API, &file)) < 0) { /* Maybe converted colors to new cpt file */
@@ -4435,6 +4437,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			GMTAPI_Set_Object (API, API->object[item]);
 #endif
 			if (reset) API->object[item]->status = 0;	/* Reset  to unread */
+			if (family == GMT_IS_CPT && API->object[item]->resource) GMT_init_cpt (API->GMT, API->object[item]->resource);
 			return ((API->object[item]->data) ? API->object[item]->data : API->object[item]->resource);	/* Return pointer to the data */
 		}
 	}
@@ -5463,8 +5466,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if ((new_obj = GMT_create_textset (API->GMT, dim[GMT_TBL], dim[GMT_SEG], dim[GMT_ROW], false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */
-			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
-		 	if ((new_obj = GMT_create_palette (API->GMT, dim[0])) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+			/* If dim is NULL then we ask for 0 color entries as direction here is GMT_OUT for return to an external API */
+		 	if ((new_obj = GMT_create_palette (API->GMT, (dim) ? dim[0] : 0)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
 			n_layers = (dim == NULL || (dim[DIM_COL] == 0 && dim[DIM_ROW] == 0)) ? 1U : dim[GMT_Z];

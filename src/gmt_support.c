@@ -2969,6 +2969,28 @@ struct GMT_PALETTE * GMT_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 }
 
 /*! . */
+void GMT_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P)
+{
+	/* For CPTs passed to/from external APIs we need to initialize some derived CPT quantities */
+	unsigned int k, n;
+	
+	for (n = 0; n < P->n_colors; n++) {
+		gmt_rgb_to_hsv (P->range[n].rgb_low,  P->range[n].hsv_low);
+		gmt_rgb_to_hsv (P->range[n].rgb_high, P->range[n].hsv_high);
+		P->range[n].i_dz = 1.0 / (P->range[n].z_high - P->range[n].z_low);	/* Recompute inverse stepsize */
+		/* Differences used in GMT_get_rgb_from_z */
+		for (k = 0; k < 4; k++) P->range[n].rgb_diff[k] = P->range[n].rgb_high[k] - P->range[n].rgb_low[k];
+		for (k = 0; k < 4; k++) P->range[n].hsv_diff[k] = P->range[n].hsv_high[k] - P->range[n].hsv_low[k];
+	}
+	/* Set background and foreground colors to the bottom and top of the colormap, plus use default NaN color */
+	GMT_memcpy (P->patch[GMT_BGD].rgb, P->range[0].rgb_low, 4, double);
+	GMT_memcpy (P->patch[GMT_FGD].rgb, P->range[P->n_colors-1].rgb_high, 4, double);
+	GMT_memcpy (P->patch[GMT_NAN].rgb, GMT->current.setting.color_patch[GMT_NAN], 4, double);
+	P->is_continuous = true;	/* The only kind from the outside (?) */
+	P->model = GMT_RGB;		/* ---" --- */
+}
+
+/*! . */
 int GMT_get_index (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_PALETTE *P, double value)
 {
 	unsigned int index, lo, hi, mid;
