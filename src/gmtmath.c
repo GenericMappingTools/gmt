@@ -491,6 +491,9 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 				}
 				n_files++;
 				break;
+			case '=':	/* Output file specified via an API */
+				opt->option = GMT_OPT_OUTFILE;
+				break;
 			case '#':	/* Skip numbers */
 				break;
 				
