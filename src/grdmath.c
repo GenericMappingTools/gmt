@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"grdmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
-#define THIS_MODULE_KEYS	"<GI,>GO"
+#define THIS_MODULE_KEYS	"<GI,=GO"
 
 #include "gmt_dev.h"
 
@@ -221,11 +221,14 @@ int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct G
 			case '<':	/* Input files */
 				if (opt->arg[0] == '=' && !opt->arg[1]) {
 					missing_equal = false;
-					if (opt->next && (opt->next->option == GMT_OPT_INFILE || opt->next->option == GMT_OPT_OUTFILE)) {
+					if (opt->next && (opt->next->option == GMT_OPT_INFILE)) {
 						Ctrl->Out.active = true;
 						if (opt->next->option == GMT_OPT_OUTFILE) opt->next->option = GMT_OPT_OUTFILE2;	/* See definition of this for reason */
 					}
 				}
+				break;
+			case '=':	/* Output files */
+				missing_equal = false;
 				break;
 			case '#':	/* Numbers */
 				break;
@@ -3616,25 +3619,20 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STACK);
 	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 
+	/* The list is now the active options list. */
 	/* Internally replace the = file sequence with an output option ->file*/
 
-	GMT_Destroy_Options (API, &options);
-	options = list;	list = NULL;
-	for (opt = options; opt; opt = opt->next) {
+	for (opt = list; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
 			if (opt->next) {
-				ptr = GMT_Make_Option (API, GMT_OPT_OUTFILE2, opt->next->arg);
-				opt = opt->next;	/* Now we must skip that option */
+				opt->next->option = GMT_OPT_OUTFILE2;
+				GMT_Delete_Option (API, opt);
 			}
 			else {	/* Standard output */
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: No output file specified via = file mechanism\n");
 				Return (EXIT_FAILURE);
 			}
 		}
-		else
-		 	ptr = GMT_Make_Option (API, opt->option, opt->arg);
-
-		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return (API->error);
 	}
 
 	GMT_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS);

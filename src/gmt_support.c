@@ -10144,7 +10144,7 @@ struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTI
 	n_macros = gmt_load_macros (GMT, mfile, &M);	/* Load in any macros */
 	if (n_macros) GMT_Report (API, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
 
-	/* Internally replace the = [file] sequence with a single output option ->file */
+	/* Expand any macro with its building blocks */
 
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMT_NOTSET) {

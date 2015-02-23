@@ -5096,11 +5096,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 		size_t size;
 		S_obj->n_alloc += GMT_CHUNK;
 		size = S_obj->n_alloc;
-		if (S_obj->method == GMT_IS_DUPLICATE_VIA_MATRIX) {
+		if (S_obj->method == GMT_IS_DUPLICATE_VIA_MATRIX || S_obj->method == GMT_IS_REFERENCE_VIA_MATRIX) {
 			size *= API->GMT->common.b.ncol[GMT_OUT];
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
 		}
-		else {
+		else {	/* VIA_VECTOR */
 			V_obj->n_rows = size;
 			if ((error = gmt_alloc_vectors (API->GMT, V_obj)) != GMT_OK) return (error);
 		}
@@ -6294,16 +6294,15 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			output_set = 1;	/* Remember to turn off implicit output option since we got one */
 		}
 	}
-	/* 1b. Check if this is either gmtmath or grdmath which uses the special = outfile syntax */
+	/* 1b. Check if this is either gmtmath or grdmath which uses the special = outfile syntax and replace by -=<outfile> */
 	if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
-		unsigned int equal_found = 0;
-		for (opt = *head; opt->next; opt = opt->next) /* Here opt will end up being the last option */
-			if (!strcmp (opt->arg, "=")) equal_found = 1;	/* For all but the last option */
-		if (!strcmp (opt->arg, "=")) equal_found = 1;	/* Check the last option */
-		if (!equal_found) {	/* Must add missing equal as a final item */
-			new_ptr = GMT_Make_Option (API, GMT_OPT_INFILE, "=");	/* Create new option with 'filename' "=" */
-			*head = GMT_Append_Option (API, new_ptr, *head);
-			GMT_Report (API, GMT_MSG_DEBUG, "Added missing = operator for %s command\n", module);
+		for (opt = *head; opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
+			if (!strcmp (opt->arg, "=")) {
+				if (opt->next) {	/* Combine the previous = and <whatever> options into a single -=<whatever> option, then delete the former */
+					opt->next->option = '=';
+					GMT_Delete_Option (API, opt);
+				}
+			}
 		}
 	}
 
@@ -6335,15 +6334,19 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 		family = geometry = -1;	/* Not set yet */
 		if (k >= 0) direction = GMTAPI_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 		
-		if (GMTAPI_found_marker (opt->arg, marker)) {	/* Found an explicit dollar sign within the option [these are always inputs] */
-			direction = GMT_IN;
+		if (GMTAPI_found_marker (opt->arg, marker)) {	/* Found an explicit dollar sign within the option, e.g., -G$ or -<$ */
+			if (k == -1) {
+				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
+				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
+			}
 			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
-			if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i so we dont add it later */
+			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i so we dont add it later */
+			if (k >= 0) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
 			info[n_items].geometry  = geometry;
 			info[n_items].direction = direction;
-			info[n_items].pos = pos = explicit_pos++;	/* Explicitly given arguments are the first given on the r.h.s. */
+			info[n_items].pos = pos = (direction == GMT_IN) ? explicit_pos++ : output_pos++;	/* Explicitly given arguments are the first given on the r.h.s. */
 			kind = GMT_FILE_EXPLICIT;
 			n_items++;
 		}
