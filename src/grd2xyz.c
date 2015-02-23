@@ -439,7 +439,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 						out[GMT_Z] = GMT->session.d_NaN;
 				}
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
-				if (write_error == 0) n_suppressed++;	/* Bad value caught by -s[r] */
+				if (write_error != 0) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			GMT_free (GMT, x);
 			GMT_free (GMT, y);
