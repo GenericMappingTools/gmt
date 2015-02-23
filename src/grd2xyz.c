@@ -315,7 +315,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 				else if (GMT_z_input_is_nan_proxy (GMT, GMT_Z, d_value))	/* The inverse: Grid node is nan-proxy and -di was set, so change to NaN */
 					d_value = GMT->session.d_NaN;
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, &d_value);
-				if (write_error == 0) n_suppressed++;	/* Bad value caught by -s[r] */
+				if (write_error != 0) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			GMT->current.io.output = save;			/* Reset pointer */
 			GMT->common.b.active[GMT_OUT] = previous;	/* Reset binary */
