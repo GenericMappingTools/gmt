@@ -3309,7 +3309,7 @@ int GMT_get_io_type (struct GMT_CTRL *GMT, char type)
 		case 'f': t = GMT_FLOAT;  break; /* Binary 4-byte float */
 		case 'd': t = GMT_DOUBLE; break; /* Binary 8-byte double */
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%c not a valid data type!\n", type);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not a valid data type [%c]!\n", type);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			break;
 	}
