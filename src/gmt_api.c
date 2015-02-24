@@ -4068,7 +4068,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	 * header:	Either GMT_HEADER_ON|OFF, controls the writing of the table start header info block
 	 * Returns:	false if successfull, true if error.
 	 */
-	int error;
+	int error, item;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -4080,13 +4080,19 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 
 	/* Must initialize record-by-record machinery for dataset or textset */
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: Initialize record-by-record access for %s\n", GMT_direction[direction]);
-	API->current_item[direction] = -1;	/* GMTAPI_Next_Data_Object (below) will wind it to the first item >= 0 */
+	item = API->current_item[direction] = -1;	/* GMTAPI_Next_Data_Object (below) will wind it to the first item >= 0 */
 	if ((error = GMTAPI_Next_Data_Object (API, family, direction))) return_error (API, GMT_NO_RESOURCES);	/* Something went bad */
+	item = API->current_item[direction];	/* Next item */
 	API->io_mode[direction] = GMT_BY_REC;
 	API->io_enabled[direction] = true;	/* OK to access resources */
 	API->GMT->current.io.need_previous = (API->GMT->common.g.active || API->GMT->current.io.skip_duplicates);
 	API->GMT->current.io.ogr = GMT_OGR_UNKNOWN;
 	API->GMT->current.io.segment_header[0] = API->GMT->current.io.current_record[0] = 0;
+	if (direction == GMT_OUT && API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
+		error = GMTAPI_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data);	/* Do the dirty deed */
+		API->object[item]->resource = NULL;	/* Since resource == data here */
+		API->object[item]->messenger = false;	/* OK, now clean for output */
+	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
 	if (direction == GMT_OUT && header == GMT_HEADER_ON && !API->GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ascii header block */
 
@@ -4142,6 +4148,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						D_obj->n_segments = T_obj->n_segments;
 						GMT_set_tbl_minmax (API->GMT, T_obj);
 						GMT_set_dataset_minmax (API->GMT, D_obj);
+						D_obj->n_records = T_obj->n_records = p[GMT_ROW];
 					}
 				}
 				else if (S_obj->actual_family == GMT_IS_MATRIX) {	/* Matrix type */
@@ -4170,6 +4177,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						if (p[GMT_SEG] > 0) T_obj->segment[p[GMT_SEG]]->record = GMT_memory (API->GMT, T_obj->segment[p[GMT_SEG]]->record, T_obj->segment[p[GMT_SEG]]->n_rows, char *);	/* Last segment */
 						T_obj->segment = GMT_memory (API->GMT, T_obj->segment, T_obj->n_segments, struct GMT_TEXTSEGMENT *);
 						D_obj->n_segments = T_obj->n_segments;
+						D_obj->n_records = T_obj->n_records = p[GMT_ROW];
 					}
 				}
 				S_obj->data = NULL;	/* Since S_obj->resources points to it too, and needed for GMT_Retrieve_Data to work */
@@ -5402,7 +5410,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 
 	int error = GMT_OK, object_ID = GMT_NOTSET;
 	int def_direction = GMT_IN;	/* Default direction is GMT_IN except for vectors/matrices destined for output  */
-	uint64_t n_layers = 0;
+	uint64_t n_layers = 0, zero_dim[4] = {0, 0, 0, 0}, *this_dim = dim;
 	bool already_registered = false, has_ID = false;
 	void *new_obj = NULL, *p_data = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -5410,7 +5418,10 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
-	if (dim == NULL && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If nothing is known then it must be output */
+	if (dim == NULL && range == NULL && inc == NULL) {
+		def_direction = GMT_OUT;	/* If nothing is known then it must be output */
+		this_dim = zero_dim;
+	}
 
 #if 0	/* This seems wrong: Create should always CREATE data and has nothing to do with @GMTAPI@-###### */
 	if ((has_ID = GMT_File_Is_Memory (data))) {	/* In case a @GMTAPI@-###### reference is passed... */
@@ -5461,9 +5472,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if ((new_obj = GMT_create_dataset (API->GMT, dim[GMT_TBL], dim[GMT_SEG], dim[GMT_ROW], dim[GMT_COL], geometry, false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
-			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (dim[GMT_TBL] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
-			if ((new_obj = GMT_create_textset (API->GMT, dim[GMT_TBL], dim[GMT_SEG], dim[GMT_ROW], false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+			if (this_dim[GMT_TBL] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
+			if ((new_obj = GMT_create_textset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */
 			/* If dim is NULL then we ask for 0 color entries as direction here is GMT_OUT for return to an external API */
@@ -5500,6 +5510,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		enum GMT_enum_family actual_family = family;
 		int direction, item = GMT_NOTSET;
 		direction = (object_ID == GMT_NOTSET) ? def_direction : GMT_NOTSET;	/* Do not consider direction if pre-registered */
+		if (direction == GMT_OUT && family == GMT_IS_TEXTSET) method = GMT_IS_DUPLICATE;	/* TEMPORARY WHILE TESTING */
 		if (object_ID == GMT_NOTSET) {	/* Must register this new object */
 			if (family == GMT_IS_MATRIX) {
 				method = GMT_IS_REFERENCE_VIA_MATRIX;

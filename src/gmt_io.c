@@ -6057,7 +6057,7 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *GMT, uint64_t n_tables
 	struct GMT_TEXTSET *D = NULL;
 
 	D = GMT_memory (GMT, NULL, 1, struct GMT_TEXTSET);
-	D->table = GMT_memory (GMT, NULL, n_tables, struct GMT_TEXTTABLE *);
+	if (n_tables) D->table = GMT_memory (GMT, NULL, n_tables, struct GMT_TEXTTABLE *);
 	D->n_alloc = D->n_tables = n_tables;
 	if (!alloc_only) D->n_segments = n_tables * n_segments;
 	for (tbl = 0; tbl < n_tables; tbl++) {
@@ -6776,13 +6776,12 @@ void GMT_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data)
 {	/* This takes pointer to data array and thus can return it as NULL */
 	unsigned int tbl, k;
 	if (!data) return;	/* Do not try to free NULL pointer */
-	if (!data->table) return;	/* Do not try to free NULL pointer of tables */
 	for (tbl = 0; tbl < data->n_tables; tbl++) {
 		GMT_free_table (GMT, data->table[tbl], data->alloc_mode);
 	}
 	if (data->min) GMT_free (GMT, data->min);
 	if (data->max) GMT_free (GMT, data->max);
-	GMT_free (GMT, data->table);
+	if (data->table) GMT_free (GMT, data->table);
 	for (k = 0; k < 2; k++) if (data->file[k]) free (data->file[k]);
 }
 
@@ -6827,7 +6826,7 @@ void GMT_free_textset_ptr (struct GMT_CTRL *GMT, struct GMT_TEXTSET *data)
 
 	unsigned int tbl, k;
 	for (tbl = 0; tbl < data->n_tables; tbl++) gmt_free_texttable (GMT, data->table[tbl]);
-	GMT_free (GMT, data->table);
+	if (data->table) GMT_free (GMT, data->table);
 	for (k = 0; k < 2; k++) if (data->file[k]) free (data->file[k]);
 }
 
