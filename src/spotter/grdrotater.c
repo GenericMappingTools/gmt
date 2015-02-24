@@ -543,11 +543,13 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		}
 		GMT_set_tbl_minmax (GMT, polr);	/* Update table domain */
 		if (!Ctrl->N.active && not_global) {
-			char dfile[GMT_BUFSIZ] = {""};
-			if (Ctrl->T.n_times > 1)
+			char dfile[GMT_BUFSIZ] = {""}, *file = NULL;
+			if (Ctrl->T.n_times > 1) {
 				sprintf (dfile, Ctrl->D.file, Ctrl->T.value[t]);
+				file = dfile;
+			}
 			else
-				strcpy (dfile, Ctrl->D.file);
+				file = Ctrl->D.file;
 			if (!Ctrl->E.single) {	/* Add a segment header with the age via -Z */
 				char txt[BUFSIZ] = {""};
 				sprintf (txt, "-Z%g", Ctrl->T.value[t]);
@@ -557,7 +559,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 					Sr->header = strdup (txt);
 				}
 			}
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, dfile, Dr) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, file, Dr) != GMT_OK) {
 				Return (API->error);
 			}
 		}
