@@ -6930,8 +6930,8 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns,
 	struct GMT_VECTOR *V = NULL;
 
 	V = GMT_memory (GMT, NULL, 1U, struct GMT_VECTOR);
-	V->data = GMT_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
-	V->type = GMT_memory (GMT, NULL, n_columns, enum GMT_enum_type);
+	if (n_columns) V->data = GMT_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
+	if (n_columns) V->type = GMT_memory (GMT, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
 	/* We expect external memory for input and GMT-allocated memory on output */
 	V->alloc_mode = (direction == GMT_IN) ? GMT_ALLOC_EXTERNALLY : GMT_ALLOC_INTERNALLY;

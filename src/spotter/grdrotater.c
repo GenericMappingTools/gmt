@@ -476,7 +476,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->E.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
-		n_stages = 1;
+		Ctrl->T.n_times = n_stages = 1;
 		p = GMT_memory (GMT, NULL, n_stages, struct EULER);
 		p[0].lon = Ctrl->E.lon; p[0].lat = Ctrl->E.lat; p[0].omega = Ctrl->E.w;
 	}

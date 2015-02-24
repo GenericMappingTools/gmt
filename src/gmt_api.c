@@ -963,8 +963,7 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 /*! . */
 int GMTAPI_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int direction, struct GMT_VECTOR *V) {
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a vector for handing external %s\n", GMT_direction[direction]);
-	if (dim == NULL) return (GMT_PTR_IS_NULL);	/* number of columns not provided */
-	if (dim[DIM_COL] == 0) return (GMT_VALUE_NOT_SET);	/* Must know the number of columns to do this */
+	if (dim[DIM_COL] == 0 && direction == GMT_IN) return (GMT_VALUE_NOT_SET);	/* Must know the number of columns to do this */
 	if (range == NULL || (range[XLO] == range[XHI])) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
 		V->n_rows = dim[DIM_ROW];		/* If so, n_rows is passed via dim[DIM_ROW], unless it is GMT_OUT when it is zero */
@@ -5467,9 +5466,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			break;
 #endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
-			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (dim[GMT_TBL] > UINT_MAX || dim[GMT_ROW] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
-			if ((new_obj = GMT_create_dataset (API->GMT, dim[GMT_TBL], dim[GMT_SEG], dim[GMT_ROW], dim[GMT_COL], geometry, false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+			if (this_dim[GMT_TBL] > UINT_MAX || this_dim[GMT_ROW] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
+			if ((new_obj = GMT_create_dataset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], this_dim[GMT_COL], geometry, false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
 			if (this_dim[GMT_TBL] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
@@ -5477,24 +5475,22 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */
 			/* If dim is NULL then we ask for 0 color entries as direction here is GMT_OUT for return to an external API */
-		 	if ((new_obj = GMT_create_palette (API->GMT, (dim) ? dim[0] : 0)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+		 	if ((new_obj = GMT_create_palette (API->GMT, this_dim[0])) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
-			n_layers = (dim == NULL || (dim[DIM_COL] == 0 && dim[DIM_ROW] == 0)) ? 1U : dim[GMT_Z];
+			n_layers = (this_dim[DIM_COL] == 0 && this_dim[DIM_ROW] == 0) ? 1U : this_dim[GMT_Z];
 		 	new_obj = GMT_create_matrix (API->GMT, n_layers, def_direction);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			if ((API->error = GMTAPI_init_matrix (API, dim, range, inc, registration, mode, def_direction, new_obj))) {	/* Failure, must free the object */
+			if ((API->error = GMTAPI_init_matrix (API, this_dim, range, inc, registration, mode, def_direction, new_obj))) {	/* Failure, must free the object */
 				struct GMT_MATRIX *M = return_address (new_obj, GMT_IS_MATRIX);	/* Get pointer to resource */
 				GMT_free_matrix (API->GMT, &M, true);
 			}
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
-			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (dim[DIM_COL] == 0) return_null (API, GMT_N_COLS_NOT_SET);
-			if (dim[DIM_ROW] == 0 && range == NULL && inc == NULL) def_direction = GMT_OUT;	/* If only n_columns is known then it must be output */
-	 		new_obj = GMT_create_vector (API->GMT, dim[DIM_COL], def_direction);
+			if (dim && dim[DIM_COL] == 0) return_null (API, GMT_N_COLS_NOT_SET);
+	 		new_obj = GMT_create_vector (API->GMT, this_dim[DIM_COL], def_direction);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			if ((API->error = GMTAPI_init_vector (API, dim, range, inc, registration, def_direction, new_obj))) {	/* Failure, must free the object */
+			if ((API->error = GMTAPI_init_vector (API, this_dim, range, inc, registration, def_direction, new_obj))) {	/* Failure, must free the object */
 				struct GMT_VECTOR *V = return_address (new_obj, GMT_IS_VECTOR);	/* Get pointer to resource */
 				GMT_free_vector (API->GMT, &V, true);
 			}

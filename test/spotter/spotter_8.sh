@@ -21,7 +21,7 @@ cat << EOF > r.txt
 -39.7   18.7    118.7   -27.37
 -37.5   16.7    130.0   -28.52
 EOF
-makecpt -Cgray -T0/130/10 -Z -I > s.cpt
+gmt makecpt -Cgray -T0/130/10 -Z -I > s.cpt
 gmt grdrotater in.nc -Er.txt -Gout_%.1f.nc -Doutline_%.1f.txt
 gmt pscoast -R-20/10/-25/10 -JM6i -Glightgray -P -K -Baf -Xc > $ps
 gmt makecpt -Crainbow -T0/8/1 -Z > t.cpt
