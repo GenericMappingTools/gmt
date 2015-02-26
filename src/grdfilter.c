@@ -267,12 +267,13 @@ struct GRDFILTER_BIN_MODE_INFO *grdfilter_bin_setup (struct GMT_CTRL *GMT, doubl
 	return (B);
 }
 
-double GMT_histmode (struct GMT_CTRL * GMT_UNUSED(GMT), double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B)
+double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B)
 {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning unweighted data with the specified width. We check if we find more
 	 * than one mode and return the chosen one as per the settings. */
 
+	GMT_UNUSED(GMT);
 	double value = 0.0;
 	uint64_t i;
 	unsigned int n_modes = 0, mode_count = 0, ubin;
@@ -413,18 +414,21 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 }
 
 /* Various functions that will be accessed via pointers */
-double CartRadius (struct GMT_CTRL *GMT_UNUSED(GMT), double x0, double y0, double x1, double y1, double GMT_UNUSED(par[]))
+double CartRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Plain Cartesian distance (par is not used) */
+	GMT_UNUSED(GMT); GMT_UNUSED(par);
 	return (hypot (x0 - x1, y0 - y1));
 }
 
-double CartScaledRadius (struct GMT_CTRL *GMT_UNUSED(GMT), double x0, double y0, double x1, double y1, double par[])
+double CartScaledRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Plain scaled Cartesian distance (xscale = yscale) */
+	GMT_UNUSED(GMT);
 	return (par[GRDFILTER_X_SCALE] * hypot (x0 - x1, y0 - y1));
 }
 
-double CartScaledRect (struct GMT_CTRL *GMT_UNUSED(GMT), double x0, double y0, double x1, double y1, double par[])
+double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Pass dx,dy via par[GRDFILTER_X|Y_DIST] and return a r that is either in or out */
+	GMT_UNUSED(GMT);
 	double r;
 	par[GRDFILTER_X_DIST] = par[GRDFILTER_X_SCALE] * (x0 - x1);
 	par[GRDFILTER_Y_DIST] = par[GRDFILTER_Y_SCALE] * (y0 - y1);
@@ -432,13 +436,15 @@ double CartScaledRect (struct GMT_CTRL *GMT_UNUSED(GMT), double x0, double y0, d
 	return (r);
 }
 
-double FlatEarthRadius (struct GMT_CTRL *GMT_UNUSED(GMT), double x0, double y0, double x1, double y1, double par[])
+double FlatEarthRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Cartesian radius with different scales */
+	GMT_UNUSED(GMT);
 	return (hypot (par[GRDFILTER_X_SCALE] * (x0 - x1), par[GRDFILTER_Y_SCALE] * (y0 - y1)));
 }
 
-double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double GMT_UNUSED(par[]))
+double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Great circle distance in km with polar wrap-around test on 2nd point */
+	GMT_UNUSED(par);
 	if (fabs (y1) > 90.0) {	/* Must find the point across the pole */
 		y1 = copysign (180.0 - fabs (y1), y1);
 		x1 += 180.0;
@@ -446,8 +452,9 @@ double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, d
 	return (0.001 * GMT_great_circle_dist_meter (GMT, x0, y0, x1, y1));
 }
 
-double UnitWeight (double GMT_UNUSED(r), double GMT_UNUSED(par[]))
+double UnitWeight (double r, double par[])
 {	/* Return unit weight since we know r is inside radius (par is not used) */
+	GMT_UNUSED(r); GMT_UNUSED(par);
 	return (1.0);
 }
 

@@ -850,7 +850,8 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned ny, unsigned nx, ff
 	return plan;
 }
 
-int GMT_fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int GMT_UNUSED(mode)) {
+int GMT_fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
+	GMT_UNUSED(mode);
 	fftwf_plan plan = NULL;
 
 	/* Generate FFTW plan for complex 1d DFT */
@@ -861,7 +862,8 @@ int GMT_fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, int dir
 	return GMT_NOERROR;
 }
 
-int GMT_fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int GMT_UNUSED(mode)) {
+int GMT_fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
+	GMT_UNUSED(mode);
 	fftwf_plan plan = NULL;
 
 	/* Generate FFTW plan for complex 2d DFT */
@@ -885,8 +887,9 @@ void GMT_fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 	}
 }
 
-int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int GMT_UNUSED(mode))
+int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode)
 {
+	GMT_UNUSED(mode);
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
@@ -931,8 +934,9 @@ void GMT_fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 	}
 }
 
-int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int GMT_UNUSED(mode))
+int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
 {
+	GMT_UNUSED(mode);
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
@@ -981,8 +985,9 @@ int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 
 #include "kiss_fft/kiss_fftnd.h"
 
-int GMT_fft_1d_kiss (struct GMT_CTRL * GMT_UNUSED(GMT), float *data, unsigned int n, int direction, unsigned int GMT_UNUSED(mode))
+int GMT_fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode)
 {
+	GMT_UNUSED(GMT); GMT_UNUSED(mode);
 	kiss_fft_cpx *fin, *fout;
 	kiss_fft_cfg config;
 
@@ -995,8 +1000,9 @@ int GMT_fft_1d_kiss (struct GMT_CTRL * GMT_UNUSED(GMT), float *data, unsigned in
 	return GMT_NOERROR;
 }
 
-int GMT_fft_2d_kiss (struct GMT_CTRL * GMT_UNUSED(GMT), float *data, unsigned int nx, unsigned int ny, int direction, unsigned int GMT_UNUSED(mode))
+int GMT_fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
 {
+	GMT_UNUSED(GMT); GMT_UNUSED(mode);
 	const int dim[2] = {ny, nx}; /* dimensions of fft */
 	const int dimcount = 2;      /* number of dimensions */
 	kiss_fft_cpx *fin, *fout;

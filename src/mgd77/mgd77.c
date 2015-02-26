@@ -483,8 +483,9 @@ static inline void mgd77_free_plain_mgd77 (struct MGD77_HEADER *H)
 	}
 }
 
-bool MGD77_txt_are_constant (struct GMT_CTRL *GMT_UNUSED(GMT), char *txt, uint64_t n, size_t width)
+bool MGD77_txt_are_constant (struct GMT_CTRL *GMT, char *txt, uint64_t n, size_t width)
 {
+	GMT_UNUSED(GMT);
 	uint64_t i = 0;
 
 	if (n == 1) return (true);
@@ -494,8 +495,9 @@ bool MGD77_txt_are_constant (struct GMT_CTRL *GMT_UNUSED(GMT), char *txt, uint64
 	return (true);
 }
 
-bool MGD77_dbl_are_constant (struct GMT_CTRL *GMT_UNUSED(GMT), double x[], uint64_t n, double limits[2])
+bool MGD77_dbl_are_constant (struct GMT_CTRL *GMT, double x[], uint64_t n, double limits[2])
 {	/* Determine if the values in x[] are all the same, and sets actual range limits */
+	GMT_UNUSED(GMT);
 	uint64_t i;
 	bool constant = true;
 	double last;
@@ -539,12 +541,13 @@ static inline void MGD77_do_scale_offset_after_read (struct GMT_CTRL *GMT, doubl
 
 }
 
-uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT_UNUSED(GMT), double new_x[], const double x[], uint64_t n, double scale, double offset, int type)
+uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new_x[], const double x[], uint64_t n, double scale, double offset, int type)
 {	/* Here we apply the various scale/offsets to fit the data in a smaller data type.
 	 * We also replace NaNs with special values that represent NaNs for the saved data
 	 * type, and finally replace transformed values that fall outside the valid range
 	 * with NaN, and report the number of such problems.
 	 */
+	GMT_UNUSED(GMT);
 	uint64_t k, n_crap = 0;
 	double nan_val, lo_val, hi_val, i_scale;
 
@@ -635,8 +638,9 @@ static void MGD77_Place_Text (struct GMT_CTRL *GMT, int dir, char *struct_member
 		MGD77_Fatal_Error (GMT, MGD77_BAD_ARG);
 }
 
-static int MGD77_Find_Cruise_ID (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, char **cruises, unsigned int n_cruises, bool sorted)
+static int MGD77_Find_Cruise_ID (struct GMT_CTRL *GMT, char *name, char **cruises, unsigned int n_cruises, bool sorted)
 {
+	GMT_UNUSED(GMT);
 	if (!cruises) return (-1);	/* Null pointer passed */
 
 	if (sorted) {	/* cruises array is lexically sorted; use binary search */
@@ -664,9 +668,10 @@ static int MGD77_Find_Cruise_ID (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, c
 	}
 }
 
-static int MGD77_Decode_Header_m77t (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_HEADER_PARAMS *P, char *record)
+static int MGD77_Decode_Header_m77t (struct GMT_CTRL *GMT, struct MGD77_HEADER_PARAMS *P, char *record)
 {
 	/* Copies information from record to the header structure */
+	GMT_UNUSED(GMT);
 	int k = 0;
 	char *stringp = NULL, *word = NULL, buffer[GMT_BUFSIZ+1];
 
@@ -936,11 +941,12 @@ static int MGD77_Read_Header_Sequence (struct GMT_CTRL *GMT, FILE *fp, char *rec
 	return (MGD77_NO_ERROR);
 }
 
-static void MGD77_Select_All_Columns (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+static void MGD77_Select_All_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {
 	/* If MGD77_Select_Column has not been called, we want to return all the columns
 	 * present in the current file.  Here, we implement this default "-Fall" choice
 	 */
+	GMT_UNUSED(GMT);
 	int id, k, set;
 
 	if (F->n_out_columns) return;	/* Already made selection via MGD77_Select_Columns */
@@ -1006,8 +1012,9 @@ static int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, s
 	return (MGD77_NO_ERROR);
 }
 
-static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
+	GMT_UNUSED(file);
 	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[GMT_BUFSIZ] = {""};
 	int i, sequence, err, n_eols, c, n;
 	struct stat buf;
@@ -1066,8 +1073,9 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *GMT_UNUSED(
 	return (MGD77_NO_ERROR);	/* Success, it seems */
 }
 
-static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77T files */
+	GMT_UNUSED(file);
 	char *MGD77_header = NULL, line[BUFSIZ] = {""};
 	int i, err;
 
@@ -1103,8 +1111,9 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *GMT_UNUSED
 	return (MGD77_NO_ERROR);	/* Success, it seems */
 }
 
-static int MGD77_Convert_To_New_Format (struct GMT_CTRL *GMT_UNUSED(GMT), char *line)
+static int MGD77_Convert_To_New_Format (struct GMT_CTRL *GMT, char *line)
 {
+	GMT_UNUSED(GMT);
 	int yy, nconv;
 
 	if (line[0] != '3') return false;
@@ -1427,8 +1436,9 @@ int MGD77_Read_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, s
 	return (error);
 }
 
-static int MGD77_Read_Data_asc (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will read all MGD77 records in current file */
+static int MGD77_Read_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will read all MGD77 records in current file */
 {
+	GMT_UNUSED(file);
 	uint64_t rec, n_nan_times;
 	unsigned int k, col, n_txt, n_val;
 	size_t Clength[3] = {8U, 5U, 6U};
@@ -1574,8 +1584,9 @@ static int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONT
 
 /* MGD77_Write_Data_Record writes the MGD77_DATA_RECORD structure, printing stored values in original MGD77 format.
  */
-static int MGD77_Write_Data_Record_m77 (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	/* Will write a single ASCII MGD77 record */
+static int MGD77_Write_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	/* Will write a single ASCII MGD77 record */
 {
+	GMT_UNUSED(GMT);
 	int nwords = 0, nvalues = 0, i;
 
 	for (i = 0; i < MGD77_N_DATA_FIELDS; i++) {
@@ -1613,8 +1624,9 @@ int MGD77_Write_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, 
 	return (error);
 }
 
-static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will write all MGD77 records in current file */
+static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will write all MGD77 records in current file */
 {
+	GMT_UNUSED(file);
 	uint64_t rec;
 	unsigned int k, id;
 	size_t Clength[3] = {8U, 5U, 6U};
@@ -1677,12 +1689,13 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), s
 
 /* MGD77+ functions will be added down here */
 
-int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *GMT_UNUSED(F), struct MGD77_DATASET *S)
+int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {	/* Must determine which columns are present and if time is available, etc.
 	 * MUST BE CALLED BEFORE MGD77_Write_Header_Record_cdf!
 	 *
 	 */
 
+	GMT_UNUSED(F);
 	int id, t_id, set, t_set = MGD77_NOT_SET, entry;
 	uint64_t rec;
 	bool crossed_dateline = false, crossed_greenwich = false;
@@ -1865,7 +1878,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	return (MGD77_NO_ERROR);
 }
 
-static int MGD77_Write_Data_cdf (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
+static int MGD77_Write_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {	/* This function will create a netCDF version of a standard MGD77 file.  No additional
 	 * columns are considered.  Such columns may be added/deleted by mgd77manage.  We assume
 	 * that the dataset was read by MGD77_Read_File_asc which will return the entire set
@@ -1874,6 +1887,7 @@ static int MGD77_Write_Data_cdf (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), s
 	 * written as scalars.  The read routine will replicate these to columns.
 	 */
 
+	GMT_UNUSED(file);
 	int id, set, entry, n_bad = 0;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	double *values = NULL, *x = NULL, *xtmp = NULL, single_val, scale, offset;
@@ -2442,8 +2456,9 @@ static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, struc
 	return (MGD77_NO_ERROR); /* Success, unless failure! */
 }
 
-int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *GMT_UNUSED(file), struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will write the entire 24-section header structure */
+int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will write the entire 24-section header structure */
 {
+	GMT_UNUSED(file);
 	int i, err, use;
 	char *MGD77_header[MGD77_N_HEADER_RECORDS];
 
@@ -2459,8 +2474,9 @@ int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *GMT_UNUSED(file),
 	return (MGD77_NO_ERROR);
 }
 
-static int MGD77_Write_Header_Record_m77t (struct GMT_CTRL *GMT_UNUSED(GMT), char *GMT_UNUSED(file), struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will write the new 2-rec header structure */
+static int MGD77_Write_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will write the new 2-rec header structure */
 {
+	GMT_UNUSED(GMT); GMT_UNUSED(file);
 	int use;
 	struct MGD77_HEADER_PARAMS *P = NULL;
 
@@ -2564,8 +2580,9 @@ static int MGD77_Write_File_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_
 	return (MGD77_NO_ERROR);
 }
 
-static void MGD77_dt2rdc (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL *F, double t, int64_t *rd, double *s) {
+static void MGD77_dt2rdc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t, int64_t *rd, double *s) {
 
+	GMT_UNUSED(GMT);
 	int64_t i;
 
 /*	Given time in sec relative to unix epoc, load rata die of this day
@@ -2578,8 +2595,9 @@ static void MGD77_dt2rdc (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL
 
 /* =================================== PUBLIC FUNCTIONS =================================== */
 
-int MGD77_Info_from_Abbrev (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, struct MGD77_HEADER *H, int *set, int *item)
+int MGD77_Info_from_Abbrev (struct GMT_CTRL *GMT, char *name, struct MGD77_HEADER *H, int *set, int *item)
 {
+	GMT_UNUSED(GMT);
 	unsigned int id, c;
 
 	/* Returns the number in the output list AND passes set,item as the entry in H */
@@ -2597,7 +2615,8 @@ int MGD77_Info_from_Abbrev (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, struct
 	return (MGD77_NOT_SET);
 }
 
-int MGD77_Param_Key (struct GMT_CTRL *GMT_UNUSED(GMT), int record, int item) {
+int MGD77_Param_Key (struct GMT_CTRL *GMT, int record, int item) {
+	GMT_UNUSED(GMT);
 	unsigned int i, u_rec, u_item;
 	int status = MGD77_BAD_HEADER_RECNO;
 	/* Given record and item, return the structure array key that matches these two values.
@@ -2615,12 +2634,13 @@ int MGD77_Param_Key (struct GMT_CTRL *GMT_UNUSED(GMT), int record, int item) {
 	return (status);
 }
 
-void MGD77_select_high_resolution (struct GMT_CTRL *GMT_UNUSED(GMT))
+void MGD77_select_high_resolution (struct GMT_CTRL *GMT)
 {
 	/* If it becomes necessary to store mag, diur, faa, and eot using 4-byte integers we modify
 	 * these entries in the mgd77cdf structure array.
 	 */
 
+	GMT_UNUSED(GMT);
 	mgd77cdf[16].type = mgd77cdf[18].type = NC_INT;		/* MAG & DIUR:  4-byte integer with 10 fTesla (0.01 pTesla) precision  */
 	mgd77cdf[16].factor = mgd77cdf[18].factor = 1.0e-4;
 	mgd77cdf[21].type = mgd77cdf[22].type = NC_INT;		/* EOT & FAA :  4-byte integer with 10 nGal precision */
@@ -3498,8 +3518,9 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 	return GMT_OK;
 }
 
-void MGD77_Verify_Prep_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *GMT_UNUSED(F), struct MGD77_META *C, struct MGD77_DATA_RECORD *D, uint64_t nrec)
+void MGD77_Verify_Prep_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_META *C, struct MGD77_DATA_RECORD *D, uint64_t nrec)
 {
+	GMT_UNUSED(F);
 	uint64_t i;
 	int ix, iy;
 	double lon, lat, xpmin, xpmax, xnmin, xnmax, ymin, ymax;
@@ -3661,8 +3682,9 @@ int MGD77_Write_File (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F,
 	return (err);
 }
 
-void MGD77_List_Header_Items (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL *GMT_UNUSED(F))
+void MGD77_List_Header_Items (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 {
+	GMT_UNUSED(GMT); GMT_UNUSED(F);
 	int i;
 
 	for (i = 0; i < MGD77_N_HEADER_ITEMS; i++) GMT_message (GMT, "\t\t%2d. %s\n", i+1, MGD77_Header_Lookup[i].name);
@@ -3731,23 +3753,26 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 	return 0;
 }
 
-int MGD77_Read_Data_Sequence (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, char *record)
+int MGD77_Read_Data_Sequence (struct GMT_CTRL *GMT, FILE *fp, char *record)
 {
+	GMT_UNUSED(GMT);
 	if (fgets (record, MGD77_RECORD_LENGTH, fp)) return (1);
 	return (MGD77_NO_ERROR);
 }
 
-void MGD77_Write_Sequence (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, int seq)
+void MGD77_Write_Sequence (struct GMT_CTRL *GMT, FILE *fp, int seq)
 {
+	GMT_UNUSED(GMT);
 	if (seq > 0) fprintf (fp, "%02d", seq);
 	fprintf (fp, "\n");
 }
 
-void MGD77_Ignore_Format (struct GMT_CTRL *GMT_UNUSED(GMT), int format)
+void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format)
 {
 	/* Allow user to turn on/off acceptance of certain formats.
 	 * Use MGD77_FORMAT_ANY to reset back to defaults (all OK) */
 
+	 GMT_UNUSED(GMT);
 	 if (format == MGD77_FORMAT_ANY) {
 	 	MGD77_format_allowed[MGD77_FORMAT_M77] = true;
 	 	MGD77_format_allowed[MGD77_FORMAT_CDF] = true;
@@ -3852,9 +3877,10 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 	MGD77_pos[MGD77T_BQC+4] = MGD77T_BQC;	MGD77_pos[MGD77T_MQC+4] = MGD77T_MQC;	MGD77_pos[MGD77T_GQC+4] = MGD77T_GQC;	/* MGD77T extension */
 }
 
-void MGD77_Reset (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL *F)
+void MGD77_Reset (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 {
 	/* Reset the entire MGD77 control system except system paths, etc */
+	GMT_UNUSED(GMT);
 	unsigned int k;
 	for (k = 0; k < F->n_out_columns; k++) if (F->desired_column[k]) free ((void *)F->desired_column[k]);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = true;		/* true means programs will use error bitflags (if present) when returning data */
@@ -4024,8 +4050,9 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 }
 
 
-int MGD77_Get_Column (struct GMT_CTRL *GMT_UNUSED(GMT), char *word, struct MGD77_CONTROL *F)
+int MGD77_Get_Column (struct GMT_CTRL *GMT, char *word, struct MGD77_CONTROL *F)
 {
+	GMT_UNUSED(GMT);
 	unsigned int j;
 	int k;
 
@@ -4034,8 +4061,9 @@ int MGD77_Get_Column (struct GMT_CTRL *GMT_UNUSED(GMT), char *word, struct MGD77
 	return (k);
 }
 
-int MGD77_Match_List (struct GMT_CTRL *GMT_UNUSED(GMT), char *word, unsigned int n_fields, char **list)
+int MGD77_Match_List (struct GMT_CTRL *GMT, char *word, unsigned int n_fields, char **list)
 {
+	GMT_UNUSED(GMT);
 	unsigned int j;
 	int k;
 
@@ -4043,8 +4071,9 @@ int MGD77_Match_List (struct GMT_CTRL *GMT_UNUSED(GMT), char *word, unsigned int
 	return (k);
 }
 
-int MGD77_Get_Set (struct GMT_CTRL *GMT_UNUSED(GMT), char *word)
+int MGD77_Get_Set (struct GMT_CTRL *GMT, char *word)
 {	/* If word is one of the standard 27 MGD77 columns or time, return 0, else return 1 */
+	GMT_UNUSED(GMT);
 	unsigned int j;
 	int k;
 
@@ -4237,8 +4266,9 @@ void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 	}
 }
 
-bool MGD77_Pass_Record (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec)
+bool MGD77_Pass_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec)
 {
+	GMT_UNUSED(GMT);
 	unsigned int i, col, c, id, n_passed;
 	int match;
 	bool pass;
@@ -5340,8 +5370,9 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 	return (MGD77_NO_ERROR);
 }
 
-void MGD77_IGF_text (struct GMT_CTRL *GMT_UNUSED(GMT), FILE *fp, int version)
+void MGD77_IGF_text (struct GMT_CTRL *GMT, FILE *fp, int version)
 {
+	GMT_UNUSED(GMT);
 	switch (version) {
 		case 1:	/* Heiskanen 1924 model */
 			fprintf (fp, "g = %.12g * [1 + %.6f * sin^2(lat) - %.7f * sin^2(2*lat) + %.6f * cos^2(lat) * cos^2(lon-18)]\n",
@@ -5707,9 +5738,10 @@ void MGD77_Init_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE *CORR, 
 	}
 }
 
-double MGD77_Correction (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CORRECTION *C, double **value, double *aux, uint64_t rec)
+double MGD77_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRECTION *C, double **value, double *aux, uint64_t rec)
 {	/* Calculates the correction term for a single observation
 	 * when data are given in a 2-D array and aux in a 1-D array for current record */
+	GMT_UNUSED(GMT);
 	double dz = 0.0, z;
 	struct MGD77_CORRECTION *current;
 
@@ -5728,9 +5760,10 @@ double MGD77_Correction (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CORRECTI
 	return (dz);
 }
 
-double MGD77_Correction_Rec (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CORRECTION *C, double *value, double *aux)
+double MGD77_Correction_Rec (struct GMT_CTRL *GMT, struct MGD77_CORRECTION *C, double *value, double *aux)
 {	/* Calculates the correction term for a single observation
 	 * when both data and aux are given in a 1-D array for the current record. */
+	GMT_UNUSED(GMT);
 	double dz = 0.0, z;
 	struct MGD77_CORRECTION *current;
 
@@ -5778,8 +5811,9 @@ double MGD77_time_to_fyear (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, doubl
 	return (MGD77_cal_to_fyear (GMT, &cal));	/* Returns decimal year */
 }
 
-double MGD77_cal_to_fyear (struct GMT_CTRL *GMT_UNUSED(GMT), struct GMT_GCAL *cal) {
+double MGD77_cal_to_fyear (struct GMT_CTRL *GMT, struct GMT_GCAL *cal) {
 	/* Convert GMT calendar structure to decimal year for use with IGRF/CM4 function */
+	GMT_UNUSED(GMT);
 	double n_days;
 	n_days = (GMT_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
 	return (cal->year + ((cal->day_y - 1.0) + (cal->hour * GMT_HR2SEC_I + cal->min * GMT_MIN2SEC_I + cal->sec) * GMT_SEC2DAY) / n_days);
@@ -5793,9 +5827,10 @@ double MGD77_time2utime (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double g
 	return (gmt_time * GMT->current.setting.time_system.scale - (F->utime.rata_die - GMT->current.setting.time_system.rata_die - GMT->current.setting.time_system.epoch_t0) * GMT_DAY2SEC_F);
 }
 
-double MGD77_rdc2dt (struct GMT_CTRL *GMT_UNUSED(GMT), struct MGD77_CONTROL *F, int64_t rd, double secs) {
+double MGD77_rdc2dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, int64_t rd, double secs) {
 /*	Given rata die rd and double seconds, return
 	time in secs relative to unix epoch  */
+	GMT_UNUSED(GMT);
 	double f_days;
 	f_days = (rd - F->utime.rata_die - F->utime.epoch_t0);
 	return ((f_days * GMT_DAY2SEC_F  + secs) * F->utime.i_scale);
@@ -5874,11 +5909,12 @@ void MGD77_CM4_init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77
 	CM4->CM4_DATA.pred[4] = CM4->CM4_DATA.pred[5] = false;
 }
 
-double MGD77_Eotvos (struct GMT_CTRL *GMT_UNUSED(GMT), double lat, double velocity, double heading)
+double MGD77_Eotvos (struct GMT_CTRL *GMT, double lat, double velocity, double heading)
 {
 	/*	Given latitude *degree), velocity (m/s), and heading (degree), return Eotvos correction.
 	 * If v is in knots then E = 7.5027*cos(lat)*sin(az)*velocity + 0.004154*velocity^2.
 	 * Since our v is in m/s and m/s / (1852/3600) gives knots we get the constants below. */
+	GMT_UNUSED(GMT);
 	double E;
 	E = (14.584247034 *cosd (lat) * sind (heading) + 0.0156960194805 * velocity) * velocity;
 	return (E);

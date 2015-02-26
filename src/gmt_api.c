@@ -1029,8 +1029,9 @@ void GMTAPI_grdheader_to_info (struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_o
 }
 
 /*! . */
-void GMTAPI_info_to_grdheader (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_obj)
+void GMTAPI_info_to_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_obj)
 {	/* Unpacks the necessary items into the grid header from the matrix parameters */
+	GMT_UNUSED(GMT);
 	h->nx = (unsigned int)M_obj->n_columns;
 	h->ny = (unsigned int)M_obj->n_rows;
 	h->registration = M_obj->registration;
@@ -1318,7 +1319,8 @@ void GMTAPI_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, 
 }
 
 /*! Split a combined method/via enum into two array indices for use with GMT_method[] and GMT_via[] */
-enum GMT_enum_method GMTAPI_split_via_method (struct GMTAPI_CTRL * GMT_UNUSED(API), enum GMT_enum_method method, unsigned int *via) {
+enum GMT_enum_method GMTAPI_split_via_method (struct GMTAPI_CTRL *API, enum GMT_enum_method method, unsigned int *via) {
+	GMT_UNUSED(API);
 	enum GMT_enum_method m;
 	switch (method) {
 		case GMT_IS_DUPLICATE_VIA_VECTOR:
@@ -1525,7 +1527,8 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 }
 
 /*! Sanity check that geometry and family are compatible; note they may be -1 hence int */
-bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL * GMT_UNUSED(API), int family, int geometry) {
+bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL *API, int family, int geometry) {
+	GMT_UNUSED(API);
 	bool problem = false;
 	if (geometry == GMT_NOTSET || family == GMT_NOTSET) return false;	/* No errors if nothing to check */
 	switch (family) {
@@ -5540,8 +5543,9 @@ void * GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned 
 #endif
 
 /*! Convenience function to get grid or image node */
-int64_t GMT_Get_Index (void * GMT_UNUSED(V_API), struct GMT_GRID_HEADER *header, int row, int col) {
+int64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
+	GMT_UNUSED(V_API);
 	return (GMT_IJP (header, row, col));
 }
 
@@ -5806,7 +5810,8 @@ void * GMT_FFT_Parse_ (char *option, unsigned int *dim, char *args, int *length)
 #endif
 
 /*! . */
-struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_1d (struct GMTAPI_CTRL * GMT_UNUSED(API), struct GMT_DATASET * GMT_UNUSED(D), unsigned int GMT_UNUSED(mode), void * GMT_UNUSED(v_info)) {
+struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, unsigned int mode, void *v_info) {
+	GMT_UNUSED(API); GMT_UNUSED(D); GMT_UNUSED(mode); GMT_UNUSED(v_info);
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 
 #if 0	/* Have not finalized 1-D FFT usage in general; this will probably happen when we add gmtfft [1-D FFT equivalent to grdfft] */
@@ -5984,8 +5989,9 @@ double GMTAPI_FFT_wavenumber_2d (uint64_t k, unsigned int mode, struct GMT_FFT_W
 }
 
 /*! . */
-double GMT_FFT_Wavenumber (void * GMT_UNUSED(V_API), uint64_t k, unsigned int mode, void *v_K)
+double GMT_FFT_Wavenumber (void *V_API, uint64_t k, unsigned int mode, void *v_K)
 {	/* Lets you specify which 1-D or 2-D wavenumber you want */
+	GMT_UNUSED(V_API);
 	struct GMT_FFT_WAVENUMBER *K = gmt_get_fftwave_ptr (v_K);
 	if (K->dim == 2) return (GMTAPI_FFT_wavenumber_2d (k, mode, K));
 	else return (GMT_fft_kx (k, K));
@@ -5999,8 +6005,9 @@ double GMT_FFT_Wavenumber_ (uint64_t *k, unsigned int *mode, void *v_K)
 #endif
 
 /*! . */
-int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER * GMT_UNUSED(K))
+int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
 {	/* The 1-D FFT operating on DATASET segments */
+	GMT_UNUSED(K);
 	int status = 0;
 	uint64_t seg, row, tbl, last = 0, col = 0;
 	float *data = NULL;

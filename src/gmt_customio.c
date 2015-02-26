@@ -583,8 +583,9 @@ int GMT_native_write_grd_header (FILE *fp, struct GMT_GRID_HEADER *header)
 	return (err);
 }
 
-int GMT_native_skip_grd_header (FILE *fp, struct GMT_GRID_HEADER * GMT_UNUSED(header))
+int GMT_native_skip_grd_header (FILE *fp, struct GMT_GRID_HEADER *header)
 {
+	GMT_UNUSED(header);
 	int err = GMT_NOERROR;
 	/* Because GMT_GRID_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
 
@@ -1581,7 +1582,8 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	return (GMT_NOERROR);
 }
 
-int GMT_gdal_write_grd_info (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER * GMT_UNUSED(header)) {
+int GMT_gdal_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+	GMT_UNUSED(GMT); GMT_UNUSED(header);
 	return (GMT_NOERROR);
 }
 
@@ -1752,7 +1754,8 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	return (GMT_NOERROR);
 }
 
-int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int * GMT_UNUSED(pad), unsigned int complex_mode) {
+int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+	GMT_UNUSED(pad);
 	uint64_t node = 0, ij, imag_offset;
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */

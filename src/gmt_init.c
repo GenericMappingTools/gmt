@@ -1573,7 +1573,8 @@ int gmt_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 }
 
 /*! If region is given then we must have w < e and s < n */
-bool GMT_check_region (struct GMT_CTRL *GMT_UNUSED(GMT), double wesn[]) {
+bool GMT_check_region (struct GMT_CTRL *GMT, double wesn[]) {
+	GMT_UNUSED(GMT);
 	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
@@ -2966,22 +2967,26 @@ double gmt_abs_col_map_dist (struct GMT_CTRL *GMT, uint64_t col) {
 }
 
 /*! Compute point-separation after mapping */
-double gmt_xy_map_dist (struct GMT_CTRL *GMT, uint64_t GMT_UNUSED(col)) {
+double gmt_xy_map_dist (struct GMT_CTRL *GMT, uint64_t col) {
+	GMT_UNUSED(col);
 	return (GMT_cartesian_dist_proj (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! . */
-double gmt_xy_deg_dist (struct GMT_CTRL *GMT, uint64_t GMT_UNUSED(col)) {
+double gmt_xy_deg_dist (struct GMT_CTRL *GMT, uint64_t col) {
+	GMT_UNUSED(col);
 	return (GMT_great_circle_dist_degree (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! . */
-double gmt_xy_true_dist (struct GMT_CTRL *GMT, uint64_t GMT_UNUSED(col)) {
+double gmt_xy_true_dist (struct GMT_CTRL *GMT, uint64_t col) {
+	GMT_UNUSED(col);
 	return (GMT_great_circle_dist_meter (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! . */
-double gmt_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t GMT_UNUSED(col)) {
+double gmt_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t col) {
+	GMT_UNUSED(col);
 	return (GMT_cartesian_dist (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
@@ -6394,8 +6399,9 @@ char *GMT_putcolor (struct GMT_CTRL *GMT, double *rgb) {
 }
 
 /*! Creates t the string r/g/b corresponding to the RGB triplet */
-char *GMT_putrgb (struct GMT_CTRL *GMT_UNUSED(GMT), double *rgb) {
+char *GMT_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 
+	GMT_UNUSED(GMT);
 	static char text[GMT_LEN256] = {""};
 
 	if (rgb[0] < -0.5)
@@ -6407,9 +6413,9 @@ char *GMT_putrgb (struct GMT_CTRL *GMT_UNUSED(GMT), double *rgb) {
 }
 
 /*! Creates the string c/m/y/k corresponding to the CMYK quadruplet */
-char *GMT_putcmyk (struct GMT_CTRL *GMT_UNUSED(GMT), double *cmyk)
-{
+char *GMT_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 
+	GMT_UNUSED(GMT);
 	static char text[GMT_LEN256] = {""};
 
 	if (cmyk[0] < -0.5)
@@ -6421,9 +6427,9 @@ char *GMT_putcmyk (struct GMT_CTRL *GMT_UNUSED(GMT), double *cmyk)
 }
 
 /*! Creates the string h/s/v corresponding to the HSV triplet */
-char *GMT_puthsv (struct GMT_CTRL *GMT_UNUSED(GMT), double *hsv)
-{
+char *GMT_puthsv (struct GMT_CTRL *GMT, double *hsv) {
 
+	GMT_UNUSED(GMT);
 	static char text[GMT_LEN256] = {""};
 
 	if (hsv[0] < -0.5)
@@ -6516,8 +6522,8 @@ unsigned int GMT_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit)
 }
 
 /*! . */
-int GMT_hash (struct GMT_CTRL *GMT_UNUSED(GMT), char *v, unsigned int n_hash)
-{
+int GMT_hash (struct GMT_CTRL *GMT, char *v, unsigned int n_hash) {
+	GMT_UNUSED(GMT);
 	int h;
 	assert (v!=NULL); /* We are in trouble if we get a NULL pointer here */
 	for (h = 0; *v != '\0'; v++) h = (64 * h + (*v)) % n_hash;
@@ -6657,8 +6663,7 @@ int GMT_get_datum (struct GMT_CTRL *GMT, char *name)
 }
 
 /*! . */
-bool GMT_get_time_system (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, struct GMT_TIME_SYSTEM *time_system)
-{
+bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYSTEM *time_system) {
 	/* Convert TIME_SYSTEM into TIME_EPOCH and TIME_UNIT.
 	   TIME_SYSTEM can be one of the following: j2000, jd, mjd, s1985, unix, dr0001, rata
 	   or any string in the form "TIME_UNIT since TIME_EPOCH", like "seconds since 1985-01-01".
@@ -6666,6 +6671,7 @@ bool GMT_get_time_system (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, struct G
 	   See GMT_init_time_system_structure for that.
 	   TIME_SYSTEM = other is completely ignored.
 	*/
+	GMT_UNUSED(GMT);
 	char *epoch = NULL;
 
 	if (!strcmp (name, "j2000")) {
@@ -6711,7 +6717,8 @@ bool GMT_get_time_system (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, struct G
 }
 
 /*! . */
-int GMT_get_char_encoding (struct GMT_CTRL *GMT_UNUSED(GMT), char *name) {
+int GMT_get_char_encoding (struct GMT_CTRL *GMT, char *name) {
+	GMT_UNUSED(GMT);
 	int i;
 
 	for (i = 0; i < 7 && strcmp (name, GMT_weekdays[i]); i++);
@@ -7554,9 +7561,10 @@ int gmt_strip_colonitem (struct GMT_CTRL *GMT, int axis, const char *in, const c
 }
 
 /*! . */
-void gmt_handle_atcolon (struct GMT_CTRL *GMT_UNUSED(GMT), char *txt, int old_p)
+void gmt_handle_atcolon (struct GMT_CTRL *GMT, char *txt, int old_p)
 {	/* Way = 0: Replaces @:<size>: and @:: with @^<size>^ and @^^ to avoid trouble in -B:label: parsing;
 	 * Way = 1: Restores it the way it was. */
+	GMT_UNUSED(GMT);
 	int new_p;
 	char *item[2] = {"@:", "@^"}, mark[2] = {':', '^'}, *s = NULL;
 
@@ -8031,8 +8039,9 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 /* New GMT5 functions for parsing new -B syntax */
 
 /*! . */
-void gmt5_handle_plussign (struct GMT_CTRL *GMT_UNUSED(GMT), char *in, unsigned way) {
+void gmt5_handle_plussign (struct GMT_CTRL *GMT, char *in, unsigned way) {
 	/* Way = 0: replace ++ with ASCII 1, Way = 1: Replace ASCII 1 with + */
+	GMT_UNUSED(GMT);
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace pairs of ++ with a single ASCII 1 */
 		char *c = in;
@@ -10185,7 +10194,8 @@ int GMT_init_scales (struct GMT_CTRL *GMT, unsigned int unit, double *fwd_scale,
 }
 
 /*! Converts character unit (e.g., 'k') to unit number (e.g., GMT_IS_KM) */
-enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *GMT_UNUSED(GMT), char unit) {
+enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *GMT, char unit) {
+	GMT_UNUSED(GMT);
 	enum GMT_enum_units mode;
 
 	switch (unit) {
@@ -10755,7 +10765,8 @@ int GMT_init_fonts (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-struct GMT_CTRL *New_GMT_Ctrl (char *GMT_UNUSED(session), unsigned int pad) {	/* Allocate and initialize a new common control structure */
+struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
+	GMT_UNUSED(session);
 	int i;
 	char path[PATH_MAX+1];
 	char *unit_name[4] = {"cm", "inch", "m", "point"};

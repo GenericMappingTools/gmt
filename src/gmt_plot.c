@@ -668,8 +668,9 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 
 }
 
-void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *GMT_UNUSED(PSL), double GMT_UNUSED(w), double GMT_UNUSED(e), double s, double n, double dval)
+void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {	/* x gridlines in oblique coordinates for all but the Oblique Mercator projection [which already is oblique] */
+	GMT_UNUSED(PSL); GMT_UNUSED(w); GMT_UNUSED(e);
 	double *x = NULL, *lon = NULL, *lat = NULL, *lat_obl = NULL, tval, p_cap, s_cap;
 	unsigned int idup = 0, i, j, k, nx, np, nc1 = 0, nc2, npc, np1;
 	bool cap = false;
@@ -777,9 +778,10 @@ void gmt_x_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double s, double n,
 	}
 }
 
-void GMT_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *GMT_UNUSED(PSL), double w, double e, double GMT_UNUSED(s), double GMT_UNUSED(n), double dval)
+void GMT_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {	/* y gridlines in oblique coordinates for all but the Oblique Mercator projection [which already is oblique] */
 
+	GMT_UNUSED(PSL); GMT_UNUSED(s); GMT_UNUSED(n);
 	double *y = NULL, *lon = NULL, *lon_obl = NULL, *lat = NULL, tval, p_cap;
 	bool cap;
 	unsigned int i, k, ny, np;
@@ -1484,8 +1486,9 @@ void gmt_conic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 
 /*	OBLIQUE MERCATOR PROJECTION MAP FUNCTIONS	*/
 
-void gmt_oblmrc_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double GMT_UNUSED(w), double GMT_UNUSED(e), double GMT_UNUSED(s), double GMT_UNUSED(n))
+void gmt_oblmrc_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
+	GMT_UNUSED(w); GMT_UNUSED(e); GMT_UNUSED(s); GMT_UNUSED(n);
 	gmt_rect_map_boundary (GMT, PSL, 0.0, 0.0, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI]);
 }
 
@@ -1517,8 +1520,9 @@ void gmt_basic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
  *	GENERIC MAP PLOTTING FUNCTIONS
  */
 
-int gmt_genper_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double GMT_UNUSED(w), double GMT_UNUSED(e), double GMT_UNUSED(s), double GMT_UNUSED(n))
+int gmt_genper_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
+	GMT_UNUSED(w); GMT_UNUSED(e); GMT_UNUSED(s); GMT_UNUSED(n);
 	uint64_t nr;
 
 	if (GMT->common.R.oblique) {	/* Draw rectangular boundary and return */
@@ -1540,8 +1544,9 @@ int gmt_genper_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 	return 0;
 }
 
-void gmt_circle_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double GMT_UNUSED(w), double GMT_UNUSED(e), double GMT_UNUSED(s), double GMT_UNUSED(n))
+void gmt_circle_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n)
 {
+	GMT_UNUSED(w); GMT_UNUSED(e); GMT_UNUSED(s); GMT_UNUSED(n);
 	if (GMT->common.R.oblique) { /* Draw rectangular boundary and return */
 		gmt_rect_map_boundary (GMT, PSL, 0.0, 0.0, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI]);
 		return;
@@ -4761,9 +4766,10 @@ double gmt_get_local_scale (struct GMT_CTRL *GMT, double lon0, double lat0, doub
 	return (length / hypot (x1 - x0, y1 - y0));	/* This scales a length in inches to degrees, approximately */
 }
 
-void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *GMT_UNUSED(B), bool longway, double rot, struct GMT_PEN *pen, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C, double scale)
+void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B, bool longway, double rot, struct GMT_PEN *pen, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C, double scale)
 {	/* Given vectors A and B, return a small circle polygon path sampled every step that approximates a pen of given width
  	 * drawn on the map.  Use small circle pole and its opening rot */
+	GMT_UNUSED(B);
 	uint64_t k, n, n2;
 	double Ai[3], Ao[3], Px[3], X[3], R[3][3], R0[3][3], w, step;
 	struct GMT_DATASEGMENT *L = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);

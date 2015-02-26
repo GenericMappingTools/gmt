@@ -293,8 +293,9 @@ char *gmt_modeltime_unit (unsigned int u)
 	return (names[u]);
 }
 
-void gmt_modeltime_name (struct GMT_CTRL * GMT_UNUSED(GMT), char *file, char *format, struct GMT_MODELTIME *T)
+void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME *T)
 {	/* Creates a filename from the format.  If %s is included we scale and append time units */
+	GMT_UNUSED(GMT);
 	if (strstr (format, "%s"))	/* Want unit name */
 		sprintf (file, format, T->value*T->scale, gmt_modeltime_unit (T->u));
 	else if (strstr (format, "%c"))	/* Want unit letter */
@@ -321,13 +322,14 @@ double transfer_elastic (double *k, struct RHEOLOGY *R)
 	return (transfer_fn);
 }
 
-void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER * GMT_UNUSED(K), struct RHEOLOGY *R) {
+void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
 	/* Do the isostatic response function convolution in the Freq domain.
 	   All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
 	   densities in kg/m**3, Te in m, etc.
 	   rw, the water density, is used to set the Airy ratio and the restoring
 	   force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air (ri changed to rl).
 	*/
+	GMT_UNUSED(K);
 	double  A = 1.0, rho_load, rigidity_d;
 
 	/*   te	 Elastic thickness, SI units (m)  */

@@ -320,11 +320,12 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void disc_area_volume_height (double a, double b, double h, double hc, double GMT_UNUSED (f), double *A, double *V, double *z)
+void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
 {
 	/* Compute area and volume of circular or elliptical disc "seamounts" (more like plateaus).
 	 * Here, f is not used; ignore compiler warning. */
 
+	GMT_UNUSED(f);
 	double r2;
 
 	r2 = a * b;

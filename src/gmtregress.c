@@ -407,9 +407,10 @@ double get_scale_factor (unsigned int regression, double slope)
 	return (f);
 }
 
-double L1_misfit (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64_t n, unsigned int regression, double slope)
+double L1_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope)
 {	/* Compute L1 misfit from y-residuals ey and weights W for regression x|y|o|r.
 	 * Since W contains squared weights and we use a linear sum we take sqrt(W) below */
+	GMT_UNUSED(GMT);
 	uint64_t k;
 	double f, E = 0.0;
 	f = get_scale_factor (regression, slope);
@@ -417,8 +418,9 @@ double L1_misfit (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint6
 	return (f * E / (n-2));
 }
 
-double L2_misfit (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64_t n, unsigned int regression, double slope)
+double L2_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope)
 {	/* Compute L2 misfit from y-residuals ey and weights W for regression x|y|o|r */
+	GMT_UNUSED(GMT);
 	uint64_t k;
 	double f, E = 0.0;
 	f = get_scale_factor (regression, slope);
@@ -438,8 +440,9 @@ double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsi
 	return (f * f * E);	/* f^2 since E was computed from squared misfits */
 }
 
-double L1_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64_t n, double *GMT_UNUSED(par))
+double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par)
 {	/* L1 regression scale estimate is weighted median absolute residual */
+	GMT_UNUSED(GMT); GMT_UNUSED(par);
 	uint64_t k;
 	double MAD;
 	struct GMT_OBSERVATION *ee = NULL;
@@ -454,16 +457,18 @@ double L1_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64
 	return (MAD);
 }
 
-double L2_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *GMT_UNUSED(ey), double *W, uint64_t n, double *par)
+double L2_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par)
 {	/* LS scale estimate as weighted average residual */
+	GMT_UNUSED(GMT); GMT_UNUSED(ey);
 	double W_sum, scale;
 	W_sum = gmt_sum (W, n);
 	scale = sqrt ((n-2)*par[GMTREGRESS_MISFT] / W_sum);	/* Undo the previous (n-2) division */
 	return (scale);
 }
 
-double LMS_scale (struct GMT_CTRL *GMT_UNUSED(GMT), double *GMT_UNUSED(ey), double *GMT_UNUSED(W), uint64_t n, double *par)
+double LMS_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par)
 {	/* LMS scale estimate as per Rousseuuw & Leroy [1987] */
+	GMT_UNUSED(GMT); GMT_UNUSED(ey); GMT_UNUSED(W);
 	double scale;
 	scale = 1.4826 * (1.0 + 5.0 / (n - 2.0)) * sqrt (par[GMTREGRESS_MISFT]);
 	return (scale);
@@ -503,12 +508,13 @@ void gmt_unitary (double *x, uint64_t n)
 	for (k = 0; k < n; k++) x[k] = 1.0;
 }
 
-double gmt_demeaning (struct GMT_CTRL *GMT_UNUSED(GMT), double *X, double *Y, double *w[], uint64_t n, double *par, double *U, double *V, double *W, double *alpha, double *beta)
+double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par, double *U, double *V, double *W, double *alpha, double *beta)
 {
 	/* Compute weighted X and Y means, return these via par, and calculate residuals U and V and weights W
 	 * (and alpha, beta if orthogonal).  If orthogonal regression we expect a preliminary estimate of the
 	 * slope to be present in par[GMTREGRESS_SLOPE].  Return weight sum S.  This function carries out many of
 	 * the steps in York et al [2004]. */
+	GMT_UNUSED(GMT);
 	double S;
 	
 	if (w && w[GMT_X] && w[GMT_Y]) {	/* Orthogonal regression with x/y weights [and optionally x-y correlations] requested */
@@ -679,7 +685,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 	/* x, y here are actually the reduced coordinates U, V */
 	uint64_t k;
 	double a, b, E;
-	double (*misfit) (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64_t n, unsigned int regression, double slope);
+	double (*misfit) (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope);
 	switch (norm) {	/* Set misfit function pointer */
 		case GMTREGRESS_NORM_L1:  misfit = L1_misfit;  break;
 		case GMTREGRESS_NORM_L2:  misfit = L2_misfit;  break;
@@ -724,7 +730,7 @@ double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint6
 	double a_min = -90.0, a_max = 90.0, angle, r_a, d_a, f, last_E = DBL_MAX, S, scale, tpar[GMTREGRESS_NPAR];
 	double *U = GMT_memory (GMT, NULL, n, double), *V = GMT_memory (GMT, NULL, n, double);
 	double *W = GMT_memory (GMT, NULL, n, double), *e = GMT_memory (GMT, NULL, n, double);
-	double (*scl_func) (struct GMT_CTRL *GMT_UNUSED(GMT), double *ey, double *W, uint64_t n, double *par);
+	double (*scl_func) (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par);
 	
 	switch (norm) {	/* Set regression residual scale function pointer */
 		case GMTREGRESS_NORM_L1:  scl_func = L1_scale;  break;

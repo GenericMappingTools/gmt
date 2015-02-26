@@ -28,8 +28,9 @@ static void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or, double
 
 /*--------------------------------------------------------------------*/
 double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, bool is_grav,
-              struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int pm, struct LOC_OR *GMT_UNUSED(loc_or_)) {
+              struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int pm, struct LOC_OR *loc_or_) {
 
+	GMT_UNUSED(loc_or_);
 	double okb = 0, c_tet = 0, s_tet = 0, c_phi = 0, s_phi = 0;
 	unsigned int i, l, k, cnt_v = 0, n_vert;
 	bool top = true;

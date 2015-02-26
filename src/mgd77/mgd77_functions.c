@@ -177,8 +177,9 @@ void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	MGD77_Put_Param (C, F, "Additional_Documentation_7", strlen (P[0]->Additional_Documentation_7), P[0]->Additional_Documentation_7, strlen (P[1]->Additional_Documentation_7), P[1]->Additional_Documentation_7, L[MGD77_Param_Key(C,24,1)].revised);
 }
 
-void MGD77_Dump_Header_Params (struct GMT_CTRL *GMT_UNUSED(C), struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
+void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 {
+	GMT_UNUSED(C);
 	char word[2] = { '\0', '\0'}, EOL = '\n';
 
 	/* Write all the individual MGD77 header parameters to stdout */
@@ -261,12 +262,13 @@ void MGD77_Dump_Header_Params (struct GMT_CTRL *GMT_UNUSED(C), struct MGD77_CONT
 	if (F->Want_Header_Item[71]) printf ("%s %44s : %s%c", F->NGDC_id, "Additional_Documentation_7", P->Additional_Documentation_7, EOL);
 }
 
-void MGD77_Reset_Header_Params (struct GMT_CTRL *GMT_UNUSED(C), struct MGD77_CONTROL *F)
+void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 {
 	/* Remove the revised MGD77 header attributes so we return to the original values.
 	 * Here we simply ignore return values since many of these are presumably unknown attributes.
 	 * File is assumed to be in define mode. */
 
+	GMT_UNUSED(C);
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "Survey_Identifier_REVISED");
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "Format_Acronym_REVISED");
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "Data_Center_File_Number_REVISED");
@@ -450,10 +452,11 @@ struct MGD77_HEADER_LOOKUP MGD77_Header_Lookup[MGD77_N_HEADER_PARAMS] = {
 	{ "Additional_Documentation_7"                  ,  79U, 24,  1, false, 0, { NULL, NULL } },
 };
 
-void MGD77_Init_Ptr (struct GMT_CTRL *GMT_UNUSED(C), struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS **P)
+void MGD77_Init_Ptr (struct GMT_CTRL *C, struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS **P)
 {	/* Assigns array of pointers to each idividual parameter */
 	int i;
 
+	GMT_UNUSED(C);
 	for (i = 0; i < 2; i++) H[0].ptr[i] = P[i]->Survey_Identifier;
 	for (i = 0; i < 2; i++) H[1].ptr[i] = P[i]->Format_Acronym;
 	for (i = 0; i < 2; i++) H[2].ptr[i] = P[i]->Data_Center_File_Number;

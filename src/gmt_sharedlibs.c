@@ -106,9 +106,10 @@ void *dlopen_special(const char *name)
 
 /* Extra convenience function for opening shared library of current process */
 
-void *dlopen_special(const char *GMT_UNUSED(name))
+void *dlopen_special(const char *name)
 {	/* Opens the shared library file of the current process under *nix.
 	 * Just call dlopen with NULL and RTLD_LAZY */
+	GMT_UNUSED(name);
 	return (dlopen (NULL, RTLD_LAZY));
 }
 #endif
