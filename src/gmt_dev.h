@@ -52,14 +52,11 @@ extern "C" {
  * warnings [-Wunused-variable]. To suppress those (and only those), we can define GMT_UNUSED as this:
  */
 
-#ifdef __GNUC__
-#define GMT_UNUSED __attribute__ ((unused))
-#else
-#define GMT_UNUSED
-#endif
+#define GMT_UNUSED(x) (void)(x)
 
-/* and then call GMT_UNUSED() on all such variables.  For GNU compilers the warning is then suppressed.
- * Other compilers will not see anything and give whatever harmless warnings they normally do.
+/* and then call GMT_UNUSED() on all such variables at the beginning of a routine. For example:
+ * bool func (int x) { GMT_UNUSED(x); return(true); }
+ * This should work for all compilers, GCC and others.
  * Just grep for GMT_UNUSED to see where these situations occur.
  */
 

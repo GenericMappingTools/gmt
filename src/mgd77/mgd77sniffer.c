@@ -306,8 +306,9 @@ unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, st
 /* intervals for any ship grid comparisons by reducing excessive */
 /* number of degrees of freedom */
 /* Then create arrays for passing to RLS */
-int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *GMT_UNUSED(fieldTest)) {
+int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *fieldTest) {
 
+	GMT_UNUSED(fieldTest);
 	unsigned int n, j, k, npts, ship_bin, grid_bin;
 	int **bin2d = NULL;
 	double *dorig, *dnew = NULL;

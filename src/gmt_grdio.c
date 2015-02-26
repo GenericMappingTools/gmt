@@ -105,8 +105,9 @@ void grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, cha
 	fprintf (stderr, "---------------------------------------------\n");
 }
 #else	/* Just a dummy */
-void grd_dump (struct GMT_GRID_HEADER * GMT_UNUSED(header), float * GMT_UNUSED(grid), bool GMT_UNUSED(is_complex), char * GMT_UNUSED(txt))
+void grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
 {
+	GMT_UNUSED(header); GMT_UNUSED(grid); GMT_UNUSED(is_complex); GMT_UNUSED(txt);
 	/* Nothing */
 }
 #endif
@@ -781,7 +782,7 @@ void gmt_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	}
 }
 
-bool GMT_grd_pad_status (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *header, unsigned int *pad)
+bool GMT_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int *pad)
 {	/* Determines if this grid has padding at all (pad = NULL) OR
 	 * if pad is given, determines if the pads are different.
 	 * Return codes are:
@@ -792,6 +793,7 @@ bool GMT_grd_pad_status (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEAD
 	 *    true:  Grid padding matches pad exactly.
 	 *    false: Grid padding failed to match pad exactly.
 	 */
+	GMT_UNUSED(GMT);
 	unsigned int side;
 
 	if (pad) {	/* Determine if the grid's pad differ from given pad (false) or not (true) */
@@ -804,13 +806,14 @@ bool GMT_grd_pad_status (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEAD
 	}
 }
 
-int gmt_padspace (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P)
+int gmt_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P)
 {	/* When padding is requested it is usually used to set boundary conditions based on
 	 * two extra rows/columns around the domain of interest.  BCs like natural or periodic
 	 * can then be used to fill in the pad.  However, if the domain is taken from a grid
 	 * whose full domain exceeds the region of interest we are better off using the extra
 	 * data to fill those pad rows/columns.  Thus, this function tries to determine if the
 	 * input grid has the extra data we need to fill the BC pad with observations. */
+	GMT_UNUSED(GMT);
 	bool wrap;
 	unsigned int side, n_sides = 0;
 	double wesn2[4];
@@ -1036,12 +1039,13 @@ int GMT_write_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	return ((*GMT->session.writeinfo[header->type]) (GMT, header));
 }
 
-int GMT_update_grd_info (struct GMT_CTRL *GMT, char * GMT_UNUSED(file), struct GMT_GRID_HEADER *header)
+int GMT_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header)
 {	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 */
 
 	/* pack z-range: */
+	GMT_UNUSED(file);
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
 	gmt_grd_set_units (GMT, header);
@@ -1140,9 +1144,10 @@ size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_
 	}
 }
 
-void GMT_grd_set_ij_inc (struct GMT_CTRL * GMT_UNUSED(GMT), unsigned int nx, int *ij_inc)
+void GMT_grd_set_ij_inc (struct GMT_CTRL *GMT, unsigned int nx, int *ij_inc)
 {	/* Set increments to the 4 nodes with ij as lower-left node, from a node at (i,j).
 	 * nx may be header->nx or header->mx depending on pad */
+	GMT_UNUSED(GMT);
 	int s_nx = nx;	/* A signed version */
 	ij_inc[0] = 0;		/* No offset relative to itself */
 	ij_inc[1] = 1;		/* The node one column to the right relative to ij */
@@ -1382,9 +1387,10 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 	return;
 }
 
-void GMT_set_grdinc (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *h)
+void GMT_set_grdinc (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 {
 	/* Update grid increments based on w/e/s/n, nx/ny, and registration */
+	GMT_UNUSED(GMT);
 	h->inc[GMT_X] = GMT_get_inc (GMT, h->wesn[XLO], h->wesn[XHI], h->nx, h->registration);
 	h->inc[GMT_Y] = GMT_get_inc (GMT, h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
 	h->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];	/* Get inverse increments to avoid divisions later */
@@ -2203,8 +2209,9 @@ int gmt_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image)
 	return (GMT_NOERROR);
 }
 
-int GMT_change_grdreg (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID_HEADER *header, unsigned int registration)
+int GMT_change_grdreg (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int registration)
 {
+	GMT_UNUSED(GMT);
 	unsigned int old_registration;
 	double F;
 	/* Adjust the grid header to the selected registration, if different.
@@ -2243,8 +2250,9 @@ void GMT_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *z)
 	if (n == 0) h->z_min = h->z_max = GMT->session.d_NaN;	/* No non-NaNs in the entire grid */
 }
 
-void GMT_grd_minmax (struct GMT_CTRL * GMT_UNUSED(GMT), struct GMT_GRID *Grid, double xyz[2][3])
+void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
 {	/* Determine a grid's global min and max locations and z values; return via xyz */
+	GMT_UNUSED(GMT);
 	unsigned int row, col, i;
 	uint64_t ij, i_minmax[2] = {0, 0};
 	float z_extreme[2] = {FLT_MAX, -FLT_MAX};
@@ -2505,7 +2513,7 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	return (GMT_NOERROR);
 }
 
-int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, unsigned int *pad, unsigned int GMT_UNUSED(complex_mode)) {
+int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, unsigned int *pad, unsigned int complex_mode) {
 	/* file:	- IGNORED -
 	 * image:	array with final image
 	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]
@@ -2515,6 +2523,7 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
+	GMT_UNUSED(complex_mode);
 	int i;
 	bool expand;
 	struct GRD_PAD P;

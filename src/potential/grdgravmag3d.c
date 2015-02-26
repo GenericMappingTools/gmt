@@ -739,7 +739,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *GMT_UNUSED(Ctrl), struct BODY_DESC *body_desc, struct BODY_VERTS **body_verts, unsigned int face) {
+int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc, struct BODY_VERTS **body_verts, unsigned int face) {
 /*
 		__________________________________________
 		|                                        |
@@ -758,6 +758,7 @@ int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *GMT_UNUSED(
 		|________________________________________|
 
 */
+	GMT_UNUSED(Ctrl);
 	if (face == 0) {			/* Decompose the TOP square surface in 2 triangles using CW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
@@ -786,11 +787,12 @@ int grdgravmag3d_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *GMT_UNUSED(
 	return(0);
 }
 
-int grdgravmag3d_body_set(struct GMT_CTRL *GMT_UNUSED(GMT), struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
-		struct BODY_DESC *GMT_UNUSED(body_desc), struct BODY_VERTS *body_verts, double *x, double *y,
+int grdgravmag3d_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
+		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
 		double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i) {
 	/* Allocate and fille the body_desc structure with the description on how to
 	   connect the vertex of the polygonal planar surface */
+	GMT_UNUSED(GMT); GMT_UNUSED(body_desc);
 	unsigned int i1, j1;
 	bool is_geog = Ctrl->box.is_geog;
 	float *z = Grid->data;

@@ -213,8 +213,9 @@ void x2sys_set_home (struct GMT_CTRL *GMT)
 #endif
 }
 
-void x2sys_path (struct GMT_CTRL *GMT_UNUSED(GMT), char *fname, char *path)
+void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path)
 {
+	GMT_UNUSED(GMT);
 	sprintf (path, "%s/%s", X2SYS_HOME, fname);
 }
 
@@ -247,9 +248,9 @@ int x2sys_access (struct GMT_CTRL *GMT, char *fname, int mode)
 	return (k);
 }
 
-int x2sys_fclose (struct GMT_CTRL *GMT_UNUSED(GMT), char *GMT_UNUSED(fname), FILE *fp)
+int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp)
 {
-
+	GMT_UNUSED(GMT); GMT_UNUSED(fname);
 	if (fclose (fp)) return (X2SYS_FCLOSE_ERR);
 	return (X2SYS_NOERROR);
 }
@@ -413,8 +414,9 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X)
 	MGD77_end (GMT, &M);
 }
 
-unsigned int x2sys_record_length (struct GMT_CTRL *GMT_UNUSED(GMT), struct X2SYS_INFO *s)
+unsigned int x2sys_record_length (struct GMT_CTRL *GMT, struct X2SYS_INFO *s)
 {
+	GMT_UNUSED(GMT);
 	unsigned int i, rec_length = 0;
 
 	for (i = 0; i < s->n_fields; i++) {
@@ -441,8 +443,9 @@ unsigned int x2sys_record_length (struct GMT_CTRL *GMT_UNUSED(GMT), struct X2SYS
 	return (rec_length);
 }
 
-unsigned int x2sys_n_data_cols (struct GMT_CTRL *GMT_UNUSED(GMT), struct X2SYS_INFO *s)
+unsigned int x2sys_n_data_cols (struct GMT_CTRL *GMT, struct X2SYS_INFO *s)
 {
+	GMT_UNUSED(GMT);
 	unsigned int i, n = 0;
 	int is;
 
@@ -786,8 +789,9 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *GMT_UNUSED(G), uint64_t *n_rec)
+int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
 {
+	GMT_UNUSED(G);
 	uint64_t i, j;
 	size_t n_alloc = GMT_CHUNK;
 	int col[MGD77_N_DATA_EXTENDED];
@@ -848,8 +852,9 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *GMT_UNUSED(G), uint64_t *n_rec)
+int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
 {
+	GMT_UNUSED(G);
 	uint64_t i;
 	char path[GMT_BUFSIZ] = {""};
 	double **z = NULL;
@@ -904,8 +909,9 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *GMT_UNUSED(G), uint64_t *n_rec)
+int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
 {
+	GMT_UNUSED(G);
 	int n_fields, ns = s->n_out_columns;
 	uint64_t n_expect = GMT_MAX_COLUMNS;
 	uint64_t i, j;
@@ -1451,8 +1457,9 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S)
  * to where this data file can be found.  x2sys_path_init must be called first.
  */
 
-int x2sys_get_data_path (struct GMT_CTRL *GMT_UNUSED(GMT), char *track_path, char *track, char *suffix)
+int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, char *suffix)
 {
+	GMT_UNUSED(GMT);
 	unsigned int id;
 	bool add_suffix;
 	char geo_path[GMT_BUFSIZ] = {""};
@@ -1495,10 +1502,11 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT_UNUSED(GMT), char *track_path, cha
 	return(1);	/* Schwinehund! */
 }
 
-const char * x2sys_strerror (struct GMT_CTRL *GMT_UNUSED(GMT), int err)
+const char * x2sys_strerror (struct GMT_CTRL *GMT, int err)
 {
 /* Returns the error string for a given error code "err"
    Passes "err" on to nc_strerror if the error code is not one we defined */
+	GMT_UNUSED(GMT);
 	switch (err) {
 		case X2SYS_FCLOSE_ERR:
 			return "Error from fclose";
@@ -1822,8 +1830,9 @@ void x2sys_free_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_COE_PAIR *P, uint6
 	GMT_free (GMT, P);
 }
 
-int x2sys_find_track (struct GMT_CTRL *GMT_UNUSED(GMT), char *name, char **list, unsigned int n)
+int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, unsigned int n)
 {	/* Return track id # for this leg or -1 if not found */
+	GMT_UNUSED(GMT);
 	unsigned int i = 0;
 	if (!list) return (-1);	/* Null pointer passed */
 	for (i = 0; i < n; i++) if (!strcmp (name, list[i])) return (i);
@@ -1877,8 +1886,9 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 }
 
 /* A very similar function (and with the same name -- but the '2') is also defined in MGD77list_func.c */
-unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT_UNUSED(GMT), unsigned int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
+unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
 {	/* Used in x2sys_get_corrtable */
+	GMT_UNUSED(GMT);
 	unsigned int i, j, k, n_aux;
 	int this_aux;
 	/* Based on what item_name contains, we copy over info on the 3 aux fields (dist, azim, vel) from auxlist to aux */
