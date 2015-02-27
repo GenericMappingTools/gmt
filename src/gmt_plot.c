@@ -3775,7 +3775,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	form = mode;					/* Which actions to take */
 	if (G->box & 4) form |= PSL_TXT_ROUND;		/* Want round box shape */
 	if (G->curved_text) form |= PSL_TXT_CURVED;	/* Want text set along curved path */
-	if (!G->transparent) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
+	if (G->fillbox) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
 	if (G->box & 1) form |= PSL_TXT_DRAWBOX;	/* Want box outline */
 	if (mode & PSL_TXT_INIT) {	/* Determine and places all PSL attributes */
 		char font[PSL_BUFSIZ] = {""};
@@ -3908,7 +3908,7 @@ void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 
 	GMT_setfont (GMT, &G->font_label);
 	
-	if (G->transparent) {		/* Transparent boxes means we must set up plot text, then set up clip paths, then draw lines, then deactivate clipping */
+	if (G->must_clip) {		/* Transparent boxes means we must set up plot text, then set up clip paths, then draw lines, then deactivate clipping */
 		/* Place PSL variables, plot labels, set up clip paths, draw lines */
 		mode = PSL_TXT_INIT | PSL_TXT_SHOW | PSL_TXT_CLIP_ON | PSL_TXT_DRAW;
 		if (!G->delay) mode |= PSL_TXT_CLIP_OFF;	/* Also turn off clip path when done */

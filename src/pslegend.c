@@ -989,7 +989,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 								/* Because we support both GMT4 and GMT5 vector notations this section is a bit messy */
 								if (strchr (size, ',')) {	/* We got dir,length combined as one argument */
 									sscanf (size, "%[^,],%s", A, B);
-									az1 = GMT_to_inch (GMT, A);
+									az1 = atof (A);
 									x = GMT_to_inch (GMT, B);
 								}
 								else {	/* No dir given, default to horizontal */
