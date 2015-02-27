@@ -3874,18 +3874,8 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[])
 {
 	PSL_comment (GMT->PSL, "Pen and fill for text boxes (if enabled):\n");
-	if (GMT_IS_ZERO (BP->rgb[3]))	/* Opaque pen requested */
-		PSL_defpen (GMT->PSL, "PSL_setboxpen", BP->width, BP->style, BP->offset, BP->rgb);
-	else {	/* Define function for a transparent pen */
-		PSL_defpen (GMT->PSL, "PSL_setboxpen_init", BP->width, BP->style, BP->offset, BP->rgb);
-		PSL_command (GMT->PSL, "/PSL_setboxpen {PSL_setboxpen_init %g /%s PSL_transp} def\n", 1.0 - BP->rgb[3], GMT->PSL->current.transparency_mode);
-	}
-	if (GMT_IS_ZERO (Brgb[3]))	/* Opaque textbox fill requested */
-		PSL_defcolor (GMT->PSL, "PSL_setboxrgb", Brgb);
-	else {	/* Define function for transparent fill */
-		PSL_defcolor (GMT->PSL, "PSL_setboxrgb_init", Brgb);
-		PSL_command (GMT->PSL, "/PSL_setboxrgb {PSL_setboxrgb_init %g /%s PSL_transp} def\n", 1.0 - Brgb[3], GMT->PSL->current.transparency_mode);
-	}
+	PSL_defpen (GMT->PSL, "PSL_setboxpen", BP->width, BP->style, BP->offset, BP->rgb);
+	PSL_defcolor (GMT->PSL, "PSL_setboxrgb", Brgb);
 }
 
 void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
