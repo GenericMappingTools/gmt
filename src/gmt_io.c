@@ -6934,6 +6934,7 @@ int GMT_conv_intext2dbl (struct GMT_CTRL *GMT, char *record, unsigned int ncols)
 
 	while (k < ncols && GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, p)) {	/* Get each field in turn and bail when done */
 		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) continue;	/* Numbers must be [+|-][.][<digits>] */
+		if (strchr (p, '/')) continue;	/* Somehow got to a color triplet? */
 		GMT_scanf (GMT, p, GMT->current.io.col_type[GMT_IN][k], &GMT->current.io.curr_rec[k]);	/* Be tolerant of errors */
 		k++;
 	}
