@@ -3489,7 +3489,7 @@ void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 		strcpy (G->line_name, "Line");
 	}
 	sprintf (G->label_file, "%s_labels.txt", G->line_name);
-	G->transparent = true;
+	G->must_clip = true;
 	G->spacing = true;
 	G->half_width = UINT_MAX;	/* Auto */
 	G->label_dist_spacing = 4.0;	/* Inches */
@@ -3575,7 +3575,8 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'g':	/* Box Fill specification */
 				if (p[1] && GMT_getrgb (GMT, &p[1], G->rgb)) bad++;
-				G->transparent = false;
+				G->fillbox = true;
+				G->must_clip = (G->rgb[3] > 0.0);	/* May still be transparent if gave transparency; else opaque */
 				break;
 
 			case 'j':	/* Justification specification */

@@ -3873,7 +3873,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	form = mode;					/* Which actions to take */
 	if (G->box & 4) form |= PSL_TXT_ROUND;		/* Want round box shape */
 	if (G->curved_text) form |= PSL_TXT_CURVED;	/* Want text set along curved path */
-	if (!G->transparent) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
+	if (G->fillbox) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
 	if (G->box & 1) form |= PSL_TXT_DRAWBOX;	/* Want box outline */
 	if (mode & PSL_TXT_INIT) {	/* Determine and places all PSL attributes */
 		char font[PSL_BUFSIZ] = {""};
@@ -3972,18 +3972,8 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[])
 {
 	PSL_comment (GMT->PSL, "Pen and fill for text boxes (if enabled):\n");
-	if (GMT_IS_ZERO (BP->rgb[3]))	/* Opaque pen requested */
-		PSL_defpen (GMT->PSL, "PSL_setboxpen", BP->width, BP->style, BP->offset, BP->rgb);
-	else {	/* Define function for a transparent pen */
-		PSL_defpen (GMT->PSL, "PSL_setboxpen_init", BP->width, BP->style, BP->offset, BP->rgb);
-		PSL_command (GMT->PSL, "/PSL_setboxpen {PSL_setboxpen_init %g /%s PSL_transp} def\n", 1.0 - BP->rgb[3], GMT->PSL->current.transparency_mode);
-	}
-	if (GMT_IS_ZERO (Brgb[3]))	/* Opaque textbox fill requested */
-		PSL_defcolor (GMT->PSL, "PSL_setboxrgb", Brgb);
-	else {	/* Define function for transparent fill */
-		PSL_defcolor (GMT->PSL, "PSL_setboxrgb_init", Brgb);
-		PSL_command (GMT->PSL, "/PSL_setboxrgb {PSL_setboxrgb_init %g /%s PSL_transp} def\n", 1.0 - Brgb[3], GMT->PSL->current.transparency_mode);
-	}
+	PSL_defpen (GMT->PSL, "PSL_setboxpen", BP->width, BP->style, BP->offset, BP->rgb);
+	PSL_defcolor (GMT->PSL, "PSL_setboxrgb", Brgb);
 }
 
 void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
@@ -4006,7 +3996,7 @@ void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 
 	GMT_setfont (GMT, &G->font_label);
 
-	if (G->transparent) {		/* Transparent boxes means we must set up plot text, then set up clip paths, then draw lines, then deactivate clipping */
+	if (G->must_clip) {		/* Transparent boxes means we must set up plot text, then set up clip paths, then draw lines, then deactivate clipping */
 		/* Place PSL variables, plot labels, set up clip paths, draw lines */
 		mode = PSL_TXT_INIT | PSL_TXT_SHOW | PSL_TXT_CLIP_ON | PSL_TXT_DRAW;
 		if (!G->delay) mode |= PSL_TXT_CLIP_OFF;	/* Also turn off clip path when done */
