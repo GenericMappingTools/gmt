@@ -35,10 +35,6 @@
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcpt"
 
 struct PSLEGEND_CTRL {
-	struct PSLEGND_A {	/* -A<cptfile> */
-		bool active;
-		char *file;
-	} A;
 	struct PSLEGND_C {	/* -C<dx>/<dy> */
 		bool active;
 		double dx, dy;
@@ -76,7 +72,6 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free_anchorpoint (GMT, &C->D.anchor);
-	if (C->A.file) free (C->A.file);
 	GMT_free (GMT, C);
 }
 
@@ -86,7 +81,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<specfile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [-A<cpt>] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<specfile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -109,7 +104,6 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Color palette file used for color look-up when fills are given via z=<value> [no lookup].\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", GMT_FRAME_CLEARANCE, GMT_FRAME_CLEARANCE);
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
@@ -146,11 +140,6 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Get CPT for lookup of fill colors via z=<value> */
-				Ctrl->A.active = true;
-				if (Ctrl->A.file) free (Ctrl->A.file);
-				Ctrl->A.file = strdup (opt->arg);
-				break;
 			case 'C':	/* Sets the clearance between frame and internal items */
 				Ctrl->C.active = true;
 				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
@@ -405,9 +394,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	if ((In = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Ctrl->A.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
-		Return (API->error);
-	}
 
 	/* First attempt to compute the legend height */
 
@@ -436,7 +422,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						column_number = 0;
 						break;
 
-					case 'C':	/* Color change, no height implication */
+					case 'A':	/* Color change, no height implication */
+					case 'C':
 					case 'F':
 						break;
 
@@ -669,6 +656,15 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 				}
 
 				switch (line[0]) {
+					case 'A':	/* Z lookup color table change: A cptfile */
+						if (P && GMT_Destroy_Data (API, &P) != GMT_OK)	/* Remove the previous CPT from registration */
+							Return (API->error);
+						for (col = 1; line[col] == ' '; col++);	/* Wind past spaces */
+						if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &line[col], NULL)) == NULL)
+							Return (API->error);
+						GMT->current.setting.color_model = GMT_RGB;	/* Since we will be interpreting r/g/b triplets via z=<value> */
+						break;
+
 					case 'B':	/* B cptname offset height [ Optional psscale args -A -B -I -L -M -N -S -Z -p ] */
 						/* Color scale Bar [via GMT_psscale] */
 						row_height = GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
@@ -1281,9 +1277,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	if (GMT_Destroy_Data (API, &In) != GMT_OK) {	/* Remove the main input file from registration */
 		Return (API->error);
 	}
-	if (Ctrl->A.active && GMT_Destroy_Data (API, &P) != GMT_OK) {	/* Remove the optional CPT from registration */
+	if (P && GMT_Destroy_Data (API, &P) != GMT_OK)	/* Remove the last CPT from registration */
 		Return (API->error);
-	}
 
 	/* Reset the flag */
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;

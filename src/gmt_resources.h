@@ -607,6 +607,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	uint64_t id;			/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	unsigned int alloc_level;	/* The level it was allocated at */
+	unsigned int auto_scale;	/* If 1 then we must resample to fit actual data range */
 	unsigned int model;		/* RGB, HSV, CMYK */
 	unsigned int is_gray;		/* true if only grayshades are needed */
 	unsigned int is_bw;		/* true if only black and white are needed */

@@ -15,7 +15,6 @@ Synopsis
 
 **pslegend** [ *specfile* ]
 **-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *anchor*/*width*\ [/*height*]\ [/*justify*]\ [/*dx*/*dy*]
-[ **-A**\ *cpt\_file* ]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
 [ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
@@ -59,10 +58,6 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 `Optional Arguments <#toc5>`_
 -----------------------------
-
-**-A**\ *cpt\_file*
-    If symbol or cell color fills are given indirectly via a *z*-value then you must specify
-    a CPT file to be used for the color look-up [all colors are specified as is].
 
 .. include:: explain_-B.rst_
 
@@ -129,6 +124,10 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     the syntax for each of these records are presented below:
 **#** *comment*
     Records starting with # and blank lines are skipped.
+**A** *cptname*
+    Symbol or cell color fills may be given indirectly via a *z*-value 
+    which can be used for the color look-up via the given CPT file *cptname*.
+    You may switch to other *cptname* by repeating this command.
 **B** *cptname offset height* [ *optional arguments* ]
     The **B** record will plot a horizontal color bar, **psscale**-style
     in the middle, starting at *offset* from the left edge, and of the
@@ -138,7 +137,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **C** *textcolor*
     The **C** record specifies the color with which the remaining text
     is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,
-    a named color, or an indirect color via z=*value* (requires **-A**).
+    a named color, or an indirect color via z=*value* (requires the **A** command).
     Use **-** to reset to default color.
 **D** [*offset] pen* [**-**\|**+**\|**=**]
     The **D** record results in a horizontal line with specified *pen*
@@ -153,7 +152,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     [Default places a quarter line-spacing both before and after the line].
 **F** *fill1 fill2 ... filln*
     Specify fill (color of pattern) for cells.  Alternatively, you can
-    specify an indirect color via z=*value* (requires **-A**).
+    specify an indirect color via z=*value* (requires the **A** command).
     If only *fill1* is given
     then it is used to fill the entire row, otherwise give one fill value
     for each active column (see **N**).  If any fill is - then no fill
@@ -216,7 +215,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. Alternatively, the *fill*
     may be specified indirectly via z=*value* and the color is assigned
-    vi the CPT look-up (requires **-A**).
+    vi the CPT look-up (requires the **A** command).
     When plotting just a
     symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
     can also be given as a justification code L, C, R which justifies the
