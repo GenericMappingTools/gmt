@@ -3080,6 +3080,23 @@ int GMT_get_rgb_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double valu
 }
 
 /*! . */
+int GMT_get_rgbtxt_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *text)
+{	/* Assumes text is long enough to hold the color specification */
+	double z, rgb[4];
+	if (!strcmp (text, "-")) return 0;	/* Got just - which means we did not want fill; not an error */
+	if (strncmp (text, "z=", 2U)) return 0;	/* Not a z=<value> specification, so no error since presumably we got a color or fill */
+	if (P == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Requested color lookup via z=<value> but no CPT was given via -A<cpt>\n");
+		return GMT_NO_CPT;
+	}
+	z = atof (&text[2]);	/* Extract the z value */
+	GMT_get_rgb_from_z (GMT, P, z, rgb);	/* Convert via CPT to r/g/b */
+	sprintf (text, "%s", GMT_putcolor (GMT, rgb));
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Gave z=%g and returned %s\n", z, text);
+	return 0;
+}
+
+/*! . */
 int GMT_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value, struct GMT_FILL *fill) {
 	int index;
 	struct GMT_FILL *f = NULL;

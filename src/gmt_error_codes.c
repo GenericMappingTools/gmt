@@ -70,6 +70,7 @@ const char *g_api_error_string[] = {
 	/* GMT_NO_OUTPUT */			"GMT_NO_OUTPUT",
 	/* GMT_NO_PARAMETERS */			"GMT_NO_PARAMETERS",
 	/* GMT_NO_RESOURCES */			"GMT_NO_RESOURCES",
+	/* GMT_NO_CPT */			"GMT_NO_CPT",
 	/* GMT_N_COLS_NOT_SET */		"GMT_N_COLS_NOT_SET",
 	/* GMT_N_COLS_VARY */			"GMT_N_COLS_VARY",
 	/* GMT_N_ROWS_NOT_SET */		"GMT_N_ROWS_NOT_SET",

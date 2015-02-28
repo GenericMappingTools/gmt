@@ -28,13 +28,17 @@
 #define THIS_MODULE_NAME	"pslegend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot legends on maps"
-#define THIS_MODULE_KEYS	"<TI,-Xo"
+#define THIS_MODULE_KEYS	"<TI,ACi,-Xo"
 
 #include "gmt_dev.h"
 
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcpt"
 
 struct PSLEGEND_CTRL {
+	struct PSLEGND_A {	/* -A<cptfile> */
+		bool active;
+		char *file;
+	} A;
 	struct PSLEGND_C {	/* -C<dx>/<dy> */
 		bool active;
 		double dx, dy;
@@ -72,6 +76,7 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free_anchorpoint (GMT, &C->D.anchor);
+	if (C->A.file) free (C->A.file);
 	GMT_free (GMT, C);
 }
 
@@ -81,7 +86,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<specfile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<specfile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [-A<cpt>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -104,6 +109,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Color palette file used for color look-up when fills are given via z=<value> [no lookup].\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", GMT_FRAME_CLEARANCE, GMT_FRAME_CLEARANCE);
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
@@ -140,6 +146,11 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* Get CPT for lookup of fill colors via z=<value> */
+				Ctrl->A.active = true;
+				if (Ctrl->A.file) free (Ctrl->A.file);
+				Ctrl->A.file = strdup (opt->arg);
+				break;
 			case 'C':	/* Sets the clearance between frame and internal items */
 				Ctrl->C.active = true;
 				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
@@ -351,6 +362,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	struct GMT_TEXTSEGMENT *Ts[N_TXT];
 	struct GMT_DATASET *D[N_DAT];
 	struct GMT_DATASEGMENT *Ds[N_DAT];
+	struct GMT_PALETTE *P = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	GMT_memset (&header, 1, struct imageinfo);	/* initialize struct */
@@ -391,6 +403,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	if ((In = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
+	if (Ctrl->A.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -675,6 +690,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 					case 'C':	/* Font color change: C textcolor */
 						sscanf (&line[2], "%[^\n]", txtcolor);
+						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txtcolor))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 						break;
 
 					case 'D':	/* Delimiter record: D [offset] <pen>|- [-|=|+] */
@@ -726,6 +742,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						for (col = 0; col < PSLEGEND_MAX_COLS; col++) if (fill[col]) {free (fill[col]); fill[col] = NULL;}
 						pos = n_col = 0;
 						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
+							if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, p))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 							if (strcmp (p, "-")) fill[n_col++] = strdup (p);
 							if (n_col > n_columns) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding specified N columns (%d) in F operator (%d)\n", n_columns, n_col);
@@ -958,6 +975,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 					case 'S':	/* Symbol record: S dx1 symbol size fill pen [ dx2 text ] */
 						n_scan = sscanf (&line[2], "%s %s %s %s %s %s %[^\n]", txt_a, symbol, size, txt_c, txt_d, txt_b, text);
+						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txt_c))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 						if (column_number%n_columns == 0) {	/* Symbol in first column, also fill row if requested */
 							fillcell (GMT, Ctrl->D.anchor->x, row_base_y-one_line_spacing, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 							row_base_y -= one_line_spacing;
@@ -1261,6 +1279,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	if (Ctrl->C.dy > 0.0) fillcell (GMT, Ctrl->D.anchor->x, row_base_y-Ctrl->C.dy, row_base_y, x_off_col, &d_line_after_gap, n_columns, fill);
 
 	if (GMT_Destroy_Data (API, &In) != GMT_OK) {	/* Remove the main input file from registration */
+		Return (API->error);
+	}
+	if (Ctrl->A.active && GMT_Destroy_Data (API, &P) != GMT_OK) {	/* Remove the optional CPT from registration */
 		Return (API->error);
 	}
 

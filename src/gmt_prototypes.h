@@ -449,6 +449,7 @@ EXTERN_MSC int GMT_get_format (struct GMT_CTRL *GMT, double interval, char *unit
 EXTERN_MSC int GMT_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value);
 EXTERN_MSC int GMT_get_rgb_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value, double *rgb);
 EXTERN_MSC int GMT_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value, struct GMT_FILL *fill);
+EXTERN_MSC int GMT_get_rgbtxt_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *text);
 EXTERN_MSC bool GMT_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill);
 EXTERN_MSC bool GMT_getinc (struct GMT_CTRL *GMT, char *line, double inc[]);
 EXTERN_MSC int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n);
