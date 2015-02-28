@@ -237,6 +237,8 @@ Examples
 To add an example of a legend to a Mercator plot (map.ps) with the given
 specifications, use
 
+   ::
+
     gmt pslegend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i/5i/3.3i/BL \
     -C0.1i/0.1i -L1.2 -B5f1 << EOF >> map.ps
     # Legend test for pslegend
