@@ -2707,6 +2707,58 @@ struct GMT_IMAGE *GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, u
 
 	return ((mode & GMT_GRID_DATA_ONLY) ? NULL : I_obj);	/* Pass back out what we have so far */
 }
+
+/*! Writes out a single grid to destination */
+int GMTAPI_Export_Image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *I_obj) {
+	int item;
+	bool done = true;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	struct GMT_IMAGE *I_copy = NULL;
+
+	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Export_Image: Passed ID = %d and mode = %d\n", object_ID, mode);
+
+	if (object_ID == GMT_NOTSET) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));
+	if ((item = GMTAPI_Validate_ID (API, GMT_IS_IMAGE, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMTAPI_report_error (API, API->error));
+
+	S_obj = API->object[item];	/* The current object whose data we will export */
+	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))
+		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
+	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;
+	switch (S_obj->method) {
+		case GMT_IS_FILE:	/* Name of an image file on disk */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Writing image to file %s\n", S_obj->filename);
+			/* Look at grdimage for how this might be done and incorporate here, maybe via a GMT_write_img function */
+			//if (GMT_err_pass (API->GMT, GMT_write_img (API->GMT, S_obj->filename, I_obj->header, I_obj->data, S_obj->wesn, I_obj->header->pad, mode), S_obj->filename)) return (GMTAPI_report_error (API, GMT_IMAGE_WRITE_ERROR));
+			break;
+
+	 	case GMT_IS_DUPLICATE:	/* Duplicate GMT image to a new GMT_IMAGE container object */
+			if (S_obj->resource) return (GMTAPI_report_error (API, GMT_PTR_NOT_NULL));	/* The ouput resource pointer must be NULL */
+			if (mode & GMT_GRID_HEADER_ONLY) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_MODE));
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating image data to GMT_IMAGE memory location\n");
+			I_copy = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_DATA, I_obj);
+			S_obj->resource = I_copy;	/* Set resource pointer to the image */
+			break;		/* Done with this image */
+
+	 	case GMT_IS_REFERENCE:	/* GMT image and header in a GMT_IMAGE container object - just pass the reference */
+			if (S_obj->region) return (GMTAPI_report_error (API, GMT_SUBSET_NOT_ALLOWED));
+			if (mode & GMT_GRID_HEADER_ONLY) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_MODE));
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing image data to GMT_IMAGE memory location\n");
+			S_obj->resource = I_obj;	/* Set resource pointer to the image */
+			I_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			break;
+
+		default:
+			GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to export image\n");
+			return (GMTAPI_report_error (API, GMT_NOT_A_VALID_METHOD));
+			break;
+	}
+
+	if (done) S_obj->status = GMT_IS_USED;	/* Mark as written (unless we only updated header) */
+	S_obj->data = I_obj;		/* Retain pointer to the allocated data so we can find the object via its pointer later */
+	S_obj->data = NULL;
+
+	return (GMT_OK);
+}
 #endif
 
 /*! . */
@@ -3161,6 +3213,9 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, in
 			break;
 		case GMT_IS_GRID:	/* Export a GMT grid */
 			error = GMTAPI_Export_Grid (API, object_ID, mode, data);
+			break;
+		case GMT_IS_IMAGE:	/* Export a GMT image */
+			error = GMTAPI_Export_Image (API, object_ID, mode, data);
 			break;
 		default:
 			error = GMT_NOT_A_VALID_FAMILY;

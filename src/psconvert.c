@@ -514,7 +514,7 @@ int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_TEXTSET))) {
 					Ctrl->F.file = strdup (opt->arg);
-					GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
+					if (!GMT_File_Is_Memory (Ctrl->F.file)) GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
 				}
 				else
 					n_errors++;
@@ -690,7 +690,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len, line_size = 0U;
 	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig;
-	bool excessK, setup, found_proj = false, isGMT_PS = false;
+	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false;
 	bool transparency = false, look_for_transparency, BeginPageSetup_here = false;
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
@@ -790,6 +790,13 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 		Ctrl->F.active = false;
 	}
 
+	if (Ctrl->F.active && GMT_File_Is_Memory (Ctrl->F.file)) {
+		if (Ctrl->T.device <= GS_DEV_SVG || Ctrl->In.n_files > 1) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Can only return one raster image to calling program via memory array.\n");
+			Return (EXIT_FAILURE);
+		}
+		return_image = true;
+	}
 	/* Parameters for all the formats available */
 
 	gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dUseFlateCompression=true -dPDFSETTINGS=/prepress -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
@@ -1006,7 +1013,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Format EPS file...\n");
 		if (Ctrl->T.eps) {
 			if (Ctrl->D.active) sprintf (tmp_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
-			if (!Ctrl->F.active)
+			if (!Ctrl->F.active || return_image)
 				strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			else
 				strcat (tmp_file, Ctrl->F.file);
@@ -1343,7 +1350,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			else
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert to %s...\n", tag);
 
-			if (!Ctrl->F.active) {
+			if (!Ctrl->F.active || return_image) {
 				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 				strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			}
@@ -1399,7 +1406,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 				Ctrl->T.device = dest_device;	/* Reset output device type */
 				strcpy (pdf_file, out_file);	/* Now the PDF is the infile */
 				*out_file = '\0'; /* truncate string to build new output file */
-				if (!Ctrl->F.active) {
+				if (!Ctrl->F.active || return_image) {
 					if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 				}
@@ -1429,6 +1436,19 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 		if (Ctrl->Z.active) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", ps_file);
 			remove (ps_file);
+		}
+
+		if (return_image) {	/* Must read in the saved raster image and return via Ctrl->F.file pointer */
+			struct GMT_IMAGE *I = NULL;
+			GMT_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, NULL)) == NULL) {
+				Return (API->error);
+			}
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
+				Return (API->error);
+			GMT_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", out_file);
+			remove (out_file);
 		}
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done.\n");
