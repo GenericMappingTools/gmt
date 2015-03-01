@@ -989,6 +989,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			GMT_free (GMT, stacked_lo);
 			GMT_free (GMT, stacked_hi);
 			GMT_free (GMT, stacked_n);
+			GMT_set_cartesian (GMT, GMT_OUT);	/* Since x now is distance and y is a data quantity */
 			if (Ctrl->S.selected[STACK_ADD_TBL] && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Stack->io_mode, NULL, Ctrl->S.file, Stack) != GMT_OK) {
 				Return (API->error);
 			}
