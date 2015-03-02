@@ -667,6 +667,10 @@ Next table gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Encode_ID_          | Encode a resources ID as a special filename       |
 +-------------------------+---------------------------------------------------+
+| GMT_Encode_Options_     | Encode option arguments for external interfaces   |
++-------------------------+---------------------------------------------------+
+| GMT_Expand_Option_      | Expand option with explicit memory references     |
++-------------------------+---------------------------------------------------+
 | GMT_End_IO_             | Disable further record-by-record i/o              |
 +-------------------------+---------------------------------------------------+
 | GMT_FFT_                | Take the Fast Fourier Transform of data object    |
@@ -2228,9 +2232,9 @@ a GMT call in the Matlab or Octave application might look like
 ::
 
   table = gmt ('blockmean -R30W/30E/10S/10N -I2m', [x y z]);
-  grid = gmt ('surface -R -I2m -Lu$', high_limit_grid, table);
+  grid  = gmt ('surface -R -I2m -Lu$', high_limit_grid, table);
 
-and it such environments we need the ability to (1) specify references
+and in such environments we need the ability to (1) specify references
 to memory items (via a marker, here "$") and (2) supply implicit
 module arguments (here a command-line "$" will be added to both commands
 to represent the input 3-column table, a "> $" to indicate the output
@@ -2246,8 +2250,8 @@ The prototype is
 
   ::
 
-    struct GMT_RESOURCE * GMT_Encode_Options (void *API, char *module, 
-	char marker, int nl, struct GMT_OPTION **head, int *n_items);
+    struct GMT_RESOURCE *GMT_Encode_Options (void *API, char *module, char marker, int nl,
+                    	                       struct GMT_OPTION **head, int *n_items);
 
 where ``module`` is the name of the module whose linked options are
 pointed to by ``*head``, the ``marker`` is the special character that
@@ -2259,7 +2263,7 @@ items in the array is returned via the ``n`` variable.  The function
 returns NULL if there are errors and sets ``API->error`` to the corresponding
 error number.  The GMT_RESOURCE structure is defined below:
 
-.. _struct-grid:
+.. .. _struct-grid:
 
 .. code-block:: c
 
@@ -2291,7 +2295,7 @@ calling ``GMT_Expand_Option``, with prototype
   ::
 
     int GMT_Expand_Option (void *API, struct GMT_OPTION *option,
-	char marker, char *name);
+	                         char marker, char *name);
 
 where ``option`` is the current option, ``marker`` is the character
 identifier representing an explicit memory reference, and ``name``

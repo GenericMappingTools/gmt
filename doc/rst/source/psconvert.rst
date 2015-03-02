@@ -15,7 +15,7 @@ Synopsis
 
 **psconvert** *psfile(s)*
 [ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
-[ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ]
+[ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [ **-F**\ *<out_name>* ]
 [ **-G**\ *ghost_path* ] [ **-I** ] [ **-L**\ *listfile* ] [ **-P** ]
 [ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
 [ **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s** \|\ **t** ]
@@ -85,7 +85,7 @@ Optional Arguments
 **-E**\ *resolution*
     Set raster resolution in dpi [default = 720 for PDF, 300 for others].
 
-**-F**
+**-F**\ *out_name*
     Force the output file name. By default output names are constructed
     using the input names as base, which are appended with an
     appropriate extension. Use this option to provide a different name,
