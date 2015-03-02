@@ -1447,8 +1447,10 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
 				Return (API->error);
 			GMT_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", out_file);
-			remove (out_file);
+			if (Ctrl->Z.active) {	/* Remove the image since it is returned to a calling program and -Z was given */
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", out_file);
+				remove (out_file);
+			}
 		}
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done.\n");
