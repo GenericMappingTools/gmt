@@ -6302,13 +6302,14 @@ const char * GMTAPI_get_moduleinfo (void *V_API, char *module)
 }
 
 /*! . */
-struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTION **head, unsigned int *n) {
+struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker, int nleft, struct GMT_OPTION **head, unsigned int *n) {
 	/* This function determines which input sources and output destinations are required.
 	 * It is only meant to assist developers of external APIs such as the Matlab, Julia, Python, etc, APIs
 	 * These are the arguments:
 	 *   API controls all things within GMT.
 	 *   module is the name of the GMT module. While an input arg it may grow if a prefix of "gmt" is prepended.
 	 *   marker is the character that represents a resource, typically $, but could be something else if need be.
+	 *   nleft is the number of output items expected by the external API (e.g., nlhs in Matlab and Octave).
 	 *   head is the linked list of GMT options passed for this module.  We may hook on 1-2 additional options.
 	 *   We return an array of structures with information about registered resources going to/from GMT.
 	 *   The number of structures is returned by the *n argument.
@@ -6323,17 +6324,18 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 * the information passed back via X to attach actual resources.
 	 */
 
-	unsigned int n_keys, direction, PS, kind, pos, output_set = 0;
+	unsigned int n_keys, direction, PS, kind, pos;
 	unsigned int n_items = 0, n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
 	int family;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int k;
+	bool activate_output = false, deactivate_output = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
 	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[16] = {""};
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
-	char type = 0;
+	char type = 0, option;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
 	struct GMTAPI_CTRL *API = NULL;
@@ -6362,8 +6364,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 		}
 		if (!strncmp (module, "gmtwrite", 8U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
 			/* Found a -<"file" option; this is actually the output file so we reset the option */
-			opt->option = GMT_OPT_OUTFILE;
-			output_set = 1;	/* Remember to turn off implicit output option since we got one */
+			opt->option = option = GMT_OPT_OUTFILE;
+			deactivate_output = true;	/* Remember to turn off implicit output option since we got one */
 		}
 	}
 	/* 1b. Check if this is either gmtmath or grdmath which uses the special = outfile syntax and replace by -=<outfile> */
@@ -6377,11 +6379,20 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			}
 		}
 	}
+	/* 1c. Check if this is psconvert and nleft == 1, meaning write the image to memory */
+	if (!strncmp (module, "psconvert", 9U) && nleft == 1 && (opt = GMT_Find_Option (API, 'F', *head)) == NULL) {	/* Want psconvert to return image but gave no -F option */
+		activate_output = true;
+		option = 'F';
+	}
 
-	/* 2. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) */
+	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) */
 	key = GMTAPI_process_keys (API, keys, type, &n_keys, &PS);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
-	if (output_set && (k = GMTAPI_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
-		key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Since we got an output file already */
+	
+	/* 2b. Make some specific modifications to the keys given the options passed */
+	if (deactivate_output && (k = GMTAPI_get_key (API, option, key, n_keys)) >= 0)
+		key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Since we got an explicit output file already */
+	if (activate_output && (k = GMTAPI_get_key (API, option, key, n_keys)) >= 0)
+		key[k][K_DIR] = toupper (key[k][K_DIR]);	/* Since we must add a required implicit output file */
 
 	/* 3. Count the module options and any input files referenced via marker, then allocate info struct array */
 	for (opt = *head; opt; opt = opt->next) {
@@ -6527,9 +6538,9 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 }
 
 #ifdef FORTRAN_API
-struct GMT_RESOURCE * GMT_Encode_Options_ (char *module, char *marker, struct GMT_OPTION **head, unsigned int *n, int len)
+struct GMT_RESOURCE * GMT_Encode_Options_ (char *module, char *marker, int *nleft, struct GMT_OPTION **head, unsigned int *n, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Encode_Options (GMT_FORTRAN, module, *marker, head, n));
+	return (GMT_Encode_Options (GMT_FORTRAN, module, *marker, *nleft, head, n));
 }
 #endif
 
