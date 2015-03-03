@@ -27,9 +27,11 @@
  */
 
 int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform);
-int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_filename, int got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
+int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_filename, int got_R, int nXSize,
+                       int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
 int ReportCorner (struct GMT_CTRL *GMT, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
-void ComputeRasterMinMax (struct GMT_CTRL *GMT, unsigned char *tmp, GDALRasterBandH hBand, double adfMinMax[2], int nXSize, int nYSize, double, double);
+void ComputeRasterMinMax (struct GMT_CTRL *GMT, unsigned char *tmp, GDALRasterBandH hBand, double adfMinMax[2],
+                          int nXSize, int nYSize, double, double);
 int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, unsigned int n_col);
 
 int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
@@ -60,7 +62,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	bool    do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
 	bool   	metadata_only;
 	bool   	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
-	bool   	fliplr, got_R = false, got_r = false, error = false;
+	bool   	fliplr, flipud, got_R = false, got_r = false, error = false;
 	int    *whichBands = NULL, *rowVec = NULL, *colVec = NULL;
 	int     off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
 	unsigned int nn, mm;
@@ -106,6 +108,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	do_BIP = prhs->I.active;
 	if (nReqBands == 1) do_BIP = false;	/* This must overrule any -I option settings */
 	fliplr = prhs->L.active;
+	flipud = prhs->U.active;
 	metadata_only = prhs->M.active;
 
 	if (prhs->p.active) pad = prhs->p.pad;
@@ -377,7 +380,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		}
 
 		GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize,
-			tmp, nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0);
+		             tmp, nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0);
 
 		/* If we didn't computed it yet, its time to do it now */
 		if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
@@ -408,11 +411,16 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		switch (GDALGetRasterDataType(hBand)) {
 			case GDT_Byte:
 				/* This chunk is kind of complicated because we want to take into account several different cases */
-				for (n = 0; n < nXSize; n++)
-					if (do_BIP)
-						colVec[n] = n * nRGBA + i;	/* Vector for Pixel Interleaving */
-					else
-						colVec[n] = n + i_x_nXYSize;	/* Vector for Band Sequential */
+				for (n = 0; n < nXSize; n++) {
+					if (do_BIP)			/* Vector for Pixel Interleaving */
+						colVec[n] = n * nRGBA + i;
+					else {				/* Vector for Band Sequential */
+						if (flipud)
+							colVec[n] = n * nY-1 + nY + i_x_nXYSize; 
+						else
+							colVec[n] = n + i_x_nXYSize;
+					}
+				}
 
 				Ctrl->UInt8.active = true;
 				if (fliplr) {				/* No BIP option yet, and maybe never */
@@ -420,6 +428,14 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
+					}
+				}
+				else if (flipud) {
+					for (m = 0; m < nYSize; m++) {
+						for (n = 0; n < nXSize; n++) {
+							nn = colVec[n] - m;
+							Ctrl->UInt8.data[nn] = tmp[rowVec[m]+n];
+						}
 					}
 				}
 				else
