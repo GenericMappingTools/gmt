@@ -771,7 +771,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript version query.\n");
 		if (n != 2) {
 			/* command execution failed or cannot parse response */
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query [n = %d %d %d].\n", n, gsVersion.major, gsVersion.minor);
 			Return (EXIT_FAILURE);
 		}
 	}

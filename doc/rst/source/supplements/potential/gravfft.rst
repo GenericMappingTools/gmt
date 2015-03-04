@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
-[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density* ] [ **-E**\ *n_terms* ]
+[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density*\ \|\ *rhogrid* ] [ **-E**\ *n_terms* ]
 [ **-F**\ [**f**\ [**+**]\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
 [ **-Q** ] [ **-T**\ *te/rl/rm/rw*\ [**+m**] ]
@@ -72,11 +72,13 @@ Optional Arguments
     depth. Append dataflags (one or two) of *tbw* in any order. *t* =
     use "from top" model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
-**-D**\ *density*
+**-D**\ *density*\ \|\ *rhogrid*
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-N+h**.
+    do not use **-T**. It also implicitly sets **-N+h**.  Alternatively,
+    specify a co-registered grid with density contrasts if a variable
+    density contrast is required.
 **-E**\ *n_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 3]
@@ -85,11 +87,11 @@ Optional Arguments
 
        **f** = Free-air anomalies (mGal) [Default].  Append **+** to add
        in the slab implied when removing the mean value from the topography.
-       This requires zero topograhy to mean no mass anomaly.
+       This requires zero topography to mean no mass anomaly.
 
        **g** = Geoid anomalies (m).
 
-       **v** = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).
+       **v** = Vertical Gravity Gradient (VGG; 1 Eotvos = 0.1 mGal/km).
 
        **e** = East deflections of the vertical (micro-radian).
 
@@ -193,9 +195,9 @@ in Parker expansion):
 
 Now subtract it to your free-air anomaly faa.grd and you will get the
 Bouguer anomaly. You may wonder why we are subtracting and not adding.
-After all the Bouger anomaly pretends to correct the mass deficiency
+After all the Bouguer anomaly pretends to correct the mass deficiency
 presented by the water layer, so we should add because water is less
-dense than the rocks below. The answer relyies on the way gravity
+dense than the rocks below. The answer relies on the way gravity
 effects are computed by the Parker's method and practical aspects of
 using the FFT.
 
@@ -262,7 +264,7 @@ depth and the same densities as before?
 
 To compute the admittance between the topo.grd bathymetry and faa.grd
 free-air anomaly grid using the elastic plate model of a crust of 6 km
-mean thickness with 10 km efective elastic thickness in a region of 3 km
+mean thickness with 10 km effective elastic thickness in a region of 3 km
 mean water depth:
 
    ::
@@ -289,8 +291,8 @@ References
 ----------
 
 Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
-Azores Plateau: a 3D admittance and coherence analysis. J. Geotermal
-Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
+Azores Plateau: a 3D admittance and coherence analysis. J. Geothermal
+Volc. Res. Volume 156, Issues 1-2, Pages 10-22,
 `http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,

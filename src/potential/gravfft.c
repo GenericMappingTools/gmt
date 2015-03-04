@@ -64,8 +64,10 @@ struct GRAVFFT_CTRL {
 		unsigned int n_pt;
 		double theor_inc;
 	} C;
-	struct GRVF_D {	/* -D[<scale>] */
+	struct GRVF_D {	/* -D[<rho>|<rhofile>] */
 		bool active;
+		bool variable;
+		char *file;
 	} D;
 	struct GRVF_E {	/* -E */
 		bool active;
@@ -149,6 +151,7 @@ void Free_gravfft_Ctrl (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *C) {	/* Deall
 	if (C->par) GMT_free (GMT, C->par);	
 	if (C->In.file[0]) free (C->In.file[0]);	
 	if (C->In.file[1]) free (C->In.file[1]);	
+	if (C->D.file) free (C->D.file);	
 	if (C->G.file) free (C->G.file);	
 	if (C->N.info) GMT_free (GMT, C->N.info);
 	GMT_free (GMT, C);	
@@ -222,12 +225,20 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				break;
 			case 'D':
 				if (!opt->arg) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: must give density contrast\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: must give constant density contrast or grid with density constrasts\n");
 					n_errors++;
 				}
-				Ctrl->D.active = true;
-				Ctrl->misc.rho = atof (opt->arg);
-				override_mode = GMT_FFT_REMOVE_MID;		/* Leave trend alone and remove mid value */
+				else {
+					Ctrl->D.active = true;
+					if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a grid with density contrast */
+						Ctrl->D.file = strdup (opt->arg);
+						Ctrl->D.variable = true;
+						Ctrl->misc.rho = 1.0;
+					}
+					else
+						Ctrl->misc.rho = atof (opt->arg);
+					override_mode = GMT_FFT_REMOVE_MID;		/* Leave trend alone and remove mid value */
+				}
 				break;
 			case 'E':
 				Ctrl->E.n_terms = atoi (opt->arg);
@@ -396,23 +407,25 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f[+]|g|v|n|e]] [-I<wbctk>]\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density|grid>] [-E<n_terms>] [-F[f[+]|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE,"\ttopo_grd is the input grdfile with topography values\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-G filename for output netCDF grdfile with gravity [or geoid] values\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t-G Filename for output netCDF grdfile with gravity [or geoid] values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-C n/wavelength/mean_depth/tbw Compute admittance curves based on a theoretical model.\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t-C Compute admittance curves based on a theoretical model.\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t   Append <n/wavelength/mean_depth/tbw> as specified below:\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   Total profile length in meters = <n> * <wavelength> (unless -Kx is set).\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   --> Rest of parametrs are set within -T AND -Z options\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t   --> Rest of parameters are set within -T AND -Z options\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   Append dataflags (one or two) of tbw:\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t     t writes \"elastic plate\" admittance.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t     b writes \"loading from below\" admittance.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t     w writes wavelength instead of wavenumber.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-D Sets density contrast across surface (used when not -T).\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t   Give a coregistered density grid for a variable density contrast [constant].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-I Use <ingrid2> and <topo_grd> to estimate admittance|coherence and write\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   it to stdout (-G ignored if set). This grid should contain gravity or geoid\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   for the same region of <topo_grd>. Default computes admittance. Output\n");
@@ -426,7 +439,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t       theoretical admittance.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t     t writes a forth column with \"elastic plate\" \n");
 	GMT_Message (API, GMT_TIME_NONE,"\t       theoretical admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-E number of terms used in Parker's expansion [Default = 3].\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t-E Number of terms used in Parker's expansion [Default = 3].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-F Specify desired geopotential field:\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   f = Free-air anomalies (mGal) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t       Append + to adjust for implied slab correction [none].\n");
@@ -436,7 +449,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t   n = North deflections of the vertical (micro-radian).\n");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Message (API, GMT_TIME_NONE,"\t   Warning: both -D -T...+m and -Q will implicitly set -N's +h.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t-Q Writes out a grid with the flexural topography (with z positive up)\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   whose average depth is set to the value given by -Z<zm>.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-S Computes predicted geopotential (see -F) grid due to a subplate load\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   produced by the current bathymetry and the theoretical admittance.\n");
@@ -469,7 +482,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	float	slab_gravity = 0.0f, *topo = NULL, *raised = NULL;
 	double	delta_pt, freq;
 
-	struct GMT_GRID *Grid[2] = {NULL, NULL}, *Orig[2] = {NULL, NULL};
+	struct GMT_GRID *Grid[2] = {NULL, NULL}, *Orig[2] = {NULL, NULL}, *Rho = NULL;
 	struct GMT_FFT_WAVENUMBER *FFT_info[2] = {NULL, NULL}, *K = NULL;
 	struct GRAVFFT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -555,6 +568,27 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		}
 		if (!GMT_grd_same_inc (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different intervals\n");
+			Return (EXIT_FAILURE);
+		}
+	}
+
+	if (Ctrl->D.variable) {	/* Read density contrast grid */
+		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->D.file, NULL)) == NULL)
+			Return (API->error);
+		if(Orig[0]->header->registration != Rho->header->registration) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different registrations!\n");
+			Return (EXIT_FAILURE);
+		}
+		if (!GMT_grd_same_shape (GMT, Orig[0], Rho)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different dimensions\n");
+			Return (EXIT_FAILURE);
+		}
+		if (!GMT_grd_same_region (GMT, Orig[0], Rho)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different regions\n");
+			Return (EXIT_FAILURE);
+		}
+		if (!GMT_grd_same_inc (GMT, Orig[0], Rho)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different intervals\n");
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -657,7 +691,13 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_memcpy (topo, Grid[0]->data, Grid[0]->header->size, float);
 	/* Manually interleave this copy of topo [and hence raised] since we will call FFT repeatedly */
 	GMT_grd_mux_demux (API->GMT, Grid[0]->header, topo, GMT_GRID_IS_INTERLEAVED);
-	GMT_memcpy (raised,  topo, Grid[0]->header->size, float);
+	if (Ctrl->D.variable) {
+		GMT_grd_mux_demux (API->GMT, Rho->header, Rho->data, GMT_GRID_IS_INTERLEAVED);
+		for (m = 0; m < Grid[0]->header->size; m++)
+			raised[m] = topo[m] * Rho->data[m];
+	}
+	else	/* Constant density contrast passed into do_parker */
+		GMT_memcpy (raised,  topo, Grid[0]->header->size, float);
 	GMT_memset (Grid[0]->data, Grid[0]->header->size, float);
 
 	for (n = 1; n <= Ctrl->E.n_terms; n++) {
@@ -665,8 +705,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating Parker for term = %d\n", n);
 
 		if (n > 1)	/* n == 1 was initialized via the GMT_memcpy above */
-			for (m = 0; m < Grid[0]->header->size; m++)
+			for (m = 0; m < Grid[0]->header->size; m++) {
 				raised[m] = (float)pow(topo[m], (double)n);
+				if (Ctrl->D.variable) raised[m] *= Rho->data[m];
+			}
 
 		if (GMT_FFT_2D (API, raised, K->nx2, K->ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX))
 			Return (EXIT_FAILURE);
