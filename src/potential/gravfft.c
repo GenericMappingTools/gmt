@@ -483,7 +483,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	double	delta_pt, freq;
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL}, *Orig[2] = {NULL, NULL}, *Rho = NULL;
-	struct GMT_FFT_WAVENUMBER *FFT_info[2] = {NULL, NULL}, *K = NULL;
+	struct GMT_FFT_WAVENUMBER *FFT_info[2] = {NULL, NULL}, *K = NULL, *Rho_info = NULL;
 	struct GRAVFFT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -619,6 +619,13 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
 		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
 	}
+	
+	if (Ctrl->D.variable) {	/* No detrending, please */
+		int was = Ctrl->N.info->trend_mode;	/* Record what trendmode we had for topography */
+		Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;	/* Temporarily set to no removal */
+		Rho_info = GMT_FFT_Create (API, Rho, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+		Ctrl->N.info->trend_mode = was;	/* Restore what we had */
+	}
 
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
 
@@ -691,20 +698,21 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_memcpy (topo, Grid[0]->data, Grid[0]->header->size, float);
 	/* Manually interleave this copy of topo [and hence raised] since we will call FFT repeatedly */
 	GMT_grd_mux_demux (API->GMT, Grid[0]->header, topo, GMT_GRID_IS_INTERLEAVED);
-	if (Ctrl->D.variable) {
+	if (Ctrl->D.variable) {	/* Also interleave manually the rho grid */
 		GMT_grd_mux_demux (API->GMT, Rho->header, Rho->data, GMT_GRID_IS_INTERLEAVED);
 		for (m = 0; m < Grid[0]->header->size; m++)
 			raised[m] = topo[m] * Rho->data[m];
 	}
 	else	/* Constant density contrast passed into do_parker */
 		GMT_memcpy (raised,  topo, Grid[0]->header->size, float);
+
 	GMT_memset (Grid[0]->data, Grid[0]->header->size, float);
 
 	for (n = 1; n <= Ctrl->E.n_terms; n++) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating Parker for term = %d\n", n);
 
-		if (n > 1)	/* n == 1 was initialized via the GMT_memcpy above */
+		if (n > 1)	/* n == 1 was initialized via the GMT_memcpy or loop above */
 			for (m = 0; m < Grid[0]->header->size; m++) {
 				raised[m] = (float)pow(topo[m], (double)n);
 				if (Ctrl->D.variable) raised[m] *= Rho->data[m];
@@ -767,6 +775,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write Output...\n");
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) GMT_free (GMT, FFT_info[k]);
+	if (Ctrl->D.variable) GMT_free (GMT, Rho_info);
 	GMT_free (GMT, raised);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);
