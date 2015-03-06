@@ -352,7 +352,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	char font[GMT_LEN256] = {""}, lspace[GMT_LEN256] = {""}, tw[GMT_LEN256] = {""}, jj[GMT_LEN256] = {""};
 	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_opts[GMT_BUFSIZ] = {""};
 	char *opt = NULL, sarg[GMT_LEN256] = {""}, txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""};
-	char B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""};
+	char path[GMT_BUFSIZ] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""};
 	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0, *c = NULL;
 #ifdef DEBUG
 	int guide = 0;
@@ -740,7 +740,11 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 					case 'I':	/* Image record [use GMT_psimage] */
 						sscanf (&line[2], "%s %s %s", image, size, key);
-						PSL_loadimage (PSL, image, &header, &dummy);
+						if (GMT_getdatapath (GMT, image, path, R_OK) == NULL) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", image);
+							Return (EXIT_FAILURE);
+						}
+						PSL_loadimage (PSL, path, &header, &dummy);
 						PSL_free (dummy);
 						justify = GMT_just_decode (GMT, key, 12);
 						x_off = Ctrl->D.lon;
