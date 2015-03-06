@@ -371,7 +371,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
 	unsigned char *picture = NULL, *buffer = NULL;
 
-	char *format[2] = {"EPS", "Sun raster"};
+	char path[GMT_BUFSIZ] = {""}, *format[2] = {"EPS", "Sun raster"};
 
 	struct imageinfo header;
 
@@ -415,8 +415,12 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
 	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
 	if (known) {	/* Read an EPS or Sun raster file */
-		if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading %s file %s!\n", format[known-1], Ctrl->In.file);
+		if (GMT_getdatapath (GMT, Ctrl->In.file, path, R_OK) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", Ctrl->In.file);
+			Return (EXIT_FAILURE);
+		}
+		if (PSL_loadimage (PSL, path, &header, &picture)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading %s file %s!\n", format[known-1], path);
 			Return (EXIT_FAILURE);
 		}
 	}
