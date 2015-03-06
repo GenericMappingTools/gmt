@@ -458,8 +458,12 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 		}
 
 		if (!Ctrl->W.active) {
-			if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading/converting Sun rasterfile!\n");
+			if (GMT_getdatapath (GMT, Ctrl->In.file, buffer, R_OK) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s\n", Ctrl->In.file);
+				Return (EXIT_FAILURE);
+			}
+			if (PSL_loadimage (PSL, buffer, &header, &picture)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading/converting Sun rasterfile %s\n", buffer);
 				Return (EXIT_FAILURE);
 			}
 		}
