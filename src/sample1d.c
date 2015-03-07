@@ -31,7 +31,7 @@
 #define THIS_MODULE_NAME	"sample1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Resample 1-D table data using splines"
-#define THIS_MODULE_KEYS	"<DI,NDI,>DO"
+#define THIS_MODULE_KEYS	"<DI,NDi,>DO"
 
 #include "gmt_dev.h"
 
