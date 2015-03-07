@@ -113,8 +113,8 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in) {
 	 */
 
 	int error = GMT_OK;
-	unsigned int arg, first_char, n_args;
-	char option, **args = NULL, **new_args = NULL, *pch = NULL;
+	unsigned int arg, first_char, append = 0, n_args;
+	char option, **args = NULL, **new_args = NULL, *pch = NULL, *this_arg = NULL, buffer[BUFSIZ] = {""};
 	struct GMT_OPTION *head = NULL, *new_opt = NULL;
 	struct GMT_CTRL *G = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -169,6 +169,8 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in) {
 			first_char = 0, option = GMT_OPT_INFILE, arg++;
 		else if (args[arg][0] == '>' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "> file" for output */
 			first_char = 0, option = GMT_OPT_OUTFILE, arg++;
+		else if (args[arg][0] == '>' && args[arg][1] == '>' && args[arg][2] == '\0' && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with ">> file" for appended output */
+			first_char = 0, option = GMT_OPT_OUTFILE, append = 1, arg++;
 		else if (args[arg][0] == '+' && !args[arg][1] && n_args == 1)	/* extended synopsis + */
 			first_char = 1, option = GMT_OPT_USAGE, G->common.synopsis.extended = true;
 		else if (args[arg][0] == '-' && args[arg][1] == '+' && !args[arg][2] && n_args == 1)	/* extended synopsis + */
@@ -184,7 +186,14 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in) {
 		else	/* Most likely found a regular option flag (e.g., -D45.0/3) */
 			first_char = 2, option = args[arg][1];
 
-		if ((new_opt = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL)
+		if (append) {	/* Must prepend ">" to the filename so we select append mode when opening the file later */
+			sprintf (buffer, ">%s", args[arg]);
+			this_arg = buffer;
+			append = 0;
+		}
+		else
+			this_arg = &args[arg][first_char];
+		if ((new_opt = GMT_Make_Option (API, option, this_arg)) == NULL)
 			return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
 		if (option == GMT_OPT_INFILE && ((pch = strstr(new_opt->arg, "+b")) != NULL) && !strstr(new_opt->arg, "=gd")) {
