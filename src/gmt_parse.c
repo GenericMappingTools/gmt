@@ -165,6 +165,9 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in) {
 
 		if (!args[arg]) continue;	/* Skip any NULL arguments quietly */
 
+		/* Note: The UNIX command line will never see redirections like >, >>, and < pass as arguments to when we check for these
+		 * below it is because command-strings passed from external APIs may contain things like '-Fap -O -K >> plot.ps' */
+		
 		if (args[arg][0] == '<' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "< file" for input */
 			first_char = 0, option = GMT_OPT_INFILE, arg++;
 		else if (args[arg][0] == '>' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "> file" for output */
