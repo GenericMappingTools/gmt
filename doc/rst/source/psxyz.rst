@@ -122,7 +122,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**\ [**-**\ \|\ **+**][*pen*\ ]
+**-W**\ [**-**\ \|\ **+**][*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
     width = default, color = black, style = solid]. A leading **+** will
     use the lookup color (via **-C**) for both symbol fill and outline
