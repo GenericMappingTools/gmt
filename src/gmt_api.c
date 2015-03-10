@@ -3214,9 +3214,11 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, in
 		case GMT_IS_GRID:	/* Export a GMT grid */
 			error = GMTAPI_Export_Grid (API, object_ID, mode, data);
 			break;
+#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* Export a GMT image */
 			error = GMTAPI_Export_Image (API, object_ID, mode, data);
 			break;
+#endif
 		default:
 			error = GMT_NOT_A_VALID_FAMILY;
 			break;
