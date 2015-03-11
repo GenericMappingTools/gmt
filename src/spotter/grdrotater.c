@@ -223,7 +223,7 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 						n_errors++;
 					}
 					/* Single table, build t array */
-					Ctrl->T.n_times = T->n_records;
+					Ctrl->T.n_times = (unsigned int)T->n_records;
 					Ctrl->T.value = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);
 					for (seg = t = 0; seg < T->table[0]->n_segments; seg++) {
 						S = T->table[0]->segment[seg];	/* Shorthand to current segment */
