@@ -490,7 +490,7 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 
 	/* Base the area weight grid on the input grid domain and increments. */
 	if ((A = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, G->header->wesn, G->header->inc, \
-		G->header->registration, GMT_NOTSET, file)) == NULL) return (NULL);
+		G->header->registration, GMT_NOTSET, NULL)) == NULL) return (NULL);
 
 	if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data */
 		if (mode == GRDFILTER_GEO_MERCATOR) dy_half = 0.5 * A->header->inc[GMT_Y];	/* Half img y-spacing */
@@ -909,7 +909,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	/* Allocate space and determine the header for the new grid; croak if there are issues. */
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
-		!one_or_zero, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		!one_or_zero, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
 	   if output grid spacing is a multiple of input grid spacing */
@@ -1316,7 +1316,6 @@ void threaded_function (struct THREAD_STRUCT *t) {
     struct GMT_GRID *Gin        = t->Gin;
     struct GMT_GRID *Gout       = t->Gout;
     struct GMT_GRID *A          = t->A;
-    struct GMT_GRID *L          = t->L;
     struct FILTER_INFO F        = t->F;
     struct GRDFILTER_BIN_MODE_INFO *B = t->B;
 

@@ -7011,22 +7011,6 @@ int GMT_duplicate_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u_out, u
 }
 
 /*! . */
-int gmt_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V)
-{	/* Allocate space for each column according to data type */
-	uint64_t col;
-	int error;
-
-	if (!V) return (GMT_PTR_IS_NULL);			/* Nothing to allocate to */
-	if (V->n_columns == 0) return (GMT_PTR_IS_NULL);	/* No columns specified */
-	if (V->n_rows == 0) return (GMT_N_COLS_NOT_SET);	/* No rows specified */
-	if (!V->data) return (GMT_PTR_IS_NULL);			/* Array of columns have not been allocated */
-	for (col = 0; col < V->n_columns; col++) {
-		if ((error = GMT_alloc_univector (GMT, &V->data[col], V->type[col],  V->n_rows)) != GMT_OK) return (error);
-	}
-	return (GMT_OK);
-}
-
-/*! . */
 unsigned int GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector)
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
@@ -7082,17 +7066,6 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers, un
 	M->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;		/* Default to 1 if not set */
 	return (M);
-}
-
-/*! . */
-int gmt_alloc_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M)
-{	/* Allocate the data array  */
-	int error;
-	if (!M) return (GMT_MEMORY_ERROR);	/* Nothing to allocate from */
-	if (M->n_columns == 0) return (GMT_N_COLS_NOT_SET);	/* No columns specified */
-	if (M->n_rows == 0) return (GMT_N_ROWS_NOT_SET);	/* No rows specified */
-	error = GMT_alloc_univector (GMT, &(M->data), M->type, M->n_rows * M->n_columns);
-	return (error);
 }
 
 /*! . */

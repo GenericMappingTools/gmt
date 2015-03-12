@@ -2192,26 +2192,6 @@ int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, st
 	return (GMT_NOERROR);
 }
 
-int gmt_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
-{	/* Use information in Grid header to allocate the grid data.
-	 * We assume gmt_init_grdheader has been called. */
-
-	if (Grid->data) return (GMT_PTR_NOT_NULL);
-	if (Grid->header->size == 0U) return (GMT_SIZE_IS_ZERO);
-	if ((Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float)) == NULL) return (GMT_MEMORY_ERROR);
-	return (GMT_NOERROR);
-}
-
-int gmt_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image)
-{	/* Use information in Image header to allocate the image data.
-	 * We assume gmt_init_grdheader has been called. */
-
-	if (Image->data) return (GMT_PTR_NOT_NULL);
-	if (Image->header->size == 0U) return (GMT_SIZE_IS_ZERO);
-	if ((Image->data = GMT_memory (GMT, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
-	return (GMT_NOERROR);
-}
-
 int GMT_change_grdreg (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int registration)
 {
 	GMT_UNUSED(GMT);

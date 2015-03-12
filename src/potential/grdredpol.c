@@ -1292,7 +1292,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	psi = TWO_PI / Ctrl->F.ncoef_col;
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn_new, Gin->header->inc, \
-		Gin->header->registration, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		Gin->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
 		double wesn[4], inc[2];
@@ -1301,7 +1301,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		inc[GMT_X] = inc[GMT_Y] = 1;
 		
 		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
-			GMT_GRID_PIXEL_REG, 0, Ctrl->Z.file)) == NULL) Return (API->error);
+			GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");
 		strcpy (Gfilt->header->y_units, "radians");

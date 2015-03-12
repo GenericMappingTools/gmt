@@ -175,18 +175,18 @@ no_such:
 		fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
 		fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
 		fprintf (stderr, "GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html).\n");
-		fprintf (stderr, "For more information about these matters, see the file named LICENSE.TXT.\n\n");
+		fprintf (stderr, "For more information about legal matters, see the file named LICENSE.TXT.\n\n");
 		fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
-		fprintf (stderr, "       %s <module name> [<module options>]\n\n", PROGRAM_NAME);
+		fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 		fprintf (stderr, "options:\n");
-		fprintf (stderr, "  --help            List and description of GMT modules.\n");
-		fprintf (stderr, "  --version         Print version and exit.\n");
-		fprintf (stderr, "  --show-cores      Show number of available cores and exit.\n");
-		fprintf (stderr, "  --show-datadir    Show data directory and exit.\n");
-		fprintf (stderr, "  --show-bindir     Show directory of executables and exit.\n");
-		fprintf (stderr, "  --show-plugindir  Show directory of plug-ins and exit.\n\n");
-		fprintf (stderr, "if <module options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
-		if (modulename_arg_n == 1) {
+		fprintf (stderr, "  --help            List a description of GMT modules.\n");
+		fprintf (stderr, "  --version         Print version number.\n");
+		fprintf (stderr, "  --show-cores      Show number of available cores.\n");
+		fprintf (stderr, "  --show-datadir    Show directory of data.\n");
+		fprintf (stderr, "  --show-bindir     Show directory of executables.\n");
+		fprintf (stderr, "  --show-plugindir  Show directory of plug-ins.\n\n");
+		fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
+		if (modulename_arg_n == 1 && module[0] != '-') {
 			fprintf (stderr, "ERROR: No module named %s was found.  This could mean:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; check your spelling.\n");
 			if (strlen (GMT_SUPPL_LIB_NAME))

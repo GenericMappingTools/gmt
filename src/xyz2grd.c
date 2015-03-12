@@ -521,7 +521,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	
 	/* Set up and allocate output grid [note: zero padding specificied] */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, 0, Ctrl->G.file)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 	
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
