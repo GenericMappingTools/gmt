@@ -1930,8 +1930,9 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	if (Ctrl->N.file) {	/* Specified nodes only */
 		double out[4];
 	
+		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
 		if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET) {
-			Return (error);
+			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
@@ -2017,7 +2018,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 				}
 			}
 		}
-		if (dimension == 2) {
+		if (dimension == 2) {	/* Write the grid */
 			GMT_grd_init (GMT, Out->header, options, true);
 			sprintf (Out->header->remark, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);

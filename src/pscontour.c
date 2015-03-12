@@ -904,6 +904,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		int got, in_ID, NL;
 		double tmp;
 
+		/* Must register Ctrl->C.file first since we are going to read rec-by-rec from all available source */
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IN, NULL, Ctrl->C.file)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);

@@ -385,6 +385,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 	else {
 		if (Ctrl->D.active) {	/* Initialize file/stdout for table output */
 			int out_ID;
+			/* Must register Ctrl->D.file first since we are going to writing rec-by-rec */
 			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, Ctrl->D.file)) == GMT_NOTSET) {
 				Return (EXIT_FAILURE);
 			}
