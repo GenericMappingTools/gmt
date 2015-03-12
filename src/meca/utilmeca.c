@@ -593,7 +593,7 @@ void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struc
 }
 
 /***************************************************************************************/
-double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace)
+double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno)
 {
 	GMT_UNUSED(outline);
 	int d, b = 1, m, i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
@@ -845,13 +845,13 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 	}
 	else if (jp_flag == 1) {
-		fprintf (stderr, "Warning: big isotropic component, case not fully tested! \n");
+		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
 		GMT_setfill (GMT, F1, true);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		F1 = E, F2 = C;
 	}
 	else if (jp_flag == 2) {
-		fprintf (stderr, "Warning: big isotropic component, case not fully tested! \n");
+		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
 		GMT_setfill (GMT, F1, true);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		F2 = E, F1 = C;
