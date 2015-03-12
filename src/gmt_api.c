@@ -2241,7 +2241,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 
 		case GMT_IS_DUPLICATE_VIA_MATRIX:
 		case GMT_IS_REFERENCE_VIA_MATRIX:
-			if (S_obj->resource == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource must initially have info needed to do the output */
+			//if (S_obj->resource == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource must initially have info needed to do the output */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user array location\n");
 			M_obj = GMT_create_matrix (API->GMT, 1, GMT_OUT);
 			/* Must allocate output space */
@@ -2278,7 +2278,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 
 		case GMT_IS_DUPLICATE_VIA_VECTOR:
 		case GMT_IS_REFERENCE_VIA_VECTOR:
-			if ((V_obj = S_obj->resource) == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource must initially have info needed to do the output */
+			//if ((V_obj = S_obj->resource) == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource must initially have info needed to do the output */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user column arrays location\n");
 			if ((V_obj = GMT_create_vector (API->GMT, D_obj->n_columns, GMT_OUT)) == NULL)
 				return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));
@@ -2518,7 +2518,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			break;
 		case GMT_IS_DUPLICATE_VIA_MATRIX:
 		case GMT_IS_REFERENCE_VIA_MATRIX:
-			if ((M_obj = S_obj->resource) == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource cannot be NULL for Matrix */
+			//if ((M_obj = S_obj->resource) == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource cannot be NULL for Matrix */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating text table to user array location\n");
 			M_obj = GMT_duplicate_matrix (API->GMT, S_obj->resource, false);
 			/* Must allocate output space */
@@ -2667,7 +2667,7 @@ struct GMT_IMAGE *GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, u
 			}
 			break;
 
-	 	case GMT_IS_REFERENCE:	/* GMT grid and header in a GMT_GRID container object by reference */
+	 	case GMT_IS_REFERENCE:	/* GMT image and header in a GMT_IMAGE container object by reference */
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing image data from GMT_IMAGE memory location\n");
 			if ((I_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
@@ -2682,7 +2682,7 @@ struct GMT_IMAGE *GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, u
 			GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Import_Image: Return from GMT_IS_REFERENCE\n");
 			break;
 
-	 	case GMT_IS_DUPLICATE_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
+	 	case GMT_IS_DUPLICATE_VIA_MATRIX:	/* The user's 2-D image array of some sort, + info in the args [NOT YET FULLY TESTED] */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			I_obj = (image == NULL) ? GMT_create_image (API->GMT) : image;	/* Only allocate when not already allocated */
@@ -3237,7 +3237,7 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, in
 	/* Check if this is a container passed from the outside to capture output */
 	if (API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
 		error = GMTAPI_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data);	/* Do the dirty deed */
-		API->object[item]->resource = NULL;	/* Since resource == data here */
+		API->object[item]->resource = API->object[item]->data = NULL;	/* Since we now have nothing */
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
 
@@ -4189,7 +4189,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	API->GMT->current.io.segment_header[0] = API->GMT->current.io.current_record[0] = 0;
 	if (direction == GMT_OUT && API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
 		error = GMTAPI_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data);	/* Do the dirty deed */
-		API->object[item]->resource = NULL;	/* Since resource == data here */
+		API->object[item]->resource = API->object[item]->data = NULL;	/* Since we now have nothing */
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
@@ -5144,19 +5144,20 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 		case GMT_IS_DUPLICATE_VIA_MATRIX:	/* Data matrix only */
 		case GMT_IS_REFERENCE_VIA_MATRIX:
 			/* At the first output record the output matrix has not been allocated.
-			 * So first we do that, then later we can increment its size.
+			 * So first we do that, then later we can increment its size when needed.
 			 * The realloc to final size takes place in GMT_End_IO. */
-			d = record;
 			if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DUPLICATE_VIA_MATRIX\n");
+			d = record;
 			M_obj = S_obj->resource;
-			if (S_obj->n_alloc == 0) {	/* Never allocated anything */
+			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				size_t size = S_obj->n_alloc = GMT_CHUNK;
+				M_obj = GMT_create_matrix (API->GMT, 1, GMT_OUT);
+				M_obj->type = GMT_DOUBLE;
 				M_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];	/* Set the number of columns */
-				if (M_obj->shape == GMT_IS_COL_FORMAT) return (GMTAPI_report_error (API, error));
 				M_obj->dim = M_obj->n_columns;
 				size *= M_obj->n_columns;
-				/* S_obj->n_rows is 0 which means we are allocating more space as we need it later */
 				if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (GMTAPI_report_error (API, error));
+				S_obj->resource = M_obj;	/* Save so we can get it next time */
 			}
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?)\n");
@@ -5173,8 +5174,8 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 
 		case GMT_IS_DUPLICATE_VIA_VECTOR:	/* List of column arrays */
 		case GMT_IS_REFERENCE_VIA_VECTOR:
-			d = record;
 			if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DATASET_ARRAY\n");
+			d = record;
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?)\n");
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
@@ -5182,15 +5183,13 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			}
 			V_obj = S_obj->resource;
 			if (!V_obj) {	/* Was given a NULL pointer == First time allocation, default to double data type */
-				if ((V_obj = GMT_create_vector (API->GMT, API->GMT->common.b.ncol[GMT_OUT], GMT_OUT)) == NULL) {
+				if ((V_obj = GMT_create_vector (API->GMT, API->GMT->common.b.ncol[GMT_OUT], GMT_OUT)) == NULL)
 					return_error (API, GMT_MEMORY_ERROR);
-				}
 				S_obj->resource = V_obj;
 				for (col = 0; col < S_obj->n_columns; col++) V_obj->type[col] = GMT_DOUBLE;
 			}
-			for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) {	/* Place the output items */
+			for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++)	/* Place the output items */
 				GMTAPI_put_val (API, &(V_obj->data[col]), d[col], API->current_rec[GMT_OUT], V_obj->type[col]);
-			}
 			V_obj->n_rows++;
 			break;
 
