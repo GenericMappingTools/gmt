@@ -731,8 +731,8 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 #endif
 
 #ifdef HAVE_GDAL
-	struct GDALREAD_CTRL *to_gdalread = NULL;
-	struct GD_CTRL *from_gdalread = NULL;
+	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
+	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 #endif
 
 	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fpl = NULL, *fp2 = NULL, *fpw = NULL;
@@ -1263,8 +1263,8 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 				/* Write a GeoPDF registration info */
 
 				/* Allocate new control structures */
-				to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
-				from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
+				to_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+				from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 				to_gdalread->W.active = true;
 				from_gdalread->ProjectionRefPROJ4 = proj4_cmd;
 				GMT_gdalread (GMT, NULL, to_gdalread, from_gdalread);

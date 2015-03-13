@@ -1524,7 +1524,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
  *		GMT_gdal_write_grd_info, GMT_gdal_read_grd, GMT_gdal_write_grd
  *-----------------------------------------------------------*/
 
-static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GD_CTRL *from_gdalread) {
+static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;
 	if (from_gdalread->ColorMap)
 		GMT_free (GMT, from_gdalread->ColorMap);
@@ -1539,8 +1539,8 @@ static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GD_CTRL *from
 }
 
 int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	struct GDALREAD_CTRL *to_gdalread = NULL;
-	struct GD_CTRL *from_gdalread = NULL;
+	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
+	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 
 	if (!strcmp (header->name, "=")) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Pipes cannot be used within the GDAL interface.\n");
@@ -1548,8 +1548,8 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	/* Allocate new control structures */
-	to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
-	from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
+	to_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+	from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	to_gdalread->M.active = true;		/* Metadata only */
 
@@ -1596,15 +1596,15 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	struct GDALREAD_CTRL *to_gdalread = NULL;
-	struct GD_CTRL *from_gdalread = NULL;
+	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
+	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 	int nBand, subset;
 	uint64_t i, j, row, col;
 	char strR[128];
 
 	/* Allocate new control structures */
-	to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
-	from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
+	to_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+	from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (complex_mode & GMT_GRID_IS_COMPLEX_MASK) {
 		to_gdalread->Z.active = true;		/* Force reading into a compex array */

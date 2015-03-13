@@ -2439,12 +2439,12 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	int i;
 	size_t k;
 	double dumb;
-	struct GDALREAD_CTRL *to_gdalread = NULL;
-	struct GD_CTRL *from_gdalread = NULL;
+	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
+	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 
 	/* Allocate new control structures */
-	to_gdalread   = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
-	from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
+	to_gdalread   = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+	from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	to_gdalread->M.active = true;	/* Get metadata only */
 
@@ -2510,16 +2510,16 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 	int i;
 	bool expand;
 	struct GRD_PAD P;
-	struct GDALREAD_CTRL *to_gdalread = NULL;
-	struct GD_CTRL *from_gdalread = NULL;
+	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
+	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 
 	expand = gmt_padspace (GMT, I->header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
 	/*GMT_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, image, P.wesn, P.pad, complex_mode));*/
 
 	/* Allocate new control structures */
-	to_gdalread   = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
-	from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
+	to_gdalread   = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+	from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active) {
 		char strR [128]; 
@@ -2536,7 +2536,9 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 
 	to_gdalread->p.active = to_gdalread->p.pad = (int)GMT->current.io.pad[0];	/* Only 'square' padding allowed */
 	to_gdalread->I.active = true; 			/* Means that image in I->data will be BIP interleaved */
-	//to_gdalread->U.active = true;			/* For Matlab & Julia */
+	//to_gdalread->O.active = true;			/* For Matlab & Julia */
+	//to_gdalread->O.order[0] = 'T'; to_gdalread->O.order[1] = 'C'; to_gdalread->O.order[2] = 'L';
+	//to_gdalread->O.do_BIP = false;
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
 	to_gdalread->c_ptr.active = true;

@@ -21,6 +21,9 @@
  * \brief Define structures to interface with gdalread|write
  */
 
+#ifndef _GMT_GDALREAD_H
+#define _GMT_GDALREAD_H
+
 #include <gdal.h>
 #include <ogr_srs_api.h>
 #include <cpl_string.h>
@@ -56,7 +59,7 @@ struct GDALWRITE_CTRL {
 };
 
 /*! Structure to control which options are transmited to GMT_gdalread */
-struct GDALREAD_CTRL {
+struct GMT_GDALREAD_IN_CTRL {
 	struct GD_B {	/* Band selection */
 		int active;
 		char *bands;
@@ -70,6 +73,11 @@ struct GDALREAD_CTRL {
 	struct GD_M {	/* Metadata only */
 		int active;
 	} M;
+	struct GD_O {	/* Three chars code to specify the array layout in memory */
+		int active;
+		int do_BIP;
+		char order[3]; /* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight) */
+	} O;
 	struct GD_P {	/* Preview mode */
 		int active;
 		char *jump;
@@ -85,9 +93,6 @@ struct GDALREAD_CTRL {
 		int active;
 		char *region;
 	} R;
-	struct GD_U {	/* Up-Down flip */
-		int active;
-	} U;
 	struct GD_Z {	/* Tell to store data in a complex array */
 		int active;
 		int complex_mode; /* 1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
@@ -127,7 +132,7 @@ struct GDAL_BAND_FNAMES {
 };
 
 /*! Structure with the output data transmited by GMT_gdalread */
-struct GD_CTRL {
+struct GMT_GDALREAD_OUT_CTRL {
 	/* active is true if the option has been activated */
 	struct UInt8 {			/* Declare byte pointer */
 		int active;
@@ -180,3 +185,5 @@ struct GD_CTRL {
 
 	struct GDAL_BAND_FNAMES *band_field_names;
 };
+
+#endif  /* _GMT_GDALREAD_H */
