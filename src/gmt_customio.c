@@ -1769,7 +1769,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	unsigned short int *zu16 = NULL;
 	int *zi32 = NULL;
 	unsigned int *zu32 = NULL;
-	struct GDALWRITE_CTRL *to_GDALW = NULL;
+	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 	type[0] = '\0';
 
 	if (header->pocket == NULL) {
@@ -1781,7 +1781,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	sscanf (header->pocket, "%[^/]/%s", driver, type);
-	to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
+	to_GDALW = GMT_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
 	to_GDALW->driver = strdup(driver);
 	to_GDALW->P.ProjectionRefPROJ4 = NULL;
 	to_GDALW->flipud = 0;

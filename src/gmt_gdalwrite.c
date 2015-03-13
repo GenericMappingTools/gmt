@@ -36,7 +36,7 @@
 
 #define GDAL_TILE_SIZE 256 /* default tile size when creating tiled GTiff */
 
-int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prhs) {
+int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *prhs) {
 	int	bStrict = false;
 	char **papszOptions = NULL, *projWKT = NULL;
 	char *pszFormat = "GTiff"; 

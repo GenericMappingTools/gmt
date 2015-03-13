@@ -403,7 +403,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_GRID *G2 = NULL;
-	struct GDALWRITE_CTRL *to_GDALW = NULL;
+	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 #endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -879,7 +879,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	if (Ctrl->A.active) {
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
-		to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
+		to_GDALW = GMT_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
 		to_GDALW->driver = Ctrl->A.driver;
 		to_GDALW->type = strdup("byte");
 		to_GDALW->P.ProjectionRefPROJ4 = NULL;
