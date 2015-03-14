@@ -63,11 +63,12 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool    do_BIP;         /* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
 	bool   	metadata_only;
 	bool   	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
-	bool   	fliplr, flipud, got_R = false, got_r = false, error = false;
+	bool   	fliplr, got_R = false, got_r = false, error = false;
 	bool    topdown = true, rowmajor = true, leftright = true;		/* arrays from GDAL have this order */
 	int    *whichBands = NULL, *rowVec = NULL, *colVec = NULL;
 	int     off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
 	unsigned int nn, mm;
+	uint64_t ij;
 	size_t  n_alloc;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
@@ -111,18 +112,15 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	fliplr = prhs->L.active;
 	metadata_only = prhs->M.active;
 	
-	if (prhs->O.active) {               /* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight) */
-		if (prhs->O.order[0] == 'B' || prhs->O.order[0] == 'b') {
+	if (!metadata_only && GMT->current.gdal_read_in.O.mem_layout[0]) {    /* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight) */
+		if (GMT->current.gdal_read_in.O.mem_layout[0] == 'B')
 			topdown = false;
-			flipud  = false;	/* Temporary. Just to smooth out transition to the 3 chars rule only */
-		}
-		if (prhs->O.order[1] == 'C' || prhs->O.order[1] == 'c')
+		if (GMT->current.gdal_read_in.O.mem_layout[1] == 'C')
 			rowmajor  = false;
-		if (prhs->O.order[2] == 'R' || prhs->O.order[2] == 'r')
+		if (GMT->current.gdal_read_in.O.mem_layout[2] == 'R')
 			leftright = false;
-
-		do_BIP = prhs->O.do_BIP;
-		if (topdown) flipud = true;
+		if (GMT->current.gdal_read_in.O.mem_layout[3] == 'S' || GMT->current.gdal_read_in.O.mem_layout[3] == 'L')
+			do_BIP = false;
 	}
 
 	if (prhs->p.active) pad = prhs->p.pad;
@@ -428,9 +426,10 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					if (do_BIP)			/* Vector for Pixel Interleaving */
 						colVec[n] = n * nRGBA + i;
 					else {				/* Vector for Band Sequential */
-						if (flipud)
-							colVec[n] = (n + 1) * nY - 1 + i_x_nXYSize;
+						if (topdown)
+							colVec[n] = n * nY + i_x_nXYSize;
 						else
+							//colVec[n] = (n + 1) * nY - 1 + i_x_nXYSize;
 							colVec[n] = n + i_x_nXYSize;
 					}
 				}
@@ -443,15 +442,16 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 							Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
 					}
 				}
-				else if (flipud) {			/* No BIP option yet, and maybe never */
+				else if (topdown) {			/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
 						for (n = 0; n < nXSize; n++) {
-							nn = colVec[n] - m;
-							Ctrl->UInt8.data[nn] = tmp[rowVec[m]+n];
+							//ij = colVec[n] - m;
+							ij = colVec[n] + m;
+							Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
 						}
 					}
 				}
-				else
+				else		/* Currently all calls to send image to GMT (BIP case) must come through here */
 					for (m = 0; m < nYSize; m++) {
 						off = nRGBA * pad + (pad+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
 						for (n = 0; n < nXSize; n++)

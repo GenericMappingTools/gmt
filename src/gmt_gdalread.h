@@ -74,9 +74,7 @@ struct GMT_GDALREAD_IN_CTRL {
 		int active;
 	} M;
 	struct GD_O {	/* Three chars code to specify the array layout in memory */
-		int active;
-		int do_BIP;
-		char order[3]; /* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight) */
+		char mem_layout[4]; /* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight), fourth P(ix)|L(ine)|S(equencial) */
 	} O;
 	struct GD_P {	/* Preview mode */
 		int active;
