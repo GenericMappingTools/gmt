@@ -2536,9 +2536,6 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 
 	to_gdalread->p.active = to_gdalread->p.pad = (int)GMT->current.io.pad[0];	/* Only 'square' padding allowed */
 	to_gdalread->I.active = true; 			/* Means that image in I->data will be BIP interleaved */
-	//to_gdalread->O.active = true;			/* For Matlab & Julia */
-	//to_gdalread->O.order[0] = 'T'; to_gdalread->O.order[1] = 'C'; to_gdalread->O.order[2] = 'L';
-	//to_gdalread->O.do_BIP = false;
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
 	to_gdalread->c_ptr.active = true;
