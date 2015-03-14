@@ -229,6 +229,11 @@ struct GMT_CURRENT {
 	struct GMT_PS ps;		/* Hold parameters related to PS setup */
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */
+#ifdef HAVE_GDAL
+	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */ 
+	struct GMT_GDALREAD_OUT_CTRL gdal_read_out; /* Hold parameters related to options transmitted from gdalread */ 
+	struct GMT_GDALWRITE_CTRL    gdal_write;    /* Hold parameters related to options transmitted to gdalwrite */ 
+#endif
 };
 
 struct GMT_INTERNAL {
