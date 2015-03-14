@@ -7017,3 +7017,11 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
 	return EXIT_SUCCESS;
 }
+
+EXTERN_MSC void GMT_set_mem_layout (struct GMTAPI_CTRL *API, char mem_layout[]);
+void GMT_set_mem_layout(struct GMTAPI_CTRL *API, char mem_layout[]) {
+	int i;
+	for (i = 0; i < 4; i++)
+		API->GMT->current.gdal_read_in.O.mem_layout[i] = mem_layout[i];
+	return;
+}
