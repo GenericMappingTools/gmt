@@ -324,11 +324,12 @@ struct GMT_GRID_HEADER {
 	size_t t_index[3];               /* NetCDF: index of higher coordinates */
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
 	unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
-	float nan_value;                 /* Missing value as stored in grid file */
+	float  nan_value;                /* Missing value as stored in grid file */
 	double xy_off;                   /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
-	char flags[4];                   /* Flags used for ESRI grids */
-	char *pocket;                    /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
+	char   flags[4];                 /* Flags used for ESRI grids */
+	char  *pocket;                   /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
+	char   mem_layout[4];            /* GDAL: Four char codes T|B R|C L|R P|L|S to describe array layout in mem and interleaving */
 	double bcr_threshold;            /* sum of cardinals must >= threshold in bilinear; else NaN */
 	unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
 	unsigned int bcr_n;              /* Width of the interpolation function */
