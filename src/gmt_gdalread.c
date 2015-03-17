@@ -64,7 +64,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   	metadata_only;
 	bool   	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	bool   	fliplr, got_R = false, got_r = false, error = false;
-	bool    topdown = true, rowmajor = true, leftright = true;		/* arrays from GDAL have this order */
+	bool    topdown = false, rowmajor = true, leftright = true;		/* arrays from GDAL have this order */
 	int    *whichBands = NULL, *rowVec = NULL, *colVec = NULL;
 	int     off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
 	unsigned int nn, mm;
@@ -113,8 +113,8 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	metadata_only = prhs->M.active;
 	
 	if (!metadata_only && GMT->current.gdal_read_in.O.mem_layout[0]) {    /* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight) */
-		if (GMT->current.gdal_read_in.O.mem_layout[0] == 'B')
-			topdown = false;
+		if (GMT->current.gdal_read_in.O.mem_layout[0] == 'T')
+			topdown = true;
 		if (GMT->current.gdal_read_in.O.mem_layout[1] == 'C')
 			rowmajor  = false;
 		if (GMT->current.gdal_read_in.O.mem_layout[2] == 'R')
@@ -435,14 +435,14 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				}
 
 				Ctrl->UInt8.active = true;
-				if (fliplr) {				/* No BIP option yet, and maybe never */
+				if (fliplr && !do_BIP) {				/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
 						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
 					}
 				}
-				else if (topdown) {			/* No BIP option yet, and maybe never */
+				else if (topdown && !do_BIP) {			/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
 						for (n = 0; n < nXSize; n++) {
 							//ij = colVec[n] - m;
