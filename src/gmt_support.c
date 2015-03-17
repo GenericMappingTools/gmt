@@ -5471,6 +5471,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE));
 						if (G->crossect) {	/* Special crossection mode */
+							GMT_memory(GMT, new_label->label, strlen(new_label->label) + strlen(G->crossect_tag[i]) + 1, char);	/* Need to increase alloced space */
 							if (!strcmp (new_label->label, "N/A"))	/* Override the N/A lack of label identifier */
 								strcpy (new_label->label, G->crossect_tag[i]);
 							else	/* Append tag to the label */
