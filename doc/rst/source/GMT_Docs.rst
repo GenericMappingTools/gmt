@@ -3267,6 +3267,7 @@ provides a shorthand notation for complex options. For example, if a
 basemap was created with an oblique Mercator projection, specified as
 
     ::
+
      -Joc170W/25:30S/33W/56:20N/1:500000
 
 then a subsequent :doc:`psxy` command to plot
@@ -3472,6 +3473,8 @@ PostScript (EPS) that can be imported into graphics programs such as
 embellishment, simply run :doc:`psconvert`
 **-Te**. See Appendix [app:C] for an extensive discussion of converting
 PostScript to other formats.
+
+.. _-Wpen_attrib:
 
 Specifying pen attributes
 -------------------------
