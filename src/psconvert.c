@@ -954,6 +954,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				remove (BB_file);
 				Return (EXIT_FAILURE);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
@@ -987,6 +988,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 						if (sys_retval) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+							remove (tmp_file);
 							Return (EXIT_FAILURE);
 						}
 						/* must leave loop because fpb has been closed and line_reader would
@@ -1082,6 +1084,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 
 		if (!got_BB) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
+			if (!Ctrl->T.eps) remove (tmp_file);	/* Remove the temporary EPS file */
 			continue;
 		}
 
@@ -1380,6 +1383,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			sys_retval = system (cmd);
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				remove (tmp_file);
 				Return (EXIT_FAILURE);
 			}
 
