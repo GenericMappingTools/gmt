@@ -1217,9 +1217,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				GMT_get_rgb_from_z (GMT, P, cont[c].val, rgb);
 				GMT_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 			}
-			if (Ctrl->W.color_text && Ctrl->contour.curved_text) {	/* Override label color according to cpt file */
+			if (Ctrl->W.color_text)	/* Override label color according to cpt file */
 				GMT_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
-			}
 			
 			head_c = last_c = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 

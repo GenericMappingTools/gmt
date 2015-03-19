@@ -61,6 +61,7 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 	double angle;		/* Angle of text unless curved text */
 	double line_angle;	/* Angle of line at label unless curved text */
 	double dist;
+	double rgb[4];		/* Font rgb */
 	uint64_t node;		/* Node of label on the line */
 	int end;		/* If N is used then -1 is start, +1 is end label */
 	char *label;

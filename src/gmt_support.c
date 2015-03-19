@@ -4361,6 +4361,7 @@ void gmt_contlabel_addpath (struct GMT_CTRL *GMT, double x[], double y[], uint64
 			L->L[i].dist = G->L[i]->dist;
 			L->L[i].node = G->L[i]->node;
 			L->L[i].label = GMT_memory (GMT, NULL, strlen (G->L[i]->label)+1, char);
+			GMT_memcpy (L->L[i].rgb, G->L[i]->rgb, 4, double);
 			strcpy (L->L[i].label, G->L[i]->label);
 		}
 	}
@@ -5169,6 +5170,7 @@ void gmt_place_label (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *txt, stru
 	if (use_unit && G->unit && G->unit[0]) {	/* Append a unit string */
 		strcat (L->label, G->unit);
 	}
+	GMT_memcpy (L->rgb, G->font_label.fill.rgb, 4, double);	/* Remember color in case it varies */
 }
 
 void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, struct GMT_CONTOUR *G)

@@ -3808,6 +3808,9 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		angle = GMT_memory (GMT, NULL, n_labels, double);
 		txt   = GMT_memory (GMT, NULL, n_labels, char *);
 		pen   = GMT_memory (GMT, NULL, n_segments, char *);
+		fonts = GMT_memory (GMT, NULL, n_labels, char *);
+		PSL_setfont (PSL, G->font_label.id);
+		psl_encodefont (PSL, PSL->current.font_no);		
 		for (seg = m = this_seg = 0; seg < G->n_segments; seg++) {	/* Process all segments, skip those without labels */
 			L = G->segment[seg];	/* Pointer to current segment */
 			//if (!L->annot || L->n_labels == 0) continue;
@@ -3826,30 +3829,28 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 					xtxt[m]    = L->L[k].x;
 					ytxt[m]    = L->L[k].y;
 				}
+				sprintf (font, "%s %d F%d", psl_putcolor (PSL, L->L[k].rgb), psl_ip (PSL, G->font_label.size), PSL->current.font_no);
+				fonts[m] = strdup (font);
 			}
 			this_seg++;
 		}
 	
 		PSL_comment (PSL, "Store path and label attributes:\n");
-		PSL_setfont (PSL, G->font_label.id);
-		psl_encodefont (PSL, PSL->current.font_no);		
-		sprintf (font, "%s %d F%d", psl_putcolor (PSL, G->font_label.fill.rgb), psl_ip (PSL, G->font_label.size), PSL->current.font_no);
 		GMT_textpath_init (GMT, &G->pen, G->rgb);
 		PSL_comment (PSL, "Store pens used for each line segment:\n");
 		psl_set_txt_array (PSL, "path_pen", pen, n_segments);
-		/* While all contours & quoted lines have same justification and font, this is not true of pstext items
-		 * so we use separate arrays for both font and justify [here both are constants]  */
+		/* While all contours & quoted lines have same justification and font (except maybe color), this is not true of pstext items
+		 * so we use separate arrays for both font and justify [here justify and possibly font are constants]  */
 		just = GMT_memory (GMT, NULL, n_labels, int);
-		fonts = GMT_memory (GMT, NULL, n_labels, char *);
-		for (k = 0; k < n_labels; k++) {
+		for (k = 0; k < n_labels; k++)
 			just[k] = abs (justify);
-			fonts[k] = font;
-		}
 		PSL_comment (PSL, "Store text justification for each text label:\n");
 		psl_set_int_array   (PSL, "label_justify", just, n_labels);
 		PSL_comment (PSL, "Store font setting for each text label:\n");
 		psl_set_txt_array   (PSL, "label_font", fonts, n_labels);
 		GMT_free (GMT, just);
+		for (k = 0; k < n_labels; k++)
+			free (fonts[k]);
 		GMT_free (GMT, fonts);
 	}
 	PSL_plottextline (PSL, xpath, ypath, npoints_per_segment, n_segments, A1, A2, txt, angle, nlabels_per_segment, G->font_label.size, justify, G->clearance, form);
