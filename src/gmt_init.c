@@ -8039,8 +8039,35 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 /* New GMT5 functions for parsing new -B syntax */
 
 /*! . */
-void gmt5_handle_plussign (struct GMT_CTRL *GMT, char *in, unsigned way) {
-	/* Way = 0: replace ++ with ASCII 1, Way = 1: Replace ASCII 1 with + */
+void gmt5_handle_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned way) {
+	/* Way = 0: replace any +<letter> with <letter> NOT in <mods> with ASCII 1<letter>
+	 * Way = 1: Replace ASCII 1 with + */
+	GMT_UNUSED(GMT);
+	if (in == NULL || in[0] == '\0') return;	/* No string to check */
+	if (way == 0) {	/* Replace any +<letter> with <letter> NOT in <mods> with ASCII 1<letter> */
+		char *c = in;
+		for ( ;; ) { /* Replace super-script escape sequence @+ with @1 */
+			c = strstr (c, "@+");
+			if (c == NULL) break;
+			++c;
+			*c = 1;
+		}
+		c = in;
+		for ( ;; ) { /* Now look for +<letter> */
+			c = strchr (c, '+');	/* Find next '+' */
+			if (c == NULL) break;	/* No more + found */
+			if (!strchr (mods, c[1])) /* Not one of the +<mods> cases so we can replace the + by 1 */
+				*c = 1;
+			++c;
+		}
+	}
+	else /* way != 0: Replace single ASCII 1 with + */
+		GMT_strrepc (in, 1, '+');
+}
+
+/*! . */
+void gmt5_handle_plussign_orig (struct GMT_CTRL *GMT, char *in, unsigned way)
+{	/* Way = 0: replace ++ with ASCII 1, Way = 1: Replace ASCII 1 with + */
 	GMT_UNUSED(GMT);
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace pairs of ++ with a single ASCII 1 */
@@ -8086,7 +8113,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	/* OK, here we are pretty sure this is a frame -B statement */
 
 	strcpy (text, in);
-	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
+	gmt5_handle_plussign (GMT, text, "bgnot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
 	GMT->current.map.frame.header[0] = '\0';
 
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
@@ -8126,7 +8153,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					}
 					else {
 						strcpy (GMT->current.map.frame.header, &p[1]);
-						gmt5_handle_plussign (GMT, GMT->current.map.frame.header, 1);	/* Revert to ++ */
+						gmt5_handle_plussign (GMT, GMT->current.map.frame.header, NULL, 1);	/* Recover any non-modifier plus signs */
 						GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 					}
 					break;
@@ -8230,11 +8257,12 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
 
 	strcpy (text, &in[k]);			/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change any ++ to pair of ASCII 1 to avoid interference with +modifiers */
+	gmt5_handle_plussign (GMT, text, "lpu", 0);	/* Temporarily change any +<letter> except +l, +p, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +l, +p, or +s */
 	while (text[k] && !(text[k] == '+' && strchr ("lpu", text[k+1]))) k++;
 	GMT_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
+	gmt5_handle_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
 	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
 	for (no = 0; no < 3; no++) {		/* Process each axis separately */
 		if (!side[no]) continue;	/* Except we did not specify this axis */
@@ -8256,7 +8284,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						}
 						else {
 							strcpy (GMT->current.map.frame.axis[no].label, &p[1]);
-							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].label, 1);	/* Revert to ++ */
+							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].label, NULL, 1);	/* Recover any non-modifier plus signs */
 							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].label, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
@@ -8267,7 +8295,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						}
 						else {
 							strcpy (GMT->current.map.frame.axis[no].prefix, &p[1]);
-							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].prefix, 1);	/* Revert to ++ */
+							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].prefix, NULL, 1);	/* Recover any non-modifier plus signs */
 							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].prefix, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
@@ -8278,7 +8306,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						}
 						else {
 							strcpy (GMT->current.map.frame.axis[no].unit, &p[1]);
-							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].unit, 1);	/* Revert to ++ */
+							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].unit, NULL, 1);	/* Recover any non-modifier plus signs */
 							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].unit, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
