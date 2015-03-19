@@ -223,11 +223,13 @@ int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct G
 					missing_equal = false;
 					if (opt->next && (opt->next->option == GMT_OPT_INFILE)) {
 						Ctrl->Out.active = true;
-						if (opt->next->option == GMT_OPT_OUTFILE) opt->next->option = GMT_OPT_OUTFILE2;	/* See definition of this for reason */
+						if (opt->next->option == GMT_OPT_OUTFILE)
+							opt->next->option = GMT_OPT_OUTFILE2;	/* See definition of this for reason */
 					}
 				}
 				break;
 			case '=':	/* Output files */
+			case '>':	/* Output files */
 				missing_equal = false;
 				break;
 			case '#':	/* Numbers */

@@ -485,14 +485,16 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 					opt->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
 					if (opt->next && (opt->next->option == GMT_OPT_INFILE || opt->next->option == GMT_OPT_OUTFILE)) {
 						Ctrl->Out.active = true;
-						if (opt->next->arg) Ctrl->Out.file = strdup (opt->next->arg);
+						if (opt->next->arg[0]) Ctrl->Out.file = strdup (opt->next->arg);
 						opt->next->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
 					}
 				}
 				n_files++;
 				break;
-			case '=':	/* Output file specified via an API */
+			case '>':	/* Output file specified via an API; set output file here */
 				opt->option = GMT_OPT_OUTFILE;
+				if (opt->arg[0] && !Ctrl->Out.file) Ctrl->Out.file = strdup (opt->arg);
+				missing_equal = false;
 				break;
 			case '#':	/* Skip numbers */
 				break;
