@@ -65,6 +65,9 @@ struct GDALREAD_CTRL {
 	struct GD_M {	/* Metadata only */
 		int active;
 	} M;
+	struct GD_N {	/* For floats, replace this value by NaN */
+		float nan_value;
+	} N;
 	struct GD_P {	/* Preview mode */
 		int active;
 		char *jump;

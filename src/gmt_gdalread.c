@@ -501,6 +501,16 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		}
 	}
 
+	if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
+		for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+			nn = (pad+m)*(nXSize_withPad) + startColPos;
+			for (n = 0; n < nXSize; n++) {
+				if (Ctrl->Float.data[nn] == prhs->N.nan_value) Ctrl->Float.data[nn] = (float)NAN;
+				nn += incStep;
+			}
+		}
+	}
+
 	GMT_free(GMT, rowVec);
 	free(tmp);
 	if (whichBands) GMT_free(GMT, whichBands);
@@ -831,10 +841,12 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 	Ctrl->Corners.LR[0] = xy_c[0];
 	Ctrl->Corners.LR[1] = xy_c[1];
 
+	/* Must check that geog grids have not y_max > 90.0 We'll be eps tollerant ... but how do I know that it's geog?*/
+
 	/* --------------------------------------------------------------------------------------
 	 * Record Geographical corners (if they exist)
 	 * -------------------------------------------------------------------------------------- */
-	if(!got_R) {
+	if (!got_R) {
 		if (!GMT_is_dnan(xy_geo[0][0])) {
 			Ctrl->GEOGCorners.LL[0] = xy_geo[0][0]; Ctrl->GEOGCorners.LL[1] = xy_geo[0][1];
 			Ctrl->GEOGCorners.UL[0] = xy_geo[1][0]; Ctrl->GEOGCorners.UL[1] = xy_geo[1][1];

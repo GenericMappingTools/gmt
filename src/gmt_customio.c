@@ -1667,6 +1667,9 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *grid pointer */
 	to_gdalread->f_ptr.active = true;
 	to_gdalread->f_ptr.grd = grid;
+	
+	/* If header->nan_value != NaN tell gdalread to replace nan_value by NaN (in floats only) */
+	to_gdalread->N.nan_value = header->nan_value;
 
 	if (GMT_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
