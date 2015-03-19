@@ -116,6 +116,7 @@ int GMT_grdconvert_parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, st
 				else {
 					n_in++;
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one input and one output file\n");
+					n_errors++;
 				}
 				break;
 			case '>':	/* Output file */

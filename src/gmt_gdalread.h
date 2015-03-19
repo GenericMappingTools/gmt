@@ -74,8 +74,12 @@ struct GMT_GDALREAD_IN_CTRL {
 		int active;
 	} M;
 	struct GD_O {	/* Three chars code to specify the array layout in memory */
-		char mem_layout[4]; /* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight), fourth P(ix)|L(ine)|S(equencial) */
+		/* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight), fourth P(ix)|L(ine)|S(equencial) */
+		char mem_layout[4];
 	} O;
+	struct GD_N {	/* For floats, replace this value by NaN */
+		float nan_value;
+	} N;
 	struct GD_P {	/* Preview mode */
 		int active;
 		char *jump;
