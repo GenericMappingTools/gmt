@@ -1132,9 +1132,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			GMT_get_rgb_from_z (GMT, P, cval, rgb);
 			GMT_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 		}
-		if (Ctrl->W.color_text && Ctrl->contour.curved_text) {	/* Override label color according to cpt file */
+		if (Ctrl->W.color_text)	/* Override label color according to cpt file */
 			GMT_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
-		}
 
 		n_alloc = 0;
 		begin = true;
