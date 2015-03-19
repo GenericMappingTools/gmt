@@ -3681,7 +3681,11 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 		if (opt->option == GMT_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
 			if (opt->next) {
 				opt->next->option = GMT_OPT_OUTFILE2;
+				/* Bypass the current opt in the linked list */
+				opt->next->previous = opt->previous;
+				opt->previous->next = opt->next;
 				GMT_Delete_Option (API, opt);
+				opt = list;	/* GO back to start to avoid bad pointer */
 			}
 			else {	/* Standard output */
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: No output file specified via = file mechanism\n");
