@@ -313,8 +313,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			m = h.flag >> 26;
 			scale = pow (10.0, (double)m);		/* Area scale */
 		}
-		area = h.area / scale;				/* Now im km^2 */
-		f_area = h.area_full / scale;			/* Now im km^2 */
+		area = h.area / scale;				/* Now in km^2 */
+		f_area = h.area_full / scale;			/* Now in km^2 */
 		this_id = h.id;
 		
 		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && this_id == Ctrl->I.id) || (Ctrl->I.mode && this_id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
