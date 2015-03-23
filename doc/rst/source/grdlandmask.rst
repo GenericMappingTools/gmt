@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdlandmask** **-G**\ *mask_grd\_file*]
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**] [
-**-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
-] [ **-D**\ *resolution*\ [**+**\ ] ] [ **-N**\ *maskvalues*\ [**o**]
-] [ **-V**\ [*level*\ ] ] [ **-r** ]
+**grdlandmask** **-G**\ *mask_grd_file*
+**-I**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
+**-R**\ *west*/*east*/*south*/*north*\ [**r**]
+[ **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ **-D**\ *resolution*\ [**+**] ] [ **-N**\ *maskvalues*\ [**o**] ]
+[ **-V**\ [*level*] ] [ **-r** ]
 
 |No-spaces|
 
