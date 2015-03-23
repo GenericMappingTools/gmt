@@ -1532,7 +1532,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 				S1 = D->table[tbl]->segment[seg];
 				if (S1->n_rows == 0) continue;
 
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Check if segment %" PRIu64 "from Table %d has duplicates:\n", seg, tbl);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Check if segment %" PRIu64 " from Table %d has duplicates:\n", seg, tbl);
 				if (same_feature) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
 					S2->n_rows = S1->n_rows;
 					for (col = 0; col < S1->n_columns; col++) S2->coord[col] = S1->coord[col];
