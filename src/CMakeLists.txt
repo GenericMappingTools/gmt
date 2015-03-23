@@ -566,6 +566,7 @@ if (BUILD_DEVELOPER)
 		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_nan.h gmt_notposix.h gmt_plot.h
 		gmt_private.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_symbol.h gmt_synopsis.h
 		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h
+		gmt_core_module.h gmt_supplements_module.h
 		DESTINATION ${GMT_INCLUDEDIR}
 		COMPONENT Runtime)
 	# Install Configured Developer headers [These are produced by cmake from *.h.in files]

@@ -327,6 +327,7 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GM
 	 * -3	: Same as -2 but S is likely a reversed subset of S'
 	 * +4	: Same as +2 but S is likely a superset of S'
 	 * -4	: Same as -2 but S is likely a reversed superset of S'
+	 *  5   : Two lines split exactly at the Dateline
 	 * The algorithm first finds the smallest separation from any point on S to the line Sp.
 	 * We then reverse the situation and check the smallest separation from any point on any
 	 * of the Sp candidates to the line S.
@@ -541,6 +542,14 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GM
 			else
 				k_signed = 2;	/* S and S' are practically the same feature */
 			L[tbl][seg].mode = (d1 < d2) ? k_signed : -k_signed;	/* Negative means Sp is reversed w.r.t. S */
+			/* Last check: If two lines are split at 180 the above will find them to be approximate duplicates even
+			 * though they just share one point (at 180 longitude) */
+			if (L[tbl][seg].closeness < GMT_CONV8_LIMIT && L[tbl][seg].distance < GMT_CONV8_LIMIT) {
+				if (fabs (S->coord[GMT_X][0]) == 180.0 && (fabs (Sp->coord[GMT_X][0]) == 180.0 || fabs (Sp->coord[GMT_X][Sp->n_rows-1]) == 180.0))
+					L[tbl][seg].mode = 5;
+				else if (fabs (S->coord[GMT_X][S->n_rows-1]) == 180.0 && (fabs (Sp->coord[GMT_X][0]) == 180.0 || fabs (Sp->coord[GMT_X][Sp->n_rows-1]) == 180.0))
+					L[tbl][seg].mode = 5;
+			}
 			n_dup++;
 		}
 	}
@@ -1484,9 +1493,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		unsigned int n_dup, poly_D, poly_S2;
 		uint64_t tbl, tbl2, col, seg, seg2;
 		bool same_feature = false;
-		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
+		char *kind[10] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset", "Dateline-split"};
 		char record[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""}, src[GMT_BUFSIZ] = {""}, dup[GMT_BUFSIZ] = {""}, *feature[2] = {"polygon", "line"}, *from = NULL;
-		char *in = "the same data set", *verdict = "NY~-+";	/* No, Yes, Approximate, Subsection, Supersection */
+		char *in = "the same data set", *verdict = "NY~-+/";	/* No, Yes, Approximate, Subsection, Supersection */
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		struct DUP_INFO **Info = NULL, *I = NULL;
@@ -1547,7 +1556,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X], C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows)) ? 1 : 0;
 						sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
 						(C->n_tables == 1) ? sprintf (dup, "[ segment %" PRIu64 " ]", seg2) : sprintf (dup, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl2, seg2);
-						sprintf (record, format, verdict[abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2], dup, from, I->distance, I->closeness, I->setratio);
+						if (I->mode == 5)
+							sprintf (record, "| : Input %s %s was separated at the Dateline from %s %s in %s", feature[poly_D], src, feature[poly_S2], dup, from);
+						else
+							sprintf (record, format, verdict[abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2], dup, from, I->distance, I->closeness, I->setratio);
 						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					}
 				}

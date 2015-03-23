@@ -83,7 +83,9 @@ Optional Arguments
     single letter Y (exact match) or ~ (approximate match). If the two
     matching segments differ in length by more than a factor of 2 then
     we consider the duplicate to be either a subset (-) or a superset
-    (+). For polygons we also consider the fractional difference in
+    (+). Finally, if two lines are the result of splitting a continuous
+    line at the Dateline we report that as well (|).
+    For polygons we also consider the fractional difference in
     areas; duplicates must differ by less than *amax* [0.01]. By
     default, we compute the mean line separation. Use **-+C**\ *cmin* to
     instead compute the median line separation and therefore a robust

@@ -192,7 +192,7 @@
 
 # List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes
 # that link against the full gmt libs (not just the API; for building codes
-# that only need the GMT API, see the gmtextension project).
+# that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
 
 # Directory in which to install the release sources per default

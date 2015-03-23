@@ -412,8 +412,25 @@ int GMT_set_resolution (struct GMT_CTRL *GMT, char *res, char opt)
 	/* Decodes the -D<res> option and returns the base integer value */
 
 	int base;
+	char *choice = "fhilc";
+	double area, earth_area = 360 * 180; /* Flat Earth squared degrees */
 
 	switch (*res) {
+		case 'a':	/* Auto, based on region only */
+			area = (GMT->common.R.wesn[GMT_XHI] - GMT->common.R.wesn[GMT_XLO]) * (GMT->common.R.wesn[GMT_YHI] - GMT->common.R.wesn[GMT_YLO]); /* Squared degrees */
+			if (area > (pow (0.6, 2.0) * earth_area))
+				base = 4;	/* crude */
+			else if (area > (pow (0.6, 4.0) * earth_area))
+				base = 3;	/* low */
+			else if (area >  (pow (0.6, 6.0) * earth_area))
+				base = 2;	/* intermediate */
+			else if (area >  (pow (0.6, 8.0) * earth_area))
+				base = 1;	/* high */
+			else
+				base = 0;	/* full */
+			*res = choice[base];
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-%c option: Selected resolution -%c%c\n", opt, opt, *res);
+			break;
 		case 'f':	/* Full */
 			base = 0;
 			break;

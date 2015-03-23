@@ -23,7 +23,7 @@
  * Date:	1-JUN-2013
  * Version:	5
  *
- * The API presently consists of 52 documented functions.  For a full
+ * The API presently consists of 56 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
  * These functions have Fortran bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUser.cmake].
@@ -40,7 +40,7 @@
  * GMT_Message		: Report an message given a verbosity level
  * GMT_Report		: Report an error given an error code
  *
- * There are 20 further public functions used for GMT i/o activities:
+ * There are 21 further public functions used for GMT i/o activities:
  *
  * GMT_Begin_IO		: Allow i/o to take place for rec-by-rec operations
  * GMT_Create_Data	: Return an empty container for a new data set
@@ -62,8 +62,9 @@
  * GMT_Set_Comment	: Update a comment for a data set
  * GMT_Status_IO	: Exmine current status of record-by-record i/o
  * GMT_Write_Data	: Place data set from program memory to selected destination
- *
- * The above 20 functions deal with registration of input sources (files,
+ * GMT_Encode_Options	: Used by external APIs to fill out options from implicit rules
+
+ * The above 21 functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
  * (same flavors as input), the setup of the i/o, and generic functions
  * to access the data either in one go (GMT_Get|Put_Data) or on a
@@ -97,7 +98,7 @@
  * GMT_FFT_Parse	: Parse the GMT FFT option
  * GMT_FFT_Wavenumber	: Return selected wavenumber given its type
  *
- * There are also 12 functions for argument and option parsing.  See gmt_parse.c for these.
+ * There are also 13 functions for argument and option parsing.  See gmt_parse.c for these.
  *
  * Finally, three low-level F77-callable functions for grid i/o are given:
  *

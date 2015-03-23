@@ -282,7 +282,6 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 		
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
-		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 		
 		if (fmode == POINT && strstr (line, "</coordinates>")) {	/* Process the single point */
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point");
