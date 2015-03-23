@@ -56,6 +56,7 @@ struct DUP {
 	unsigned int table;
 	int mode;
 	bool inside;
+	bool full_report;
 	double distance;
 	double closeness;
 	double setratio;
@@ -671,9 +672,9 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -696,6 +697,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To flag duplicate polygons, the fractional difference in areas must be less than <amax> [0.01].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default we consider all points when comparing two lines.  Use +p to limit\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the comparison to points that project perpendicularly on to the other line.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   By default we only report segments that pass the test,  Add +l for the full long listing.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Orient all polygons to have the same handedness.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + for counter-clockwise or - for clockwise handedness.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force all input segments to become closed polygons on output by adding repeated point if needed.\n");
@@ -808,6 +810,9 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 							Ctrl->D.I.mode = 1;	/* Median instead of mean */
 						case 'c':	/* Gave a new +c<cmax> value */
 							if (p[1]) Ctrl->D.I.c_threshold = atof (&p[1]);	/* This allows +C by itself just to change to median */
+							break;
+						case 'l':	/* Give full report, including negative (no duplicate) */
+							Ctrl->D.I.full_report = true;
 							break;
 						case 's':	/* Gave a new +s<fact> value */
 							Ctrl->D.I.s_threshold = atof (&p[1]);
@@ -1547,14 +1552,22 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 					S1->n_rows = S2->n_rows;	/* Reset the count */
 					if (Ctrl->D.I.table < tbl || (Ctrl->D.I.table == tbl && Ctrl->D.I.segment < seg)) n_dup = 0;	/* To avoid reporting the same pair twice */
 				}
-				if (n_dup == 0) continue;	/* No duplicates */
+				if (n_dup == 0) {	/* No duplicates */
+					if (Ctrl->D.I.full_report) {
+						(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
+						poly_D = (GMT_polygon_is_open (GMT, D->table[tbl]->segment[seg]->coord[GMT_X], D->table[tbl]->segment[seg]->coord[GMT_Y], D->table[tbl]->segment[seg]->n_rows)) ? 1 : 0;
+						sprintf (record, "N : Input %s %s not present in %s", feature[poly_D], src, from);
+						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					}
+					continue;
+				}
 				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) {
 					for (seg2 = 0; seg2 < C->table[tbl2]->n_segments; seg2++) {
 						I = &(Info[tbl2][seg2]);
 						if (I->mode == 0) continue;
 						/* Report on all the close/exact matches */
 						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X], C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows)) ? 1 : 0;
-						sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
+						(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
 						(C->n_tables == 1) ? sprintf (dup, "[ segment %" PRIu64 " ]", seg2) : sprintf (dup, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl2, seg2);
 						if (I->mode == 5)
 							sprintf (record, "| : Input %s %s was separated at the Dateline from %s %s in %s", feature[poly_D], src, feature[poly_S2], dup, from);
