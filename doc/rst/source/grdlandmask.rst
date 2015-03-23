@@ -13,11 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdlandmask** **-G**\ *mask\_grd\_file*]
+**grdlandmask** **-G**\ *mask_grd\_file*]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
+**-R**\ *west*/*east*/*south*/*north*\ [**r**] [
 **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
-] [ **-D**\ *resolution*\ [**+**\ ] ] [ **-N**\ *maskvalues*\ [**o**\ ]
+] [ **-D**\ *resolution*\ [**+**\ ] ] [ **-N**\ *maskvalues*\ [**o**]
 ] [ **-V**\ [*level*\ ] ] [ **-r** ]
 
 |No-spaces|
@@ -50,7 +50,7 @@ Optional Arguments
 .. |Add_-A| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-A.rst_
 
-**-D**\ *resolution*\ [**+**\ ]
+**-D**\ *resolution*\ [**+**]
     Selects the resolution of the data set to use ((**f**)ull,
     (**h**)igh, (**i**)ntermediate, (**l**)ow, or (**c**)rude). The
     resolution drops off by ~80% between data sets. [Default is **l**].
@@ -59,7 +59,7 @@ Optional Arguments
     because the coastlines differ in details a node in a mask file using
     one resolution is not guaranteed to remain inside [or outside] when
     a different resolution is selected.
-**-N**\ *maskvalues*\ [**o**\ ]
+**-N**\ *maskvalues*\ [**o**]
     Sets the values that will be assigned to nodes. Values can be any
     number, including the textstring NaN. Append **o** to let nodes
     exactly on feature boundaries be considered outside [Default is
@@ -87,10 +87,14 @@ Examples
 To set all nodes on land to NaN, and nodes over water to 1, using the
 high resolution data set, do
 
+   ::
+
     gmt grdlandmask -R-60/-40/-40/-30 -Dh -I5m -N1/NaN -Gland_mask.nc -V
 
 To make a 1x1 degree global grid with the hierarchical levels of the
 nodes based on the low resolution data:
+
+   ::
 
     gmt grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
  
