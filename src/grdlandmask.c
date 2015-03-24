@@ -112,6 +112,7 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a - auto: select best resolution given selected region.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   h - high resolution (may be slow for large regions).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");

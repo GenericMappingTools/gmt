@@ -8167,6 +8167,7 @@ int gmt_init_three_D (struct GMT_CTRL *GMT) {
 int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	unsigned int i;
 	bool search, double_auto[6];
+	double scale, i_scale;
 
 	if (!GMT->common.J.active) Return (GMT_MAP_NO_PROJECTION);
 	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) Return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
@@ -8386,6 +8387,11 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	GMT->current.map.path_step = GMT->current.setting.map_line_step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 
 	gmt_init_three_D (GMT);
+
+	i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
+	scale = 0.001 / (GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit] * GMT->current.proj.scale[GMT_X]);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Map scale is %g km per %s or 1:%g.\n",
+		scale, GMT->session.unit_name[GMT->current.setting.proj_length_unit], i_scale);
 
 	return (GMT_NOERROR);
 }

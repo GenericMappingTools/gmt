@@ -55,7 +55,9 @@ Optional Arguments
     (**h**)igh, (**i**)ntermediate, (**l**)ow, or (**c**)rude). The
     resolution drops off by ~80% between data sets. [Default is **l**].
     Append **+** to automatically select a lower resolution should the
-    one requested not be available [abort if not found]. Note that
+    one requested not be available [abort if not found].
+    Alternatively, choose (**a**)uto to automatically select the best
+    resolution given the chosen region.  Note that
     because the coastlines differ in details a node in a mask file using
     one resolution is not guaranteed to remain inside [or outside] when
     a different resolution is selected.

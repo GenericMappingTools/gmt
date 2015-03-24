@@ -407,27 +407,52 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	return (GMT_OK);
 }
 
+#define GMT_CRUDE_THRESHOLD	1e8
+#define GMT_LOW_THRESHOLD	5e7
+#define GMT_INT_THRESHOLD	1e7
+#define GMT_HIGH_THRESHOLD	5e6
+#define GMT_FULL_THRESHOLD	1e6	/* Not used */
+
 int GMT_set_resolution (struct GMT_CTRL *GMT, char *res, char opt)
 {
 	/* Decodes the -D<res> option and returns the base integer value */
 
 	int base;
 	char *choice = "fhilc";
-	double area, earth_area = 360 * 180; /* Flat Earth squared degrees */
 
 	switch (*res) {
-		case 'a':	/* Auto, based on region only */
-			area = (GMT->common.R.wesn[GMT_XHI] - GMT->common.R.wesn[GMT_XLO]) * (GMT->common.R.wesn[GMT_YHI] - GMT->common.R.wesn[GMT_YLO]); /* Squared degrees */
-			if (area > (pow (0.6, 2.0) * earth_area))
-				base = 4;	/* crude */
-			else if (area > (pow (0.6, 4.0) * earth_area))
+		case 'a':	/* Automatic selection via -J or -R, of possible */
+			if (GMT->common.J.active) {	/* Use map scale xxxx as in 1:xxxx */
+				double i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
+				if (i_scale > GMT_CRUDE_THRESHOLD)
+					base = 4;	/* crude */
+				else if (i_scale > GMT_LOW_THRESHOLD)
+					base = 3;	/* low */
+				else if (i_scale > GMT_INT_THRESHOLD)
+					base = 2;	/* intermediate */
+				else if (i_scale > GMT_HIGH_THRESHOLD)
+					base = 1;	/* high */
+				else
+					base = 0;	/* full */
+			}
+			else if (GMT->common.R.active) {	/* No scale, based on region only */
+				double area, earth_area = 360 * 180; /* Flat Earth squared degrees */
+				area = (GMT->common.R.wesn[GMT_XHI] - GMT->common.R.wesn[GMT_XLO]) * (GMT->common.R.wesn[GMT_YHI] - GMT->common.R.wesn[GMT_YLO]); /* Squared degrees */
+				if (area > (pow (0.6, 2.0) * earth_area))
+					base = 4;	/* crude */
+				else if (area > (pow (0.6, 4.0) * earth_area))
+					base = 3;	/* low */
+				else if (area >  (pow (0.6, 6.0) * earth_area))
+					base = 2;	/* intermediate */
+				else if (area >  (pow (0.6, 8.0) * earth_area))
+					base = 1;	/* high */
+				else
+					base = 0;	/* full */
+			}
+			else {	/* No basis - select low */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-%c option: Cannot select automatic resolution without -R or -J [Default to low]\n");
 				base = 3;	/* low */
-			else if (area >  (pow (0.6, 6.0) * earth_area))
-				base = 2;	/* intermediate */
-			else if (area >  (pow (0.6, 8.0) * earth_area))
-				base = 1;	/* high */
-			else
-				base = 0;	/* full */
+			}
 			*res = choice[base];
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-%c option: Selected resolution -%c%c\n", opt, opt, *res);
 			break;

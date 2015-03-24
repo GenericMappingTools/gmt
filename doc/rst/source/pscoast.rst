@@ -90,6 +90,8 @@ Optional Arguments
     resolution drops off by 80% between data sets [Default is **l**].
     Append **+** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
+    Alternatively, choose (**a**)uto to automatically select the best
+    resolution given the chosen map scale.
 
 **-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
     Select painting or dumping country polygons from the Digital Chart of the World.

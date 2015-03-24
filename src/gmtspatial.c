@@ -1547,11 +1547,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 					S1->n_rows = S2->n_rows;	/* Reset the count */
 					if (Ctrl->D.I.table < tbl || (Ctrl->D.I.table == tbl && Ctrl->D.I.segment < seg)) n_dup = 0;	/* To avoid reporting the same pair twice */
 				}
-				if (n_dup == 0) {	/* No duplicates */
-					(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
-					poly_D = (GMT_polygon_is_open (GMT, D->table[tbl]->segment[seg]->coord[GMT_X], D->table[tbl]->segment[seg]->coord[GMT_Y], D->table[tbl]->segment[seg]->n_rows)) ? 1 : 0;
-					sprintf (record, "N : Input %s %s not present in %s", feature[poly_D], src, from);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				if (n_dup == 0) {	/* No duplicate found for this segment */
+					if (!same_feature) {
+						(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
+						poly_D = (GMT_polygon_is_open (GMT, D->table[tbl]->segment[seg]->coord[GMT_X], D->table[tbl]->segment[seg]->coord[GMT_Y], D->table[tbl]->segment[seg]->n_rows)) ? 1 : 0;
+						sprintf (record, "N : Input %s %s not present in %s", feature[poly_D], src, from);
+						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					}
 					continue;
 				}
 				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) {

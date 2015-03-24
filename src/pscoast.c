@@ -203,6 +203,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t      l = Lakes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      r = River-lakes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a - auto: select best resolution given map scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   h - high resolution (may be slow for large regions).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");
@@ -673,7 +674,6 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->D.force) Ctrl->D.set = GMT_shore_adjust_res (GMT, Ctrl->D.set);
-	base = GMT_set_resolution (GMT, &Ctrl->D.set, 'D');
 	fill[0] = Ctrl->S.fill;
 	fill[1] = fill[3] = Ctrl->G.fill;
 	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : Ctrl->S.fill;
@@ -698,6 +698,8 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+
+	base = GMT_set_resolution (GMT, &Ctrl->D.set, 'D');
 
 	if (!GMT_is_geographic (GMT, GMT_IN)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
