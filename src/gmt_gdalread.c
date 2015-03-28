@@ -64,7 +64,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   	metadata_only;
 	bool   	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	bool   	fliplr, got_R = false, got_r = false, error = false;
-	bool    topdown = false, rowmajor = true, leftright = true;		/* arrays from GDAL have this order */
+	bool    topdown = false, rowmajor = true, leftright = true, just_copy = false;	/* arrays from GDAL have this order */
 	int    *whichBands = NULL, *rowVec = NULL, *colVec = NULL;
 	int     off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
 	unsigned int nn, mm;
@@ -121,6 +121,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			leftright = false;
 		if (GMT->current.gdal_read_in.O.mem_layout[3] == 'S' || GMT->current.gdal_read_in.O.mem_layout[3] == 'L')
 			do_BIP = false;
+		if (topdown && rowmajor && leftright) just_copy = true;		/* Means we will send out the data as it came from gdal */
 	}
 
 	if (prhs->p.active) pad = prhs->p.pad;
@@ -403,7 +404,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			i_x_nXYSize = i*(nXSize+2*pad)*(nYSize+2*pad);		/* We don't need to recompute this everytime */
 		}
 		else
-			i_x_nXYSize= i * (nBufXSize + 2*pad) * (nBufYSize + 2*pad);
+			i_x_nXYSize = i * (nBufXSize + 2*pad) * (nBufYSize + 2*pad);
 
 		startColPos = pad + i_x_nXYSize + (complex_mode > 1);	/* Take into account nBands, Padding and Complex */
 		nXSize_withPad = nXSize + 2 * pad;
@@ -435,7 +436,10 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				}
 
 				Ctrl->UInt8.active = true;
-				if (fliplr && !do_BIP) {				/* No BIP option yet, and maybe never */
+				if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was an waste. Needs fix */
+					memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, nBufYSize * nBufXSize);
+				}
+				else if (fliplr && !do_BIP) {				/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
 						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = nXSize-1; n >= 0; n--)
@@ -634,7 +638,7 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *Ctrl,
 	GDALColorTableH	hTable;
 	GDALColorEntry	sEntry;
 
-	int	i, j, n_colors;     /* Number of colors in the eventual Color Table */
+	int	i, j;
 	int	status, bSuccess;   /* success or failure */
 	int	nBand, raster_count, pixel_reg = false;
 	int	bGotMin, bGotMax;   /* To know if driver transmited Min/Max */
@@ -837,9 +841,9 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *Ctrl,
 	if (GDALGetRasterColorInterpretation(hBand) == GCI_PaletteIndex
 		&& (hTable = GDALGetRasterColorTable(hBand)) != NULL) {
 
-		n_colors = GDALGetColorEntryCount(hTable);
-		Ctrl->ColorMap = GMT_memory(GMT, NULL, n_colors*4+1, int);
-		for (i = 0, j = 0; i < n_colors; i++) {
+		Ctrl->nIndexedColors = GDALGetColorEntryCount(hTable);
+		Ctrl->ColorMap = GMT_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
+		for (i = 0, j = 0; i < Ctrl->nIndexedColors; i++) {
 			GDALGetColorEntryAsRGB(hTable, i, &sEntry);
 			Ctrl->ColorMap[j++] = sEntry.c1;
 			Ctrl->ColorMap[j++] = sEntry.c2;
@@ -848,8 +852,10 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *Ctrl,
 		}
 		Ctrl->ColorMap[j++] = -1;
 	}
-	else
+	else {
 		Ctrl->ColorMap = NULL;
+		Ctrl->nIndexedColors  = 0;
+	}
 
 	/* ------------------------------------------------------------------------- */
 	/* Record corners. */

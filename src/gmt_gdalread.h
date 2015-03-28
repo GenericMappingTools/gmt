@@ -174,10 +174,11 @@ struct GMT_GDALREAD_OUT_CTRL {
 	const char	*DriverLongName;
 	const char	*ColorInterp;
 	int	*ColorMap;
+	int nIndexedColors; /* Number of colors in a paletted image */
 	int	RasterXsize;
 	int	RasterYsize;
-	int	RasterCount;	/* Total number of bands in file */
-	int	nActualBands;	/* Number of bands that were actually sent back */
+	int	RasterCount;    /* Total number of bands in file */
+	int	nActualBands;   /* Number of bands that were actually sent back */
 	struct Corners {
 		double LL[2], UL[2], UR[2], LR[2];
 	} Corners;

@@ -630,13 +630,14 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 
 struct GMT_IMAGE {	/* Single container for a user image of data */
 	/* Variables we document for the API: */
-	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
-	int *ColorMap;			/* Array with color lookup values */
+	enum GMT_enum_type type;    /* Data type, e.g. GMT_FLOAT */
+	int *ColorMap;              /* Array with color lookup values */
+	int nIndexedColors;         /* Number of colors in a paletted image */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
 	unsigned char *data;		/* Pointer to actual image */
 /* ---- Variables "hidden" from the API ---- */
-	uint64_t id;			/* The internal number of the data set */
-	unsigned int alloc_level;	/* The level it was allocated at */
+	uint64_t id;                /* The internal number of the data set */
+	unsigned int alloc_level;   /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	const char *ColorInterp;
 };

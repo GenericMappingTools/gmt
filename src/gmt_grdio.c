@@ -2465,7 +2465,8 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 		return (EXIT_FAILURE);
 	}
 
-	I->ColorInterp  = from_gdalread->ColorInterp;		/* Must find out how to release this mem */
+	I->ColorInterp    = from_gdalread->ColorInterp;     /* Must find out how to release this mem */
+	I->nIndexedColors = from_gdalread->nIndexedColors;
 	I->header->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
 	I->header->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
 	I->header->inc[GMT_X] = from_gdalread->hdr[7];
@@ -2552,6 +2553,7 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 	}
 
 	I->ColorMap = from_gdalread->ColorMap;
+	I->nIndexedColors  = from_gdalread->nIndexedColors;
 	I->header->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
 	if (expand) {	/* Must undo the region extension and reset nx, ny */
