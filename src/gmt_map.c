@@ -2589,16 +2589,15 @@ void GMT_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 
 	/* Set annotation/major tick interval */
 	T = &A->item[item];
-	if (T->active && T->interval == 0.0) T->interval = d, set_a = true;
+	if (T->active && T->interval == 0.0) T->interval = d, T->generated = set_a = true;
 
 	/* Set minor ticks as well (if copied from annotation, set to major interval) */
 	T = &A->item[item+2];
-	if (T->active && T->interval == 0.0) T->interval = (T->type == 'f' || T->type == 'F') ? f : d;
+	if (T->active && T->interval == 0.0) T->interval = (T->type == 'f' || T->type == 'F') ? f : d, T->generated = true;
 
 	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
-	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f;
-	A->generated = true;
+	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f, T->generated = true;
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
