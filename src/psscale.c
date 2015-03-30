@@ -812,7 +812,9 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 		if (B_set) {	/* Used -B */
 			A = &GMT->current.map.frame.axis[GMT_X];
-			if (A->generated) A->item[GMT_ANNOT_UPPER].interval = A->item[GMT_TICK_UPPER].interval = A->item[GMT_GRID_UPPER].interval = 0.0;	/* Reset so we can redo */
+			if (A->item[GMT_ANNOT_UPPER].generated) A->item[GMT_ANNOT_UPPER].interval = 0.0;	/* Reset annot so we can redo via automagic */
+			if (A->item[GMT_TICK_UPPER].generated)  A->item[GMT_TICK_UPPER].interval  = 0.0;	/* Reset frame so we can redo via automagic */
+			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
 			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & 1), GMT->current.map.frame.side[flip & 1 ? N_SIDE : S_SIDE] & 2);
 			if (A->item[GMT_GRID_UPPER].active) {
@@ -1026,7 +1028,9 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			char *custum;
 
 			A = &GMT->current.map.frame.axis[GMT_X];
-			if (A->generated) A->item[GMT_ANNOT_UPPER].interval = A->item[GMT_TICK_UPPER].interval = A->item[GMT_GRID_UPPER].interval = 0.0;	/* Reset so we can redo */
+			if (A->item[GMT_ANNOT_UPPER].generated) A->item[GMT_ANNOT_UPPER].interval = 0.0;	/* Reset annot so we can redo via automagic */
+			if (A->item[GMT_TICK_UPPER].generated)  A->item[GMT_TICK_UPPER].interval  = 0.0;	/* Reset frame so we can redo via automagic */
+			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
 			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
 				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
