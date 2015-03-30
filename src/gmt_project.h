@@ -439,7 +439,7 @@ struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	double interval;		/* Distance between ticks in user units */
 	unsigned int parent;		/* Id of axis this item belongs to (0,1,2) */
 	bool active;			/* true if we want to use this item */
-	bool special;		/* true if custom interval annotations */
+	bool special;			/* true if custom interval annotations */
 	unsigned int flavor;		/* Index into month/day name abbreviation array (0-2) */
 	bool upper_case;		/* true if we want upper case text (used with flavor) */
 	char type;			/* One of a, A, i, I, f, F, g, G */
@@ -450,6 +450,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int id;		/* 0 (x), 1(y), or 2(z) */
 	unsigned int type;		/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
 	unsigned int special;		/* 0, GMT_CUSTOM, GMT_CPT */
+	bool generated;			/* true if this axes had auto-generated intervals */
 	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_LEN256];	/* Label of the axis */
