@@ -41,6 +41,7 @@
  *  GMT_nc_update_grd_info: Update header in existing file
  *  GMT_nc_write_grd_info:  Write header to new file
  *  GMT_nc_write_grd:       Write header and data set to new file
+ *  GMT_grid_flip_vertical  Reverses the grid vertically (flipud)
  *
  * Private functions:
  *  setup_chunk_cache:      Change the default HDF5 chunk cache settings
@@ -48,7 +49,6 @@
  *  unpad_grid:             Remove padding from a grid
  *  padding_copy:           Fill padding by replicating the border cells
  *  padding_zero:           Fill padding with zeros
- *  grid_flip_vertical      Reverses the grid vertically
  *  n_chunked_rows_in_cache Determines how many chunks to read at once
  *  io_nc_grid              Does the actual netcdf I/O
  *  netcdf_libvers          returns the netCDF library version
@@ -904,7 +904,7 @@ void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 }
 
 /* Reverses the grid vertically, that is, from north up to south up or vice versa. */
-void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
+void GMT_grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
 	/* Note: when grid is complex, pass 2x n_rows */
 	unsigned rows_over_2 = (unsigned) floor (n_rows / 2.0);
 	unsigned row;
@@ -1355,7 +1355,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		grid_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
+		GMT_grid_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
 
 	/* Add padding with border replication */
 	// pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
@@ -1459,7 +1459,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		grid_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
+		GMT_grid_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
 
 	/* get stats */
 	header->z_min = DBL_MAX;

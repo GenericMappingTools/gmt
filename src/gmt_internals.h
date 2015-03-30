@@ -237,26 +237,26 @@ EXTERN_MSC void GMT_eckert6 (struct GMT_CTRL *GMT, double lon, double lat, doubl
 EXTERN_MSC void GMT_ieckert6 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Eckert VI) to lon/lat	*/
 EXTERN_MSC void GMT_robinson (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Robinson)	*/
 EXTERN_MSC void GMT_irobinson (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Robinson) to lon/lat	*/
-EXTERN_MSC void GMT_stereo1 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Stereographic)	*/
-EXTERN_MSC void GMT_stereo2 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Stereographic, equatorial view)*/
+EXTERN_MSC void GMT_stereo1 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Stereographic)	*/
+EXTERN_MSC void GMT_stereo2 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Stereographic, equatorial view)*/
 EXTERN_MSC void GMT_istereo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Stereographic) to lon/lat 	*/
 EXTERN_MSC void GMT_stereo1_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Stereographic Spherical)*/
 EXTERN_MSC void GMT_stereo2_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Stereographic Spherical, equatorial view)	*/
 EXTERN_MSC void GMT_istereo_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Stereographic Spherical) to lon/lat 	*/
 EXTERN_MSC void GMT_lambeq (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Lambert Azimuthal Equal-Area)*/
 EXTERN_MSC void GMT_ilambeq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Lambert Azimuthal Equal-Area) to lon/lat*/
-EXTERN_MSC void GMT_mollweide (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Mollweide Equal-Area)	*/
-EXTERN_MSC void GMT_imollweide (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Mollweide Equal-Area) to lon/lat 	*/
+EXTERN_MSC void GMT_mollweide (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Mollweide Equal-Area) */
+EXTERN_MSC void GMT_imollweide (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Mollweide Equal-Area) to lon/lat */
 EXTERN_MSC void GMT_cyleq (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Cylindrical Equal-Area)	*/
-EXTERN_MSC void GMT_icyleq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Cylindrical Equal-Area) to lon/lat 	*/
+EXTERN_MSC void GMT_icyleq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Cylindrical Equal-Area) to lon/lat	*/
 EXTERN_MSC void GMT_cyleqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Cylindrical Equidistant)	*/
 EXTERN_MSC void GMT_icyleqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Cylindrical Equidistant) to lon/lat 	*/
 EXTERN_MSC void GMT_miller (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Miller Cylindrical)	*/
 EXTERN_MSC void GMT_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Miller Cylindrical) to lon/lat 	*/
 EXTERN_MSC void GMT_cylstereo (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Cylindrical Stereographic)	*/
-EXTERN_MSC void GMT_icylstereo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Cylindrical Stereographic) to lon/lat 	*/
-EXTERN_MSC void GMT_obl (struct GMT_CTRL *GMT, double lon, double lat, double *olon, double *olat);	/* Convert lon/loat to oblique lon/lat		*/
-EXTERN_MSC void GMT_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat);	/* Convert oblique lon/lat to regular lon/lat	*/
+EXTERN_MSC void GMT_icylstereo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Cylindrical Stereographic) to lon/lat */
+EXTERN_MSC void GMT_obl (struct GMT_CTRL *GMT, double lon, double lat, double *olon, double *olat);	/* Convert lon/loat to oblique lon/lat */
+EXTERN_MSC void GMT_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat);	/* Convert oblique lon/lat to regular lon/lat */
 EXTERN_MSC double GMT_left_winkel (struct GMT_CTRL *GMT, double y);	/* For Winkel maps	*/
 EXTERN_MSC double GMT_right_winkel (struct GMT_CTRL *GMT, double y);	/* For Winkel maps	*/
 EXTERN_MSC double GMT_left_eckert4 (struct GMT_CTRL *GMT, double y);	/* For Eckert IV maps	*/
@@ -277,6 +277,9 @@ EXTERN_MSC void gmt_Cmul (double A[], double B[], double C[]);
 EXTERN_MSC void gmt_Cdiv (double A[], double B[], double C[]);
 EXTERN_MSC void gmt_Ccot (double Z[], double cotZ[]);
 EXTERN_MSC double Cabs (double A[]);
+
+/* From gmt_nc.c */
+EXTERN_MSC void GMT_grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 
 /* From gmt_api.c */
 /* Sub function needed by GMT_end to free memory used in modules and at end of session */
