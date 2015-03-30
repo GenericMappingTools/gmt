@@ -390,6 +390,7 @@ support via ``GMT_grdimage`` [4]_.
   struct GMT_IMAGE {
       enum GMT_enum_type      type;           /* Data type, e.g. GMT_FLOAT */
       int                    *ColorMap;       /* Array with color lookup values */
+      int                     nIndexedColors; /* Number of colors in a paletted image */
       struct GMT_GRID_HEADER *header;         /* Pointer to full GMT header for the image */
       unsigned char          *data;           /* Pointer to actual image */
       /* ---- Variables "hidden" from the API ---- */
