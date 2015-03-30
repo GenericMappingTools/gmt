@@ -36,7 +36,6 @@
  * Version:	5 API
  * Tech Note:	1. surface uses old grid-structure (transpose of current GMT grid)
  *		   and must therefore waste time transposing grid before writing.
- *		2. No support for periodic boundary conditions.
  */
 
 #define THIS_MODULE_NAME	"surface"
