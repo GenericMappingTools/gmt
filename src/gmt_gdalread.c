@@ -64,7 +64,8 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   	metadata_only;
 	bool   	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	bool   	fliplr, got_R = false, got_r = false, error = false;
-	bool    topdown = false, rowmajor = true, leftright = true, just_copy = false;	/* arrays from GDAL have this order */
+	bool    topdown = false, rowmajor = true, leftright = true;		/* arrays from GDAL have this order */
+	bool    just_copy = false, copy_flipud = false;
 	int    *whichBands = NULL, *rowVec = NULL, *colVec = NULL;
 	int     off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
 	unsigned int nn, mm;
@@ -121,7 +122,8 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			leftright = false;
 		if (GMT->current.gdal_read_in.O.mem_layout[3] == 'S' || GMT->current.gdal_read_in.O.mem_layout[3] == 'L')
 			do_BIP = false;
-		if (topdown && rowmajor && leftright) just_copy = true;		/* Means we will send out the data as it came from gdal */
+		if (topdown && rowmajor && leftright) just_copy = true;     /* Means we will send out the data as it came from gdal */
+		if (!topdown && rowmajor && leftright) copy_flipud = true;  /* Means we will send out the data as it came from gdal */
 	}
 
 	if (prhs->p.active) pad = prhs->p.pad;
@@ -436,31 +438,40 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				}
 
 				Ctrl->UInt8.active = true;
-				if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was an waste. Needs fix */
-					memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, nBufYSize * nBufXSize);
-				}
-				else if (fliplr && !do_BIP) {				/* No BIP option yet, and maybe never */
-					for (m = 0; m < nYSize; m++) {
-						nn = (pad+m)*(nXSize_withPad) + startColPos;
-						for (n = nXSize-1; n >= 0; n--)
-							Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
-					}
-				}
-				else if (topdown && !do_BIP) {			/* No BIP option yet, and maybe never */
-					for (m = 0; m < nYSize; m++) {
-						for (n = 0; n < nXSize; n++) {
-							//ij = colVec[n] - m;
-							ij = colVec[n] + m;
-							Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
-						}
-					}
-				}
-				else		/* Currently all calls to send image to GMT (BIP case) must come through here */
+				if (do_BIP || !GMT->current.gdal_read_in.O.mem_layout[0]) {
+					/* Currently all calls to send image to GMT (BIP case) must come through here */
 					for (m = 0; m < nYSize; m++) {
 						off = nRGBA * pad + (pad+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
 						for (n = 0; n < nXSize; n++)
 							Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
 					}
+				}
+				else {
+					if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was an waste. Needs fix */
+						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, nBufYSize * nBufXSize);
+					}
+					else if (copy_flipud) {
+						/* We could copy and flip but the idea here is also to not use a tmp array too */
+						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, nBufYSize * nBufXSize);
+						GMT_grid_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
+					}
+					else if (fliplr) {				/* No BIP option yet, and maybe never */
+						for (m = 0; m < nYSize; m++) {
+							nn = (pad+m)*(nXSize_withPad) + startColPos;
+							for (n = nXSize-1; n >= 0; n--)
+								Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
+						}
+					}
+					else if (topdown) {			/* No BIP option yet, and maybe never */
+						for (m = 0; m < nYSize; m++) {
+							for (n = 0; n < nXSize; n++) {
+								//ij = colVec[n] - m;
+								ij = colVec[n] + m;
+								Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
+							}
+						}
+					}
+				}
 				break;
 			case GDT_Int16:
 				if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
