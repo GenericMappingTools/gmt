@@ -6349,28 +6349,28 @@ const char * GMTAPI_get_moduleinfo (void *V_API, char *module)
 
 /*! . */
 struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTION **head, unsigned int *n) {
-	/* This function determines which input sources and output destinations are required.
-	 * It is only meant to assist developers of external APIs such as the Matlab, Julia, Python, etc, APIs
-	 * These are the arguments:
-	 *   API controls all things within GMT.
-	 *   module is the name of the GMT module. While an input arg it may grow if a prefix of "gmt" is prepended.
-	 *   marker is the character that represents a resource, typically $, but could be something else if need be.
-	 *   head is the linked list of GMT options passed for this module.  We may hook on 1-2 additional options.
+	/* This function determines which input sources and output destinations are required given the options.
+	 * It is only used to assist developers of external APIs such as the Matlab, Julia, Python, R, and other APIs.
+	 * These are the function arguments:
+	 *   API	Controls all things within GMT.
+	 *   module	Name of the GMT module. An input arg, but may grow if a prefix of "gmt" is prepended.
+	 *   marker	Character that represents a resource, typically $, but could be another char if need be.
+	 *   head	Linked list of GMT options passed for this module.  We may hook on 1-2 additional options.
 	 *   We return an array of structures with information about registered resources going to/from GMT.
-	 *   The number of structures is returned by the *n argument.
+	 *   The number of structures is returned by the *n argument. struct GMT_RESOURCE is defined in gmt.h.
 	 * Basically, given the module we look up the keys for that module which tells us which options provide
 	 * the input and output selections and which ones are required and which ones are optional.  We then
 	 * scan the given options and if file arguments to the options listed in the keys are missing we are
 	 * to insert the given marker as the filename.  Some options may already have the marker, e.g., -G$, and
 	 * it is required for filenames on the command line that is to come from memory (just $).  After scanning
 	 * the options we examine the keys for any required input or output argument that have yet to be specified
-	 * explicitly.  If so we add the missing options, with filenames of marker, and append them to the end of
+	 * explicitly.  If so we add the missing options, with filename = marker, and append them to the end of
 	 * the option list (head).  The API developers can then use this array of encoded options in concert with
-	 * the information passed back via X to attach actual resources.
+	 * the information passed back via the structure list to attach actual resources.
 	 */
 
-	unsigned int n_keys, direction, PS, kind, pos;
-	unsigned int n_items = 0, n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
+	unsigned int n_keys, direction, PS, kind, pos, n_items = 0;
+	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
 	int family;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int k;
