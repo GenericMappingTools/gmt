@@ -6348,14 +6348,13 @@ const char * GMTAPI_get_moduleinfo (void *V_API, char *module)
 }
 
 /*! . */
-struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker, int nleft, struct GMT_OPTION **head, unsigned int *n) {
+struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker, struct GMT_OPTION **head, unsigned int *n) {
 	/* This function determines which input sources and output destinations are required.
 	 * It is only meant to assist developers of external APIs such as the Matlab, Julia, Python, etc, APIs
 	 * These are the arguments:
 	 *   API controls all things within GMT.
 	 *   module is the name of the GMT module. While an input arg it may grow if a prefix of "gmt" is prepended.
 	 *   marker is the character that represents a resource, typically $, but could be something else if need be.
-	 *   nleft is the number of output items expected by the external API (e.g., nlhs in Matlab and Octave).
 	 *   head is the linked list of GMT options passed for this module.  We may hook on 1-2 additional options.
 	 *   We return an array of structures with information about registered resources going to/from GMT.
 	 *   The number of structures is returned by the *n argument.
@@ -6424,11 +6423,6 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 				}
 			}
 		}
-	}
-	/* 1c. Check if this is psconvert and nleft == 1, meaning write the image to memory */
-	if (!strncmp (module, "psconvert", 9U) && nleft == 1 && (opt = GMT_Find_Option (API, 'F', *head)) == NULL) {	/* Want psconvert to return image but gave no -F option */
-		activate_output = true;
-		option = 'F';
 	}
 
 	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) */
@@ -6584,9 +6578,9 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 }
 
 #ifdef FORTRAN_API
-struct GMT_RESOURCE * GMT_Encode_Options_ (char *module, char *marker, int *nleft, struct GMT_OPTION **head, unsigned int *n, int len)
+struct GMT_RESOURCE * GMT_Encode_Options_ (char *module, char *marker, struct GMT_OPTION **head, unsigned int *n, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Encode_Options (GMT_FORTRAN, module, *marker, *nleft, head, n));
+	return (GMT_Encode_Options (GMT_FORTRAN, module, *marker, head, n));
 }
 #endif
 
