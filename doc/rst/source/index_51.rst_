@@ -77,6 +77,16 @@ API Reference
 |    api             |
 +--------------------+
 
+MATLAB Wrapper
+==============
+
++--------------------+
+| .. toctree::       |
+|    :maxdepth: 2    |
+|                    |
+|    ml_wrapper      |
++--------------------+
+
 .. Include an hiden page with option's examples that can be referenced by individual programs
 
 .. toctree::
