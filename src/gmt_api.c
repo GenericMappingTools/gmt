@@ -428,7 +428,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 				API->lib[n_custom_libs].name = lib_tag (list[k]);
 				sprintf (path, "%s/%s", plugindir, list[k]);
 				API->lib[n_custom_libs].path = strdup (path);
-				GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
+				GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = %s\n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
 				n_custom_libs++;			/* Add up entries found */
 				if (n_custom_libs == n_alloc) {		/* Allocate more memory for list */
 					n_alloc <<= 1;
