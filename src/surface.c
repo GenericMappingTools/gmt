@@ -1289,6 +1289,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 		C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
 	}
 }
 
@@ -1778,7 +1779,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 		(GMT->common.r.active) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
-	if (C.grid == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid dimensions are mutually prime.\n");
+	if (C.grid == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
 	if ((C.grid == 1 && GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.factors, C.nx-1, C.ny-1);
 	if (Ctrl->Q.active) Return (EXIT_SUCCESS);
 
@@ -1789,7 +1790,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	C.grid = 1;
 	set_grid_parameters (&C);
 	if (read_data_surface (GMT, &C, options)) Return (EXIT_FAILURE);
-	if (Ctrl->D.active) {
+	if (Ctrl->D.active) {	/* Consider breakline dataset */
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
 		xyzline = Lin->table[0];			/* Can only be one table since we read a single file */
@@ -1823,6 +1824,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	}
 	set_offset (&C);
 	set_index (&C);
+
 	/* Now the data are ready to go for the first iteration.  */
 
 	/* Allocate more space  */

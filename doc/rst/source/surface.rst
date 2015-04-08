@@ -83,7 +83,10 @@ boundary conditions in the longitude direction.
     Convergence limit. Iteration is assumed to have converged when the
     maximum absolute change in any grid value is less than
     *convergence\_limit*. (Units same as data z units). [Default is
-    scaled to 0.1 percent of typical gradient in input data.]
+    scaled to 0.01 percent of the standard deviation of the input data.].
+    This is the final convergence limit at the desired grid spacing; for
+    intermediate (coarser) grids the effective convergence limit is scaled
+    by the grid spacing multiplier.
 **-Ll**\ *lower* and **-Lu**\ *upper*
     Impose limits on the output solution. **l**\ *lower* sets the lower
     bound. *lower* can be the name of a grid file with lower bound
@@ -97,7 +100,10 @@ boundary conditions in the longitude direction.
 **-N**\ *max\_iterations*
     Number of iterations. Iteration will cease when *convergence\_limit*
     is reached or when number of iterations reaches *max\_iterations*.
-    [Default is 250.]
+    This is the final iteration limit at the desired grid spacing; for
+    intermediate (coarser) grids the effective iteration limit is scaled
+    by the grid spacing multiplier.
+    [Default is 500.]
 **-Q**
     Suggest grid dimensions which have a highly composite greatest
     common factor. This allows surface to use several intermediate steps
