@@ -1512,10 +1512,10 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <aspect_ratio> such that yinc = xinc / <aspect_ratio>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e.g., if gridding lon,lat use <aspect_ratio> = cosine(middle of lat range).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set convergence limit; iteration stops when max |change| < <convergence_limit>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default will choose %g of the range of your z data (%u ppm precision).\n", SURFACE_CONV_LIMIT, ppm);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Enter your own convergence limit in same units as z data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Use xyz data (can be multiseg) in the <breakline> file as a 'soft breakline'.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set final convergence limit; iteration stops when max |change| < <convergence_limit>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default will choose %g of the rms of your z data after removing L2 plane (%u ppm precision).\n", SURFACE_CONV_LIMIT, ppm);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Enter your own convergence limit in same units as your z data.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Use xyz data in the <breakline> file as a 'soft breakline'.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Constrain the range of output values:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ll<limit> specifies lower limit; forces solution to be >= <limit>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lu<limit> specifies upper limit; forces solution to be <= <limit>.\n");

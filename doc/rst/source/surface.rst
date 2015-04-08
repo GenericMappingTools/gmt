@@ -83,7 +83,8 @@ boundary conditions in the longitude direction.
     Convergence limit. Iteration is assumed to have converged when the
     maximum absolute change in any grid value is less than
     *convergence\_limit*. (Units same as data z units). [Default is
-    scaled to 0.01 percent of the standard deviation of the input data.].
+    scaled to 1e-4 of the root-mean-square deviation of the data
+    from a best-fit (least-squares) plane.].
     This is the final convergence limit at the desired grid spacing; for
     intermediate (coarser) grids the effective convergence limit is scaled
     by the grid spacing multiplier.
