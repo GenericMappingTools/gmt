@@ -47,8 +47,6 @@
 
 #define GMT_PROG_OPTIONS "-:RVabdfhirs" GMT_OPT("FH")
 
-/* MEX: <DI DDi GGO LGi */
-
 struct SURFACE_CTRL {
 	struct A {	/* -A<aspect_ratio> */
 		bool active;
@@ -98,7 +96,10 @@ struct SURFACE_CTRL {
 	} Z;
 };
 
-#define SURFACE_OUTSIDE LONG_MAX	/* Index number indicating data is outside usable area */
+#define SURFACE_OUTSIDE		LONG_MAX	/* Index number indicating data is outside usable area */
+#define SURFACE_CONV_LIMIT	0.0001		/* Default is 100 ppm of data range as convergence criterion */
+#define SURFACE_MAX_ITERATIONS	500		/* Default iterations at final grid size */
+#define SURFACE_OVERRELAXATION	1.4		/* Default over-relaxation value */
 
 struct SURFACE_DATA {	/* Data point and index to node it currently constrains  */
 	float x;
@@ -781,6 +782,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 {	/* Main finite difference solver */
 	uint64_t ij, briggs_index, ij_v2, iteration_count = 0, ij_sw, ij_se;
+	unsigned int current_max_iterations = C->max_iterations * C->grid;
 	int i, j, k, kase;
 	int x_case, y_case, x_w_case, x_e_case, y_s_case, y_n_case;
 	char *iu = C->iu;
@@ -1033,7 +1035,7 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
 			C->grid, C->mode_type[mode], iteration_count, max_change, current_limit, C->total_iterations);
 
-	} while (max_change > current_limit && iteration_count < C->max_iterations);
+	} while (max_change > current_limit && iteration_count < current_max_iterations);
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format,
 		C->grid, C->mode_type[mode], iteration_count, max_change, current_limit, C->total_iterations);
@@ -1311,7 +1313,11 @@ int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 
 	for (i = 0; i < C->npoints; i++) C->data[i].z *= (float)C->r_z_scale;
 
-	if (C->converge_limit == 0.0) C->converge_limit = 0.001 * C->z_scale; /* i.e., 1 ppt of L2 scale */
+	if (C->converge_limit == 0.0) {
+		unsigned int ppm = urint (SURFACE_CONV_LIMIT / 1.0e-6);
+		C->converge_limit = SURFACE_CONV_LIMIT * C->z_scale; /* i.e., 100 ppm of L2 scale */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Select default convergence limit of %g (%u ppm of L2 scale)\n", C->converge_limit, ppm);
+	}
 	return (0);
 }
 
@@ -1467,9 +1473,9 @@ void *New_surface_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct SURFACE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->N.value = 250;
+	C->N.value = SURFACE_MAX_ITERATIONS;
 	C->A.value = 1.0;
-	C->Z.value = 1.4;
+	C->Z.value = SURFACE_OVERRELAXATION;
 		
 	return (C);
 }
@@ -1485,6 +1491,7 @@ void Free_surface_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deall
 
 int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 {
+	unsigned int ppm;
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: surface [<table>] -G<outgrid> %s\n", GMT_I_OPT);
@@ -1494,7 +1501,8 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
-
+	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);
+	
 	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid file name.\n");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -1503,8 +1511,8 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <aspect_ratio> such that yinc = xinc / <aspect_ratio>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e.g., if gridding lon,lat use <aspect_ratio> = cosine(middle of lat range).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set convergence limit; iteration stops when max abs change is less than <c.l.>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default will choose 0.001 of the range of your z data (1 ppt precision).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set convergence limit; iteration stops when max |change| < <convergence_limit>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default will choose %g of the range of your z data (%u ppm precision).\n", SURFACE_CONV_LIMIT, ppm);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Enter your own convergence limit in same units as z data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Use xyz data (can be multiseg) in the <breakline> file as a 'soft breakline'.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Constrain the range of output values:\n");
@@ -1513,7 +1521,7 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   <limit> can be any number, or the letter d for min (or max) input data value,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or the filename of a grid with bounding values.  [Default solution unconstrained].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Example: -Ll0 gives a non-negative solution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set max <n_iterations> in each cycle; default = 250.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set max <n_iterations> in the final cycle; default = %d.\n", SURFACE_MAX_ITERATIONS);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set <search_radius> to initialize grid; default = 0 will skip this step.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This step is slow and not needed unless grid dimensions are pathological;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., have few or no common factors.\n");
@@ -1526,13 +1534,13 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend b to set tension in boundary conditions only;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend i to set tension in interior equations only;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No appended letter sets tension for both to same value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Query for grid sizes that might run faster than your -R -I give.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set <over_relaxation parameter>.  Default = 1.4\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use a value between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set <over_relaxation parameter>.  Default = %g.  Use a value\n", SURFACE_OVERRELAXATION);
+	GMT_Message (API, GMT_TIME_NONE, "\t   between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n\n");
 	GMT_Option (API, "a,bi3,di,f,h,i,r,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
 	
 	return (EXIT_FAILURE);

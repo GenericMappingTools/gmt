@@ -91,7 +91,8 @@ if (APPLE)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ACCELERATE_FRAMEWORK})
 endif (APPLE)
 
-#find_package (OpenMP) # OpenMP not used; disabled for now
+set (GMT_OPENMP TRUE CACHE INTERNAL "Turn on GMT OpenMP")
+find_package (OpenMP) # OpenMP not used; disabled for now
 if (OPENMP_FOUND AND GMT_OPENMP)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_C_FLAGS}")

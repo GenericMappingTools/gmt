@@ -1117,6 +1117,12 @@ int GMT_psxy (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_NORMAL, "Warning: Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
 							continue;
 						}
+						if (item == 1) {    /* Deal with periodicity */
+							if (x_2 < GMT->current.map.half_width)     /* Might reappear at right edge */
+								x_2 += width;	/* Outside the right edge */
+							else      /* Might reappear at left edge */
+					              		x_2 -= width;         /* Outside the left edge */
+						}
 						length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */
 					}
 					else {	/* Compute tip coordinates from tail and length */
