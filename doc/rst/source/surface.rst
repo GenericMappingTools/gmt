@@ -79,10 +79,11 @@ boundary conditions in the longitude direction.
     Aspect ratio. If desired, grid anisotropy can be added to the
     equations. Enter *aspect\_ratio*, where dy = dx / *aspect\_ratio*
     relates the grid dimensions. [Default = 1 assumes isotropic grid.]
-**-C**\ *convergence\_limit*
+**-C**\ *convergence\_limit*[%]
     Convergence limit. Iteration is assumed to have converged when the
     maximum absolute change in any grid value is less than
-    *convergence\_limit*. (Units same as data z units). [Default is
+    *convergence\_limit*. (Units same as data z units). Alternatively,
+    give limit in percentage of rms deviation by appending %.  [Default is
     scaled to 1e-4 of the root-mean-square deviation of the data
     from a best-fit (least-squares) plane.].
     This is the final convergence limit at the desired grid spacing; for

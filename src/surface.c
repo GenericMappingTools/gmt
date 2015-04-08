@@ -54,6 +54,7 @@ struct SURFACE_CTRL {
 	} A;
 	struct C {	/* -C<converge_limit> */
 		bool active;
+		unsigned int mode;	/* 1 if given as fraction */
 		double value;
 	} C;
 	struct D {	/* -D<line.xyz> */
@@ -142,6 +143,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	int block_nx;		/* Number of nodes in x-dir for a given grid factor */
 	int block_ny;		/* Number of nodes in y-dir for a given grid factor */
 	unsigned int max_iterations;	/* Max iter per call to iterate */
+	double converge_limit_mode;	/* 1 if -C set fractional convergence limit */
 	uint64_t total_iterations;
 	bool periodic;		/* true if geographic grid and west-east == 360 */
 	int grid_east;
@@ -1314,9 +1316,11 @@ int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 
 	for (i = 0; i < C->npoints; i++) C->data[i].z *= (float)C->r_z_scale;
 
-	if (C->converge_limit == 0.0) {
-		unsigned int ppm = urint (SURFACE_CONV_LIMIT / 1.0e-6);
-		C->converge_limit = SURFACE_CONV_LIMIT * C->z_scale; /* i.e., 100 ppm of L2 scale */
+	if (C->converge_limit == 0.0 || C->converge_limit_mode == 1) {	/* Set default values */
+		unsigned int ppm;
+		double limit = (C->converge_limit_mode == 1) ? C->converge_limit : SURFACE_CONV_LIMIT;
+		ppm = urint (limit / 1.0e-6);
+		C->converge_limit = limit * C->z_scale; /* i.e., 100 ppm of L2 scale */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Select default convergence limit of %g (%u ppm of L2 scale)\n", C->converge_limit, ppm);
 	}
 	return (0);
@@ -1372,6 +1376,7 @@ void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
 	C->interior_tension = Ctrl->T.i_tension;
 	C->l_epsilon = Ctrl->A.value;
 	C->converge_limit = Ctrl->C.value;
+	C->converge_limit_mode = Ctrl->C.mode;
 }
 
 void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline)
@@ -1576,6 +1581,10 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 			case 'C':
 				Ctrl->C.active = true;
 				Ctrl->C.value = atof (opt->arg);
+				if (strchr (opt->arg, '%')) {	/* Gave convergence in percent */
+					Ctrl->C.mode = 1;
+					Ctrl->C.value *= 0.01;
+				}
 				break;
 			case 'D':
 				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_IN, GMT_IS_DATASET)))
