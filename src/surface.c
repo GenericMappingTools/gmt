@@ -1326,7 +1326,7 @@ int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	return (0);
 }
 
-void suggest_sizes_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny)
+void suggest_sizes_for_surface (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int nx, unsigned int ny)
 {
 	/* Calls GMT_optimal_dim_for_surface to determine if there are
 	 * better choices for nx, ny that might speed up calculations
@@ -1341,11 +1341,35 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], un
 	n_sug = GMT_optimal_dim_for_surface (GMT, factors, nx, ny, &sug);
 
 	if (n_sug) {
+		char region[GMT_LEN128] = {""}, buffer[GMT_LEN128] = {""};
+		unsigned int m, j, save_range = GMT->current.io.geo.range;
+		double x0, y0, w, e, s, n;
+		x0 = 0.5 * (G->header->wesn[XLO] + G->header->wesn[XHI]);
+		y0 = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
+		GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;		/* Override this setting explicitly */
 		for (i = 0; i < n_sug && i < 10; i++) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: Choosing nx = %d, ny = %d might cut run time by a factor of %.8g\n",
-				sug[i].nx, sug[i].ny, sug[i].factor);
+			m = sug[i].nx - (G->header->nx - 1);	/* Additional nodes in x */
+			w = G->header->wesn[XLO] - (m/2)*G->header->inc[GMT_X];
+			e = G->header->wesn[XHI] + (m/2)*G->header->inc[GMT_X];
+			if (m%2) e += G->header->inc[GMT_X];
+			m = sug[i].ny - (G->header->ny - 1);	/* Additional nodes in y */
+			s = G->header->wesn[YLO] - (m/2)*G->header->inc[GMT_Y];
+			n = G->header->wesn[YHI] + (m/2)*G->header->inc[GMT_Y];
+			if (m%2) n += G->header->inc[GMT_Y];
+			GMT_ascii_format_col (GMT, buffer, w, GMT_OUT, GMT_X);
+			sprintf (region, "-R%s/", buffer);
+			GMT_ascii_format_col (GMT, buffer, e, GMT_OUT, GMT_X);
+			strcat (region, buffer);	strcat (region, "/");
+			GMT_ascii_format_col (GMT, buffer, s, GMT_OUT, GMT_Y);
+			strcat (region, buffer);	strcat (region, "/");
+			GMT_ascii_format_col (GMT, buffer, n, GMT_OUT, GMT_Y);
+			strcat (region, buffer);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: Choosing %s [nx = %d, ny = %d] might cut run time by a factor of %.8g\n",
+				region, sug[i].nx, sug[i].ny, sug[i].factor);
 		}
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: After completion you can recover the desired region via gmt grdcut\n");
 		GMT_free (GMT, sug);
+		GMT->current.io.geo.range = save_range;
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot suggest any nx,ny better than your -R -I define.\n");
@@ -1789,7 +1813,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
 	if (C.grid == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.grid == 1 && GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.factors, C.nx-1, C.ny-1);
+	if ((C.grid == 1 && GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.Grid, C.factors, C.nx-1, C.ny-1);
 	if (Ctrl->Q.active) Return (EXIT_SUCCESS);
 
 	/* New idea: set grid = 1, read data, setting index.  Then throw
