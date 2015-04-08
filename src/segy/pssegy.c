@@ -698,7 +698,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 	GMT_plotend (GMT);
 
 	GMT_free (GMT, bitmap);
-	GMT_free (GMT, tracelist);
+	if (Ctrl->T.active) GMT_free (GMT, tracelist);
 
 	Return (EXIT_SUCCESS);
 }

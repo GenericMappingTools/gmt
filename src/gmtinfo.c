@@ -286,9 +286,9 @@ int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GM
 int GMT_gmtinfo (void *V_API, int mode, void *args)
 {
 	bool got_stuff = false, first_data_record, give_r_string = false;
-	bool brackets = false, work_on_abs_value, do_report, save_range, done;
+	bool brackets = false, work_on_abs_value, do_report, done;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
-	unsigned int fixed_phase[2] = {1, 1}, min_cols, o_mode;
+	unsigned int fixed_phase[2] = {1, 1}, min_cols, o_mode, save_range;
 	uint64_t col, ncol = 0, n = 0;
 
 	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, delimeter[2] = {""};
