@@ -260,10 +260,6 @@ make each explicitly contain the polar point. The two polygons will
 combine to give the desired effect when filled; to draw outline use the
 original polygon.
 
-The **-N** option does not adjust the BoundingBox information so you may
-have to post-process the PostScript output with :doc:`psconvert` **-A**
-to obtain the correct BoundingBox.
-
 See Also
 --------
 
