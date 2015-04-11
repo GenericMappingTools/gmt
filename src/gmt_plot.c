@@ -3484,7 +3484,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
-	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
+	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
 	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL *f = NULL, *current_fill = fill;
@@ -3514,6 +3514,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	start = symbol->start;	/* Link to top level head info */
 	/* Remember current settings as we wish to restore at the end */
 	GMT_savepen (GMT, &save_pen);
+	GMT_memset (dim, PSL_MAX_DIMS, double);
 	
 	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes outside the gsave/grestore around each symbol */
 		symbol->text = false;	/* Only do this once */
@@ -3687,6 +3688,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (this_outline) GMT_setpen (GMT, p);
 				GMT_setfill (GMT, f, this_outline);
 				dim[1] = s->p[1], dim[2] = s->p[2];
+				dim[5] = current_pen->width * GMT->session.u2u[GMT_PT][GMT_INCH];
 				PSL_plotsymbol (PSL, x, y, dim, PSL_MARC);
 				break;
 
