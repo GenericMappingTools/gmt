@@ -9734,14 +9734,17 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'b':
 			p->symbol = GMT_SYMBOL_BARY;
-			if (text[bset+1] == '\0') {	/* Read it from data file */
-				p->base_set = 2;
-				p->n_required = 1;
-				p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
-			}
-			else {
-				if (gmt_get_uservalue (GMT, &text[bset+1], GMT->current.io.col_type[GMT_IN][GMT_Y], &p->base, "-Sb base value")) return EXIT_FAILURE;
-				p->base_set = 1;
+			if (bset) {
+				if (p->user_unit[GMT_Y]) text_cp[strlen(text_cp)-1] = '\0';	/* Chop off u */
+				if (text_cp[bset+1] == '\0') {	/* Read it from data file */
+					p->base_set = 2;
+					p->n_required = 1;
+					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
+				}
+				else {
+					if (gmt_get_uservalue (GMT, &text_cp[bset+1], GMT->current.io.col_type[GMT_IN][GMT_Y], &p->base, "-Sb base value")) return EXIT_FAILURE;
+					p->base_set = 1;
+				}
 			}
 			break;
 		case 'C':

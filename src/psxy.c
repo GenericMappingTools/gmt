@@ -768,8 +768,8 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	if (clip_set) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);	/* Set the required font */
-	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set && GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
-	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set && GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
+	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
+	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
 	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
 		/* Reading 2nd coordinate so must set column types */
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
