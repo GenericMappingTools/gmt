@@ -32,7 +32,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:RVbdfhirs" GMT_OPT("FH")
+#define GMT_PROG_OPTIONS "-:JRVbdfhirs" GMT_OPT("FH")
 
 void GMT_str_tolower (char *string);
 
@@ -302,6 +302,18 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_xyz2grd_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
+void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+	if (GMT_Find_Option (API, 'J', options) != NULL) { 
+#ifdef HAVE_GDAL
+		struct GMT_OPTION *opt = GMT_Make_Option (API, 'f', "0f,1f");
+		options = GMT_Append_Option(API, opt, options);
+#else
+		GMT_Report(API, GMT_MSG_NORMAL,
+		           "Warning: -J option to set grid's referencing system is only availabe when GMT was build with GDAL\n");
+#endif
+	}
+}
+
 int GMT_xyz2grd (void *V_API, int mode, void *args)
 {
 	bool previous_bin_i = false, previous_bin_o = false;
@@ -337,6 +349,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
+	protect_J(API, options);	/* If -J is used, add a -f0f,1f option to avoid later parsing errors due to -R & -J conflicts */
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_xyz2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -522,6 +535,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	/* Set up and allocate output grid [note: zero padding specificied] */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
+
+	/* See if we have a projection info to add */
+	if (GMT->common.J.active)		/* Convert the GMT -J<...> into a proj4 string and save it in the header */
+		Grid->header->ProjRefPROJ4 = GMT_export2proj4(GMT);
 	
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
