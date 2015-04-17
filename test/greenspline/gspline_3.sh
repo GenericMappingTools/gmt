@@ -5,7 +5,7 @@
 ps=gspline_3.ps
 
 # Figure 4 in Wessel, P. (2009), A general-purpose Green's function-based
-#	interpolator, Computers & Geosciences, 35, 1247–1254.
+#	interpolator, Computers & Geosciences, 35, 1247-1254.
 
 # Create synthetic data as in Lancaster & Salkauskas using C code on the fly
 
