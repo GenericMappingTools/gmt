@@ -404,7 +404,6 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the psimage main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input EPS or Sun rasterfile\n");
 	PS_interpolate = (Ctrl->W.interpolate) ? -1 : +1;
 
 	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
@@ -415,6 +414,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
 	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
 	if (known) {	/* Read an EPS or Sun raster file */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input EPS or Sun rasterfile\n");
 		if (GMT_getdatapath (GMT, Ctrl->In.file, path, R_OK) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
@@ -426,6 +426,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	}
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input raster via GDAL\n");
 		GMT_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
