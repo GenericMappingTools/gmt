@@ -173,7 +173,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 int GMT_blockmean (void *V_API, int mode, void *args)
 {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
-	unsigned int row, col;
+	unsigned int row, col, n_input;
 	int error;
 	bool use_xy, use_weight, duplicate_col;
 
@@ -221,7 +221,8 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, uint64_t);
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
+	n_input = (Ctrl->S.mode == 3) ? 2 : 3;
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_input + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
 		Return (error);
 	}
 	if ((error = GMT_set_cols (GMT, GMT_OUT, ((Ctrl->W.weighted[GMT_OUT]) ? 4 : 3) + 3 * Ctrl->E.active)) != GMT_OK) {
