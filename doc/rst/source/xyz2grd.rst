@@ -70,7 +70,8 @@ Optional Arguments
     **l** or **u** to find the lowest (minimum) or upper (maximum) value
     at each node, respectively. Append **m** or **r** to compute mean or
     RMS value at each node, respectively. Append **n** to simply count
-    the number of data points that were assigned to each node. Append
+    the number of data points that were assigned to each node (this only
+    requires two input columns *x* and *y* as *z* is not consulted). Append
     **z** to sum multiple values that belong to the same node.
 
 .. include:: explain_-D_cap.rst_

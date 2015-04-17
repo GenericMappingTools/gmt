@@ -73,7 +73,7 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -W with no modifier has both weighted Input and Output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is no weights used].\n");
 	GMT_Option (API, "a,bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Default is 3 columns (or 4 if -W is set).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Default is 3 columns (or 4 if -W is set), or 2 for -Sn.\n");
 	GMT_Option (API, "bo,d,f,h,i,o,r,:,.");
 
 	return (EXIT_FAILURE);

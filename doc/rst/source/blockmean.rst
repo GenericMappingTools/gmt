@@ -97,6 +97,8 @@ Optional Arguments
    
  
 .. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
+   The **-Sn** option will work with only 2 input columns (x and y).
+
 .. include:: explain_-bo.rst_
  
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
