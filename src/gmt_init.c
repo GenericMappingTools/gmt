@@ -10796,7 +10796,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
+struct GMT_CTRL *New_GMT_Ctrl (struct GMTAPI_CTRL *API, char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
 	GMT_UNUSED(session);
 	int i;
 	char path[PATH_MAX+1];
@@ -10853,6 +10853,9 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	GMT_memcpy (GMT->current.setting.ref_ellipsoid, ref_ellipsoid, 1, ref_ellipsoid);
 	GMT_memcpy (GMT->current.setting.proj_datum, datum, 1, datum);
 
+	/* Assign the daddy */
+	GMT->parent = API;
+	
 	/* Assign the three std* pointers */
 
 	GMT->session.std[GMT_IN]  = stdin;
@@ -11004,9 +11007,8 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 	}
 #endif
 
-	GMT = New_GMT_Ctrl (session, pad);	/* Allocate and initialize a new common control structure */
+	GMT = New_GMT_Ctrl (API, session, pad);	/* Allocate and initialize a new common control structure */
 	API->GMT = GMT;
-	GMT->parent = API;	/* So we know who's your daddy */
 
 	GMT->PSL = New_PSL_Ctrl ("GMT5");		/* Allocate a PSL control structure */
 	if (!GMT->PSL) {

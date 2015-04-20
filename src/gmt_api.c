@@ -6795,30 +6795,34 @@ int GMT_Message_ (void *V_API, unsigned int *mode, char *message, int len)
 int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 {	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
+	unsigned int g_level;
 	char message[GMT_BUFSIZ] = {""};
 	struct GMTAPI_CTRL *API = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	va_list args;
-
+	/* GMT_Report may be called before GMT is set so take precautions */
 	if (V_API == NULL) return GMT_NOERROR;		/* Not a fatal issue here */
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	API = gmt_get_api_ptr (V_API);
-	if (level > MAX(API->verbose, API->GMT->current.setting.verbose))
+	GMT = API->GMT;
+	g_level = (GMT) ? GMT->current.setting.verbose : 0;
+	if (level > MAX(API->verbose, g_level))
 		return 0;
-	if (API->GMT->current.setting.timer_mode > GMT_NO_TIMER) {
-		char *stamp = GMTAPI_tictoc_string (API, API->GMT->current.setting.timer_mode);	/* NULL or pointer to a timestamp string */
+	if (GMT && GMT->current.setting.timer_mode > GMT_NO_TIMER) {
+		char *stamp = GMTAPI_tictoc_string (API, GMT->current.setting.timer_mode);	/* NULL or pointer to a timestamp string */
 		if (stamp) {
 			sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
 			source_info_len = strlen (message);	/* Update length of message from 0 */
 		}
 	}
-	snprintf (message + source_info_len, GMT_BUFSIZ-source_info_len, "%s: ", (API->GMT->init.module_name) ? API->GMT->init.module_name : API->session_tag);
+	snprintf (message + source_info_len, GMT_BUFSIZ-source_info_len, "%s: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag);
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */
 	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
 	va_end (args);
 	assert (strlen (message) < GMT_BUFSIZ);
-	API->print_func (API->GMT->session.std[GMT_ERR], message);
+	API->print_func (GMT ? GMT->session.std[GMT_ERR] : stderr, message);
 	return_error (V_API, GMT_NOERROR);
 }
 
