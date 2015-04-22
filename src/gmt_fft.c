@@ -851,8 +851,8 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned ny, unsigned nx, ff
 }
 
 int GMT_fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
-	GMT_UNUSED(mode);
 	fftwf_plan plan = NULL;
+	GMT_UNUSED(mode);
 
 	/* Generate FFTW plan for complex 1d DFT */
 	plan = gmt_fftwf_plan_dft(GMT, 0, n, (fftwf_complex*)data, direction);
@@ -863,8 +863,8 @@ int GMT_fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, int dir
 }
 
 int GMT_fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
-	GMT_UNUSED(mode);
 	fftwf_plan plan = NULL;
+	GMT_UNUSED(mode);
 
 	/* Generate FFTW plan for complex 2d DFT */
 	plan = gmt_fftwf_plan_dft(GMT, ny, nx, (fftwf_complex*)data, direction);
@@ -889,7 +889,6 @@ void GMT_fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 
 int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode)
 {
-	GMT_UNUSED(mode);
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
@@ -897,6 +896,7 @@ int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int dire
 	/* Base 2 exponent that specifies the largest power of
 	 * two that can be processed by fft: */
 	vDSP_Length log2n = radix2 (n);
+	GMT_UNUSED(mode);
 
 	if (log2n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u [n]\n", 1U<<propose_radix2 (n));
@@ -936,7 +936,6 @@ void GMT_fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 
 int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
 {
-	GMT_UNUSED(mode);
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
@@ -946,6 +945,7 @@ int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 	vDSP_Length log2nx = radix2 (nx);
 	vDSP_Length log2ny = radix2 (ny);
 	unsigned int n_xy = nx * ny;
+	GMT_UNUSED(mode);
 
 	if (log2nx == 0 || log2ny == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u/%u [nx/ny]\n",
@@ -987,9 +987,9 @@ int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 
 int GMT_fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode)
 {
-	GMT_UNUSED(GMT); GMT_UNUSED(mode);
 	kiss_fft_cpx *fin, *fout;
 	kiss_fft_cfg config;
+	GMT_UNUSED(GMT); GMT_UNUSED(mode);
 
 	/* Initialize a FFT (or IFFT) config/state data structure */
 	config = kiss_fft_alloc(n, direction == GMT_FFT_INV, NULL, NULL);
@@ -1002,11 +1002,11 @@ int GMT_fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int dire
 
 int GMT_fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
 {
-	GMT_UNUSED(GMT); GMT_UNUSED(mode);
 	const int dim[2] = {ny, nx}; /* dimensions of fft */
 	const int dimcount = 2;      /* number of dimensions */
 	kiss_fft_cpx *fin, *fout;
 	kiss_fftnd_cfg config;
+	GMT_UNUSED(GMT); GMT_UNUSED(mode);
 
 	/* Initialize a FFT (or IFFT) config/state data structure */
 	config = kiss_fftnd_alloc (dim, dimcount, direction == GMT_FFT_INV, NULL, NULL);

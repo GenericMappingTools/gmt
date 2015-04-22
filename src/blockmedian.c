@@ -159,11 +159,11 @@ int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, 
 void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra,
 	unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data)
 {
-	GMT_UNUSED(GMT);
 	double weight_half, weight_count;
 	uint64_t node, n_in_cell, node1;
 	unsigned int k, k_for_xy;
 	int way;
+	GMT_UNUSED(GMT);
 
 	/* Remember: Data are already sorted on z for each cell */
 

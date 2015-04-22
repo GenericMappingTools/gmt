@@ -241,10 +241,10 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 
-	GMT_UNUSED(GMT);
 	bool error = false;
 	unsigned int pos = 0;
 	char txt[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
+	GMT_UNUSED(GMT);
 
 	C->W.active = true;
 	strncpy (txt, arg, GMT_BUFSIZ);

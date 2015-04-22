@@ -216,7 +216,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 	double mean = 0.0, median = 0.0, sum2 = 0.0, stdev = 0.0, scale = 0.0, rms = 0.0, x;
 
 	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
-	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL;
+	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL;
 
 	struct GRDINFO_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
@@ -269,6 +269,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		if (subset) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
+
+		if (G->header->ProjRefPROJ4) projStr = strdup(G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
 		
 		for (n = 0; n < GMT_Z; n++) GMT->current.io.col_type[GMT_OUT][n] = GMT->current.io.col_type[GMT_IN][n];	/* Since grids may differ in types */
 		
@@ -624,6 +626,13 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		GMT_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
+
+	if (projStr) {		/* Print the referencing info */
+		GMT_Put_Record (API, GMT_WRITE_TEXT, projStr);
+		free(projStr);
+		projStr = NULL;
+	}
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}

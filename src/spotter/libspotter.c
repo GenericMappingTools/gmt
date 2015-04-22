@@ -96,8 +96,8 @@ int spotter_comp_total (const void *p_1, const void *p_2)
 
 void spotter_matrix_to_pole (struct GMT_CTRL *GMT, double T[3][3], double *plon, double *plat, double *w)
 {	/* Based on Cox and Hart, 1986 */
-	GMT_UNUSED(GMT);
 	double T13_m_T31, T32_m_T23, T21_m_T12, L, H, tr;
+	GMT_UNUSED(GMT);
 
 	T13_m_T31 = T[0][2] - T[2][0];
 	T32_m_T23 = T[2][1] - T[1][2];
@@ -225,8 +225,8 @@ void spotter_covar_to_record (struct GMT_CTRL *GMT, struct EULER *e, double K[])
 	/* Translates an Euler covariance matrix to the 9 values needed for printout
 	 * covariance matrix is stored as [k_hat a b c d e f g df] */
 	
-	GMT_UNUSED(GMT);
 	unsigned int k;
+	GMT_UNUSED(GMT);
 	K[0] = e->k_hat;
 	K[7] = e->g;
 	K[8] = e->df;
@@ -587,8 +587,8 @@ unsigned int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocen
 
 int spotter_stage (struct GMT_CTRL *GMT, double t, struct EULER p[], unsigned int ns)
 {	/* Return the stage ID for given t, or -1 if not within time range */
-	GMT_UNUSED(GMT);
 	unsigned int j = 0;
+	GMT_UNUSED(GMT);
 	while (j < ns && t < p[j].t_stop) j++;	/* Find first applicable stage pole */
 	if (j == ns) return (-1);	/* Outside in time */
 	return (j);
@@ -1191,9 +1191,9 @@ double spotter_t2w (struct GMT_CTRL *GMT, struct EULER a[], unsigned int n, doub
 {
 	/* Take time, return cumulative omega */
 
-	GMT_UNUSED(GMT);
 	int i;
 	double w = 0.0;
+	GMT_UNUSED(GMT);
 
 	i = n - 1;
 	while (i >= 0 && t > a[i].t_start) {
@@ -1235,8 +1235,8 @@ void set_rot_angle (double w, double R[3][3], double E[])
 
 void spotter_matrix_mult (struct GMT_CTRL *GMT, double a[3][3], double b[3][3], double c[3][3])
 {	/* C = A * B */
-	GMT_UNUSED(GMT);
 	unsigned int i, j, k;
+	GMT_UNUSED(GMT);
 
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
@@ -1246,12 +1246,11 @@ void spotter_matrix_mult (struct GMT_CTRL *GMT, double a[3][3], double b[3][3], 
 	}
 }
 
-void spotter_matrix_transpose (struct GMT_CTRL *GMT, double At[3][3], double A[3][3])
-{
+void spotter_matrix_transpose (struct GMT_CTRL *GMT, double At[3][3], double A[3][3]) {
 	/* Computes the matrix transpose */
 
-	GMT_UNUSED(GMT);
 	unsigned int i, j;
+	GMT_UNUSED(GMT);
 	for (j = 0; j < 3; j++) {
 		for (i = 0; i < 3; i++) {
 			At[i][j] = A[j][i];
@@ -1259,12 +1258,11 @@ void spotter_matrix_transpose (struct GMT_CTRL *GMT, double At[3][3], double A[3
 	}
 }
 
-void spotter_matrix_add (struct GMT_CTRL *GMT, double A[3][3], double B[3][3], double C[3][3])
-{
+void spotter_matrix_add (struct GMT_CTRL *GMT, double A[3][3], double B[3][3], double C[3][3]) {
 	/* Computes the matrix addition */
 
-	GMT_UNUSED(GMT);
 	unsigned int i, j;
+	GMT_UNUSED(GMT);
 	for (j = 0; j < 3; j++) {
 		for (i = 0; i < 3; i++) {
 			C[i][j] = A[i][j] + B[i][j];
@@ -1389,17 +1387,15 @@ bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double 
 	return (false);
 }
 
-void spotter_matrix_1Dto2D (struct GMT_CTRL *GMT, double *M, double X[3][3])
-{
-	GMT_UNUSED(GMT);
+void spotter_matrix_1Dto2D (struct GMT_CTRL *GMT, double *M, double X[3][3]) {
 	unsigned int i, j;
+	GMT_UNUSED(GMT);
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) X[i][j] = M[3*i+j];
 }
 
-void spotter_matrix_2Dto1D (struct GMT_CTRL *GMT, double *M, double X[3][3])
-{
-	GMT_UNUSED(GMT);
+void spotter_matrix_2Dto1D (struct GMT_CTRL *GMT, double *M, double X[3][3]) {
 	unsigned int i, j;
+	GMT_UNUSED(GMT);
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) M[3*i+j] = X[i][j];
 }
 
@@ -1407,8 +1403,8 @@ void spotter_inv_cov (struct GMT_CTRL *GMT, double Ci[3][3], double C[3][3])
 {	/* Return the inverse of a covariance matrix
 	 * (or any symmetric 3x3 matrix) */
 	
-	GMT_UNUSED(GMT);
 	double inv_D;
+	GMT_UNUSED(GMT);
 	inv_D = 1.0 / (-C[0][0]*C[1][1]*C[2][2] + C[0][0]*C[1][2]*C[1][2] + C[0][1]*C[0][1]*C[2][2] - 2.0*C[0][1]*C[0][2]*C[1][2] + C[0][2]*C[0][2]*C[1][1]);
 	Ci[0][0] = (-C[1][1] * C[2][2] + C[1][2]*C[1][2]) * inv_D;
 	Ci[0][1] = Ci[1][0] = (C[0][1]*C[2][2] - C[0][2]*C[1][2]) * inv_D;
@@ -1705,8 +1701,8 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 void spotter_project_ellipsoid_new (struct GMT_CTRL *GMT, double X[3][3], double *par)
 {	/* Project an arbitrarily oriented ellipsoid orthographically onto the x-y plane
 	 */
-	GMT_UNUSED(GMT);
 	double a, b, c, r;
+	GMT_UNUSED(GMT);
 
 	a = X[0][0] - (X[0][2] * X[0][2] / X[2][2]);
 	b = X[0][1] - (X[0][2] * X[1][2] / X[2][2]);

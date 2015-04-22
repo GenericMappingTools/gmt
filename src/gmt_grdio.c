@@ -797,8 +797,8 @@ bool GMT_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, u
 	 *    true:  Grid padding matches pad exactly.
 	 *    false: Grid padding failed to match pad exactly.
 	 */
-	GMT_UNUSED(GMT);
 	unsigned int side;
+	GMT_UNUSED(GMT);
 
 	if (pad) {	/* Determine if the grid's pad differ from given pad (false) or not (true) */
 		for (side = 0; side < 4; side++) if (header->pad[side] != pad[side]) return (false);	/* Pads differ */
@@ -817,10 +817,10 @@ int gmt_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *
 	 * whose full domain exceeds the region of interest we are better off using the extra
 	 * data to fill those pad rows/columns.  Thus, this function tries to determine if the
 	 * input grid has the extra data we need to fill the BC pad with observations. */
-	GMT_UNUSED(GMT);
 	bool wrap;
 	unsigned int side, n_sides = 0;
 	double wesn2[4];
+	GMT_UNUSED(GMT);
 
 	/* First copy over original settings to the Pad structure */
 	GMT_memset (P, 1, struct GRD_PAD);					/* Initialize to zero */
@@ -1151,8 +1151,8 @@ size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_
 void GMT_grd_set_ij_inc (struct GMT_CTRL *GMT, unsigned int nx, int *ij_inc)
 {	/* Set increments to the 4 nodes with ij as lower-left node, from a node at (i,j).
 	 * nx may be header->nx or header->mx depending on pad */
-	GMT_UNUSED(GMT);
 	int s_nx = nx;	/* A signed version */
+	GMT_UNUSED(GMT);
 	ij_inc[0] = 0;		/* No offset relative to itself */
 	ij_inc[1] = 1;		/* The node one column to the right relative to ij */
 	ij_inc[2] = 1 - s_nx;	/* The node one column to the right and one row up relative to ij */
@@ -2194,9 +2194,9 @@ int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, st
 
 int GMT_change_grdreg (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int registration)
 {
-	GMT_UNUSED(GMT);
 	unsigned int old_registration;
 	double F;
+	GMT_UNUSED(GMT);
 	/* Adjust the grid header to the selected registration, if different.
 	 * In all cases we return the original registration. */
 
@@ -2235,10 +2235,10 @@ void GMT_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *z)
 
 void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
 {	/* Determine a grid's global min and max locations and z values; return via xyz */
-	GMT_UNUSED(GMT);
 	unsigned int row, col, i;
 	uint64_t ij, i_minmax[2] = {0, 0};
 	float z_extreme[2] = {FLT_MAX, -FLT_MAX};
+	GMT_UNUSED(GMT);
 
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
 		if (GMT_is_fnan (Grid->data[ij])) continue;
@@ -2507,12 +2507,12 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	GMT_UNUSED(complex_mode);
 	int i;
 	bool expand;
 	struct GRD_PAD P;
 	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
+	GMT_UNUSED(complex_mode);
 
 	expand = gmt_padspace (GMT, I->header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 

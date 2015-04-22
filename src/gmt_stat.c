@@ -417,10 +417,9 @@ double gmt_gammq (struct GMT_CTRL *GMT, double a, double x) {
  * of Bessel Functions).
  */
 
-double GMT_ber (struct GMT_CTRL *GMT, double x)
-{
-	GMT_UNUSED(GMT);
+double GMT_ber (struct GMT_CTRL *GMT, double x) {
 	double t, rxsq, alpha, beta;
+	GMT_UNUSED(GMT);
 
 	if (x == 0.0) return (1.0);
 
@@ -455,10 +454,9 @@ double GMT_ber (struct GMT_CTRL *GMT, double x)
 	}
 }
 
-double GMT_bei (struct GMT_CTRL *GMT, double x)
-{
-	GMT_UNUSED(GMT);
+double GMT_bei (struct GMT_CTRL *GMT, double x) {
 	double t, rxsq, alpha, beta;
+	GMT_UNUSED(GMT);
 
 	if (x == 0.0) return (0.0);
 
@@ -572,11 +570,10 @@ double GMT_kei (struct GMT_CTRL *GMT, double x)
 	}
 }
 
-double GMT_i0 (struct GMT_CTRL *GMT, double x)
-{
+double GMT_i0 (struct GMT_CTRL *GMT, double x) {
 /* Modified from code in Press et al. */
-	GMT_UNUSED(GMT);
 	double y, res;
+	GMT_UNUSED(GMT);
 
 	if (x < 0.0) x = -x;
 
@@ -591,11 +588,10 @@ double GMT_i0 (struct GMT_CTRL *GMT, double x)
 	return (res);
 }
 
-double GMT_i1 (struct GMT_CTRL *GMT, double x)
-{
+double GMT_i1 (struct GMT_CTRL *GMT, double x) {
 	/* Modified Bessel function I1(x) */
-	GMT_UNUSED(GMT);
 	double y, res;
+	GMT_UNUSED(GMT);
 
 	if (x < 0.0) x = -x;
 	if (x < 3.75) {
@@ -643,11 +639,10 @@ double GMT_in (struct GMT_CTRL *GMT, unsigned int n, double x)
 	return (res);
 }
 
-double GMT_k0 (struct GMT_CTRL *GMT, double x)
-{
+double GMT_k0 (struct GMT_CTRL *GMT, double x) {
 /* Modified from code in Press et al. */
-	GMT_UNUSED(GMT);
 	double y, z, res;
+	GMT_UNUSED(GMT);
 
 	if (x < 0.0) x = -x;
 
@@ -962,8 +957,7 @@ void GMT_plm_bar_all (struct GMT_CTRL *GMT, int lmax, double x, bool ortho, doub
 
 /* GMT_sinc (x) calculates the sinc function */
 
-double GMT_sinc (struct GMT_CTRL *GMT, double x)
-{
+double GMT_sinc (struct GMT_CTRL *GMT, double x) {
 	GMT_UNUSED(GMT);
 	if (x == 0.0) return (1.0);
 	x *= M_PI;
@@ -972,8 +966,7 @@ double GMT_sinc (struct GMT_CTRL *GMT, double x)
 
 /* GMT_factorial (n) calculates the factorial n! */
 
-double GMT_factorial (struct GMT_CTRL *GMT, int n)
-{
+double GMT_factorial (struct GMT_CTRL *GMT, int n) {
 	int i;
 	double val = 1.0;
 

@@ -428,8 +428,8 @@ double CartScaledRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, 
 
 double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Pass dx,dy via par[GRDFILTER_X|Y_DIST] and return a r that is either in or out */
-	GMT_UNUSED(GMT);
 	double r;
+	GMT_UNUSED(GMT);
 	par[GRDFILTER_X_DIST] = par[GRDFILTER_X_SCALE] * (x0 - x1);
 	par[GRDFILTER_Y_DIST] = par[GRDFILTER_Y_SCALE] * (y0 - y1);
 	r = (fabs (par[GRDFILTER_X_DIST]) > par[GRDFILTER_HALF_WIDTH] || fabs (par[GRDFILTER_Y_DIST]) > par[GRDFILTER_HALF_WIDTH]) ? 2.0 : 0.0;

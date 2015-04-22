@@ -269,9 +269,9 @@ void load_pstuff (double *pstuff, unsigned int n_model, double x, double y, unsi
 
 void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, unsigned int n_model, double *pstuff)
 {	/* Find trend from a model  */
-	GMT_UNUSED(GMT);
 	unsigned int row, col, k;
 	uint64_t ij;
+	GMT_UNUSED(GMT);
 
 	GMT_grd_loop (GMT, T, row, col, ij) {
 		load_pstuff (pstuff, n_model, xval[col], yval[row], 1, (!(col)));
@@ -282,16 +282,15 @@ void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, doub
 
 void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
 {	/* Find residuals from a trend  */
-	GMT_UNUSED(GMT);
 	unsigned int row, col;
 	uint64_t ij;
+	GMT_UNUSED(GMT);
 
 	GMT_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
 
 void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model)
 {
-	GMT_UNUSED(GMT);
 	/* Routine to fit up elementary polynomial model of grd data, 
 	model = gtd[0] + gtd[1]*x + gtd[2]*y + gtd[3] * x * y,
 	where x,y are normalized to range [-1,1] and there are no
@@ -300,6 +299,7 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 	unsigned int row, col;
 	uint64_t ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
+	GMT_UNUSED(GMT);
 
 	/* First zero the model parameters to use for sums */
 
@@ -333,10 +333,10 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 
 double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale)
 {	/* Find Chi-Squared from weighted residuals  */
-	GMT_UNUSED(GMT);
 	unsigned int row, col;
 	uint64_t ij;
 	double tmp, chisq = 0.0;
+	GMT_UNUSED(GMT);
 
 	GMT_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) continue;
@@ -416,9 +416,9 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 	loading only lower triangular part of gtg and then filling
 	by symmetry after i,j loop.  */
 
-	GMT_UNUSED(GMT);
 	unsigned int row, col, k, l, n_used = 0;
 	uint64_t ij;
+	GMT_UNUSED(GMT);
 
 	/* First zero things out to start */
 
