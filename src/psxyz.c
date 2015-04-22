@@ -466,7 +466,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	unsigned int n_cols_start = 3, justify;
 	unsigned int bcol, ex1, ex2, ex3, change, n_needed, read_mode;
 	int error = GMT_NOERROR;
-	
+
 	uint64_t i, n, n_total_read = 0;
 	size_t n_alloc = 0;
 
@@ -575,7 +575,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	tmp = MAX (lux[0], MAX (lux[1], lux[2]));
 	for (k = 0; k < 3; k++) lux[k] = (lux[k] / tmp) - 0.5;
 
-	if ((Ctrl->C.active || current_fill.rgb[0]) >= 0 && (S.symbol == GMT_SYMBOL_COLUMN || S.symbol == GMT_SYMBOL_CUBE)) {	/* Modify the color for each facet */
+	if ((Ctrl->C.active || current_fill.rgb[0] >= 0) && (S.symbol == GMT_SYMBOL_COLUMN || S.symbol == GMT_SYMBOL_CUBE)) {	/* Modify the color for each facet */
 		for (k = 0; k < 3; k++) {
 			GMT_rgb_copy (rgb[k], current_fill.rgb);
 			if (S.shade3D) GMT_illuminate (GMT, lux[k], rgb[k]);
@@ -1001,7 +1001,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 			n++;
 			if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
 		} while (true);
-		
+
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}

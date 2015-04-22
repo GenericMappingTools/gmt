@@ -5217,7 +5217,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			if ((ival = atoi (value)) < 0) error = true;
 			else GMT->current.setting.time_Y2K_offset_year = ival;
 			/* Set the Y2K conversion parameters */
-			GMT->current.time.Y2K_fix.y2_cutoff = abs (GMT->current.setting.time_Y2K_offset_year) % 100;
+			GMT->current.time.Y2K_fix.y2_cutoff = GMT->current.setting.time_Y2K_offset_year % 100;
 			GMT->current.time.Y2K_fix.y100 = GMT->current.setting.time_Y2K_offset_year - GMT->current.time.Y2K_fix.y2_cutoff;
 			GMT->current.time.Y2K_fix.y200 = GMT->current.time.Y2K_fix.y100 + 100;
 			break;

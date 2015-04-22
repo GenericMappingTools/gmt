@@ -111,25 +111,25 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 
 void *New_mapproject_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MAPPROJECT_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct MAPPROJECT_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->G.unit = GMT_MAP_DIST_UNIT;	/* Default unit is meter */
 	C->G.sph = 1;			/* Default is great-circle distances */
 	C->L.mode = 2;			/* Default returns coordinates of nearest point */
 	C->L.unit = GMT_MAP_DIST_UNIT;	/* Default unit is meter */
 	C->L.sph = 1;			/* Default is great-circle distances */
 	C->N.mode = GMT_LATSWAP_G2O;	/* Default is geodetic<->geocentric, if -N is used */
-	
+
 	return (C);
 }
 
 void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->L.file) free (C->L.file);	
-	GMT_free (GMT, C);	
+	if (C->L.file) free (C->L.file);
+	GMT_free (GMT, C);
 }
 
 int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
@@ -192,7 +192,7 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   <from> = - means WGS-84.  If /<to> is not given we assume WGS-84.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -T can be used as pre- or post- (-I) processing for -J -R.\n");
 	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,p,s,:,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -386,7 +386,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0, "Syntax error: -T cannot work with -E, -G or -L\n");
 	/* Can only do one of -A, -G and -L */
-	n_errors += GMT_check_condition (GMT, (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active) > 1, "Syntax error: Can only specify one of -A, -G and -L\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->G.mode + Ctrl->A.active + Ctrl->L.active) > 1, "Syntax error: Can only specify one of -A, -G and -L\n");
 	n_errors += GMT_check_condition (GMT, geodetic_calc && Ctrl->I.active, "Syntax error: -A, -G, and -L cannot work with -I\n");
 	/* Can only do -p for forward projection */
 	n_errors += GMT_check_condition (GMT, GMT->common.p.active && Ctrl->I.active, "Syntax error: -p cannot work with -I\n");
@@ -399,9 +399,9 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 			n_errors++;
 		}
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n", 
+			GMT_Report (API, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n",
 				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
-		
+
 		GMT->common.R.active = true;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_access (GMT, Ctrl->L.file, R_OK), "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
@@ -427,9 +427,9 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	bool line_start = true, do_geo_conv = false;
 	bool geodetic_calc = false, datum_conv_only = false, double_whammy = false;
-	
+
 	unsigned int i = 0, pos;
-	
+
 	uint64_t row, n_read_in_seg, seg, n_read = 0, n = 0, k, n_output = 0;
 
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
@@ -465,7 +465,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	if (!GMT->common.J.active && !GMT_is_geographic (GMT, GMT_IN)) { /* -J not given and input not specified as lon/lat; check if we should add -fg */
 		if ((Ctrl->G.active && Ctrl->G.unit != 'X') || (Ctrl->L.active && Ctrl->L.unit != 'X')) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Not Cartesian unit so set -fg */
 	}
-	
+
 	/*---------------------------- This is the mapproject main code ----------------------------*/
 
 	if (Ctrl->Q.mode & 1) {	/* List ellipsoid parameters */
@@ -489,7 +489,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------------------------------------\n");
 	}
 	if (Ctrl->Q.mode) Return (EXIT_SUCCESS);
-	
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->D.active) GMT_err_fail (GMT, GMT_set_measure_unit (GMT, Ctrl->D.unit), "-D");
 	if (Ctrl->T.active) GMT_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
@@ -533,7 +533,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	}
 	else
 		datum_conv_only = Ctrl->T.active;
-	
+
 	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (Ctrl->G.mode) {	/* save output format in case -J changes it */
@@ -555,7 +555,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		}
 	}
 	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
-	
+
 	if (Ctrl->G.unit == 'X') GMT_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 	if (Ctrl->L.unit == 'X') GMT_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 
@@ -567,7 +567,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	}
-	
+
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && !(geodetic_calc || Ctrl->T.active)) {
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
@@ -683,7 +683,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		fmt[1] = GMT_Y;
 	}
 	out = GMT_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
-	
+
 	coord = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	if (Ctrl->N.active) lat_mode = Ctrl->N.mode + Ctrl->I.active;
 
@@ -719,7 +719,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 			line_start = true;
 			n_read_in_seg = 0;
 		}
-		
+
 		/* Data record to process */
 
 		n_read++;
@@ -800,7 +800,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 				}
 				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
-				
+
 			}
 			else {	/* Simply copy other columns and output */
 				if (n_output == 0) {
@@ -985,7 +985,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
