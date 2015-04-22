@@ -462,7 +462,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 
 	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "Syntax error: -S must specify scale\n");
+	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active && Ctrl->S.scale <= 0.0), "Syntax error: -S must specify scale\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->O2.active, "Syntax error: -Z cannot be combined with -Fo\n");
 
 	/* Set to default pen where needed */
@@ -526,7 +526,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	if ((error = GMT_psmeca_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the psmeca main code ----------------------------*/
-	
+
 	GMT_memset (event_title, GMT_BUFSIZ, char);
 	GMT_memset (&meca, 1, st_me);
 	GMT_memset (col, GMT_LEN64*15, char);
@@ -799,7 +799,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 			i = (Ctrl->S.justify == PSL_BC ? 1 : -1);
 			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
 			if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset + Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset));
-			PSL_plottext (PSL, plot_x, plot_y + i * (size * 0.5 + Ctrl->S.offset), Ctrl->S.fontsize, event_title, angle, 
+			PSL_plottext (PSL, plot_x, plot_y + i * (size * 0.5 + Ctrl->S.offset), Ctrl->S.fontsize, event_title, angle,
 				Ctrl->S.justify, form);
 		}
 
@@ -815,7 +815,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 		}
 		event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}

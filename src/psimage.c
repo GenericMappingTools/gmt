@@ -283,8 +283,9 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 	}
 	GMT_fclose (GMT, fp);
 	if (j) file[j] = '+';			/* Reset the band request string */
-	if (GMT_same_rgb (c, magic_ps)) return(1);
-	if (GMT_same_rgb (c, magic_ras)) return(2);
+	/* Note: cannot use GMT_same_rgb here, because that requires doubles */
+	if (c[0] == magic_ps[0] && c[1] == magic_ps[1] && c[2] == magic_ps[2] && c[3] == magic_ps[3]) return(1);
+	if (c[0] == magic_ras[0] && c[1] == magic_ras[1] && c[2] == magic_ras[2] && c[3] == magic_ras[3]) return(2);
 	return (0);	/* Neither */
 }
 

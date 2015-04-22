@@ -155,7 +155,7 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,c,h,i,:,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -168,9 +168,9 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, n_set;
 	int n;
-	bool no_size_needed, n_set, got_A = false;
+	bool no_size_needed, got_A = false;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol;
 	struct GMT_OPTION *opt = NULL;
 
@@ -490,7 +490,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->A.S.v.pen);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen);
-					
+
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
 					if (Ctrl->S.fontsize > 0.0 && strlen(station_name) > 0)	/* 1 inch = 2.54 cm */
 						PSL_plottext (PSL, plot_x + (6 - justify) / 25.4 , plot_y, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
@@ -523,7 +523,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 				break;
 		}
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
