@@ -229,12 +229,12 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 	 * data array is already sorted on a[k]. We check if we find more
 	 * than one mode and return the chosen one as per the settings. */
 
-	GMT_UNUSED(GMT);
 	double value = 0.0, mode_count = 0.0;
 	uint64_t i;
 	unsigned int n_modes = 0;
 	int bin, mode_bin = 0;
 	bool done;
+	GMT_UNUSED(GMT);
 
 	GMT_memset (B->count, B->n_bins, double);	/* Reset the counts */
 	for (i = 0; i < n; i++) {	/* Loop over sorted data points */

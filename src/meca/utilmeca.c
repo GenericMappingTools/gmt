@@ -595,7 +595,6 @@ void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struc
 /***************************************************************************************/
 double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace)
 {
-	GMT_UNUSED(outline);
 	int d, b = 1, m, i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
 	int big_iso = 0;
 	int djp, mjp, jp_flag;
@@ -611,6 +610,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 	double radius_size, si, co, ssize[1];
 
 	struct GMT_FILL *F1 = NULL, *F2 = NULL;
+	GMT_UNUSED(outline);
 
 	a[0] = T.str; a[1] = N.str; a[2] = P.str;
 	p[0] = T.dip; p[1] = N.dip; p[2] = P.dip;
@@ -1242,8 +1242,8 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 	/*   v_width, h_length,h_width,vector_shape: arrow characteristics */
 
 	/* local */
-	GMT_UNUSED(outline);
 	double dx, dy, x1, x2, y1, y2, hl, hw, vw, s, c, dim[PSL_MAX_DIMS];
+	GMT_UNUSED(outline);
 
 	GMT_setpen (GMT, &pen);		/* Pen for segment line */
 	PSL_setfill (GMT->PSL, pen.rgb, 0);	/* Same color for arrow head fill with no outline */
@@ -1361,8 +1361,7 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 	return 0;
 }
 
-int trace_wedge (double spin, double sscale, double wedge_amp, int lines, double *x, double *y)
-{
+int trace_wedge (double spin, double sscale, double wedge_amp, int lines, double *x, double *y) {
 	/* make a rotation rate wedge and return in x,y */
 
 	/* Kurt Feigl, from code by D. Dong */
@@ -1478,19 +1477,20 @@ void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, doubl
 
 #define NPOINTS 1000
 
-	GMT_UNUSED(outline);
 	int npoints = NPOINTS, i;
 
 	/* relative to center of ellipse */
 	double dxe[NPOINTS], dye[NPOINTS];
 	/* absolute paper coordinates */
 	double axe[NPOINTS], aye[NPOINTS];
+	GMT_UNUSED(outline);
 
 	/* draw wedge */
 
 	npoints = trace_wedge (spin, 1.0, wedge_amp, true, dxe, dye);
 
-	for (i = 0; i <= npoints - 1; i++) transform_local (x0, y0, dxe[i], dye[i], sscale, t11, t12, t21, t22, &axe[i], &aye[i]);
+	for (i = 0; i <= npoints - 1; i++)
+		transform_local (x0, y0, dxe[i], dye[i], sscale, t11, t12, t21, t22, &axe[i], &aye[i]);
 
 	if (polygon) {
 		PSL_setfill (PSL, rgb, true);
@@ -1514,8 +1514,7 @@ void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, doubl
 }
 
 #ifdef DEBUG
-int dump_meca (st_me meca)
-{
+int dump_meca (st_me meca) {
 	fprintf (stderr, "\nNodal plane NP1: str = %g dip = %g rake = %g\n", meca.NP1.str, meca.NP1.dip, meca.NP1.rake);
 	fprintf (stderr, "Nodal plane NP2: str = %g dip = %g rake = %g\n", meca.NP2.str, meca.NP2.dip, meca.NP2.rake);
 	fprintf (stderr, "Magnitude = %g exponent = %d\n", meca.moment.mant, meca.moment.exponent);

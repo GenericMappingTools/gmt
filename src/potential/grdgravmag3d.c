@@ -792,12 +792,12 @@ int grdgravmag3d_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct
 		double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i) {
 	/* Allocate and fille the body_desc structure with the description on how to
 	   connect the vertex of the polygonal planar surface */
-	GMT_UNUSED(GMT); GMT_UNUSED(body_desc);
 	unsigned int i1, j1;
 	bool is_geog = Ctrl->box.is_geog;
 	float *z = Grid->data;
 	double cosj, cosj1;
 	struct GMT_GRID_HEADER *h = Grid->header;
+	GMT_UNUSED(GMT); GMT_UNUSED(body_desc);
 
 	j1 = j + inc_j;		i1 = i + inc_i;
 	cosj = cos_vec[j];		cosj1 = cos_vec[j1];

@@ -177,10 +177,9 @@ void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	MGD77_Put_Param (C, F, "Additional_Documentation_7", strlen (P[0]->Additional_Documentation_7), P[0]->Additional_Documentation_7, strlen (P[1]->Additional_Documentation_7), P[1]->Additional_Documentation_7, L[MGD77_Param_Key(C,24,1)].revised);
 }
 
-void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
-{
-	GMT_UNUSED(C);
+void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P) {
 	char word[2] = { '\0', '\0'}, EOL = '\n';
+	GMT_UNUSED(C);
 
 	/* Write all the individual MGD77 header parameters to stdout */
 
@@ -262,8 +261,7 @@ void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, stru
 	if (F->Want_Header_Item[71]) printf ("%s %44s : %s%c", F->NGDC_id, "Additional_Documentation_7", P->Additional_Documentation_7, EOL);
 }
 
-void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
-{
+void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F) {
 	/* Remove the revised MGD77 header attributes so we return to the original values.
 	 * Here we simply ignore return values since many of these are presumably unknown attributes.
 	 * File is assumed to be in define mode. */

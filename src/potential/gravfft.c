@@ -724,10 +724,10 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 	densities in kg/m**3, Te in m, etc.
 	rw, the water density, is used to set the Airy ratio and the restoring
 	force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air (ri changed to rl).  */
-	GMT_UNUSED(GMT);
 	uint64_t k;
 	double  airy_ratio, rigidity_d, d_over_restoring_force, mk, k2, k4, transfer_fn;
 	float *datac = Grid->data;
+	GMT_UNUSED(GMT);
 
 	/*   te	 Elastic thickness, SI units (m)  */
 	/*   rl	 Load density, SI units  */
@@ -754,10 +754,10 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 
 #define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint64_t n, double rho) {
-	GMT_UNUSED(GMT);
 	uint64_t i, k;
 	double f, p, t, mk, kx, ky, v, c;
 	float *datac = Grid->data;
+	GMT_UNUSED(GMT);
 
 	f = 1.0;
 	for (i = 2; i <= n; i++) f *= i;	/* n! */
@@ -958,9 +958,9 @@ void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, str
 	   The z_from_below is a vector that must have been previously allocated 
 	   with a size of "nk" like that variable is computed here.	*/
 
-	GMT_UNUSED(GMT);
 	unsigned int k, nk;
 	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2, t3;
+	GMT_UNUSED(GMT);
 
 	if (K->delta_kx < K->delta_ky)
 		{delta_k = K->delta_kx;	 nk = K->nx2/2;}
@@ -995,9 +995,9 @@ void load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, stru
 	   The z_from_top is a vector that must have been previously allocated 
 	   with a size of "nk" like that variable is computed here.	*/
 
-	GMT_UNUSED(GMT);
 	unsigned int k, nk;
 	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2;
+	GMT_UNUSED(GMT);
 
 	if (K->delta_kx < K->delta_ky) 
 		{delta_k = K->delta_kx;	 nk = K->nx2/2;}
@@ -1027,11 +1027,11 @@ void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRA
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from top" model --  M. McNutt & Shure (1986)  */
 
-	GMT_UNUSED(GMT);
 	unsigned int i;
 	uint64_t k;
 	double	earth_curvature, alfa, D, twopi, t1, t2, f, p, t, mk;
 	float *datac = Grid->data;
+	GMT_UNUSED(GMT);
 
 	f = 1.0;
 	for (i = 2; i <= n; i++)
@@ -1068,11 +1068,11 @@ void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct G
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from below" model --  M. McNutt & Shure (1986)  */
 
-	GMT_UNUSED(GMT);
 	unsigned int i;
 	uint64_t k;
 	double	earth_curvature, alfa, D, twopi, t1, t2, t3, f, p, t, mk;
 	float *datac = Grid->data;
+	GMT_UNUSED(GMT);
 
 	f = 1.0;
 	for (i = 2; i <= n; i++)

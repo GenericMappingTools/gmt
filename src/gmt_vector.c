@@ -852,40 +852,36 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	return (n_use);
 }
 
-double GMT_dot3v (struct GMT_CTRL *GMT, double *a, double *b)
-{
+double GMT_dot3v (struct GMT_CTRL *GMT, double *a, double *b) {
 	GMT_UNUSED(GMT);
 	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y] + a[GMT_Z]*b[GMT_Z]);
 }
 
-double GMT_dot2v (struct GMT_CTRL *GMT, double *a, double *b)
-{
+double GMT_dot2v (struct GMT_CTRL *GMT, double *a, double *b) {
 	GMT_UNUSED(GMT);
 	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y]);
 }
 
-double GMT_mag3v (struct GMT_CTRL *GMT, double *a)
-{
+double GMT_mag3v (struct GMT_CTRL *GMT, double *a) {
 	GMT_UNUSED(GMT);
 	return (d_sqrt(a[GMT_X]*a[GMT_X] + a[GMT_Y]*a[GMT_Y] + a[GMT_Z]*a[GMT_Z]));
 }
 
 void GMT_add3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
 {	/* C = A + B */
-	GMT_UNUSED(GMT);
 	int k;
+	GMT_UNUSED(GMT);
 	for (k = 0; k < 3; k++) c[k] = a[k] + b[k];
 }
 
 void GMT_sub3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
 {	/* C = A - B */
-	GMT_UNUSED(GMT);
 	int k;
+	GMT_UNUSED(GMT);
 	for (k = 0; k < 3; k++) c[k] = a[k] - b[k];
 }
 
-void GMT_normalize3v (struct GMT_CTRL *GMT, double *a)
-{
+void GMT_normalize3v (struct GMT_CTRL *GMT, double *a) {
 	double r_length;
 	r_length = GMT_mag3v (GMT,a);
 	if (r_length != 0.0) {
@@ -896,10 +892,9 @@ void GMT_normalize3v (struct GMT_CTRL *GMT, double *a)
 	}
 }
 
-void GMT_normalize2v (struct GMT_CTRL *GMT, double *a)
-{
-	GMT_UNUSED(GMT);
+void GMT_normalize2v (struct GMT_CTRL *GMT, double *a) {
 	double r_length;
+	GMT_UNUSED(GMT);
 	r_length = hypot (a[GMT_X], a[GMT_Y]);
 	if (r_length != 0.0) {
 		r_length = 1.0 / r_length;
@@ -918,8 +913,8 @@ void GMT_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
 
 void GMT_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3])
 {	/* c = A * b for 2 or 3 D */
-	GMT_UNUSED(GMT);
 	unsigned int i, j;
+	GMT_UNUSED(GMT);
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
 }
@@ -932,8 +927,8 @@ void GMT_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R
  *	R	the 3x3 rotation matrix
  */
 
-	GMT_UNUSED(GMT);
 	double sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
+	GMT_UNUSED(GMT);
 
 	sincosd (w, &sin_w, &cos_w);
 	c = 1 - cos_w;
@@ -979,8 +974,8 @@ void GMT_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, b
 	   to a 3-vector of unit length (a). If degrees = true,
 	   input coordinates are in degrees, otherwise in radian */
 
-	GMT_UNUSED(GMT);
 	double clat, clon, slon;
+	GMT_UNUSED(GMT);
 
 	if (degrees) {
 		lat *= D2R;
@@ -1479,9 +1474,9 @@ int GMT_chol_dcmp (struct GMT_CTRL *GMT, double *a, double *d, double *cond, int
 
 	W H F Smith, 18 Feb 2000.
 */
-	GMT_UNUSED(GMT);
 	int i, j, k, ik, ij, kj, kk, nrp1;
 	double eigmax, eigmin;
+	GMT_UNUSED(GMT);
 
 	nrp1 = nr + 1;
 
@@ -1542,8 +1537,8 @@ void GMT_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n
 	W H F Smith, 18 Feb 2000
 */
 
-	GMT_UNUSED(GMT);
 	int kbad, i, j, ii, ij, ji, nrp1;
+	GMT_UNUSED(GMT);
 
 	kbad = abs (nerr) - 1;
 	nrp1 = nr + 1;
@@ -1576,8 +1571,8 @@ void GMT_chol_solv (struct GMT_CTRL *GMT, double *a, double *x, double *y, int n
 
 	W H F Smith, 18 Feb 2000
 */
-	GMT_UNUSED(GMT);
 	int i, j, ij, ji, ii, nrp1;
+	GMT_UNUSED(GMT);
 
 	nrp1 = nr + 1;
 

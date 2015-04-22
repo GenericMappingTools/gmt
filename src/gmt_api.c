@@ -1229,8 +1229,8 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 
 bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL *API, int family, int geometry)
 {	/* Sanity check that geometry and family are compatible; note they may be -1 hence int */
-	GMT_UNUSED(API);
 	bool problem = false;
+	GMT_UNUSED(API);
 	if (geometry == GMT_NOTSET || family == GMT_NOTSET) return false;	/* No errors if nothing to check */
 	switch (family) {
 		case GMT_IS_TEXTSET: if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) problem = true; break;	/* Textsets can hold many things... */
@@ -5596,8 +5596,8 @@ void * GMT_FFT_Parse_ (char *option, unsigned int *dim, char *args, int *length)
 
 struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, unsigned int mode, void *v_info)
 {
-	GMT_UNUSED(API); GMT_UNUSED(D); GMT_UNUSED(mode); GMT_UNUSED(v_info);
 	struct GMT_FFT_WAVENUMBER *K = NULL;
+	GMT_UNUSED(API); GMT_UNUSED(D); GMT_UNUSED(mode); GMT_UNUSED(v_info);
 
 #if 0	/* Have not finalized 1-D FFT usage in general; this will probably happen when we add gmtfft [1-D FFT equivalent to grdfft] */
 	unsigned n_cols = 1;
@@ -5773,8 +5773,8 @@ double GMTAPI_FFT_wavenumber_2d (uint64_t k, unsigned int mode, struct GMT_FFT_W
 
 double GMT_FFT_Wavenumber (void *V_API, uint64_t k, unsigned int mode, void *v_K)
 {	/* Lets you specify which 1-D or 2-D wavenumber you want */
-	GMT_UNUSED(V_API);
 	struct GMT_FFT_WAVENUMBER *K = gmt_get_fftwave_ptr (v_K);
+	GMT_UNUSED(V_API);
 	if (K->dim == 2) return (GMTAPI_FFT_wavenumber_2d (k, mode, K));
 	else return (GMT_fft_kx (k, K));
 }
@@ -5788,11 +5788,11 @@ double GMT_FFT_Wavenumber_ (uint64_t *k, unsigned int *mode, void *v_K)
 
 int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
 {	/* The 1-D FFT operating on DATASET segments */
-	GMT_UNUSED(K);
 	int status = 0;
 	uint64_t seg, row, tbl, last = 0, col = 0;
 	float *data = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	GMT_UNUSED(K);
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	/* Not at all finished; will require gmtfft.c to be developed and tested */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {

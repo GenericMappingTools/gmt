@@ -1423,8 +1423,7 @@ bool GMT_check_region (struct GMT_CTRL *GMT, double wesn[])
 	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
-int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R)
-{
+int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R) {
 	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r] then we must
 	 * call GMT_mapproject to convert this to geographic degrees.
 	 * get_R is true when this is done to obtain the -R setting.  */
@@ -5707,12 +5706,11 @@ char *GMT_putcolor (struct GMT_CTRL *GMT, double *rgb)
 	return (text);
 }
 
-char *GMT_putrgb (struct GMT_CTRL *GMT, double *rgb)
-{
+char *GMT_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 	/* Creates t the string r/g/b corresponding to the RGB triplet */
 
-	GMT_UNUSED(GMT);
 	static char text[GMT_LEN256] = {""};
+	GMT_UNUSED(GMT);
 
 	if (rgb[0] < -0.5)
 		sprintf (text, "-");
@@ -5722,12 +5720,11 @@ char *GMT_putrgb (struct GMT_CTRL *GMT, double *rgb)
 	return (text);
 }
 
-char *GMT_putcmyk (struct GMT_CTRL *GMT, double *cmyk)
-{
+char *GMT_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 	/* Creates the string c/m/y/k corresponding to the CMYK quadruplet */
 
-	GMT_UNUSED(GMT);
 	static char text[GMT_LEN256] = {""};
+	GMT_UNUSED(GMT);
 
 	if (cmyk[0] < -0.5)
 		sprintf (text, "-");
@@ -5737,12 +5734,11 @@ char *GMT_putcmyk (struct GMT_CTRL *GMT, double *cmyk)
 	return (text);
 }
 
-char *GMT_puthsv (struct GMT_CTRL *GMT, double *hsv)
-{
+char *GMT_puthsv (struct GMT_CTRL *GMT, double *hsv) {
 	/* Creates the string h/s/v corresponding to the HSV triplet */
 
-	GMT_UNUSED(GMT);
 	static char text[GMT_LEN256] = {""};
+	GMT_UNUSED(GMT);
 
 	if (hsv[0] < -0.5)
 		sprintf (text, "-");
@@ -5833,8 +5829,8 @@ unsigned int GMT_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit)
 
 int GMT_hash (struct GMT_CTRL *GMT, char *v, unsigned int n_hash)
 {
-	GMT_UNUSED(GMT);
 	int h;
+	GMT_UNUSED(GMT);
 	assert (v!=NULL); /* We are in trouble if we get a NULL pointer here */
 	for (h = 0; *v != '\0'; v++) h = (64 * h + (*v)) % n_hash;
 	while (h < 0) h += n_hash;
@@ -5979,8 +5975,8 @@ bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYST
 	   See GMT_init_time_system_structure for that.
 	   TIME_SYSTEM = other is completely ignored.
 	*/
-	GMT_UNUSED(GMT);
 	char *epoch = NULL;
+	GMT_UNUSED(GMT);
 
 	if (!strcmp (name, "j2000")) {
 		strcpy (time_system->epoch, "2000-01-01T12:00:00");
@@ -6026,8 +6022,8 @@ bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYST
 
 int GMT_get_char_encoding (struct GMT_CTRL *GMT, char *name)
 {
-	GMT_UNUSED(GMT);
 	int i;
+	GMT_UNUSED(GMT);
 
 	for (i = 0; i < 7 && strcmp (name, GMT_weekdays[i]); i++);
 	return (i);
@@ -6854,9 +6850,9 @@ int gmt_strip_colonitem (struct GMT_CTRL *GMT, int axis, const char *in, const c
 void gmt_handle_atcolon (struct GMT_CTRL *GMT, char *txt, int old_p)
 {	/* Way = 0: Replaces @:<size>: and @:: with @^<size>^ and @^^ to avoid trouble in -B:label: parsing;
 	 * Way = 1: Restores it the way it was. */
-	GMT_UNUSED(GMT);
 	int new_p;
 	char *item[2] = {"@:", "@^"}, mark[2] = {':', '^'}, *s = NULL;
+	GMT_UNUSED(GMT);
 
 	if (!txt || !txt[0]) return;	/* Nothing to do */
 	new_p = 1 - old_p;	/* The opposite of old */
@@ -9464,8 +9460,8 @@ int GMT_init_scales (struct GMT_CTRL *GMT, unsigned int unit, double *fwd_scale,
 
 enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *GMT, char unit) {
 	/* Converts character unit (e.g., 'k') to unit number (e.g., GMT_IS_KM) */
-	GMT_UNUSED(GMT);
 	enum GMT_enum_units mode;
+	GMT_UNUSED(GMT);
 
 	switch (unit) {
 		case '\0':
@@ -10009,7 +10005,6 @@ int GMT_init_fonts (struct GMT_CTRL *GMT)
 }
 
 struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
-	GMT_UNUSED(session);
 	int i;
 	char path[PATH_MAX+1];
 	char *unit_name[4] = {"cm", "inch", "m", "point"};
@@ -10059,6 +10054,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	struct DATUM datum[GMT_N_DATUMS] = {     /* This constant is created by GNUmakefile - do not edit */
 	#include "gmt_datums.h"		/* This include file is created by GNUmakefile - do not edit */
 	};
+	GMT_UNUSED(session);
 
 	/* Alloc using calloc since GMT_memory may use resources not yet initialized */
 	GMT = calloc (1U, sizeof (struct GMT_CTRL));

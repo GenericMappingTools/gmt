@@ -125,7 +125,6 @@ int i_dnnt(double x);
 
 int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date) {
 
-	GMT_UNUSED(GMT);
 	int c__1356 = 1356, c__13680 = 13680;
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
@@ -158,6 +157,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	char line[GMT_BUFSIZ] = {""}, *c_unused = NULL;
 
 	FILE *fp;
+	GMT_UNUSED(GMT);
 
 /* =====  FORTRAN SOUVENIRS ==============================================
    =======================================================================
@@ -1087,9 +1087,9 @@ void mseason(int ks, int ns, int ng, double d, double *t, double *e, double *g) 
 }
 
 void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) {
-	GMT_UNUSED(ns);
 	int i, j;
 	double s;
+	GMT_UNUSED(ns);
 
 	memset(e, 0, ng * sizeof(double));
 	j = 0;
@@ -1674,9 +1674,9 @@ void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, in
 	ns, int *nsi, int *nse, int *nc, int *nci, int *nce, int *na, int *np, int *ii, int *ie, int *
 	atyp, int *dsti, int *bori, int *bkni, int *tdgi, int *dste, int *bore, int *bkne, int *tdge, int *u, int *cerr) {
 
-    GMT_UNUSED(grad);
     static int nx = 0;
     int i__1, edst, esvr, idst, isvr;
+    GMT_UNUSED(grad);
 
     /* Parameter adjustments */
     --u;
@@ -1782,7 +1782,6 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 	mmin, int *mmax, double *theta, double *p, double *r__, double *t, int *u, double *w, double *dldc, int *cerr) {
     /* Initialized data */
 
-    GMT_UNUSED(nsi); GMT_UNUSED(nci); GMT_UNUSED(cerr);
     static double roo = 0.;
     static double phio = 0.;
     static double thetao = 0.;
@@ -1793,6 +1792,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
     double fa, fc, fd, ar, fm, ra, fp, fr, fs, fn, fnm1, fnp1, fnp2, fnfp, fprr, fdrr;
     double pbppp = 0, pbppr = 0, pbrpp = 0, pbtpp = 0, pbppt = 0, pbtpr = 0, pbrpt = 0, pbtpt = 0, pbrpr = 0, cscth2;
     double cscthe, costhe, cotthe, sinthe, fmfpst;
+    GMT_UNUSED(nsi); GMT_UNUSED(nci); GMT_UNUSED(cerr);
 
     /* Parameter adjustments */
     --dldc;

@@ -2050,8 +2050,8 @@ bool gmt_genperg_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double
 
 bool gmt_genperw_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1)
 {
-	GMT_UNUSED(lon0); GMT_UNUSED(lat0); GMT_UNUSED(lon1); GMT_UNUSED(lat1);
 	bool out0, out1;
+	GMT_UNUSED(lon0); GMT_UNUSED(lat0); GMT_UNUSED(lon1); GMT_UNUSED(lat1);
 	/* Return true if either of the points (lon0,lat0) and (lon1,lat1) is inside (not on) the windowed genper boundary */
 	/* Check if point 1 is beyond horizon: */
 	out0 = gmt_radial_outside (GMT, lon0, lat0);		/* true if point 0 is beyond the horizon */
@@ -2290,8 +2290,8 @@ double gmt_right_genper (struct GMT_CTRL *GMT, double y)
 void GMT_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1)
 /* Given point (lon0, lat0), find coordinates of a point r degrees away in the azim direction */
 {
-	GMT_UNUSED(GMT);
 	double sinr, cosr, sinaz, cosaz, siny, cosy;
+	GMT_UNUSED(GMT);
 
 	sincosd (azim, &sinaz, &cosaz);
 	sincosd (r, &sinr, &cosr);
@@ -2371,8 +2371,8 @@ double gmt_az_backaz_sphere (struct GMT_CTRL *GMT, double lonE, double latE, dou
 	 * Azimuth is direction from Station to Event.
 	 * BackAzimuth is direction from Event to Station */
 
-	GMT_UNUSED(GMT);
 	double az, sin_yS, cos_yS, sin_yE, cos_yE, sin_dlon, cos_dlon;
+	GMT_UNUSED(GMT);
 
 	if (baz) {	/* exchange point one and two */
 		double_swap (lonS, lonE);
@@ -3609,9 +3609,9 @@ bool gmt_this_point_wraps_tm (struct GMT_CTRL *GMT, double y0, double y1)
 
 bool gmt_will_it_wrap_tm (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t *start)
 {	/* Determines if a polygon will wrap at edges for TM global projection */
-	GMT_UNUSED(x);
 	uint64_t i;
 	bool wrap;
+	GMT_UNUSED(x);
 
 	if (!GMT->current.map.is_world) return (false);
 
@@ -3653,8 +3653,8 @@ int gmt_map_jump_tm (struct GMT_CTRL *GMT, double x0, double y0, double x1, doub
 	/* true if y-distance between points exceeds 1/2 map height at this x value */
 	/* Only used for TM world maps */
 
-	GMT_UNUSED(x0); GMT_UNUSED(x1);
 	double dy;
+	GMT_UNUSED(x0); GMT_UNUSED(x1);
 
 	dy = y1 - y0;
 	if (dy > GMT->current.map.half_height) return (-1);	/* Cross bottom/south boundary */
@@ -3846,8 +3846,8 @@ double GMT_UTMzone_to_clon (struct GMT_CTRL *GMT, unsigned int zone_x, char zone
 bool GMT_UTMzone_to_wesn (struct GMT_CTRL *GMT, unsigned int zone_x, char zone_y, int hemi, double wesn[])
 {	/* Given the full UTM zone specification, return w/e/s/n */
 
-	GMT_UNUSED(GMT);
 	bool error = false;
+	GMT_UNUSED(GMT);
 
 	wesn[XHI] = -180.0 + 6.0 * zone_x;	wesn[XLO] = wesn[XHI] - 6.0;
 
@@ -5248,8 +5248,8 @@ bool gmt_this_point_wraps_x (struct GMT_CTRL *GMT, double x0, double x1, double 
 {
 	/* Returns true if the 2 x-points implies a jump at this y-level of the map */
 
-	GMT_UNUSED(GMT);
 	double w_min, w_max, dx;
+	GMT_UNUSED(GMT);
 
 	if (w_this > w_last) {
 		w_max = w_this;
@@ -5454,8 +5454,8 @@ double gmt_flatearth_dist_degree (struct GMT_CTRL *GMT, double x0, double y0, do
 	   If difference in longitudes exceeds 180 we pick the other
 	   offset (360 - offset)
 	 */
-	GMT_UNUSED(GMT);
 	double dlon;
+	GMT_UNUSED(GMT);
 
 	GMT_set_delta_lon (x0, x1, dlon);
 	return (hypot ( dlon * cosd (0.5 * (y1 + y0)), (y1 - y0)));
@@ -7242,8 +7242,8 @@ double GMT_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[])
 {
 	/* Return latitude, in degrees, given latitude, in degrees, based on coefficients c */
 
-	GMT_UNUSED(GMT);
 	double delta, cos2phi, sin2phi;
+	GMT_UNUSED(GMT);
 
 	/* First deal with trivial cases */
 
