@@ -263,7 +263,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 	nc_type z_type;
 
 	/* Dimension ids, variable ids, etc.. */
-	int i, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars, ndims = 0;
+	int i, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, gm_id = -1, dims[5], nvars, ndims = 0;
 	size_t lens[5], item[2];
 
 	/* If not yet determined, attempt to get the layer IDs from the variable name */
@@ -363,6 +363,9 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		if (nc_inq_varid (ncid, "LatLon", &i) == NC_NOERR) nc_get_var_int (ncid, i, header->xy_dim);
 		header->nx = (int) lens[header->xy_dim[0]];
 		header->ny = (int) lens[header->xy_dim[1]];
+
+		/* Check if the grid_mapping variable exists */
+		if (nc_inq_varid (ncid, "grid_mapping", &i) == NC_NOERR) gm_id = i;
 	} /* if (job == 'r' || job == 'u') */
 	else {
 		/* Define dimensions of z variable */
@@ -411,10 +414,17 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 	if (job == 'r') {
 		/* Get global information */
 		if (GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
-		    GMT_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
+			GMT_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
 		if (GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
-		    GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
+			GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
 		GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
+
+		if (gm_id > 0) {
+			size_t len;
+			GMT_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
+			header->ProjRefWKT = GMT_memory(GMT, NULL, len+1, char);		/* and allocate the needed space */
+			GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", header->ProjRefWKT));
+		}
 
 		/* Create enough memory to store the x- and y-coordinate values */
 		xy = GMT_memory (GMT, NULL, MAX(header->nx,header->ny), double);
