@@ -1342,7 +1342,7 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsign
 
 	if (n_sug) {
 		char region[GMT_LEN128] = {""}, buffer[GMT_LEN128] = {""};
-		unsigned int m, j, save_range = GMT->current.io.geo.range;
+		unsigned int m, save_range = GMT->current.io.geo.range;
 		double x0, y0, w, e, s, n;
 		x0 = 0.5 * (G->header->wesn[XLO] + G->header->wesn[XHI]);
 		y0 = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
