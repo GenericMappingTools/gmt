@@ -1149,7 +1149,7 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 		/* Global grids: if -R + padding is equal or exceeds grid bounds */
 		if (is_global && 1 + is_global_repeat + last_col - first_col >= header->nx) {
 			/* Number of requested cols >= nx: read whole grid and shift */
-			*n_shift  = -first_col;
+			*n_shift  = -(int)first_col;
 			first_col = 0;
 			last_col  = header->nx - 1;
 		}

@@ -2770,7 +2770,6 @@ is shown in Figure :ref:`Geographic map border <basemap_border>`.
    frame, and grid intervals.  Formatting of the annotation is controlled by
    the parameter :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>` in your :doc:`gmt.conf`.
 
-
 The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
 be used to separate degree annotations from minutes- and
