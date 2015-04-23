@@ -270,7 +270,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
 
-		if (G->header->ProjRefPROJ4) projStr = strdup(G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
+		if (G->header->ProjRefPROJ4)
+			projStr = strdup(G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
+		else if (G->header->ProjRefWKT) 
+			projStr = strdup(G->header->ProjRefWKT);
 		
 		for (n = 0; n < GMT_Z; n++) GMT->current.io.col_type[GMT_OUT][n] = GMT->current.io.col_type[GMT_IN][n];	/* Since grids may differ in types */
 		
@@ -520,21 +523,21 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			}
 
 			/* print scale and offset */
-			sprintf (format, "%s: scale_factor: %s add_offset: %s", G->header->name, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			sprintf (format, "%s: scale_factor: %s add_offset: %s",
+			         G->header->name, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			sprintf (record, format, G->header->z_scale_factor, G->header->z_add_offset);
 			if (G->header->z_scale_factor != 1.0 || G->header->z_add_offset != 0) {
 				/* print packed z-range */
 				sprintf (format, "%s packed z-range: [%s,%s]", record,
-						GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+				         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 				sprintf (record, format,
-						(G->header->z_min - G->header->z_add_offset) / G->header->z_scale_factor,
-						(G->header->z_max - G->header->z_add_offset) / G->header->z_scale_factor);
+				         (G->header->z_min - G->header->z_add_offset) / G->header->z_scale_factor,
+				         (G->header->z_max - G->header->z_add_offset) / G->header->z_scale_factor);
 			}
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			if (n_nan) {
 				double percent = 100.0 * n_nan / G->header->nm;
-				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN",
-							G->header->name, n_nan, percent);
+				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN", G->header->name, n_nan, percent);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 			if (Ctrl->L.norm & 1) {
@@ -557,8 +560,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 				/* type is netCDF: report chunk size and deflation level */
 				if (G->header->is_netcdf4) {
 					sprintf (text, " chunk_size: %" PRIuS ",%" PRIuS " shuffle: %s deflation_level: %u",
-							G->header->z_chunksize[0], G->header->z_chunksize[1],
-							G->header->z_shuffle ? "on" : "off", G->header->z_deflate_level);
+					         G->header->z_chunksize[0], G->header->z_chunksize[1],
+					         G->header->z_shuffle ? "on" : "off", G->header->z_deflate_level);
 				}
 				else
 					text[0] = '\0';
