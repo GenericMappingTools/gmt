@@ -3088,8 +3088,8 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 
 	double angle, xtip, ytip, r, tailwidth, headlength, headwidth, headshape, length_inch;
 	double xx[4], yy[4], off[2], yshift[2];
-	int length, asymmetry[2], n, heads, outline, fill;
-	unsigned int status, kind[2];
+	int length, asymmetry[2], n, heads, outline, fill, status;
+	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
 	xtip = param[0];	ytip = param[1];
@@ -3099,7 +3099,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	angle = atan2 (ytip-y, xtip-x) * R2D;					/* Angle vector makes with horizontal, in radians */
 	tailwidth = param[2];
 	headlength = param[3];	headwidth = 0.5 * param[4];	headshape = param[5];
-	status = (unsigned int)lrint (param[6]);
+	status = lrint (param[6]);
 	kind[0] = (unsigned int)lrint (param[7]);
 	kind[1] = (unsigned int)lrint (param[8]);
 	off[0] = (kind[0] == PSL_VEC_ARROW) ? 0.5 * (2.0 - headshape) * headlength : 0.0;
