@@ -327,17 +327,6 @@ set_source_files_properties (triangle.c
 	PROPERTIES
 	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY;ANSI_DECLARATORS")
 
-if (MSVC)
-	# Disable automatic manifest generation
-	string(REGEX REPLACE "/MANIFEST[^ ]*( |$)" ""
-		CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
-
-	# To expand the command line arguments in Windows, see:
-	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
-endif(MSVC)
-
 # libpslib
 add_library (pslib
 	${GMT_GEN_HDRS}
@@ -420,6 +409,14 @@ if (BUILD_SUPPLEMENTS)
 		gmtlib
 		pslib)
 
+	# Include any extra files that are listed in EXTRA_INCLUDE_GMTSUPPL defined in ConfigUser.cmake
+	# This include(s) will add new modules to the official GMT supplements
+	if (EXTRA_INCLUDE_GMTSUPPL)
+		foreach (_f ${EXTRA_INCLUDE_GMTSUPPL})
+			include (${_f})
+		endforeach(_f)
+	endif ()
+
 	set_target_properties (supplib
 		PROPERTIES
 		OUTPUT_NAME supplements
@@ -451,6 +448,15 @@ if (BUILD_SUPPLEMENTS)
 		RUNTIME DESTINATION ${GMT_BINDIR}/gmt_plugins # Windows
 		COMPONENT Runtime)
 endif (BUILD_SUPPLEMENTS)
+
+# Include any extra files that are listed in EXTRA_INCLUDE_NEWSUPPL defined in ConfigUser.cmake
+# This include(s) will create new pluggins
+if (EXTRA_INCLUDE_NEWSUPPL)
+	foreach (_f ${EXTRA_INCLUDE_NEWSUPPL})
+		include (${_f})
+	endforeach(_f)
+endif ()
+
 
 # make UNIX PATH variable
 string (REPLACE ";" ":" GMT_BINARY_DIR_PATH "${GMT_BINARY_DIR_PATH}")
@@ -542,6 +548,17 @@ else (BUILD_SUPPLEMENTS)
 	# Tests depend on GMT progs and supplements:
 	add_dependencies (check ${_gmt_progs} psldemo)
 endif (BUILD_SUPPLEMENTS)
+
+if (MSVC)
+	# Disable automatic manifest generation
+	string(REGEX REPLACE "/MANIFEST[^ ]*( |$)" ""
+		CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+
+	# To expand the command line arguments in Windows, see:
+	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
+endif(MSVC)
 
 # add the install targets
 install (TARGETS gmtlib pslib gmt
