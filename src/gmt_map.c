@@ -1532,7 +1532,7 @@ unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 		if (S->header) L[side]->header = strdup (S->header);
 		if (S->ogr) GMT_duplicate_ogr_seg (GMT, L[side], S);
 	}
-	L[0]->range = 2;	L[1]->range = 3;
+	L[0]->range = GMT_IS_0_TO_P360;	L[1]->range = GMT_IS_M360_TO_0_RANGE;
 	*Lout = L;
 	return (2);
 }

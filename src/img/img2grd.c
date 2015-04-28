@@ -550,7 +550,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 
 
 	/* Now before beginning data loop, fseek if needed.  */
-	if (jinstart > 0 && jinstart < imgcoord.nyrow) fseek (fp, 2LL * imgcoord.nxcol * jinstart, SEEK_SET);
+	if (jinstart > 0 && jinstart < (unsigned int)imgcoord.nyrow) fseek (fp, 2LL * imgcoord.nxcol * jinstart, SEEK_SET);
 
 	/* Now loop over output points, reading and handling data as needed */
 
