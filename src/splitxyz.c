@@ -565,7 +565,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	if (nprofiles > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
 	dim[GMT_SEG] = seg2;	dim[GMT_COL] = n_outputs;
-	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) Return (API->error);	/* An empty table */
+	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
 	for (seg = 0; seg < seg2; seg++) {	/* We fake a table by setting the coord pointers to point to various points in our single S_out arrays */
 		S = D[GMT_OUT]->table[0]->segment[seg];
 		k = (seg == 0) ? 0 : rec[seg-1];

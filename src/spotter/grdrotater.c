@@ -488,7 +488,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	GMT->common.R.active = true;
 	
 	if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, G->header->inc, \
-		GMT_GRID_DEFAULT_REG, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* Precalculate node coordinates in both degrees and radians */
 	grd_x = GMT_grd_coord (GMT, G_rot->header, GMT_X);

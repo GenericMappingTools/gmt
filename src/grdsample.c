@@ -257,7 +257,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	}
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
-		registration, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	sprintf (format, "Input  grid (%s/%s/%s/%s) nx = %%d ny = %%d dx = %s dy = %s registration = %%d\n", 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, 

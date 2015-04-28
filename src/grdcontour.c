@@ -1095,7 +1095,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			}
 		}
 		dim[GMT_TBL] = n_tables;
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, Ctrl->D.file)) == NULL) Return (API->error);	/* An empty dataset */
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
 		n_seg = GMT_memory (GMT, NULL, n_tables, uint64_t);
 	}

@@ -320,7 +320,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	}
 	
 	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
-		registration, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);

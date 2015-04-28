@@ -855,7 +855,7 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	/* OK, here we have a recognized dataset ID */
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, -1, Ctrl->G.file)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, -1, NULL)) == NULL) Return (API->error);
 
 	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
 

@@ -1082,25 +1082,25 @@ and pass the ``par`` array as indicated below:
     An empty :ref:`GMT_DATASET <struct-dataset>` structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, each with ``par[2]`` rows, all
     with ``par[3]`` columns, is allocated.
-    The ``wesn``, ``inc``, and ``registration`` argument are ignored.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
   **GMT_IS_TEXTSET**
     An empty :ref:`GMT_TEXTSET <struct-textset>` structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, all with ``par[2]`` text records (rows), is allocated.
-    The ``wesn``, ``inc``, and ``registration`` argument are ignored.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
   **GMT_IS_CPT**
     An empty :ref:`GMT_PALETTE <struct-palette>` structure with ``par[0]`` palette entries is allocated.
-    The ``wesn``, ``inc``, and ``registration`` argument are ignored.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
   **GMT_IS_VECTOR**
     An empty :ref:`GMT_VECTOR <struct-vector>` structure with ``par[0]`` column entries is allocated.
-    The ``wesn``, ``inc``, and ``registration`` argument are ignored.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
   **GMT_IS_MATRIX**
     An empty :ref:`GMT_MATRIX <struct-matrix>` structure is allocated. ``par[2]`` indicates
     the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.  Here,
-    par[0] is the number of columns while par[1] has the number of rows.
+    par[0] is the number of columns while par[1] has the number of rows.  The ``data`` argument should be NULL.
 
 For the second approach, you
 instead pass ``wesn``, ``inc``, and ``registration`` and leave ``par`` as NULL
@@ -1109,7 +1109,7 @@ For grids and images you may pass ``pad`` to set the padding, or -1 to
 accept the GMT default. The ``mode`` determines what is actually
 allocated when you have chosen grids or images. As for GMT_Read_Data_
 you can pass ``GMT_GRID_ALL`` to initialize the header and allocate
-space for the array. Alternatively, you can pass
+space for the array; here ``data`` must be NULL. Alternatively, you can pass
 ``GMT_GRID_HEADER_ONLY`` to just initialize the grid or image header,
 and call a second time, passing ``GMT_GRID_DATA_ONLY``, to allocate
 space for the array. In that second call you pass the pointer returned

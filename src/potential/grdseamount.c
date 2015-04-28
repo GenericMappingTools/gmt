@@ -320,7 +320,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	}
 	else {	/* Set up and allocate output grid */
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
-			GMT_GRID_DEFAULT_REG, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 
 	map = GMT_is_geographic (GMT, GMT_IN);

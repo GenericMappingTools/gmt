@@ -563,7 +563,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			}
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENT;	/* d: Want individual files with running numbers */
 		}
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, Ctrl->D.file)) == NULL) Return (API->error);	/* An empty table */
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
 	}
 	
@@ -697,7 +697,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			struct GMT_GRID *G = NULL;
 			char *dumpfile = "psmask.nc";
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Grid->header->wesn, Grid->header->inc, \
-				Grid->header->registration, 0, dumpfile)) == NULL) Return (API->error);
+				Grid->header->registration, 0, NULL)) == NULL) Return (API->error);
 			for (ij = 0; ij < Grid->header->size; ij++) G->data[ij] = (float)grd[ij];
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, dumpfile, G) != GMT_OK) {
 				Return (API->error);

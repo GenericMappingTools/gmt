@@ -1741,7 +1741,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	}
 	
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, wesn, Ctrl->I.inc, \
-		GMT_GRID_NODE_REG, 2, Ctrl->G.file)) == NULL) Return (API->error);	/* Need a pad of 2 */
+		GMT_GRID_NODE_REG, 2, NULL)) == NULL) Return (API->error);	/* Need a pad of 2 */
 	
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);
