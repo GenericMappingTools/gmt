@@ -171,6 +171,11 @@ if (WIN32 AND NOT CYGWIN)
 	" COMPONENT Runtime)
 endif(WIN32 AND NOT CYGWIN)
 
+# If defined, import a list of files to add to the installer
+if(EXTRA_INCLUDE_EXES)
+	include (${EXTRA_INCLUDE_EXES})
+endif()
+
 # MacOSX:
 if (APPLE)
 	# Generate startup script:
