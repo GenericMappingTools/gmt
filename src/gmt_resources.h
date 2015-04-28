@@ -452,7 +452,7 @@ struct GMT_DATASEGMENT {		/* For holding segment lines in memory */
 	enum GMT_enum_pol pol_mode;	/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
 	uint64_t id;			/* The internal number of the segment */
 	size_t n_alloc;			/* The current allocation length of each coord */
-	int range;			/* 0 = use default lon adjustment, -1 = negative longs, +1 = positive lons */
+	unsigned int range;		/* Longitude reporting scheme, e.g. GMT_IS_GIVEN_RANGE [0] */
 	int pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
 	double dist;			/* Distance from a point to this feature */
 	double lat_limit;		/* For polar caps: the latitude of the point closest to the pole */

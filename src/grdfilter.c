@@ -491,7 +491,6 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 	/* Base the area weight grid on the input grid domain and increments. */
 	if ((A = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, G->header->wesn, G->header->inc, \
 		G->header->registration, GMT_NOTSET, NULL)) == NULL) return (NULL);
-
 	if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data */
 		if (mode == GRDFILTER_GEO_MERCATOR) dy_half = 0.5 * A->header->inc[GMT_Y];	/* Half img y-spacing */
 		dx = A->header->inc[GMT_X] * R2D;			/* Longitude increment in radians */
