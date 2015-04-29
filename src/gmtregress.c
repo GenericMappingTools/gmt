@@ -141,9 +141,9 @@ static int GMT_gmtregress_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Examine E as function of line slope; give angle range and increment [-90/+90/1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Option -F is not required as no model will be returned; instead we return\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   records of (angle, E, slope, intercept) for all angles specified.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Select level (%%) to use in confidence band calculations (see -F) [95].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Regression type: Select how misfit should be measured:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     x : Horizontally from data point to regression line\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Select level (%%) to use in confidence band calculations (see -Fc) [95].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Regression type. Select how misfit should be measured:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     x : Horizontally from data point to regression line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     y : Vertically from data point to regression line [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     o : Orthogonally from data point to regression line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r : Use Reduced Major Axis area misfit.\n");
@@ -162,7 +162,7 @@ static int GMT_gmtregress_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     1 : L-1 measure (mean absolute residuals).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     2 : L-2 measure (mean squared residuals) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r : LMS robust measure (median of squared residuals).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     w : RLS Reweighted L-2 measure (r followed by 2 after excluding outliners.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     w : RLS Reweighted L-2 measure (r followed by 2 after excluding outliers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip records identified as outliers on output.  Append r to reverse mode and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   only output the outlier records.  Cannot be used with -T [output all records].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Evaluate model at the equidistant points implied by the arguments.\n");
@@ -876,7 +876,7 @@ double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double 
 	bool flipped, reweighted_ls = false;
 	double scale, *x = NULL, *y = NULL, *z = NULL, *ww[3] = {NULL, NULL, NULL};
 	
-	if (in_norm == GMTREGRESS_NORM_RLS) {	/* Reweighted Least Squares means first LMS, then remove outliners, then L2 for final result */
+	if (in_norm == GMTREGRESS_NORM_RLS) {	/* Reweighted Least Squares means first LMS, then remove outliers, then L2 for final result */
 		norm = GMTREGRESS_NORM_LMS;
 		reweighted_ls = true;
 	}
