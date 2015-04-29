@@ -77,7 +77,7 @@ endif (GMT_BUNDLE_ACCEPT_BUTTON)
 
 # Install components:
 set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG)
-set (CPACK_COMPONENT_DOCUMENTATION_DISABLED ON)
+# set (CPACK_COMPONENT_DOCUMENTATION_DISABLED ON)
 set (CPACK_COMPONENT_RUNTIME_DISPLAY_NAME "Runtime files")
 set (CPACK_COMPONENT_RUNTIME_DESCRIPTION
 	"GMT programs, libraries and shared files.")
@@ -170,6 +170,11 @@ if (WIN32 AND NOT CYGWIN)
 	endif ()
 	" COMPONENT Runtime)
 endif(WIN32 AND NOT CYGWIN)
+
+# If defined, import a list of files to add to the installer
+if(EXTRA_INCLUDE_EXES)
+	include (${EXTRA_INCLUDE_EXES})
+endif()
 
 # MacOSX:
 if (APPLE)

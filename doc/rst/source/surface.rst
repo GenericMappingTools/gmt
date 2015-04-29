@@ -57,8 +57,8 @@ input data values. Natural boundary conditions are applied at the edges,
 except for geographic data with 360-degree range where we apply periodic
 boundary conditions in the longitude direction.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-G**\ *outputfile.nc*
     Output file name. Output is a binary 2-D *.nc* file. Note that the
@@ -69,20 +69,20 @@ boundary conditions in the longitude direction.
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-**-A**\ *aspect\_ratio*
+**-A**\ *aspect_ratio*
     Aspect ratio. If desired, grid anisotropy can be added to the
-    equations. Enter *aspect\_ratio*, where dy = dx / *aspect\_ratio*
+    equations. Enter *aspect_ratio*, where dy = dx / *aspect_ratio*
     relates the grid dimensions. [Default = 1 assumes isotropic grid.]
-**-C**\ *convergence\_limit*[%]
+**-C**\ *convergence_limit*\ [%]
     Convergence limit. Iteration is assumed to have converged when the
     maximum absolute change in any grid value is less than
-    *convergence\_limit*. (Units same as data z units). Alternatively,
+    *convergence_limit*. (Units same as data z units). Alternatively,
     give limit in percentage of rms deviation by appending %.  [Default is
     scaled to 1e-4 of the root-mean-square deviation of the data
     from a best-fit (least-squares) plane.].
@@ -99,9 +99,9 @@ boundary conditions in the longitude direction.
     unconstrained [Default]. Grid files used to set the limits may
     contain NaNs. In the presence of NaNs, the limit of a node masked
     with NaN is unconstrained.
-**-N**\ *max\_iterations*
-    Number of iterations. Iteration will cease when *convergence\_limit*
-    is reached or when number of iterations reaches *max\_iterations*.
+**-N**\ *max_iterations*
+    Number of iterations. Iteration will cease when *convergence_limit*
+    is reached or when number of iterations reaches *max_iterations*.
     This is the final iteration limit at the desired grid spacing; for
     intermediate (coarser) grids the effective iteration limit is scaled
     by the grid spacing multiplier.
@@ -113,20 +113,20 @@ boundary conditions in the longitude direction.
     sizes suggested by **-Q** can be achieved by altering **-R** and/or
     **-I**. You can recover the **-R** and **-I** you want later by
     using **grdsample** or **grdcut** on the output of **surface**.
-**-S**\ *search\_radius*\ [**m**\ \|\ **s**]
+**-S**\ *search_radius*\ [**m**\ \|\ **s**]
     Search radius. Enter *search\_radius* in same units as x,y data;
     append **m** to indicate arc minutes or **s** for arc seconds. This
     is used to initialize the grid before the first iteration; it is not
     worth the time unless the grid lattice is prime and cannot have
     regional stages. [Default = 0.0 and no search is made.]
-**-T**\ [**i**\ \|\ **b**] ]\ *tension\_factor*
+**-T**\ [**i**\ \|\ **b**] ]\ *tension_factor*
     Tension factor[s]. These must be between 0 and 1. Tension may be
     used in the interior solution (above equation, where it suppresses
     spurious oscillations) and in the boundary conditions (where it
     tends to flatten the solution approaching the edges). Using zero for
     both values results in a minimum curvature surface with free edges,
-    i.e., a natural bicubic spline. Use **-Ti**\ *tension\_factor*
-    to set interior tension, and **-Tb**\ *tension\_factor* to set
+    i.e., a natural bicubic spline. Use **-Ti**\ *tension_factor*
+    to set interior tension, and **-Tb**\ *tension_factor* to set
     boundary tension. If you do not prepend **i** or **b**, both will be
     set to the same value. [Default = 0 for both gives minimum curvature
     solution.] 
@@ -190,7 +190,7 @@ node and suggest that you run **blockmean**, **blockmedian**, or
 message it usually means that your grid spacing is so small that you
 need more decimals in the output format used by **blockm\***. You may
 specify more decimal places by editing the parameter
-**FORMAT\_FLOAT\_OUT** in your :doc:`gmt.conf` file prior to running
+**FORMAT_FLOAT_OUT** in your :doc:`gmt.conf` file prior to running
 **blockm\***, or choose binary input and/or output using single or
 double precision storage.
 
@@ -198,8 +198,8 @@ Note that only gridline registration is possible with **surface**. If
 you need a pixel-registered grid you can resample a gridline registered
 grid using :doc:`grdsample` **-T**.
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 :doc:`blockmean`,
 :doc:`blockmedian`,
