@@ -198,14 +198,14 @@ it to the sea-bottom anomaly. Assuming a 6 km thick crust of density
 2700 and a mantle with 3300 density we could repeat the command used to
 compute the water layer anomaly, using 600 (3300 - 2700) as the density
 contrast. But we now have a problem because we need to know the mean
-moho depth. That is when **-A** option comes in hand. Notice that we
-didn't need to do that before because mean water depth was computed
-directly from data. (notice also the negative sign of the argument to
-**-A**, remember z positive up):
+moho depth. That is when the scale/offset that can be appended to the grid's name
+comes in hand. Notice that we didn't need to do that before because mean water
+depth was computed directly from data. (notice also the negative sign of the
+offset due to the fact that *z* is positive up):
 
    ::
 
-    gmt gravfft bat.grd -D600 -Gmoho_g.grd -A-6000
+    gmt gravfft bat.grd=nf/1/-6000 -D600 -Gmoho_g.grd
 
 Now, subtract it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
 
