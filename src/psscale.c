@@ -462,7 +462,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	struct GMT_FILL *f = NULL;
 	struct GMT_PLOT_AXIS *A;
 #ifdef DEBUG
-	unsigned int dump_k_val = 0, zzz;
+	unsigned int dump_k_val = 0;
 #endif
 
 	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
@@ -593,11 +593,6 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			for (j = 0; j < ny; j++) {
 				GMT_rgb_copy (rgb, rrggbb);
 				k = j * nx + ii;
-#ifdef DEBUG
-				if (dump && z > 2499.2 && z < 2500.25) {
-					zzz = 1;
-				}
-#endif
 				if (intens) GMT_illuminate (GMT, max_intens[1] - j * inc_j, rgb);
 				if (P->is_gray)	/* All gray, pick red */
 					bar[k] = GMT_u255 (rgb[0]);

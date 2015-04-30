@@ -61,7 +61,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	bool	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	bool	fliplr, got_R = false, got_r = false, error = false;
 	int	*whichBands = NULL, *rowVec = NULL, *colVec = NULL;
-	int	off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
+	int	off, pad = 0, i_x_nXYSize, startColPos = 0, startRow = 0, nXSize_withPad = 0;
 	unsigned int nn, mm;
 	size_t n_alloc;
 	//int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
@@ -167,7 +167,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 		}
 		else {
 			Ctrl->ProjectionRefWKT = NULL;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n",
 					Ctrl->ProjectionRefPROJ4);
 		}
 
@@ -523,7 +523,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GDALREAD_CTR
 	GDALDestroyDriverManager();
 
 	/* Return registration based on data type of the actually read first band.
-	   We do this at the end because 'populate_metadata' scans all bands in file 
+	   We do this at the end because 'populate_metadata' scans all bands in file
 	   and cannot know which one was actually read. */
 	if (!pixel_reg) {		/* Grid registration */
 		Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
@@ -579,7 +579,7 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
  *
  *    nodata:
  *        A special marker value used to mark nodes that contain not valid data. Its values is
- *        fetch from that of the first Band. In case that band has no defines 'nodata' than the 
+ *        fetch from that of the first Band. In case that band has no defines 'nodata' than the
  *        GMT->session.d_NaN value is used. Besides this, the Ctrl->band_field_names[nBand].nodata
  *        also stores the nodata for each band exactly as returned by GDALGetRasterNoDataValue().
  *        That is, without checking for the contents of 'status' that is used to indicate if a
@@ -895,7 +895,7 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 		/* This chunk should give us info is a GeoTiff GRID (not image) file is grid registered but I lack one
 		   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
 		   (where all this (re)started) not only is bugged as does not carry the AREA_OR_POINT metadata */
-		if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) && 
+		if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) &&
 			!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Point"))
 			fprintf(stderr, "IT's point\n");
 #endif
