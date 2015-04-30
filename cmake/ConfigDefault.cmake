@@ -37,7 +37,7 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
 # GMT_VERSION_YEAR is set to current date in
 # cmake/modules/ConfigCMake.cmake if not specified here:
-#set (GMT_VERSION_YEAR "2014")
+#set (GMT_VERSION_YEAR "2015")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 5)
@@ -48,7 +48,7 @@ set (GMT_PACKAGE_VERSION_PATCH 0)
 # This is manually set when making GMT *public* releases.
 # However, when making internal releases or just an ordinary developer build, leave it
 # empty; if it is empty, the revision number is automatically populated for you on build.
-#set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "12968")
+#set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "14260")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
