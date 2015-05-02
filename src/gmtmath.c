@@ -802,6 +802,43 @@ void table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : GMT_ber (GMT, fabs (T->segment[s]->coord[col][row]));
 }
 
+void table_BDIST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BDIST 3 1 binomial distribution B_n,p(x), with p = A, n = B and x = C.  */
+{
+	unsigned int prev1 = last - 1, prev2 = last - 2, error = 0;
+	uint64_t s, row;
+	double p, q, x, n;
+	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument p to BDIST must be a 0 <= p <= 1!\n");
+		error++;
+	}
+	if (S[prev1]->constant && S[prev1]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument n to BDIST must be a positive integer (n >= 0)!\n");
+		error++;
+	}
+	if (S[last]->constant && S[last]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument x to BDIST must be a positive integer (x >= 0)!\n");
+		error++;
+	}
+	if (error || (S[prev2]->constant && S[prev1]->constant && S[last]->constant)) {	/* BDIST is undefined or constant arguments */
+		double value;
+		p = S[prev2]->factor;	q = 1.0 - p;
+		n = S[prev1]->factor;	x = S[last]->factor;
+		value = (error) ? GMT->session.d_NaN : GMT_combination (GMT, irint (n), irint (x)) * pow (p, x) * pow (q, n-x);
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
+		return;
+	}
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		p = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
+		n = (S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row];
+		x = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		q = 1.0 - p;
+		T_prev2->segment[s]->coord[col][row] = GMT_combination (GMT, irint (n), irint (x)) * pow (p, x) * pow (q, n-x);
+	}
+}
+
 void table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
 {
@@ -1090,6 +1127,36 @@ void table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	k = urint (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		T->segment[s]->coord[col][row] = T_prev->segment[s]->coord[k][row];
+	}
+}
+
+void table_COMB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: COMB 2 1 Combinations n_C_r, with n = A and r = B.  */
+{
+	uint64_t s, row;
+	unsigned int prev, error = 0;
+	double a, b;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev);	/* Set up pointers and prev; exit if running out of stack */
+
+	if (S[prev]->constant && S[prev]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument n to COMB must be a positive integer (n >= 0)!\n");
+		error++;
+	}
+	if (S[last]->constant && S[last]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument r to COMB must be a positive integer (r >= 0)!\n");
+		error++;
+	}
+	if (error || (S[prev]->constant && S[last]->constant)) {	/* COMBO is undefined or given constant args */
+		double value = (error) ? GMT->session.d_NaN : GMT_combination (GMT, irint(S[prev]->factor), irint(S[last]->factor));
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+		return;
+	}
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = GMT_combination (GMT, irint(a), irint(b));
 	}
 }
 
@@ -2534,6 +2601,37 @@ void table_OR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
 		T_prev->segment[s]->coord[col][row] = (GMT_is_dnan (a) || GMT_is_dnan (b)) ? GMT->session.d_NaN : a;
+	}
+}
+
+void table_PERM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: PERM 2 1 Permutations n_P_r, with n = A and r = B.  */
+{
+	uint64_t s, row;
+	unsigned int prev, error = 0;
+	double a, b;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev);	/* Set up pointers and prev; exit if running out of stack */
+
+	if (S[prev]->constant && S[prev]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument n to PERM must be a positive integer (n >= 0)!\n");
+		error++;
+	}
+	if (S[last]->constant && S[last]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument r to PERM must be a positive integer (r >= 0)!\n");
+		error++;
+	}
+	if (error || (S[prev]->constant && S[last]->constant)) {	/* PERM is undefined or we have constant argument */
+		double value = (error) ? GMT->session.d_NaN : GMT_permutation (GMT, irint(S[prev]->factor), irint(S[last]->factor));
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = value;
+		return;
+	}
+	/* Must run the full thing */
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = GMT_permutation (GMT, irint(a), irint(b));
 	}
 }
 

@@ -493,6 +493,44 @@ void grd_ATANH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : atanhf (stack[last]->G->data[node]);
 }
 
+void grd_BDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BDIST 3 1 binomial distribution B_n,p(x), with p = A, n = B and x = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col, error = 0;
+	double p, q, x, n;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && stack[prev2]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument p to BDIST must be in 0 <= p <= 1!\n");
+		error++;
+	}
+	if (stack[prev1]->constant && stack[prev1]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument n to BDIST must be a positive integer (n >= 0)!\n");
+		error++;
+	}
+	if (stack[last]->constant  && stack[last]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument x to BDIST must be a positive integer (x >= 0)!\n");
+		error++;
+	}
+	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* BDIST is undefined or constant arguments */
+		float value;
+		p = stack[prev2]->factor;	q = 1.0 - p;
+		n = stack[prev1]->factor;	x = stack[last]->factor;
+		value = (error) ? GMT->session.f_NaN : (float)(GMT_combination (GMT, irint (n), irint (x)) * pow (p, x) * pow (q, n-x));
+		GMT_grd_loop (GMT, info->G, row, col, node) stack[prev2]->G->data[node] = value;
+		return;
+	}
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		p = (stack[prev2]->constant) ? stack[prev2]->factor : (double)stack[prev2]->G->data[node];
+		n = (stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node];
+		x = (stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node];
+		q = 1.0 - p;
+		stack[prev2]->G->data[node] = (float)(GMT_combination (GMT, irint (n), irint (x)) * pow (p, x) * pow (q, n-x));
+	}
+}
+
 void grd_BEI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BEI 1 1 bei (A).  */
 {
@@ -841,6 +879,33 @@ void grd_CHIDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 		GMT_chi2 (GMT, a, b, &prob);
 		stack[prev]->G->data[node] = (float)prob;
+	}
+}
+
+void grd_COMB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: COMB 2 1 Combinations n_C_r, with n = A and r = B.  */
+{
+	uint64_t node;
+	unsigned int prev = last - 1, row, col, error = 0;
+	double a, b;
+
+	if (stack[prev]->constant && stack[prev]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument n to COMB must be a positive integer (n >= 0)!\n");
+		error++;
+	}
+	if (stack[last]->constant && stack[last]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument r to COMB must be a positive integer (r >= 0)!\n");
+		error++;
+	}
+	if (error || (stack[prev]->constant && stack[last]->constant)) {	/* COMBO is undefined or we have a constant */
+		float value = (error) ? GMT->session.f_NaN : (float)GMT_combination (GMT, irint(stack[prev]->factor), irint(stack[last]->factor));
+		GMT_grd_loop (GMT, info->G, row, col, node) stack[prev]->G->data[node] = value;
+		return;
+	}
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+		stack[prev]->G->data[node] = (float)GMT_combination (GMT, irint(a), irint(b));
 	}
 }
 
@@ -2558,6 +2623,33 @@ void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	}
 
 	ASCII_free (GMT, info, &D, "PDIST2");	/* Free memory used for points */
+}
+
+void grd_PERM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: PERM 2 1 Permutations n_P_r, with n = A and r = B.  */
+{
+	uint64_t node;
+	unsigned int prev = last - 1, row, col, error = 0;
+	double a, b;
+
+	if (stack[prev]->constant && stack[prev]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument n to PERM must be a positive integer (n >= 0)!\n");
+		error++;
+	}
+	if (stack[last]->constant && stack[last]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument r to PERM must be a positive integer (r >= 0)!\n");
+		error++;
+	}
+	if (error || (stack[prev]->constant && stack[last]->constant)) {	/* PERM is undefined */
+		float value = (error) ? GMT->session.f_NaN : (float)GMT_permutation (GMT, irint(stack[prev]->factor), irint(stack[last]->factor));
+		GMT_grd_loop (GMT, info->G, row, col, node) stack[prev]->G->data[node] = value;
+		return;
+	}
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+		stack[prev]->G->data[node] = (float)GMT_permutation (GMT, irint(a), irint(b));
+	}
 }
 
 void grd_POP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)

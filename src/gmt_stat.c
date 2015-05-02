@@ -967,8 +967,9 @@ double GMT_sinc (struct GMT_CTRL *GMT, double x) {
 /* GMT_factorial (n) calculates the factorial n! */
 
 double GMT_factorial (struct GMT_CTRL *GMT, int n) {
+	static int ntop = 8;	/* Initial portion filled in below */
+	static double a[33] = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0};
 	int i;
-	double val = 1.0;
 
 	if (n < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: n < 0 in GMT_factorial(n)\n");
@@ -976,9 +977,42 @@ double GMT_factorial (struct GMT_CTRL *GMT, int n) {
 		/* This could be set to return 0 without warning, to facilitate
 			sums over binomial coefficients, if desired.  -whfs  */
 	}
+	if (n > 32) return (gmt_ln_gamma (GMT, n+1.0));
+	while (ntop < n) {
+		i = ntop++;
+		a[ntop] = a[i] * ntop;
+	}
+	return (a[n]);
+}
 
-	for (i = 1; i <= n; i++) val *= ((double)i);
-	return (val);
+double gmt_factln (struct GMT_CTRL *GMT, int n)
+{	/* returns log(n!) */
+	static double a[101];	/* Automatically initialized to zero */
+	if (n < 0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: n < 0 in gmt_factln(n)\n");
+		return (GMT->session.d_NaN);
+	}
+	if (n <= 1) return 0.0;
+	if (n <= 100) return (a[n] ? a[n] : (a[n] = gmt_ln_gamma (GMT, n+1.0)));
+	else return gmt_ln_gamma (GMT, n+1.0);
+}
+
+double GMT_permutation (struct GMT_CTRL *GMT, int n, int r)
+{	/* Compute Permutations n_P_r */
+	if (n < 0 || r < 0 || r > n) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: n < 0 or r < 0 or r > n in GMT_permutation(n,r)\n");
+		return (GMT->session.d_NaN);
+	}
+	return (floor (0.5 + exp (gmt_factln (GMT, n) - gmt_factln (GMT, n-r))));
+}
+
+double GMT_combination (struct GMT_CTRL *GMT, int n, int r)
+{	/* Compute Combinations n_C_r */
+	if (n < 0 || r < 0 || r > n) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: n < 0 or r < 0 or r > n in GMT_combination(n,r)\n");
+		return (GMT->session.d_NaN);
+	}
+	return (floor (0.5 + exp (gmt_factln (GMT, n) - gmt_factln (GMT, r) - gmt_factln (GMT, n-r))));
 }
 
 double GMT_dilog (struct GMT_CTRL *GMT, double x)

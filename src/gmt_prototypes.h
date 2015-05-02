@@ -544,6 +544,8 @@ EXTERN_MSC double GMT_k0 (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_k1 (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_kn (struct GMT_CTRL *GMT, unsigned int n, double x);
 EXTERN_MSC double GMT_dilog (struct GMT_CTRL *GMT, double x);
+EXTERN_MSC double GMT_permutation (struct GMT_CTRL *GMT, int n, int r);
+EXTERN_MSC double GMT_combination (struct GMT_CTRL *GMT, int n, int r);
 EXTERN_MSC double GMT_sinc (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_erfinv (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_rand (struct GMT_CTRL *GMT);
