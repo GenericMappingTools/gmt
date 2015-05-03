@@ -1150,7 +1150,7 @@ void table_COMB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	}
 	if (error || (S[prev]->constant && S[last]->constant)) {	/* COMBO is undefined or given constant args */
 		double value = (error) ? GMT->session.d_NaN : GMT_combination (GMT, irint(S[prev]->factor), irint(S[last]->factor));
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = value;
 		return;
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
