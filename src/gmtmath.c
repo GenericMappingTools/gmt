@@ -3685,8 +3685,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		n_rows = rhs->n_records;
 		n_columns = Ctrl->N.ncol;
 		Ctrl->T.min = rhs->min[0];
-		Ctrl->T.max = rhs->max[1];
-		Ctrl->T.inc = (rhs->max[1] - rhs->min[0]) / (rhs->n_records - 1);
+		Ctrl->T.max = rhs->max[0];
+		Ctrl->T.inc = (rhs->max[0] - rhs->min[0]) / (rhs->n_records - 1);
 	}
 	if (Ctrl->T.file) n_columns = Ctrl->N.ncol;
 
