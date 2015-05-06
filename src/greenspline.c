@@ -892,6 +892,9 @@ double spline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double pa
 	double P0, P1, P2, S;
 	GMT_UNUSED(GMT);
 
+	if (x == -1.0) return 0.0;
+	if (x == +1.0) return 1.0;
+	
 	L_max = get_L (x, par[0], par[1]);	/* Highest order needed in sum given x, p, and err */
 
 	/* pp = par[0] * par[0]; */
@@ -919,6 +922,7 @@ double gradspline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, doubl
 	double sin_theta, P0, P1, P2, S;
 	GMT_UNUSED(GMT);
 
+	if (fabs(x) == 1.0) return 1.0;
 	L_max = get_L (x, par[0], par[1]);	/* Highest order needed in sum given x, p, and err */
 	sin_theta = sqrt (1.0 - x * x);
 	P0 = 1.0;	/* Initialize the P0 and P1 Legendre polynomials */
@@ -1024,7 +1028,10 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GRE
 	fclose (fp);
 #endif
 	spline2d_Wessel_Becker_splineinit (GMT, par, x, Lz);
-	if (Lg) spline2d_Wessel_Becker_splineinit (GMT, par, x, Lg);
+	if (Lg) {
+		if (x[0] == -1.0) Lg->y[0] = 2.0*Lg->y[1] - Lg->y[2];	/* Linear interpolation from 2 nearest nodes */
+		spline2d_Wessel_Becker_splineinit (GMT, par, x, Lg);
+	}
 	GMT_free (GMT, x);	/* Done with x array */
 }
 
