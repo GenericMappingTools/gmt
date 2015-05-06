@@ -1798,8 +1798,6 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		dump_green (GMT, G, dGdr, par, x0, x1, 10001, Lz, Lg);
 		GMT_free_grid (GMT, &Grid, dimension == 2);
 		for (p = 0; p < nm; p++) GMT_free (GMT, X[p]);
-		GMT_free (GMT, X);
-		GMT_free (GMT, obs);
 		free_lookup (GMT, &Lz, 0);
 		free_lookup (GMT, &Lg, 1);
 		Return (0);
