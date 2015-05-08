@@ -207,7 +207,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 	unsigned int n_slash,k, n_errors = 0, slash;
 	int n;
 	size_t last;
-	bool geodetic_calc = false;
+	bool geodetic_calc = false,  g_dist = false;
 	char c, d, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -386,7 +386,8 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0, "Syntax error: -T cannot work with -E, -G or -L\n");
 	/* Can only do one of -A, -G and -L */
-	n_errors += GMT_check_condition (GMT, (Ctrl->G.active + Ctrl->A.active + Ctrl->L.active) > 1, "Syntax error: Can only specify one of -A, -G and -L\n");
+	g_dist = (Ctrl->G.mode > 0);
+	n_errors += GMT_check_condition (GMT, (g_dist + Ctrl->A.active + Ctrl->L.active) > 1, "Syntax error: Can only specify one of -A, -G and -L\n");
 	n_errors += GMT_check_condition (GMT, geodetic_calc && Ctrl->I.active, "Syntax error: -A, -G, and -L cannot work with -I\n");
 	/* Can only do -p for forward projection */
 	n_errors += GMT_check_condition (GMT, GMT->common.p.active && Ctrl->I.active, "Syntax error: -p cannot work with -I\n");
