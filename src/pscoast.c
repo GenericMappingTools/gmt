@@ -79,7 +79,7 @@ struct PSCOAST_CTRL {
 	} C;
 	struct D {	/* -D<resolution> */
 		bool active;
-		bool force;	/* if true, select next highest level if current set is not avaialble */
+		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E<DWC-options> */
@@ -170,6 +170,7 @@ void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deall
 	if (C->E.active && C->E.info.n_items) {
 		for (k = 0; k < C->E.info.n_items; k++)
 			free ((void *)C->E.info.item[k].codes);
+		GMT_free (GMT, C->E.info.item);
 	}
 	GMT_free (GMT, C);
 }
@@ -497,10 +498,10 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
 	}
-	if (!GMT->common.R.active && Ctrl->E.active && Ctrl->M.active && !Ctrl->E.info.region) Ctrl->E.info.region = true;	/* For -M and -F with no plotting, get -R from pols */
+	if (!GMT->common.R.active && Ctrl->E.active && Ctrl->M.active && !Ctrl->E.info.region) Ctrl->E.info.region = true;	/* For -M and -E with no plotting, get -R from pols */
 	if (Ctrl->E.info.region) {	/* Must pick up region from chosen polygons */
 		if (GMT->common.R.active)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning -F option: The -R option overrides the region found via -E.\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning -E option: The -R option overrides the region found via -E.\n");
 		else {	/* Pick up region from chosen polygons */
 			(void) GMT_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);
 			GMT->common.R.active = true;

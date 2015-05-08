@@ -482,12 +482,12 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	}
+	GMT_free (GMT, order);
 	if (mode > GMT_DCW_REGION) {
 		GMT_free (GMT, dx);
 		GMT_free (GMT, dy);
 		GMT_free (GMT, lon);
 		GMT_free (GMT, lat);
-		GMT_free (GMT, order);
 		P->coord[GMT_X] = P->coord[GMT_Y] = NULL;
 		GMT_free_segment (GMT, &P, GMT_ALLOC_INTERNALLY);
 	}
