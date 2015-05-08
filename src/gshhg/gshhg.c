@@ -309,7 +309,6 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		source = (level > 4) ? 'A' : ((src == 1) ? 'W' : 'C');		/* Either Antarctica, WVS or CIA (WDBII) pedigree */
 		if (is_river) source = (char)tolower ((int)source);	/* Lower case c means river-lake */
 		is_line = (h.area) ? 0 : 1;			/* Either Polygon (0) or Line (1) (if no area) */
-		if (is_line && D->geometry == GMT_IS_POLY) D->geometry = GMT_IS_LINE;	/* Change from polygon to line geometry */
 		if (version >= 9) {				/* Magnitude for area scale */
 			m = h.flag >> 26;
 			scale = pow (10.0, (double)m);		/* Area scale */
@@ -335,6 +334,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			}
 		}
 		else {
+			if (is_line && D->geometry == GMT_IS_POLY) D->geometry = GMT_IS_LINE;	/* Change from polygon to line geometry */
 			dim[GMT_ROW] = h.n + Ctrl->G.active;	/* Number of data records to allocate for this segment/polygon*/
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
 				size_t old_n_alloc = n_alloc;
