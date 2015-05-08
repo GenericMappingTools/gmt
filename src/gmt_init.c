@@ -8147,11 +8147,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					}
 					break;
 				case 't':
-					if (p[1] == 0) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: No title given after +t\n");
-						error++;
-					}
-					else {
+					if (p[1]) {	/* Actual title was appended */
 						strcpy (GMT->current.map.frame.header, &p[1]);
 						gmt5_handle_plussign (GMT, GMT->current.map.frame.header, NULL, 1);	/* Recover any non-modifier plus signs */
 						GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
