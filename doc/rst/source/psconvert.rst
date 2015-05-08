@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psconvert** *psfile(s)*
-[ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
+[ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
 [ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [ **-F**\ *<out_name>* ]
 [ **-G**\ *ghost_path* ] [ **-I** ] [ **-L**\ *listfile* ] [ **-P** ]
 [ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
@@ -53,7 +53,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
+**-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **u** to first remove any GMT-produced
     time-stamps. Optionally, append extra margins to the bounding box.
@@ -65,7 +65,8 @@ Optional Arguments
     The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`
     but you can append a new unit and/or impose different width and height. What happens
     here is that GhostScript will do the re-interpolation work and the final image will
-    retain the DPI resolution set by **-E**.
+    retain the DPI resolution set by **-E**.  Use **-A+sm** to set a maximum size and
+    the new width are only imposed if the original figure width exceeds it.
     Alternatively use **-A+S**\ *scale* to scale the image by a constant factor.
 
     Use the **-A+r** to round the HighRes BoundingBox instead of using the `ceil` function.

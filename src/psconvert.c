@@ -85,6 +85,7 @@ struct PS2RASTER_CTRL {
 	} In;
 	struct PS2R_A {             /* -A[u][-] [Adjust boundingbox] */
 		bool active;
+		bool max;          /* Only scale if dim exceeds the given size */
 		bool round;        /* Round HiRes BB instead of ceil */
 		bool strip;        /* Remove the -U time-stamp */
 		bool reset;        /* The -A- turns -A off, overriding any automode in effect */
@@ -158,7 +159,7 @@ struct PS2RASTER_CTRL {
 };
 
 int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
-	/* Syntax: -A[u][<margins>][-][+r][+s<width>[u][/<height>[u]]] */
+	/* Syntax: -A[u][<margins>][-][+r][+s|S[m]<width>[u][/<height>[u]]] */
 
 	bool error = false;
 	unsigned int pos = 0;
@@ -207,9 +208,10 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 				Ctrl->A.rescale = true;
 				Ctrl->A.scale = atof(&p[1]);
 				break;
-			case 's':	/* New size */
+			case 's':	/* New size +s[m]<width>[u][/<height>[u]] */
 				Ctrl->A.resize = true;
-				j = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
+				if (p[1] == 'm') { Ctrl->A.max = true, k = 2;} else k = 1;
+				j = sscanf (&p[k], "%[^/]/%s", txt_a, txt_b);
 				switch (j) {
 					case 1:	/* Got width only. Height will be computed later */
 						Ctrl->A.new_size[0] = GMT_to_points (GMT, txt_a);
@@ -352,7 +354,7 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s|S<width[u]>[/<height>[u]]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
@@ -373,6 +375,7 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] set separate w-,e-,s-,n-margins.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use the -A+s<width[u]>[/<height>[u]] option the select a new image size\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n", GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -A+S<scale> to scale the image by the <scale> factor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A+r to force rounding of HighRes BoundingBox instead of ceil.\n");
@@ -1224,6 +1227,8 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 					/* Now we must calculate the new scale */
 					if (Ctrl->A.rescale)          /* except if it was set as an option */
 						r_x = Ctrl->A.scale;
+					else if (Ctrl->A.max)
+						r_x = (w > Ctrl->A.new_size[0]) ? Ctrl->A.new_size[0] / w : 1.0;
 					else
 						r_x = Ctrl->A.new_size[0] / w;
 
