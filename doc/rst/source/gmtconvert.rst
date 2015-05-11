@@ -109,8 +109,8 @@ Optional Arguments
     Only write segments whose number is included in *selection* and skip
     all others. Cannot be used with **-S**. The *selection* syntax is
     *range*\ [,\ *range*,...] where each *range* of items is either a single
-    segment *number*, a range of segment numbers *start-stop*, or a range with
-    stepped increments given via *start:step:stop*.   A leading **~** will
+    segment *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
+    (*step* is optional and defaults to 1). A leading **~** will
     invert the selection and write all segments but the ones listed.  Instead
     of a list of ranges, use **+f**\ *file* to supply a file list with one
     *range* per line.

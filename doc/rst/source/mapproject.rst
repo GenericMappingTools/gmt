@@ -195,6 +195,14 @@ Optional Arguments
 Examples
 --------
 
+To convert UTM coordinates in meters to geographic locations, given
+a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
+
+   ::
+
+    gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
+
+
 To transform a file with (longitude,latitude) into (x,y) positions in cm
 on a Mercator grid for a given scale of 0.5 cm per degree, run
 

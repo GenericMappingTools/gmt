@@ -10,9 +10,9 @@
 # Data from Table 7 in Rousseeuw and Leroy, 1987.
 ps=example_43.ps
 
-gmt regress -Ey -Nw -i0-1l bb_weights.asc > model.txt
-gmt regress -Ey -Nw -i0-1l bb_weights.asc -Fxmc -T-2/6/0.1 > rls_line.txt
-gmt regress -Ey -N2 -i0-1l bb_weights.asc -Fxm -T-2/6/8 > ls_line.txt
+gmt regress -Ey -Nw -i0:1l bb_weights.asc > model.txt
+gmt regress -Ey -Nw -i0:1l bb_weights.asc -Fxmc -T-2/6/0.1 > rls_line.txt
+gmt regress -Ey -N2 -i0:1l bb_weights.asc -Fxm -T-2/6/8 > ls_line.txt
 grep -v '^>' model.txt > A.txt
 grep -v '^#' bb_weights.asc > B.txt
 awk '{if ($7 == 0) printf "%dp\n", NR}' A.txt > sed.txt

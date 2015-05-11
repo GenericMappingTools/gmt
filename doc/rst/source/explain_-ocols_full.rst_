@@ -2,5 +2,7 @@
 
 **-o**\ *cols*\ [,...]
     Select specific data columns for output, in arbitrary order. Columns
-    not listed will be skipped. Give columns (or column ranges)
-    separated by commas [Default writes all columns in order].
+    not listed will be skipped. Give columns (or column ranges
+    in the format *start*\ [:*inc* \]:*stop*, where *inc* defaults to 1 if
+    not specified) separated by commas.  Columns may be repeated.
+    [Default writes all columns in order].

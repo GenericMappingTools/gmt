@@ -31,7 +31,7 @@ gmt regress -Ex -Fxm -N2 york.txt -T-0.5/8.5/8 | gmt psxy -R -J -O -K -W0.5p,bla
 # Plot LSY solution using y-errors
 gmt regress -Ey -Fxm -N2 -Wwy york.txt -i0,1,3 -T-0.5/8.5/8 | gmt psxy -R -J -O -K -W1p,red >> $ps
 # Plot LSX solution using x-errors
-gmt regress -Ex -Fxm -N2 -Wwx york.txt -i0-2 -T-0.5/8.5/8 | gmt psxy -R -J -O -K -W0.25p,black >> $ps
+gmt regress -Ex -Fxm -N2 -Wwx york.txt -i0:2 -T-0.5/8.5/8 | gmt psxy -R -J -O -K -W0.25p,black >> $ps
 gmt pslegend -DjTR/1.9i/RT/0.1i/0.1i -R -J -O -K -F+p1p << EOF >> $ps
 S 0.3i - 0.5i - 1p,red       0.6i LSY using @~s@~@-y@-
 S 0.3i - 0.5i - 0.5p,red,-   0.6i LSY ignoring @~s@~@-y@-
