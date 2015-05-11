@@ -811,7 +811,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 			PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
 			GMT_setpen (GMT, &Ctrl->T2.pen);
 			GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
-			PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
+			PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
 		}
 		event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
 	} while (true);
