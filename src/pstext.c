@@ -386,8 +386,8 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 					k = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 					for (j = 0; txt_a[j]; j++) if (txt_a[j] == '%') txt_a[j] = '\0';	/* Remove % signs before processing values */
 					for (j = 0; k == 2 && txt_b[j]; j++) if (txt_b[j] == '%') txt_b[j] = '\0';
-					Ctrl->C.dx = GMT_to_inch (GMT, txt_a);
-					Ctrl->C.dy = (k == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->C.dx;
+					Ctrl->C.dx = (Ctrl->C.percent) ? atof (txt_a) : GMT_to_inch (GMT, txt_a);
+					Ctrl->C.dy = (k == 2) ? ((Ctrl->C.percent) ? atof (txt_b) : GMT_to_inch (GMT, txt_b)) : Ctrl->C.dx;
 				}
 				break;
 			case 'D':
