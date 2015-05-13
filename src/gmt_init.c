@@ -6554,6 +6554,8 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 
 	/* Determine GMT->session.SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
 
+	/* Note: GMT_set_env cannot use GMT_Report because the verbose level is not yet set */
+
 	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL
 			&& GMT_verify_sharedir_version (this_c) )
 		/* GMT5_SHAREDIR was set */
@@ -6576,9 +6578,7 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 			GMT->session.SHAREDIR = strdup (path);
 		else {
 			/* Still not found */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-				"Error: Could not locate share directory that matches the current GMT version %s.\n",
-				GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+			fprintf (stderr, "Error: Could not locate share directory that matches the current GMT version %s.\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
@@ -6595,7 +6595,7 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 		GMT->session.HOMEDIR = strdup (this_c);
 #endif
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine home directory!\n");
+		fprintf (stderr, "Error: Could not determine home directory!\n");
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	DOS_path_fix (GMT->session.HOMEDIR);
@@ -6627,9 +6627,9 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 
 		if ((this_c = getenv ("GMT_CPTDIR")) != NULL) {
 			/* GMT_CPTDIR was set */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
+			fprintf (stderr, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
+			fprintf (stderr, "Warning: System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
+			fprintf (stderr, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
 		}
 	}
 
@@ -6649,8 +6649,8 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 	if ((this_c = getenv ("GMT_TMPDIR")) != NULL) {
 		/* GMT_TMPDIR was set */
 		if (access (this_c, R_OK|W_OK|X_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
+			fprintf (stderr, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
+			fprintf (stderr, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			GMT->session.TMPDIR = NULL;
 		}
 		else
