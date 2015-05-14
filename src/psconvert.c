@@ -49,8 +49,10 @@ void GMT_str_toupper (char *string);
 #	define getpid _getpid
 	int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C);
 	static char quote = '\"';
+	static char *squote = "\"";
 #else
 	static char quote = '\'';
+	static char *squote = "\'";
 #endif
 
 enum GMT_GS_Devices {
@@ -78,6 +80,7 @@ enum GMT_KML_Elevation {
 	N_KML_ELEVATIONS};
 
 #define add_to_list(list,item) { if (list[0]) strcat (list, " "); strcat (list, item); }
+#define add_to_qlist(list,item) { if (list[0]) strcat (list, " "); strcat (list, squote);  strcat (list, item); strcat (list, squote); }
 
 struct PS2RASTER_CTRL {
 	struct PS2R_In {	/* Input file info */
@@ -869,15 +872,15 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 
 		n_alloc = 0;
 		for (k = 0; k < Ctrl->In.n_files; k++)
-			n_alloc += (strlen (ps_names[k]) + 1);
+			n_alloc += (strlen (ps_names[k]) + 3);	/* 3 = 2 quotes plus space */
 		all_names_in = GMT_memory (GMT, NULL, n_alloc, char);
 		for (k = 0; k < Ctrl->In.n_files; k++) {
-			add_to_list (all_names_in, ps_names[k]);
+			add_to_qlist (all_names_in, ps_names[k]);
 			free (ps_names[k]);
 		}
 		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
-		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%c%s.pdf%c %c%s%c",
-			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, quote, Ctrl->F.file, quote, quote, all_names_in, quote);
+		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%c%s.pdf%c %s",
+			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, quote, Ctrl->F.file, quote, all_names_in);
 
 		GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd2);
 		sys_retval = system (cmd2);		/* Execute the GhostScript command */
@@ -891,6 +894,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 		GMT_free (GMT, all_names_in);
 		GMT_free (GMT, cmd2);
 		GMT_free (GMT, ps_names);
+		GMT_free (GMT, line);
 		Return (GMT_OK);
 	}
 	/* ----------------------------------------------------------------------------------------------- */
