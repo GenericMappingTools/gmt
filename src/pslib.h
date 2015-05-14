@@ -391,6 +391,7 @@ EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char
 EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
 EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
 EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
+EXTERN_MSC char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 
 /* Used indirectly by macro PSL_free and FORTRAN wrapper PSL_free_ . */
 EXTERN_MSC int PSL_free_nonmacro (void *addr);

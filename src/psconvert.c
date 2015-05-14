@@ -94,10 +94,14 @@ struct PS2RASTER_CTRL {
 		bool reset;        /* The -A- turns -A off, overriding any automode in effect */
 		bool resize;       /* Resize to a user selected size */
 		bool rescale;      /* Resize to a user selected scale factor */
+		bool outline;      /* Draw frame around plot with selected pen [0.25p] */
+		bool paint;        /* Paint box behind plot with selected fill */
 		double scale;      /* Scale factor to go along with the 'rescale' option */
 		double new_size[2];
 		double margin[4];
 		double new_dpi_x, new_dpi_y;
+		struct GMT_PEN pen;
+		struct GMT_FILL fill;
 	} A;
 	struct PS2R_C {	/* -C<option> */
 		bool active;
@@ -166,18 +170,20 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 
 	bool error = false;
 	unsigned int pos = 0;
-	int j, k = 0;
+	int j, k = 0, trim_j = -1;
 	char txt[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 
 	Ctrl->A.active = true;
 
 	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}
+	/* If there are +modifiers later we need to temporarily disable them: */
+	for (j = k; arg[j] && arg[j] != '+'; j++);
+	if (arg[j] == '+') arg[j] = 0, trim_j = j;
 	if (*arg != '\0' && arg[strlen(arg)-1] == '-') {
 		Ctrl->A.reset = true;
 		return (error);
 	}
-
 	if (arg[k] && arg[k] != '+') {	/* Also specified margin(s) */
 		j = sscanf (&arg[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 		switch (j) {
@@ -200,10 +206,30 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 				break;
 		}
 	}
-
+	if (trim_j >= 0) arg[trim_j] = '+';	/* Restore the chopped off section */
 	strncpy (txt, arg, GMT_LEN128);
 	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
+			case 'p':	/* Draw outline */
+				Ctrl->A.outline = true;
+				if (!p[1])
+					Ctrl->A.pen = GMT->current.setting.map_default_pen;
+				else if (GMT_getpen (GMT, &p[1], &Ctrl->A.pen)) {
+					GMT_pen_syntax (GMT, 'A', "sets background outline pen attributes");
+					error++;
+				}
+				break;
+			case 'g':	/* Fill background */
+				Ctrl->A.paint = true;
+				if (!p[1]) {
+					GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A+g: Append the background fill\n");
+					error++;
+				}
+				else if (GMT_getfill (GMT, &p[1], &Ctrl->A.fill)) {
+					GMT_pen_syntax (GMT, 'A', "sets background fill attributes");
+					error++;
+				}
+				break;
 			case 'r':	/* Round */
 				Ctrl->A.round = true;
 				break;
@@ -357,7 +383,7 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
@@ -378,6 +404,9 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] set separate w-,e-,s-,n-margins.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use the -A+s<width[u]>[/<height>[u]] option the select a new image size\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add +g<paint> to paint the BoundingBox [no paint].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add +p[<pen>] to outline the BoundingBox [%s].\n",
+		GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n", GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -A+S<scale> to scale the image by the <scale> factor.\n");
@@ -695,7 +724,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len, line_size = 0U;
-	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig;
+	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false;
 	bool transparency = false, look_for_transparency, BeginPageSetup_here = false;
 
@@ -1113,6 +1142,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		transparency = false;
+		set_background = (Ctrl->A.paint || Ctrl->A.outline);
 		while (line_reader (GMT, &line, &line_size, fp) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
 				if (look_for_transparency && strstr (line, " PSL_transp")) {
@@ -1256,6 +1286,29 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 					}
 					else
 						fprintf (fpo, "V %g %g scale\n", new_scale_x, new_scale_y);
+					if (Ctrl->A.paint) /* Paint the background of the page */
+						fprintf (fpo, "V clippath %s F N U\n", psl_putcolor (GMT->PSL, Ctrl->A.fill.rgb));
+					if (Ctrl->A.outline) {	/* Draw the outline of the page */
+						fprintf (fpo, "V %d W", psl_ip (GMT->PSL, Ctrl->A.pen.width));
+						if (Ctrl->A.pen.style[0]) fprintf (fpo, " %s", psl_putdash (GMT->PSL, Ctrl->A.pen.style, Ctrl->A.pen.offset));
+						if (Ctrl->A.pen.rgb[0] > 0.0 || Ctrl->A.pen.rgb[1] > 0.0 || Ctrl->A.pen.rgb[2] > 0.0) fprintf (fpo, "  %s", psl_putcolor (GMT->PSL, Ctrl->A.pen.rgb));
+						fprintf (fpo, " clippath S U\n");
+					}
+				}
+			}
+			else if (set_background) {
+				/* Paint or outline the background rectangle. */
+				if (!strncmp (line, "%%EndPageSetup", 14)) {
+					GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;		/* Dots pr. point resolution of output device */
+					set_background = false;
+					if (Ctrl->A.paint) /* Paint the background of the page */
+						fprintf (fpo, "V clippath %s F N U\n", psl_putcolor (GMT->PSL, Ctrl->A.fill.rgb));
+					if (Ctrl->A.outline) {	/* Draw the outline of the page */
+						fprintf (fpo, "V %d W", psl_ip (GMT->PSL, Ctrl->A.pen.width));
+						if (Ctrl->A.pen.style[0]) fprintf (fpo, " %s", psl_putdash (GMT->PSL, Ctrl->A.pen.style, Ctrl->A.pen.offset));
+						if (Ctrl->A.pen.rgb[0] > 0.0 || Ctrl->A.pen.rgb[1] > 0.0 || Ctrl->A.pen.rgb[2] > 0.0) fprintf (fpo, "  %s", psl_putcolor (GMT->PSL, Ctrl->A.pen.rgb));
+						fprintf (fpo, " clippath S U\n");
+					}
 				}
 			}
 			else if (!strncmp (line, "%%Page:", 7)) {

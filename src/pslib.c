@@ -328,6 +328,11 @@ struct PSL_CTRL *New_PSL_Ctrl (char *session)
 	PSL = calloc (1U, sizeof (struct PSL_CTRL));
 	if (session) PSL->init.session = strdup (session);
 	for (i = 0; i < 3; i++) PSL->init.page_rgb[i] = -1.0;		/* Not set */
+	/* Initialize a few global variables */
+	strcpy (PSL->current.bw_format, "%.3lg A");			/* Default format used for grayshade value */
+	strcpy (PSL->current.rgb_format, "%.3lg %.3lg %.3lg C");	/* Same, for RGB triplets */
+	strcpy (PSL->current.hsv_format, "%.3lg %.3lg %.3lg H");	/* Same, for HSV triplets */
+	strcpy (PSL->current.cmyk_format, "%.3lg %.3lg %.3lg %.3lg K");	/* Same, for CMYK quadruples */
 
 	return (PSL);
 }

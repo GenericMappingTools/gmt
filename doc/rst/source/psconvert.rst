@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psconvert** *psfile(s)*
-[ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
+[ **-A**\ [**u**][*margins*][**-**][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
 [ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [ **-F**\ *<out_name>* ]
 [ **-G**\ *ghost_path* ] [ **-I** ] [ **-L**\ *listfile* ] [ **-P** ]
 [ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
@@ -53,7 +53,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
+**-A**\ [**u**][*margins*][**-**][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **u** to first remove any GMT-produced
     time-stamps. Optionally, append extra margins to the bounding box.
@@ -73,6 +73,9 @@ Optional Arguments
     This is going against Adobe Law but can be useful when creating very small images
     where the difference of one pixel might matter.
     If **-V** is used we also report the dimensions of the illustration.
+    Use **-A+g**\ *paint*\ to paint the BoundingBox behind the illustration and
+    use **-A+p**\ [\ *pen*\ ] to draw the BoundingBox outline (append a pen or accept
+    the default pen of 0.25p,black).
 
 **-C**\ *gs_option*
     Specify a single, custom option that will be passed on to
@@ -281,6 +284,13 @@ rotating it back to normal orientation in case it was in Landscape mode:
    ::
 
     gmt psconvert psfile.ps -A -P -Tg
+
+To convert the file map.ps to PDF, extend the BoundingBox by 0.2 cm,
+fill it with lightblue paint and draw outline with a thick pen:
+
+   ::
+
+    gmt psconvert map.ps -A0.2c+glightblue+pthick -Tf
 
 To create a 5 cm PNG version at 300 dpi of our example_01.ps file
 
