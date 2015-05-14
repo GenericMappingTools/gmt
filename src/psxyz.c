@@ -578,7 +578,10 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	if ((Ctrl->C.active || current_fill.rgb[0] >= 0) && (S.symbol == GMT_SYMBOL_COLUMN || S.symbol == GMT_SYMBOL_CUBE)) {	/* Modify the color for each facet */
 		for (k = 0; k < 3; k++) {
 			GMT_rgb_copy (rgb[k], current_fill.rgb);
-			if (S.shade3D) GMT_illuminate (GMT, lux[k], rgb[k]);
+			if (S.shade3D) {
+				GMT_Report (API, GMT_MSG_DEBUG, "3-D shading illusion: lux[k] = %g\n", k, lux[k]);
+				GMT_illuminate (GMT, lux[k], rgb[k]);
+			}
 		}
 	}
 
