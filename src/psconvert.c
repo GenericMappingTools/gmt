@@ -719,6 +719,24 @@ static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 	return alpha;
 }
 
+int possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struct PS2R_A *A, FILE *fp)
+{	/* Check if user wanted to paint or outline the BoundingBox - otherwise do nothing */
+	GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;	/* Dots pr. point resolution of output device, set here since no PSL initialization */
+	if (A->paint) {	/* Paint the background of the page */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));
+		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));
+		fprintf (fp, "V clippath %s F N U\n", psl_putcolor (GMT->PSL, A->fill.rgb));
+	}
+	if (A->outline) {	/* Draw the outline of the page */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Outline background BoundingBox using pen %s\n", GMT_putpen (GMT, A->pen));
+		if (GMT->PSL->internal.comments) fprintf (fp, "%% Outline background BoundingBox using pen %s\n", GMT_putpen (GMT, A->pen));
+		fprintf (fp, "V %d W", psl_ip (GMT->PSL, 2.0*A->pen.width));	/* Double pen thickness since half will be clipped by BoundingBox */
+		if (A->pen.style[0]) fprintf (fp, " %s", psl_putdash (GMT->PSL, A->pen.style, A->pen.offset));
+		if (A->pen.rgb[0] > 0.0 || A->pen.rgb[1] > 0.0 || A->pen.rgb[2] > 0.0) fprintf (fp, "  %s", psl_putcolor (GMT->PSL, A->pen.rgb));
+		fprintf (fp, " clippath S U\n");
+	}
+}
+
 int GMT_psconvert (void *V_API, int mode, void *args)
 {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
@@ -1143,6 +1161,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		transparency = false;
 		set_background = (Ctrl->A.paint || Ctrl->A.outline);
+		
 		while (line_reader (GMT, &line, &line_size, fp) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
 				if (look_for_transparency && strstr (line, " PSL_transp")) {
@@ -1286,29 +1305,15 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 					}
 					else
 						fprintf (fpo, "V %g %g scale\n", new_scale_x, new_scale_y);
-					if (Ctrl->A.paint) /* Paint the background of the page */
-						fprintf (fpo, "V clippath %s F N U\n", psl_putcolor (GMT->PSL, Ctrl->A.fill.rgb));
-					if (Ctrl->A.outline) {	/* Draw the outline of the page */
-						fprintf (fpo, "V %d W", psl_ip (GMT->PSL, Ctrl->A.pen.width));
-						if (Ctrl->A.pen.style[0]) fprintf (fpo, " %s", psl_putdash (GMT->PSL, Ctrl->A.pen.style, Ctrl->A.pen.offset));
-						if (Ctrl->A.pen.rgb[0] > 0.0 || Ctrl->A.pen.rgb[1] > 0.0 || Ctrl->A.pen.rgb[2] > 0.0) fprintf (fpo, "  %s", psl_putcolor (GMT->PSL, Ctrl->A.pen.rgb));
-						fprintf (fpo, " clippath S U\n");
-					}
+					set_background = false;
+					possibly_fill_or_outline_BoundingBox (GMT, &(Ctrl->A), fpo);
 				}
 			}
 			else if (set_background) {
 				/* Paint or outline the background rectangle. */
 				if (!strncmp (line, "%%EndPageSetup", 14)) {
-					GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;		/* Dots pr. point resolution of output device */
 					set_background = false;
-					if (Ctrl->A.paint) /* Paint the background of the page */
-						fprintf (fpo, "V clippath %s F N U\n", psl_putcolor (GMT->PSL, Ctrl->A.fill.rgb));
-					if (Ctrl->A.outline) {	/* Draw the outline of the page */
-						fprintf (fpo, "V %d W", psl_ip (GMT->PSL, Ctrl->A.pen.width));
-						if (Ctrl->A.pen.style[0]) fprintf (fpo, " %s", psl_putdash (GMT->PSL, Ctrl->A.pen.style, Ctrl->A.pen.offset));
-						if (Ctrl->A.pen.rgb[0] > 0.0 || Ctrl->A.pen.rgb[1] > 0.0 || Ctrl->A.pen.rgb[2] > 0.0) fprintf (fpo, "  %s", psl_putcolor (GMT->PSL, Ctrl->A.pen.rgb));
-						fprintf (fpo, " clippath S U\n");
-					}
+					possibly_fill_or_outline_BoundingBox (GMT, &(Ctrl->A), fpo);
 				}
 			}
 			else if (!strncmp (line, "%%Page:", 7)) {
