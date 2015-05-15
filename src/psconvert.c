@@ -719,7 +719,7 @@ static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 	return alpha;
 }
 
-int possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struct PS2R_A *A, FILE *fp)
+void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struct PS2R_A *A, FILE *fp)
 {	/* Check if user wanted to paint or outline the BoundingBox - otherwise do nothing */
 	GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;	/* Dots pr. point resolution of output device, set here since no PSL initialization */
 	if (A->paint) {	/* Paint the background of the page */
@@ -1261,16 +1261,20 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 				double new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
 				char t1[8], t2[8];	/* To hold the translate part when landscape */
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
+					int n_scan = 0;
 					size_t Lsize = 128U;
-					char dumb1[8], dumb2[8], dumb3[8];
 					char *line_ = GMT_memory (GMT, NULL, Lsize, char);
-					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
-					line_reader (GMT, &line_, &Lsize, fp);   /* Read also next line which is to be overwritten */
+					BeginPageSetup_here = true;	/* Signal that on next line the job must be done */
+					line_reader (GMT, &line_, &Lsize, fp);   /* Read also next line which is to be overwritten (unless a comment) */
+					while (line_[0] == '%')	/* Skip all comments until we get the first actionable line */
+						line_reader (GMT, &line_, &Lsize, fp);
 					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
 					if (landscape_orig)
-						sscanf(line_, "%s %s %s %s %s %s %s %s",c1, t1, t2, dumb1, dumb2, dumb3, c2, c3);
+						n_scan = sscanf (line_, "%s %s %s %*s %*s %*s %s %s", c1, t1, t2, c2, c3);
 					else
-						sscanf(line_, "%s %s %s",c1, c2,c3);
+						n_scan = sscanf (line_, "%s %s %s", c1, c2, c3);
+					if (strcmp (c1, "V") || !(n_scan == 3 || n_scan == 5)) 
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: Parsing of scale after %%%%BeginPageSetup failed\n");
 					old_scale_x = atof (c2);		old_scale_y = atof (c3);
 					GMT_free (GMT, line_);
 				}
