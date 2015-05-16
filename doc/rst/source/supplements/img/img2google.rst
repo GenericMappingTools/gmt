@@ -77,7 +77,7 @@ Options
     (and if the region is in view), the Region is active. If this limit is
     not reached, the associated geometry is considered to be too far from
     the user's viewpoint to be drawn. *LODmax* represents the maximum limit
-    of the visibility range for a given Region. A value of â1, the default,
+    of the visibility range for a given Region. A value of 1, the default,
     indicates "active to infinite size." [always active].
 
 **-N**

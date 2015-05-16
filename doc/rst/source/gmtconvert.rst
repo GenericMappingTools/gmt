@@ -120,7 +120,7 @@ Optional Arguments
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
     **-S~**. Should your pattern happen to start with ~ you need to
-    escape this character with a backslash  [Default output all
+    escape this character with a backslash [Default output all
     segments]. Cannot be used with **-Q**. For matching segments based
     on aspatial values (via OGR/GMT format), give the search string as
     *varname*\ =\ *value* and we will compare *value* against the value
@@ -128,7 +128,7 @@ Optional Arguments
     then a match of a particular polygon perimeter also means that any
     associated polygon holes will also be matched. For matching segment
     headers against extended regular expressions enclose the expression
-    in slashes. Append **i** for caseless matching.
+    in slashes. Append **i** for case-insensitive matching.
     For a list of such patterns, give **+f**\ *file* with one pattern per line.
     To give a single pattern starting with +f, escape it with a backslash.
 

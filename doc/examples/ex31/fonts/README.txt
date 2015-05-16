@@ -2,7 +2,7 @@ LOFP - Libertine Open Fonts Project
 
 1. OPEN FONTS PROJECT'S AIMS
 We work on a serif and organic grotesque font-family for practical use in documents. Our project aims at creating a free alternative to the standard W*ndows Font (T*mes).
-But neveretheless Libertine and Biolinum are not a clone of any common font! They have been developed from scratch and go different ways in typography than the Times or Arial. Just the useability and the dimensions shall be similar, Libertine should be even better for typical office use! If you want Times- and Arial-clones go elsewhere. If you just need reliable and good typography give our fonts a chance. If you want to know more about the design of Libertine and Biolinum, have a look at our website.
+But nevertheless Libertine and Biolinum are not a clone of any common font! They have been developed from scratch and go different ways in typography than the Times or Arial. Just the usability and the dimensions shall be similar, Libertine should be even better for typical office use! If you want Times- and Arial-clones go elsewhere. If you just need reliable and good typography give our fonts a chance. If you want to know more about the design of Libertine and Biolinum, have a look at our website.
 
 2. LICENSE AND OPENSOURCE
 We publish our fonts under the terms of the GPL (see GPL.txt) and OFL (OFL.txt) 
@@ -16,7 +16,7 @@ and the OTF
 "LinuxLibertine O" and "Linux Biolinum O". 
 
 So that both types can be installed and used parallely.
-Most often TTF is the better supported format though OTF has advances in printing. Decide yourself what is better for your purpose. OpenType-features are equally available in both fonts. Note that OpenOffice doesn’t support OTFs, yet.
+Most often TTF is the better supported format though OTF has advances in printing. Decide yourself what is better for your purpose. OpenType-features are equally available in both fonts. Note that OpenOffice doesn't support OTFs, yet.
 
 4. THE LINUX BIOLINUM FONT FACE
 Please note: The Biolinum is a very early version. While you use Libertine-Fonts without any warranty anyway, take special care with this young font face.
@@ -29,7 +29,7 @@ Since version 2.7 also the normal TTFs are hinted. If you don't like this, send 
 We publish our fonts at http://linuxlibertine.sf.net.
 
 7. THE UNDERLINED VARIANT
-Please note: The underlined variant is recently not being maintained because its concept doesn’t seem to be sofware-technically reliable and because of lack of interest. 
+Please note: The underlined variant is recently not being maintained because its concept doesn't seem to be sofware-technically reliable and because of lack of interest. 
 The advantage of this font was that g, commas, cedillas... were not overprinted by the line anymore. For technical reasons the space was not underlined but you could use the _ instead. In this font it had the width of the space and the line was at hight of the underline. The underlined variant used an older font outline.
 
 Philipp Poll -- philthelion at users.sourceforge.net

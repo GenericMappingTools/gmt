@@ -33,7 +33,7 @@
  *
  * Originally published as:
  *   "Wessel, P., 2009. A general-purpose Green's function-based interpolator,
- *	Computers & Geosciences, 35: 1247–1254".
+ *	Computers & Geosciences, 35: 1247-1254".
  *
  * PW Update June 2013.  The numerical implementation of the Green's function found by Wessel & Becker [2008]
  * was unstable (it required the difference between k*P_v and log, and P_v is difficult to compute accurately).

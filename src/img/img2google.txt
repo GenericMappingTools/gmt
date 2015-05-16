@@ -45,7 +45,7 @@ and the Region is not tilted, this measurement is equal to the width of the proj
 measurement falls within the limits defined by IT(LODmin) and IT(LODmax) (and if the region is in view),
 the Region is active. If this limit is not reached, the associated geometry is considered to be too far from
 the user's viewpoint to be drawn. IT(LODmax) represents the maximum limit of the visibility range for a given
-Region. A value of −1, the default, indicates "active to infinite size." [always active].
+Region. A value of -1, the default, indicates "active to infinite size." [always active].
 .TP
 OPT(N)IT(layername)
 Append the layername of the image (use quotes if strings contain spaces) [topoN|SIT(<north>)E|W<IT(west)>].
