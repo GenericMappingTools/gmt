@@ -210,7 +210,7 @@ void set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	/* For optimal performance, set the number of elements in a given chunk
 	 * dimension (n) to be the ceiling of the number of elements in that
 	 * dimension of the array variable (d) divided by a natural number N>1.
-	 * That is, set n = ceil (d / Ν).  Using a chunk size slightly larger than
+	 * That is, set n = ceil (d / N).  Using a chunk size slightly larger than
 	 * this value is also acceptable.  For example: 129 = ceil (257 / 2).
 	 * Do NOT set n = floor (d / N), for example 128 = floor (257 / 2). */
 

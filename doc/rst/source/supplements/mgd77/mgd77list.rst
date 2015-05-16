@@ -463,7 +463,7 @@ cruises.lis:
 
    ::
 
-    gmt mgd77list ‘cat cruises.lis‘ -F"depth,DEPTH>9000,BTC!=1" > really_deep.d
+    gmt mgd77list `cat cruises.lis` -F"depth,DEPTH>9000,BTC!=1" > really_deep.d
 
 To extract dist, faa, and grav12_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
@@ -472,7 +472,7 @@ cruises.lis, we try
 
    ::
 
-    gmt mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
+    gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
         shallow_grav.d
 
 To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
@@ -481,7 +481,7 @@ records whose bitflag for faa indicates BAD values, we try
 
    ::
 
-    gmt mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.d
+    gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.d
 
 To output lon, lat, mag, and faa from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
@@ -489,7 +489,7 @@ reference fields, try:
 
    ::
 
-    gmt mgd77list ‘cat cruises.lis‘ -Flon,lat,mag,faa -Af2,4 -Am2 > data.d
+    gmt mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.d
 
 Recalculated Anomalies
 ----------------------

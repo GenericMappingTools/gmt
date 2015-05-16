@@ -1632,7 +1632,7 @@ double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint
 
 double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n)
 {
-	/* Looks for the “shortest 50%”. This means that when the cumulative weight
+	/* Looks for the "shortest 50%". This means that when the cumulative weight
 	   (y) is plotted against the value (x) then the line between (xi,yi) and
 	   (xj,yj) should be the steepest for any combination where (yj-yi) is 50%
 	   of the total sum of weights */

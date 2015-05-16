@@ -343,7 +343,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 
 double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index)
 {
-	/* Looks for the “shortest 50%”. This means that when the cumulative weight
+	/* Looks for the "shortest 50%". This means that when the cumulative weight
 	   (y) is plotted against the value (x) then the line between (xi,yi) and
 	   (xj,yj) should be the steepest for any combination where (yj-yi) is 50%
 	   of the total sum of weights */
