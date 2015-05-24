@@ -452,7 +452,7 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (transparent where nothing is plotted).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   j means JPEG.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG [if supported by your ghostscript version].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, t, append - to get a grayscale image [24-bit color].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The EPS format can be combined with any of the other formats.\n");
@@ -833,6 +833,11 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
+	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Your ghostscript version (%d.%d) no logner supports the SVG device.\n", gsVersion.major, gsVersion.minor);
+		GMT_Report (API, GMT_MSG_NORMAL, "We recommend converting to PDF and then installing the pdf2svg package.\n");
+		Return (EXIT_FAILURE);
+	}
 	if (Ctrl->F.active && (Ctrl->L.active || Ctrl->D.active)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
 		Ctrl->F.active = false;

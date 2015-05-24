@@ -271,6 +271,11 @@ Although **psconvert** was developed as part of the GMT, it can be
 used to convert PostScript files created by nearly any graphics
 program. However, **-Au** is GMT-specific.
 
+The **ghostscript** program continues to be developed and occasionally its
+developers make decisions that affect **psconvert**.  As of version 9.16 the
+SVG device has been removed.  Fortunately, quality SVG graphics can be obtained
+by first converting to PDF and then install and use the package **pdf2svg**.
+
 See :ref:`include-gmt-graphics` of the **GMT Technical Reference and Cookbook** for more
 information on how **psconvert** is used to produce graphics that can be
 inserted into other documents (articles, presentations, posters, etc.).
