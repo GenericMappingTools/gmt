@@ -2834,13 +2834,31 @@ bool GMT_geo_to_xy (struct GMT_CTRL *GMT, double lon, double lat, double *x, dou
 }
 
 /*! . */
-void GMT_xy_to_geo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+bool GMT_geo_to_xy_noshift (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y)
+{	/* Converts lon/lat to x/y using the current projection but applies no shift */
+	if (GMT_is_dnan (lon) || GMT_is_dnan (lat)) {(*x) = (*y) = GMT->session.d_NaN; return true;}	/* Quick and safe way to ensure NaN-input results in NaNs */
+	(*GMT->current.proj.fwd) (GMT, lon, lat, x, y);
+	return false;
+}
+
+/*! . */
+void GMT_xy_to_geo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y)
+{
 	/* Converts x/y to lon/lat using the current projection */
 
 	if (GMT_is_dnan (x) || GMT_is_dnan (y)) {(*lon) = (*lat) = GMT->session.d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	x = (x - GMT->current.proj.origin[GMT_X]) * GMT->current.proj.i_scale[GMT_X];
 	y = (y - GMT->current.proj.origin[GMT_Y]) * GMT->current.proj.i_scale[GMT_Y];
 
+	(*GMT->current.proj.inv) (GMT, lon, lat, x, y);
+}
+
+/*! . */
+void GMT_xy_to_geo_noshift (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y)
+{
+	/* Converts x/y to lon/lat using the current projection but applies no shift */
+
+	if (GMT_is_dnan (x) || GMT_is_dnan (y)) {(*lon) = (*lat) = GMT->session.d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	(*GMT->current.proj.inv) (GMT, lon, lat, x, y);
 }
 

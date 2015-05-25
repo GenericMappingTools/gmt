@@ -638,6 +638,7 @@ L100:
 			/* netCDF-4 has a bug and crash when * rewriting the _FillValue attribute in netCDF-4 files
 			   https://bugtracking.unidata.ucar.edu/browse/NCF-187
 			   To work-around it we implement the renaming trick advised on NCF-133
+         Edit: This work-around should eventually be removed because the bug was fixed as of 2015-04-02 (any version >4.3.3.1 should be fine).
 			*/
 			GMT_err_trap (nc_rename_att (ncid, z_id, "_FillValue", "_fillValue"));
 			GMT_err_trap (nc_put_att_float (ncid, z_id, "_fillValue", z_type, 1U, &header->nan_value));
