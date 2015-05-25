@@ -437,6 +437,9 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_LEN64] = {""}, scale_unit_name[GMT_LEN64] = {""};
 	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
 
+	bool (*map_fwd) (struct GMT_CTRL *, double, double, double *, double *);	/* Pointers to the selected forward mapping function */
+	void (*map_inv) (struct GMT_CTRL *, double *, double *, double, double);	/* Pointers to the selected inverse mapping function */
+
 	struct GMT_DATATABLE *xyline = NULL;
 	struct GMT_DATASET *Lin = NULL;
 	struct MAPPROJECT_CTRL *Ctrl = NULL;
@@ -565,6 +568,14 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	}
 
+	if (Ctrl->C.active) {
+		map_fwd = &GMT_geo_to_xy_noshift;
+		map_inv = &GMT_xy_to_geo_noshift;
+	}
+	else {
+		map_fwd = &GMT_geo_to_xy;
+		map_inv = &GMT_xy_to_geo;
+	}
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && !(geodetic_calc || Ctrl->T.active)) {
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
@@ -621,7 +632,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
 			for (seg = 0; seg < xyline->n_segments; seg++) {
 				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
-					GMT_geo_to_xy (GMT, xyline->segment[seg]->coord[GMT_X][row], xyline->segment[seg]->coord[GMT_Y][row], &xtmp, &ytmp);
+					map_fwd (GMT, xyline->segment[seg]->coord[GMT_X][row], xyline->segment[seg]->coord[GMT_Y][row], &xtmp, &ytmp);
 					xyline->segment[seg]->coord[GMT_X][row] = xtmp;
 					xyline->segment[seg]->coord[GMT_Y][row] = ytmp;
 				}
@@ -745,18 +756,22 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 						in[GMT_X] *= u_scale;
 						in[GMT_Y] *= u_scale;
 					}
-					in[GMT_X] *= GMT->current.proj.scale[GMT_X];
-					in[GMT_Y] *= GMT->current.proj.scale[GMT_Y];
+					if (!Ctrl->C.active) {
+						in[GMT_X] *= GMT->current.proj.scale[GMT_X];
+						in[GMT_Y] *= GMT->current.proj.scale[GMT_Y];
+					}
 				}
 				else if (GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Convert from whatever to inch */
 					in[GMT_X] *= unit_to_inch;
 					in[GMT_Y] *= unit_to_inch;
 				}
+#if 0
 				if (Ctrl->C.active) {	/* Then correct so lower left corner is (0,0) */
 					in[GMT_X] += GMT->current.proj.origin[GMT_X];
 					in[GMT_Y] += GMT->current.proj.origin[GMT_Y];
 				}
-				GMT_xy_to_geo (GMT, &out[GMT_X], &out[GMT_Y], in[GMT_X], in[GMT_Y]);
+#endif
+				map_inv (GMT, &out[GMT_X], &out[GMT_Y], in[GMT_X], in[GMT_Y]);
 			}
 			if (double_whammy) {	/* Now apply datum shift */
 				in[GMT_X] = out[GMT_X];
@@ -828,14 +843,18 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 					in[GMT_X] = out[GMT_X];
 					in[GMT_Y] = out[GMT_Y];
 				}
-				GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &out[GMT_X], &out[GMT_Y]);
+				map_fwd (GMT, in[GMT_X], in[GMT_Y], &out[GMT_X], &out[GMT_Y]);
+#if 0
 				if (Ctrl->C.active) {	/* Change origin from lower left to projection center */
 					out[GMT_X] -= GMT->current.proj.origin[GMT_X];
 					out[GMT_Y] -= GMT->current.proj.origin[GMT_Y];
 				}
+#endif
 				if (Ctrl->F.active) {	/* Convert to 1:1 scale */
-					out[GMT_X] /= GMT->current.proj.scale[GMT_X];
-					out[GMT_Y] /= GMT->current.proj.scale[GMT_Y];
+					if (!Ctrl->C.active) {	/* Change origin from lower left to projection center */
+						out[GMT_X] /= GMT->current.proj.scale[GMT_X];
+						out[GMT_Y] /= GMT->current.proj.scale[GMT_Y];
+					}
 					if (unit) {
 						out[GMT_X] *= u_scale;
 						out[GMT_Y] *= u_scale;

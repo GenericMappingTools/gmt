@@ -301,6 +301,7 @@ EXTERN_MSC int GMT_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struc
 EXTERN_MSC uint64_t GMT_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *donut);
 EXTERN_MSC bool GMT_map_outside (struct GMT_CTRL *GMT, double lon, double lat);
 EXTERN_MSC bool GMT_geo_to_xy (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);
+EXTERN_MSC bool GMT_geo_to_xy_noshift (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);
 EXTERN_MSC void GMT_geoz_to_xy (struct GMT_CTRL *GMT, double x, double y, double z, double *x_out, double *y_out);
 EXTERN_MSC int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int nx, unsigned int ny, unsigned int dpi, unsigned int offset);
 EXTERN_MSC int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[]);
@@ -308,6 +309,7 @@ EXTERN_MSC double GMT_x_to_xx (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double GMT_y_to_yy (struct GMT_CTRL *GMT, double y);
 EXTERN_MSC double GMT_z_to_zz (struct GMT_CTRL *GMT, double z);
 EXTERN_MSC void GMT_xy_to_geo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);
+EXTERN_MSC void GMT_xy_to_geo_noshift (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);
 EXTERN_MSC void GMT_xyz_to_xy (struct GMT_CTRL *GMT, double x, double y, double z, double *x_out, double *y_out);
 EXTERN_MSC void GMT_xyz_to_xy_n (struct GMT_CTRL *GMT, double *x, double *y, double z, uint64_t n);
 EXTERN_MSC double * GMT_dist_array (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, bool cumulative);
