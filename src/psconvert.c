@@ -245,12 +245,12 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 					case 1:	/* Got width only. Height will be computed later */
 						Ctrl->A.new_size[0] = GMT_to_points (GMT, txt_a);
 						break;
-					case 2:	/* Got seprate width/height */
+					case 2:	/* Got separate width/height */
 						Ctrl->A.new_size[0] = GMT_to_points (GMT, txt_a);
 						Ctrl->A.new_size[1] = GMT_to_points (GMT, txt_b);
 						break;
 					default:
-						GMT_Report (Ctrl, GMT_MSG_NORMAL, "GMT ERROR -A+s<width[/height]>: Wrong size parameters\n");
+						GMT_Report (Ctrl, GMT_MSG_NORMAL, "GMT ERROR -A+s[m]<width[/height]>: Wrong size parameters\n");
 						error++;
 						break;
 					}
@@ -402,7 +402,7 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<off>[u] sets uniform margin for all 4 sides.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<xoff>[u]/<yoff>[u] set separate x- and y-margins.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] set separate w-,e-,s-,n-margins.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use the -A+s<width[u]>[/<height>[u]] option the select a new image size\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use the -A+s[m]<width[u]>[/<height>[u]] option the select a new image size\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +g<paint> to paint the BoundingBox [no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +p[<pen>] to outline the BoundingBox [%s].\n",
@@ -1155,6 +1155,9 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			xt = -x0, yt = -y0, w = x1-x0, h = y1-y0, r = 0;
 
 		xt_bak = xt;	yt_bak = yt;		/* Needed when Ctrl->A.resize */
+		
+		/* Set new height when width was set and no height given */
+		if (Ctrl->A.new_size[0] > 0.0 && Ctrl->A.new_size[1] == 0.0) Ctrl->A.new_size[1] = Ctrl->A.new_size[0] * h / w;
 
 		/* ****************************************************************** */
 		/*         Rewind the input file and start copying and replacing      */
@@ -1289,8 +1292,10 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 					/* Now we must calculate the new scale */
 					if (Ctrl->A.rescale)          /* except if it was set as an option */
 						r_x = Ctrl->A.scale;
-					else if (Ctrl->A.max)
+					else if (Ctrl->A.max) {	/* Check if plot size exceeds specified limits */
 						r_x = (w > Ctrl->A.new_size[0]) ? Ctrl->A.new_size[0] / w : 1.0;
+						if (Ctrl->A.new_size[1] / h < r_x) r_x = Ctrl->A.new_size[1] / h;	/* Pick the smallest scale */
+					}
 					else
 						r_x = Ctrl->A.new_size[0] / w;
 
@@ -1298,7 +1303,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 					new_off_x = -xt_bak + xt_bak * r_x;     /* Need to recompute the new offsets as well */
 					new_off_y = -yt_bak + yt_bak * r_x;
 					Ctrl->A.new_dpi_x = Ctrl->A.new_dpi_y = Ctrl->E.dpi * r_x;
-					if (Ctrl->A.new_size[1]) {
+					if (!Ctrl->A.max && Ctrl->A.new_size[1]) {
 						r_y = Ctrl->A.new_size[1] / h;
 						new_scale_y = old_scale_y * r_y;
 						new_off_y = -yt_bak + yt_bak * r_y;

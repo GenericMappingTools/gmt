@@ -66,7 +66,8 @@ Optional Arguments
     but you can append a new unit and/or impose different width and height. What happens
     here is that GhostScript will do the re-interpolation work and the final image will
     retain the DPI resolution set by **-E**.  Use **-A+sm** to set a maximum size and
-    the new width are only imposed if the original figure width exceeds it.
+    the new width are only imposed if the original figure width exceeds it. Append
+    /\ *new_height* to also also impose a maximum height in addition to the width.
     Alternatively use **-A+S**\ *scale* to scale the image by a constant factor.
 
     Use the **-A+r** to round the HighRes BoundingBox instead of using the `ceil` function.
