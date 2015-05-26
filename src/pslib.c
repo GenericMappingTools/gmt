@@ -3176,7 +3176,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	}
 	PSL_command (PSL, "U\n");
 	if (heads & 2) {	/* Need head at end, pointing forwards */
-		PSL_command (PSL, "V %d %d T ", psl_ix (PSL, xtip), psl_iy (PSL, ytip));	/* Temporarily set tail point the local origin (0, 0) */
+		PSL_command (PSL, "V %d %d T ", psl_ix (PSL, xtip), psl_iy (PSL, ytip));	/* Temporarily set head point the local origin (0, 0) */
 		if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 		switch (kind[1]) {
 			case PSL_VEC_ARROW:
@@ -3191,7 +3191,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 					xx[n] = -headlength; yy[n++] = -headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
-				PSL_command (PSL, "P clip %s %s U\n", dump[fill], line[outline]);
+				PSL_command (PSL, "P clip %s %s \n", dump[fill], line[outline]);
 				break;	/* Finalize, then reset outline parameter */
 			case PSL_VEC_CIRCLE:
 				if (asymmetry[1] == -1)	/* Need left side */
@@ -3215,6 +3215,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
 				break;
 		}
+		PSL_command (PSL, "U\n");
 	}
 	return (PSL_NO_ERROR);
 }
