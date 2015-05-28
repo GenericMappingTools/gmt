@@ -3924,6 +3924,15 @@ vectors whose length are less than a given cutoff length, and the size
 and shape of the head. These attributes are detailed further in the
 relevant manual pages.
 
+.. figure:: /_images/GMT_arrows_types.*
+   :width: 500 px
+   :align: center
+
+   Examples of different vector heads and attributes.  The default is the standard
+   triangular arrow head, which can be modified by adjusting the apex angle [30] or
+   changing its shape via the :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>` setting.
+   Other vector heads are the circle (**c**) and the terminal line (**t**).
+
 Character escape sequences
 --------------------------
 

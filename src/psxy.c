@@ -863,6 +863,8 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
+				int save[2];
+				bool col_reset = false;
 				text_rec = (char *)record;
 				
 				/* First establish the symbol type given at the end of the record */
@@ -870,8 +872,17 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				i = (unsigned int)strlen (text_rec) - 1;
 				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
 				GMT_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, false);
+				
 				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
+				if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
+					/* Reading 2nd point coordinates so must set column types to be the same as for x,y */
+					col_reset = true;
+					save[GMT_X] = GMT->current.io.col_type[GMT_IN][pos2x];
+					save[GMT_Y] = GMT->current.io.col_type[GMT_IN][pos2y];
+					GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
+					GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+				}
 				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
 				if (GMT_conv_intext2dbl (GMT, text_rec, 6U)) {	/* Max 6 columns needs to be parsed */
 					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
@@ -894,6 +905,10 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				}
 				else if (S.symbol == GMT_SYMBOL_DOT && !Ctrl->G.active) {	/* Must switch on default black fill */
 					current_fill = black;
+				}
+				if (col_reset) {	/* Reset type above since there may not be +s in the next record */
+					GMT->current.io.col_type[GMT_IN][pos2x] = save[GMT_X];
+					GMT->current.io.col_type[GMT_IN][pos2y] = save[GMT_Y];
 				}
 			}
 
