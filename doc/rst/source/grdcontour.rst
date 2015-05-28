@@ -76,7 +76,8 @@ Required Arguments
         constant contour interval. However, if prepended with the + sign the
         *cont_int* is taken as meaning draw that single contour. The **-A**
         option offers the same possibility so they may be used together to
-        plot only one annotated and one non-annotated contour.
+        plot a single annotated contour and another single non-annotated contour,
+        as in '... -A+10 -C+5' that plots an annotated 10 contour and an non-annotated 5 contour.
         If **-A** is set and **-C** is not, then the contour interval is set
         equal to the specified annotation interval.
 
