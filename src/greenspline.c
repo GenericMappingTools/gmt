@@ -892,9 +892,6 @@ double spline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double pa
 	double P0, P1, P2, S;
 	GMT_UNUSED(GMT);
 
-	if (x == -1.0) return 0.0;
-	if (x == +1.0) return 1.0;
-	
 	L_max = get_L (x, par[0], par[1]);	/* Highest order needed in sum given x, p, and err */
 
 	/* pp = par[0] * par[0]; */
