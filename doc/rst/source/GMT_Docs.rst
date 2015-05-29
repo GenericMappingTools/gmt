@@ -3972,7 +3972,8 @@ sequence for font switching.
 | @@                | Prints the @ sign itself                                       |
 +-------------------+----------------------------------------------------------------+
 
-Shorthand notation for a few special European characters has also been added:
+Shorthand notation for a few special European characters has also been added (for others
+you must use the full octal code):
 
 
 +----------+------------+----------+------------+
@@ -3990,7 +3991,7 @@ Shorthand notation for a few special European characters has also been added:
 +----------+------------+----------+------------+
 | @U       | Ü          | @u       | ü          |
 +----------+------------+----------+------------+
-| @s       | ß          |          |            |
+| @s       | ß          | @i       | í          |
 +----------+------------+----------+------------+
 
 PostScript fonts used in GMT may be re-encoded to include several

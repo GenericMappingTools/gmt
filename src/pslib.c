@@ -3375,7 +3375,7 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text)
 	etc escape sequences. Calling function must REMEMBER to free memory
 	allocated by string */
 {
-	const char *psl_scandcodes[14][5] = {	/* Short-hand conversion for some European characters in both Undefined [0], Standard [1], Standard+ [2], ISOLatin1 [3], and ISOLatin1+ [4] encoding */
+	const char *psl_scandcodes[15][5] = {	/* Short-hand conversion for some European characters in both Undefined [0], Standard [1], Standard+ [2], ISOLatin1 [3], and ISOLatin1+ [4] encoding */
 		{ "AA", "AA"   , "\\375", "\\305", "\\305"},	/* Aring */
 		{ "AE", "\\341", "\\341", "\\306", "\\306"},	/* AE */
 		{ "OE", "\\351", "\\351", "\\330", "\\330"},	/* Oslash */
@@ -3389,7 +3389,8 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text)
 		{ "n" , "n"    , "\\227", "\\361", "\\361"},	/* ntilde */
 		{ "ss", "\\373", "\\373", "\\337", "\\337"},	/* germandbls */
 		{ "u" , "ue"   , "\\370", "\\374", "\\374"},	/* udieresis */
-		{ "@" , "\\100", "\\100", "\\100", "\\100"}		/* atsign */
+		{ "i" , "i"    , "\\354", "\\355", "\\355"},	/* iaccute */
+		{ "@" , "\\100", "\\100", "\\100", "\\100"}	/* atsign */
 	};
 	char *string = NULL;
 	int i=0, j=0, font;
@@ -3465,9 +3466,13 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text)
 					strcat (string, psl_scandcodes[12][he]);
 					j += (int)strlen(psl_scandcodes[12][he]); i++;
 					break;
-				case '@':
+				case 'i':
 					strcat (string, psl_scandcodes[13][he]);
 					j += (int)strlen(psl_scandcodes[13][he]); i++;
+					break;
+				case '@':
+					strcat (string, psl_scandcodes[14][he]);
+					j += (int)strlen(psl_scandcodes[14][he]); i++;
 					break;
 				case '%':	/* Font switcher */
 					if (isdigit ((int)text[i+1])) {	/* Got a font */
