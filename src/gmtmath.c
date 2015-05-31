@@ -3973,6 +3973,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				stack[i]->alloc_mode = 1;
+				if (!Ctrl->T.notime) load_column (stack[0]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
 			}
 		}
 
