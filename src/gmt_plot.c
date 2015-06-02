@@ -617,6 +617,7 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	double *x = NULL, ys, yn, p_cap = 0.0, cap_start[2] = {0.0, 0.0}, cap_stop[2] = {0.0, 0.0};
 	unsigned int idup = 0, i, nx;
 	bool cap = false;
+	char *type = (GMT_x_is_lon (GMT, GMT_IN)) ? "meridian" : "x";
 
 	/* Do we have duplicate e and w boundaries ? */
 	idup = (GMT_IS_AZIMUTHAL(GMT) && doubleAlmostEqual(e-w, 360.0)) ? 1 : 0;
@@ -644,7 +645,7 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	}
 	nx = GMT_linear_array (GMT, w, e, dval, GMT->current.map.frame.axis[GMT_X].phase, &x);
 	for (i = 0; i < nx - idup; i++)  {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw meridian = %g from %g to %g\n", x[i], ys, yn);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw %s = %g from %g to %g\n", type, x[i], ys, yn);
 		gmt_map_lonline (GMT, PSL, x[i], ys, yn);
 	}
 	if (nx) GMT_free (GMT, x);
@@ -749,6 +750,7 @@ void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 void gmt_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
 {
 	double *y = NULL;
+	char *type = (GMT_y_is_lat (GMT, GMT_IN)) ? "parallel" : "y";
 	unsigned int i, ny;
 
 	if (GMT->current.proj.z_down) {
@@ -759,7 +761,7 @@ void gmt_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	else
 		ny = GMT_linear_array (GMT, s, n, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
 	for (i = 0; i < ny; i++) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw parallel = %g from %g to %g\n", y[i], w, e);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw %s = %g from %g to %g\n", type, y[i], w, e);
 		gmt_map_latline (GMT, PSL, y[i], w, e);
 	}
 	if (ny) GMT_free (GMT, y);

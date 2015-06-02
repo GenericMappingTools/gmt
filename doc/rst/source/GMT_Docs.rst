@@ -4011,7 +4011,7 @@ GMT strings using the Standard+ encoding:
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
 | ``Se@nor Gar@con`` = Señor Garçon
 | ``M@!\305anoa stra@se`` = Manoa straße
-| ``A@\#cceleration@\# (ms@+-2@+)`` =
+| ``A@\#cceleration@\# (ms@+-2@+)`` = ACCELERATION
 
 The option in :doc:`pstext` to draw a
 rectangle surrounding the text will not work for strings with escape
