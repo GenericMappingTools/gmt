@@ -219,7 +219,7 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 	return (0);
 }
 
-double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, int stairs, int flip_to_y, int draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, int cpt, struct D *D)
+double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct D *D)
 {
 	int i, index, fmode = 0, label_justify = (flip_to_y) ? PSL_ML : PSL_BC;
 	uint64_t ibox;
@@ -386,7 +386,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set the bin width.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Plot horizontal bars [Default is vertical].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Plot horizontal bars, i.e., flip x and y axis [Default is vertical].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file to assign fill to bars based on the mid x-value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Place histogram count labels on top of each bar; optionally append modifiers:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +b places the labels beneath the bars [above]\n");
@@ -822,16 +822,20 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI], GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
 	}
 
-	if (Ctrl->A.active) {
-		char buffer[GMT_LEN256] = {""};
+	if (Ctrl->A.active) {	/* Must flip x and y axis */
+		struct GMT_PLOT_AXIS shelf;
 		double wesn[4];
-		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
-		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER].interval);
-		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval,  GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER].interval);
-		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_LOWER].interval,  GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].interval);
-		strncpy (buffer, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256);
-		strncpy (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256);
-		strncpy (GMT->current.map.frame.axis[GMT_Y].label, buffer, GMT_LEN256);
+		unsigned int k;
+		GMT_memcpy (&shelf, &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
+		GMT_memcpy (&GMT->current.map.frame.axis[GMT_X], &GMT->current.map.frame.axis[GMT_Y], 1, struct GMT_PLOT_AXIS);
+		GMT_memcpy (&GMT->current.map.frame.axis[GMT_Y], &shelf, 1, struct GMT_PLOT_AXIS);
+		/* But must update the ids of parents and children since x and y ids have been swapped too */
+		GMT->current.map.frame.axis[GMT_X].id = GMT_X;
+		GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;
+		for (k = 0; k < 6; k++) {
+			GMT->current.map.frame.axis[GMT_Y].item[k].parent = GMT_Y;
+			GMT->current.map.frame.axis[GMT_X].item[k].parent = GMT_X;
+		}
 		wesn[XLO] = F.wesn[YLO];	wesn[XHI] = F.wesn[YHI];
 		wesn[YLO] = F.wesn[XLO];	wesn[YHI] = F.wesn[XHI];
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
