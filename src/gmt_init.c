@@ -6595,8 +6595,11 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 		GMT->session.HOMEDIR = strdup (this_c);
 #endif
 	else {
-		fprintf (stderr, "Error: Could not determine home directory!\n");
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		/* If HOME not set: use root directory instead (http://gmt.soest.hawaii.edu/issues/710) */
+		GMT->session.HOMEDIR = strdup ("/"); /* Note: Windows will use the current drive if drive letter unspecified. */
+#ifdef DEBUG
+		fprintf (stderr, "Warning: HOME environment not set. Using root directory instead.\n");
+#endif
 	}
 	DOS_path_fix (GMT->session.HOMEDIR);
 
