@@ -23,7 +23,7 @@
 
 #define GMTMATH_N_OPERATORS @GMTMATH_N_OPERATORS@
 
-void gmtmath_init (void (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[])
+void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
 
 	/* Operator function	# of operands	# of outputs */
