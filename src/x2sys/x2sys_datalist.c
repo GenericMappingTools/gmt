@@ -270,7 +270,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 
 	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
-		exit (EXIT_FAILURE);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
@@ -354,7 +354,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
-				exit (EXIT_FAILURE);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				break;
 			}
 		case 'M':
@@ -388,7 +388,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
-				exit (EXIT_FAILURE);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				break;
 			}
 		case 'M':
@@ -411,7 +411,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "Selected correction table requires velocity which implies time (not selected)\n");
 			MGD77_Free_Correction (GMT, CORR, n_tracks);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			exit (EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
 

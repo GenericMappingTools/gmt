@@ -171,7 +171,7 @@ void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned 
 	}
 }
 
-void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode)
+int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode)
 {
 	int n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
@@ -211,7 +211,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 		detrend_and_hanning (C, leave_trend, mode);
 
 		if (GMT_FFT_1D (GMT->parent, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX))
-			exit (EXIT_FAILURE);
+			return EXIT_FAILURE;
 
 		/* Get one-sided estimates */
 
@@ -278,6 +278,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 	else {
 		for (i = 0; i < C->n_spec; i++)  C->spec[i].xpow *= one_on_nw;
 	}
+	return 0;
 }
 
 int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem)
@@ -724,7 +725,9 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points.\n", S->n_rows);
 
 			y = (C.y_given) ? S->coord[GMT_Y] : NULL;
-			compute_spectra (GMT, &C, S->coord[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode);
+			if (compute_spectra (GMT, &C, S->coord[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 
 			if (one_table) {
 				Sout = Tout->segment[seg];	/* Current output segment */

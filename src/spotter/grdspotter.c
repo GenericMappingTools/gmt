@@ -679,7 +679,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			
 			if ((fp = fopen (Ctrl->Q.file, "r")) == NULL) {	/* Oh, oh... */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: -Q info file unreadable/nonexistent\n");
-				exit (EXIT_FAILURE);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				if (line[0] == '#' || line[0] == '\n') continue;
