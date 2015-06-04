@@ -2844,15 +2844,15 @@ int gmt_d_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 
 #define DEBUG_BYTESWAP
 
-static inline void fwrite_check (struct GMT_CTRL *GMT, const void *ptr,
+static inline bool fwrite_check (struct GMT_CTRL *GMT, const void *ptr,
 		size_t size, size_t nitems, FILE *stream) {
 	if (fwrite (ptr, size, nitems, stream) != nitems) {
 		char message[GMT_LEN256] = {""};
-		sprintf (message, "%s: error writing %" PRIuS " bytes to stream.\n",
-				__func__, size * nitems);
+		sprintf (message, "%s: error writing %" PRIuS " bytes to stream.\n", __func__, size * nitems);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
-		exit (EXIT_FAILURE);
+		return true;
 	}
+	return false;
 }
 
 static inline void swap_uint16 (char *buffer, const size_t len) {
@@ -2908,7 +2908,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 	if ( length%swapwidth != 0 ) {
 		sprintf (message, "%s: error: length must be a multiple of %u bytes.\n", __func__, swapwidth);
 		GMT_Message (GMT->parent, GMT_TIME_NONE, message);
-		exit(EXIT_FAILURE);
+		return false;
 	}
 
 	/* allocate buffer on stack to improve disk i/o */
@@ -2916,7 +2916,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 	if (buffer == NULL) {
 		sprintf (message, "%s: error: cannot malloc %" PRIuS " bytes.\n", __func__, chunksize);
 		GMT_Message (GMT->parent, GMT_TIME_NONE, message);
-		exit(EXIT_FAILURE);
+		return false;
 	}
 
 	/* skip offset bytes at beginning of infp */
@@ -2937,11 +2937,12 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 			}
 			sprintf (message, "%s: error reading stream while skipping.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
-			exit(EXIT_FAILURE);
+			return false;
 		}
 		bytes_read += nbytes;
 		/* write buffer */
-		fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp);
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+			return false;
 	}
 #ifdef DEBUG_BYTESWAP
 	if (bytes_read) {
@@ -2959,11 +2960,10 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 			if (feof (infp)) {
 				/* EOF */
 #ifdef DEBUG_BYTESWAP
-				sprintf (message, "%s: %" PRIu64 " bytes swapped.\n",
-						__func__, bytes_read - offset - extrabytes);
+				sprintf (message, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset - extrabytes);
 				GMT_Message (GMT->parent, GMT_TIME_NONE, message);
 #endif
-				if ( extrabytes != 0 ) {
+				if (extrabytes != 0) {
 					sprintf (message, "%s: warning: the last %" PRIuS " bytes were ignored during swapping.\n",
 							__func__, extrabytes);
 					GMT_Message (GMT->parent, GMT_TIME_NONE, message);
@@ -2974,7 +2974,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 			}
 			sprintf (message, "%s: error reading stream while swapping.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
-			exit(EXIT_FAILURE);
+			return false;
 		}
 		bytes_read += nbytes;
 #ifdef DEBUG_BYTESWAP
@@ -2985,7 +2985,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 
 		/* nbytes must be a multiple of SwapWidth */
 		extrabytes = nbytes % swapwidth;
-		if ( extrabytes != 0 ) {
+		if (extrabytes != 0) {
 			/* this can only happen on EOF, ignore extra bytes while swapping. */
 			sprintf (message, "%s: warning: read buffer contains %" PRIuS " bytes which are "
 					"not aligned with the swapwidth of %" PRIuS " bytes.\n",
@@ -3012,7 +3012,8 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 		nbytes += extrabytes;
 
 		/* write buffer */
-		fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp);
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+			return false;
 	}
 #ifdef DEBUG_BYTESWAP
 	sprintf (message, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset);
@@ -3034,11 +3035,12 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 			}
 			sprintf (message, "%s: error reading stream while skipping to EOF.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
-			exit(EXIT_FAILURE);
+			return false;
 		}
 		bytes_read += nbytes;
 		/* write buffer */
-		fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp);
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+			return false;
 	}
 
 	GMT->current.io.status = GMT_IO_EOF;
