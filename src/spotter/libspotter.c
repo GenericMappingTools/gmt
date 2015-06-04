@@ -536,7 +536,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
  * array of structures.  Hotspot locations are stored as geodetic coordintaes
  * but are converted to GEOCENTRIC by this function if geocentric == true */
 
-unsigned int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p)
+int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p)
 {
 	unsigned int i = 0, n;
 	int ival;
@@ -548,7 +548,7 @@ unsigned int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocen
 
 	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s - aborts\n", file);
-		exit (EXIT_FAILURE);
+		return -1;
 	}
 
 	e = GMT_memory (GMT, NULL, n_alloc, struct HOTSPOT);
@@ -559,7 +559,7 @@ unsigned int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocen
 		if (n == 3) ival = i + 1;	/* Minimal lon, lat, abbrev */
 		if (ival <= 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hotspot ID numbers must be > 0\n");
-			exit (EXIT_FAILURE);
+			return -1;
 		}
 		e[i].id = ival;
 		if (n >= 10) {		/* Long-form hotspot table used for rotator suite */
