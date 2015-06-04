@@ -565,7 +565,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		}
 		if ((fread (row, sizeof (int16_t), n_expected, fp) ) != n_expected) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Read failure at jin = %d.\n", jin);
-			exit (EXIT_FAILURE);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 
 #ifndef WORDS_BIGENDIAN

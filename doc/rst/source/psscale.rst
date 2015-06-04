@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*length*/*width*\ [**h**] [/*justify*]\ [/*dx*/*dy*]
-[ **-A**\ [**a**\ \|\ **l**\ \|\ **c**] ]
+[ **-A**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
 [ **-E**\ [**b**\ \|\ **f**][*length*][\ **+n**\ [*text*]] ]
@@ -74,11 +74,13 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**a**\ \|\ **l**\ \|\ **c**]
-    Place annotations and labels above (instead of below) horizontal
-    scalebars and to the left (instead of the right) of vertical
-    scalebars. Append **a** or **l** to move only the annotations or the
-    label to the other side. Append **c** if you want to print a
+**-A**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]
+    Horizontal scale bars: Place annotations and labels above [below];
+    the unit remains on the left. 
+    Vertical scale bars: Place annotations and labels on the left [right];
+    the unit remains below.
+    Append one or more of **a**, **l** or **u** to control which of the annotations, label, and
+    unit that will be moved to the opposite side. Append **c** if you want to print a
     vertical label as a column of characters (does not work with special characters).
 
 **-B**\ [**p**\ \|\ **s**]\ *parameters*

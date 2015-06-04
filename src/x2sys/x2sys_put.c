@@ -326,11 +326,11 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
 					GMT_Report (API, GMT_MSG_NORMAL, "Error processing record for track %s [%s]\n", track, line);
-					exit (EXIT_FAILURE);
+					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				else if (flag > max_flag) {
 					GMT_Report (API, GMT_MSG_NORMAL, "data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
-					exit (EXIT_FAILURE);
+					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				if (B.base[index].n_tracks == 0) {	/* First track to cross this bin */
 					B.base[index].first_track = x2sys_bix_make_track (GMT, 0, 0);

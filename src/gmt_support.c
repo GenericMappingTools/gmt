@@ -11417,7 +11417,7 @@ void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 {	/* See GMT_just_decode for how text code becomes the justify integer.
  	 * If geo is true we get point from wesn, else we get from projected coordinates */
 	int i, j;
-	double *box = (geo) ? GMT->common.R.wesn : GMT->current.proj.rect;
+	double *box = (geo && !GMT->common.R.oblique) ? GMT->common.R.wesn : GMT->current.proj.rect;
 
 	i = justify % 4;	/* Split the 2-D justify code into x and y components */
 	j = justify / 4;
@@ -11434,6 +11434,10 @@ void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 		*y = (box[YLO] + box[YHI]) / 2;
 	else
 		*y = box[YHI];
+	if (geo && GMT->common.R.oblique) {	/* Actually computed x,y in inches for oblique box, must convert to lon lat */
+		double xx = *x, yy = *y;
+		GMT_xy_to_geo (GMT, x, y, xx, yy);
+	}
 }
 
 /*! . */
