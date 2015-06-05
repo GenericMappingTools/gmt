@@ -2808,7 +2808,7 @@ int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file)
 	FILE *fp = NULL;
 
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
-
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading GMT Default parameters from file: %s\n", file);
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
 		GMT_chop (line); /* Get rid of [\r]\n */
