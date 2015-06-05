@@ -2919,8 +2919,8 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 		GMT->current.map.lon_wrap = false;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.pars[0];
 	GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
-	if (GMT->current.proj.scale[GMT_X] < 0.0) GMT->current.proj.xyz_pos[GMT_X] = false;	/* User wants x to increase left */
-	if (GMT->current.proj.scale[GMT_Y] < 0.0) GMT->current.proj.xyz_pos[GMT_Y] = false;	/* User wants y to increase down */
+	GMT->current.proj.xyz_pos[GMT_X] = (GMT->current.proj.scale[GMT_X] >= 0.0);	/* False if user wants x to increase left */
+	GMT->current.proj.xyz_pos[GMT_Y] = (GMT->current.proj.scale[GMT_Y] >= 0.0);	/* False if user wants y to increase down */
 	switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
 			if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME)

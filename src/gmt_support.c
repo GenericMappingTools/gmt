@@ -11555,9 +11555,11 @@ void GMT_set_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR *A) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert map anchor point coordinates from %g, %g to %g, %g\n", A->x, A->y, x, y);
 		A->x = x;	A->y = y;
 	}
-	else if (A->mode == GMT_ANCHOR_JUST) {	/* Convert from justify code to plot coordinates */
-		GMT_just_to_lonlat (GMT, A->justify, false, &A->x, &A->y);
+	else if (A->mode == GMT_ANCHOR_JUST) {	/* Convert from justify code to map coordinates, then to plot coordinates */
+		GMT_just_to_lonlat (GMT, A->justify, GMT_is_geographic (GMT, GMT_IN), &A->x, &A->y);
+		GMT_geo_to_xy (GMT, A->x, A->y, &x, &y);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert code anchor point coordinates from justification %s to %g, %g\n", GMT_just_code[A->justify], A->x, A->y);
+		A->x = x;	A->y = y;
 	}
 	else if (A->mode == GMT_ANCHOR_NORM) {	/* Convert relative to plot coordinates */
 		x = A->x * (2.0 * GMT->current.map.half_width);

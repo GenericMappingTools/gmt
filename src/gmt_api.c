@@ -4517,8 +4517,11 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
 				size_t len = strlen (file);
-				char *ext = (len > 4 && !strncmp (&file[len-4], ".cpt", 4U)) ? "" : ".cpt";
-				GMT_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
+				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt";
+				if (!(strstr (file, "+U") || strstr (file, "+u")))	/* Only append extension and supply path if not containint +u|U */
+					GMT_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
+				else	/* Use name as is */
+					strncpy (CPT_file, file, GMT_BUFSIZ);
 			}
 			else	/* Got color list, now a temp cpt file instead */
 				strncpy (CPT_file, file, GMT_BUFSIZ);
