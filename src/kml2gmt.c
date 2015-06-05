@@ -156,12 +156,13 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 
 int GMT_kml2gmt (void *V_API, int mode, void *args)
 {
-	unsigned int i, start, fmode = POINT, n_features = 0;
-	int error = 0;
+	unsigned int i, start, fmode = POINT, n_features = 0, pos;
+	int error = 0, n_scan;
 	size_t length;
-	bool scan = true, first = true, skip;
+	bool scan = true, first = true, skip, single = false;
 	
-	char line[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""};
+	char line[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
+	char word[GMT_LEN128] = {""}, description[GMT_BUFSIZ] = {""};
 	char *gm[3] = {"Point", "Line", "Polygon"};
 
 	double out[3];
@@ -290,13 +291,26 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next feature");
 		}
 		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
+
+		single = (strstr (line, "</coordinates>") != NULL);	/* All on one line */
 		
-		if (fmode == POINT && strstr (line, "</coordinates>")) {	/* Process the single point */
+		if (fmode == POINT && single) {	/* Process the single point from current record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
-		else {
+		else if (single) {	/* Process multiple points from current single record */
+			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
+			pos = i + 1;
+			while (GMT_strtok (line, " \t", &pos, word)) {	/* Look for clusters of x,y,z separated by whitespace */
+				n_scan = sscanf (word, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
+				if (n_scan == 2 || n_scan == 3)
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+				else
+					break;
+			}
+		}
+		else {	/* Processes points from separate lines */
 			while (fscanf (fp, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z])) {
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
