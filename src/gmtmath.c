@@ -3889,6 +3889,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		Ctrl->N.active = set_equidistant_t = true;
 		Ctrl->T.min = Ctrl->T.max = 0.0;
 		Ctrl->T.inc = 1.0;
+		Ctrl->T.notime = true;
 		n_rows = n_columns = 1;
 	}
 	if (Ctrl->N.active) {
@@ -4226,7 +4227,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				stack[i]->alloc_mode = 1;
-				if (!Ctrl->T.notime) load_column (stack[0]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
+				if (!Ctrl->T.notime) load_column (stack[i]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
 			}
 		}
 
