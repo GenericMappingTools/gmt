@@ -565,7 +565,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 		}
 	}
 	else if (Ctrl->F.R_justify) {
-		GMT_just_to_lonlat (GMT, Ctrl->F.R_justify, true, &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
+		GMT_just_to_lonlat (GMT, Ctrl->F.R_justify, GMT_is_geographic (GMT, GMT_IN), &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
 		nscan = 2;	/* Since x,y are implicit */
 		nscan += sscanf (record, "%[^\n]\n", buffer);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
