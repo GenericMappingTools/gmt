@@ -11421,6 +11421,10 @@ void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 
 	i = justify % 4;	/* Split the 2-D justify code into x and y components */
 	j = justify / 4;
+	if (!geo) {	/* Check for negative Cartesian scales */
+		if (!GMT->current.proj.xyz_pos[GMT_X]) i = 4 - i;	/* Negative x-scale */
+		if (!GMT->current.proj.xyz_pos[GMT_Y]) j = 2 - j;	/* Negative y-scale */
+	}
 	if (i == 1)
 		*x = box[XLO];
 	else if (i == 2)
@@ -11438,6 +11442,7 @@ void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 		double xx = *x, yy = *y;
 		GMT_xy_to_geo (GMT, x, y, xx, yy);
 	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted code %d to i = %d, j = %d and finally x = %g and y = %g\n", justify, i, j, *x, *y);
 }
 
 /*! . */
