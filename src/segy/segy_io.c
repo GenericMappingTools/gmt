@@ -35,9 +35,9 @@ uint32_t samp_rd(SEGYHEAD *hdr) {
 int get_segy_reelhd (FILE *fileptr, char *reelhead) {
 	if (fread (reelhead, 3200, 1, fileptr) != 1) {
 		fprintf(stderr,"Error reading SEGY reel header \n");
-		exit(1);
+		return false;
 	}
-	return (true);
+	return true;
 }
 
 /*********************** get_segy_binhd() ****************************/
@@ -47,7 +47,7 @@ int get_segy_binhd (FILE *fileptr, SEGYREEL *binhead) {
 	if (fread (binhead, 400, 1, fileptr) !=1) {
 		fprintf(stderr, "Error reading SEGY binary header \n");
 		return(false);
-		}
+	}
 	return (true);
 }
 
