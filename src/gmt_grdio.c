@@ -2120,6 +2120,7 @@ unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool f
 	if (G->extra) GMTAPI_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	//if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) GMT_free (GMT, G->header);
 	if (G->header) {	/* Free the header structure and anything allocated by it */
+		if (G->header->ProjRefWKT) free (G->header->ProjRefWKT);
 		if (G->header->pocket) free (G->header->pocket);
 		GMT_free (GMT, G->header);
 	}
@@ -2467,6 +2468,8 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 
 	I->ColorInterp    = from_gdalread->ColorInterp;     /* Must find out how to release this mem */
 	I->nIndexedColors = from_gdalread->nIndexedColors;
+	if (I->header->ProjRefPROJ4) free(I->header->ProjRefPROJ4);		/* Make sure we don't leak due to a previous copy */
+	if (I->header->ProjRefWKT)   free(I->header->ProjRefWKT);
 	I->header->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
 	I->header->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
 	I->header->inc[GMT_X] = from_gdalread->hdr[7];

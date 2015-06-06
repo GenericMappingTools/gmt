@@ -421,9 +421,15 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 
 		if (gm_id > 0) {
 			size_t len;
+			char *pch;
 			GMT_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
-			header->ProjRefWKT = GMT_memory(GMT, NULL, len+1, char);		/* and allocate the needed space */
-			GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", header->ProjRefWKT));
+			if (header->ProjRefWKT) free(header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
+			pch = GMT_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
+			GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
+			header->ProjRefWKT = strdup(pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			GMT_free(GMT, pch);
+			//header->ProjRefWKT = GMT_memory(GMT, NULL, len+1, char);		/* and allocate the needed space */
+			//GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", header->ProjRefWKT));
 		}
 
 		/* Create enough memory to store the x- and y-coordinate values */
@@ -436,7 +442,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
 			/* If actual range differs from end-points of vector then we have a pixel grid */
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ? GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
+			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?
+			                       GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
 		}
 		else if (!j) {	/* Got node vector, so default to gridline registration */
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
