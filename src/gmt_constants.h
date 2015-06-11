@@ -266,6 +266,10 @@ enum GMT_enum_dist {GMT_MAP_DIST = 0,	/* Distance in the map */
 enum GMT_enum_path {GMT_RESAMPLE_PATH = 0,	/* Default: Resample geographic paths based in a max gap allowed (path_step) */
 	GMT_LEAVE_PATH};	/* Options like -A can turn of this resampling, where available */
 
+enum GMT_enum_stairpath {GMT_STAIRS_OFF = 0,	/* Default: No stairclimbing */
+	GMT_STAIRS_Y,	/* Move vertically (meridian) to next point along y, then horizontally along x */
+	GMT_STAIRS_X};	/* Move horizontally (parallel) to next point along x, then vertically along y */
+
 enum GMT_enum_cdist {GMT_CARTESIAN_DIST	 = 0,	/* Cartesian 2-D x,y data, r = hypot */
 	GMT_CARTESIAN_DIST2,		/* Cartesian 2-D x,y data, return r^2 to avoid hypot */
 	GMT_CARTESIAN_DIST_PROJ,	/* Project lon,lat to Cartesian 2-D x,y data, then get distance */

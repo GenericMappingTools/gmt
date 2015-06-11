@@ -1029,6 +1029,61 @@ void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *
 	if (degrees) *theta *= R2D;
 }
 
+void GMT_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsigned int mode)
+{
+	/* Sets the GMT->current.map.path_mode setting given -A and data type.
+	 * By default, path_mode = GMT_RESAMPLE_PATH = 0. */
+	
+	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Geographic data: Default is to resample along great circles unless -A given */
+		if (active && mode == GMT_STAIRS_OFF) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
+	}
+	else {	/* Cartesian data: Default is to leave alone unless -Ax|y was set */
+		if (!active) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
+	}
+}
+
+uint64_t gmt_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, unsigned int mode)
+{
+	/* Takes pointers to a list of <n> Cartesian x/y pairs and adds
+	 * auxiliary points to build a staircase curve.
+	 * If mode=1: staircase; first follows y, then x
+	 * If mode=2: staircase; first follows x, then y
+	 * Returns the new number of points (original plus auxiliary).
+	 */
+
+	uint64_t i, k, n_new = 2*n - 1;
+	double *x = NULL, *y = NULL;
+
+	x = *a_x;	y = *a_y;	/* Default is to return the input unchanged */
+	if (n < 2) return n;		/* Nothing to do */
+	
+	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate two tmp vectors */
+	/* Start at first point */
+	GMT->hidden.mem_coord[GMT_X][0] = x[0];	GMT->hidden.mem_coord[GMT_Y][0] = y[0];
+
+	for (i = k = 1; i < n; i++) {	/* For remaining points we must insert an intermediate node */
+		if (mode == GMT_STAIRS_X) {	/* First follow x, then y */
+			GMT->hidden.mem_coord[GMT_X][k] = x[i];
+			GMT->hidden.mem_coord[GMT_Y][k] = y[i-1];
+		}
+		else if (mode == GMT_STAIRS_Y) {	/* First follow y, then x */
+			GMT->hidden.mem_coord[GMT_X][k] = x[i-1];
+			GMT->hidden.mem_coord[GMT_Y][k] = y[i];
+		}
+		k++;
+		/* Then add original point */
+		GMT->hidden.mem_coord[GMT_X][k] = x[i];	GMT->hidden.mem_coord[GMT_Y][k] = y[i];
+		k++;
+	}
+
+	/* Destroy old allocated memory and put the new one in place */
+	GMT_free (GMT, x);	GMT_free (GMT, y);
+	*a_x = GMT_assign_vector (GMT, n_new, GMT_X);
+	*a_y = GMT_assign_vector (GMT, n_new, GMT_Y);
+	
+	return (n_new);
+}
+
 uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
@@ -1047,6 +1102,8 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i;
 
+	if (!GMT_is_geographic (GMT, GMT_IN)) return (gmt_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
+	
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
 	GMT_geo_to_cart (GMT, lat[0], lon[0], a, true);	/* Start point of current arc */
@@ -1066,7 +1123,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 
 		GMT_geo_to_cart (GMT, lat[i], lon[i], b, true);	/* End point of current arc */
 
-		if (mode == 1) {	/* First follow meridian, then parallel */
+		if (mode == GMT_STAIRS_Y) {	/* First follow meridian, then parallel */
 			dlon = lon[i]-lon[i-1];	/* Beware of jumps due to sign differences */
 			if (fabs (dlon) > 180.0) dlon += copysign (360.0, -dlon);	/* Never more than  180 to next point */
 			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
@@ -1091,7 +1148,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			k = 0;
 		}
 
-		else if (mode == 2) {	/* First follow parallel, then meridian */
+		else if (mode == GMT_STAIRS_X) {	/* First follow parallel, then meridian */
 			theta = fabs (lat[i]-lat[i-1]);
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
@@ -1179,7 +1236,7 @@ uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
 
 	for (i = 1; i < n; i++) {
-		if (mode == 1) {	/* First follow x, then y */
+		if (mode == GMT_STAIRS_Y) {	/* First follow x, then y */
 			n_step = lrint (fabs (x[i] - x[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
@@ -1198,7 +1255,7 @@ uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 			}
 			k = 0;
 		}
-		else if (mode == 2) {	/* First follow y, then x */
+		else if (mode == GMT_STAIRS_X) {	/* First follow y, then x */
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;

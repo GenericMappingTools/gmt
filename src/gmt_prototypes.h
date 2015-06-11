@@ -511,6 +511,7 @@ EXTERN_MSC double GMT_mag3v (struct GMT_CTRL *GMT, double *a);
 EXTERN_MSC void GMT_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c);
 EXTERN_MSC void GMT_normalize3v (struct GMT_CTRL *GMT, double *a);
 EXTERN_MSC void GMT_normalize2v (struct GMT_CTRL *GMT, double *a);
+EXTERN_MSC void GMT_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsigned int mode);
 EXTERN_MSC uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode);
 EXTERN_MSC int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m, double *d, double *v, double *b, double *z, unsigned int *nrots);
 EXTERN_MSC int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag);

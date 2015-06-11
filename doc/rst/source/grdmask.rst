@@ -16,7 +16,7 @@ Synopsis
 **grdmask** *pathfiles* **-G**\ *mask_grd_file*]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [**m**\ \|\ **p**] ]
+[ **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
 [ **-S**\ *search\_radius*\ [*unit*] ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -63,12 +63,15 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**m**\ \|\ **p**]
-    If the input data are geographic (as indicated by **-fi**) then the
+**-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**]
+    If the input data are geographic (as indicated by **-f**) then the
     sides in the polygons will be approximated by great circle arcs.
     When using the **-A** sides will be regarded as straight lines.
     Alternatively, append **m** to have sides first follow meridians,
     then parallels. Or append **p** to first follow parallels, then meridians.
+    For Cartesian data, points are simply connected, unless you append
+    **x** or **y** to construct stair-case paths whose first move is along 
+    *x* or *y*, respectively.
 
 **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values*
     Sets the *out/edge/in* that will be assigned to nodes that are

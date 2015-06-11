@@ -15,7 +15,7 @@ Synopsis
 
 **psxy** [ *table* ] **-J**\ *parameters*
 |SYN_OPT-Rz|
-[ **-A**\ [**m**\ \|\ **p**] ] 
+[ **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ] 
 [ |SYN_OPT-B| ]
 [ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
 [ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ] 
@@ -78,12 +78,14 @@ Optional Arguments
 .. |Add_intables| replace:: Use **-T** to ignore all input files, including standard input (see below).
 .. include:: explain_intables.rst_
 
-**-A**\ [**m**\ \|\ **p**]
-    By default line segments are drawn as great circle arcs. To draw them as
-    straight lines, use the **-A** flag. Alternatively, add **m** to draw
+**-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**]
+    By default, geographic line segments are drawn as great circle arcs. To draw them as
+    straight lines, use the **-A** flag.  Alternatively, add **m** to draw
     the line by first following a meridian, then a parallel. Or append **p**
     to start following a parallel, then a meridian. (This can be practical
-    to draw a line along parallels, for example). 
+    to draw a line along parallels, for example).  For Cartesian data, points
+    are simply connected, unless you append **x** or **y** to draw stair-case
+    curves that whose first move is along *x* or *y*, respectively.
 
 .. include:: explain_-B.rst_
 
