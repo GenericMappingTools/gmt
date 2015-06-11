@@ -229,7 +229,7 @@ GMT logo to maps and posters.
 :doc:`gmtregress` determines linear regressions for data sets using
 a variety of misfit norms and regression modes.
 
-Two new modules have also been added to the *potential* supplement:
+Three new modules have also been added to the *potential* supplement:
 
 :doc:`gmtflexure <supplements/potential/gmtflexure>`:
 	Compute the elastic flexural response to a 2-D (line) load.
@@ -237,6 +237,10 @@ Two new modules have also been added to the *potential* supplement:
 :doc:`grdflexure <supplements/potential/grdflexure>`:
 	Compute the flexural response to a 3-D (grid) load, using a variety
 	or rheological models (elastic, viscoelastic, firmoviscous).
+
+:doc:`talwani3d <supplements/potential/talwani3d>`:
+	Compute a grid or profile of the free-air gravity anomaly or vertical gravity gradient
+	over a 3-D body given as polygonal slices.
 
 In addition, here are two established modules that have been given more suitable names:
 

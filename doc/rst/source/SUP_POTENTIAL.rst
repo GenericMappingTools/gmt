@@ -12,3 +12,4 @@ POTENTIAL
    supplements/potential/grdgravmag3d
    supplements/potential/grdredpol
    supplements/potential/grdseamount
+   supplements/potential/talwani3d

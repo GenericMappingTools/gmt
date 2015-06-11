@@ -362,7 +362,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;
 	
-	int error = 0;
+	int error = 0, s_k;
 	bool better;
 
 	double x_smt, y_smt, z_smt, r_smt, t_smt, t, *c = NULL, *in = NULL, dist, dlon, lon, lat, out[5];
@@ -399,9 +399,10 @@ int GMT_originator (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the originator main code ----------------------------*/
 
-	n_hotspots = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
-	if (n_hotspots < 0)
+	s_k = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
+	if (s_k < 0)
 		GMT_exit(GMT, EXIT_FAILURE);		/* An error message was already issued by spotter_hotspot_init() */
+	n_hotspots = (unsigned int)s_k;
 
 	if (Ctrl->S.n > n_hotspots) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
