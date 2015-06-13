@@ -2120,7 +2120,7 @@ unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool f
 	if (G->extra) GMTAPI_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	//if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) GMT_free (GMT, G->header);
 	if (G->header) {	/* Free the header structure and anything allocated by it */
-		if (G->header->ProjRefWKT) free (G->header->ProjRefWKT);
+		//if (G->header->ProjRefWKT) free (G->header->ProjRefWKT);
 		if (G->header->pocket) free (G->header->pocket);
 		GMT_free (GMT, G->header);
 	}
