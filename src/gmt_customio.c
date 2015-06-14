@@ -1576,6 +1576,20 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		header->z_add_offset   = 0.0;
 	}
 
+	if (header->ProjRefPROJ4) {			/* Make sure we don't leak due to a previous copy */
+		free(header->ProjRefPROJ4);
+		header->ProjRefPROJ4 = NULL;
+	}
+	if (header->ProjRefWKT) {
+		free(header->ProjRefWKT);
+		header->ProjRefWKT = NULL;
+	}
+	if (from_gdalread->ProjectionRefPROJ4)
+		/* Need to strdup because from_gdalread is freed later */
+		header->ProjRefPROJ4 = strdup(from_gdalread->ProjectionRefPROJ4);
+	if (from_gdalread->ProjectionRefWKT)
+		header->ProjRefWKT   = strdup(from_gdalread->ProjectionRefWKT);
+
 	GMT_free (GMT, to_gdalread);
 	free_from_gdalread (GMT, from_gdalread);
 
