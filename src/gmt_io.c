@@ -6894,6 +6894,9 @@ struct GMT_IMAGE *GMT_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I
 	Inew->header = save;	/* Reset to correct header pointer */
 	Inew->data = NULL;	/* Reset to NULL data pointer */
 	GMT_memcpy (Inew->header, I->header, 1, struct GMT_GRID_HEADER);
+	if (I->header->ProjRefWKT) Inew->header->ProjRefWKT = strdup (I->header->ProjRefWKT);
+	if (I->header->ProjRefPROJ4) Inew->header->ProjRefPROJ4 = strdup (I->header->ProjRefPROJ4);
+	if (I->header->pocket) Inew->header->pocket = strdup (I->header->pocket);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possiblhy duplicate data array */
 		Inew->data = GMT_memory_aligned (GMT, NULL, I->header->size, char);

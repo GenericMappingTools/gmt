@@ -428,8 +428,6 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 			GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
 			header->ProjRefWKT = strdup(pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
 			GMT_free(GMT, pch);
-			//header->ProjRefWKT = GMT_memory(GMT, NULL, len+1, char);		/* and allocate the needed space */
-			//GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", header->ProjRefWKT));
 		}
 
 		/* Create enough memory to store the x- and y-coordinate values */

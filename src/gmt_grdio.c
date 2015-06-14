@@ -2102,6 +2102,10 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 	Gnew = GMT_create_grid (GMT);
 	GMT_memcpy (Gnew->header, G->header, 1, struct GMT_GRID_HEADER);
+	if (G->header->ProjRefWKT) Gnew->header->ProjRefWKT = strdup (G->header->ProjRefWKT);
+	if (G->header->ProjRefPROJ4) Gnew->header->ProjRefPROJ4 = strdup (G->header->ProjRefPROJ4);
+	if (G->header->pocket) Gnew->header->pocket = strdup (G->header->pocket);
+
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possiblhy duplicate data array */
 		Gnew->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
 		if (mode & GMT_DUPLICATE_DATA) GMT_memcpy (Gnew->data, G->data, G->header->size, float);
@@ -2120,7 +2124,8 @@ unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool f
 	if (G->extra) GMTAPI_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	//if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) GMT_free (GMT, G->header);
 	if (G->header) {	/* Free the header structure and anything allocated by it */
-		//if (G->header->ProjRefWKT) free (G->header->ProjRefWKT);
+		if (G->header->ProjRefWKT) free (G->header->ProjRefWKT);
+		if (G->header->ProjRefPROJ4) free (G->header->ProjRefPROJ4);
 		if (G->header->pocket) free (G->header->pocket);
 		GMT_free (GMT, G->header);
 	}
