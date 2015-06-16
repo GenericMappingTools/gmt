@@ -102,6 +102,8 @@ enum Talwani3d_fields {
 	TALWANI3D_FAA	= 0,
 	TALWANI3D_VGG,
 	TALWANI3D_PW,
+	TALWANI3D_HOR=0,
+	TALWANI3D_VER=1
 };
 
 void *New_talwani3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -165,13 +167,13 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 			case 'M':	/* Length units */
 				both = false;	side = 0;
 				switch (opt->arg[0]) {
-					case 'h': side = 0; break;
-					case 'z': side = 1; break;
+					case 'h': side = TALWANI3D_HOR; break;
+					case 'z': side = TALWANI3D_VER; break;
 					default:  both = true; break;
 				}
 				k = (both) ? 0 : 1;	/* Offset in string */
 				Ctrl->M.active[side] = true;
-				if (both) Ctrl->M.active[1] = Ctrl->M.active[0];
+				if (both) Ctrl->M.active[TALWANI3D_VER] = Ctrl->M.active[TALWANI3D_HOR];
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -656,6 +658,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	bool flat_earth = false, first_slice = true;
 	
+	char *uname[2] = {"meter", "km"};
 	double z_level, depth, rho;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL, *work = NULL;
 					
@@ -709,6 +712,8 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	cake = GMT_memory (GMT, NULL, n_alloc1, struct CAKE);
 	
 	/* Read polygon information from multiple segment file */
+	GMT_Report (API, GMT_MSG_VERBOSE, "All x/y-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_HOR]]);
+	GMT_Report (API, GMT_MSG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_VER]]);
 	
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -759,7 +764,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 				sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
 				if (Ctrl->D.active) rho = Ctrl->D.rho;
 				rho *= 0.001;	/* Change to g/cm3 */
-				if (!Ctrl->M.active[1]) depth *= 0.001;	/* Change to km */
+				if (!Ctrl->M.active[TALWANI3D_VER]) depth *= 0.001;	/* Change to km */
 				if (Ctrl->A.active) depth = -depth;	/* Make positive down */
 				/* Allocate array for this slice */
 				n_alloc = GMT_CHUNK;
@@ -773,8 +778,10 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 
 		x[n] = in[GMT_X];	y[n] = in[GMT_Y];
 		if (!flat_earth) {
-			if (!Ctrl->M.active[0]) x[n] *= 0.001;
-			if (!Ctrl->M.active[0]) y[n] *= 0.001;
+			if (!Ctrl->M.active[TALWANI3D_HOR]) {
+				x[n] *= 0.001;
+				y[n] *= 0.001;
+			}
 		}
 		n++;
 		if (n == n_alloc) {
@@ -830,7 +837,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;
 	
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
-		double scl = (!(flat_earth || Ctrl->M.active[0])) ? 0.001 : 1.0;	/* Perhaps convert to km */
+		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? 0.001 : 1.0;	/* Perhaps convert to km */
 		double out[3];
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
@@ -864,11 +871,11 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		double y_obs, *x_obs = GMT_memory (GMT, NULL, G->header->nx, double);
 		for (col = 0; col < G->header->nx; col++) {
 			x_obs[col] = GMT_grd_col_to_x (GMT, col, G->header);
-			if (!(flat_earth || Ctrl->M.active[0])) x_obs[col] *= 0.001;	/* Convert to km */
+			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) x_obs[col] *= 0.001;	/* Convert to km */
 		}
 		GMT_row_loop (GMT, G, row) {	/* Do row-by-row and report on progress if -V */
 			y_obs = GMT_grd_row_to_y (GMT, row, G->header);
-			if (!(flat_earth || Ctrl->M.active[0])) y_obs *= 0.001;	/* Convert to km */
+			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) y_obs *= 0.001;	/* Convert to km */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Finished row %5d\n", row);
 			GMT_col_loop (GMT, G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */
