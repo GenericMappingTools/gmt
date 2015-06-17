@@ -4013,6 +4013,7 @@ GMT strings using the Standard+ encoding:
 
 | ``2@~p@~r@+2@+h@-0@- E\363tv\363s`` = 2\ :math:`\pi r^2h_0` Eötvös
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
+| ``Stresses are @~s@~@+*@+@-xx@- MPa`` = :math:`\sigma^{*}_{xx}` MPa
 | ``Se@nor Gar@con`` = Señor Garçon
 | ``M@!\305anoa stra@se`` = Manoa straße
 | ``A@\#cceleration@\# (ms@+-2@+)`` = ACCELERATION
