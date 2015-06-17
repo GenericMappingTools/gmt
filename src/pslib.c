@@ -1612,6 +1612,36 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
+		else if (ptr[0] == '|') {	/* Sub- and super-script */
+			char sub_txt[64] = {""}, sup_txt[64] = {""};
+			ptr++;
+			if (ptr[0] == ',')	/* No sub-script, must only scan super */
+				sscanf (&ptr[1], "%[^|]", sup_txt);
+			else
+				sscanf (ptr, "%[^,],%[^|]", sub_txt, sup_txt);
+			/* First do sub-script */
+			if (sub_txt[0]) {	/* Have subscript to set */
+				dy = -psl_ip (PSL, dstep);
+				PSL_command (PSL, "0 %d G ", dy);	/* Move down the baseline */
+				PSL_command (PSL, "/PSL_last_width %d F%d (%s) sw def\n", psl_ip (PSL, small_size), font, sub_txt);	/* Compute width of subscript text */
+				PSL_command (PSL, "(%s) FP\n", sub_txt);	/* Place subscript */
+				PSL_command (PSL, "PSL_last_width neg %d G ", -dy);	/* Rewind position to orig baseline position before subscript */
+			}
+			else	/* No subscript text specified, set its width to 0 */
+				PSL_command (PSL, "/PSL_last_width 0 def\n");
+			if (sup_txt[0]) {	/* Have superscript to set */
+				dy = psl_ip (PSL, ustep[kase]);
+				PSL_command (PSL, "0 %d G ", dy);	/* Move up the baseline */
+				PSL_command (PSL, "%d F%d (%s) FP\n", psl_ip (PSL, small_size), font, sup_txt);	/* Place superscript text */
+				PSL_command (PSL, "/PSL_last_width PSL_last_width (%s) sw sub dup 0 lt {pop 0} if def\n", sup_txt);	/* Compute width of superscript text and see if we must move a bit */
+				PSL_command (PSL, "PSL_last_width %d G ", -dy);	/* Rewind position to orig baseline */
+			}
+			else
+				PSL_command (PSL, "PSL_last_width 0 G ");	/* Undo earlier rewind */
+			while (*ptr != '|') ptr++;	/* Wind until end of @|....| */
+			ptr++;
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
+		}
 		else if (ptr[0] == '-') {	/* Subscript toggle  */
 			sub_on = !sub_on;
 			size = (sub_on) ? small_size : fontsize;
@@ -1874,6 +1904,36 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				psl_encodefont (PSL, font);
 			}
 			while (*ptr != '%') ptr++;
+			ptr++;
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
+		}
+		else if (ptr[0] == '|') {	/* Sub- and super-script */
+			char sub_txt[64] = {""}, sup_txt[64] = {""};
+			ptr++;
+			if (ptr[0] == ',')	/* No sub-script, must only scan super */
+				sscanf (&ptr[1], "%[^|]", sup_txt);
+			else
+				sscanf (ptr, "%[^,],%[^|]", sub_txt, sup_txt);
+			/* First do sub-script */
+			if (sub_txt[0]) {	/* Have subscript to set */
+				dy = -psl_ip (PSL, dstep);
+				PSL_command (PSL, "0 %d G ", dy);	/* Move down the baseline */
+				PSL_command (PSL, "/PSL_last_width %d F%d (%s) sw def\n", psl_ip (PSL, small_size), font, sub_txt);	/* Compute width of subscript text */
+				PSL_command (PSL, "(%s) %s\n", sub_txt, op[mode]);	/* Place subscript */
+				PSL_command (PSL, "PSL_last_width neg %d G ", -dy);	/* Rewind position to orig baseline position before subscript */
+			}
+			else	/* No subscript text specified, set its width to 0 */
+				PSL_command (PSL, "/PSL_last_width 0 def\n");
+			if (sup_txt[0]) {	/* Have superscript to set */
+				dy = psl_ip (PSL, ustep[kase]);
+				PSL_command (PSL, "0 %d G ", dy);	/* Move up the baseline */
+				PSL_command (PSL, "%d F%d (%s) %s\n", psl_ip (PSL, small_size), font, sup_txt, op[mode]);	/* Place superscript text */
+				PSL_command (PSL, "/PSL_last_width PSL_last_width (%s) sw sub dup 0 lt {pop 0} if def\n", sup_txt);	/* Compute width of superscript text and see if we must move a bit */
+				PSL_command (PSL, "PSL_last_width %d G ", -dy);	/* Rewind position to orig baseline */
+			}
+			else
+				PSL_command (PSL, "PSL_last_width 0 G ");	/* Undo earlier rewind */
+			while (*ptr != '|') ptr++;	/* Wind until end of @|....| */
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
