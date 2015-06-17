@@ -1527,8 +1527,9 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	 * depth or both width and height on the PostScript stack.
 	 */
 
-	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL;
+	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL, previous[BUFSIZ] = {""};
 	int dy, font, sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, last_chr, kase = PSL_LC;
+	bool last_sub = false, last_sup = false, supersub;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep;
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
@@ -1571,7 +1572,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	ustep[PSL_UC] = PSL->current.sup_up[PSL_UC] * size;	/* Super-script baseline raised by given fraction of font size for upper case */
 	dstep = PSL->current.sub_down * size;		/* Sub-script baseline lowered by given fraction of font size */
 	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
-
+	supersub = (strstr (string, "@-@+") || strstr (string, "@+@-"));	/* Check for sub/super combo */
 	tempstring = PSL_memory (PSL, NULL, strlen(string)+1, char);	/* Since strtok steps on it */
 	strcpy (tempstring, string);
 	ptr = strtok_r (tempstring, "@", &plast);
@@ -1612,50 +1613,38 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
-		else if (ptr[0] == '|') {	/* Sub- and super-script */
-			char sub_txt[64] = {""}, sup_txt[64] = {""};
-			ptr++;
-			if (ptr[0] == ',')	/* No sub-script, must only scan super */
-				sscanf (&ptr[1], "%[^|]", sup_txt);
-			else
-				sscanf (ptr, "%[^,],%[^|]", sub_txt, sup_txt);
-			/* First do sub-script */
-			if (sub_txt[0]) {	/* Have subscript to set */
-				dy = -psl_ip (PSL, dstep);
-				PSL_command (PSL, "0 %d G ", dy);	/* Move down the baseline */
-				PSL_command (PSL, "/PSL_last_width %d F%d (%s) sw def\n", psl_ip (PSL, small_size), font, sub_txt);	/* Compute width of subscript text */
-				PSL_command (PSL, "(%s) FP\n", sub_txt);	/* Place subscript */
-				PSL_command (PSL, "PSL_last_width neg %d G ", -dy);	/* Rewind position to orig baseline position before subscript */
-			}
-			else	/* No subscript text specified, set its width to 0 */
-				PSL_command (PSL, "/PSL_last_width 0 def\n");
-			if (sup_txt[0]) {	/* Have superscript to set */
-				dy = psl_ip (PSL, ustep[kase]);
-				PSL_command (PSL, "0 %d G ", dy);	/* Move up the baseline */
-				PSL_command (PSL, "%d F%d (%s) FP\n", psl_ip (PSL, small_size), font, sup_txt);	/* Place superscript text */
-				PSL_command (PSL, "/PSL_last_width PSL_last_width (%s) sw sub dup 0 lt {pop 0} if def\n", sup_txt);	/* Compute width of superscript text and see if we must move a bit */
-				PSL_command (PSL, "PSL_last_width %d G ", -dy);	/* Rewind position to orig baseline */
-			}
-			else
-				PSL_command (PSL, "PSL_last_width 0 G ");	/* Undo earlier rewind */
-			while (*ptr != '|') ptr++;	/* Wind until end of @|....| */
-			ptr++;
-			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
-		}
 		else if (ptr[0] == '-') {	/* Subscript toggle  */
+			ptr++;
 			sub_on = !sub_on;
+			if (sub_on) {
+				if (last_sup)	/* Just did a super-script, must reset horizontal position */
+					PSL_command (PSL, "PSL_last_width neg 0 G ");	/* Rewind position to orig baseline */
+				else if (supersub)	/* Need to remember the width of the subscript */
+					PSL_command (PSL, "/PSL_last_width %d F%d (%s) sw def\n", psl_ip (PSL, small_size), font, ptr);	/* Compute width of subscript text */
+				if (ptr[0]) strcpy (previous, ptr);	/* Keep copy of possibly previous text */
+			}
+			else
+				last_sub = (last_sup || ptr[0] == 0) ? supersub : false;	/* Only true when this is a possibility */
 			size = (sub_on) ? small_size : fontsize;
 			dy = (sub_on) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
 			PSL_command (PSL, "0 %d G ", dy);
-			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '+') {	/* Superscript toggle */
+			ptr++;
 			super_on = !super_on;
+			if (super_on) {
+				if (last_sub)	/* Just did a sub-script, must reset horizontal position */
+					PSL_command (PSL, "PSL_last_width neg 0 G ");	/* Rewind position to orig baseline */
+				else if (supersub)	/* Need to remember the width of the superscript */
+					PSL_command (PSL, "/PSL_last_width %d F%d (%s) sw def\n", psl_ip (PSL, small_size), font, ptr);	/* Compute width of subscript text */
+				if (ptr[0]) strcpy (previous, ptr);	/* Keep copy of possibly previous text */
+			}
+			else
+				last_sup = (last_sub || ptr[0] == 0) ? supersub : false;	/* Only true when this is a possibility */
 			size = (super_on) ? small_size : fontsize;
 			dy = (super_on) ? psl_ip (PSL, ustep[kase]) : -psl_ip (PSL, ustep[kase]);
 			PSL_command (PSL, "0 %d G ", dy);
-			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '#') {	/* Small caps toggle */
@@ -1690,13 +1679,19 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
-		else	/* Not recognized or @@ for a single @ */
+		else {	/* Not recognized or @@ for a single @ */
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
+			last_sub = last_sup = false;
+		}
 		if (strlen (piece) > 0) {
+			if (last_sub && last_sup) {	/* May possibly need to move currentpoint a bit to the widest piece */
+				PSL_command (PSL, "/PSL_last_width PSL_last_width (%s) sw sub dup 0 lt {pop 0} if def\n", previous);	/* Compute width of superscript text and see if we must move a bit */
+				PSL_command (PSL, "PSL_last_width 0 G ");	/* Rewind position to orig baseline */
+				last_sub = last_sup = false;
+			}
 			PSL_command (PSL, "%d F%d (%s) FP ", psl_ip (PSL, size), font, piece);
 			last_chr = ptr[strlen(piece)-1];
 			if (!super_on) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
-			//fprintf (stderr, "text = %s kase = %d\n", piece, kase);
 		}
 		ptr = strtok_r (NULL, "@", &plast);
 	}
@@ -1759,12 +1754,13 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	*   1	    2	     3
 	*/
 
-	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL;
+	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, previous[BUFSIZ] = {""};
 	const char *op[2] = {"Z", "false charpath fs"}, *align[3] = {"0", "-2 div", "neg"};
 	char *plast = NULL;
 	const char *justcmd[12] = {"", "", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap, mode = (pmode > 0);
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
+	bool last_sub = false, last_sup = false, supersub;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4];
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
@@ -1841,6 +1837,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 
 	/* Now we can start printing text items */
 
+	supersub = (strstr (string, "@-@+") || strstr (string, "@+@-"));	/* Check for sub/super combo */
 	ptr = strtok_r (string, "@", &plast);
 	if(string[0] != '@') {	/* String has @ but not at start - must deal with first piece explicitly */
 		PSL_command (PSL, "(%s) %s\n", ptr, op[mode]);
@@ -1907,50 +1904,38 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
-		else if (ptr[0] == '|') {	/* Sub- and super-script */
-			char sub_txt[64] = {""}, sup_txt[64] = {""};
+		else if (ptr[0] == '-') {	/* Subscript toggle  */
 			ptr++;
-			if (ptr[0] == ',')	/* No sub-script, must only scan super */
-				sscanf (&ptr[1], "%[^|]", sup_txt);
-			else
-				sscanf (ptr, "%[^,],%[^|]", sub_txt, sup_txt);
-			/* First do sub-script */
-			if (sub_txt[0]) {	/* Have subscript to set */
-				dy = -psl_ip (PSL, dstep);
-				PSL_command (PSL, "0 %d G ", dy);	/* Move down the baseline */
-				PSL_command (PSL, "/PSL_last_width %d F%d (%s) sw def\n", psl_ip (PSL, small_size), font, sub_txt);	/* Compute width of subscript text */
-				PSL_command (PSL, "(%s) %s\n", sub_txt, op[mode]);	/* Place subscript */
-				PSL_command (PSL, "PSL_last_width neg %d G ", -dy);	/* Rewind position to orig baseline position before subscript */
-			}
-			else	/* No subscript text specified, set its width to 0 */
-				PSL_command (PSL, "/PSL_last_width 0 def\n");
-			if (sup_txt[0]) {	/* Have superscript to set */
-				dy = psl_ip (PSL, ustep[kase]);
-				PSL_command (PSL, "0 %d G ", dy);	/* Move up the baseline */
-				PSL_command (PSL, "%d F%d (%s) %s\n", psl_ip (PSL, small_size), font, sup_txt, op[mode]);	/* Place superscript text */
-				PSL_command (PSL, "/PSL_last_width PSL_last_width (%s) sw sub dup 0 lt {pop 0} if def\n", sup_txt);	/* Compute width of superscript text and see if we must move a bit */
-				PSL_command (PSL, "PSL_last_width %d G ", -dy);	/* Rewind position to orig baseline */
-			}
-			else
-				PSL_command (PSL, "PSL_last_width 0 G ");	/* Undo earlier rewind */
-			while (*ptr != '|') ptr++;	/* Wind until end of @|....| */
-			ptr++;
-			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
-		}
-		else if (ptr[0] == '-') {	/* Subscript */
 			sub_on = !sub_on;
+			if (sub_on) {
+				if (last_sup)	/* Just did a super-script, must reset horizontal position */
+					PSL_command (PSL, "PSL_last_width neg 0 G ");	/* Rewind position to orig baseline */
+				else if (supersub)	/* Need to remember the width of the subscript */
+					PSL_command (PSL, "/PSL_last_width %d F%d (%s) sw def\n", psl_ip (PSL, small_size), font, ptr);	/* Compute width of subscript text */
+				if (ptr[0]) strcpy (previous, ptr);	/* Keep copy of possibly previous text */
+			}
+			else
+				last_sub = (last_sup || ptr[0] == 0) ? supersub : false;	/* Only true when this is a possibility */
 			size = (sub_on) ? small_size : fontsize;
 			dy = (sub_on) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
 			PSL_command (PSL, "0 %d G ", dy);
-			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
-		else if (ptr[0] == '+') {	/* Superscript */
+		else if (ptr[0] == '+') {	/* Superscript toggle */
+			ptr++;
 			super_on = !super_on;
+			if (super_on) {
+				if (last_sub)	/* Just did a sub-script, must reset horizontal position */
+					PSL_command (PSL, "PSL_last_width neg 0 G ");	/* Rewind position to orig baseline */
+				else if (supersub)	/* Need to remember the width of the superscript */
+					PSL_command (PSL, "/PSL_last_width %d F%d (%s) sw def\n", psl_ip (PSL, small_size), font, ptr);	/* Compute width of subscript text */
+				if (ptr[0]) strcpy (previous, ptr);	/* Keep copy of possibly previous text */
+			}
+			else
+				last_sup = (last_sub || ptr[0] == 0) ? supersub : false;	/* Only true when this is a possibility */
 			size = (super_on) ? small_size : fontsize;
 			dy = (super_on) ? psl_ip (PSL, ustep[kase]) : -psl_ip (PSL, ustep[kase]);
 			PSL_command (PSL, "0 %d G ", dy);
-			ptr++;
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '#') {	/* Small caps */
@@ -2042,6 +2027,11 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		if (stop_uline) PSL_command (PSL, "V %d W currentpoint pop /x1_u edef x0_u y0_u %d sub M x1_u x0_u sub 0 D S x1_u y0_u M U\n", upen, ugap);
 		start_uline = stop_uline = false;
 		if (strlen (piece) > 0) {
+			if (last_sub && last_sup) {	/* May possibly need to move currentpoint a bit to the widest piece */
+				PSL_command (PSL, "/PSL_last_width PSL_last_width (%s) sw sub dup 0 lt {pop 0} if def\n", previous);	/* Compute width of superscript text and see if we must move a bit */
+				PSL_command (PSL, "PSL_last_width 0 G ");	/* Rewind position to orig baseline */
+				last_sub = last_sup = false;
+			}
 			PSL_command (PSL, "%d F%d (%s) %s\n", psl_ip (PSL, size), font, piece, op[mode]);
 			last_chr = ptr[strlen(piece)-1];
 			if (!super_on) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
