@@ -1164,10 +1164,12 @@ int grdgravmag3d_body_set_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, 
 
 
 /* -----------------------------------------------------------------------------------*/
+#ifdef HAVE_GLIB_GTHREAD
 static void *thread_function (void *args) {
 	grdgravmag3d_calc_surf_ ((struct THREAD_STRUCT *)args);
 	return NULL;
 }
+#endif
 
 void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 	/* Do the actual work. This function is called in either threaded and non-threaded cases. */
@@ -1216,7 +1218,7 @@ void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 
 	/* For Bhattacharya, select which component */
 	pm = (Ctrl->H.f_tot) ? 0 : ((Ctrl->H.x_comp) ? 1 : ((Ctrl->H.y_comp) ? 2 : ((Ctrl->H.z_comp) ? 3 : ((Ctrl->H.h_comp) ? 4 : 0)) ));
-	if (Ctrl->H.bhatta) pm = MAX(0,pm - 1);		/* TEMP TEMP TEMP. Will crash if h_comp */
+	if (Ctrl->H.bhatta && pm > 0) pm = pm - 1;		/* TEMP TEMP TEMP. Will crash if h_comp */
 
 	s_rad2 = Ctrl->S.radius * Ctrl->S.radius;
 
@@ -1355,7 +1357,6 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Grid->header->ny - 1 - indf) / GMT->common.x.n_threads);
    		if (i == GMT->common.x.n_threads - 1) threadArg[i].r_stop = Grid->header->ny - 1 + indf;	/* Make sure last row is not left behind */
-   		//fprintf(stderr, "MERDA2 %d\tstart = %d\tstop = %d\n", i, threadArg[i].r_start, threadArg[i].r_stop);
 		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
 	}
 
