@@ -616,7 +616,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
-				if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, n_smts, map, inv_scale, in)) continue;
+				if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
 				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 					a = in[3];		/* Semi-major axis */
@@ -689,7 +689,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
-					if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, n_smts, map, inv_scale, in)) continue;
+					if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
 					
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
