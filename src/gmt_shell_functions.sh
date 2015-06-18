@@ -77,22 +77,23 @@ gmt_get_gridregion() {
 	printf "%s/%s/%s/%s\n" `gmt grdinfo -C $* | cut -d'	' -f2-5`
 }
 
+# 4 obsolete but backwards compatible functions in use before -W was introduced in mapproject 5.2:
 #	Return the current map width (expects -R and -J settings)
 gmt_get_map_width() {
-	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $5}'
+	gmt mapproject $* -Ww
 }
 #	Same with backwards compatible name...
 gmt_map_width() {
-	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $5}'
+	gmt mapproject $* -Ww
 }
 
 #	Return the current map height (expects -R and -J settings)
 gmt_get_map_height() {
-	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $7}' | cut -f1 -d' '
+	gmt mapproject $* -Wh
 }
 #	ame with backwards compatible name...
 gmt_map_height() {
-	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $7}' | cut -f1 -d' '
+	gmt mapproject $* -Wh
 }
 
 # Make output PostScript file name based on script base name

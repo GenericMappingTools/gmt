@@ -25,6 +25,7 @@ Synopsis
 [ **-Q**\ [**d**\ \|\ **e** ] [ **-S** ]
 [ **-T**\ [**h**\ ]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
+[ **-W**\ [**w**\ \|\ **h**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -155,6 +156,11 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+**-W**\ [**w**\ \|\ **h**]
+    Prints map width and height on standard output.  No input files are read.
+    To only output the width or the height, append **w** or **h**, respectively.
+    The units of the dimensions may be changed via **-D**.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_

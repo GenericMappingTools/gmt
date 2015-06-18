@@ -107,6 +107,10 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
+	struct W {	/* -W[w|h] */
+		bool active;
+		unsigned int mode;	/* 0 = print width & height, 1 print width, 2 print height */
+	} W;
 };
 
 void *New_mapproject_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -138,7 +142,7 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]]\n\t[-G[-|+][<lon0>/<lat0>/][<unit>][+|-]", GMT_DIM_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, " [-I] [-L<ltable>[/[+|-]<unit>]][+] [-N[a|c|g|m]]\n\t[-Q[e|d]] [-S] [-T[h]<from>[/<to>] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_d_OPT);
+	GMT_Message (API, GMT_TIME_NONE, " [-I] [-L<ltable>[/[+|-]<unit>]][+] [-N[a|c|g|m]]\n\t[-Q[e|d]] [-S] [-T[h]<from>[/<to>] [%s] [-W[w|h]] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_d_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -191,6 +195,9 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <from> = - means WGS-84.  If /<to> is not given we assume WGS-84.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -T can be used as pre- or post- (-I) processing for -J -R.\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -W prints map width and height. No input files are read. See -D for units.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append w or h to just print width or height, respectively.\n");
 	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,p,s,:,.");
 
 	return (EXIT_FAILURE);
@@ -374,6 +381,11 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 					strncpy (from, &opt->arg[k], GMT_LEN256);
 				}
 				n_errors += GMT_check_condition (GMT, GMT_set_datum (GMT, to, &Ctrl->T.to) == -1 || GMT_set_datum (GMT, from, &Ctrl->T.from) == -1, "Syntax error -T: Usage -T[h]<from>[/<to>]\n");
+				break;
+			case 'W':
+				Ctrl->W.active = true;
+				if (opt->arg[0] == 'w') Ctrl->W.mode = 1;
+				else if (opt->arg[0] == 'h') Ctrl->W.mode = 2;
 				break;
 
 			default:	/* Report bad options */
@@ -559,6 +571,36 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		}
 	}
 	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
+	
+	if (Ctrl->W.active) {	/* Print map dimensions and exit */
+		double w_out[2] = {0.0, 0.0};
+		switch (Ctrl->W.mode) {
+			case 1:
+				GMT_Report (API, GMT_MSG_VERBOSE, "Reporting map width in %s\n", unit_name);
+				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;	n_output = 1;	break;
+			case 2:
+				GMT_Report (API, GMT_MSG_VERBOSE, "Reporting map height in %s\n", unit_name);
+				w_out[GMT_X] = GMT->current.proj.rect[YHI] * inch_to_unit;	n_output = 1;	break;
+			default:
+				GMT_Report (API, GMT_MSG_VERBOSE, "Reporting map width and height in %s\n", unit_name);
+				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;
+				w_out[GMT_Y] = GMT->current.proj.rect[YHI] * inch_to_unit;
+				n_output = 2;
+			break;
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if ((error = GMT_set_cols (GMT, GMT_OUT, n_output))) Return (error);
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		GMT_Put_Record (API, GMT_WRITE_DOUBLE, w_out);	/* Write this to output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
+		Return (GMT_OK);
+	}
 
 	if (Ctrl->G.unit == 'X') GMT_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 	if (Ctrl->L.unit == 'X') GMT_set_cartesian (GMT, GMT_IN);	/* Cartesian */
