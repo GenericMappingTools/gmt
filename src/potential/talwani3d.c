@@ -126,8 +126,7 @@ void Free_talwani3d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* D
 
 int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_OPTION *options)
 {
-	unsigned int side, k, n_errors = 0;
-	bool both;
+	unsigned int k, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
