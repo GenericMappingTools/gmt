@@ -325,8 +325,8 @@ void disc_area_volume_height (double a, double b, double h, double hc, double f,
 	/* Compute area and volume of circular or elliptical disc "seamounts" (more like plateaus).
 	 * Here, f is not used; ignore compiler warning. */
 
-	GMT_UNUSED(f);
 	double r2;
+	GMT_UNUSED(f);
 
 	r2 = a * b;
 	*A = M_PI * r2;

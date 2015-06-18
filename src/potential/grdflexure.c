@@ -329,8 +329,8 @@ void setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct G
 	   rw, the water density, is used to set the Airy ratio and the restoring
 	   force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air (ri changed to rl).
 	*/
-	GMT_UNUSED(K);
 	double  A = 1.0, rho_load, rigidity_d;
+	GMT_UNUSED(K);
 
 	/*   te	 Elastic thickness, SI units (m)  */
 	/*   rl	 Load density, SI units  */

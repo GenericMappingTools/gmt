@@ -3043,7 +3043,7 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 		side[i] = PSL_vec_side (status, i);		  /* -1 = left-only, +1 = right-only, 0 = normal head for this end */
 		tangle[i] = angle[i];	/* Angle if no head is present */
 		off[i] = (kind[i] == PSL_VEC_ARROW) ? sign[i]*da*(1.0-0.5*shape) : 0.0;		/* Arc length from tip to backstop */
-		if ((heads & (i+1)) && side && kind[i] == PSL_VEC_CIRCLE) off[i] -= 0.5 * sign[i] * da_c;
+		if ((heads & (i+1)) && side[i] && kind[i] == PSL_VEC_CIRCLE) off[i] -= 0.5 * sign[i] * da_c;
 		if (heads & (i+1)) tangle[i] += off[i];	/* Change arc angle by headlength or half-circle arc */
 	}
 	side[0] = -side[0];	/* Because of it was initially implemented */

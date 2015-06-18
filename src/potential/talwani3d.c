@@ -165,15 +165,18 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 				}
 				break;
 			case 'M':	/* Length units */
-				both = false;	side = 0;
-				switch (opt->arg[0]) {
-					case 'h': side = TALWANI3D_HOR; break;
-					case 'z': side = TALWANI3D_VER; break;
-					default:  both = true; break;
+				k = 0;
+				while (opt->arg[k]) {
+					switch (opt->arg[k]) {
+						case 'h': Ctrl->M.active[TALWANI3D_HOR] = true; break;
+						case 'z': Ctrl->M.active[TALWANI3D_VER] = true; break;
+						default:
+							n_errors++;
+							GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
+							break;
+					}
+					k++;
 				}
-				k = (both) ? 0 : 1;	/* Offset in string */
-				Ctrl->M.active[side] = true;
-				if (both) Ctrl->M.active[TALWANI3D_VER] = Ctrl->M.active[TALWANI3D_HOR];
 				break;
 			case 'N':
 				Ctrl->N.active = true;

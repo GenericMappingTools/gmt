@@ -1960,8 +1960,8 @@ void GMT_copy_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct GM
 /*! . */
 struct GMT_PALETTE * GMT_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_from, unsigned int mode)
 {	/* Mode not used yet */
-	GMT_UNUSED(mode);
 	struct GMT_PALETTE *P = GMT_create_palette (GMT, P_from->n_colors);
+	GMT_UNUSED(mode);
 	GMT_copy_palette (GMT, P, P_from);
 	return (P);
 }

@@ -1361,8 +1361,8 @@ void GMTAPI_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, 
 
 /*! Split a combined method/via enum into two array indices for use with GMT_method[] and GMT_via[] */
 enum GMT_enum_method GMTAPI_split_via_method (struct GMTAPI_CTRL *API, enum GMT_enum_method method, unsigned int *via) {
-	GMT_UNUSED(API);
 	enum GMT_enum_method m;
+	GMT_UNUSED(API);
 	switch (method) {
 		case GMT_IS_DUPLICATE_VIA_VECTOR:
 			m = GMT_IS_DUPLICATE;
@@ -6372,7 +6372,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 * the information passed back via the structure list to attach actual resources.
 	 */
 
-	unsigned int n_keys, direction, PS, kind, pos, n_items = 0;
+	unsigned int n_keys, direction, PS, kind, pos, n_items = 0, ku;
 	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
 	int family;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
@@ -6535,12 +6535,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	/* Done processing references that were explicitly given in the options.  Now determine if module
 	 * has required input or output references that we must add (if not specified explicitly above) */
 	
-	for (k = 0; k < n_keys; k++) {	/* Each set of keys specifies if the item is required via the 3rd key letter */
-		if (isupper (key[k][K_DIR])) {	/* Required input|output that was not specified explicitly above */
+	for (ku = 0; ku < n_keys; ku++) {	/* Each set of keys specifies if the item is required via the 3rd key letter */
+		if (isupper (key[ku][K_DIR])) {	/* Required input|output that was not specified explicitly above */
 			char str[2] = {0,0};
 			str[0] = marker;
-			direction = GMTAPI_key_to_family (API, key[k], &family, &geometry);
-			new_ptr = GMT_Make_Option (API, key[k][K_OPT], str);	/* Create new option with filename "$" */
+			direction = GMTAPI_key_to_family (API, key[ku], &family, &geometry);
+			new_ptr = GMT_Make_Option (API, key[ku][K_OPT], str);	/* Create new option with filename "$" */
 			/* Append the new option to the list */
 			*head = GMT_Append_Option (API, new_ptr, *head);
 			info[n_items].option    = new_ptr;
@@ -6549,10 +6549,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			info[n_items].direction = direction;
 			info[n_items].pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
 			GMT_Report (API, GMT_MSG_DEBUG, "%s: Must add -%c%c as implicit memory reference to %s argument # %d\n",
-				S[direction], key[k][K_OPT], marker, LR[direction], info[n_items].pos);
+				S[direction], key[ku][K_OPT], marker, LR[direction], info[n_items].pos);
 			n_items++;
 		}
-		free (key[k]);	/* Free up this key */
+		free (key[ku]);	/* Free up this key */
 	}
 	/* Free up the temporary key array */
 	free (key);

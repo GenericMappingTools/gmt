@@ -273,12 +273,12 @@ double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILT
 	 * from binning unweighted data with the specified width. We check if we find more
 	 * than one mode and return the chosen one as per the settings. */
 
-	GMT_UNUSED(GMT);
 	double value = 0.0;
 	uint64_t i;
 	unsigned int n_modes = 0, mode_count = 0, ubin;
 	int bin, mode_bin = 0;
 	bool done;
+	GMT_UNUSED(GMT);
 
 	GMT_memset (B->icount, B->n_bins, unsigned int);	/* Reset the counts */
 	for (i = 0; i < n; i++) {	/* Loop over data points */

@@ -319,7 +319,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	
 	uint64_t ij;
 
-	double tmp, x, y, plot_x, plot_y, x_off, y_off, f, h_length = 0.0, h_width = 0.0, v_width = 0.0;
+	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
 	double x2, y2, wesn[4], vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
@@ -491,9 +491,6 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	dim[6] = (double)Ctrl->Q.S.v.status;
 	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
 	
-	if (Geographic) {
-		v_width = Ctrl->Q.S.v.v_width;	h_length = Ctrl->Q.S.v.h_length;	h_width = Ctrl->Q.S.v.h_width;	
-	}
 	PSL_command (GMT->PSL, "V\n");
 	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {
 		y = GMT_grd_row_to_y (GMT, row, Grid[0]->header);

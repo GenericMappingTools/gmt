@@ -162,7 +162,13 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 					default:		both = true; break;
 				}
 				k = (both) ? 0 : 1;	/* Offset to <bc> argument */
-				Ctrl->A.bc[side] = atoi (&opt->arg[k]);
+				n = atoi (&opt->arg[k]);
+				if (n < BC_INFINITY || n > BC_FREE) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: <bc> must be in 1-4 range\n");
+					n_errors++;
+					break;
+				}
+				Ctrl->A.bc[side] = (unsigned int)n;
 				if (Ctrl->A.bc[side] == BC_CLAMPED)	/* Get clamped deflection */
 					Ctrl->A.deflection[side] = (opt->arg[k+2]) ? atof (&opt->arg[k+2]) : 0.0;
 				else if (Ctrl->A.bc[side] == BC_FREE) {	/* Get bending moment and shear force */
@@ -272,7 +278,6 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error -E option: Must specify plate thickness or rigidity\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "Syntax error -Q option: Must specify load option\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Syntax error -Q option: Must specify equidistant min/max/inc setting\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->A.bc[LEFT] < BC_INFINITY || Ctrl->A.bc[LEFT] > BC_FREE) || (Ctrl->A.bc[RIGHT] < BC_INFINITY || Ctrl->A.bc[RIGHT] > BC_FREE), "Syntax error -A option: <bc> must be in 1-4 range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

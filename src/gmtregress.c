@@ -410,9 +410,9 @@ double get_scale_factor (unsigned int regression, double slope)
 double L1_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope)
 {	/* Compute L1 misfit from y-residuals ey and weights W for regression x|y|o|r.
 	 * Since W contains squared weights and we use a linear sum we take sqrt(W) below */
-	GMT_UNUSED(GMT);
 	uint64_t k;
 	double f, E = 0.0;
+	GMT_UNUSED(GMT);
 	f = get_scale_factor (regression, slope);
 	for (k = 0; k < n; k++) E += fabs (sqrt (W[k]) * ey[k]);
 	return (f * E / (n-2));
@@ -420,9 +420,9 @@ double L1_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsig
 
 double L2_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope)
 {	/* Compute L2 misfit from y-residuals ey and weights W for regression x|y|o|r */
-	GMT_UNUSED(GMT);
 	uint64_t k;
 	double f, E = 0.0;
+	GMT_UNUSED(GMT);
 	f = get_scale_factor (regression, slope);
 	for (k = 0; k < n; k++) E += W[k] * ey[k] * ey[k];	/* Basically a chi-squared sum */
 	return (f * f * E / (n-2));	/* f^2 since E was computed from squared misfits */
@@ -442,10 +442,10 @@ double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsi
 
 double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par)
 {	/* L1 regression scale estimate is weighted median absolute residual */
-	GMT_UNUSED(GMT); GMT_UNUSED(par);
 	uint64_t k;
 	double MAD;
 	struct GMT_OBSERVATION *ee = NULL;
+	GMT_UNUSED(GMT); GMT_UNUSED(par);
 	/* Compute the (weighted) MAD */
 	ee = GMT_memory (GMT, NULL, n, struct GMT_OBSERVATION);
 	for (k = 0; k < n; k++) {
@@ -459,8 +459,8 @@ double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double
 
 double L2_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par)
 {	/* LS scale estimate as weighted average residual */
-	GMT_UNUSED(GMT); GMT_UNUSED(ey);
 	double W_sum, scale;
+	GMT_UNUSED(GMT); GMT_UNUSED(ey);
 	W_sum = gmt_sum (W, n);
 	scale = sqrt ((n-2)*par[GMTREGRESS_MISFT] / W_sum);	/* Undo the previous (n-2) division */
 	return (scale);
@@ -468,8 +468,8 @@ double L2_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double
 
 double LMS_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par)
 {	/* LMS scale estimate as per Rousseuuw & Leroy [1987] */
-	GMT_UNUSED(GMT); GMT_UNUSED(ey); GMT_UNUSED(W);
 	double scale;
+	GMT_UNUSED(GMT); GMT_UNUSED(ey); GMT_UNUSED(W);
 	scale = 1.4826 * (1.0 + 5.0 / (n - 2.0)) * sqrt (par[GMTREGRESS_MISFT]);
 	return (scale);
 }
@@ -514,8 +514,8 @@ double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], u
 	 * (and alpha, beta if orthogonal).  If orthogonal regression we expect a preliminary estimate of the
 	 * slope to be present in par[GMTREGRESS_SLOPE].  Return weight sum S.  This function carries out many of
 	 * the steps in York et al [2004]. */
-	GMT_UNUSED(GMT);
 	double S;
+	GMT_UNUSED(GMT);
 	
 	if (w && w[GMT_X] && w[GMT_Y]) {	/* Orthogonal regression with x/y weights [and optionally x-y correlations] requested */
 		double corr_i = 0.0, alpha_i, w_xy;
@@ -660,10 +660,10 @@ double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_
 double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par)
 {	/* Basic LS RMA orthogonal regression with no weights [Reference?] */
 	uint64_t k;
-	double mx, sx, my, sy, S, scale;
+	double mx, sx, my, sy, scale;
 	double *U = GMT_memory (GMT, NULL, n, double), *V = GMT_memory (GMT, NULL, n, double), *W = GMT_memory (GMT, NULL, n, double);
 	GMT_memset (par, GMTREGRESS_NPAR, double);
-	S = gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
+	(void)gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
 	mx = GMT_mean_and_std (GMT, U, n, &sx);
 	my = GMT_mean_and_std (GMT, V, n, &sy);
 	fprintf (stderr, "mx and my should be zero: %g %g\n", mx, my);
@@ -727,7 +727,7 @@ double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint6
 	unsigned int n_iter = 0;
 	bool done = false, weighted = false;
 	char buffer[GMT_BUFSIZ] = {""};
-	double a_min = -90.0, a_max = 90.0, angle, r_a, d_a, f, last_E = DBL_MAX, S, scale, tpar[GMTREGRESS_NPAR];
+	double a_min = -90.0, a_max = 90.0, angle, r_a, d_a, f, last_E = DBL_MAX, scale, tpar[GMTREGRESS_NPAR];
 	double *U = GMT_memory (GMT, NULL, n, double), *V = GMT_memory (GMT, NULL, n, double);
 	double *W = GMT_memory (GMT, NULL, n, double), *e = GMT_memory (GMT, NULL, n, double);
 	double (*scl_func) (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par);
@@ -740,7 +740,7 @@ double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint6
 	
 	GMT_memset (par,  GMTREGRESS_NPAR, double);	/* Reset all regression parameters */
 	GMT_memset (tpar, GMTREGRESS_NPAR, double);	/* Reset all test regression parameters */
-	if (regression != GMTREGRESS_XY) S = gmt_demeaning (GMT, x, y, w, n, tpar, U, V, W, NULL, NULL);	/* Do this once except for orthogonal */
+	if (regression != GMTREGRESS_XY) (void)gmt_demeaning (GMT, x, y, w, n, tpar, U, V, W, NULL, NULL);	/* Do this once except for orthogonal */
 	par[GMTREGRESS_MISFT] = DBL_MAX;	/* Initally we have no fit */
 	weighted = (regression == GMTREGRESS_X) ? (w && w[GMT_X]) : (w && w[GMT_Y]);	/* true if weights were provided */
 	while (!done) {	/* Keep iterating and zooming in on smaller angle-ranges until misfit is very small */
@@ -750,7 +750,7 @@ double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint6
 			angle = a_min + d_a * k;		/* This is the current slope angle */
 			if (regression == GMTREGRESS_XY) {	/* Since W depends on slope we must recompute W each time in this loop */
 				tpar[GMTREGRESS_SLOPE] = tand (angle);
-				S = gmt_demeaning (GMT, x, y, w, n, tpar, U, V, W, NULL, NULL);
+				(void)gmt_demeaning (GMT, x, y, w, n, tpar, U, V, W, NULL, NULL);
 			}
 			regress1D_sub (GMT, U, V, W, e, n, regression, norm, weighted, angle, tpar);	/* Solve for best intercept given this slope */
 			if (tpar[GMTREGRESS_MISFT] < par[GMTREGRESS_MISFT])
@@ -1104,16 +1104,16 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 			
 			if (Ctrl->A.active) {	/* Explore E vs slope only - no final best regression is returned */
 				uint64_t min_row;
-				double angle, min_E = DBL_MAX, W_sum;
+				double angle, min_E = DBL_MAX;
 				bool weighted = (Ctrl->E.mode == GMTREGRESS_X) ? (w[GMT_X]) : (w[GMT_Y]);	/* true if these pointers are not NULL */
 				
 				/* Determine x/y means, compute reduced coordinates U,V and return proper weights W once, unless orthogonal regression was selected */
-				if (Ctrl->E.mode != GMTREGRESS_XY) W_sum = gmt_demeaning (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
+				if (Ctrl->E.mode != GMTREGRESS_XY) (void)gmt_demeaning (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
 				for (row = 0; row < n_try; row++) {	/* For each new slope candidate */
 					angle = Ctrl->A.min + row * Ctrl->A.inc;	/* Current slope in degrees */
 					if (Ctrl->E.mode == GMTREGRESS_XY) {	/* Since W depends on slope when doing orthogonal regression we must recompute W for each slope */
 						par[GMTREGRESS_SLOPE] = tand (angle);
-						W_sum = gmt_demeaning (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
+						(void)gmt_demeaning (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
 					}
 					regress1D_sub (GMT, U, V, W, e, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, weighted, angle, par);	/* Solve for best intercept given this slope */
 					if (par[GMTREGRESS_MISFT] < min_E) {	/* Update best fit so far */

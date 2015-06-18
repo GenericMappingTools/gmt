@@ -292,8 +292,8 @@ struct GMT_GRID * alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Templ
 
 int grdmath_find_stored_item (struct GMT_CTRL *GMT, struct GRDMATH_STORE *recall[], int n_stored, char *label)
 {
-	GMT_UNUSED(GMT);
 	int k = 0;
+	GMT_UNUSED(GMT);
 	while (k < n_stored && strcmp (recall[k]->label, label)) k++;
 	return (k == n_stored ? -1 : k);
 }
@@ -404,10 +404,10 @@ void grd_ARC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	Kurt Feigl 2014-AUG-10
 	*/
 {
-	GMT_UNUSED(GMT);
 	uint64_t node;
 	unsigned int prev = last - 1;
 	double a, b;
+	GMT_UNUSED(GMT);
 
 	for (node = 0; node < info->size; node++) {
 
@@ -3455,9 +3455,9 @@ Function: float roundf (float x) These functions are similar to rint, but they r
 away from zero instead of to the nearest integer (or other current rounding mode).
 */
 {
-	GMT_UNUSED(GMT);
 	uint64_t node;
 	double a;
+	GMT_UNUSED(GMT);
 
 	for (node = 0; node < info->size; node++) {
 		/* Argument must be finite  */
