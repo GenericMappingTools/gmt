@@ -452,7 +452,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
-		Geo->header->ProjRefPROJ4 = "+proj=longlat +no_defs";	/* HOWEVER, this may be quite incorrect for we are ignoring the DATUM */
+		Geo->header->ProjRefPROJ4 = strdup("+proj=longlat +no_defs");	/* HOWEVER, this may be quite incorrect for we are ignoring the DATUM */
 
 		GMT_grd_project (GMT, Rect, Geo, true);
 
