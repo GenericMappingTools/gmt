@@ -688,7 +688,6 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				dim[XLO] += 0.5*off;
 				dim[XHI] += MAX (u_off, 0.5*off);	/* Half the x-label may extend outside */
 			}
-			dim[XLO] += 0.5*off;	/* Half the label may extend outside */
 			x_center = 0.5 * length + 0.5 * (dim[XHI] - dim[XLO]); y_center = 0.5 * width + 0.5 * (dim[YHI] - dim[YLO]);
 			panel->width = length + dim[XHI] + dim[XLO];	panel->height = width + dim[YHI] + dim[YLO];
 		}
