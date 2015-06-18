@@ -34,14 +34,23 @@ several other options are available:
 **-**\ **-help**
     List and description of GMT modules.
 
-**-**\ **-version**
-    Print version and exit.
-
-**-**\ **-show-datadir**
-    Show data directory and exit.
+**-**\ **-show-cores**
+    Show number of available cores.
 
 **-**\ **-show-bindir** 
     Show directory of executables and exit.
+
+**-**\ **-show-datadir**
+    Show data directory/ies and exit.
+
+**-**\ **-show-plugindir**
+    Show plugin directory and exit.
+
+**-**\ **-show-sharedir**
+    Show share directory and exit.
+
+**-**\ **-version**
+    Print version and exit.
 
 **=**
     Check if that module exist and if so the

@@ -144,7 +144,7 @@ int main (int argc, char *argv[]) {
 
 			/* Show share directory */
 			if (!strcmp (argv[arg_n], "--show-datadir")) {
-				fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
+				fprintf (stdout, "%s\n", api_ctrl->GMT->session.DATADIR);
 				goto exit;
 			}
 
@@ -159,6 +159,13 @@ int main (int argc, char *argv[]) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_plugindir);
 				goto exit;
 			}
+			
+			/* Show share directory */
+			if (!strcmp (argv[arg_n], "--show-sharedir")) {
+				fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
+				goto exit;
+			}
+
 		} /* for (arg_n = 1; arg_n < argc; ++arg_n) */
 
 		/* If we get here, we were called without a recognized modulename or option
@@ -179,15 +186,16 @@ no_such:
 		fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 		fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 		fprintf (stderr, "options:\n");
-		fprintf (stderr, "  --help            List a description of GMT modules.\n");
-		fprintf (stderr, "  --version         Print version number.\n");
+		fprintf (stderr, "  --help            List a description of available GMT modules.\n");
+		fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 		fprintf (stderr, "  --show-cores      Show number of available cores.\n");
-		fprintf (stderr, "  --show-datadir    Show directory of data.\n");
-		fprintf (stderr, "  --show-bindir     Show directory of executables.\n");
-		fprintf (stderr, "  --show-plugindir  Show directory of plug-ins.\n\n");
+		fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
+		fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
+		fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");
+		fprintf (stderr, "  --version         Print GMT version number.\n\n");
 		fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 		if (modulename_arg_n == 1 && module[0] != '-') {
-			fprintf (stderr, "ERROR: No module named %s was found.  This could mean:\n", module);
+			fprintf (stderr, "ERROR: No module named %s was found.  This could mean one of three things:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; check your spelling.\n");
 			if (strlen (GMT_SUPPL_LIB_NAME))
 				fprintf (stderr, "  2. Module exists in the GMT supplemental library, but the library could not be found.\n");
