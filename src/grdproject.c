@@ -544,6 +544,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		free(Rect->header->ProjRefPROJ4);
+		Rect->header->ProjRefPROJ4 = NULL;
 	}
 
 	Return (GMT_OK);
