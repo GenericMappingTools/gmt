@@ -270,13 +270,13 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
 
-		if (G->header->ProjRefPROJ4)
+		if (G->header->ProjRefPROJ4 && !Ctrl->C.active)
 			projStr = strdup(G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
-		else if (G->header->ProjRefWKT) 
+		else if (G->header->ProjRefWKT && !Ctrl->C.active) 
 			projStr = strdup(G->header->ProjRefWKT);
-		
+
 		for (n = 0; n < GMT_Z; n++) GMT->current.io.col_type[GMT_OUT][n] = GMT->current.io.col_type[GMT_IN][n];	/* Since grids may differ in types */
-		
+
 		n_grds++;
 
 		if (Ctrl->M.active || Ctrl->L.active || subset) {	/* Need to read the data (all or subset) */
@@ -284,7 +284,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		
+
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			uint64_t ij_min, ij_max;
 			unsigned int col, row;
@@ -630,10 +630,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
 
-	if (projStr) {		/* Print the referencing info */
+	if (!Ctrl->C.active && projStr) {		/* Print the referencing info */
 		GMT_Put_Record (API, GMT_WRITE_TEXT, projStr);
 		free(projStr);
-		projStr = NULL;
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
