@@ -43,7 +43,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-VRfhio"
+#define GMT_PROG_OPTIONS "-VRfhior"
 
 #define TOL		1.0e-7
 #define DEG_TO_KM	111.319490793
@@ -209,28 +209,32 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d -G<outfile> [-A] [-D<rhom>] [-Ff|v] [-M[hz]]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-N<trktable>] [%s] [-Z<level|grid>]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d -G<outfile> [-A] [-D<rho>] [-Ff|v] [%s] [-M[hz]] [-N<trktable>]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Z<level>] [%s] \n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tmodelfile is a multiple-segment ASCII file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is down].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides setting in model file, in kg/m^3.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file, in kg/m^3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f = Free-air anomalies (mGal) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets output file name\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets output grid file name (i.e., when -N is not specified).\n");
+	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x/y-distances are in km [meters]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-distances are in km [meters]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets output locations where a calculation is requested.  No grid\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   is produced and output (x,y[,z],g|v) is written to stdout.\n");
-	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level (either a constant or name of gridfile with levels) [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, else in m [but see -M]h).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   is produced and output (x,y,z,g|v) is written to stdout.\n");
+	GMT_Option (API, "R,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append either a constant or the name of gridfile with levels.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If a grid then it also defines the output grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot use both -Z<grid> and -R -I [-r].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, else in m [but see -Mh]).\n");
 	GMT_Option (API, "h,i,o,r,.");
 	return (EXIT_FAILURE);
 }
@@ -836,12 +840,12 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	/* Set up two work arrays needed by get_one_output */
 	work   = GMT_memory (GMT, NULL, ndepths, double);
 	depths = GMT_memory (GMT, NULL, ndepths, double);
-	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;
+	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
 	
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? 0.001 : 1.0;	/* Perhaps convert to km */
-		double out[3];
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+		double out[4];
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
@@ -859,8 +863,9 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 				for (row = 0; row < S->n_rows; row++) {	/* Loop over output locations */
 					out[GMT_X] = S->coord[GMT_X][row];
 					out[GMT_Y] = S->coord[GMT_Y][row];
-					if (S->n_columns == 3) z_level = S->coord[GMT_Z][row];
-					out[GMT_Z] = get_one_output (out[GMT_X] * scl, out[GMT_Y] * scl, z_level, cake, depths, ndepths, work, Ctrl->F.mode, flat_earth);
+					if (S->n_columns == 3 && !Ctrl->Z.active) z_level = S->coord[GMT_Z][row];
+					out[GMT_Z] = z_level;
+					out[3] = get_one_output (out[GMT_X] * scl, out[GMT_Y] * scl, z_level, cake, depths, ndepths, work, Ctrl->F.mode, flat_earth);
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 			}
