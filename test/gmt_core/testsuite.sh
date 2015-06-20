@@ -9,9 +9,13 @@
 echo -n "gmt location: "
 gmt --show-bindir       | grep "^${GMT_BINARY_DIR}/src$"
 echo -n "sharedir    : "
-gmt --show-datadir     | grep "^${GMT_SHAREDIR}$"
+gmt --show-sharedir     | grep "^${GMT_SHAREDIR}$"
+echo -n "sharedir    : "
+gmt --show-datadir      | grep "^${GMT_DATADIR}$"
 echo -n "gmt gshhg dir   : "
 gmt gmtget DIR_GSHHG    | grep "^${GSHHG_DIR}$"
+echo -n "gmt DCW dir     : "
+gmt gmtget DIR_DCW      | grep "^${DIR_DCW}$"
 
 # compare actual version with expected version
 echo -n "gmt version : "

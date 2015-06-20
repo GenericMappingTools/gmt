@@ -1162,8 +1162,8 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 				/* 3. Evaluate the chosen output columns and write records */
 				
 				for (row = 0; row < n_t; row++) {
+					if (!Ctrl->T.active) outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);	/* Gotta exceed this threshold to be a bad boy */
 					if (Ctrl->S.active) {	/* Restrict the output records */
-						outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);	/* Gotta exceed this threshold to be a bad boy */
 						if (Ctrl->S.mode == GMTREGRESS_OUTPUT_GOOD && outlier) continue;	/* Dont want the outliers */
 						if (Ctrl->S.mode == GMTREGRESS_OUTPUT_BAD && !outlier) continue;	/* Only want the outliers */
 					}
