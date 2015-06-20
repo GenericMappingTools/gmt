@@ -1297,7 +1297,8 @@ int PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset)
 	 *   starting 2 points from current point.
 	 */
 
-	if (PSL_eq(offset,PSL->current.offset) && ((pattern && !strcmp (pattern, PSL->current.style)) || (!pattern && PSL->current.style[0] == '\0'))) return (PSL_NO_ERROR);
+	if (!pattern && PSL->current.style[0] == '\0') return (PSL_NO_ERROR);
+	if (PSL_eq(offset,PSL->current.offset) && (pattern && PSL->current.style[0] && !strcmp (pattern, PSL->current.style))) return (PSL_NO_ERROR);
 	PSL->current.offset = offset;
 	if (pattern)
 		strncpy (PSL->current.style, pattern, PSL_PEN_LEN);
@@ -1386,6 +1387,7 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode)
 	 * rgb[0] = -1: ignore. Do not change pen color. Leave untouched.
 	 * rgb[0] >= 0: rgb is the color with R G B in 0-1 range.
 	 */
+	if (!rgb) return (PSL_NO_ERROR);	/* NULL args to be ignored */
 	if (mode == PSL_IS_FONT) {	/* Internally update font color but set stroke color */
 		PSL_rgb_copy (PSL->current.rgb[mode], rgb);
 		mode = PSL_IS_STROKE;
@@ -3134,7 +3136,7 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 {
 	/* Will make sure that arrow has a finite width in PS coordinates.
-	 * param must hold up to 7 values:
+	 * param must hold up to 9 values:
 	 * param[0] = xtip;		param[1] = ytip;
 	 * param[2] = tailwidth;	param[3] = headlength;	param[4] = headwidth;
 	 * param[5] = headshape;	param[6] = status bit flags

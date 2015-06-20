@@ -875,7 +875,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 							break;
 					}
 				}
-				if (strstr (s, "++") || s[strlen(s)-1] == '+') {	/* Deal with the old-style single "+" to mean header */
+				if (strstr (s, "++") || (s[0] && s[strlen(s)-1] == '+')) {	/* Deal with the old-style single "+" to mean header */
 					Ctrl->Q.header = true;
 					GMT_Report (API, GMT_MSG_NORMAL, "Warning:-Q+ is interpreted as -Q+h\n");
 				}

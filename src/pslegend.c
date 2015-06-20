@@ -973,9 +973,11 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						drawn = true;
 						break;
 
-					case 'S':	/* Symbol record: S dx1 symbol size fill pen [ dx2 text ] */
-						n_scan = sscanf (&line[2], "%s %s %s %s %s %s %[^\n]", txt_a, symbol, size, txt_c, txt_d, txt_b, text);
-						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txt_c))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
+					case 'S':	/* Symbol record: S [dx1 symbol size fill pen [ dx2 text ]] */
+						if (strlen (line) > 2)
+							n_scan = sscanf (&line[2], "%s %s %s %s %s %s %[^\n]", txt_a, symbol, size, txt_c, txt_d, txt_b, text);
+						else	/* No args given means skip to next cell */
+							n_scan = 0;
 						if (column_number%n_columns == 0) {	/* Symbol in first column, also fill row if requested */
 							fillcell (GMT, Ctrl->D.anchor->x, row_base_y-one_line_spacing, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 							row_base_y -= one_line_spacing;
@@ -987,6 +989,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							drawn = true;
 							break;
 						}
+						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txt_c))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 						if (strchr ("LCR", txt_a[0])) {	/* Gave L, C, or R justification relative to current cell */
 							justify = GMT_just_decode (GMT, txt_a, 0);
 							off_ss = (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.dx : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));

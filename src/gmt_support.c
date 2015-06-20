@@ -4494,7 +4494,7 @@ void GMT_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
-		for (j = 0; j < L->n_labels; j++) GMT_free (GMT, L->L[j].label);
+		for (j = 0; j < L->n_labels; j++) if (L->L[j].label) GMT_free (GMT, L->L[j].label);
 		if (L->L) GMT_free (GMT, L->L);
 		GMT_free (GMT, L->x);
 		GMT_free (GMT, L->y);

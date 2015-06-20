@@ -1380,7 +1380,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode,
 		GMT->current.map.frame.draw, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
-		Ctrl->L.interval, Ctrl->M.active, Ctrl->F.active, &Ctrl->F.panel);
+		Ctrl->L.interval, Ctrl->M.active, Ctrl->F.active, &(Ctrl->F.panel));
 	PSL_setorigin (PSL, -Ctrl->D.anchor->x, -Ctrl->D.anchor->y, 0.0, PSL_FWD);
 	GMT_plane_perspective (GMT, -1, 0.0);
 

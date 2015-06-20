@@ -690,6 +690,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		else if (not_global)
 			GMT_free_dataset (GMT, &D);
 	}
+	if (Ctrl->T.value) GMT_free (GMT, Ctrl->T.value);
 	if (D && GMT_Destroy_Data (API, &D) != GMT_OK)
 		Return (API->error);
 	if (Dr && GMT_Destroy_Data (API, &Dr) != GMT_OK)

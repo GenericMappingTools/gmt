@@ -1133,7 +1133,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 				}
 			}
 			else {	/* Here we are solving for the best regression */
-				bool outlier;
+				bool outlier = false;
 				double *z_score = do_regression (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, par, 0);	/* The heavy work happens here */
 				/* Make segment header with the findings for best regression */
 				sprintf (buffer, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
@@ -1162,8 +1162,8 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 				/* 3. Evaluate the chosen output columns and write records */
 				
 				for (row = 0; row < n_t; row++) {
-					outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);	/* Gotta exceed this threshold to be a bad boy */
 					if (Ctrl->S.active) {	/* Restrict the output records */
+						outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);	/* Gotta exceed this threshold to be a bad boy */
 						if (Ctrl->S.mode == GMTREGRESS_OUTPUT_GOOD && outlier) continue;	/* Dont want the outliers */
 						if (Ctrl->S.mode == GMTREGRESS_OUTPUT_BAD && !outlier) continue;	/* Only want the outliers */
 					}

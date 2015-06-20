@@ -3015,7 +3015,8 @@ void gmt_Nstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0
 void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr)
 {	/* Magnetic compass rose */
 	unsigned int i, k, level, just, ljust[4] = {10, 5, 2, 7}, n_tick, form;
-	double ew_angle, angle, R[2], tlen[3], L, s, c, x[5], y[5], xp[5], yp[5], offset, t_angle, scale[2], base, *val = NULL, dim[PSL_MAX_DIMS];
+	double ew_angle, angle, R[2], tlen[3], L, s, c, x[5], y[5], xp[5], yp[5];
+	double offset, t_angle, scale[2], base, *val = NULL, dim[PSL_MAX_DIMS];
 	char label[16];
 	struct GMT_FILL f;
 
@@ -3145,7 +3146,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 {
 	unsigned int i, kind, form, just[4] = {10, 5, 2, 7};
 	int k;
-	double angle, L[4], R[4], x[8], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
+	double angle, L[4], R[4], x[PSL_MAX_DIMS], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	struct GMT_FILL f;
 
 	/* Initialize fill structure */
@@ -3195,7 +3196,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 	}
 	else {			/* Plain North arrow w/circle */
 		sincosd (angle, &s, &c);
-		GMT_memset (x, 8, double);
+		GMT_memset (x, PSL_MAX_DIMS, double);
 		x[0] = x[1] = x[4] = 0.0, x[2] = -0.25 * mr->size, x[3] = -x[2];
 		y[0] = -0.5 * mr->size, y[1] = -y[0], y[2] = y[3] = 0.0; y[4] = y[1] + GMT->current.setting.map_annot_offset[0];
 		GMT_rotate2D (GMT, x, y, 5, mr->x0, mr->y0, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
@@ -3262,7 +3263,7 @@ void GMT_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	 * mode = 1.  Lay down fills for background (if any fills) but no outlines
 	 * mode = 2.  Just draw any outlines requested
 	 * mode = 3.  Do both at the same time. */
-	double dim[3];
+	double dim[3] = {0.0, 0.0, 0.0};
 	int outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
 	struct GMT_FILL *fill = NULL;	/* Default is no fill */
 	

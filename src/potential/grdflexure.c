@@ -1017,6 +1017,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		This_Load = Load[t_load];	/* Short-hand for current load */
 		if (This_Load == NULL) continue;	/* Quietly skip containers with no grids */
 		GMT_Destroy_Data (API, &This_Load->Grid);
+		if (This_Load->K->info) GMT_free (GMT, This_Load->K->info);
 		GMT_free (GMT, This_Load->K);
 		if (This_Load->Time) GMT_free (GMT, This_Load->Time);
 		GMT_free (GMT, This_Load);
