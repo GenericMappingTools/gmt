@@ -10,9 +10,9 @@ ps=cyltest.ps
 # This works out to a factor of 0.992386602589:
 corr=`gmt math -Q 25000 2 POW 5084 1333 SUB MUL 25000 25 2 DIV ADD 2 POW 5084 1333 SUB 25 ADD MUL DIV =`
 gmt math -T-100/100/1 0 = trk
-gmt talwani3d "${src:-.}"/cylinder.mod -D1670 -Mh -Ntrk -o0,2 > faa.txt
-gmt talwani3d "${src:-.}"/cylinder.mod -D1670 -Mh -Ntrk -o0,2 -Fp > vgg_p.txt
-gmt talwani3d "${src:-.}"/cylinder.mod -D1670 -Mh -Ntrk -o0,2 -Fv > vgg_s.txt
+gmt talwani3d "${src:-.}"/cylinder.mod -D1670 -Mh -Ntrk -o0,3 > faa.txt
+gmt talwani3d "${src:-.}"/cylinder.mod -D1670 -Mh -Ntrk -o0,3 -Fp > vgg_p.txt
+gmt talwani3d "${src:-.}"/cylinder.mod -D1670 -Mh -Ntrk -o0,3 -Fv > vgg_s.txt
 gmt math -T-100/250/350 -25 = > tmp
 gmt math -T-100/250/350 -I 25  = >> tmp
 gmt psxy -R-100/100/-100/250 -JX6i/6i -P -Glightgray tmp -: -K -Xc -Y4i > $ps

@@ -9,9 +9,9 @@ ps=sphtest.ps
 R=2000
 z0=4000
 gmt math -T-25/25/0.2 0 = trk
-gmt talwani3d "${src:-.}"/sphere.mod -D1670 -Mh -Ntrk -o0,2 > faa.txt
-gmt talwani3d "${src:-.}"/sphere.mod -D1670 -Mh -Ntrk -o0,2 -Fp > vgg_p.txt
-gmt talwani3d "${src:-.}"/sphere.mod -D1670 -Mh -Ntrk -o0,2 -Fv > vgg_s.txt
+gmt talwani3d "${src:-.}"/sphere.mod -D1670 -Mh -Ntrk -o0,3 > faa.txt
+gmt talwani3d "${src:-.}"/sphere.mod -D1670 -Mh -Ntrk -o0,3 -Fp > vgg_p.txt
+gmt talwani3d "${src:-.}"/sphere.mod -D1670 -Mh -Ntrk -o0,3 -Fv > vgg_s.txt
 gmt psbasemap -R-25/25/-5/120 -JX6i/6i -P -K -Xc -Y4i -Bxafg1000 -Byafg1000 -BWsne+t"Testing FAA and VGG over sphere" > $ps
 cg=`gmt math -Q 1.0e5 4.0 MUL PI MUL 6.673e-11 MUL $R 3 POW MUL $z0 MUL 1670.0 MUL 3.0 DIV =`
 cv=`gmt math -Q 1.0e9 4.0 MUL PI MUL 6.673e-11 MUL $R 3 POW MUL 1670.0 MUL 3.0 DIV =`
