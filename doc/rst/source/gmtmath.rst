@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtmath** [ **-A**\ *t_f(t).d*\ [**+s**\ \|\ **r**] ] [ **-C**\ *cols* ]
+**gmtmath** [ **-A**\ *t_f(t).d*\ [**+s**] ] [ **-C**\ *cols* ]
 [ **-E**\ *eigen* ] [ **-I** ]
 [ **-N**\ *n\_col*\ [/*t_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
 ] [ **-T**\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
@@ -67,14 +67,15 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ *t_f(t).d*
+**-A**\ *t_f(t).d*\ [**+s**]
     Requires **-N** and will partially initialize a table with values
     from the given file containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
     (see **-N**).  If used with operators LSQFIT and SVDFIT you can
-    optionally append the modifiers **+s** or **+r** which will write
-    out the model solution or the residuals, respectively [Default
-    writes one column with model coefficients].
+    optionally append the modifier **+s** which will instead write
+    a data set with four columns: t, f(t), the model solution at t,
+    and the the residuals at t, respectively [Default writes one column
+    with model coefficients].
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
     **-C**. List columns separated by commas; ranges like 1,3-5,7 are

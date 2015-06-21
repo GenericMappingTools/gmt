@@ -82,7 +82,7 @@ struct SURFACE_CTRL {
 	struct Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<radius>[m|c] */
+	struct S {	/* -S<radius>[m|s] */
 		bool active;
 		double radius;
 		char unit;
