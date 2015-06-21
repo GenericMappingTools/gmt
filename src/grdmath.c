@@ -47,18 +47,20 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 #define GRDMATH_ARG_IS_EULER		-5
 #define GRDMATH_ARG_IS_XMIN		-6
 #define GRDMATH_ARG_IS_XMAX		-7
-#define GRDMATH_ARG_IS_XINC		-8
-#define GRDMATH_ARG_IS_NX		-9
-#define GRDMATH_ARG_IS_YMIN		-10
-#define GRDMATH_ARG_IS_YMAX		-11
-#define GRDMATH_ARG_IS_YINC		-12
-#define GRDMATH_ARG_IS_NY		-13
-#define GRDMATH_ARG_IS_X_MATRIX		-14
-#define GRDMATH_ARG_IS_x_MATRIX		-15
-#define GRDMATH_ARG_IS_Y_MATRIX		-16
-#define GRDMATH_ARG_IS_y_MATRIX		-17
-#define GRDMATH_ARG_IS_ASCIIFILE	-18
-#define GRDMATH_ARG_IS_SAVE		-19
+#define GRDMATH_ARG_IS_XRANGE		-8
+#define GRDMATH_ARG_IS_XINC		-9
+#define GRDMATH_ARG_IS_NX		-10
+#define GRDMATH_ARG_IS_YMIN		-11
+#define GRDMATH_ARG_IS_YMAX		-12
+#define GRDMATH_ARG_IS_YRANGE		-13
+#define GRDMATH_ARG_IS_YINC		-14
+#define GRDMATH_ARG_IS_NY		-15
+#define GRDMATH_ARG_IS_X_MATRIX		-16
+#define GRDMATH_ARG_IS_x_MATRIX		-17
+#define GRDMATH_ARG_IS_Y_MATRIX		-18
+#define GRDMATH_ARG_IS_y_MATRIX		-19
+#define GRDMATH_ARG_IS_ASCIIFILE	-20
+#define GRDMATH_ARG_IS_SAVE		-21
 #define GRDMATH_ARG_IS_STORE		-50
 #define GRDMATH_ARG_IS_RECALL		-51
 #define GRDMATH_ARG_IS_CLEAR		-52
@@ -156,8 +158,8 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\tPI                     = 3.1415926...\n"
 		"\tE                      = 2.7182818...\n"
 		"\tEULER                  = 0.5772156...\n"
-		"\tXMIN, XMAX, XINC or NX = the corresponding constants.\n"
-		"\tYMIN, YMAX, YINC or NY = the corresponding constants.\n"
+		"\tXMIN, XMAX, XRANGE, XINC or NX = the corresponding constants.\n"
+		"\tYMIN, YMAX, YRANGE, YINC or NY = the corresponding constants.\n"
 		"\tX                      = grid with x-coordinates.\n"
 		"\tY                      = grid with y-coordinates.\n"
 		"\tXn                     = grid with normalized [-1|+1] x-coordinates.\n"
@@ -3338,10 +3340,12 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 	if (!strcmp (opt->arg, "EULER")) return GRDMATH_ARG_IS_EULER;
 	if (!strcmp (opt->arg, "XMIN")) return GRDMATH_ARG_IS_XMIN;
 	if (!strcmp (opt->arg, "XMAX")) return GRDMATH_ARG_IS_XMAX;
+	if (!strcmp (opt->arg, "XRANGE")) return GRDMATH_ARG_IS_XRANGE;
 	if (!strcmp (opt->arg, "XINC")) return GRDMATH_ARG_IS_XINC;
 	if (!strcmp (opt->arg, "NX")) return GRDMATH_ARG_IS_NX;
 	if (!strcmp (opt->arg, "YMIN")) return GRDMATH_ARG_IS_YMIN;
 	if (!strcmp (opt->arg, "YMAX")) return GRDMATH_ARG_IS_YMAX;
+	if (!strcmp (opt->arg, "YRANGE")) return GRDMATH_ARG_IS_YRANGE;
 	if (!strcmp (opt->arg, "YINC")) return GRDMATH_ARG_IS_YINC;
 	if (!strcmp (opt->arg, "NY")) return GRDMATH_ARG_IS_NY;
 	if (!strcmp (opt->arg, "X")) return GRDMATH_ARG_IS_X_MATRIX;
@@ -3605,10 +3609,12 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_EULER] = M_EULER;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XMIN] = info.G->header->wesn[XLO];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XMAX] = info.G->header->wesn[XHI];
+	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XRANGE] = info.G->header->wesn[XHI] - info.G->header->wesn[XLO];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XINC] = info.G->header->inc[GMT_X];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NX] = info.G->header->nx;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YMIN] = info.G->header->wesn[YLO];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YMAX] = info.G->header->wesn[YHI];
+	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YRANGE] = info.G->header->wesn[YHI] - info.G->header->wesn[YLO];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YINC] = info.G->header->inc[GMT_Y];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NY] = info.G->header->ny;
 

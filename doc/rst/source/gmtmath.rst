@@ -450,6 +450,8 @@ The following symbols have special meaning:
 +-------------+----------------------------+
 | **TMAX**    | Maximum t value            |
 +-------------+----------------------------+
+| **TRANGE**  | Range of t values          |
++-------------+----------------------------+
 | **TINC**    | t increment                |
 +-------------+----------------------------+
 | **N**       | The number of records      |
