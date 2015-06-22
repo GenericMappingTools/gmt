@@ -231,7 +231,7 @@ struct PSL_CTRL {
 		char *encoding;			/* The encoding name. e.g. ISO-8859-1		*/
 		char *session;			/* The session name (NULL)			*/
 		int unit;			/* 0 = cm, 1 = inch, 2 = meter			*/
-		int copies;		/* Number of copies for this plot		*/
+		int copies;			/* Number of copies for this plot		*/
 		double page_rgb[4];		/* RGB color for background paper [white]	*/
 		double page_size[2];		/* Width and height of paper used in points	*/
 		double magnify[2];		/* Global scale values [1/1]			*/
@@ -254,8 +254,8 @@ struct PSL_CTRL {
 		double sup_up[2];		/* Fractional fontsize shift up for superscript */
 						/* [0] is for lower-case, [1] is for uppercase  */
 		int nclip;			/* Clip depth 					*/
-		int font_no;		/* Current font number				*/
-		int outline;		/* Current outline				*/
+		int font_no;			/* Current font number				*/
+		int outline;			/* Current outline				*/
 	} current;
 	struct INTERNAL {	/* Variables used internally only */
 		char *SHAREDIR;			/* Pointer to path of directory with pslib subdirectory */
@@ -273,31 +273,31 @@ struct PSL_CTRL {
 		double axis_limit[4];		/* The current xmin, xmax, ymin, ymax settings for axes */
 		double axis_pos[2];		/* Lower left placement for axes		*/
 		double axis_dim[2];		/* Lengths of axes 				*/
-		int verbose;		/* Verbosity level (0-4): see PSL_MSG_*	*/
-		int comments;		/* true for writing comments to output, false strips all comments */
-		int overlay;		/* true if overlay (-O)				*/
-		int landscape;		/* true = Landscape, false = Portrait		*/
-		int text_init;		/* true after PSL_text.ps has been loaded	*/
+		int verbose;			/* Verbosity level (0-4): see PSL_MSG_*	*/
+		int comments;			/* true for writing comments to output, false strips all comments */
+		int overlay;			/* true if overlay (-O)				*/
+		int landscape;			/* true = Landscape, false = Portrait		*/
+		int text_init;			/* true after PSL_text.ps has been loaded	*/
 		int image_format;		/* 0 writes images in ascii, 2 uses binary	*/
-		int N_FONTS;		/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
-		int compress;		/* Compresses images with (1) RLE or (2) LZW (3) DEFLATE or (0) None */
-		int deflate_level; /* Compression level for DEFLATE (1-9, default 0) */
-		int color_mode;		/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
-		int line_cap;		/* 0, 1, or 2 for butt, round, or square [butt]	*/
-		int line_join;		/* 0, 1, or 2 for miter, arc, or bevel [miter]	*/
+		int N_FONTS;			/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
+		int compress;			/* Compresses images with (1) RLE or (2) LZW (3) DEFLATE or (0) None */
+		int deflate_level; 		/* Compression level for DEFLATE (1-9, default 0) */
+		int color_mode;			/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
+		int line_cap;			/* 0, 1, or 2 for butt, round, or square [butt]	*/
+		int line_join;			/* 0, 1, or 2 for miter, arc, or bevel [miter]	*/
 		int miter_limit;		/* Acute angle threshold 0-180; 0 means PS default [0] */
-		int ix, iy;		/* Absolute coordinates of last point		*/
+		int ix, iy;			/* Absolute coordinates of last point		*/
 		int n_userimages;		/* Number of specified custom patterns		*/
-		int x0, y0;		/* x,y PS offsets				*/
+		int x0, y0;			/* x,y PS offsets				*/
 		FILE *fp;			/* PS output file pointer. NULL = stdout	*/
 		struct PSL_FONT {
 			double height;		/* Height of A for unit fontsize */
 			char *name;		/* Name of this font */
-			int encoded;	/* true if we never should reencode this font (e.g. symbols) */
+			int encoded;		/* true if we never should reencode this font (e.g. symbols) */
 						/* This is also changed to true after we do reencode a font */
 		} *font;	/* Pointer to array of font structures 		*/
 		struct PSL_PATTERN {
-			int nx, ny;
+			int nx, ny;	/* Dimension of pattern image */
 			int status, depth, dpi;
 			double f_rgb[4], b_rgb[4];
 		} pattern[PSL_N_PATTERNS*2];

@@ -1286,25 +1286,33 @@ int PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, int n)
 	return (PSL_NO_ERROR);
 }
 
-int PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset)
+int PSL_setdash (struct PSL_CTRL *PSL, char *style, double offset)
 {
 	/* Line structure in points
 	 * offset from currentpoint in points
-	 * pattern = "1 2", offset = 0:
+	 * style = "1 2", offset = 0:
 	 *   1 point of line, 2 points of space, start at current point
-	 * pattern = "5 3 1 3", offset = 2:
+	 * style = "5 3 1 3", offset = 2:
 	 *   5 points line, 3 points space, 1 points line, 3 points space,
 	 *   starting 2 points from current point.
 	 */
 
-	if (!pattern && PSL->current.style[0] == '\0') return (PSL_NO_ERROR);
-	if (PSL_eq(offset,PSL->current.offset) && (pattern && PSL->current.style[0] && !strcmp (pattern, PSL->current.style))) return (PSL_NO_ERROR);
-	PSL->current.offset = offset;
-	if (pattern)
-		strncpy (PSL->current.style, pattern, PSL_PEN_LEN);
-	else
+	if (PSL->current.style[0] == '\0') { /* No previous style, so previous offset does not matters */
+		if (!style || style[0] == '\0') return (PSL_NO_ERROR);	/* No new style given, so just return */
+	}
+	/* Here, we have a previous non-NULL style */
+	if (!style || style[0] == '\0') {	/* No style wanted going forwards, so we do a full reset */
 		memset (PSL->current.style, 0, PSL_PEN_LEN);
-	PSL_command (PSL, "%s\n", psl_putdash (PSL, pattern, offset));
+		PSL->current.offset = 0;
+		PSL_command (PSL, "[] 0 B\n");
+		return (PSL_NO_ERROR);
+	}
+	/* Here we have a previous style AND we have specified a (possibly) new style */
+	if (PSL_eq(offset,PSL->current.offset) && !strcmp (style, PSL->current.style)) return (PSL_NO_ERROR);	/* Same as before, so just return */
+	/* Finally, a new style has been given that differs from the previous and we need to update our settings */
+	PSL->current.offset = offset;
+	strncpy (PSL->current.style, style, PSL_PEN_LEN);
+	PSL_command (PSL, "%s\n", psl_putdash (PSL, style, offset));
 	return (PSL_NO_ERROR);
 }
 
