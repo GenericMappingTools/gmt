@@ -50,11 +50,10 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 #define GMTMATH_ARG_IS_EULER	-5
 #define GMTMATH_ARG_IS_TMIN	-6
 #define GMTMATH_ARG_IS_TMAX	-7
-#define GMTMATH_ARG_IS_TRANGE	-8
-#define GMTMATH_ARG_IS_TINC	-9
-#define GMTMATH_ARG_IS_N	-10
-#define GMTMATH_ARG_IS_T_MATRIX	-11
-#define GMTMATH_ARG_IS_t_MATRIX	-12
+#define GMTMATH_ARG_IS_TINC	-8
+#define GMTMATH_ARG_IS_N	-9
+#define GMTMATH_ARG_IS_T_MATRIX	-10
+#define GMTMATH_ARG_IS_t_MATRIX	-11
 #define GMTMATH_ARG_IS_STORE	-50
 #define GMTMATH_ARG_IS_RECALL	-51
 #define GMTMATH_ARG_IS_CLEAR	-52
@@ -430,7 +429,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\tPI                  = 3.1415926...\n"
 		"\tE                   = 2.7182818...\n"
 		"\tEULER               = 0.5772156...\n"
-		"\tTMIN, TMAX, TRANGE or TINC = the corresponding constant.\n"
+		"\tTMIN, TMAX, or TINC = the corresponding constant.\n"
 		"\tN                   = number of records.\n"
 		"\tT                   = table with t-coordinates.\n"
 		"\tTn                  = table with normalized [-1 to +1] t-coordinates.\n"
@@ -3605,7 +3604,6 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	if (!strcmp (txt, "EULER")) return GMTMATH_ARG_IS_EULER;
 	if (!strcmp (txt, "TMIN")) return GMTMATH_ARG_IS_TMIN;
 	if (!strcmp (txt, "TMAX")) return GMTMATH_ARG_IS_TMAX;
-	if (!strcmp (txt, "TRANGE")) return GMTMATH_ARG_IS_TRANGE;
 	if (!strcmp (txt, "TINC")) return GMTMATH_ARG_IS_TINC;
 	if (!strcmp (txt, "N")) return GMTMATH_ARG_IS_N;
 	if (!(strcmp (txt, "T") && strcmp (txt, "t"))) return GMTMATH_ARG_IS_T_MATRIX;
@@ -3910,7 +3908,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_EULER] = M_EULER;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMIN] = Ctrl->T.min;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMAX] = Ctrl->T.max;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TRANGE] = Ctrl->T.max - Ctrl->T.min;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TINC] = Ctrl->T.inc;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N] = (double)n_records;
 
