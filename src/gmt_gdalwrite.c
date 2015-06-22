@@ -260,6 +260,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	hOutDS = GDALCreateCopy(hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL);
 	if (hOutDS != NULL) GDALClose(hOutDS);
 
+	OGRFree(pszSRS_WKT);
 	GDALClose(hDstDS);
 	GDALDestroyDriverManager();
 	if (outByte) GMT_free(GMT, outByte);
