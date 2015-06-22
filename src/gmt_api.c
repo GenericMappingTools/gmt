@@ -5948,7 +5948,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	bool stop;
 	double tdummy, edummy;
 	struct GMT_FFT_SUGGESTION fft_sug[3];
-	struct GMT_FFT_INFO *F = gmt_get_fftinfo_ptr (v_info);
+	struct GMT_FFT_INFO *F = NULL, *F_in = gmt_get_fftinfo_ptr (v_info);
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct GMT_CTRL *GMT = NULL;
 
@@ -5957,8 +5957,10 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	GMT = API->GMT;
 	K = GMT_memory (GMT, NULL, 1, struct GMT_FFT_WAVENUMBER);
 
-	if (F == NULL) {	/* User did not specify -N so default settings should take effect */
-		F = GMT_memory (GMT, NULL, 1, struct GMT_FFT_INFO);
+	F = GMT_memory (GMT, NULL, 1, struct GMT_FFT_INFO);
+	if (F_in) {	/* User specified -N so default settings should take effect */
+		GMT_memcpy (F, F_in, 1, struct GMT_FFT_INFO);
+		if (F->K) GMT_Report (API, GMT_MSG_DEBUG, "Warning: F->K already set; investigate.\n");
 	}
 	if (!F->set) {	/* User is accepting the default values of extend via edge-point symmetry over 100% of margin */
 		F->info_mode = GMT_FFT_EXTEND_POINT_SYMMETRY;

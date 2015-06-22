@@ -48,18 +48,22 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 #define GRDMATH_ARG_IS_EULER		-5
 #define GRDMATH_ARG_IS_XMIN		-6
 #define GRDMATH_ARG_IS_XMAX		-7
-#define GRDMATH_ARG_IS_XINC		-8
-#define GRDMATH_ARG_IS_NX		-9
-#define GRDMATH_ARG_IS_YMIN		-10
-#define GRDMATH_ARG_IS_YMAX		-11
-#define GRDMATH_ARG_IS_YINC		-12
-#define GRDMATH_ARG_IS_NY		-13
-#define GRDMATH_ARG_IS_X_MATRIX		-14
-#define GRDMATH_ARG_IS_x_MATRIX		-15
-#define GRDMATH_ARG_IS_Y_MATRIX		-16
-#define GRDMATH_ARG_IS_y_MATRIX		-17
-#define GRDMATH_ARG_IS_ASCIIFILE	-18
-#define GRDMATH_ARG_IS_SAVE		-19
+#define GRDMATH_ARG_IS_XRANGE		-8
+#define GRDMATH_ARG_IS_XINC		-9
+#define GRDMATH_ARG_IS_NX		-10
+#define GRDMATH_ARG_IS_YMIN		-11
+#define GRDMATH_ARG_IS_YMAX		-12
+#define GRDMATH_ARG_IS_YRANGE		-13
+#define GRDMATH_ARG_IS_YINC		-14
+#define GRDMATH_ARG_IS_NY		-15
+#define GRDMATH_ARG_IS_X_MATRIX		-16
+#define GRDMATH_ARG_IS_x_MATRIX		-17
+#define GRDMATH_ARG_IS_Y_MATRIX		-18
+#define GRDMATH_ARG_IS_y_MATRIX		-19
+#define GRDMATH_ARG_IS_XCOL_MATRIX	-20
+#define GRDMATH_ARG_IS_YROW_MATRIX	-21
+#define GRDMATH_ARG_IS_ASCIIFILE	-22
+#define GRDMATH_ARG_IS_SAVE		-23
 #define GRDMATH_ARG_IS_STORE		-50
 #define GRDMATH_ARG_IS_RECALL		-51
 #define GRDMATH_ARG_IS_CLEAR		-52
@@ -170,12 +174,14 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\tPI                     = 3.1415926...\n"
 		"\tE                      = 2.7182818...\n"
 		"\tEULER                  = 0.5772156...\n"
-		"\tXMIN, XMAX, XINC or NX = the corresponding constants.\n"
-		"\tYMIN, YMAX, YINC or NY = the corresponding constants.\n"
+		"\tXMIN, XMAX, XRANGE, XINC or NX = the corresponding constants.\n"
+		"\tYMIN, YMAX, YRANGE, YINC or NY = the corresponding constants.\n"
 		"\tX                      = grid with x-coordinates.\n"
 		"\tY                      = grid with y-coordinates.\n"
-		"\tXn                     = grid with normalized [-1|+1] x-coordinates.\n"
-		"\tYn                     = grid with normalized [-1|+1] y-coordinates.\n"
+		"\tXNORM                  = grid with normalized [-1|+1] x-coordinates.\n"
+		"\tYNORM                  = grid with normalized [-1|+1] y-coordinates.\n"
+		"\tXCOL                   = grid with column numbers 0, 1, ..., NX-1.\n"
+		"\tYROW                   = grid with row numbers 0, 1, ..., NY-1.\n"
 		"\n\tUse macros for frequently used long expressions; see the grdmath man page.\n"
 		"\tStore stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.\n"
 		"\n\tOPTIONS: (only use -R|I|r|f if no grid files are passed as arguments).\n\n");
@@ -3638,16 +3644,22 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 	if (!strcmp (opt->arg, "EULER")) return GRDMATH_ARG_IS_EULER;
 	if (!strcmp (opt->arg, "XMIN")) return GRDMATH_ARG_IS_XMIN;
 	if (!strcmp (opt->arg, "XMAX")) return GRDMATH_ARG_IS_XMAX;
+	if (!strcmp (opt->arg, "XRANGE")) return GRDMATH_ARG_IS_XRANGE;
 	if (!strcmp (opt->arg, "XINC")) return GRDMATH_ARG_IS_XINC;
 	if (!strcmp (opt->arg, "NX")) return GRDMATH_ARG_IS_NX;
 	if (!strcmp (opt->arg, "YMIN")) return GRDMATH_ARG_IS_YMIN;
 	if (!strcmp (opt->arg, "YMAX")) return GRDMATH_ARG_IS_YMAX;
+	if (!strcmp (opt->arg, "YRANGE")) return GRDMATH_ARG_IS_YRANGE;
 	if (!strcmp (opt->arg, "YINC")) return GRDMATH_ARG_IS_YINC;
 	if (!strcmp (opt->arg, "NY")) return GRDMATH_ARG_IS_NY;
 	if (!strcmp (opt->arg, "X")) return GRDMATH_ARG_IS_X_MATRIX;
-	if (!strcmp (opt->arg, "Xn")) return GRDMATH_ARG_IS_x_MATRIX;
+	if (!strcmp (opt->arg, "Xn")) return GRDMATH_ARG_IS_x_MATRIX;	/* Backwards compatible. Xn is now XNORM to avoid mixed-case operators */
+	if (!strcmp (opt->arg, "XNORM")) return GRDMATH_ARG_IS_x_MATRIX;
 	if (!strcmp (opt->arg, "Y")) return GRDMATH_ARG_IS_Y_MATRIX;
-	if (!strcmp (opt->arg, "Yn")) return GRDMATH_ARG_IS_y_MATRIX;
+	if (!strcmp (opt->arg, "Yn")) return GRDMATH_ARG_IS_y_MATRIX;	/* Backwards compatible. Yn is now YNORM to avoid mixed-case operators */
+	if (!strcmp (opt->arg, "YNORM")) return GRDMATH_ARG_IS_y_MATRIX;
+	if (!strcmp (opt->arg, "XCOL")) return GRDMATH_ARG_IS_XCOL_MATRIX;
+	if (!strcmp (opt->arg, "YROW")) return GRDMATH_ARG_IS_YROW_MATRIX;
 	if (!strcmp (opt->arg, "NaN")) {*value = GMT->session.d_NaN; return GRDMATH_ARG_IS_NUMBER;}
 
 	/* Preliminary test-conversion to a number */
@@ -4062,12 +4074,17 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				}
 			}
 			else if (op == GRDMATH_ARG_IS_x_MATRIX) {		/* Need to set up matrix of normalized x-values */
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Xn ");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "XNORM ");
 				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
 				GMT_row_padloop (GMT, info.G, row, node) {
 					node = row * info.G->header->mx;
 					GMT_memcpy (&stack[nstack]->G->data[node], info.f_grd_xn, info.G->header->mx, float);
 				}
+			}
+			else if (op == GRDMATH_ARG_IS_XCOL_MATRIX) {		/* Need to set up matrix of column numbers */
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "XCOL ");
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = (float)(col - stack[nstack]->G->header->pad[XLO]);
 			}
 			else if (op == GRDMATH_ARG_IS_Y_MATRIX) {	/* Need to set up matrix of y-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Y ");
@@ -4075,9 +4092,14 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = info.f_grd_y[row];
 			}
 			else if (op == GRDMATH_ARG_IS_y_MATRIX) {	/* Need to set up matrix of normalized y-values */
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Yn ");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "YNORM ");
 				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = info.f_grd_yn[row];
+			}
+			else if (op == GRDMATH_ARG_IS_YROW_MATRIX) {		/* Need to set up matrix of row numbers */
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "YROW ");
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = (float)(row - stack[nstack]->G->header->pad[YHI]);
 			}
 			else if (op == GRDMATH_ARG_IS_ASCIIFILE) {
 				if (info.ASCII_file) free (info.ASCII_file);

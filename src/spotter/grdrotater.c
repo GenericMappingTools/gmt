@@ -481,7 +481,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		p[0].lon = Ctrl->E.lon; p[0].lat = Ctrl->E.lat; p[0].omega = Ctrl->E.w;
 	}
 	else {	/* Got a rotation file with multiple rotations in total reconstruction format */
-		double t_max;
+		double t_max = 0.0;
 		n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, true, Ctrl->E.mode, &t_max);
 		GMT_set_segmentheader (GMT, GMT_OUT, true);
 	}

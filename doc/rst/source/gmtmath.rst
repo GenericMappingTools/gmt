@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtmath** [ **-A**\ *t_f(t).d*\ [**+s**] ] [ **-C**\ *cols* ]
+**gmtmath** [ **-A**\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**] ] [ **-C**\ *cols* ]
 [ **-E**\ *eigen* ] [ **-I** ]
 [ **-N**\ *n\_col*\ [/*t_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
 ] [ **-T**\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
@@ -67,15 +67,19 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ *t_f(t).d*\ [**+s**]
+**-A**\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**]
     Requires **-N** and will partially initialize a table with values
     from the given file containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
     (see **-N**).  If used with operators LSQFIT and SVDFIT you can
-    optionally append the modifier **+s** which will instead write
-    a data set with four columns: t, f(t), the model solution at t,
-    and the the residuals at t, respectively [Default writes one column
-    with model coefficients].
+    optionally append the modifier **+e** which will instead evaluate
+    the solution and write a data set with four columns: t, f(t), the
+    model solution at t, and the the residuals at t, respectively
+    [Default writes one column with model coefficients].  Append **+w**
+    if *t_f(t).d* has a third column with weights, or append **+s** if
+    *t_f(t).d* has a third column with 1-sigma.  In those two cases we
+    find the weighted solution.  The weights (or sigmas) will be output
+    as the last column when **+e** is in effect.
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
     **-C**. List columns separated by commas; ranges like 1,3-5,7 are
@@ -450,23 +454,29 @@ Symbols
 
 The following symbols have special meaning:
 
-+-------------+----------------------------+
-| **PI**      | 3.1415926...               |
-+-------------+----------------------------+
-| **E**       | 2.7182818...               |
-+-------------+----------------------------+
-| **EULER**   | 0.5772156...               |
-+-------------+----------------------------+
-| **TMIN**    | Minimum t value            |
-+-------------+----------------------------+
-| **TMAX**    | Maximum t value            |
-+-------------+----------------------------+
-| **TINC**    | t increment                |
-+-------------+----------------------------+
-| **N**       | The number of records      |
-+-------------+----------------------------+
-| **T**       | Table with t-coordinates   |
-+-------------+----------------------------+
++-------------+---------------------------------------+
+| **PI**      | 3.1415926...                          |
++-------------+---------------------------------------+
+| **E**       | 2.7182818...                          |
++-------------+---------------------------------------+
+| **EULER**   | 0.5772156...                          |
++-------------+---------------------------------------+
+| **TMIN**    | Minimum t value                       |
++-------------+---------------------------------------+
+| **TMAX**    | Maximum t value                       |
++-------------+---------------------------------------+
+| **TRANGE**  | Range of t values                     |
++-------------+---------------------------------------+
+| **TINC**    | t increment                           |
++-------------+---------------------------------------+
+| **N**       | The number of records                 |
++-------------+---------------------------------------+
+| **T**       | Table with t-coordinates              |
++-------------+---------------------------------------+
+| **TNORM**   | Table with normalized t-coordinates   |
++-------------+---------------------------------------+
+| **TROW**    | Table with row numbers 1, 2, ..., N-1 |
++-------------+---------------------------------------+
 
 .. include:: explain_precision.rst_
 

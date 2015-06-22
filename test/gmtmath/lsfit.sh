@@ -3,9 +3,6 @@
 
 # Testing gmt math for LSQFIT and SVDFIT solutions to Ax = b
 ps=lsfit.ps
-pdf=lsfit.pdf
-OP=LSQFIT
-OP=SVDFIT
 # (bottom)
 # Dummy data is y(x) = a + bx + c*H(x-x0) + N(0,0.1), with
 # a = 1, b = 0.1, c = 2, and x0 = 0.5, for x -3:3, with
@@ -43,8 +40,8 @@ X=2
 # The next line produced sinusoiddata.txt, now in subversion
 # gmt math -T0/2/0.01 T $X DIV 2 MUL PI MUL 6 MUL $c SUB COS $b MUL $a ADD 0 0.2 NRAND ADD  = sinusoiddata.txt
 # Here, we instead use the +s modifier to return the solution evaluated at the data points.
-gmt math -A-sinusoiddata.txt+s -N4/1 -C0 1 ADD -C1,2 T ADD 2 DIV 2 MUL PI MUL 6 MUL -C1 COS -C2 SIN -Ca LSQFIT = sinusoidfit_lsq.txt
-gmt math -A-sinusoiddata.txt+s -N4/1 -C0 1 ADD -C1,2 T ADD 2 DIV 2 MUL PI MUL 6 MUL -C1 COS -C2 SIN -Ca SVDFIT = sinusoidfit_svd.txt
+gmt math -A-sinusoiddata.txt+e -N4/1 -C0 1 ADD -C1,2 T ADD 2 DIV 2 MUL PI MUL 6 MUL -C1 COS -C2 SIN -Ca LSQFIT = sinusoidfit_lsq.txt
+gmt math -A-sinusoiddata.txt+e -N4/1 -C0 1 ADD -C1,2 T ADD 2 DIV 2 MUL PI MUL 6 MUL -C1 COS -C2 SIN -Ca SVDFIT = sinusoidfit_svd.txt
 gmt psxy -R0/2/-3/4 -J -O -Baf sinusoiddata.txt -Sc0.15c -Gblue -K -Y5i >> $ps
 gmt psxy -R -J -O -K sinusoidfit_lsq.txt -W2p -i0,2 >> $ps
 gmt psxy -R -J -O -K sinusoidfit_svd.txt -Sc2p -Gred -i0,2 >> $ps

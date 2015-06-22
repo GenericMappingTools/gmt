@@ -51,10 +51,12 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 #define GMTMATH_ARG_IS_EULER	-5
 #define GMTMATH_ARG_IS_TMIN	-6
 #define GMTMATH_ARG_IS_TMAX	-7
-#define GMTMATH_ARG_IS_TINC	-8
-#define GMTMATH_ARG_IS_N	-9
-#define GMTMATH_ARG_IS_T_MATRIX	-10
-#define GMTMATH_ARG_IS_t_MATRIX	-11
+#define GMTMATH_ARG_IS_TRANGE	-8
+#define GMTMATH_ARG_IS_TINC	-9
+#define GMTMATH_ARG_IS_N	-10
+#define GMTMATH_ARG_IS_J_MATRIX	-11
+#define GMTMATH_ARG_IS_T_MATRIX	-12
+#define GMTMATH_ARG_IS_t_MATRIX	-13
 #define GMTMATH_ARG_IS_STORE	-50
 #define GMTMATH_ARG_IS_RECALL	-51
 #define GMTMATH_ARG_IS_CLEAR	-52
@@ -67,11 +69,14 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 #define GMTMATH_RECALL_CMD	"RCL@"
 #define GMTMATH_CLEAR_CMD	"CLR@"
 
-#define COL_T	0	/* These are the first and 2nd columns in the Time structure */
+#define COL_T	0	/* These are the first 3 columns in the Time structure */
 #define COL_TN	1
+#define COL_TJ	2
 
 #define GMTMATH_COEFFICIENTS	0
 #define GMTMATH_EVALUATE	1
+#define GMTMATH_WEIGHTS		1
+#define GMTMATH_SIGMAS		2
 
 #define DOUBLE_BIT_MASK (~(1023ULL << 54ULL))	/* This will be 00000000 00111111 11111111 .... and sets to 0 anything larger than 2^53 which is max integer in double */
 
@@ -81,10 +86,11 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A[-]<t_f(t).d>[+r|s] */
+	struct A {	/* -A[-]<t_f(t).d>[+e][+w|s] */
 		bool active;
 		bool null;
-		unsigned int mode;	/* 0 save coefficients, 1 save predictions, 2 save residuals */
+		unsigned int e_mode;	/* 0 save coefficients, 1 save predictions and residuals */
+		unsigned int w_mode;	/* 0 no weights, 1 = got weights, 2 = got sigmas */
 		char *file;
 	} A;
 	struct C {	/* -C<cols> */
@@ -127,6 +133,7 @@ struct GMTMATH_INFO {
 	bool notime;		/* No time-array avaible for operators who depend on that */
 	unsigned int n_roots;	/* Number of roots found */
 	unsigned int fit_mode;	/* Used for {LSQ|SVD}FIT */
+	unsigned int w_mode;	/* Used for weighted fit */
 	uint64_t r_col;	/* The column used to find roots */
 	uint64_t n_col;	/* Number of columns */
 	double t_min, t_max, t_inc;
@@ -231,8 +238,9 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 
 	unsigned int i, j, k, k0, i2, j2, n;
 	int ier;
-	uint64_t row, seg, rhs;
-	double cond, *N = NULL, *B = NULL, *d = NULL, *x = NULL, *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
+	uint64_t row, seg, rhs, w_col;
+	double cond, w = 1.0;
+	double *N = NULL, *r = NULL, *d = NULL, *x = NULL;
 	struct GMT_DATATABLE *T = S->D->table[0];
 	struct GMT_DATASET *D = NULL;
 
@@ -245,9 +253,14 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	rhs = n_col - 1;
 	while (rhs > 0 && skip[rhs]) rhs--;	/* Get last active col number as the rhs vector b */
 	n--;					/* Account for b, the rhs vector, to get row & col dimensions of normal matrix N */
+	if (info->w_mode) {
+		w_col = rhs - 1;		/* If there are weights, this is the column they are stored in */
+		while (w_col > 0 && skip[w_col]) w_col--;	/* Get next active col number as the weight vector w */
+		n--;					/* Account for w, the rhs vector, to get row & col dimensions of normal matrix N */
+	}
 
 	N = GMT_memory (GMT, NULL, n*n, double);
-	B = GMT_memory (GMT, NULL, T->n_records, double);
+	r = GMT_memory (GMT, NULL, T->n_records, double);
 
 #if 0
 	fprintf (stderr, "Printout of A | b matrix\n");
@@ -263,6 +276,7 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	}
 	fprintf (stderr, "------------------------------------------------------------------\n");
 #endif
+	/* Here we build A^T*W*A*x = A^T*W*b ==> N*x = r, where W is the diagonal matrix with squared weights w */
 	/* Do the row & col dot products, skipping inactive columns as we go along */
 	for (j = j2 = 0; j < n; j2++) {	/* j2 is table column, j is row in N matrix */
 		if (skip[j2]) continue;
@@ -271,13 +285,25 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 			k0 = j * n + i;
 			N[k0] = 0.0;
 			for (seg = k = 0; seg < info->T->n_segments; seg++) {
-				for (row = 0; row < T->segment[seg]->n_rows; row++, k++) N[k0] += T->segment[seg]->coord[j2][row] * T->segment[seg]->coord[i2][row];
+				for (row = 0; row < T->segment[seg]->n_rows; row++, k++) {
+					if (info->w_mode) {
+						w = pow (T->segment[seg]->coord[w_col][row], 2.0);
+						if (info->w_mode == GMTMATH_SIGMAS) w = 1.0 / w;	/* Got sigma */
+					}
+					N[k0] += w * T->segment[seg]->coord[j2][row] * T->segment[seg]->coord[i2][row];
+				}
 			}
 			i++;
 		}
-		B[j] = 0.0;
+		r[j] = 0.0;
 		for (seg = k = 0; seg < info->T->n_segments; seg++) {
-			for (row = 0; row < T->segment[seg]->n_rows; row++, k++) B[j] += T->segment[seg]->coord[j2][row] * T->segment[seg]->coord[rhs][row];
+			for (row = 0; row < T->segment[seg]->n_rows; row++, k++) {
+				if (info->w_mode) {
+					w = pow (T->segment[seg]->coord[w_col][row], 2.0);
+					if (info->w_mode == GMTMATH_SIGMAS) w = 1.0 / w;	/* Got sigma */
+				}
+				r[j] += w * T->segment[seg]->coord[j2][row] * T->segment[seg]->coord[rhs][row];
+			}
 		}
 		j++;
 	}
@@ -287,7 +313,7 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Solve LS system via Cholesky decomposition\n");
 
 #if 0
-	fprintf (stderr, "Printout of N and B matrix\n");
+	fprintf (stderr, "Printout of N and r matrix\n");
 	fprintf (stderr, "------------------------------------------------------------------\n");
 	for (j = 0; j < n; j++) {
 		for (k = 0; k < n; k++)
@@ -295,13 +321,14 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 		fprintf (stderr, "\n");
 	}
 	for (k = 0; k < n; k++)
-		fprintf (stderr, "%g\n", B[k]);
+		fprintf (stderr, "%g\n", r[k]);
 	fprintf (stderr, "------------------------------------------------------------------\n");
 #endif
 	d = GMT_memory (GMT, NULL, n, double);
 	x = GMT_memory (GMT, NULL, n, double);
 	if (svd || ((ier = GMT_chol_dcmp (GMT, N, d, &cond, n, n) ) != 0)) {	/* Cholesky decomposition failed, use SVD method, or use SVD if specified */
 		unsigned int nrots;
+		double *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
 		if (!svd) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cholesky decomposition failed, try SVD decomposition instead and exclude eigenvalues < %g.\n", eigen_min);
 			GMT_chol_recover (GMT, N, d, n, n, ier, true);	/* Restore to former matrix N */
@@ -316,10 +343,10 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The solution might be inaccurate.\n");
 		}
-		/* Solution x = v * lambda^-1 * v' * B */
+		/* Solution x = v * lambda^-1 * v' * r */
 
-		/* First do d = V' * B, so x = v * lambda^-1 * d */
-		for (j = 0; j < n; j++) for (k = 0, d[j] = 0.0; k < n; k++) d[j] += v[j*n+k] * B[k];
+		/* First do d = V' * r, so x = v * lambda^-1 * d */
+		for (j = 0; j < n; j++) for (k = 0, d[j] = 0.0; k < n; k++) d[j] += v[j*n+k] * r[k];
 		/* Then do d = lambda^-1 * d by setting small lambda's to zero */
 		for (j = k = 0; j < n; j++) {
 			if (lambda[j] < eigen_min) {
@@ -340,7 +367,7 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 		GMT_free (GMT, lambda);
 	}
 	else {	/* Decomposition worked, now solve system */
-		GMT_chol_solv (GMT, N, x, B, n, n);
+		GMT_chol_solv (GMT, N, x, r, n, n);
 	}
 
 	if (info->fit_mode == GMTMATH_COEFFICIENTS) {	/* Return coefficients only as a single vector */
@@ -366,7 +393,7 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	else {	/* Return t, y, p(t), r(t), where p(t) is the predicted solution and r(t) is the residuals */
 		double value;
 		k = S->D->dim[GMT_COL];
-		S->D->dim[GMT_COL] = 4;	/* State we want a different set of columns on output */
+		S->D->dim[GMT_COL] = (info->w_mode) ? 5 : 4;	/* State we want a different set of columns on output */
 		D = GMT_Duplicate_Data (GMT->parent, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, S->D);	/* Same table length as S->D, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
 		S->D->dim[GMT_COL] = k;	/* Reset the original columns */
 		if (D->table[0]->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* More than one segment triggers -mo */
@@ -382,11 +409,14 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 				}
 				D->table[0]->segment[seg]->coord[2][row] = value;
 				D->table[0]->segment[seg]->coord[3][row] = T->segment[seg]->coord[rhs][row] - value;
+				if (info->w_mode) D->table[0]->segment[seg]->coord[4][row] = T->segment[seg]->coord[w_col][row];
 			}
 		}
 		if (GMT->common.h.add_colnames) {
 			char header[GMT_BUFSIZ] = {""};
 			sprintf (header, "#t[0]\tobserved(t)[1]\tpredict(t)[2]\tresidual(t)[3]");
+			if (info->w_mode == GMTMATH_WEIGHTS) strcat (header, "\tweight(t)[4]");
+			else if (info->w_mode == GMTMATH_SIGMAS) strcat (header, "\tsigma(t)[4]");
 			if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
 		}
 		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_OK) {
@@ -397,7 +427,7 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	GMT_free (GMT, x);
 	GMT_free (GMT, d);
 	GMT_free (GMT, N);
-	GMT_free (GMT, B);
+	GMT_free (GMT, r);
 	return (EXIT_SUCCESS);
 }
 
@@ -463,10 +493,11 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\tPI                  = 3.1415926...\n"
 		"\tE                   = 2.7182818...\n"
 		"\tEULER               = 0.5772156...\n"
-		"\tTMIN, TMAX, or TINC = the corresponding constant.\n"
+		"\tTMIN, TMAX, RANGE, or TINC = the corresponding constant.\n"
 		"\tN                   = number of records.\n"
 		"\tT                   = table with t-coordinates.\n"
-		"\tTn                  = table with normalized [-1 to +1] t-coordinates.\n"
+		"\tTNORM               = table with normalized [-1 to +1] t-coordinates.\n"
+		"\tTROW                = table with row numbers 0, 1, ..., N-1.\n"
 		"\n\tUse macros for frequently used long expressions; see the gmtmath man page.\n"
 		"\tStore stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.\n"
 		"\n\tOPTIONS:\n\n"
@@ -475,8 +506,9 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\t   t goes into column <t_col> while f(t) goes into column <n_col> - 1 (i.e., r.h.s. vector b).\n"
 		"\t   Use -A-<ftable> to only place f(t) in b and leave A initialized to zeros.\n"
 		"\t   No additional data files are read.  Output will be a single column with coefficients.\n"
-		"\t   Append +s to instead write t, f(t), the solution, and residuals, evaluated at given t.\n"
-		"\t   Use LSQFIT or SVDFIT to solve the linear system.\n"
+		"\t   Append +w if 3rd column contains weights and +s if 3rd column contains 1-sigmas.\n"
+		"\t   Append +e to evaluate solution and write t, f(t), the solution, residuals[, weight|sigma].\n"
+		"\t   Use eighter LSQFIT or SVDFIT to solve the [weighted] linear system.\n"
 		"\t-C Change which columns to operate on [Default is all except time].\n"
 		"\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n"
 		"\t-E Set minimum eigenvalue used by LSQFIT and SVDFIT [1e-7].\n"
@@ -543,12 +575,23 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 					Ctrl->A.null = true;
 					k = 1;
 				}
-				if ((c = strstr (&opt->arg[k], "+s"))) {
-					Ctrl->A.mode = GMTMATH_EVALUATE;
-					c[0] = '\0';
+				if ((c = strchr (opt->arg, '+')) && strchr ("esw", c[1])) {	/* Got a valid modifier */
+					unsigned int pos = 0;
+					char p[GMT_LEN256] = {""};
+					c[0] = '\0';	/* Temporarily chop off modifiers */
+					Ctrl->A.file = strdup (&opt->arg[k]);
+					c[0] = '+';	/* Restore the modifier */
+					while (GMT_strtok (c, "+", &pos, p)) {
+						switch (p[0]) {
+							case 'e': Ctrl->A.e_mode = GMTMATH_EVALUATE; break;	/* Evaluate solution */
+							case 's': Ctrl->A.w_mode = GMTMATH_SIGMAS;   break;	/* Got t,y,s */
+							case 'w': Ctrl->A.w_mode = GMTMATH_WEIGHTS;  break;	/* Got t,y,w */
+							default: n_errors++;	break;
+						}
+					}
 				}
-				Ctrl->A.file = strdup (&opt->arg[k]);
-				if (c) c[0] = '+';	/* Restore the modifier */
+				else	/* No modifiers, selected default output of coefficient column */
+					Ctrl->A.file = strdup (&opt->arg[k]);
 				break;
 			case 'C':	/* Processed in the main loop but not here; just skip */
 				break;
@@ -3747,10 +3790,13 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	if (!strcmp (txt, "EULER")) return GMTMATH_ARG_IS_EULER;
 	if (!strcmp (txt, "TMIN")) return GMTMATH_ARG_IS_TMIN;
 	if (!strcmp (txt, "TMAX")) return GMTMATH_ARG_IS_TMAX;
+	if (!strcmp (txt, "TRANGE")) return GMTMATH_ARG_IS_TRANGE;
 	if (!strcmp (txt, "TINC")) return GMTMATH_ARG_IS_TINC;
 	if (!strcmp (txt, "N")) return GMTMATH_ARG_IS_N;
+	if (!strcmp (txt, "TROW")) return GMTMATH_ARG_IS_J_MATRIX;
 	if (!(strcmp (txt, "T") && strcmp (txt, "t"))) return GMTMATH_ARG_IS_T_MATRIX;
-	if (!(strcmp (txt, "Tn") && strcmp (txt, "tn"))) return GMTMATH_ARG_IS_t_MATRIX;
+	if (!(strcmp (txt, "Tn") && strcmp (txt, "tn"))) return GMTMATH_ARG_IS_t_MATRIX;	/* Backwards compatible. Tn is now TNORM since there is a TN operator */
+	if (!strcmp (txt, "TNORM")) return GMTMATH_ARG_IS_t_MATRIX;
 	if (!strcmp (txt, "NaN")) {*value = GMT->session.d_NaN; return GMTMATH_ARG_IS_NUMBER;}
 
 	/* Preliminary test-conversion to a number */
@@ -3912,9 +3958,17 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		rhs = A_in->table[0];	/* Only one table */
-		if (rhs->n_columns != 2) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -A must take a file with 2 (t,f(t)) columns\n");
-			Return (EXIT_FAILURE);
+		if (Ctrl->A.w_mode) {	/* Need at least 3 columns */
+			if (rhs->n_columns < 3) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -A requires a file with at least 3 (t,f(t),w(t)|s(t)) columns\n");
+				Return (EXIT_FAILURE);
+			}
+		}
+		else {	/* Need at least 2 columns */
+			if (rhs->n_columns < 2) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -A requires a file with at least 2 (t,f(t)) columns\n");
+				Return (EXIT_FAILURE);
+			}
 		}
 	}
 	if (Ctrl->Q.active) {	/* Shorthand for -N1/0 -T0/0/1 -Ca */
@@ -3993,9 +4047,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	Ctrl->N.ncol = n_columns;
 	if (!Ctrl->T.notime && n_columns > 1) Ctrl->C.cols[Ctrl->N.tcol] = (Ctrl->Q.active) ? false : true;
 	
-	/* Create the Time data structure with 2 cols: 0 is t, 1 is normalized tn */
+	/* Create the Time data structure with 3 cols: 0 is t, 1 is normalized tn, 2 is row numbers */
 	if (D_in) {	/* Either D_in or D_stdin */
-		Time = GMT_alloc_dataset (GMT, D_in, 0, 2, GMT_ALLOC_NORMAL);
+		Time = GMT_alloc_dataset (GMT, D_in, 0, 3, GMT_ALLOC_NORMAL);
 		free_time = true;
 		info.T = Time->table[0];	D = D_in->table[0];
 		for (seg = 0, done = false; seg < D->n_segments; seg++) {
@@ -4012,7 +4066,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Create orderly output */
-		dim[GMT_COL] = 2;	dim[GMT_ROW] = n_rows;
+		dim[GMT_COL] = 3;	dim[GMT_ROW] = n_rows;
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
 		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->coord[COL_T][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
@@ -4023,7 +4077,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		off = 0.5 * (info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1] + info.T->segment[seg]->coord[COL_T][0]);
 		scale = 2.0 / (info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1] - info.T->segment[seg]->coord[COL_T][0]);
 		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) double_swap (info.T->segment[seg]->coord[COL_T][row], info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time-series */
-		for (row = 0; row < info.T->segment[seg]->n_rows; row++) info.T->segment[seg]->coord[COL_TN][row] = (info.T->segment[seg]->coord[COL_T][row] - off) * scale;
+		for (row = 0; row < info.T->segment[seg]->n_rows; row++) {
+			info.T->segment[seg]->coord[COL_TN][row] = (info.T->segment[seg]->coord[COL_T][row] - off) * scale;
+			info.T->segment[seg]->coord[COL_TJ][row] = (Ctrl->I.active) ? info.T->segment[seg]->n_rows - row - 1 : row;
+		}
 		n_records += info.T->segment[seg]->n_rows;
 	}
 	info.t_min = Ctrl->T.min;	info.t_max = Ctrl->T.max;	info.t_inc = Ctrl->T.inc;
@@ -4031,7 +4088,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	info.notime = Ctrl->T.notime;
 	GMT_set_tbl_minmax (GMT, info.T);
 
-	if (Ctrl->A.active) {	/* Set up A * x = b, with the table holding the extended matrix [ A | b ] */
+	if (Ctrl->A.active) {	/* Set up A * x = b, with the table holding the extended matrix [ A | [w | ] b ], with w the optional weights */
 		if (!stack[0]->D) {
 			stack[0]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 			stack[0]->alloc_mode = 1;
@@ -4040,7 +4097,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		if (!Ctrl->A.null) load_column (stack[0]->D, Ctrl->N.tcol, rhs, 0);	/* Optionally, put the t vector in the time column of the item on the stack */
 		GMT_set_tbl_minmax (GMT, stack[0]->D->table[0]);
 		nstack = 1;
-		info.fit_mode = Ctrl->A.mode;
+		info.fit_mode = Ctrl->A.e_mode;
+		info.w_mode = Ctrl->A.w_mode;
 	}
 	else
 		nstack = 0;
@@ -4050,6 +4108,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_EULER] = M_EULER;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMIN] = Ctrl->T.min;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMAX] = Ctrl->T.max;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TRANGE] = Ctrl->T.max - Ctrl->T.min;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TINC] = Ctrl->T.inc;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N] = (double)n_records;
 
@@ -4178,15 +4237,24 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			}
 			else if (op == GMTMATH_ARG_IS_t_MATRIX) {	/* Need to set up matrix of normalized t-values */
 				if (Ctrl->T.notime) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Tn is not defined for plain data files!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "TNORM is not defined for plain data files!\n");
 					Return (EXIT_FAILURE);
 				}
 				if (!stack[nstack]->D) {
 					stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 					stack[nstack]->alloc_mode = 1;
 				}
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Tn ");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "TNORM ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TN);
+				GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
+			}
+			else if (op == GMTMATH_ARG_IS_J_MATRIX) {	/* Need to set up matrix of row numbers */
+				if (!stack[nstack]->D) {
+					stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
+					stack[nstack]->alloc_mode = 1;
+				}
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "TROW ");
+				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TJ);
 				GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_FILE) {		/* Filename given */

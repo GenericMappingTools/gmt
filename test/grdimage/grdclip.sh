@@ -6,13 +6,13 @@
 ps=grdclip.ps
 
 plot1 () {
-gmt grdmath $1 -fg -I10 Xn Yn 0.2 MUL ADD = t.nc
+gmt grdmath $1 -fg -I10 XNORM YNORM 0.2 MUL ADD = t.nc
 gmt grdedit -T t.nc
 gmt grdimage t.nc -nn -Ct.cpt -Q -R0/360/30/70 -J -E50 -O $2
 }
 
 plot2 () {
-gmt grdmath $1 -fg -I10 Xn Yn 0.2 MUL ADD = t.nc
+gmt grdmath $1 -fg -I10 XNORM YNORM 0.2 MUL ADD = t.nc
 gmt grdimage t.nc -nn -Ct.cpt -Q -R0/360/30/70 -J -E50 -O $2
 }
 
