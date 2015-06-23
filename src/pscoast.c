@@ -165,13 +165,8 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
-	unsigned int k;
 	if (!C) return;
-	if (C->E.active && C->E.info.n_items) {
-		for (k = 0; k < C->E.info.n_items; k++)
-			free ((void *)C->E.info.item[k].codes);
-		GMT_free (GMT, C->E.info.item);
-	}
+	GMT_DCW_free (GMT, &(C->E.info));
 	GMT_free (GMT, C);
 }
 

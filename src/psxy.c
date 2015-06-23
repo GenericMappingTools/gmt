@@ -535,7 +535,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				else	/* Just force a closed polygon */
 					Ctrl->L.polygon = true;
 				if ((c = strstr (opt->arg, "+p"))) {	/* Want outline */
-					if (opt->arg[j] && GMT_getpen (GMT, &c[2], &Ctrl->L.pen)) {
+					if (c[2] && GMT_getpen (GMT, &c[2], &Ctrl->L.pen)) {
 						GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:");
 						n_errors++;
 					}

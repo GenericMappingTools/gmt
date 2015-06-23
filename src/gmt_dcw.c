@@ -232,7 +232,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	
 	for (j = ks = 0; j < F->n_items; j++) {
-		if (!F->item[j].codes || F->item[j].codes[0] == '\0') continue;
+		if (!F->item[j]->codes || F->item[j]->codes[0] == '\0') continue;
 		ks++;	/* Gave some codes */
 	}
 	if (ks == 0) return NULL;	/* No countries requested */
@@ -248,7 +248,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	order = GMT_memory (GMT, NULL, n_alloc, unsigned int);
 	for (j = 0; j < F->n_items; j++) {
 		pos = 0;
-		while (GMT_strtok (F->item[j].codes, ",", &pos, code)) {	/* Loop over items */
+		while (GMT_strtok (F->item[j]->codes, ",", &pos, code)) {	/* Loop over items */
 			if (code[0] == '=') {	/* Must expand a continent into all member countries */
 				for (k = 0; k < GMT_DCW_COUNTRIES; k++) {
 					if (strncmp (GMT_DCW_country[k].continent, &code[1], 2)) continue;	/* Not this one */
@@ -257,7 +257,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					order[n_items] = j;	/* So we know which color/pen to apply for this item */
 					n_items++;
 				}
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Continent code expanded from %s to %s [%d countries]\n", F->item[j].codes, list, n_items);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
 			}
 			else {	/* Just append this single one */
 				if (n_items) strcat (list, ",");
@@ -394,10 +394,10 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		if (mode & GMT_DCW_PLOT) {	/* Time to consider fill/pen change */
 			new_set = (tbl == 0 || order[tbl] != order[tbl-1]);	/* When item group change it is likely pen/fill changes too */
-			outline = (F->item[order[tbl]].mode & DCW_DO_OUTLINE);
-			fill = (F->item[order[tbl]].mode & DCW_DO_FILL);
-			if (outline && new_set) GMT_setpen (GMT, &F->item[order[tbl]].pen);
-			if (fill && new_set) GMT_setfill (GMT, &F->item[order[tbl]].fill, outline);
+			outline = (F->item[order[tbl]]->mode & DCW_DO_OUTLINE);
+			fill = (F->item[order[tbl]]->mode & DCW_DO_FILL);
+			if (outline && new_set) GMT_setpen (GMT, &(F->item[order[tbl]]->pen));
+			if (fill && new_set) GMT_setfill (GMT, &(F->item[order[tbl]]->fill), outline);
 		}
 		
 	        /* Extract the pieces into separate segments */
@@ -550,10 +550,11 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 {	/* Parse the F option in pscoast */
 	unsigned int n_errors = 0, pos = 0, n;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL, *a = NULL;
+	struct GMT_DCW_ITEM *this_item = NULL;
 
 	if ((a = strchr (args, '+'))) a[0] = '\0';	/* Temporarily chop off modifiers */
-	F->item = GMT_memory (GMT, F->item, F->n_items+1, struct GMT_DCW_CHUNK);	/* Add one more item to the structure (NULL first time) */
-	F->item[F->n_items].codes = strdup (args);
+	this_item = GMT_memory (GMT, NULL, 1, struct GMT_DCW_ITEM);	/* New item to fill */
+	this_item->codes = strdup (args);
 	if (a) a[0] = '+';	/* Reset modifiers */
 
 	if (a && (c = strchr (a, '+'))) {	/* Handle modifiers */
@@ -574,7 +575,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 							F->inc[YLO] = F->inc[YHI] = F->inc[XHI];
 							F->inc[XHI] = F->inc[XLO];
 						}
-						else if (n != 4){
+						else if (n != 4) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
 							n_errors++;
 						}
@@ -583,18 +584,18 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				case 'l':  F->mode = DCW_GET_COUNTRY;  break;	/* Country list */
 				case 'L':  F->mode = DCW_GET_COUNTRY_AND_STATE;  break;	/* Country and state list */
 				case 'p':
-					if (GMT_getpen (GMT, &p[1], &F->item[F->n_items].pen)) {	/* Error decoding pen */
-						GMT_pen_syntax (GMT, 'F', " ");
+					if (GMT_getpen (GMT, &p[1], &(this_item->pen))) {	/* Error decoding pen */
+						GMT_pen_syntax (GMT, option, " ");
 						n_errors++;
 					}
-					F->item[F->n_items].mode |= DCW_DO_OUTLINE;
+					this_item->mode |= DCW_DO_OUTLINE;
 					break;
 				case 'g':
-					if (GMT_getfill (GMT, &p[1], &F->item[F->n_items].fill)) {
-						GMT_fill_syntax (GMT, 'F', " ");
+					if (GMT_getfill (GMT, &p[1], &(this_item->fill))) {
+						GMT_fill_syntax (GMT, option, " ");
 						n_errors++;
 					}
-					F->item[F->n_items].mode |= DCW_DO_FILL;
+					this_item->mode |= DCW_DO_FILL;
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
@@ -603,10 +604,23 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 			}
 		}
 	}
-	if (F->item[F->n_items].codes[0] == '\0' && !(F->mode & (DCW_GET_COUNTRY+DCW_GET_COUNTRY_AND_STATE))) {	/* Gave +l or +L but no codes */
+	if (this_item->codes[0] == '\0' && !(F->mode & (DCW_GET_COUNTRY+DCW_GET_COUNTRY_AND_STATE))) {	/* Gave +l or +L but no codes */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: No country codes given\n", option);
 		n_errors++;
 	}
+	F->item = GMT_memory (GMT, F->item, F->n_items+1, struct GMT_DCW_ITEM *);	/* Add one more pointer space to the structure (NULL first time) */
+	F->item[F->n_items] = this_item;
 	F->n_items++;
 	return (n_errors);
+}
+
+void GMT_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F)
+{	/* Free what we might have allocated during parsing */
+	unsigned int k;
+	if (F->n_items == 0) return;	/* Nothing to free */
+	for (k = 0; k < F->n_items; k++) {
+		free (F->item[k]->codes);
+		GMT_free (GMT, F->item[k]);
+	}
+	GMT_free (GMT, F->item);
 }
