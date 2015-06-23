@@ -5312,7 +5312,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 	double *track_dist = NULL, *map_dist = NULL, *value_dist = NULL, *radii = NULL, *xx = NULL, *yy = NULL;
 	double dx, dy, width, f, this_dist, step, stept, this_value_dist, lon[2], lat[2];
 	struct GMT_LABEL *new_label = NULL;
-	char this_label[GMT_BUFSIZ];
+	char this_label[GMT_BUFSIZ] = {""};
 
 	if (nn < 2) return;
 
