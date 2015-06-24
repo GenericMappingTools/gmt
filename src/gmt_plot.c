@@ -2731,15 +2731,16 @@ void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 {	/* Place a rectangle on the map, as defined by center point and dimensions or w/e/s/n in geo or projected coordinates */
 	unsigned int k;
-	double rect[4], dim[3];
+	double rect[4], dim[3], x0, y0, s;
 	struct GMT_MAP_PANEL *panel = B->panel;
 
 	GMT_set_anchorpoint (GMT, B->anchor);	/* Finalize anchor point plot coordinates, if needed */
 
 	/* First convert the information we have into the center and dimensions of a rectangle */
-	if (B->unit || B->oblique) {	/* Dealing with projected coordinates and dimensions or got oblique box */
+	
+	if (B->anchor || B->unit || B->oblique) {	/* Dealing with projected coordinates and dimensions or got oblique box */
 		if (B->unit) GMT_init_distaz (GMT, B->unit, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Get scales for this unit */
-		if (B->justify) {	/* Got a geographic center point and width/height for a rectangular box */
+		if (B->anchor) {	/* Got a geographic center point and width/height for a rectangular box */
 			GMT_memcpy (dim, B->dim, 2, double);		/* Duplicate the width/height of rectangle */
 			if (B->unit) {	/* Gave dimensioned box */
 				for (k = 0; k < 2; k++) {
@@ -2750,6 +2751,9 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 			/* Now in inches */
 			B->anchor->x -= 0.5 * ((B->justify-1)%4) * dim[GMT_X];	/* Adjust to lower left corner */
 			B->anchor->y -= 0.5 * (B->justify/4) * dim[GMT_Y];
+			/* Also deal with any justified offsets, if given */
+			B->anchor->x -= ((B->justify%4)-2) * B->dx;
+			B->anchor->y -= ((B->justify/4)-1) * B->dy;
 			rect[XLO] = B->anchor->x;	rect[XHI] = B->anchor->x + dim[GMT_X];	/* Get the min/max map coordinates of the rectangle */
 			rect[YLO] = B->anchor->y;	rect[YHI] = B->anchor->y + dim[GMT_Y];
 		}
@@ -2795,6 +2799,21 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 	
 	panel->width = rect[XHI] - rect[XLO];	panel->height = rect[YHI] - rect[YLO];
 	if (!panel->clearance) GMT_memset (panel->off, 4, double);	/* No clearance is default for map inserts unless actually specified */
+	/* Report position and dimensions */
+	x0 = 0.5 * (rect[XHI] + rect[XLO]);
+	y0 = 0.5 * (rect[YHI] + rect[YLO]);
+	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Map insert lower left corner and dimensions (in %s): %g %g %g %g\n",
+		GMT->session.unit_name[GMT->current.setting.proj_length_unit], rect[XLO]*s, rect[YLO]*s, panel->width*s, panel->height);
+	if (B->file) {	/* Save x0 y0 w h to file */
+		FILE *fp = fopen (B->file, "w");
+		if (fp) {
+			fprintf (fp, "%.12g %.12g %.12g %.12g\n", rect[XLO]*s, rect[YLO]*s, panel->width*s, panel->height);
+			fclose (fp);
+		}
+		else
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create file %s\n", B->file);
+	}
 	GMT_draw_map_panel (GMT, 0.5 * (rect[XHI] + rect[XLO]), 0.5 * (rect[YHI] + rect[YLO]), 3U, panel);
 }
 

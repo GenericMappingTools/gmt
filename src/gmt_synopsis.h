@@ -60,8 +60,8 @@
 
 #define GMT_TROSE	"[f|m][x]<lon0>/<lat0>/<diameter>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
 #define GMT_SCALE	"[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[e|f|M|n|k|u][+l<label>][+j<just>][+u]"
-#define GMT_INSERT_A	"[g|j|n|x]<anchor>/<width>[<unit>]/<height>[<unit>][/<justify>[/<dx>/<dy>]]"
-#define GMT_INSERT_B	"[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r]"
+#define GMT_INSERT_A	"[g|j|n|x]<anchor>/<width>[<unit>]/<height>[<unit>][/<justify>[/<dx>/<dy>]][+s<file>]"
+#define GMT_INSERT_B	"[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>]"
 
 /* Options for background panel, used in gmtlogo, psimage, pslegend and psscale */
 

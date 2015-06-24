@@ -7706,15 +7706,20 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 	 * -D[<unit>]<xmin/xmax/ymin/ymax>|<width>[/<height>][+c<clon>/<clat>] */
 	unsigned int col_type[2], k = 0, error = 0, n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""};
-	char text[GMT_BUFSIZ] = {""}, oldshit[GMT_LEN128] = {""};
+	char text[GMT_BUFSIZ] = {""}, oldshit[GMT_LEN128] = {""}, *c = NULL;
 
 	if (!in_text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	GMT_memset (B, 1, struct GMT_MAP_INSERT);
+	if ((c = strstr (in_text, "+s")) && c[2]) {	/* Want to save insert information to file */
+		B->file = strdup (&c[2]);
+		c[0] = '\0';	/* Chop off this single modifier */
+	}
 
 	if (gmt_ensure_new_syntax (GMT, option, in_text, text, oldshit)) return (1);	/* This recasts any old syntax using new syntax and gives a warning */
+	if (c) c[0] = '+';	/* Restore original argument */
 	
 	/* Determine if we got an anchor point or a region */
 	
@@ -8162,6 +8167,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					n_errors++;
 				}
 				for (n = 0; n < 4; n++) P->off[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];	/* Since GMT_Get_Value might return cm */
+				P->clearance = true;
 				break;
 			case 'i':	/* Secondary pen info */
 				P->mode |= GMT_PANEL_INNER;

@@ -104,6 +104,7 @@ struct GMT_MAP_INSERT {
 	double wesn[4];		/* Geographic or projected boundaries */
 	double dx, dy;		/* Offset from anchor point */
 	double dim[2];		/* Width & height of box */
+	char *file;			/* Used to write insert location and dimensions [+s] */
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
