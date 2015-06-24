@@ -154,16 +154,11 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set anchor point [top center-point position] x0/y0 and length/width for scale; use one of four coordinate systems:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dg to specify <anchor> with map coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to specify <anchor> with 2-char justification code (LB, CM, etc).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dn to specify <anchor> with normalized coordinates in 0-1 range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx to specify <anchor> with plot coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   All except -Dx requires the -R and -J options to be set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative length to reverse the positive direction of the scalebar.\n");
+	GMT_anchor_syntax (API->GMT, 'D', "Specify position and size of the scale bar", GMT_ANCHOR_SCALE, 1);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append <length>/<width> for the scale\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction of the scale bar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append h to <width> for a horizontal scale [Default is vertical].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate that point on the scale with <x0>/<y0> [TC or LM].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <dx>/<dy> to shift the bar from the selected anchor in the direction implied by <justify> [0/0].\n");
+	GMT_anchor_syntax (API->GMT, 'D', "TC or LM", GMT_ANCHOR_SCALE, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Place the desired annotations/labels/units on the opposite side of the colorscale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append any of a, l, or u to flip the annotations, labels, or unit, respectively.\n");

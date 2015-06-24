@@ -7637,103 +7637,168 @@ bool GMT_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double righ
 }
 
 /*! . */
-int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_INSERT *B)
-{	/* Parse the map insert option:
-	 * -D[unit]<xmin/xmax/ymin/ymax>|<width>[/<height>][+c<clon>/<clat>][+p<pen>][+g<fill>] */
-	unsigned int col_type[2], k = 0, i, start = 0, pos = 0, error = 0, n;
-	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
+int gmt_ensure_new_syntax (struct GMT_CTRL *GMT, char option, char *in_text, char *text, char *panel_txt)
+{	/* Recasts any old syntax using new syntax and gives a warning.
+ 	   Assumes text and panel_text are blank and has space */
+	if (strstr (in_text, "+c") || strstr (in_text, "+g") || strstr (in_text, "+p")) {	/* Tell-tale wsign of old syntax */
+		unsigned int pos = 0, start = 0, i;
+		int n;
+		char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+		bool center = false;
+		for (i = 0; start == 0 && in_text[i]; i++) {
+			if (in_text[i] == '+') {
+				if (strchr ("cgp", in_text[i+1])) start = i;	/* Found start of the modifiers */
+			}
+		}
+		while ((GMT_strtok (&in_text[start], "+", &pos, p))) {
+			switch (p[0]) {
+				case 'c':	/* Got insert center */
+					center = true;
+					if ((n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify +c<lon>/<lat> for center\n", option);
+						return (1);
+					}
+					break;
+				case 'g':	/* Fill specification [Obsolete, done via panel attributes ] */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -%c option:  Insert fill attributes now given with panel setting (-F)\n", option);
+					strcat (panel_txt, "+g");
+					strcat (panel_txt, &p[1]);
+					break;
+				case 'p':	/* Pen specification [Obsolete, done via panel attributes ] */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -%c option:  Insert pen attributes now given with panel setting (-F)\n", option);
+					strcat (panel_txt, "+p");
+					strcat (panel_txt, &p[1]);
+					break;
+				default:
+					break;
+			}
+		}
+		in_text[start] = '\0';	/* Chop off modifiers for now */
+		if (center) {
+			char unit[2] = {0, 0};
+			sprintf (text, "g%s/%s/", txt_a, txt_b);
+			n = sscanf (in_text, "%[^/]/%s", txt_a, txt_b);
+			if (strchr (GMT_LEN_UNITS2, txt_a[0])) {	/* Got dimensions in these units */
+				unit[0] = txt_a[0];
+				strcat (text, &txt_a[1]);	/* Append width */
+				strcat (text, unit);		/* Append unit */
+				strcat (text, "/");
+				(n == 2) ? strcat (text, txt_b) : strcat (text, &txt_a[1]);		/* Append height */
+				strcat (text, unit);		/* Append unit */
+			}
+			else
+				strcat (text, in_text);		/* Append h/w as is */
+			strcat (text, "/CM");	/* Append justification */
+		}
+		else	/* Just keep as is minus the modifiers */
+			strcpy (text, in_text);
+		in_text[start] = '+';	/* Restore modifiers */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted %s to %s and %s\n", in_text, text, panel_txt);
+	}
+	else	/* New syntax or no +g,+p given so old syntax is same as new */
+		strcpy (text, in_text);
+	return (0);
+}
 
-	if (!text) {
+/*! . */
+int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_MAP_INSERT *B)
+{	/* Parse the map insert option:
+	 * -D[<unit>]<xmin/xmax/ymin/ymax>|<width>[/<height>][+c<clon>/<clat>] */
+	unsigned int col_type[2], k = 0, i = 0, error = 0, n;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""};
+	char text[GMT_BUFSIZ] = {""}, oldshit[GMT_LEN128] = {""};
+
+	if (!in_text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	GMT_memset (B, 1, struct GMT_MAP_INSERT);
 
-	if (strchr (GMT_LEN_UNITS2, text[0])) {
-		B->unit = text[0];
-		k = 1;
-	}
-	for (i = k; start == 0 && text[i]; i++) {
-		if (text[i] == '+') {
-			if (strchr ("cgp", text[i+1])) start = i;
+	if (gmt_ensure_new_syntax (GMT, option, in_text, text, oldshit)) return (1);	/* This recasts any old syntax using new syntax and gives a warning */
+	
+	/* Determine if we got an anchor point or a region */
+	
+	if (strchr ("gjnx", text[0])) {	/* Did the anchor point thing. */
+		unsigned int last;
+		char *p[2];
+		size_t len;
+		/* Syntax is -Dg|j|n|x<anchor>/<width>[u][/<height>[u]][/<justify>[/<dx>/<dy>]] */
+		if ((B->anchor = GMT_get_anchorpoint (GMT, text)) == NULL) return (1);	/* Failed basic parsing */
+		/* anchor args are <width>[h][/<height>[h]][/<justify>[/<dx>/<dy>]].  If justify is not given, the it defaults to CM
+		 * and in that case dx/dy are useless, so the cases we need to handle are:
+		 *	n = 1. <width>[h]
+		 *	n = 2. <width>[h]/<height>[h]
+		 *	n = 3. <width>[h]/<height>[h]/<justify>
+		 *	n = 4. <width>[h]/<height>[h]/<dx>/<dy>
+		 *	n = 5. <width>[h]/<height>[h]/<justify>/<dx>[/<dy> */
+		n = sscanf (B->anchor->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+		/* First deal with insert dimensions and horizontal vs vertical */
+		/* Handle either <unit><width>/<height> or <width>[<unit>]/<height>[<unit>] */
+		p[GMT_X] = txt_a;	p[GMT_Y] = txt_b;
+		last = (n == 1) ? GMT_X : GMT_Y;
+		for (k = GMT_X; k <= last; k++) {
+			len = strlen (p[k]) - 1;
+			if (strchr (GMT_LEN_UNITS2, p[k][len])) {	/* Got dimensions in these units */
+				B->unit = p[k][len];
+				p[k][len] = 0;
+			}
+			B->dim[k] = (B->unit) ? atof (p[k]) : GMT_to_inch (GMT, p[k]);
 		}
+		if (last == GMT_X) B->dim[GMT_Y] = B->dim[GMT_X];
+		if (B->anchor->mode == GMT_ANCHOR_JUST)	/* With -Dj, set default as the mirror to anchor justify point */
+			B->justify = GMT_flip_justify (GMT, B->anchor->justify);
+		else
+			B->justify = PSL_MC;	/* Default justifications for non-Dj settings */
+		/* Now deal with optional arguments, if any */
+		switch (n) {
+			case 3: B->justify = GMT_just_decode (GMT, txt_c, 10);	break;	/* Just got justification */
+			case 4: B->dx = GMT_to_inch (GMT, txt_c); 	B->dy = GMT_to_inch (GMT, txt_d); break;	/* Just got offsets */
+			case 5: B->justify = GMT_just_decode (GMT, txt_c, 10);	B->dx = GMT_to_inch (GMT, txt_d); 	B->dy = GMT_to_inch (GMT, txt_e); break;	/* Got both */
+		}
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Insert settings: justify = %d, dx = %g dy = %g\n", B->justify, B->dx, B->dy);
 	}
-	col_type[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];
-	col_type[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
-
-	if (start) {	/* Process modifiers */
-		while ((GMT_strtok (&text[start], "+", &pos, p))) {
-			switch (p[0]) {
-				case 'c':	/* Set insert center */
-					B->center = true;
-					if ((n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) == 2) {
-						error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->x0), txt_a);
-						error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_b, col_type[GMT_Y], &B->y0), txt_b);
-					}
-					else {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify +c<lon>/<lat> for center\n", option);
-						return (1);
-					}
-					break;
-				case 'g':	/* Fill specification */
-					if (GMT_getfill (GMT, &p[1], &B->fill)) error++;
-					B->boxfill = true;
-					break;
-				case 'p':	/* Pen specification */
-					if (GMT_getpen (GMT, &p[1], &B->pen)) error++;
-					B->boxdraw = true;
-					break;
-				default:
-					error++;
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Unrecognized modifier +%c\n", option, p[0]);
-					break;
+	else {	/* Did the [<unit>]<xmin/xmax/ymin/ymax> thing - this is exact so no justify, offsets etc. */
+		/* Syntax is -D[<unit>]<xmin/xmax/ymin/ymax> */
+		/* Decode the w/e/s/n part */
+		if (strchr (GMT_LEN_UNITS2, text[0])) {	/* Got a rectangular region in these units */
+			B->unit = text[0];
+			k = 1;
+		}
+		if ((n = sscanf (&text[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d)) != 4) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify w/e/s/n or <unit>xmin/xmax/ymin/ymax\n", option);
+			return (1);
+		}
+		col_type[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];
+		col_type[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+		if (k == 0) {	/* Got geographic w/e/s/n or <w/s/e/n>r */
+			n = (unsigned int)strlen(txt_d) - 1;
+			if (txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
+				B->oblique = true;
+				txt_d[n] = '\0';
+				error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
+				error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_b, col_type[GMT_Y], &B->wesn[YLO]), txt_b);
+				error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_c, col_type[GMT_X], &B->wesn[XHI]), txt_c);
+				error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_d, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
+				txt_d[n] = 'r';
+			}
+			else {	/* Got  w/e/s/n for box that follows meridians and parallels, which may not be rectangular */
+				error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
+				error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_b, col_type[GMT_X], &B->wesn[XHI]), txt_b);
+				error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_c, col_type[GMT_Y], &B->wesn[YLO]), txt_c);
+				error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_d, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
 			}
 		}
-		text[start] = '\0';	/* Truncate string for now */
-	}
-	if (! (B->boxdraw || B->boxfill)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Need to add at least one of +<pen> or +g<fill>\n", option);
-		return (1);
-	}
-	/* Decode the w/e/s/n or width[/height] part */
-	n = sscanf (&text[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-	if (!B->center && n != 4) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify w/e/s/n or unit/xmin/xmax/ymin/ymax\n", option);
-		return (1);
-	}
-	else if (B->center && n > 2) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify unit/width/height\n", option);
-		return (1);
-	}
-	if (k == 0 && !B->center) {	/* Got geographic w/e/s/n or <w/s/e/n>r */
-		n = (unsigned int)strlen(txt_d) - 1;
-		if (txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
-			B->oblique = true;
-			txt_d[n] = '\0';
-			error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
-			error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_b, col_type[GMT_Y], &B->wesn[YLO]), txt_b);
-			error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_c, col_type[GMT_X], &B->wesn[XHI]), txt_c);
-			error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_d, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
-			txt_d[n] = 'r';
-		}
-		else {	/* Got  w/e/s/n for box that follows meridians and parallels */
-			error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
-			error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_b, col_type[GMT_X], &B->wesn[XHI]), txt_b);
-			error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_c, col_type[GMT_Y], &B->wesn[YLO]), txt_c);
-			error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_d, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
+		else {	/* Got projected xmin/xmax/ymin/ymax for rectangular box */
+			B->wesn[XLO] = atof (txt_a);	B->wesn[XHI] = atof (txt_b);
+			B->wesn[YLO] = atof (txt_c);	B->wesn[YHI] = atof (txt_d);
 		}
 	}
-	else if (!B->center) {	/* Got projected xmin/xmax/ymin/ymax for rectangular box */
-		B->wesn[XLO] = atof (txt_a);	B->wesn[XHI] = atof (txt_b);
-		B->wesn[YLO] = atof (txt_c);	B->wesn[YHI] = atof (txt_d);
-	}
-	else {	/* Got width[/height] + center for rectangular box */
-		B->dim[GMT_X] = atof (txt_a);
-		B->dim[GMT_Y] = (n == 2) ? atof (txt_b) : B->dim[GMT_X];
-		if (k == 0) B->unit = 'e';	/* Default unit is meter */
-	}
-	if (start) text[start] = '+';	/* Restore string*/
+
 	B->plot = true;
+	if (oldshit[0] && GMT_getpanel (GMT, 'F', oldshit, &(B->panel))) {
+		GMT_mappanel_syntax (GMT, 'F', "Specify the rectanglar panel attributes for map insert", 3);
+		error++;
+	}
 	return (error);
 }
 

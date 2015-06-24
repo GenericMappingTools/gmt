@@ -965,6 +965,29 @@ void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
 }
 
+
+void GMT_anchor_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part)
+{	/* For -Dgjnx */
+	char *type[5] = {"logo", "image", "legend", "scale", "insert"}, *tab[2] = {"", "     "};
+	unsigned int shift = (part & 4) ? 1 : 0;
+	if (part & 1) {	/* Here string is message, or NULL */
+		if (string) GMT_message (GMT, "\t-%c %s\n", option, string);
+		GMT_message (GMT, "\t   %sPositioning is specified via one of four coordinate systems:\n", tab[shift]);
+		GMT_message (GMT, "\t   %s  Use -Dg to specify <anchor> with map coordinates.\n", tab[shift]);
+		GMT_message (GMT, "\t   %s  Use -Dj to specify <anchor> with 2-char justification code (LB, CM, etc).\n", tab[shift]);
+		GMT_message (GMT, "\t   %s  Use -Dn to specify <anchor> with normalized coordinates in 0-1 range.\n", tab[shift]);
+		GMT_message (GMT, "\t   %s  Use -Dx to specify <anchor> with plot coordinates.\n", tab[shift]);
+		GMT_message (GMT, "\t   %sAll except -Dx requires the -R and -J options to be set.\n", tab[shift]);
+	}
+	/* May need to place other things in the middle */
+	if (part & 2) {	/* Here string is jsutification unless part == 3 */
+		char *just = (part == 3) ? "LB" : string;
+		GMT_message (GMT, "\t   %sAppend 2-char <justify> code to associate that point on the %s with <x0>/<y0> [%s].\n", tab[shift], type[kind], just);
+		GMT_message (GMT, "\t   %sNote for -Dj: If <justify> is not given then it inherits the code used to set <x0>/<y0>.\n", tab[shift]);
+		GMT_message (GMT, "\t   %sOptionally, append /<dx>/<dy> to shift %s from selected anchor in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
+	}
+}
+
 /*! .
 	\param GMT ...
 	\param option ...
@@ -974,14 +997,15 @@ void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {	/* Only called in psbasemap.c for now */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
+	GMT_message (GMT, "\t     Specify the map insert region using one of three specifications:\n");
 	GMT_message (GMT, "\t     a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels.\n");
 	GMT_message (GMT, "\t        Append r if coordinates are the lower left and upper right corners of a rectangular area.\n");
 	GMT_message (GMT, "\t     b) Give <u><xmin>/<xmax>/<ymin>/<ymax> of bounding rectangle in projected coordinates.\n");
-	GMT_message (GMT, "\t     c) Give [<u>]width[/height] of bounding rectangle and use +c to set box center (<u> is unit).\n");
-	GMT_message (GMT, "\t   Append any combination of these modifiers to draw the map insert rectangle:\n");
-	GMT_message (GMT, "\t     +c<lon>/<lat> to specify insert rectangle center (required for case c above).\n");
-	GMT_message (GMT, "\t     +g<fill> to paint the insert rectangle [no fill].\n");
-	GMT_message (GMT, "\t     +p<pen> to draw the insert rectangle outline [no outline].\n");
+	GMT_message (GMT, "\t     c) Set anchor point x0/y0 and dimensions of the insert:\n");
+	GMT_anchor_syntax (GMT, 'D', NULL, GMT_ANCHOR_INSERT, 5);
+	GMT_message (GMT, "\t        Append width[<u>]/height[u] of bounding rectangle (<u> is unit).\n");
+	GMT_anchor_syntax (GMT, 'D', "CM", GMT_ANCHOR_INSERT, 6);
+	GMT_message (GMT, "\t   Set panel attributes separately via -F option:\n");
 }
 
 /*! .
@@ -1036,6 +1060,7 @@ void GMT_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	GMT_message (GMT, "\t   Without further options: draw border around the %s panel (using MAP_FRAME_PEN)\n", type[kind]);
 	GMT_message (GMT, "\t      [Default is no border].\n");
 	GMT_message (GMT, "\t   Append +c<clearance> where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp].\n", GMT_FRAME_CLEARANCE);
+	GMT_message (GMT, "\t     Note: For a map insert the default clearance is zero.\n");
 #ifdef DEBUG
 	GMT_message (GMT, "\t   Append +d to draw guide lines for debugging.\n");
 #endif

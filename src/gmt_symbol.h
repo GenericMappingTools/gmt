@@ -96,17 +96,15 @@ struct GMT_MAP_PANEL {
 /*! Plot a map insert box in psbasemap */
 struct GMT_MAP_INSERT {
 	/* -D[unit]xmin/xmax/ymin/ymax|width[/height][+c<clon>/<clat>][+p<pen>][+g<fill>] */
-	bool center;		/* Gave center of insert */
+	int justify;		/* Gave center of insert */
 	bool plot;		/* true if we want to draw the insert */
-	bool boxdraw;		/* true if we want to plot a rectangle to indicate the insert */
-	bool boxfill;		/* true if we want to paint/fill the insert */
 	bool oblique;		/* true if we want got <w/s/e/n>r instead of <w/e/s/n> */
 	char unit;		/* Unit of projected coordinates or 0 for geographic */
-	double x0, y0;		/* Center of insert, if given */
+	struct GMT_ANCHOR *anchor;
 	double wesn[4];		/* Geographic or projected boundaries */
+	double dx, dy;		/* Offset from anchor point */
 	double dim[2];		/* Width & height of box */
-	struct GMT_FILL fill;	/* Fill for insert */
-	struct GMT_PEN pen;	/* Pen for insert */
+	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
 /*! Plot a map scale in psbasemap and pscoast */

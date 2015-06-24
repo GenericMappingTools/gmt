@@ -91,17 +91,10 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set anchor point <x0>/<y0> and size of legend box; use one of four coordinate systems:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dg to specify <anchor> with map coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to specify <anchor> with 2-char justification code (LB, CM, etc).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dn to specify <anchor> with normalized coordinates in 0-1 range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx to specify <anchor> with plot coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   All except -Dx require the -R and -J options to be set.\n");
+	GMT_anchor_syntax (API->GMT, 'D', "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append the legend box <width>. The remaining arguments are optional:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <height> is 0 or not specified then we estimate it from <specfile>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate a point on the legend box with <x0>/<y0> [TC].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: If -Dj<code> is used and <justify> not set then <justify> is set equal to <code>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <dx>/<dy> to shift legend from selected anchor in direction implied by <justify> [0/0].\n");
+	GMT_anchor_syntax (API->GMT, 'D', "TC", GMT_ANCHOR_LEGEND, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");

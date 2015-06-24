@@ -50,7 +50,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     Append the legend box *width*.  The remaining arguments are optional:
     If *height* is zero or not given then we estimate *height* based the expected
     vertical extent of the items to be placed.
-    The *justify* code is an2-char justification string (see :doc:`pstext`) that relates the given
+    The *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
     anchor *x0*/*y0* to a point on the rectangular legend box [CT].  Note that if **-Dj**\ *code*
     is used and *justify* is not set then *justify* is set equal to *code*.
     Finally, you can offset the legend box by *dx*/*dy* away from the *anchor* point in

@@ -220,6 +220,13 @@ enum GMT_enum_bc {
 	GMT_BC_IS_GEO,        /* Geographic BC condition */
 	GMT_BC_IS_DATA};      /* Fill in BC with actual data */
 
+enum GMT_enum_anchors {	/* Various anchor strings */
+	GMT_ANCHOR_LOGO = 0,	/* Anchor for logo */
+	GMT_ANCHOR_IMAGE,	/* Anchor for image */
+	GMT_ANCHOR_LEGEND,	/* Anchor for legend */
+	GMT_ANCHOR_SCALE,	/* Anchor for scale */
+	GMT_ANCHOR_INSERT};	/* Anchor for insert */
+
 enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */
 	GMT_RADIUS_MEAN = 0,	/* Mean radius IUGG R_1 = (2*a+b)/3 = a (1 - f/3) */
 	GMT_RADIUS_AUTHALIC,	/* Authalic radius 4*pi*r^2 = surface area of ellipsoid, R_2 = sqrt (0.5a^2 + 0.5b^2 (tanh^-1 e)/e) */

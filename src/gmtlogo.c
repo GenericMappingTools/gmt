@@ -90,15 +90,7 @@ int GMT_gmtlogo_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set the lower left (anchor) position x0,y0 on the map for the logo [0/0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dg to specify <anchor> with map coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to specify <anchor> with 2-char justification code (LB, CM, etc).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dn to specify <anchor> with normalized coordinates in 0-1 range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dx to specify <anchor> with plot coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   All except -Dx requires the -R and -J options to be set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append 2-char <justify> code to associate that point on the logo with <x0>/<y0> [LB].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note for -Dj: If <justify> is not given then it inherits the code use to set <x0>/<y0>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <dx>/<dy> to shift the logo from the selected anchor in the direction implied by <justify> [0/0].\n");
+	GMT_anchor_syntax (API->GMT, 'D', "Specify position of the logo", GMT_ANCHOR_LOGO, 3);
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the logo", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set width of the GMT logo [2 inches].\n");

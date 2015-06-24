@@ -16,8 +16,8 @@ Synopsis
 **psbasemap** **-J**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-A**\ [*file*] ] [ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
-[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ **-A**\ [*file*] ] [ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*width*\ /*height*[/*justify*]\ [/*dx*/*dy*] ]
+[ **-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-K** ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
 [ **-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ [*label*]\ ][\ **+j**\ *just*]\ [**+u**]\ ]
 [ **-O** ] [ **-P** ]
@@ -66,20 +66,27 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 
-**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]
-    Draw a simple map insert box on the map.  Specify the box in one of three ways:
+**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*width*\ [/*height*][/*justify*\ ][/*dx*/*dy*]
+    Draw a simple map insert box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
     of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
-    (c) Give [**u**]\ *width*\ [/*height*] of bounding rectangle and use **+c** to set
-    box center. Append any combination of the following modifiers to draw the insert box:
-    **+c**\ *lon/lat* to specify box center.
-    **+g**\ *fill* to paint a insert [no fill].
-    **+p**\ *pen* to draw the insert outline [no outline].
+    (c) Give the *anchor* position *x0*/*y0* of the insert using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
+    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (inches, cm, etc.). Append *width*\ [**u**]\ [/*height*\ [**u**]] of bounding rectangle or box.
+    The optional *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
+    anchor *x0*/*y0* to a point on the rectangular insert box [CT].  Note that if **-Dj**\ *code*
+    is used and *justify* is not set then *justify* is set equal to *code*.
+    Finally, you can offset the insert box by *dx*/*dy* away from the *anchor* point in
+    the direction implied by *justify*.
+    Specify insert box attributes via the **-F** option [outline only].
 
-**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
-    Without further options, draws a rectangular border around the map scale or rose using
+**-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+    Without further options, draws a rectangular border around any map insert (**-D**),
+    map scale (**-L**) or map rose (**-T**) using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
@@ -93,7 +100,11 @@ Optional Arguments
     **+s** to draw an offset background shaded region. Here, *dx*/*dy*
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading.
-    Requires **-L** or **-T**.  If both **-L** or **-T**, you may repeat **-F**
+    Used in combination with **-D**, **-L** or **-T**. To specify separate parameters
+    for the various map features, append  **d**\ \|\ **l**\ \|\ **t** to **-F**
+    to specify panel parameters for just that panel [Default uses the same panel
+    parameters for all selected map features].
+
     after each of these.
 
 .. include:: explain_-Jz.rst_

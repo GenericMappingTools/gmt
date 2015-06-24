@@ -67,6 +67,7 @@ EXTERN_MSC bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GM
 EXTERN_MSC int GMT_hash_lookup (struct GMT_CTRL *GMT, char *key, struct GMT_HASH *hashnode, unsigned int n, unsigned int n_hash);
 EXTERN_MSC void GMT_syntax (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
+EXTERN_MSC void GMT_anchor_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part);
 EXTERN_MSC void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string);
