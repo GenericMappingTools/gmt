@@ -844,7 +844,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				PSL_setfill (PSL, rgb, true);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
-			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, 0.0, PSL_MR, 0);
+			if (nan_text) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, 0.0, PSL_MR, 0);
 		}
 		if (extend & (2 - reverse)) {	/* Add color triangle on right side */
 			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + e_length;
@@ -1061,7 +1061,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				PSL_setfill (PSL, rgb, true);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
-			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, -90.0, PSL_TC, 0);
+			if (nan_text) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, -90.0, PSL_TC, 0);
 		}
 		if (extend & (2 - reverse)) {	/* Add color triangle at top */
 			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + e_length;

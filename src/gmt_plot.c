@@ -2731,7 +2731,7 @@ void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 {	/* Place a rectangle on the map, as defined by center point and dimensions or w/e/s/n in geo or projected coordinates */
 	unsigned int k;
-	double rect[4], dim[3], x0, y0;
+	double rect[4], dim[3];
 	struct GMT_MAP_PANEL *panel = B->panel;
 
 	GMT_set_anchorpoint (GMT, B->anchor);	/* Finalize anchor point plot coordinates, if needed */

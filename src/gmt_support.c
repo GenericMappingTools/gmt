@@ -7704,7 +7704,7 @@ int gmt_ensure_new_syntax (struct GMT_CTRL *GMT, char option, char *in_text, cha
 int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_MAP_INSERT *B)
 {	/* Parse the map insert option:
 	 * -D[<unit>]<xmin/xmax/ymin/ymax>|<width>[/<height>][+c<clon>/<clat>] */
-	unsigned int col_type[2], k = 0, i = 0, error = 0, n;
+	unsigned int col_type[2], k = 0, error = 0, n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""};
 	char text[GMT_BUFSIZ] = {""}, oldshit[GMT_LEN128] = {""};
 
