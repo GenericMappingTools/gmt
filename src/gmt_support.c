@@ -5924,7 +5924,7 @@ int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEG
 {	/* Case of a polar cap */
 	uint64_t i, in, ip, prev;
 	int cut;
-	double W, E, S, N, lon, lon1, lon2, dlon, x_lat;
+	double W, E, S, N, lon, lon1, lon2, dlon, x_lat, dx1, dx2;
 
 	/* Draw meridian through P and count all the crossings with the line segments making up the polar cap S */
 
@@ -5951,7 +5951,12 @@ int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEG
 		if (gmt_same_longitude (plon, lon1)) {	/* Line goes through the 1st node */
 			/* Must check that the two neighboring points are on either side; otherwise it is just a tangent line */
 			ip = gmt_getprevpoint (plon, P->coord[GMT_X], P->n_rows, i);	/* Index of previous point != plon */
-			if ((lon2 >= lon1 && P->coord[GMT_X][ip] > lon1) || (lon2 <= lon1 && P->coord[GMT_X][ip] < lon1)) continue;	/* Both on same side */
+			dx1 = P->coord[GMT_X][ip] - lon1;
+			if (fabs (dx1) > 180.0) dx1 += copysign (360.0, -dx1);	/* Allow for jumps across discontinuous 0 or 180 boundary */
+			if (dx1 == 0.0) continue;	/* Points ip and i forms a meridian, we a tangent line */
+			dx2 = lon2 - lon1;
+			if (fabs (dx2) > 180.0) dx2 += copysign (360.0, -dx2);	/* Allow for jumps across discontinuous 0 or 180 boundary */
+			if (dx1*dx2 > 0.0) continue;	/* Both on same side since signs are the same */
 			cut = (P->coord[GMT_Y][i] > plat) ? 0 : 1;	/* node is north (0) or south (1) of P */
 			count[cut]++;
 			prev = ip + 1;	/* Always exists because ip is <= n-2 */
