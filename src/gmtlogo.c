@@ -57,7 +57,7 @@ struct GMTLOGO_CTRL {
 	} W;
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
-		struct GMT_MAP_PANEL panel;
+		struct GMT_MAP_PANEL *panel;
 	} F;
 };
 
@@ -73,6 +73,7 @@ void *New_gmtlogo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_gmtlogo_Ctrl (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free_anchorpoint (GMT, &C->D.anchor);
+	if (C->F.panel) GMT_free (GMT, C->F.panel);
 	GMT_free (GMT, C);
 }
 
@@ -144,7 +145,7 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->F.panel)) {
+				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the logo", 0);
 					n_errors++;
 				}
@@ -245,13 +246,14 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 
 	PSL_command (PSL, "V\n");	/* Ensure the entire gmtlogo output after initialization is between gsave/grestore */
 	PSL_setorigin (PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->y, 0.0, PSL_FWD);
-	Ctrl->F.panel.width = Ctrl->W.width;	Ctrl->F.panel.height = 0.5 * Ctrl->W.width;	
 
 	/* Set up linear projection with logo domain and user width */
 	scale = Ctrl->W.width / 2.0;	/* Scale relative to default size 2 inches */
 	plot_x = 0.5 * Ctrl->W.width;	plot_y = 0.25 * Ctrl->W.width;	/* Center of logo box */
-	if (Ctrl->F.active)	/* First place legend frame fill */
-		GMT_draw_map_panel (GMT, plot_x, plot_y, 3U, &Ctrl->F.panel);
+	if (Ctrl->F.active) {	/* First place legend frame fill */
+		Ctrl->F.panel->width = Ctrl->W.width;	Ctrl->F.panel->height = 0.5 * Ctrl->W.width;	
+		GMT_draw_map_panel (GMT, plot_x, plot_y, 3U, Ctrl->F.panel);
+	}
 	
 	/* Plot the title beneath the map with 1.5 vertical stretching */
 

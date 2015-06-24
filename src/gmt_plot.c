@@ -31,6 +31,8 @@
  * PUBLIC Functions include:
  *
  *	GMT_draw_map_scale :	Plot map scale
+ *	GMT_draw_map_rose :	Plot map rose
+ *	GMT_draw_map_panel :	Plot map panel
  *	GMT_draw_front :	Draw a front line
  *	gmt_echo_command :	Puts the command line into the PostScript file as comments
  *	GMT_geo_line :		Plots line in lon/lat on maps, takes care of periodicity jumps
@@ -2799,7 +2801,8 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	char *label[GMT_N_UNITS] = {"m", "km", "miles", "nautical miles", "inch", "cm", "pt", "feet", "survey feet"};
 	char *units[GMT_N_UNITS] = {"m", "km", "mi", "nm", "in", "cm", "pt", "ft", "usft"}, measure;
 	struct PSL_CTRL *PSL= GMT->PSL;
-
+	struct GMT_MAP_PANEL *panel = ms->panel;
+	
 	if (!ms->plot) return GMT_OK;
 
 	if (!GMT_is_geographic (GMT, GMT_IN)) return GMT_OK;	/* Only for geographic projections */
@@ -2857,7 +2860,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 		dx_a = bar_width / n_a_ticks[i];
 		bar_height = 0.5 * fabs (GMT->current.setting.map_scale_height);	/* Height of the black/white checkered fancy bar */
 		bar_tick_len = 0.75 * fabs (GMT->current.setting.map_scale_height);	/* Length of tickmarks */
-		if (ms->panel.mode) {	/* Place rectangle behind the map scale */
+		if (panel && panel->mode) {	/* Place rectangle behind the map scale */
 			double x_center, y_center, dim[4], l_width = 0.0, l_height = 0.0, l_shift = 0.0;
 
 			/* Adjustment for size of largest annotation is ~half its length (= js+1) times approximate dimensions: */
@@ -2886,8 +2889,8 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 			x_center = ms->x0 + 0.5 * (dim[XHI] - dim[XLO]);
 			y_center = ms->y0 + 0.5 * (dim[YHI] - dim[YLO]);
 			/* Determine panel dimensions */
-			ms->panel.width = bar_width + dim[XHI] + dim[XLO];	ms->panel.height = dim[YHI] + dim[YLO];
-			GMT_draw_map_panel (GMT, x_center, y_center, 3U, &(ms->panel));
+			panel->width = bar_width + dim[XHI] + dim[XLO];	panel->height = dim[YHI] + dim[YLO];
+			GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
 		}
 		/* Draw bar scale ticks using tick pen as well as checkerboard using map_default_pen color [black] and page color [white] */
 		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
@@ -2941,7 +2944,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	}
 	else {	/* Simple scale has no annotation and just the length and unit centered beneath */
 		double xp[4], yp[4];	/* Line for simple scale */
-		if (ms->panel.mode) {	/* Place rectangle behind the map scale */
+		if (panel && panel->mode) {	/* Place rectangle behind the map scale */
 			double x_center, y_center, dim[4];
 
 			/* Adjustment for size of largest annotation is half the length times dimensions: */
@@ -2952,8 +2955,8 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 			x_center = ms->x0 + 0.5 * (dim[XHI] - dim[XLO]);
 			y_center = ms->y0 + 0.5 * (dim[YHI] - dim[YLO]);
 			/* Determine panel dimensions */
-			ms->panel.width = bar_width + dim[XHI] + dim[XLO];	ms->panel.height = dim[YHI] + dim[YLO];
-			GMT_draw_map_panel (GMT, x_center, y_center, 3U, &(ms->panel));
+			panel->width = bar_width + dim[XHI] + dim[XLO];	panel->height = dim[YHI] + dim[YLO];
+			GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
 		}
 		/* Draw the simple scale bar using tick pen */
 		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
@@ -3219,8 +3222,8 @@ void GMT_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr)
 {
 	int tmp_join, tmp_limit;
 	struct PSL_CTRL *PSL= GMT->PSL;
+	struct GMT_MAP_PANEL *panel = mr->panel;
 	if (!mr->plot) return;
-
 	if (!GMT_is_geographic (GMT, GMT_IN)) return;	/* Only for geographic projections */
 
 	if (mr->gave_xy)	/* Also get lon/lat coordinates */
@@ -3231,15 +3234,15 @@ void GMT_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr)
 		GMT_geo_to_xy (GMT, mr->lon, mr->lat, &mr->x0, &mr->y0);
 	}
 
-	if (mr->panel.mode) {	/* Place rectangle behind the map rose */
+	if (panel && panel->mode) {	/* Place rectangle behind the map rose */
 		double x_center, y_center, dim[4] = {0.0, 0.0, 0.0, 0.0};
 
 		/* Determine center of gravity for panel */
 		x_center = mr->x0 + 0.5 * (dim[XHI] - dim[XLO]);
 		y_center = mr->y0 + 0.5 * (dim[YHI] - dim[YLO]);
 		/* Determine panel dimensions */
-		mr->panel.width = mr->size + dim[XHI] + dim[XLO];	mr->panel.height = mr->size + dim[YHI] + dim[YLO];
-		GMT_draw_map_panel (GMT, x_center, y_center, 3U, &(mr->panel));
+		panel->width = mr->size + dim[XHI] + dim[XLO];	panel->height = mr->size + dim[YHI] + dim[YLO];
+		GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
 	}
 
 	/* Temporarily use miter to get sharp points to compass rose */
@@ -3264,9 +3267,10 @@ void GMT_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	 * mode = 2.  Just draw any outlines requested
 	 * mode = 3.  Do both at the same time. */
 	double dim[3] = {0.0, 0.0, 0.0};
-	int outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
+	int outline;
 	struct GMT_FILL *fill = NULL;	/* Default is no fill */
-	
+	if (!P) return;	/* No panel given */
+	outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Place rectangular back panel\n");
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Offsets: %g/%g/%g/%g\n", P->off[XLO], P->off[XLO], P->off[YLO], P->off[YHI]);
 	dim[GMT_X] = P->width  + P->off[XLO] + P->off[XHI];	/* Rectangle width */

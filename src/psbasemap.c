@@ -48,7 +48,7 @@ struct PSBASEMAP_CTRL {
 	} D;
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
-		/* The panel struct is a member of the GMT_MAP_SCALE in -L */
+		/* The panels are members of GMT_MAP_SCALE and GMT_MAP_ROSE */
 	} F;
 	struct L {	/* -L */
 		bool active;
@@ -76,6 +76,8 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->A.file) free (C->A.file);
+	if (C->L.scale.panel) GMT_free (GMT, C->L.scale.panel);
+	if (C->T.rose.panel)  GMT_free (GMT, C->T.rose.panel);
 	GMT_free (GMT, C);
 }
 
@@ -125,8 +127,9 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	struct GMT_MAP_PANEL *this_panel = NULL;	/* Current panel to specify */
-
+	char *kind[2] = {"Specify a rectanglar panel behind the map-scale", "Specify a rectanglar panel behind the directional rose"};
+	bool get_panel[2] = {false, false};
+	
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
@@ -143,9 +146,17 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (this_panel == NULL) this_panel = &(Ctrl->L.scale.panel); 
-				if (GMT_getpanel (GMT, opt->option, opt->arg, this_panel)) {
-					GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+				switch (opt->arg[0]) {
+					case 'l': get_panel[0] = true; break;
+					case 't': get_panel[1] = true; break;
+					default : get_panel[0] = get_panel[1] = true; break;
+				}
+				if (get_panel[0] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->L.scale.panel))) {
+					GMT_mappanel_syntax (GMT, 'F', kind[0], 3);
+					n_errors++;
+				}
+				if (get_panel[1] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->T.rose.panel))) {
+					GMT_mappanel_syntax (GMT, 'F', kind[1], 3);
 					n_errors++;
 				}
 				break;
@@ -164,12 +175,10 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = true;
 				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
-				this_panel = &(Ctrl->L.scale.panel);
 				break;
 			case 'T':	/* Draw map rose */
 				Ctrl->T.active = true;
 				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
-				this_panel = &(Ctrl->T.rose.panel);
 				break;
 
 			default:	/* Report bad options */

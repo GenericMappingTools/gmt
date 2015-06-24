@@ -8046,15 +8046,21 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 }
 
 /*! . */
-int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_PANEL *P) {
+int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_PANEL **Pptr) {
 	/* Gets the specifications for a rectangular panel w/optional reflection that is
 	 * used as background for legends, logos, images, and map scales. */
 	
 	unsigned int pos = 0;
 	int n_errors = 0, n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
+	struct GMT_MAP_PANEL *P = NULL;
 	
+	if (*Pptr) {	/* Already a panel structure there! */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_getpanel: Given a non-null panel pointer!\n");
+		return 1;
+	}
 	/* Initialize the panel settings first */
+	P = GMT_memory (GMT, NULL, 1, struct GMT_MAP_PANEL);
 	P->radius = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_RADIUS;	/* 6 pt */
 	GMT_init_fill (GMT, &P->fill, -1.0, -1.0, -1.0);			/* Default is no fill unless specified */
 	GMT_init_fill (GMT, &P->sfill, 0.5, 0.5, 0.5);			/* Default if gray shade is used */
@@ -8069,6 +8075,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	
 	if (text == NULL || text[0] == 0) {	/* Blank arg means draw outline with default pen */
 		P->mode = GMT_PANEL_OUTLINE;
+		*Pptr = P;	/* Pass out the pointer to the panel attributes */
 		return 0;
 	}
 	pos = 0;
@@ -8135,6 +8142,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 				break;
 		}
 	}
+	*Pptr = P;	/* Pass out the pointer to the panel attributes */
 	return (n_errors);
 }
 

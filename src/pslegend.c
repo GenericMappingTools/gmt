@@ -48,7 +48,7 @@ struct PSLEGEND_CTRL {
 	struct PSLEGND_F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		bool debug;			/* If true we draw guide lines */
-		struct GMT_MAP_PANEL panel;
+		struct GMT_MAP_PANEL *panel;
 	} F;
 	struct PSLEGND_L {	/* -L<spacing> */
 		bool active;
@@ -72,6 +72,7 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free_anchorpoint (GMT, &C->D.anchor);
+	if (C->F.panel) GMT_free (GMT, C->F.panel);
 	GMT_free (GMT, C);
 }
 
@@ -193,23 +194,25 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->F.panel)) {
+				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 					n_errors++;
 				}
-				Ctrl->F.debug = Ctrl->F.panel.debug;	/* Hidden +d processing; this may go away */
-				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.panel.mode |= GMT_PANEL_OUTLINE;	/* Draw frame if just -F is given if in compatibility mode */
-				if (!Ctrl->F.panel.clearance) GMT_memset (Ctrl->F.panel.off, 4, double);	/* No clearance is default since handled via -C */
+				Ctrl->F.debug = Ctrl->F.panel->debug;	/* Hidden +d processing; this may go away */
+				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.panel->mode |= GMT_PANEL_OUTLINE;	/* Draw frame if just -F is given if in compatibility mode */
+				if (!Ctrl->F.panel->clearance) GMT_memset (Ctrl->F.panel->off, 4, double);	/* No clearance is default since handled via -C */
 				break;
 			case 'G':	/* Inside legend box fill [OBSOLETE] */
 				if (GMT_compat_check (GMT, 4)) {
+					char tmparg[GMT_LEN32] = {""};
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
 					Ctrl->F.active = true;
-					Ctrl->F.panel.mode |= GMT_PANEL_FILL;
-					if (GMT_getfill (GMT, opt->arg, &Ctrl->F.panel.fill)) {	/* We check syntax here */
-						GMT_fill_syntax (GMT, 'F', " ");
+					sprintf (tmparg, "+g%s", opt->arg);
+					if (GMT_getpanel (GMT, opt->option, tmparg, &(Ctrl->F.panel))) {
+						GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 						n_errors++;
 					}
+					Ctrl->F.panel->mode |= GMT_PANEL_FILL;
 				}
 				else
 					n_errors += GMT_default_error (GMT, opt->option);
@@ -623,8 +626,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	current_pen = GMT->current.setting.map_default_pen;
 
 	if (Ctrl->F.active) {	/* First place legend frame fill */
-		Ctrl->F.panel.width = Ctrl->D.width;	Ctrl->F.panel.height = Ctrl->D.height;	
-		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, 1U, &Ctrl->F.panel);
+		Ctrl->F.panel->width = Ctrl->D.width;	Ctrl->F.panel->height = Ctrl->D.height;	
+		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, 1U, Ctrl->F.panel);
 	}
 
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
@@ -1291,7 +1294,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
 	if (Ctrl->F.active)	/* Draw legend frame box */
-		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, 2U, &Ctrl->F.panel);
+		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, 2U, Ctrl->F.panel);
 	
 	/* Time to plot any symbols, text, and paragraphs we collected in the loop */
 

@@ -81,7 +81,7 @@ struct PSSCALE_CTRL {
 	} E;
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
-		struct GMT_MAP_PANEL panel;
+		struct GMT_MAP_PANEL *panel;
 	} F;
 	struct G {	/* -Glow/high for input CPT truncation */
 		bool active;
@@ -135,6 +135,7 @@ void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deall
 	if (C->C.file) free (C->C.file);
 	GMT_free_anchorpoint (GMT, &C->D.anchor);
 	if (C->E.text) free (C->E.text);
+	if (C->F.panel) GMT_free (GMT, C->F.panel);
 	if (C->Z.file) free (C->Z.file);
 	GMT_free (GMT, C);
 }
@@ -311,7 +312,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (GMT_getpanel (GMT, opt->option, opt->arg, &Ctrl->F.panel)) {
+				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
 					n_errors++;
 				}
@@ -386,7 +387,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 						strcat (extra, p);
 					}
 					Ctrl->F.active = true;
-					if (GMT_getpanel (GMT, opt->option, extra, &Ctrl->F.panel)) {
+					if (GMT_getpanel (GMT, opt->option, extra, &(Ctrl->F.panel))) {
 						GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 						n_errors++;
 					}
@@ -1380,7 +1381,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode,
 		GMT->current.map.frame.draw, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
-		Ctrl->L.interval, Ctrl->M.active, Ctrl->F.active, &(Ctrl->F.panel));
+		Ctrl->L.interval, Ctrl->M.active, Ctrl->F.active, Ctrl->F.panel);
 	PSL_setorigin (PSL, -Ctrl->D.anchor->x, -Ctrl->D.anchor->y, 0.0, PSL_FWD);
 	GMT_plane_perspective (GMT, -1, 0.0);
 

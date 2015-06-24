@@ -86,9 +86,9 @@ struct PSCOAST_CTRL {
 		bool active;
 		struct GMT_DCW_SELECT info;
 	} E;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct F {	/* -F[l|t][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
-		/* The panel struct is a member of the GMT_MAP_SCALE in -L */
+		/* The panels are members of GMT_MAP_SCALE and GMT_MAP_ROSE */
 	} F;
 	struct G {	/* -G<fill> */
 		bool active;
@@ -124,7 +124,7 @@ struct PSCOAST_CTRL {
 		bool clip;
 		struct GMT_FILL fill;
 	} S;
-	struct T {	/* -L */
+	struct T {	/* -T */
 		bool active;
 		struct GMT_MAP_ROSE rose;
 	} T;
@@ -159,7 +159,7 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	for (k = 0; k < GSHHS_N_BLEVELS; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;		/* Default border pens */
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) C->W.pen[k] = GMT->current.setting.map_default_pen;	/* Default coastline pens */
 	GMT_memset (&C->L.scale, 1, struct GMT_MAP_SCALE);
-	GMT_memset (&C->T.rose, 1, struct GMT_MAP_ROSE);
+	GMT_memset (&C->T.rose, 1,  struct GMT_MAP_ROSE);
 
 	return (C);
 }
@@ -167,6 +167,8 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_DCW_free (GMT, &(C->E.info));
+	if (C->L.scale.panel) GMT_free (GMT, C->L.scale.panel);
+	if (C->T.rose.panel)  GMT_free (GMT, C->T.rose.panel);
 	GMT_free (GMT, C);
 }
 
@@ -274,12 +276,11 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, n_files = 0, k;
 	int ks;
-	bool clipping;
+	bool clipping, get_panel[2] = {false, false};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	struct GMT_PEN pen;
-	char *string = NULL;
-	struct GMT_MAP_PANEL *this_panel = NULL;	/* Current panel to specify */
+	char *string = NULL, *kind[2] = {"Specify a rectanglar panel behind the map-scale", "Specify a rectanglar panel behind the directional rose"};
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -331,9 +332,17 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 					}
 				}
 				Ctrl->F.active = true;
-				if (this_panel == NULL) this_panel = &(Ctrl->L.scale.panel); 
-				if (GMT_getpanel (GMT, opt->option, opt->arg, this_panel)) {
-					GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+				switch (opt->arg[0]) {
+					case 'l': get_panel[0] = true; break;
+					case 't': get_panel[1] = true; break;
+					default : get_panel[0] = get_panel[1] = true; break;
+				}
+				if (get_panel[0] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->L.scale.panel))) {
+					GMT_mappanel_syntax (GMT, 'F', kind[0], 3);
+					n_errors++;
+				}
+				if (get_panel[1] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->T.rose.panel))) {
+					GMT_mappanel_syntax (GMT, 'F', kind[1], 3);
 					n_errors++;
 				}
 				break;
@@ -393,7 +402,6 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 			case 'L':
 				Ctrl->L.active = true;
 				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
-				this_panel = &(Ctrl->L.scale.panel);
 				break;
 			case 'm':
 				if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
@@ -449,7 +457,6 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 			case 'T':
 				Ctrl->T.active = true;
 				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
-				this_panel = &(Ctrl->T.rose.panel);
 				break;
 			case 'W':
 				Ctrl->W.active = true;	/* Want to draw shorelines */

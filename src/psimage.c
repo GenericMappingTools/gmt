@@ -51,7 +51,7 @@ struct PSIMAGE_CTRL {
 	} E;
 	struct PSIMG_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
-		struct GMT_MAP_PANEL panel;
+		struct GMT_MAP_PANEL *panel;
 	} F;
 	struct PSIMG_G {	/* -G[f|b|t]<rgb> */
 		bool active;
@@ -92,6 +92,7 @@ void Free_psimage_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deall
 	if (!C) return;
 	if (C->In.file) free (C->In.file);
 	GMT_free_anchorpoint (GMT, &C->D.anchor);
+	if (C->F.panel) GMT_free (GMT, C->F.panel);
 	GMT_free (GMT, C);
 }
 
@@ -195,7 +196,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 					sprintf (txt_a, "+c0+p%s", opt->arg);
 				else
 					strcpy (txt_a, opt->arg);
-				if (GMT_getpanel (GMT, opt->option, txt_a, &Ctrl->F.panel)) {
+				if (GMT_getpanel (GMT, opt->option, txt_a, &(Ctrl->F.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the image", 1);
 					n_errors++;
 				}
@@ -563,8 +564,8 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	}
 
  	if (Ctrl->F.active) {	/* Draw frame, fill only */
-		Ctrl->F.panel.width = Ctrl->N.nx * Ctrl->W.width;	Ctrl->F.panel.height = Ctrl->N.ny * Ctrl->W.height;	
-		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel.width, 0.5 * Ctrl->F.panel.height, 1U, &Ctrl->F.panel);
+		Ctrl->F.panel->width = Ctrl->N.nx * Ctrl->W.width;	Ctrl->F.panel->height = Ctrl->N.ny * Ctrl->W.height;	
+		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel->width, 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
  	}
 
 	for (row = 0; row < Ctrl->N.ny; row++) {
@@ -590,7 +591,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		}
 	}
  	if (Ctrl->F.active)	/* Draw frame outlines */
-		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel.width, 0.5 * Ctrl->F.panel.height, 2U, &Ctrl->F.panel);
+		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel->width, 0.5 * Ctrl->F.panel->height, 2U, Ctrl->F.panel);
 
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);

@@ -125,7 +125,7 @@ struct GMT_MAP_SCALE {
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
 	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
 	char label[GMT_LEN128];	/* Alternative user-specified label */
-	struct GMT_MAP_PANEL panel;	/* Everything about optional back panel */
+	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
 /*! Plot a map direction "rose" in psbasemap and pscoast */
@@ -143,7 +143,7 @@ struct GMT_MAP_ROSE {
 	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_LEN64];	/* User-changable labels for W, E, S, N point */
 	char dlabel[GMT_LEN256];	/* Magnetic declination label */
-	struct GMT_MAP_PANEL panel;	/* Everything about optional back panel */
+	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
 #endif	/* _GMT_SYMBOLS_H */
