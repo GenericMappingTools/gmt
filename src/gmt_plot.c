@@ -2857,11 +2857,11 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	/* Estimate the local scale so we can draw correct length */
 	/* 1. Pick a reasonably small dx, e.g., 5% of map width */
 	dx = 0.05 * GMT->current.map.width;
-	/* 2. Compute test x1, x2 to either side of x0, y0 */
-	x1 = ms->x0 - dx;	x2 = ms->x0 + dx;
+	/* 2. Compute test x1, x2 to either side of ms->scale_lon, ms->scale_lat */
+	x1 = x0_scl - dx;	x2 = x0_scl + dx;
 	/* 3. Convert (x1,y0), (x2,y0) to lon,lat coordinates */
-	GMT_xy_to_geo (GMT, &XL, &YL, x1, ms->y0);
-	GMT_xy_to_geo (GMT, &XR, &YR, x2, ms->y0);
+	GMT_xy_to_geo (GMT, &XL, &YL, x1, y0_scl);
+	GMT_xy_to_geo (GMT, &XR, &YR, x2, y0_scl);
 	/* 4. Get distances in km between (XL,YL) and (XR,YR) */
 	dist = 0.001 * GMT_great_circle_dist_meter (GMT, XL, YL, XR, YR);
 	/* Get local scale of desired length to this reference length */

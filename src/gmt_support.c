@@ -7895,8 +7895,8 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_sy, GMT_IS_LAT, &ms->scale_lat), txt_sy);
 	if (k == 5)	/* Must also decode longitude of scale */
 		error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_sx, GMT_IS_LON, &ms->scale_lon), txt_sx);
-	else		/* Default to central meridian */
-		ms->scale_lon = GMT->current.proj.central_meridian;
+	else		/* Default to central meridian but must be set after GMT_map_setup has been called */
+		ms->scale_lon = GMT->session.d_NaN;
 	if (fabs (ms->scale_lat) > 90.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale latitude is out of range\n", option);
 		error++;
