@@ -977,14 +977,14 @@ void GMT_anchor_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigne
 		GMT_message (GMT, "\t   %s  Use -Dj to specify <anchor> with 2-char justification code (LB, CM, etc).\n", tab[shift]);
 		GMT_message (GMT, "\t   %s  Use -Dn to specify <anchor> with normalized coordinates in 0-1 range.\n", tab[shift]);
 		GMT_message (GMT, "\t   %s  Use -Dx to specify <anchor> with plot coordinates.\n", tab[shift]);
-		GMT_message (GMT, "\t   %sAll except -Dx requires the -R and -J options to be set.\n", tab[shift]);
+		GMT_message (GMT, "\t   %sAll except -Dx require the -R and -J options to be set.\n", tab[shift]);
 	}
 	/* May need to place other things in the middle */
-	if (part & 2) {	/* Here string is jsutification unless part == 3 */
+	if (part & 2) {	/* Here string is justification unless part == 3 */
 		char *just = (part == 3) ? "LB" : string;
-		GMT_message (GMT, "\t   %sAppend 2-char <justify> code to associate that point on the %s with <x0>/<y0> [%s].\n", tab[shift], type[kind], just);
-		GMT_message (GMT, "\t   %sNote for -Dj: If <justify> is not given then it inherits the code used to set <x0>/<y0>.\n", tab[shift]);
-		GMT_message (GMT, "\t   %sOptionally, append /<dx>/<dy> to shift %s from selected anchor in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
+		GMT_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that point on the %s with <anchor> [%s].\n", tab[shift], type[kind], just);
+		GMT_message (GMT, "\t   %sNote for -Dj: If +j<justify> is not given then it inherits the inverse of <anchor>.\n", tab[shift]);
+		GMT_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from anchor in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
 	}
 }
 
@@ -1740,7 +1740,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		double xdim, ydim, orig[2];
 		int nx, ny, just;
 		GMT_memcpy (code, item, 2, char);
-		if ((just = GMT_just_decode (GMT, code, 12)) == -99) {	/* Since justify not in correct format */
+		if ((just = GMT_just_decode (GMT, code, PSL_NO_DEF)) == -99) {	/* Since justify not in correct format */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -R: Unrecognized justification code %s\n", code);
 			return (GMT_PARSE_ERROR);
 		}
@@ -4328,7 +4328,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->current.setting.map_logo_pos[GMT_Y] = GMT_to_inch (GMT, txt_b);
 			}
 			else if (i == 3) {	/* New style, includes justification, introduced in GMT 4.3.0 */
-				GMT->current.setting.map_logo_justify = GMT_just_decode (GMT, txt_a, 12);
+				GMT->current.setting.map_logo_justify = GMT_just_decode (GMT, txt_a, PSL_NO_DEF);
 				GMT->current.setting.map_logo_pos[GMT_X] = GMT_to_inch (GMT, txt_b);
 				GMT->current.setting.map_logo_pos[GMT_Y] = GMT_to_inch (GMT, txt_c);
 			}
@@ -9485,7 +9485,7 @@ int gmt_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S) {
 					if (GMT_getfont (GMT, &p[1], &S->font))
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sl contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, S->font));
 					break;
-				case 'j':	S->justify = GMT_just_decode (GMT, &p[1], 12);	break;	/* text justification */
+				case 'j':	S->justify = GMT_just_decode (GMT, &p[1], PSL_NO_DEF);	break;	/* text justification */
 				case 't':	strncpy (S->string, &p[1], GMT_LEN256);	break;	/* Get the symbol text */
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error option -Sl: Bad modifier +%c\n", p[0]);

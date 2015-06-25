@@ -22,7 +22,7 @@ Synopsis
 [ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] 
 [ **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ]
 [ **-S**\ [\ *p*\ \|\ *t*] ]
-[ **-T**\ [\ **+\|-**][\ *gap/length*][\ **:**\ [\ *labels*]] ]
+[ **-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ] 
 [ |SYN_OPT-V| ] [ **-W**\ [**+**]\ *pen* ] 
 [ |SYN_OPT-X| ] 
@@ -151,20 +151,20 @@ Optional Arguments
     to skip triangles whose three vertices are all outside the region.
     **-S** with no modifier is interpreted as **-Sp**.
 
-**-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]]
-    Will draw tickmarks pointing in the downward direction every *gap*
-    along the innermost closed contours. Append *gap* and tickmark
-    length (append units as **c**, **i**, or **p**) or use defaults
+**-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
+    Will draw tick marks pointing in the downward direction every *gap*
+    along the innermost closed contours. Append **+d**\ *gap* and optionally tick
+    mark *length* (append units as **c**, **i**, or **p**) or use defaults
     [15\ **p**/3\ **p**]. User may choose to tick only local highs or local
     lows by specifying **-T+** or **-T-**, respectively. Append
-    **:**\ *labels* to annotate the centers of closed innermost contours
-    (i.e, the local lows and highs). If no *labels* is appended we use -
-    and + as the labels. Appending two characters, **:LH**, will plot
-    the two characters (here, L and H) as labels. For more elaborate
-    labels, separate the two label strings by a comma (e.g.,
-    **:**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
-    then only contours marked with upper case C or A will have tickmarks
-    [and annotation]. 
+    **+l**\ *labels* to annotate the centers of closed innermost contours
+    (i.e., the local lows and highs). If no *labels* is appended we use -
+    and + as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,
+    will plot the two characters (here, L and H) as labels. For more elaborate
+    labels, separate the low and hight label strings with a comma (e.g.,
+    **+l**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
+    then only contours marked with upper case C or A will have tick marks
+    [and annotations]. 
 
 .. include:: explain_-U.rst_
 

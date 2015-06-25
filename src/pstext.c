@@ -241,7 +241,7 @@ int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
 	k = (int)strlen (size) - 1;
 	if (size[k] == 'c' || size[k] == 'i' || size[k] == 'm' || size[k] == 'p') size[k] = '\0';	/* Chop of unit */
 	if (GMT_not_numeric (GMT, size)) return (5);	/* Since size is not a number */
-	if (GMT_just_decode (GMT, just, 12) == -99) return (5);	/* Since justify not in correct format */
+	if (GMT_just_decode (GMT, just, PSL_NO_DEF) == -99) return (5);	/* Since justify not in correct format */
 	if (mode) {	/* A few more checks for paragraph mode */
 		k = (int)strlen (spacing) - 1;
 		if (spacing[k] == 'c' || spacing[k] == 'i' || spacing[k] == 'm' || spacing[k] == 'p') spacing[k] = '\0';	/* Chop of unit */
@@ -249,7 +249,7 @@ int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
 		k = (int)strlen (width) - 1;
 		if (width[k] == 'c' || width[k] == 'i' || width[k] == 'm' || width[k] == 'p') width[k] = '\0';	/* Chop of unit */
 		if (GMT_not_numeric (GMT, width)) return (5);		/* Since width is not a number */
-		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (GMT, pjust, 0) == -99) return (5);
+		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (GMT, pjust, PSL_NONE) == -99) return (5);
 	}
 
 	/* Well, seems like the old format so far */
@@ -419,7 +419,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 						case 'c':	/* -R corner justification */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
 							else {
-								Ctrl->F.R_justify = GMT_just_decode (GMT, &p[1], 12);
+								Ctrl->F.R_justify = GMT_just_decode (GMT, &p[1], PSL_NO_DEF);
 								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
 									Ctrl->F.justify = Ctrl->F.R_justify;
 							}
@@ -431,7 +431,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 						case 'j':	/* Justification */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
 							else {
-								Ctrl->F.justify = GMT_just_decode (GMT, &p[1], 12);
+								Ctrl->F.justify = GMT_just_decode (GMT, &p[1], PSL_NO_DEF);
 								explicit_justify = true;
 							}
 							break;
@@ -724,10 +724,10 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				}
 				if (input_format_version == 4) {	/* Old-style GMT 4 records */
 					nscan += sscanf (buffer, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
-					T.block_justify = GMT_just_decode (GMT, just_key, 12);
+					T.block_justify = GMT_just_decode (GMT, just_key, PSL_NO_DEF);
 					T.line_spacing = GMT_to_inch (GMT, txt_a);
 					T.paragraph_width  = GMT_to_inch (GMT, txt_b);
-					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : GMT_just_decode (GMT, pjust_key, 0);
+					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : GMT_just_decode (GMT, pjust_key, PSL_NONE);
 					sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by GMT_getfont */
 					T.font = Ctrl->F.font;
 					if (GMT_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
@@ -748,7 +748,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 								T.paragraph_angle = atof (text);
 								break;
 							case 'j':
-								T.block_justify = GMT_just_decode (GMT, text, 12);
+								T.block_justify = GMT_just_decode (GMT, text, PSL_NO_DEF);
 								break;
 						}
 					}
@@ -757,7 +757,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 				if (in_txt) {	/* Get the remaining parameters */
 					nscan += sscanf (in_txt, "%s %s %s\n", txt_a, txt_b, pjust_key);
-					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : GMT_just_decode (GMT, pjust_key, 0);
+					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : GMT_just_decode (GMT, pjust_key, PSL_NONE);
 					T.line_spacing = GMT_to_inch (GMT, txt_a);
 					T.paragraph_width  = GMT_to_inch (GMT, txt_b);
 				}
@@ -836,7 +836,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			if (input_format_version == 4) {	/* Old-style GMT 4 records */
 				nscan--; /* Since we have already counted "text" */
 				nscan += sscanf (buffer, "%s %lf %s %s %[^\n]\n", this_size, &T.paragraph_angle, this_font, just_key, text);
-				T.block_justify = GMT_just_decode (GMT, just_key, 12);
+				T.block_justify = GMT_just_decode (GMT, just_key, PSL_NO_DEF);
 				sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by GMT_getfont */
 				T.font = Ctrl->F.font;
 				if (GMT_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
@@ -863,7 +863,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 							}
 							break;
 						case 'j':
-							T.block_justify = GMT_just_decode (GMT, text, 12);
+							T.block_justify = GMT_just_decode (GMT, text, PSL_NO_DEF);
 							break;
 					}
 				}

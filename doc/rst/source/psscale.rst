@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*length*/*width*\ [**h**] [/*justify*]\ [/*dx*/*dy*]
+**psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *length*/*width*\ [**+h**][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
 [ **-A**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
@@ -55,7 +55,7 @@ If a label is requested, it is plotted with :ref:`FONT_LABEL <FONT_LABEL>`.
 Required Arguments
 ------------------
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*length*/*width*\ [**h**][/*justify*]\ [/*dx*/*dy*]
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *length*/*width*\ [**+h**][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
     Defines the *anchor* position *x0*/*y0* of the color scale using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,

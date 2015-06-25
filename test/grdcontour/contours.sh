@@ -25,7 +25,7 @@ gmt makecpt -Cseis -T0/1/0.1 -Z > contour.cpt
 # your right (-Fr).
 
 gmt psbasemap -R204/206/19/21 -JM4i -P -B1 -BWSne -K -X2.5i -Y1.25i > $ps
-gmt grdcontour BigIsland.nc -J -C1000 -T0.1i/0.02i:-+ -S8 -O -K --FONT_ANNOT_PRIMARY=9p >> $ps
+gmt grdcontour BigIsland.nc -J -C1000 -T+d0.1i/0.02i+l -S8 -O -K --FONT_ANNOT_PRIMARY=9p >> $ps
 
 color_contour r
 
@@ -36,9 +36,8 @@ gmt psscale -Ccontour.cpt -D2i/-0.35i/4i/0.1ih -B1 -O -K >> $ps
 # your left (-Fl).
 
 gmt psbasemap -R -J -O -B1 -BWsNe -K -Y4.5i >> $ps
-gmt grdcontour BigIsland.nc -J -O -C1000 -T0.1i/0.02i:-+ -S8 -K --FONT_ANNOT_PRIMARY=9p >> $ps
+gmt grdcontour BigIsland.nc -J -O -C1000 -T+d0.1i/0.02i+l -S8 -K --FONT_ANNOT_PRIMARY=9p >> $ps
 
 color_contour l
 
 gmt psxy -R -J -O -T >> $ps
-

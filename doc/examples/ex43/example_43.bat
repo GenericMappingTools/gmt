@@ -30,7 +30,7 @@ echo H 18 Times-Roman Index of Animals > legend.txt
 echo D 1p >> legend.txt
 echo N 7 43 7 43 >> legend.txt
 gawk -F'\t' "{printf "L - - C %d.\nL - - L %s\n", NR, $NF}" B.txt >> legend.txt
-gmt pslegend -DjBR/2.5i/BR/0.15i/0.15i -R -J -O -K -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL=8p >> %ps%
+gmt pslegend -DjBR+w2.5i+o0.2i -R -J -O -K -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL=8p >> %ps%
 gmt psbasemap -R0.5/28.5/-10/4 -JX6i/2i -O -K -Y-2.9i -B+glightgoldenrod >> %ps%
 gmt psxy -R -J -O -K -Gcornsilk1 -W0.25p,- << EOF >> %ps%
 >

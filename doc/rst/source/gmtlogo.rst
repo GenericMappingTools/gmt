@@ -13,15 +13,18 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtlogo** [ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [/*justify*]\ [/*dx*/*dy*] ]
+**gmtlogo** [ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
 [ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-J**\ *parameters* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-O** ] [ **-P** ] [ **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**] ]
-[ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*] ] [ **-W**\ *width* ]
-[ **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]] ]
-[ **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]] ]
-[ **-c**\ *copies* ]
-[ **-t**\ [*transp*] ]
+[ **-O** ] [ **-P** ]
+[ |SYN_OPT-Rz| ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-W**\ *width* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-t| ]
 |No-spaces|
 
 Description
@@ -39,7 +42,7 @@ None.
 Optional Arguments
 ------------------
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [/*justify*]\ [/*dx*/*dy*]
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
     Sets *anchor* position *x0*/*y0* of the image using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,

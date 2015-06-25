@@ -54,6 +54,15 @@ enum GMT_enum_panel {
 	GMT_PANEL_OUTLINE	= 16
 };
 	
+/*! Definition of structure used for holding information about an anchor point */
+struct GMT_ANCHOR {	/* Used to hold items relevant for an anchor point */
+	double x;		/* X position of anchor point */
+	double y;		/* Y position of anchor point */
+	enum GMT_enum_anchor mode;	/* Coordinate mode */
+	int justify;		/* Justification integer (1-11) for anchor (if given via -Dj) */
+	char *args;		/* Text representation of any additional arguments */
+};
+
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3], const_val[3];
 	int action, operator, var[3];	/* var[0] refers to variable on left hand side of operator, var[1] and var[2] to the right hand */
@@ -112,8 +121,7 @@ struct GMT_MAP_INSERT {
 struct GMT_MAP_SCALE {
 	double lon, lat;	/* Location of top/mid point of scale on the map in lon/lat space */
 	double x0, y0;		/* Location of top/mid point of scale on the map in inches x/y */
-	double scale_lon;	/* Point where scale should apply */
-	double scale_lat;	/* Point where scale should apply */
+	double origin[2];	/* Longitude/latitude where scale should apply */
 	double length;		/* How long the scale is in measure units */
 	bool plot;		/* true if we want to draw the scale */
 	bool fancy;		/* true for a fancy map scale */

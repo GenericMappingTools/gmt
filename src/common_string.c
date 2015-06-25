@@ -196,6 +196,38 @@ unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos,
 	return 1;
 }
 
+unsigned int GMT_get_modifier (const char *string, char modifier, char *token)
+{
+	/* Looks for modifier string in the form +<modifier>[arg] and if found
+	   returns 1 and places arg in token, else return 0.  Must ignore any
+	   +<modifier> found inside quotes as part of text.
+	*/
+	bool quoted = false;
+	size_t k, len, start = 0;
+	
+	if (!string || string[0] == 0) return 0;	/* No hope */
+	len = strlen (string);
+	for (k = 0; start == 0 && k < (len-1); k++) {
+		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+		if (quoted) continue;		/* Not look inside quoted strings */
+		if (string[k] == '+' && string[k+1] == modifier)	/* Found the start */
+			start = k+2;
+	}
+	if (start == 0) return 0;	/* Not found */
+	k = start;
+	while (k < len) {
+		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+		if (quoted) continue;	/* Not look inside quoted strings */
+		if (string[k] == '+')	/* Found the end */
+			break;
+		k++;
+	}
+	len = k - start;
+	if (len) strncpy (token, &string[start], len);
+	token[len] = '\0';
+	return 1;
+}
+
 #ifdef WIN32
 /* Turn '/c/dir/...' paths into 'c:/dir/...'
  * Must do it in a loop since dir may be several ';'-separated dirs */

@@ -146,6 +146,11 @@ enum GMT_swap_direction {
 
 #define GMT_N_MAX_MODEL	20	/* No more than 20 basis functions in a trend model */
 
+#define GMT_PAIR_COORD		0	/* Tell GMT_get_pair to get both x and y as coordinates */
+#define GMT_PAIR_DIM_EXACT	1	/* Tell GMT_get_pair to get BOTH x and y as separate dimensions */
+#define GMT_PAIR_DIM_DUP	2	/* Tell GMT_get_pair to get both x and y as dimensions, and if only x then set y = x */
+#define GMT_PAIR_DIM_NODUP	3	/* Tell GMT_get_pair to get both x and y as dimensions, and if only x then leave y alone */
+
 /*! Return codes from GMT_inonout */
 enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,

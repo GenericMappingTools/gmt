@@ -65,7 +65,7 @@ gmt pstext -R -J -O -K $whitetags -F+f --FONT=white >> $ps
 width=`gmt math -Q $WIDTH $COL DIV 0.95 MUL =`
 xoff=`gmt math -Q $WIDTH $COL DIV 2 DIV =`
 yoff=`gmt math -Q $HEIGHT $ROW DIV $ROW 1 SUB MUL =`
-gmt logo -W${width}i -O -K -Dx${xoff}i/${yoff}i/MC >> $ps
+gmt logo -W${width}i -O -K -Dx${xoff}i/${yoff}i+jMC >> $ps
 
 height=`gmt math -Q $HEIGHT $ROW DIV =`
 gmt pslegend -O -Dx0/0/$WIDTH/$height/BL >> $ps <<END

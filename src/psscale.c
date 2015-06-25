@@ -65,13 +65,13 @@ struct PSSCALE_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[g|j|n|x]<anchor>/<length>/<width>[h][/<justify>][/<dx>/<dy>]] */
+	struct D {	/* -D[g|j|n|x]<anchor>+w<length>/<width>[+h][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		bool horizontal;
 		struct GMT_ANCHOR *anchor;
 		int justify;
-		double width, length;
-		double dx, dy;
+		double dim[2];
+		double off[2];
 	} D;
 	struct E {	/* -E[b|f][<length>][+n[<text>]] */
 		bool active;
@@ -146,7 +146,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D[g|j|n|x]<anchor>/<length>/<width>[h][/<justify>][/<dx>/<dy>]] [-A[a|c|l|u]] [%s] [-C<cpt>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D%s+w<length>/<width>[+h]%s [-A[a|c|l|u]] [%s] [-C<cpt>]\n", GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]\n\t[%s] [%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q] [%s] [-S] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
@@ -154,10 +154,10 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_anchor_syntax (API->GMT, 'D', "Specify position and size of the scale bar", GMT_ANCHOR_SCALE, 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <length>/<width> for the scale\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction of the scale bar.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append h to <width> for a horizontal scale [Default is vertical].\n");
+	GMT_anchor_syntax (API->GMT, 'D', "Specify position and dimensions of the scale bar", GMT_ANCHOR_SCALE, 1);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>/<width> for the scale dimensions.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h for a horizontal scale [Default is vertical].\n");
 	GMT_anchor_syntax (API->GMT, 'D', "TC or LM", GMT_ANCHOR_SCALE, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Place the desired annotations/labels/units on the opposite side of the colorscale.\n");
@@ -216,9 +216,9 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n, n_errors = 0, n_files = 0;
-	int j;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
+	unsigned int n_errors = 0, n_files = 0;
+	int n, j;
+	char string[GMT_LEN256] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	char txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -253,7 +253,21 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 			case 'D':
 				Ctrl->D.active = true;
 				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {	/* args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
+				if (strstr (Ctrl->D.anchor->args, "+w")) {	/* New syntax: Args are +w<length>/<width>][+h][+j<justify>][+o<dx>[/<dy>]] */
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'h', string))
+						Ctrl->D.horizontal = true;
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'j', string))
+						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+					else if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* With -Dj, set default as the mirror to anchor justify point */
+						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.anchor->justify);
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'o', string)) {
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+					}
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'w', string)) {
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_EXACT, Ctrl->D.dim)) < 2) n_errors++;
+					}
+				}
+				else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
 					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 					/* First deal with bar dimensions and horizontal vs vertical */
 					j = (unsigned int)strlen (txt_b) - 1;
@@ -261,20 +275,20 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 						Ctrl->D.horizontal = true;
 						txt_b[j] = 0;	/* Remove this to avoid unit confusion */
 					}
-					Ctrl->D.length = GMT_to_inch (GMT, txt_a);
-					Ctrl->D.width  = GMT_to_inch (GMT, txt_b);
+					Ctrl->D.dim[GMT_X] = GMT_to_inch (GMT, txt_a);
+					Ctrl->D.dim[GMT_Y]  = GMT_to_inch (GMT, txt_b);
 					if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* With -Dj, set default as the mirror to anchor justify point */
 						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.anchor->justify);
 					else
 						Ctrl->D.justify = (Ctrl->D.horizontal) ? 10 : 5;	/* Default justifications for non-Dj settings */
 					/* Now deal with optional arguments, if any */
 					switch (n) {
-						case 3: Ctrl->D.justify = GMT_just_decode (GMT, txt_c, 10);	break;	/* Just got justification */
-						case 4: Ctrl->D.dx = GMT_to_inch (GMT, txt_c); 	Ctrl->D.dy = GMT_to_inch (GMT, txt_d); break;	/* Just got offsets */
-						case 5: Ctrl->D.justify = GMT_just_decode (GMT, txt_c, 10);	Ctrl->D.dx = GMT_to_inch (GMT, txt_d); 	Ctrl->D.dy = GMT_to_inch (GMT, txt_e); break;	/* Got both */
+						case 3: Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
+						case 4: Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_d); break;	/* Just got offsets */
+						case 5: Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_e); break;	/* Got both */
 					}
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.dx, Ctrl->D.dy);
 				}
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
 				break;
 			case 'E':
 				Ctrl->E.active = true;
@@ -414,8 +428,8 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 		n_errors++;
 	}
 	else {
-		n_errors += GMT_check_condition (GMT, fabs (Ctrl->D.length) < GMT_CONV4_LIMIT , "Syntax error -D option: scale length must be nonzero\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->D.width <= 0.0, "Syntax error -D option: scale width must be positive\n");
+		n_errors += GMT_check_condition (GMT, fabs (Ctrl->D.dim[GMT_X]) < GMT_CONV4_LIMIT , "Syntax error -D option: scale length must be nonzero\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Syntax error -D option: scale width must be positive\n");
 	}
 	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Syntax error -L option: Cannot be used if -B option sets increments.\n");
@@ -1291,7 +1305,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		}
 	}
 
-	if (Ctrl->E.mode && Ctrl->E.length == 0.0) Ctrl->E.length = Ctrl->D.width * 0.5;
+	if (Ctrl->E.mode && Ctrl->E.length == 0.0) Ctrl->E.length = Ctrl->D.dim[GMT_Y] * 0.5;
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
 
@@ -1307,24 +1321,24 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	}
 	else if (Ctrl->L.active) {
 		z_width = GMT_memory (GMT, NULL, P->n_colors, double);
-		dz = fabs (Ctrl->D.length) / P->n_colors;
+		dz = fabs (Ctrl->D.dim[GMT_X]) / P->n_colors;
 		for (i = 0; i < P->n_colors; i++) z_width[i] = dz;
 	}
 	else {
 		z_width = GMT_memory (GMT, NULL, P->n_colors, double);
-		for (i = 0; i < P->n_colors; i++) z_width[i] = fabs (Ctrl->D.length) * (P->range[i].z_high - P->range[i].z_low) / (P->range[P->n_colors-1].z_high - P->range[0].z_low);
+		for (i = 0; i < P->n_colors; i++) z_width[i] = fabs (Ctrl->D.dim[GMT_X]) * (P->range[i].z_high - P->range[i].z_low) / (P->range[P->n_colors-1].z_high - P->range[0].z_low);
 	}
 
 	/* Because psscale uses -D to position things we need to make some
 	 * changes so that BoundingBox and others are set ~correctly */
 
 	if (Ctrl->Q.active && GMT->current.map.frame.draw) {
-		sprintf (text, "X%gil/%gi", Ctrl->D.length, Ctrl->D.width);
+		sprintf (text, "X%gil/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 		start_val = pow (10.0, P->range[0].z_low);
 		stop_val  = pow (10.0, P->range[P->n_colors-1].z_high);
 	}
 	else {
-		sprintf (text, "X%gi/%gi", Ctrl->D.length, Ctrl->D.width);
+		sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 		start_val = P->range[0].z_low;
 		stop_val  = P->range[P->n_colors-1].z_high;
 	}
@@ -1334,7 +1348,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', text);
-		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.width;
+		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -1347,16 +1361,16 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', text);
-		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.width;
+		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
 	if (Ctrl->D.horizontal) {
 		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
-		xdim = fabs (Ctrl->D.length);	ydim = Ctrl->D.width;
+		xdim = fabs (Ctrl->D.dim[GMT_X]);	ydim = Ctrl->D.dim[GMT_Y];
 	}
 	else {
-		ydim = fabs (Ctrl->D.length);	xdim = Ctrl->D.width;
+		ydim = fabs (Ctrl->D.dim[GMT_X]);	xdim = Ctrl->D.dim[GMT_Y];
 		GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = 0;
 		double_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
@@ -1368,12 +1382,12 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * ydim;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Bar anchor x = %g y = %g\n", Ctrl->D.justify, Ctrl->D.anchor->x, Ctrl->D.anchor->y);
 	/* Also deal with any justified offsets if given */
-	Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.dx;
-	Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.dy;
+	Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
+	Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar anchor x = %g y = %g\n", Ctrl->D.anchor->x, Ctrl->D.anchor->y);
 	PSL_setorigin (PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->y, 0.0, PSL_FWD);
 
-	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode,
+	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode,
 		GMT->current.map.frame.draw, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
 		Ctrl->L.interval, Ctrl->M.active, Ctrl->F.active, Ctrl->F.panel);

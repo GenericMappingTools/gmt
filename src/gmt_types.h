@@ -70,15 +70,6 @@ struct GMT_TEXT_SELECTION {	/* Used to hold array with items (0-n) that have bee
 	bool ogr_match;		/* Compare pattern to an OGR item */
 };
 
-/*! Definition of structure used for holding information about an anchor point */
-struct GMT_ANCHOR {	/* Used to hold items relevant for an anchor point */
-	double x;		/* X position of anchor point */
-	double y;		/* Y position of anchor point */
-	enum GMT_enum_anchor mode;	/* Coordinate mode */
-	int justify;		/* Justification integer (1-11) for anchor (if given via -Dj) */
-	char *args;		/* Text representation of any additional arguments */
-};
-
 /*! For weighted mean/mode */
 struct GMT_OBSERVATION {
 	float value;

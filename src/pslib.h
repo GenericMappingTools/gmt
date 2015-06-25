@@ -151,6 +151,7 @@ enum PSL_enum_just {PSL_BL	= 1,
 	PSL_TL			= 9,
 	PSL_TC			= 10,
 	PSL_TR			= 11,
+	PSL_NO_DEF		= 12,
 	PSL_JUST		= 4};
 
 /* PSL code for rectangle shapes */

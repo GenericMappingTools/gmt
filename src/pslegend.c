@@ -35,14 +35,14 @@
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcpt"
 
 struct PSLEGEND_CTRL {
-	struct PSLEGND_C {	/* -C<dx>/<dy> */
+	struct PSLEGND_C {	/* -C<dx>[/<dy>] */
 		bool active;
-		double dx, dy;
+		double off[2];
 	} C;
-	struct PSLEGND_D {	/* -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] */
+	struct PSLEGND_D {	/* -D[g|j|n|x]<anchor>+w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		struct GMT_ANCHOR *anchor;
-		double width, height, dx, dy;
+		double dim[2], off[2];
 		int justify;
 	} D;
 	struct PSLEGND_F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]][+d] */
@@ -63,7 +63,7 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->C.dx = C->C.dy = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* 4 pt */
+	C->C.off[GMT_X] = C->C.off[GMT_Y] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* 4 pt */
 	C->D.justify = PSL_TC;	/* If nothing is specified we use this justification */
 	C->L.spacing = 1.1;
 	return (C);
@@ -82,8 +82,8 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<specfile>] -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [%s]\n", GMT_PANEL);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<specfile>] -D%s+w<width>[/<height>]%s [%s]\n", GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>[/<dy>]] [%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout specification from <specfile> [or stdin].\n");
@@ -92,14 +92,14 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_anchor_syntax (API->GMT, 'D', "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append the legend box <width>. The remaining arguments are optional:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <height> is 0 or not specified then we estimate it from <specfile>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify legend width with +w<width>; <height> is optional [Estimated from <specfile>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The remaining arguments are optional:\n");
 	GMT_anchor_syntax (API->GMT, 'D', "TC", GMT_ANCHOR_LEGEND, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", GMT_FRAME_CLEARANCE, GMT_FRAME_CLEARANCE);
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp].\n", GMT_FRAME_CLEARANCE);
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 	GMT_Option (API, "J-,K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
@@ -121,7 +121,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 	unsigned int n_errors = 0;
 	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""};
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -136,17 +136,30 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 
 			case 'C':	/* Sets the clearance between frame and internal items */
 				Ctrl->C.active = true;
-				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				Ctrl->C.dx = GMT_to_inch (GMT, txt_a);
-				Ctrl->C.dy = (n == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->C.dx;
+				if ((n = GMT_get_pair (GMT, opt->arg, GMT_PAIR_DIM_DUP, Ctrl->C.off)) < 0) n_errors++;
 				break;
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
-				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {	/* Args are <width>[/<height>][/<justify>][/<dx>/<dy>] */
+				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) {
+					n_errors++;	/* Failed basic parsing */
+					break;
+				}
+				if (strstr (opt->arg, "+w")) {	/* New syntax: 	Args are +w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]] */
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'j', string))
+						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+					else if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate as default */
+						Ctrl->D.justify = Ctrl->D.anchor->justify;
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'o', string)) {
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+					}
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'w', string)) {
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
+					}
+				}
+				else {	/* Backwards handling of old syntax. Args are args are <width>[/<height>][/<justify>][/<dx>/<dy>] */
 					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-					n_errors += GMT_check_condition (GMT, n < 2, "Error: Syntax is -D[g|j|n|x]<anchor>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
-					Ctrl->D.width = GMT_to_inch (GMT, txt_a);
+					n_errors += GMT_check_condition (GMT, n < 2, "Error: Syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
+					Ctrl->D.dim[GMT_X] = GMT_to_inch (GMT, txt_a);
 					switch (n) {
 						case 1: /* Only gave anchor and width; change default justify if -Dj */
 							if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate */
@@ -154,33 +167,33 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 							break;
 						case 2:	/* Gave width and (height or justify) */
 							if (strlen (txt_b) == 2 && strchr ("LMRBCT", txt_b[GMT_X]) && strchr ("LMRBCT", txt_b[GMT_Y]))	/* Gave a 2-char justification code */
-								Ctrl->D.justify = GMT_just_decode (GMT, txt_b, 12);
+								Ctrl->D.justify = GMT_just_decode (GMT, txt_b, PSL_NO_DEF);
 							else /* Got height */
-								Ctrl->D.height = GMT_to_inch (GMT, txt_b);
+								Ctrl->D.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
 							break;
 						case 3:	/* Gave width and (height and justify) or (dx/dy) */
 							if (strlen (txt_c) == 2 && strchr ("LMRBCT", txt_c[GMT_X]) && strchr ("LMRBCT", txt_c[GMT_Y])) {	/* Gave a 2-char justification code */
-								Ctrl->D.height = GMT_to_inch (GMT, txt_b);
-								Ctrl->D.justify = GMT_just_decode (GMT, txt_c, 12);
+								Ctrl->D.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
+								Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_NO_DEF);
 							}
 							else {	/* Just got offsets */
-								Ctrl->D.dx = GMT_to_inch (GMT, txt_b);
-								Ctrl->D.dy = GMT_to_inch (GMT, txt_c);
+								Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_b);
+								Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_c);
 							}
 							break;
 						case 4:	/* Gave width and (height or justify) and dx/dy */
 							if (strlen (txt_b) == 2 && strchr ("LMRBCT", txt_b[GMT_X]) && strchr ("LMRBCT", txt_b[GMT_Y]))	/* Gave a 2-char justification code */
-								Ctrl->D.justify = GMT_just_decode (GMT, txt_b, 12);
+								Ctrl->D.justify = GMT_just_decode (GMT, txt_b, PSL_NO_DEF);
 							else
-								Ctrl->D.height = GMT_to_inch (GMT, txt_b);
-							Ctrl->D.dx = GMT_to_inch (GMT, txt_c);
-							Ctrl->D.dy = GMT_to_inch (GMT, txt_d);
+								Ctrl->D.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
+							Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_c);
+							Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_d);
 							break;
 						case 5:	/* Got them all */
-							Ctrl->D.height = GMT_to_inch (GMT, txt_b);
-							Ctrl->D.justify = GMT_just_decode (GMT, txt_c, 12);
-							Ctrl->D.dx = GMT_to_inch (GMT, txt_d);
-							Ctrl->D.dy = GMT_to_inch (GMT, txt_e);
+							Ctrl->D.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
+							Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_NO_DEF);
+							Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_d);
+							Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_e);
 							break;
 					}
 				}
@@ -223,10 +236,10 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.off[GMT_X] < 0.0 || Ctrl->C.off[GMT_Y] < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error: The -D option is required!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.width <= 0.0, "Syntax error -D option: legend box width must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.height < 0.0, "Syntax error -D option: legend box height cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.dim[GMT_X] <= 0.0, "Syntax error -D option: legend box width must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.dim[GMT_Y] < 0.0, "Syntax error -D option: legend box height cannot be negative!\n");
 	if (Ctrl->D.anchor->mode != GMT_ANCHOR_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
@@ -397,7 +410,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	half_line_spacing    = 0.5  * one_line_spacing;
 	quarter_line_spacing = 0.25 * one_line_spacing;
 
-	height = 2.0 * Ctrl->C.dy;
+	height = 2.0 * Ctrl->C.off[GMT_Y];
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
@@ -561,21 +574,21 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		double average_char_width = 0.44;	/* There is no such thing but this is just a 1st order estimate */
 		double x_lines;
 		/* Guess: Given legend width and approximate char width, do the simple expression */
-		x_lines = n_char * (average_char_width * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH) / ((Ctrl->D.width - 2 * Ctrl->C.dx));
+		x_lines = n_char * (average_char_width * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH) / ((Ctrl->D.dim[GMT_X] - 2 * Ctrl->C.off[GMT_X]));
 		n_lines = irint (ceil (x_lines));
 		height += n_lines * Ctrl->L.spacing * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 		GMT_Report (API, GMT_MSG_DEBUG, "Estimating %d lines of typeset paragraph text [%.1f].\n", n_lines, x_lines);
 	}
 
 	scl = GMT_convert_units (GMT, "1", GMT_INCH, GMT->current.setting.proj_length_unit);
-	if (Ctrl->D.height == 0.0) {	/* Use the computed height */
-		Ctrl->D.height = height;
+	if (Ctrl->D.dim[GMT_Y] == 0.0) {	/* Use the computed height */
+		Ctrl->D.dim[GMT_Y] = height;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height not given, use estimated height of %g %s.\n", scl*height,
 			GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	}
 	else
 		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height given as %g %s; estimated height is %g %s.\n",
-		            scl*Ctrl->D.height, GMT->session.unit_name[GMT->current.setting.proj_length_unit],
+		            scl*Ctrl->D.dim[GMT_Y], GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 		            scl*height, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
@@ -584,7 +597,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "x1i");
-		wesn[XHI] = Ctrl->D.width;	wesn[YHI] = Ctrl->D.height;
+		wesn[XHI] = Ctrl->D.dim[GMT_X];	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 	else {
@@ -602,13 +615,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	/* Allow for justification so that the anchor point is the plot location of the lower left corner of box */
 
-	Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.width;
-	Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->D.height;
+	Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.dim[GMT_X];
+	Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->D.dim[GMT_Y];
 
 	/* Also deal with any justified offsets if given */
 	
-	Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.dx;
-	Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.dy;
+	Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
+	Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
 	
 	/* Set new origin */
 	
@@ -619,24 +632,24 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	current_pen = GMT->current.setting.map_default_pen;
 
 	if (Ctrl->F.active) {	/* First place legend frame fill */
-		Ctrl->F.panel->width = Ctrl->D.width;	Ctrl->F.panel->height = Ctrl->D.height;	
-		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, 1U, Ctrl->F.panel);
+		Ctrl->F.panel->width = Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.dim[GMT_Y];	
+		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.anchor->y + 0.5 * Ctrl->D.dim[GMT_Y], 1U, Ctrl->F.panel);
 	}
 
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
 
-	col_left_x = Ctrl->D.anchor->x + Ctrl->C.dx;			/* Left justification edge of items inside legend box accounting for clearance */
-	row_base_y = Ctrl->D.anchor->y + Ctrl->D.height - Ctrl->C.dy;	/* Top justification edge of items inside legend box accounting for clearance  */
+	col_left_x = Ctrl->D.anchor->x + Ctrl->C.off[GMT_X];			/* Left justification edge of items inside legend box accounting for clearance */
+	row_base_y = Ctrl->D.anchor->y + Ctrl->D.dim[GMT_Y] - Ctrl->C.off[GMT_Y];	/* Top justification edge of items inside legend box accounting for clearance  */
 	column_number = 0;	/* Start at first column in multi-column setup */
 	n_columns = 1;		/* Reset to default number of columns */
 	txtcolor[0] = 0;	/* Reset to black text color */
 	x_off_col[0] = 0.0;	/* The x-coordinate of left side of first column */
-	x_off_col[n_columns] = Ctrl->D.width;	/* Holds width of a row */
+	x_off_col[n_columns] = Ctrl->D.dim[GMT_X];	/* Holds width of a row */
 	
-	if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+	if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 
 	flush_paragraph = false;
-	gap = Ctrl->C.dy;	/* This gets reset to 0 once we finish the first printable row */
+	gap = Ctrl->C.off[GMT_Y];	/* This gets reset to 0 once we finish the first printable row */
 	
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
@@ -668,7 +681,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						bar_opts[0] = '\0';
 						sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, bar_opts);
 						x_off = GMT_to_inch (GMT, bar_gap);
-						sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, row_base_y, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
+						sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.anchor->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, Ctrl->D.dim[GMT_X] - 2 * x_off, bar_height, bar_opts);
 						status = GMT_Call_Module (API, "psscale", GMT_MODULE_CMD, buffer);	/* Plot the colorbar */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
@@ -720,12 +733,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							row_base_y -= quarter_line_spacing;
 						}
 						d_line_last_y0 = row_base_y;	/* Remember the y-value were we potentially draw the horizontal line */
-						if (d_line_half_width > 0.0) PSL_plotsegment (PSL, Ctrl->D.anchor->x + d_line_hor_offset, row_base_y, Ctrl->D.anchor->x + Ctrl->D.width - d_line_hor_offset, row_base_y);
+						if (d_line_half_width > 0.0) PSL_plotsegment (PSL, Ctrl->D.anchor->x + d_line_hor_offset, row_base_y, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X] - d_line_hor_offset, row_base_y);
 						d_line_after_gap = (txt_c[0] == '+' || txt_c[0] == '=') ? 0.0 : quarter_line_spacing;
 						row_base_y -= d_line_after_gap;
 						d_line_after_gap -= d_line_half_width;	/* Shrink the gap fill-height after a D line by half the line width so we dont overwrite the line */
 						column_number = 0;	/* Reset to new row */
-						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 						drawn = true;
 						break;
 
@@ -752,7 +765,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						fillcell (GMT, Ctrl->D.anchor->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						row_base_y -= row_height;
 						column_number = 0;
-						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 						drawn = true;
 						break;
 
@@ -768,13 +781,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						row_height = Ctrl->L.spacing * ifont.size / PSL_POINTS_PER_INCH;
 						fillcell (GMT, Ctrl->D.anchor->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						row_base_y -= row_height;
-						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, row_base_y + d_off, GMT_putfont (GMT, ifont), text);
+						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.anchor->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y + d_off, GMT_putfont (GMT, ifont), text);
 						Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
 						if (debug_print) fprintf (stderr, "%s\n", buffer);
 						if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = GMT_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number = 0;
-						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 						drawn = true;
 						break;
 
@@ -786,12 +799,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						}
 						PSL_loadimage (PSL, path, &header, &dummy);
 						PSL_free (dummy);
-						justify = GMT_just_decode (GMT, key, 12);
+						justify = GMT_just_decode (GMT, key, PSL_NO_DEF);
 						row_height = GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
 						fillcell (GMT, Ctrl->D.anchor->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						x_off = Ctrl->D.anchor->x;
-						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
-						sprintf (buffer, "-O -K %s -W%s -D%gi/%gi/%s", image, size, x_off, row_base_y, key);
+						x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? Ctrl->D.dim[GMT_X] - Ctrl->C.off[GMT_X] : 0.5 * Ctrl->D.dim[GMT_X]);
+						sprintf (buffer, "-O -K %s -W%s -Dx%gi/%gi+j%s", image, size, x_off, row_base_y, key);
 						status = GMT_Call_Module (API, "psimage", GMT_MODULE_CMD, buffer);	/* Plot the image */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psimage returned error %d.\n", status);
@@ -817,7 +830,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							fillcell (GMT, Ctrl->D.anchor->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 							row_base_y -= row_height;
 							column_number = 0;
-							if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+							if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 						}
 						if (text[0] == '\0') {	/* Nothing to do, just skip to next */
 							column_number++;
@@ -827,7 +840,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						}
 						justify = GMT_just_decode (GMT, key, 0);
 						x_off = Ctrl->D.anchor->x + x_off_col[column_number];
-						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.dx : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
+						x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
 						sprintf (buffer, "%g %g %s B%s %s", x_off, row_base_y + d_off, GMT_putfont (GMT, ifont), key, text);
 						Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
@@ -868,9 +881,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						fillcell (GMT, Ctrl->D.anchor->x, row_base_y-h, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						if (gave_label && just == 't') row_base_y -= d_off;
 						if (!strcmp (txt_a, "-"))	/* No longitude needed */
-							sprintf (mapscale, "fx%gi/%gi/%s/%s", Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, row_base_y, txt_b, txt_c);
+							sprintf (mapscale, "fx%gi/%gi/%s/%s", Ctrl->D.anchor->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, txt_b, txt_c);
 						else				/* Gave both lon and lat for scale */
-							sprintf (mapscale, "fx%gi/%gi/%s/%s/%s", Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, row_base_y, txt_a, txt_b, txt_c);
+							sprintf (mapscale, "fx%gi/%gi/%s/%s/%s", Ctrl->D.anchor->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, txt_a, txt_b, txt_c);
 						if (n_scan == 6)	/* Gave specific -R -J on M line */
 							sprintf (buffer, "%s %s -O -K -L%s", txt_e, txt_f, &mapscale[k]);
 						else {	/* Use -R -J as supplied to pslegend */
@@ -888,7 +901,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (gave_label && just == 'b') row_base_y -= d_off;
 						row_base_y -= row_height;
 						column_number = 0;
-						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 						drawn = true;
 						break;
 
@@ -909,8 +922,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							for (column_number = 0; column_number < n_columns; column_number++) col_width[column_number] = 1.0;
 						}
 						for (column_number = 0, sum_width = 0.0; column_number < n_columns; column_number++) sum_width += col_width[column_number];
-						for (column_number = 1, x_off_col[0] = 0.0; column_number < n_columns; column_number++) x_off_col[column_number] = x_off_col[column_number-1] + (Ctrl->D.width * col_width[column_number-1] / sum_width);
-						x_off_col[column_number] = Ctrl->D.width;	/* Holds width of row */
+						for (column_number = 1, x_off_col[0] = 0.0; column_number < n_columns; column_number++) x_off_col[column_number] = x_off_col[column_number-1] + (Ctrl->D.dim[GMT_X] * col_width[column_number-1] / sum_width);
+						x_off_col[column_number] = Ctrl->D.dim[GMT_X];	/* Holds width of row */
 						if (n_columns > n_col) for (col = 1; col < n_columns; col++) if (fill[0]) fill[col] = strdup (fill[0]);	/* Extend the fill array to match the new column numbers, if fill is active */
 						column_number = 0;
 						if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
@@ -950,14 +963,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							}
 						}
 						did_old = false;
-						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 						if (n == 0 || xx[0] == '-') sprintf (xx, "%g", col_left_x);
 						if (n == 0 || yy[0] == '-') sprintf (yy, "%g", row_base_y);
 						if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%d,%s", GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor);
 						if (n == 0 || angle[0] == '-') sprintf (angle, "0");
 						if (n == 0 || key[0] == '-') sprintf (key, "TL");
 						if (n == 0 || lspace[0] == '-') sprintf (lspace, "%gi", one_line_spacing);
-						if (n == 0 || tw[0] == '-') sprintf (tw, "%gi", Ctrl->D.width - 2.0 * Ctrl->C.dx);
+						if (n == 0 || tw[0] == '-') sprintf (tw, "%gi", Ctrl->D.dim[GMT_X] - 2.0 * Ctrl->C.off[GMT_X]);
 						if (n == 0 || jj[0] == '-') sprintf (jj, "j");
 						if ((T[PAR] = get_textset_pointer (API, T[PAR], GMT_IS_NONE)) == NULL) return (API->error);
 						sprintf (buffer, "> %s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
@@ -988,7 +1001,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txt_c))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 						if (strchr ("LCR", txt_a[0])) {	/* Gave L, C, or R justification relative to current cell */
 							justify = GMT_just_decode (GMT, txt_a, 0);
-							off_ss = (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.dx : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
+							off_ss = (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
 							x_off = Ctrl->D.anchor->x + x_off_col[column_number];
 						}
 						else {
@@ -1215,7 +1228,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = GMT_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
 						column_number++;
-						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 						drawn = true;
 						break;
 
@@ -1225,7 +1238,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						Ts[PAR] = T[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						if (!flush_paragraph) {
 							d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
-							sprintf (buffer, "> %g %g %g,%d,%s 0 TL %gi %gi j", col_left_x, row_base_y - d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, one_line_spacing, Ctrl->D.width - 2.0 * Ctrl->C.dx);
+							sprintf (buffer, "> %g %g %g,%d,%s 0 TL %gi %gi j", col_left_x, row_base_y - d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, one_line_spacing, Ctrl->D.dim[GMT_X] - 2.0 * Ctrl->C.off[GMT_X]);
 							Ts[PAR]->record[Ts[PAR]->n_rows++] = strdup (buffer);
 							if (Ts[PAR]->n_rows == Ts[PAR]->n_alloc) Ts[PAR]->record = GMT_memory (GMT, Ts[PAR]->record, Ts[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
@@ -1262,7 +1275,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							v_line_y_start = d_line_last_y0;
 						}
 						column_number = 0;
-						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.width, row_base_y);
+						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->x + Ctrl->D.dim[GMT_X], row_base_y);
 						break;
 
 					default:
@@ -1275,7 +1288,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 	}
 	/* If there is clearance and fill is active we must paint the clearance row */
-	if (Ctrl->C.dy > 0.0) fillcell (GMT, Ctrl->D.anchor->x, row_base_y-Ctrl->C.dy, row_base_y, x_off_col, &d_line_after_gap, n_columns, fill);
+	if (Ctrl->C.off[GMT_Y] > 0.0) fillcell (GMT, Ctrl->D.anchor->x, row_base_y-Ctrl->C.off[GMT_Y], row_base_y, x_off_col, &d_line_after_gap, n_columns, fill);
 
 	if (GMT_Destroy_Data (API, &In) != GMT_OK) {	/* Remove the main input file from registration */
 		Return (API->error);
@@ -1287,7 +1300,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
 	if (Ctrl->F.active)	/* Draw legend frame box */
-		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.width, Ctrl->D.anchor->y + 0.5 * Ctrl->D.height, 2U, Ctrl->F.panel);
+		GMT_draw_map_panel (GMT, Ctrl->D.anchor->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.anchor->y + 0.5 * Ctrl->D.dim[GMT_Y], 2U, Ctrl->F.panel);
 	
 	/* Time to plot any symbols, text, and paragraphs we collected in the loop */
 

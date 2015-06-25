@@ -42,7 +42,7 @@ struct PSBASEMAP_CTRL {
 		bool active;
 		char *file;
 	} A;
-	struct D {	/* -D */
+	struct D {	/* -D[g|j|n|x]<anchor>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>] */
 		bool active;
 		struct GMT_MAP_INSERT insert;
 	} D;

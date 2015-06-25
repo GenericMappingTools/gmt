@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pslegend** [ *specfile* ]
-**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *anchor*/*width*\ [/*height*]\ [/*justify*]\ [/*dx*/*dy*]
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *anchor*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
 [ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
@@ -41,7 +41,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 `Required Arguments <#toc4>`_
 -----------------------------
 
-**-D**\ [**j**\ \|\ **g**\ \|\ **n**\ \|\ **x**]\ *anchor*/*width*\ [/*height*]\ [/*justify*]\ [/*dx*/*dy*]
+**-D**\ [**j**\ \|\ **g**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
     Defines the *anchor* position *x0*/*y0* of the legend using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,

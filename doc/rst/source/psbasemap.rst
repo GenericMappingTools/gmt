@@ -16,7 +16,7 @@ Synopsis
 **psbasemap** **-J**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-A**\ [*file*] ] [ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*width*\ /*height*[/*justify*]\ [/*dx*/*dy*][**+s**\ *file*] ]
+[ **-A**\ [*file*] ] [ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]][**+s**\ *file*] ]
 [ **-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-K** ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
 [ **-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ [*label*]\ ][\ **+j**\ *just*]\ [**+u**]\ ]
@@ -66,7 +66,7 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 
-**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ /*width*\ [/*height*][/*justify*\ ][/*dx*/*dy*][**+s**\ *file*]
+**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*]
     Draw a simple map insert box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
@@ -76,10 +76,10 @@ Optional Arguments
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.). Append *width*\ [**u**]\ [/*height*\ [**u**]] of bounding rectangle or box.
+    (inches, cm, etc.). Append **+w**\ *width*\ [**u**]\ [/*height*\ [**u**]] of bounding rectangle or box.
     The optional *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
     anchor *x0*/*y0* to a point on the rectangular insert box [CT].  Note that if **-Dj**\ *code*
-    is used and *justify* is not set then *justify* is set equal to *code*.
+    is used and **+j**\ *justify* is not set then *justify* is set equal to *code*.
     Finally, you can offset the insert box by *dx*/*dy* away from the *anchor* point in
     the direction implied by *justify*.
     If you need access to the placement of the lower left corner of the map insert and

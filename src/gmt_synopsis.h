@@ -58,6 +58,8 @@
 
 /* Options for map rose, scale and insert, used in pscoast and psbasemap */
 
+#define GMT_XYANCHOR	"[g|j|n|x]<anchor>"
+#define GMT_OFFSET	"[+j<justify>][+o<dx>[/<dy>]]"
 #define GMT_TROSE	"[f|m][x]<lon0>/<lat0>/<diameter>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
 #define GMT_SCALE	"[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[e|f|M|n|k|u][+l<label>][+j<just>][+u]"
 #define GMT_INSERT_A	"[g|j|n|x]<anchor>/<width>[<unit>]/<height>[<unit>][/<justify>[/<dx>/<dy>]][+s<file>]"
@@ -70,7 +72,7 @@
 /* Argument to *contour programs */
 
 #define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"
-#define GMT_CONTT	"-T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:[<labels>]]"
+#define GMT_CONTT	"-T[+|-][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
 
 /* Options for coastline extraction  */
 #define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+ag|i|s|S][+r|l][+p<percent>]"

@@ -322,6 +322,7 @@ EXTERN_MSC void GMT_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_S
 EXTERN_MSC bool GMT_get_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match);
 EXTERN_MSC struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify);
+EXTERN_MSC int GMT_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double par[]);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int GMT_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);

@@ -78,12 +78,12 @@ struct GRDCONTOUR_CTRL {
 		bool active;
 		unsigned int value;
 	} S;
-	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
+	struct T {	/* -T[+|-][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
 		bool active;
 		bool label;
 		bool low, high;	/* true to tick low and high locals */
-		double spacing, length;
-		char *txt[2];	/* Low and high label */
+		double dim[2];	/* spacing, length */
+		char *txt[2];	/* Low and high label [-+] */
 	} T;
 	struct W {	/* -W[+]<type><pen> */
 		bool active;
@@ -137,10 +137,8 @@ void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->D.file = strdup ("contour");
 	C->L.low = -DBL_MAX;
 	C->L.high = DBL_MAX;
-	C->T.spacing = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
-	C->T.length  = TICKED_LENGTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 3p */
-	C->T.txt[0] = strdup ("-");	/* Default low label */
-	C->T.txt[1] = strdup ("+");	/* Default high label */
+	C->T.dim[GMT_X] = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
+	C->T.dim[GMT_Y] = TICKED_LENGTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 3p */
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->W.pen[1].width *= 3.0;
 	C->Z.scale = 1.0;
@@ -221,11 +219,11 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the downward direction.  User may specify to tick only highs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-T+) or lows (-T-) [-T implies both extrema].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append spacing/ticklength (with units) to change defaults [%gp/%gp].\n", TICKED_SPACING, TICKED_LENGTH);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append :[<labels>] to plot L and H in the center of local lows and highs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no labels are given we default to - and +.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., :LH) we use the as L and H.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For string labels, simply give two strings separated by a comma (e.g., lo,hi).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].\n", TICKED_SPACING, TICKED_LENGTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +lXY (or +l\"low,high\") to place X and Y (or low and high) at the center\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of local lows and highs.  If no labels are given we default to - and +.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., +lLH) we use the as L and H.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For string labels, simply give two strings separated by a comma (e.g., +llo,hi).\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The default pen settings are\n");
@@ -243,6 +241,44 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
+unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct GRDCONTOUR_CTRL *Ctrl)
+{	/* The backwards compatible parser for old-style -T option: */
+	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
+	int n, j;
+	unsigned int n_errors = 0;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	if (strchr (arg, '/')) {	/* Gave gap/length */
+		n = sscanf (arg, "%[^/]/%[^:]", txt_a, txt_b);
+		if (n == 2) {
+			Ctrl->T.dim[GMT_X] = GMT_to_inch (GMT, txt_a);
+			Ctrl->T.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
+		}
+	}
+	n = 0;
+	for (j = 0; arg[j] && arg[j] != ':'; j++);
+	if (arg[j] == ':') Ctrl->T.label = true, j++;
+	if (arg[j]) {	/* Override high/low markers */
+		if (strlen (&(arg[j])) == 2) {	/* Standard :LH syntax */
+			txt_a[0] = arg[j++];	txt_a[1] = '\0';
+			txt_b[0] = arg[j++];	txt_b[1] = '\0';
+			n = 2;
+		}
+		else if (strchr (&(arg[j]), ',')) {	/* Found :<labellow>,<labelhigh> */
+			n = sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
+			Ctrl->T.label = false;
+			n_errors++;
+		}
+		if (Ctrl->T.label) {	/* Replace defaults */
+			Ctrl->T.txt[0] = strdup (txt_a);
+			Ctrl->T.txt[1] = strdup (txt_b);
+		}
+	}
+	return (n_errors);
+}
+
 int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdcontour and sets parameters in Ctrl.
@@ -254,7 +290,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 	unsigned int n_errors = 0, n_files = 0, id;
 	int j, k, n;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -353,44 +389,37 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 			case 'T':	/* Ticking of innermost closed contours */
 				Ctrl->T.active = Ctrl->T.high = Ctrl->T.low = true;	/* Default if just -T is given */
 				if (opt->arg[0]) {	/* But here we gave more options */
-					if (opt->arg[0] == '+')			/* Only tick local highs */
+					if (opt->arg[0] == '+' && !strchr ("dl", opt->arg[1]))			/* Only tick local highs */
 						Ctrl->T.low = false, j = 1;
 					else if (opt->arg[0] == '-')		/* Only tick local lows */
 						Ctrl->T.high = false, j = 1;
 					else
 						j = 0;
-					if (strchr (&opt->arg[j], '/')) {	/* Gave gap/length */
-						n = sscanf (&opt->arg[j], "%[^/]/%[^:]", txt_a, txt_b);
-						if (n == 2) {
-							Ctrl->T.spacing = GMT_to_inch (GMT, txt_a);
-							Ctrl->T.length = GMT_to_inch (GMT, txt_b);
+					if (strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
+						if (GMT_get_modifier (opt->arg, 'd', string))
+							if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->T.dim)) < 1) n_errors++;
+						if (GMT_get_modifier (opt->arg, 'l', string)) {	/* Want to label innermost contours */
+							Ctrl->T.label = true;
+							if (string[0] == 0)
+								;	/* Use default labels */
+							else if (strlen (string) == 2) {	/* Standard +lLH syntax */
+								char A[2] = {0, 0};
+								A[0] = string[0];	Ctrl->T.txt[0] = strdup (A);
+								A[0] = string[1];	Ctrl->T.txt[1] = strdup (A);
+							}
+							else if (strchr (&(opt->arg[j]), ',') && (n = sscanf (&(opt->arg[j]), "%[^,],%s", txt_a, txt_b)) == 2) {	/* Found :<labellow>,<labelhigh> */
+								Ctrl->T.txt[0] = strdup (txt_a);
+								Ctrl->T.txt[1] = strdup (txt_b);
+							}
+							else {
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Give low and high labels either as +lLH or +l<low>,<high>.\n");
+								n_errors++;
+							}
 						}
 					}
-					n = 0;
-					for (j = 0; opt->arg[j] && opt->arg[j] != ':'; j++);
-					if (opt->arg[j] == ':') Ctrl->T.label = true, j++;
-					if (opt->arg[j]) {	/* Override high/low markers */
-						if (strlen (&(opt->arg[j])) == 2) {	/* Standard :LH syntax */
-							txt_a[0] = opt->arg[j++];	txt_a[1] = '\0';
-							txt_b[0] = opt->arg[j++];	txt_b[1] = '\0';
-							n = 2;
-						}
-						else if (strchr (&(opt->arg[j]), ',')) {	/* Found :<labellow>,<labelhigh> */
-							n = sscanf (&(opt->arg[j]), "%[^,],%s", txt_a, txt_b);
-						}
-						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
-							Ctrl->T.label = false;
-							n_errors++;
-						}
-						if (Ctrl->T.label) {	/* Replace defaults */
-							free (Ctrl->T.txt[0]);
-							free (Ctrl->T.txt[1]);
-							Ctrl->T.txt[0] = strdup (txt_a);
-							Ctrl->T.txt[1] = strdup (txt_b);
-						}
-					}
-					n_errors += GMT_check_condition (GMT, n == 1 || Ctrl->T.spacing <= 0.0 || Ctrl->T.length == 0.0, "Syntax error -T option: Expected\n\t-T[+|-][<tick_gap>[%s]/<tick_length>[%s]][:LH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+					else
+						n_errors += grdcontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
+					n_errors += GMT_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0, "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
 			case 'W':	/* Pen settings */
@@ -451,7 +480,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 /* Three sub functions used by GMT_grdcontour */
 
-void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[], unsigned int mode, FILE *fp)
+void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, FILE *fp)
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
@@ -465,11 +494,14 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	uint64_t ij;
 	size_t pol, pol2;
 	bool done, match, found;
+	char *lbl[2], *def[2] = {"-", "+"};
 	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end, x_lbl, y_lbl;
 	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;
 	double *s = NULL, *xp = NULL, *yp = NULL;
 	double da, db, dc, dd;
 
+	lbl[0] = (in_lbl[0]) ? in_lbl[0] : def[0];
+	lbl[1] = (in_lbl[1]) ? in_lbl[1] : def[1];
 	/* The x/y coordinates in SAVE in original cooordinates */
 
 	for (pol = 0; pol < n; pol++) {	/* Set y min/max for polar caps */
@@ -1240,7 +1272,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
 		save = GMT_memory (GMT, save, n_save, struct SAVE);
 
-		grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode, Ctrl->contour.fp);
+		grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode, Ctrl->contour.fp);
 		for (i = 0; i < n_save; i++) {
 			GMT_free (GMT, save[i].x);
 			GMT_free (GMT, save[i].y);

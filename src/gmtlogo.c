@@ -45,17 +45,17 @@
 /* Control structure for gmtlogo */
 
 struct GMTLOGO_CTRL {
-	struct D {	/* -D[g|j|n|x]<anchor>[/<justify>][/<dx>/<dy>] */
+	struct D {	/* -D[g|j|n|x]<anchor>[+j<justify>][+o<off[GMT_X]>[/<dy>]] */
 		bool active;
 		struct GMT_ANCHOR *anchor;
-		double dx, dy;
+		double off[2];
 		int justify;
 	} D;
 	struct W {	/* -W<width> */
 		bool active;
 		double width;
 	} W;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<off[GMT_X]>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
@@ -83,15 +83,16 @@ int GMT_gmtlogo_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtlogo  [-D[g|j|n|x]<anchor>[/<justify>][/<dx>/<dy>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtlogo [%s%s]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "[%s] [%s] [%s] [-K]\n", GMT_PANEL, GMT_J_OPT, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t [-O] [-P] [-W<width>] [%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t [-O] [-P] [%s] [-W<width>] [%s] [%s] [%s] [%s]\n\n", GMT_Rgeoz_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_anchor_syntax (API->GMT, 'D', "Specify position of the logo", GMT_ANCHOR_LOGO, 3);
-	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the logo", 0);
+	GMT_anchor_syntax (API->GMT, 'D', "Specify position of the GMT logo [0/0]", GMT_ANCHOR_LOGO, 1);
+	GMT_anchor_syntax (API->GMT, 'D', "BL", GMT_ANCHOR_LOGO, 2);
+	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set width of the GMT logo [2 inches].\n");
 	GMT_Option (API, "U,V");
@@ -110,8 +111,8 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0;
-	int n;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+int n;
+	char string[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -123,15 +124,13 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 			case 'D':
 				Ctrl->D.active = true;
 				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {	/* args are [/<justify>][/<dx>/<dy>] (0-3) */
-					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-					if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate as default */
+				else {	/* args are [+j<justify>][+o<dx>[/<dy>]] */
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'j', string))
+						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+					else if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate as default */
 						Ctrl->D.justify = Ctrl->D.anchor->justify;
-					switch (n) {
-						case 1: Ctrl->D.justify = GMT_just_decode (GMT, txt_a, 12);	break;
-						case 2: Ctrl->D.dx = GMT_to_inch (GMT, txt_a); 	Ctrl->D.dy = GMT_to_inch (GMT, txt_b);
-							break;
-						case 3: Ctrl->D.justify = GMT_just_decode (GMT, txt_a, 12);	Ctrl->D.dx = GMT_to_inch (GMT, txt_b); 	Ctrl->D.dy = GMT_to_inch (GMT, txt_c); break;
+					if (GMT_get_modifier (Ctrl->D.anchor->args, 'o', string)) {
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 				}
 				break;
@@ -212,8 +211,8 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 		Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.width;
 		Ctrl->D.anchor->y -= 0.25 * (Ctrl->D.justify/4) * Ctrl->W.width;	/* 0.25 because height = 0.5 * width */
 		/* Also deal with any justified offsets if given */
-		Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.dx;
-		Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.dy;
+		Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
+		Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
 		wesn[XHI] = Ctrl->D.anchor->x + Ctrl->W.width;	wesn[YHI] = Ctrl->D.anchor->y + 0.5 * Ctrl->W.width;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
@@ -225,8 +224,8 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 		Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.width;
 		Ctrl->D.anchor->y -= 0.25 * (Ctrl->D.justify/4) * Ctrl->W.width;	/* 0.25 because height = 0.5 * width */
 		/* Also deal with any justified offsets if given */
-		Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.dx;
-		Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.dy;
+		Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
+		Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
