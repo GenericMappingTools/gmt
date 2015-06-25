@@ -2822,6 +2822,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	}
 
 	/* We will determine the scale at the point ms->scale_lon, ms->scale_lat */
+	if (GMT_is_dnan (ms->scale_lon)) ms->scale_lon = GMT->current.proj.central_meridian;
 	GMT_geo_to_xy (GMT, ms->scale_lon, ms->scale_lat, &x0_scl, &y0_scl);
 	/* 1. Pick a reasonably small dx, e.g., 5% of map width */
 	dx = 0.05 * GMT->current.map.width;
