@@ -42,7 +42,7 @@ struct PSBASEMAP_CTRL {
 		bool active;
 		char *file;
 	} A;
-	struct D {	/* -D[g|j|n|x]<anchor>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>] */
 		bool active;
 		struct GMT_MAP_INSERT insert;
 	} D;
@@ -50,7 +50,7 @@ struct PSBASEMAP_CTRL {
 		bool active;
 		/* The panels are members of GMT_MAP_SCALE, GMT_MAP_ROSE, and GMT_MAP_INSERT */
 	} F;
-	struct L {	/* -L[g|j|n|x]<anchor>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+f][+l[<label>]][+j<just>][+u] */
+	struct L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+f][+l[<label>]][+j<just>][+u] */
 		bool active;
 		struct GMT_MAP_SCALE scale;
 	} L;
@@ -70,9 +70,9 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->A.file) free (C->A.file);
-	if (C->D.insert.anchor) GMT_free (GMT, C->D.insert.anchor);
+	if (C->D.insert.refpoint) GMT_free (GMT, C->D.insert.refpoint);
 	if (C->D.insert.panel) GMT_free (GMT, C->D.insert.panel);
-	if (C->L.scale.anchor) GMT_free (GMT, C->L.scale.anchor);
+	if (C->L.scale.refpoint) GMT_free (GMT, C->L.scale.refpoint);
 	if (C->L.scale.panel) GMT_free (GMT, C->L.scale.panel);
 	if (C->T.rose.panel)  GMT_free (GMT, C->T.rose.panel);
 	GMT_free (GMT, C);
@@ -105,9 +105,9 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
 	GMT_Option (API, "K");
-	GMT_mapscale_syntax (API->GMT, 'L', "Draw a map scale centered on specified anchor point.");
+	GMT_mapscale_syntax (API->GMT, 'L', "Draw a map scale centered on specified reference point.");
 	GMT_Option (API, "O,P");
-	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose centered on <anchor>.");
+	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose centered on specified reference point.");
 	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
 	return (EXIT_FAILURE);

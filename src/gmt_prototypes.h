@@ -67,7 +67,7 @@ EXTERN_MSC bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GM
 EXTERN_MSC int GMT_hash_lookup (struct GMT_CTRL *GMT, char *key, struct GMT_HASH *hashnode, unsigned int n, unsigned int n_hash);
 EXTERN_MSC void GMT_syntax (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
-EXTERN_MSC void GMT_anchor_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part);
+EXTERN_MSC void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part);
 EXTERN_MSC void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string);
@@ -301,9 +301,9 @@ EXTERN_MSC void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, con
 /* gmt_support.c: */
 
 EXTERN_MSC void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x, double *y);
-EXTERN_MSC struct GMT_ANCHOR * GMT_get_anchorpoint (struct GMT_CTRL *GMT, char *arg);
-EXTERN_MSC void GMT_set_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR *A);
-EXTERN_MSC void GMT_free_anchorpoint (struct GMT_CTRL *GMT, struct GMT_ANCHOR **Ap);
+EXTERN_MSC struct GMT_REFPOINT * GMT_get_refpoint (struct GMT_CTRL *GMT, char *arg);
+EXTERN_MSC void GMT_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A);
+EXTERN_MSC void GMT_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap);
 EXTERN_MSC void GMT_flip_angle_d (struct GMT_CTRL *GMT, double *angle);
 EXTERN_MSC void GMT_flip_angle_f (struct GMT_CTRL *GMT, float *angle);
 EXTERN_MSC struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]);

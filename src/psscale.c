@@ -65,10 +65,10 @@ struct PSSCALE_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[g|j|n|x]<anchor>+w<length>/<width>[+h][+j<justify>][+o<dx>[/<dy>]] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+h][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		bool horizontal;
-		struct GMT_ANCHOR *anchor;
+		struct GMT_REFPOINT *refpoint;
 		int justify;
 		double dim[2];
 		double off[2];
@@ -133,7 +133,7 @@ void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->C.file) free (C->C.file);
-	GMT_free_anchorpoint (GMT, &C->D.anchor);
+	GMT_free_refpoint (GMT, &C->D.refpoint);
 	if (C->E.text) free (C->E.text);
 	if (C->F.panel) GMT_free (GMT, C->F.panel);
 	if (C->Z.file) free (C->Z.file);
@@ -154,11 +154,11 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_anchor_syntax (API->GMT, 'D', "Specify position and dimensions of the scale bar", GMT_ANCHOR_COLORBAR, 1);
+	GMT_refpoint_syntax (API->GMT, 'D', "Specify position and dimensions of the scale bar", GMT_ANCHOR_COLORBAR, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>/<width> for the scale dimensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h for a horizontal scale [Default is vertical].\n");
-	GMT_anchor_syntax (API->GMT, 'D', "TC or LM", GMT_ANCHOR_COLORBAR, 2);
+	GMT_refpoint_syntax (API->GMT, 'D', "TC or LM", GMT_ANCHOR_COLORBAR, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Place the desired annotations/labels/units on the opposite side of the colorscale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append any of a, l, or u to flip the annotations, labels, or unit, respectively.\n");
@@ -252,23 +252,23 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				if (strstr (Ctrl->D.anchor->args, "+w")) {	/* New syntax: Args are +w<length>/<width>][+h][+j<justify>][+o<dx>[/<dy>]] */
-					if (GMT_get_modifier (Ctrl->D.anchor->args, 'h', string))
+				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
+				if (strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: Args are +w<length>/<width>][+h][+j<justify>][+o<dx>[/<dy>]] */
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'h', string))
 						Ctrl->D.horizontal = true;
-					if (GMT_get_modifier (Ctrl->D.anchor->args, 'j', string))
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* With -Dj, set default as the mirror to anchor justify point */
-						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.anchor->justify);
-					if (GMT_get_modifier (Ctrl->D.anchor->args, 'o', string)) {
+					else if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
+						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.refpoint->justify);
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
-					if (GMT_get_modifier (Ctrl->D.anchor->args, 'w', string)) {
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_EXACT, Ctrl->D.dim)) < 2) n_errors++;
 					}
 				}
 				else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
-					n = sscanf (Ctrl->D.anchor->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+					n = sscanf (Ctrl->D.refpoint->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 					/* First deal with bar dimensions and horizontal vs vertical */
 					j = (unsigned int)strlen (txt_b) - 1;
 					if (txt_b[j] == 'h' || txt_b[j] == 'H') {	/* Want horizontal color bar */
@@ -277,8 +277,8 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 					}
 					Ctrl->D.dim[GMT_X] = GMT_to_inch (GMT, txt_a);
 					Ctrl->D.dim[GMT_Y]  = GMT_to_inch (GMT, txt_b);
-					if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* With -Dj, set default as the mirror to anchor justify point */
-						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.anchor->justify);
+					if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
+						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.refpoint->justify);
 					else
 						Ctrl->D.justify = (Ctrl->D.horizontal) ? 10 : 5;	/* Default justifications for non-Dj settings */
 					/* Now deal with optional arguments, if any */
@@ -1355,7 +1355,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
-		GMT_set_anchorpoint (GMT, Ctrl->D.anchor);	/* Finalize anchor point plot coordinates, if needed */
+		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -1376,22 +1376,22 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
 	/* We must do any origin translation manually in psscale */
-	/* Change anchor point from what we got to be the lower left point on the bar */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before justify = %d, Bar anchor x = %g y = %g\n", Ctrl->D.justify, Ctrl->D.anchor->x, Ctrl->D.anchor->y);
-	Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * xdim;
-	Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * ydim;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Bar anchor x = %g y = %g\n", Ctrl->D.justify, Ctrl->D.anchor->x, Ctrl->D.anchor->y);
+	/* Change reference point from what we got to be the lower left point on the bar */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before justify = %d, Bar reference x = %g y = %g\n", Ctrl->D.justify, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
+	Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * xdim;
+	Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * ydim;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Bar referece x = %g y = %g\n", Ctrl->D.justify, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	/* Also deal with any justified offsets if given */
-	Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-	Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar anchor x = %g y = %g\n", Ctrl->D.anchor->x, Ctrl->D.anchor->y);
-	PSL_setorigin (PSL, Ctrl->D.anchor->x, Ctrl->D.anchor->y, 0.0, PSL_FWD);
+	Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
+	Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar referece x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
+	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 
 	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode,
 		GMT->current.map.frame.draw, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
 		Ctrl->L.interval, Ctrl->M.active, Ctrl->F.active, Ctrl->F.panel);
-	PSL_setorigin (PSL, -Ctrl->D.anchor->x, -Ctrl->D.anchor->y, 0.0, PSL_FWD);
+	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 	GMT_plane_perspective (GMT, -1, 0.0);
 
 	GMT_plotend (GMT);

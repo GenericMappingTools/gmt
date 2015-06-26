@@ -39,9 +39,9 @@ struct PSIMAGE_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct PSIMG_D {	/* -D[g|j|n|x]<anchor>[+j<justify>][+o<off[GMT_X]>[/<dy>]] */
+	struct PSIMG_D {	/* -D[g|j|n|x]<refpoint>[+j<justify>][+o<off[GMT_X]>[/<dy>]] */
 		bool active;
-		struct GMT_ANCHOR *anchor;
+		struct GMT_REFPOINT *refpoint;
 		double off[2];
 		int justify;
 	} D;
@@ -91,7 +91,7 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_psimage_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->In.file) free (C->In.file);
-	GMT_free_anchorpoint (GMT, &C->D.anchor);
+	GMT_free_refpoint (GMT, &C->D.refpoint);
 	if (C->F.panel) GMT_free (GMT, C->F.panel);
 	GMT_free (GMT, C);
 }
@@ -117,7 +117,7 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   then we use absolute value and interpolate image in PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
-	GMT_anchor_syntax (API->GMT, 'D', "Specify position of the image", GMT_ANCHOR_IMAGE, 3);
+	GMT_refpoint_syntax (API->GMT, 'D', "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   respectively. Set <color> = - for transparency [Default is black and white].\n");
@@ -173,13 +173,13 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 			case 'D':
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
-				if ((Ctrl->D.anchor = GMT_get_anchorpoint (GMT, p)) == NULL) n_errors++;	/* Failed basic parsing */
+				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, p)) == NULL) n_errors++;	/* Failed basic parsing */
 				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]] */
-					if (GMT_get_modifier (Ctrl->D.anchor->args, 'j', string))
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else if (Ctrl->D.anchor->mode == GMT_ANCHOR_JUST)	/* For -Dj with no 2nd justification, use same code as anchor coordinate as default */
-						Ctrl->D.justify = Ctrl->D.anchor->justify;
-					if (GMT_get_modifier (Ctrl->D.anchor->args, 'o', string)) {
+					else if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* For -Dj with no 2nd justification, use same code as reference coordinate as default */
+						Ctrl->D.justify = Ctrl->D.refpoint->justify;
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 				}
@@ -271,7 +271,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 	if (Ctrl->G.b_rgb[0] == -2) { Ctrl->G.b_rgb[0] = Ctrl->G.b_rgb[1] = Ctrl->G.b_rgb[2] = 1.0; }
 
 	if (!Ctrl->D.active) {
-		Ctrl->D.anchor = GMT_get_anchorpoint (GMT, "x0/0");	/* Default if no -D given */
+		Ctrl->D.refpoint = GMT_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
 		Ctrl->D.active = true;
 	}
 	/* Check that the options selected are mutually consistent */
@@ -530,33 +530,33 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.dim[GMT_X];
-		Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->W.dim[GMT_Y];
+		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.dim[GMT_X];
+		Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->W.dim[GMT_Y];
 		/* Also deal with any justified offsets if given */
-		Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-		Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
-		wesn[XHI] = Ctrl->D.anchor->x + Ctrl->N.nx * Ctrl->W.dim[GMT_X];
-		wesn[YHI] = Ctrl->D.anchor->y + Ctrl->N.ny * Ctrl->W.dim[GMT_Y];
+		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
+		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
+		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->N.nx * Ctrl->W.dim[GMT_X];
+		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->N.ny * Ctrl->W.dim[GMT_Y];
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
-		GMT_set_anchorpoint (GMT, Ctrl->D.anchor);	/* Finalize anchor point plot coordinates, if needed */
-		Ctrl->D.anchor->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.dim[GMT_X];
-		Ctrl->D.anchor->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->W.dim[GMT_Y];
+		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
+		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.dim[GMT_X];
+		Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->W.dim[GMT_Y];
 		/* Also deal with any justified offsets if given */
-		Ctrl->D.anchor->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-		Ctrl->D.anchor->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
+		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
+		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_map_basemap (GMT);	/* Draw basemap if requested */
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		wesn[XHI] = Ctrl->D.anchor->x + Ctrl->N.nx * Ctrl->W.dim[GMT_X];
-		wesn[YHI] = Ctrl->D.anchor->y + Ctrl->N.ny * Ctrl->W.dim[GMT_Y];
+		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->N.nx * Ctrl->W.dim[GMT_X];
+		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->N.ny * Ctrl->W.dim[GMT_Y];
 		GMT->common.R.active = GMT->common.J.active = true;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
@@ -567,10 +567,10 @@ int GMT_psimage (void *V_API, int mode, void *args)
  	}
 
 	for (row = 0; row < Ctrl->N.ny; row++) {
-		y = Ctrl->D.anchor->y + row * Ctrl->W.dim[GMT_Y];
+		y = Ctrl->D.refpoint->y + row * Ctrl->W.dim[GMT_Y];
 		if (Ctrl->N.ny > 1) GMT_Report (API, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->N.nx, row);
 		for (col = 0; col < Ctrl->N.nx; col++) {
-			x = Ctrl->D.anchor->x + col * Ctrl->W.dim[GMT_X];
+			x = Ctrl->D.refpoint->x + col * Ctrl->W.dim[GMT_X];
 			if (header.depth == 0)
 				PSL_plotepsimage (PSL, x, y, Ctrl->W.dim[GMT_X], Ctrl->W.dim[GMT_Y], PSL_BL, picture, header.length,
 						header.width, header.height, header.xorigin, header.yorigin);

@@ -54,12 +54,12 @@ enum GMT_enum_panel {
 	GMT_PANEL_OUTLINE	= 16
 };
 	
-/*! Definition of structure used for holding information about an anchor point */
-struct GMT_ANCHOR {	/* Used to hold items relevant for an anchor point */
-	double x;		/* X position of anchor point */
-	double y;		/* Y position of anchor point */
-	enum GMT_enum_anchor mode;	/* Coordinate mode */
-	int justify;		/* Justification integer (1-11) for anchor (if given via -Dj) */
+/*! Definition of structure used for holding information about a reference point */
+struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
+	double x;		/* X position of reference point */
+	double y;		/* Y position of reference point */
+	enum GMT_enum_refpoint mode;	/* Coordinate mode */
+	int justify;		/* Justification integer (1-11) for reference point (if given via -Dj) */
 	char *args;		/* Text representation of any additional arguments */
 };
 
@@ -109,9 +109,9 @@ struct GMT_MAP_INSERT {
 	bool plot;		/* true if we want to draw the insert */
 	bool oblique;		/* true if we want got <w/s/e/n>r instead of <w/e/s/n> */
 	char unit;		/* Unit of projected coordinates or 0 for geographic */
-	struct GMT_ANCHOR *anchor;
+	struct GMT_REFPOINT *refpoint;
 	double wesn[4];		/* Geographic or projected boundaries */
-	double dx, dy;		/* Offset from anchor point */
+	double dx, dy;		/* Offset from reference point */
 	double dim[2];		/* Width & height of box */
 	char *file;			/* Used to write insert location and dimensions [+s] */
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
@@ -119,7 +119,7 @@ struct GMT_MAP_INSERT {
 
 /*! Plot a map scale in psbasemap and pscoast */
 struct GMT_MAP_SCALE {
-	struct GMT_ANCHOR *anchor;
+	struct GMT_REFPOINT *refpoint;
 	double origin[2];	/* Longitude/latitude where scale should apply */
 	double length;		/* How long the scale is in measure units */
 	bool plot;		/* true if we want to draw the scale */
@@ -135,9 +135,9 @@ struct GMT_MAP_SCALE {
 
 /*! Plot a map direction "rose" in psbasemap and pscoast */
 struct GMT_MAP_ROSE {
-	struct GMT_ANCHOR *anchor;
+	struct GMT_REFPOINT *refpoint;
 	double size;		/* Diameter of the rose in measure units */
-	double off[2];		/* Offset from anchor point sensed by justify */
+	double off[2];		/* Offset from reference point sensed by justify */
 	double declination;	/* Magnetic declination if needed */
 	double a_int[2];	/* Annotation interval for geographic and magnetic directions */
 	double f_int[2];	/* Tick (large) interval for geographic and magnetic directions */

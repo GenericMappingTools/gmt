@@ -157,13 +157,13 @@ enum GMT_enum_inside {
 	GMT_ONEDGE,
 	GMT_INSIDE};
 
-/*! Return codes from GMT_get_anchorpoint */
-enum GMT_enum_anchor {
-	GMT_ANCHOR_NOTSET = -1,		/* -D */
-	GMT_ANCHOR_MAP,			/* -Dg */
-	GMT_ANCHOR_JUST,		/* -Dj */
-	GMT_ANCHOR_NORM,		/* -Dn */
-	GMT_ANCHOR_PLOT};		/* -Dx */
+/*! Return codes from GMT_get_refpoint */
+enum GMT_enum_refpoint {
+	GMT_REFPOINT_NOTSET = -1,	/* -D */
+	GMT_REFPOINT_MAP,		/* -Dg */
+	GMT_REFPOINT_JUST,		/* -Dj */
+	GMT_REFPOINT_NORM,		/* -Dn */
+	GMT_REFPOINT_PLOT};		/* -Dx */
 
 /* Various constants for map roses */
 enum GMT_enum_rose {
