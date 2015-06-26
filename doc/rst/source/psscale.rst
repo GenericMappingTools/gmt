@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *length*/*width*\ [**+h**][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+**psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+h**][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
 [ **-A**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
@@ -55,20 +55,20 @@ If a label is requested, it is plotted with :ref:`FONT_LABEL <FONT_LABEL>`.
 Required Arguments
 ------------------
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *length*/*width*\ [**+h**][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
-    Defines the *anchor* position *x0*/*y0* of the color scale using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+h**][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+    Defines the reference point on the map fpr the color scale using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
     Append the *length* and *width* of the color bar.
     Give a negative *length* to reverse the scale bar. Append **h** to get a
     horizontal scale [Default is vertical].
-    By default, the *anchor* point is assumed to be the top center (CT) of the bar for
+    By default, the anchor point on the scale is assumed to be the top center (CT) for
     horizontal bars and left middle (LM) for vertical bars, but this
     can be changed by specifying a 2-char justification code *justify* (see :doc:`pstext`).
-    Note: If **Dj** is used then *justify* defaults to the mirror opposite setting used to define *anchor*.
-    Finally, you can offset the color scale by *dx*/*dy* away from the *anchor* point in
+    Note: If **Dj** is used then *justify* defaults to the mirror opposite setting used to define *refpoint*.
+    Finally, you can offset the color scale by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify*.
 
 Optional Arguments

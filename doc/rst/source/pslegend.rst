@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pslegend** [ *specfile* ]
-**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *anchor*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
 [ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
@@ -41,9 +41,9 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 `Required Arguments <#toc4>`_
 -----------------------------
 
-**-D**\ [**j**\ \|\ **g**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
-    Defines the *anchor* position *x0*/*y0* of the legend using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
+**-D**\ [**j**\ \|\ **g**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+    Defines the reference point on the map for the legend using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
@@ -51,9 +51,9 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     If *height* is zero or not given then we estimate *height* based the expected
     vertical extent of the items to be placed.
     The *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
-    anchor *x0*/*y0* to a point on the rectangular legend box [CT].  Note that if **-Dj**\ *code*
+    *refpoint* to an anchor point on the rectangular legend box [CT].  Note that if **-Dj**\ *code*
     is used and *justify* is not set then *justify* is set equal to *code*.
-    Finally, you can offset the legend box by *dx*/*dy* away from the *anchor* point in
+    Finally, you can offset the legend box by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify*.
 
 `Optional Arguments <#toc5>`_

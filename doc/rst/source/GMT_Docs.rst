@@ -300,9 +300,9 @@ Two of the established GMT common options have seen minor improvements:
 
 *  Added a forth way to specify the region for a new grid via the new
    **-R**\ [**L**\ \|\ **C**\ \|\ **R**][**T**\ \|\ **M**\ \|\ **B**]\ *x0*/*y0*/*nx*/*ny*
-   syntax where you specify an anchor point and number of points in the two
+   syntax where you specify an reference point and number of points in the two
    dimensions (requires **-I** to use the increments).  The optional justification
-   keys specify how the anchor point relate to the grid region.
+   keys specify how the reference point relate to the grid region.
 
 General improvements
 --------------------
@@ -3723,6 +3723,55 @@ Distiller** to create a PDF file you must first change some settings to
 make transparency effective: change the parameter /AllowTransparency to
 true in your \*.joboptions file.
 
+Placement of text
+-----------------
+
+Many text labels placed on maps are part of the standard basemap
+machinery (e.g., annotations, axis labels, plot titles) and GMT
+automatically takes care of where these are placed and how they
+are justified.  However, when you wish to add extra text to a plot
+in locations of your choice you will need to understand how we
+reference text to locations on the map.  Figure :ref:`Text justification <Text_justify>`
+discusses the various ways to do this.
+
+.. _Text_justify:
+
+.. figure:: /_images/GMT_pstext_justify.*
+   :width: 500 px
+   :align: center
+
+   Text strings are placed on maps by associating an *anchor* point on
+   the string with a *reference* point on the map.  Nine anchor points
+   relative to any text string may be specified by combining any of
+   three letter codes for horizontal (**L**\ eft, **C**\ enter, **R**\ ight)
+   and vertical (**T**\ op, **M**\ iddle, **B**\ ottom) alignments.
+
+Notice how the anchor points refers to the text baseline and do not change
+for text whose letters extend below the baseline.
+
+The concept of anchor points extends to entire text paragraphs that you
+may want to typeset with :doc:`pstext`.
+
+A related point involves the
+footprint of the text and any background panel on the map.  We determine
+the bounding box for any text string, but very often we wish to extend this
+box outwards to allow for some *clearance* between the text and the space
+surrounding it.  Programs that allows for such clearance will let you
+specify offsets *dx* and *dy* that is used to enlarge the bounding box,
+as illustrated in Figure :ref:`Text clearance <Text_clearance>`.
+
+.. _Text_clearance:
+
+.. figure:: /_images/GMT_pstext_clearance.*
+   :width: 400 px
+   :align: center
+
+   The bounding box of any text string can be enlarged by specifying the
+   adjustments *dx* and *dy* in the horizontal and vertical dimension.  The shape of the
+   bounding box can be modified as well, including rounded or convex
+   rectangles.  Here we have chosen a rounded rectangle, requiring the
+   additional specification of a corner radius, *r*.
+
 Color palette tables
 --------------------
 
@@ -4024,6 +4073,75 @@ sequences. A chart of characters and their octal codes is given in
 Appendix [app:F].
 
 .. _grid-file-format:
+
+Plot embellishments
+-------------------
+
+Apart from visualizing your data sets, GMT maps can also be embellished in several ways.
+The embellishments currently available are
+
+*  Map scale showing the true scale at some location(s) on the map.
+
+*  Directional rose showing true north and other cardinal directions.
+
+*  Magnetic rose showing magnetic north and declination deviations.
+
+*  Color bar relating the colors of your image to the data values.
+
+*  Legend showing the meaning of the symbols on your map.
+
+*  Map insert showing perhaps the location of your detailed area in a regional or global context.
+
+*  Overlay of raster image or EPS plots (e.g., institutional logos, photos, etc.).
+
+Each of these features share a common system for specifying the location on the plot where the
+feature will be placed.  Thus, before we discuss the different features in detail we will review
+the "reference point/anchor point" system used by GMT to specify such locations in relation to the underlying map.
+
+Anchor and reference point specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _gmt_anchor:
+
+.. figure:: /_images/GMT_anchor.*
+   :width: 500 px
+   :align: center
+
+   The placement of a map feature (here abstracted by a green rectangle) in relation
+   to the underlying map.  The nine named *reference* points (blue circles) on the map perimeter (and center)
+   can be used to specify a location.  This desired location can then be shifted away
+   from the selected reference point (here LT, red square) by an amount *dx/dy*, yielding the adjusted
+   reference point (orange square).  Using the same system of nine points on the feature
+   (cyan circles) we select one of these as our *anchor* point (here LT).  The feature is then
+   placed such that its anchor point matches the selected reference point.
+
+Placing a feature on the map means selecting an *reference* point somewhere on the map and an
+*anchor* point somewhere on the feature, and positioning the feature so that the two points overlap.
+There are four different ways to specify the reference point on a map, allowing for complete freedom
+to select any location.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
+the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
+
+#. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the origin.
+   This mechanism is useful when you want to tie the location of the feature to an actual point
+   best described by the original data coordinates.  An example of such a reference point might
+   be **g**\ 135W/20N.
+
+#. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distance in inches, centimeters, or
+   points from the lower left plot origin.  This mechanism is preferred when you wish to lay out
+   map features using familiar measurements of distance from origins. An example of such a reference
+   point might be **x**\ 2.75i/2c.
+
+#. [**n**] Specify *refpoint* using *normalized* coordinates, i.e., fractional coordinates between 0
+   and 1 in both directions.  This mechanism avoids units and is useful if you want to always
+   place feature at locations best references as fractions of the plot dimensions.
+   An example of such a reference point might be **n**\ 0.2/0.1.
+
+#. [**j**] Specify the location using one of the nine justification codes, equivalent to the justification
+   codes used for placing text strings in :doc:`pstext`.  This mechanism is illustrated in Figure
+   :ref:`<_gmt_anchor>`.  This mechanism is preferred when you just want to place the feature in
+   one of the corners or centered at one of the sides (or even smack in the middle).
+   An example of such a reference point might be **j**\ LT.
+
 
 Grid file format specifications
 -------------------------------

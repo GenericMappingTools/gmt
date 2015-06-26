@@ -1,7 +1,7 @@
-**-L**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [**+f**]\ [\ **+l**\ [*label*]\ ]\ [\ **+j**\ *just*]\ [**+u**]
-    Draws a simple map scale centered on the *anchor* point specified
+**-L**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [**+f**]\ [\ **+l**\ [*label*]\ ]\ [\ **+j**\ *just*]\ [**+u**]
+    Draws a simple map scale centered on the reference point specified
     using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  Scale is calculated for latitude *slat*

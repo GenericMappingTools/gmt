@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
-**-E**\ *dpi* ] [ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
+**-E**\ *dpi* ] [ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
 [ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [
 **-J**\ *parameters* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
@@ -71,15 +71,15 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
-    Sets *anchor* position *x0*/*y0* of the image using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *anchor* via
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+    Sets reference point on the map for the image using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
-    By default, the *anchor* is assumed to be the lower left corner of the image, but this
+    By default, the anchor point of the image is assumed to be the lower left corner, but this
     can be changed by specifying a 2-char justification code *justify* (see :doc:`pstext`).
-    Finally, you can offset the image by *dx*/*dy* away from the *anchor* point in the
+    Finally, you can offset the image by *dx*/*dy* away from the *refpoint* point in the
     direction implied by *justify* [LB].
 
 **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
