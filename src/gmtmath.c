@@ -392,7 +392,7 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	}
 	else {	/* Return t, y, p(t), r(t), where p(t) is the predicted solution and r(t) is the residuals */
 		double value;
-		k = S->D->dim[GMT_COL];
+		k = (unsigned int)S->D->dim[GMT_COL];
 		S->D->dim[GMT_COL] = (info->w_mode) ? 5 : 4;	/* State we want a different set of columns on output */
 		D = GMT_Duplicate_Data (GMT->parent, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, S->D);	/* Same table length as S->D, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
 		S->D->dim[GMT_COL] = k;	/* Reset the original columns */
@@ -4079,7 +4079,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) double_swap (info.T->segment[seg]->coord[COL_T][row], info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time-series */
 		for (row = 0; row < info.T->segment[seg]->n_rows; row++) {
 			info.T->segment[seg]->coord[COL_TN][row] = (info.T->segment[seg]->coord[COL_T][row] - off) * scale;
-			info.T->segment[seg]->coord[COL_TJ][row] = (Ctrl->I.active) ? info.T->segment[seg]->n_rows - row - 1 : row;
+			info.T->segment[seg]->coord[COL_TJ][row] = (unsigned int)((Ctrl->I.active) ? info.T->segment[seg]->n_rows - row - 1 : row);
 		}
 		n_records += info.T->segment[seg]->n_rows;
 	}
