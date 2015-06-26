@@ -45,7 +45,7 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_App_G.sh GMT_App_J_1.sh GMT_App_J_2.sh GMT_App_J_3.sh GMT_App_M_1a.sh GMT_App_M_1b.sh
 	GMT_App_N_1.sh GMT_arrows.sh GMT_arrows_types.sh GMT_atan.sh GMT_color_interpolate.sh
 	GMT_chunking.sh GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh
-	GMT_Defaults_1c.sh GMT_linecap.sh GMT_nearneighbor.sh
+	GMT_Defaults_1c.sh GMT_linecap.sh GMT_nearneighbor.sh GMT_anchor.sh
 	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh
 	GMT_utm_zones.sh GMT_volcano.sh)
 

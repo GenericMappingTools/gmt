@@ -3737,7 +3737,7 @@ discusses the various ways to do this.
 .. _Text_justify:
 
 .. figure:: /_images/GMT_pstext_justify.*
-   :width: 500 px
+   :width: 400 px
    :align: center
 
    Text strings are placed on maps by associating an *anchor* point on
@@ -3763,7 +3763,7 @@ as illustrated in Figure :ref:`Text clearance <Text_clearance>`.
 .. _Text_clearance:
 
 .. figure:: /_images/GMT_pstext_clearance.*
-   :width: 400 px
+   :width: 300 px
    :align: center
 
    The bounding box of any text string can be enlarged by specifying the
@@ -4099,9 +4099,7 @@ feature will be placed.  Thus, before we discuss the different features in detai
 the "reference point/anchor point" system used by GMT to specify such locations in relation to the underlying map.
 
 Anchor and reference point specification
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. _gmt_anchor:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_images/GMT_anchor.*
    :width: 500 px
@@ -4137,10 +4135,46 @@ the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
    An example of such a reference point might be **n**\ 0.2/0.1.
 
 #. [**j**] Specify the location using one of the nine justification codes, equivalent to the justification
-   codes used for placing text strings in :doc:`pstext`.  This mechanism is illustrated in Figure
-   :ref:`<_gmt_anchor>`.  This mechanism is preferred when you just want to place the feature in
+   codes used for placing text strings in :doc:`pstext`.  This mechanism is illustrated in the figure.
+   This mechanism is preferred when you just want to place the feature in
    one of the corners or centered at one of the sides (or even smack in the middle).
    An example of such a reference point might be **j**\ LT.
+
+
+Placing map scales
+~~~~~~~~~~~~~~~~~~
+
+Text about specifying and placing map scales.
+
+Placing directional map roses
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Text about specifying and placing directional map roses.
+
+Placing magnetic map roses
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Text about specifying and placing magnetic map roses.
+
+Placing color scale bars
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Text about specifying and placing color scale bars.
+
+Placing map legends
+~~~~~~~~~~~~~~~~~~~
+
+Text about specifying and placing map legends.
+
+Placing map inserts
+~~~~~~~~~~~~~~~~~~~
+
+Text about specifying and placing map inserts.
+
+Placing raster and EPS images on maps
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Text about specifying and placing raster and EPS images on maps.
 
 
 Grid file format specifications
