@@ -154,11 +154,11 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_anchor_syntax (API->GMT, 'D', "Specify position and dimensions of the scale bar", GMT_ANCHOR_SCALE, 1);
+	GMT_anchor_syntax (API->GMT, 'D', "Specify position and dimensions of the scale bar", GMT_ANCHOR_COLORBAR, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>/<width> for the scale dimensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h for a horizontal scale [Default is vertical].\n");
-	GMT_anchor_syntax (API->GMT, 'D', "TC or LM", GMT_ANCHOR_SCALE, 2);
+	GMT_anchor_syntax (API->GMT, 'D', "TC or LM", GMT_ANCHOR_COLORBAR, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Place the desired annotations/labels/units on the opposite side of the colorscale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append any of a, l, or u to flip the annotations, labels, or unit, respectively.\n");

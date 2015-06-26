@@ -968,7 +968,7 @@ void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string)
 
 void GMT_anchor_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part)
 {	/* For -Dgjnx */
-	char *type[5] = {"logo", "image", "legend", "scale", "insert"}, *tab[2] = {"", "     "};
+	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "insert", "map scale", "map rose"}, *tab[2] = {"", "     "};
 	unsigned int shift = (part & 4) ? 1 : 0;
 	if (part & 1) {	/* Here string is message, or NULL */
 		if (string) GMT_message (GMT, "\t-%c %s\n", option, string);
@@ -1017,11 +1017,13 @@ void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {	/* Used in psbasemap and pscoast */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
-	GMT_message (GMT, "\t   Use -%cx to specify Cartesian coordinates instead.  Scale is calculated at latitude <slat>;\n", option);
-	GMT_message (GMT, "\t   optionally give longitude <slon> [Default is central longitude].  Give scale <length> and\n");
-	GMT_message (GMT, "\t   append unit from %s [km].  Use -%cf to draw a \"fancy\" scale [Default is plain].\n", GMT_LEN_UNITS2_DISPLAY, option);
-	GMT_message (GMT, "\t   By default, the label equals the distance unit name and is placed on top [+jt].  Use the +l<label>\n");
-	GMT_message (GMT, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  +u appends units to annotations.\n");
+	GMT_message (GMT, "\t   Set the anchor point (center top of scale) and length of the scale:\n");
+	GMT_anchor_syntax (GMT, 'L', NULL, GMT_ANCHOR_MAPSCALE, 5);
+	GMT_message (GMT, "\t   Use +c<slat> (with central longitude) or +c<slon>/<slat> to specify scale origin.\n");
+	GMT_message (GMT, "\t   Set scale length with +w<length> and append a unit from %s [km].  Use -%cf to draw a \"fancy\" scale [Default is plain].\n", GMT_LEN_UNITS2_DISPLAY, option);
+	GMT_message (GMT, "\t   Several modifiers are optional:\n");
+	GMT_message (GMT, "\t   Add +f to draw a \"fancy\" scale [Default is plain].\n");
+	GMT_message (GMT, "\t   By default, the scale label equals the distance unit name and is placed on top [+jt].  Use the +l<label>\n");
 	GMT_message (GMT, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  For the fancy scale,\n");
 	GMT_message (GMT, "\t   +u appends units to annotations while for plain scale it uses unit abbreviation instead of name as label.\n");
 }
@@ -1035,15 +1037,22 @@ void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {	/* Used in psbasemap and pscoast */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
-	GMT_message (GMT, "\t   Use -%cx to specify Cartesian coordinates instead.  -Tf draws a \"fancy\" rose [Default is plain].\n", option);
-	GMT_message (GMT, "\t   Give rose <diameter> and optionally the west, east, south, north labels desired [W,E,S,N].\n");
-	GMT_message (GMT, "\t   For a fancy rose, specify as <info> the kind you want: 1 draws E-W, N-S directions [Default],\n");
-	GMT_message (GMT, "\t   2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW directions.\n");
-	GMT_message (GMT, "\t   For Magnetic compass rose, specify -%cm.  Use the optional <info> = <dec>/<dlabel> (where <dec> is\n", option);
-	GMT_message (GMT, "\t   the magnetic declination and <dlabel> is a label for the magnetic compass needle) to plot\n");
-	GMT_message (GMT, "\t   directions to both magnetic and geographic north [Default is just geographic].\n");
+	GMT_message (GMT, "\t   Choose betwee a directional (-Td) or magnetic (-Tm) rose.\n");
+	GMT_message (GMT, "\t   Both share most modifers for locating and sizing the rose.\n");
+	GMT_message (GMT, "\t   Set the anchor point (center of rose) and size of the rose:\n");
+	GMT_anchor_syntax (GMT, 'T', NULL, GMT_ANCHOR_MAPROSE, 5);
+	GMT_anchor_syntax (GMT, 'T', "CM", GMT_ANCHOR_MAPROSE, 2);
+	GMT_message (GMT, "\t   Set the diameter of the rose with modifier +w<width>.\n");
+	GMT_message (GMT, "\t   Place labels with +l, which will place the letters W, E, S, N at the cardinal points..\n");
+	GMT_message (GMT, "\t   Optionally append comma-separated west, east, south, north labels to override the default.\n");
+	GMT_message (GMT, "\t   Append +i<pint>[/<sint>] to override default primary and secondary annotation/tick interval(s) [30/5/1].\n");
+	GMT_message (GMT, "\t   Directional rose: Add +f to draws a \"fancy\" rose [Default is plain].\n");
+	GMT_message (GMT, "\t     Optionally, add <kind> of fancy rose: 1 draws E-W, N-S directions [Default],\n");
+	GMT_message (GMT, "\t     2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW directions.\n");
+	GMT_message (GMT, "\t   Magnetic compass rose:  Optional add +d<dec>[/<dlabel>] (where <dec> is the\n");
+	GMT_message (GMT, "\t     magnetic declination and <dlabel> is an optional label for the magnetic compass needle).\n");
+	GMT_message (GMT, "\t     If +d does not set <dlabel> the we default to \"delta = <declination>\".\n");
 	GMT_message (GMT, "\t   If the North label = \'*\' then a north star is plotted instead of the label.\n");
-	GMT_message (GMT, "\t   Append +<gints>[/<mints>] to override default annotation/tick interval(s) [30/5/1].\n");
 }
 
 /*! .

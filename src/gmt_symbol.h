@@ -119,17 +119,15 @@ struct GMT_MAP_INSERT {
 
 /*! Plot a map scale in psbasemap and pscoast */
 struct GMT_MAP_SCALE {
-	double lon, lat;	/* Location of top/mid point of scale on the map in lon/lat space */
-	double x0, y0;		/* Location of top/mid point of scale on the map in inches x/y */
+	struct GMT_ANCHOR *anchor;
 	double origin[2];	/* Longitude/latitude where scale should apply */
 	double length;		/* How long the scale is in measure units */
 	bool plot;		/* true if we want to draw the scale */
 	bool fancy;		/* true for a fancy map scale */
-	bool gave_xy;		/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	bool unit;		/* true if we should append distance unit to all annotations along the scale */
 	bool do_label;		/* true if we should plot a label for the scale */
 	bool old_style;		/* true if we are using old syntax, pre-panel settings */
-	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
+	char measure;		/* The unit, i.e., e|f|k|M|n|u */
 	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
 	char label[GMT_LEN128];	/* Alternative user-specified label */
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
@@ -137,15 +135,16 @@ struct GMT_MAP_SCALE {
 
 /*! Plot a map direction "rose" in psbasemap and pscoast */
 struct GMT_MAP_ROSE {
-	double lon, lat;	/* Location of center point of rose on the map in lon/lat space */
-	double x0, y0;		/* Location of center point of scale on the map in inches x/y */
+	struct GMT_ANCHOR *anchor;
 	double size;		/* Diameter of the rose in measure units */
+	double off[2];		/* Offset from anchor point sensed by justify */
 	double declination;	/* Magnetic declination if needed */
 	double a_int[2];	/* Annotation interval for geographic and magnetic directions */
 	double f_int[2];	/* Tick (large) interval for geographic and magnetic directions */
 	double g_int[2];	/* Tick (small) interval for geographic and magnetic directions */
 	bool plot;		/* true if we want to draw the rose */
-	bool gave_xy;	/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	bool do_label;		/* true if we should plot labels for the rose */
+	int justify;		/* Gave justification of rose */
 	unsigned int type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
 	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_LEN64];	/* User-changable labels for W, E, S, N point */

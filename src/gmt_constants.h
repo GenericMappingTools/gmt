@@ -165,6 +165,14 @@ enum GMT_enum_anchor {
 	GMT_ANCHOR_NORM,		/* -Dn */
 	GMT_ANCHOR_PLOT};		/* -Dx */
 
+/* Various constants for map roses */
+enum GMT_enum_rose {
+	GMT_ROSE_DIR_PLAIN = 0,		/* Direction map rose [plain] */
+	GMT_ROSE_DIR_FANCY = 1,		/* Direction map rose [fancy] */
+	GMT_ROSE_MAG = 2,		/* Magnetic map rose */
+	GMT_ROSE_PRIMARY = 0,		/* Primary [inner] annotation ring for magnetic rose  */
+	GMT_ROSE_SECONDARY = 1};	/* Secondary [outer] annotation ring for magnetic rose  */
+
 /*! Various types of trend model */
 enum GMT_enum_model {
 	GMT_POLYNOMIAL, GMT_COSINE, GMT_SINE
@@ -229,8 +237,11 @@ enum GMT_enum_anchors {	/* Various anchor strings */
 	GMT_ANCHOR_LOGO = 0,	/* Anchor for logo */
 	GMT_ANCHOR_IMAGE,	/* Anchor for image */
 	GMT_ANCHOR_LEGEND,	/* Anchor for legend */
-	GMT_ANCHOR_SCALE,	/* Anchor for scale */
-	GMT_ANCHOR_INSERT};	/* Anchor for insert */
+	GMT_ANCHOR_COLORBAR,	/* Anchor for colorbar */
+	GMT_ANCHOR_INSERT,	/* Anchor for insert */
+	GMT_ANCHOR_MAPSCALE,	/* Anchor for map scale */
+	GMT_ANCHOR_MAPROSE,	/* Anchor for map rose */
+	GMT_ANCHOR_NTYPES};	/* Number of such types */
 
 enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */
 	GMT_RADIUS_MEAN = 0,	/* Mean radius IUGG R_1 = (2*a+b)/3 = a (1 - f/3) */

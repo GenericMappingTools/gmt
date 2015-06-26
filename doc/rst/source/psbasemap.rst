@@ -16,11 +16,14 @@ Synopsis
 **psbasemap** **-J**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-A**\ [*file*] ] [ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]][**+s**\ *file*] ]
+[ **-A**\ [*file*] ]
+[ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]][**+s**\ *file*] ]
 [ **-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
-[ **-K** ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
-[ **-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ [*label*]\ ][\ **+j**\ *just*]\ [**+u**]\ ]
-[ **-O** ] [ **-P** ]
+[ **-K** ]
+[ **-Jz**\ \|\ **Z**\ *parameters* ]
+[ **-L**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *anchor*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [**+f**]\ [\ **+l**\ [*label*]\ ]\ [\ **+j**\ *just*]\ [**+u**]\ ]
+[ **-O** ]
+[ **-P** ]
 [ |SYN_OPT-U| ]
 [ **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]] ]
 [ |SYN_OPT-V| ]

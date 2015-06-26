@@ -2,7 +2,6 @@
 #	$Id$
 # Testing map directional roses for magnetics
 ps=rose_mag2.ps
-rm -f gmt.conf
 gmt set FONT_ANNOT_PRIMARY 9p FONT_ANNOT_SECONDARY 12p FONT_LABEL 14p FONT_TITLE 24p \
 	MAP_TITLE_OFFSET 7p MAP_ANNOT_OBLIQUE 34 MAP_FRAME_WIDTH 3p \
 	MAP_VECTOR_SHAPE 0.5 MAP_TICK_PEN_SECONDARY thinner,red MAP_TICK_PEN_PRIMARY thinner,blue

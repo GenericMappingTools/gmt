@@ -200,7 +200,8 @@ unsigned int GMT_get_modifier (const char *string, char modifier, char *token)
 {
 	/* Looks for modifier string in the form +<modifier>[arg] and if found
 	   returns 1 and places arg in token, else return 0.  Must ignore any
-	   +<modifier> found inside quotes as part of text.
+	   +<modifier> found inside quotes as part of text. If token is NULL
+	   then we only return 1 or 0 and no string.
 	*/
 	bool quoted = false;
 	size_t k, len, start = 0;
@@ -223,8 +224,10 @@ unsigned int GMT_get_modifier (const char *string, char modifier, char *token)
 		k++;
 	}
 	len = k - start;
-	if (len) strncpy (token, &string[start], len);
-	token[len] = '\0';
+	if (token) {	/* Only pass back when token is not NULL */
+		if (len) strncpy (token, &string[start], len);
+		token[len] = '\0';
+	}
 	return 1;
 }
 

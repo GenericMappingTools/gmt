@@ -2,7 +2,6 @@
 # $Id$
 # Testing that map scales with various labels have reasonable panels behind them
 ps=mapscales.ps
-rm -f gmt.conf
 gmt psbasemap -R-10/10/-15/15 -JM15c -Bafg90 -BWSne+gazure1 -Lg0/14+c14+f+w1000k+l+jr -F+gcornsilk1+p0.5p,black -P -K -Xc > $ps
 gmt psbasemap -R -J -Lg0/11+c11+w1000k+f+l+jl -F+gcornsilk1+p0.5p,black -O -K >> $ps
 gmt psbasemap -R -J -Lg0/8+c8+w1000k+f+l+jt -F+gcornsilk1+p0.5p,black -O -K >> $ps

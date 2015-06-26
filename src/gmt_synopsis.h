@@ -60,8 +60,11 @@
 
 #define GMT_XYANCHOR	"[g|j|n|x]<anchor>"
 #define GMT_OFFSET	"[+j<justify>][+o<dx>[/<dy>]]"
-#define GMT_TROSE	"[f|m][x]<lon0>/<lat0>/<diameter>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
-#define GMT_SCALE	"[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[e|f|M|n|k|u][+l<label>][+j<just>][+u]"
+#define GMT_TROSE	"+w<width>[+i<ints>][+l<w,e,s,n>]"
+#define GMT_TROSE_DIR	"[+f[<kind>]]"
+#define GMT_TROSE_MAG	"[+d[<dec>[/<dlabel>]]]"
+//#define GMT_TROSE	"[f|m][x]<lon0>/<lat0>/<diameter>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
+#define GMT_SCALE	"+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+f][+l[<label>]][+j<just>][+u]"
 #define GMT_INSERT_A	"[g|j|n|x]<anchor>/<width>[<unit>]/<height>[<unit>][/<justify>[/<dx>/<dy>]][+s<file>]"
 #define GMT_INSERT_B	"[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>]"
 

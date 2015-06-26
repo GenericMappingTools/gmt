@@ -2479,7 +2479,7 @@ void GMT_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode)
 		form = GMT_setfont (GMT, &GMT->current.setting.font_title);
 		PSL_plottext (PSL, 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax),
 			GMT->current.proj.z_project.ymax + GMT->current.setting.map_title_offset,
-			GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -2, form);
+			GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
 		GMT->current.map.frame.plotted_header = true;
 	}
 
@@ -2613,13 +2613,13 @@ void gmt_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double
 	PSL_plotcolorimage (PSL, 0.0, 0.0, dim[0], dim[1], PSL_BL, GMT_glyph, 220, 90, 1);
 	PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
 	PSL_command (PSL, "PSL_g_h PSL_b_w PSL_g_w 0 Sb\n");
-	PSL_plottext (PSL, dim[0], dim[2], 8.0, label, 0.0, 1, 0);
+	PSL_plottext (PSL, dim[0], dim[2], 8.0, label, 0.0, PSL_BL, 0);
 
 	/* Optionally, add additional label to the right of the box */
 
 	if (U_label && U_label[0]) {
 		sprintf (label, "   %s", U_label);
-		PSL_plottext (PSL, 0.0, 0.0, -7.0, label, 0.0, 1, 0);
+		PSL_plottext (PSL, 0.0, 0.0, -7.0, label, 0.0, PSL_BL, 0);
 	}
 
 	PSL_command (PSL, "U\n%% End GMT time-stamp\n");
@@ -2826,7 +2826,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	double name_width[GMT_N_UNITS] = {1.0, 2.3, 4.02, 10.7, 3.2, 2.0, 2.0, 3.05, 8.6};
 	enum GMT_enum_units unit;
 	double x1, x2, y1, y2, tx, ty, dist_to_annot, scale_height, x_left, x_right, bar_length_km;
-	double XL, YL, XR, YR, dist, scl, bar_width, dx;
+	double XL, YL, XR, YR, dist, scl, bar_width, dx, x0_scl, y0_scl;
 	char txt[GMT_LEN256] = {""}, format[GMT_LEN64] = {""}, *this_label = NULL;
 	/* inch, cm, pt is not used here but in the array since GMT_get_unit_number uses this sequence */ 
 	char *label[GMT_N_UNITS] = {"m", "km", "miles", "nautical miles", "inch", "cm", "pt", "feet", "survey feet"};
@@ -2846,18 +2846,14 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 
 	bar_length_km = 0.001 * GMT->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
 
-	if (ms->gave_xy)	/* Also get lon/lat coordinates */
-		GMT_xy_to_geo (GMT, &ms->lon, &ms->lat, ms->x0, ms->y0);
-	else {	/* Must convert lon/lat to location on map */
-		ms->lon = ms->x0;
-		ms->lat = ms->y0;
-		GMT_geo_to_xy (GMT, ms->lon, ms->lat, &ms->x0, &ms->y0);
-	}
+	GMT_set_anchorpoint (GMT, ms->anchor);	/* Finalize anchor point plot coordinates, if needed */
 
-	/* Estimate the local scale so we can draw correct length */
+	/* We will determine the scale at the point ms->origin[GMT_X], ms->origin[GMT_Y] */
+	if (GMT_is_dnan (ms->origin[GMT_X])) ms->origin[GMT_X] = GMT->current.proj.central_meridian;
+	GMT_geo_to_xy (GMT, ms->origin[GMT_X], ms->origin[GMT_Y], &x0_scl, &y0_scl);
 	/* 1. Pick a reasonably small dx, e.g., 5% of map width */
 	dx = 0.05 * GMT->current.map.width;
-	/* 2. Compute test x1, x2 to either side of ms->scale_lon, ms->scale_lat */
+	/* 2. Compute test x1, x2 to either side of ms->origin[GMT_X], ms->origin[GMT_Y] */
 	x1 = x0_scl - dx;	x2 = x0_scl + dx;
 	/* 3. Convert (x1,y0), (x2,y0) to lon,lat coordinates */
 	GMT_xy_to_geo (GMT, &XL, &YL, x1, y0_scl);
@@ -2867,14 +2863,14 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	/* Get local scale of desired length to this reference length */
 	scl = bar_length_km / dist;
 	/* Revise the selection of dx, x1, x2 using this scale.  Use center y as coordinates for a horizontal bar */
-	dx *= scl; x1 = ms->x0 - dx;	x2 = ms->x0 + dx;
-	y1 = y2 = ms->y0;
+	dx *= scl; x1 = ms->anchor->x - dx;	x2 = ms->anchor->x + dx;
+	y1 = y2 = ms->anchor->y;
 	
 	bar_width = hypot (x2 - x1, y2 - y1);		/* Width of scale bar in inches */
 	scale_height = fabs (GMT->current.setting.map_scale_height);	/* Nominal scale bar height */
 	dist_to_annot = scale_height + 0.75 * GMT->current.setting.map_annot_offset[0];	/* Dist from top of scalebar to top of annotations */
-	x_left  = ms->x0 - 0.5 * bar_width;	/* x-coordinate of leftmost  scalebar point */
-	x_right = ms->x0 + 0.5 * bar_width;	/* x-coordinate of rightmost scalebar point */
+	x_left  = ms->anchor->x - 0.5 * bar_width;	/* x-coordinate of leftmost  scalebar point */
+	x_right = ms->anchor->x + 0.5 * bar_width;	/* x-coordinate of rightmost scalebar point */
 
 	if (ms->fancy) {	/* Fancy scale */
 		unsigned int i, justify, form;
@@ -2917,22 +2913,22 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 			else if (ms->do_label && ms->justify == 't') dim[YHI] += fabs (GMT->current.setting.map_label_offset) + l_height;
 			else if (ms->do_label && l_shift > dim[YHI]) dim[YHI] = l_shift;
 			/* Determine center of gravity for panel */
-			x_center = ms->x0 + 0.5 * (dim[XHI] - dim[XLO]);
-			y_center = ms->y0 + 0.5 * (dim[YHI] - dim[YLO]);
+			x_center = ms->anchor->x + 0.5 * (dim[XHI] - dim[XLO]);
+			y_center = ms->anchor->y + 0.5 * (dim[YHI] - dim[YLO]);
 			/* Determine panel dimensions */
 			panel->width = bar_width + dim[XHI] + dim[XLO];	panel->height = dim[YHI] + dim[YLO];
 			GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
 		}
 		/* Draw bar scale ticks using tick pen as well as checkerboard using map_default_pen color [black] and page color [white] */
 		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
-		PSL_plotsegment (PSL, x_left, ms->y0 - bar_tick_len, x_left, ms->y0);
+		PSL_plotsegment (PSL, x_left, ms->anchor->y - bar_tick_len, x_left, ms->anchor->y);
 		for (j = 0; j < n_f_ticks[i]; j++) {
 			PSL_setfill (PSL, (j%2) ? GMT->PSL->init.page_rgb : GMT->current.setting.map_default_pen.rgb, true);
-			PSL_plotbox (PSL, x_left + j * dx_f, ms->y0, x_left + (j+1) * dx_f, ms->y0 - bar_height);
-			PSL_plotsegment (PSL, x_left + (j+1) * dx_f, ms->y0 - bar_tick_len, x_left + (j+1) * dx_f, ms->y0);
+			PSL_plotbox (PSL, x_left + j * dx_f, ms->anchor->y, x_left + (j+1) * dx_f, ms->anchor->y - bar_height);
+			PSL_plotsegment (PSL, x_left + (j+1) * dx_f, ms->anchor->y - bar_tick_len, x_left + (j+1) * dx_f, ms->anchor->y);
 		}
 		/* Place annotations */
-		ty = ms->y0 - dist_to_annot;	/* The y-coordinate at the top of the annotations */
+		ty = ms->anchor->y - dist_to_annot;	/* The y-coordinate at the top of the annotations */
 		form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 		for (j = 0; j <= n_a_ticks[i]; j++) {
 			GMT_sprintf_float (format, GMT->current.setting.format_float_map, j * d_base);
@@ -2941,7 +2937,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 			else
 				sprintf (txt, "%s", format);
 			tx = x_left + j * dx_a;	/* center x-coordinate for this annotation */
-			PSL_plotsegment (PSL, tx, ms->y0 - scale_height, tx, ms->y0);	/* Draw the tick mark */
+			PSL_plotsegment (PSL, tx, ms->anchor->y - scale_height, tx, ms->anchor->y);	/* Draw the tick mark */
 			PSL_plottext (PSL, tx, ty, GMT->current.setting.font_annot[0].size, txt, 0.0, PSL_TC, form);	/* Place annotation */
 		}
 		if (ms->do_label) {	/* Label was requested */
@@ -2949,22 +2945,22 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 			switch (ms->justify) {
 				case 'l':	/* Left */
 					tx = x_left - bar_tick_len;
-					ty = ms->y0 - scale_height;
+					ty = ms->anchor->y - scale_height;
 					justify = PSL_BR;	/* Left side annotation are right-justified, etc. */
 					break;
 				case 'r':	/* Right */
 					tx = x_right + bar_tick_len;
-					ty = ms->y0 - scale_height;
+					ty = ms->anchor->y - scale_height;
 					justify = PSL_BL;
 					break;
 				case 't':	/* Top */
-					tx = ms->x0;
-					ty = ms->y0 + fabs (GMT->current.setting.map_label_offset);
+					tx = ms->anchor->x;
+					ty = ms->anchor->y + fabs (GMT->current.setting.map_label_offset);
 					justify = PSL_BC;
 					break;
 				default:	/* Bottom */
-					tx = ms->x0;
-					ty = ms->y0 - dist_to_annot - GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH - fabs (GMT->current.setting.map_label_offset);
+					tx = ms->anchor->x;
+					ty = ms->anchor->y - dist_to_annot - GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH - fabs (GMT->current.setting.map_label_offset);
 					justify = PSL_TC;
 					break;
 			}
@@ -2983,8 +2979,8 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 			dim[YLO] = dist_to_annot + GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 			dim[YHI] = 0.0;
 			/* Determine center of gravity for panel */
-			x_center = ms->x0 + 0.5 * (dim[XHI] - dim[XLO]);
-			y_center = ms->y0 + 0.5 * (dim[YHI] - dim[YLO]);
+			x_center = ms->anchor->x + 0.5 * (dim[XHI] - dim[XLO]);
+			y_center = ms->anchor->y + 0.5 * (dim[YHI] - dim[YLO]);
 			/* Determine panel dimensions */
 			panel->width = bar_width + dim[XHI] + dim[XLO];	panel->height = dim[YHI] + dim[YLO];
 			GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
@@ -2992,13 +2988,13 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 		/* Draw the simple scale bar using tick pen */
 		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 		xp[0] = xp[1] = x_left;	xp[2] = xp[3] = x_right;
-		yp[0] = yp[3] = ms->y0 - scale_height;	yp[1] = yp[2] = ms->y0;
+		yp[0] = yp[3] = ms->anchor->y - scale_height;	yp[1] = yp[2] = ms->anchor->y;
 		PSL_plotline (PSL, xp, yp, 4, PSL_MOVE + PSL_STROKE);
 		/* Make a basic label using the length and chosen unit and place below the scale */
 		GMT_sprintf_float (format, GMT->current.setting.format_float_map, ms->length);
 		sprintf (txt, "%s %s", format, (ms->unit) ? units[unit] : label[unit]);
 		form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
-		PSL_plottext (PSL, ms->x0, ms->y0 - dist_to_annot, GMT->current.setting.font_annot[0].size, txt, 0.0, PSL_TC, form);
+		PSL_plottext (PSL, ms->anchor->x, ms->anchor->y - dist_to_annot, GMT->current.setting.font_annot[0].size, txt, 0.0, PSL_TC, form);
 	}
 	return GMT_OK;
 }
@@ -3048,36 +3044,38 @@ void gmt_Nstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0
 
 void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr)
 {	/* Magnetic compass rose */
-	unsigned int i, k, level, just, ljust[4] = {10, 5, 2, 7}, n_tick, form;
-	double ew_angle, angle, R[2], tlen[3], L, s, c, x[5], y[5], xp[5], yp[5];
+	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick, form;
+	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, *val = NULL, dim[PSL_MAX_DIMS];
 	char label[16];
 	struct GMT_FILL f;
 
+	GMT_xy_to_geo (GMT, &lon, &lat, mr->anchor->x, mr->anchor->y);
+
 	/* Initialize fill structure */
 	GMT_init_fill (GMT, &f, GMT->current.setting.color_patch[GMT_BGD][0], GMT->current.setting.color_patch[GMT_BGD][1], GMT->current.setting.color_patch[GMT_BGD][2]);
-	ew_angle = GMT_azim_to_angle (GMT, mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0);	/* Get angle of E-W direction at this location */
+	ew_angle = GMT_azim_to_angle (GMT, lon, lat, DIST_TO_2ND_POINT, 90.0);	/* Get angle of E-W direction at this location */
 
-	R[0] = 0.75 * 0.5 * mr->size;
-	R[1] = 0.5 * mr->size;
+	R[GMT_ROSE_PRIMARY] = 0.75 * 0.5 * mr->size;
+	R[GMT_ROSE_SECONDARY] = 0.5 * mr->size;
 	tlen[0] = GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
-	tlen[1] = GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];;
+	tlen[1] = GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 	tlen[2] = 1.5 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
-	scale[0] = 0.85;
-	scale[1] = 1.0;
+	scale[GMT_ROSE_PRIMARY] = 0.85;
+	scale[GMT_ROSE_SECONDARY] = 1.0;
 	GMT->current.plot.r_theta_annot = false;	/* Just in case it was turned on in gmt_map.c */
 
-	for (level = 0; level < 2; level++) {	/* Outer and inner angles */
-		if (level == 0 && mr->kind == 1) continue;	/* Sorry, not magnetic directions */
-		offset = (level == 0) ? mr->declination : 0.0;
+	for (level = 0; level < 2; level++) {	/* Inner (0) and outer (1) angles */
+		if (level == GMT_ROSE_PRIMARY && mr->kind == 1) continue;	/* Sorry, not magnetic directions */
+		offset = (level == GMT_ROSE_PRIMARY) ? mr->declination : 0.0;
 		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 		n_tick = GMT_linear_array (GMT, 0.0, 360.0, mr->g_int[level], 0.0, &val);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of fine tickmarks (-1 to avoid repeating 360) */
 			angle = offset + val[i];
 			k = (GMT_IS_ZERO (fmod (val[i], mr->a_int[level]))) ? 2 : ((GMT_IS_ZERO (fmod (val[i], mr->f_int[level]))) ? 1 : 0);
 			sincosd (ew_angle + angle, &s, &c);
-			x[0] = mr->x0 + R[level] * c, y[0] = mr->y0 + R[level] * s;
-			x[1] = mr->x0 + (R[level] - scale[level]*tlen[k]) * c, y[1] = mr->y0 + (R[level] - scale[level]*tlen[k]) * s;
+			x[0] = mr->anchor->x + R[level] * c, y[0] = mr->anchor->y + R[level] * s;
+			x[1] = mr->anchor->x + (R[level] - scale[level]*tlen[k]) * c, y[1] = mr->anchor->y + (R[level] - scale[level]*tlen[k]) * s;
 			PSL_plotsegment (PSL, x[0], y[0], x[1], y[1]);
 		}
 		GMT_free (GMT, val);
@@ -3087,7 +3085,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of annotations (-1 to avoid repeating 360) */
 			angle = 90.0 - (offset + val[i]);	/* Since val is azimuth */
 			sincosd (ew_angle + angle, &s, &c);
-			x[0] = mr->x0 + (R[level] + GMT->current.setting.map_annot_offset[level]) * c, y[0] = mr->y0 + (R[level] + GMT->current.setting.map_annot_offset[level]) * s;
+			x[0] = mr->anchor->x + (R[level] + GMT->current.setting.map_annot_offset[level]) * c, y[0] = mr->anchor->y + (R[level] + GMT->current.setting.map_annot_offset[level]) * s;
 			if (GMT->current.setting.map_degree_symbol == gmt_none)
 				sprintf (label, "%ld", lrint (val[i]));
 			else
@@ -3095,11 +3093,11 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 			t_angle = fmod ((double)(-val[i] - offset) + 360.0, 360.0);	/* Now in 0-360 range */
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
-			just = (y[0] <= mr->y0) ? 10 : 2;
-			if (level == 1 && doubleAlmostEqual (val[i], 90.0))
-				t_angle = -90.0, just = 2;
-			if (level == 1 && doubleAlmostEqual (val[i], 270.0))
-				t_angle = 90.0, just = 2;
+			just = (y[0] <= mr->anchor->y) ? PSL_TC : PSL_BC;
+			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (val[i], 90.0))
+				t_angle = -90.0, just = PSL_BC;
+			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (val[i], 270.0))
+				t_angle = 90.0, just = PSL_BC;
 			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_annot[level].size, label, t_angle, just, form);
 		}
 		GMT_free (GMT, val);
@@ -3107,24 +3105,24 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 
 	/* Draw extra tick for the 4 main compass directions */
 	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
-	base = R[1] + GMT->current.setting.map_annot_offset[1] + GMT->current.setting.font_annot[1].size / PSL_POINTS_PER_INCH;
+	base = R[GMT_ROSE_SECONDARY] + GMT->current.setting.map_annot_offset[GMT_ROSE_SECONDARY] + GMT->current.setting.font_annot[GMT_ROSE_SECONDARY].size / PSL_POINTS_PER_INCH;
 	for (i = 0, k = 1; i < 360; i += 90, k++) {	/* 90-degree increments of tickmarks */
 		angle = (double)i;
 		sincosd (ew_angle + angle, &s, &c);
-		x[0] = mr->x0 + R[1] * c, y[0] = mr->y0 + R[1] * s;
-		x[1] = mr->x0 + (R[1] + tlen[0]) * c, y[1] = mr->y0 + (R[1] + tlen[0]) * s;
+		x[0] = mr->anchor->x + R[GMT_ROSE_SECONDARY] * c, y[0] = mr->anchor->y + R[GMT_ROSE_SECONDARY] * s;
+		x[1] = mr->anchor->x + (R[GMT_ROSE_SECONDARY] + tlen[0]) * c, y[1] = mr->anchor->y + (R[GMT_ROSE_SECONDARY] + tlen[0]) * s;
 		PSL_plotsegment (PSL, x[0], y[0], x[1], y[1]);
 		if (k == 4) k = 0;
 		if (!mr->label[k][0]) continue;	/* No label desired */
-		x[0] = mr->x0 + base * c, y[0] = mr->y0 + base * s;
-		x[1] = mr->x0 + (base + 2.0 * tlen[2]) * c, y[1] = mr->y0 + (base + 2.0 * tlen[2]) * s;
+		x[0] = mr->anchor->x + base * c, y[0] = mr->anchor->y + base * s;
+		x[1] = mr->anchor->x + (base + 2.0 * tlen[2]) * c, y[1] = mr->anchor->y + (base + 2.0 * tlen[2]) * s;
 		PSL_plotsegment (PSL, x[0], y[0], x[1], y[1]);
 		if (k == 2 && mr->label[2][0] == '*') {
-			x[0] = mr->x0 + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset + 0.025*mr->size) * c, y[0] = mr->y0 + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset + 0.025*mr->size) * s;
+			x[0] = mr->anchor->x + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset + 0.025*mr->size) * c, y[0] = mr->anchor->y + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset + 0.025*mr->size) * s;
 			gmt_Nstar (GMT, PSL, x[0], y[0], 0.1*mr->size);
 		}
 		else {
-			x[0] = mr->x0 + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset) * c, y[0] = mr->y0 + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset) * s;
+			x[0] = mr->anchor->x + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset) * c, y[0] = mr->anchor->y + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset) * s;
 			form = GMT_setfont (GMT, &GMT->current.setting.font_title);
 			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_title.size, mr->label[k], ew_angle, ljust[k], form);
 			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
@@ -3133,10 +3131,11 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 
 	GMT_memset (dim, PSL_MAX_DIMS, double);
 	if (mr->kind == 2) {	/* Compass needle and label */
+		char tmpstring[GMT_LEN64] = {""};
 		sincosd (ew_angle + (90.0 - mr->declination), &s, &c);
-		L = R[0] - 2.0 * tlen[2];
-		x[0] = mr->x0 - L * c, y[0] = mr->y0 - L * s;
-		x[1] = mr->x0 + L * c, y[1] = mr->y0 + L * s;
+		L = R[GMT_ROSE_PRIMARY] - 2.0 * tlen[2];
+		x[0] = mr->anchor->x - L * c, y[0] = mr->anchor->y - L * s;
+		x[1] = mr->anchor->x + L * c, y[1] = mr->anchor->y + L * s;
 		dim[0] = x[1], dim[1] = y[1],
 		dim[2] = M_VW * mr->size, dim[3] = M_HL * mr->size, dim[4] = M_HW * mr->size,
 		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = GMT_VEC_END | GMT_VEC_FILL;
@@ -3145,16 +3144,19 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		t_angle = fmod (ew_angle + 90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */
 		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
 		sincosd (t_angle, &s, &c);
-		x[0] = mr->x0 - 2.0 * M_VW * mr->size * s, y[0] = mr->y0 + 2.0 * M_VW * mr->size * c;
-		if (!strcmp(mr->dlabel, "-")) GMT_get_annot_label (GMT, mr->declination, mr->dlabel, true, false, true, 0, GMT->current.map.is_world);
+		x[0] = mr->anchor->x - 2.0 * M_VW * mr->size * s, y[0] = mr->anchor->y + 2.0 * M_VW * mr->size * c;
+		if (!strcmp(mr->dlabel, "-")) {
+			GMT_get_annot_label (GMT, mr->declination, tmpstring, true, false, true, 0, GMT->current.map.is_world);
+			sprintf (mr->dlabel, "@~d@~ = %s", tmpstring);
+		}
 		form = GMT_setfont (GMT, &GMT->current.setting.font_label);
-		PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_label.size, mr->dlabel, t_angle, 2, form);
+		PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_label.size, mr->dlabel, t_angle, PSL_BC, form);
 	}
 	else {			/* Just geographic directions and a centered arrow */
 		L = mr->size - 4.0*tlen[2];
 		x[0] = x[1] = x[4] = 0.0,	x[2] = -0.25 * mr->size,		x[3] = -x[2];
 		y[0] = -0.5 * L,		y[1] = -y[0], y[2] = y[3] = 0.0,	y[4] = y[1] + GMT->current.setting.map_annot_offset[0];
-		GMT_rotate2D (GMT, x, y, 5, mr->x0, mr->y0, ew_angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
+		GMT_rotate2D (GMT, x, y, 5, mr->anchor->x, mr->anchor->y, ew_angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		dim[0] = xp[1], dim[1] = yp[1];
 		dim[2] = F_VW * mr->size, dim[3] = F_HL * mr->size, dim[4] = F_HW * mr->size;
 		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = GMT_VEC_END | GMT_VEC_FILL;
@@ -3163,7 +3165,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		s = 0.25 * mr->size;
 		GMT_init_fill (GMT, &f, -1.0, -1.0, -1.0);
 		GMT_setfill (GMT, &f, true);
-		PSL_plotsymbol (PSL, mr->x0, mr->y0, &s, PSL_CIRCLE);
+		PSL_plotsymbol (PSL, mr->anchor->x, mr->anchor->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 	}
 }
@@ -3178,19 +3180,21 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 
 void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr)
 {
-	unsigned int i, kind, form, just[4] = {10, 5, 2, 7};
+	unsigned int i, kind, form, just[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR};
 	int k;
-	double angle, L[4], R[4], x[PSL_MAX_DIMS], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
+	double angle, L[4], R[4], x[PSL_MAX_DIMS], y[8], xp[8], yp[8], tx[3], ty[3];
+	double lon, lat, s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	struct GMT_FILL f;
 
 	/* Initialize fill structure */
 	GMT_init_fill (GMT, &f, GMT->current.setting.color_patch[GMT_BGD][0], GMT->current.setting.color_patch[GMT_BGD][1], GMT->current.setting.color_patch[GMT_BGD][2]);
 
-	angle = GMT_azim_to_angle (GMT, mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0);	/* Get angle of E-W direction at this location */
+	GMT_xy_to_geo (GMT, &lon, &lat, mr->anchor->x, mr->anchor->y);
+	angle = GMT_azim_to_angle (GMT, lon, lat, DIST_TO_2ND_POINT, 90.0);	/* Get angle of E-W direction at this location */
 
 	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 
-	if (mr->type == 1) {	/* Fancy scale */
+	if (mr->type == GMT_ROSE_DIR_FANCY) {	/* Fancy scale */
 		mr->size *= 0.5;	/* Got diameter, use radius for calculations */
 		L[0] = mr->size;
 		L[1] = ROSE_LENGTH_SCL1 * mr->size;
@@ -3206,10 +3210,10 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 			y[0] = y[4] = 0.0, y[1] = y[3] = 0.5 * M_SQRT2 * R[kind], y[2] = L[kind];
 			x[3] = x[5] = -x[1], x[4] = -x[0];
 			y[5] = y[7] = -y[1], y[6] = -y[2];
-			GMT_rotate2D (GMT, x, y, 8, mr->x0, mr->y0, rot[kind] + angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
+			GMT_rotate2D (GMT, x, y, 8, mr->anchor->x, mr->anchor->y, rot[kind] + angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 			PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
 			PSL_plotpolygon (PSL, xp, yp, 8);	/* Outline of 4-pointed star */
-			tx[0] = mr->x0, ty[0] = mr->y0;
+			tx[0] = mr->anchor->x, ty[0] = mr->anchor->y;
 			/* Fill positive halfs of the 4-pointed blades */
 			PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, true);
 			tx[1] = xp[0], ty[1] = yp[0], tx[2] = xp[7], ty[2] = yp[7];
@@ -3224,7 +3228,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		sincosd (angle, &s, &c);
 		x[0] = x[2] = 0.0, x[1] = L[0] + GMT->current.setting.map_title_offset; x[3] = -x[1];
 		y[1] = y[3] = 0.0, y[2] = L[0] + GMT->current.setting.map_title_offset; y[0] = -y[2];
-		GMT_rotate2D (GMT, x, y, 4, mr->x0, mr->y0, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
+		GMT_rotate2D (GMT, x, y, 4, mr->anchor->x, mr->anchor->y, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		form = GMT_setfont (GMT, &GMT->current.setting.font_title);
 		for (i = 0; i < 4; i++) PSL_plottext (PSL, xp[i], yp[i], GMT->current.setting.font_title.size, mr->label[i], angle, just[i], form);
 	}
@@ -3233,7 +3237,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		GMT_memset (x, PSL_MAX_DIMS, double);
 		x[0] = x[1] = x[4] = 0.0, x[2] = -0.25 * mr->size, x[3] = -x[2];
 		y[0] = -0.5 * mr->size, y[1] = -y[0], y[2] = y[3] = 0.0; y[4] = y[1] + GMT->current.setting.map_annot_offset[0];
-		GMT_rotate2D (GMT, x, y, 5, mr->x0, mr->y0, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
+		GMT_rotate2D (GMT, x, y, 5, mr->anchor->x, mr->anchor->y, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		x[0] = xp[1], x[1] = yp[1];
 		x[2] = F_VW * mr->size, x[3] = F_HL * mr->size, x[4] = F_HW * mr->size;
 		x[5] = GMT->current.setting.map_vector_shape, x[6] = GMT_VEC_END | GMT_VEC_FILL;
@@ -3242,7 +3246,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		s = 0.25 * mr->size;
 		GMT_init_fill (GMT, &f, -1.0, -1.0, -1.0);
 		GMT_setfill (GMT, &f, true);
-		PSL_plotsymbol (PSL, mr->x0, mr->y0, &s, PSL_CIRCLE);
+		PSL_plotsymbol (PSL, mr->anchor->x, mr->anchor->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 		form = GMT_setfont (GMT, &GMT->current.setting.font_title);
 		PSL_plottext (PSL, xp[4], yp[4], GMT->current.setting.font_title.size, mr->label[2], angle, 2, form);
@@ -3257,20 +3261,19 @@ void GMT_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr)
 	if (!mr->plot) return;
 	if (!GMT_is_geographic (GMT, GMT_IN)) return;	/* Only for geographic projections */
 
-	if (mr->gave_xy)	/* Also get lon/lat coordinates */
-		GMT_xy_to_geo (GMT, &mr->lon, &mr->lat, mr->x0, mr->y0);
-	else {	/* Must convert lon/lat to location on map */
-		mr->lon = mr->x0;
-		mr->lat = mr->y0;
-		GMT_geo_to_xy (GMT, mr->lon, mr->lat, &mr->x0, &mr->y0);
-	}
+	GMT_set_anchorpoint (GMT, mr->anchor);	/* Finalize anchor point plot coordinates, if needed */
+	mr->anchor->x -= 0.5 * ((mr->justify%4)-2) * mr->size;	/* Adjust to center */
+	mr->anchor->y -= 0.5 * ((mr->justify/4)-1) * mr->size;
+	/* Also deal with any justified offsets, if given */
+	mr->anchor->x -= ((mr->justify%4)-2) * mr->off[GMT_X];
+	mr->anchor->y -= ((mr->justify/4)-1) * mr->off[GMT_Y];
 
 	if (panel && panel->mode) {	/* Place rectangle behind the map rose */
 		double x_center, y_center, dim[4] = {0.0, 0.0, 0.0, 0.0};
 
 		/* Determine center of gravity for panel */
-		x_center = mr->x0 + 0.5 * (dim[XHI] - dim[XLO]);
-		y_center = mr->y0 + 0.5 * (dim[YHI] - dim[YLO]);
+		x_center = mr->anchor->x + 0.5 * (dim[XHI] - dim[XLO]);
+		y_center = mr->anchor->y + 0.5 * (dim[YHI] - dim[YLO]);
 		/* Determine panel dimensions */
 		panel->width = mr->size + dim[XHI] + dim[XLO];	panel->height = mr->size + dim[YHI] + dim[YLO];
 		GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
@@ -3280,7 +3283,7 @@ void GMT_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr)
 	tmp_join = PSL->internal.line_join;	PSL_setlinejoin (PSL, 0);
 	tmp_limit = PSL->internal.miter_limit;	PSL_setmiterlimit (PSL, 0);
 
-	if (mr->type == 2)	/* Do magnetic compass rose */
+	if (mr->type == GMT_ROSE_MAG)	/* Do magnetic compass rose */
 		gmt_draw_mag_rose (GMT, PSL, mr);
 	else
 		gmt_draw_dir_rose (GMT, PSL, mr);

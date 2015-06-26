@@ -50,11 +50,11 @@ struct PSBASEMAP_CTRL {
 		bool active;
 		/* The panels are members of GMT_MAP_SCALE, GMT_MAP_ROSE, and GMT_MAP_INSERT */
 	} F;
-	struct L {	/* -L */
+	struct L {	/* -L[g|j|n|x]<anchor>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+f][+l[<label>]][+j<just>][+u] */
 		bool active;
 		struct GMT_MAP_SCALE scale;
 	} L;
-	struct T {	/* -T */
+	struct T {	/* -Td|m */
 		bool active;
 		struct GMT_MAP_ROSE rose;
 	} T;
@@ -64,22 +64,15 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct PSBASEMAP_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct PSBASEMAP_CTRL);
-
-	/* Initialize values whose defaults are not 0/false/NULL */
-	GMT_memset (&C->D.insert, 1, struct GMT_MAP_INSERT);
-	GMT_memset (&C->L.scale, 1, struct GMT_MAP_SCALE);
-	GMT_memset (&C->T.rose, 1, struct GMT_MAP_ROSE);
-
 	return (C);
 }
 
 void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->A.file) free (C->A.file);
-	if (C->D.insert.panel) {
-		if (C->D.insert.anchor) GMT_free (GMT, C->D.insert.anchor);
-		GMT_free (GMT, C->D.insert.panel);
-	}
+	if (C->D.insert.anchor) GMT_free (GMT, C->D.insert.anchor);
+	if (C->D.insert.panel) GMT_free (GMT, C->D.insert.panel);
+	if (C->L.scale.anchor) GMT_free (GMT, C->L.scale.anchor);
 	if (C->L.scale.panel) GMT_free (GMT, C->L.scale.panel);
 	if (C->T.rose.panel)  GMT_free (GMT, C->T.rose.panel);
 	GMT_free (GMT, C);
@@ -94,8 +87,9 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s or -D%s]\n\t[%s]\n", GMT_INSERT_A, GMT_INSERT_A, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L%s]\n", GMT_SCALE);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-T%s]\n", GMT_TROSE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L%s%s]\n", GMT_XYANCHOR, GMT_SCALE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Td%s%s%s%s]\n", GMT_XYANCHOR, GMT_OFFSET, GMT_TROSE, GMT_TROSE_DIR);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Tm%s%s%s%s]\n", GMT_XYANCHOR, GMT_OFFSET, GMT_TROSE, GMT_TROSE_MAG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
 
@@ -111,9 +105,9 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
 	GMT_Option (API, "K");
-	GMT_mapscale_syntax (API->GMT, 'L', "Draw a map scale centered on <lon0>/<lat0>.");
+	GMT_mapscale_syntax (API->GMT, 'L', "Draw a map scale centered on specified anchor point.");
 	GMT_Option (API, "O,P");
-	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
+	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose centered on <anchor>.");
 	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
 	return (EXIT_FAILURE);
