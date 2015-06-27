@@ -4095,8 +4095,11 @@ The embellishments currently available are
 *  Overlay of raster image or EPS plots (e.g., institutional logos, photos, etc.).
 
 Each of these features share a common system for specifying the location on the plot where the
-feature will be placed.  Thus, before we discuss the different features in detail we will review
-the "reference point/anchor point" system used by GMT to specify such locations in relation to the underlying map.
+feature will be placed.  They also share a common way to specify the placement of a rectangular
+panel behind the feature (to provide a uniform background, for instance).  Thus, before we discuss
+the different features in more detail we will first review the "reference point/anchor point"
+system used by GMT to specify such locations in relation to the underlying map, and then discuss
+the background panel attribute settings.
 
 Anchor and reference point specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4140,6 +4143,40 @@ the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
    one of the corners or centered at one of the sides (or even smack in the middle).
    An example of such a reference point might be **j**\ LT.
 
+
+The background panel
+~~~~~~~~~~~~~~~~~~~~
+
+For almost all maps you will wish to place a background panel of uniform color behind
+any of the map features you plan to add.  Because the panel is linked to the map feature
+you have selected, the parameters such as location and dimensions are handled automatically.
+What remains is to specify the attributes of the panel.  Typically, panels settings are
+given via a module's **-F** option by appending one or more modifiers.  Here is a list of
+the attributes that is under your control:
+
+#. Color or pattern.  You specify the fill you want with **+g**\ *fill* [Default is no fill].
+
+#. Panel frame pen.  Turn on the frame outline with **+p**, using as pen defined via
+   :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`.  You may override this choice with **+p**\ *pen*
+   [Default is no outline].
+
+#. Rounded versus straight rectangle.  By specifying a corner radius with **+r**\ *radius*
+   you can round the corners [No rounding].
+
+#. Inner frame.  A secondary, inner frame outline may be added as well with the modifier
+   **+i**\ [[*gap*/]*pen*].  The default pen is a solid, 0.25p black pen, with a default
+   spacing between main and inner frame of 2 points.  Add arguments to override these defaults.
+
+#. Panel clearance.  The panel's dimensions are automatically determined from knowledge of
+   its contents.  However, it is often required to add some extra clearance around most or
+   all sides, and you can do so with **+c**\ [*clearance*], with a 4-point clearance being
+   the default.  Add one (uniform), two (different horizontal and vertical clearance), or
+   four (separate for each side) clearances, separated by slashes.  For instance, to add
+   a 1 cm clearance in x and 5 points in y, use **+c**\ 1c/5p.
+
+#. Drop-down shadow.  Append **+s** to simulate a gray shadow cast toward the southeast.
+   You may append [*dx*/*dy>*]*fill* to change the shade color and the offset of the
+   shade [4p/-4p].
 
 Placing map scales
 ~~~~~~~~~~~~~~~~~~

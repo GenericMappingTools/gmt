@@ -3090,13 +3090,13 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 				sprintf (label, "%ld", lrint (val[i]));
 			else
 				sprintf (label, "%ld%c", lrint (val[i]), (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
-			t_angle = fmod ((double)(-val[i] - offset) + 360.0, 360.0);	/* Now in 0-360 range */
+			t_angle = fmod ((double)(ew_angle - val[i] - offset) + 360.0, 360.0);	/* Now in 0-360 range */
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
 			just = (y[0] <= mr->refpoint->y) ? PSL_TC : PSL_BC;
-			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (val[i], 90.0))
+			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (t_angle, 90.0))
 				t_angle = -90.0, just = PSL_BC;
-			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (val[i], 270.0))
+			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (t_angle, 270.0))
 				t_angle = 90.0, just = PSL_BC;
 			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_annot[level].size, label, t_angle, just, form);
 		}
