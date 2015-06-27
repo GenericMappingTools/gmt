@@ -3046,7 +3046,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 {	/* Magnetic compass rose */
 	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick, form;
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
-	double offset, t_angle, scale[2], base, *val = NULL, dim[PSL_MAX_DIMS];
+	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
 	char label[16];
 	struct GMT_FILL f;
 
@@ -3094,9 +3094,10 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
 			just = (y[0] <= mr->refpoint->y) ? PSL_TC : PSL_BC;
-			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (t_angle, 90.0))
+			v_angle = val[i] - ew_angle;
+			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (v_angle, 90.0))
 				t_angle = -90.0, just = PSL_BC;
-			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (t_angle, 270.0))
+			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (v_angle, 270.0))
 				t_angle = 90.0, just = PSL_BC;
 			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_annot[level].size, label, t_angle, just, form);
 		}
