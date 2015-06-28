@@ -2752,8 +2752,8 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 			B->refpoint->x -= 0.5 * ((B->justify-1)%4) * dim[GMT_X];	/* Adjust to lower left corner */
 			B->refpoint->y -= 0.5 * (B->justify/4) * dim[GMT_Y];
 			/* Also deal with any justified offsets, if given */
-			B->refpoint->x -= ((B->justify%4)-2) * B->dx;
-			B->refpoint->y -= ((B->justify/4)-1) * B->dy;
+			B->refpoint->x -= ((B->justify%4)-2) * B->off[GMT_X];
+			B->refpoint->y -= ((B->justify/4)-1) * B->off[GMT_Y];
 			rect[XLO] = B->refpoint->x;	rect[XHI] = B->refpoint->x + dim[GMT_X];	/* Get the min/max map coordinates of the rectangle */
 			rect[YLO] = B->refpoint->y;	rect[YHI] = B->refpoint->y + dim[GMT_Y];
 		}
@@ -2869,6 +2869,13 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	bar_width = hypot (x2 - x1, y2 - y1);		/* Width of scale bar in inches */
 	scale_height = fabs (GMT->current.setting.map_scale_height);	/* Nominal scale bar height */
 	dist_to_annot = scale_height + 0.75 * GMT->current.setting.map_annot_offset[0];	/* Dist from top of scalebar to top of annotations */
+
+	ms->refpoint->x -= 0.5 * ((ms->justify%4)-2) * bar_width;	/* Adjust to top center */
+	ms->refpoint->y -= 0.5 * ((ms->justify/4)-2) * scale_height;
+	/* Also deal with any justified offsets, if given */
+	ms->refpoint->x -= ((ms->justify%4)-2) * ms->off[GMT_X];
+	ms->refpoint->y -= ((ms->justify/4)-1) * ms->off[GMT_Y];
+
 	x_left  = ms->refpoint->x - 0.5 * bar_width;	/* x-coordinate of leftmost  scalebar point */
 	x_right = ms->refpoint->x + 0.5 * bar_width;	/* x-coordinate of rightmost scalebar point */
 
@@ -2903,14 +2910,14 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 				l_height = GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;	/* Approximate height of label */
 				l_shift  = l_height - scale_height;	/* Adjust for the shift in y-coordinate */
 			}
-			if (ms->justify == 'l' && l_width > dim[XLO]) dim[XLO] = l_width;	/* Extend rectangle on the left to accomodate the label */
-			else if (ms->justify == 'r' && l_width > dim[XHI]) dim[XHI] = l_width;	/* Extend rectangle on the right to accomodate the label */
+			if (ms->alignment == 'l' && l_width > dim[XLO]) dim[XLO] = l_width;	/* Extend rectangle on the left to accomodate the label */
+			else if (ms->alignment == 'r' && l_width > dim[XHI]) dim[XHI] = l_width;	/* Extend rectangle on the right to accomodate the label */
 			/* Estimate approximate distance from anchor point down to base of annotations */
 			dim[YLO] = dist_to_annot + GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 			dim[YHI] = 0.0;	/* Normally nothing above the scale bar */
 			/* If label is above or below bar, add label offset and approximate label height to the space dim */
-			if (ms->do_label && ms->justify == 'b') dim[YLO] += fabs (GMT->current.setting.map_label_offset) + l_height;
-			else if (ms->do_label && ms->justify == 't') dim[YHI] += fabs (GMT->current.setting.map_label_offset) + l_height;
+			if (ms->do_label && ms->alignment == 'b') dim[YLO] += fabs (GMT->current.setting.map_label_offset) + l_height;
+			else if (ms->do_label && ms->alignment == 't') dim[YHI] += fabs (GMT->current.setting.map_label_offset) + l_height;
 			else if (ms->do_label && l_shift > dim[YHI]) dim[YHI] = l_shift;
 			/* Determine center of gravity for panel */
 			x_center = ms->refpoint->x + 0.5 * (dim[XHI] - dim[XLO]);
@@ -2942,7 +2949,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 		}
 		if (ms->do_label) {	/* Label was requested */
 			/* Determine placement of the label */
-			switch (ms->justify) {
+			switch (ms->alignment) {
 				case 'l':	/* Left */
 					tx = x_left - bar_tick_len;
 					ty = ms->refpoint->y - scale_height;
@@ -3307,17 +3314,17 @@ void GMT_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	if (!P) return;	/* No panel given */
 	outline = ((P->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Place rectangular back panel\n");
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Offsets: %g/%g/%g/%g\n", P->off[XLO], P->off[XLO], P->off[YLO], P->off[YHI]);
-	dim[GMT_X] = P->width  + P->off[XLO] + P->off[XHI];	/* Rectangle width */
-	dim[GMT_Y] = P->height + P->off[YLO] + P->off[YHI];	/* Rectangle height */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Clearance: %g/%g/%g/%g\n", P->padding[XLO], P->padding[XLO], P->padding[YLO], P->padding[YHI]);
+	dim[GMT_X] = P->width  + P->padding[XLO] + P->padding[XHI];	/* Rectangle width */
+	dim[GMT_Y] = P->height + P->padding[YLO] + P->padding[YHI];	/* Rectangle height */
 	dim[GMT_Z] = P->radius;	/* Corner radius, or zero */
 	/* In case clearances are not symmetric we need to shift the symbol center accordingly */
-	x += 0.5 * (P->off[XHI] - P->off[XLO]);
-	y += 0.5 * (P->off[YHI] - P->off[YLO]);
+	x += 0.5 * (P->padding[XHI] - P->padding[XLO]);
+	y += 0.5 * (P->padding[YHI] - P->padding[YLO]);
 	if (mode == 1) outline = 0;	/* Do not draw outlines (if requested) at this time */
 	if ((mode & 1) && (P->mode & GMT_PANEL_SHADOW)) {	/* Draw offset background shadow first */
 		GMT_setfill (GMT, &P->sfill, false);	/* The shadow has no outline */
-		PSL_plotsymbol (GMT->PSL, x + P->dx, y + P->dy, dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
+		PSL_plotsymbol (GMT->PSL, x + P->off[GMT_X], y + P->off[GMT_Y], dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	}
 	if ((mode & 2) && outline) GMT_setpen (GMT, &P->pen1);	/* Set frame outline pen */
 	if (mode & 1) fill = &P->fill;		/* Select fill (which may be NULL) unless we are just doing outlines */

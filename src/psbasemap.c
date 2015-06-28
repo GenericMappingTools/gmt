@@ -87,9 +87,9 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s or -D%s]\n\t[%s]\n", GMT_INSERT_A, GMT_INSERT_A, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L%s%s]\n", GMT_XYANCHOR, GMT_SCALE);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Td%s%s%s%s]\n", GMT_XYANCHOR, GMT_OFFSET, GMT_TROSE, GMT_TROSE_DIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Tm%s%s%s%s]\n", GMT_XYANCHOR, GMT_OFFSET, GMT_TROSE, GMT_TROSE_MAG);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L%s]\n", GMT_SCALE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Td%s]\n", GMT_TROSE_DIR);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Tm%s]\n", GMT_TROSE_MAG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
 

@@ -1019,12 +1019,13 @@ void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t   Set the reference point and length of the scale:\n");
 	GMT_refpoint_syntax (GMT, 'L', NULL, GMT_ANCHOR_MAPSCALE, 5);
+	GMT_refpoint_syntax (GMT, 'L', "CT", GMT_ANCHOR_MAPSCALE, 2);
 	GMT_message (GMT, "\t   Use +c<slat> (with central longitude) or +c<slon>/<slat> to specify scale origin.\n");
 	GMT_message (GMT, "\t   Set scale length with +w<length> and append a unit from %s [km].  Use -%cf to draw a \"fancy\" scale [Default is plain].\n", GMT_LEN_UNITS2_DISPLAY, option);
 	GMT_message (GMT, "\t   Several modifiers are optional:\n");
 	GMT_message (GMT, "\t   Add +f to draw a \"fancy\" scale [Default is plain].\n");
-	GMT_message (GMT, "\t   By default, the scale label equals the distance unit name and is placed on top [+jt].  Use the +l<label>\n");
-	GMT_message (GMT, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  For the fancy scale,\n");
+	GMT_message (GMT, "\t   By default, the scale label equals the distance unit name and is placed on top [+at].  Use the +l<label>\n");
+	GMT_message (GMT, "\t   and +a<align> mechanisms to specify another label and placement (t,b,l,r).  For the fancy scale,\n");
 	GMT_message (GMT, "\t   +u appends units to annotations while for plain scale it uses unit abbreviation instead of name as label.\n");
 }
 

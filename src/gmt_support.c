@@ -7746,10 +7746,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 					B->justify = GMT_just_decode (GMT, &p[1], PSL_MC);
 					break;
 				case 'o':	/* Got offsets from reference point */
-					//if ((n = GMT_get_pair (GMT, p, GMT_PAIR_DIM_DUP, B->off)) < 0) n_errors++;
-					n = sscanf ( &p[1], "%[^/]/%s", txt_a, txt_b);
-					B->dx = GMT_to_inch (GMT, txt_a); 
-					B->dy = (n == 2) ? GMT_to_inch (GMT, txt_b) : B->dx;
+					if (GMT_get_pair (GMT, p, GMT_PAIR_DIM_DUP, B->off) < 0) error++;
 					break;
 				case 's':	/* Got filename for saving map insert parameters */
 					B->file = strdup (&p[1]);
@@ -7776,7 +7773,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 					break;
 			}
 		}
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map insert attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->dx, B->dy);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map insert attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
 	}
 	else {	/* Did the [<unit>]<xmin/xmax/ymin/ymax> thing - this is exact so justify, offsets do not apply. */
 		char *c = NULL;
@@ -7851,7 +7848,8 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 
 	GMT_memset (ms, 1, struct GMT_MAP_SCALE);
 	ms->measure = 'k';	/* Default distance unit is km */
-	ms->justify = 't';
+	ms->alignment = 't';
+	ms->justify = PSL_TC;
 
 	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx) */
 	if (text[j] == 'f') ms->fancy = true, j++;
@@ -7950,8 +7948,8 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 					break;
 
 				case 'j':	/* Label justification */
-					ms->justify = p[1];
-					if (!(ms->justify == 'l' || ms->justify == 'r' || ms->justify == 't' || ms->justify == 'b')) bad++;
+					ms->alignment = p[1];
+					if (!(ms->alignment == 'l' || ms->alignment == 'r' || ms->alignment == 't' || ms->alignment == 'b')) bad++;
 					break;
 
 				case 'p':	/* Pen specification */
@@ -7995,7 +7993,7 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 
 int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms) {
 	/* This function parses the -L map scale syntax:
-	 *   -L[gjnx]<refpoint>+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+f][+j<just>][+l<label>][+u]
+	 *   -L[gjnx]<refpoint>+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+u]
 	 * If the required +w is not present we call the backwards compatible parsert for the previous map scale syntax.
 	 * An optional background panel is handled by a separate option (typically -F). */
 
@@ -8011,7 +8009,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 	GMT_memset (ms, 1, struct GMT_MAP_SCALE);
 	ms->measure = 'k';	/* Default distance unit is km */
-	ms->justify = 't';	/* Default label placement is on top */
+	ms->alignment = 't';	/* Default label placement is on top */
 
 	if ((ms->refpoint = GMT_get_refpoint (GMT, text)) == NULL) return (1);	/* Failed basic parsing */
 	
@@ -8040,12 +8038,21 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	}
 	if (GMT_get_modifier (ms->refpoint->args, 'f', NULL))	/* Do fancy label */
 		ms->fancy = true;
-	if (GMT_get_modifier (ms->refpoint->args, 'j', string)) {	/* Set justification */
-		ms->justify = string[0];
-		if (!(ms->justify == 'l' || ms->justify == 'r' || ms->justify == 't' || ms->justify == 'b')) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid label justifications are l|r|t|b\n", option);
+	if (GMT_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
+		ms->alignment = string[0];
+		if (!(ms->alignment == 'l' || ms->alignment == 'r' || ms->alignment == 't' || ms->alignment == 'b')) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid label alignments (+a) are l|r|t|b\n", option);
 			error++;
 		}
+	}
+	if (GMT_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
+		ms->justify = GMT_just_decode (GMT, string, PSL_MC);
+	else if (ms->refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default to reference justify point */
+		ms->justify = ms->refpoint->justify;
+	else	/* Top center is the default */
+		ms->justify = PSL_TC;
+	if (GMT_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
+		if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
 	}
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
 		if (string[0]) strncpy (ms->label, string, GMT_LEN64);
@@ -8372,10 +8379,10 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	P->pen2 = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
 	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;	/* Default is 2p */
 	/* Initialize the panel clearances */
-	P->off[XLO] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
-	for (pos = XHI; pos <= YHI; pos++) P->off[pos] = P->off[XLO];
-	P->dx = P->off[XLO];	/* Set the shadow offsets [default is (4p, -4p)] */
-	P->dy = -P->dx;
+	P->padding[XLO] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
+	for (pos = XHI; pos <= YHI; pos++) P->padding[pos] = P->padding[XLO];
+	P->off[GMT_X] = P->padding[XLO];	/* Set the shadow offsets [default is (4p, -4p)] */
+	P->off[GMT_Y] = -P->off[GMT_X];
 	
 	if (text == NULL || text[0] == 0) {	/* Blank arg means draw outline with default pen */
 		P->mode = GMT_PANEL_OUTLINE;
@@ -8383,25 +8390,29 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		return 0;
 	}
 	pos = 0;
-	while (GMT_getmodopt (GMT, text, "cidgprs", &pos, p)) {	/* Looking for +c, +i, +f, +p, +r, +s */
+	while (GMT_getmodopt (GMT, text, "cidgprs", &pos, p)) {	/* Looking for +c, [+d], +g, +i, +p, +r, +s */
 		switch (p[0]) {
-			case 'd':	/* debug mode for developers */
-				P->debug = true;
-				break;
 			case 'c':	/* Clearance will expand the rectangle by specified amounts */
-				n = GMT_Get_Value (GMT->parent, &p[1], P->off);
+				n = GMT_Get_Value (GMT->parent, &p[1], P->padding);
 				if (n == 1)	/* Same round in all directions */
-					P->off[XHI] = P->off[YLO] = P->off[YHI] = P->off[XLO];
+					P->padding[XHI] = P->padding[YLO] = P->padding[YHI] = P->padding[XLO];
 				else if (n == 2) {	/* Separate round in x and y */
-					P->off[YLO] = P->off[YHI] = P->off[XHI];
-					P->off[XHI] = P->off[XLO];
+					P->padding[YLO] = P->padding[YHI] = P->padding[XHI];
+					P->padding[XHI] = P->padding[XLO];
 				}
 				else if (n != 4){
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
 					n_errors++;
 				}
-				for (n = 0; n < 4; n++) P->off[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];	/* Since GMT_Get_Value might return cm */
+				for (n = 0; n < 4; n++) P->padding[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];	/* Since GMT_Get_Value might return cm */
 				P->clearance = true;
+				break;
+			case 'd':	/* debug mode for developers */
+				P->debug = true;
+				break;
+			case 'g':	/* Set fill */
+				if (!p[1] || GMT_getfill (GMT, &p[1], &P->fill)) n_errors++;
+				P->mode |= GMT_PANEL_FILL;
 				break;
 			case 'i':	/* Secondary pen info */
 				P->mode |= GMT_PANEL_INNER;
@@ -8415,10 +8426,6 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 						if (GMT_getpen (GMT, txt_a, &P->pen2)) n_errors++;
 				}
 				break;
-			case 'g':	/* Set fill */
-				if (!p[1] || GMT_getfill (GMT, &p[1], &P->fill)) n_errors++;
-				P->mode |= GMT_PANEL_FILL;
-				break;
 			case 'p':	/* Set outline and optionally change primary pen info */
 				if (p[1] && GMT_getpen (GMT, &p[1], &P->pen1)) n_errors++;
 				P->mode |= GMT_PANEL_OUTLINE;
@@ -8430,13 +8437,16 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 			case 's':	/* Get shade settings */
 				if (p[1]) {
 					n = sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-					if (n == 3) {
-						P->dx = GMT_to_inch (GMT, txt_a);
-						P->dy = GMT_to_inch (GMT, txt_b);
-						if (GMT_getfill (GMT, txt_c, &P->sfill)) n_errors++;
-					}
-					else if (n == 1) {
+					if (n == 1) {	/* Just got a new fill */
 						if (GMT_getfill (GMT, txt_a, &P->sfill)) n_errors++;
+					}
+					else if (n == 2) {	/* Just got a new offset */
+						if (GMT_get_pair (GMT, p, GMT_PAIR_DIM_DUP, P->off) < 0) n_errors++;
+					}
+					else if (n == 3) {	/* Got offset and fill */
+						P->off[GMT_X] = GMT_to_inch (GMT, txt_a);
+						P->off[GMT_Y] = GMT_to_inch (GMT, txt_b);
+						if (GMT_getfill (GMT, txt_c, &P->sfill)) n_errors++;
 					}
 					else n_errors++;
 				}

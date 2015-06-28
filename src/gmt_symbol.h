@@ -91,9 +91,9 @@ struct GMT_CUSTOM_SYMBOL {
 struct GMT_MAP_PANEL {
 	unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
 	double width, height;		/* Size of panel in inches */
-	double off[4];			/* Extend panel by this clearance (inches) in the w/e/s/n directions [0/0/0/0] */
+	double padding[4];		/* Extend panel by this clearance (inches) in the w/e/s/n directions [0/0/0/0] */
 	double radius;			/* Radius for rounded corner */
-	double dx, dy;			/* Offset for background shaded rectangle (+s) */
+	double off[2];			/* Offset for background shaded rectangle (+s) */
 	double gap;			/* Space between main and secondary frame */
 	struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
 	struct GMT_FILL fill;		/* Frame fill */
@@ -111,7 +111,7 @@ struct GMT_MAP_INSERT {
 	char unit;		/* Unit of projected coordinates or 0 for geographic */
 	struct GMT_REFPOINT *refpoint;
 	double wesn[4];		/* Geographic or projected boundaries */
-	double dx, dy;		/* Offset from reference point */
+	double off[2];		/* Offset from reference point */
 	double dim[2];		/* Width & height of box */
 	char *file;			/* Used to write insert location and dimensions [+s] */
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
@@ -121,14 +121,16 @@ struct GMT_MAP_INSERT {
 struct GMT_MAP_SCALE {
 	struct GMT_REFPOINT *refpoint;
 	double origin[2];	/* Longitude/latitude where scale should apply */
+	double off[2];		/* Offset from reference point */
 	double length;		/* How long the scale is in measure units */
 	bool plot;		/* true if we want to draw the scale */
 	bool fancy;		/* true for a fancy map scale */
 	bool unit;		/* true if we should append distance unit to all annotations along the scale */
 	bool do_label;		/* true if we should plot a label for the scale */
 	bool old_style;		/* true if we are using old syntax, pre-panel settings */
+	int justify;		/* Justification of anchor point */
 	char measure;		/* The unit, i.e., e|f|k|M|n|u */
-	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
+	char alignment;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
 	char label[GMT_LEN128];	/* Alternative user-specified label */
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };

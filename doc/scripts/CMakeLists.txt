@@ -47,7 +47,8 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_chunking.sh GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh
 	GMT_Defaults_1c.sh GMT_linecap.sh GMT_nearneighbor.sh GMT_anchor.sh
 	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh
-	GMT_utm_zones.sh GMT_volcano.sh)
+	GMT_utm_zones.sh GMT_volcano.sh GMT_panel.sh GMT_mapscale.sh
+	GMT_dir_rose.sh)
 
 # Scripts that are only used for testing, figures are not in the documentation
 set (_scr_test GMT_RGBchart.sh)
