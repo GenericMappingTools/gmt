@@ -8441,7 +8441,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 						if (GMT_getfill (GMT, txt_a, &P->sfill)) n_errors++;
 					}
 					else if (n == 2) {	/* Just got a new offset */
-						if (GMT_get_pair (GMT, p, GMT_PAIR_DIM_DUP, P->off) < 0) n_errors++;
+						if (GMT_get_pair (GMT, &p[1], GMT_PAIR_DIM_DUP, P->off) < 0) n_errors++;
 					}
 					else if (n == 3) {	/* Got offset and fill */
 						P->off[GMT_X] = GMT_to_inch (GMT, txt_a);
