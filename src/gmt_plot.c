@@ -2798,7 +2798,7 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 	/* Determine panel dimensions */
 	
 	panel->width = rect[XHI] - rect[XLO];	panel->height = rect[YHI] - rect[YLO];
-	if (!panel->clearance) GMT_memset (panel->off, 4, double);	/* No clearance is default for map inserts unless actually specified */
+	if (!panel->clearance) GMT_memset (panel->padding, 4, double);	/* No clearance is default for map inserts unless actually specified */
 	/* Report position and dimensions */
 	x0 = 0.5 * (rect[XHI] + rect[XLO]);
 	y0 = 0.5 * (rect[YHI] + rect[YLO]);

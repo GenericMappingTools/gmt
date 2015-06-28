@@ -7746,7 +7746,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 					B->justify = GMT_just_decode (GMT, &p[1], PSL_MC);
 					break;
 				case 'o':	/* Got offsets from reference point */
-					if (GMT_get_pair (GMT, p, GMT_PAIR_DIM_DUP, B->off) < 0) error++;
+					if (GMT_get_pair (GMT, &p[1], GMT_PAIR_DIM_DUP, B->off) < 0) error++;
 					break;
 				case 's':	/* Got filename for saving map insert parameters */
 					B->file = strdup (&p[1]);
@@ -8404,7 +8404,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
 					n_errors++;
 				}
-				for (n = 0; n < 4; n++) P->padding[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];	/* Since GMT_Get_Value might return cm */
+				for (n = 0; n < 4; n++) P->padding[n] *= GMT->session.u2u[GMT_CM][GMT_INCH];	/* Since GMT_Get_Value might return cm */
 				P->clearance = true;
 				break;
 			case 'd':	/* debug mode for developers */
