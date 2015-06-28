@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
-**-E**\ *dpi* ] [ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
+**psimage** *imagefile* 
+[ **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+e**\ *dpi* **+w**\ [**-**\ ]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]] ]
 [ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [
 **-J**\ *parameters* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-M** ] [ **-N**\ *nx*\ [/*ny*] ] [ **-O** ] [ **-P** ] [
+**-M** ] [ **-O** ] [ **-P** ] [
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**] ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*]
 ] [
@@ -59,19 +59,11 @@ Required Arguments
     Note: If GDAL was not configured during GMT installation then only
     Sun raster files are supported natively.  You must then convert other
     formats to Sun raster files before use.
-**-E**\ *dpi*
-    Sets the dpi of the image in dots per inch, or use **-W**.
-**-W**\ [**-**]\ *width*\ [/*height*]
-    Sets the width (and height) of the image in plot coordinates
-    (inches, cm, etc.). If *height* is not given, the original aspect
-    ratio of the image is maintained. If *width* is negative we use the
-    absolute value and interpolate image to the device resolution using
-    the PostScript image operator. Alternatively, use **-E**.
 
 Optional Arguments
 ------------------
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+e**\ *dpi* **+w**\ [**-**\ ]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]]
     Sets reference point on the map for the image using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
@@ -80,7 +72,18 @@ Optional Arguments
     By default, the anchor point of the image is assumed to be the lower left corner, but this
     can be changed by specifying a 2-char justification code *justify* (see :doc:`pstext`).
     Finally, you can offset the image by *dx*/*dy* away from the *refpoint* point in the
-    direction implied by *justify* [LB].
+    direction implied by *justify* [LB]. Specify image size in one of two ways:
+    Use **+e**\ *dpi* to set the dpi of the image in dots per inch, or use
+   **+w**\ [**-**]\ *width*\ [/*height*] to
+    set the width (and height) of the image in plot coordinates
+    (inches, cm, etc.). If *height* is not given, the original aspect
+    ratio of the image is maintained. If *width* is negative we use the
+    absolute value and interpolate image to the device resolution using
+    the PostScript image operator.
+    Optionally, use **+n**\ *nx*\ [/*ny*] to
+    replicate the image *nx* times horizontally and *ny* times
+    vertically. If *ny* is omitted, it will be identical to *nx*
+    [Default is 1/1].
 
 **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the image using
@@ -108,10 +111,6 @@ Optional Arguments
 **-M**
     Convert color image to monochrome grayshades using the (television)
     YIQ-transformation.
-**-N**\ *nx*\ [/*ny*]
-    Replicate the image *nx* times horizontally and *ny* times
-    vertically. If *ny* is omitted, it will be identical to *nx*
-    [Default is 1/1].
 
 .. include:: explain_-O.rst_
 
@@ -167,7 +166,7 @@ accordingly), and outline with a thin, blue pen, use
 
    ::
 
-    gmt psimage logo.jpg -W1i -F+pthin,blue > image.ps
+    gmt psimage logo.jpg -Dx0/0+w1i -F+pthin,blue > image.ps
 
 To include an Encapsulated PostScript file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
@@ -176,7 +175,7 @@ aspect ratio, use
 
    ::
 
-    gmt psimage tiger.eps -Dx2i/1i/TR -W3i > image.ps
+    gmt psimage tiger.eps -Dx2i/1i+jTR+w3i > image.ps
 
 To replicate the 1-bit raster image template 1_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles
@@ -184,7 +183,7 @@ to be 1 cm wide, use
 
    ::
 
-    gmt psimage 1_bit.ras -Gbbrown -Gfred -N5 -W1c > image.ps
+    gmt psimage 1_bit.ras -Gbbrown -Gfred -Dx0/0+w1c+n5 > image.ps
 
 See Also
 --------

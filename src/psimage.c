@@ -39,16 +39,16 @@ struct PSIMAGE_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct PSIMG_D {	/* -D[g|j|n|x]<refpoint>[+j<justify>][+o<off[GMT_X]>[/<dy>]] */
+	struct PSIMG_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<nx>[/<ny>]][+o<off[GMT_X]>[/<dy>]][+r<dpi>] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
 		int justify;
-	} D;
-	struct PSIMG_E {	/* -E<dpi> */
-		bool active;
+		bool interpolate;
+		double dim[2];
 		double dpi;
-	} E;
+		unsigned int nx, ny;
+	} D;
 	struct PSIMG_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
@@ -65,15 +65,6 @@ struct PSIMAGE_CTRL {
 	struct PSIMG_M {	/* -M */
 		bool active;
 	} M;
-	struct PSIMG_N {	/* -N<nx>/<ny> */
-		bool active;
-		unsigned int nx, ny;
-	} N;
-	struct PSIMG_W {	/* -W[-]<width>[/<height>] */
-		bool active;
-		bool interpolate;
-		double dim[2];
-	} W;
 };
 
 void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -84,7 +75,7 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.justify = PSL_BL;
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
-	C->N.nx = C->N.ny = 1;
+	C->D.nx = C->D.ny = 1;
 	return (C);
 }
 
@@ -102,22 +93,23 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psimage <imagefile> [-E<dpi> or -W[-]<width>[/<height>]] [%s] [-D%s%s]\n", GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psimage <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<nx>[/<ny>]]%s+r<dpi>]\n", GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-N<nx>[/<ny>]] [-O]\n", GMT_J_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-O]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<imagefile> is an EPS or image file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set image dpi (dots per inch), OR\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set the width (and height) of the image.  If <height> = 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then the original aspect ratio is maintained.  If <width> < 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then we use absolute value and interpolate image in PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
 	GMT_refpoint_syntax (API->GMT, 'D', "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Set width (and height) of image with +w<width>/[/<height>].  If <height> = 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then the original aspect ratio is maintained.  If <width> < 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then we use absolute value as width and interpolate image in PostScript.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set image dpi (dots per inch) with +r.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n to replicate image <nx> by <ny> times [Default is no replication].\n");
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   respectively. Set <color> = - for transparency [Default is black and white].\n");
@@ -126,7 +118,6 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert 1-bit images (does not affect 8 or 24-bit images).\n");
 	GMT_Option (API, "J-Z,K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force color -> monochrome image using GMT_YIQ-transformation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Replicate image <nx> by <ny> times [Default is no replication].\n");
 	GMT_Option (API, "O,P,R,U,V,X,c,p");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
@@ -163,7 +154,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Image placement (old syntax) */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -C option is deprecated, use -D instead.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -C option is deprecated, use -Dx instead.\n");
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, txt_c);
 				sprintf (string, "x%s/%s", txt_a, txt_b);
 				if (n == 3) {
@@ -182,11 +173,20 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
+						if ((n = GMT_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
+						if (Ctrl->D.dim[GMT_X] < 0.0) {
+							Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
+							Ctrl->D.interpolate = true;
+						}
+					}
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'r', string))
+						Ctrl->D.dpi = atof (string);
 				}
 				break;
 			case 'E':	/* Specify image dpi */
-				Ctrl->E.active = true;
-				Ctrl->E.dpi = atof (opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -E option is deprecated; use -D modifier +r instead.\n");
+				Ctrl->D.dpi = atof (opt->arg);
 				break;
 			case 'F':	/* Specify frame pen */
 				Ctrl->F.active = true;
@@ -245,17 +245,17 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Replicate image */
-				Ctrl->N.active = true;
-				n = sscanf (opt->arg, "%d/%d", &Ctrl->N.nx, &Ctrl->N.ny);
-				if (n == 1) Ctrl->N.ny = Ctrl->N.nx;
-				n_errors += GMT_check_condition (GMT, n < 1, "Syntax error -N option: Must values for replication\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D modifier +n instead.\n");
+				n = sscanf (opt->arg, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
+				if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
+				n_errors += GMT_check_condition (GMT, n < 1, "Syntax error -N option: Must give values for replication\n");
 				break;
 			case 'W':	/* Image width */
-				Ctrl->W.active = true;
-				if ((n = GMT_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->W.dim)) < 0) n_errors++;
-				if (Ctrl->W.dim[GMT_X] < 0.0) {
-					Ctrl->W.dim[GMT_X] = -Ctrl->W.dim[GMT_X];
-					Ctrl->W.interpolate = true;
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -W option is deprecated; use -D modifier +w instead.\n");
+				if ((n = GMT_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
+				if (Ctrl->D.dim[GMT_X] < 0.0) {
+					Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
+					Ctrl->D.interpolate = true;
 				}
 				break;
 
@@ -277,9 +277,9 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.dim[GMT_X] <= 0.0 && Ctrl->E.dpi <= 0.0, "Must specify image width (-W) or dpi (-E)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.nx < 1 || Ctrl->N.ny < 1),
-			"Syntax error -N option: Must specify positive values for replication\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+e)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.nx < 1 || Ctrl->D.ny < 1,
+			"Syntax error -D option: Must specify positive values for replication with +n\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0,
 			"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 
@@ -402,7 +402,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the psimage main code ----------------------------*/
 
-	PS_interpolate = (Ctrl->W.interpolate) ? -1 : +1;
+	PS_interpolate = (Ctrl->D.interpolate) ? -1 : +1;
 
 	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
 	if (known < 0) {
@@ -520,8 +520,8 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	else
 		GMT_Report (API, GMT_MSG_NORMAL, "Can only do transparent color for 8- or 24-bit images. -Gt ignored\n");
 
-	if (Ctrl->E.dpi > 0.0) Ctrl->W.dim[GMT_X] = (double) header.width / Ctrl->E.dpi;
-	if (Ctrl->W.dim[GMT_Y] == 0.0) Ctrl->W.dim[GMT_Y] = header.height * Ctrl->W.dim[GMT_X] / header.width;
+	if (Ctrl->D.dpi > 0.0) Ctrl->D.dim[GMT_X] = (double) header.width / Ctrl->D.dpi;
+	if (Ctrl->D.dim[GMT_Y] == 0.0) Ctrl->D.dim[GMT_Y] = header.height * Ctrl->D.dim[GMT_X] / header.width;
 
 	/* The following is needed to have psimage work correctly in perspective */
 
@@ -530,13 +530,13 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.dim[GMT_X];
-		Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->W.dim[GMT_Y];
+		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.dim[GMT_X];
+		Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->D.dim[GMT_Y];
 		/* Also deal with any justified offsets if given */
 		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
 		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
-		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->N.nx * Ctrl->W.dim[GMT_X];
-		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->N.ny * Ctrl->W.dim[GMT_Y];
+		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
+		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -544,8 +544,8 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
-		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.dim[GMT_X];
-		Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->W.dim[GMT_Y];
+		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.dim[GMT_X];
+		Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->D.dim[GMT_Y];
 		/* Also deal with any justified offsets if given */
 		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
 		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
@@ -555,36 +555,36 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT_map_basemap (GMT);	/* Draw basemap if requested */
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->N.nx * Ctrl->W.dim[GMT_X];
-		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->N.ny * Ctrl->W.dim[GMT_Y];
+		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
+		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		GMT->common.R.active = GMT->common.J.active = true;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
  	if (Ctrl->F.active) {	/* Draw frame, fill only */
-		Ctrl->F.panel->width = Ctrl->N.nx * Ctrl->W.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->N.ny * Ctrl->W.dim[GMT_Y];	
+		Ctrl->F.panel->width = Ctrl->D.nx * Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.ny * Ctrl->D.dim[GMT_Y];	
 		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel->width, 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
  	}
 
-	for (row = 0; row < Ctrl->N.ny; row++) {
-		y = Ctrl->D.refpoint->y + row * Ctrl->W.dim[GMT_Y];
-		if (Ctrl->N.ny > 1) GMT_Report (API, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->N.nx, row);
-		for (col = 0; col < Ctrl->N.nx; col++) {
-			x = Ctrl->D.refpoint->x + col * Ctrl->W.dim[GMT_X];
+	for (row = 0; row < Ctrl->D.ny; row++) {
+		y = Ctrl->D.refpoint->y + row * Ctrl->D.dim[GMT_Y];
+		if (Ctrl->D.ny > 1) GMT_Report (API, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->D.nx, row);
+		for (col = 0; col < Ctrl->D.nx; col++) {
+			x = Ctrl->D.refpoint->x + col * Ctrl->D.dim[GMT_X];
 			if (header.depth == 0)
-				PSL_plotepsimage (PSL, x, y, Ctrl->W.dim[GMT_X], Ctrl->W.dim[GMT_Y], PSL_BL, picture, header.length,
+				PSL_plotepsimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture, header.length,
 						header.width, header.height, header.xorigin, header.yorigin);
 			else if (header.depth == 1) {
 				/* Invert is opposite from what is expected. This is to match the behaviour of -Gp */
 				if (Ctrl->I.active)
-					PSL_plotbitimage (PSL, x, y, Ctrl->W.dim[GMT_X], Ctrl->W.dim[GMT_Y], PSL_BL, picture,
+					PSL_plotbitimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
 							header.width, header.height, Ctrl->G.f_rgb, Ctrl->G.b_rgb);
 				else
-					PSL_plotbitimage (PSL, x, y, Ctrl->W.dim[GMT_X], Ctrl->W.dim[GMT_Y], PSL_BL, picture,
+					PSL_plotbitimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
 							header.width, header.height, Ctrl->G.b_rgb, Ctrl->G.f_rgb);
 			}
 			else
-				 PSL_plotcolorimage (PSL, x, y, Ctrl->W.dim[GMT_X], Ctrl->W.dim[GMT_Y], PSL_BL, picture,
+				 PSL_plotcolorimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
 						 PS_transparent * header.width, header.height, PS_interpolate * header.depth);
 		}
 	}

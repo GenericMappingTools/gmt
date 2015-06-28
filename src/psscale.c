@@ -57,28 +57,38 @@ enum psscale_shift {
 /* Control structure for psscale */
 
 struct PSSCALE_CTRL {
+	#if 0
 	struct A {	/* -A[a|c|l|u] */
 		bool active;
 		unsigned int mode;
 	} A;
+	#endif
 	struct C {	/* -C<cptfile> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+h][+j<justify>][+o<dx>[/<dy>]] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		bool horizontal;
+		bool move;
 		struct GMT_REFPOINT *refpoint;
 		int justify;
+		unsigned int mmode;
 		double dim[2];
 		double off[2];
+		bool extend;
+		unsigned int emode;
+		double elength;
+		char *etext;
 	} D;
+	#if 0
 	struct E {	/* -E[b|f][<length>][+n[<text>]] */
 		bool active;
 		unsigned int mode;
 		double length;
 		char *text;
 	} E;
+	#endif
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
@@ -134,7 +144,7 @@ void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deall
 	if (!C) return;
 	if (C->C.file) free (C->C.file);
 	GMT_free_refpoint (GMT, &C->D.refpoint);
-	if (C->E.text) free (C->E.text);
+	if (C->D.etext) free (C->D.etext);
 	if (C->F.panel) GMT_free (GMT, C->F.panel);
 	if (C->Z.file) free (C->Z.file);
 	GMT_free (GMT, C);
@@ -146,8 +156,8 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D%s+w<length>/<width>[+h]%s [-A[a|c|l|u]] [%s] [-C<cpt>]\n", GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [%s]\n", GMT_PANEL);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D%s+w<length>/<width>[+e[b|f][<length>]][+h][+ma|c|l|u][+n[<txt>]]%s\n", GMT_XYANCHOR, GMT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [%s]\n", GMT_B_OPT, GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]\n\t[%s] [%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q] [%s] [-S] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>] [%s]\n\t[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -159,10 +169,14 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h for a horizontal scale [Default is vertical].\n");
 	GMT_refpoint_syntax (API->GMT, 'D', "TC or LM", GMT_ANCHOR_COLORBAR, 2);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to add sidebar triangles for back- and foreground colors.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Specify b(ackground) or f(oreground) to get one only [Default is both].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append triangle height [Default is half the barwidth].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +m<code> to move selected annotations/labels/units on opposite side of colorscale.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of a, l, or u to move the annotations, labels, or unit, respectively.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append c to plot vertical labels as column text.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to draw rectangle with NaN color and label with <txt> [NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Place the desired annotations/labels/units on the opposite side of the colorscale.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append any of a, l, or u to flip the annotations, labels, or unit, respectively.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to plot vertical labels as column text.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-B Set scale annotation interval and label. Use y-label to set unit label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no annotation interval is set it is taken from the cpt file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, stdin is read.\n");
@@ -170,10 +184,6 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the cpt-file with a L, U, or B\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If a categorical CPT file is given the -Li is set automatically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Add sidebar triangles for back- and foreground colors.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify b(ackground) or f(oreground) to get one only [Default is both].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append triangle height [Default is half the barwidth].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to draw rectangle with NaN color and label with <txt> [NaN].\n");
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one if the incoming limits, set to other to NaN.\n");
@@ -234,14 +244,15 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.active = true;
-				if (!opt->arg[0]) Ctrl->A.mode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is -Aal */
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -A option is deprecated; use -D modifier +m instead.\n");
+				Ctrl->D.move = true;
+				if (!opt->arg[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
-						case 'a': Ctrl->A.mode |= PSSCALE_FLIP_ANNOT; break;
-						case 'l': Ctrl->A.mode |= PSSCALE_FLIP_LABEL; break;
-						case 'c': Ctrl->A.mode |= PSSCALE_FLIP_VERT;  break;
-						case 'u': Ctrl->A.mode |= PSSCALE_FLIP_UNIT;  break;
+						case 'a': Ctrl->D.mmode |= PSSCALE_FLIP_ANNOT; break;
+						case 'l': Ctrl->D.mmode |= PSSCALE_FLIP_LABEL; break;
+						case 'c': Ctrl->D.mmode |= PSSCALE_FLIP_VERT;  break;
+						case 'u': Ctrl->D.mmode |= PSSCALE_FLIP_UNIT;  break;
 					}
 				}
 				break;
@@ -254,6 +265,18 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				Ctrl->D.active = true;
 				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
 				if (strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: Args are +w<length>/<width>][+h][+j<justify>][+o<dx>[/<dy>]] */
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
+						Ctrl->D.move = true;
+						if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
+						for (j = 0; string[j]; j++) {
+							switch (string[j]) {
+								case 'a': Ctrl->D.mmode |= PSSCALE_FLIP_ANNOT; break;
+								case 'l': Ctrl->D.mmode |= PSSCALE_FLIP_LABEL; break;
+								case 'c': Ctrl->D.mmode |= PSSCALE_FLIP_VERT;  break;
+								case 'u': Ctrl->D.mmode |= PSSCALE_FLIP_UNIT;  break;
+							}
+						}
+					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'h', string))
 						Ctrl->D.horizontal = true;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
@@ -265,6 +288,18 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_EXACT, Ctrl->D.dim)) < 2) n_errors++;
+					}
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
+						Ctrl->D.extend = true;
+						if (strchr (string, 'b')) Ctrl->D.emode |= 1;
+						if (strchr (string, 'f')) Ctrl->D.emode |= 2;
+						if ((Ctrl->D.emode&3) == 0) Ctrl->D.emode |= 3;	/* No b|f added */
+						j = 0; while (string[j] == 'b' || string[j] == 'f') j++;
+						if (string[j]) Ctrl->D.elength = GMT_to_inch (GMT, &string[j]);
+					}
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
+						Ctrl->D.etext = (string[0]) ? strdup (string) : strdup ("NaN");
+						Ctrl->D.emode |= 4;
 					}
 				}
 				else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
@@ -291,32 +326,33 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
 				break;
 			case 'E':
-				Ctrl->E.active = true;
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -E option is deprecated; use -D modifier +e instead.\n");
+				Ctrl->D.extend = true;
 				if ((c = strchr (opt->arg, 'n'))) {	/* Got +n[<text>] */
 					c--;	*c = 0; c += 2;
-					Ctrl->E.text = (*c) ? strdup (c) : strdup ("NaN");
-					Ctrl->E.mode = 4;
+					Ctrl->D.etext = (*c) ? strdup (c) : strdup ("NaN");
+					Ctrl->D.emode = 4;
 					c -= 2;
 				}
 				j = 0;
 				if (opt->arg[0] == 'b') {
-					Ctrl->E.mode |= 1;
+					Ctrl->D.emode |= 1;
 					j = 1;
 				}
 				else if (opt->arg[j] == 'f') {
-					Ctrl->E.mode |= 2;
+					Ctrl->D.emode |= 2;
 					j = 1;
 				}
 				if (opt->arg[j] == 'b') {
-					Ctrl->E.mode |= 1;
+					Ctrl->D.emode |= 1;
 					j++;
 				}
 				else if (opt->arg[j] == 'f') {
-					Ctrl->E.mode |= 2;
+					Ctrl->D.emode |= 2;
 					j++;
 				}
-				if (j == 0) Ctrl->E.mode |= 3;	/* No b|f added */
-				if (opt->arg[j]) Ctrl->E.length = GMT_to_inch (GMT, &opt->arg[j]);
+				if (j == 0) Ctrl->D.emode |= 3;	/* No b|f added */
+				if (opt->arg[j]) Ctrl->D.elength = GMT_to_inch (GMT, &opt->arg[j]);
 				if (c) *c = '+';	/* Put back the + sign */
 				break;
 			case 'F':
@@ -1305,7 +1341,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		}
 	}
 
-	if (Ctrl->E.mode && Ctrl->E.length == 0.0) Ctrl->E.length = Ctrl->D.dim[GMT_Y] * 0.5;
+	if (Ctrl->D.emode && Ctrl->D.elength == 0.0) Ctrl->D.elength = Ctrl->D.dim[GMT_Y] * 0.5;
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
 
@@ -1387,9 +1423,9 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar referece x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 
-	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode,
+	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->D.mmode,
 		GMT->current.map.frame.draw, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
-		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
+		max_intens, Ctrl->S.active, Ctrl->D.emode, Ctrl->D.elength, Ctrl->D.etext, Ctrl->L.spacing,
 		Ctrl->L.interval, Ctrl->M.active, Ctrl->F.active, Ctrl->F.panel);
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 	GMT_plane_perspective (GMT, -1, 0.0);

@@ -37,7 +37,7 @@ gmt grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30 -BWsne -J -O -K -Y4.2i -E200
 	--FONT_ANNOT_PRIMARY=12p >> $ps
 gmt grdcontour mars.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
 gmt psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
-gmt psscale -Cmars.cpt -O -K -D3.5i/-0.15i/6i/0.1ih -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm >> $ps
+gmt psscale -Cmars.cpt -O -K -Dx3.5i/-0.15i+w6i/0.1i+h -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm >> $ps
 echo "0 90 a)" | gmt pstext -R -J -O -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
 # Clean up
 rm -f *.nc mars.cpt

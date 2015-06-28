@@ -29,7 +29,7 @@ echo "0 -30 Honolulu, Hawaii, April 1, 2015" | gmt pstext -R -J -O -K \
 gmt pscoast -R -J -O -K -Dc -A5000 -Gp100/86:FredByellow -Sp100/circuit.ras -B0 -Y-3.25i >> $ps
 echo "0 30 SILLY USES OF" | gmt pstext -R -J -O -K -F+f32p,Helvetica-Bold,lightgreen=thinner >> $ps
 echo "0 -30 COLOR PATTERNS" | gmt pstext -R -J -O -K -F+f32p,Helvetica-Bold,magenta=thinner >> $ps
-gmt psimage -C3.25i/1.625i/CM -W3i GMT_covertext.eps -O -K >> $ps
+gmt psimage -Dx3.25i/1.625i+jCM+w3i GMT_covertext.eps -O -K >> $ps
 
 # Finally repeat 1st plot but exchange the patterns
 

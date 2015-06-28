@@ -13,11 +13,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+h**][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
-[ **-A**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**] ]
+**psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
-[ **-E**\ [**b**\ \|\ **f**][*length*][\ **+n**\ [*text*]] ]
 [ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-G**\ *zlo*\ /\ *zhi* ]
 [ **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
@@ -55,8 +53,8 @@ If a label is requested, it is plotted with :ref:`FONT_LABEL <FONT_LABEL>`.
 Required Arguments
 ------------------
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+h**][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
-    Defines the reference point on the map fpr the color scale using one of four coordinate systems:
+**-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
+    Defines the reference point on the map for the color scale using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
@@ -70,18 +68,23 @@ Required Arguments
     Note: If **Dj** is used then *justify* defaults to the mirror opposite setting used to define *refpoint*.
     Finally, you can offset the color scale by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify*.
-
-Optional Arguments
-------------------
-
-**-A**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]
-    Horizontal scale bars: Place annotations and labels above [below];
+    Add sidebar triangles for **b**\ ack- and/or **f**\ oreground
+    colors  with **+e**. Append **f** or **b** for only one sidebar triangle [Default
+    gives both]. Optionally, append triangle height [Default is half the
+    barwidth].
+    Move text to opposite side with **+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**].
+    Horizontal scale bars: Move annotations and labels above [below];
     the unit remains on the left. 
-    Vertical scale bars: Place annotations and labels on the left [right];
+    Vertical scale bars: Move annotations and labels to the left [right];
     the unit remains below.
     Append one or more of **a**, **l** or **u** to control which of the annotations, label, and
     unit that will be moved to the opposite side. Append **c** if you want to print a
     vertical label as a column of characters (does not work with special characters).
+    Append **+n** to plot a rectangle with the NaN color at
+    the start of the bar, append *text* to change label from NaN.
+
+Optional Arguments
+------------------
 
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
     Set annotation, tick, and gridline interval for the colorbar. The
@@ -107,13 +110,6 @@ Optional Arguments
     when plotting.  To do so, append **+U**\ *unit* to the file name.
     Likewise, if the CPT file uses another unit than meter and you wish
     to plot the CPT versus meters, append **+u**\ *unit*.
-
-**-E**\ [**b**\ \|\ **f**][*length*][\ **+n**\ [*text*]]
-    Add sidebar triangles for **b**\ ack- and/or **f**\ oreground
-    colors. Add **f** or **b** for only one sidebar triangle [Default
-    gives both]. Optionally, append triangle height [Default is half the
-    barwidth]. Finally, you can plot a rectangle with the NaN color at
-    the start of the bar, labeled with *text* [NaN].
 
 **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the scale using
@@ -218,14 +214,14 @@ and show back- and foreground colors, and annotating every 5 units, use
 
    ::
 
-    gmt psscale -Dx6.5i/2i/7.5c/1.25c -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: >> map.ps
+    gmt psscale -Dx6.5i/2i+w7.5c/1.25c+e -O -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm >> map.ps
 
 To overlay a horizontal color scale (4 inches long; 1 cm wide) above a
 Mercator map produced by a previous call, ensuring a 2 cm offset from the map frame, use
 
    ::
 
-    gmt psscale -DjCT/4i/1c/0/2ch -O -Ccolors.cpt -Baf -R -J >> map.ps
+    gmt psscale -DjCT+w4i/1c+o0/2c+hh -O -Ccolors.cpt -Baf -R -J >> map.ps
 
 Notes
 -----

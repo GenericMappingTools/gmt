@@ -34,7 +34,7 @@ gmt gmtset FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
 gmt grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -K -Ckey.cpt -Y1.2i -nn > $ps
 gmt pscoast -R -J -O -K -Wthinnest -Dc -A500 >> $ps
 # Place an explanatory legend below
-gmt pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0/6i/TC -Y-0.2i -F+pthick >> $ps << END
+gmt pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0+w6i+jTC -Y-0.2i -F+pthick >> $ps << END
 N 3
 S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [$land %]
 S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [$ocean %]
