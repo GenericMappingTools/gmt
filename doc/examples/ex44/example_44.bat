@@ -11,7 +11,7 @@ set ps=example_44.ps
 
 REM Bottom map of Australia
 gmt pscoast -R110E/170E/44S/9S -JM6i -P -Baf -BWSne -Wfaint -N2/1p  -EAU+gbisque -Gbrown -Sazure1 -Da -K -Xc --FORMAT_GEO_MAP=dddF > %ps%
-gmt psbasemap -R -J -O -K -DjTR+w1.5i+o0.1i+stmp -F+gwhite+p1p+c0.1c+s >> %ps%
+gmt psbasemap -R -J -O -K -DjTR+w1.5i+o0.15i/0.1i+stmp -F+gwhite+p1p+c0.1c+s >> %ps%
 REM read x0 y0 w h < tmp
 gmt pscoast -Rg -JG120/30S/3.81c -Da -Gbrown -A5000 -Bg -Wfaint -EAU+gbisque -O -K -X11.049c -Y6.05864582401c >> %ps%
 gmt psxy -R -J -O -K -T  -X-11.049c -Y-6.05864582401c >> %ps%
