@@ -283,6 +283,8 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
 					else if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
 						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.refpoint->justify);
+					else
+						Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
@@ -315,7 +317,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 					if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
 						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.refpoint->justify);
 					else
-						Ctrl->D.justify = (Ctrl->D.horizontal) ? 10 : 5;	/* Default justifications for non-Dj settings */
+						Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;	/* Default justifications for non-Dj settings */
 					/* Now deal with optional arguments, if any */
 					switch (n) {
 						case 3: Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
