@@ -4222,7 +4222,7 @@ Here is a list of the attributes that is under your control:
    *unit* is on of the recognized distance units.  An example might be **+w**\ 250n for
    a bar representing 250 nautical miles at the map scale origin.
 
-#. Map scale origin.  Required modifier given with **+c**\ [*slon*\]\ *slat*, where the longitude
+#. Map scale origin.  Required modifier given with **+c**\ [*slon*/]\ *slat*, where the longitude
    of the scale origin is optional for projections with constant scale along parallels.
 
 #. Fancy scale bar.  By default a plain-looking scale bar is plotted.  Upgrade to a fancier bar
