@@ -1053,6 +1053,7 @@ void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   Magnetic compass rose:  Optional add +d<dec>[/<dlabel>], where <dec> is the\n");
 	GMT_message (GMT, "\t     magnetic declination and <dlabel> is an optional label for the magnetic compass needle.\n");
 	GMT_message (GMT, "\t     If +d does not include <dlabel> we default to \"delta = <declination>\".\n");
+	GMT_message (GMT, "\t     Set <dlabel> to \"-\"to disable the delication label.\n");
 	GMT_message (GMT, "\t     Append +p<pen> to draw outline of secondary (outer) circle [no circle].\n");
 	GMT_message (GMT, "\t     Append +i<pen> to draw outline of primary (inner) circle [no circle].\n");
 	GMT_message (GMT, "\t     Append +t<pint>[/<sint>] to override default primary and secondary annotation/tick interval(s) [30/5/1].\n");

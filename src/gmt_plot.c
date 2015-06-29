@@ -2885,6 +2885,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 		unsigned int n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
 		int js;
 		double base, d_base, dx_f, dx_a, bar_height, bar_tick_len;
+		PSL_comment (PSL, "Draw fancy map scale\n");
 		/* Based on magnitue of length, determine reasonable annotation spacings */
 		js = irint (floor (d_log10 (GMT, ms->length / 0.95)));
 		base = pow (10.0, (double)js);
@@ -2978,6 +2979,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	}
 	else {	/* Simple scale has no annotation and just the length and unit centered beneath */
 		double xp[4], yp[4];	/* Line for simple scale */
+		PSL_comment (PSL, "Draw plain map scale\n");
 		if (panel && panel->mode) {	/* Place rectangle behind the map scale */
 			double x_center, y_center, dim[4];
 
@@ -3054,7 +3056,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick, form;
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
-	char label[16];
+	char label[16], *type[2] = {"inner", "outer"};
 	struct GMT_FILL f;
 
 	GMT_xy_to_geo (GMT, &lon, &lat, mr->refpoint->x, mr->refpoint->y);
@@ -3073,14 +3075,18 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 	GMT->current.plot.r_theta_annot = false;	/* Just in case it was turned on in gmt_map.c */
 
 	for (level = 0; level < 2; level++) {	/* Inner (0) and outer (1) angles */
-		if (level == GMT_ROSE_PRIMARY && mr->kind == 1) continue;	/* Sorry, not magnetic directions */
+		if (level == GMT_ROSE_PRIMARY && mr->kind != 2) continue;	/* Sorry, not magnetic directions */
 		if (mr->draw_circle[level]) {
+			GMT_setfill (GMT, NULL, true);
+			PSL_comment (PSL, "Draw magnetic rose %s circle\n", type[level]);
 			GMT_setpen (GMT, &mr->pen[level]);
-			PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &R[level], PSL_CIRCLE);
+			s = 2.0 * R[level];
+			PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		}
 		offset = (level == GMT_ROSE_PRIMARY) ? mr->declination : 0.0;
 		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 		n_tick = GMT_linear_array (GMT, 0.0, 360.0, mr->g_int[level], 0.0, &val);
+		PSL_comment (PSL, "Draw %d tickmarks for magnetic rose %s circle\n", n_tick, type[level]);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of fine tickmarks (-1 to avoid repeating 360) */
 			angle = offset + val[i];
 			k = (GMT_IS_ZERO (fmod (val[i], mr->a_int[level]))) ? 2 : ((GMT_IS_ZERO (fmod (val[i], mr->f_int[level]))) ? 1 : 0);
@@ -3093,6 +3099,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 
 		form = GMT_setfont (GMT, &GMT->current.setting.font_annot[level]);
 		n_tick = GMT_linear_array (GMT, 0.0, 360.0, mr->a_int[level], 0.0, &val);
+		PSL_comment (PSL, "Draw %d tickmarks and annotations for magnetic rose %s circle\n", n_tick, type[level]);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of annotations (-1 to avoid repeating 360) */
 			angle = 90.0 - (offset + val[i]);	/* Since val is azimuth */
 			sincosd (ew_angle + angle, &s, &c);
@@ -3118,6 +3125,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 	/* Draw extra tick for the 4 main compass directions */
 	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 	base = R[GMT_ROSE_SECONDARY] + GMT->current.setting.map_annot_offset[GMT_ROSE_SECONDARY] + GMT->current.setting.font_annot[GMT_ROSE_SECONDARY].size / PSL_POINTS_PER_INCH;
+	PSL_comment (PSL, "Draw 4 tickmarks and annotations for cardinal directions of magnetic rose\n", n_tick);
 	for (i = 0, k = 1; i < 360; i += 90, k++) {	/* 90-degree increments of tickmarks */
 		angle = (double)i;
 		sincosd (ew_angle + angle, &s, &c);
@@ -3129,7 +3137,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		x[0] = mr->refpoint->x + base * c, y[0] = mr->refpoint->y + base * s;
 		x[1] = mr->refpoint->x + (base + 2.0 * tlen[2]) * c, y[1] = mr->refpoint->y + (base + 2.0 * tlen[2]) * s;
 		PSL_plotsegment (PSL, x[0], y[0], x[1], y[1]);
-		if (k == 2 && mr->label[2][0] == '*') {
+		if (k == 2 && mr->label[2][0] == '*') {	/* Wanted '*' instead of N */
 			x[0] = mr->refpoint->x + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset + 0.025*mr->size) * c, y[0] = mr->refpoint->y + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset + 0.025*mr->size) * s;
 			gmt_Nstar (GMT, PSL, x[0], y[0], 0.1*mr->size);
 		}
@@ -3144,6 +3152,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 	GMT_memset (dim, PSL_MAX_DIMS, double);
 	if (mr->kind == 2) {	/* Compass needle and label */
 		char tmpstring[GMT_LEN64] = {""};
+		PSL_comment (PSL, "Draw magnetic rose declination arrow and optional label\n");
 		sincosd (ew_angle + (90.0 - mr->declination), &s, &c);
 		L = R[GMT_ROSE_PRIMARY] - 2.0 * tlen[2];
 		x[0] = mr->refpoint->x - L * c, y[0] = mr->refpoint->y - L * s;
@@ -3157,12 +3166,14 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
 		sincosd (t_angle, &s, &c);
 		x[0] = mr->refpoint->x - 2.0 * M_VW * mr->size * s, y[0] = mr->refpoint->y + 2.0 * M_VW * mr->size * c;
-		if (!strcmp(mr->dlabel, "-")) {
-			GMT_get_annot_label (GMT, mr->declination, tmpstring, true, false, true, 0, GMT->current.map.is_world);
-			sprintf (mr->dlabel, "@~d@~ = %s", tmpstring);
+		if (strcmp (mr->dlabel, "-")) {	/* Want declination labeling unless when giving "-" */
+			if (mr->dlabel[0] == 0) {	/* Want default label */
+				GMT_get_annot_label (GMT, mr->declination, tmpstring, true, false, true, 0, GMT->current.map.is_world);
+				sprintf (mr->dlabel, "@~d@~ = %s", tmpstring);
+			}
+			form = GMT_setfont (GMT, &GMT->current.setting.font_label);
+			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_label.size, mr->dlabel, t_angle, PSL_BC, form);
 		}
-		form = GMT_setfont (GMT, &GMT->current.setting.font_label);
-		PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_label.size, mr->dlabel, t_angle, PSL_BC, form);
 	}
 	else {			/* Just geographic directions and a centered arrow */
 		L = mr->size - 4.0*tlen[2];
@@ -3207,6 +3218,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 
 	if (mr->type == GMT_ROSE_DIR_FANCY) {	/* Fancy scale */
+		PSL_comment (PSL, "Draw fancy directional rose of level %d\n", mr->kind);
 		mr->size *= 0.5;	/* Got diameter, use radius for calculations */
 		L[0] = mr->size;
 		L[1] = ROSE_LENGTH_SCL1 * mr->size;
@@ -3245,6 +3257,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		for (i = 0; i < 4; i++) PSL_plottext (PSL, xp[i], yp[i], GMT->current.setting.font_title.size, mr->label[i], angle, just[i], form);
 	}
 	else {			/* Plain North arrow w/circle */
+		PSL_comment (PSL, "Draw plain directional rose\n");
 		sincosd (angle, &s, &c);
 		GMT_memset (x, PSL_MAX_DIMS, double);
 		x[0] = x[1] = x[4] = 0.0, x[2] = -0.25 * mr->size, x[3] = -x[2];
@@ -3260,8 +3273,10 @@ void gmt_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		GMT_setfill (GMT, &f, true);
 		PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
-		form = GMT_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, xp[4], yp[4], GMT->current.setting.font_title.size, mr->label[2], angle, 2, form);
+		if (mr->label[2][0]) {	/* Wanted the north label */
+			form = GMT_setfont (GMT, &GMT->current.setting.font_title);
+			PSL_plottext (PSL, xp[4], yp[4], GMT->current.setting.font_title.size, mr->label[2], angle, 2, form);
+		}
 	}
 }
 
