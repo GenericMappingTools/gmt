@@ -54,7 +54,7 @@ REM reduce annotation font size for legend
 gmt gmtset FONT_ANNOT_PRIMARY 8p
 
 REM plot legend
-gmt pslegend -R -J -Dx7.9c/12.6c/8.0c/3.4c/BL -C0.3c/0.4c -L1.2 -F+p+gwhite -O legend.txt >> %ps%
+gmt pslegend -R -J -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite -O legend.txt >> %ps%
 
 REM make a PostScript and a PDF file with outlined fonts
 REM unfortunately gmt psconvert won't be able to crop that file correctly anymore

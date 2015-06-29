@@ -26,7 +26,7 @@ gmt grdimage HI_geoid4.nc -Ig_intens.nc -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid
 gmt pscoast -R -J -p -B2 -BNEsw -Gblack -O -K >> $ps
 gmt psbasemap -R -J -p -O -K -Td209/19.5+w1i+l --COLOR_BACKGROUND=red --FONT=red \
 	--MAP_TICK_PEN_PRIMARY=thinner,red >> $ps
-gmt psscale -R -J -p240/30 -Dx3.375i/-0.5i+w5i/0.3i+h -Cgeoid.cpt -I -O -K -Bx2+l"Geoid (m)" >> $ps
+gmt psscale -R -J -p240/30 -DjBC+o0/0.5i+w5i/0.3i+h -Cgeoid.cpt -I -O -K -Bx2+l"Geoid (m)" >> $ps
 gmt grdview HI_topo4.nc -It_intens.nc -R195/210/18/25/-6/4 -J -JZ3.4i -p60/30 -Ctopo.cpt \
 	-O -K -N-6+glightgray -Qc100 -B2 -Bz2+l"Topo (km)" -BneswZ -Y2.2i >> $ps
 echo '3.25 5.75 H@#awaiian@# R@#idge@#' | gmt pstext -R0/10/0/10 -Jx1i \

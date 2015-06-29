@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Make DVD-res movie of NY to Miami flight
-# GMT progs:    gmt gmtset, gmt gmtmath, gmt psbasemap, gmt pstext, gmt psxy, gmt psconvert
+# GMT progs:    gmt gmtset, gmt gmtmath, gmt pstext, gmt psxy, gmt psconvert
 # Unix progs:   awk, mkdir, rm, mv, echo, qt_export, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #

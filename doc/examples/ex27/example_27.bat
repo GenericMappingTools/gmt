@@ -29,10 +29,9 @@ REM and use Mercator gmt projection with same scale as above on a spherical Eart
 
 gmt pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere -Cwhite -Dh+ --FORMAT_GEO_MAP=dddF >> %ps%
 
-REM Put a color legend on top of the land mask justified with 147E,31S
+REM Put a color legend in top-left corner of the land mask
 
-echo 147E 31S 1i 2.5i | gmt psxy -R -J -O -K -Sr -D0.25i/0.05i -Gwhite -W1p --PROJ_ELLIPSOID=Sphere >> %ps%
-gmt psscale -D0.5i/6.3i/2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O >> %ps%
+gmt psscale -DjTL+o1c+w2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal  -F+gwhite+p1p -I -O >> %ps%
 
 REM Clean up
 

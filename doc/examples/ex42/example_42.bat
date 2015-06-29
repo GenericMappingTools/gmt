@@ -2,7 +2,7 @@ REM             GMT EXAMPLE 42
 REM             $Id$
 REM
 REM Purpose:      Illustrate Antarctica and stereographic projection
-REM GMT progs:    makecpt, grdimage, pscoast, psbasemap, pslegend, psscale, pstext, psxy [grdreformat]
+REM GMT progs:    makecpt, grdimage, pscoast, pslegend, psscale, pstext, psxy [grdreformat]
 REM DOS calls:	  [curl]
 REM
 
@@ -19,7 +19,7 @@ gmt makecpt -Cbathy -T-7000/0/200 -N -Z > t.cpt
 gmt makecpt -Cdem4 -T0/4000/200 -N -Z >> t.cpt
 gmt grdimage -Ct.cpt BEDMAP_elevation.nc -Jx1:60000000 -Q -P -K > %ps%
 gmt pscoast -R-180/180/-90/-60 -Js0/-90/-71/1:60000000 -Bafg -Di -W0.25p -O -K >> %ps%
-gmt psscale -Ct.cpt -DjRM/2.5i/0.2i/0.5i/0 -R -J -O -K -F+p+i -Bxa1000+lELEVATION -Ac -By+lm >> %ps%
+gmt psscale -Ct.cpt -DjRM+w2.5i/0.2i+o0.5i/0+mc -R -J -O -K -F+p+i -Bxa1000+lELEVATION -By+lm >> %ps%
 REM GSHHG
 gmt pscoast -R -J -Di -Glightblue -Sroyalblue2 -O -K -X2i -Y4.75i >> %ps%
 gmt pscoast -R -J -Di -Glightbrown -O -K -A+ag -Bafg >> %ps%
@@ -28,7 +28,7 @@ echo D 0.1i 1p >> legend.txt
 echo S 0.15i s 0.2i blue  0.25p 0.3i Ocean >> legend.txt
 echo S 0.15i s 0.2i lightblue  0.25p 0.3i Ice front >> legend.txt
 echo S 0.15i s 0.2i lightbrown  0.25p 0.3i Grounding line >> legend.txt
-gmt pslegend -DjLM/1.7i/RM/0.5i/0 -R -J -O -K -F+p+i legend.txt >> %ps%
+gmt pslegend -DjLM+w1.7i+jRM+o0.5i/0 -R -J -O -K -F+p+i legend.txt >> %ps%
 REM Fancy line
 echo 0 5.55 > line
 echo 2.5 5.55 >> line

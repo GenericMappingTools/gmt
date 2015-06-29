@@ -31,11 +31,9 @@ R=`gmt grdinfo tasman_grav.nc | grep Remark | $AWK '{print $NF}'`
 gmt pscoast $R -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
 	-Cwhite -Dh+ --FORMAT_GEO_MAP=dddF >> $ps
 
-# Put a color legend on top of the land mask justified with 147E,31S
+# Put a color legend in top-left corner of the land mask
 
-pos=`echo 147E 31S | gmt mapproject -R -J -Di --PROJ_ELLIPSOID=Sphere | \
-	$AWK '{printf "%si/%si\n", $1, $2}'`
-gmt psscale -Dx${pos}+w2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -F+gwhite+p1p >> $ps
+gmt psscale -DjTL+o1c+w2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -F+gwhite+p1p >> $ps
 
 # Clean up
 

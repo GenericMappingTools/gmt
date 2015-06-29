@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate Antarctica and stereographic projection
-# GMT progs:    makecpt, grdimage, pscoast, psbasemap, pslegend, psscale, pstext, psxy
+# GMT progs:    makecpt, grdimage, pscoast, pslegend, psscale, pstext, psxy
 # Unix progs:   [curl grdreformat]
 #
 ps=example_42.ps

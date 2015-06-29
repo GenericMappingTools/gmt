@@ -30,7 +30,7 @@ gmt pscoast -R -J -O -K -Q -B10f5 -B+t"Clipping of Images" >> $ps
 
 # Put a color legend on top of the land mask
 
-gmt psscale -Dx4i/7.6i+w4i/0.2i+h -Cgeoid.cpt -Bx5f1 -By+lm -I -O -K >> $ps
+gmt psscale -DjTR+o0.2+w4i/0.2i+h -Cgeoid.cpt -Bx5f1 -By+lm -I -O -K >> $ps
 
 # Add a text paragraph
 

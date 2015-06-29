@@ -1,4 +1,4 @@
-# Legend test for gmt pslegend
+# Legend commands for example 41
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
 #
 #G 0.04i

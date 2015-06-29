@@ -22,5 +22,5 @@ $AWK '{print $1, $2, $3+$4+$5+$6, $3+$4+$5}' languages.txt \
 	| gmt psxyz -R -J -JZ -So0.3ib -Gyellow -Wthinner -O -K -p >> $ps
 $AWK '{print $1, $2, $3+$4+$5+$6+$7, $3+$4+$5+$6}' languages.txt \
 	| gmt psxyz -R -J -JZ -So0.3ib -Gred -Wthinner -O -K -p >> $ps
-gmt pslegend -R -J -JZ -Dg-170/-80+w1.35i/0+jBL -O --FONT=Helvetica-Bold \
+gmt pslegend -R -J -JZ -DjLB+o0.2i+w1.35i/0+jBL -O --FONT=Helvetica-Bold \
 	-F+glightgrey+pthinner+s-4p/-6p/grey20@40 -p legend.txt >> $ps

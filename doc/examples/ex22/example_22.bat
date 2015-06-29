@@ -88,7 +88,7 @@ echo L 12 6 LB %me% >> neis.legend
 REM OK, now we can actually run gmt pslegend.  We center the legend below the map.
 REM Trial and error shows that 1.7i is a good legend height:
 
-gmt pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F+p+glightyellow neis.legend >> %ps%
+gmt pslegend -DjCB+o0/-0.4i+w7i+jTC -R -J -O -F+p+glightyellow neis.legend >> %ps%
 
 REM Clean up after ourselves:
 

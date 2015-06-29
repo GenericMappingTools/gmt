@@ -75,8 +75,8 @@ $AWK 'BEGIN {FS=","; f="L 8 LinBiolinumO L"}
 gmt gmtset FONT_ANNOT_PRIMARY 8p
 
 # plot legend
-gmt pslegend -R -J -Dx7.9c/12.6c+w8.0c+jBL \
--C0.3c/0.4c -L1.2 -F+p+gwhite -O legend.txt >> $ps
+gmt pslegend -R -J -DjTR+o0.1c+w8.0c+l1.2 \
+-C0.3c/0.4c -F+p+gwhite -O legend.txt >> $ps
 
 # make a PostScript and a PDF file with outlined fonts
 # unfortunately gmt psconvert won't be able to crop that file correctly anymore
