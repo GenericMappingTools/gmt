@@ -3074,6 +3074,10 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 
 	for (level = 0; level < 2; level++) {	/* Inner (0) and outer (1) angles */
 		if (level == GMT_ROSE_PRIMARY && mr->kind == 1) continue;	/* Sorry, not magnetic directions */
+		if (mr->draw_circle[level]) {
+			GMT_setpen (GMT, &mr->pen[level]);
+			PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &R[level], PSL_CIRCLE);
+		}
 		offset = (level == GMT_ROSE_PRIMARY) ? mr->declination : 0.0;
 		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 		n_tick = GMT_linear_array (GMT, 0.0, 360.0, mr->g_int[level], 0.0, &val);

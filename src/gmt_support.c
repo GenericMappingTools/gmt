@@ -8228,7 +8228,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	int n;
 	char txt_a[GMT_LEN256] = {""}, string[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
 
-	/* SYNTAX is -T[g|j|n|x]<refpoint>+w<width>[+f[<kind>]][+i<ints>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]]
+	/* SYNTAX is -T[g|j|n|x]<refpoint>+w<width>[+f[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
 	 * 1)  +f: fancy direction rose, <kind> = 1,2,3 which is the level of directions [1].
 	 * 2)  +m: magnetic rose.  Optionally, append <dec>[/<dlabel>], where <dec> is magnetic declination and dlabel its label [no declination info].
 	 * If -?m, optionally set annotation interval with +
@@ -8290,12 +8290,12 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			error++;
 		}
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'i', string)) {	/* Set intervals */
+	if (GMT_get_modifier (ms->refpoint->args, 't', string)) {	/* Set intervals */
 		n = sscanf (string, "%lf/%lf/%lf/%lf/%lf/%lf",
 			&ms->a_int[GMT_ROSE_SECONDARY], &ms->f_int[GMT_ROSE_SECONDARY], &ms->g_int[GMT_ROSE_SECONDARY],
 			&ms->a_int[GMT_ROSE_PRIMARY], &ms->f_int[GMT_ROSE_PRIMARY], &ms->g_int[GMT_ROSE_PRIMARY]);
-		if (!(k == 3 || k == 6)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Modifier +i<intervals> expects 3 or 6 intervals\n", option);
+		if (!(n == 3 || n == 6)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Modifier +t<intervals> expects 3 or 6 intervals\n", option);
 			error++;
 		}
 	}
@@ -8307,6 +8307,14 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		ms->justify = PSL_MC;
 	if (GMT_get_modifier (ms->refpoint->args, 'o', string))
 		if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
+	if (GMT_get_modifier (ms->refpoint->args, 'i', string)) {
+		if (string[0] && GMT_getpen (GMT, string, &ms->pen[GMT_ROSE_PRIMARY])) error++;
+		ms->draw_circle[GMT_ROSE_PRIMARY] = true;
+	}
+	if (GMT_get_modifier (ms->refpoint->args, 'p', string)) {
+		if (string[0] && GMT_getpen (GMT, string, &ms->pen[GMT_ROSE_SECONDARY])) error++;
+		ms->draw_circle[GMT_ROSE_SECONDARY] = true;
+	}
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Set labels +lw,e,s,n*/
 		ms->do_label = true;
 		if (string[0] == 0) {	/* Want default labels */

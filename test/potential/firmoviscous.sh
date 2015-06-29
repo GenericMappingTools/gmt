@@ -26,7 +26,7 @@ done < times.txt
 gmt math -T-200/200/1 0 = t.txt
 gmt grdtrack t.txt -G+lflist > a.txt
 # Plot flexure(t)
-gmt psbasemap -R-200/200/-2000/100 -JX6.5i/2.75i -Bafg10000 -BWSne -P -K --PS_MEDIA=letter > $ps
+gmt psbasemap -R-200/200/-2000/100 -JX6.5i/2.75i -Bafg10000 -BWSne -P -K > $ps
 let col=2
 while read t color; do
 	let c=2*col

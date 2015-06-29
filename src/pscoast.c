@@ -167,6 +167,7 @@ void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deall
 	GMT_DCW_free (GMT, &(C->E.info));
 	if (C->L.scale.refpoint) GMT_free (GMT, C->L.scale.refpoint);
 	if (C->L.scale.panel) GMT_free (GMT, C->L.scale.panel);
+	if (C->T.rose.refpoint) GMT_free (GMT, C->T.rose.refpoint);
 	if (C->T.rose.panel)  GMT_free (GMT, C->T.rose.panel);
 	GMT_free (GMT, C);
 }

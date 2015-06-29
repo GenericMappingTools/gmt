@@ -1047,13 +1047,15 @@ void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   Several modifiers are optional:\n");
 	GMT_message (GMT, "\t   Add labels with +l, which places the letters W, E, S, N at the cardinal points.\n");
 	GMT_message (GMT, "\t     Optionally, append comma-separated west, east, south, north labels instead.\n");
-	GMT_message (GMT, "\t   Append +i<pint>[/<sint>] to override default primary and secondary annotation/tick interval(s) [30/5/1].\n");
 	GMT_message (GMT, "\t   Directional rose: Add +f to draws a \"fancy\" rose [Default is plain].\n");
 	GMT_message (GMT, "\t     Optionally, add <level> of fancy rose: 1 draws E-W, N-S directions [Default],\n");
 	GMT_message (GMT, "\t     2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW directions.\n");
 	GMT_message (GMT, "\t   Magnetic compass rose:  Optional add +d<dec>[/<dlabel>], where <dec> is the\n");
 	GMT_message (GMT, "\t     magnetic declination and <dlabel> is an optional label for the magnetic compass needle.\n");
 	GMT_message (GMT, "\t     If +d does not include <dlabel> we default to \"delta = <declination>\".\n");
+	GMT_message (GMT, "\t     Append +p<pen> to draw outline of secondary (outer) circle [no circle].\n");
+	GMT_message (GMT, "\t     Append +i<pen> to draw outline of primary (inner) circle [no circle].\n");
+	GMT_message (GMT, "\t     Append +t<pint>[/<sint>] to override default primary and secondary annotation/tick interval(s) [30/5/1].\n");
 	GMT_message (GMT, "\t   If the North label = \'*\' then a north star is plotted instead of the label.\n");
 }
 
