@@ -74,16 +74,14 @@ Optional Arguments
     Finally, you can offset the image by *dx*/*dy* away from the *refpoint* point in the
     direction implied by *justify* [LB]. Specify image size in one of two ways:
     Use **+e**\ *dpi* to set the dpi of the image in dots per inch, or use
-   **+w**\ [**-**]\ *width*\ [/*height*] to
+    **+w**\ [**-**]\ *width*\ [/*height*] to
     set the width (and height) of the image in plot coordinates
     (inches, cm, etc.). If *height* is not given, the original aspect
     ratio of the image is maintained. If *width* is negative we use the
     absolute value and interpolate image to the device resolution using
-    the PostScript image operator.
-    Optionally, use **+n**\ *nx*\ [/*ny*] to
+    the PostScript image operator. Optionally, use **+n**\ *nx*\ [/*ny*] to
     replicate the image *nx* times horizontally and *ny* times
-    vertically. If *ny* is omitted, it will be identical to *nx*
-    [Default is 1/1].
+    vertically. If *ny* is omitted, it will be identical to *nx* [Default is 1/1].
 
 **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the image using
