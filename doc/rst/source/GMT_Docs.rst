@@ -316,6 +316,10 @@ A few changes have affects across GMT; these are:
 
 *  Faster netCDF reading for COARDS table data (i.e., not grids).
 
+*  When importing grids via GDAL the projection info is preserved and stored as netCDF metadata.
+   This will allow third party programs like GDAL and QGis to recognize the projection info of
+   GMT created grids. Same thing happens when creating grids with :doc:`grdproject`
+
 *  Tools using GSHHG can now access information for both Antarctica data
    set (ice-front and grounding line).
 
@@ -341,12 +345,16 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`grdedit` enhances the **-E** option to allow for 90-degree rotations
    or flips of grid, as well as a new **-G** to enable writing of the result
-   to a new output file [Default updates the existing file].
+   to a new output file [Default updates the existing file]. **-J** option
+   saves the georeferencing info as metadata in netCDF grids.
 
 *  :doc:`grdfilter` now includes histogram mode filtering to complement mode
    (LMS) filtering.
 
 *  :doc:`grdgradient` adds **-Da** to compute the aspect (down-slope) direction [up-slope].
+
+*  :doc:`grdinfo` plots the projection info of netCDF grids when that is stored in
+    grid's metadata in WKT format.
 
 *  :doc:`grdmath` adds several new operators, such as **ARC** and **WRAP** for
    angular operators, **LDISTG** (for distances to GSHHG), **CDIST2** and **SDIST2**
