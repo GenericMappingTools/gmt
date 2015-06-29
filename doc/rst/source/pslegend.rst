@@ -79,7 +79,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     override this radius by appending another value. Finally, append
     **+s** to draw an offset background shaded region. Here, *dx*/*dy*
     indicates the shift relative to the foreground frame
-    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading.
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_

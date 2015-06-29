@@ -8382,7 +8382,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	P = GMT_memory (GMT, NULL, 1, struct GMT_MAP_PANEL);
 	P->radius = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_RADIUS;	/* 6 pt */
 	GMT_init_fill (GMT, &P->fill, -1.0, -1.0, -1.0);			/* Default is no fill unless specified */
-	GMT_init_fill (GMT, &P->sfill, 0.5, 0.5, 0.5);			/* Default if gray shade is used */
+	GMT_init_fill (GMT, &P->sfill, 127.0/255.0, 127.0/255.0, 127.0/255.0);			/* Default if gray shade is used */
 	P->pen1 = GMT->current.setting.map_frame_pen;			/* Heavier pen for main outline */
 	P->pen2 = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
 	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;	/* Default is 2p */

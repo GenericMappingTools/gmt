@@ -223,7 +223,7 @@ New modules
 There are two new modules in the core system:
 
 :doc:`gmtlogo` is modeled after the shell script with the same
-name but is now a regular C module that can be used to add the 
+name but is now a regular C module that can be used to add the
 GMT logo to maps and posters.
 
 :doc:`gmtregress` determines linear regressions for data sets using
@@ -374,7 +374,7 @@ changes to syntax will be backwards compatible:
    front for Antarctica coastline [Default].  As above, the **-L** option for map scale
    has been revised (backwards compatible) and a new uniform **-F** option to specify
    background panel and its many settings was added.
-   
+
 
 *  :doc:`psconvert` (apart from the name change) has several new features, such as
    reporting dimensions of the plot when **-A** and **-V** are used,
@@ -4155,7 +4155,7 @@ Any of the reference point mechanism can accept two additional adjustments:
 
 #. Shifting the reference point.  For any of the reference point specifications, in particular
    the justification code method, it is likely that you will wish to offset the reference point away from
-   your selection by some arbitrary amount.  Do so with  **+o**\ *dx*\ [*dy*], where *dy* = *dx* if it is
+   your selection by some arbitrary amount.  Do so with  **+o**\ *dx*\ [/*dy*], where *dy* = *dx* if it is
    not provided.  These increments are added to the projected plot coordinates of the reference point, with
    positive values moving the reference point towards the anchor.
 
@@ -4176,7 +4176,7 @@ the attributes that is under your control:
    [Default is no outline].
 
 #. Rounded versus straight rectangle.  By specifying a corner radius with **+r**\ *radius*
-   you can round the corners [No rounding].
+   you can round the corners [Default is no rounding].
 
 #. Inner frame.  A secondary, inner frame outline may be added as well with the modifier
    **+i**\ [[*gap*/]\ *pen*].  The default pen is a solid, 0.25p black pen, with a default
@@ -4190,8 +4190,8 @@ the attributes that is under your control:
    a 1 cm clearance in x and 5 points in y, use **+c**\ 1c/5p.
 
 #. Drop-down shadow.  Append **+s** to simulate a gray shadow cast toward the southeast.
-   You may append [*dx*/*dy>*]\ *fill* to change the shade color and the offset of the
-   shade [4p/-4p].
+   You may append [*dx*/*dy*/][*shade*] to change the shade color and the offset of the
+   shade [Default is 4p/-4p/gray50].
 
 .. figure:: /_images/GMT_panel.*
    :width: 400 px
@@ -4426,7 +4426,7 @@ What you put in this panel is up to you (and we will show some examples).  Howev
 the other map features there are two ways to specify the placement of the map insert.
 The first is the standard way of specifying a reference point and the insert dimensions,
 while the second specifies a *subregion* in the current plot that should be designated the
-map insert area.  Depending on the map projection this may or may not be a rectangular area. 
+map insert area.  Depending on the map projection this may or may not be a rectangular area.
 Map inserts are produced by the module :doc:`psbasemap` via the **-D** option. Unless you
 use the reference point approach you must first append [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**],
 where the optional leading unit indicate that the four coordinates to follow are projected
