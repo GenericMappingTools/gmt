@@ -52,6 +52,10 @@ enum GMT_enum_grdlayout {	/* Needed by some modules */
 	GMT_GRID_IS_SERIAL = 0,		/* Grid is RRRRRR...[IIIIII...] */
 	GMT_GRID_IS_INTERLEAVED = 1};	/* Grid is RIRIRIRI... - required layout for FFT */
 
+enum GMT_enum_grid_nans {	/* Flags to tell if a grid has NaNs */
+	GMT_GRID_NOT_CHECKED = 0,
+	GMT_GRID_NO_NANS = 1,
+	GMT_GRID_HAS_NANS = 2};
 /*
  * GMT's internal representation of grids is north-up, i.e., the index of the
  * least dimension (aka y or lat) increases to the south. NetCDF files are

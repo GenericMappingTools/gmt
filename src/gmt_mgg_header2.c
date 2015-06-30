@@ -301,6 +301,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
@@ -330,7 +331,10 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			else {
 				return (GMT_GRDIO_UNKNOWN_TYPE);
 			}
-			if (GMT_is_fnan (grid[kk])) continue;
+			if (GMT_is_fnan (grid[kk])) {
+				header->has_NaNs = GMT_GRID_HAS_NANS;
+				continue;
+			}
 			/* Update z_min, z_max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);

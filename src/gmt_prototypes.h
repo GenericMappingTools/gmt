@@ -111,6 +111,7 @@ EXTERN_MSC void GMT_setmode (struct GMT_CTRL *GMT, int direction);
 
 /* gmt_bcr.c: */
 EXTERN_MSC double GMT_get_bcr_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, double yy);		/* Compute z(x,y) from bcr structure and grid */
+EXTERN_MSC double GMT_get_bcr_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, double yy);		/* Same but without region and nan checks */
 EXTERN_MSC int GMT_get_bcr_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z);		/* Compute z(x,y) from bcr structure and image */
 
 /* gmt_customio.c: */

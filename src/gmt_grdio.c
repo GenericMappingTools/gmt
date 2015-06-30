@@ -1912,6 +1912,7 @@ int GMT_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	}
 	GMT_BC_init (GMT, Grid->header);	/* Initialize grid interpolation and boundary condition parameters */
 	GMT_grd_BC_set (GMT, Grid, GMT_IN);	/* Set boundary conditions */
+	Grid->header->has_NaNs = GMT_GRID_NO_NANS;	/* No nans in img grids */
 	return (GMT_NOERROR);
 }
 

@@ -1337,18 +1337,22 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	header->z_min = DBL_MAX;
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (row = 0; row < height; ++row) {
 		float *p_data = pgrid + row * (header->stride ? header->stride : width);
 		unsigned col;
 		for (col = 0; col < width; col ++) {
 			if (adj_nan_value && p_data[col] == header->nan_value) {
 				p_data[col] = (float)NAN;
+				header->has_NaNs = GMT_GRID_HAS_NANS;
 				continue;
 			}
 			else if (!isnan (p_data[col])) {
 				header->z_min = MIN (header->z_min, p_data[col]);
 				header->z_max = MAX (header->z_max, p_data[col]);
 			}
+			else
+				header->has_NaNs = GMT_GRID_HAS_NANS;
 		}
 	}
 	/* check limits */

@@ -333,6 +333,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* Cannot have nans in a raster */
 
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		ij = imag_offset + (j2 + pad[3]) * width_out + pad[XLO];
@@ -645,6 +646,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
@@ -656,7 +658,10 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			grid[kk] = (float) ival;
 			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
-			if (GMT_is_fnan (grid[kk])) continue;
+			if (GMT_is_fnan (grid[kk])) {
+				header->has_NaNs = GMT_GRID_HAS_NANS;
+				continue;
+			}
 			/* Update z min/max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -887,6 +892,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread (tmp, size, n_expected, fp) < n_expected)
 			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
@@ -895,7 +901,10 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
 			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
-			if (GMT_is_fnan (grid[kk])) continue;
+			if (GMT_is_fnan (grid[kk])) {
+				header->has_NaNs = GMT_GRID_HAS_NANS;
+				continue;
+			}
 			/* Update z_min, z_max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -1369,14 +1378,20 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		if (first_row && fseek (fp, (off_t) (first_row * n_expected * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
+	header->z_min = DBL_MAX;
+	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+
 	for (j = first_row, j2 = height_in-1; j <= last_row; j++, j2--) {
 		if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
 			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
-			if (grid[kk] >= header->nan_value)
+			if (grid[kk] >= header->nan_value) {
+				header->has_NaNs = GMT_GRID_HAS_NANS;
 				grid[kk] = GMT->session.f_NaN;
+			}
 			else {	/* Update z_min, z_max */
 				header->z_min = MIN (header->z_min, (double)grid[kk]);
 				header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -1736,6 +1751,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		}
 	}
 
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	if (from_gdalread->nodata && !GMT_is_dnan (from_gdalread->nodata)) {	/* Data has a nodata value */
 		/* Since all originally integer types were actually converted to float above, we can use
 		   the same test to search for nodata values other than NaN. Note that gmt_galread sets
@@ -1745,8 +1761,10 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		grid += (header->pad[YHI] * header->mx + header->pad[XLO]);	/* Position pointer at start of first row taking pad into acount */
 		for (row = 0; row < header->ny; row++) {
 			for (col = 0; col < header->nx; col++, grid++) {
-				if (*grid == (float)from_gdalread->nodata)
+				if (*grid == (float)from_gdalread->nodata) {
 					*grid = GMT->session.f_NaN;
+					header->has_NaNs = GMT_GRID_HAS_NANS;
+				}
 			}
 			grid += (header->pad[XLO] + header->pad[XHI]);	/* Advance the pad number of columns */
 		}

@@ -331,6 +331,7 @@ struct GMT_GRID_HEADER {
 	char  *pocket;                   /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 	char   mem_layout[4];            /* GDAL: Four char codes T|B R|C L|R P|L|S to describe array layout in mem and interleaving */
 	double bcr_threshold;            /* sum of cardinals must >= threshold in bilinear; else NaN */
+	unsigned int has_NaNs;		 /* Is 2 if the grid contains any NaNs, 1 if it does not, and 0 if no check has yet happened */
 	unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
 	unsigned int bcr_n;              /* Width of the interpolation function */
 	unsigned int nxp;                /* if X periodic, nxp > 0 is the period in pixels  */

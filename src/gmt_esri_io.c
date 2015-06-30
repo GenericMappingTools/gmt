@@ -486,6 +486,8 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	else
 		tmp16 = GMT_memory (GMT, NULL, n_expected, int16_t);
 
+	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	if (is_binary) {
 		int ny = header->ny;
 		if (last_row - first_row + 1 != ny)		/* We have a sub-region */
@@ -519,8 +521,10 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 					}
 					grid[kk] = tmp16[actual_col[col]];
 				}
-				if (grid[kk] == header->nan_value) 
+				if (grid[kk] == header->nan_value) {
+					header->has_NaNs = GMT_GRID_HAS_NANS;
 					grid[kk] = GMT->session.f_NaN;
+				}
 				else {		 /* Update z_min, z_max */
 					header->z_min = MIN (header->z_min, (double)grid[kk]);
 					header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -540,7 +544,6 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		check = !isnan (header->nan_value);
 		in_nx = header->nx;
 		header->nx = width_in;	/* Needed to be set here due to GMT_IJP below */
-		header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 		while (fscanf (fp, "%f", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
 			tmp[col] = value;	/* Build up a single input row */
 			col++;
@@ -550,7 +553,10 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 					for (ii = 0; ii < width_in; ii++) {
 						kk = ij + ii;
 						grid[kk] = (check && tmp[actual_col[ii]] == header->nan_value) ? GMT->session.f_NaN : tmp[actual_col[ii]];
-						if (GMT_is_fnan (grid[kk])) continue;
+						if (GMT_is_fnan (grid[kk])) {
+							header->has_NaNs = GMT_GRID_HAS_NANS;
+							continue;
+						}
 						/* Update z_min, z_max */
 						header->z_min = MIN (header->z_min, (double)grid[kk]);
 						header->z_max = MAX (header->z_max, (double)grid[kk]);

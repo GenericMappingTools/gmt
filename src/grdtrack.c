@@ -575,7 +575,7 @@ int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned i
 		if (x > GC[g].G->header->wesn[XHI]) continue;
 
 		n_in++;	/* This point is inside the current grid's domain */
-		value[g] = GMT_get_bcr_z (GMT, GC[g].G, x, y);
+		value[g] = (GC[g].G->header->has_NaNs == GMT_GRID_NO_NANS) ? GMT_get_bcr_z_fast (GMT, GC[g].G, x, y) : GMT_get_bcr_z (GMT, GC[g].G, x, y);
 
 		if (!GMT_is_dnan (value[g])) n_set++;	/* Count value results */
 	}
