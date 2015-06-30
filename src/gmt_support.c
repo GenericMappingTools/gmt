@@ -7739,11 +7739,11 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		if (B->refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set justification to the reference point */
 			B->justify = B->refpoint->justify;
 		else
-			B->justify = PSL_MC;	/* Default justification for non-Dj settings */
+			B->justify = PSL_BL;	/* Default justification for non-Dj settings */
 		while ((GMT_strtok (B->refpoint->args, "+", &pos, p))) {	/* Process modifiers */
 			switch (p[0]) {
 				case 'j':	/* Got justification of item w.r.t. reference point */
-					B->justify = GMT_just_decode (GMT, &p[1], PSL_MC);
+					B->justify = GMT_just_decode (GMT, &p[1], PSL_BL);
 					break;
 				case 'o':	/* Got offsets from reference point */
 					if (GMT_get_pair (GMT, &p[1], GMT_PAIR_DIM_DUP, B->off) < 0) error++;
@@ -8047,10 +8047,8 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	}
 	if (GMT_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
 		ms->justify = GMT_just_decode (GMT, string, PSL_MC);
-	else if (ms->refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default to reference justify point */
-		ms->justify = ms->refpoint->justify;
-	else	/* Top center is the default */
-		ms->justify = PSL_TC;
+	else	/* With -Dj, set default to reference justify point, else LB */
+		ms->justify = (ms->refpoint->mode == GMT_REFPOINT_JUST) ? ms->refpoint->justify : PSL_BL;
 	if (GMT_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
 		if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
 	}
@@ -8301,10 +8299,8 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	}
 	if (GMT_get_modifier (ms->refpoint->args, 'j', string))
 		ms->justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-	else if (ms->refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default to reference justify point */
-		ms->justify = ms->refpoint->justify;
-	else	/* Centered on the given coordinates */
-		ms->justify = PSL_MC;
+	else	/* With -Dj, set default to reference justify point, else LB */
+		ms->justify = (ms->refpoint->mode == GMT_REFPOINT_JUST) ? ms->refpoint->justify : PSL_BL;
 	if (GMT_get_modifier (ms->refpoint->args, 'o', string))
 		if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
 	if (GMT_get_modifier (ms->refpoint->args, 'i', string)) {

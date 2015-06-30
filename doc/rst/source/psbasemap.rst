@@ -220,7 +220,7 @@ plotted as
 
    ::
 
-    gmt psbasemap -R90/180/-50/50 -Jm0.025i -B30g30:.Mercator: -Lx1i/1i/0/5000k > mercator.ps
+    gmt psbasemap -R90/180/-50/50 -Jm0.025i -B30g30:.Mercator: -Lx1i/1i+c0+w5000k > mercator.ps
 
 Miller
 ~~~~~~

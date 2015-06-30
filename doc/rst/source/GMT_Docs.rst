@@ -4084,7 +4084,7 @@ Plot embellishments
 -------------------
 
 Apart from visualizing your data sets, GMT maps can also be embellished in several ways.
-The embellishments currently available are
+The 8 embellishments currently available are
 
 *  Map scale showing the true scale at some location(s) on the map.
 
@@ -4096,12 +4096,14 @@ The embellishments currently available are
 
 *  Legend showing the meaning of the symbols on your map.
 
-*  Map insert showing perhaps the location of your detailed area in a regional or global context.
-
 *  Overlay of raster image or EPS plots (e.g., institutional logos, photos, etc.).
 
+*  Overlay of the GMT logo.
+
+*  Map insert showing perhaps the location of your detailed area in a regional or global context.
+
 Each of these features share a common system for specifying the location on the plot where the
-feature will be placed.  They also share a common way to specify the placement of a rectangular
+feature will be placed.  They also share a common way for specifying the placement of a rectangular
 panel behind the feature (to provide a uniform background, for instance).  Thus, before we discuss
 the different features in more detail we will first review the "reference point/anchor point"
 system used by GMT to specify such locations in relation to the underlying map, and then discuss
@@ -4118,9 +4120,9 @@ Anchor and reference point specification
    to the underlying map.  The nine named *reference* points (blue circles) on the map perimeter (and center)
    can be used to specify a location.  This desired location can then be shifted away
    from the selected reference point (here LT, red square) by an amount *dx/dy*, yielding the adjusted
-   reference point (orange square).  Using the same system of nine points on the feature
+   reference point (orange square).  Using the same system of nine points on the map feature
    (cyan circles) we select one of these as our *anchor* point (here LT).  The feature is then
-   placed such that its anchor point matches the selected reference point.
+   placed such that its anchor point matches the adjusted reference point.
 
 Placing a feature on the map means selecting a *reference* point somewhere on the map and an
 *anchor* point somewhere on the feature, and positioning the feature so that the two points overlap.
@@ -4128,7 +4130,7 @@ It may be helpful to consider the analog of a boat dropping an anchor: The boat 
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
 There are four different ways to specify the reference point on a map, allowing for complete freedom
-to select any location.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
+to select any location inside our outside the map.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
 the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
 
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the origin.
@@ -4154,18 +4156,22 @@ the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
    An example of such a reference point might be **j**\ LT.
 
 If no code is specified we default to **x**.
-Any of the reference point mechanism can accept two additional adjustments:
+Any of the reference point mechanism can accept two additional, optional adjustments:
 
 #. Selecting the anchor point.  While the reference point selection gives unlimited flexibility to pick
    any point inside the map region, the anchor point selection is limited to the 9 justification points
    discussed for the **j** reference point code above.  Add **+j**\ *anchor* to indicate which justification
-   point of the map feature should coregistered with the chosen reference point.
+   point of the map feature should coregistered with the chosen reference point.  If an anchor point is not
+   specified then it defaults to the justification point set for the reference point (if **j**\ *code* was
+   used to set it), otherwise it takes on the default value of LB. For instance, **+j**\ TR would instead
+   select the top right point on the map feature as the anchor.
 
 #. Shifting the reference point.  For any of the reference point specifications, in particular
    the justification code method, it is likely that you will wish to offset the reference point away from
    your selection by some arbitrary amount.  Do so with  **+o**\ *dx*\ [/*dy*], where *dy* = *dx* if it is
    not provided.  These increments are added to the projected plot coordinates of the reference point, with
-   positive values moving the reference point towards the anchor.
+   positive values moving the reference point towards the anchor.  E.g., **+o**\ 0.2c will move the reference
+   point towards the anchor by 0.2 cm.
 
 The background panel
 ~~~~~~~~~~~~~~~~~~~~
@@ -4178,17 +4184,21 @@ given via a module's **-F** option by appending one or more modifiers.  Here is 
 the attributes that is under your control:
 
 #. Color or pattern.  You specify the fill you want with **+g**\ *fill* [Default is no fill].
+   For instance, paint the panel yellow with **+g**\ yellow.
 
 #. Panel frame pen.  Turn on the frame outline with **+p**, using the pen defined via
    :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`.  You may override this choice with **+p**\ *pen*
-   [Default is no outline].
+   [Default is no outline].  A very bold red outline might look like **+p**\ thick,red.
 
 #. Rounded versus straight rectangle.  By specifying a corner radius with **+r**\ *radius*
-   you can round the corners [Default is no rounding].
+   you can round the corners [Default is no rounding]. Here is a 0.2-inch radius rounding:
+   **+r**\ 0.2i.
 
 #. Inner frame.  A secondary, inner frame outline may be added as well with the modifier
    **+i**\ [[*gap*/]\ *pen*].  The default pen is a solid, 0.25p black pen, with a default
-   *gap* between the outer and inner frames of 2 points.  Add arguments to override these defaults.
+   *gap* between the outer and inner frames of 2 points.  Add arguments to override these defaults,
+   such as **+i**\ 0.1c/thin,dashed to get a thin, dashed inner frame offset by 0.1 cm from the
+   main frame.
 
 #. Panel clearance.  The panel's dimensions are automatically determined from knowledge of
    its contents.  However, it is often required to add some extra clearance around most or
@@ -4199,7 +4209,8 @@ the attributes that is under your control:
 
 #. Drop-down shadow.  Append **+s** to simulate a gray shadow cast toward the southeast.
    You may append [*dx*/*dy*/][*shade*] to change the shade color and the offset of the
-   shade [Default is 4p/-4p/gray50].
+   shade [Default is 4p/-4p/gray50].  If happy with the placement but desiring a dark blue
+   shadow, add **+s**\ darkblue.
 
 .. figure:: /_images/GMT_panel.*
    :width: 400 px
@@ -4208,8 +4219,8 @@ the attributes that is under your control:
    A map panel is a rectangular background placed behind any of the map features.  It has
    several attributes that can be changed with panel option modifiers.  The light green rounded
    rectangle was specified with **-F+g**\ lightgreen\ **+r**, while the white panel on the
-   lower right was set with **-F+p**\ 1p\ **+i+s+g**\ white\ **+c**\ 0.1i.  We added a light
-   dashed box to indicate the effect of the clearance setting.
+   lower right was set with **-F+p**\ 1p\ **+i+s+g**\ white\ **+c**\ 0.1i (we added a light
+   dashed box to indicate the effect of the clearance setting).
 
 Placing map scales
 ~~~~~~~~~~~~~~~~~~
@@ -4222,7 +4233,7 @@ latitude (e.g., Mercator projection).  Thus, in placing the map scale on the map
 two locations involved: (1) The *reference* point where the map scale's *anchor* should be
 pinned, and (2) the *projection* point where the scale is computed and thus where the map
 scale is true.  Map scales can be plotted by :doc:`psbasemap` or :doc:`pscoast` and in
-addition to the the required *refpoint* argument for where the scale should be placed there
+addition to the the required *refpoint* and anchor arguments for where the scale should be placed there
 are both required and optional modifiers.  These are given via these modules' **-L** option.
 Here is a list of the attributes that is under your control:
 
@@ -4231,20 +4242,24 @@ Here is a list of the attributes that is under your control:
    a bar representing 250 nautical miles at the map scale origin.
 
 #. Map scale origin.  Required modifier given with **+c**\ [*slon*/]\ *slat*, where the longitude
-   of the scale origin is optional for projections with constant scale along parallels.
+   of the scale origin is optional for projections with constant scale along parallels.  For
+   a Mercator projection it may look like +c30N while an oblique projection may have **+c**\ 100W/23N,
+   for instance.
 
 #. Fancy scale bar.  By default a plain-looking scale bar is plotted.  Upgrade to a fancier bar
-   by appending **+f**.
+   by appending **+f**.  The fancier bar is, well, a bit fancier.
 
 #. Scale label. Turn on scale labels with **+l**.  By default, the scale label is initialized to
-   equal the distance unit name.  Use the **+l**\ *label* argument to supply your own scale label.
+   equal the distance unit name.  Use the **+l**\ *label* argument to supply your own scale label,
+   such as**+l**\ "Distances at Equator".
 
 #. Scale label alignment.  The default alignment is on top of the bar [**+at**], but you can change
-   this by selecting another alignment, such as **b**\ ottom, **l**\ eft, or **r**\ ight.
+   this by selecting another alignment by appending them to the **+a** modifier, including
+   **b**\ ottom, **l**\ eft, or **r**\ ight.  Here, **+ab** would align on the bottom of the scale.
 
 #. Append distance unit.  For the fancy scale, adding **+u** will append the distance unit specified
-   with **+w** to the annotations along the bar, while for a plain scale it replaces the default scale
-   label with the unit abbreviation.
+   with **+w** to all distance annotations along the bar, while for the plain scale it will replace
+   the default scale label with the unit abbreviation.
 
 .. figure:: /_images/GMT_mapscale.*
    :width: 500 px
@@ -4264,8 +4279,8 @@ for oblique projections where north-south is not vertically aligned.  However, t
 have ornamental value and can be used on any map projection.  As for map scales, a directional
 map rose is added with :doc:`psbasemap` or :doc:`pscoast` and selected by the **-Td** option.
 This option accepts the *reference* point where the map rose's *anchor* should be
-pinned.  In addition to the required *refpoint* argument (and its standard modifiers) there is
-one required and two optional modifiers:
+pinned.  In addition to the required *refpoint* and *anchor* arguments (and their standard modifiers)
+there is one required and two optional modifiers:
 
 #. Size of map rose.  Use **+w**\ *size* to specify the full width and height of the rose.  A 3 cm
    rose would require **+w**\ 3c.
@@ -4280,15 +4295,16 @@ one required and two optional modifiers:
    and for the default English we use W, E, S, N, respectively.  You can replace these labels with four custom
    labels via  **+l**\ *w,e,s,n*, i.e., four comma-separated labels in the specified order.  You can exclude any
    of the cardinal points from being labeled by giving no label in the corresponding order.  E.g., **+l**",,Down,Up"
-   would write Down and Up at the south and north cardinal point, respectively.
+   would write Down and Up at the south and north cardinal point, respectively.  Note that for the plain
+   directional rose only the north annotation will be placed.
 
 .. figure:: /_images/GMT_dir_rose.*
    :width: 500 px
    :align: center
 
    Plain and fancy directional map roses. (left) Bare-bones plain rose showing arrow towards north
-   and a cross indicating the cardinal directions, specified by -Tdg0/0+w1i. (middle) Fancy rose
-   obtained by adding +f.  (right) Fancy directional rose at level 3 by adding +f3.
+   and a cross indicating the cardinal directions, specified by **-Tdg**\ 0/0\ **+w**\ 1i. (middle) Fancy rose
+   obtained by adding **+f**.  (right) Fancy directional rose at level 3 with labels by adding **+f**\ 3\ **+l**.
 
 Placing magnetic map roses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4297,11 +4313,11 @@ Map roses showing the magnetic directions of a map are useful when magnetic data
 or when declinations are significantly nonzero.  However, as for directional roses the magnetic rose
 also has ornamental value.  The magnetic rose consists of two concentric angular scales: The first
 (outer) ring shows directional angles while the second (inner) ring is optional and portrays the
-magnetic directions, which differ for nonzero declination. In style, the two-ring rose looks a
+magnetic directions, which differ for nonzero declination. As for style, the two-ring rose looks a
 bit like a standard compass.  As for directional roses, a magnetic
 map rose is added with :doc:`psbasemap` or :doc:`pscoast` and selected by the **-Tm** option.
-Append the required *reference* point where the magnetic map rose's *anchor* should be
-pinned.  There is one required and several optional modifiers:
+As for other features, append the required *reference* point where the magnetic map rose's *anchor*
+should be pinned.  There is one required and several optional modifiers:
 
 #. Specify size of map rose.  Use **+w**\ *size* to specify the full width of the rose.  A 3 cm
    rose would imply **+w**\ 3c.
@@ -4309,16 +4325,11 @@ pinned.  There is one required and several optional modifiers:
 #. Specify Declination.  To add the inner angular scale, append **d**\ *dec*\ [/\ *dlabel*\ ], where
    *dec* is the declination value in decimal or ddd:mm:ss format, and *dlabel* is an optional string
    that replaces the default label (which is "d = *dec*", with d being a Greek delta and we format
-   the specified declination).  Append **d**\ *dec*/ to indicate you do not want any declination label.
+   the specified declination).  Append **d**\ *dec*/- to indicate you do not want any declination label.
+   As an example consider **d**\ 11/"Honolulu declination".
 
-#. Set annotation, tick and grid intervals.  Each ring has a default annotation [30], tick [5], and grid [1]
-   interval (although here grid interval is just a finer tick interval drawn at half tickmark length).
-   Adjust these three intervals with **i**\ *intervals*.  If you selected **+d** then you must supply
-   two sets of such intervals (i.e., 6 comma-separated values), with the first (primary) set refers to
-   the declination-adjusted ring and the second (secondary) set refers to the directional ring.
-   If only 3 intervals are given then we assume
-   you want the same intervals for both rings.  As an example, to annotate every 90 degrees and tick every 15 and 5
-   degrees, add **+i**\ 90/15/5.
+#. Draw the secondary (inner) ring outline.  Normally it is not drawn, but you can change that by appending
+   **+i**\ *pen*.  For instance, adding **+i**\ thin will draw the right with the selected thin pen.
 
 #. Add labels.  As for directional roses you do so with **+l**, which places the current one-letter codes for west, east, south,
    and north at the four cardinal points.  These letters depend on the setting of :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`
@@ -4326,6 +4337,17 @@ pinned.  There is one required and several optional modifiers:
    labels via  **+l**\ *w,e,s,n*, i.e., four comma-separated labels in the specified order.  You can exclude any
    of the cardinal points from being labeled by giving no label in the corresponding order.  E.g., **+l**",,Down,Up"
    would write Down and Up at the south and north cardinal point, respectively.
+
+#. Draw the primary (outer) ring outline.  It is also not normally drawn; change that by appending
+   **+p**\ *pen*.  For instance, adding **+p**\ thin,blue will draw the right with the selected thin, blue pen.
+
+#. Set annotation, tick and grid intervals.  Each ring has a default annotation [30], tick [5], and grid [1]
+   interval (although here "grid interval" is just a finer tick interval drawn at half tickmark length).
+   Adjust these three intervals with **+t**\ *intervals*.  If you selected **+d** then you must supply
+   two sets of such intervals (i.e., 6 comma-separated values), where the first (primary) set refers to
+   the declination-adjusted ring and the second (secondary) set refers to the directional (outer) ring.
+   If only three intervals are given then we assume you want the same intervals for both rings.  As an example,
+   to annotate every 90 degrees and tick every 15 and 5 degrees, add **+t**\ 90/15/5.
 
 Placing color scale bars
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4335,7 +4357,7 @@ relate the chosen color to a data value or category.  For instance, color images
 or other grids will need a mechanism for users to decode what the colors represent.  Typically, we do this
 by adding a color scale bar on the outside (or inside) of the map boundaries.  The module
 :doc:`psscale` places the color scale bar, with location and size determined by the **-D** attributes.
-As for other map features we must specify the reference point and any adjustments to it first, then
+As for other map features we must specify the reference and anchor points and any adjustments to them, then
 supply suitable required and optional modifiers:
 
 #. Give dimensions of color bar.  Use **+w**\ *length*/*width* to specify the full width and height of the bar.
@@ -4355,7 +4377,7 @@ supply suitable required and optional modifiers:
    only [Default is both].  Optionally, append triangle height [Default is half the bar *width*].
 
 #. Add missing data key.  Append **+n** to draw a rectangle with the current NaN color and label it NaN.
-   Optionally, append a replacement *text*.
+   Optionally, append a replacement *text*.  One example might be **+n**\ "No data".
 
 .. figure:: /_images/GMT_colorbar.*
    :width: 500 px
@@ -4372,12 +4394,13 @@ represent.  For instance, you may use this mechanism to convey the information t
 earthquake locations, triangles are places where you ate Thai food, and dashed lines indicate
 some sort of gang-land demarkation line that you should not cross without paying the locals due respect.
 Map legends are placed by the module :doc:`pslegend`, with location and size determined by the
-various **-D** attributes. We must again specify the reference point and any adjustments to it
+various **-D** attributes. We must again specify the reference and anchor points and any adjustments to them
 first, then supply suitable required and optional modifiers:
 
 #. Give legend dimensions.  You must specify the required legend width, while legend height is optional
    and if not given is computed based on the contents of the legend.  The syntax is therefore
-   **+w**\ *width* \[/*height*] in your desired plot units.
+   **+w**\ *width* \[/*height*] in your desired plot units.  Thus, **+w**\ 12c sets the legend width
+   as 12 cm but the hight will become whatever is needed to contain the information.
 
 #. Set line-spacing.  You may optionally specify the line-spacing used for the setting of the legend.  The legend will
    typically consist of several lines that may or may not contain text, but the spacing between
@@ -4405,11 +4428,12 @@ In addition, we require one (of two) modifiers to determine the image size.
 
 #. Specify image width.  This is a required modifier and is set via **+w**\ *width*\ [/*height*].
    If *height* is specified as 0 then we compute the height from *width* and the aspect
-   ratio of the image.  If *width* is negative the we use its absolute value as width
+   ratio of the image, for instance **+w**\ 4c/0.  If *width* is negative the we use its absolute value as width
    but interpolate the image in *PostScript* to the device resolution.
 
 #. Specify image resolution.  For raster images (not EPS) you may instead specify the size of the
-   plotted image by specifying its resolution in dots per inch, via **+r**\ *dpi*.
+   plotted image by specifying its resolution in dots per inch, via **+r**\ *dpi*.  The
+   actual size of the images is then controlled by its number of pixels times the *dpi*.
 
 #. Enable image replication.  For raster images (not EPS) you may optionally append **+n**\ *nx*\ [/*ny*]
    to indicate that you want the source image to be replicated that many times in the two
@@ -4425,14 +4449,32 @@ In addition, we require one (of two) modifiers to determine the image size.
    The School of Ocean and Earth Science and Technology at the University of Hawaii at Manoa
    hosts the gmt server and its EPS logo is shown.
 
+Placing a GMT logo on maps
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is possible to overlay the GMT logo on maps as well, using the module :doc:`gmtlogo`.
+Like other features it requires reference and anchor points and their optional adjustments via the **-D** option.
+In addition, we require one modifiers to determine the logo's size.
+
+#. Specify logo width.  This is a required modifier and is set via **+w**\ *width*.
+   The height is automatically set (it is half the width).  To place a 5 cm wide
+   GMT logo, append **+w**\ 5c.
+   
+.. figure:: /_images/GMT_coverlogo.*
+   :width: 300 px
+   :align: center
+
+   Placement of the GMT logo. The logo itself only has a size modifier but the :doc:`gmtlogo`
+   module allows additional attributes such as a background map panel.
+
 Placing map inserts
 ~~~~~~~~~~~~~~~~~~~
 
 Our final map embellishment is the map insert.
-A map insert is the easiest feature to add since it only consists of an empty map panel.
+A map insert may appear to be the easiest feature to add since it only consists of an empty map panel.
 What you put in this panel is up to you (and we will show some examples).  However, unlike
 the other map features there are two ways to specify the placement of the map insert.
-The first is the standard way of specifying a reference point and the insert dimensions,
+The first is the standard way of specifying a reference and anchor points and the insert dimensions,
 while the second specifies a *subregion* in the current plot that should be designated the
 map insert area.  Depending on the map projection this may or may not be a rectangular area.
 Map inserts are produced by the module :doc:`psbasemap` via the **-D** option. Unless you
@@ -4446,7 +4488,9 @@ instead (similar to how the **-R** option works).  Some optional modifiers are a
 #. Set insert size.  If you specified a reference point then you must also specify the insert dimensions with the
    **+w**\ *width*\ [*unit*][/*height*\ [*unit*]], where *height* defaults to *width* if not given.
    Append the unit of the dimensions, which may be distance units such as km, feet, etc., and
-   the map projection will be used to determine insert dimensions on the map.
+   the map projection will be used to determine insert dimensions on the map.  For instance,
+   **+w** \ 300k/200k is a 300x200 km region (which depends on the projection) while **+w** \ 5c
+   is a 5cm square box.
 
 #. Save the location and dimensions.  For all but the simplest of map inserts you will need to
    know the exact location of the resulting insert and its dimensions.  For instance, if you
@@ -4457,7 +4501,7 @@ instead (similar to how the **-R** option works).  Some optional modifiers are a
    users who wish to script this automatically you can use **+s**\ *file* to save this information
    in a file that your script can ingest and act upon.  The file contains a single record with the
    four tab-separated values *x0 y0 width height* in the current plot units [cm], where *x0 y0* refers
-   to the lower-left point on the insert.
+   to the lower-left point on the insert.  See the figure caption for an example.
 
 .. figure:: /_images/GMT_insert.*
    :width: 500 px
@@ -4468,7 +4512,7 @@ instead (similar to how the **-R** option works).  Some optional modifiers are a
    right area with **-Dj**\ TR\ **+w**\ 1.5i\ **+o**\ 0.15i\ **+s**\ tmp and then read in the coordinates
    of the lower-right corner of the insert and its dimension with UNIX ("read x0 y0 w h < tmp").
    Knowing the placement (we know the size of the circular global map) we can correctly position it
-   in the insert with **-X$x0** and **-Y$y**.  See gallery example 44 for more details.
+   in the insert with **-X$x0** and **-Y$y0**.  See gallery example 44 for more details.
 
 .. _grid-file-format:
 

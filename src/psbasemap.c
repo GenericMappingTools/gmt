@@ -50,11 +50,11 @@ struct PSBASEMAP_CTRL {
 		bool active;
 		/* The panels are members of GMT_MAP_SCALE, GMT_MAP_ROSE, and GMT_MAP_INSERT */
 	} F;
-	struct L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+f][+l[<label>]][+j<just>][+u] */
+	struct L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
 		bool active;
 		struct GMT_MAP_SCALE scale;
 	} L;
-	struct T {	/* -Td|m */
+	struct T {	/* -Td|m<params> */
 		bool active;
 		struct GMT_MAP_ROSE rose;
 	} T;
@@ -106,9 +106,9 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
 	GMT_Option (API, "K");
-	GMT_mapscale_syntax (API->GMT, 'L', "Draw a map scale centered on specified reference point.");
+	GMT_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");
 	GMT_Option (API, "O,P");
-	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose centered on specified reference point.");
+	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose at specified reference point.");
 	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
 	return (EXIT_FAILURE);
@@ -126,7 +126,7 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	char *kind[3] = {"Specify a rectanglar panel for the map insert", "Specify a rectanglar panel behind the map-scale", "Specify a rectanglar panel behind the directional rose"};
+	char *kind[3] = {"Specify a rectanglar panel for the map insert", "Specify a rectanglar panel behind the map scale", "Specify a rectanglar panel behind the map rose"};
 	bool get_panel[3] = {false, false, false};
 	
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */

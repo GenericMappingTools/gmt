@@ -73,7 +73,6 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->D.justify = PSL_BL;
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
 	C->D.nx = C->D.ny = 1;
 	return (C);
@@ -168,13 +167,13 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]] */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* For -Dj with no 2nd justification, use same code as reference coordinate as default */
-						Ctrl->D.justify = Ctrl->D.refpoint->justify;
+					else	/* With -Dj, set default to reference justify point, else LB */
+						Ctrl->D.justify = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? Ctrl->D.refpoint->justify : PSL_BL;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
-						if ((n = GMT_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 						if (Ctrl->D.dim[GMT_X] < 0.0) {
 							Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 							Ctrl->D.interpolate = true;

@@ -225,6 +225,46 @@ uint64_t gmt_bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, double w
 	return (ij);
 }
 
+double GMT_get_bcr_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, double yy)
+{
+	/* Given xx, yy in user's grid file (in non-normalized units)
+	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
+	   B-spline or bicubic) at xx, yy.
+	   Same as GMT_get_bcr_z but no check for Nan or outside, so calling program
+	   must make sure we dont go outside array or pass nans.
+	*/
+
+	unsigned int i, j;
+	uint64_t ij, node;
+	double retval, wsum, wx[4], wy[4], w;
+
+	/* Determine nearest node ij and set weights wx, wy */
+
+	ij = gmt_bcr_prep (G->header, xx, yy, wx, wy);
+
+	retval = wsum = 0.0;
+	for (j = 0; j < G->header->bcr_n; j++) {
+		for (i = 0; i < G->header->bcr_n; i++) {
+			/* assure that index is inside bounds of the array G->data: */
+			node = ij + i;
+			assert (node < G->header->size);
+			w = wx[i] * wy[j];
+			retval += G->data[node] * w;
+			wsum += w;
+		}
+		ij += G->header->mx;
+	}
+	if ((wsum + GMT_CONV8_LIMIT - G->header->bcr_threshold) > 0.0) {
+		retval /= wsum;
+		if (GMT->common.n.truncate) {
+			if (retval < G->header->z_min) retval = G->header->z_min;
+			else if (retval > G->header->z_max) retval = G->header->z_max;
+		}
+		return (retval);
+	}
+	return (GMT->session.d_NaN);
+}
+
 double GMT_get_bcr_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, double yy)
 {
 	/* Given xx, yy in user's grid file (in non-normalized units)

@@ -33,7 +33,7 @@ gmt pscoast $R -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
 
 # Put a color legend in top-left corner of the land mask
 
-gmt psscale -DjTL+o1c+w2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -F+gwhite+p1p >> $ps
+gmt psscale -DjTL+o1c+w2i/0.15i -R -J -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -F+gwhite+p1p >> $ps
 
 # Clean up
 

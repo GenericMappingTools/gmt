@@ -14,10 +14,10 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pslegend** [ *specfile* ]
-**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**n**\ \|\ **g**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+l**\ *spacing*]\ [**+o**\ *dx*\ [/*dy*]]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
 [ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
-[ **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
+[ **-J**\ *parameters* ] [ **-K** ] [ **-O** ] [
 **-P** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
 ] [
@@ -41,7 +41,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 `Required Arguments <#toc4>`_
 -----------------------------
 
-**-D**\ [**j**\ \|\ **g**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**j**\ \|\ **g**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+l**\ *spacing*]\ [**+o**\ *dx*\ [/*dy*]]
     Defines the reference point on the map for the legend using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
@@ -53,6 +53,8 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     The *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
     *refpoint* to an anchor point on the rectangular legend box [CT].  Note that if **-Dj**\ *code*
     is used and *justify* is not set then *justify* is set equal to *code*.
+    Use **+l**\ *spacing* to change the line-spacing factor in units of the current
+    font size [1.1]. 
     Finally, you can offset the legend box by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify*.
 
@@ -85,9 +87,6 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 .. include:: explain_-J.rst_
 
 .. include:: explain_-K.rst_
-
-**-L**\ *spacing*
-    Sets the line-spacing factor in units of the current annotation font size [1.1]. 
 
 .. include:: explain_-O.rst_
 
@@ -131,9 +130,12 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **B** *cptname offset height* [ *optional arguments* ]
     The **B** record will plot a horizontal color bar, **psscale**-style
     in the middle, starting at *offset* from the left edge, and of the
-    given *height*. You may add any additional **psscale** options from
-    the list: **-A** **-B** **-I** **-L** **-M** **-N** **-S** **-Z**
-    and **-p**. See the **psscale** man page for details.
+    given *height*. You may add any additional **psscale** options as well.
+    Any of the modifiers [+e[b|f][<length>]][+h][+ma|c|l|u][+n[<txt>]] may be
+    appended to the *height* argument, while other module options
+    **-B** **-I** **-L** **-M** **-N** **-S** **-Z** and **-p** may be appended as
+    *optional arguments* at the end of the record.
+    See :doc:`psscale` for details on all modifiers and options.
 **C** *textcolor*
     The **C** record specifies the color with which the remaining text
     is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,
@@ -165,33 +167,35 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     The **H** record plots a centered text string using the specified
     font parameters. Use **-** to default to size and type of **FONT\_TITLE**.
 **I** *imagefile width justification*
-    Place an EPS or Sun raster image in the legend justified relative to
+    Place an EPS or raster image in the legend justified relative to
     the current point. The image *width* determines the size of the image on the page.
 **L** *fontsize*\ \|\ **-** *font*\ \|\ **-** justification label
     The **L** record plots a (L)eft, (C)entered, or (R)ight-justified
     text string within a column using the specified font parameters. Use
     **-** to default to the size and type of **FONT\_LABEL**.
-**M** *slon*\ \|\ **-** *slat length* **f**\ \|\ **p** [ **-R**\ *w/e/s/n* **-J**\ *param* ]
+**M** *slon*\ \|\ **-** *slat length*\ [**+f**\ ][**+l**\ [*label*]][**+u**\ ] [**-F**\ *param*] [ **-R**\ *w/e/s/n* **-J**\ *param* ]
     Place a map scale in the legend. Specify *slon slat*, the point on
     the map where the scale applies (*slon* is only meaningful for
     certain oblique projections. If not needed, you must specify **-**
-    instead), *length*, the length of the scale in km (for other units
+    instead). Give *length*, the length of the scale in km (for other units
     append **e** (meter), **f** (foot), **M** (mile), **n** (nautical
-    mile), or **u** (survey foot)), and **f** or **p** for fancy or
-    plain scale. If the **-R** **-J** supplied to **pslegend** is
-    different than the projection needed for the scale (or not given at
-    all, e.g., with **-Dx**), supply the optional **-R** **-J** settings
-    as well. Append **+l** to the *length* to select the default label
+    mile), or **u** (survey foot)). Append **+f** for a fancy map scale
+    [Default is plain].
+    Append **+l** to the *length* to select the default label
     which equals the distance unit (meter, feet, km, miles, nautical
     miles, survey feet) and is justified on top of the scale [t]. Change
     this by giving your own label (append **+l**\ *label*). Change label
-    justification with **+j**\ *justification* (choose among l(eft),
-    r(ight), t(op) , and b(ottom)).
+    alignment with **+a**\ *align* (choose among **l**\ (eft),
+    **r**\ (ight), **t**\ (op) , and **b**\ (ottom)).
     Apply **+u** to append the unit to all distance annotations along
-    the scale. If you want to place a rectangle behind the scale,
-    specify suitable **+p**\ *pen* and/or **+f**\ *fill* parameters. All
-    these )+)\ *modifiers* are appended to *length* to make a single
-    string.
+    the scale. If you want to place a map panel behind the scale,
+    add a suitable **-F** panel option (see :doc:`psbasemap` for details
+    on panels as well as map scale modifiers).
+    All **+**\ *modifiers* must be appended to *length* to make a single
+    string argument.  If the **-R** **-J** supplied to **pslegend** is
+    different than the projection needed for the scale (or not given at
+    all, e.g., with **-Dx**), supply the two optional **-R** **-J** settings
+    as well. 
 **N** [*ncolumns* or *relwidth1 relwidth2 ... relwidthn*]
     Change the number of columns in the legend [1]. This only affects
     the printing of symbols (**S**) and labels (**L**). The number of
@@ -278,8 +282,8 @@ specifications, use
 
    ::
 
-     gmt pslegend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i/5i/3.3i/BL \
-     -C0.1i/0.1i -L1.2 -B5f1 << EOF >> map.ps
+     gmt pslegend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i+w5i/3.3i+jBL+l1.2 \
+     -C0.1i/0.1i -B5f1 << EOF >> map.ps
      # Legend test for pslegend
      # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
      # H is header, L is label, S is symbol, T is paragraph text, M is map scale.

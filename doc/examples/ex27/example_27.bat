@@ -31,7 +31,7 @@ gmt pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5 -BWSne -O -
 
 REM Put a color legend in top-left corner of the land mask
 
-gmt psscale -DjTL+o1c+w2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal  -F+gwhite+p1p -I -O >> %ps%
+gmt psscale -DjTL+o1c+w2i/0.15i -R -J -Cgrav.cpt -Bx50f10 -By+lmGal  -F+gwhite+p1p -I -O >> %ps%
 
 REM Clean up
 

@@ -45,16 +45,13 @@
 /* Control structure for gmtlogo */
 
 struct GMTLOGO_CTRL {
-	struct D {	/* -D[g|j|n|x]<refpoint>[+j<justify>][+o<off[GMT_X]>[/<dy>]] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[+j<justify>][+o<off[GMT_X]>[/<dy>]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
+		double width;
 		int justify;
 	} D;
-	struct W {	/* -W<width> */
-		bool active;
-		double width;
-	} W;
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<off[GMT_X]>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
@@ -65,8 +62,6 @@ void *New_gmtlogo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	struct GMTLOGO_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct GMTLOGO_CTRL);
-	C->D.justify = PSL_BL;
-	C->W.width = 2.0;	/* Default width is 2" */
 	return (C);
 }
 
@@ -83,18 +78,18 @@ int GMT_gmtlogo_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtlogo [%s%s]\n", GMT_XYANCHOR, GMT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtlogo [%s[+w<width>]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "[%s] [%s] [%s] [-K]\n", GMT_PANEL, GMT_J_OPT, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t [-O] [-P] [%s] [-W<width>] [%s] [%s] [%s] [%s]\n\n", GMT_Rgeoz_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t [-O] [-P] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_Rgeoz_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_refpoint_syntax (API->GMT, 'D', "Specify position of the GMT logo [0/0]", GMT_ANCHOR_LOGO, 1);
 	GMT_refpoint_syntax (API->GMT, 'D', "BL", GMT_ANCHOR_LOGO, 2);
+	GMT_Message (API, GMT_TIME_NONE, "\t  Use +w<width> to set the width of the GMT logo.\n");
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set width of the GMT logo [2 inches].\n");
 	GMT_Option (API, "U,V");
 	GMT_Option (API, "X,c,f,t,.");
 
@@ -111,7 +106,7 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0;
-int n;
+	int n;
 	char string[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
@@ -127,11 +122,13 @@ int n;
 				else {	/* args are [+j<justify>][+o<dx>[/<dy>]] */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* For -Dj with no 2nd justification, use same code as reference point coordinate as default */
-						Ctrl->D.justify = Ctrl->D.refpoint->justify;
+					else	/* With -Dj, set default to reference justify point, else LB */
+						Ctrl->D.justify = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? Ctrl->D.refpoint->justify : PSL_BL;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
+						Ctrl->D.width = GMT_to_inch (GMT, string);
 				}
 				break;
 			case 'F':
@@ -142,8 +139,8 @@ int n;
 				}
 				break;
 			case 'W':	/* Scale for the logo */
-				Ctrl->W.active = true;
-				Ctrl->W.width = GMT_to_inch (GMT, opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -W is deprecated; -D...+w%s was set instead, use this in the future.\n", opt->arg);
+				Ctrl->D.width = GMT_to_inch (GMT, opt->arg);
 				break;
 
 			default:	/* Report bad options */
@@ -155,7 +152,7 @@ int n;
 		Ctrl->D.refpoint = GMT_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
 		Ctrl->D.active = true;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->W.width < 0.0, "Syntax error -W option: Width cannot be zero or negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0, "Syntax error -D option, +w modifier: Width cannot be zero or negative!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -208,12 +205,12 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.width;
-		Ctrl->D.refpoint->y -= 0.25 * (Ctrl->D.justify/4) * Ctrl->W.width;	/* 0.25 because height = 0.5 * width */
+		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.width;
+		Ctrl->D.refpoint->y -= 0.25 * (Ctrl->D.justify/4) * Ctrl->D.width;	/* 0.25 because height = 0.5 * width */
 		/* Also deal with any justified offsets if given */
 		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
 		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
-		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->W.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->W.width;
+		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -221,8 +218,8 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
-		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->W.width;
-		Ctrl->D.refpoint->y -= 0.25 * (Ctrl->D.justify/4) * Ctrl->W.width;	/* 0.25 because height = 0.5 * width */
+		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.width;
+		Ctrl->D.refpoint->y -= 0.25 * (Ctrl->D.justify/4) * Ctrl->D.width;	/* 0.25 because height = 0.5 * width */
 		/* Also deal with any justified offsets if given */
 		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
 		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
@@ -230,7 +227,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->W.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->W.width;
+		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		GMT->common.R.active = GMT->common.J.active = true;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
@@ -239,10 +236,10 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 
 	/* Set up linear projection with logo domain and user width */
-	scale = Ctrl->W.width / 2.0;	/* Scale relative to default size 2 inches */
-	plot_x = 0.5 * Ctrl->W.width;	plot_y = 0.25 * Ctrl->W.width;	/* Center of logo box */
+	scale = Ctrl->D.width / 2.0;	/* Scale relative to default size 2 inches */
+	plot_x = 0.5 * Ctrl->D.width;	plot_y = 0.25 * Ctrl->D.width;	/* Center of logo box */
 	if (Ctrl->F.active) {	/* First place legend frame fill */
-		Ctrl->F.panel->width = Ctrl->W.width;	Ctrl->F.panel->height = 0.5 * Ctrl->W.width;	
+		Ctrl->F.panel->width = Ctrl->D.width;	Ctrl->F.panel->height = 0.5 * Ctrl->D.width;	
 		GMT_draw_map_panel (GMT, plot_x, plot_y, 3U, Ctrl->F.panel);
 	}
 	

@@ -982,8 +982,8 @@ void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is justification unless part == 3 */
 		char *just = (part == 3) ? "LB" : string;
-		GMT_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that point on the %s with <refpoint> [%s].\n", tab[shift], type[kind], just);
-		GMT_message (GMT, "\t   %sNote for -Dj: If +j<justify> is not given then it inherits the inverse of <refpoint>.\n", tab[shift]);
+		GMT_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that anchor point on the %s with <refpoint> [%s].\n", tab[shift], type[kind], just);
+		GMT_message (GMT, "\t   %sNote for -Dj: If +j<justify> is not given then it inherits the code for <refpoint>.\n", tab[shift]);
 		GMT_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from refpoint in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
 	}
 }
@@ -1004,7 +1004,7 @@ void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t     c) Set reference point and dimensions of the insert:\n");
 	GMT_refpoint_syntax (GMT, 'D', NULL, GMT_ANCHOR_INSERT, 5);
 	GMT_message (GMT, "\t        Append width[<u>]/height[u] of bounding rectangle (<u> is unit).\n");
-	GMT_refpoint_syntax (GMT, 'D', "CM", GMT_ANCHOR_INSERT, 6);
+	GMT_refpoint_syntax (GMT, 'D', "LB", GMT_ANCHOR_INSERT, 6);
 	GMT_message (GMT, "\t   Set panel attributes separately via -F option:\n");
 }
 
@@ -1019,7 +1019,7 @@ void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t   Set the reference point and length of the scale:\n");
 	GMT_refpoint_syntax (GMT, 'L', NULL, GMT_ANCHOR_MAPSCALE, 5);
-	GMT_refpoint_syntax (GMT, 'L', "CT", GMT_ANCHOR_MAPSCALE, 2);
+	GMT_refpoint_syntax (GMT, 'L', "LB", GMT_ANCHOR_MAPSCALE, 2);
 	GMT_message (GMT, "\t   Use +c<slat> (with central longitude) or +c<slon>/<slat> to specify scale origin.\n");
 	GMT_message (GMT, "\t   Set scale length with +w<length> and append a unit from %s [km].  Use -%cf to draw a \"fancy\" scale [Default is plain].\n", GMT_LEN_UNITS2_DISPLAY, option);
 	GMT_message (GMT, "\t   Several modifiers are optional:\n");
@@ -1042,7 +1042,7 @@ void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   Both share most modifers for locating and sizing the rose.\n");
 	GMT_message (GMT, "\t   First set the reference point (center of rose) and size of the rose:\n");
 	GMT_refpoint_syntax (GMT, 'T', NULL, GMT_ANCHOR_MAPROSE, 5);
-	GMT_refpoint_syntax (GMT, 'T', "CM", GMT_ANCHOR_MAPROSE, 2);
+	GMT_refpoint_syntax (GMT, 'T', "LB", GMT_ANCHOR_MAPROSE, 2);
 	GMT_message (GMT, "\t   Set the diameter of the rose with modifier +w<width>.\n");
 	GMT_message (GMT, "\t   Several modifiers are optional:\n");
 	GMT_message (GMT, "\t   Add labels with +l, which places the letters W, E, S, N at the cardinal points.\n");

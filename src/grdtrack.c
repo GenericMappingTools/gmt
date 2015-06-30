@@ -539,12 +539,12 @@ unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsig
 	return (error);
 }
 
-int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, bool img, double x_in, double y_in, double value[])
-{
+int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, unsigned int mode, double x_in, double y_in, double value[])
+{	/* Mode = 0: Cartesian, 1 = geographic, 2 = img mercmator */
 	unsigned int g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
 
-	if (img) GMT_geo_to_xy (GMT, x_in, y_in, &x0, &y0);	/* At least one Mercator IMG grid in use - get Mercator coordinates x,y */
+	if (mode == 2) GMT_geo_to_xy (GMT, x_in, y_in, &x0, &y0);	/* At least one Mercator IMG grid in use - get Mercator coordinates x,y */
 
 	for (g = n_in = n_set = 0; g < n_grids; g++) {
 		y = (GC[g].type == 1) ? y0 : y_in;
@@ -563,7 +563,7 @@ int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned i
 		}
 		else {	/* Regular Cartesian x,y or lon,lat */
 			x = x_in;
-			if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must wind lonn/lat to fit current grid longitude range */
+			if (mode == 1) {	/* Must wind lonn/lat to fit current grid longitude range */
 				while (x > GC[g].G->header->wesn[XHI]) x -= 360.0;
 				while (x < GC[g].G->header->wesn[XLO]) x += 360.0;
 			}
@@ -710,7 +710,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	int status, error, ks;
 	uint64_t n_points = 0, n_read = 0;
-	unsigned int g, k;
+	unsigned int g, k, xy_mode;
 	bool img_conv_needed = false, some_outside = false;
 
 	char line[GMT_BUFSIZ] = {""}, run_cmd[BUFSIZ] = {""}, *cmd = NULL;
@@ -820,6 +820,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 
 	value = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double);
+	xy_mode = (img_conv_needed) ? 2 : (GMT_is_geographic (GMT, GMT_IN) ? 1 : 0);
 
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
 		uint64_t tbl, col, row, seg, n_cols = Ctrl->G.n_grids;
@@ -856,7 +857,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 					S = T->segment[seg];
 					for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
-						status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, S->coord[GMT_X][row], S->coord[GMT_Y][row], value);
+						status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->coord[GMT_X][row], S->coord[GMT_Y][row], value);
 						if (status < 0) some_outside = true;
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->coord[col][row] = value[k];
 					}
@@ -893,7 +894,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 				S = T->segment[seg];
 				for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
-					status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, S->coord[GMT_X][row], S->coord[GMT_Y][row], value);
+					status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->coord[GMT_X][row], S->coord[GMT_Y][row], value);
 					for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->coord[col][row] = value[k];
 					if (status < 0)
 						some_outside = true;
@@ -1022,7 +1023,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Sout = Dout->table[0]->segment[seg];	/* Shorthand */
 			for (col = 0; col < Din->n_columns; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
 			for (row = 0; row < Sin->n_rows; row++) {	/* For each row  */
-				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], value);
+				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], value);
 				if (status < 0) some_outside = true;
 				for (col = Din->n_columns, k = 0; k < Ctrl->G.n_grids; k++, col++) Sout->coord[col][row] = value[k];
 				n_points++;
@@ -1103,7 +1104,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 			n_read++;
 
-			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, in[GMT_X], in[GMT_Y], value);
+			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);
 			if (status == -1) {	/* Point is outside the region of all grids */
 				some_outside = true;
 				if (!Ctrl->N.active) continue;

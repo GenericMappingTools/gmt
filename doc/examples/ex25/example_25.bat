@@ -44,7 +44,7 @@ echo N 3 > tmp
 echo S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [%land% %%%%] >> tmp
 echo S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [%ocean% %%%%] >> tmp
 echo S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [%mixed% %%%%] >> tmp
-gmt pslegend -R0/9/0/0.5 -Jx1i -O -DjCB+w6i+jTC -R -J -Y-0.2i -F+pthick tmp >> %ps%
+gmt pslegend -R -J -O -DjCB+w6i+jTC -Y-0.2i -F+pthick tmp >> %ps%
 del *.nc
 del key.*
 del tmp

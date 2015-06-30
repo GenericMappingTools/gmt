@@ -210,18 +210,19 @@ Examples
 
 To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the
 right of a plot that is 6 inch wide and 4 inch high, using illumination,
-and show back- and foreground colors, and annotating every 5 units, use
+and show back- and foreground colors, and annotating every 5 units, we
+provide the reference point and select the left-mid anchor point via
 
    ::
 
-    gmt psscale -Dx6.5i/2i+w7.5c/1.25c+e -O -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm >> map.ps
+    gmt psscale -Dx6.5i+jLM/2i+w7.5c/1.25c+e -O -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm >> map.ps
 
 To overlay a horizontal color scale (4 inches long; 1 cm wide) above a
 Mercator map produced by a previous call, ensuring a 2 cm offset from the map frame, use
 
    ::
 
-    gmt psscale -DjCT+w4i/1c+o0/2c+hh -O -Ccolors.cpt -Baf -R -J >> map.ps
+    gmt psscale -DjCT+w4i/1c+o0/2c+h -O -Ccolors.cpt -Baf -R -J >> map.ps
 
 Notes
 -----
