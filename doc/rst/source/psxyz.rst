@@ -202,7 +202,7 @@ southeast at 30 degree elevation, use:
    ::
 
     gmt psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c \
-              -Gblue -B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 \
+              -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30 \
               -Uc -W -P > heights.ps
 
 Segment Header Parsing

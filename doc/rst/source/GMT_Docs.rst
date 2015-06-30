@@ -9309,7 +9309,7 @@ lines:
     ::
 
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_1.ps
-     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T:LH >> GMT_App_O_1.ps
+     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T+lLH >> GMT_App_O_1.ps
 
 As seen in Figure :ref:`Contour label 1 <Contour_label_1>`, the contours are
 placed rather arbitrary. The string of contours for -40 to
@@ -9335,7 +9335,7 @@ contour line should have:
     ::
 
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_2.ps
-     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T:LH >> GMT_App_O_2.ps
+     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T+lLH >> GMT_App_O_2.ps
 
 By selecting only one label per contour and requiring that labels only
 be placed on contour lines whose length exceed 1 inch, we achieve the
@@ -9368,7 +9368,7 @@ distance will host the label.
      130     10.5
      EOF
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_3.ps
-     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T:LH >> GMT_App_O_3.ps
+     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T+lLH >> GMT_App_O_3.ps
 
 The angle of the label is evaluated from the contour line geometry, and
 the final result is shown in Figure :ref:`Contour label 3 <Contour_label_3>`.
@@ -9395,7 +9395,7 @@ between the contour lines and a well-placed straight line segment. The
     ::
 
       gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_4.ps
-      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T:LH >> GMT_App_O_4.ps
+      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T+lLH >> GMT_App_O_4.ps
 
 The obvious choice in this example is to specify a great circle between
 the high and the low, thus placing all labels between these extrema.
@@ -9426,7 +9426,7 @@ sense:
     ::
 
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_5.ps
-     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GXcross.txt -S10 -T:LH >> GMT_App_O_5.ps
+     gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GXcross.txt -S10 -T+lLH >> GMT_App_O_5.ps
 
 .. _Contour_label_5:
 
@@ -9463,7 +9463,7 @@ are placed normal to the line:
     ::
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_6.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 \
-     -T:'-+' >> GMT_App_O_6.ps
+     -T+l"-+" >> GMT_App_O_6.ps
      gmt psxy -R -J -O -SqD1000k:+g+LD+an+p -Wthick transect.txt >> GMT_App_O_6.ps
 
 .. _Contour_label_6:
@@ -9493,7 +9493,7 @@ inverse-video the label:
 
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_7.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 \
-     -T:-+ >> GMT_App_O_7.ps
+     -T+l"-+" >> GMT_App_O_7.ps
      gmt psxy -R -J -O -SqD15d:+gblack+fwhite+Ld+o+u\\260 -Wthick transect.txt >> GMT_App_O_7.ps
 
 The output is presented as Figure :ref:`Contour label 7 <Contour_label_7>`.
@@ -9522,7 +9522,7 @@ labels. This is done with **awk**.
      gmt gmtconvert -i0,1,4 -Em150 transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_8.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S \
-                    -S10 -T:-+ >> GMT_App_O_8.ps
+                    -S10 -T+l"-+" >> GMT_App_O_8.ps
      gmt psxy -R -J -O -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick transect.txt >> GMT_App_O_8.ps
 
 The output is presented as Figure :ref:`Contour label 8 <Contour_label_8>`.

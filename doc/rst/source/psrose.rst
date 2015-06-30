@@ -175,8 +175,8 @@ azimuth, and shown in Portrait orientation, use:
 
    ::
 
-    gmt psrose fault_segments.az_r -R0/150/-90/90 -B50g25:"Fault
-               length":/g30:."Rose diagram":-S3i -Ar10 -Glightblue
+    gmt psrose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
+               -Byg30 -B+t"Rose diagram"-S3i -Ar10 -Glightblue
                -W0.75p,red -Z0.001 -C -P -T -: > half_rose.ps
 
 To plot a full circle wind rose diagram of the data in the file
@@ -187,7 +187,7 @@ orientation with UNIX timestamp and command line plotted, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -S5c -Bg100/g45:."Windrose diagram": -W0.5p -Uc | lpr
+    gmt psrose lines.az_r -R0/500/0/360 -S5c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc | lpr
 
 Bugs
 ----

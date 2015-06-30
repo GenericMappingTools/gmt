@@ -1,14 +1,14 @@
-**-Td\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\ [**+j**\ *justify*]\ [**+l**\ *w,e,s,n*][**+o**\ *dx*\ [/*dy*]]
-    Draws a map directional rose on the map at the location defined by
+**-Td**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\ [**+j**\ *justify*]\ [**+l**\ *w,e,s,n*][**+o**\ *dx*\ [/*dy*]]
+    **-Td** draws a map directional rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
+    (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).  You can offset the reference point by *dx*/*dy* in
+    (3) use **n** for normalized (0-1) coordinates, or (4) use **x** for plot coordinates
+    (inches, cm, etc.) [Default].  You can offset the reference point by *dx*/*dy* in
     the direction implied by *justify*.
     The optional *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
-    reference point to an anchor point on the rectangular insert box [LB].  Note that if **-Tdj**\ *code*
+    reference point to an anchor point on the rectangular insert box [LB].  Note that if **j**\ *code*
     is used and **+j**\ *justify* is not set then *justify* is set equal to *code*.
     Append **+w**\ *width*\ [**u**]\ to set the width of the rose.
     Add **+f** to get a "fancy" rose, and specify in *level* what
@@ -22,18 +22,18 @@
     the direction implied by *justify*.
     See **-F** on how to place a panel behind the scale.
 
-**-Tm\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]
+**-Tm**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]
 
-    Draws a map magnetic rose on the map at the location defined by
+    **-Tm** draws a map magnetic rose on the map at the location defined by
     the reference and anchor points:
     Give the reference point on the map for the rose using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
+    (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).  You can offset the reference point by *dx*/*dy* in
+    (3) use **n** for normalized (0-1) coordinates, or (4) use **x** for plot coordinates
+    (inches, cm, etc.) [Default].  You can offset the reference point by *dx*/*dy* in
     the direction implied by *justify*.
     The optional *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
-    reference point to an anchor point on the rectangular insert box [LB].  Note that if **-Tdj**\ *code*
+    reference point to an anchor point on the rectangular insert box [LB].  Note that if **j**\ *code*
     is used and **+j**\ *justify* is not set then *justify* is set equal to *code*.
     Append **+w**\ *width*\ [**u**]\ to set the width of the rose.
     Use **+d** to assign the magnetic declination and set *dlabel*, which is a label for

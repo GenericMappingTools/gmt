@@ -234,8 +234,8 @@ dashed, blue pen for the rest, and send the output to the default printer:
 
    ::
 
-    gmt grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS \
-                   Misfit":-Wathick,red -Wcthinnest,blue,- | lp
+    gmt grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -Bx20 -By0.1 \
+               -B+t"RMS Misfit" -Wathick,red -Wcthinnest,blue,- | lp
 
 The labeling of local highs and lows may plot outside the innermost
 contour since only the mean value of the contour coordinates is used to
