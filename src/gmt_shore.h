@@ -92,6 +92,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int leftmost_bin;		/* true if current bin is at left edge of map */
 	int skip_feature;		/* true if GSHHS version > 2.0 and +r or +l is in use */
 	int ant_mode;			/* Antarctica mode [0-2] */
+	int ant_special;		/* 1 when dealing with crude bins 50-70S that must be split at 60S */
 	double bsize;			/* Size of square bins in degrees */
 	double lon_sw;			/* Longitude of SW corner */
 	double lat_sw;			/* Latitude of SW corner */
@@ -122,6 +123,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	char title[80];		/* Title of data set */
 	char source[80];	/* Source of data set */
 	char version[8];	/* Version of data set */
+	char res;		/* Resolution f,g,i,l,c */
 
 	/* netCDF ID variables */
 	

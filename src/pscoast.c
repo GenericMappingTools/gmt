@@ -929,7 +929,10 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		}
 
 		if (Ctrl->W.active && c.ns) {	/* Draw or dump shorelines, no need to assemble polygons */
-			if ((np = GMT_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) continue;
+			if ((np = GMT_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {
+				GMT_free_shore (GMT, &c);
+				continue;
+			}
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
