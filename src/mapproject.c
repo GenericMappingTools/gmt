@@ -590,13 +590,13 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 			ymin /= GMT->current.proj.scale[GMT_Y];
 			ymax /= GMT->current.proj.scale[GMT_Y];
 		}
-
-		/* Convert inches to chosen MEASURE */
-		xmin *= inch_to_unit;
-		xmax *= inch_to_unit;
-		ymin *= inch_to_unit;
-		ymax *= inch_to_unit;
-
+		else {
+			/* Convert inches to chosen MEASURE */
+			xmin *= inch_to_unit;
+			xmax *= inch_to_unit;
+			ymin *= inch_to_unit;
+			ymax *= inch_to_unit;
+		}
 		if (Ctrl->C.shift) {
 			xmin += Ctrl->C.easting;
 			xmax += Ctrl->C.easting;
