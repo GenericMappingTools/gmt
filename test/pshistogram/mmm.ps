@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13153 [64-bit] Document from pshistogram
+%%Title: GMT v5.2.0_r14429 [64-bit] Document from pshistogram
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri May 16 15:50:45 2014
+%%CreationDate: Mon Jun 29 17:03:16 2015
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -291,15 +291,15 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -307,6 +307,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +344,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +368,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +494,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -513,6 +541,9 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
@@ -533,8 +564,8 @@ end
     PSL_ST_prepare_text
     PSL_usebox
     {  PSL_rounded
-        {PSL_ST_textbox_rect}
         {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
       ifelse
       PSL_fillbox {V PSL_setboxrgb fill U} if
       PSL_drawbox {V PSL_setboxpen S U} if
@@ -557,7 +588,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -635,8 +666,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: pshistogram /Users/pwessel/GMTdev/gmt5-dev/branches/newclip/test/pshistogram/pac.txt -W50 -JX9i/6i -Bafg '-BWSne+glightblue+tPeak, Mode, Median, Mean' -R-6100/-500/0/700 -Gred -K -F
-%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245
+%%GMT: pshistogram /Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5-dev/branches/5.2.0/test/pshistogram/pac.txt -W50 -JX9i/6i -Bafg '-BWSne+glightblue+tPeak, Mode, Median, Mean' -R-6100/-500/0/700 -Gred -K -F
+%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -1025,7 +1056,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -R-6100/-500/0/700 -JX9i/6i -O -K -W2p -V tmp
-%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -1050,19 +1081,16 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-6100/-500/0/700 -JX9i/6i -O -K -D-4600/-600/280/690+glightgreen+p1p
-%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245
+%%GMT: psbasemap -R-6100/-500/0/700 -JX9i/6i -O -K -D-4600/-600/280/690 -F+glightgreen+p1p
+%%PROJ: xy -6100.00000000 -500.00000000 0.00000000 700.00000000 -6100.000 -500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+17 W
 {0.565 0.933 0.565 C} FS
 O1
-17 W
-/FO {P}!
--7714 0 0 4217 7714 0 3 2893 2880 SP
-/FO {fs os}!
-FO
+4217 7714 6750 4989 Sr
 %%EndObject
 0 A
 FQ
@@ -1070,8 +1098,8 @@ O0
 3600 3300 TM
 
 % PostScript produced by:
-%%GMT: pshistogram /Users/pwessel/GMTdev/gmt5-dev/branches/newclip/test/pshistogram/pac.txt -W50 -JX5.5i/3i -Bafg -BWSne -R-6100/-4500/0/700 -L0.25p -Gred -O -K -F -X3i -Y2.75i
-%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245
+%%GMT: pshistogram /Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5-dev/branches/5.2.0/test/pshistogram/pac.txt -W50 -JX5.5i/3i -Bafg -BWSne -R-6100/-4500/0/700 -L0.25p -Gred -O -K -F -X3i -Y2.75i
+%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1269,7 +1297,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -R-6100/-4500/0/700 -JX5.5i/3i -O -K -W2p -V tmp
-%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -1295,7 +1323,7 @@ O0
 
 % PostScript produced by:
 %%GMT: pstext -R-6100/-4500/0/700 -JX5.5i/3i -O -K -F+jCM+a90+f12p -Gwhite -W0.25p
-%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -1352,7 +1380,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -R-6100/-4500/0/700 -JX5.5i/3i -O -T
-%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -6100.00000000 -4500.00000000 0.00000000 700.00000000 -6100.000 -4500.000 0.000 700.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
