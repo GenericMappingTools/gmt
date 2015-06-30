@@ -2734,7 +2734,7 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 	double rect[4], dim[3], x0, y0, s;
 	struct GMT_MAP_PANEL *panel = B->panel;
 
-	GMT_set_refpoint (GMT, B->refpoint);	/* Finalize reference point plot coordinates, if needed */
+	if (B->refpoint) GMT_set_refpoint (GMT, B->refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 	/* First convert the information we have into the center and dimensions of a rectangle */
 	

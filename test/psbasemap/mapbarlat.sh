@@ -14,7 +14,7 @@ $dlon	0
 $dlon	80
 EOF
 for lat in 76 70 60 45 30 10; do
-	gmt psbasemap -R -J -Lg0/$lat+c0+f+w5000k+l"5000 km at Equator" -O -K >> $ps
+	gmt psbasemap -R -J -Lg0/$lat+c0+f+w5000k+l"5000 km at Equator"+jTC -O -K >> $ps
 done
 gmt psxy -R -J -O -Baf -K -Y5i -W0.25p,- << EOF >> $ps
 >
@@ -30,6 +30,6 @@ gmt psxy -R -J -O -K -: t.txt -W0.25p >> $ps
 gmt math -T0/80/1 T COSD INV $dlon MUL NEG = t.txt
 gmt psxy -R -J -O -K -: t.txt -W0.25p >> $ps
 for lat in 76 70 60 45 30 10; do
-	gmt psbasemap -R -J -Lg0/$lat+c$lat+f/+w5000k+l"5000 km at ${lat}\312N" -O -K >> $ps
+	gmt psbasemap -R -J -Lg0/$lat+c$lat+f/+w5000k+l"5000 km at ${lat}\312N"+jTC -O -K >> $ps
 done
 gmt psxy -R -J -O -T >> $ps

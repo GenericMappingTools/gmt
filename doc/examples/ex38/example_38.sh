@@ -24,5 +24,5 @@ echo "315 -10 Normalized" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -
 gmt grdhisteq topo.nc -Gout.nc -N
 gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> $ps
 echo "315 -10 Quadratic" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
-gmt psscale -Dx0i/-0.4i+w5i/0.15i+h+e+n -O -Cc.cpt -Bx1 -By+lz >> $ps
+gmt psscale -Dx0i/-0.4i+w5i/0.15i+h+jTC+e+n -O -Cc.cpt -Bx1 -By+lz >> $ps
 rm -f itopo.nc out.nc ?.cpt

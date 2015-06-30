@@ -269,7 +269,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 	if (Ctrl->G.f_rgb[0] == -2) { Ctrl->G.f_rgb[0] = Ctrl->G.f_rgb[1] = Ctrl->G.f_rgb[2] = 0.0; }
 	if (Ctrl->G.b_rgb[0] == -2) { Ctrl->G.b_rgb[0] = Ctrl->G.b_rgb[1] = Ctrl->G.b_rgb[2] = 1.0; }
 
-	if (!Ctrl->D.active) {
+	if (!Ctrl->D.active) {	/* Old syntax without reference point implies -Dx0/0 */
 		Ctrl->D.refpoint = GMT_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
 		Ctrl->D.active = true;
 	}

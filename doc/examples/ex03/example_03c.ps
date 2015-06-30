@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13146 [64-bit] Document from psxy
+%%Title: GMT v5.2.0_r14429 [64-bit] Document from psxy
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu May 15 14:25:24 2014
+%%CreationDate: Mon Jun 29 15:47:41 2015
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -193,6 +193,7 @@
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
+    /ydepth exch def
     /textheight exch def
     /just exch def
     /offset exch def
@@ -200,7 +201,7 @@
     /pathdist 0 def
     /setdist offset def
     /charcount 0 def
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
     V flattenpath
 	{movetoproc} {linetoproc}
 	{curvetoproc} {closepathproc}
@@ -290,15 +291,15 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -306,6 +307,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -342,11 +344,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -366,6 +368,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -432,6 +461,8 @@ end
 {
   /PSL_just PSL_label_justify k get def
   /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
   PSL_usebox
   {PSL_CT_clippath
     PSL_fillbox
@@ -439,7 +470,7 @@ end
     PSL_drawbox
     {V PSL_setboxpen S U} if N
   } if
-  PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 /PSL_CT_clippath
 {
@@ -463,7 +494,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -510,6 +541,9 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
@@ -530,8 +564,8 @@ end
     PSL_ST_prepare_text
     PSL_usebox
     {  PSL_rounded
-        {PSL_ST_textbox_rect}
         {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
       ifelse
       PSL_fillbox {V PSL_setboxrgb fill U} if
       PSL_drawbox {V PSL_setboxpen S U} if
@@ -554,7 +588,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -604,7 +638,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label show
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -633,7 +667,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -R-1200/1200/-75/200 -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg '-Bxa500f100+lDistance along great circle' '-Bya100f25+lGravity anomaly (mGal)' -BWeSn '-UL/-1.75i/-1.25i/Example 3c in Cookbook'
-%%PROJ: xy -1200.00000000 1200.00000000 -75.00000000 200.00000000 -1200.000 1200.000 -75.000 200.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -1200.00000000 1200.00000000 -75.00000000 200.00000000 -1200.000 1200.000 -75.000 200.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_1
 % Begin GMT time-stamp
 V
@@ -649,19 +683,16 @@ O1
 180 438 219 90 Sr
 V N 0 0 T 438 180 scale /DeviceGray setcolorspace
 << /ImageType 1 /Decode [0 1] /Width 220 /Height 90 /BitsPerComponent 1
-   /ImageMatrix [220 0 0 -90 0 90] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+   /ImageMatrix [220 0 0 -90 0 90] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-J,g]g3$]7K"p`!':q.Jl)%V>:U(KAL:*14/6K8ZF4Dm.kO2E3j(_i!%-BQ@pnu,^j&L7Inhrk=kZ47tE4smR$r5nrRL<0ttk
-N)mVs):=Qdjb>!2a*mc!&OBb9u0JPcDf/oSB@m'YIl@rkq#;P1]c5O<LOp\Bc*Gj!#CoS%K?:8c`&X&mE4[:ISM>9=KKO7!1
-;>f&,5QWYsjPq0,=sjg&Hf'f&1X,"NKa^W8dC>9>,3h;khe)=q%db!$BS+VDOA8s&Z&)eLB'B/.-A!+3q.GbnW-H7b['N2!e
-gYBkc0eX"Z7-$GF"(<9^XQ:=ES$J)-Ic>@27O1"UX6ce4j\s5VAk+kZ!+=4ci=Vt!:W,WfE1\5-RIr39"$2$5eZdpT1@NhWn
-95Dcr@"s;oQ6N=Ab;@;]j$CiZ%W[LNJ#nQ;ndgr7Vj@&^7cE'XK_Q=(S'h/^-!=5eMH\g^_DaYimY,b6.J]ER?Go!"^>%8_g
-mgOOj8J4rSi[lZ3GdOA$qs>9CObBha9+IGks2S%(X!aQ=$l"(_L\/h=8CIWg21b$C@5lC$8r2rV9mQOs9bDtg4!,.%X"MJuX
-T[)!lQ_$Gaf?qc1siTSO!%3',\]ig%f;:c;_^nf&_!naWtNo6gNsAYe0CW^<A;?6nl/>;?=5tAoKn+"$*))!.V&m9>_!AAr5
-CAu,jSj8FsVIZ;@bpTU7^QdB4nZVm3<f;1sN&igC$rih)Ua9(1Yb;bB/LhaDJM_O61c1(XYq*C;hpG"Yr<5pOeGR,!c$]S27
-X,VffM*Q1EfZ?p5"1`Ka%@^Y#Ob*K$EqRp?.@Y%rrRVl'Tnc.7]R6S'2p!e(0[QQdp"-cYtuQ8SGQH&XfpEdVMk)5D\>bLt'
-RT,@CkIr<*i%IB7U`#an<"7IOmV<:AE!dju+RpOeRme3W;]K4#rSSP/8rhd0',1EA4aRB_I,:U(TOs+%m.Cpb9_I'u(Hfg$q
-DTIS7MsoF"n\M"l#Q~>
+G[Bde95`N=$jL)W>%jl[kU8K\'_DAg6B>"H=_*pF<&^bA>.A1dT9S_7ita&KN.Dkjkd+u$%m"o]`I%HgO0WeEJZ.F.+rYZk
+M.jT-_R<a/g1`tOTNRR"(E$>R_8`j9s'SsC3c(E(8^d;<9VVTgR:bT\Mes?_e/!A7"RBegmgCP3p'BF&P/KA>E%<:@.oZVk
+#cO,m3]n/I\rAr7Yf`*j]EH?iS@8"XDO*i9(gQ/d/Wa,g*fZq>#qUi'Or-ntCp%o\:A^%h:^bnV@__]iU/i0`b2!m2-Eeg<
+L0EG;f(I5(/8b;#Z_Sq/4([&GM'KjrAZN&CBb?(tbW%\&[]@r&/AV263rd/]bCi>8>qLtgX1?\iU&Jd*0TV3`#$2f<46(2K
+5K:$l[WcO$g])0O;M3!r;WH^uihJMp<t-4m4oR1.du)jaL\3@HTX9X1g6u#>ZZXk_Jb6q41eu5l/bERcq[C4cYm@CF\j'&Q
+R\OMqLgtd5(QcD^oGs);cAE;JeR!K4g3J_*Nm,Z3Nam+"^G91slmI;6bIL?19]BBpj1L<]k<5OqR!"1'ZVR5qAQmbBFmO1>
+/bC+K!G'asZLZLiKNGY!<f^jt:.'+"d<JXI\iVu<B9.H-0ZQt!-^g[7^R2uKBpqW?04M4bI4gMJ"FV0rQ6J2A.@hdpgVF*6
+A_IXcBTI'a1DeVhHggg<&%:Ao`&On~>
 U
 {1 A} FS
 PSL_g_h PSL_b_w PSL_g_w 0 Sb
@@ -1366,8 +1397,8 @@ O0
 16 -52 D
 8 -34 D
 S
-2 setlinecap
 25 W
+2 setlinecap
 N 0 6000 M 0 -6000 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -1422,6 +1453,7 @@ N 0 3273 M 42 0 D S
 N 0 4364 M 42 0 D S
 N 0 4909 M 42 0 D S
 N 0 5455 M 42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 -9600 0 T
 25 W
 N 0 0 M 9600 0 D S
@@ -1509,6 +1541,7 @@ N 8000 0 M 0 42 D S
 N 8400 0 M 0 42 D S
 N 9200 0 M 0 42 D S
 N 9600 0 M 0 42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -6000 T
 0 setlinecap
 %%EndObject
@@ -1519,7 +1552,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -R-1200/1200/-75/200 -JX8i/5i -O -Sp0.03i samp_ship.pg
-%%PROJ: xy -1200.00000000 1200.00000000 -75.00000000 200.00000000 -1200.000 1200.000 -75.000 200.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -1200.00000000 1200.00000000 -75.00000000 200.00000000 -1200.000 1200.000 -75.000 200.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin

@@ -32,7 +32,7 @@ gmt pscoast -R -J -O -K -Q -B10f5 -B+t"Clipping of Images" >> %ps%
 
 REM Put a color legend on top of the land mask
 
-gmt psscale -DjTR+o0.2+w4i/0.2i+h -R -J -Cgeoid.cpt -Bx5f1 -By+lm -I -O -K >> %ps%
+gmt psscale -DjTR+o0.3i/0.1i+w4i/0.2i+h -R -J -Cgeoid.cpt -Bx5f1 -By+lm -I -O -K >> %ps%
 
 REM Add a text paragraph (Note double %% to get a single % in DOS)
 echo 62 | gawk "{printf \"%%c 90 -10 12p 3i j\n\", $1}" > tmp

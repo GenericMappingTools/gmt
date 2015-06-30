@@ -686,7 +686,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						row_height = GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, 1, fill);
 						x_off = GMT_to_inch (GMT, bar_gap);
-						sprintf (buffer, "-C%s -O -K -Dx%gi/%gi+w%gi/%s+h %s", bar_cpt, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, Ctrl->D.dim[GMT_X] - 2 * x_off, bar_modifiers, module_options);
+						sprintf (buffer, "-C%s -O -K -Dx%gi/%gi+w%gi/%s+h+jTC %s", bar_cpt, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, Ctrl->D.dim[GMT_X] - 2 * x_off, bar_modifiers, module_options);
 						status = GMT_Call_Module (API, "psscale", GMT_MODULE_CMD, buffer);	/* Plot the colorbar */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
@@ -899,9 +899,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-h, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						if (gave_label && just == 't') row_base_y -= d_off;
 						if (!strcmp (txt_a, "-"))	/* No longitude needed */
-							sprintf (mapscale, "x%gi/%gi+c%s+w%s", Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, txt_b, txt_c);
+							sprintf (mapscale, "x%gi/%gi+c%s+jTC+w%s", Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, txt_b, txt_c);
 						else				/* Gave both lon and lat for scale */
-							sprintf (mapscale, "x%gi/%gi+c%s/%s+w%s", Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, txt_a, txt_b, txt_c);
+							sprintf (mapscale, "x%gi/%gi+c%s/%s+jTC+w%s", Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, txt_a, txt_b, txt_c);
 						if (r_options[0])	/* Gave specific -R -J on M line */
 							sprintf (buffer, "%s -O -K -L%s", r_options, mapscale);
 						else {	/* Must use -R -J as supplied to pslegend */
