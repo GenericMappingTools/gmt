@@ -3043,7 +3043,7 @@ void gmt_Nstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0
 
 #define M_VW	0.005
 #define M_HL	0.075
-#define M_HW	0.015
+#define M_HW	0.025
 
 #define DIST_TO_2ND_POINT 1.0
 
@@ -3084,7 +3084,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 			PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		}
 		offset = (level == GMT_ROSE_PRIMARY) ? mr->declination : 0.0;
-		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
+		GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[level]);
 		n_tick = GMT_linear_array (GMT, 0.0, 360.0, mr->g_int[level], 0.0, &val);
 		PSL_comment (PSL, "Draw %d tickmarks for magnetic rose %s circle\n", n_tick, type[level]);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of fine tickmarks (-1 to avoid repeating 360) */
@@ -3123,7 +3123,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 	}
 
 	/* Draw extra tick for the 4 main compass directions */
-	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
+	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_ROSE_SECONDARY]);
 	base = R[GMT_ROSE_SECONDARY] + GMT->current.setting.map_annot_offset[GMT_ROSE_SECONDARY] + GMT->current.setting.font_annot[GMT_ROSE_SECONDARY].size / PSL_POINTS_PER_INCH;
 	PSL_comment (PSL, "Draw 4 tickmarks and annotations for cardinal directions of magnetic rose\n", n_tick);
 	for (i = 0, k = 1; i < 360; i += 90, k++) {	/* 90-degree increments of tickmarks */
@@ -3145,7 +3145,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 			x[0] = mr->refpoint->x + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset) * c, y[0] = mr->refpoint->y + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset) * s;
 			form = GMT_setfont (GMT, &GMT->current.setting.font_title);
 			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_title.size, mr->label[k], ew_angle, ljust[k], form);
-			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
+			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_ROSE_SECONDARY]);
 		}
 	}
 
@@ -3160,6 +3160,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 		dim[0] = x[1], dim[1] = y[1],
 		dim[2] = M_VW * mr->size, dim[3] = M_HL * mr->size, dim[4] = M_HW * mr->size,
 		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = GMT_VEC_END | GMT_VEC_FILL;
+		GMT_setpen (GMT, &GMT->current.setting.map_default_pen);
 		GMT_setfill (GMT, &f, true);
 		PSL_plotsymbol (PSL, x[0], y[0], dim, PSL_VECTOR);
 		t_angle = fmod (ew_angle + 90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */

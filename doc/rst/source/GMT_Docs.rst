@@ -4349,6 +4349,16 @@ should be pinned.  There is one required and several optional modifiers:
    If only three intervals are given then we assume you want the same intervals for both rings.  As an example,
    to annotate every 90 degrees and tick every 15 and 5 degrees, add **+t**\ 90/15/5.
 
+.. figure:: /_images/GMT_mag_rose.*
+   :width: 500 px
+   :align: center
+
+   Magnetic direction map rose. This symbol is quite complicated and has many items whose attributes are
+   in part controlled by GMT defaults parameters and in part by the above modifiers.  The color-coded legend
+   indicates which parameters controls the font, pen, or color of the correspond item of the rose.  This rose
+   was specified by **-Tmg**\ -2/0.5\ **+w**\ 2.5i\ **+d**\ -14.5\ **+t**\ 45/10/5\ **+i**\ 0.25p,blue\ **+p**\ 0.25p,red\ **+l+j**\ CM.
+   See :doc:`gmt.conf` for more details on the default parameters.
+
 Placing color scale bars
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
