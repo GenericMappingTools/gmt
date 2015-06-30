@@ -342,6 +342,6 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`gmt.conf`,
-:doc:`gmtcolors`,:doc:`gmtlogo`
+:doc:`gmtcolors`, :doc:`gmtlogo`
 :doc:`psbasemap`, :doc:`pstext`,
 :doc:`psxy`

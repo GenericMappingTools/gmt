@@ -25,7 +25,8 @@ Synopsis
 [ **-O** ]
 [ **-P** ]
 [ |SYN_OPT-U| ]
-[ **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]] ]
+[ **-Td\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\ [**+j**\ *justify*]\ [**+l**\ *w,e,s,n*][**+o**\ *dx*\ [/*dy*]]]
+[ **-Tm\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -81,7 +82,7 @@ Optional Arguments
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.). Append **+w**\ *width*\ [**u**]\ [/*height*\ [**u**]] of bounding rectangle or box.
     The optional *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
-    reference point to an anchor point on the rectangular insert box [CT].  Note that if **-Dj**\ *code*
+    reference point to an anchor point on the rectangular insert box [LB].  Note that if **-Dj**\ *code*
     is used and **+j**\ *justify* is not set then *justify* is set equal to *code*.
     Finally, you can offset the insert box by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify*.
