@@ -4086,21 +4086,21 @@ Plot embellishments
 Apart from visualizing your data sets, GMT maps can also be embellished in several ways.
 The 8 embellishments currently available are
 
-*  Map scale showing the true scale at some location(s) on the map.
+*  **Map scale** showing the true scale at some location(s) on the map.
 
-*  Directional rose showing true north and other cardinal directions.
+*  **Directional rose** showing true north and other cardinal directions.
 
-*  Magnetic rose showing magnetic north and declination deviations.
+*  **Magnetic rose** showing magnetic north and declination deviations.
 
-*  Color bar relating the colors of your image to the data values.
+*  **Color bar** relating the colors of your image to the data values.
 
-*  Legend showing the meaning of the symbols on your map.
+*  **Map legend** showing the meaning of the symbols on your map.
 
-*  Overlay of raster image or EPS plots (e.g., institutional logos, photos, etc.).
+*  **Image overlay** of raster images or EPS figures (e.g., institutional logos, photos, etc.).
 
-*  Overlay of the GMT logo.
+*  **GMT logo** overlay.
 
-*  Map insert showing perhaps the location of your detailed area in a regional or global context.
+*  **Map insert** showing perhaps the location of your detailed area in a regional or global context.
 
 Each of these features share a common system for specifying the location on the plot where the
 feature will be placed.  They also share a common way for specifying the placement of a rectangular
@@ -4109,7 +4109,7 @@ the different features in more detail we will first review the "reference point/
 system used by GMT to specify such locations in relation to the underlying map, and then discuss
 the background panel attribute settings.
 
-Anchor and reference point specification
+Reference and anchor point specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_images/GMT_anchor.*
@@ -4130,7 +4130,7 @@ It may be helpful to consider the analog of a boat dropping an anchor: The boat 
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
 There are four different ways to specify the reference point on a map, allowing for complete freedom
-to select any location inside our outside the map.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
+to select any location inside or outside the map.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
 the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
 
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the origin.
@@ -4148,7 +4148,7 @@ the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
    place features at locations best referenced as fractions of the plot dimensions.
    An example of such a reference point might be **n**\ 0.2/0.1.
 
-#. [**j**] Specify the location using one of the nine justification codes, equivalent to the justification
+#. [**j**] Specify the location using one of the nine *justification codes*, equivalent to the justification
    codes for placing text strings in :doc:`pstext`.  This mechanism is illustrated in the above figure.
    This mechanism is preferred when you just want to place the feature in
    one of the corners or centered at one of the sides (or even smack in the middle).  Justification codes
@@ -4156,22 +4156,23 @@ the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
    An example of such a reference point might be **j**\ LT.
 
 If no code is specified we default to **x**.
-Any of the reference point mechanism can accept two additional, optional adjustments:
+The reference point may be modified by an optional adjustment:
 
-#. Selecting the anchor point.  While the reference point selection gives unlimited flexibility to pick
-   any point inside the map region, the anchor point selection is limited to the 9 justification points
-   discussed for the **j** reference point code above.  Add **+j**\ *anchor* to indicate which justification
-   point of the map feature should coregistered with the chosen reference point.  If an anchor point is not
-   specified then it defaults to the justification point set for the reference point (if **j**\ *code* was
-   used to set it), otherwise it takes on the default value of LB. For instance, **+j**\ TR would instead
-   select the top right point on the map feature as the anchor.
-
-#. Shifting the reference point.  For any of the reference point specifications, in particular
+#. For any of the reference point specifications, but in particular for
    the justification code method, it is likely that you will wish to offset the reference point away from
    your selection by some arbitrary amount.  Do so with  **+o**\ *dx*\ [/*dy*], where *dy* = *dx* if it is
    not provided.  These increments are added to the projected plot coordinates of the reference point, with
    positive values moving the reference point towards the anchor.  E.g., **+o**\ 0.2c will move the reference
    point towards the anchor by 0.2 cm.
+
+With the reference point taken care of, it is time to selecting the anchor point.
+While the reference point selection gives unlimited flexibility to pick
+any point inside or outside the map region, the anchor point selection is limited to the 9 justification points
+discussed for the **j** reference point code above.  Add **+j**\ *anchor* to indicate which justification
+point of the map feature should co-registered with the chosen reference point.  If an anchor point is not
+specified then it defaults to the justification point set for the reference point (if **j**\ *code* was
+used to set it), otherwise it takes on the default value of LB. For instance, **+j**\ TR would instead
+select the top right point on the map feature as the anchor.
 
 The background panel
 ~~~~~~~~~~~~~~~~~~~~
@@ -4243,7 +4244,7 @@ Here is a list of the attributes that is under your control:
 
 #. Map scale origin.  Required modifier given with **+c**\ [*slon*/]\ *slat*, where the longitude
    of the scale origin is optional for projections with constant scale along parallels.  For
-   a Mercator projection it may look like +c30N while an oblique projection may have **+c**\ 100W/23N,
+   a Mercator projection it may look like +**+c**\ 30N while an oblique projection may have **+c**\ 100W/23N,
    for instance.
 
 #. Fancy scale bar.  By default a plain-looking scale bar is plotted.  Upgrade to a fancier bar
@@ -4251,7 +4252,7 @@ Here is a list of the attributes that is under your control:
 
 #. Scale label. Turn on scale labels with **+l**.  By default, the scale label is initialized to
    equal the distance unit name.  Use the **+l**\ *label* argument to supply your own scale label,
-   such as**+l**\ "Distances at Equator".
+   such as **+l**\ "Distances at Equator".
 
 #. Scale label alignment.  The default alignment is on top of the bar [**+at**], but you can change
    this by selecting another alignment by appending them to the **+a** modifier, including
@@ -4328,8 +4329,8 @@ should be pinned.  There is one required and several optional modifiers:
    the specified declination).  Append **d**\ *dec*/- to indicate you do not want any declination label.
    As an example consider **d**\ 11/"Honolulu declination".
 
-#. Draw the secondary (inner) ring outline.  Normally it is not drawn, but you can change that by appending
-   **+i**\ *pen*.  For instance, adding **+i**\ thin will draw the right with the selected thin pen.
+#. Draw the secondary (outer) ring outline.  Normally it is not drawn, but you can change that by appending
+   **+p**\ *pen*.  For instance, adding **+p**\ thin will draw the right with the selected thin pen.
 
 #. Add labels.  As for directional roses you do so with **+l**, which places the current one-letter codes for west, east, south,
    and north at the four cardinal points.  These letters depend on the setting of :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`
@@ -4338,8 +4339,8 @@ should be pinned.  There is one required and several optional modifiers:
    of the cardinal points from being labeled by giving no label in the corresponding order.  E.g., **+l**",,Down,Up"
    would write Down and Up at the south and north cardinal point, respectively.
 
-#. Draw the primary (outer) ring outline.  It is also not normally drawn; change that by appending
-   **+p**\ *pen*.  For instance, adding **+p**\ thin,blue will draw the right with the selected thin, blue pen.
+#. Draw the primary (inner) ring outline.  It is also not normally drawn; change that by appending
+   **+i**\ *pen*.  For instance, adding **+i**\ thin,blue will draw the right with the selected thin, blue pen.
 
 #. Set annotation, tick and grid intervals.  Each ring has a default annotation [30], tick [5], and grid [1]
    interval (although here "grid interval" is just a finer tick interval drawn at half tickmark length).
@@ -4350,7 +4351,7 @@ should be pinned.  There is one required and several optional modifiers:
    to annotate every 90 degrees and tick every 15 and 5 degrees, add **+t**\ 90/15/5.
 
 .. figure:: /_images/GMT_mag_rose.*
-   :width: 500 px
+   :width: 600 px
    :align: center
 
    Magnetic direction map rose. This symbol is quite complicated and has many items whose attributes are
@@ -4464,7 +4465,7 @@ Placing a GMT logo on maps
 
 It is possible to overlay the GMT logo on maps as well, using the module :doc:`gmtlogo`.
 Like other features it requires reference and anchor points and their optional adjustments via the **-D** option.
-In addition, we require one modifiers to determine the logo's size.
+In addition, we require one modifier to set the logo's size.
 
 #. Specify logo width.  This is a required modifier and is set via **+w**\ *width*.
    The height is automatically set (it is half the width).  To place a 5 cm wide
@@ -4475,7 +4476,9 @@ In addition, we require one modifiers to determine the logo's size.
    :align: center
 
    Placement of the GMT logo. The logo itself only has a size modifier but the :doc:`gmtlogo`
-   module allows additional attributes such as a background map panel.
+   module allows additional attributes such as a background map panel.  Note: If no declination
+   setting is provided then the inner scale is replaced with a plain directional rose as
+   shown in the previous section.
 
 Placing map inserts
 ~~~~~~~~~~~~~~~~~~~
