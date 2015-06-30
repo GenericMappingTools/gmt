@@ -2731,7 +2731,7 @@ void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 {	/* Place a rectangle on the map, as defined by center point and dimensions or w/e/s/n in geo or projected coordinates */
 	unsigned int k;
-	double rect[4], dim[3], x0, y0, s;
+	double rect[4], dim[3], s;
 	struct GMT_MAP_PANEL *panel = B->panel;
 
 	if (B->refpoint) GMT_set_refpoint (GMT, B->refpoint);	/* Finalize reference point plot coordinates, if needed */
@@ -2800,8 +2800,6 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 	panel->width = rect[XHI] - rect[XLO];	panel->height = rect[YHI] - rect[YLO];
 	if (!panel->clearance) GMT_memset (panel->padding, 4, double);	/* No clearance is default for map inserts unless actually specified */
 	/* Report position and dimensions */
-	x0 = 0.5 * (rect[XHI] + rect[XLO]);
-	y0 = 0.5 * (rect[YHI] + rect[YLO]);
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Map insert lower left corner and dimensions (in %s): %g %g %g %g\n",
 		GMT->session.unit_name[GMT->current.setting.proj_length_unit], rect[XLO]*s, rect[YLO]*s, panel->width*s, panel->height);

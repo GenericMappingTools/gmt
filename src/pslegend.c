@@ -325,12 +325,11 @@ int debug_print = 0;	/* Change to 1 to get debug print for some buffer strings *
 int GMT_pslegend (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pslegend task */
 	unsigned int tbl, pos;
-	int i, k, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan;
+	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan;
 	int status = 0, object_ID;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false, drawn = false;
 	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0;
 	size_t n_char = 0;
-	 
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char txt_e[GMT_LEN256] = {""}, txt_f[GMT_LEN256] = {""}, key[GMT_LEN256] = {""}, sub[GMT_LEN256] = {""}, just;
 	char tmp[GMT_LEN256] = {""}, symbol[GMT_LEN256] = {""}, text[GMT_BUFSIZ] = {""}, image[GMT_BUFSIZ] = {""}, xx[GMT_LEN256] = {""};
@@ -338,7 +337,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	char font[GMT_LEN256] = {""}, lspace[GMT_LEN256] = {""}, tw[GMT_LEN256] = {""}, jj[GMT_LEN256] = {""};
 	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_modifiers[GMT_LEN256] = {""};
 	char module_options[GMT_LEN256] = {""}, r_options[GMT_LEN256] = {""};
-	char *opt = NULL, sarg[GMT_LEN256] = {""}, txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""};
+	char sarg[GMT_LEN256] = {""}, txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""};
 	char path[GMT_BUFSIZ] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
 	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 
@@ -488,30 +487,17 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 					case 'M':	/* Map scale record M lon0|- lat0 length[n|m|k][+opts] f|p  [-R -J] */
 						n_scan = sscanf (&line[2], "%s %s %s %s %s %s", txt_a, txt_b, txt_c, txt_d, txt_e, txt_f);
-						k = (txt_d[0] != 'f') ? 1 : 0;	/* Determines if we start -L with f or not */
 						for (i = 0, gave_mapscale_options = false; txt_c[i] && !gave_mapscale_options; i++) if (txt_c[i] == '+') gave_mapscale_options = true;
 						/* Default assumes label is added on top */
 						just = 't';
 						gave_label = true;
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
-
-						if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
-							char txt_cpy[GMT_BUFSIZ] = {""};
-							pos = 0;
-							strncpy (txt_cpy, opt, GMT_BUFSIZ);
-							while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
-								switch (p[0]) {
-									case 'u':	/* Label put behind annotation */
-										gave_label = false;
-										break;
-									case 'j':	/* Justification */
-										just = p[1];
-										break;
-									default:	/* Just ignore */
-										break;
-								}
-							}
-						}
+						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && GMT_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
+							just = string[0];
+						else if (GMT_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
+							just = string[0];
+						if (GMT_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
+							gave_label = false;	/* Not sure why I do this, will find out */
 						if (gave_label && (just == 't' || just == 'b')) height += d_off;
 						height += GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 						column_number = 0;
@@ -890,7 +876,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						gave_label = true;
 						row_height = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
-						if (GMT_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
+						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && GMT_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
+							just = string[0];
+						else if (GMT_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
 							just = string[0];
 						if (GMT_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
 							gave_label = false;	/* Not sure why I do this, will find out */
