@@ -1,6 +1,6 @@
 #!/bin/bash
 #	$Id$
-ps=GMT_rose.ps
+ps=GMT_mag_rose.ps
 # Magnetic rose with a specified declination
 gmt psbasemap -R-10/-2/13/1r -JOc0/0/50/60/7i -Baf -BWSne -P -K -X1.25i --MAP_ANNOT_OBLIQUE=34 --FONT_ANNOT_PRIMARY=12p > $ps
 gmt psbasemap -R -J -Tmg-2/0.5+w2.5i+d-14.5+t45/10/5+i0.25p,blue+p0.25p,red+l+jCM -O -K \
