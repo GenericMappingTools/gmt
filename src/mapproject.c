@@ -583,15 +583,20 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		xmax = (Ctrl->C.active) ? GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XHI];
 		ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 		ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
-		if (Ctrl->F.active) {	/* Convert to GMT inches */
+		if (Ctrl->F.active) {	/* Convert to meter, then to chosen unit */
 			strncpy (unit_name, scale_unit_name, GMT_LEN64);
 			xmin /= GMT->current.proj.scale[GMT_X];
 			xmax /= GMT->current.proj.scale[GMT_X];
 			ymin /= GMT->current.proj.scale[GMT_Y];
 			ymax /= GMT->current.proj.scale[GMT_Y];
+			if (unit) {	/* Change the 1:1 unit used */
+				xmin *= fwd_scale;
+				xmax *= fwd_scale;
+				ymin *= fwd_scale;
+				ymax *= fwd_scale;
+			}
 		}
-		else {
-			/* Convert inches to chosen MEASURE */
+		else {	/* Convert inches to chosen MEASURE */
 			xmin *= inch_to_unit;
 			xmax *= inch_to_unit;
 			ymin *= inch_to_unit;
