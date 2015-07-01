@@ -679,10 +679,14 @@ and others and issue calculations with **PSL_setcommand**.
     then we assume **PSL_plottextbox** was called first. Give
     *fontsize* in points. Normally, the text is typed using solid
     characters in the current color (set by **PSL_setcolor**). To draw
-    outline characters, set *mode* == 1; the outline will get the
+    outlined characters, set *mode* == 3; the outline will get the
     current color and the text is filled with the current fill color
     (set by **PSL_setfill**). Use *mode* == 2 if the current fill is a
-    pattern. If *fontsize* is negative it means that the current point
+    pattern. Use *mode* == 1 to achieve the same as *mode* == 3, while
+    preventing the outline from obsuring any filled text font; the outline
+    will hence be reduced to half the selected width. If the text is not
+    filled, *mode* == 1 operates the same as *mode* == 3.
+    If *fontsize* is negative it means that the current point
     has already been set before **PSL_plottext** was called and that
     (*x*, *y*) should be ignored.
 
@@ -802,7 +806,7 @@ and others and issue calculations with **PSL_setcommand**.
     the surrounding text box in user units (the clip path is the
     combination of all these text boxes). Use *justify* to specify
     how the text string relates to the coordinates (see
-    BF(JUSTIFICATION) for details). 
+    BF(JUSTIFICATION) for details).
     PSL_TXT_FILLBOX (128) will fill the text box (this requires you
     to first define the text box rgb color with **PSL_define_rgb**
     by setting a local PostScript variable that must be called PSL_setboxrgb).
