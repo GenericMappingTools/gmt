@@ -3524,7 +3524,11 @@ void gmt_get_origin (struct GMT_CTRL *GMT, double lon1, double lat1, double lon_
 }
 
 /*! . */
-void gmt_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
+void gmt_get_rotate_pole_old (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
+	/* THis is the old method of finding the N pole for an oblique Mercator projection based on
+	 * two points along the oblique Equator.  Based on stuff from Snyder.  However, when I recently
+	 * tried origin as 0,0 and an azimuth of 70 I got a pole of -270,90 which is clearly wrong.
+	 * Rather than finding why this is I replaced it with a much simpler cross-product rule */
 	double plon, plat, beta, dummy, x, y;
 	double sin_lon1, cos_lon1, sin_lon2, cos_lon2, sin_lat1, cos_lat1, sin_lat2, cos_lat2;
 
@@ -3537,6 +3541,30 @@ void gmt_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double lat1, double
 	x = sin_lat1 * cos_lat2 * sin_lon2 - cos_lat1 * sin_lat2 * sin_lon1;
 	plon = d_atan2d (y, x);
 	plat = atand (-cosd (plon - lon1) / tand (lat1));
+	if (plat < 0.0) {
+		plat = -plat;
+		plon += 180.0;
+		if (plon >= 360.0) plon -= 360.0;
+	}
+	GMT->current.proj.o_pole_lon = plon;
+	GMT->current.proj.o_pole_lat = plat;
+	sincosd (plat, &GMT->current.proj.o_sin_pole_lat, &GMT->current.proj.o_cos_pole_lat);
+	gmt_pole_rotate_forward (GMT, lon1, lat1, &beta, &dummy);
+	GMT->current.proj.o_beta = -beta;
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Oblique Mercator pole is %.12g %.12g, with beta = %.12g\n", plon, plat, -beta);
+}
+
+/*! . */
+void gmt_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
+	double plon, plat, beta, dummy;
+	double A[3], B[3], P[3];
+	/* Given A = (lon1, lat1) and B = (lon2, lat2), get P = A x B */
+	
+	GMT_geo_to_cart (GMT, lat1, lon1, A, true);	/* Cartesian vector for origin */
+	GMT_geo_to_cart (GMT, lat2, lon2, B, true);	/* Cartesian vector for 2nd point along oblique Equator */
+	GMT_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and center of Earth O) */
+	GMT_normalize3v (GMT, P);			/* Make sure P has unit length */
+	GMT_cart_to_geo (GMT, &plat, &plon, P, true);	/* Recover lon,lat of pole */
 	if (plat < 0.0) {
 		plat = -plat;
 		plon += 180.0;
