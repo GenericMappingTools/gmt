@@ -1731,11 +1731,11 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	if (size_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-size change not terminated [%s]\n", text);
 	if (color_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-color change not terminated [%s]\n", text);
 	if (under_on) PSL_message (PSL, PSL_MSG_FATAL, "Text underline not terminated [%s]\n", text);
-		
+
 	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
 
-int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *text, double angle, int justify, int pmode)
+int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *text, double angle, int justify, int mode)
 {
 	/* General purpose text plotter for single line of text.  For paragraphs, see PSL_plotparagraph.
 	* PSL_plottext positions and justifies the text string according to the parameters given.
@@ -1752,10 +1752,13 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	* justify:	indicates where on the textstring the x,y point refers to, see fig below.
 	*		If negative then we string leading and trailing blanks from the text.
 	*		0 means no justification (already done separately).
-	* pmode:	0 = normal text filled with solid color, 1 = draw outline of text using
+	* mode:	0 = normal text filled with solid color; 3 = draw outline of text using
 	*		the current line width and color; the text is filled with the current fill
-	*		(if set; otherwise no filling is taking place), 2 = no outline, but text fill
-	*		is a pattern so we use the outline path and not the show operator.
+	*		(if set, otherwise no filling is taking place); 2 = no outline, but text fill
+	*		is a pattern so we use the outline path and not the show operator;
+	*       1 = same as 3, except that half the outline width is plotted on the outside
+	*       of the filled text, so none of the text font is obscured by the outline
+	*		(If the text is not filled, 1 operates the same as 3).
 	*
 	*   9	    10      11
 	*   |----------------|
@@ -1765,10 +1768,10 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	*/
 
 	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, previous[BUFSIZ] = {""};
-	const char *op[2] = {"Z", "false charpath fs"}, *align[3] = {"0", "-2 div", "neg"};
+	const char *op[4] = {"Z", "false charpath V S U fs", "false charpath fs", "false charpath fs"}, *align[3] = {"0", "-2 div", "neg"};
 	char *plast = NULL;
 	const char *justcmd[12] = {"", "", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
-	int dy, i = 0, j, font, x_just, y_just, upen, ugap, mode = (pmode > 0);
+	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
 	bool last_sub = false, last_sup = false, supersub;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4];
@@ -1806,8 +1809,8 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 
 	if (!strchr (string, '@')) {	/* Plain text ... this is going to be easy! */
 		PSL_command (PSL, "(%s) %s%s", string, justcmd[justify], op[mode]);
-		if (pmode == 1) PSL_command (PSL, " S");
-		else if (pmode == 2) PSL_command (PSL, " N");
+		if (mode == 3) PSL_command (PSL, " S");
+		else if (mode == 2) PSL_command (PSL, " N");
 		PSL_command (PSL, (angle != 0.0 ) ? " U\n" : "\n");
 		PSL_free (string);
 		return (PSL_NO_ERROR);
@@ -2048,15 +2051,15 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		}
 		ptr = strtok_r (NULL, "@", &plast);
 	}
-	if (pmode == 1) PSL_command (PSL, "S\n");
-	else if (pmode == 2) PSL_command (PSL, "N\n");
+	if (mode == 3) PSL_command (PSL, "S\n");
+	else if (mode == 2) PSL_command (PSL, "N\n");
 	if (angle != 0.0) PSL_command (PSL, "U\n");
 	PSL->current.fontsize = 0.0;	/* Force reset */
 
 	PSL_free (piece);
 	PSL_free (piece2);
 	PSL_free (string);
-	
+
 	if (sub_on) PSL_message (PSL, PSL_MSG_FATAL, "Sub-scripting not terminated [%s]\n", text);
 	if (super_on) PSL_message (PSL, PSL_MSG_FATAL, "Super-scripting not terminated [%s]\n", text);
 	if (scaps_on) PSL_message (PSL, PSL_MSG_FATAL, "Small-caps not terminated [%s]\n", text);
@@ -2064,17 +2067,17 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	if (size_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-size change not terminated [%s]\n", text);
 	if (color_on) PSL_message (PSL, PSL_MSG_FATAL, "Font-color change not terminated [%s]\n", text);
 	if (under_on) PSL_message (PSL, PSL_MSG_FATAL, "Text underline not terminated [%s]\n", text);
-		
+
 	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
 
 void psl_remove_spaces (char *label[], int n_labels, int m[])
 {
 	int i, k, j, n_tot = n_labels;
-	
+
 	if (m)
 		for (i = 0; i < n_labels; i++) n_tot += m[i];	/* Count number of labels */
-		
+
 	for (i = 0; i < n_tot; i++) {	/* Strip leading and trailing blanks */
 		for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
 		if (k > 0) {	/* Shift text to start, eliminating spaces */
@@ -2108,15 +2111,15 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 	 * fontsize	Constant fontsize of all label texts [font use is the current font set with PSL_setfont]
 	 * just		Justification of text relative to label coordinates [constant for all labels]
 	 * offset	Clearances between text and textbox [constant]
-	 * mode		1: We place all the PSL variables required to use the text for clipping of painting.
-	 * mode		2: We paint the text that is stored in the PSL variables.
-	 * mode		4: We use the text stored in the PSL variables to set up a clip path.  Clipping is turned ON.
-	 * mode		8: We draw the paths.
-	 * mode		16: We turn clip path OFF.
-	 * mode		32: We want rounded rectangles instead of straight rectangular boxes [straight text only].
-	 * mode		64: Typeset text along path [straight text].
-	 * mode		128 = fill box
-	 * mode		256 = draw box
+	 * mode		= 1: We place all the PSL variables required to use the text for clipping of painting.
+	 * 			= 2: We paint the text that is stored in the PSL variables.
+	 * 			= 4: We use the text stored in the PSL variables to set up a clip path.  Clipping is turned ON.
+	 * 			= 8: We draw the paths.
+	 * 			= 16: We turn clip path OFF.
+	 * 			= 32: We want rounded rectangles instead of straight rectangular boxes [straight text only].
+	 * 			= 64: Typeset text along path [straight text].
+	 * 			= 128: Fill box
+	 * 			= 256: Draw box
 	 */
 
 	bool curved = ((mode & PSL_TXT_CURVED) == PSL_TXT_CURVED);	/* True if baseline must follow line path */
@@ -2150,7 +2153,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_comment (PSL, "Estimate text heights:\n");
 		PSL_command (PSL, "PSL_set_label_heights\n");	/* Estimate text heights */
 	}
-	
+
 	extras = mode & (PSL_TXT_ROUND | PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX);	/* This just gets these bit settings, if present */
 	if (mode & PSL_TXT_SHOW) {	/* Lay down visible text */
 		PSL_comment (PSL, "Display the texts:\n");
@@ -2655,7 +2658,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 		free (text[i]);	/* since strdup created it */
 
 	} /* End of word loop */
-	
+
 	if (sub_on) PSL_message (PSL, PSL_MSG_FATAL, "Sub-scripting not terminated [%s]\n", paragraph);
 	if (super_on) PSL_message (PSL, PSL_MSG_FATAL, "Super-scripting not terminated [%s]\n", paragraph);
 	if (scaps_on) PSL_message (PSL, PSL_MSG_FATAL, "Small-caps not terminated [%s]\n", paragraph);
@@ -4422,9 +4425,9 @@ void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int
 		new_tot += j;
 		i_offset += n[p];
 		k_offset += m[p];
-	
+
 	}
-		
+
 	PSL_comment (PSL, "Set concatenated coordinate arrays for line segments:\n");
 	PSL_command (PSL, "/PSL_path_x [ ");
 	for (i = k = 0; i < ntot; i++) {
@@ -4459,7 +4462,7 @@ void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, d
 
 	if (x == NULL && y == NULL) return;		/* No path */
 	for (i = 0; i < npath; i++) ntot += n[i];	/* Determine total number of points */
-		
+
 	PSL_comment (PSL, "Set coordinate arrays for text label placements:\n");
 	PSL_command (PSL, "/PSL_%s_x [ ", prefix);
 	for (i = 0; i < ntot; i++) {
