@@ -1,6 +1,6 @@
 #!/bin/bash
 # Oblique Mercator map for NZ using complementary poles
-ps=nzobl.ps
+ps=GMT_obl_nz.ps
 lon=173:17:02E
 lat=41:16:15S
 az=35
