@@ -298,6 +298,9 @@ Two of the established GMT common options have seen minor improvements:
 
 *  Implemented modifier **-B+n** to *not* draw the frame at all.
 
+*  Allow oblique Mercator projections to select projection poles in the
+   southern hemisphere by using upper-case selectors **A**\ \|\ **B**\ \|\ **C*C.
+
 *  Added a forth way to specify the region for a new grid via the new
    **-R**\ [**L**\ \|\ **C**\ \|\ **R**][**T**\ \|\ **M**\ \|\ **B**]\ *x0*/*y0*/*nx*/*ny*
    syntax where you specify an reference point and number of points in the two
@@ -329,6 +332,14 @@ A few changes have affects across GMT; these are:
 *  Added two alternative vector head choices (terminal and circle) in addition
    to the default "arrow" style.
 
+*  All eight map embellishment features (map scale, color bar, direction rose, magnetic
+   rose, GMT logo, raster images, map inserts, and map legends) now use a uniform
+   mechanism for specifying placement, justification, and attributes and is supported
+   by a new section in the documentation.
+
+*  Typesetting simultaneous sub- and super-scripts has improved (i.e., when a symbol
+   should have both a subscript and and a superscript).
+
 Program-specific improvements
 -----------------------------
 
@@ -339,6 +350,10 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate
    segments on output based on the number of of records it contains.
+
+*  :doc:`gmtmath` adds the operator **BDIST* for binomial distribution, as
+   well as the constants **TRANGE** and **TROW**, and we have renamed the
+   normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).
 
 *  :doc:`grdblend` relaxes the **-W** restriction on only one output grid
    and adds the new mode **-Wz** to write the weight*zsum grid.
@@ -357,9 +372,12 @@ changes to syntax will be backwards compatible:
     grid's metadata in WKT format.
 
 *  :doc:`grdmath` adds several new operators, such as **ARC** and **WRAP** for
-   angular operators, **LDISTG** (for distances to GSHHG), **CDIST2** and **SDIST2**
+   angular operators, **BDIST* for binomial distribution, **LDISTG** (for distances
+   to GSHHG), **CDIST2** and **SDIST2**
    (to complement **LDIST2** and **PDIST2**), while **LDIST1** has been renamed
-   to **LDISTC**.
+   to **LDISTC**.  We also add the constants **XRANGE**, **YRANGE**, **XCOL** and
+   **YROW**, and we have renamed the normalized coordinates from **Xn** to **XNORM**
+   and **Yn** to **YNORM** (but this is backwards compatible).
 
 *  :doc:`grdtrack` add modifier **-G+l**\ *list* modifier to provide a list of grids.
 
@@ -370,23 +388,23 @@ changes to syntax will be backwards compatible:
 *  :doc:`makecpt` takes **-E** to determine range from input data table.
 
 *  :doc:`mapproject` can be used in conjunction with the 3-D projection options to
-   compute 3-D projected coordinates.
+   compute 3-D projected coordinates.  We also added **-W** to simply output the
+   projected dimensions of the plot without reading input data.
 
 *  :doc:`psbasemap` now takes **-A** to save plot domain polygon in geographical coordinates.
-   The **-L** option for map scale has been revised (backwards compatible) and a
+   The **-L** option for map scale and **-T** for map roses hav been revised (backwards compatible) and a
    new uniform **-F** option to specify background panel and its many settings was added.
 
 *  :doc:`pscoast` can accept multiple **-E** settings to color features independently.
    We also have **-A** modifiers **+AS** to *only* plot Antarctica, **+ag** to use
    shelf ice grounding line for Antarctica coastline, and **+ai** to use ice/water
    front for Antarctica coastline [Default].  As above, the **-L** option for map scale
-   has been revised (backwards compatible) and a new uniform **-F** option to specify
+   and **-T** option for map roses have been revised (backwards compatible) and a new uniform **-F** option to specify
    background panel and its many settings was added.
-
 
 *  :doc:`psconvert` (apart from the name change) has several new features, such as
    reporting dimensions of the plot when **-A** and **-V** are used,
-   scaling the output plots via **-A+s**\ *width*\ [**u**][/\ *height*\ [**u**]],
+   scaling the output plots via **-A+s**\ [**m**]\ *width*\ [**u**][/\ *height*\ [**u**]],
    and **-Z** for removing the PostScript file on exit.  In addition, we have
    added SVG as a new output vector graphics format and now handle transparency even if
    non-PDF output formats are requested.
@@ -418,6 +436,7 @@ changes to syntax will be backwards compatible:
    The **-L** option has been enhanced to create envelope polygons around y(x),
    say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
+   The **-A** now has new modifiers **x**\ \|\ **y** for creating stair-case curves.
    Finally, custom symbols definition tests can now compare two input variables.
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
@@ -6229,9 +6248,9 @@ parallels and meridians are not very suitable as map boundaries.
 When working with oblique projections such as here, it is often much more convenient
 to specify the map domain in the projected coordinates relative to the map center.
 The figure below shows two views of New Zealand using the oblique Mercator projection
-that in both cases specifies the region using **-Rk**\ -1000/1000/500/500.  The leading
+that in both cases specifies the region using **-Rk**\ -1000/1000/-500/500.  The leading
 unit **k** means the following bounds are in projected km and we let GMT determine the
-geographic coordinates of the two diagonal corners.
+geographic coordinates of the two diagonal corners internally.
 
 .. figure:: /_images/GMT_obl_nz.*
    :width: 600 px
@@ -6241,13 +6260,13 @@ geographic coordinates of the two diagonal corners.
    indicated by the white circle for an oblique Equator with azimuth 35.  This
    resulted in the argument **-JOa**\ 173:17:02E/41:16:15S/35/3i.
    The map is 2000 km by 1000 km and the Cartesian
-   coordinate system in the projected units are indicated by the axes.  The blue
-   circle is the point (40S,180E) and has projected coordinates (426.2,	-399.7).
-   (right) Same region but now with an azimuth of 215, yielding a projection
-   pole in the southern hemisphere (hence we used -JOA to override the restriction,
+   coordinate system in the projected units are indicated by the bold axes.  The blue
+   circle is the point (40S,180E) and it has projected coordinates (*x* = 426.2, *y* = -399.7).
+   (right) Same dimensions but now specifying an azimuth of 215, yielding a projection
+   pole in the southern hemisphere (hence we used **-JOA** to override the restriction,
    i.e., **-JOA**\ 173:17:02E/41:16:15S/215/3i.)
    The projected coordinate system is still aligned as before but the Earth has been rotated
-   180 degrees.  The blue point now has projected coordinates (-426.2, 399.7).
+   180 degrees.  The blue point now has projected coordinates (*x* = -426.2, *y* = 399.7).
 
 Cassini cylindrical projection (**-Jc** **-JC**) :ref:`... <-Jc_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -493,7 +493,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\tPI                  = 3.1415926...\n"
 		"\tE                   = 2.7182818...\n"
 		"\tEULER               = 0.5772156...\n"
-		"\tTMIN, TMAX, RANGE, or TINC = the corresponding constant.\n"
+		"\tTMIN, TMAX, TRANGE, or TINC = the corresponding constant.\n"
 		"\tN                   = number of records.\n"
 		"\tT                   = table with t-coordinates.\n"
 		"\tTNORM               = table with normalized [-1 to +1] t-coordinates.\n"
