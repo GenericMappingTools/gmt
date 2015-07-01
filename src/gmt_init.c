@@ -338,13 +338,14 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_message (GMT, "\t   -Jn|N[<lon0>/]<scale>|<width> (Robinson projection)\n\t     Give central meridian (opt) and scale\n");
 
 			GMT_message (GMT, "\t   -Jo|O<parameters> (Oblique Mercator).  Specify one of three definitions:\n");
-			GMT_message (GMT, "\t     -Jo|O[a]<lon0>/<lat0>/<azimuth>/<scale>|<width>\n");
+			GMT_message (GMT, "\t     -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scale>|<width>\n");
 			GMT_message (GMT, "\t       Give origin, azimuth of oblique equator, and scale at oblique equator\n");
-			GMT_message (GMT, "\t     -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>\n");
+			GMT_message (GMT, "\t     -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>\n");
 			GMT_message (GMT, "\t       Give origin, second point on oblique equator, and scale at oblique equator\n");
-			GMT_message (GMT, "\t     -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>\n");
+			GMT_message (GMT, "\t     -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>\n");
 			GMT_message (GMT, "\t       Give origin, pole of projection, and scale at oblique equator\n");
 			GMT_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
+			GMT_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
 
 			GMT_message (GMT, "\t   -Jp|P[a]<scale>|<width>[/<base>][r|z] (Polar (theta,radius))\n");
 			GMT_message (GMT, "\t     Linear scaling for polar coordinates.\n");
@@ -442,9 +443,9 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_message (GMT, "\t   -Jn|N[<lon0>/]<scl>|<width> (Robinson projection)\n");
 
 			GMT_message (GMT, "\t   -Jo|O (Oblique Mercator).  Specify one of three definitions:\n");
-			GMT_message (GMT, "\t      -Jo|O[a]<lon0>/<lat0>/<azimuth>/<scl>|<width>\n");
-			GMT_message (GMT, "\t      -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>\n");
-			GMT_message (GMT, "\t      -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>\n");
+			GMT_message (GMT, "\t      -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scl>|<width>\n");
+			GMT_message (GMT, "\t      -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>\n");
+			GMT_message (GMT, "\t      -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>\n");
 
 			GMT_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scl>|<width> ((American) Polyconic)\n");
 
@@ -973,17 +974,17 @@ void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	if (part & 1) {	/* Here string is message, or NULL */
 		if (string) GMT_message (GMT, "\t-%c %s\n", option, string);
 		GMT_message (GMT, "\t   %sPositioning is specified via one of four coordinate systems:\n", tab[shift]);
-		GMT_message (GMT, "\t   %s  Use -Dg to specify <refpoint> with map coordinates.\n", tab[shift]);
-		GMT_message (GMT, "\t   %s  Use -Dj to specify <refpoint> with 2-char justification code (LB, CM, etc).\n", tab[shift]);
-		GMT_message (GMT, "\t   %s  Use -Dn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift]);
-		GMT_message (GMT, "\t   %s  Use -Dx to specify <refpoint> with plot coordinates.\n", tab[shift]);
-		GMT_message (GMT, "\t   %sAll except -Dx require the -R and -J options to be set.\n", tab[shift]);
+		GMT_message (GMT, "\t   %s  Use -%cg to specify <refpoint> with map coordinates.\n", tab[shift], option);
+		GMT_message (GMT, "\t   %s  Use -%cj to specify <refpoint> with 2-char justification code (LB, CM, etc).\n", tab[shift], option);
+		GMT_message (GMT, "\t   %s  Use -%cn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift], option);
+		GMT_message (GMT, "\t   %s  Use -%cx to specify <refpoint> with plot coordinates.\n", tab[shift], option);
+		GMT_message (GMT, "\t   %sAll except -%cx require the -R and -J options to be set.\n", tab[shift], option);
 	}
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is justification unless part == 3 */
 		char *just = (part == 3) ? "LB" : string;
 		GMT_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that anchor point on the %s with <refpoint> [%s].\n", tab[shift], type[kind], just);
-		GMT_message (GMT, "\t   %sNote for -Dj: If +j<justify> is not given then it inherits the code for <refpoint>.\n", tab[shift]);
+		GMT_message (GMT, "\t   %sNote for -%cj: If +j<justify> is not given then it inherits the code for <refpoint>.\n", tab[shift], option);
 		GMT_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from refpoint in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
 	}
 }

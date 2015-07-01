@@ -1,5 +1,5 @@
 #!/bin/bash
-ps=oblsuite.ps
+ps=oblsuite_N.ps
 gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-180/1:60000000 -Ba0fg -P -Gred -K -X1.25i -Y9i > $ps
 gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-150/1:60000000 -Ba0fg -O -K -Gred -Y-1.7i >> $ps
 gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-120/1:60000000 -Ba0fg -O -K -Gred -Y-1.7i >> $ps
