@@ -1201,8 +1201,9 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 
 	F->form = 1;	/* Default is to fill the text with a solid color */
 	if ((s = strchr (line, '='))) {	/* Specified an outline pen */
-		s[0] = 0;	/* Chop of this modifier */
-		if (GMT_getpen (GMT, &s[1], &F->pen))
+		s[0] = 0, i = 1;	/* Chop of this modifier */
+		if (s[1] == '=') F->form |= 8, i = 2;	/* Want to have an outline that can obscure the text */
+		if (GMT_getpen (GMT, &s[i], &F->pen))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Representation of font outline pen not recognized - ignored.\n");
 		else
 			F->form |= 2;	/* Turn on outline font flag */
@@ -1268,7 +1269,7 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 		if (GMT_getfill (GMT, fill, &F->fill)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Representation of font fill not recognized. Using default.\n");
 		if (F->fill.use_pattern) F->form &= 2, F->form |= 4;	/* Flag that font fill is a pattern and not solid color */
 	}
-	if (F->form == 0) {
+	if ((F->form & 7) == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot turn off both font fill and font outline.  Reset to font fill.\n");
 		F->form = 1;
 	}
@@ -2981,7 +2982,7 @@ void GMT_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P)
 {
 	/* For CPTs passed to/from external APIs we need to initialize some derived CPT quantities */
 	unsigned int k, n;
-	
+
 	for (n = 0; n < P->n_colors; n++) {
 		gmt_rgb_to_hsv (P->range[n].rgb_low,  P->range[n].hsv_low);
 		gmt_rgb_to_hsv (P->range[n].rgb_high, P->range[n].hsv_high);
@@ -7725,9 +7726,9 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 	GMT_memset (B, 1, struct GMT_MAP_INSERT);
 
 	if (gmt_ensure_new_mapinsert_syntax (GMT, option, in_text, text, oldshit)) return (1);	/* This recasts any old syntax using new syntax and gives a warning */
-	
+
 	/* Determine if we got an reference point or a region */
-	
+
 	if (strchr ("gjnx", text[0])) {	/* Did the reference point thing. */
 		/* Syntax is -Dg|j|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>] */
 		unsigned int last;
@@ -7898,7 +7899,7 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 	else	/* Set up ancher in geographical coordinates */
 		sprintf (string, "g%s/%s", txt_a, txt_b);
 	if ((ms->refpoint = GMT_get_refpoint (GMT, string)) == NULL) return (1);	/* Failed basic parsing */
-	
+
 	error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_sy, GMT_IS_LAT, &ms->origin[GMT_Y]), txt_sy);
 	if (k == 5)	/* Must also decode longitude of scale */
 		error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_sx, GMT_IS_LON, &ms->origin[GMT_X]), txt_sx);
@@ -7920,9 +7921,9 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Defining latitude is out of range\n", option);
 		error++;
 	}
-	
+
 	ms->old_style = (strstr (txt_cpy, "+f") || strstr (txt_cpy, "+g") || strstr (txt_cpy, "+p"));
-	
+
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
 		char p[GMT_BUFSIZ], oldshit[GMT_LEN128] = {""};
 		unsigned int pos = 0, bad = 0;
@@ -8001,7 +8002,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	char string[GMT_BUFSIZ] = {""};
 
 	if (!strstr (text, "+w")) return gmt_getscale_old (GMT, option, text, ms);	/* Old-style args */
-	
+
 	if (!text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -8012,9 +8013,9 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	ms->alignment = 't';	/* Default label placement is on top */
 
 	if ((ms->refpoint = GMT_get_refpoint (GMT, text)) == NULL) return (1);	/* Failed basic parsing */
-	
+
 	/* refpoint->args are now +c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+f][+j<just>][+l<label>][+u]. */
-	
+
 	if (GMT_get_modifier (ms->refpoint->args, 'c', string)) {
 		if (strchr (string, '/')) {	/* Got both lon and lat for scale */
 			if ((n = GMT_get_pair (GMT, string, GMT_PAIR_COORD, ms->origin)) < 2) error++;
@@ -8085,7 +8086,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	}
 	if (error)
 		GMT_mapscale_syntax (GMT, 'L', "Draw a map scale centered on specified reference point.");
-	
+
 	ms->plot = true;
 	return (error);
 }
@@ -8364,12 +8365,12 @@ int GMT_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double 
 int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_PANEL **Pptr) {
 	/* Gets the specifications for a rectangular panel w/optional reflection that is
 	 * used as background for legends, logos, images, and map scales. */
-	
+
 	unsigned int pos = 0;
 	int n_errors = 0, n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_MAP_PANEL *P = NULL;
-	
+
 	if (*Pptr) {	/* Already a panel structure there! */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_getpanel: Given a non-null panel pointer!\n");
 		return 1;
@@ -8387,7 +8388,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	for (pos = XHI; pos <= YHI; pos++) P->padding[pos] = P->padding[XLO];
 	P->off[GMT_X] = P->padding[XLO];	/* Set the shadow offsets [default is (4p, -4p)] */
 	P->off[GMT_Y] = -P->off[GMT_X];
-	
+
 	if (text == NULL || text[0] == 0) {	/* Blank arg means draw outline with default pen */
 		P->mode = GMT_PANEL_OUTLINE;
 		*Pptr = P;	/* Pass out the pointer to the panel attributes */
@@ -10708,7 +10709,7 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 	uint64_t tbl, seg, row, col, new_seg, last_row;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
-	
+
 	dim[GMT_COL] = Din->n_columns;	/* Same number of columns as input dataset */
 	/* Determine how many total segments will be created */
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
