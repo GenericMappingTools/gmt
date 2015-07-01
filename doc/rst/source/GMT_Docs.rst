@@ -299,7 +299,7 @@ Two of the established GMT common options have seen minor improvements:
 *  Implemented modifier **-B+n** to *not* draw the frame at all.
 
 *  Allow oblique Mercator projections to select projection poles in the
-   southern hemisphere by using upper-case selectors **A**\ \|\ **B**\ \|\ **C*C.
+   southern hemisphere by using upper-case selectors **A**\ \|\ **B**\ \|\ **C**.
 
 *  Added a forth way to specify the region for a new grid via the new
    **-R**\ [**L**\ \|\ **C**\ \|\ **R**][**T**\ \|\ **M**\ \|\ **B**]\ *x0*/*y0*/*nx*/*ny*
