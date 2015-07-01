@@ -249,6 +249,7 @@ struct GMT_PROJ {
 	bool JZ_set;		/* true if -Jz|Z was set */
 	bool GMT_convert_latitudes;	/* true if using spherical code with authalic/conformal latitudes */
 	bool inv_coordinates;	/* true if -fp[unit] was given and we must first recover lon,lat during reading */
+	bool N_hemi;		/* true if we only allow northern hemisphere oblique Mercator poles */
 	unsigned int n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 

@@ -3565,7 +3565,7 @@ void gmt_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double lat1, double
 	GMT_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and center of Earth O) */
 	GMT_normalize3v (GMT, P);			/* Make sure P has unit length */
 	GMT_cart_to_geo (GMT, &plat, &plon, P, true);	/* Recover lon,lat of pole */
-	if (plat < 0.0) {
+	if (GMT->current.proj.N_hemi && plat < 0.0) {	/* Insist on a Northen hemisphere pole */
 		plat = -plat;
 		plon += 180.0;
 		if (plon >= 360.0) plon -= 360.0;
