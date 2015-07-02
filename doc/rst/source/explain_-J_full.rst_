@@ -79,6 +79,7 @@ projection names stands for Equal-Area and Conformal, respectively):
             *lonp/latp*, and *scale*.
             Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
 	    The upper-case **A**\ \|\ **B**\ \|\ **C** to removes enforcement of a northern hemisphere pole.
+
 .. _-Jq_full:
 
     **-Jq**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or
