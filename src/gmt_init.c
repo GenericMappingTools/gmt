@@ -1293,7 +1293,8 @@ int GMT_default_error (struct GMT_CTRL *GMT, char option)
 		case 'X': error += GMT->common.X.active == false; break;
 		case 'Y': error += GMT->common.Y.active == false; break;
 		case 'a': error += GMT->common.a.active == false; break;
-		case 'b': error += (GMT->common.b.active[GMT_IN] == false && GMT->common.b.active[GMT_OUT] == false); break;
+		case 'b': error += ((GMT->common.b.active[GMT_IN] == false && GMT->common.b.nc[GMT_IN] == false) \
+			&& (GMT->common.b.active[GMT_OUT] == false && GMT->common.b.active[GMT_OUT] == false)); break;
 		case 'c': error += GMT->common.c.active == false; break;
 		case 'f': error += (GMT->common.f.active[GMT_IN] == false &&  GMT->common.f.active[GMT_OUT] == false); break;
 		case 'g': error += GMT->common.g.active == false; break;
@@ -1849,6 +1850,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 		}
 		else if (text[k] == 'c' && text[k+1] != ',') {	/* netCDF with list of variables */
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: -b[i]c<varlist> is deprecated. Use <file>?<varlist> instead.\n");
+			GMT->common.b.nc[id] = true;
 			GMT->common.b.active[id] = false;	/* Binary is 'false' if netCDF is to be read */
 			strncpy (GMT->common.b.varnames, &text[k+1], GMT_BUFSIZ);	/* Copy the list of netCDF variable names */
 			v4_parse = true;	/* Yes, we parsed a GMT4-compatible option */
@@ -1956,6 +1958,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 	}
 
 	if (!i_or_o) {	/* Specified neither i or o so let settings apply to both */
+		GMT->common.b.nc[GMT_OUT] = GMT->common.b.nc[GMT_IN];
 		GMT->common.b.active[GMT_OUT] = GMT->common.b.active[GMT_IN];
 		GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];
 		GMT->common.b.type[GMT_OUT] = GMT->common.b.type[GMT_IN];

@@ -114,6 +114,7 @@ struct GMT_COMMON {
 	} a;
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
 		bool active[2];		/* true if current input/output is in native binary format */
+		bool nc[2];		/* True if netcdf i/o */
 		bool o_delay;		/* true if we dont know number of output columns until we have read at least one input record */
 		enum GMT_swap_direction swab[2];	/* k_swap_in or k_swap_out if current binary input/output must be byte-swapped, else k_swap_none */
 		uint64_t ncol[2];		/* Number of expected columns of input/output
