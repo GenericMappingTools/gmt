@@ -11,5 +11,5 @@
 
 gmt psconvert -Tg -E600 -P -A -D. "${src:-.}"/GMT_App_F_stand+.ps
 gmt psconvert -Tg -E600 -P -A -D. "${src:-.}"/GMT_App_F_iso+.ps
-gmt psimage GMT_App_F_stand+.png -Dx0/0+e600 -P -K > GMT_App_F_stand+_iso+.ps
-gmt psimage GMT_App_F_iso+.png -Dx0/0+e600 -O -X3.2i >> GMT_App_F_stand+_iso+.ps
+gmt psimage GMT_App_F_stand+.png -Dx0/0+r600 -P -K > GMT_App_F_stand+_iso+.ps
+gmt psimage GMT_App_F_iso+.png -Dx0/0+r600 -O -X3.2i >> GMT_App_F_stand+_iso+.ps
