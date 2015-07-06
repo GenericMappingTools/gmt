@@ -2850,7 +2850,7 @@ When done you terminate the FFT machinery with
 
     double GMT_FFT_Destroy (void *API, void *K);
 
-which simply frees up the memory allocated by the FFT machinery.
+which simply frees up the memory allocated by the FFT machinery with ``GMT_FFT_Create``.
 
 FORTRAN interfaces
 ==================

@@ -643,8 +643,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		}
 
 		do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
-		GMT_free (GMT, FFT_info[0]);
-		GMT_free (GMT, FFT_info[1]);
+		for (k = 0; k < Ctrl->In.n_grids; k++)
+			GMT_FFT_Destroy (API, &(FFT_info[k]));
 		Return (EXIT_SUCCESS);
 	}
 
@@ -683,7 +683,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
                                 GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 				Return (API->error);
 			}
-			GMT_free (GMT, K);
+			GMT_FFT_Destroy (API, &(FFT_info[0]));
 			GMT_free (GMT, topo);
 			GMT_free (GMT, raised);
 			Return (EXIT_SUCCESS);
@@ -774,8 +774,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write Output...\n");
 
-	for (k = 0; k < Ctrl->In.n_grids; k++) GMT_free (GMT, FFT_info[k]);
-	if (Ctrl->D.variable) GMT_free (GMT, Rho_info);
+	for (k = 0; k < Ctrl->In.n_grids; k++)
+		GMT_FFT_Destroy (API, &(FFT_info[k]));
+	if (Ctrl->D.variable)
+		GMT_FFT_Destroy (API, &Rho_info);
 	GMT_free (GMT, raised);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);

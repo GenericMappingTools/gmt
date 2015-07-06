@@ -324,6 +324,7 @@ static inline struct GMT_IMAGE   * gmt_get_image_ptr (struct GMT_IMAGE **ptr) {r
 static inline struct GMT_GRID_ROWBYROW * gmt_get_rbr_ptr (struct GMT_GRID_ROWBYROW *ptr) {return (ptr);}
 static inline struct GMT_FFT_INFO * gmt_get_fftinfo_ptr (struct GMT_FFT_INFO *ptr) {return (ptr);}
 static inline struct GMT_FFT_WAVENUMBER * gmt_get_fftwave_ptr (struct GMT_FFT_WAVENUMBER *ptr) {return (ptr);}
+static inline struct GMT_FFT_WAVENUMBER ** gmt_get_fftwave_addr (struct GMT_FFT_WAVENUMBER **ptr) {return (ptr);}
 
 static inline struct GMT_GRID    * gmt_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
 
@@ -6191,13 +6192,13 @@ int GMT_FFT_ (void *X, int *direction, unsigned int *mode, void *v_K)
 /*! . */
 int GMT_FFT_Destroy (void *V_API, void *v_info)
 {	/* Perform any final duties, perhaps report.  For now just free */
-	struct GMT_FFT_INFO *info = NULL;
+	struct GMT_FFT_WAVENUMBER **K = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
-	info = gmt_get_fftinfo_ptr (v_info);
-	GMT_free (API->GMT, info->K);
-	GMT_free (API->GMT, info);
+	K = gmt_get_fftwave_addr (v_info);
+	if ((*K)->info) GMT_free (API->GMT, (*K)->info);
+	GMT_free (API->GMT, (*K));
 	return_error (V_API, GMT_NOERROR);
 }
 

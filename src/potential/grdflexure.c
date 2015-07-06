@@ -1014,13 +1014,12 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	/* 5. FREE ALL GRIDS AND ARRAYS */
 
 	for (t_load = 0; t_load < n_load_times; t_load++) {	/* Free up grid structures */
-		This_Load = Load[t_load];	/* Short-hand for current load */
-		if (This_Load == NULL) continue;	/* Quietly skip containers with no grids */
-		GMT_Destroy_Data (API, &This_Load->Grid);
-		if (This_Load->K->info) GMT_free (GMT, This_Load->K->info);
-		GMT_free (GMT, This_Load->K);
-		if (This_Load->Time) GMT_free (GMT, This_Load->Time);
-		GMT_free (GMT, This_Load);
+		This_Load = Load[t_load];			/* Short-hand for current load */
+		if (This_Load == NULL) continue;		/* Quietly skip containers with no grids */
+		GMT_Destroy_Data (API, &This_Load->Grid);	/* Free up grid used */
+		GMT_FFT_Destroy (API, &This_Load->K);		/* Free up wavenumber vectors and info structure created by GMT_FFT_Create */
+		if (This_Load->Time) GMT_free (GMT, This_Load->Time);	/* Free time array, if used */
+		GMT_free (GMT, This_Load);			/* Free load structure */
 	}
 	GMT_free (GMT, Load);
 	GMT_free (GMT, R);

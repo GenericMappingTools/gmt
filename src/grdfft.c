@@ -960,7 +960,8 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		}
 	}
 
-	for (k = 0; k < Ctrl->In.n_grids; k++) GMT_free (GMT, FFT_info[k]);
+	for (k = 0; k < Ctrl->In.n_grids; k++)
+		GMT_FFT_Destroy (API, &(FFT_info[k]));
 
 	Return (EXIT_SUCCESS);
 }
