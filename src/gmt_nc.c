@@ -572,7 +572,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 			if (header->ProjRefWKT == NULL) {				/* Must convert from proj4 string to WKT */
 				OGRSpatialReferenceH hSRS = OSRNewSpatialReference(NULL); 
 
-				if (!strncmp(header->ProjRefPROJ4, "+unavailable", 4)) {		/* Silently jump out of here */
+				if (!strncmp(header->ProjRefPROJ4, "+unavailable", 4) || strlen(header->ProjRefPROJ4) <= 5) {	/* Silently jump out of here */
 					OSRDestroySpatialReference(hSRS);
 					goto L100;
 				}
