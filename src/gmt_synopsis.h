@@ -52,9 +52,9 @@
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+r<remark>][+t<title>]"
 
 #ifdef GMT_MP_ENABLED
-#define GMT_x_OPT	" [-x+a|[-]<ncores>] "
+#define GMT_x_OPT	" [-x[[-]<n>]] "	/* Must add spaces and brackets here and place via %s since it may be blank */
 #define GMT_ADD_x_OPT	"x"
-#else
+#else	/* No Open-MP support */
 #define GMT_ADD_x_OPT	""
 #define GMT_x_OPT	""
 #endif

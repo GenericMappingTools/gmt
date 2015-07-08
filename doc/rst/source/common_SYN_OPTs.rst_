@@ -48,6 +48,8 @@
 
 .. |SYN_OPT-t| replace:: **-t**\ [*transp*]
 
+.. |SYN_OPT-x| replace:: **-x**\ [[-]\ *n*]
+
 .. |SYN_OPT-:| replace:: **-:**\ [**i**\ \|\ **o**]
 
 .. |No-spaces| replace:: **Note:** No space is allowed between the option flag and the associated arguments. 

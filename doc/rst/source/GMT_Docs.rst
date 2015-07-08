@@ -257,12 +257,18 @@ In addition, here are two established modules that have been given more suitable
 New common options
 ------------------
 
-We have added one new lower-case GMT common option:
+We have added two new lower-case GMT common option:
 
 *  Programs that need to specify which values should represent "no data"
    can now use **-d**\ [**i**\ \|\ **o**]\ *nodata*. For instance, this
    option replaces the old **-N** in :doc:`grd2xyz` and :doc:`xyz2grd`
    (but are backwards compatible).
+
+*  Programs using multi-threaded computational algorithms implemented
+   via OpenMP (and if compiled with OpenMP support) will offer the new
+   option **-x**\ [[-]\ *n*]. Specifying **-x** will try to utilize all
+   available cores.  Only some programs currently has this option, such
+   as greenspline, grdmath, and grdfilter.
 
 New default parameters
 ----------------------
@@ -2098,7 +2104,7 @@ Standardized command line options
 ---------------------------------
 
 Most of the programs take many of the same arguments such as those related
-to setting the data region, the map projection, etc. The 25 switches in
+to setting the data region, the map projection, etc. The 26 switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
@@ -2156,6 +2162,8 @@ importance (some are used a lot more than others).
 | **-s**   | Control output of records containing one or more NaNs              |
 +----------+--------------------------------------------------------------------+
 | **-t**   | Change layer PDF transparency                                      |
++----------+--------------------------------------------------------------------+
+| **-x**   | Set number of cores to be used in multi-threaded applications      |
 +----------+--------------------------------------------------------------------+
 | **-:**   | Assume input geographic data are (*lat,lon*) and not (*lon,lat*)   |
 +----------+--------------------------------------------------------------------+

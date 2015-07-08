@@ -581,10 +581,10 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 #ifdef GMT_MP_ENABLED
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
-			GMT_message (GMT, "\t-x Choose the number of processors used in multi-threading [1].\n");
-			GMT_message (GMT, "\t   -xa Use all available processors [%d].\n", GMT_get_num_processors());
-			GMT_message (GMT, "\t   -x<ncores>  Use <ncores> processors (not more than max available, off course).\n");
-			GMT_message (GMT, "\t   -x-<ncores> Use (all - <ncores>) processors.\n");
+			GMT_message (GMT, "\t-x Set the number of cores used in multi-threaded algorithms [1].\n");
+			GMT_message (GMT, "\t   -x Use all available cores [%d].\n", GMT_get_num_processors());
+			GMT_message (GMT, "\t   -x<n>  Use <n> cores (up to all available).\n");
+			GMT_message (GMT, "\t   -x-<n> Use (all - <n>) cores (or at least 1).\n");
 			break;
 #endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
@@ -2907,11 +2907,11 @@ int gmt_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 }
 
 #ifdef GMT_MP_ENABLED
-/*! -xa|[-]<ncores> */
+/*! -x[[-]<ncores>] */
 int gmt_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	GMT->common.x.active = true;
-	if (!arg || !arg[0]) return (GMT_NOERROR);      /* For the time being we ignore this, but in future it may mean -x1 */
-	if (arg[0] == 'a')                     /* Use all processors */
+	if (!arg) return (GMT_PARSE_ERROR);	/* -x requires a non-NULL argument */
+	if (arg[0] == '\0')                     /* Use all processors */
 		GMT->common.x.n_threads = GMT_get_num_processors();
 	else
 		GMT->common.x.n_threads = atoi (arg);
@@ -2919,7 +2919,7 @@ int gmt_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	if (GMT->common.x.n_threads == 0)
 		GMT->common.x.n_threads = 1;
 	else if (GMT->common.x.n_threads < 0)
-		GMT->common.x.n_threads = MAX(GMT_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max -n but at least one */
+		GMT->common.x.n_threads = MAX(GMT_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
 
 	return (GMT_NOERROR);
 }

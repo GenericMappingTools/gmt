@@ -26,7 +26,9 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-n| ]
-[ **-r** ] *operand* [ *operand* ] **OPERATOR** [ *operand* ]
+[ **-r** ]
+[ |SYN_OPT-x| ]
+*operand* [ *operand* ] **OPERATOR** [ *operand* ]
 **OPERATOR** ... **=** *outgrdfile*
 
 |No-spaces|
@@ -114,6 +116,8 @@ Optional Arguments
 
 .. |Add_nodereg| replace:: Only used with **-R** **-I**.
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
 
