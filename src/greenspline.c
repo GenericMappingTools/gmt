@@ -1871,12 +1871,13 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	if (Ctrl->C.active) {		/* Solve using svd decomposition */
 		int n_use, error;
 		double *v = NULL, *s = NULL, *b = NULL, eig_max = 0.0, limit;
-		
+	        
 		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by SVD\n");
 	
 		v = GMT_memory (GMT, NULL, nm * nm, double);
 		s = GMT_memory (GMT, NULL, nm, double);
 		if ((error = GMT_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v))) Return (error);
+		
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = GMT_memory (GMT, NULL, nm, double);
 			uint64_t e_dim[4] = {1, 1, nm, 2};
@@ -1902,6 +1903,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
 			GMT_free (GMT, eig);
+			
 			if (Ctrl->C.value < 0.0) {	/* We are done */
 				for (p = 0; p < nm; p++) GMT_free (GMT, X[p]);
 				GMT_free (GMT, X);
@@ -1939,7 +1941,10 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		}
 	}
 	alpha = obs;	/* Just a different name since the obs vector now holds the alpha factors */
-		
+	fp = fopen ("alpha.txt", "w");
+	for (p = 0; p < nm; p++) fprintf (fp, "%g\n", alpha[p]);
+	fclose (fp);
+	
 	GMT_free (GMT, A);
 
 	if (Ctrl->N.file) {	/* Specified nodes only */

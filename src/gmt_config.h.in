@@ -47,6 +47,9 @@
 /* compile with GDAL support <gdal.h> */
 #cmakedefine HAVE_GDAL
 
+/* compile with LAPACK support */
+#cmakedefine HAVE_LAPACK
+
 /* compile with FFTW3 support <fftw3.h> */
 #cmakedefine HAVE_FFTW3F
 #cmakedefine HAVE_FFTW3F_THREADS

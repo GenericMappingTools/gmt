@@ -479,7 +479,7 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigne
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
 /* Use version provided by DJ 2015-07-06 [SDSC] */
-int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
+int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
 {
 	/* void svdcmp(double *a,int m,int n,double *w,double *v) */
 
@@ -700,31 +700,35 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	return (GMT_NOERROR);
 }
 
-void gmt_mat_trans (double a[], unsigned int mrow, unsigned int ncol, double at[])
+int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
 {
-	/* Return the transpose of a */
-	int i, j;
-#ifdef GMT_USE_OPENMP
-#pragma omp parallel for private(i,j) shared(ncol,mrow,a,at)
+	/* Front for SVD calculations */
+#ifdef HAVE_LAPACK	
+/* Here we use Lapack */
+	int n = m_in, lda = m_in, info, lwork;
+	double wkopt, *work = NULL;
+	extern void dsyev ( char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info );
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_svdcmp: Using Lapack dsyev\n");
+	/* Query and allocate the optimal workspace */
+        lwork = -1;
+        dsyev ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
+        lwork = (int)wkopt;
+	work = GMT_memory (GMT, NULL, lwork, double);
+        /* Solve eigenproblem */
+        dsyev ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
+        /* Check for convergence */
+        if (info > 0 ) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT_svdcmp: dsyev failed to compute eigenvalues.\n" );
+		return (EXIT_FAILURE);
+        }
+       /* Free workspace */
+        GMT_free (GMT, work);
+	/* No separate v matrix but stored in a, so... */
+	v = a;
+#else
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_svdcmp: Using GMT's NR-based SVD\n");
+	return GMT_svdcmp_nr (GMT, a, m_in, n_in, w, v);
 #endif
-	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
-}
-
-void gmt_mat_mult (double a[], unsigned int mrow, unsigned int ncol, double b[], unsigned int kcol, double c[])
-{
-	/* Matrix multiplication a * b = c */
-	
-	int i, j, k, ij;
-#ifdef GMT_USE_OPENMP
-#pragma omp parallel for private(i,j,k,ij) shared(kcol,ncol,a,b,c,mrow)	
-#endif
-	for (i = 0; i < kcol; i++) {
-		for (j = 0; j < mrow; j++) {
-			ij = j * kcol + i;
-			c[ij] = 0.0;
-			for (k = 0; k < ncol; k++) c[ij] += a[j * ncol + k] * b[k * kcol + i];
-		}
-	}
 }
 
 /* Given the singular value decomposition of a matrix a[0...m-1][0...n-1]
@@ -751,17 +755,13 @@ int compare_singular_values (const void *point_1v, const void *point_2v)
 
 int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
 {
-	double *ut = NULL, sing_max, total_variance, variance = 0.0, limit;
+	double sing_max, total_variance, variance = 0.0, limit;
 	unsigned int i, j, n_use = 0;
+	double s, *tmp = GMT_memory (GMT, NULL, n, double);
 
-	/* allocate work space */
-	
-	ut = GMT_memory (GMT, NULL, n*m, double);	/* space for the transpose */
-	
 	/* find maximum singular value and total variance */
 	
-	sing_max = w[0];
-	total_variance = w[0];
+	sing_max = total_variance = w[0];
 	for (i = 1; i < n; i++) {
 		sing_max = MAX (sing_max, w[i]);
 		total_variance += w[i];
@@ -818,26 +818,43 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: Selected %d singular values that explain %g %% of total variance %g\n", n_use, *cutoff, total_variance);
 	
-	/* multiply V by 1/w */
+	/* Here w contains 1/eigenvalue so we multiply by w */
 	
-	for (i = 0; i < n; i++) for (j = 0; j < n; j++) v[j*n+i] *= w[i];
-			
-	/* get transpose of U */
-		
-	gmt_mat_trans (u, m, n, ut);
-	
-	/* multiply v(1/w)ut  -> this overwrites the matrix U */
-		
-	gmt_mat_mult (v, n, n, ut, m, u);
-	
-	/* multiply this result by b to get x */
-		
-	gmt_mat_mult (u, n, m, b, k, x);
+#ifdef HAVE_LAPACK
+	/* New Lapack SVD evaluation */
+	for (j = 0; j < n; j++) {
+		if (w[j] > 0.0) {	/* No point adding up if multiplying the sum by zero */
+			s = 0.0;
+#pragma omp parallel for private(i) shared(j,u,s,b,n)
+			for (i = 0; i < n; i++) s += u[j*n+i]*b[i];	/* Calculate v'*b */
+			tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
+		}
+	}
+#pragma omp parallel for private(i,j,s) shared(u,tmp,n,x)
+	for (j = 0; j < n; j++) {	/* Now premultiply by v */
+		s = 0.0;
+		for (i = 0; i < n; i++) s += u[i*n+j]*tmp[i];
+		x[j] = s;
+	}
+#else
+	for (j = 0; j < n; j++) {
+		if (w[j] > 0.0) {	/* No point adding up if multiplying the sum by zero */
+			s = 0.0;
+#pragma omp parallel for private(i) shared(j,u,s,b,n)
+			for (i = 0; i < n; i++) s += u[i*n+j]*b[i];	/* Calculate v'*b */
+			tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
+		}
+	}
+#pragma omp parallel for private(i,j,s) shared(v,tmp,n,x)
+	for (j = 0; j < n; j++) {	/* Now premultiply by v */
+		s = 0.0;
+		for (i = 0; i < n; i++) s += v[j*n+i]*tmp[i];
+		x[j] = s;
+	}
+#endif
 
-	/* free work space */
-
-	GMT_free (GMT, ut);
-	
+	GMT_free (GMT, tmp);
+	n_use = n;
 	return (n_use);
 }
 
