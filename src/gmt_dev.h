@@ -60,6 +60,19 @@ extern "C" {
  * Just grep for GMT_UNUSED to see where these situations occur.
  */
 
+/* Because gcc does not support some features in clang AND due to bugs in os/base.h we must add these,
+ * see http://stackoverflow.com/questions/26527077/compiling-with-accelerate-framework-on-osx-yosemite */
+
+#ifdef __APPLE__
+#ifndef __clang__
+#ifndef __has_extension
+#define __has_extension(x) 0
+#endif
+#define vImage_Utilities_h
+#define vImage_CVUtilities_h
+#endif
+#endif
+
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
