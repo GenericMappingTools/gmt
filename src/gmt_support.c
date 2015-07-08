@@ -11922,8 +11922,13 @@ void GMT_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A) {
 }
 
 /*! . */
-void GMT_report_mp (struct GMT_CTRL *GMT) {
+void GMT_enable_threads (struct GMT_CTRL *GMT) {
+	/* Control how many threads to use in Open MP section */
 #ifdef GMT_MP_ENABLED
-	if (GMT->common.x.active) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Using %d processors of %d available\n", GMT->common.x.n_threads, GMT_get_num_processors());
+	if (GMT->common.x.active) {
+		omp_set_dynamic (0);   			/* Explicitly disable dynamic teams */
+		omp_set_num_threads (GMT->common.x.n_threads);	/* Use requested threads for all consecutive parallel regions */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Enable %d threads of %d available\n", GMT->common.x.n_threads, GMT_get_num_processors());
+	}
 #endif
 }

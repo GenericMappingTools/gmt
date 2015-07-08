@@ -2909,8 +2909,6 @@ int gmt_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 #ifdef GMT_MP_ENABLED
 /*! -xa|[-]<ncores> */
 int gmt_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
-	char *s = NULL;
-
 	GMT->common.x.active = true;
 	if (!arg || !arg[0]) return (GMT_NOERROR);      /* For the time being we ignore this, but in future it may mean -x1 */
 	if (arg[0] == 'a')                     /* Use all processors */

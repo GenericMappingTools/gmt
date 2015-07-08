@@ -404,45 +404,44 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 	return (iet + ieb);   /* Return final error flag*/
 }
 
-#ifdef GMT_USE_OPENMP
-/* Use version provided by DJ 2015-07-06 [SDSC] */
 void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned int n)
 {
-	double *oa, *ob;
-
-	oa=(double *)malloc(sizeof(double)*n);
-    	ob=(double *)malloc(sizeof(double));
+	double *oa = (double *)malloc (sizeof(double)*n);
 
         memcpy(oa,a+n*n1,sizeof(double)*n);
         memcpy(a+n*n1,a+n*n2,sizeof(double)*n);
         memcpy(a+n*n2,oa,sizeof(double)*n);
-    
-        memcpy(ob,b+n1,sizeof(double));
-        memcpy(b+n1,b+n2,sizeof(double));
-        memcpy(b+n2,ob,sizeof(double));
 
+	double_swap (b[n1], b[n2]);
+
+	free (oa);
 }
 
 int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigned int ndim, double *b, unsigned int m_in, unsigned int mdim)
 {
     int i,j,k,n;
-    double sum, c, *oa, *ob; 
+    double sum, c; 
     n=ndim;
    
     switchRows(a, b, 0, n-1, n);
  
     for(j=0; j<n-1; j++)
     {
+	int jpinc = j+1;
+#ifdef GMT_USE_OPENMP
 #pragma omp parallel for private(i,k,c) shared(a,b,j,n)
+#endif
         for(i=j+1; i<n; i++)
         {
-		while (a[j*n+j] < 1.e-10) {
-			if(j+1 < n) {
-				switchRows(a, b, j, j+1, n);
-			} else {
+		while (a[j*n+j]*a[j*n+j] < 1.e-20) {
+			if(jpinc < n) {
+				switchRows(a, b, j, jpinc, n);
+				jpinc +=1;
+			}
+			else {
 				printf(" GaussJordan meet singular matric\n");
 			}
-		}
+		} 
                 c=a[i*n+j]/a[j*n+j];
                 for(k=j+1; k<n; k++)
                 {
@@ -466,96 +465,6 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigne
 
     return(0);
 }
-#else
-	/* The old, non-Open-MP version from before */
-	/* Modified from similar function in Numerical Recipes */
-
-int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigned int ndim, double *b, unsigned int m_in, unsigned int mdim)
-{
-	int i, j, k, l, ll, *ipiv = NULL, *indxc = NULL, *indxr = NULL, irow = 0, icol = 0;
-	int n = n_in, m = m_in;
-	double big, dum, pivinv;
-	
-	ipiv  = GMT_memory (GMT, NULL, n, int);
-	indxc = GMT_memory (GMT, NULL, n, int);
-	indxr = GMT_memory (GMT, NULL, n, int);
-	
-	for (i = 0; i < n; i++) {
-		big = 0.0;
-		for (j = 0; j < n; j++) {
-			if (ipiv[j] != 1) {
-				for (k = 0; k < n; k++) {
-					if (ipiv[k] == 0) {
-						if ((dum = fabs (a[j*ndim+k])) >= big) {
-							big = dum;
-							irow = j;
-							icol = k;
-						}
-					}
-					else if (ipiv[k] > 1) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gaussjordan: Singular matrix!\n");
-						GMT_free (GMT, ipiv);
-						GMT_free (GMT, indxc);
-						GMT_free (GMT, indxr);
-						return (1);
-					}
-				}
-			}
-		}
-		ipiv[icol]++;
-		
-		if (irow != icol) {
-			for (l = 0; l < n; l++) {
-				dum = a[irow*ndim+l];
-				a[irow*ndim+l] = a[icol*ndim+l];
-				a[icol*ndim+l] = dum;
-			}
-			for (l = 0; l < m; l++) {
-				dum = b[irow*mdim+l];
-				b[irow*mdim+l] = b[icol*mdim+l];
-				b[icol*mdim+l] = dum;
-			}
-		}
-		
-		indxr[i] = irow;
-		indxc[i] = icol;
-		if (a[icol*ndim+icol] == 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gaussjordan: Singular matrix!\n");
-			GMT_free (GMT, ipiv);
-			GMT_free (GMT, indxc);
-			GMT_free (GMT, indxr);
-			return (1);
-		}
-		pivinv = 1.0 / a[icol*ndim+icol];
-		a[icol*ndim+icol] = 1.0;
-		for (l = 0; l < n; l++) a[icol*ndim+l] *= pivinv;
-		for (l = 0; l < m; l++)  b[icol*mdim+l] *= pivinv;
-		for (ll = 0; ll < n; ll++) {
-			if (ll != icol) {
-				dum = a[ll*ndim+icol];
-				a[ll*ndim+icol] = 0.0;
-				for (l = 0; l < n; l++) a[ll*ndim+l] -= a[icol*ndim+l] * dum;
-				for (l = 0; l < m; l++) b[ll*mdim+l] -= b[icol*mdim+l] * dum;
-			}
-		}
-	}
-	for (l = n-1; l >= 0; l--) {
-		if (indxr[l] != indxc[l]) {
-			for (k = 0; k < n; k++) {
-				dum = a[k*ndim+indxr[l]];
-				a[k*ndim+indxr[l]] = a[k*ndim+indxc[l]];
-				a[k*ndim+indxc[l]] = dum;
-			}
-		}
-	}
-	
-	GMT_free (GMT, ipiv);
-	GMT_free (GMT, indxc);
-	GMT_free (GMT, indxr);
-	
-	return (0);
-}
-#endif
 
 /* Given a matrix a[0..m-1][0...n-1], this routine computes its singular
 	value decomposition, A=UWVt.  The matrix U replaces a on output.
@@ -569,7 +478,6 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigne
 
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
-#ifdef GMT_USE_OPENMP
 /* Use version provided by DJ 2015-07-06 [SDSC] */
 int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
 {
@@ -670,7 +578,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 		if (g) {
 			g=1.0/g;
 			if (i != n-1) {
+#ifdef GMT_USE_OPENMP
 #pragma omp parallel for private(j,k,f,s) shared(a,n,m,g,l)
+#endif
 				for (j=l;j<n;j++) {
 					for (s=0.0,k=l;k<m;k++) s += a[k*n+i]*a[k*n+j];	/* a[k][i] a[k][j] */
 					f=(s/a[i*n+i])*g;	/* a[i][i] */
@@ -729,224 +639,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 			}
 			if (its == 30) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT_svdcmp: No convergence in 30 iterations\n");
-				// return (EXIT_FAILURE);
-			}
-			x=w[l];		/* shift from bottom 2-by-2 minor */
-			nm=k-1;
-			y=w[nm];
-			g=rv1[nm];
-			h=rv1[k];
-			f=((y-z)*(y+z)+(g-h)*(g+h))/(2.0*h*y);
-			g=hypot (f,1.0);
-			f=((x-z)*(x+z)+h*((y/(f+SIGN(g,f)))-h))/x;
-
-				/* next QR transformation */
-
-			c=s=1.0;
-			for (j=l;j<=nm;j++) {
-				i=j+1;
-				g=rv1[i];
-				y=w[i];
-				h=s*g;
-				g=c*g;
-				z=hypot(f,h);
-				rv1[j]=z;
-				c=f/z;
-				s=h/z;
-				f=(x*c)+(g*s);
-				g=(g*c)-(x*s);
-				h=y*s;
-				y=y*c;
-				for (jj=0;jj<n;jj++) {
-					x=v[jj*n+j];	/* v[jj][j] */
-					z=v[jj*n+i];	/* v[jj][i] */
-					v[jj*n+j]=(x*c)+(z*s);	/* v[jj][j] */
-					v[jj*n+i]=(z*c)-(x*s);	/* v[jj][i] */
-				}
-				z=hypot(f,h);
-				w[j]=z;		/* rotation can be arbitrary if z=0 */
-				if (z) {
-					z=1.0/z;
-					c=f*z;
-					s=h*z;
-				}
-				f=(c*g)+(s*y);
-				x=(c*y)-(s*g);
-				for (jj=0;jj<m;jj++) {
-					y=a[jj*n+j];	/* a[jj][j] */
-					z=a[jj*n+i];	/* a[jj][i] */
-					a[jj*n+j]=(y*c)+(z*s);	/* a[jj][j] */
-					a[jj*n+i]=(z*c)-(y*s);	/* a[jj][i] */
-				}
-			}
-			rv1[l]=0.0;
-			rv1[k]=f;
-			w[k]=x;
-		}
-	}
-	GMT_free (GMT, rv1);
-	return (GMT_NOERROR);
-}
-#else
-	/* Old non-OpenMP version from before */
-int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
-{
-	/* void svdcmp(double *a,int m,int n,double *w,double *v) */
-	
-	int flag,i,its,j,jj,k,l=0,nm = 0, n = n_in, m = m_in;
-	double c,f,h,s,x,y,z;
-	double anorm=0.0,tnorm, g=0.0,scale=0.0;
-	double *rv1 = NULL;
-	
-	if (m < n) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT_svdcmp: m < n augment A with additional rows\n");
-		return (EXIT_FAILURE);
-	}
-	
-	/* allocate work space */
-		
-	rv1 = GMT_memory (GMT, NULL, n, double);
-	
-	/* do householder reduction to bidiagonal form */
-		
-	for (i=0;i<n;i++) {
-		l=i+1;
-		rv1[i]=scale*g;
-		g=s=scale=0.0;
-		if (i < m) {
-			for (k=i;k<m;k++) scale += fabs (a[k*n+i]);		/* a[k][i] */
-			if (scale) {
-				for (k=i;k<m;k++) {
-					a[k*n+i] /= scale;	/* a[k][i] */
-					s += a[k*n+i]*a[k*n+i];	/* a[k][i] */
-				}
-				f=a[i*n+i];	/* a[i][i] */
-				g= -1.0*SIGN(sqrt(s),f);
-				h=f*g-s;
-				a[i*n+i]=f-g;	/* a[i][i] */
-				if (i != n-1) {
-					for (j=l;j<n;j++) {
-						for (s=0.0,k=i;k<m;k++) s += a[k*n+i]*a[k*n+j];	/* a[k][i] a[k][j] */
-						f=s/h;
-						for (k=i;k<m;k++) a[k*n+j] += f*a[k*n+i];	/* a[k][j] a[k][i] */
-					}
-				}
-				for (k=i;k<m;k++) a[k*n+i] *= scale;	/* a[k][i] */
-			}
-		}
-		w[i]=scale*g;
-		g=s=scale=0.0;
-		if (i <= m-1 && i != n-1) {
-			for (k=l;k<n;k++) scale += fabs (a[i*n+k]);	/* a[i][k] */
-			if (scale) {
-				for (k=l;k<n;k++) {
-					a[i*n+k] /= scale;	/* a[i][k] */
-					s += a[i*n+k]*a[i*n+k];	/* a[i][k] */
-				}
-				f=a[i*n+l];	/* a[i][l] */
-				g = -1.0*SIGN(sqrt(s),f);
-				h=f*g-s;
-				a[i*n+l]=f-g;	/* a[i][l] */
-				for (k=l;k<n;k++) rv1[k]=a[i*n+k]/h;	/* a[i][k] */
-				if (i != m-1) {
-					for (j=l;j<m;j++) {
-						for (s=0.0,k=l;k<n;k++) s += a[j*n+k]*a[i*n+k];	/*a[j][k] a[i][k] */
-						for (k=l;k<n;k++) a[j*n+k] += s*rv1[k];	/* a[j][k] */
-					}
-				}
-				for (k=l;k<n;k++) a[i*n+k] *= scale;	/* a[i][k] */
-			}
-		}
-		tnorm=fabs (w[i])+fabs (rv1[i]);
-		anorm=MAX(anorm,tnorm);
-	}
-						
-	/* accumulation of right-hand transforms */
-		
-	for (i=n-1;i>=0;i--) {
-		if (i < n-1) {
-			if (g) {
-				for (j=l;j<n;j++) v[j*n+i]=(a[i*n+j]/a[i*n+l])/g;	/* v[j][i] a[i][j] a[i][l] */
-				for (j=l;j<n;j++) {
-					for (s=0.0,k=l;k<n;k++) s += a[i*n+k]*v[k*n+j];	/* a[i][k] v[k][j] */
-					for (k=l;k<n;k++) v[k*n+j] += s*v[k*n+i];	/* v[k][j] v[k][i] */
-				}
-			}
-			for (j=l;j<n;j++) v[i*n+j]=v[j*n+i]=0.0;	/* v[i][j] v[j][i] */
-		}
-		v[i*n+i]=1.0;	/* v[i][i] */
-		g=rv1[i];
-		l=i;
-	}
-	
-	/* accumulation of left-hand transforms */
-		
-	for (i=n-1;i>=0;i--) {
-		l=i+1;
-		g=w[i];
-		if (i < n-1) for (j=l;j<n;j++) a[i*n+j]=0.0;	/* a[i][j] */
-		if (g) {
-			g=1.0/g;
-			if (i != n-1) {
-				for (j=l;j<n;j++) {
-					for (s=0.0,k=l;k<m;k++) s += a[k*n+i]*a[k*n+j];	/* a[k][i] a[k][j] */
-					f=(s/a[i*n+i])*g;	/* a[i][i] */
-					for (k=i;k<m;k++) a[k*n+j] += f*a[k*n+i];	/* a[k][j] a[k][i] */
-				}
-			}
-			for (j=i;j<m;j++) a[j*n+i] *= g;	/* a[j][i] */
-		}
-		else {
-			for (j=i;j<m;j++) a[j*n+i]=0.0;	/* a[j][i] */
-		}
-		++a[i*n+i];	/* a[i][i] */
-	}
-	
-	/* diagonalization of the bidiagonal form */
-		
-	for (k=n-1;k>=0;k--) {			/* loop over singular values */
-		for (its=1;its<=30;its++) {	/* loop over allowed iterations */
-			flag=1;
-			for (l=k;l>=0;l--) {		/* test for splitting */
-				nm=l-1;
-				if (fabs(rv1[l])+anorm == anorm) {
-					flag=0;
-					break;
-				}
-				if (fabs (w[nm])+anorm == anorm) break;
-			}
-			if (flag) {
-				c=0.0;			/* cancellation of rv1[l] if l > 1 */
-				s=1.0;
-				for (i=l;i<=k;i++) {
-					f=s*rv1[i];
-					if (fabs (f)+anorm != anorm) {
-						g=w[i];
-						h=hypot (f,g);
-						w[i]=h;
-						h=1.0/h;
-						c=g*h;
-						s=(-1.0*f*h);
-						for (j=0;j<m;j++) {
-							y=a[j*n+nm];	/* a[j][nm] */
-							z=a[j*n+i];	/* a[j][i] */
-							a[j*n+nm]=(y*c)+(z*s);	/* a[j][nm] */
-							a[j*n+i]=(z*c)-(y*s);	/* a[j][i] */
-						}
-					}
-				}
-			}
-			z=w[k];
-			if (l == k) {		/* convergence */
-				if (z < 0.0) {	/* singular value is made positive */
-					w[k]= -1.0*z;
-					for (j=0;j<n;j++) v[j*n+k] *= (-1.0);	/* v[j][k] */
-				}
-				break;
-			}
-			if (its == 30) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT_svdcmp: No convergence in 30 iterations\n");
+#ifndef GMT_USE_OPENMP
 				return (EXIT_FAILURE);
+#endif
 			}
 			x=w[l];		/* shift from bottom 2-by-2 minor */
 			nm=k-1;
@@ -956,9 +651,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 			f=((y-z)*(y+z)+(g-h)*(g+h))/(2.0*h*y);
 			g=hypot (f,1.0);
 			f=((x-z)*(x+z)+h*((y/(f+SIGN(g,f)))-h))/x;
-			
+
 				/* next QR transformation */
-			
+
 			c=s=1.0;
 			for (j=l;j<=nm;j++) {
 				i=j+1;
@@ -1004,56 +699,33 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	GMT_free (GMT, rv1);
 	return (GMT_NOERROR);
 }
-#endif
 
-#ifdef GMT_USE_OPENMP
 void gmt_mat_trans (double a[], unsigned int mrow, unsigned int ncol, double at[])
 {
 	/* Return the transpose of a */
 	unsigned int i, j;
-#pragma omp parallel for private(i,j) shared(ncol,mrow,a,at)	
-	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
-}
-#else
-void gmt_mat_trans (double a[], unsigned int mrow, unsigned int ncol, double at[])
-{
-	/* Return the transpose of a */
-	unsigned int i, j;
-	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
-}
-#endif
-
 #ifdef GMT_USE_OPENMP
+#pragma omp parallel for private(i,j) shared(ncol,mrow,a,at)
+#endif
+	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
+}
+
 void gmt_mat_mult (double a[], unsigned int mrow, unsigned int ncol, double b[], unsigned int kcol, double c[])
 {
 	/* Matrix multiplication a * b = c */
 	
 	unsigned int i, j, k, ij;
+#ifdef GMT_USE_OPENMP
 #pragma omp parallel for private(i,j,k,ij) shared(kcol,ncol,a,b,c,mrow)	
-	for (i = 0; i < kcol; i++) {
-		for (j = 0; j < mrow; j++) {
-			ij = j * kcol + i;
-			c[ij] = 0.0;
-			for (k = 0; k < ncol; k++) c[ij] += a[j * ncol + k] * b[k * kcol + i];
-		}
-	}
-}
-#else
-void gmt_mat_mult (double a[], unsigned int mrow, unsigned int ncol, double b[], unsigned int kcol, double c[])
-{
-	/* Matrix multiplication a * b = c */
-	
-	unsigned int i, j, k, ij;
-	
-	for (i = 0; i < kcol; i++) {
-		for (j = 0; j < mrow; j++) {
-			ij = j * kcol + i;
-			c[ij] = 0.0;
-			for (k = 0; k < ncol; k++) c[ij] += a[j * ncol + k] * b[k * kcol + i];
-		}
-	}
-}
 #endif
+	for (i = 0; i < kcol; i++) {
+		for (j = 0; j < mrow; j++) {
+			ij = j * kcol + i;
+			c[ij] = 0.0;
+			for (k = 0; k < ncol; k++) c[ij] += a[j * ncol + k] * b[k * kcol + i];
+		}
+	}
+}
 
 /* Given the singular value decomposition of a matrix a[0...m-1][0...n-1]
 	solve the system of equations ax=b for x.  Input the matrices 

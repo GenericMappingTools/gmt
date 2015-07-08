@@ -41,6 +41,9 @@
  * resulting in a more stable expression that converges reasonably rapidly.  We now use this new series
  * solution for -Sq, combined with a (new) cubic spline interpolation.  This replaces the old -SQ machinery
  * with linear interpolation which is now deprecated.
+ *
+ * PW Update July 2015. With help from Dong Ju Choi, San Diego Supercomputing Center, we have added Open MP
+ * support in greenspline and the matrix solvers in gmt_vector.c.  Requires open MP support and use of -x.
  */
 
 #define THIS_MODULE_NAME	"greenspline"
@@ -49,6 +52,10 @@
 #define THIS_MODULE_KEYS	"<DI,ADi,NDi,TGi,CDo,GGO"
 
 #include "gmt_dev.h"
+
+#ifdef _OPENMP
+#define GMT_USE_OPENMP
+#endif
 
 #define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH") GMT_ADD_x_OPT
 
@@ -1358,7 +1365,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the greenspline main code ----------------------------*/
 
-	GMT_report_mp (GMT);
+	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
 	GMT_memset (par,   7, double);
@@ -1609,13 +1616,13 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	
 	/* Check for duplicates which would result in a singular matrix system; also update min/max radius */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Distance between closest constraint = %.12g]\n", r_min);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Distance between distant constraint = %.12g]\n", r_max);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Distance between closest constraints = %.12g]\n", r_min);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Distance between distant constraints = %.12g]\n", r_max);
 
 	if (n_duplicates) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
 		if (!Ctrl->C.active || GMT_IS_ZERO (Ctrl->C.value)) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Reconcile duplicates before running greenspline since they will result in a singular matrix\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "You must reconcile duplicates before running greenspline since they will result in a singular matrix\n");
 			for (p = 0; p < nm; p++) GMT_free (GMT, X[p]);
 			GMT_free (GMT, X);
 			GMT_free (GMT, obs);
@@ -2001,13 +2008,8 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		GMT_memset (V, 4, double);
 		for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {
 			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
-#if 0
-#ifdef _OPENMP
-			omp_set_dynamic (0);     // Explicitly disable dynamic teams
-			omp_set_num_threads (GMT->common.x.n_threads); // Use requested threads for all consecutive parallel regions
-			GMT_Report (API, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", omp_get_num_threads ());
+#ifdef GMT_USE_OPENMP
 #pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,Grid,xp,X,Ctrl,GMT,alpha,Lz,norm,Out,par)
-#endif
 #endif
 			for (row = 0; row < Grid->header->ny; row++) {
 				if (dimension > 1) V[GMT_Y] = yp[row];
