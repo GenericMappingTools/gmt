@@ -320,6 +320,8 @@ A few changes have affects across GMT; these are:
 
 *  Add optional multi-threading capabilities to grdfilter and the potential/grdgravmag3d
 
+*  Optional prerequisite LAPACK means SVD decomposition in greenspline is very fast.
+
 *  Allow comma-separated colors instead of CPT files in options that are
    used to pass a CPT file (typically this means **-C**).
 
