@@ -576,6 +576,10 @@ Notes On Operators
    24 bits.  Thus, bit operations are effectively limited to 24 bit.  All
    bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
 
+#. When OpenMP support is compiled in, a few operators will take advantage
+   of the ability to spread the load onto several cores.  At present, the
+   list of such operators is: **LDIST**.
+
 .. include:: explain_float.rst_
 
 .. include:: explain_grd_inout.rst_

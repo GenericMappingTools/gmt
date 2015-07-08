@@ -508,7 +508,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\t   No additional data files are read.  Output will be a single column with coefficients.\n"
 		"\t   Append +w if 3rd column contains weights and +s if 3rd column contains 1-sigmas.\n"
 		"\t   Append +e to evaluate solution and write t, f(t), the solution, residuals[, weight|sigma].\n"
-		"\t   Use eighter LSQFIT or SVDFIT to solve the [weighted] linear system.\n"
+		"\t   Use either LSQFIT or SVDFIT to solve the [weighted] linear system.\n"
 		"\t-C Change which columns to operate on [Default is all except time].\n"
 		"\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n"
 		"\t-E Set minimum eigenvalue used by LSQFIT and SVDFIT [1e-7].\n"
