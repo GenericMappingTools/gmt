@@ -33,7 +33,11 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:RVbdfghinrs" GMT_OPT("F")
+#ifdef _OPENMP
+#define GMT_USE_OPENMP
+#endif
+
+#define GMT_PROG_OPTIONS "-:RVbdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
@@ -2072,10 +2076,16 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	if ((D = ASCII_read (GMT, info, GMT_IS_LINE, "LDIST")) == NULL) return;
 	T = D->table[0];	/* Only one table in a single file */
 
-	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
-		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
-		(void) GMT_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, true, &d, NULL, NULL);
-		stack[last]->G->data[node] = (float)d;
+#ifdef GMT_USE_OPENMP
+#pragma omp parallel for private(row,col,node,d) shared(GMT,stack,info,T,last)
+#endif
+	for (row = 0; row < info->G->header->my; row++) {
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
+		for (col = 0; col < info->G->header->mx; col++) {	/* Visit each node */
+			(void) GMT_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, 1, &d, NULL, NULL);
+			node = GMT_IJ(info->G->header,row,col);
+			stack[last]->G->data[node] = (float)d;
+		}
 	}
 
 	ASCII_free (GMT, info, &D, "LDIST");	/* Free memory used for line */
@@ -2155,7 +2165,7 @@ void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 		if (stack[prev]->G->data[node] == 0.0)
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
-			(void) GMT_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, true, &d, NULL, NULL);
+			(void) GMT_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, 1, &d, NULL, NULL);
 			stack[prev]->G->data[node] = (float)d;
 		}
 	}
@@ -3784,6 +3794,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 
+	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Perform reverse Polish notation calculations on grids\n");
 	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
 	GMT_memset (recall, GRDMATH_STORE_SIZE, struct GRDMATH_STORE *);
@@ -3935,7 +3946,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F"), opt->option)) continue;
+		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
 
