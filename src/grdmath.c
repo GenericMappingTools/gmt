@@ -2068,7 +2068,7 @@ int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_DATA
 void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: LDIST 1 1 Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A.  */
 {
-	uint64_t node, row, col;
+	int64_t node, row, col;
 	double d;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;

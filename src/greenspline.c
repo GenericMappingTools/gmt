@@ -2007,6 +2007,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		}
 		GMT_memset (V, 4, double);
 		for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {
+			int64_t col, row, p; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
 			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
 #ifdef GMT_USE_OPENMP
 #pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,Grid,xp,X,Ctrl,GMT,alpha,Lz,norm,Out,par)

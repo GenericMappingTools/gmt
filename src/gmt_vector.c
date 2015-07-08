@@ -703,7 +703,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 void gmt_mat_trans (double a[], unsigned int mrow, unsigned int ncol, double at[])
 {
 	/* Return the transpose of a */
-	unsigned int i, j;
+	int i, j;
 #ifdef GMT_USE_OPENMP
 #pragma omp parallel for private(i,j) shared(ncol,mrow,a,at)
 #endif
@@ -714,7 +714,7 @@ void gmt_mat_mult (double a[], unsigned int mrow, unsigned int ncol, double b[],
 {
 	/* Matrix multiplication a * b = c */
 	
-	unsigned int i, j, k, ij;
+	int i, j, k, ij;
 #ifdef GMT_USE_OPENMP
 #pragma omp parallel for private(i,j,k,ij) shared(kcol,ncol,a,b,c,mrow)	
 #endif
