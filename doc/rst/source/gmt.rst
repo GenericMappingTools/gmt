@@ -194,6 +194,8 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_grd_inout.rst_
 
+.. include:: explain_core_full.rst_
+
 See Also
 --------
 
