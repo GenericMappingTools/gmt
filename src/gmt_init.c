@@ -579,13 +579,14 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
+#ifdef GMT_MP_ENABLED
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
-			GMT_message (GMT, "\t-x Choose the number of processors used in multi-threading.\n");
-			GMT_message (GMT, "\t   -x+a Use all available processors.\n");
-			GMT_message (GMT, "\t   -xn  Use n processors (not more than max available off course).\n");
-			GMT_message (GMT, "\t   -x-n Use (all - n) processors.\n");
+			GMT_message (GMT, "\t-x Choose the number of processors used in multi-threading [1].\n");
+			GMT_message (GMT, "\t   -xa Use all available processors [%d].\n", GMT_get_num_processors());
+			GMT_message (GMT, "\t   -x<ncores>  Use <ncores> processors (not more than max available, off course).\n");
+			GMT_message (GMT, "\t   -x-<ncores> Use (all - <ncores>) processors.\n");
 			break;
-
+#endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
 
 			GMT_message (GMT, "\t   -JZ|z For z component of 3-D projections.  Same syntax as -JX|x, i.e.,\n");
@@ -759,7 +760,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 			break;
 
-		default:
+		default:	/* Pass through, no error, might be things like -y not available */
 			break;
 		}
 	}
@@ -1516,7 +1517,7 @@ int GMT_default_error (struct GMT_CTRL *GMT, char option)
 		case 'r': error += GMT->common.r.active == false; break;
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
-#ifdef HAVE_GLIB_GTHREAD
+#ifdef GMT_MP_ENABLED
 		case 'x': error += GMT->common.x.active == false; break;
 #endif
 		case ':': error += GMT->common.colon.active == false; break;
@@ -2905,16 +2906,17 @@ int gmt_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	return (error);
 }
 
-#ifdef HAVE_GLIB_GTHREAD
-/*! -x+a|[-]n */
+#ifdef GMT_MP_ENABLED
+/*! -xa|[-]<ncores> */
 int gmt_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	char *s = NULL;
 
+	GMT->common.x.active = true;
 	if (!arg || !arg[0]) return (GMT_NOERROR);      /* For the time being we ignore this, but in future it may mean -x1 */
-	if ((s = strstr (arg, "+a")))                     /* Use all processors */
+	if (arg[0] == 'a')                     /* Use all processors */
 		GMT->common.x.n_threads = GMT_get_num_processors();
 	else
-		GMT->common.x.n_threads = atoi(arg);
+		GMT->common.x.n_threads = atoi (arg);
 
 	if (GMT->common.x.n_threads == 0)
 		GMT->common.x.n_threads = 1;
@@ -10630,7 +10632,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			}
 			break;
 
-#ifdef HAVE_GLIB_GTHREAD
+#ifdef GMT_MP_ENABLED
 		case 'x':
 			error += (GMT_more_than_once (GMT, GMT->common.x.active) || gmt_parse_x_option (GMT, item));
 			GMT->common.x.active = true;

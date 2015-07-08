@@ -51,6 +51,14 @@
 #define GMT_fo_OPT	"-f<info>"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+r<remark>][+t<title>]"
 
+#ifdef GMT_MP_ENABLED
+#define GMT_x_OPT	" [-x+a|[-]<ncores>] "
+#define GMT_ADD_x_OPT	"x"
+#else
+#define GMT_ADD_x_OPT	""
+#define GMT_x_OPT	""
+#endif
+
 /* For options needing a length or radius */
 
 #define GMT_DIST_OPT	"[-|+]<dist>[<unit>]"
@@ -108,7 +116,6 @@
 #define GMT_r_OPT	"-r"
 #define GMT_s_OPT	"-s[<cols>][a|r]"
 #define GMT_t_OPT	"-t<+a|[-]n>"
-#define GMT_x_OPT	"-x<threads>"
 #define GMT_colon_OPT	"-:[i|o]"
 
 /*! Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */

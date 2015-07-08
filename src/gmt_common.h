@@ -189,10 +189,12 @@ struct GMT_COMMON {
 		bool active;
 		double value;
 	} t;
+#ifdef GMT_MP_ENABLED
 	struct x {	/* -x+a|[-]n */
 		bool active;
 		int n_threads;
 	} x;
+#endif
 	struct colon {	/* -:[i|o] */
 		bool active;
 		bool toggle[2];

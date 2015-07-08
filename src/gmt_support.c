@@ -11920,3 +11920,10 @@ void GMT_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A) {
 	/* Now the reference point is given in plot coordinates (inches) */
 	A->mode = GMT_REFPOINT_PLOT;
 }
+
+/*! . */
+void GMT_report_mp (struct GMT_CTRL *GMT) {
+#ifdef GMT_MP_ENABLED
+	if (GMT->common.x.active) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Using %d processors of %d available\n", GMT->common.x.n_threads, GMT_get_num_processors());
+#endif
+}

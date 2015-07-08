@@ -50,7 +50,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH")
+#define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH") GMT_ADD_x_OPT
 
 double GMT_geodesic_dist_cos (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE);
 double GMT_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
@@ -195,8 +195,8 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
 	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|v]<cut>[/<file>]]\n\t[-D<mode>] [-L] [-N<nodes>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s]\n\n",
+		GMT_bi_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 	
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -260,7 +260,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note this will only have an effect if -C is used.\n");
 	GMT_Option (API, "V,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2-5 input columns depending on dimensionality (see -D) and weights (see -W).\n");
-	GMT_Option (API, "d,g,h,i,o,r,s,:,.");
+	GMT_Option (API, "d,g,h,i,o,r,s,x,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -1358,6 +1358,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the greenspline main code ----------------------------*/
 
+	GMT_report_mp (GMT);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
 	GMT_memset (par,   7, double);
@@ -2000,6 +2001,14 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		GMT_memset (V, 4, double);
 		for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {
 			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
+#if 0
+#ifdef _OPENMP
+			omp_set_dynamic (0);     // Explicitly disable dynamic teams
+			omp_set_num_threads (GMT->common.x.n_threads); // Use requested threads for all consecutive parallel regions
+			GMT_Report (API, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", omp_get_num_threads ());
+#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,Grid,xp,X,Ctrl,GMT,alpha,Lz,norm,Out,par)
+#endif
+#endif
 			for (row = 0; row < Grid->header->ny; row++) {
 				if (dimension > 1) V[GMT_Y] = yp[row];
 				for (col = 0; col < Grid->header->nx; col++) {
