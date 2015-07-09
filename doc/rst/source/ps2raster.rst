@@ -149,7 +149,7 @@ Optional Arguments
 
 **-W**\ [**+g**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*]
     Write a ESRI type world file suitable to make (e.g) .tif files be
-    recognized as geotiff by softwares that know how to do it. Be aware,
+    recognized as geotiff by software that know how to do it. Be aware,
     however, that different results are obtained depending on the image
     contents and if the **-B** option has been used or not. The trouble
     with the **-B** option is that it creates a frame and very likely

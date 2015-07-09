@@ -591,7 +591,7 @@ int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct G
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output columns \n");
 	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > 1 && Ctrl->model_parameters, 
-					"Syntax error -F option: When selecting model parameters, it must be the only ouput\n");
+					"Syntax error -F option: When selecting model parameters, it must be the only output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

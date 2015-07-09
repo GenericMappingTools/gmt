@@ -84,7 +84,7 @@ Optional Arguments
 
 **-T**
     Write the unique arcs of the construction [Default writes fillable
-    triangles or polygons]. When used with **-A** we store arc lenght in
+    triangles or polygons]. When used with **-A** we store arc length in
     the segment header in chosen unit (see **-L**).
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code

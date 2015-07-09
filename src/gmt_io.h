@@ -134,7 +134,7 @@ enum GMT_lon_enum {
 /* How to handle NaNs in records */
 
 enum GMT_io_nan_enum {
-	GMT_IO_NAN_OK = 0,	/* NaNs are fine; just ouput the record as is */
+	GMT_IO_NAN_OK = 0,	/* NaNs are fine; just output the record as is */
 	GMT_IO_NAN_SKIP,	/* -s[cols]	: Skip records with z == NaN in selected cols [z-col only] */
 	GMT_IO_NAN_KEEP,	/* -sr		: Skip records with z != NaN */
 	GMT_IO_NAN_ONE};	/* -sa		: Skip records with at least one NaN */

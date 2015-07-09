@@ -3934,7 +3934,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 	if (option & MGD77_RESET_EXACT) F->n_exact = 0;
 	all_exact = (option & MGD77_SET_ALLEXACT);
 
-	i = pos = 0;		/* Start at the first ouput column */
+	i = pos = 0;		/* Start at the first output column */
 	while ((GMT_strtok (cstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		/* Must check if we need to break this word into flag[=|<=|>=|<|>value] */
 		for (k = constraint = 0; p[k] && constraint == 0; k++) {
@@ -4016,7 +4016,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 
 	F->n_out_columns = i;
 
-	i = pos = 0;		/* Start at the first ouput column */
+	i = pos = 0;		/* Start at the first output column */
 	while ((GMT_strtok (bstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		if (p[0] == '+')
 			F->Bit_test[i].match = 1;

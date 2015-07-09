@@ -420,7 +420,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   gdal_translate command, in case you want to use this program\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to create a geoTIFF file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write a ESRI type world file suitable to make (e.g.,) .tif files be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   recognized as geotiff by softwares that know how to do it. Be aware,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   recognized as geotiff by software that know how to do it. Be aware,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   however, that different results are obtained depending on the image\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   contents and if the -B option has been used or not. The trouble with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -B is that it creates a frame and very likely its annotations and\n");

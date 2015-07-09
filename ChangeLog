@@ -402,7 +402,7 @@
 2013-03-26	pwessel
 	* psxy[z]:		The -S= geovector now has modifiers +o<plon>/<plat> for
 				specifying small circle geovectors; input is then just
-				lenght in km. Also +q to say input is rotation angles 1 and 2.
+				length in km. Also +q to say input is rotation angles 1 and 2.
 
 2013-03-25	pwessel
 	* greenspline.c:	Enhanced -Cv option to set desired level of variance explained.
@@ -11534,7 +11534,7 @@
 	* psxyz.c:	Vector attributes can now be scaled down proportional to length
 
 1992-02-07
-	* xyz2grd.c:	Now use same algoritm as block_eman to get i,j
+	* xyz2grd.c:	Now use same algorithm as blockmean to get i,j
 
 1992-02-07
 	* grd2xyz.c:	Now prints out correct x/y for pixel files
