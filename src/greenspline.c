@@ -1985,7 +1985,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	}
 	else {	/* Output on equidistance lattice */
 		uint64_t nz_off, nxy;
-		unsigned int col, row, layer, wmode = GMT_ADD_DEFAULT;
+		unsigned int layer, wmode = GMT_ADD_DEFAULT;
 		double *xp = NULL, *yp = NULL, wp, V[4];
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */

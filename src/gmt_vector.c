@@ -753,7 +753,7 @@ int compare_singular_values (const void *point_1v, const void *point_2v)
 int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
 {
 	double w_abs, sing_max, total_variance, variance = 0.0, limit;
-	unsigned int i, j, n_use = 0;
+	int i, j, n_use = 0;
 	double s, *tmp = GMT_memory (GMT, NULL, n, double);
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_solve_svd: Evaluate solution\n");
@@ -812,11 +812,17 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	}		
 	*cutoff = (100.0 * variance / total_variance);	/* Actual explained variance level in % */
 	if (mode == 0)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: Ratio limit %g gave %d singular values that explain %g %% of total variance %g\n", limit, n_use, *cutoff, total_variance);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "GMT_solve_svd: Ratio limit %g gave %d singular values that explain %g %% of total variance %g\n",
+		            limit, n_use, *cutoff, total_variance);
 	if (mode == 1)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: Found %d singular values needed to explain %g %% of total variance %g\n", n_use, *cutoff, total_variance);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "GMT_solve_svd: Found %d singular values needed to explain %g %% of total variance %g\n",
+		            n_use, *cutoff, total_variance);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: Selected %d singular values that explain %g %% of total variance %g\n", n_use, *cutoff, total_variance);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "GMT_solve_svd: Selected %d singular values that explain %g %% of total variance %g\n",
+		            n_use, *cutoff, total_variance);
 	
 	/* Here w contains 1/eigenvalue so we multiply by w if w != 0*/
 	
