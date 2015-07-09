@@ -33,10 +33,6 @@
 
 #include "gmt_dev.h"
 
-#ifdef _OPENMP
-#define GMT_USE_OPENMP
-#endif
-
 #define GMT_PROG_OPTIONS "-:RVbdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
@@ -2076,7 +2072,7 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	if ((D = ASCII_read (GMT, info, GMT_IS_LINE, "LDIST")) == NULL) return;
 	T = D->table[0];	/* Only one table in a single file */
 
-#ifdef GMT_USE_OPENMP
+#ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d) shared(GMT,stack,info,T,last)
 #endif
 	for (row = 0; row < info->G->header->my; row++) {

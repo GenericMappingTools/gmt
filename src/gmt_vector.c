@@ -25,10 +25,6 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
-#ifdef _OPENMP
-#define GMT_USE_OPENMP
-#endif
-
 #define MAX_SWEEPS 50
 
 struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functions */
@@ -428,7 +424,7 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigne
     for(j=0; j<n-1; j++)
     {
 	int jpinc = j+1;
-#ifdef GMT_USE_OPENMP
+#ifdef _OPENMP
 #pragma omp parallel for private(i,k,c) shared(a,b,j,n)
 #endif
         for(i=j+1; i<n; i++)
@@ -578,7 +574,7 @@ int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned 
 		if (g) {
 			g=1.0/g;
 			if (i != n-1) {
-#ifdef GMT_USE_OPENMP
+#ifdef _OPENMP
 #pragma omp parallel for private(j,k,f,s) shared(a,n,m,g,l)
 #endif
 				for (j=l;j<n;j++) {
@@ -639,7 +635,7 @@ int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned 
 			}
 			if (its == 30) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT_svdcmp: No convergence in 30 iterations\n");
-#ifndef GMT_USE_OPENMP
+#ifndef _OPENMP
 				return (EXIT_FAILURE);
 #endif
 			}
