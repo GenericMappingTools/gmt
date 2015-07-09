@@ -703,18 +703,18 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 /* Here we use Lapack */
 	int n = m_in, lda = m_in, info, lwork, i, j;
 	double wkopt, *work = NULL;
-	extern void dsyev ( char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info );
+	extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_svdcmp: Using Lapack dsyev\n");
 	/* Query and allocate the optimal workspace */
         lwork = -1;
-        dsyev ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
+        dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
         lwork = (int)wkopt;
 	work = GMT_memory (GMT, NULL, lwork, double);
         /* Solve eigenproblem */
-        dsyev ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
+        dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
         /* Check for convergence */
         if (info > 0 ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT_svdcmp: dsyev failed to compute eigenvalues.\n" );
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_svdcmp: Error - dsyev failed to compute eigenvalues.\n" );
 		return (EXIT_FAILURE);
         }
        /* Free workspace */
