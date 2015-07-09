@@ -10,10 +10,9 @@
     Helvetica-Bold or 1). *fill* specifies the gray shade, color or
     pattern of the text (see `Specifying Fill`_ above). Optionally, you may
     append **=**\ *pen* to the *fill* value in order to draw a text
-    outline; this outline will, however, plotted only with half its width
-    on the outside of the text font, so that none of the font is obscured.
-    If you want to have the full pen width, thus partially obscuring the font,
-    append **==**\ *pen* instead.  If an outline is requested, you may optionally
+    outline. If you want to avoid that the outline partially obscures the text, append
+    append **=~**\ *pen* instead; in that case only half the linewidth is plotted
+    on the outside of the font only.  If an outline is requested, you may optionally
     skip the text *fill* by setting it to **-**, in which case the full pen width
     is always used. If any of the font attributes is omitted their default or
     previous setting will be retained.

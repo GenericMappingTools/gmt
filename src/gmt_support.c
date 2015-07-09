@@ -1202,7 +1202,7 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	F->form = 1;	/* Default is to fill the text with a solid color */
 	if ((s = strchr (line, '='))) {	/* Specified an outline pen */
 		s[0] = 0, i = 1;	/* Chop of this modifier */
-		if (s[1] == '=') F->form |= 8, i = 2;	/* Want to have an outline that can obscure the text */
+		if (s[1] == '~') F->form |= 8, i = 2;	/* Want to have an outline that does not obscure the text */
 		if (GMT_getpen (GMT, &s[i], &F->pen))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Representation of font outline pen not recognized - ignored.\n");
 		else

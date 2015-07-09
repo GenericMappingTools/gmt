@@ -681,13 +681,13 @@ and others and issue calculations with **PSL_setcommand**.
     then we assume **PSL_plottextbox** was called first. Give
     *fontsize* in points. Normally, the text is typed using solid
     characters in the current color (set by **PSL_setcolor**). To draw
-    outlined characters, set *mode* == 3; the outline will get the
+    outlined characters, set *mode* == 1; the outline will get the
     current color and the text is filled with the current fill color
     (set by **PSL_setfill**). Use *mode* == 2 if the current fill is a
-    pattern. Use *mode* == 1 to achieve the same as *mode* == 3, while
+    pattern. Use *mode* == 3 to achieve the same as *mode* == 1, while
     preventing the outline from obsuring any filled text font; the outline
     will hence be reduced to half the selected width. If the text is not
-    filled, *mode* == 1 operates the same as *mode* == 3.
+    filled, *mode* == 3 operates the same as *mode* == 1.
     If *fontsize* is negative it means that the current point
     has already been set before **PSL_plottext** was called and that
     (*x*, *y*) should be ignored.
