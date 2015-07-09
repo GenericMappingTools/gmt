@@ -705,7 +705,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	/* Front for SVD calculations */
 #ifdef HAVE_LAPACK	
 /* Here we use Lapack */
-	int n = m_in, lda = m_in, info, lwork;
+	int n = m_in, lda = m_in, info, lwork, i, j;
 	double wkopt, *work = NULL;
 	extern void dsyev ( char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info );
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_svdcmp: Using Lapack dsyev\n");
@@ -725,6 +725,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
         GMT_free (GMT, work);
 	/* No separate v matrix but stored in a, so... */
 	v = a;
+	return (GMT_NOERROR);
 #else
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_svdcmp: Using GMT's NR-based SVD\n");
 	return GMT_svdcmp_nr (GMT, a, m_in, n_in, w, v);
@@ -755,16 +756,18 @@ int compare_singular_values (const void *point_1v, const void *point_2v)
 
 int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
 {
-	double sing_max, total_variance, variance = 0.0, limit;
+	double w_abs, sing_max, total_variance, variance = 0.0, limit;
 	unsigned int i, j, n_use = 0;
 	double s, *tmp = GMT_memory (GMT, NULL, n, double);
 
-	/* find maximum singular value and total variance */
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_solve_svd: Evaluate solution\n");
+	/* find maximum singular value and total variance.  Assumes w[] may have negative eigenvalues */
 	
-	sing_max = total_variance = w[0];
+	sing_max = total_variance = fabs (w[0]);
 	for (i = 1; i < n; i++) {
-		sing_max = MAX (sing_max, w[i]);
-		total_variance += w[i];
+		w_abs = fabs (w[i]);
+		sing_max = MAX (sing_max, w_abs);
+		total_variance += w_abs;
 	}
 	
 	if (mode) {
@@ -779,8 +782,8 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		} *eigen;
 		unsigned int n_eigen = 0;
 		eigen = GMT_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
-		for (i = 0; i < n; i++) {	/* Load in original order from w */
-			eigen[i].value = w[i];
+		for (i = 0; i < n; i++) {	/* Load in original order from |w| */
+			eigen[i].value = fabs (w[i]);
 			eigen[i].order = i;
 		}
 		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), compare_singular_values);
@@ -801,8 +804,9 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	else {	/* Loop through singular values removing small ones (if limit is nonzero) */
 		limit = *cutoff;
 		for (i = 0; i < n; i++) {
-			if ((w[i]/sing_max) > limit) {
-				variance += w[i];
+			w_abs = fabs (w[i]);
+			if ((w_abs/sing_max) > limit) {
+				variance += w_abs;
 				w[i] = 1.0 / w[i];
 				n_use++;
 			}
@@ -818,32 +822,30 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: Selected %d singular values that explain %g %% of total variance %g\n", n_use, *cutoff, total_variance);
 	
-	/* Here w contains 1/eigenvalue so we multiply by w */
+	/* Here w contains 1/eigenvalue so we multiply by w if w != 0*/
 	
 #ifdef HAVE_LAPACK
 	/* New Lapack SVD evaluation */
 	for (j = 0; j < n; j++) {
-		if (w[j] > 0.0) {	/* No point adding up if multiplying the sum by zero */
-			s = 0.0;
-#pragma omp parallel for private(i) shared(j,u,s,b,n)
-			for (i = 0; i < n; i++) s += u[j*n+i]*b[i];	/* Calculate v'*b */
-			tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
-		}
+		if (w[j] == 0.0) continue;	/* No point adding up if multiplying the sum by zero */
+		s = 0.0;
+		for (i = 0; i < n; i++) s += u[j*n+i]*b[i];	/* Calculate v'*b */
+		//s = cblas_ddot (n, &u[j*n], 1, b, 1);
+		tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
 	}
 #pragma omp parallel for private(i,j,s) shared(u,tmp,n,x)
 	for (j = 0; j < n; j++) {	/* Now premultiply by v */
 		s = 0.0;
+		//s = cblas_ddot (n, &u[j], n, tmp, 1);
 		for (i = 0; i < n; i++) s += u[i*n+j]*tmp[i];
 		x[j] = s;
 	}
 #else
 	for (j = 0; j < n; j++) {
-		if (w[j] > 0.0) {	/* No point adding up if multiplying the sum by zero */
-			s = 0.0;
-#pragma omp parallel for private(i) shared(j,u,s,b,n)
-			for (i = 0; i < n; i++) s += u[i*n+j]*b[i];	/* Calculate v'*b */
-			tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
-		}
+		if (w[j] == 0.0) continue;	/* No point adding up if multiplying the sum by zero */
+		s = 0.0;
+		for (i = 0; i < n; i++) s += u[i*n+j]*b[i];	/* Calculate v'*b */
+		tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
 	}
 #pragma omp parallel for private(i,j,s) shared(v,tmp,n,x)
 	for (j = 0; j < n; j++) {	/* Now premultiply by v */
