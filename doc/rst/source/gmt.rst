@@ -107,6 +107,7 @@ The Common GMT Options
 **-r**
 |SYN_OPT-s|
 |SYN_OPT-t|
+|SYN_OPT-x|
 |SYN_OPT-:|
 
 Description
@@ -178,6 +179,8 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_-t_full.rst_
 
+.. include:: explain_core_full.rst_
+
 .. include:: explain_colon_full.rst_
 
 .. include:: explain_help.rst_
@@ -193,8 +196,6 @@ programs. No space between the option flag and the associated arguments.
 .. include:: explain_precision.rst_
 
 .. include:: explain_grd_inout.rst_
-
-.. include:: explain_core_full.rst_
 
 See Also
 --------
