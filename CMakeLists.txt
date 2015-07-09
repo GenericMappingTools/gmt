@@ -181,6 +181,8 @@ message(
 	"*  LAPACK library             : ${GMT_CONFIG_LAPACK_MESSAGE}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
+	"*  OpenMP support             : ${GMT_CONFIG_OPENMP_MESSAGE}\n"
+	"*  GLIB GTHREAD support       : ${GMT_CONFIG_GTHREAD_MESSAGE}\n"
 	"*  Build mode                 : ${BUILD_MODE}\n"
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
