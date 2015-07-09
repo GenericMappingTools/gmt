@@ -15,7 +15,7 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
- 
+
 /*
  * Holds current selections for the family of common GMT options.
  *
@@ -28,7 +28,7 @@
  * \file gmt_common.h
  * \brief Holds current selections for the family of common GMT options
  */
- 
+
 #ifndef _GMT_COMMON_H
 #define _GMT_COMMON_H
 
@@ -61,20 +61,20 @@ struct GMT_COMMON {
 		bool active[2];	/* 0 = primary annotation, 1 = secondary annotations */
 		int mode;	/* 5 = GMT 5 syntax, 4 = GMT 4 syntax, 1 = Either, -1 = mix (error), 0 = not set yet */
 		char string[2][GMT_LEN256];
-	} B;	
+	} B;
 	struct API_I {	/* -I<xinc>[/<yinc>] grids only, and for API use only */
 		bool active;
 		double inc[2];
-	} API_I;	
+	} API_I;
 	struct J {	/* -J<params> */
 		bool active, zactive;
 		unsigned int id;
 		double par[6];
 		char string[GMT_LEN256];
-	} J;		
+	} J;
 	struct K {	/* -K */
 		bool active;
-	} K;	
+	} K;
 	struct O {	/* -O */
 		bool active;
 	} O;
@@ -158,7 +158,7 @@ struct GMT_COMMON {
 		char *title;
 		char *remark;
 		char *colnames;	/* Not set by -h but maintained here */
-	} h;	
+	} h;
 	struct i {	/* -i<col>|<colrange>,... */
 		bool active;
 		uint64_t n_cols;
@@ -190,12 +190,10 @@ struct GMT_COMMON {
 		bool active;
 		double value;
 	} t;
-#ifdef GMT_MP_ENABLED
 	struct x {	/* -x+a|[-]n */
 		bool active;
 		int n_threads;
 	} x;
-#endif
 	struct colon {	/* -:[i|o] */
 		bool active;
 		bool toggle[2];
