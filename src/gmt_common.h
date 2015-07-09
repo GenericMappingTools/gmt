@@ -190,7 +190,7 @@ struct GMT_COMMON {
 		bool active;
 		double value;
 	} t;
-	struct x {	/* -x+a|[-]n */
+	struct x {	/* -x[[-]<n>] */
 		bool active;
 		int n_threads;
 	} x;

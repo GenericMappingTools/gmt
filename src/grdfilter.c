@@ -54,7 +54,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 #include "gmt_dev.h"
 #include "gmt_glib.h"
 
-#define GMT_PROG_OPTIONS "-RVfx"
+#define GMT_PROG_OPTIONS "-RVf" GMT_ADD_x_OPT
 
 struct GRDFILTER_CTRL {
 	struct GRDFILT_In {
@@ -542,7 +542,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<modifiers>] -G<outgrid>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]%s\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -604,12 +604,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
-	GMT_Option (API, "V,f");
-#ifdef HAVE_GLIB_GTHREAD
-	GMT_Option (API, "x");
-#else
-	GMT_Message (API, GMT_TIME_NONE, "\t-x Not available since this binary was not build with multi-threading support.\n");
-#endif
+	GMT_Option (API, "V,f,x");
 	GMT_Option (API, ".");
 
 	return (EXIT_FAILURE);

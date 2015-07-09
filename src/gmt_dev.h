@@ -78,13 +78,13 @@ extern "C" {
 #endif
 #endif
 
-#if defined HAVE_GLIB_GTHREAD || defined _OPENMP
+/* CMake definitions: This must be first! */
+#include "gmt_config.h"
+
+#if defined(HAVE_GLIB_GTHREAD) || defined(_OPENMP)
 /* This means we should enable the -x+a|[-]<ncores> common option */
 #define GMT_MP_ENABLED
 #endif
-
-/* CMake definitions: This must be first! */
-#include "gmt_config.h"
 
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"

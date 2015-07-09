@@ -11924,7 +11924,7 @@ void GMT_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A) {
 /*! . */
 void GMT_enable_threads (struct GMT_CTRL *GMT) {
 	/* Control how many threads to use in Open MP section */
-#ifdef GMT_MP_ENABLED
+#ifdef _OPENMP
 	if (GMT->common.x.active) {
 		omp_set_dynamic (0);   			/* Explicitly disable dynamic teams */
 		omp_set_num_threads (GMT->common.x.n_threads);	/* Use requested threads for all consecutive parallel regions */
