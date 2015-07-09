@@ -153,6 +153,11 @@ if (Threads_FOUND)
 	add_executable (pthreads_example pthreads_example.c)
 	include_directories(${PTHREADS_INCLUDE_DIR})
 	target_link_libraries(pthreads_example ${CMAKE_THREAD_LIBS_INIT})
+	set (GMT_CONFIG_PTHREAD_MESSAGE "enabled"
+		CACHE INTERNAL "PTHREAD config message")
+else (Threads_FOUND)
+	set (GMT_CONFIG_PTHREAD_MESSAGE "disabled"
+		CACHE INTERNAL "PTHREAD config message")
 endif (Threads_FOUND)
 
 find_package(GLIB COMPONENTS gthread)
@@ -161,18 +166,18 @@ if (GLIB_FOUND AND GMT_USE_THREADS)
 	include_directories (${GLIB_INCLUDE_DIRS})
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARIES})
 	set (GMT_CONFIG_GTHREAD_MESSAGE "enabled"
-		CACHE INTERNAL "OPENMP config message")
+		CACHE INTERNAL "GTHREAD config message")
 endif (GLIB_FOUND AND GMT_USE_THREADS)
 if (GLIB_FOUND AND NOT GMT_USE_THREADS)
 	set (HAVE_GLIB_GTHREAD FALSE CACHE INTERNAL "User disabled threads")
 	message (STATUS "User variable GMT_USE_THREADS not set: disabling GThread.")
 	set (GMT_CONFIG_GTHREAD_MESSAGE "disabled"
-		CACHE INTERNAL "OPENMP config message")
+		CACHE INTERNAL "GTHREAD config message")
 endif (GLIB_FOUND AND NOT GMT_USE_THREADS)
 if (GMT_USE_THREADS AND NOT GLIB_FOUND)
 	message (FATAL_ERROR "User variable GMT_USE_THREADS set but GLIB component gthread not found.")
 	set (GMT_CONFIG_GTHREAD_MESSAGE "unavailable"
-		CACHE INTERNAL "OPENMP config message")
+		CACHE INTERNAL "GTHREAD config message")
 endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
 # check for math and POSIX functions
