@@ -1712,11 +1712,11 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	* justify:	indicates where on the textstring the x,y point refers to, see fig below.
 	*		If negative then we string leading and trailing blanks from the text.
 	*		0 means no justification (already done separately).
-	* mode:	0 = normal text filled with solid color; 3 = draw outline of text using
+	* mode:	0 = normal text filled with solid color; 1 = draw outline of text using
 	*		the current line width and color; the text is filled with the current fill
 	*		(if set, otherwise no filling is taking place); 2 = no outline, but text fill
 	*		is a pattern so we use the outline path and not the show operator;
-	*       1 = same as 3, except that half the outline width is plotted on the outside
+	*       3 = same as 1, except that half the outline width is plotted on the outside
 	*       of the filled text, so none of the text font is obscured by the outline
 	*		(If the text is not filled, 1 operates the same as 3).
 	*
@@ -1728,7 +1728,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	*/
 
 	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL;
-	const char *op[4] = {"Z", "false charpath V S U fs", "false charpath fs", "false charpath fs"}, *align[3] = {"0", "-2 div", "neg"};
+	const char *op[4] = {"Z", "false charpath fs", "false charpath fs", "false charpath V S U fs"}, *align[3] = {"0", "-2 div", "neg"};
 	char *plast = NULL;
 	const char *justcmd[12] = {"", "", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
@@ -1768,7 +1768,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 
 	if (!strchr (string, '@')) {	/* Plain text ... this is going to be easy! */
 		PSL_command (PSL, "(%s) %s%s", string, justcmd[justify], op[mode]);
-		if (mode == 3) PSL_command (PSL, " S");
+		if (mode == 1) PSL_command (PSL, " S");
 		else if (mode == 2) PSL_command (PSL, " N");
 		PSL_command (PSL, (angle != 0.0 ) ? " U\n" : "\n");
 		PSL_free (string);
@@ -1986,7 +1986,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		}
 		ptr = strtok_r (NULL, "@", &plast);
 	}
-	if (mode == 3) PSL_command (PSL, "S\n");
+	if (mode == 1) PSL_command (PSL, "S\n");
 	else if (mode == 2) PSL_command (PSL, "N\n");
 	if (angle != 0.0) PSL_command (PSL, "U\n");
 	PSL->current.fontsize = 0.0;	/* Force reset */
