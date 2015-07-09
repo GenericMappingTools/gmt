@@ -5944,7 +5944,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 		if (p_func) break;	/* Found it in this shared library */
 	}
 	if (p_func == NULL) {	/* Not in any of the shared libraries */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Shared GMT module not found: %s \n", module);
+		if (mode != GMT_MODULE_EXIST) GMT_Report (API, GMT_MSG_VERBOSE, "Shared GMT module not found: %s \n", module);
 		status = GMT_NOT_A_VALID_MODULE;
 	}
 	else if (mode == GMT_MODULE_EXIST)	/* Just wanted to know it is there */
