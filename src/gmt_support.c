@@ -10039,7 +10039,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				}
 			}
 			else {
-				for (k = 0; k < head->n_required; k++) head->type[k] = GMT_IS_DIMENSION;	/* Default is lenghts */
+				for (k = 0; k < head->n_required; k++) head->type[k] = GMT_IS_DIMENSION;	/* Default is lengths */
 			}
 			continue;
 		}

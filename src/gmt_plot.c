@@ -3857,9 +3857,9 @@ int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 		sprintf (record, "# %s%s%s%slabel", xname[kind], GMT->current.setting.io_col_separator, yname[kind], GMT->current.setting.io_col_separator);
 	if ((G->fp = GMT_fopen (GMT, G->label_file, GMT->current.io.w_mode)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create/open file %s\n", G->label_file);
-		return (GMT_ERROR_ON_FOPEN);	/* Establishes data ouput */
+		return (GMT_ERROR_ON_FOPEN);	/* Establishes data output */
 	}
-	fprintf (G->fp, "%s\n", record);	/* Write hte header record */
+	fprintf (G->fp, "%s\n", record);	/* Write the header record */
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
 		if (!L->annot || L->n_labels == 0) continue;

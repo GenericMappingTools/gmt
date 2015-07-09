@@ -281,7 +281,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	/*---------------------------- This is the triangulate main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s triangulation algoritm selected\n", tri_algorithm[GMT->current.setting.triangulate]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s triangulation algorithm selected\n", tri_algorithm[GMT->current.setting.triangulate]);
 	
 	if (Ctrl->G.active) {
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \

@@ -75,7 +75,7 @@ int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			GMT_fclose (GMT, fp);
 
 			if (!strncmp (record, "BYTEORDER", 4) ) {
-				sscanf (record, "%*s %c", &header->flags[0]);	/* Store the endianess flag here */
+				sscanf (record, "%*s %c", &header->flags[0]);	/* Store the endianness flag here */
 				strncpy (header->title, file, GMT_GRID_TITLE_LEN80);
 			}
 			else if (!strncmp (record, "ncols ", 6) ) {	/* Ah. A Arc/Info float binary file with a separate .hdr */
@@ -349,10 +349,10 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 
 	if (fpBAK) {		/* Case of Arc/Info binary file with a separate header file. We still have things to do. */
 		char tmp[16];
-		/* Read an extra record containing the endianess info */
+		/* Read an extra record containing the endianness info */
 		GMT_fgets (GMT, record, GMT_BUFSIZ, fp);
 		if (sscanf (record, "%*s %s", tmp) != 1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info BINARY Grid: Error decoding endianess record\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info BINARY Grid: Error decoding endianness record\n");
 			return (GMT_GRDIO_READ_FAILED);
 		}
 		header->flags[0] = (tmp[0] == 'L') ? 'L' : 'B';
