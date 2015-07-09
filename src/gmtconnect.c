@@ -659,7 +659,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 		sprintf (buffer, "%" PRIu64, segment[id].orig_id);
 		end_order = 0;	/* Start at the start point of segment */
 		closed = false;
-		n_steps_pass_1 = 1;		/* Nothing appended yet to this single line segment */
+		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
 		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
