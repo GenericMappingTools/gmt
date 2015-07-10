@@ -34,6 +34,7 @@
  *   of gravitational attraction of three-dimensional bodies of 
  *   arbitrary shape, Geophysics, 25, 203-225, 1960.
  * Extended to handle VGG by Kim / Wessel, 2015, in prep.
+ * Accelerated with OpenMP; see -x.
  */
 
 #define THIS_MODULE_NAME	"talwani3d"
@@ -43,13 +44,15 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-VRfhior"
+#define GMT_PROG_OPTIONS "-VRfhior" GMT_ADD_x_OPT
 
 #define TOL		1.0e-7
 #define DEG_TO_KM	111.319490793
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
 #define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
+
+#define GMT_TALWANI3D_N_DEPTHS GMT_BUFSIZ	/* Max depths allowed due to OpenMP needing stack array */
 
 struct TALWANI3D_CTRL {
 	struct A {	/* -A positive up  */
@@ -209,13 +212,13 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d -G<outfile> [-A] [-D<rho>] [-Ff|v] [%s] [-M[hz]] [-N<trktable>]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Z<level>] [%s] \n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
-	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d <modelfile> [-A] [-D<rho>] [-Ff|v] [-G<outfile>] [%s]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [%s] [-Z<level>] [%s] \n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tmodelfile is a multiple-segment ASCII file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<modelfile> is a multiple-segment ASCII file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is down].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file, in kg/m^3.\n");
@@ -235,7 +238,7 @@ int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If a grid then it also defines the output grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot use both -Z<grid> and -R -I [-r].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, else in m [but see -Mh]).\n");
-	GMT_Option (API, "h,i,o,r,.");
+	GMT_Option (API, "h,i,o,r,x,.");
 	return (EXIT_FAILURE);
 }
 
@@ -622,12 +625,13 @@ double get_vgg3d_pw (double x[], double y[], int n, double x_obs, double y_obs, 
 	return (10 * 6.673 * rho * vsum);	/* Go get Eotvos = 0.1 mGal/km */
 }
 
-double get_one_output (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, double vtry[], unsigned int mode, bool flat_earth)
+double get_one_output (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
 {	/* Evaluate output at a single observation point (x,y,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
 	double dz;
 	struct SLICE *sl = NULL;
+	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
 	for (k = 0; k < ndepths; k++) {
 		vtry[k] = 0.0;
 		dz = cake[k].depth - z_obs;
@@ -666,7 +670,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	char *uname[2] = {"meter", "km"};
 	double z_level, depth, rho;
-	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL, *work = NULL;
+	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
 					
 	struct SLICE *sl = NULL, *slnext = NULL;
 	struct CAKE *cake = NULL;
@@ -699,6 +703,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the talwani3d main code ----------------------------*/
 	
+	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	/* Specify input expected columns to be at least 2 */
 	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 		Return (error);
@@ -721,6 +726,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "All x/y-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_HOR]]);
 	GMT_Report (API, GMT_MSG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_VER]]);
 	
+	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -769,8 +775,8 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 				/* Process the next segment header */
 				sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
 				if (Ctrl->D.active) rho = Ctrl->D.rho;
-				rho *= 0.001;	/* Change to g/cm3 */
-				if (!Ctrl->M.active[TALWANI3D_VER]) depth *= 0.001;	/* Change to km */
+				rho *= 0.001;	/* Change density to g/cm3 */
+				if (!Ctrl->M.active[TALWANI3D_VER]) depth *= 0.001;	/* Change depth to km */
 				if (Ctrl->A.active) depth = -depth;	/* Make positive down */
 				/* Allocate array for this slice */
 				n_alloc = GMT_CHUNK;
@@ -784,7 +790,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 
 		x[n] = in[GMT_X];	y[n] = in[GMT_Y];
 		if (!flat_earth) {
-			if (!Ctrl->M.active[TALWANI3D_HOR]) {
+			if (!Ctrl->M.active[TALWANI3D_HOR]) {	/* Change distances to km */
 				x[n] *= 0.001;
 				y[n] *= 0.001;
 			}
@@ -801,6 +807,11 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
+	if (ndepths >= GMT_TALWANI3D_N_DEPTHS) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Model cannot have more than %d depth layer\n", GMT_TALWANI3D_N_DEPTHS);
+		GMT_Report (API, GMT_MSG_NORMAL, "You must increase GMT_TALWANI3D_N_DEPTHS and recompile\n");
+		Return (EXIT_FAILURE);
+	}
 	/* Finish allocation and sort on layers */
 	
 	cake = GMT_memory (GMT, cake, ndepths, struct CAKE);
@@ -827,18 +838,17 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	/* Now we can write to the screen the user's polygon model characteristics. */
 	
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "# of depths: %d\n", ndepths);
+	GMT_Report (API, GMT_MSG_VERBOSE, "# of depths: %d\n", ndepths);
+	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 	 	for (k = 0; k < ndepths; k++) {
 	 		for (sl = cake[k].first_slice; sl; sl = sl->next)
-				GMT_Report (API, GMT_MSG_VERBOSE, "Depth: %lg Rho: %lg N-vertx: %4d\n",
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Depth: %lg Rho: %lg N-vertx: %4d\n",
 	 				cake[k].depth, sl->rho, sl->n);
 	 	}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating gravity\n");
 	}
+	GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating gravity\n");
 
-	/* Set up two work arrays needed by get_one_output */
-	work   = GMT_memory (GMT, NULL, ndepths, double);
+	/* Set up depths array needed by get_one_output */
 	depths = GMT_memory (GMT, NULL, ndepths, double);
 	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
 	
@@ -860,12 +870,24 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];	/* Current segment */
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
+				GMT_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
+#ifdef _OPENMP
+				/* Spread calculation over selected cores */
+#pragma omp parallel for private(row,z_level) shared(GMT,Ctrl,S,scl,cake,depths,ndepths,flat_earth)
+#endif
+				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
+				 * with OpenMP active due to race condiations would mess up the output order */
+				for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
+					if (S->n_columns == 3 && !Ctrl->Z.active) z_level = S->coord[GMT_Z][row];
+					GMT->hidden.mem_coord[GMT_X][row] = get_one_output (S->coord[GMT_X][row] * scl, S->coord[GMT_Y][row] * scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
+				}
+				/* This loop is not under OpenMP */
+				out[GMT_Z] = Ctrl->Z.level;	/* Default observation z level unless provided in input file */
 				for (row = 0; row < S->n_rows; row++) {	/* Loop over output locations */
 					out[GMT_X] = S->coord[GMT_X][row];
 					out[GMT_Y] = S->coord[GMT_Y][row];
-					if (S->n_columns == 3 && !Ctrl->Z.active) z_level = S->coord[GMT_Z][row];
-					out[GMT_Z] = z_level;
-					out[3] = get_one_output (out[GMT_X] * scl, out[GMT_Y] * scl, z_level, cake, depths, ndepths, work, Ctrl->F.mode, flat_earth);
+					if (S->n_columns == 3 && !Ctrl->Z.active) out[GMT_Z] = S->coord[GMT_Z][row];
+					out[3] = GMT->hidden.mem_coord[GMT_X][row];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 			}
@@ -880,13 +902,19 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 			x_obs[col] = GMT_grd_col_to_x (GMT, col, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) x_obs[col] *= 0.001;	/* Convert to km */
 		}
-		GMT_row_loop (GMT, G, row) {	/* Do row-by-row and report on progress if -V */
+#ifdef _OPENMP
+				/* Spread calculation over selected cores */
+#pragma omp parallel for private(row,col,node,y_obs,z_level) shared(API,GMT,Ctrl,G,x_obs,cake,depths,ndepths,flat_earth)
+#endif
+		for (row = 0; row < G->header->ny; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = GMT_grd_row_to_y (GMT, row, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) y_obs *= 0.001;	/* Convert to km */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Finished row %5d\n", row);
-			GMT_col_loop (GMT, G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
+			//GMT_Report (API, GMT_MSG_VERBOSE, "Finished row %5d\n", row);
+			for (col = 0; col < G->header->nx; col++) {
+				/* Loop over cols; always save the next level before we update the array at that col */
+				node = GMT_IJP (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */
-				G->data[node] = (float) get_one_output (x_obs[col], y_obs, z_level, cake, depths, ndepths, work, Ctrl->F.mode, flat_earth);
+				G->data[node] = (float) get_one_output (x_obs[col], y_obs, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
 			}
 		}
 		GMT_free (GMT, x_obs);
@@ -915,7 +943,6 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		GMT_free (GMT, sl);
 	}
 	GMT_free (GMT, cake);
-	GMT_free (GMT, work);
 	GMT_free (GMT, depths);
 
 	Return (EXIT_SUCCESS);

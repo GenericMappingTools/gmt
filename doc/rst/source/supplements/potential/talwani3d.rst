@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ **-r** ] 
+[ |SYN_OPT-x| ]
 
 |No-spaces|
 
@@ -98,6 +99,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
+
+.. include:: ../../explain_core.rst_
 
 .. include:: ../../explain_colon.rst_
 
