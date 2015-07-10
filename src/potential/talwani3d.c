@@ -202,9 +202,12 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 	}
 	if (GMT->common.R.active && Ctrl->I.active)
 		GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
-	n_errors += GMT_check_condition (GMT, (GMT->common.R.active && Ctrl->I.active) && Ctrl->Z.mode == 1, "Syntax error -Z option: Cannot also specify -R -I\n");
-	n_errors += GMT_check_condition (GMT, (GMT->common.R.active + Ctrl->I.active) == 1, "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active, "Syntax error -G option: Must specify output gridfile name.\n");
+	n_errors += GMT_check_condition (GMT, (GMT->common.R.active && Ctrl->I.active) && Ctrl->Z.mode == 1,
+	                                 "Syntax error -Z option: Cannot also specify -R -I\n");
+	n_errors += GMT_check_condition (GMT, (GMT->common.R.active + Ctrl->I.active) == 1,
+	                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
+	                                 "Syntax error -G option: Must specify output gridfile name.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -661,8 +664,8 @@ int comp_cakes (const void *cake_a, const void *cake_b)
 
 int GMT_talwani3d (void *V_API, int mode, void *args)
 {
-	int error = 0;
-	unsigned int k, tbl, seg, row, col, ndepths = 0, n;
+	int row, col, error = 0;
+	unsigned int k, tbl, seg, ndepths = 0, n;
 	uint64_t node;
 	size_t n_alloc, n_alloc1;
 	
