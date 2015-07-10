@@ -210,9 +210,6 @@ struct THREAD_STRUCT {
 	struct GRDFILTER_BIN_MODE_INFO *B;
 };
 
-#ifdef HAVE_GLIB_GTHREAD
-static void *threading_function (void *args);
-#endif
 void threaded_function (struct THREAD_STRUCT *t);
 
 void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
