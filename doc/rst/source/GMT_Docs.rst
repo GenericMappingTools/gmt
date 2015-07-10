@@ -318,7 +318,8 @@ General improvements
 
 A few changes have affects across GMT; these are:
 
-*  Add optional multi-threading capabilities to grdfilter and the potential/grdgravmag3d
+*  Add optional multi-threading capabilities to several modules, such as
+   greenspline, grdfilter and the potential supplement's grdgravmag3d, talwani3d.
 
 *  Optional prerequisite LAPACK means SVD decomposition in greenspline is very fast.
 
