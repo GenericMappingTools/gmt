@@ -1,11 +1,11 @@
 .. _core_full:
 
 **-x**\ [[-]\ *n*\ ]
-    Set the number of cores to be used in any OpenMP-enabled
-    multi-threaded algorithms [1]. With no argument we try
-    to use all available cores.  Append *n* to use *n* cores
+    Limit the number of cores to be used in any OpenMP-enabled
+    multi-threaded algorithms. By default we try
+    to use all available cores.  Append *n* to only use *n* cores
     (if too large it will be truncated to the maximum cores
     available).  Finally, give a negative *n* to select
     (all - *n*) cores (or at least 1 if *n equals or exceeds
-    all).  The **-x** option is only available if GMT was
+    all).  The **-x** option is only available to GMT modules
     compiled with OpenMP support.

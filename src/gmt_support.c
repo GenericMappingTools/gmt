@@ -11934,9 +11934,8 @@ void GMT_enable_threads (struct GMT_CTRL *GMT) {
 		}
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Enable %d threads of %d available\n", GMT->common.x.n_threads, GMT_get_num_processors());
 	}
-	else {	/* Only 1 core */
-		omp_set_dynamic (0);   		/* Explicitly disable dynamic teams */
-		omp_set_num_threads (1);	/* Select one thread only */
+	else {	/* Default uses all cores */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Enable all available threads (up to %d)\n", GMT_get_num_processors());
 	}
 #endif
 }

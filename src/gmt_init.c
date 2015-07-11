@@ -581,10 +581,10 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 #ifdef GMT_MP_ENABLED
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
-			GMT_message (GMT, "\t-x Set the number of cores used in multi-threaded algorithms [1].\n");
-			GMT_message (GMT, "\t   -x Use all available cores [%d].\n", GMT_get_num_processors());
-			GMT_message (GMT, "\t   -x<n>  Use <n> cores (up to all available).\n");
-			GMT_message (GMT, "\t   -x-<n> Use (all - <n>) cores (or at least 1).\n");
+			GMT_message (GMT, "\t-x Limit the number of cores used in multi-threaded algorithms.\n");
+			GMT_message (GMT, "\t   Default uses all available cores [%d].\n", GMT_get_num_processors());
+			GMT_message (GMT, "\t   -x<n>  Select <n> cores (up to all available).\n");
+			GMT_message (GMT, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
 			break;
 #endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
@@ -2906,9 +2906,9 @@ int gmt_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	return (error);
 }
 
-#ifdef GMT_MP_ENABLED
 /*! -x[[-]<ncores>] */
 int gmt_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
+#ifdef GMT_MP_ENABLED
 	GMT->common.x.active = true;
 	if (!arg) return (GMT_PARSE_ERROR);	/* -x requires a non-NULL argument */
 	if (arg[0] == '\0')                     /* Use all processors */
@@ -2920,10 +2920,11 @@ int gmt_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.x.n_threads = 1;
 	else if (GMT->common.x.n_threads < 0)
 		GMT->common.x.n_threads = MAX(GMT_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
-
+#else
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: -x is only available when compiled with OpenMP - ignored for now.\n");
+#endif
 	return (GMT_NOERROR);
 }
-#endif
 
 /*! . */
 int gmt_parse_colon_option (struct GMT_CTRL *GMT, char *item) {
