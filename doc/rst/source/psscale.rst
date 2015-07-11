@@ -16,7 +16,7 @@ Synopsis
 **psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
-[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ **-G**\ *zlo*\ /\ *zhi* ]
 [ **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
 [ **-J**\ *parameters* ]
