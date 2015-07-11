@@ -33,7 +33,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:RVabdfghirs" GMT_OPT("FHMm")
+#define GMT_PROG_OPTIONS "-:RVabdfghirs" GMT_ADD_x_OPT GMT_OPT("FHMm")
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 
@@ -87,8 +87,8 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdmask [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s]\n\n",
+		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -114,7 +114,7 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to treat xyfiles as polygons and use inside/outside searching].\n");
-	GMT_Option (API, "V,a,bi2,di,f,g,h,i,r,s,:,.");
+	GMT_Option (API, "V,a,bi2,di,f,g,h,i,r,s,x,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -275,6 +275,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 
+	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -388,6 +389,9 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 						last_radius = radius;
 					}
 					
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,ij,distance) shared(Grid,row_0,d_row,ny,col_0,d_col,nx,xtmp,S,grd_x0,grd_y0,radius,mask_val)
+#endif
 					for (row = row_0 - d_row; row <= (int)(row_0 + d_row); row++) {
 						if (row < 0 || row >= ny) continue;
 						for (col = col_0 - d_col[row]; col <= (int)(col_0 + d_col[row]); col++) {
@@ -441,6 +445,9 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 						continue;
 
 					/* Here we will have to consider the x coordinates as well */
+#ifdef _OPENMP
+#pragma omp parallel for private(col,xx,side,ij) shared(Grid,nx,do_test,yy,S,row,Ctrl,z_value,mask_val)
+#endif
 					for (col = 0; col < nx; col++) {
 						xx = GMT_grd_col_to_x (GMT, col, Grid->header);
 						if (do_test && (side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */

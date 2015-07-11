@@ -257,18 +257,19 @@ In addition, here are two established modules that have been given more suitable
 New common options
 ------------------
 
-We have added two new lower-case GMT common option:
+We have added two new lower-case GMT common options:
 
 *  Programs that need to specify which values should represent "no data"
    can now use **-d**\ [**i**\ \|\ **o**]\ *nodata*. For instance, this
    option replaces the old **-N** in :doc:`grd2xyz` and :doc:`xyz2grd`
    (but are backwards compatible).
 
-*  Programs using multi-threaded computational algorithms implemented
-   via OpenMP (and if compiled with OpenMP support) will offer the new
-   option **-x**\ [[-]\ *n*]. Specifying **-x** will try to utilize all
-   available cores.  Only some programs currently has this option, such
-   as greenspline, grdmath, and grdfilter.
+*  Some programs are now using OpenMP to spread computations over all
+   available cores (only available if compiled with OpenMP support).
+   Those modules will offer the new option **-x**\ [[-]\ *n*] to reduce
+   how many cores to assign to the task.  Only some programs currently
+   has this option, such as greenspline, grdmask, grdmath, grdfilter,
+   sph2grd, and the potential supplement's grdgravmag3d and talwani3d.
 
 New default parameters
 ----------------------
