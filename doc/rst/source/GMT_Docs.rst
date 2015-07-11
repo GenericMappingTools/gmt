@@ -4195,7 +4195,7 @@ The reference point may be modified by an optional adjustment:
    positive values moving the reference point towards the anchor.  E.g., **+o**\ 0.2c will move the reference
    point towards the anchor by 0.2 cm.
 
-With the reference point taken care of, it is time to selecting the anchor point.
+With the reference point taken care of, it is time to select the anchor point.
 While the reference point selection gives unlimited flexibility to pick
 any point inside or outside the map region, the anchor point selection is limited to the 9 justification points
 discussed for the **j** reference point code above.  Add **+j**\ *anchor* to indicate which justification
@@ -4297,6 +4297,8 @@ Here is a list of the attributes that is under your control:
    :align: center
 
    Example of two map scales for a Mercator projection evaluated at 53 degrees north.
+   The left-most scale was placed with **-Lj**\ *ML*\ **+c**\ 53\ **+w**\ 1000k\ **+f+l**\ "Scale at 53\\232N"
+   while the scale on the right was placed with **-Lj**\ *BR\ **+c**\ 53\ **+w**\ 1000k\ **+l+f**.
 
 Note that for the purpose of anchor justification (**+j**) the footprint of the map scale is
 considered the rectangle that contains the scale and all selected labels and annotations, i.e.,
@@ -4425,7 +4427,8 @@ supply suitable required and optional modifiers:
    :align: center
 
    Color bar placed beneath a map (here truncated).  We extended the bar to show background and foreground
-   colors, and used the frame-annotation machinery to add labels.
+   colors, and used the frame-annotation machinery to add labels.  The bar was placed with
+   **-D**\ *jBC*\ **+o**\ 0.35i\ **+j**\ *TC*\ **+w**\ 4.5i/0.1i\ **+h**.
 
 Placing map legends
 ~~~~~~~~~~~~~~~~~~~
@@ -4455,7 +4458,8 @@ first, then supply suitable required and optional modifiers:
 
    Example of a map legend placed with pslegend.  Apart from the placement and dimensions discussed
    here, pslegend reads macro commands that specifies each item of the legend, including colors,
-   widths of columns, the number of columns, and presents a broad selection of items.
+   widths of columns, the number of columns, and presents a broad selection of items.  Here, we
+   simply used **-Dx**\ 0/0\ **+w**\ 5.6i\ **+j**\ *BL*.
 
 Placing raster and EPS images on maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4486,9 +4490,10 @@ In addition, we require one (of two) modifiers to determine the image size.
    :align: center
 
    Placement of EPS and raster images. (left) The US National Science Foundation (NSF) has
-   generously funded the development of GMT and their JPG logo is reproduced here. (right)
+   generously funded the development of GMT and their JPG logo is reproduced here via
+   **-Dj**\ *ML*\ **+w**\ 1.5i\ **+o**\ 0.1i. (right)
    The School of Ocean and Earth Science and Technology at the University of Hawaii at Manoa
-   hosts the gmt server and its EPS logo is shown.
+   hosts the gmt server and its EPS logo is shown via **-Dj**\ *MR*\ **+o**\ 0.1i\ **+w**\ 2i.
 
 Placing a GMT logo on maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4532,7 +4537,7 @@ instead (similar to how the **-R** option works).  Some optional modifiers are a
    **+w**\ *width*\ [*unit*][/*height*\ [*unit*]], where *height* defaults to *width* if not given.
    Append the unit of the dimensions, which may be distance units such as km, feet, etc., and
    the map projection will be used to determine insert dimensions on the map.  For instance,
-   **+w** \ 300k/200k is a 300x200 km region (which depends on the projection) while **+w** \ 5c
+   **+w**\ 300k/200k is a 300x200 km region (which depends on the projection) while **+w**\ 5c
    is a 5cm square box.
 
 #. Save the location and dimensions.  For all but the simplest of map inserts you will need to

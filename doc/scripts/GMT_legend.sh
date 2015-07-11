@@ -105,5 +105,5 @@ cat << EOF > t.cpt
 7	magenta
 8	white
 EOF
-gmt pslegend -Dx0/0/5.6i/BL -C0.05i -L1.2 -F+p+gsnow1 -B0 table.txt -P --FONT_ANNOT_PRIMARY=12p  --FONT_LABEL=12p> $ps
+gmt pslegend -Dx0/0+w5.6i+jBL -C0.05i -L1.2 -F+p+gsnow1 -B0 table.txt -P --FONT_ANNOT_PRIMARY=12p  --FONT_LABEL=12p> $ps
 rm -f table.txt t.cpt
