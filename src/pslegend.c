@@ -140,19 +140,21 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 					n_errors++;	/* Failed basic parsing */
 					break;
 				}
-				if (strstr (opt->arg, "+w")) {	/* New syntax: 	Args are +w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]] */
+				if (strstr (opt->arg, "+w")) {	/* New syntax: 	*/
+					/* Args are +w<width>[/<height>][+j<justify>][+l<spacing>][+o<dx>[/<dy>]] */
+					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow")) n_errors++;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj, set default to reference justify point, else LB */
 						Ctrl->D.justify = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? Ctrl->D.refpoint->justify : PSL_BL;
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'l', string)) {
+						Ctrl->D.spacing = atof (string);
+					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
-					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'l', string)) {
-						Ctrl->D.spacing = atof (string);
 					}
 				}
 				else {	/* Backwards handling of old syntax. Args are args are <width>[/<height>][/<justify>][/<dx>/<dy>] */

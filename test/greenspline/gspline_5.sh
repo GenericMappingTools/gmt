@@ -6,7 +6,7 @@ ps=gspline_5.ps
 
 # Figures 2+3 in Wessel, P., and J. M. Becker (2008), Interpolation using a
 # Generalized Green's Function for a Spherical Surface Spline in Tension,
-# Geophys. J. Int., 174, 21–28.
+# Geophys. J. Int., 174, 21-28.
 
 # First find Parker's solution for no tension:
 gmt greenspline -Rg -I1 mag_obs_1990.d -Sp -GFig_2_p0.nc

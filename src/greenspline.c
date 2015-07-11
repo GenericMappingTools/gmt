@@ -135,6 +135,7 @@ struct GREENSPLINE_CTRL {
 #define LINEAR_2D			11
 
 #define N_METHODS			12
+#define N_PARAMS			11
 
 #ifndef M_LOG_2
 #define M_LOG_2 0.69314718055994530942
@@ -151,6 +152,18 @@ struct GREENSPLINE_CTRL {
 
 #define SQ_N_NODES 		10001	/* Default number of nodes in the precalculated -Sq spline */
 #define SQ_TRUNC_ERROR		1.0e-6	/* Max truncation error in Parker's simplified sum for WB'08 */
+
+#define GREENSPLINE_TREND	1	/* Remove/Restore linear trend */
+#define GREENSPLINE_NORM	2	/* Normalize residual data to 0-1 range */
+
+enum Greenspline_index {	/* Indices for coeff array for normalization */
+	GSP_MEAN_X	= 0,
+	GSP_MEAN_Y	= 1,
+	GSP_MEAN_Z	= 2,
+	GSP_SLP_X	= 3,
+	GSP_SLP_Y	= 4,
+	GSP_RANGE	= 5,
+	GSP_LENGTH	= 6};
 
 struct GREENSPLINE_LOOKUP {	/* Used to spline interpolation of precalculated function */
 	uint64_t n;		/* Number of values in the spline setup */
@@ -1112,93 +1125,108 @@ double gradspline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[]
 
 /* GENERAL NUMERICAL FUNCTIONS */
 
-/* Normalization parameters are stored in the coeff array which holds up to 7 terms
- * coeff[0]:	The mean x coordinate
- * coeff[1]:	The mean y coordinate
- * coeff[2]:	The mean w coordinate
- * coeff[3]:	The linear x slope
- * coeff[4]:	The linear y slope
- * coeff[5]:	The offset for the detrended data (combined into coeff[2])
- * coeff[6]:	The normalizing scale for the detrended data
+/* Normalization parameters are stored in the coeff array which holds up to GSP_LENGTH terms
+ * coeff[GSP_MEAN_X]:	The mean x coordinate
+ * coeff[GSP_MEAN_Y]:	The mean y coordinate
+ * coeff[GSP_MEAN_Z]:	The mean w coordinate
+ * coeff[GSP_SLP_X]:	The linear x slope
+ * coeff[GSP_SLP_Y]:	The linear y slope
+ * coeff[GSP_RANGE]:	The largest |range| of the detrended data
  */
 
-void do_normalization_1d (double **X, double *obs, uint64_t n, unsigned int mode, double *coeff)
-{	/* mode == 1 norm w; mode == 2: also remove linear trend, norm & 4: also normalize result by range */
+double undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim)
+{
+	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual data range (ir we normalized) */
+	w_norm += coeff[GSP_MEAN_Z];					/* Add in mean data value plus minimum residual value (ir we normalized by range) */
+	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
+		w_norm += coeff[GSP_SLP_X] * (X[GMT_X] - coeff[GSP_MEAN_X]);
+		if (dim == 2) w_norm += coeff[GSP_SLP_Y] * (X[GMT_Y] - coeff[GSP_MEAN_Y]);
+	}
+	return (w_norm);
+}
+
+void do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, double *coeff)
+{	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
+	 * Bit GREENSPLINE_TREND will also remove linear trend
+	 * Bit GREENSPLINE_NORM will normalize residuals by range
+	 */
 
 	uint64_t i;
-	double d;
+	double d, min = DBL_MAX, max = -DBL_MAX;
 	
-	GMT_memset (coeff, 5, double);
+	GMT_memset (coeff, GSP_LENGTH, double);
 	for (i = 0; i < n; i++) {	/* Find mean w-value */
-		coeff[GMT_Z] += obs[i];
-		if (mode == 1) continue;
-		coeff[GMT_X] += X[i][GMT_X];
+		coeff[GSP_MEAN_Z] += obs[i];
+		if ((mode & GREENSPLINE_TREND) == 0) continue;	/* No linear trend to model */
+		coeff[GSP_MEAN_X] += X[i][GMT_X];
 	}
-	coeff[GMT_Z] /= n;
+	coeff[GSP_MEAN_Z] /= n;
 
-	if (mode & 2) {	/* Solve for LS linear trend using deviations from (0, 0, 0) */
+	if (mode & GREENSPLINE_TREND) {	/* Solve for LS linear trend using deviations from (0, 0, 0) */
 		double	xx, zz, sxx, sxz;
 		sxx = sxz = 0.0;
-		coeff[GMT_X] /= n;
+		coeff[GSP_MEAN_X] /= n;
 		for (i = 0; i < n; i++) {
-			xx = X[i][GMT_X] - coeff[GMT_X];
-			zz = obs[i] - coeff[GMT_Z];
+			xx = X[i][GMT_X] - coeff[GSP_MEAN_X];
+			zz = obs[i] - coeff[GSP_MEAN_Z];
 			sxx += (xx * xx);
 			sxz += (xx * zz);
 		}
-		if (sxx != 0.0) coeff[3] = sxz/ sxx;
+		if (sxx != 0.0) coeff[GSP_SLP_X] = sxz/ sxx;
 	}
 	
 	/* Remove linear trend (or mean) */
 	
-	coeff[5] = DBL_MAX;	coeff[6] = -DBL_MAX;
-	for (i = 0; i < n; i++) {	/* Also find min/max */
-		obs[i] -= coeff[GMT_Z];
-		if (mode == 2) obs[i] -= (coeff[3] * (X[i][GMT_X] - coeff[GMT_X]));
-		if (obs[i] < coeff[5]) coeff[5] = obs[i];
-		if (obs[i] > coeff[6]) coeff[6] = obs[i];
+	for (i = 0; i < n; i++) {	/* Get residuals and find range */
+		obs[i] -= coeff[GSP_MEAN_Z];	/* Always remove the mean data value */
+		if (mode & GREENSPLINE_TREND) obs[i] -= (coeff[GSP_SLP_X] * (X[i][GMT_X] - coeff[GSP_MEAN_X]));
+		if (obs[i] < min) min = obs[i];
+		if (obs[i] > max) max = obs[i];
 	}
-	if (mode & 4) {	/* Normalize by range */
-		coeff[6] -= coeff[5];	/* Range */
-		d = (coeff[6] == 0.0) ? 1.0 : 1.0 / coeff[6];
-		for (i = 0; i < n; i++) obs[i] = (obs[i] - coeff[5]) * d;	/* Normalize 0-1 */
-		coeff[GMT_Z] += coeff[5];	/* Combine the two constants in one place */
+	if (mode & GREENSPLINE_NORM) {	/* Normalize by range */
+		coeff[GSP_RANGE] = MAX (fabs(min), fabs(max));	/* Determine range */
+		d = (coeff[GSP_RANGE] == 0.0) ? 1.0 : 1.0 / coeff[GSP_RANGE];
+		for (i = 0; i < n; i++) obs[i] *= d;	/* Normalize 0-1 */
 	}
 	
-	/* Recover obs(x) = w_norm(x) * coeff[6] + coeff[GMT_Z] + coeff[3]*(x-coeff[GMT_X]) */
-
+	/* Recover obs(x) = w_norm(x) * coeff[GSP_RANGE] + coeff[GSP_MEAN_Z] + coeff[GSP_SLP_X]*(x-coeff[GSP_MEAN_X]) */
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "1-D Normalization coefficients: zoff = %g slope = %g xmean = %g range = %g\n", coeff[GSP_MEAN_Z], coeff[GSP_SLP_X], coeff[GSP_MEAN_X], coeff[GSP_RANGE]);
 }
 
-void do_normalization (double **X, double *obs, uint64_t n, unsigned int mode, unsigned int dim, double *coeff)
-{	/* mode == 1 norm z; mode == 2: also remove plane, norm & 4: also normalize result by range */
+void do_normalization (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, unsigned int dim, double *coeff)
+{	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
+	 * Bit GREENSPLINE_TREND will also remove linear trend
+	 * Bit GREENSPLINE_NORM will normalize residuals by range
+	 */
 
 	uint64_t i;
-	double d;
+	double d, min = DBL_MAX, max = -DBL_MAX;
 	
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalization mode: %d\n", mode);
 	if (dim == 1) {	/* 1-D trend or mean only */
-		do_normalization_1d (X, obs, n, mode, coeff);
+		do_normalization_1d (API, X, obs, n, mode, coeff);
 		return;
 	}
-	GMT_memset (coeff, 5, double);
+	GMT_memset (coeff, GSP_LENGTH, double);
 	for (i = 0; i < n; i++) {	/* Find mean z-value */
-		coeff[GMT_Z] += obs[i];
-		if (mode == 1) continue;
-		coeff[GMT_X] += X[i][GMT_X];
-		coeff[GMT_Y] += X[i][GMT_Y];
+		coeff[GSP_MEAN_Z] += obs[i];
+		if ((mode & GREENSPLINE_TREND) == 0) continue;	/* Else we also sum up x and y to get their means */
+		coeff[GSP_MEAN_X] += X[i][GMT_X];
+		coeff[GSP_MEAN_Y] += X[i][GMT_Y];
 	}
-	coeff[GMT_Z] /= n;
+	coeff[GSP_MEAN_Z] /= n;	/* Average z value to remove/restore */
 
-	if (mode & 2) {	/* Solve for LS plane using deviations from (0, 0, 0) */
+	if (mode & GREENSPLINE_TREND) {	/* Solve for LS plane using deviations from (0, 0, 0) */
 		double	xx, yy, zz, sxx, sxy, sxz, syy, syz;
 		sxx = sxy = sxz = syy = syz = 0.0;
-		coeff[GMT_X] /= n;
-		coeff[GMT_Y] /= n;
+		coeff[GSP_MEAN_X] /= n;	/* Mean x */
+		coeff[GSP_MEAN_Y] /= n;	/* Mean y */
 		for (i = 0; i < n; i++) {
 
-			xx = X[i][GMT_X] - coeff[GMT_X];
-			yy = X[i][GMT_Y] - coeff[GMT_Y];
-			zz = obs[i] - coeff[GMT_Z];
-
+			xx = X[i][GMT_X] - coeff[GSP_MEAN_X];
+			yy = X[i][GMT_Y] - coeff[GSP_MEAN_Y];
+			zz = obs[i] - coeff[GSP_MEAN_Z];
+			/* xx,yy,zz are residuals relative to (0,0,0) */
 			sxx += (xx * xx);
 			sxz += (xx * zz);
 			sxy += (xx * yy);
@@ -1208,42 +1236,28 @@ void do_normalization (double **X, double *obs, uint64_t n, unsigned int mode, u
 
 		d = sxx*syy - sxy*sxy;
 		if (d != 0.0) {
-			coeff[3] = (sxz*syy - sxy*syz)/d;
-			coeff[4] = (sxx*syz - sxy*sxz)/d;
+			coeff[GSP_SLP_X] = (sxz*syy - sxy*syz)/d;
+			coeff[GSP_SLP_Y] = (sxx*syz - sxy*sxz)/d;
 		}
 	}
 	
-	/* Remove plane (or mean) */
+	/* Remove plane (or just mean) */
 	
-	coeff[5] = DBL_MAX;	coeff[6] = -DBL_MAX;
-	for (i = 0; i < n; i++) {	/* Also find min/max */
-		obs[i] -= coeff[GMT_Z];
-		if (mode == 2) obs[i] -= (coeff[3] * (X[i][GMT_X] - coeff[GMT_X]) + coeff[4] * (X[i][GMT_Y] - coeff[GMT_Y]));
-		if (obs[i] < coeff[5]) coeff[5] = obs[i];
-		if (obs[i] > coeff[6]) coeff[6] = obs[i];
+	for (i = 0; i < n; i++) {	/* Also find min/max or residuals in the process */
+		obs[i] -= coeff[GSP_MEAN_Z];	/* Always remove mean data value */
+		if (mode & GREENSPLINE_TREND) obs[i] -= (coeff[GSP_SLP_X] * (X[i][GMT_X] - coeff[GSP_MEAN_X]) + coeff[GSP_SLP_Y] * (X[i][GMT_Y] - coeff[GSP_MEAN_Y]));
+		if (obs[i] < min) min = obs[i];
+		if (obs[i] > max) max = obs[i];
 	}
-	if (mode & 4) {	/* Normalize by range */
-		coeff[6] -= coeff[5];	/* Range */
-		d = (coeff[6] == 0.0) ? 1.0 : 1.0 / coeff[6];
-		for (i = 0; i < n; i++) obs[i] = (obs[i] - coeff[5]) * d;	/* Normalize 0-1 */
-		coeff[GMT_Z] += coeff[5];	/* Combine the two constants in one place */
+	if (mode & GREENSPLINE_NORM) {	/* Normalize by range */
+		coeff[GSP_RANGE] = MAX (fabs(min), fabs(max));	/* Determine range */
+		d = (coeff[GSP_RANGE] == 0.0) ? 1.0 : 1.0 / coeff[GSP_RANGE];
+		for (i = 0; i < n; i++) obs[i] *= d;	/* Normalize 0-1 */
 	}
 	
-	/* Recover obs(x,y) = w_norm(x,y) * coeff[6] + coeff[GMT_Z] + coeff[3]*(x-coeff[GMT_X]) + coeff[4]*(y-coeff[GMT_Y]) */
-
-}
-
-double undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim)
-{
-	double w;
-	w = w_norm;
-	if (mode & 4) w_norm *= coeff[6];
-	w += coeff[GMT_Z];
-	if (mode & 2) {
-		w += coeff[3] * (X[GMT_X] - coeff[GMT_X]);
-		if (dim == 2) w += coeff[4] * (X[GMT_Y] - coeff[GMT_Y]);
-	}
-	return (w);
+	/* Recover obs(x,y) = w_norm(x,y) * coeff[GSP_RANGE] + coeff[GSP_MEAN_Z] + coeff[GSP_SLP_X]*(x-coeff[GSP_MEAN_X]) + coeff[GSP_SLP_Y]*(y-coeff[GSP_MEAN_Y]) */
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "2-D Normalization coefficients: zoff = %g xslope = %g xmean = %g yslope = %g ymean = %g range = %g\n",
+		coeff[GSP_MEAN_Z], coeff[GSP_SLP_X], coeff[GSP_MEAN_X], coeff[GSP_SLP_Y], coeff[GSP_MEAN_Y], coeff[GSP_RANGE]);
 }
 
 double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, unsigned int dim)
@@ -1300,7 +1314,7 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, u
 int GMT_greenspline (void *V_API, int mode, void *args)
 {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
-	unsigned int dimension = 0, normalize = 1, unit = 0, n_cols, L_Max = 0;
+	unsigned int dimension = 0, normalize, unit = 0, n_cols, L_Max = 0;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID, way, nx;
 	bool new_grid = false, delete_grid = false, check_longitude, skip;
@@ -1320,7 +1334,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 	
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL;
-	double mem, part, C, p_val, r, par[11], norm[7], az, grad, weight_i, weight_j;
+	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az, grad, weight_i, weight_j;
 	double *A = NULL, r_min, r_max;
 #ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
@@ -1364,8 +1378,8 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
-	GMT_memset (par,   7, double);
-	GMT_memset (norm,  7, double);
+	GMT_memset (par,   N_PARAMS, double);
+	GMT_memset (norm,  GSP_LENGTH, double);
 	GMT_memset (&info, 1, struct GMT_GRID_INFO);
 	GMT_memset (&Z,    1, struct ZGRID);
 	
@@ -1377,29 +1391,32 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	Ctrl->D.mode--;	/* Since I added 0 to be 1-D later so now it is -1 */
 	switch (Ctrl->D.mode) {	/* Set pointers to 2-D distance functions */
 		case -1:	/* Cartesian 1-D x data */
-			normalize = 2;
+			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 0:	/* Cartesian 2-D x,y data */
 			GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
-			normalize = 2;
+			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 1:	/* 2-D lon, lat data, but scale to Cartesian flat earth km */
 			GMT_set_geographic (GMT, GMT_IN);
 			GMT_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
-			normalize = 2;
+			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 2:	/* 2-D lon, lat data, use spherical distances in km (geodesic if PROJ_ELLIPSOID is nor sphere) */
 			GMT_set_geographic (GMT, GMT_IN);
 			GMT_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
+			normalize = GREENSPLINE_NORM;
 			break;
 		case 3:	/* 2-D lon, lat data, and Green's function needs cosine of spherical or geodesic distance */
 			GMT_set_geographic (GMT, GMT_IN);
 			GMT_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'S', way, GMT_MAP_DIST);
+			normalize = GREENSPLINE_NORM;
 			break;
 		case 4:	/* 3-D Cartesian x,y,z data handled separately */
+			normalize = GREENSPLINE_NORM;
 			break;
 		default:	/* Cannot happen unless we make a bug */
 			GMT_Report (API, GMT_MSG_NORMAL, "BUG since D (=%d) cannot be outside 0-5 range\n", Ctrl->D.mode+1);
@@ -1407,7 +1424,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->D.mode <= 1 && Ctrl->L.active)
-		normalize = 1;	/* Do not de-plane, just remove mean and normalize */
+		normalize = GREENSPLINE_NORM;	/* Do not de-plane, just remove mean and normalize */
 	else if (Ctrl->D.mode > 1 && Ctrl->L.active)
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -L ignored for -D modes 2 and 3\n");
 	
@@ -1632,8 +1649,8 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Expect some eigenvalues to be identically zero\n");
 	}
 		
-	if (m > 0 && normalize > 1) {
-		normalize &= 1;	/* Only allow taking out data mean for mixed z/slope data */
+	if (m > 0 && (normalize & GREENSPLINE_TREND)) {
+		normalize = GREENSPLINE_NORM;	/* Only allow taking out data mean for mixed z/slope data */
 		GMT_Report (API, GMT_MSG_NORMAL, "Only remove/restore mean z in mixed {z, grad(z)} data sets\n");
 	}
 	
@@ -1694,7 +1711,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		else
 			Grid->header->nx = GMT_grd_get_nx (GMT, Grid->header);
 		n_ok = Grid->header->nm * Z.nz;
-		if (dimension == 2) Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
+		if (dimension >= 2) Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
 		Out = Grid;	/* Just point since we created Grid */
 	}
 
@@ -1814,7 +1831,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 
 	/* Remove mean (or LS plane) from data (we will add it back later) */
 
-	do_normalization (X, obs, n, normalize, dimension, norm);
+	do_normalization (API, X, obs, n, normalize, dimension, norm);
 		
 	/* Set up linear system Ax = z */
 	
@@ -1937,10 +1954,11 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		}
 	}
 	alpha = obs;	/* Just a different name since the obs vector now holds the alpha factors */
-	fp = fopen ("alpha.txt", "w");
+#if 0
+	fp = fopen ("alpha.txt", "w");	/* Save alpah coefficients for debugging purposes */
 	for (p = 0; p < nm; p++) fprintf (fp, "%g\n", alpha[p]);
 	fclose (fp);
-	
+#endif	
 	GMT_free (GMT, A);
 
 	if (Ctrl->N.file) {	/* Specified nodes only */
@@ -1993,7 +2011,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		if (dimension > 1) yp = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 		nxy = Grid->header->size;
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
-		if (dimension != 2) {	/* Write ascii table to named file or stdout */
+		if (dimension != 2) {	/* Write ascii table to named file or stdout for 1-D or 3-D */
 			if (Ctrl->G.active) {
 				if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET)
 					Return (error);
@@ -2005,17 +2023,23 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
-		}
+			if (dimension == 1) GMT_prep_tmp_arrays (GMT, Grid->header->nx, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
+			
+		} /* Else we are writing a grid */
 		GMT_memset (V, 4, double);
-		for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {
+		for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
 			int64_t col, row, p; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
-			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
+			double z_level = 0.0;
+			if (dimension == 3) z_level = GMT_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,Grid,xp,X,Ctrl,GMT,alpha,Lz,norm,Out,par)
+#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,Grid,xp,X,Ctrl,GMT,alpha,Lz,norm,Out,par,nz_off,z_level,nm,normalize)
 #endif
-			for (row = 0; row < Grid->header->ny; row++) {
-				if (dimension > 1) V[GMT_Y] = yp[row];
-				for (col = 0; col < Grid->header->nx; col++) {
+			for (row = 0; row < Grid->header->ny; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+				if (dimension > 1) {
+					V[GMT_Y] = yp[row];
+					if (dimension == 3) V[GMT_Z] = z_level;
+				}
+				for (col = 0; col < Grid->header->nx; col++) {	/* This loop is always active for 1,2,3D */
 					ij = GMT_IJP (Grid->header, row, col) + nz_off;
 					if (dimension == 2 && GMT_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 					V[GMT_X] = xp[col];
@@ -2031,10 +2055,30 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 						wp += alpha[p] * part;
 					}
 					V[dimension] = (float)undo_normalization (V, wp, normalize, norm, dimension);
-					if (dimension == 2)	/* Special 2-D grid output */
+					if (dimension > 1)	/* Special 2-D grid output */
 						Out->data[ij] = (float)V[dimension];
 					else	/* Crude dump for now for both 1-D and 3-D */
+						GMT->hidden.mem_coord[GMT_X][col] = V[dimension];
+				}
+			}
+			/* Write output, in case of 3-D just a single slice */
+			if (dimension == 1) {	/* Must dump 1-D table */
+				for (col = 0; col < Grid->header->nx; col++) {
+					V[GMT_X] = xp[col];
+					V[dimension] = GMT->hidden.mem_coord[GMT_X][col];
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, V);
+				}
+			}
+			else if (dimension == 3) {	/* Must dump 3-D grid as ascii slices for now */
+				V[GMT_Z] = z_level;
+				for (row = 0; row < Grid->header->ny; row++) {
+					V[GMT_Y] = yp[row];
+					for (col = 0; col < Grid->header->nx; col++) {
+						V[GMT_X] = xp[col];
+						ij = GMT_IJP (Grid->header, row, col) + nz_off;
+						V[dimension] = Out->data[ij];
 						GMT_Put_Record (API, GMT_WRITE_DOUBLE, V);
+					}
 				}
 			}
 		}
@@ -2047,7 +2091,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			}
 		}
 		if (delete_grid)
-			GMT_free_grid (GMT, &Grid, dimension == 2);
+			GMT_free_grid (GMT, &Grid, dimension > 1);
 		else if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Orig\n");
 		}

@@ -156,7 +156,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D%s+w<length>/<width>[+e[b|f][<length>]][+h][+ma|c|l|u][+n[<txt>]]%s\n", GMT_XYANCHOR, GMT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D%s+w<length>/<width>[+e[b|f][<length>]][+h][+j<justify>][+ma|c|l|u][+n[<txt>]]%s\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [%s]\n", GMT_B_OPT, GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]\n\t[%s] [%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q] [%s] [-S] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
@@ -264,7 +264,32 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 			case 'D':
 				Ctrl->D.active = true;
 				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				if (strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: Args are +w<length>/<width>][+h][+j<justify>][+o<dx>[/<dy>]] */
+				if (strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
+					/* Args are +w<length>/<width>[+e[b|f][<length>]][+h][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
+					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnow")) n_errors++;
+					/* Required modifier +w */
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
+						if (string[(j = strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
+							string[j] = '\0';
+							Ctrl->D.horizontal = true;
+						}
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_EXACT, Ctrl->D.dim)) < 2) n_errors++;
+					}
+					/* Optional modifiers +e, +h, +j, +m, +n, +o */
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
+						Ctrl->D.extend = true;
+						if (strchr (string, 'b')) Ctrl->D.emode |= 1;
+						if (strchr (string, 'f')) Ctrl->D.emode |= 2;
+						if ((Ctrl->D.emode&3) == 0) Ctrl->D.emode |= 3;	/* No b|f added */
+						j = 0; while (string[j] == 'b' || string[j] == 'f') j++;
+						if (string[j]) Ctrl->D.elength = GMT_to_inch (GMT, &string[j]);
+					}
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'h', string))
+						Ctrl->D.horizontal = true;
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
+						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+					else	/* With -Dj, set default to reference justify point, else LB */
+						Ctrl->D.justify = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? Ctrl->D.refpoint->justify : PSL_BL;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
 						Ctrl->D.move = true;
 						if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
@@ -277,29 +302,12 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 							}
 						}
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'h', string))
-						Ctrl->D.horizontal = true;
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
-						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else	/* With -Dj, set default to reference justify point, else LB */
-						Ctrl->D.justify = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? Ctrl->D.refpoint->justify : PSL_BL;
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
-					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_EXACT, Ctrl->D.dim)) < 2) n_errors++;
-					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
-						Ctrl->D.extend = true;
-						if (strchr (string, 'b')) Ctrl->D.emode |= 1;
-						if (strchr (string, 'f')) Ctrl->D.emode |= 2;
-						if ((Ctrl->D.emode&3) == 0) Ctrl->D.emode |= 3;	/* No b|f added */
-						j = 0; while (string[j] == 'b' || string[j] == 'f') j++;
-						if (string[j]) Ctrl->D.elength = GMT_to_inch (GMT, &string[j]);
-					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
 						Ctrl->D.etext = (string[0]) ? strdup (string) : strdup ("NaN");
 						Ctrl->D.emode |= 4;
+					}
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 				}
 				else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
@@ -326,7 +334,9 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
 				break;
 			case 'E':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -E option is deprecated; use -D modifier +e instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: The -E option is deprecated but is accepted.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +e instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+e) with the old-style -D option.\n");
 				Ctrl->D.extend = true;
 				if ((c = strchr (opt->arg, 'n'))) {	/* Got +n[<text>] */
 					c--;	*c = 0; c += 2;

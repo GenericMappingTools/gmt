@@ -7715,9 +7715,10 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 	 * 1) -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>]
 	 * 2) -Dg|j|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
 	 */
-	unsigned int col_type[2], k = 0, error = 0, n, pos = 0;
+	unsigned int col_type[2], k = 0, error = 0;
+	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
-	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, oldshit[GMT_LEN128] = {""};
+	char string[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, oldshit[GMT_LEN128] = {""};
 
 	if (!in_text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
@@ -7735,44 +7736,37 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		char *q[2] = {NULL, NULL};
 		size_t len;
 		if ((B->refpoint = GMT_get_refpoint (GMT, text)) == NULL) return (1);	/* Failed basic parsing */
-		/* Reference point args are +w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>].
-		 * If justify is not given, then it defaults to CM. */
-		if (B->refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set justification to the reference point */
-			B->justify = B->refpoint->justify;
-		else
-			B->justify = PSL_BL;	/* Default justification for non-Dj settings */
-		while ((GMT_strtok (B->refpoint->args, "+", &pos, p))) {	/* Process modifiers */
-			switch (p[0]) {
-				case 'j':	/* Got justification of item w.r.t. reference point */
-					B->justify = GMT_just_decode (GMT, &p[1], PSL_BL);
-					break;
-				case 'o':	/* Got offsets from reference point */
-					if (GMT_get_pair (GMT, &p[1], GMT_PAIR_DIM_DUP, B->off) < 0) error++;
-					break;
-				case 's':	/* Got filename for saving map insert parameters */
-					B->file = strdup (&p[1]);
-					break;
-				case 'w':	/* Got dimension of map insert */
-					n = sscanf ( &p[1], "%[^/]/%s", txt_a, txt_b);
-					/* First deal with insert dimensions and horizontal vs vertical */
-					/* Handle either <unit><width>/<height> or <width>[<unit>]/<height>[<unit>] */
-					q[GMT_X] = txt_a;	q[GMT_Y] = txt_b;
-					last = (n == 1) ? GMT_X : GMT_Y;
-					for (k = GMT_X; k <= last; k++) {
-						len = strlen (q[k]) - 1;
-						if (strchr (GMT_LEN_UNITS2, q[k][len])) {	/* Got dimensions in these units */
-							B->unit = q[k][len];
-							q[k][len] = 0;
-						}
-						B->dim[k] = (B->unit) ? atof (q[k]) : GMT_to_inch (GMT, q[k]);
-					}
-					if (last == GMT_X) B->dim[GMT_Y] = B->dim[GMT_X];
-					break;
-				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Unrecognized modifier +%s\n", option, p);
-					error++;
-					break;
+		
+		if (GMT_validate_modifiers (GMT, B->refpoint->args, option, "josw")) return (1);
+		
+		/* Reference point args are +w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>]. */
+		/* Required modifier +w */
+		if (GMT_get_modifier (B->refpoint->args, 'w', string)) {
+			n = sscanf (string, "%[^/]/%s", txt_a, txt_b);
+			/* First deal with insert dimensions and horizontal vs vertical */
+			/* Handle either <unit><width>/<height> or <width>[<unit>]/<height>[<unit>] */
+			q[GMT_X] = txt_a;	q[GMT_Y] = txt_b;
+			last = (n == 1) ? GMT_X : GMT_Y;
+			for (k = GMT_X; k <= last; k++) {
+				len = strlen (q[k]) - 1;
+				if (strchr (GMT_LEN_UNITS2, q[k][len])) {	/* Got dimensions in these units */
+					B->unit = q[k][len];
+					q[k][len] = 0;
+				}
+				B->dim[k] = (B->unit) ? atof (q[k]) : GMT_to_inch (GMT, q[k]);
 			}
+			if (last == GMT_X) B->dim[GMT_Y] = B->dim[GMT_X];
+		}
+		/* Optional modifiers +j, +o, +s */
+		if (GMT_get_modifier (B->refpoint->args, 'j', string))
+			B->justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+		else	/* With -Dj, set default to reference justify point, else LB */
+			B->justify = (B->refpoint->mode == GMT_REFPOINT_JUST) ? B->refpoint->justify : PSL_BL;
+		if (GMT_get_modifier (B->refpoint->args, 'o', string)) {
+			if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, B->off)) < 0) error++;
+		}
+		if (GMT_get_modifier (B->refpoint->args, 's', string)) {
+			B->file = strdup (string);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map insert attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
 	}
@@ -7795,7 +7789,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		col_type[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Set correct input types */
 		col_type[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 		if (k == 0) {	/* Got geographic w/e/s/n or <w/s/e/n>r */
-			n = (unsigned int)strlen(txt_d) - 1;
+			n = (int)strlen(txt_d) - 1;
 			if (txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
 				B->oblique = true;
 				txt_d[n] = '\0';
@@ -8014,8 +8008,11 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 	if ((ms->refpoint = GMT_get_refpoint (GMT, text)) == NULL) return (1);	/* Failed basic parsing */
 
-	/* refpoint->args are now +c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+f][+j<just>][+l<label>][+u]. */
+	/* refpoint->args are now +c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+o<dx>[/<dy>]][+u]. */
 
+	if (GMT_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouw")) return (1);
+
+	/* Required modifiers +c, +w */
 	if (GMT_get_modifier (ms->refpoint->args, 'c', string)) {
 		if (strchr (string, '/')) {	/* Got both lon and lat for scale */
 			if ((n = GMT_get_pair (GMT, string, GMT_PAIR_COORD, ms->origin)) < 2) error++;
@@ -8037,28 +8034,6 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale origin modifier +c[<lon>/]/<lat> is required\n", option);
 		error++;
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'f', NULL))	/* Do fancy label */
-		ms->fancy = true;
-	if (GMT_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
-		ms->alignment = string[0];
-		if (!(ms->alignment == 'l' || ms->alignment == 'r' || ms->alignment == 't' || ms->alignment == 'b')) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid label alignments (+a) are l|r|t|b\n", option);
-			error++;
-		}
-	}
-	if (GMT_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
-		ms->justify = GMT_just_decode (GMT, string, PSL_MC);
-	else	/* With -Dj, set default to reference justify point, else LB */
-		ms->justify = (ms->refpoint->mode == GMT_REFPOINT_JUST) ? ms->refpoint->justify : PSL_BL;
-	if (GMT_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
-		if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
-	}
-	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
-		if (string[0]) strncpy (ms->label, string, GMT_LEN64);
-		ms->do_label = true;
-	}
-	if (GMT_get_modifier (ms->refpoint->args, 'u', NULL))	/* Add units to annotations */
-		ms->unit = true;
 	if (GMT_get_modifier (ms->refpoint->args, 'w', string)) {	/* Get bar length */
 		n = (int)strlen (string) - 1;
 		if (isalpha ((int)string[n])) {	/* Letter at end of distance value */
@@ -8084,6 +8059,29 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale length modifier +w<length>[unit] is required\n", option);
 		error++;
 	}
+	/* Optional modifiers +a, +f, +j, +l, +o, +u */
+	if (GMT_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
+		ms->alignment = string[0];
+		if (!(ms->alignment == 'l' || ms->alignment == 'r' || ms->alignment == 't' || ms->alignment == 'b')) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid label alignments (+a) are l|r|t|b\n", option);
+			error++;
+		}
+	}
+	if (GMT_get_modifier (ms->refpoint->args, 'f', NULL))	/* Do fancy label */
+		ms->fancy = true;
+	if (GMT_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
+		ms->justify = GMT_just_decode (GMT, string, PSL_MC);
+	else	/* With -Dj, set default to reference justify point, else LB */
+		ms->justify = (ms->refpoint->mode == GMT_REFPOINT_JUST) ? ms->refpoint->justify : PSL_BL;
+	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
+		if (string[0]) strncpy (ms->label, string, GMT_LEN64);
+		ms->do_label = true;
+	}
+	if (GMT_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
+		if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
+	}
+	if (GMT_get_modifier (ms->refpoint->args, 'u', NULL))	/* Add units to annotations */
+		ms->unit = true;
 	if (error)
 		GMT_mapscale_syntax (GMT, 'L', "Draw a map scale centered on specified reference point.");
 
@@ -8227,10 +8225,10 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	int n;
 	char txt_a[GMT_LEN256] = {""}, string[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
 
-	/* SYNTAX is -T[g|j|n|x]<refpoint>+w<width>[+f[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
+	/* SYNTAX is -Td|m[g|j|n|x]<refpoint>+w<width>[+f[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
 	 * 1)  +f: fancy direction rose, <kind> = 1,2,3 which is the level of directions [1].
-	 * 2)  +m: magnetic rose.  Optionally, append <dec>[/<dlabel>], where <dec> is magnetic declination and dlabel its label [no declination info].
-	 * If -?m, optionally set annotation interval with +
+	 * 2)  Tm: magnetic rose.  Optionally, append +d<dec>[/<dlabel>], where <dec> is magnetic declination and dlabel its label [no declination info].
+	 * If  -Tm, optionally set annotation interval with +t
 	 */
 
 	if (!text) {
@@ -8255,12 +8253,16 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	}
 	if ((ms->refpoint = GMT_get_refpoint (GMT, &text[1])) == NULL) return (1);	/* Failed basic parsing */
 
+	if (GMT_validate_modifiers (GMT, ms->refpoint->args, option, "dfijloptw")) return (1);
+
+	/* Get required +w modifier */
 	if (GMT_get_modifier (ms->refpoint->args, 'w', string))	/* Get rose dimensions */
 		ms->size = GMT_to_inch (GMT, string);
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Rose dimension modifier +w<length>[unit] is required\n", option);
 		error++;
 	}
+	/* Get optional +d, +f, +i, +j, +l, +o, +p, +t, +w modifier */
 	if (GMT_get_modifier (ms->refpoint->args, 'd', string)) {	/* Want magnetic directions */
 		if (ms->type != GMT_ROSE_MAG) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Cannot specify +d<info> when -Td is selected\n", option);
@@ -8289,29 +8291,14 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			error++;
 		}
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 't', string)) {	/* Set intervals */
-		n = sscanf (string, "%lf/%lf/%lf/%lf/%lf/%lf",
-			&ms->a_int[GMT_ROSE_SECONDARY], &ms->f_int[GMT_ROSE_SECONDARY], &ms->g_int[GMT_ROSE_SECONDARY],
-			&ms->a_int[GMT_ROSE_PRIMARY], &ms->f_int[GMT_ROSE_PRIMARY], &ms->g_int[GMT_ROSE_PRIMARY]);
-		if (!(n == 3 || n == 6)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Modifier +t<intervals> expects 3 or 6 intervals\n", option);
-			error++;
-		}
+	if (GMT_get_modifier (ms->refpoint->args, 'i', string)) {
+		if (string[0] && GMT_getpen (GMT, string, &ms->pen[GMT_ROSE_PRIMARY])) error++;
+		ms->draw_circle[GMT_ROSE_PRIMARY] = true;
 	}
 	if (GMT_get_modifier (ms->refpoint->args, 'j', string))
 		ms->justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
 	else	/* With -Dj, set default to reference justify point, else LB */
 		ms->justify = (ms->refpoint->mode == GMT_REFPOINT_JUST) ? ms->refpoint->justify : PSL_BL;
-	if (GMT_get_modifier (ms->refpoint->args, 'o', string))
-		if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
-	if (GMT_get_modifier (ms->refpoint->args, 'i', string)) {
-		if (string[0] && GMT_getpen (GMT, string, &ms->pen[GMT_ROSE_PRIMARY])) error++;
-		ms->draw_circle[GMT_ROSE_PRIMARY] = true;
-	}
-	if (GMT_get_modifier (ms->refpoint->args, 'p', string)) {
-		if (string[0] && GMT_getpen (GMT, string, &ms->pen[GMT_ROSE_SECONDARY])) error++;
-		ms->draw_circle[GMT_ROSE_SECONDARY] = true;
-	}
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Set labels +lw,e,s,n*/
 		ms->do_label = true;
 		if (string[0] == 0) {	/* Want default labels */
@@ -8330,6 +8317,21 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: 4 Labels must be given via modifier +lw,e,s,n\n", option);
 				error++;
 			}
+		}
+	}
+	if (GMT_get_modifier (ms->refpoint->args, 'o', string))
+		if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
+	if (GMT_get_modifier (ms->refpoint->args, 'p', string)) {
+		if (string[0] && GMT_getpen (GMT, string, &ms->pen[GMT_ROSE_SECONDARY])) error++;
+		ms->draw_circle[GMT_ROSE_SECONDARY] = true;
+	}
+	if (GMT_get_modifier (ms->refpoint->args, 't', string)) {	/* Set intervals */
+		n = sscanf (string, "%lf/%lf/%lf/%lf/%lf/%lf",
+			&ms->a_int[GMT_ROSE_SECONDARY], &ms->f_int[GMT_ROSE_SECONDARY], &ms->g_int[GMT_ROSE_SECONDARY],
+			&ms->a_int[GMT_ROSE_PRIMARY], &ms->f_int[GMT_ROSE_PRIMARY], &ms->g_int[GMT_ROSE_PRIMARY]);
+		if (!(n == 3 || n == 6)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Modifier +t<intervals> expects 3 or 6 intervals\n", option);
+			error++;
 		}
 	}
 	ms->plot = true;
@@ -11937,4 +11939,27 @@ void GMT_enable_threads (struct GMT_CTRL *GMT) {
 		omp_set_num_threads (1);	/* Select one thread only */
 	}
 #endif
+}
+
+/*! . */
+unsigned int GMT_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers)
+{
+	/* Looks for modifiers +<mod> in string and making sure <mod> is
+	 * only from the set given by valid_modifiers.  Return 1 if failure, 0 otherwise.
+	*/
+	bool quoted = false;
+	unsigned int n_errors = 0;
+	size_t k, len, start = 0;
+	
+	if (!string || string[0] == 0) return 0;	/* Nothing to check */
+	len = strlen (string);
+	for (k = 0; start == 0 && k < (len-1); k++) {
+		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exits the quote */
+		if (quoted) continue;		/* Not consider +<mod> inside quoted strings */
+		if (string[k] == '+' && !strchr (valid_modifiers, string[k+1])) {	/* Found an invalid modifier */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c option: Modifier +%c unrecognized\n", option, string[k+1]);
+			n_errors++;
+		}
+	}
+	return n_errors;
 }

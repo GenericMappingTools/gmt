@@ -164,27 +164,36 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, p)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]] */
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
-						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else	/* With -Dj, set default to reference justify point, else LB */
-						Ctrl->D.justify = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? Ctrl->D.refpoint->justify : PSL_BL;
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
-					}
+				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]][+n<nx>[/<ny>]][+r<dpi>] */
+					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw")) n_errors++;
+					/* Required modifier +w OR +r */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
-						if (Ctrl->D.dim[GMT_X] < 0.0) {
+						if (Ctrl->D.dim[GMT_X] < 0.0) {	/* Negative width means PS interpolation */
 							Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 							Ctrl->D.interpolate = true;
 						}
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'r', string))
+					else if (GMT_get_modifier (Ctrl->D.refpoint->args, 'r', string))
 						Ctrl->D.dpi = atof (string);
+					/* Optional modifiers +j, +n, +o */
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
+						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+					else	/* With -Dj, set default to reference justify point, else LB */
+						Ctrl->D.justify = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? Ctrl->D.refpoint->justify : PSL_BL;
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
+						n = sscanf (string, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
+						if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
+					}
+					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
+						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+					}
 				}
 				break;
 			case 'E':	/* Specify image dpi */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -E option is deprecated; use -D modifier +r instead.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: The -E option is deprecated but is accepted.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +r instead.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+r) with the old-style -C option.\n");
 				Ctrl->D.dpi = atof (opt->arg);
 				break;
 			case 'F':	/* Specify frame pen */

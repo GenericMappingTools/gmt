@@ -5,7 +5,7 @@
 ps=gspline_2.ps
 
 # Figure 3 in Wessel, P. (2009), A general-purpose Green's function-based
-#	interpolator, Computers & Geosciences, 35, 1247–1254.
+#	interpolator, Computers & Geosciences, 35, 1247-1254.
 
 D=0.05
 R=0/7.2/-0.2/7

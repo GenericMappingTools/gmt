@@ -357,6 +357,7 @@ EXTERN_MSC unsigned int GMT_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsig
 EXTERN_MSC int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int in_dim[], unsigned int out_dim[]);
 EXTERN_MSC void GMT_sprintf_float (char *string, char *format, double x);
 EXTERN_MSC void GMT_enable_threads (struct GMT_CTRL *GMT);
+EXTERN_MSC unsigned int GMT_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers);
 
 /* gmt_calclock.c: */
 
