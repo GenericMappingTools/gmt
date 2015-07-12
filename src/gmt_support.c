@@ -11962,3 +11962,22 @@ unsigned int GMT_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 	}
 	return n_errors;
 }
+
+double GMT_pol_area (double x[], double y[], uint64_t n)
+{
+	uint64_t i;
+	double area, xold, yold;
+
+	/* Trapezoidal area calculation.
+	 * area will be +ve if polygon is CW, negative if CCW */
+
+	if (n < 3) return (0.0);
+	area = yold = 0.0;
+	xold = x[n-1];	yold = y[n-1];
+
+	for (i = 0; i < n; i++) {
+		area += (xold - x[i]) * (yold + y[i]);
+		xold = x[i];	yold = y[i];
+	}
+	return (0.5 * area);
+}

@@ -167,25 +167,6 @@ void Free_gmtspatial_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-double area (double x[], double y[], uint64_t n)
-{
-	uint64_t i;
-	double area, xold, yold;
-	
-	/* Trapezoidal area calculation.
-	 * area will be +ve if polygon is CW, negative if CCW */
-	
-	if (n < 3) return (0.0);
-	area = yold = 0.0;
-	xold = x[n-1];	yold = y[n-1];
-	
-	for (i = 0; i < n; i++) {
-		area += (xold - x[i]) * (yold + y[i]);
-		xold = x[i];	yold = y[i];
-	}
-	return (0.5 * area);
-}
-
 void centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo)
 {	/* Estimate mean position */
 	uint64_t i, k;
@@ -264,7 +245,7 @@ unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n
 		}
 	}
 	
-	size = area (xp, yp, n);
+	size = GMT_pol_area (xp, yp, n);
 	GMT_free (GMT, xp);
 	GMT_free (GMT, yp);
 	if (geo) size *= (GMT->current.map.dist[GMT_MAP_DIST].scale * GMT->current.map.dist[GMT_MAP_DIST].scale);

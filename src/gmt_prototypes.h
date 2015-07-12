@@ -358,6 +358,7 @@ EXTERN_MSC int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, uns
 EXTERN_MSC void GMT_sprintf_float (char *string, char *format, double x);
 EXTERN_MSC void GMT_enable_threads (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int GMT_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers);
+EXTERN_MSC double GMT_pol_area (double x[], double y[], uint64_t n);
 
 /* gmt_calclock.c: */
 

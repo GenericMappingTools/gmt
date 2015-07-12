@@ -323,9 +323,33 @@ double get_grav2d (double x[], double z[], unsigned int n, double x0, double z0,
 	return (sum);
 }
 
-double get_vgg2d (double *xvert, double *zvert, unsigned int n, double x_obs, double z_obs, double rho)
-{	/* Not implemented yet */
-	return 0.0;
+double get_vgg2d (double *x, double *z, unsigned int n, double x0, double z0, double rho)
+{
+	unsigned int i, i1;
+	double inc, xi, xi1, zi, zi1, ri2, ri12, phi_i, phi_i1, dx, dz, dr2, v = 0.0;
+	n--;	/* To avoid repeated indices */
+	xi = x[0] - x0;
+	zi = z[0] - z0;
+	ri2 = xi*xi + zi*zi;
+	phi_i = d_atan2 (zi, xi);
+	for (i = 0; i < n; i++) {
+		i1 = i + 1;
+		dx = x[i1] - x[i];
+		dz = z[i1] - z[i];
+		dr2 = dx*dx + dz*dz;
+		xi1 = x[i1] - x0;
+		zi1 = z[i1] - z0;
+		ri12 = xi1*xi1 + zi1*zi1;
+		phi_i1 = d_atan2 (zi1, xi1);
+		inc = (dx*(dx*(phi_i1 - phi_i) - dz*log(ri12/ri2)/2) - (xi*zi1 - xi1*zi)*(dx*(xi1/ri12 - xi/ri2) + dz*(zi1/ri12 - zi/ri2)))/dr2;
+		v += inc;
+		xi = xi1;
+		zi = zi1;
+		ri2 = ri12;
+		phi_i = phi_i1;
+	}
+	v = -v * 2.0 * GAMMA * rho * 1.0e9;        /* 1e9 To get Eotvos; -ve is just lazy and depends on CCW vs CW */
+	return (v);
 }
 
 double get_geoid2d (double y[], double z[], unsigned int n_v, double y0, double z0, double rho)
@@ -390,7 +414,7 @@ double get_geoid2d (double y[], double z[], unsigned int n_v, double y0, double 
 				- (part_a_1 + part_b_1 + part_c_1 + part_d_1 + part_e_1 + part_f_1));
 		}
 	}
-	N *= (-GAMMA * rho / G);
+	N *= (GAMMA * rho / G);
 	return (N);
 }
 
@@ -398,19 +422,23 @@ double get_one_output2D (double x_obs, double z_obs, struct BODY2D *body, unsign
 {	/* Evaluate output at a single observation point (x,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
-	double vtry = 0.0;
+	double area, v_sum = 0.0, v;
 
 	for (k = 0; k < n_bodies; k++) {	/* Loop over slices */
+		area = GMT_pol_area (body[k].x, body[k].z, body[k].n);
+		v = 0.0;
 		if (mode == TALWANI2D_FAA) /* FAA */
-			vtry += get_grav2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += get_grav2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
 		else if (mode == TALWANI2D_FAA2) /* FAA 2.5D */
-			vtry += grav_2_5D (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, ymin, ymax);
+			v += grav_2_5D (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, ymin, ymax);
 		else if (mode == TALWANI2D_VGG) /* VGG */
-			vtry += get_vgg2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += get_vgg2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
 		else /* GEOID*/
-			vtry += get_geoid2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += get_geoid2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+		if (area < 0.0) v = -v;	/* Polygon went counter-clockwise */
+		v_sum += v;
 	}
-	return (vtry);
+	return (v_sum);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
@@ -422,7 +450,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 	unsigned int k, tbl, seg, n, geometry, n_bodies;
 	size_t n_alloc, n_alloc1;
 	uint64_t dim[4] = {1, 1, 0, 2};
-	double scl, rho, z_level;
+	double scl, rho, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;
 	
 	char *uname[2] = {"meter", "km"}, *kind[4] = {"FAA", "VGG", "GEOID", "FAA(2.5-D)"};
@@ -580,9 +608,9 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 	
 	/* Now we can write to the screen the user's polygon model characteristics. */
 	
-	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-	 	for (k = 0; k < n_bodies; k++)
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%lg Rho: %lg N-vertx: %4d\n", body[k].rho, body[k].n);
+	for (k = 0, rho = 0.0; k < n_bodies; k++) {
+		rho += body[k].rho;
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%lg Rho: %lg N-vertx: %4d\n", body[k].rho, body[k].n);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
 	
@@ -590,13 +618,28 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 	for (tbl = 0; tbl < Out->n_tables; tbl++) {
 		for (seg = 0; seg < Out->table[tbl]->n_segments; seg++) {
 			S = Out->table[tbl]->segment[seg];	/* Current segment */
-#ifdef _OPENMPXXX
+#ifdef _OPENMP
 			/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,z_level) shared(GMT,Ctrl,S,scl,body,n_bodies)
+#pragma omp parallel for private(row,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies)
 #endif
 			for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 				z_level = (S->n_columns == 2 && !Ctrl->Z.active) ? S->coord[GMT_Y][row] : Ctrl->Z.level;
-				S->coord[GMT_Y][row] = get_one_output2D (S->coord[GMT_X][row] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
+				answer = get_one_output2D (S->coord[GMT_X][row] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
+				S->coord[GMT_Y][row] = answer;
+				if (answer < min_answer) min_answer = answer;
+				if (answer > max_answer) max_answer = answer;
+			}
+		}
+	}
+	if (Ctrl->F.mode == TALWANI2D_GEOID) {	/* Adjust zero level */
+		double off = (rho > 0.0) ? min_answer : max_answer;
+		GMT_Report (API, GMT_MSG_NORMAL, "Geoid algorithm in progress - not working yet\n");
+		for (tbl = 0; tbl < Out->n_tables; tbl++) {
+			for (seg = 0; seg < Out->table[tbl]->n_segments; seg++) {
+				S = Out->table[tbl]->segment[seg];	/* Current segment */
+				for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
+					S->coord[GMT_Y][row] -= off;
+				}
 			}
 		}
 	}
