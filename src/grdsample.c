@@ -36,7 +36,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-RVfnr" GMT_OPT("FQ")
+#define GMT_PROG_OPTIONS "-RVfnr" GMT_ADD_x_OPT GMT_OPT("FQ")
 
 struct GRDSAMPLE_CTRL {
 	struct In {
@@ -76,7 +76,8 @@ int GMT_grdsample_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdsample <ingrid> -G<outgrid> [%s]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]%s\n", GMT_Rgeo_OPT,
+		GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -87,7 +88,7 @@ int GMT_grdsample_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   When omitted: grid spacing is copied from input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a subregion [Default is old region].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle between grid registration and pixel registration.\n");
-	GMT_Option (API, "V,f,n,r,.");
+	GMT_Option (API, "V,f,n,r,x,.");
 
 	return (EXIT_FAILURE);
 }
@@ -221,6 +222,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdsample main code ----------------------------*/
 
+	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
@@ -297,7 +299,11 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	/* Loop over input point and estimate output values */
 	
 	Gout->header->z_min = FLT_MAX; Gout->header->z_max = -FLT_MAX;	/* Min/max for out */
-	GMT_row_loop (GMT, Gout, row) {
+
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,lat,ij) shared(GMT,Gin,Gout,lon)
+#endif
+	for (row = 0; row < Gout->header->ny; row++) {
 		lat = GMT_grd_row_to_y (GMT, row, Gout->header);
 		if (!Gin->header->nyp)
 			/* Nothing */;
@@ -305,7 +311,8 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			lat -= Gin->header->inc[GMT_Y] * Gin->header->nyp;
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * Gin->header->nyp;
-		GMT_col_loop (GMT, Gout, row, col, ij) {
+		for (col = 0; col < Gout->header->nx; col++) {
+			ij = GMT_IJP (Gout->header, row, col);
 			Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
 			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];
 			if (Gout->data[ij] > Gout->header->z_max) Gout->header->z_max = Gout->data[ij];
@@ -313,7 +320,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	}
 
 	if (!GMT->common.n.truncate && (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max)) {	/* Report and possibly truncate output to input extrama */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
 			Gout->header->z_min, Gout->header->z_max, Gin->header->z_min, Gin->header->z_max);
 	}
 

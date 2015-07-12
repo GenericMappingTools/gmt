@@ -264,12 +264,13 @@ We have added two new lower-case GMT common options:
    option replaces the old **-N** in :doc:`grd2xyz` and :doc:`xyz2grd`
    (but are backwards compatible).
 
-*  Some programs are now using OpenMP to spread computations over all
+*  Some modules are now using OpenMP to spread computations over all
    available cores (only available if compiled with OpenMP support).
    Those modules will offer the new option **-x**\ [[-]\ *n*] to reduce
-   how many cores to assign to the task.  Only some programs currently
-   has this option, such as greenspline, grdmask, grdmath, grdfilter,
-   sph2grd, and the potential supplement's grdgravmag3d and talwani3d.
+   how many cores to assign to the task.  The modules that currently
+   have this option are greenspline, grdmask, grdmath, grdfilter,
+   grdsample, sph2grd, and the potential supplement's grdgravmag3d and
+   talwani3d; this list will grow longer with time.
 
 New default parameters
 ----------------------
