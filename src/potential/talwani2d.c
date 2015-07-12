@@ -44,6 +44,8 @@
 #define TOL		1.0e-7
 #define GAMMA 		6.673e-11	/* Gravitational constant */
 #define G               9.81            /* Normal gravity */
+#define SI_TO_MGAL	1.0e5		/* Convert m/s^2 to mGal */
+#define SI_TO_EOTVOS	1.0e9		/* Convert (m/s^2)/m to Eotvos */
 
 struct TALWANI2D_CTRL {
 	struct A {	/* -A positive up  */
@@ -112,6 +114,7 @@ void Free_talwani2d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* D
 int GMT_talwani2d_parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	unsigned int k, n_errors = 0;
+	int n;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
@@ -167,7 +170,11 @@ int GMT_talwani2d_parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, stru
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
-				if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Z.level, &Ctrl->Z.ymin, &Ctrl->Z.ymax) == 3) Ctrl->Z.mode = 1;
+				k = (opt->arg[0] == '/') ? 1 : 0;	/* In case someone gives -Z/ymin/ymax */
+				n = sscanf (&opt->arg[k], "%lf/%lf/%lf", &Ctrl->Z.level, &Ctrl->Z.ymin, &Ctrl->Z.ymax);
+				if (n == 3) Ctrl->Z.mode = 3;
+				else if (n == 2) {Ctrl->Z.mode = 2; Ctrl->Z.ymax = Ctrl->Z.ymin; Ctrl->Z.ymin = Ctrl->Z.level;}
+				else if (n == 1) Ctrl->Z.mode = 1;
 				break;
 			default:
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -176,11 +183,11 @@ int GMT_talwani2d_parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, stru
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->N.active,
 	                                 "Syntax error -N option: Cannot also specify -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.mode == 1 && Ctrl->Z.ymin >= Ctrl->Z.ymax,
+	n_errors += GMT_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->Z.ymin >= Ctrl->Z.ymax,
 				         "Syntax error -Z option: The ymin >= ymax for 2.5-D body\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.mode == 1 && Ctrl->F.mode != TALWANI2D_FAA,
+	n_errors += GMT_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->F.mode != TALWANI2D_FAA,
 				         "Syntax error -Z option: 2.5-D solution only available for FAA\n");
-	if (Ctrl->Z.mode == 1 && Ctrl->F.mode == TALWANI2D_FAA) Ctrl->F.mode = TALWANI2D_FAA2;
+	if ((Ctrl->Z.mode & 2) && Ctrl->F.mode == TALWANI2D_FAA) Ctrl->F.mode = TALWANI2D_FAA2;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -188,7 +195,7 @@ int GMT_talwani2d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: talwani2d <modelfile> [-A] [-D<rho>] [-Ff|n|v]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-T[<t_min>/<t_max>/<t_inc>[+]]] [%s] [-Z<level>[/<ymin/<ymax>]]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-T[<xmin>/<xmax>/<xinc>[+]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -198,18 +205,17 @@ int GMT_talwani2d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is down].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file, in kg/m^3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f = Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (n).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f = FAA Free-air anomalies (mGal) [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   v = VGG Vertical Gravity Gradient (Eotvos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x-distances are in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-distances are in km [meters]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x-distances are given in km [meters]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-distances are given in km [meters]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Gives file with output locations x[,z].  If there are\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z-coordinates then these are used as observation level\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   You can use -Z to override these with a constant level.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set domain from t_min to t_max in steps of t_inc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to t_inc to indicate the number of points instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If a filename is given instead we read t coordinates from first column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   z-coordinates then these are used as observation levels.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   You can use -Z to override these by setting a constant level.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set domain from <xmin> to <xmax> in steps of <xinc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to xinc to indicate the number of points instead.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For FAA only: Optionally append <ymin/ymax> to get 2.5-D solution.\n");
@@ -285,9 +291,8 @@ double grav_2_5D (double x[], double z[], unsigned int n, double x0, double z0, 
 		xx0 = xx1;
 		zz0 = zz1;
 	}
-	sum *= GAMMA * rho * 1e5;	/* To get mGal */
-	sum = fabs (sum);
-	return ((rho < 0.0) ? -sum : sum);
+	sum *= GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	return (sum);
 }
 
 double get_grav2d (double x[], double z[], unsigned int n, double x0, double z0, double rho)
@@ -319,14 +324,62 @@ double get_grav2d (double x[], double z[], unsigned int n, double x0, double z0,
 		ri = ri1;
 		phi_i = phi_i1;
 	}
-	sum *= 2.0 * GAMMA * rho * 1e5;	/* 1e5 To get mGal */
+	sum *= 2.0 * GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
 double get_vgg2d (double *x, double *z, unsigned int n, double x0, double z0, double rho)
-{
+{	/* This was obtained via d/dz of integral */
+	int i1, i2;
+	double sum=0.0, st1, ct1, st2, ct2, x1, z1, x2, z2, r1sq, r2sq;
+	double dx, dz, drsq, factor, theta2, theta1, term2, term1;
+
+	n--;
+	for (i1 = 0; i1 < n; i1++) {
+	        i2 = i1 + 1;
+		x1 = x[i1] - x0;
+		z1 = z[i1] - z0;
+		x2 = x[i2] - x0;
+		z2 = z[i2] - z0;
+		r1sq = x1 * x1 + z1 * z1;
+		r2sq = x2 * x2 + z2 * z2;
+		if (r1sq == 0) {      
+			fprintf (stderr, "Field point on corner of vertex\n");
+			return 0.0;
+		}
+		else if (r2sq == 0) {      
+			fprintf (stderr, "Field point on corner of vertex\n");
+			return 0.0;
+		}
+		dx = x2 - x1;
+		dz = z2 - z1;
+		drsq = dx * dx + dz * dz;
+
+		if (dz == 0)
+		    dz = 1e-6;
+		
+		if (drsq == 0)
+		    drsq = 1e-6;
+		
+		factor = 1.0 / (2.0 * drsq);
+		theta2 = atan2(z2,x2); theta1 = atan2(z1,x1);
+		sincos (theta1, &st1, &ct1);
+		sincos (theta2, &st2, &ct2);
+		term2 = dz * (2 * dx * log (fabs (dz * ct2 - dx * st2)) - 2 * theta2 * dz) +
+			drsq * log ((x2 * dz - dx * z2) / (dz / tan (theta2) - dx)) * sin (2 * theta2);
+		term1 = dz * (2 * dx * log (fabs (dz * ct1 - dx * st1)) - 2 * theta1 * dz) +
+			drsq * log ((x2 * dz - dx * z2) / (dz / tan (theta1) - dx)) * sin (2 * theta1);
+		sum += factor * (term2 - term1);
+	}
+
+	sum *= (-2.0 * GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
+	return (sum);
+}
+
+double get_vgg2d_old (double *x, double *z, unsigned int n, double x0, double z0, double rho)
+{	/* This was obtained via d/dz of Talwani grav of linesegment */
 	unsigned int i, i1;
-	double inc, xi, xi1, zi, zi1, ri2, ri12, phi_i, phi_i1, dx, dz, dr2, v = 0.0;
+	double inc, xi, xi1, zi, zi1, ri2, ri12, phi_i, phi_i1, dx, dz, dr2, sum = 0.0;
 	n--;	/* To avoid repeated indices */
 	xi = x[0] - x0;
 	zi = z[0] - z0;
@@ -342,32 +395,32 @@ double get_vgg2d (double *x, double *z, unsigned int n, double x0, double z0, do
 		ri12 = xi1*xi1 + zi1*zi1;
 		phi_i1 = d_atan2 (zi1, xi1);
 		inc = (dx*(dx*(phi_i1 - phi_i) - dz*log(ri12/ri2)/2) - (xi*zi1 - xi1*zi)*(dx*(xi1/ri12 - xi/ri2) + dz*(zi1/ri12 - zi/ri2)))/dr2;
-		v += inc;
+		sum += inc;
 		xi = xi1;
 		zi = zi1;
 		ri2 = ri12;
 		phi_i = phi_i1;
 	}
-	v = -v * 2.0 * GAMMA * rho * 1.0e9;        /* 1e9 To get Eotvos; -ve is just lazy and depends on CCW vs CW */
-	return (v);
+	sum *= (-2.0 * GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
+	return (sum);
 }
 
-double get_geoid2d (double y[], double z[], unsigned int n_v, double y0, double z0, double rho)
-{
+double get_geoid2d (double y[], double z[], unsigned int n, double y0, double z0, double rho)
+{	/* Based on Chaptman, 1979, Techniques for interpretation of geoid anomalies, JGR, 84 (B8), 3793-3801.
 	/*  y0;		Y-coordinate of observation point, in m */
 	/*  z0;		Z-coordinate of observation point, in m */
 	/*  y[];	Y-coordinates of vertices, in m */
 	/*  z[];	Z-coordinates of vertices, in m */
-	/*  n_v;	Number of vertices, with 1st == last point */
+	/*  n;	Number of vertices, with 1st == last point */
 	/*  rho;	Density contrast, in kg/m3 */
 	int i1, i2;
 	double dy1, dy2, dz1, dz2, hyp1, hyp2, mi, mi2, a2, bi, ci, ci2, di, di2;
 	double part_a_1, part_b_1, part_c_1, part_d_1, part_e_1, part_f_1;
 	double part_a_2, part_b_2, part_c_2, part_d_2, part_e_2, part_f_2;
-	double N = 0.0;
+	double N = 0.0, ni;
 
-	n_v--;	/* Since last point is repeated */
-	for (i1 = 0; i1 < n_v; i1++) {
+	n--;	/* Since last point is repeated */
+	for (i1 = 0; i1 < n; i1++) {
 		i2 = i1 + 1;	/* next point is simple since the last is repeated as first */
 		if (z[i1] == z[i2]) continue;		/* Slope mi is zero, so ni == 0 */
 		dy1 = y[i1] - y0;	dy2 = y[i2] - y0;
@@ -378,7 +431,7 @@ double get_geoid2d (double y[], double z[], unsigned int n_v, double y0, double 
 			part_b_2 = hyp2 * atan (dy2/dz2) + dy2 * dz2;
 			part_a_1 = dy1 * (dz1 * log (hyp1) - 2.0 * ( dz1 - fabs (dy1) * atan (dz1/dy1)) + dy1 * z[i1]);
 			part_b_1 = hyp1 * atan (dy1/dz1) + dy1 * dz1;
-			N += (part_a_2 + part_b_2 - part_a_1 - part_b_1);
+			ni = (part_a_2 + part_b_2 - part_a_1 - part_b_1);
 		}
 		else {
 			mi = (z[i2] - z[i1]) / (y[i2] - y[i1]);
@@ -391,8 +444,7 @@ double get_geoid2d (double y[], double z[], unsigned int n_v, double y0, double 
 				part_a_1 = 0.5 * z[i1] * z[i1] * log ((1 + 1.0/mi2)*z[i1]*z[i1])/mi;
 				part_b_1 = -1.5 * z[i1] * z[i1] / mi;
 				part_c_1 = z[i1] * z[i1] * atan (1.0/mi);
-				N += ((part_a_2 + part_b_2 + part_c_2)
-					- (part_a_1 + part_b_1 + part_c_1));
+				ni = (part_a_2 + part_b_2 + part_c_2) - (part_a_1 + part_b_1 + part_c_1);
 			}
 			else {
 				ci = 1.0 / mi;
@@ -421,10 +473,11 @@ double get_geoid2d (double y[], double z[], unsigned int n_v, double y0, double 
 				part_f_1 = di * z[i1] / (1.0 + ci2)
 					 + ((1.0 - ci2) * di2 / pow (1.0 + ci2, 2.0)) * atan (dy1 / z[i1]);
 
-				N += ((part_a_2 + part_b_2 + part_c_2 + part_d_2 + part_e_2 + part_f_2)
-					- (part_a_1 + part_b_1 + part_c_1 + part_d_1 + part_e_1 + part_f_1));
+				ni = (part_a_2 + part_b_2 + part_c_2 + part_d_2 + part_e_2 + part_f_2)
+					- (part_a_1 + part_b_1 + part_c_1 + part_d_1 + part_e_1 + part_f_1);
 			}
 		}
+		N = N + ni;
 	}
 	N *= (-GAMMA * rho / G);
 	return (N);
@@ -635,7 +688,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 #pragma omp parallel for private(row,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies)
 #endif
 			for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
-				z_level = (S->n_columns == 2 && !Ctrl->Z.active) ? S->coord[GMT_Y][row] : Ctrl->Z.level;
+				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->coord[GMT_Y][row] : Ctrl->Z.level;
 				answer = get_one_output2D (S->coord[GMT_X][row] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
 				S->coord[GMT_Y][row] = answer;
 				if (answer < min_answer) min_answer = answer;
