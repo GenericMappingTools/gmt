@@ -189,8 +189,8 @@ int GMT_grdsample_parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, stru
 
 int GMT_grdsample (void *V_API, int mode, void *args) {
 
-	int error = 0;
-	unsigned int row, col, registration;
+	int error = 0, row, col;
+	unsigned int registration;
 	
 	uint64_t ij;
 	
@@ -286,7 +286,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	/* Precalculate longitudes */
 
 	lon = GMT_memory (GMT, NULL, Gout->header->nx, double);
-	for (col = 0; col < Gout->header->nx; col++) {
+	for (col = 0; col < (int)Gout->header->nx; col++) {
 		lon[col] = GMT_grd_col_to_x (GMT, col, Gout->header);
 		if (!Gin->header->nxp)
 			/* Nothing */;
@@ -303,7 +303,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,lat,ij) shared(GMT,Gin,Gout,lon)
 #endif
-	for (row = 0; row < Gout->header->ny; row++) {
+	for (row = 0; row < (int)Gout->header->ny; row++) {
 		lat = GMT_grd_row_to_y (GMT, row, Gout->header);
 		if (!Gin->header->nyp)
 			/* Nothing */;
@@ -311,7 +311,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			lat -= Gin->header->inc[GMT_Y] * Gin->header->nyp;
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * Gin->header->nyp;
-		for (col = 0; col < Gout->header->nx; col++) {
+		for (col = 0; col < (int)Gout->header->nx; col++) {
 			ij = GMT_IJP (Gout->header, row, col);
 			Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
 			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];
