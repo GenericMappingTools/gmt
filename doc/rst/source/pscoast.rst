@@ -296,6 +296,13 @@ domain form the extents of these countries, use
 
     gmt pscoast  -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red+r -EES,PT,GR+gyellow > map.ps
 
+To extract a high-resolution coastline data table for Iceland to be used
+in your analysis, try
+
+   ::
+
+    gmt pscoast -R-26/-12/62/68 -Dh -W > iceland.txt
+
 **pscoast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
 for the file **$GMT_SHAREDIR**/coastline.conf. This file may contain
@@ -334,7 +341,7 @@ permanent shelf ice. In addition to these time-varying ice-ocean
 boundaries, there are also shelf ice grounding lines where ice goes from
 floating on the sea to sitting on land, and lines delimiting areas of
 rock outcrop. For consistency's sake, we have used the World Vector
-Shoreline throughout the world in pscoast, as described in the GMT
+Shoreline throughout the world in **pscoast**, as described in the GMT
 Cookbook Appendix K. Users who need specific boundaries in Antarctica
 should get the Antarctic Digital Database, prepared by the British
 Antarctic Survey, Scott Polar Research Institute, World Conservation
