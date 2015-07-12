@@ -128,7 +128,9 @@ Suppose you ...
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`grdgravmag3d`
+:doc:`gmt </gmt>`, :doc:`grdgravmag3d`,
+:doc:`talwani2d </supplements/potential/talwani2d>`,
+:doc:`talwani3d </supplements/potential/talwani3d>`
 
 Reference
 ---------

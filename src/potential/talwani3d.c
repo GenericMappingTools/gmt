@@ -104,7 +104,6 @@ struct CAKE {
 enum Talwani3d_fields {
 	TALWANI3D_FAA	= 0,
 	TALWANI3D_VGG,
-	TALWANI3D_PW,
 	TALWANI3D_HOR=0,
 	TALWANI3D_VER=1
 };
@@ -150,7 +149,6 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI3D_VGG; 	     break;
-					case 'p': Ctrl->F.mode = TALWANI3D_PW; 		     break;
 					default:  Ctrl->F.mode = TALWANI3D_FAA; 	   /* FAA */
 						break;
 				}
@@ -408,135 +406,7 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 	return (6.673 * rho * vsum);
 }
 
-double comp_s (double old, double new)
-{
-	if (old < new)
-		return (new);
-	else
-		return (old);
-}
-
-double get_vgg3d_ssk (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
-{
-	int k;
-	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside, sflip, s_max;
-	double xr2, yr2, dx, dy, dz, p, em, sign2, wsign, value, part2, part3, q, f, pz;
-    /*double part1, psi; */
-	int zerog;
-	s_max = -1.0;
-    dz = z_obs;
-	vsum = 0.0;
-    sflip = 1.0;
-	if (flat) {
-		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
-		y1 = DY_FROM_DLAT (y[0], y_obs);
-	}
-	else {
-		x1 = x[0] - x_obs;
-		y1 = y[0] - y_obs;
-	}
-	r1 = hypot (x1, y1);
-	if (r1 != 0.0) {
-		ir1 = 1.0 / r1;
-		xr1 = x1 * ir1;
-		yr1 = y1 * ir1;
-	}
-    
-	for (k = 1; k < n; k++) {	/* Loop over vertex */
-        
-		if (flat) {
-			x2 = DX_FROM_DLON (x[k], x_obs, y[k], y_obs);
-			y2 = DY_FROM_DLAT (y[k], y_obs);
-		}
-		else {
-			x2 = x[k] - x_obs;
-			y2 = y[k] - y_obs;
-		}
-		r2 = hypot (x2, y2);
-		if (r2 == 0.0)
-			zerog = TRUE;
-		else {
-			zerog = FALSE;
-			ir2 = 1.0 / r2;
-			xr2 = x2 * ir2;
-			yr2 = y2 * ir2;
-			if (r1 == 0.0)
-				zerog = TRUE;
-			else {
-				dx = x1 - x2;
-				dy = y1 - y2;
-				side = hypot (dx, dy);
-				iside = 1.0 / side;
-				p = (dy * x1 - dx * y1) * iside;
-				if (fabs (p) < TOL)
-					zerog = TRUE;
-				else {
-					sign2 = copysign (1.0, p);
-                    
-					em = (yr1 * xr2) - (yr2 * xr1);
-					if (em == 0.0)
-						zerog = TRUE;
-					else {
-						wsign = copysign (1.0, em);
-						value = xr1*xr2 + yr1*yr2;
-						/*part1 = wsign * d_acos (value);*/
-                        pz = p*p+z_obs*z_obs;
-                        
-                        q = (dx*xr1 + dy*yr1)/hypot(dx,dy);
-                        f = (dx*xr2 + dy*yr2)/hypot(dx,dy);
-                        /*
-                        part2 = p*p*q*sign2/(pow(p*p+dz*dz,3/2)*pow(1-pow(q*dz,2)/(p*p+dz*dz),0.5));
-                        
-                        part3 = p*p*f*sign2/(pow(p*p+dz*dz,3/2)*pow(1-pow(f*dz,2)/(p*p+dz*dz),0.5));
-                        */
-                        /*
-                        part2 = sqrt(pz)*sqrt((p*p-(q*q-1)*dz*dz)/pz)*atan(q*sign2*dz/sqrt(p*p-(q*q-1)*dz*dz))/sqrt(p*p-(q*q-1)*dz*dz);
-                        part3 = sqrt(pz)*sqrt((p*p-(f*f-1)*dz*dz)/pz)*atan(f*sign2*dz/sqrt(p*p-(f*f-1)*dz*dz))/sqrt(p*p-(f*f-1)*dz*dz);
-                        */
-                        
-                        // working code
-                        part2 = (q*sign2*z_obs*z_obs/pow(sqrt(pz),3)-q*sign2/sqrt(pz))/sqrt(1-(q*q*z_obs*z_obs)/(pz));
-                        part3 = (f*sign2*z_obs*z_obs/pow(sqrt(pz),3)-f*sign2/sqrt(pz))/sqrt(1-(f*f*z_obs*z_obs)/(pz));
-                        
-                        if (fabs(part2)>TOL && fabs(part3)>TOL) s_max = comp_s(s_max,sign2);
-                        
-                        
-						/*if (z_obs == 0.0)
-							part2 = part3 = 0.0;
-						else {
-							psi = iside * z_obs * sign2 / hypot (p, z_obs);
-							q = (dx*xr1 + dy*yr1) * psi;
-							f = (dx*xr2 + dy*yr2) * psi;
-							part2 = d_asin (q);
-							part3 = d_asin (f);
-						} */
-                        //if (y_obs == 0.0)
-                        //printf("x = %f \t y = %f \t S = %f \t W = %f \t p = %f \t q = %f \t f = %f \t part2 = %f \t part3 = %f \t vertex = %d \t s_max = %f \n",x_obs,y_obs,sign2,wsign,p,q,f,part2,part3,k,s_max);
-					}
-				}
-			}
-		}
-        
-		if (!zerog) vsum += -part2 + part3;
-        
-		/* move this vertex to last vertex : */
-        
-		x1 = x2;
-		y1 = y2;
-		r1 = r2;
-		xr1 = xr2;
-		yr1 = yr2;
-        
-	}
-    
-	/* If z axis is positive down, then vsum should have the same sign as z, */
-    
-	vsum = (z_obs > 0.0) ? fabs (vsum) : -fabs (vsum);
-    if (s_max == 1.0) sflip=-1.0;
-	return (6.673 * rho * vsum * 1e1 *sflip);
-}
-
-double get_vgg3d_pw (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
+double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {	/* Now works, see talwani_pw.pdf */
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
@@ -628,7 +498,7 @@ double get_vgg3d_pw (double x[], double y[], int n, double x_obs, double y_obs, 
 	return (10 * 6.673 * rho * vsum);	/* Go get Eotvos = 0.1 mGal/km */
 }
 
-double get_one_output (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
+double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
 {	/* Evaluate output at a single observation point (x,y,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
@@ -642,10 +512,8 @@ double get_one_output (double x_obs, double y_obs, double z_obs, struct CAKE *ca
 		for (sl = cake[k].first_slice; sl; sl = sl->next) {	/* Loop over slices */
 			if (mode == TALWANI3D_FAA) /* FAA */
 				vtry[k] += get_grav3d    (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
-			else if (mode == TALWANI3D_VGG) /* SSK VGG */
-				vtry[k] += get_vgg3d_ssk (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
-			else /* PW VGG */
-				vtry[k] += get_vgg3d_pw  (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
+			else /* VGG */
+				vtry[k] += get_vgg3d  (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
 		}
 	}
 	return (parint (depths, vtry, ndepths));	/* Use parabolic integrator and return value */
@@ -671,7 +539,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	bool flat_earth = false, first_slice = true;
 	
-	char *uname[2] = {"meter", "km"};
+	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "VGG"};
 	double z_level, depth, rho;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
 					
@@ -849,9 +717,9 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	 				cake[k].depth, sl->rho, sl->n);
 	 	}
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating gravity\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
 
-	/* Set up depths array needed by get_one_output */
+	/* Set up depths array needed by get_one_output3D */
 	depths = GMT_memory (GMT, NULL, ndepths, double);
 	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
 	
@@ -882,7 +750,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 				 * with OpenMP active due to race condiations would mess up the output order */
 				for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 					if (S->n_columns == 3 && !Ctrl->Z.active) z_level = S->coord[GMT_Z][row];
-					GMT->hidden.mem_coord[GMT_X][row] = get_one_output (S->coord[GMT_X][row] * scl, S->coord[GMT_Y][row] * scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
+					GMT->hidden.mem_coord[GMT_X][row] = get_one_output3D (S->coord[GMT_X][row] * scl, S->coord[GMT_Y][row] * scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
 				}
 				/* This loop is not under OpenMP */
 				out[GMT_Z] = Ctrl->Z.level;	/* Default observation z level unless provided in input file */
@@ -917,7 +785,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = GMT_IJP (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */
-				G->data[node] = (float) get_one_output (x_obs[col], y_obs, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
+				G->data[node] = (float) get_one_output3D (x_obs[col], y_obs, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
 			}
 		}
 		GMT_free (GMT, x_obs);

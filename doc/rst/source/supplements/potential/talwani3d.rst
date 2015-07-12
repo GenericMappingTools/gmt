@@ -133,4 +133,5 @@ See Also
 :doc:`gmt.conf </gmt.conf>`, :doc:`gmt </gmt>`,
 :doc:`grdmath </grdmath>`, :doc:`gravfft </supplements/potential/gravfft>`,
 :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>`,
-:doc:`grdgravmag3d </supplements/potential/grdgravmag3d>`
+:doc:`grdgravmag3d </supplements/potential/grdgravmag3d>`,
+:doc:`talwani2d </supplements/potential/talwani2d>`

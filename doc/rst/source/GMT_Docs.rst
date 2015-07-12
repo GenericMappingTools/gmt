@@ -238,6 +238,10 @@ Three new modules have also been added to the *potential* supplement:
 	Compute the flexural response to a 3-D (grid) load, using a variety
 	or rheological models (elastic, viscoelastic, firmoviscous).
 
+:doc:`talwani2d <supplements/potential/talwani2d>`:
+	Compute a profile of the free-air gravity anomaly, geoid or vertical gravity gradient
+	over a 2-D body given as cross-sectional polygons.
+
 :doc:`talwani3d <supplements/potential/talwani3d>`:
 	Compute a grid or profile of the free-air gravity anomaly or vertical gravity gradient
 	over a 3-D body given as polygonal slices.
@@ -269,8 +273,8 @@ We have added two new lower-case GMT common options:
    Those modules will offer the new option **-x**\ [[-]\ *n*] to reduce
    how many cores to assign to the task.  The modules that currently
    have this option are greenspline, grdmask, grdmath, grdfilter,
-   grdsample, sph2grd, and the potential supplement's grdgravmag3d and
-   talwani3d; this list will grow longer with time.
+   grdsample, sph2grd, and the potential supplement's grdgravmag3d,
+   talwani2d and talwani3d; this list will grow longer with time.
 
 New default parameters
 ----------------------
@@ -321,7 +325,8 @@ General improvements
 A few changes have affects across GMT; these are:
 
 *  Add optional multi-threading capabilities to several modules, such as
-   greenspline, grdfilter and the potential supplement's grdgravmag3d, talwani3d.
+   greenspline, grdfilter and the potential supplement's grdgravmag3d,
+   talwani2d and talwani3d.
 
 *  Optional prerequisite LAPACK means SVD decomposition in greenspline is very fast.
 

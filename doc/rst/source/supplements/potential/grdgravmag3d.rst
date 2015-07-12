@@ -161,7 +161,9 @@ processors, do:
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`gmtgravmag3d`
+:doc:`gmt </gmt>`, :doc:`gmtgravmag3d`,
+:doc:`talwani2d </supplements/potential/talwani2d>`,
+:doc:`talwani3d </supplements/potential/talwani3d>`
 
 Reference
 ---------

@@ -127,6 +127,7 @@ Supplementary modules
    supplements/potential/grdgravmag3d
    supplements/potential/grdredpol
    supplements/potential/grdseamount
+   supplements/potential/talwani2d
    supplements/potential/talwani3d
    supplements/segy/pssegy
    supplements/segy/pssegyz
