@@ -301,7 +301,7 @@ in your analysis, try
 
    ::
 
-    gmt pscoast -R-26/-12/62/68 -Dh -W > iceland.txt
+    gmt pscoast -R-26/-12/62/68 -Dh -W -M > iceland.txt
 
 **pscoast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
