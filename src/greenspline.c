@@ -1886,7 +1886,10 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		double *v = NULL, *s = NULL, *b = NULL, eig_max = 0.0, limit;
 	        
 		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by SVD\n");
-	
+#ifndef HAVE_LAPACK
+		GMT_Report (API, GMT_MSG_VERBOSE, "Note: SVD solution without LAPACK will be very very slow.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "We strongly recommend you install LAPACK and recompile GMT.\n");
+#endif
 		v = GMT_memory (GMT, NULL, nm * nm, double);
 		s = GMT_memory (GMT, NULL, nm, double);
 		if ((error = GMT_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v))) Return (error);

@@ -19,6 +19,7 @@ Synopsis
 [ **-W[u]** ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-x| ]
 
 |No-spaces|
 
@@ -93,6 +94,8 @@ Optional Arguments
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
+
+.. include:: ../../explain_core.rst_
 
 .. include:: ../../explain_help.rst_
 

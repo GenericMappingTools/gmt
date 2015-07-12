@@ -39,7 +39,7 @@
 
 #include "x2sys.h"
 
-#define GMT_PROG_OPTIONS "->Vbd"
+#define GMT_PROG_OPTIONS "->Vbd" GMT_ADD_x_OPT
 
 #define N_COE_PARS	12	/* Total number of items that might be known at each crossover */
 #define COL_COE		0	/* The crossover value in whatever field we are studying */
@@ -185,9 +185,9 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef SAVEFORLATER
-	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [-I<tracklist>] [%s] [-W]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [-I<tracklist>] [%s] [-W]\n\t[%s]%s\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_x_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]%s\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_x_OPT);
 #endif
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -204,7 +204,7 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Weights are present in last column for weighted fit [no weights].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append 'u' to report unweighted mean/std [Default, report weighted stats].\n");
-	GMT_Option (API, "bi,di,.");
+	GMT_Option (API, "bi,di,x,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -351,7 +351,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	char **trk_list = NULL;
 	char trk[2][GMT_LEN64], t_txt[2][GMT_LEN64], z_txt[GMT_LEN64] = {""}, w_txt[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
-	int *ID[2] = {NULL, NULL}, ks, t, error = 0, ierror, expect;
+	int *ID[2] = {NULL, NULL}, ks, t, error = 0, expect;
 	uint64_t n_par = 0, n, m, n_tracks = 0, n_active, n_expected_fields, n_constraints = 0;
 	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, *R = NULL, *col_off = NULL, *cluster = NULL;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC, n_alloc_t = GMT_CHUNK;
@@ -395,6 +395,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	}
 #endif
 	
+	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
+
 	/* Initialize system via the tag */
 	
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &S, &B, &GMT->current.io), Ctrl->T.TAG);
@@ -836,11 +838,13 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 
 	/* Get LS solution */
 
-	if ((ierror = GMT_gauss (GMT, N, b, (unsigned int)m, (unsigned int)m, true)))
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Divisions by a small number (< DBL_EPSILON) occurred in GMT_gauss()!\n");
+	if ((error = GMT_gaussjordan (GMT, N, (unsigned int)m, (unsigned int)m, b, 1U, 1U))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Singular matrix - unable to solve!\n");
+		Return (EXIT_FAILURE);
+	}
 
 	GMT_free (GMT, N);
-	a = b;	/* Convenience since the solution is called a in the notes and Wessel [2010] */
+	a = b;	/* Convenience since the solution is called a in the notes and in Wessel [2010] */
 
 	/* Estimate new st.dev. */
 	

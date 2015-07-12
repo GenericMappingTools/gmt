@@ -273,8 +273,9 @@ We have added two new lower-case GMT common options:
    Those modules will offer the new option **-x**\ [[-]\ *n*] to reduce
    how many cores to assign to the task.  The modules that currently
    have this option are greenspline, grdmask, grdmath, grdfilter,
-   grdsample, sph2grd, and the potential supplement's grdgravmag3d,
-   talwani2d and talwani3d; this list will grow longer with time.
+   grdsample, sph2grd, the potential supplement's grdgravmag3d,
+   talwani2d and talwani3d, and the x2sys supplement's x2sys_solve.
+   This list will grow longer with time.
 
 New default parameters
 ----------------------
@@ -325,10 +326,12 @@ General improvements
 A few changes have affects across GMT; these are:
 
 *  Add optional multi-threading capabilities to several modules, such as
-   greenspline, grdfilter and the potential supplement's grdgravmag3d,
-   talwani2d and talwani3d.
+   greenspline, grdfilter, grdmask, grdsample, the potential supplement's
+   grdgravmag3d, talwani2d and talwani3d and x2sys's x2sys_solve.
 
-*  Optional prerequisite LAPACK means SVD decomposition in greenspline is very fast.
+*  Optional prerequisite LAPACK means SVD decomposition in greenspline is
+   now very fast, as is true for the regular Gauss-Jordan solution via a
+   new multi-processor enabled algorithm.
 
 *  Allow comma-separated colors instead of CPT files in options that are
    used to pass a CPT file (typically this means **-C**).
