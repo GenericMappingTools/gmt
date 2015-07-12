@@ -102,7 +102,7 @@ and saved to body.txt, using 1.7 g/cm^3 as the density contrast, try
 
 ::
 
-    gmt talwani2d -R-200/200/2 body.txt -D1700 -Fg > 2dgrav.txt
+    gmt talwani2d -T-200/200/2 body.txt -D1700 -Fg > 2dgrav.txt
 
 To obtain the vertical gravity gradient anomaly along the track in crossing.txt
 for the same model, try
@@ -111,6 +111,15 @@ for the same model, try
 
     gmt talwani2d -Ncrossing.txt body.txt -D1700 -Fv > vgg_crossing.txt
 
+
+Notes
+-----
+
+#. The 2-D geoid anomaly is a logarithmic potential and thus has no natural
+   reference level.  We simply remove the most negative (if density contrast
+   is positive) or positive (if density contrast is negative) computed value
+   from all values, rendering the entire anomaly positive (or negative).  You
+   can use gmt math to change the zero level to suit your needs.
 
 See Also
 --------
