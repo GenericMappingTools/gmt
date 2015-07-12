@@ -383,38 +383,50 @@ double get_geoid2d (double y[], double z[], unsigned int n_v, double y0, double 
 		else {
 			mi = (z[i2] - z[i1]) / (y[i2] - y[i1]);
 			bi = z[i2] - mi * y[i2];
-			ci = 1.0 / mi;
-			a2 = mi * y0 + bi - z0;
-			di = -bi/mi - y0;
 			mi2 = mi * mi;
-			ci2 = ci * ci;
-			di2 = di * di;
+			if ((bi/mi) == -y0) {
+				part_a_2 = 0.5 * z[i2] * z[i2] * log ((1 + 1.0/mi2)*z[i2]*z[i2])/mi;
+				part_b_2 = -1.5 * z[i2] * z[i2] / mi;
+				part_c_2 = z[i2] * z[i2] * atan (1.0/mi);
+				part_a_1 = 0.5 * z[i1] * z[i1] * log ((1 + 1.0/mi2)*z[i1]*z[i1])/mi;
+				part_b_1 = -1.5 * z[i1] * z[i1] / mi;
+				part_c_1 = z[i1] * z[i1] * atan (1.0/mi);
+				N += ((part_a_2 + part_b_2 + part_c_2)
+					- (part_a_1 + part_b_1 + part_c_1));
+			}
+			else {
+				ci = 1.0 / mi;
+				a2 = mi * y0 + bi - z0;
+				di = -bi/mi - y0;
+				ci2 = ci * ci;
+				di2 = di * di;
 
-			part_a_2 = 0.5 * mi * dy2 * dy2 * (log (hyp2) - 1.0) + mi2 * a2 * dy2 / (1.0 + mi2);
-			part_b_2 = -(0.5 * mi * (mi2 - 1.0) * a2 * a2 / pow (mi2 + 1.0, 2.0)) * log (hyp2);
-			part_c_2 = -(2.0 * mi2 * a2 * a2 / pow (1.0 * mi2, 2.0))
-				 * atan (((1.0 + mi2) * dy2 + mi * a2) / a2);
-			part_d_2 = -mi * dy2 * dy2 + z[i2] * z[i2] * atan (dy2 / z[i2]);
-			part_e_2 = -(ci * di2 / pow (1.0 + ci2, 2.0))
-				 * log (((1.0 + ci2) * z[i2] * z[i2] + 2.0 * ci * di * z[i2] + di2)/di2);
-			part_f_2 = di * z[i2] / (1.0 + ci2)
-				 + ((1.0 - ci2) * di2 / pow (1.0 + ci2, 2.0)) * atan (dy2 / z[i2]);
+				part_a_2 = 0.5 * mi * dy2 * dy2 * (log (hyp2) - 1.0) + mi2 * a2 * dy2 / (1.0 + mi2);
+				part_b_2 = -(0.5 * mi * (mi2 - 1.0) * a2 * a2 / pow (mi2 + 1.0, 2.0)) * log (hyp2);
+				part_c_2 = -(2.0 * mi2 * a2 * a2 / pow (1.0 + mi2, 2.0))
+					 * atan (((1.0 + mi2) * dy2 + mi * a2) / a2);
+				part_d_2 = -mi * dy2 * dy2 + z[i2] * z[i2] * atan (dy2 / z[i2]);
+				part_e_2 = -(ci * di2 / pow (1.0 + ci2, 2.0))
+					 * log (((1.0 + ci2) * z[i2] * z[i2] + 2.0 * ci * di * z[i2] + di2)/di2);
+				part_f_2 = di * z[i2] / (1.0 + ci2)
+					 + ((1.0 - ci2) * di2 / pow (1.0 + ci2, 2.0)) * atan (dy2 / z[i2]);
 
-			part_a_1 = 0.5 * mi * dy1 * dy1 * (log (hyp1) - 1.0) + mi2 * a2 * dy1 / (1.0 + mi2);
-			part_b_1 = -(0.5 * mi * (mi2 - 1.0) * a2 * a2 / pow (mi2 + 1.0, 2.0)) * log (hyp1);
-			part_c_1 = -(2.0 * mi2 * a2 * a2 / pow (1.0 * mi2, 2.0))
-				 * atan (((1.0 + mi2) * dy1 + mi * a2) / a2);
-			part_d_1 = -mi * dy1 * dy1 + z[i1] * z[i1] * atan (dy1 / z[i1]);
-			part_e_1 = -(ci * di2 / pow (1.0 + ci2, 2.0))
-				 * log (((1.0 + ci2) * z[i1] * z[i1] + 2.0 * ci * di * z[i1] + di2)/di2);
-			part_f_1 = di * z[i1] / (1.0 + ci2)
-				 + ((1.0 - ci2) * di2 / pow (1.0 + ci2, 2.0)) * atan (dy1 / z[i1]);
+				part_a_1 = 0.5 * mi * dy1 * dy1 * (log (hyp1) - 1.0) + mi2 * a2 * dy1 / (1.0 + mi2);
+				part_b_1 = -(0.5 * mi * (mi2 - 1.0) * a2 * a2 / pow (mi2 + 1.0, 2.0)) * log (hyp1);
+				part_c_1 = -(2.0 * mi2 * a2 * a2 / pow (1.0 + mi2, 2.0))
+					 * atan (((1.0 + mi2) * dy1 + mi * a2) / a2);
+				part_d_1 = -mi * dy1 * dy1 + z[i1] * z[i1] * atan (dy1 / z[i1]);
+				part_e_1 = -(ci * di2 / pow (1.0 + ci2, 2.0))
+					 * log (((1.0 + ci2) * z[i1] * z[i1] + 2.0 * ci * di * z[i1] + di2)/di2);
+				part_f_1 = di * z[i1] / (1.0 + ci2)
+					 + ((1.0 - ci2) * di2 / pow (1.0 + ci2, 2.0)) * atan (dy1 / z[i1]);
 
-			N += ((part_a_2 + part_b_2 + part_c_2 + part_d_2 + part_e_2 + part_f_2)
-				- (part_a_1 + part_b_1 + part_c_1 + part_d_1 + part_e_1 + part_f_1));
+				N += ((part_a_2 + part_b_2 + part_c_2 + part_d_2 + part_e_2 + part_f_2)
+					- (part_a_1 + part_b_1 + part_c_1 + part_d_1 + part_e_1 + part_f_1));
+			}
 		}
 	}
-	N *= (GAMMA * rho / G);
+	N *= (-GAMMA * rho / G);
 	return (N);
 }
 
@@ -633,7 +645,6 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 	}
 	if (Ctrl->F.mode == TALWANI2D_GEOID) {	/* Adjust zero level */
 		double off = (rho > 0.0) ? min_answer : max_answer;
-		GMT_Report (API, GMT_MSG_NORMAL, "Geoid algorithm in progress - not working yet\n");
 		for (tbl = 0; tbl < Out->n_tables; tbl++) {
 			for (seg = 0; seg < Out->table[tbl]->n_segments; seg++) {
 				S = Out->table[tbl]->segment[seg];	/* Current segment */
