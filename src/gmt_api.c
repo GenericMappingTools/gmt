@@ -415,8 +415,9 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt) {
 /*! . */
 char *GMTAPI_lib_tag (char *name) {
 	/* Pull out the tag from a name like <tag>[.extension] */
-	char *extension, *pch;
-	char *tag = strdup (name);
+	char *extension = NULL, *pch = NULL, *tag = NULL;
+	if (!strchr (name, '.')) return NULL;	/* No file with extension given, probably just a directory due to user confusion */
+	tag = strdup (name);
 	extension = strrchr (tag, '.'); /* last period in name */
 	*extension = '\0'; /* remove extension */
 	/* if name has the "_w32|64" suffix or any other suffix that starts with a '_', remove it. */
@@ -518,15 +519,18 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			if ((list = GMT_get_dir_list (API->GMT, plugindir, extension))) {	/* Add these to the libs */
 				k = 0;
 				while (list[k]) {
-					API->lib[n_custom_libs].name = GMTAPI_lib_tag (list[k]);
-					sprintf (path, "%s/%s", plugindir, list[k]);
-					API->lib[n_custom_libs].path = strdup (path);
-					GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
-					n_custom_libs++;		/* Add up entries found */
-					if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
-						n_alloc <<= 1;
-						API->lib = GMT_memory (API->GMT, API->lib, n_alloc, struct Gmt_libinfo);
+					if ((API->lib[n_custom_libs].name = GMTAPI_lib_tag (list[k]))) {
+						sprintf (path, "%s/%s", plugindir, list[k]);
+						API->lib[n_custom_libs].path = strdup (path);
+						GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
+						n_custom_libs++;		/* Add up entries found */
+						if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
+							n_alloc <<= 1;
+							API->lib = GMT_memory (API->GMT, API->lib, n_alloc, struct Gmt_libinfo);
+						}
 					}
+					else
+						GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s has no extension! Ignored\n", list[k]);
 					++k;
 				}
 				GMT_free_dir_list (API->GMT, &list);
@@ -535,16 +539,19 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		else {	/* Just a list with one or more comma-separated library paths */
 			unsigned int pos = 0;
 			while (GMT_strtok (API->GMT->session.CUSTOM_LIBS, ",", &pos, text)) {
-				API->lib[n_custom_libs].path = strdup (text);
 				libname = strdup (basename (text));		/* Last component from the pathname */
-				API->lib[n_custom_libs].name = GMTAPI_lib_tag (libname);
-				GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
-				free (libname);
-				n_custom_libs++;		/* Add up entries found */
-				if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
-					n_alloc <<= 1;
-					API->lib = GMT_memory (API->GMT, API->lib, n_alloc, struct Gmt_libinfo);
+				if ((API->lib[n_custom_libs].name = GMTAPI_lib_tag (libname))) {
+					API->lib[n_custom_libs].path = strdup (text);
+					GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
+					free (libname);
+					n_custom_libs++;		/* Add up entries found */
+					if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
+						n_alloc <<= 1;
+						API->lib = GMT_memory (API->GMT, API->lib, n_alloc, struct Gmt_libinfo);
+					}
 				}
+				else
+					GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s has no extension! Ignored\n", text);
 			}
 		}
 	}
