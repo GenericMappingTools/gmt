@@ -137,6 +137,9 @@
 #set (PTHREADS_WIN32_ROOT c:/prefix/of/pthreads-win32)
 #set (GMT_USE_THREADS TRUE)
 
+# Set LAPACK location. Use this when want to link with LAPACK and it's not found automatically
+#set (LAPACK_LIBRARY "V:/lapack-3.5.0/build/lib/liblapack.lib")
+
 ##
 ## Section 3: GMT features
 ##
