@@ -32,7 +32,6 @@ HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 HAVE_OPENMP="@HAVE_OPENMP@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 src="@GMT_SOURCE_DIR@/test/${script_dir}"
-
 # choose awk
 if type gawk >/dev/null 2>&1 ; then
   export AWK=gawk
