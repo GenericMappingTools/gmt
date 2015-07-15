@@ -1028,7 +1028,9 @@ We will demonstrate :doc:`pstext` with the following script:
 
 Here we have used the "here document" notation in UNIX: The << EOF
 will treat the following lines as the input file until it detects the
-word EOF.   Your plot should look like :ref:`our example 10 below <gmt_tut_10>`
+word EOF.   There is nothing magical about the word EOF; you can use any other
+string like STOP, hellobaby, or IamDone.
+Your plot should look like :ref:`our example 10 below <gmt_tut_10>`
 
 .. _gmt_tut_10:
 
