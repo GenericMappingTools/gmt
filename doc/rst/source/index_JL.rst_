@@ -74,6 +74,16 @@ The CookBook
 |    cookbook        |
 +--------------------+
 
+The Tutorial
+============
+
++--------------------+
+| .. toctree::       |
+|    :maxdepth: 2    |
+|                    |
+|    tutorial        |
++--------------------+
+
 API Reference
 =============
 

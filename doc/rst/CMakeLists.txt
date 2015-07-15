@@ -86,7 +86,7 @@ if (SPHINX_FOUND)
 		add_dependencies (docs_pdf docs_depends)
 
 		# Shrink PDF files
-		set (_docs_pdf_output GMT_API.pdf GMT_Docs.pdf GMT_Manpages.pdf)
+		set (_docs_pdf_output GMT_API.pdf GMT_Docs.pdf GMT_Tutorial.pdf GMT_Manpages.pdf)
 		foreach (_pdf_file ${_docs_pdf_output})
 			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
 			set (_pdf_file "${CMAKE_CURRENT_BINARY_DIR}/latex/${_pdf_file}")
@@ -134,6 +134,9 @@ if (SPHINX_FOUND)
 			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Docs.pdf
 			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Docs.pdf
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Tutorial.pdf
+			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Tutorial.pdf
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Manpages.pdf
 			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages.pdf
 			DEPENDS docs_pdf_shrink svn_export_release)
@@ -160,6 +163,7 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	install (FILES
 		${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_API.pdf
 		${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Docs.pdf
+		${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Tutorial.pdf
 		${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Manpages.pdf
 		DESTINATION ${GMT_DOCDIR}/pdf
 		COMPONENT Documentation

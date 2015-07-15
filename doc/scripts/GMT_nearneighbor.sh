@@ -1,7 +1,10 @@
 #!/bin/bash
 #	$Id$
 #
-gmt psxy -R0/2/0/2 -Jx1i -Bg0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbor.ps
+gmt psxy -R0/2/0/2 -Jx1i -P -K -Sc1i -Wthick -Glightgreen@70 -Bg0.25 << EOF > GMT_nearneighbor.ps
+0.75	1.25
+EOF
+gmt psxy -R -J -Sc0.05i -Gblack -O -K << EOF >> GMT_nearneighbor.ps
 0.04	1.8
 0.3	0.3
 0.31	0.7
@@ -20,9 +23,6 @@ gmt psxy -R0/2/0/2 -Jx1i -Bg0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbo
 0.4	1.2
 1.15	1.3
 1	0.88
-EOF
-gmt psxy -R -J -O -K -Sc1 -Wthick << EOF >> GMT_nearneighbor.ps
-0.75	1.25
 EOF
 gmt psxy -R -J -O -K -Wthinner << EOF >> GMT_nearneighbor.ps
 >
