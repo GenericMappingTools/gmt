@@ -40,6 +40,7 @@ add_subdirectory (fig)
 # Add tests and make verbatim copies from scripts
 add_subdirectory (scripts)
 add_subdirectory (examples)
+add_subdirectory (tutorial)
 
 if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install documentation files from external location
