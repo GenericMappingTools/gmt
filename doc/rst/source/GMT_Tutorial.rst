@@ -1027,7 +1027,9 @@ We will demonstrate :doc:`pstext` with the following script:
 
 Here we have used the "here document" notation in UNIX: The << EOF
 will treat the following lines as the input file until it detects the
-word EOF.   Your plot should look like :ref:`our example 10 below <gmt_tut_10>`
+word EOF.   There is nothing magical about the word EOF; you can use any other
+string like STOP, hellobaby, or IamDone.
+Your plot should look like :ref:`our example 10 below <gmt_tut_10>`
 
 .. _gmt_tut_10:
 
@@ -1537,7 +1539,7 @@ global 30" DEM (data id 9) from USGS:
     gmt grdcut globe30s.nc -R-108/-103/35/40 -Gus.nc
 
 You can find the grid us.nc also in the *tutorial* directory
-of your GMT{} installation.
+of your GMT installation.
 Using :doc:`grdinfo` we find that the data ranges from about 1000m to
 about 4300m so we make a CPT file accordingly:
 
@@ -1655,7 +1657,7 @@ Multi-dimensional maps
 
 Climate data, like ocean temperatures or atmospheric pressure, are often provided as
 multi-dimensional (3-D, 4-D or 5-D) grids in netCDF format. This section will demonstrate
-that GMT{} is able to plot "horizonal"
+that GMT is able to plot "horizonal"
 slices (spanning latitude and longitude) of such grids without much effort.
 
 As an example we will download the Seasonal Analysed Mean Temperature from the
