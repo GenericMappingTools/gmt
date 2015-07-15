@@ -30,7 +30,7 @@
 
 **Alfred Wegener Institute, Germany**
 
-INTRODUCTION
+Introduction
 ============
 
 The purpose of this tutorial is to introduce new users to GMT,
@@ -88,7 +88,7 @@ access to a *PostScript* previewer (e.g., gv (or ghostviewor plain ghostscript))
 and any flavor of the UNIX operating system (UNIX, Linux, OS X, Cygwin, MinGW, etc.).
 We do not recommend using the DOS command window under Windows.
 
-SESSION ONE
+Session One
 ===========
 
 Tutorial setup
@@ -576,7 +576,7 @@ Exercises:
 #. Add a map scale with **-L**.
 
 
-SESSION TWO
+Session Two
 ===========
 
 General Information
@@ -1065,7 +1065,7 @@ Exercises:
 
 #. At *y = 6*, add the sentence "It is 80˚ today".
 
-SESSION THREE
+Session Three
 =============
 
 Contouring gridded data sets
@@ -1381,7 +1381,7 @@ Exercises:
 
 #. Color the clip path light gray (use **-G** in the first :doc:`psmask` call).
 
-SESSION FOUR
+Session Four
 ============
 
 In our final session we will concentrate on color images and
