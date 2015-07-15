@@ -189,6 +189,7 @@ StandaloneHTMLBuilder.supported_image_types = [
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('GMT_Docs',  'GMT_Docs.tex',     u'GMT Documentation',     gmt_team_tex, 'manual'),
+  ('GMT_Tutorial',   'GMT_Tutorial.tex',      u'GMT Tutorial', gmt_team_tex, 'manual'),
   ('GMT_API',   'GMT_API.tex',      u'GMT API Documentation', gmt_team_tex, 'manual'),
   ('man_pages', 'GMT_Manpages.tex', u'GMT Man Pages',         gmt_team_tex, 'manual'),
 ]
