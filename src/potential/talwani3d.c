@@ -661,7 +661,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		}
 		/* Clean data record to process */
 
-		if (n && (x[n-1] == x[n] && z[n-1] == z[n])) {	/* Maybe a duplicate point - or it could be the repeated last = first */
+		if (n && (x[n-1] == x[n] && y[n-1] == y[n])) {	/* Maybe a duplicate point - or it could be the repeated last = first */
 			n_duplicate++;
 			dup_node = n;
 		}
