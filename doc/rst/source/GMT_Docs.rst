@@ -1830,6 +1830,8 @@ Finally, the rest of the GMT common options are given below:
 
 .. include:: std_opts.rst_
 
+.. _GMT_General_Features:
+
 General Features
 ================
 

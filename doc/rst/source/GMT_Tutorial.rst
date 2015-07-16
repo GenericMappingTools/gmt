@@ -30,7 +30,7 @@
 
 **Alfred Wegener Institute, Germany**
 
-INTRODUCTION
+Introduction
 ============
 
 The purpose of this tutorial is to introduce new users to GMT,
@@ -88,7 +88,7 @@ access to a *PostScript* previewer (e.g., gv (or ghostviewor plain ghostscript))
 and any flavor of the UNIX operating system (UNIX, Linux, OS X, Cygwin, MinGW, etc.).
 We do not recommend using the DOS command window under Windows.
 
-SESSION ONE
+Session One
 ===========
 
 Tutorial setup
@@ -575,7 +575,7 @@ Exercises:
 #. Add a map scale with **-L**.
 
 
-SESSION TWO
+Session Two
 ===========
 
 General Information
@@ -676,70 +676,71 @@ file.  The *size* is optional since individual sizes for
 symbols may also be provided by the input data.  The main symbols available to
 us are shown in the table below:
 
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | Option                            | Symbol                                                                                      | 
-  +===================================+=============================================================================================+
-  | **-S-**\ *size*                   | horizontal dash; *size* is length of dash                                                   |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sa**\ *size*                   | st\ **a**\ r; *size* is radius of circumscribing circle                                     |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sb**\ *size*\ [/*base*][**u**] | **b**\ ar; *size* is bar width, append **u** if *size* is in *x*-units                      |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  |                                   |  Bar extends from *base* [0] to the *y*-value                                               |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sc**\ *size*                   | **c**\ ircle; *size* is the diameter                                                        |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sd**\ *size*                   | **d**\ iamond; *size* is its side                                                           |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Se**                           | **e**\ llipse; *direction* (CCW from horizontal), *major*, and *minor* axes                 |    
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  |                                   | are read from the input file                                                                |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-SE**                           | **e**\ llipse; *azimuth* (CW from vertical), *major*, and *minor* axes in kilometers        |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  |                                   | are read from the input file                                                                |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sg**\ *size*                   | octa\ **g**\ on; *size* is its side                                                         |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sh**\ *size*                   | **h**\ exagon; *size* is its side                                                           |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Si**\ *size*                   | **i**\ nverted triangle; *size* is its side                                                 |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sk**\ *symbol*/*size*          | **k**\ ustom symbol; *size* is its side                                                     |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sl**\ *size*/*string*\         | **l**\ etter; *size* is fontsize.   *string* can be a letter or a text string               |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  |                                   | Append **+f**\ *font* to set font and **+j**\ *just* for justification                      |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sn**\ *size*                   | pe\ **n**\ tagon; *size* is its side                                                        |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sp**                           | **p**\ oint; no size needed (1 pixel at current resolution is used)                         |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sr**\ *size*                   | **r**\ ect, *width* and *height* are read from input file                                   |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Ss**\ *size*                   | **s**\ quare, *size* is its side                                                            |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-St**\ *size*                   | **t**\ riangle; *size* is its side                                                          |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sv**\ *params*                 | **v**\ ector; *direction* (CCW from horizontal) and *length* are read from input data       |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  |                                   | Append parameters of the vector.                                                            |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-SV**\ *params*                 | **v**\ ector, except *azimuth* (degrees east of north) is expected instead of *direction*   |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  |                                   | The angle on the map is calculated based on the chosen map projection                       |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sw**\ [*size*]                 | pie **w**\ edge; *start* and *stop* directions (CCW from horizontal) are read from          |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  |                                   | input data                                                                                  |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sx**\ *size*                   | cross; *size* is length of crossing lines                                                   |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
-  | **-Sy**\ *size*                   | vertical dash; *size* is length of dash                                                     |
-  +-----------------------------------+---------------------------------------------------------------------------------------------+
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| Option                            | Symbol                                                                                    | 
++===================================+===========================================================================================+
+| **-S-**\ *size*                   | horizontal dash; *size* is length of dash                                                 |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sa**\ *size*                   | st\ **a**\ r; *size* is radius of circumscribing circle                                   |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sb**\ *size*\ [/*base*][**u**] | **b**\ ar; *size* is bar width, append **u** if *size* is in *x*-units                    |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+|                                   |  Bar extends from *base* [0] to the *y*-value                                             |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sc**\ *size*                   | **c**\ ircle; *size* is the diameter                                                      |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sd**\ *size*                   | **d**\ iamond; *size* is its side                                                         |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Se**                           | **e**\ llipse; *direction* (CCW from horizontal), *major*, and *minor* axes               |    
++-----------------------------------+-------------------------------------------------------------------------------------------+
+|                                   | are read from the input file                                                              |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-SE**                           | **e**\ llipse; *azimuth* (CW from vertical), *major*, and *minor* axes in kilometers      |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+|                                   | are read from the input file                                                              |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sg**\ *size*                   | octa\ **g**\ on; *size* is its side                                                       |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sh**\ *size*                   | **h**\ exagon; *size* is its side                                                         |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Si**\ *size*                   | **i**\ nverted triangle; *size* is its side                                               |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sk**\ *symbol*/*size*          | **k**\ ustom symbol; *size* is its side                                                   |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sl**\ *size*/*string*\         | **l**\ etter; *size* is fontsize.   *string* can be a letter or a text string             |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+|                                   | Append **+f**\ *font* to set font and **+j**\ *just* for justification                    |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sn**\ *size*                   | pe\ **n**\ tagon; *size* is its side                                                      |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sp**                           | **p**\ oint; no size needed (1 pixel at current resolution is used)                       |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sr**\ *size*                   | **r**\ ect, *width* and *height* are read from input file                                 |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Ss**\ *size*                   | **s**\ quare, *size* is its side                                                          |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-St**\ *size*                   | **t**\ riangle; *size* is its side                                                        |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sv**\ *params*                 | **v**\ ector; *direction* (CCW from horizontal) and *length* are read from input data     |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+|                                   | Append parameters of the vector; see :doc:`psxy` for syntax.                              |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-SV**\ *params*                 | **v**\ ector, except *azimuth* (degrees east of north) is expected instead of *direction* |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+|                                   | The angle on the map is calculated based on the chosen map projection                     |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sw**\ [*size*]                 | pie **w**\ edge; *start* and *stop* directions (CCW from horizontal) are read from        |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+|                                   | input data                                                                                |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sx**\ *size*                   | cross; *size* is length of crossing lines                                                 |
++-----------------------------------+-------------------------------------------------------------------------------------------+
+| **-Sy**\ *size*                   | vertical dash; *size* is length of dash                                                   |
++-----------------------------------+-------------------------------------------------------------------------------------------+
 
 The symbol option in :doc:`psxy`.  Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
-will fit inside a circle of given diameter.  Upper case symbols (**A, C, D, G, H, I, N, S, T, X**) will have area equal to that of a circle of given diameter.
+will fit inside a circle of given diameter.  Upper case symbols (**A, C, D, G, H, I, N, S, T, X**)
+will have area equal to that of a circle of given diameter.
 
 Because some symbols require more input data than others, and because the
 size of symbols as well as their color can be determined from the input data,
@@ -781,7 +782,8 @@ apply when one (or more) of the following conditions are met:
 
 Before we try some examples we need to review two key switches; they
 specify pen attributes and symbol or polygon fill.  Please consult
-the General Features section the GMT Technical Reference and Cookbook before experimenting
+the :ref:`General Features <GMT_General_Features>` section the
+GMT Technical Reference and Cookbook before experimenting
 with the examples below.
 
 Examples:
@@ -848,7 +850,9 @@ symbols with a line we must use the overlay approach:
     gmt psxy data -R0/6/0/6 -Jx1i -Baf -P -K -Wthinner > GMT_tut_8.ps
     gmt psxy data -R -J -O -W -Si0.2i >> GMT_tut_8.ps
 
-Your plot should look like :ref:`our example 8 below <gmt_tut_8>`
+Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
+two-step procedure also makes it easy to plot the line over the symbols
+instead of symbols over the line, as here.
 
 .. _gmt_tut_8:
 
@@ -890,7 +894,7 @@ and then select the 4th, 3rd, 5th, and
 
     -i4,3,5,6s0.1 -h3
 
-We will follow conventional color schemes for seismicity and assign red
+(Remember that 0 is the first column).  We will follow conventional color schemes for seismicity and assign red
 to shallow quakes (depth 0-100 km), green to intermediate quakes
 (100-300 km), and blue to deep earthquakes (depth > 300 km).  The
 quakes.cpt file establishes the relationship between depth
@@ -941,7 +945,7 @@ Plotting text strings
 
 In many situations we need to annotate plots or maps with text strings;
 in GMT this is done using :doc:`pstext`.  Apart from the common
-switches, there are 7 options that are particularly useful.
+switches, there are 9 options that are particularly useful.
 
   +-------------------+----------------------------------------------------+
   | Option            | Purpose                                            | 
@@ -1060,11 +1064,11 @@ Your plot should look like :ref:`our example 10 below <gmt_tut_10>`
 
 Exercises:
 
-#. At *y = 5*, add the sentence "z^2 = x^2 + y^2".
+#. At *y = 5*, add the sentence :math:`z^2 = x^2 + y^2`.
 
 #. At *y = 6*, add the sentence "It is 80˚ today".
 
-SESSION THREE
+Session Three
 =============
 
 Contouring gridded data sets
@@ -1282,7 +1286,9 @@ all our data points; the values of this surface at the grid points
 become the gridded data.  Mathematically, we want to find the function
 *z(x, y)* that satisfies the following equation away from data constraints:
 
-(1-t)Laplacian^2 (z) -  t Laplacian (z) = 0,
+.. math::
+
+    (1-t)\nabla ^2 z -  t \nabla z = 0,
 
 where *t* is the "tension" in the 0-1 range.  Basically, for
 zero tension we obtain the minimum curvature solution, while as
@@ -1380,7 +1386,7 @@ Exercises:
 
 #. Color the clip path light gray (use **-G** in the first :doc:`psmask` call).
 
-SESSION FOUR
+Session Four
 ============
 
 In our final session we will concentrate on color images and
