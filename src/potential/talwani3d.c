@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * Author:      Paul Wessel and Seung-Sep Kim
- * Date:        10-JUN-2015
+ * Date:        10-JUL-2015
  *
  *
  * Calculates gravity due to 3-D shapes based on contours of
@@ -33,7 +33,7 @@
  * Based on method by M. Talwani and M. Ewing, Rapid Computation
  *   of gravitational attraction of three-dimensional bodies of 
  *   arbitrary shape, Geophysics, 25, 203-225, 1960.
- * Extended to handle VGG by Kim / Wessel, 2015, in prep.
+ * Extended to handle VGG by Kim & Wessel, 2015, in prep.
  * Accelerated with OpenMP; see -x.
  */
 
@@ -48,6 +48,7 @@
 
 #define TOL		1.0e-7
 #define DEG_TO_KM	111.319490793
+#define GAMMA 		6.673	/* Gravitational constant for distances in km and mass in kg/m^3 */
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
 #define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
@@ -265,7 +266,7 @@ double parint (double x[], double y[], int n)
 	 *       in the region  x2 - x1.  If i is 2 or n-1, however, we
 	 *       set x1 = x(1) or x2 = x(n) to cover the entire interval of x.
 	 *
-	 * Programmer:  w.h.f. smith,  30-AUG-1986.
+	 * Programmer:  W.H.F. Smith,  30-AUG-1986.
 	 * C-version by Paul Wessel, 3/4/91.
 	 *
 	 * Remarks:  This replaces PRBINT, which performed the same operation
@@ -403,7 +404,7 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 				 
 	vsum = (z_obs > 0.0) ? fabs (vsum) : -fabs (vsum);
 				
-	return (6.673 * rho * vsum);
+	return (GAMMA * rho * vsum);
 }
 
 double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
@@ -495,7 +496,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
         
 	}
     
-	return (10 * 6.673 * rho * vsum);	/* Go get Eotvos = 0.1 mGal/km */
+	return (10 * GAMMA * rho * vsum);	/* Go get Eotvos = 0.1 mGal/km */
 }
 
 double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
@@ -533,7 +534,7 @@ int comp_cakes (const void *cake_a, const void *cake_b)
 int GMT_talwani3d (void *V_API, int mode, void *args)
 {
 	int row, col, error = 0;
-	unsigned int k, tbl, seg, ndepths = 0, n;
+	unsigned int k, tbl, seg, ndepths = 0, n, dup_node, n_duplicate = 0;
 	uint64_t node;
 	size_t n_alloc, n_alloc1;
 	
@@ -608,6 +609,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 				/* First close previous segment */
 				if (!first_slice) {
 					if (!(x[n-1] == x[0] && y[n-1] == y[0])) {	/* Copy first point to last */
+						if (n_duplicate == 1 && dup_node == n) n_duplicate = 0;	/* So it was the last == first duplicate; reset count */
 						x[n] = x[0];
 						y[n] = y[0];
 						n++;
@@ -659,18 +661,24 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		}
 		/* Clean data record to process */
 
-		x[n] = in[GMT_X];	y[n] = in[GMT_Y];
-		if (!flat_earth) {
-			if (!Ctrl->M.active[TALWANI3D_HOR]) {	/* Change distances to km */
-				x[n] *= 0.001;
-				y[n] *= 0.001;
-			}
+		if (n && (x[n-1] == x[n] && z[n-1] == z[n])) {	/* Maybe a duplicate point - or it could be the repeated last = first */
+			n_duplicate++;
+			dup_node = n;
 		}
-		n++;
-		if (n == n_alloc) {
-			n_alloc += GMT_CHUNK;
-			x = GMT_memory (GMT, x, n_alloc, double);
-			y = GMT_memory (GMT, y, n_alloc, double);
+		else {
+			x[n] = in[GMT_X];	y[n] = in[GMT_Y];
+			if (!flat_earth) {
+				if (!Ctrl->M.active[TALWANI3D_HOR]) {	/* Change distances to km */
+					x[n] *= 0.001;
+					y[n] *= 0.001;
+				}
+			}
+			n++;
+			if (n == n_alloc) {
+				n_alloc += GMT_CHUNK;
+				x = GMT_memory (GMT, x, n_alloc, double);
+				y = GMT_memory (GMT, y, n_alloc, double);
+			}
 		}
 	} while (true);
 	
@@ -687,6 +695,8 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	cake = GMT_memory (GMT, cake, ndepths, struct CAKE);
 	qsort (cake, ndepths, sizeof (struct CAKE), comp_cakes);
+
+	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
 
 	if (Ctrl->Z.mode == 1) {	/* Got grid with observation levels which also sets output locations */
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, G) == NULL) {

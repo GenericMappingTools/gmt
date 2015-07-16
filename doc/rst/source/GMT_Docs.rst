@@ -3822,6 +3822,8 @@ as illustrated in Figure :ref:`Text clearance <Text_clearance>`.
    rectangles.  Here we have chosen a rounded rectangle, requiring the
    additional specification of a corner radius, *r*.
 
+.. _CPT_section:
+
 Color palette tables
 --------------------
 

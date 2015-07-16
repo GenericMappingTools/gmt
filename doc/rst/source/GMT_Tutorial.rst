@@ -789,7 +789,7 @@ with the examples below.
 Examples:
 
 We will start off using the file data in your directory.
-Using the GMT utility info we find the extent of the
+Using the GMT utility :doc:`gmtinfo` we find the extent of the
 data region:
 
    ::
@@ -885,8 +885,9 @@ sizes in inches.  Given their range it looks like multiplying the
 magnitude by 0.1 will work well for symbol sizes in cm.  Reformatting this file to comply
 with the :doc:`psxy` input format can be done in a number of ways,
 including manual editing, using MATLAB, a spreadsheet program, or UNIX
-tools.  Here, we simply use the built-in column selection option **-i**
-and its scaling/offset capabilities.  To skip the first 3 header records
+tools.  Here, we simply use the common column selection option **-i**
+and its :ref:`scaling/offset capabilities <-icols_full>`.
+To skip the first 3 header records
 and then select the 4th, 3rd, 5th, and
 6th column and scale the last column by 0.1, we would use
 
@@ -912,7 +913,8 @@ Apart from comment lines (starting with #), each record in the CPT file
 governs the color of a symbol whose *z* value falls in the range between
 *z_0* and *z_1*.  If the colors for the lower and upper levels differ
 then an intermediate color will be linearly interpolated given the *z*
-value.  Here, we have chosen constant color intervals.
+value.  Here, we have chosen constant color intervals.  You may wish
+to consult the :ref:`Color palette tables <CPT_section>` section in the Cookbook.
 
 We may now complete our example using the Mercator projection:
 

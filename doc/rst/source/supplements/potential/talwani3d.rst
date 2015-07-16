@@ -45,6 +45,10 @@ gravity gradient anomalies.  Options are available to control axes units and dir
 Required Arguments
 ------------------
 
+*modeltable*
+    The file describing the horizontal contours of the bodies.  Contours will be
+    automatically closed if not already closed, and repeated vertices will be eliminated.
+
 .. include:: ../../explain_-I.rst_
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code

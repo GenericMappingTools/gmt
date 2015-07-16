@@ -6,7 +6,7 @@ talwani2d
 
 .. only:: not man
 
-    talwani2d - Compute free-air anomalies or vertical gravity gradients over 2-D bodies
+    talwani2d - Compute free-air anomalies, geoid anomalies or vertical gravity gradients over 2-D bodies
 
 Synopsis
 --------
@@ -17,6 +17,7 @@ Synopsis
 [ **-A** ] [ **-D**\ *rho* ] ]
 [ **-F**\ **f**\ \|\ **n**\ \|\ **v** ] 
 [ **-M**\ [**h**]\ [**v**] ] [ **-N**\ *trackfile* ]
+[ **-T**\ *min*\ *max*\ /*inc* ]
 [ **-Z**\ *level*\ [*ymin*\ /*ymax*\ ] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -31,21 +32,23 @@ Description
 -----------
 
 **talwani2d** will read the multi-segment *modeltable* from file or standard input.
-This file contains crossections of one or more 2-D bodies, with one polygon
+This file contains cross-sections of one or more 2-D bodies, with one polygon
 per segment.  The segment header must contain the parameter *rho*, which
 states the the density of this body (individual body
-densities may be overridden by a fixed density contrast given via **-D**).
+densities may be overridden by a fixed constant density contrast given via **-D**).
 We can compute anomalies on an equidistant lattice (by specifying a lattice with
-**-T** or provide arbitrary
-output points specified in a file via **-N**.  Chose from free-air anomalies, vertical
-gravity gradient anomalies, or geoid anomalies.  Options are available to control axes units and direction.
+**-T**) or provide arbitrary output points specified in a file via **-N**.
+Choose between free-air anomalies, vertical gravity gradient anomalies, or geoid anomalies.
+Options are available to control axes units and direction.
 
 
 Required Arguments
 ------------------
 
 *modeltable*
-    The file describing the bodies.
+    The file describing cross-sectional polygons of one or more bodies.  Polygons
+    will be automatically closed if not already
+    closed, and repeated vertices will be eliminated.
 
 Optional Arguments
 ------------------
@@ -57,7 +60,7 @@ Optional Arguments
     Sets fixed density contrast that overrides any setting in model file, in kg/m^3.
 
 **-F**\ **f**\ \|\ **n**\ \|\ **v**
-    Specify desired geopotential field component.  Choose between **f** (free-air anomaly) [Default],
+    Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
     **n** (geoid) or **v** (vertical gravity gradient).
 
 **-M**\ [**h**]\ [**v**]
@@ -66,7 +69,11 @@ Optional Arguments
 
 **-N**\ *trackfile*
     Specifies locations where we wish to compute the predicted value.  When this option
-    is used there are no grids and the output data records are written to stdout.
+    is used you cannot use *-T** to set an equidistant lattice. The output data records are written to stdout.
+
+**-T**\ *min*\ *max*\ /*inc*
+    Specify an equidistant output lattice starting at *x = min*, with increments *inc* and
+    ending at *x = max*.
 
 **-Z**\ *level*\ [*ymin*\ /*ymax*\ ]
     Set observation level as a constant [0].  Optionally, and for gravity anomalies only,
@@ -125,7 +132,8 @@ See Also
 --------
 
 :doc:`gmt.conf </gmt.conf>`, :doc:`gmt </gmt>`,
-:doc:`grdmath </grdmath>`, :doc:`gravfft </supplements/potential/gravfft>`,
+:doc:`grdmath </grdmath>`, :doc:`gmtmath </gmtmath>`,
+:doc:`gravfft </supplements/potential/gravfft>`,
 :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>`,
 :doc:`grdgravmag3d </supplements/potential/grdgravmag3d>`,
 :doc:`talwani3d </supplements/potential/talwani3d>`
