@@ -262,7 +262,7 @@ double integralI1 (double xa, double xb, double za, double zb, double y)
 	return (part1 + part2 + part3);
 }
 
-double grav_2_5D (double x[], double z[], unsigned int n, double x0, double z0, double rho, double ymin, double ymax)
+double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho, double ymin, double ymax)
 /*  x0;		X-coordinate of observation point */
 /*  z0;		Z-coordinate of observation point */
 /*  x[];	Array of xpositions */
@@ -279,10 +279,18 @@ double grav_2_5D (double x[], double z[], unsigned int n, double x0, double z0, 
 	xx0 = x[0] - x0;
 	zz0 = z[0] - z0;
 	sum = 0.0;
+	if (hypot (xx0, zz0) == 0) {      
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
+		return GMT->session.d_NaN;
+	}
 	for (i = 0; i < n; i++) {
 		i1 = i + 1;	/* next point is simple since the last is repeated as first */
 		xx1 = x[i1] - x0;
 		zz1 = z[i1] - z0;
+		if (hypot (xx1, zz1) == 0) {      
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
+			return GMT->session.d_NaN;
+		}
 		part_1 = integralI1 (xx0, xx1, zz0, zz1, ymin);
 		if (ymin > 0.0) part_1 = -part_1;
 		part_2 = integralI1 (xx0, xx1, zz0, zz1, ymax);
@@ -295,7 +303,7 @@ double grav_2_5D (double x[], double z[], unsigned int n, double x0, double z0, 
 	return (sum);
 }
 
-double get_grav2d (double x[], double z[], unsigned int n, double x0, double z0, double rho)
+double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho)
 {
 	/*  x0;		X-coordinate of observation point */
 	/*  z0;		Z-coordinate of observation point */
@@ -311,12 +319,20 @@ double get_grav2d (double x[], double z[], unsigned int n, double x0, double z0,
 	zi = z[0] - z0;
 	phi_i = atan2 (zi, xi);
 	ri = hypot (xi, zi);
+	if (ri == 0) {      
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
+		return GMT->session.d_NaN;
+	}
 	for (i = 0, sum = 0.0; i < n; i++) {
 		i1 = i + 1;	/* next point is simple since the last is repeated as first */
 		xi1 = x[i1] - x0;
 		zi1 = z[i1] - z0;
 		phi_i1 = atan2 (zi1, xi1);
 		ri1 = hypot (xi1, zi1);
+		if (ri1 == 0) {      
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
+			return GMT->session.d_NaN;
+		}
 		sum += (xi * zi1 - zi * xi1) * ((xi1 - xi) * (phi_i - phi_i1) + (zi1 - zi) * log (ri1/ri)) /
 			(pow (xi1 - xi, 2.0) + pow (zi1 - zi, 2.0));
 		xi = xi1;
@@ -328,13 +344,13 @@ double get_grav2d (double x[], double z[], unsigned int n, double x0, double z0,
 	return (sum);
 }
 
-double get_vgg2d (double *x, double *z, unsigned int n, double x0, double z0, double rho)
-{	/* This was obtained via d/dz of integral */
+double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned int n, double x0, double z0, double rho)
+{	/* From Kim & Wessel, 2015 */
 	int i1, i2;
-	double sum=0.0, st1, ct1, st2, ct2, x1, z1, x2, z2, r1sq, r2sq;
-	double dx, dz, drsq, factor, theta2, theta1, term2, term1;
+	double sum = 0.0, x1, z1, x2, z2, r1sq, r2sq;
+	double dx, dz, drsq, two_theta2, two_theta1, sin_2th2, sin_2th1;
 
-	n--;
+	n--;	/* Since first and last point are duplicated */
 	for (i1 = 0; i1 < n; i1++) {
 	        i2 = i1 + 1;
 		x1 = x[i1] - x0;
@@ -342,77 +358,42 @@ double get_vgg2d (double *x, double *z, unsigned int n, double x0, double z0, do
 		x2 = x[i2] - x0;
 		z2 = z[i2] - z0;
 		r1sq = x1 * x1 + z1 * z1;
-		r2sq = x2 * x2 + z2 * z2;
 		if (r1sq == 0) {      
-			fprintf (stderr, "Field point on corner of vertex\n");
-			return 0.0;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
+			return GMT->session.d_NaN;
 		}
-		else if (r2sq == 0) {      
-			fprintf (stderr, "Field point on corner of vertex\n");
-			return 0.0;
+		r2sq = x2 * x2 + z2 * z2;
+		if (r2sq == 0) {      
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
+			return GMT->session.d_NaN;
 		}
-		dx = x2 - x1;
-		dz = z2 - z1;
-		drsq = dx * dx + dz * dz;
-
-		if (dz == 0)
-		    dz = 1e-6;
+		dx = x2 - x1;	dz = z2 - z1;
+		two_theta2 = 2.0 * atan2 (z2, x2);	two_theta1 = 2.0 * atan2 (z1, x1);
+		sin_2th2 = sin (two_theta2);		sin_2th1 = sin (two_theta1);
 		
-		if (drsq == 0)
-		    drsq = 1e-6;
-		
-		factor = 1.0 / (2.0 * drsq);
-		theta2 = atan2(z2,x2); theta1 = atan2(z1,x1);
-		sincos (theta1, &st1, &ct1);
-		sincos (theta2, &st2, &ct2);
-		term2 = dz * (2 * dx * log (fabs (dz * ct2 - dx * st2)) - 2 * theta2 * dz) +
-			drsq * log ((x2 * dz - dx * z2) / (dz / tan (theta2) - dx)) * sin (2 * theta2);
-		term1 = dz * (2 * dx * log (fabs (dz * ct1 - dx * st1)) - 2 * theta1 * dz) +
-			drsq * log ((x2 * dz - dx * z2) / (dz / tan (theta1) - dx)) * sin (2 * theta1);
-		sum += factor * (term2 - term1);
+		if (dz == 0)	/* z1 == z2 so any z will do.  Both log and delta_angle terms vanish */
+			sum += log (z2) * (sin_2th2 - sin_2th1);
+		else if (dx == 0)	/* log term vanish */
+			sum += sin_2th2 * log (z2) - sin_2th1 * log (z1) - (two_theta2 - two_theta1);
+		else {	/* Need all terms and must compute drsq */
+			drsq = dx * dx + dz * dz;
+			sum += (dz * (dx * log (r1sq/r2sq) - dz * (two_theta2 - two_theta1))) / drsq + sin_2th2 * log (z2) - sin_2th1 * log (z1);
+		}
 	}
 
-	sum *= (-2.0 * GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
+	sum *= (-GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
 	return (sum);
 }
 
-double get_vgg2d_old (double *x, double *z, unsigned int n, double x0, double z0, double rho)
-{	/* This was obtained via d/dz of Talwani grav of linesegment */
-	unsigned int i, i1;
-	double inc, xi, xi1, zi, zi1, ri2, ri12, phi_i, phi_i1, dx, dz, dr2, sum = 0.0;
-	n--;	/* To avoid repeated indices */
-	xi = x[0] - x0;
-	zi = z[0] - z0;
-	ri2 = xi*xi + zi*zi;
-	phi_i = d_atan2 (zi, xi);
-	for (i = 0; i < n; i++) {
-		i1 = i + 1;
-		dx = x[i1] - x[i];
-		dz = z[i1] - z[i];
-		dr2 = dx*dx + dz*dz;
-		xi1 = x[i1] - x0;
-		zi1 = z[i1] - z0;
-		ri12 = xi1*xi1 + zi1*zi1;
-		phi_i1 = d_atan2 (zi1, xi1);
-		inc = (dx*(dx*(phi_i1 - phi_i) - dz*log(ri12/ri2)/2) - (xi*zi1 - xi1*zi)*(dx*(xi1/ri12 - xi/ri2) + dz*(zi1/ri12 - zi/ri2)))/dr2;
-		sum += inc;
-		xi = xi1;
-		zi = zi1;
-		ri2 = ri12;
-		phi_i = phi_i1;
-	}
-	sum *= (-2.0 * GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
-	return (sum);
-}
-
-double get_geoid2d (double y[], double z[], unsigned int n, double y0, double z0, double rho)
+double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n, double y0, double z0, double rho)
 {	/* Based on Chaptman, 1979, Techniques for interpretation of geoid anomalies, JGR, 84 (B8), 3793-3801.
-	/*  y0;		Y-coordinate of observation point, in m */
-	/*  z0;		Z-coordinate of observation point, in m */
-	/*  y[];	Y-coordinates of vertices, in m */
-	/*  z[];	Z-coordinates of vertices, in m */
-	/*  n;	Number of vertices, with 1st == last point */
-	/*  rho;	Density contrast, in kg/m3 */
+	 *  y0;		Y-coordinate of observation point, in m
+	 *  z0;		Z-coordinate of observation point, in m
+	 *  y[];	Y-coordinates of vertices, in m
+	 *  z[];	Z-coordinates of vertices, in m
+	 *  n;	Number of vertices, with 1st == last point
+	 *  rho;	Density contrast, in kg/m3
+	 */
 	int i1, i2;
 	double dy1, dy2, dz1, dz2, hyp1, hyp2, mi, mi2, a2, bi, ci, ci2, di, di2;
 	double part_a_1, part_b_1, part_c_1, part_d_1, part_e_1, part_f_1;
@@ -426,6 +407,14 @@ double get_geoid2d (double y[], double z[], unsigned int n, double y0, double z0
 		dy1 = y[i1] - y0;	dy2 = y[i2] - y0;
 		dz1 = z[i1] - z0;	dz2 = z[i2] - z0;
 		hyp1 = dy1 * dy1 + dz1 * dz1;	hyp2 = dy2 * dy2 + dz2 * dz2;
+		if (hyp1 == 0) {      
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
+			return GMT->session.d_NaN;
+		}
+		if (hyp2 == 0) {      
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
+			return GMT->session.d_NaN;
+		}
 		if (y[i1] == y[i2]) {			/* Slope mi is infinite */
 			part_a_2 = dy2 * (dz2 * log (hyp2) - 2.0 * ( dz2 - fabs (dy2) * atan (dz2/dy2)) + dy2 * z[i2]);
 			part_b_2 = hyp2 * atan (dy2/dz2) + dy2 * dz2;
@@ -483,7 +472,7 @@ double get_geoid2d (double y[], double z[], unsigned int n, double y0, double z0
 	return (N);
 }
 
-double get_one_output2D (double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax)
+double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax)
 {	/* Evaluate output at a single observation point (x,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
@@ -493,13 +482,13 @@ double get_one_output2D (double x_obs, double z_obs, struct BODY2D *body, unsign
 		area = GMT_pol_area (body[k].x, body[k].z, body[k].n);
 		v = 0.0;
 		if (mode == TALWANI2D_FAA) /* FAA */
-			v += get_grav2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += get_grav2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
 		else if (mode == TALWANI2D_FAA2) /* FAA 2.5D */
-			v += grav_2_5D (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, ymin, ymax);
+			v += grav_2_5D (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, ymin, ymax);
 		else if (mode == TALWANI2D_VGG) /* VGG */
-			v += get_vgg2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += get_vgg2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
 		else /* GEOID*/
-			v += get_geoid2d (body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += get_geoid2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
 		if (area < 0.0) v = -v;	/* Polygon went counter-clockwise */
 		v_sum += v;
 	}
@@ -512,7 +501,7 @@ double get_one_output2D (double x_obs, double z_obs, struct BODY2D *body, unsign
 int GMT_talwani2d (void *V_API, int mode, void *args)
 {
 	int row, error = 0;
-	unsigned int k, tbl, seg, n, geometry, n_bodies;
+	unsigned int k, tbl, seg, n, geometry, n_bodies, dup_node, n_duplicate = 0;
 	size_t n_alloc, n_alloc1;
 	uint64_t dim[4] = {1, 1, 0, 2};
 	double scl, rho, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
@@ -618,6 +607,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 			if (GMT_REC_IS_SEGMENT_HEADER (GMT) || GMT_REC_IS_EOF (GMT)) {	/* Process segment headers or end-of-file */
 				if (!first) {	/* First close previous body */
 					if (!(x[n-1] == x[0] && z[n-1] == z[0])) {	/* Copy first point to last */
+						if (n_duplicate == 1 && dup_node == n) n_duplicate = 0;	/* So it was the last == first duplicate; reset count */
 						x[n] = x[0];
 						z[n] = z[0];
 						n++;
@@ -648,16 +638,22 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 				continue;
 			}
 		}
-		/* Clean data record to process */
+		/* Clean data record to process.  Add point unless duplicate */
 		if (Ctrl->A.active) in[GMT_Y] = -in[GMT_Y];
-		x[n] = in[GMT_X];	z[n] = in[GMT_Y];
-		if (Ctrl->M.active[TALWANI2D_HOR]) x[n] *= 1000.0;	/* Change distances to m */
-		if (Ctrl->M.active[TALWANI2D_VER]) z[n] *= 1000.0;	/* Change distances to m */
-		n++;
-		if (n == n_alloc) {
-			n_alloc += GMT_CHUNK;
-			x = GMT_memory (GMT, x, n_alloc, double);
-			z = GMT_memory (GMT, z, n_alloc, double);
+		if (n && (x[n-1] == x[n] && z[n-1] == z[n])) {	/* Maybe a duplicate point - or it could be the repeated last = first */
+			n_duplicate++;
+			dup_node = n;
+		}
+		else {
+			x[n] = in[GMT_X];	z[n] = in[GMT_Y];
+			if (Ctrl->M.active[TALWANI2D_HOR]) x[n] *= 1000.0;	/* Change distances to m */
+			if (Ctrl->M.active[TALWANI2D_VER]) z[n] *= 1000.0;	/* Change distances to m */
+			n++;
+			if (n == n_alloc) {
+				n_alloc += GMT_CHUNK;
+				x = GMT_memory (GMT, x, n_alloc, double);
+				z = GMT_memory (GMT, z, n_alloc, double);
+			}
 		}
 	} while (true);
 	
@@ -665,9 +661,11 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	/* Finish allocation and sort on layers */
+	/* Finish allocation */
 	
 	body = GMT_memory (GMT, body, n_bodies, struct BODY2D);
+	
+	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
 	
 	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
 	
@@ -689,7 +687,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 #endif
 			for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->coord[GMT_Y][row] : Ctrl->Z.level;
-				answer = get_one_output2D (S->coord[GMT_X][row] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
+				answer = get_one_output2D (GMT, S->coord[GMT_X][row] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
 				S->coord[GMT_Y][row] = answer;
 				if (answer < min_answer) min_answer = answer;
 				if (answer > max_answer) max_answer = answer;

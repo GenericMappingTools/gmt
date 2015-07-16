@@ -3,13 +3,17 @@
 Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory.
 
-This directory contains programs for geopotential calculations.
+This directory contains programs for geopotential and isostatic calculations.
+The following were provided by J. Luis:
 
 	gmtgravmag3d	- Compute the gravity/magnetic anomaly of a body by the method of Okabe
 	gravfft		- Compute gravitational attraction of 3-D surfaces and a little more
-	grdflexure	- Computes the flexural deformation for a range of rheologies
 	grdgravmag3d	- Computes the gravity effect of one (or two) grids by the method of Okabe
 	grdredpol	- Compute the Continuous Reduction To the Pole, AKA differential RTP
-	grdseamount	- Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
 
-These were provided by J. Luis; grdseamount and grdflexure provided by P. Wessel
+The following were provided by P. Wessel:
+	gmtflexure	- Compute flexural deformation of 2-D loads, forces, and bending moments
+	grdflexure	- Computes the flexural deformation for a range of rheologies
+	grdseamount	- Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
+	talwani2d	- Compute gravity, geoid, or VGG over a 2-D body using Talwani's line-integral method
+	talwani3d	- Compute gravity, geoid, or VGG over a D-D body using Talwani's line-integral method
