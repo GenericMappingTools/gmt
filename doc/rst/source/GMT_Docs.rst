@@ -2082,6 +2082,8 @@ Finally, the rest of the GMT common options are given below:
 | **-:**\ [**i**\ \| \ **o**]                                | Expect *y*/*x* input rather than *x*/*y*               |
 +------------------------------------------------------------+--------------------------------------------------------+
 
+.. _GMT_General_Features:
+
 General Features
 ================
 

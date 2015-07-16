@@ -724,7 +724,7 @@ us are shown in the table below:
 +-----------------------------------+---------------------------------------------------------------------------------------------+
 | **-Sv**\ *params*                 | **v**\ ector; *direction* (CCW from horizontal) and *length* are read from input data       |
 +-----------------------------------+---------------------------------------------------------------------------------------------+
-|                                   | Append parameters of the vector.                                                            |
+|                                   | Append parameters of the vector; see :doc:`psxy` for syntax.                                |
 +-----------------------------------+---------------------------------------------------------------------------------------------+
 | **-SV**\ *params*                 | **v**\ ector, except *azimuth* (degrees east of north) is expected instead of *direction*   |
 +-----------------------------------+---------------------------------------------------------------------------------------------+
@@ -782,7 +782,8 @@ apply when one (or more) of the following conditions are met:
 
 Before we try some examples we need to review two key switches; they
 specify pen attributes and symbol or polygon fill.  Please consult
-the General Features section the GMT Technical Reference and Cookbook before experimenting
+the :ref:`General Features <GMT_General_Features>` section the
+GMT Technical Reference and Cookbook before experimenting
 with the examples below.
 
 Examples:
@@ -849,7 +850,9 @@ symbols with a line we must use the overlay approach:
     gmt psxy data -R0/6/0/6 -Jx1i -Baf -P -K -Wthinner > GMT_tut_8.ps
     gmt psxy data -R -J -O -W -Si0.2i >> GMT_tut_8.ps
 
-Your plot should look like :ref:`our example 8 below <gmt_tut_8>`
+Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
+two-step procedure also makes it easy to plot the line over the symbols
+instead of symbols over the line, as here.
 
 .. _gmt_tut_8:
 
@@ -891,7 +894,7 @@ and then select the 4th, 3rd, 5th, and
 
     -i4,3,5,6s0.1 -h3
 
-We will follow conventional color schemes for seismicity and assign red
+(Remember that 0 is the first column).  We will follow conventional color schemes for seismicity and assign red
 to shallow quakes (depth 0-100 km), green to intermediate quakes
 (100-300 km), and blue to deep earthquakes (depth > 300 km).  The
 quakes.cpt file establishes the relationship between depth
@@ -942,7 +945,7 @@ Plotting text strings
 
 In many situations we need to annotate plots or maps with text strings;
 in GMT this is done using :doc:`pstext`.  Apart from the common
-switches, there are 7 options that are particularly useful.
+switches, there are 9 options that are particularly useful.
 
 +-------------------+----------------------------------------------------+
 | Option            | Purpose                                            | 
@@ -1061,7 +1064,7 @@ Your plot should look like :ref:`our example 10 below <gmt_tut_10>`
 
 Exercises:
 
-#. At *y = 5*, add the sentence "z^2 = x^2 + y^2".
+#. At *y = 5*, add the sentence :math:`z^2 = x^2 + y^2`.
 
 #. At *y = 6*, add the sentence "It is 80˚ today".
 
@@ -1283,7 +1286,9 @@ all our data points; the values of this surface at the grid points
 become the gridded data.  Mathematically, we want to find the function
 *z(x, y)* that satisfies the following equation away from data constraints:
 
-(1-t)Laplacian^2 (z) -  t Laplacian (z) = 0,
+.. math::
+
+    (1-t)\nabla ^2 z -  t \nabla z = 0,
 
 where *t* is the "tension" in the 0-1 range.  Basically, for
 zero tension we obtain the minimum curvature solution, while as
