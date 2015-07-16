@@ -659,9 +659,9 @@ shows a complete list of the options:
   +-------------------------------------------------------------+-------------------------------------------------------------------+
   | **-G**\ *fill*                                              | Set color for symbol or fill for polygons                         |
   +-------------------------------------------------------------+-------------------------------------------------------------------+
-  | **-L**                                                      | Explicitly close polygons                                         |
+  | **-L**\ [*options*]                                         | Explicitly close polygons or create polygon (see :doc:`psxy`)     |
   +-------------------------------------------------------------+-------------------------------------------------------------------+
-  | **-N**                                                      | Do Not clip symbols at map borders                                |
+  | **-N**\ [**c**\ \|\ **r**]                                  | Do Not clip symbols at map borders                                |
   +-------------------------------------------------------------+-------------------------------------------------------------------+
   | **-S**\ [*symbol*][*size*]                                  | Select one of several symbols                                     |
   +-------------------------------------------------------------+-------------------------------------------------------------------+
@@ -1113,31 +1113,31 @@ is a complicated module with too many options.  We put a positive
 spin on this situation by touting its flexibility.  Here are the most
 useful options:
 
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | Option                                            |  Purpose                                                             | 
-  +===================================================+======================================================================+
-  | **-A**\ *annot\_int*                              | Annotation interval and attributes                                   |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | **-C**\ *cont\_int*                               | Contour interval                                                     |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | **-G**\ *gap*                                     | Controls placement of contour annotations                            |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | **-L**\ *low*/*high*                              | Only draw contours within the *low* to *high* range                  |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | **-Q**\ *cut*                                     | Do not draw contours with fewer than *cut* points                    |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | **-S**\ *smooth*                                  | Resample contours *smooth* times per grid cell increment             |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | **-T**\ [**+**\ \|\ **-**][*gap*/*length*][:*LH*] | Draw tick-marks in downhill                                          |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  |                                                   | direction for innermost closed contours.  Add tick spacing           |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  |                                                   | and length, and characters to plot at the center of closed contours  |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | **-W**\ [**a**\ \|\ **c**\ ]\ *pen*               | Set contour and annotation pens                                      |
-  +---------------------------------------------------+----------------------------------------------------------------------+
-  | **-Z**\ *factor*\ [*offset*]                      | Subtract *offset* and multiply data by *factor* prior to processing  |
-  +---------------------------------------------------+----------------------------------------------------------------------+
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | Option                                                               |  Purpose                                                             | 
+  +======================================================================+======================================================================+
+  | **-A**\ *annot\_int*                                                 | Annotation interval and attributes                                   |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | **-C**\ *cont\_int*                                                  | Contour interval                                                     |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | **-G**\ *gap*                                                        | Controls placement of contour annotations                            |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | **-L**\ *low*/*high*                                                 | Only draw contours within the *low* to *high* range                  |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | **-Q**\ *cut*                                                        | Do not draw contours with fewer than *cut* points                    |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | **-S**\ *smooth*                                                     | Resample contours *smooth* times per grid cell increment             |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | **-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] | Draw tick-marks in downhill                                          |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  |                                                                      | direction for innermost closed contours.  Add tick spacing           |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  |                                                                      | and length, and characters to plot at the center of closed contours  |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | **-W**\ [**a**\ \|\ **c**\ ]\ *pen*                                  | Set contour and annotation pens                                      |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
+  | **-Z**\ *factor*\ [*offset*]                                         | Subtract *offset* and multiply data by *factor* prior to processing  |
+  +----------------------------------------------------------------------+----------------------------------------------------------------------+
 
 We will first make a plain contour map using 1 km as annotation
 interval and 250 m as contour interval.  We choose a 7-inch-wide
@@ -1326,7 +1326,7 @@ all take the same options shown below:
   +----------------------------+--------------------------------------------------------------------+
   | Option                     | Purpose                                                            | 
   +============================+====================================================================+
-  | **-N**                     | Choose pixel node registration [Default is gridline]               |
+  | **-r**                     | Choose pixel node registration [Default is gridline]               |
   +----------------------------+--------------------------------------------------------------------+
   | **-W**\ [**i**\ \|\ **o**] | Append **i**\  or **o** to read or write weights in the 4th column |
   +----------------------------+--------------------------------------------------------------------+
@@ -1443,32 +1443,35 @@ from -20 to 60, with color changes at every 10, try these two variants:
     gmt makecpt -Crainbow -T-20/60/10 -Z > cont.cpt
 
 We can plot these color tables with :doc:`psscale`; the options
-worth mentioning here are listed below.
+worth mentioning here are listed below.  The placement of the
+color bar is particularly important and we refer you to the
+:ref:`Plot embellishments <GMT_Embellishments>` section for all
+the details.
 In addition, the **-B** option can be used to set the title
 and unit label (and optionally to set the annotation-, tick-,
 and grid-line intervals for the color bars.)
 
-  +-------------------------------------------+-------------------------------------------------------------------+
-  | Option                                    | Purpose                                                           | 
-  +===========================================+===================================================================+
-  | **-C**\ *cptfile*                         | The required CPT file                                             |
-  +-------------------------------------------+-------------------------------------------------------------------+
-  | **-D**\ *xpos/ypos/length/width*\ [**h**] | Sets the position of the center/left and dimensions of scale bar. |
-  +-------------------------------------------+-------------------------------------------------------------------+
-  |                                           | Append **h**\  to get horizontal bar and give center/top instead  |
-  +-------------------------------------------+-------------------------------------------------------------------+
-  | **-I**\ *max\_intensity*                  | Add illumination effects                                          |
-  +-------------------------------------------+-------------------------------------------------------------------+
+  +--------------------------------------------------------+------------------------------------------------+
+  | Option                                                 | Purpose                                        | 
+  +===========================================+=============================================================+
+  | **-C**\ *cptfile*                                      | The required CPT file                          |
+  +--------------------------------------------------------+------------------------------------------------+
+  | **-Dx**\ *xpos/ypos*\ **+w**\ *length/width*\ [**+h**] | Sets the position and dimensions of scale bar. |
+  +--------------------------------------------------------+------------------------------------------------+
+  |                                                        | Append **+h** to get horizontal bar            |
+  +--------------------------------------------------------+------------------------------------------------+
+  | **-I**\ *max\_intensity*                               | Add illumination effects                       |
+  +--------------------------------------------------------+------------------------------------------------+
 
 Here is an example of four different ways of presenting the color bar:
 
    ::
 
-    gmt psbasemap -R0/6.5/0/9 -Jx1i -P -B0 -K > GMT_tut_14.ps
-    gmt psscale -D3i/2i/4i/0.5ih -Cdisc.cpt -B+tdiscrete -O -K >> GMT_tut_14.ps
-    gmt psscale -D3i/4i/4i/0.5ih -Ccont.cpt -B+tcontinuous -O -K >> GMT_tut_14.ps
-    gmt psscale -D3i/6i/4i/0.5ih -Cdisc.cpt -B+tdiscrete -I0.5 -O -K >> GMT_tut_14.ps
-    gmt psscale -D3i/8i/4i/0.5ih -Ccont.cpt -B+tcontinuous -I0.5 -O >> GMT_tut_14.ps
+    gmt psbasemap -R0/6/0/9 -Jx1i -P -B0 -K -Xc > GMT_tut_14.ps
+    gmt psscale -Dx1i/1i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -O -K >> GMT_tut_14.ps
+    gmt psscale -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -O -K >> GMT_tut_14.ps
+    gmt psscale -Dx1i/5i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -I0.5 -O -K >> GMT_tut_14.ps
+    gmt psscale -Dx1i/7i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -I0.5 -O >> GMT_tut_14.ps
 
 Your plot should look like :ref:`our example 14 below <gmt_tut_14>`
 
@@ -1573,7 +1576,7 @@ the plot.  We try
    ::
 
     gmt grdimage us.nc -JM6i -P -Ba -Ctopo.cpt -V -K > GMT_tut_15.ps
-    gmt psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_15.ps
+    gmt psscale -DjTC+w5i/0.25i+h+o0/-1i -Rus.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_15.ps
 
 Your plot should look like :ref:`our example 15 below <gmt_tut_15>`
 
@@ -1639,7 +1642,7 @@ create the shaded relief image:
    ::
 
     gmt grdimage us.nc -Ius_i.nc -JM6i -P -Ba -Ctopo.cpt -K > GMT_tut_16.ps
-    gmt psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_16.ps
+    gmt psscale -DjTC+w5i/0.25i+h+o0/-1i -Rus.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_16.ps
 
 Your plot should look like :ref:`our example 16 below <gmt_tut_16>`
 

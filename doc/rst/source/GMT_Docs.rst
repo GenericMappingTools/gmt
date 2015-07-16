@@ -4122,6 +4122,8 @@ rectangle surrounding the text will not work for strings with escape
 sequences. A chart of characters and their octal codes is given in
 Appendix [app:F].
 
+.. _GMT_Embellishments:
+
 Plot embellishments
 -------------------
 
