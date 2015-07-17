@@ -49,6 +49,7 @@
 #define TOL		1.0e-7
 #define DEG_TO_KM	111.319490793
 #define GAMMA 		6.673	/* Gravitational constant for distances in km and mass in kg/m^3 */
+#define G0 		9.81	/* Normal gravity */
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
 #define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
@@ -500,9 +501,119 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 	return (10 * GAMMA * rho * vsum);	/* Go get Eotvos = 0.1 mGal/km */
 }
 
-double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
+/* The geoid stuff is not working and will likely need numerical integration.
+ * Some quick-n-dirty attempts are happening here but not working yet, hence
+ * the program does not advertise geoid calculation yet. See the talwani_pw.pdf
+ * docs for details.
+ */
+
+#define DEL 0.0001
+
+double part_integral (double lim, double c, double m)
 {
-	return 0.0;
+	int k, k0, n;
+	double dx, c2 = c * c, x, sum = 0.0;
+	k0 = (int) (m / DEL + 0.5) - 2;
+	if (k0 < 1) k0 = 1;
+	n = (int) (lim / DEL + 0.5);
+	for (k = k0; k <= n; k++) {
+		x = k * DEL;
+		sum += (sqrt (pow (sin (x), -2.0) + c2) - c);
+	}
+	return sum * DEL;
+}
+
+double integral (double a, double b,  double c)
+{
+	double m;
+	while (a < 0.0) a += M_PI;
+	while (a > M_PI) a -= M_PI;
+	while (b < 0.0) b += M_PI;
+	while (b > M_PI) b -= M_PI;
+	c = fabs (c);
+	//fprintf (stderr, "I(%g, %g, %g)\n", a, b, c);
+	m = a; if (b < m) m = b;
+	return (part_integral (b, c, m) - part_integral (a, c, m));
+}
+
+double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
+{	/* Experimental and wrong so far */
+	int k;
+	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
+	double xr2, yr2, dx, dy, p, em, sign2, wsign, value, part1, psi1, psi2, f, zp_ratio;
+	int zerog;
+	/* Coordinates are in km and g/cm^3  - recover SI */
+	vsum = 0.0;
+	if (flat) {
+		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
+		y1 = DY_FROM_DLAT (y[0], y_obs);
+	}
+	else {
+		x1 = x[0] - x_obs;
+		y1 = y[0] - y_obs;
+	}
+	x1 *= 1000;	y1 *= 1000;	rho *= 1000;
+	r1 = hypot (x1, y1);
+	if (r1 != 0.0) {
+		ir1 = 1.0 / r1;
+		xr1 = x1 * ir1;
+		yr1 = y1 * ir1;
+		psi1 = atan2 (y1, x1);
+	}
+	fprintf (stderr, "Calling get_geoid3d for x = %g\n", x_obs);
+	for (k = 1; k < n; k++) {	/* Loop over vertex */
+				
+		if (flat) {
+			x2 = DX_FROM_DLON (x[k], x_obs, y[k], y_obs);
+			y2 = DY_FROM_DLAT (y[k], y_obs);
+		}
+		else {
+			x2 = x[k] - x_obs;
+			y2 = y[k] - y_obs;
+		}
+		x2 *= 1000;	y2 *= 1000;
+		r2 = hypot (x2, y2);
+		if (r2 == 0.0)
+			zerog = TRUE;
+		else {
+			zerog = FALSE;
+			ir2 = 1.0 / r2;
+			xr2 = x2 * ir2;
+			yr2 = y2 * ir2;
+			if (r1 == 0.0)
+				zerog = TRUE;
+			else {
+				dx = x1 - x2;
+				dy = y1 - y2;
+				side = hypot (dx, dy);
+				iside = 1.0 / side;
+				p = (dy * x1 - dx * y1) * iside;
+				sign2 = copysign (1.0, p);
+				psi2 = atan2 (y2, x2);
+				zp_ratio = z_obs / hypot (p, z_obs);
+				f = sign2 * (dx*xr2 + dy*yr2) * zp_ratio;
+				part1 = p * integral (f + psi1, f + psi2,  z_obs / p);
+			}
+		}
+					
+		if (!zerog) vsum += part1;
+					
+		/* move this vertex to last vertex : */
+					
+		x1 = x2;
+		y1 = y2;
+		r1 = r2;
+		xr1 = xr2;
+		yr1 = yr2;
+		psi1 = psi2;
+					
+	}
+				
+	/* If z axis is positive down, then vsum should have the same sign as z, */
+				 
+	vsum = (z_obs > 0.0) ? fabs (vsum) : -fabs (vsum);
+				
+	return (1.0e-11 * GAMMA * rho * vsum / G0);
 }
 
 double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
