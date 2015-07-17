@@ -63,7 +63,7 @@ struct TALWANI3D_CTRL {
 		bool active;
 		double rho;
 	} D;
-	struct F {	/* -F[f|v] */
+	struct F {	/* -F[f|n|v] */
 		bool active;
 		unsigned int mode;
 	} F;
@@ -105,6 +105,7 @@ struct CAKE {
 enum Talwani3d_fields {
 	TALWANI3D_FAA	= 0,
 	TALWANI3D_VGG,
+	TALWANI3D_GEOID,
 	TALWANI3D_HOR=0,
 	TALWANI3D_VER=1
 };
@@ -149,9 +150,9 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 			case 'F':
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
-					case 'v': Ctrl->F.mode = TALWANI3D_VGG; 	     break;
-					default:  Ctrl->F.mode = TALWANI3D_FAA; 	   /* FAA */
-						break;
+					case 'v': Ctrl->F.mode = TALWANI3D_VGG; 	break;
+					case 'n': Ctrl->F.mode = TALWANI3D_GEOID;	break;
+					default:  Ctrl->F.mode = TALWANI3D_FAA; 	break;
 				}
 				break;
 			case 'G':
@@ -499,6 +500,11 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 	return (10 * GAMMA * rho * vsum);	/* Go get Eotvos = 0.1 mGal/km */
 }
 
+double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
+{
+	return 0.0;
+}
+
 double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
 {	/* Evaluate output at a single observation point (x,y,z) */
 	/* Work array vtry must have at least of length ndepths */
@@ -512,9 +518,11 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 
 		for (sl = cake[k].first_slice; sl; sl = sl->next) {	/* Loop over slices */
 			if (mode == TALWANI3D_FAA) /* FAA */
-				vtry[k] += get_grav3d    (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
+				vtry[k] += get_grav3d  (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
+			else if (mode == TALWANI3D_GEOID) /* GEOID */
+				vtry[k] += get_geoid3d (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
 			else /* VGG */
-				vtry[k] += get_vgg3d  (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
+				vtry[k] += get_vgg3d   (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
 		}
 	}
 	return (parint (depths, vtry, ndepths));	/* Use parabolic integrator and return value */
@@ -540,7 +548,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	bool flat_earth = false, first_slice = true;
 	
-	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "VGG"};
+	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "GEOID"};
 	double z_level, depth, rho;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
 					
