@@ -557,7 +557,12 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", psl_iz (PSL, GMT->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
 		/* Move to new anchor point */
 		PSL_command (PSL, "%d PSL_L_y MM\n", psl_iz (PSL, 0.5 * length));
-		PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, A->label, horizontal ? 0.0 : 90.0, PSL_BC, form);
+		if (axis == GMT_Y && A->label_mode) {
+			i = (below) ? PSL_MR : PSL_ML;
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, A->label, 0.0, i, form);
+		}
+		else
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, A->label, horizontal ? 0.0 : 90.0, PSL_BC, form);
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");

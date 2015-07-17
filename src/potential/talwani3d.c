@@ -56,6 +56,8 @@
 
 #define GMT_TALWANI3D_N_DEPTHS GMT_BUFSIZ	/* Max depths allowed due to OpenMP needing stack array */
 
+bool dump = false;
+
 struct TALWANI3D_CTRL {
 	struct A {	/* -A positive up  */
 		bool active;
@@ -507,41 +509,35 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
  * docs for details.
  */
 
-#define DEL 0.0001
+#define NDEL 1000
 
-double part_integral (double lim, double c, double m)
-{
-	int k, k0, n;
-	double dx, c2 = c * c, x, sum = 0.0;
-	k0 = (int) (m / DEL + 0.5) - 2;
-	if (k0 < 1) k0 = 1;
-	n = (int) (lim / DEL + 0.5);
-	for (k = k0; k <= n; k++) {
-		x = k * DEL;
-		sum += (sqrt (pow (sin (x), -2.0) + c2) - c);
-	}
-	return sum * DEL;
-}
-
-double integral (double a, double b,  double c)
-{
-	double m;
+double integral (double a, double b, double c)
+{	/* Evalute area under curve y(x) between a and b using tapezoidal integration */
+	int k;
+	double dx, c2 = c * c, x, y, f, sum = 0.0;
+	/* Ensure no jump in range */
 	while (a < 0.0) a += M_PI;
 	while (a > M_PI) a -= M_PI;
 	while (b < 0.0) b += M_PI;
 	while (b > M_PI) b -= M_PI;
-	c = fabs (c);
-	//fprintf (stderr, "I(%g, %g, %g)\n", a, b, c);
-	m = a; if (b < m) m = b;
-	return (part_integral (b, c, m) - part_integral (a, c, m));
+	if ((b-a) > M_PI_2) b -= M_PI;
+	if ((a-b) > M_PI_2) a -= M_PI;
+	dx = (b - a) / NDEL;
+	for (k = 0; k <= NDEL; k++) {
+		f = (k == 0 || k == NDEL) ? 0.5 : 1.0;
+		x = a + k * dx;
+		y = sqrt (pow (sin (x), -2.0) + c2) - c;
+		if (isfinite (y)) sum += f * y;
+	}
+	return sum * dx;
 }
 
 double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {	/* Experimental and wrong so far */
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
-	double xr2, yr2, dx, dy, p, em, sign2, wsign, value, part1, psi1, psi2, f, zp_ratio;
-	int zerog;
+	double xr2, yr2, dx, dy, p, q, sign2, part1, part2, psi1, psi2, f, zp_ratio;
+	bool zerog;
 	/* Coordinates are in km and g/cm^3  - recover SI */
 	vsum = 0.0;
 	if (flat) {
@@ -560,7 +556,6 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		yr1 = y1 * ir1;
 		psi1 = atan2 (y1, x1);
 	}
-	fprintf (stderr, "Calling get_geoid3d for x = %g\n", x_obs);
 	for (k = 1; k < n; k++) {	/* Loop over vertex */
 				
 		if (flat) {
@@ -574,14 +569,14 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		x2 *= 1000;	y2 *= 1000;
 		r2 = hypot (x2, y2);
 		if (r2 == 0.0)
-			zerog = TRUE;
+			zerog = true;
 		else {
-			zerog = FALSE;
+			zerog = false;
 			ir2 = 1.0 / r2;
 			xr2 = x2 * ir2;
 			yr2 = y2 * ir2;
 			if (r1 == 0.0)
-				zerog = TRUE;
+				zerog = true;
 			else {
 				dx = x1 - x2;
 				dy = y1 - y2;
@@ -592,11 +587,14 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				psi2 = atan2 (y2, x2);
 				zp_ratio = z_obs / hypot (p, z_obs);
 				f = sign2 * (dx*xr2 + dy*yr2) * zp_ratio;
-				part1 = p * integral (f + psi1, f + psi2,  z_obs / p);
+	                        q = sign2 * (dx*xr1 + dy*yr1) * zp_ratio;
+				part1 = -integral (f, q, z_obs / p);
+				part2 = p * part1;
+				if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(f), R2D*(q), z_obs / p, p, part1);
 			}
 		}
 					
-		if (!zerog) vsum += part1;
+		if (!zerog) vsum += part2;
 					
 		/* move this vertex to last vertex : */
 					
@@ -626,7 +624,7 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	for (k = 0; k < ndepths; k++) {
 		vtry[k] = 0.0;
 		dz = cake[k].depth - z_obs;
-
+		dump = (mode == TALWANI3D_GEOID && fabs (x_obs - 6.0) < 0.1 && k == 25);
 		for (sl = cake[k].first_slice; sl; sl = sl->next) {	/* Loop over slices */
 			if (mode == TALWANI3D_FAA) /* FAA */
 				vtry[k] += get_grav3d  (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);

@@ -190,9 +190,9 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title].\n");
 			GMT_message (GMT, "\t   2. Axes settings control the annotation, tick, and grid intervals and labels.\n");
 			GMT_message (GMT, "\t     The full axes specification is\n");
-			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+u<unit>]\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l|L<label>][+p<prefix>][+u<unit>]\n");
 			GMT_message (GMT, "\t     Alternatively, you may break this syntax into two separate -B options:\n");
-			GMT_message (GMT, "\t       -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>]\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z][+l|L<label>][+p<prefix>][+u<unit>]\n");
 			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>\n");
 			GMT_message (GMT, "\t     There are two levels of annotations: Primary and secondary (most situations only require primary).\n");
 			GMT_message (GMT, "\t     The -B[p] selects (p)rimary annotations while -Bs specifies (s)econdary annotations.\n");
@@ -201,7 +201,8 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_message (GMT, "\t     each dimension., i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings.\n");
 			GMT_message (GMT, "\t     To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>.\n");
 			GMT_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
-			GMT_message (GMT, "\t     To label an axis, add +l<label>.  Use quotes if <label>, <prefix> or <unit> have spaces.\n");
+			GMT_message (GMT, "\t     To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes.\n");
+			GMT_message (GMT, "\t     Use quotes if any of the <label>, <prefix> or <unit> have spaces.\n");
 			GMT_message (GMT, "\t     Geographic map annotations will automatically have degree, minute, seconds units.\n");
 			GMT_message (GMT, "\t     The <intervals> setting controls the annotation spacing and is a textstring made up of one or\n");
 			GMT_message (GMT, "\t     more substrings of the form [a|f|g][<stride>[+-<phase>][<unit>]], where the (optional) a\n");
@@ -8229,9 +8230,9 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	 * Axis settings:
 	 * 	-B[p|s][x|y|z]<info>
 	 *   where <info> is of the format
-	 * 	<intervals>[+l<label>][+p<prefix>][+u<unit>]
+	 * 	<intervals>[+L|l<label>][+p<prefix>][+u<unit>]
 	 *   and each <intervals> is a concatenation of one or more [t][value][<unit>]
-	 *    		+l<label> as labels for the respective axes [none].
+	 *    		+l<label> as labels for the respective axes [none]. Use +L for only horizontal labels
 	 *    		+u<unit> as as annotation suffix unit [none].
 	 *    		+p<prefix> as as annotation prefix unit [none].
 	 *
@@ -8300,9 +8301,9 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
 
 	strcpy (text, &in[k]);			/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt5_handle_plussign (GMT, text, "lpu", 0);	/* Temporarily change any +<letter> except +l, +p, +u to ASCII 1 to avoid interference with +modifiers */
-	k = 0;					/* Start at beginning of text and look for first occurrence of +l, +p, or +s */
-	while (text[k] && !(text[k] == '+' && strchr ("lpu", text[k+1]))) k++;
+	gmt5_handle_plussign (GMT, text, "Llpu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +u to ASCII 1 to avoid interference with +modifiers */
+	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +p, or +s */
+	while (text[k] && !(text[k] == '+' && strchr ("Llpu", text[k+1]))) k++;
 	GMT_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
 	gmt5_handle_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
@@ -8320,6 +8321,9 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 			char p[GMT_BUFSIZ];
 			while ((GMT_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 				switch (p[0]) {
+					case 'L':	/* Force horizontal axis label */
+						GMT->current.map.frame.axis[no].label_mode = 1;
+						/* Fall through on purpose */
 					case 'l':	/* Axis label */
 						if (p[1] == 0) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: No axis label given after +l\n");

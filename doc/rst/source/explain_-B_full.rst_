@@ -26,7 +26,7 @@
 
     The Axes parameters are specified by
 
-    **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+    **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [\ **+l**\ \|\ **L**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
     but you may also split this into two separate invocations for clarity, i.e.,
 
@@ -40,7 +40,8 @@
     or labels for the various axes then you must repeat the **B** option for
     each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
     to give settings for the vertical axis.).  To add a label to an axis,
-    just append **+l**\ *label* (Cartesian projections only). If the
+    just append **+l**\ *label* (Cartesian projections only). Use **+L** to
+    force a horizontal label for *y*-axes (useful for very short labels).  If the
     axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
     the addition of degree symbols, etc. is automatic (and controlled by the GMT
