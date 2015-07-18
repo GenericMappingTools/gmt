@@ -269,7 +269,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnow")) n_errors++;
 					/* Required modifier +w */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
-						if (string[(j = strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
+						if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
 							string[j] = '\0';
 							Ctrl->D.horizontal = true;
 						}
