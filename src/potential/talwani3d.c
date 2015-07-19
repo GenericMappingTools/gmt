@@ -317,11 +317,12 @@ double parint (double x[], double y[], int n)
 double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {
 	int k;
-	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
+	double gsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
 	double xr2, yr2, dx, dy, p, em, sign2, wsign, value, part1, part2, part3, q, f, psi;
-	int zerog;
+	bool zerog;
 	
-	vsum = 0.0;
+	gsum = 0.0;
+	/* Get x- and y-distances relative to observation point */
 	if (flat) {
 		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
 		y1 = DY_FROM_DLAT (y[0], y_obs);
@@ -349,14 +350,14 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 		}
 		r2 = hypot (x2, y2);
 		if (r2 == 0.0)
-			zerog = TRUE;
+			zerog = true;
 		else {
-			zerog = FALSE;
+			zerog = false;
 			ir2 = 1.0 / r2;
 			xr2 = x2 * ir2;
 			yr2 = y2 * ir2;
 			if (r1 == 0.0)
-				zerog = TRUE;
+				zerog = true;
 			else {
 				dx = x1 - x2;
 				dy = y1 - y2;
@@ -364,12 +365,12 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 				iside = 1.0 / side;
 				p = (dy * x1 - dx * y1) * iside;
 				if (fabs (p) < TOL)
-					zerog = TRUE;
+					zerog = true;
 				else {
 					sign2 = copysign (1.0, p);
 					em = (yr1 * xr2) - (yr2 * xr1);
 					if (em == 0.0)
-						zerog = TRUE;
+						zerog = true;
 					else {
 						wsign = copysign (1.0, em);
 						value = xr1*xr2 + yr1*yr2;
@@ -383,16 +384,13 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 							f = (dx*xr2 + dy*yr2) * psi;
 							part2 = d_asin (q);
 							part3 = d_asin (f);
-
-                            //if (y_obs == 0.0)
-                            //printf("x = %f \t y = %f \t S = %f \t W = %f \t p = %f \t q = %f \t f = %f \t part1 = %f \t part2 = %f \t part3 = %f \t vertex = %d \n",x_obs,y_obs,sign2,wsign,p,q,f,part1,part2,part3,k);
 						}
 					}
 				}
 			}
 		}
 					
-		if (!zerog) vsum += part1 - part2 + part3;
+		if (!zerog) gsum += part1 - part2 + part3;
 					
 		/* move this vertex to last vertex : */
 					
@@ -404,21 +402,20 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 					
 	}
 				
-	/* If z axis is positive down, then vsum should have the same sign as z, */
+	/* If z axis is positive down, then gsum should have the same sign as z, */
 				 
-	vsum = (z_obs > 0.0) ? fabs (vsum) : -fabs (vsum);
+	gsum = (z_obs > 0.0) ? fabs (gsum) : -fabs (gsum);
 				
-	return (GAMMA * rho * vsum);
+	return (GAMMA * rho * gsum);
 }
 
 double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {	/* Now works, see talwani_pw.pdf */
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
-	double xr2, yr2, dx, dy, dz, p, em, sign2, part2, part3, q, f;
-    	double z2, p2;
+	double xr2, yr2, dx, dy, dz, p, em, sign2, part2, part3, q, f, z2, p2;
 	double scl, cos_theta_i, sin_theta2_i, cos_phi_i, sin_phi2_i;
-	int zerog;
+	bool zerog;
 	
 	dz = z_obs;
 	vsum = 0.0;
@@ -449,14 +446,14 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 		}
 		r2 = hypot (x2, y2);
 		if (r2 == 0.0)
-			zerog = TRUE;
+			zerog = true;
 		else {
-			zerog = FALSE;
+			zerog = false;
 			ir2 = 1.0 / r2;
 			xr2 = x2 * ir2;
 			yr2 = y2 * ir2;
 			if (r1 == 0.0)
-				zerog = TRUE;
+				zerog = true;
 			else {
 				dx = x1 - x2;
 				dy = y1 - y2;
@@ -464,20 +461,19 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 				iside = 1.0 / side;
 				p = (dy * x1 - dx * y1) * iside;
 				if (fabs (p) < TOL)
-					zerog = TRUE;
+					zerog = true;
 				else {
 					sign2 = copysign (1.0, p);
 					em = (yr1 * xr2) - (yr2 * xr1);
 					if (em == 0.0)
-						zerog = TRUE;
+						zerog = true;
 					else {
 			                        q = (dx*xr1 + dy*yr1) * iside;
 			                        f = (dx*xr2 + dy*yr2) * iside;
 						cos_theta_i = q * sign2;
 						cos_phi_i   = f * sign2;
 						sin_theta2_i = 1.0 - cos_theta_i * cos_theta_i;
-						sin_phi2_i   = 1.0 - cos_phi_i * cos_phi_i;
-			
+						sin_phi2_i   = 1.0 - cos_phi_i   * cos_phi_i;
 						p2 = p * p;
 						z2 = dz * dz;
 						scl = p2 / (p2+z2);
@@ -509,7 +505,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
  * docs for details.
  */
 
-#define NDEL 1000
+#define NDEL 10000
 
 double integral (double a, double b, double c)
 {	/* Evalute area under curve y(x) between a and b using tapezoidal integration */
@@ -586,8 +582,8 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				sign2 = copysign (1.0, p);
 				psi2 = atan2 (y2, x2);
 				zp_ratio = z_obs / hypot (p, z_obs);
-	                        q = sign2 * (dx*xr1 + dy*yr1) * iside;
-	                        f = sign2 * (dx*xr2 + dy*yr2) * iside;
+	                        q = acos (sign2 * (dx*xr1 + dy*yr1) * iside);
+	                        f = acos (sign2 * (dx*xr2 + dy*yr2) * iside);
 				part1 = integral (f, q, z_obs / p);
 				part2 = p * part1;
 				if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(f), R2D*(q), z_obs / p, p, part1);
@@ -596,7 +592,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 					
 		if (!zerog) vsum += part2;
 					
-		/* move this vertex to last vertex : */
+		/* move this vertex to last vertex */
 					
 		x1 = x2;
 		y1 = y2;
@@ -604,10 +600,9 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		xr1 = xr2;
 		yr1 = yr2;
 		psi1 = psi2;
-					
 	}
 				
-	/* If z axis is positive down, then vsum should have the same sign as z, */
+	/* If z axis is positive down, then vsum should have the same sign as z */
 				 
 	vsum = (z_obs > 0.0) ? fabs (vsum) : -fabs (vsum);
 				
@@ -618,23 +613,23 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 {	/* Evaluate output at a single observation point (x,y,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
-	double dz;
+	double z;
 	struct SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
 	for (k = 0; k < ndepths; k++) {
 		vtry[k] = 0.0;
-		dz = cake[k].depth - z_obs;
+		z = cake[k].depth - z_obs;
 		dump = (mode == TALWANI3D_GEOID && fabs (x_obs) < 0.01);
 		if (dump) {
 			vtry[k] = 0.0;	/* Just to set stop point in debug */
 		}
 		for (sl = cake[k].first_slice; sl; sl = sl->next) {	/* Loop over slices */
 			if (mode == TALWANI3D_FAA) /* FAA */
-				vtry[k] += get_grav3d  (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
+				vtry[k] += get_grav3d  (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth);
 			else if (mode == TALWANI3D_GEOID) /* GEOID */
-				vtry[k] += get_geoid3d (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
+				vtry[k] += get_geoid3d (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth);
 			else /* VGG */
-				vtry[k] += get_vgg3d   (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
+				vtry[k] += get_vgg3d   (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth);
 		}
 	}
 	return (parint (depths, vtry, ndepths));	/* Use parabolic integrator and return value */
@@ -752,7 +747,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 						cake[k].first_slice->n = n;
 						ndepths++;
 					}
-					else {
+					else {	/* Hook onto list of slices at same depth */
 						sl = cake[k].first_slice;
 						while (sl->next) sl = sl->next;
 						sl->next = GMT_memory (GMT, NULL, 1, struct SLICE);
@@ -785,7 +780,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 			n_duplicate++;
 			dup_node = n;
 		}
-		else {
+		else {	/* New point for sure */
 			x[n] = in[GMT_X];	y[n] = in[GMT_Y];
 			if (!flat_earth) {
 				if (!Ctrl->M.active[TALWANI3D_HOR]) {	/* Change distances to km */
