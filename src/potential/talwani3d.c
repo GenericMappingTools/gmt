@@ -471,8 +471,8 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 					if (em == 0.0)
 						zerog = TRUE;
 					else {
-			                        q = (dx*xr1 + dy*yr1)/hypot(dx,dy);
-			                        f = (dx*xr2 + dy*yr2)/hypot(dx,dy);
+			                        q = (dx*xr1 + dy*yr1) * iside;
+			                        f = (dx*xr2 + dy*yr2) * iside;
 						cos_theta_i = q * sign2;
 						cos_phi_i   = f * sign2;
 						sin_theta2_i = 1.0 - cos_theta_i * cos_theta_i;
@@ -586,9 +586,9 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				sign2 = copysign (1.0, p);
 				psi2 = atan2 (y2, x2);
 				zp_ratio = z_obs / hypot (p, z_obs);
-				f = sign2 * (dx*xr2 + dy*yr2) * zp_ratio;
-	                        q = sign2 * (dx*xr1 + dy*yr1) * zp_ratio;
-				part1 = -integral (f, q, z_obs / p);
+	                        q = sign2 * (dx*xr1 + dy*yr1) * iside;
+	                        f = sign2 * (dx*xr2 + dy*yr2) * iside;
+				part1 = integral (f, q, z_obs / p);
 				part2 = p * part1;
 				if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(f), R2D*(q), z_obs / p, p, part1);
 			}
@@ -624,7 +624,10 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	for (k = 0; k < ndepths; k++) {
 		vtry[k] = 0.0;
 		dz = cake[k].depth - z_obs;
-		dump = (mode == TALWANI3D_GEOID && fabs (x_obs - 6.0) < 0.1 && k == 25);
+		dump = (mode == TALWANI3D_GEOID && fabs (x_obs) < 0.01);
+		if (dump) {
+			vtry[k] = 0.0;	/* Just to set stop point in debug */
+		}
 		for (sl = cake[k].first_slice; sl; sl = sl->next) {	/* Loop over slices */
 			if (mode == TALWANI3D_FAA) /* FAA */
 				vtry[k] += get_grav3d  (sl->x, sl->y, sl->n, x_obs, y_obs, dz, sl->rho, flat_earth);
