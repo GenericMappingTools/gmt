@@ -895,8 +895,9 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Dealing with a grid */
+		int    nx = (int)G->header->nx, ny = (int)G->header->ny;	/* To shut up compiler warnings */
 		double y_obs, *x_obs = GMT_memory (GMT, NULL, G->header->nx, double);
-		for (col = 0; col < G->header->nx; col++) {
+		for (col = 0; col < nx; col++) {
 			x_obs[col] = GMT_grd_col_to_x (GMT, col, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) x_obs[col] *= 0.001;	/* Convert to km */
 		}
@@ -904,7 +905,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 				/* Spread calculation over selected cores */
 #pragma omp parallel for private(row,col,node,y_obs,z_level) shared(API,GMT,Ctrl,G,x_obs,cake,depths,ndepths,flat_earth)
 #endif
-		for (row = 0; row < G->header->ny; row++) {	/* Do row-by-row and report on progress if -V */
+		for (row = 0; row < ny; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = GMT_grd_row_to_y (GMT, row, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) y_obs *= 0.001;	/* Convert to km */
 			//GMT_Report (API, GMT_MSG_VERBOSE, "Finished row %5d\n", row);
