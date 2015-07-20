@@ -498,7 +498,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 }
 
 double definite_integral (double a, double c)
-{	/* Return out definite integral n_i */
+{	/* Return out definite integral n_i (except the factor p_i) */
 	double s, c2, u2, k, q, q3, f, v, g;
 	/* Deal with special cases */
 	if (GMT_IS_ZERO (a - M_PI_2)) return (0.0);
@@ -512,11 +512,10 @@ double definite_integral (double a, double c)
 	q3 = q * (u2 - 1.0);
 	f = sqrt (c2 + u2);
 	v = f - k;
-	g = c * atan (q) - 2.0 * atanh (v/q) + c * (atan2(v, 2.0*c*q) - atan2 (f + u2*(f - 2*(k + c2*v)), c*q3));
+	g = c * atan (q) - 2.0 * atanh (v/q) + c * (atan2(v, 2.0*c*q) - atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3));
 	if (a > M_PI_2) g = -g;
-	if (GMT_is_dnan (g)) {
-		fprintf (stderr, "Computed NaN\n");
-	}
+	if (GMT_is_dnan (g))
+		fprintf (stderr, "definite_integral returns NaN!\n");
 	return (g);
 }
 
@@ -529,7 +528,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 {	/* Experimental and wrong so far */
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
-	double xr2, yr2, dx, dy, p, q, sign2, part1, part2, f;
+	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i;
 	bool zerog;
 	/* Coordinates are in km and g/cm^3  - recover SI units */
 	vsum = 0.0;
@@ -577,11 +576,11 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				p = (dy * x1 - dx * y1) * iside;
 				sign2 = copysign (1.0, p);
 				p = fabs (p);
-	                        f = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
-	                        q = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
-				part1 = integral (f, q, z_obs / p);
+	                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
+	                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
+				part1 = integral (fi_i, theta_i, z_obs / p);
 				part2 = p * part1;
-				if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(f), R2D*(q), z_obs / p, p, part1);
+				if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(fi_i), R2D*(theta_i), z_obs / p, p, part1);
 			}
 		}
 					
