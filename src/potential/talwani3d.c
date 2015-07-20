@@ -530,7 +530,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
 	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i;
 	bool zerog;
-	/* Coordinates are in km and g/cm^3  - recover SI units */
+	/* Coordinates are in km and g/cm^3  - recover SI units. Note: z_obs is already in meters */
 	vsum = 0.0;
 	if (flat) {
 		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
@@ -644,7 +644,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	bool flat_earth = false, first_slice = true;
 	
 	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "GEOID"};
-	double z_level, depth, rho;
+	double z_level, depth, rho, n_scl = 1.0;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
 					
 	struct SLICE *sl = NULL, *slnext = NULL;
@@ -818,6 +818,8 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	flat_earth = GMT_is_geographic (GMT, GMT_IN);
 	
+	if (Ctrl->F.mode == TALWANI3D_GEOID) n_scl = 1000.0;	/* Do Geoid calculations in SI units */
+	Ctrl->Z.level *= n_scl;
 	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
 	
 	/* Now we can write to the screen the user's polygon model characteristics. */
@@ -834,7 +836,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 
 	/* Set up depths array needed by get_one_output3D */
 	depths = GMT_memory (GMT, NULL, ndepths, double);
-	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
+	for (k = 0; k < ndepths; k++) depths[k] = n_scl*cake[k].depth;	/* Used by the parabolic integrator */
 	
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? 0.001 : 1.0;	/* Perhaps convert to km */
