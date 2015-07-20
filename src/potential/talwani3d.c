@@ -26,7 +26,7 @@
  * body feature.
  * This version has been tested on a stack of disks (simulating a
  * sphere) and gave the correct answer.  It expects all distances
- * to be in meters (you can override with the -K option) or to be
+ * to be in meters (you can override with the -M option) or to be
  * in degrees lon/lat (will scale for flat earth) and densities
  * to be in kg/m^3.
  *
@@ -47,7 +47,7 @@
 #define GMT_PROG_OPTIONS "-VRfhior" GMT_ADD_x_OPT
 
 #define TOL		1.0e-7
-#define DEG_TO_KM	111.319490793
+#define DEG_TO_KM	111.319490793	/* For flat-Earth scaling of degrees to km */
 #define GAMMA 		6.673	/* Gravitational constant for distances in km and mass in kg/m^3 */
 #define G0 		9.81	/* Normal gravity */
 
@@ -392,7 +392,7 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 					
 		if (!zerog) gsum += part1 - part2 + part3;
 					
-		/* move this vertex to last vertex : */
+		/* move this vertex to last vertex */
 					
 		x1 = x2;
 		y1 = y2;
@@ -512,7 +512,7 @@ double definite_integral (double a, double c)
 	q3 = q * (u2 - 1.0);
 	f = sqrt (c2 + u2);
 	v = f - k;
-	g = c * atan (q) - 2.0 * atanh (v/q) + c * (atan2(v, 2.0*c*q) - atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3));
+	g = c * atan (q) - 2.0 * atanh (v/q) + c * (atan2 (v, 2.0*c*q) - atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3));
 	if (a > M_PI_2) g = -g;
 	if (GMT_is_dnan (g))
 		fprintf (stderr, "definite_integral returns NaN!\n");
@@ -520,7 +520,7 @@ double definite_integral (double a, double c)
 }
 
 double integral (double a, double b, double c)
-{
+{	/* Return integral of geoid function from a to b */
 	return (definite_integral (b, c) - definite_integral (a, c));
 }
 
@@ -583,7 +583,6 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(fi_i), R2D*(theta_i), z_obs / p, p, part1);
 			}
 		}
-					
 		if (!zerog) vsum += part2;
 					
 		/* move this vertex to last vertex */
@@ -628,7 +627,7 @@ int comp_cakes (const void *cake_a, const void *cake_b)
 {	/* Used in the sorting of layers on depths */
 	const struct CAKE *a = cake_a, *b = cake_b;
 	if (a->depth < b->depth) return (-1);
-	if (a->depth > b->depth) return (1);
+	if (a->depth > b->depth) return (+1);
 	return (0);
 }
 
