@@ -53,6 +53,7 @@
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
 #define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
+#define GMT_IS_ZERO2(x) (fabs (x) < 1e-16)	/* Check for near zero numbers */
 
 #define GMT_TALWANI3D_N_DEPTHS GMT_BUFSIZ	/* Max depths allowed due to OpenMP needing stack array */
 
@@ -78,7 +79,7 @@ struct TALWANI3D_CTRL {
 		bool active;
 		double inc[2];
 	} I;
-	struct M {	/* -Mx|z  */
+	struct M {	/* -Mh|z  */
 		bool active[2];	/* True if km, else m */
 	} M;
 	struct N {	/* Desired output points */
@@ -375,7 +376,6 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 						wsign = copysign (1.0, em);
 						value = xr1*xr2 + yr1*yr2;
 						part1 = wsign * d_acos (value);
-
 						if (z_obs == 0.0)
 							part2 = part3 = 0.0;
 						else {
@@ -399,7 +399,6 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 		r1 = r2;
 		xr1 = xr2;
 		yr1 = yr2;
-					
 	}
 				
 	/* If z axis is positive down, then gsum should have the same sign as z, */
@@ -493,48 +492,46 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 		r1 = r2;
 		xr1 = xr2;
 		yr1 = yr2;
-        
 	}
     
-	return (10 * GAMMA * rho * vsum);	/* Go get Eotvos = 0.1 mGal/km */
+	return (10 * GAMMA * rho * vsum);	/* To get Eotvos = 0.1 mGal/km */
 }
 
-/* The geoid stuff is not working and will likely need numerical integration.
- * Some quick-n-dirty attempts are happening here but not working yet, hence
- * the program does not advertise geoid calculation yet. See the talwani_pw.pdf
- * docs for details.
- */
-
-#define NDEL 10000
+double definite_integral (double a, double c)
+{	/* Return out definite integral n_i */
+	double s, c2, u2, k, q, q3, f, v, g;
+	/* Deal with special cases */
+	if (GMT_IS_ZERO (a - M_PI_2)) return (0.0);
+	else if (GMT_IS_ZERO2 (a)) return (0.0);
+	else if (GMT_IS_ZERO2 (a - M_PI)) return (0.0);
+	s = sin (a);
+	c2 = c * c;
+	u2 = 1.0 / (s*s);
+	k = sqrt (c2 + 1.0);
+	q = sqrt (u2 - 1.0);
+	q3 = q * (u2 - 1.0);
+	f = sqrt (c2 + u2);
+	v = f - k;
+	g = c * atan (q) - 2.0 * atanh (v/q) + c * (atan2(v, 2.0*c*q) - atan2 (f + u2*(f - 2*(k + c2*v)), c*q3));
+	if (a > M_PI_2) g = -g;
+	if (GMT_is_dnan (g)) {
+		fprintf (stderr, "Computed NaN\n");
+	}
+	return (g);
+}
 
 double integral (double a, double b, double c)
-{	/* Evalute area under curve y(x) between a and b using tapezoidal integration */
-	int k;
-	double dx, c2 = c * c, x, y, f, sum = 0.0;
-	/* Ensure no jump in range */
-	while (a < 0.0) a += M_PI;
-	while (a > M_PI) a -= M_PI;
-	while (b < 0.0) b += M_PI;
-	while (b > M_PI) b -= M_PI;
-	if ((b-a) > M_PI_2) b -= M_PI;
-	if ((a-b) > M_PI_2) a -= M_PI;
-	dx = (b - a) / NDEL;
-	for (k = 0; k <= NDEL; k++) {
-		f = (k == 0 || k == NDEL) ? 0.5 : 1.0;
-		x = a + k * dx;
-		y = sqrt (pow (sin (x), -2.0) + c2) - c;
-		if (isfinite (y)) sum += f * y;
-	}
-	return sum * dx;
+{
+	return (definite_integral (b, c) - definite_integral (a, c));
 }
 
 double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {	/* Experimental and wrong so far */
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
-	double xr2, yr2, dx, dy, p, q, sign2, part1, part2, psi1, psi2, f, zp_ratio;
+	double xr2, yr2, dx, dy, p, q, sign2, part1, part2, f;
 	bool zerog;
-	/* Coordinates are in km and g/cm^3  - recover SI */
+	/* Coordinates are in km and g/cm^3  - recover SI units */
 	vsum = 0.0;
 	if (flat) {
 		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
@@ -550,7 +547,6 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		ir1 = 1.0 / r1;
 		xr1 = x1 * ir1;
 		yr1 = y1 * ir1;
-		psi1 = atan2 (y1, x1);
 	}
 	for (k = 1; k < n; k++) {	/* Loop over vertex */
 				
@@ -580,10 +576,9 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				iside = 1.0 / side;
 				p = (dy * x1 - dx * y1) * iside;
 				sign2 = copysign (1.0, p);
-				psi2 = atan2 (y2, x2);
-				zp_ratio = z_obs / hypot (p, z_obs);
-	                        q = acos (sign2 * (dx*xr1 + dy*yr1) * iside);
-	                        f = acos (sign2 * (dx*xr2 + dy*yr2) * iside);
+				p = fabs (p);
+	                        f = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
+	                        q = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
 				part1 = integral (f, q, z_obs / p);
 				part2 = p * part1;
 				if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(f), R2D*(q), z_obs / p, p, part1);
@@ -599,13 +594,12 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		r1 = r2;
 		xr1 = xr2;
 		yr1 = yr2;
-		psi1 = psi2;
 	}
 				
 	/* If z axis is positive down, then vsum should have the same sign as z */
 				 
 	vsum = (z_obs > 0.0) ? fabs (vsum) : -fabs (vsum);
-				
+
 	return (1.0e-11 * GAMMA * rho * vsum / G0);
 }
 
@@ -618,11 +612,7 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
 	for (k = 0; k < ndepths; k++) {
 		vtry[k] = 0.0;
-		z = cake[k].depth - z_obs;
-		dump = (mode == TALWANI3D_GEOID && fabs (x_obs) < 0.01);
-		if (dump) {
-			vtry[k] = 0.0;	/* Just to set stop point in debug */
-		}
+		z = cake[k].depth - z_obs;	/* Vertical distance from observation point to this slice */
 		for (sl = cake[k].first_slice; sl; sl = sl->next) {	/* Loop over slices */
 			if (mode == TALWANI3D_FAA) /* FAA */
 				vtry[k] += get_grav3d  (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth);
