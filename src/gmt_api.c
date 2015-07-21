@@ -6408,17 +6408,17 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *   API	Controls all things within GMT.
 	 *   module	Name of the GMT module. An input arg, but may grow if a prefix of "gmt" is prepended.
 	 *   marker	Character that represents a resource, typically $, but could be another char if need be.
-	 *   head	Linked list of GMT options passed for this module.  We may hook on 1-2 additional options.
+	 *   head	Linked list of GMT options passed for this module. We may hook on 1-2 additional options.
 	 *   We return an array of structures with information about registered resources going to/from GMT.
 	 *   The number of structures is returned by the *n argument. struct GMT_RESOURCE is defined in gmt.h.
 	 * Basically, given the module we look up the keys for that module which tells us which options provide
 	 * the input and output selections and which ones are required and which ones are optional.  We then
 	 * scan the given options and if file arguments to the options listed in the keys are missing we are
-	 * to insert the given marker as the filename.  Some options may already have the marker, e.g., -G$, and
-	 * it is required for filenames on the command line that is to come from memory (just $).  After scanning
+	 * to insert the given marker as the filename. Some options may already have the marker, e.g., -G$, and
+	 * it is required for filenames on the command line that is to come from memory (just $). After scanning
 	 * the options we examine the keys for any required input or output argument that have yet to be specified
-	 * explicitly.  If so we add the missing options, with filename = marker, and append them to the end of
-	 * the option list (head).  The API developers can then use this array of encoded options in concert with
+	 * explicitly. If so we add the missing options, with filename = marker, and append them to the end of
+	 * the option list (head). The API developers can then use this array of encoded options in concert with
 	 * the information passed back via the structure list to attach actual resources.
 	 *
 	 * For each option that may take a file we need to know what kind of file and if this is input or output.
@@ -6433,10 +6433,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *    P = Dataset/Polygon, G = Grid, I = Image, T = Textset, X = PostScript, ? = type given via module option),
 	 * Z stands for primary inputs (I), primary output (O), secondary input (i), secondary output (o).
 	 *   Primary inputs and outputs need to be assigned, and if not explicitly given will result in
-	 *   a syntax error.  However, external APIs (mex, Python) can override this and supply the missing items
+	 *   a syntax error. However, external APIs (mex, Python) can override this and supply the missing items
 	 *   via the given left- and right-hand side arguments to supply input or accept output.
 	 *   Secondary inputs means they are only assigned if the option is actually given.
-	 *   A few modules with have Z = x, which means that normally these modules will produce PostScript,
+	 *   A few modules will have Z = x, which means that normally these modules will produce PostScript,
 	 *   but if this option is given they will not (e.g., pscoast -M, so it will have >Dx, for instance).
 	 *
 	 * E.g., the surface example would have the word LGI.  The data types P|L|D|G|C|T stand for
