@@ -16,6 +16,7 @@ Synopsis
 **grdsample** *in_grdfile* **-G**\ *out_grdfile*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
+[ **-T** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
@@ -46,10 +47,10 @@ have the same registration as the input grid.
 Required Arguments
 ------------------
 
-*in\_grdfile*
+*in_grdfile*
     The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
 
-**-G**\ *out\_grdfile*
+**-G**\ *out_grdfile*
     The name of the output grid file. (See GRID FILE FORMAT below.)
 
 Optional Arguments
