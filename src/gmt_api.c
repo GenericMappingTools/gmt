@@ -852,12 +852,13 @@ int GMTAPI_key_to_family (void *API, char *key, int *family, int *geometry)
 	return ((key[K_DIR] == 'i' || key[K_DIR] == 'I') ? GMT_IN : GMT_OUT);	/* Return the direction of the i/o */
 }
 
-char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned int *n_items, unsigned int *PS)
+char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned int *n_items, unsigned int *PS, char *magic)
 {	/* Turn the comma-separated list of 3-char codes into an array of such codes.
  	 * In the process, replace any ?-types with the selected type if type is not 0. */
 	size_t len, k, n;
 	char **s = NULL, *next = NULL, *tmp = NULL;
 	*PS = 0;	/* No PostScript output indicated so far */
+	*magic = 0;	/* No special option that turns off PS */
 
 	if (!string) return NULL;	/* Got NULL, just give up */
 	len = strlen (string);		/* Get the length of this item */
@@ -874,9 +875,18 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 	s = (char **) calloc (n, sizeof (char *));
 	k = 0;
 	while ((next = strsep (&tmp, ",")) != NULL) {
-		s[k++] = strdup (next);
-		if (strlen (next) != 3)
+		if (strlen (next) != 3) {
 			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: key %s does not contain exactly 3 characters\n", next);
+			continue;
+		}
+		if (next[2] == 'x') {	/* Means that this option, if given, deactivates the normal default PostScript output */
+			if (*magic == 0)	/* First time we find one, return the option letter via magic */
+				*magic = next[0];
+			else
+				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: More than one key ends in x\n");
+			next[2] = 'o';	/* Optional output */
+		}
+		s[k++] = strdup (next);
 		if (!strcmp (next, "-Xo")) (*PS)++;	/* Found a key for PostScript output */
 	}
 	*n_items = (unsigned int)n;	/* Total number of keys for this module */
@@ -6423,7 +6433,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	char **key = NULL;		/* Array of items in keys */
 	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[16] = {""};
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
-	char type = 0, option;
+	char type = 0, option, magic;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
 	struct GMTAPI_CTRL *API = NULL;
@@ -6468,10 +6478,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 		}
 	}
 
-	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) */
-	key = GMTAPI_process_keys (API, keys, type, &n_keys, &PS);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
+	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) and if PS may be bypassed (magic) */
+	key = GMTAPI_process_keys (API, keys, type, &n_keys, &PS, &magic);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
 	
 	/* 2b. Make some specific modifications to the keys given the options passed */
+	if (magic && (opt = GMT_Find_Option (API, magic, *head)))	/* Gave option to a PS-producing module that turns off PS */
+		PS = 0;	/* No PostScript will be produced this time, e.g. pscoast -M, pscontour -D, etc. */
 	if (deactivate_output && (k = GMTAPI_get_key (API, option, key, n_keys)) >= 0)
 		key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Since we got an explicit output file already */
 	if (activate_output && (k = GMTAPI_get_key (API, option, key, n_keys)) >= 0)
