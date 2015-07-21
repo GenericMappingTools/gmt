@@ -6420,6 +6420,31 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 * explicitly.  If so we add the missing options, with filename = marker, and append them to the end of
 	 * the option list (head).  The API developers can then use this array of encoded options in concert with
 	 * the information passed back via the structure list to attach actual resources.
+	 *
+	 * For each option that may take a file we need to know what kind of file and if this is input or output.
+	 * We encode this in a 3-character word XYZ, explained below.  Note that each module may
+	 * need several comma-separated XYZ words and these are returned as one string via GMT_Get_Moduleinfo.
+	 * The origin of these words are given by the THIS_MODULE_KEY in every module source code.
+	 *
+	 * X stands for the specific program option (e.g., L for -L, F for -F) or <,>
+	 *    for standard input,output (if reading tables) or command-line files (if reading grids).
+	 *    A hyphen (-) means there is no option for this item.
+	 * Y stands for data type (C = CPT, D = Dataset/Point, L = Dataset/Line,
+	 *    P = Dataset/Polygon, G = Grid, I = Image, T = Textset, X = PostScript, ? = type given via module option),
+	 * Z stands for primary inputs (I), primary output (O), secondary input (i), secondary output (o).
+	 *   Primary inputs and outputs need to be assigned, and if not explicitly given will result in
+	 *   a syntax error.  However, external APIs (mex, Python) can override this and supply the missing items
+	 *   via the given left- and right-hand side arguments to supply input or accept output.
+	 *   Secondary inputs means they are only assigned if the option is actually given.
+	 *   A few modules with have Z = x, which means that normally these modules will produce PostScript,
+	 *   but if this option is given they will not (e.g., pscoast -M, so it will have >Dx, for instance).
+	 *
+	 * E.g., the surface example would have the word LGI.  The data types P|L|D|G|C|T stand for
+	 * P(olygons), L(ines), D(point data), G(rid), C(PT file), T(ext table). [We originally only had
+	 * D for datasets but perhaps the geometry needs to be passed too (if known); hence the P|L|D char]
+	 * In addition, the only common option that might take a file is -R which may take a grid as input.
+	 * We check for that in addition to the module-specific info passed via the key variable.
+	
 	 */
 
 	unsigned int n_keys, direction, PS, kind, pos, n_items = 0, ku;
