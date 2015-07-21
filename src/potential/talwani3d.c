@@ -499,7 +499,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 
 double definite_integral (double a, double c)
 {	/* Return out definite integral n_i (except the factor p_i) */
-	double s, c2, u2, k, q, q3, f, v, g;
+	double s, c2, u2, k, q, q3, f, v, n_i;
 	/* Deal with special cases */
 	if (GMT_IS_ZERO (a - M_PI_2)) return (0.0);
 	else if (GMT_IS_ZERO2 (a)) return (0.0);
@@ -512,11 +512,11 @@ double definite_integral (double a, double c)
 	q3 = q * (u2 - 1.0);
 	f = sqrt (c2 + u2);
 	v = f - k;
-	g = c * atan (q) - 2.0 * atanh (v/q) + c * (atan2 (v, 2.0*c*q) - atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3));
-	if (a > M_PI_2) g = -g;
-	if (GMT_is_dnan (g))
-		fprintf (stderr, "definite_integral returns NaN!\n");
-	return (g);
+	n_i = c * (atan (q) + atan2 (v, 2.0*c*q) - atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3)) - 2.0 * atanh (v/q);
+	if (a > M_PI_2) n_i = -n_i;
+	if (GMT_is_dnan (n_i))
+		fprintf (stderr, "definite_integral returns n_i = NaN!\n");
+	return (n_i);
 }
 
 double integral (double a, double b, double c)
@@ -528,7 +528,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 {	/* Experimental and wrong so far */
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
-	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i;
+	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i, em;
 	bool zerog;
 	/* Coordinates are in km and g/cm^3  - recover SI units. Note: z_obs is already in meters */
 	vsum = 0.0;
@@ -574,13 +574,22 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				side = hypot (dx, dy);
 				iside = 1.0 / side;
 				p = (dy * x1 - dx * y1) * iside;
-				sign2 = copysign (1.0, p);
-				p = fabs (p);
-	                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
-	                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
-				part1 = integral (fi_i, theta_i, z_obs / p);
-				part2 = p * part1;
-				if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(fi_i), R2D*(theta_i), z_obs / p, p, part1);
+				if (fabs (p) < TOL)
+					zerog = true;
+				else {
+					em = (yr1 * xr2) - (yr2 * xr1);
+					if (em == 0.0)
+						zerog = true;
+					else {
+						sign2 = copysign (1.0, p);
+			                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
+			                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
+						part1 = integral (fi_i, theta_i, z_obs / p);
+						p = fabs (p);
+						part2 = p * part1;
+						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(fi_i), R2D*(theta_i), z_obs / p, p, part1);
+					}
+				}
 			}
 		}
 		if (!zerog) vsum += part2;
