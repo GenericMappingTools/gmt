@@ -3051,7 +3051,7 @@ name, where *var1*, *var2*, etc. are the names of the variables to be
 processed. No **-bi** option is needed in this case.
 
 Currently, netCDF tables can only be input, not output. For more
-information, see Appendix [app:B].
+information, see Appendix `B. GMT file formats`_.
 
 Number of Copies: The **-c** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3378,7 +3378,7 @@ binary table data the **-h** option may specify how many bytes should be
 skipped before the data section is reached. Binary files may also
 contain segment-headers separating data segments. These segment-headers
 are simply data records whose fields are all set to NaN; see Appendix
-[app:B] for complete documentation.
+`B. GMT file formats`_ for complete documentation.
 
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
@@ -3524,7 +3524,7 @@ with embedded printer directives. To produce Encapsulated
 PostScript (EPS) that can be imported into graphics programs such as
 **CorelDraw**, **Illustrator** or **InkScape** for further
 embellishment, simply run :doc:`psconvert`
-**-Te**. See Appendix [app:C] for an extensive discussion of converting
+**-Te**. See Appendix `C. Including GMT Graphics into your Documents`_ for an extensive discussion of converting
 PostScript to other formats.
 
 .. _-Wpen_attrib:
@@ -3673,7 +3673,8 @@ pattern:
     *pattern* can either be a number in the range 1--90 or the name of a
     1-, 8-, or 24-bit Sun raster file. The former will result in one of
     the 90 predefined 64 x 64 bit-patterns provided with GMT and
-    reproduced in Appendix [app:E]. The latter allows the user to create
+    reproduced in Appendix `E. Predefined Bit and Hachure Patterns in GMT`_.
+    The latter allows the user to create
     customized, repeating images using standard Sun raster files [18]_.
     The *dpi* parameter sets the resolution of this image on the page;
     the area fill is thus made up of a series of these "tiles".
@@ -3691,7 +3692,7 @@ pattern:
 Due to PostScript implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`psimage`. The format of Sun
-raster files is outlined in Appendix [app:B]. Note that under
+raster files is outlined in Appendix `B. GMT file formats`_. Note that under
 PostScript Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
 PostScript interpreter has been assigned. There is therefore the
@@ -3976,7 +3977,7 @@ interval [-1,+1]. These intensities are used to add "white" or "black"
 to the color as defined by the *z*-values and the CPT file. An intensity
 of zero leaves the color unchanged. Higher values will brighten the
 color, lower values will darken it, all without changing the original
-hue of the color (see Appendix [app:I] for more details). The
+hue of the color (see Appendix `H. Color Space: The Final Frontier`_ for more details). The
 illumination is decoupled from the data grid file in that a separate
 grid file holding intensities in the [-1,+1] range must be provided.
 Such intensity files can be derived from the data grid using
@@ -4122,7 +4123,7 @@ GMT strings using the Standard+ encoding:
 The option in :doc:`pstext` to draw a
 rectangle surrounding the text will not work for strings with escape
 sequences. A chart of characters and their octal codes is given in
-Appendix [app:F].
+Appendix `F. Chart of Octal Codes for Characters`_.
 
 .. _GMT_Embellishments:
 
@@ -7819,7 +7820,7 @@ usually Courier). The following is a list of the GMT fonts:
 
 
 For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
-charts in Appendix [app:F]. When specifying fonts in GMT, you can
+charts in Appendix `F. Chart of Octal Codes for Characters`_. When specifying fonts in GMT, you can
 either give the entire font name *or* just the font number listed in
 this table. To change the fonts used in plotting basemap frames, see the
 man page for :doc:`gmt.conf`. For direct
@@ -8153,7 +8154,7 @@ between two colors, instead of their respective R, G, and B values.
 
 The top row in Figure :ref:`Interpolating colors <color_interpolate>`
 illustrates two examples: a blue-white-red scale (the palette in
-Appendix [app:M]) interpolated in RGB and the palette interpolated in
+Appendix `L. Of Colors and Color Legends`_) interpolated in RGB and the palette interpolated in
 HSV. The bottom row of the Figure demonstrates how things can go
 terribly wrong when you do the interpolation in the other system.
 
@@ -8760,7 +8761,7 @@ bar are built by using :doc:`makecpt`
 Labeled and non-equidistant color legends
 -----------------------------------------
 
-[app:colorbars] The use of color legends has already been introduced in
+The use of color legends has already been introduced in
 Chapter [ch:7] (examples 2, 16, and 17). Things become a bit more
 complicated when you want to label the legend with names for certain
 intervals (like geological time periods in the example below). To
@@ -8798,7 +8799,7 @@ like circles, triangles, and many others. One the command line, custom
 symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
 selection, where *symbolname* refers to a special symbol definition file
 called ``symbolname.def`` that must be available via the standard GMT user paths. Several
-custom symbols comes pre-configured with GMT\ (see
+custom symbols comes pre-configured with GMT (see
 Figure :ref:`Custom symbols <Custom_symbols>`)
 
 .. _Custom_symbols:
@@ -10149,7 +10150,7 @@ Finally we show an example of a polygon file:
    for terms on redistribution and modifications.
 
 .. [3]
-   The tools can also be installed on other platforms (see Appendix [app:L]).
+   The tools can also be installed on other platforms (see Appendix `K. GMT on non-UNIX Platforms`_).
 
 .. [4]
    One public-domain RIP is ghostscript, available from `<http://www.gnu.org/>`_.
@@ -10216,7 +10217,7 @@ Finally we show an example of a polygon file:
    off; see :ref:`PS_COMMENTS <PS_COMMENTS>` to enable them.
 
 .. [17]
-   For an overview of color systems such as HSV, see Appendix [app:I].
+   For an overview of color systems such as HSV, see Appendix `H. Color Space: The Final Frontier`_.
 
 .. [18]
    Convert other graphics formats to Sun ras format using GraphicsMagick's

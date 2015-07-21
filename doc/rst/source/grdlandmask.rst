@@ -31,7 +31,7 @@ over water. The nodes defined by the selected region and lattice spacing
 will be set according to one of two criteria: (1) land vs water, or
 (2) the more detailed (hierarchical) ocean vs land vs lake
 vs island vs pond. The resulting mask may be used in subsequent
-operations involving **grdmath** to mask out data from land [or water] areas. 
+operations involving :doc:`grdmath` to mask out data from land [or water] areas. 
 
 Required Arguments
 ------------------
