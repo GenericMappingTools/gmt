@@ -50,16 +50,8 @@ struct Gmt_moduleinfo g_supplements_module[] = {
 	{"mgd77sniffer", "mgd77", "Along-track quality control of MGD77 cruises", ""},
 	{"mgd77track", "mgd77", "Plot track-line map of MGD77 cruises", "-Xo"},
 	{"dimfilter", "misc", "Directional filtering of grids in the space domain", "<GI,GGO"},
-	{"talwani2d
-", "potential
-", "Compute free-air anomalies, geoid anomalies or vertical gravity gradients over 2-D bodies"
-, "<DI,NDi,ZGi,GGo,>DO"
-},
-	{"talwani3d
-", "potential
-", "Compute free-air anomalies or vertical gravity gradients over 3-D bodies"
-, "<DI,NDi,ZGi,GGo,>DO"
-},
+	{"talwani2d ", "potential ", "Compute free-air anomalies, geoid anomalies or vertical gravity gradients over 2-D bodies" , "<DI,NDi,ZGi,GGo,>DO" },
+	{"talwani3d ", "potential ", "Compute free-air anomalies or vertical gravity gradients over 3-D bodies" , "<DI,NDi,ZGi,GGo,>DO" },
 	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "<DI,QDi,>DO"},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a body by the method of Okabe", "<DI,FDi,GGO"},
 	{"gravfft", "potential", "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)", "<GI,GGO"},
