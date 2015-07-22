@@ -2295,6 +2295,11 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 
 			for (tbl = offset = 0; tbl < D_obj->n_tables; tbl++) {
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
+					for (col = 0; col < D_obj->table[tbl]->segment[seg]->n_columns; col++) {
+						ij = GMT_2D_to_index (offset, col, M_obj->dim);
+						GMTAPI_put_val (API, &(M_obj->data), API->GMT->session.d_NaN, ij, M_obj->type);
+					}
+					offset++;	/* Due to the NaN-data header */
 					for (row = 0; row < D_obj->table[tbl]->segment[seg]->n_rows; row++) {
 						for (col = 0; col < D_obj->table[tbl]->segment[seg]->n_columns; col++) {
 							ij = GMT_2D_to_index (row + offset, col, M_obj->dim);
@@ -6576,7 +6581,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 					skip = true;	/* The file actually exist */
 				}
 				else if (key[k][K_FAMILY] == 'C' && !GMT_not_numeric (API->GMT, opt->arg)) {
-					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: -C<n>, for >n> a single number overrides implicit CPT specification\n");
+					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: -C<n>, for <n> a single number overrides implicit CPT specification\n");
 					skip = number = true;	/* Most likely a contour specification, e.g. -C5 */
 				}
 			}

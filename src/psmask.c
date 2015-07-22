@@ -516,7 +516,7 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 
 					if (n_plus >= 0) opt->arg[n_plus] = '\0';	/* If extra option rip it before check if there is a prefix */
 				}
-				Ctrl->D.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				if (n_plus >= 0) opt->arg[n_plus] = '+';	/* Restore it */
 				break;
 			case 'F':	/* Orient the clip contours */
@@ -660,7 +660,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
 		uint64_t dim[4] = {1, 0, 0, 2};
-		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
+		if (Ctrl->D.file || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_SET;
 		else {	/* Must determine the kind of output organization */
 			k = 0;

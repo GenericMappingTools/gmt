@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"pscontour"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
-#define THIS_MODULE_KEYS	"<DI,CCi,EDi,>DD,-Xo"
+#define THIS_MODULE_KEYS	"<DI,CCi,EDi,DDD,-Xo"
 
 #include "gmt_dev.h"
 
@@ -144,7 +144,6 @@ void *New_pscontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	GMT_contlabel_init (GMT, &C->contour, 1);
 	C->A.single_cont = GMT->session.d_NaN;
 	C->C.single_cont = GMT->session.d_NaN;
-	C->D.file = strdup ("contour");
 	C->L.pen = GMT->current.setting.map_default_pen;
 	C->T.dim[GMT_X] = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
 	C->T.dim[GMT_Y] = TICKED_LENGTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 3p */
@@ -553,8 +552,7 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 				break;
 			case 'D':	/* Dump contours */
 				Ctrl->D.active = true;
-				free (Ctrl->D.file);
-				Ctrl->D.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Triplet file */
 				Ctrl->E.file = strdup (opt->arg);
@@ -745,6 +743,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	/*---------------------------- This is the pscontour main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	if (Ctrl->D.active && !Ctrl->D.file) GMT_Report (API, GMT_MSG_VERBOSE, "Contours will be written to standard output\n");
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
@@ -1020,7 +1019,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.active) {
 		uint64_t dim[4] = {0, 0, 0, 3};
-		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%')) {	/* No file given or filename without C-format specifiers means a single output file */
+		if (Ctrl->D.file || !strchr (Ctrl->D.file, '%')) {	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_SET;
 			n_tables = 1;
 		}
