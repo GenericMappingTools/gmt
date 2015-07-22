@@ -512,6 +512,8 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	/* Open shoreline file */
 	GMT_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "NetCDF Library Version: %s\n", nc_inq_libvers());
+	
 	/* Get global attributes */
 	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version));
 	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
