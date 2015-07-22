@@ -859,6 +859,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 	char **s = NULL, *next = NULL, *tmp = NULL;
 	*PS = 0;	/* No PostScript output indicated so far */
 	*magic = 0;	/* No special option that turns off PS */
+	*n_items = 0;	/* No keys yet */
 
 	if (!string) return NULL;	/* Got NULL, just give up */
 	len = strlen (string);		/* Get the length of this item */
