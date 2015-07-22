@@ -6282,6 +6282,45 @@ int GMT_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 {
 	int error = GMT_OK, n = 0;
 	struct GMT_OPTION *opt = NULL;
+	char *param, record[GMT_BUFSIZ] = {""};
+
+	if (GMT_Init_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		return (GMT->parent->error);
+	}
+	if (GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+		return (GMT->parent->error);	/* Enables data output and sets access mode */
+	}
+	for (opt = options; opt; opt = opt->next) {
+		if (!(opt->option == '<' || opt->option == '#') || !opt->arg)
+			continue;		/* Skip other and empty options */
+		if (lines) record[0] = '\0';	/* Start over */
+		if (!lines && n)
+			strcat (record, " ");	/* Separate by spaces */
+		param = GMT_putparameter (GMT, opt->arg);
+		if (*param == '\0') {
+			/* if keyword unknown */
+			error = GMT_OPTION_NOT_FOUND;
+			break;
+		}
+		if (lines)
+			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, param);		/* Separate lines */
+		else
+			strcat (record, param);
+		n++;
+	}
+	if (!lines && n)
+		GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, record);		/* Separate lines */
+	if (GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		return (GMT->parent->error);
+	}
+	return error;
+}
+
+/*! . */
+int GMT_pickdefaults_orig (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *options)
+{
+	int error = GMT_OK, n = 0;
+	struct GMT_OPTION *opt = NULL;
 	char *param;
 
 	for (opt = options; opt; opt = opt->next) {

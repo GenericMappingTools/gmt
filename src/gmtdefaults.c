@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"gmtdefaults"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"List current GMT default parameters"
-#define THIS_MODULE_KEYS	">TO"
+#define THIS_MODULE_KEYS	""
 
 #include "gmt_dev.h"
 

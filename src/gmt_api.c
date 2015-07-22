@@ -5191,6 +5191,8 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 						T_obj->segment[p[GMT_SEG]]->record[p[GMT_ROW]] = strdup (record);
 						p[GMT_ROW]++;	T_obj->segment[p[GMT_SEG]]->n_rows++;
 						break;
+					case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
+						break;	/* Ignore for this method */
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record (text) called with illegal mode\n");
 						return_error (API, GMT_NOT_A_VALID_IO_MODE);
