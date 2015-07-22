@@ -864,7 +864,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 	len = strlen (string);		/* Get the length of this item */
 	if (len == 0) return NULL;	/* Got no characters, give up */
 	tmp = strdup (string);		/* Get a working copy of string */
-	/* Replace unknown types (amrked as ?) in tmp with selected type give by variable "type" */
+	/* Replace unknown types (marked as ?) in tmp with selected type give by variable "type" */
 	if (type)	/* Got a nonzero type */
 		for (k = 0; k < strlen (tmp); k++)
 			if (tmp[k] == '?') tmp[k] = type;
@@ -6519,6 +6519,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 				}
 			}
 		}
+	}
+	/* 1c. Check if this is gmtinfo which writes a DATASET when -C is used or a TEXTSET otherwise */
+	if (!strncmp (module, "gmtinfo", 7U)) {
+		if ((opt = GMT_Find_Option (API, 'C', *head)))	/* Found the -C option */
+			type = 'D';	/* Replace ? in keys with D in GMTAPI_process_keys below */
+		else
+			type = 'T';	/* Replace ? in keys with T in GMTAPI_process_keys below  */
 	}
 
 	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) and if PS may be bypassed (magic) */
