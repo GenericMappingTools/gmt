@@ -476,7 +476,7 @@ the central longitude, e.g.,
 
    ::
 
-    gmt psbasemap -R90/450/-90/90 -JR270/25c -Bafg -B+tWinkel Tripel" > winkel.ps
+    gmt psbasemap -R90/450/-90/90 -JR270/25c -Bafg -B+t"Winkel Tripel" > winkel.ps
 
 Mollweide [equal-area]
 ~~~~~~~~~~~~~~~~~~~~~~
