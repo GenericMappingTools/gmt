@@ -879,12 +879,13 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: key %s does not contain exactly 3 characters\n", next);
 			continue;
 		}
-		if (next[2] == 'x') {	/* Means that this option, if given, deactivates the normal default PostScript output */
+		if (strchr ("IOio", next[2])) {	/* Means that this option, if given, deactivates the normal default PostScript output */
+			/* E.g, pscoast has >DM and this becomes >DO if -M is used */
 			if (*magic == 0)	/* First time we find one, return the option letter via magic */
-				*magic = next[0];
+				*magic = next[2];
 			else
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: More than one key ends in x\n");
-			next[2] = 'O';	/* Required output */
+			next[2] = 'O';	/* Now implies required output */
 		}
 		s[k++] = strdup (next);
 		if (!strcmp (next, "-Xo")) (*PS)++;	/* Found a key for PostScript output */
