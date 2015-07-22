@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtset"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Change individual GMT default parameters"
-#define THIS_MODULE_KEYS	"<TI"
+#define THIS_MODULE_KEYS	""
 
 #include "gmt_dev.h"
 
