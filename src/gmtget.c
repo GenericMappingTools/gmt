@@ -150,7 +150,7 @@ int GMT_gmtget (void *V_API, int mode, void *args)
 
 	/* Read the supplied default file or the users defaults to override system settings */
 
-	if (Ctrl->G.active) GMT_getdefaults (GMT, Ctrl->G.file);
+	if (Ctrl->G.active || API->mode) GMT_getdefaults (GMT, Ctrl->G.file);	/* Update defaults if using external API */
 
 	error = GMT_pickdefaults (GMT, Ctrl->L.active, options);		/* Process command line arguments */
 
