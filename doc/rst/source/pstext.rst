@@ -225,7 +225,7 @@ Optional Arguments
 Examples
 --------
 
-To plot just the red outlines of the (lon at text strings) stored in the
+To plot just the red outlines of the (lon lat text strings) stored in the
 file text.d on a Mercator plot with the given specifications, use
 
    ::
@@ -242,13 +242,13 @@ To add a typeset figure caption for a 3-inch wide illustration, use
 
    ::
 
-    gmt pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
+    gmt pstext -R0/3/0/5 -JX3i -O -h1 -M -N -F+f12,Times-Roman+jLT << EOF >> figure.ps
 
-This is an optional header record
 
    ::
 
-    > 0 -0.5 12 0 4 LT 13p 3i j
+    This is an unmarked header record not starting with #
+    > 0 -0.5 13p 3i j
     @%5%Figure 1.@%% This illustration shows nothing useful, but it still needs
     a figure caption. Highlighted in @;255/0/0;red@;; you can see the locations
     of cities where it is @\_impossible@\_ to get any good Thai food; these are to be avoided.
