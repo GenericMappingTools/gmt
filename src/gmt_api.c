@@ -884,7 +884,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 				*magic = next[0];
 			else
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: More than one key ends in x\n");
-			next[2] = 'o';	/* Optional output */
+			next[2] = 'O';	/* Required output */
 		}
 		s[k++] = strdup (next);
 		if (!strcmp (next, "-Xo")) (*PS)++;	/* Found a key for PostScript output */
