@@ -193,7 +193,8 @@ Polar (theta,r) plot
 ~~~~~~~~~~~~~~~~~~~~
 
 For a base map for use with polar coordinates, where the radius from 0
-to 1000 should correspond to 3 inch and with gridlines and ticks automatically, use
+to 1000 should correspond to 3 inch and with gridlines and ticks intervals
+automatically determined, use
 
    ::
 
@@ -209,7 +210,7 @@ A 10-cm-wide basemap using the Cassini projection may be obtained by
 
    ::
 
-    gmt psbasemap -R20/50/20/35 -JC35/28/10c -P -Baf -B+tCassini > cassini.ps
+    gmt psbasemap -R20/50/20/35 -JC35/28/10c -P -Bafg -B+tCassini > cassini.ps
 
 Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~
@@ -239,7 +240,7 @@ To create a page-size global oblique Mercator basemap for a pole at
 
    ::
 
-    gmt psbasemap -R0/360/-70/70 -Joc0/0/90/30/0.064cd -Bafg -B+t"Oblique Mercator" > oblmerc.ps
+    gmt psbasemap -R0/360/-70/70 -Joc0/0/90/30/0.064cd -B30g30 -B+t"Oblique Mercator" > oblmerc.ps
 
 Transverse Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -248,7 +249,7 @@ A regular Transverse Mercator basemap for some region may look like
 
    ::
 
-    gmt psbasemap -R69:30/71:45/-17/-15:15 -Jt70/1:1000000 -Baf -B+t"Survey area" -P > transmerc.ps
+    gmt psbasemap -R69:30/71:45/-17/-15:15 -Jt70/1:1000000 -Bafg -B+t"Survey area" -P > transmerc.ps
 
 Equidistant Cylindrical Projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -390,7 +391,7 @@ degrees annotation/tick interval and 1 degree gridlines, run
 
    ::
 
-    gmt psbasemap -R-45/45/-90/-60 -Js0/-90/12c/-60 -Bafg -B+t"Salinity measurements" > stereo1.ps
+    gmt psbasemap -R-45/45/-90/-60 -Js0/-90/12c/-60 -B5g1 -B+t"Salinity measurements" > stereo1.ps
 
 To make a 12-cm-wide stereographic basemap for Australia from an
 arbitrary view point (not the poles), and use a rectangular boundary, we
@@ -433,9 +434,9 @@ following sequence of commands:
 
    ::
 
-    gmt psbasemap -R-160/-20/-90/90 -Ji-90/0.02i -B30g30/15g15 -BWesn -K > sinus_i.ps
-    gmt psbasemap -R-20/60/-90/90 -Ji20/0.02i -B30g30/15g15 -Bwesn -O -K -X2.8i >> sinus_i.ps
-    gmt psbasemap -R60/200/-90/90 -Ji130/0.02i -B30g30/15g15 -BwEsn -O -X1.6i >> sinus_i.ps
+    gmt psbasemap -R-160/-20/-90/90 -Ji-90/0.02i -Bx30g30 -By15g15 -BWesn -K > sinus_i.ps
+    gmt psbasemap -R-20/60/-90/90 -Ji20/0.02i -Bx30g30 -By15g15 -Bwesn -O -K -X2.8i >> sinus_i.ps
+    gmt psbasemap -R60/200/-90/90 -Ji130/0.02i -Bx30g30 -By15g15 -BwEsn -O -X1.6i >> sinus_i.ps
 
 Eckert IV [equal-area]
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -475,7 +476,7 @@ the central longitude, e.g.,
 
    ::
 
-    gmt psbasemap -R90/450/-90/90 -JR270/25c -Bafg -B+t"Winkel Tripel" > winkel.ps
+    gmt psbasemap -R90/450/-90/90 -JR270/25c -Bafg -B+tWinkel Tripel" > winkel.ps
 
 Mollweide [equal-area]
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -492,11 +493,11 @@ Van der Grinten
 ~~~~~~~~~~~~~~~
 
 The Van der Grinten projection is also mostly used for global maps and
-thus the spherical form is used. To get a 7-inch-wide world map centered on the Dateline:
+thus the spherical form is used. To get a 18-cm-wide world map centered on the Dateline:
 
    ::
 
-    gmt psbasemap -Rg -JV180/7i -Bafg -B+t"Van der Grinten" > grinten.ps
+    gmt psbasemap -Rg -JV180/18c -Bafg -B+t"Van der Grinten" > grinten.ps
 
 CUSTOM lABELS OR INTERVALS
 --------------------------
