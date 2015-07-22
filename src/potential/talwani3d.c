@@ -513,10 +513,11 @@ double definite_integral (double a, double c)
 	f = sqrt (c2 + u2);
 	v = f - k;
 	n_i = c * (atan (q) + atan2 (v, 2.0*c*q) - atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3)) - 2.0 * atanh (v/q);
-	if (a > M_PI_2) n_i = -n_i;
+	if (a > M_PI_2) n_i = c * M_PI -n_i;
+	//if (a > M_PI_2) n_i = -n_i;
 	if (GMT_is_dnan (n_i))
 		fprintf (stderr, "definite_integral returns n_i = NaN!\n");
-	return (n_i);
+	return (-n_i);
 }
 
 double integral (double a, double b, double c)
@@ -582,12 +583,13 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 						zerog = true;
 					else {
 						sign2 = copysign (1.0, p);
+						sign2 = 1;
 			                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
 			                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
 						part1 = integral (fi_i, theta_i, z_obs / p);
 						p = fabs (p);
 						part2 = p * part1;
-						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g %g\n", R2D*(fi_i), R2D*(theta_i), z_obs / p, p, part1);
+						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p = %g]\n", R2D*(fi_i), R2D*(theta_i), z_obs / p, part1, z_obs, p);
 					}
 				}
 			}
@@ -617,6 +619,9 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	double z;
 	struct SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
+	dump = (x_obs == 20.0);
+	if (dump)
+		k = 0;
 	for (k = 0; k < ndepths; k++) {
 		vtry[k] = 0.0;
 		z = cake[k].depth - z_obs;	/* Vertical distance from observation point to this slice */
@@ -711,6 +716,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_VER]]);
 	
 	/* Read the sliced model */
+	if (Ctrl->F.mode == TALWANI3D_GEOID) n_scl = 1000.0;	/* Do Geoid calculations in SI units */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -736,7 +742,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 							n_alloc1 += GMT_CHUNK;
 							cake = GMT_memory (GMT, cake, n_alloc1, struct CAKE);
 						}
-						cake[k].depth = depth;
+						cake[k].depth = n_scl * depth;
 						cake[k].first_slice = GMT_memory (GMT, NULL, 1, struct SLICE);
 						cake[k].first_slice->rho = rho;
 						cake[k].first_slice->x = x;
@@ -827,7 +833,6 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	flat_earth = GMT_is_geographic (GMT, GMT_IN);
 	
-	if (Ctrl->F.mode == TALWANI3D_GEOID) n_scl = 1000.0;	/* Do Geoid calculations in SI units */
 	Ctrl->Z.level *= n_scl;
 	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
 	
@@ -846,7 +851,6 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	/* Set up depths array needed by get_one_output3D */
 	depths = GMT_memory (GMT, NULL, ndepths, double);
 	for (k = 0; k < ndepths; k++) depths[k] = n_scl*cake[k].depth;	/* Used by the parabolic integrator */
-	
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? 0.001 : 1.0;	/* Perhaps convert to km */
 		double out[4];
