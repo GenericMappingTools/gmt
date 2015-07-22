@@ -879,7 +879,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: key %s does not contain exactly 3 characters\n", next);
 			continue;
 		}
-		if (strchr ("IOio", next[2])) {	/* Means that this option, if given, deactivates the normal default PostScript output */
+		if (!strchr ("IOio", next[2])) {	/* Means that this option, if given, deactivates the normal default PostScript output */
 			/* E.g, pscoast has >DM and this becomes >DO if -M is used */
 			if (*magic == 0)	/* First time we find one, return the option letter via magic */
 				*magic = next[2];
@@ -5199,7 +5199,6 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			/* At the first output record the output matrix has not been allocated.
 			 * So first we do that, then later we can increment its size when needed.
 			 * The realloc to final size takes place in GMT_End_IO. */
-			if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DUPLICATE_VIA_MATRIX\n");
 			d = record;
 			M_obj = S_obj->resource;
 			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
@@ -5214,26 +5213,30 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			}
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?)\n");
-			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs in current_record (d) */
-				for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) d[col] = API->GMT->session.d_NaN;
-			}
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
-				ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
-				GMTAPI_put_val (API, &(M_obj->data), d[col], ij, M_obj->type);
+			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs in current_record (d) */
+				for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
+					ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
+					GMTAPI_put_val (API, &(M_obj->data), API->GMT->session.d_NaN, ij, M_obj->type);
+				}
+				API->current_rec[GMT_OUT]++;	/* Since the NaN-record is an actual data record that encodes a segment break */
+				M_obj->n_rows++;
 			}
-			M_obj->n_rows++;
+			else if (mode == GMT_WRITE_DOUBLE) {	/* Data record */
+				if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DUPLICATE_VIA_MATRIX\n");
+				for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
+					ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
+					GMTAPI_put_val (API, &(M_obj->data), d[col], ij, M_obj->type);
+				}
+				M_obj->n_rows++;
+			}
 			break;
 
 		case GMT_IS_DUPLICATE_VIA_VECTOR:	/* List of column arrays */
 		case GMT_IS_REFERENCE_VIA_VECTOR:
-			if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DATASET_ARRAY\n");
 			d = record;
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?)\n");
-			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
-				for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) d[col] = API->GMT->session.d_NaN;
-			}
 			V_obj = S_obj->resource;
 			if (!V_obj) {	/* Was given a NULL pointer == First time allocation, default to double data type */
 				if ((V_obj = GMT_create_vector (API->GMT, API->GMT->common.b.ncol[GMT_OUT], GMT_OUT)) == NULL)
@@ -5241,9 +5244,18 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				S_obj->resource = V_obj;
 				for (col = 0; col < S_obj->n_columns; col++) V_obj->type[col] = GMT_DOUBLE;
 			}
-			for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++)	/* Place the output items */
-				GMTAPI_put_val (API, &(V_obj->data[col]), d[col], API->current_rec[GMT_OUT], V_obj->type[col]);
-			V_obj->n_rows++;
+			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
+				for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++)	/* Place the output items */
+					GMTAPI_put_val (API, &(V_obj->data[col]), API->GMT->session.d_NaN, API->current_rec[GMT_OUT], V_obj->type[col]);
+				V_obj->n_rows++;
+				API->current_rec[GMT_OUT]++;	/* Since the NaN-record is an actual data record that encodes a segment break */
+			}
+			else if (mode == GMT_WRITE_DOUBLE) {	/* Data record */
+				if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DATASET_ARRAY\n");
+				for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++)	/* Place the output items */
+					GMTAPI_put_val (API, &(V_obj->data[col]), d[col], API->current_rec[GMT_OUT], V_obj->type[col]);
+				V_obj->n_rows++;
+			}
 			break;
 
 		default:

@@ -760,13 +760,13 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		}
 		if (Ctrl->E.active) {
 			sprintf (header, "# Country polygons extracted from the DCW database\n");
-			GMT_Put_Record (API, GMT_WRITE_TEXT, header);
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
 		}
 		else {
 			sprintf (header, "# %s extracted from the %s resolution GSHHG version %s database\n", kind[id], shore_resolution[base], version);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, header);
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
 			sprintf (header, "# %s\n# %s\n", title, source);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, header);
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
 		}
 	}
 	else {
