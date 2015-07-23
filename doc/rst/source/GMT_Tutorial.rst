@@ -1068,7 +1068,7 @@ Exercises:
 
 #. At *y = 5*, add the sentence :math:`z^2 = x^2 + y^2`.
 
-#. At *y = 6*, add the sentence "It is 80˚ today".
+#. At *y = 6*, add the sentence "It is 32º today".
 
 Session Three
 =============
@@ -1143,7 +1143,7 @@ useful options:
 
 We will first make a plain contour map using 1 km as annotation
 interval and 250 m as contour interval.  We choose a 7-inch-wide
-Mercator plot and annotate the borders every 2˚:
+Mercator plot and annotate the borders every 2º:
 
    ::
 
@@ -1530,7 +1530,7 @@ Yellow, Green, Cyan, Blue, and Magenta.
 The CMY colors are the complimentary colors and are used when paints are
 mixed to produce a new color (this is how printers operate; they also add
 pure black (K) to avoid making gray from CMY).  In this coordinate system the
-angle 0-360˚ is the hue (H); the Saturation and Value are harder to
+angle 0-360º is the hue (H); the Saturation and Value are harder to
 explain.  Suffice it to say here that we intend to darken any pure color
 (on the cube facets) by keeping H fixed and adding black and brighten it by adding white; for
 interior points in the cube we will add or remove gray.
@@ -1594,7 +1594,7 @@ The plain color map lacks detail and fails to reveal the topographic
 complexity of this Rocky Mountain region.  What it needs is artificial
 illumination.  We want to simulate shading by a sun source in the east,
 hence we derive the required intensities from the gradients of the
-topography in the N90˚ E direction using :doc:`grdgradient`.  Other than the
+topography in the N90ºE direction using :doc:`grdgradient`.  Other than the
 required input and output filenames, the available options are
 
   +-------------------------------------------------+-------------------------------------------------------------------+
@@ -1684,8 +1684,8 @@ level (i.e., depth), latitude and longitude.
 
     ncdump -h otemp.anal1deg.nc
 
-We will need to make an appropriate color scale, running from -2˚ C (freezing temperature of salt
-water) to 30˚ C (highest likely ocean temperature). We do this as follows:
+We will need to make an appropriate color scale, running from -2ºC (freezing temperature of salt
+water) to 30ºC (highest likely ocean temperature). We do this as follows:
 
    ::
 
