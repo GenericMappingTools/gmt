@@ -1127,8 +1127,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
 			n_points, Ctrl->G.file[g], GC[g].G->header->nx, GC[g].G->header->ny);
-		if (Ctrl->G.type[g] == 0 && GMT_Destroy_Data (API, &GC[g].G) != GMT_OK) {
-			Return (API->error);
+		if (Ctrl->G.type[g] == 0) {
+			if (GMT_Destroy_Data (API, &GC[g].G) != GMT_OK)
+				Return (API->error);
 		}
 		else
 			GMT_free_grid (GMT, &GC[g].G, true);
