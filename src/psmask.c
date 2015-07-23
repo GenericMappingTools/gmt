@@ -697,7 +697,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		info.first_dump = true;
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-			GMT_GRID_DEFAULT_REG, 1, NULL)) == NULL) Return (API->error);
+			GMT_GRID_DEFAULT_REG, 1, NULL)) == NULL) Return (API->error);	/* Specifically only need 1 row/col padding */
 		
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];

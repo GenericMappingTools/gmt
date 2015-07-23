@@ -339,7 +339,8 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 	}
 
 	GMT_set_grddim (GMT, C->header);
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C) == NULL) Return (API->error);
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL,
+		NULL, 0, 0, C) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
 	A->header->size = B->header->size = C->header->size;	/* Set A & B's size to the same as C */
 	A->header->no_BC = B->header->no_BC = true;	/* We must disable the BC machinery */

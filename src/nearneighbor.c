@@ -302,7 +302,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, 2, NULL)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
