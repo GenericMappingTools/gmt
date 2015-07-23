@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"grdtrack"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
-#define THIS_MODULE_KEYS	"<DI,DDo,GGI,>DO"
+#define THIS_MODULE_KEYS	"<DI,DDo,GGi,>DO"
 
 #include "gmt_dev.h"
 
@@ -1173,10 +1173,11 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
 			n_points, Ctrl->G.file[g], GC[g].G->header->nx, GC[g].G->header->ny);
-		if (Ctrl->G.type[g] == 0 && GMT_Destroy_Data (API, &GC[g].G) != GMT_OK) {
-			Return (API->error);
+		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grid */
+			if (GMT_Destroy_Data (API, &GC[g].G) != GMT_OK)
+				Return (API->error);
 		}
-		else
+		else	/* IMG allocated locally */
 			GMT_free_grid (GMT, &GC[g].G, true);
 	}
 	GMT_free (GMT, value);
