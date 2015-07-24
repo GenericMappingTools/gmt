@@ -753,6 +753,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	rmode = (GMT_is_ascii_record (GMT) && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+	GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN));
 
 	n = n_read_in_seg = 0;
 	do {	/* Keep returning records until we reach EOF */

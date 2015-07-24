@@ -278,6 +278,11 @@ EXTERN_MSC void gmt_Cdiv (double A[], double B[], double C[]);
 EXTERN_MSC void gmt_Ccot (double Z[], double cotZ[]);
 EXTERN_MSC double Cabs (double A[]);
 
+EXTERN_MSC int GMT_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read);
+EXTERN_MSC uint64_t GMT_bin_colselect (struct GMT_CTRL *GMT);
+EXTERN_MSC bool GMT_gap_detected (struct GMT_CTRL *GMT);
+EXTERN_MSC int GMT_set_gap (struct GMT_CTRL *GMT);
+
 /* From gmt_nc.c */
 EXTERN_MSC void GMT_grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 

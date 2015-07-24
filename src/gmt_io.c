@@ -103,8 +103,6 @@ EXTERN_MSC unsigned int GMTAPI_count_objects (struct GMTAPI_CTRL *API, enum GMT_
 EXTERN_MSC int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
 EXTERN_MSC int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
 
-uint64_t gmt_bin_colselect (struct GMT_CTRL *GMT);
-
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
 #endif
@@ -244,7 +242,7 @@ static inline void gmt_update_prev_rec (struct GMT_CTRL *GMT, uint64_t n_use) {
 }
 
 /*! Determine if two points are "far enough apart" to constitude a data gap and thus "pen up" */
-bool gmt_gap_detected (struct GMT_CTRL *GMT) {
+bool GMT_gap_detected (struct GMT_CTRL *GMT) {
 	uint64_t i;
 
 	if (!GMT->common.g.active || GMT->current.io.pt_no == 0) return (false);	/* Not active or on first point in a segment */
@@ -256,7 +254,7 @@ bool gmt_gap_detected (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-int gmt_set_gap (struct GMT_CTRL *GMT) {	/* Data gaps are special since there is no multiple-segment header flagging the gap; thus next time the record is already read */
+int GMT_set_gap (struct GMT_CTRL *GMT) {	/* Data gaps are special since there is no multiple-segment header flagging the gap; thus next time the record is already read */
 	GMT->current.io.status = GMT_IO_GAP;
 	GMT->current.io.seg_no++;
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data gap detected via -g; Segment header inserted near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
@@ -307,7 +305,7 @@ bool GMT_z_input_is_nan_proxy (struct GMT_CTRL *GMT, unsigned int col, double va
 }
 
 /*! . */
-int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
+int GMT_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Process a binary record to determine what kind of record it is. Return values:
 	 * 0 = regular record; 1 = segment header (all NaNs); 2 = skip this record
 	*/
@@ -420,11 +418,11 @@ void * gmt_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 		/* Increment record counters */
 		GMT->current.io.nrec++;
 		GMT->current.io.rec_no++;
-		status = gmt_process_binary_input (GMT, n_use);	/* Determine if a header record, data record, or record to skip */
+		status = GMT_process_binary_input (GMT, n_use);	/* Determine if a header record, data record, or record to skip */
 		if (status == 1) { *retval = 0; return (NULL); }	/* Found a segment header, meaning all columns were NaN */
 	} while (status == 2);	/* Continue reading when a record is to be skipped */
-	if (gmt_gap_detected (GMT)) {	/* The -g is in effect and was triggered due to a user-specified gap criteria */
-		*retval = gmt_set_gap (GMT);
+	if (GMT_gap_detected (GMT)) {	/* The -g is in effect and was triggered due to a user-specified gap criteria */
+		*retval = GMT_set_gap (GMT);
 		return (GMT->current.io.curr_rec);
 	}
 	GMT->current.io.pt_no++;
@@ -1634,7 +1632,7 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 	if (GMT->current.proj.inv_coordinates) gmt_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
 	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (GMT);	/* Must account for periodicity in 360 as per current rule*/
 
-	if (gmt_gap_detected (GMT)) {*status = gmt_set_gap (GMT); return (GMT->current.io.curr_rec); }	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
+	if (GMT_gap_detected (GMT)) {*status = GMT_set_gap (GMT); return (GMT->current.io.curr_rec); }	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 
 	GMT->current.io.pt_no++;	/* Got a valid data record (which is true even if it was a gap) */
 	*status = (int)n_ok;			/* Return the number of fields successfully read */
@@ -1724,7 +1722,7 @@ bool GMT_is_a_blank_line (char *line) {
 }
 
 /*! . */
-uint64_t gmt_bin_colselect (struct GMT_CTRL *GMT)
+uint64_t GMT_bin_colselect (struct GMT_CTRL *GMT)
 {	/* When -i<cols> is used we must pull out and reset the current record */
 	uint64_t col;
 	static double tmp[GMT_BUFSIZ];
@@ -1785,12 +1783,12 @@ void * gmt_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 		gmt_update_prev_rec (GMT, n_use);
 		if (gmt_get_binary_input (GMT, fp, n_use)) { *retval = -1; return (NULL); }	/* EOF */
 		GMT->current.io.rec_no++;
-		status = gmt_process_binary_input (GMT, n_use);
+		status = GMT_process_binary_input (GMT, n_use);
 		if (status == 1) { *retval = 0; return (NULL); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
-	n_read = (GMT->common.i.active) ? gmt_bin_colselect (GMT) : *n;	/* We may use -i and select fewer of the input columns */
+	n_read = (GMT->common.i.active) ? GMT_bin_colselect (GMT) : *n;	/* We may use -i and select fewer of the input columns */
 
-	if (gmt_gap_detected (GMT)) { *retval = gmt_set_gap (GMT); return (GMT->current.io.curr_rec); }
+	if (GMT_gap_detected (GMT)) { *retval = GMT_set_gap (GMT); return (GMT->current.io.curr_rec); }
 	GMT->current.io.pt_no++;
 
 	*retval = (int)n_read;
