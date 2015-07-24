@@ -2416,18 +2416,16 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			col = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
 			if ((V_obj = GMT_create_vector (API->GMT, col, GMT_OUT)) == NULL)
 				return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));
-			V_obj->n_rows = D_obj->n_records;
-			if (API->GMT->current.io.multi_segments[GMT_OUT]) V_obj->n_rows += D_obj->n_segments;
+			V_obj->n_rows = D_obj->n_records;	/* Number of data records... */
+			if (API->GMT->current.io.multi_segments[GMT_OUT]) V_obj->n_rows += D_obj->n_segments;	/* ...plus number of segment headers */
 			for (col = 0; col < D_obj->n_columns; col++) V_obj->type[col] = GMT_DOUBLE;
 			if ((error = GMTAPI_alloc_vectors (API->GMT, V_obj)) != GMT_OK) return (GMTAPI_report_error (API, error));
 			for (tbl = ij = 0; tbl < D_obj->n_tables; tbl++) {
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for this segment */
-					for (col = 0; col < D_obj->table[tbl]->segment[seg]->n_columns; col++) {
-						ij = GMT_2D_to_index (offset, col, M_obj->dim);
+					for (col = 0; col < D_obj->table[tbl]->segment[seg]->n_columns; col++)
 						GMTAPI_put_val (API, &(V_obj->data[col]), API->GMT->session.d_NaN, ij, V_obj->type[col]);
-					}
-					ij++;	/* Extra NaN row */
+					ij++;	/* Due to the NaN-data header */
 					for (row = 0; row < S->n_rows; row++, ij++) {
 						for (col = 0; col < S->n_columns; col++) {
 							value = gmt_select_dataset_value (API->GMT, S, row, col);
