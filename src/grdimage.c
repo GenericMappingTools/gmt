@@ -515,7 +515,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 	if (!GMT->common.R.active && n_grids) GMT_memcpy (GMT->common.R.wesn, Grid_orig[0]->header->wesn, 4, double);
 
-	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
+	if ((error = GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), ""))) Return (error);
 	
 	/* Determine if grid is to be projected */
 
