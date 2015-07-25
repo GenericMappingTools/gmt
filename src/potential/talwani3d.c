@@ -498,7 +498,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 }
 
 double definite_integral (double a, double c)
-{	/* Return out definite integral n_i (except the factor p_i) */
+{	/* Return out definite integral n_i (except the factor z_j) */
 	double s, c2, u2, k, q, q3, f, v, n_i;
 	/* Deal with special cases */
 	if (GMT_IS_ZERO (a - M_PI_2)) return (0.0);
@@ -512,9 +512,9 @@ double definite_integral (double a, double c)
 	q3 = q * (u2 - 1.0);
 	f = sqrt (c2 + u2);
 	v = f - k;
-	n_i = c * (atan (q) + atan2 (v, 2.0*c*q) - atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3)) - 2.0 * atanh (v/q);
-	if (a > M_PI_2) n_i = c * M_PI -n_i;
-	//if (a > M_PI_2) n_i = -n_i;
+	n_i = 2.0 * atanh (v/q) / c + atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3) - atan2 (v, 2.0*c*q);
+	//if (a > M_PI_2) n_i = c * M_PI -n_i;
+	if (a > M_PI_2) n_i = -n_i;
 	if (GMT_is_dnan (n_i))
 		fprintf (stderr, "definite_integral returns n_i = NaN!\n");
 	return (-n_i);
@@ -528,10 +528,10 @@ double integral (double a, double b, double c)
 double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {	/* Experimental and wrong so far */
 	int k;
-	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
-	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i, em;
+	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside, c, z_j = z_obs;
+	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i, em, del_alpha;
 	bool zerog;
-	/* Coordinates are in km and g/cm^3  - recover SI units. Note: z_obs is already in meters */
+	/* Coordinates are in km and g/cm^3  - recover SI units. Note: z_j is already in meters */
 	vsum = 0.0;
 	if (flat) {
 		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
@@ -586,10 +586,11 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 						sign2 = 1;
 			                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
 			                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
-						part1 = integral (fi_i, theta_i, z_obs / p);
-						p = fabs (p);
-						part2 = p * part1;
-						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p = %g]\n", R2D*(fi_i), R2D*(theta_i), z_obs / p, part1, z_obs, p);
+						del_alpha = 1.0/sin(theta_i) - 1.0/sin(fi_i);
+						c = z_j / p;
+						part1 = integral (fi_i, theta_i, c);
+						part2 = z_j * (del_alpha + part1);
+						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p = %g, da = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p, del_alpha);
 					}
 				}
 			}
@@ -607,7 +608,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				
 	/* If z axis is positive down, then vsum should have the same sign as z */
 				 
-	vsum = (z_obs > 0.0) ? fabs (vsum) : -fabs (vsum);
+	vsum = (z_j > 0.0) ? fabs (vsum) : -fabs (vsum);
 
 	return (1.0e-11 * GAMMA * rho * vsum / G0);
 }
