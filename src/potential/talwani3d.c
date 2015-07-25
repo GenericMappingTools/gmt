@@ -531,7 +531,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside, c, z_j = z_obs;
 	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i, em, del_alpha;
 	bool zerog;
-	/* Coordinates are in km and g/cm^3  - recover SI units. Note: z_j is already in meters */
+	/* Coordinates are in km and g/cm^3 */
 	vsum = 0.0;
 	if (flat) {
 		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
@@ -541,7 +541,6 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		x1 = x[0] - x_obs;
 		y1 = y[0] - y_obs;
 	}
-	x1 *= 1000;	y1 *= 1000;	rho *= 1000;
 	r1 = hypot (x1, y1);
 	if (r1 != 0.0) {
 		ir1 = 1.0 / r1;
@@ -558,7 +557,6 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 			x2 = x[k] - x_obs;
 			y2 = y[k] - y_obs;
 		}
-		x2 *= 1000;	y2 *= 1000;
 		r2 = hypot (x2, y2);
 		if (r2 == 0.0)
 			zerog = true;
@@ -583,7 +581,6 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 						zerog = true;
 					else {
 						sign2 = copysign (1.0, p);
-						sign2 = 1;
 			                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
 			                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
 						del_alpha = 1.0/sin(theta_i) - 1.0/sin(fi_i);
@@ -610,7 +607,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				 
 	vsum = (z_j > 0.0) ? fabs (vsum) : -fabs (vsum);
 
-	return (1.0e-11 * GAMMA * rho * vsum / G0);
+	return (1.0e-2 * GAMMA * rho * vsum / G0);
 }
 
 double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
@@ -620,7 +617,7 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	double z;
 	struct SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
-	dump = (x_obs == 20.0);
+	dump = (x_obs == 0.0 || x_obs == 50.0);
 	if (dump)
 		k = 0;
 	for (k = 0; k < ndepths; k++) {
@@ -659,7 +656,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	bool flat_earth = false, first_slice = true;
 	
 	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "GEOID"};
-	double z_level, depth, rho, n_scl = 1.0;
+	double z_level, depth, rho;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
 					
 	struct SLICE *sl = NULL, *slnext = NULL;
@@ -717,7 +714,6 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_VER]]);
 	
 	/* Read the sliced model */
-	if (Ctrl->F.mode == TALWANI3D_GEOID) n_scl = 1000.0;	/* Do Geoid calculations in SI units */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -743,7 +739,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 							n_alloc1 += GMT_CHUNK;
 							cake = GMT_memory (GMT, cake, n_alloc1, struct CAKE);
 						}
-						cake[k].depth = n_scl * depth;
+						cake[k].depth = depth;
 						cake[k].first_slice = GMT_memory (GMT, NULL, 1, struct SLICE);
 						cake[k].first_slice->rho = rho;
 						cake[k].first_slice->x = x;
@@ -834,7 +830,6 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	flat_earth = GMT_is_geographic (GMT, GMT_IN);
 	
-	Ctrl->Z.level *= n_scl;
 	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
 	
 	/* Now we can write to the screen the user's polygon model characteristics. */
@@ -851,7 +846,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 
 	/* Set up depths array needed by get_one_output3D */
 	depths = GMT_memory (GMT, NULL, ndepths, double);
-	for (k = 0; k < ndepths; k++) depths[k] = n_scl*cake[k].depth;	/* Used by the parabolic integrator */
+	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? 0.001 : 1.0;	/* Perhaps convert to km */
 		double out[4];
