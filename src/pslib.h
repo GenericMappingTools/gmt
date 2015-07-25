@@ -74,9 +74,7 @@ extern "C" {
 #define PSL_PLUS		((int)'+')
 #define PSL_XDASH		((int)'-')
 
-/* PSL codes for vector attributes - mirroring similar codes and macros in GMT */
-
-/* Note: If changes are made to PSL_enum_vecattr you must also change gmt_plot.h: GMT_enum_vecattr */
+/* PSL codes for vector attributes */
 
 enum PSL_enum_vecattr {
 	PSL_VEC_ARROW		= 0,		/* Default head symbol is arrow */
@@ -130,7 +128,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_MAX_EPS_FONTS	= 6,
 	PSL_MAX_DIMS		= 10,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
-	PSL_BUFSIZ		= 4096U};	/* To match GMT_BUFSIZ and be consistent across all platforms */
+	PSL_BUFSIZ		= 4096U};
 
 /* PSL codes for pen movements (used by PSL_plotpoint, PSL_plotline, PSL_plotarc) */
 
@@ -260,7 +258,7 @@ struct PSL_CTRL {
 	} current;
 	struct INTERNAL {	/* Variables used internally only */
 		char *SHAREDIR;			/* Pointer to path of directory with pslib subdirectory */
-		char *USERDIR;			/* Pointer to path of directory with user definitions (~/.gmt) */
+		char *USERDIR;			/* Pointer to path of directory with user definitions */
 		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
 		char origin[2];			/* 'r', 'a', 'f', 'c' depending on reference for new origin x and y coordinate */
 		double offset[2];		/* Origin offset [1/1]				*/

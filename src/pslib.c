@@ -2874,11 +2874,11 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 		char *null_dev = "/dev/null";
 #endif
 		sprintf (tmp_file, "PSL_TMP_%d.ras", (int)getpid());
-		/* Try GraphicsMagick's "convert" */
+		/* Try GraphicsMagick's "gm convert" */
 		sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
-		if (system (cmd)) {	/* convert failed, try ImageMagic's "gm convert" */
+		if (system (cmd)) {	/* convert failed, try ImageMagic's "convert" */
 			sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
-			if (system (cmd)) {	/* gmt convert failed, give up */
+			if (system (cmd)) {	/* convert failed, give up */
 				PSL_message (PSL, PSL_MSG_FATAL, "Automatic conversion of file %s to Sun rasterfile failed\n", file);
 				remove (tmp_file);	/* Remove the temp file */
 				PSL_exit (EXIT_FAILURE);
@@ -5010,7 +5010,7 @@ char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *st
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
 	 * Returns the full pathname if a workable path was found
-	 * Looks for file stem in current directory, ~/.gmt and PSL->internal.SHAREDIR[/subdir]
+	 * Looks for file stem in current directory, PSL->internal.USERDIR, and PSL->internal.SHAREDIR[/subdir]
 	 */
 
 	/* First look in the current working directory */
@@ -5026,7 +5026,7 @@ char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *st
 	if (stem[0] == '/') return (NULL);
 #endif
 
-	/* Not found, see if there is a file in the user's PSL->internal.USERDIR (~/.gmt) directory */
+	/* Not found, see if there is a file in the user's PSL->internal.USERDIR directory */
 
 	if (PSL->internal.USERDIR) {
 		sprintf (path, "%s/%s%s", PSL->internal.USERDIR, stem, suffix);

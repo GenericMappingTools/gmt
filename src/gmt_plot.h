@@ -106,7 +106,7 @@ struct GMT_FRONTLINE {
 
 /* Vector symbols */
 
-/* Note: If changes are made to GMT_enum_vecattr you must also change pslib.h: PSL_enum_vecattr */
+/* NOTE: GMT_enum_vecattr must mirror similar settings in pslib.h: PSL_enum_vecattr */
 
 enum GMT_enum_vecattr {
 	GMT_VEC_ARROW		= 0,		/* Default head symbol is arrow */
