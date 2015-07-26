@@ -57,8 +57,10 @@
 
 #define GMT_TALWANI3D_N_DEPTHS GMT_BUFSIZ	/* Max depths allowed due to OpenMP needing stack array */
 
+#if 0
 bool dump = false;
 FILE *fp = NULL;
+#endif
 
 struct TALWANI3D_CTRL {
 	struct A {	/* -A positive up  */
@@ -521,8 +523,10 @@ double definite_integral (double a, double s, double c)
 	arg1 = 2.0*k2*v*y - f;
 	arg2 = c*q;
 	n_ij = atan2 (v, 2.0*c*q) - atan2 (arg1, arg2) - 2.0 * atanh (v/q) / c;
-//	if (dump) fprintf (fp, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\n",
-//		a, s, c, c2, k, k2, u2, q2, f, v, arg1, arg2, n_ij);
+#if 0
+	if (dump) fprintf (fp, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\n",
+		a, s, c, c2, k, k2, u2, q2, f, v, arg1, arg2, n_ij);
+#endif
 	if (a > M_PI_2) n_ij = -n_ij;
 	if (GMT_is_dnan (n_ij))
 		fprintf (stderr, "definite_integral returns n_ij = NaN!\n");
@@ -628,8 +632,8 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	double z;
 	struct SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
-	char file[32] = {""};
 #if 0
+	char file[32] = {""};
 	if (fabs (x_obs - 1.96) < 1e-5) {
 		dump = true;
 		sprintf (file, "dump.%g.txt", x_obs);
