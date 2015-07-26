@@ -3,7 +3,7 @@
 #
 # Computes the gravity and VGG anomaly over a sphere and compares
 # with theory a
-ps=t.ps
+ps=sphtest.ps
 # sphere.mod was made thus:
 # sphere 2000 50 50 4000
 R=2000
