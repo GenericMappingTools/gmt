@@ -419,7 +419,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_DEBUG, "Disabling text formatting for external interface\n");
 		gmt_formatting = false;
 	}
-	o_mode = (gmt_formatting) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
+	o_mode = (gmt_formatting) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
 	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
