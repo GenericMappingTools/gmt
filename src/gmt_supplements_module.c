@@ -21,6 +21,7 @@
  * 	gmt_make_module_src.sh supplements
  */
 #include "gmt.h"
+#include "gmt_supplements_module.h"
 #include <string.h>
 
 /* Sorted array with information for all GMT supplements modules */
@@ -102,12 +103,12 @@ void gmt_supplements_module_show_all (void *V_API) {
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
-const char * gmt_supplements_module_info (void *API, char *candidate) {
+const char *gmt_supplements_module_info (void *API, char *candidate) {
 	int module_id = 0;
 
 	/* Match actual_name against g_module[module_id].name */
-	while ( g_supplements_module[module_id].name != NULL &&
-			strcmp (candidate, g_supplements_module[module_id].name) )
+	while (g_supplements_module[module_id].name != NULL &&
+			strcmp (candidate, g_supplements_module[module_id].name))
 		++module_id;
 
 	/* Return Module keys or NULL */

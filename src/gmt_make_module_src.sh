@@ -149,6 +149,7 @@ EOF
 else
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 #include "gmt.h"
+#include "gmt_supplements_module.h"
 #include <string.h>
 EOF
 fi
@@ -270,12 +271,12 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
-const char * gmt_${L_TAG}_module_info (void *API, char *candidate) {
+const char *gmt_${L_TAG}_module_info (void *API, char *candidate) {
 	int module_id = 0;
 
 	/* Match actual_name against g_module[module_id].name */
-	while ( g_${L_TAG}_module[module_id].name != NULL &&
-			strcmp (candidate, g_${L_TAG}_module[module_id].name) )
+	while (g_${L_TAG}_module[module_id].name != NULL &&
+	       strcmp (candidate, g_${L_TAG}_module[module_id].name))
 		++module_id;
 
 	/* Return Module keys or NULL */
@@ -288,12 +289,12 @@ if [ "$U_TAG" = "CORE" ]; then
 	
 #ifndef BUILD_SHARED_LIBS
 /* Lookup module id by name, return function pointer */
-void * gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
+void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
 
 	/* Match actual_name against g_module[module_id].name */
-	while ( g_${L_TAG}_module[module_id].name != NULL &&
-			strcmp (candidate, g_${L_TAG}_module[module_id].name) )
+	while (g_${L_TAG}_module[module_id].name != NULL &&
+	       strcmp (candidate, g_${L_TAG}_module[module_id].name))
 		++module_id;
 
 	/* Return Module function or NULL */
