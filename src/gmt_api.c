@@ -6603,6 +6603,11 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 
 	*n = 0;	/* Initialize counter to zero in case we return prematurely */
 	
+	if ((*head) && ((*head)->option == GMT_OPT_USAGE || (*head)->option == GMT_OPT_SYNOPSIS)) {	/* Nothing to do */
+		*n = UINT_MAX;
+		return NULL;
+	}
+	
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
 	if ((keys = GMTAPI_get_moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
 		GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL);	/* List the available modules */
