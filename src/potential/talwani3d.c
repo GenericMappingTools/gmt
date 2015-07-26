@@ -53,11 +53,12 @@
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
 #define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
-#define GMT_IS_ZERO2(x) (fabs (x) < 1e-16)	/* Check for near zero numbers */
+#define GMT_IS_ZERO2(x) (fabs (x) < 2e-5)	/* Check for near-zero angles [used in geoid integral()]*/
 
 #define GMT_TALWANI3D_N_DEPTHS GMT_BUFSIZ	/* Max depths allowed due to OpenMP needing stack array */
 
 bool dump = false;
+FILE *fp = NULL;
 
 struct TALWANI3D_CTRL {
 	struct A {	/* -A positive up  */
@@ -498,41 +499,46 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 	return (10 * GAMMA * rho * vsum);	/* To get Eotvos = 0.1 mGal/km */
 }
 
-double definite_integral (double a, double c)
+double definite_integral (double a, double s, double c)
 {	/* Return out definite integral n_ij (except the factor z_j) */
 	/* Here, 0 <= a <= TWO_I and c >= 0 */
-	double s, c2, u2, k, k2, q, q2, q3, f, v, n_ij;
+	double s2, c2, u2, k, k2, q, q2, f, v, n_ij, arg1, arg2, y;
 	/* Deal with special cases */
-	if (GMT_IS_ZERO (a - M_PI_2)) return (0.0);
+	if (GMT_IS_ZERO2 (a - M_PI_2)) return (0.0);
 	else if (GMT_IS_ZERO2 (a)) return (0.0);
 	else if (GMT_IS_ZERO2 (a - M_PI)) return (0.0);
-	s = sin (a);
+	//s = sin (a);
+	s2 = s * s;
 	c2 = c * c;
-	u2 = 1.0 / (s*s);
+	u2 = 1.0 / s2;
 	k2 = c2 + 1.0;
 	k = sqrt (k2);
 	q2 = u2 - 1.0;
 	q = sqrt (q2);
-	q3 = q * q2;
 	f = sqrt (c2 + u2);
 	v = f - k;
-	n_ij = atan2 (v, 2.0*c*q) - atan2 (2.0*k2*v*u2 - f*q2, c*q3) - 2.0 * atanh (v/q) / c;
+	y = 1 / (1 - s2);
+	arg1 = 2.0*k2*v*y - f;
+	arg2 = c*q;
+	n_ij = atan2 (v, 2.0*c*q) - atan2 (arg1, arg2) - 2.0 * atanh (v/q) / c;
+//	if (dump) fprintf (fp, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\n",
+//		a, s, c, c2, k, k2, u2, q2, f, v, arg1, arg2, n_ij);
 	if (a > M_PI_2) n_ij = -n_ij;
 	if (GMT_is_dnan (n_ij))
 		fprintf (stderr, "definite_integral returns n_ij = NaN!\n");
 	return (n_ij);
 }
 
-double integral (double a, double b, double c)
+double integral (double a, double sa, double b, double sb, double c)
 {	/* Return integral of geoid function from a to b */
-	return (definite_integral (b, c) - definite_integral (a, c));
+	return (definite_integral (b, sb, c) - definite_integral (a, sa, c));
 }
 
 double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside, c, z_j = z_obs;
-	double xr2, yr2, dx, dy, p_i, theta_i, sign2, part1, part2, fi_i, em, del_alpha;
+	double xr2, yr2, dx, dy, p_i, theta_i, sign2, part1, part2, fi_i, em, del_alpha, s_fi, s_th;
 	bool zerog;
 	/* Coordinates are in km and g/cm^3 */
 	vsum = 0.0;
@@ -587,11 +593,13 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 						sign2 = copysign (1.0, p_i);
 			                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
 			                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
+						s_fi = p_i / r1;
+						s_th = p_i / r2;
 						del_alpha = theta_i - fi_i;
 						c = z_j / fabs (p_i);
-						part1 = integral (fi_i, theta_i, c);
+						part1 = integral (fi_i, s_fi, theta_i, s_th, c);
 						part2 = z_j * (part1 - del_alpha);
-						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p_i = %g, da = %g dx = %g dy = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p_i, del_alpha, dx, dy);
+						//if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p_i = %g, da = %g dx = %g dy = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p_i, del_alpha, dx, dy);
 					}
 				}
 			}
@@ -620,9 +628,25 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	double z;
 	struct SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
-	dump = (fabs (x_obs - 1.96) < 1e-5);
+	char file[32] = {""};
+#if 0
+	if (fabs (x_obs - 1.96) < 1e-5) {
+		dump = true;
+		sprintf (file, "dump.%g.txt", x_obs);
+		fp = fopen (file, "w");
+	}
+	else if (fabs (x_obs - 2.0) < 1e-5) {
+		dump = true;
+		sprintf (file, "dump.%g.txt", x_obs);
+		fp = fopen (file, "w");
+	}
+	else {
+		if (fp) {fclose (fp); fp = NULL;}
+		dump = false;
+	}
 	if (dump)
 		k = 0;
+#endif
 	for (k = 0; k < ndepths; k++) {
 		vtry[k] = 0.0;
 		z = cake[k].depth - z_obs;	/* Vertical distance from observation point to this slice */
