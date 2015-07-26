@@ -500,6 +500,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 
 double definite_integral (double a, double c)
 {	/* Return out definite integral n_ij (except the factor z_j) */
+	/* Here, 0 <= a <= TWO_I and c >= 0 */
 	double s, c2, u2, k, k2, q, q2, q3, f, v, n_ij;
 	/* Deal with special cases */
 	if (GMT_IS_ZERO (a - M_PI_2)) return (0.0);
@@ -531,7 +532,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 {
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside, c, z_j = z_obs;
-	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i, em, del_alpha;
+	double xr2, yr2, dx, dy, p_i, theta_i, sign2, part1, part2, fi_i, em, del_alpha;
 	bool zerog;
 	/* Coordinates are in km and g/cm^3 */
 	vsum = 0.0;
@@ -573,8 +574,8 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				dy = y1 - y2;
 				side = hypot (dx, dy);
 				iside = 1.0 / side;
-				p = (dy * x1 - dx * y1) * iside;
-				if (fabs (p) < TOL)
+				p_i = (dy * x1 - dx * y1) * iside;
+				if (fabs (p_i) < TOL || fabs (side) < TOL)
 					zerog = true;
 				else {
 					em = (yr1 * xr2) - (yr2 * xr1);
@@ -582,15 +583,15 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 						zerog = true;
 					else {
 						/* When observation point is inside the polygon then del_alpha sums to -2*PI, else it is 0 */
-						/* We then strip the sign from p since it is a physical length. */
-						sign2 = copysign (1.0, p);
+						/* We then strip the sign from p_i since it is a physical length. */
+						sign2 = copysign (1.0, p_i);
 			                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
 			                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
 						del_alpha = theta_i - fi_i;
-						c = z_j / fabs (p);
+						c = z_j / fabs (p_i);
 						part1 = integral (fi_i, theta_i, c);
 						part2 = z_j * (part1 - del_alpha);
-						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p = %g, da = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p, del_alpha);
+						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p_i = %g, da = %g dx = %g dy = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p_i, del_alpha, dx, dy);
 					}
 				}
 			}
@@ -605,7 +606,6 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		xr1 = xr2;
 		yr1 = yr2;
 	}
-				
 	/* If z axis is positive down, then vsum should have the same sign as z */
 				 
 	vsum = (z_j > 0.0) ? fabs (vsum) : -fabs (vsum);
@@ -620,7 +620,7 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	double z;
 	struct SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
-	//dump = (x_obs == 0.0 || x_obs == 50.0);
+	dump = (fabs (x_obs - 1.96) < 1e-5);
 	if (dump)
 		k = 0;
 	for (k = 0; k < ndepths; k++) {
