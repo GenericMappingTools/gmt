@@ -55,7 +55,7 @@ struct TALWANI2D_CTRL {
 		bool active;
 		double rho;
 	} D;
-	struct F {	/* -F[f|v] */
+	struct F {	/* -F[f|n|v] */
 		bool active;
 		unsigned int mode;
 	} F;

@@ -40,10 +40,6 @@ EXTERN_MSC int GMT_mgd77path (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77sniffer (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77track (void *API, int mode, void *args);
 EXTERN_MSC int GMT_dimfilter (void *API, int mode, void *args);
-EXTERN_MSC int GMT_talwani2d
- (void *API, int mode, void *args);
-EXTERN_MSC int GMT_talwani3d
- (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtflexure (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtgravmag3d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gravfft (void *API, int mode, void *args);
@@ -51,6 +47,8 @@ EXTERN_MSC int GMT_grdflexure (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdgravmag3d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdredpol (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdseamount (void *API, int mode, void *args);
+EXTERN_MSC int GMT_talwani2d (void *API, int mode, void *args);
+EXTERN_MSC int GMT_talwani3d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pssegyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pssegy (void *API, int mode, void *args);
 EXTERN_MSC int GMT_segy2grd (void *API, int mode, void *args);

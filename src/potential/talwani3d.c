@@ -33,13 +33,13 @@
  * Based on method by M. Talwani and M. Ewing, Rapid Computation
  *   of gravitational attraction of three-dimensional bodies of 
  *   arbitrary shape, Geophysics, 25, 203-225, 1960.
- * Extended to handle VGG by Kim & Wessel, 2015, in prep.
+ * Extended to handle VGG and Geoid by Kim & Wessel, 2015, in prep.
  * Accelerated with OpenMP; see -x.
  */
 
 #define THIS_MODULE_NAME	"talwani3d"
 #define THIS_MODULE_LIB		"potential"
-#define THIS_MODULE_PURPOSE	"Compute free-air anomalies or vertical gravity gradients over 3-D bodies"
+#define THIS_MODULE_PURPOSE	"Compute free-air anomalies, geoid anomalies or vertical gravity gradients over 3-D bodies"
 #define THIS_MODULE_KEYS	"<DI,NDi,ZGi,GGo,>DO"
 
 #include "gmt_dev.h"
@@ -48,8 +48,8 @@
 
 #define TOL		1.0e-7
 #define DEG_TO_KM	111.319490793	/* For flat-Earth scaling of degrees to km */
-#define GAMMA 		6.673	/* Gravitational constant for distances in km and mass in kg/m^3 */
-#define G0 		9.81	/* Normal gravity */
+#define GAMMA 		6.673		/* Gravitational constant for distances in km and mass in kg/m^3 */
+#define G0 		9.81		/* Normal gravity */
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
 #define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
@@ -219,7 +219,7 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d <modelfile> [-A] [-D<rho>] [-Ff|v] [-G<outfile>] [%s]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d <modelfile> [-A] [-D<rho>] [-Ff|n|v] [-G<outfile>] [%s]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [%s] [-Z<level>] [%s] \n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT);
 
@@ -231,6 +231,7 @@ int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file, in kg/m^3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f = Free-air anomalies (mGal) [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets output grid file name (i.e., when -N is not specified).\n");
 	GMT_Option (API, "I");
@@ -238,7 +239,7 @@ int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x/y-distances are in km [meters]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-distances are in km [meters]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets output locations where a calculation is requested.  No grid\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   is produced and output (x,y,z,g|v) is written to stdout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   is produced and output (x,y,z,g|n|v) is written to stdout.\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append either a constant or the name of gridfile with levels.\n");
@@ -409,7 +410,7 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 }
 
 double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
-{	/* Now works, see talwani_pw.pdf */
+{
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
 	double xr2, yr2, dx, dy, dz, p, em, sign2, part2, part3, q, f, z2, p2;
@@ -498,8 +499,8 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 }
 
 double definite_integral (double a, double c)
-{	/* Return out definite integral n_i (except the factor z_j) */
-	double s, c2, u2, k, q, q3, f, v, n_i;
+{	/* Return out definite integral n_ij (except the factor z_j) */
+	double s, c2, u2, k, k2, q, q2, q3, f, v, n_ij;
 	/* Deal with special cases */
 	if (GMT_IS_ZERO (a - M_PI_2)) return (0.0);
 	else if (GMT_IS_ZERO2 (a)) return (0.0);
@@ -507,17 +508,18 @@ double definite_integral (double a, double c)
 	s = sin (a);
 	c2 = c * c;
 	u2 = 1.0 / (s*s);
-	k = sqrt (c2 + 1.0);
-	q = sqrt (u2 - 1.0);
-	q3 = q * (u2 - 1.0);
+	k2 = c2 + 1.0;
+	k = sqrt (k2);
+	q2 = u2 - 1.0;
+	q = sqrt (q2);
+	q3 = q * q2;
 	f = sqrt (c2 + u2);
 	v = f - k;
-	n_i = 2.0 * atanh (v/q) / c + atan2 (f + u2*(v*(1.0 - 2.0*c2)-k), c*q3) - atan2 (v, 2.0*c*q);
-	//if (a > M_PI_2) n_i = c * M_PI -n_i;
-	if (a > M_PI_2) n_i = -n_i;
-	if (GMT_is_dnan (n_i))
-		fprintf (stderr, "definite_integral returns n_i = NaN!\n");
-	return (-n_i);
+	n_ij = atan2 (v, 2.0*c*q) - atan2 (2.0*k2*v*u2 - f*q2, c*q3) - 2.0 * atanh (v/q) / c;
+	if (a > M_PI_2) n_ij = -n_ij;
+	if (GMT_is_dnan (n_ij))
+		fprintf (stderr, "definite_integral returns n_ij = NaN!\n");
+	return (n_ij);
 }
 
 double integral (double a, double b, double c)
@@ -526,7 +528,7 @@ double integral (double a, double b, double c)
 }
 
 double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
-{	/* Experimental and wrong so far */
+{
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside, c, z_j = z_obs;
 	double xr2, yr2, dx, dy, p, theta_i, sign2, part1, part2, fi_i, em, del_alpha;
@@ -548,7 +550,6 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		yr1 = y1 * ir1;
 	}
 	for (k = 1; k < n; k++) {	/* Loop over vertex */
-				
 		if (flat) {
 			x2 = DX_FROM_DLON (x[k], x_obs, y[k], y_obs);
 			y2 = DY_FROM_DLAT (y[k], y_obs);
@@ -580,13 +581,15 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 					if (em == 0.0)
 						zerog = true;
 					else {
+						/* When observation point is inside the polygon then del_alpha sums to -2*PI, else it is 0 */
+						/* We then strip the sign from p since it is a physical length. */
 						sign2 = copysign (1.0, p);
 			                        fi_i    = d_acos (sign2 * (dx*xr1 + dy*yr1) * iside);
 			                        theta_i = d_acos (sign2 * (dx*xr2 + dy*yr2) * iside);
-						del_alpha = 1.0/sin(theta_i) - 1.0/sin(fi_i);
-						c = z_j / p;
+						del_alpha = theta_i - fi_i;
+						c = z_j / fabs (p);
 						part1 = integral (fi_i, theta_i, c);
-						part2 = z_j * (del_alpha + part1);
+						part2 = z_j * (part1 - del_alpha);
 						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p = %g, da = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p, del_alpha);
 					}
 				}
@@ -607,7 +610,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 				 
 	vsum = (z_j > 0.0) ? fabs (vsum) : -fabs (vsum);
 
-	return (1.0e-2 * GAMMA * rho * vsum / G0);
+	return (1.0e-2 * GAMMA * rho * vsum / G0);	/* To get geoid in meter */
 }
 
 double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
@@ -617,7 +620,7 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	double z;
 	struct SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
-	dump = (x_obs == 0.0 || x_obs == 50.0);
+	//dump = (x_obs == 0.0 || x_obs == 50.0);
 	if (dump)
 		k = 0;
 	for (k = 0; k < ndepths; k++) {

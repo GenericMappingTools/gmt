@@ -54,7 +54,7 @@ done < /tmp/tmp.lis
 paste /tmp/LIB.lis /tmp/NAME.lis | awk '{printf "%s%s|%s\n", $1, $2, $2}' > /tmp/SORT.txt
 paste /tmp/SORT.txt /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis | sort -k1 > /tmp/SORTED.txt
 awk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
-rm -f /tmp/tmp.lis /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
+#rm -f /tmp/tmp.lis /tmp/NAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
 
 # The output file produced
 FILE_GMT_MODULE_C=gmt_${L_TAG}_module.c
@@ -302,7 +302,7 @@ void * gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
 #endif
 EOF
 fi
-rm -f /tmp/$LIB.txt
+#rm -f /tmp/$LIB.txt
 exit 0
 
 # vim: set ft=c:

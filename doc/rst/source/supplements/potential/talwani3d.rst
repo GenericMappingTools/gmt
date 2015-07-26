@@ -6,7 +6,7 @@ talwani3d
 
 .. only:: not man
 
-    talwani3d - Compute free-air anomalies or vertical gravity gradients over 3-D bodies
+    talwani3d - Compute free-air anomalies, geoid anomalies or vertical gravity gradients over 3-D bodies
 
 Synopsis
 --------
@@ -15,7 +15,7 @@ Synopsis
 
 **talwani3d** [ *modeltable* ]
 [ **-A** ] [ **-D**\ *rho* ] ]
-[ **-F**\ **f**\ \|\ **v** ] [ **-G**\ *grdfile* ] [ |SYN_OPT-I| ]
+[ **-F**\ **f**\ \|\ **n**\ \|\ **v** ] [ **-G**\ *grdfile* ] [ |SYN_OPT-I| ]
 [ **-M**\ [**h**]\ [**v**] ] [ **-N**\ *trackfile* ]  [ |SYN_OPT-R| ]
 [ **-Z**\ *level*\ \|\ *obsgrid* ]
 [ |SYN_OPT-V| ]
@@ -38,8 +38,9 @@ states the *z* contour level and the density of this slice (individual slice
 densities may be overridden by a fixed density contrast given via **-D**).
 We can compute anomalies on an equidistant grid (by specifying a new grid with
 **-R** and **-I** or provide an observation grid with elevations) or at arbitrary
-output points specified via **-N**.  Chose from free-air anomalies or vertical
-gravity gradient anomalies.  Options are available to control axes units and direction.
+output points specified via **-N**.  Chose from free-air anomalies, vertical
+gravity gradient anomalies, or geoid anomalies.  Options are available to control
+axes units and direction.
 
 
 Required Arguments
@@ -63,9 +64,9 @@ Optional Arguments
 **-D**\ *unit*
     Sets fixed density contrast that overrides any setting in model file, in kg/m^3.
 
-**-F**\ **f**\ \|\ **v**
-    Specify desired geopotential field component.  Choose from **f** (free-air anomaly) [Default]
-    and **v** (vertical gravity gradient).
+**-F**\ **f**\ \|\ **n**\ \|\ **v**
+    Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
+    **n** (geoid) or **v** (vertical gravity gradient).
 
 **-G**\ *grdfile*
     Specify the name of the output grid file; see GRID FILE FORMATS below).
