@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"x2sys_merge"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Merge an updated COEs table (smaller) into the main table (bigger)"
-#define THIS_MODULE_KEYS	""
+#define THIS_MODULE_KEYS	">TO"
 
 #include "gmt_dev.h"
 
@@ -219,6 +219,12 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 	map_merge_end[n_merge - 1] = k - 1;	/* This one was not yet assigned */
 	rewind (fp_merge);
 
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+		Return (API->error);	/* Enables data output and sets access mode */
+	}
 
 	/* Jump comment lines in both files and osition the file poiter into the first data line */
 	k = i = 0;
@@ -228,7 +234,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 
 	k = i = 0;
 	while (fgets (line, GMT_BUFSIZ, fp_base) && line[0] == '#') {
-		fprintf (stdout, "%s", line);
+		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 		k++;
 	}
 	rewind (fp_base);
@@ -244,7 +250,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 						GMT_Report (API, GMT_MSG_NORMAL, "Read error in merge file line\n");
 						Return (EXIT_FAILURE);
 					}
-					fprintf (stdout, "%s", line);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 				}
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {	/* Advance also in the base file */
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
@@ -262,15 +268,19 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
 						Return (EXIT_FAILURE);
 					}
-					fprintf (stdout, "%s", line);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 				}
 			}
 		}
 		if (merge_start == n_merge) {	/* Copy the rest of dbase1 file and stop */
 			while (fgets (line, GMT_BUFSIZ, fp_base))
-				fprintf (stdout, "%s", line);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 			break;			/* Not very elegant way of stopping, but we are done */
 		}
+	}
+
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
 	}
 
 	fclose (fp_base);

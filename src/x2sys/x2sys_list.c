@@ -266,7 +266,8 @@ int GMT_x2sys_list_parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, st
 		}
 		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text - cannot use binary output */
 	}
-	n_errors += GMT_check_condition (GMT, mixed && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -Fn with binary output\n");
+	/* GMT->parent->mode means we are calling from mex or Python and dont want to get textsets back */
+	n_errors += GMT_check_condition (GMT, (mixed || GMT->parent->mode) && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -Fn with binary output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

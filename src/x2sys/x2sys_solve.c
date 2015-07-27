@@ -35,7 +35,7 @@
 #define THIS_MODULE_NAME	"x2sys_solve"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Determine least-squares systematic correction from crossovers"
-#define THIS_MODULE_KEYS	""
+#define THIS_MODULE_KEYS	">TO"
 
 #include "x2sys.h"
 
@@ -348,7 +348,7 @@ uint64_t next_unused_track (uint64_t *cluster, uint64_t n)
 
 int GMT_x2sys_solve (void *V_API, int mode, void *args)
 {
-	char **trk_list = NULL;
+	char **trk_list = NULL, text[GMT_BUFSIZ] = {""};
 	char trk[2][GMT_LEN64], t_txt[2][GMT_LEN64], z_txt[GMT_LEN64] = {""}, w_txt[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
 	int *ID[2] = {NULL, NULL}, ks, t, error = 0, expect;
@@ -879,32 +879,42 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	
 	/* Write correction table */
 	
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+
 	for (p = 0; p < n_tracks; p++) {
 		if (normalize) a[col_off[p]+1] /= range;	/* Unnormalize slopes */
-		(GMT->common.b.active[GMT_IN]) ? printf ("%" PRIu64, p) : printf ("%s", trk_list[p]);
-		printf ("\t%s", Ctrl->C.col);
+		(GMT->common.b.active[GMT_IN]) ? sprintf (line, "%" PRIu64, p) : sprintf (line, "%s", trk_list[p]);
+		strcat (line, "\t");
+		strcat (line, Ctrl->C.col);
 		GMT_memset (var, N_BASIS, double);	/* Reset all parameters to zero */
 		for (r = 0; r < R[p]; r++) var[r] = a[col_off[p]+r];	/* Just get the first R(p) items; the rest are set to 0 */
 		switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 			case F_IS_CONSTANT:
-				printf ("\t%g\n", var[0]);
+				sprintf (text, "\t%g\n", var[0]);
 				break;
 			case F_IS_DRIFT_T:
-				printf ("\t%g\t%g*((time-T))\n", var[0], var[1]);
+				sprintf (text, "\t%g\t%g*((time-T))\n", var[0], var[1]);
 				break;
 			case F_IS_DRIFT_D:
-				printf ("\t%g\t%g*((dist))\n", var[0], var[1]);
+				sprintf (text, "\t%g\t%g*((dist))\n", var[0], var[1]);
 				break;
 			case F_IS_GRAV1930:
-				printf ("\t%g\t%g*sin((lat))^2\n", var[0], var[1]);
+				sprintf (text, "\t%g\t%g*sin((lat))^2\n", var[0], var[1]);
 				break;
 			case F_IS_HEADING:
-				printf ("\t%g\t%g*cos((azim))\t%g*cos(2*(azim))\t%g*sin((azim))\t%g*sin(2*(azim))\n", var[0], var[1], var[2], var[3], var[4]);
+				sprintf (text, "\t%g\t%g*cos((azim))\t%g*cos(2*(azim))\t%g*sin((azim))\t%g*sin(2*(azim))\n", var[0], var[1], var[2], var[3], var[4]);
 				break;
 			case F_IS_SCALE:
-				printf ("\t%g*((%s))\n", 1.0 - var[0], Ctrl->C.col);
+				sprintf (text, "\t%g*((%s))\n", 1.0 - var[0], Ctrl->C.col);
 				break;
 		}
+		strcat (line, text);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 	}
 	
 	/* Free up memory */

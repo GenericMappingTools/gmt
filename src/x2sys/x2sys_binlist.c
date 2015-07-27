@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"x2sys_binlist"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Create bin index listing from track data files"
-#define THIS_MODULE_KEYS	">DO"
+#define THIS_MODULE_KEYS	">TO"
 
 #include "x2sys.h"
 
@@ -171,7 +171,7 @@ int comp_bincross (const void *p1, const void *p2)
 
 int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 {
-	char **trk_name = NULL;
+	char **trk_name = NULL, record[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""};
 
 	uint64_t this_bin_index, index, last_bin_index, row;
 	unsigned int trk, curr_x_pt, prev_x_pt, n_tracks;
@@ -269,7 +269,14 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 		dist_bin = GMT_memory (GMT, NULL, B.nm_bin, double);
 	}
 
-	fprintf (GMT->session.std[GMT_OUT], "# %s\n", Ctrl->T.TAG);
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+	
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Ctrl->T.TAG);
 
 	for (trk = 0; trk < n_tracks; trk++) {
 
@@ -414,23 +421,30 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 
 		/* Time for bin index output */
 
-		fprintf (GMT->session.std[GMT_OUT], "> %s\n", trk_name[trk]);
+		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, trk_name[trk]);
 		for (index = 0; index < B.nm_bin; index++) {
 			if (B.binflag[index] == 0) continue;
 			x = B.wesn[XLO] + ((index % B.nx_bin) + 0.5) * B.inc[GMT_X];
 			y = B.wesn[YLO] + ((index / B.nx_bin) + 0.5) * B.inc[GMT_Y];
-			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
-			fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
-			fprintf (GMT->session.std[GMT_OUT], "%s%" PRIu64 "%s%u", GMT->current.setting.io_col_separator, index, GMT->current.setting.io_col_separator, B.binflag[index]);
+			GMT_ascii_format_col (GMT, record, x, GMT_OUT, GMT_X);
+			strcat (record, GMT->current.setting.io_col_separator);
+			GMT_ascii_format_col (GMT, text, y, GMT_OUT, GMT_Y);
+			strcat (record, text);
+			sprintf (text, "%s%" PRIu64 "%s%u", GMT->current.setting.io_col_separator, index, GMT->current.setting.io_col_separator, B.binflag[index]);
+			strcat (record, text);
 			if (Ctrl->D.active) {
-				fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dist_bin[index], GMT_Z);
+				strcat (record, GMT->current.setting.io_col_separator);
+				GMT_ascii_format_col (GMT, text, dist_bin[index], GMT_OUT, GMT_Z);
+				strcat (record, text);
 			}
-			fprintf (GMT->session.std[GMT_OUT], "\n");
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
 
 		if (Ctrl->D.active) GMT_free (GMT, dist_km);
+	}
+	
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
 	}
 
 	GMT_free (GMT, X);

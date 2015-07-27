@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"x2sys_report"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Report statistics from crossover data base"
-#define THIS_MODULE_KEYS	"LTi,ITi,>DO"
+#define THIS_MODULE_KEYS	"LTi,ITi,>TO"
 
 #include "x2sys.h"
 
@@ -385,7 +385,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 		sprintf (record, fmt, trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
- 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
 	
