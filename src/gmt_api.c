@@ -705,16 +705,16 @@ void GMTAPI_put_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, double val
 	 * Used in GMTAPI_Export_Dataset and GMTAPI_Export_Grid. */
 
 	switch (type) {	/* Use type to select the correct array to which we will put a value */
-		case GMT_UCHAR:  u->uc1[row] = (uint8_t)val;  break;
-		case GMT_CHAR:   u->sc1[row] = (int8_t)val;   break;
-		case GMT_USHORT: u->ui2[row] = (uint16_t)val; break;
-		case GMT_SHORT:  u->si2[row] = (int16_t)val;  break;
-		case GMT_UINT:   u->ui4[row] = (uint32_t)val; break;
-		case GMT_INT:    u->si4[row] = (int32_t)val;  break;
-		case GMT_ULONG:  u->ui8[row] = (uint64_t)val; break;
-		case GMT_LONG:   u->si8[row] = (int64_t)val;  break;
-		case GMT_FLOAT:  u->f4[row]  = (float)val;    break;
 		case GMT_DOUBLE: u->f8[row]  = val;           break;
+		case GMT_FLOAT:  u->f4[row]  = (float)val;    break;
+		case GMT_LONG:   u->si8[row] = (int64_t)val;  break;
+		case GMT_ULONG:  u->ui8[row] = (uint64_t)val; break;
+		case GMT_INT:    u->si4[row] = (int32_t)val;  break;
+		case GMT_UINT:   u->ui4[row] = (uint32_t)val; break;
+		case GMT_SHORT:  u->si2[row] = (int16_t)val;  break;
+		case GMT_USHORT: u->ui2[row] = (uint16_t)val; break;
+		case GMT_CHAR:   u->sc1[row] = (int8_t)val;   break;
+		case GMT_UCHAR:  u->uc1[row] = (uint8_t)val;  break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "Internal error in GMTAPI_get_val: Passed bad type (%d)\n", type);
 			API->error = GMT_NOT_A_VALID_TYPE;
