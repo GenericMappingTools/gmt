@@ -96,6 +96,7 @@ struct GMT_DEFAULTS {
 	unsigned int fftw_plan;   /* Only accessed if HAVE_FFTW3F is defined: Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
 	bool fftwf_threads;   /* Only accessed if HAVE_FFTW3F_THREADS is defined: Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
 	unsigned int history;     /* mode to pass information via history file gmt.history (k_history_off, k_history_read, k_history_write) */
+	unsigned int export_type;     /* What data type to export to external APIs [GMT_DOUBLE] */
 	double extrapolate_val[2];/* Choose between [0] = 0, 1D extrapolated vals are NaN, = 1 -> extrapolate, = 2 -> set to const stored in [1] */
 	/* IO group */
 	uint64_t n_bin_header_cols;		/* Minimum number of columns in a binary file for which the all cols == NaN means segment header [2] */

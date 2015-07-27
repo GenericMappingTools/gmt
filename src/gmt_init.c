@@ -5041,6 +5041,35 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			}
 			break;
 
+		case GMTCASE_GMT_EXPORT_TYPE:
+			if (!strncmp (lower_value, "double", 6U))
+				GMT->current.setting.export_type = GMT_DOUBLE;
+			else if (!strncmp (lower_value, "single", 6U))
+				GMT->current.setting.export_type = GMT_FLOAT;
+			else if (!strncmp (lower_value, "float", 5U))
+				GMT->current.setting.export_type = GMT_FLOAT;
+			else if (!strncmp (lower_value, "long", 4U))
+				GMT->current.setting.export_type = GMT_LONG;
+			else if (!strncmp (lower_value, "ulong", 10U))
+				GMT->current.setting.export_type = GMT_ULONG;
+			else if (!strncmp (lower_value, "int", 3U))
+				GMT->current.setting.export_type = GMT_INT;
+			else if (!strncmp (lower_value, "uint", 4U))
+				GMT->current.setting.export_type = GMT_UINT;
+			else if (!strncmp (lower_value, "short", 5U))
+				GMT->current.setting.export_type = GMT_SHORT;
+			else if (!strncmp (lower_value, "ushort", 6U))
+				GMT->current.setting.export_type = GMT_USHORT;
+			else if (!strncmp (lower_value, "char", 4U))
+				GMT->current.setting.export_type = GMT_CHAR;
+			else if (!strncmp (lower_value, "byte", 4U))
+				GMT->current.setting.export_type = GMT_UCHAR;
+			else if (!strncmp (lower_value, "uchar", 5U))
+				GMT->current.setting.export_type = GMT_UCHAR;
+			else
+				error = true;
+			break;
+			
 		case GMTCASE_GMT_EXTRAPOLATE_VAL:
 			if (!strcmp (lower_value, "nan"))
 				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
@@ -6110,6 +6139,30 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_LEN256);
 			break;
+			
+		case GMTCASE_GMT_EXPORT_TYPE:
+			if (GMT->current.setting.export_type == GMT_DOUBLE)
+				strcpy (value, "double");
+			else if (GMT->current.setting.export_type == GMT_FLOAT)
+				strcpy (value, "single");
+			else if (GMT->current.setting.export_type == GMT_LONG)
+				strcpy (value, "long");
+			else if (GMT->current.setting.export_type == GMT_ULONG)
+				strcpy (value, "ulong");
+			else if (GMT->current.setting.export_type == GMT_INT)
+				strcpy (value, "int");
+			else if (GMT->current.setting.export_type == GMT_UINT)
+				strcpy (value, "uint");
+			else if (GMT->current.setting.export_type == GMT_SHORT)
+				strcpy (value, "short");
+			else if (GMT->current.setting.export_type == GMT_USHORT)
+				strcpy (value, "ushort");
+			else if (GMT->current.setting.export_type == GMT_CHAR)
+				strcpy (value, "char");
+			else if (GMT->current.setting.export_type == GMT_UCHAR)
+				strcpy (value, "byte");
+			break;
+		
 		case GMTCASE_GMT_EXTRAPOLATE_VAL:
 			if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE)
 				strcpy (value, "NaN");

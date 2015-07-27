@@ -2389,7 +2389,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 				if (M_obj->dim < D_obj->n_records) return (GMTAPI_report_error (API, GMT_DIM_TOO_SMALL));
 				S_obj->n_alloc = M_obj->n_columns * M_obj->dim;	/* Get total number of elements as n_columns * dim */
 			}
-			M_obj->type = GMT_DOUBLE;
+			M_obj->type = API->GMT->current.setting.export_type;
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 
@@ -2423,7 +2423,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 				return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));
 			V_obj->n_rows = D_obj->n_records;	/* Number of data records... */
 			if (API->GMT->current.io.multi_segments[GMT_OUT]) V_obj->n_rows += D_obj->n_segments;	/* ...plus number of segment headers */
-			for (col = 0; col < D_obj->n_columns; col++) V_obj->type[col] = GMT_DOUBLE;
+			for (col = 0; col < D_obj->n_columns; col++) V_obj->type[col] = API->GMT->current.setting.export_type;
 			if ((error = GMTAPI_alloc_vectors (API->GMT, V_obj)) != GMT_OK) return (GMTAPI_report_error (API, error));
 			for (tbl = ij = 0; tbl < D_obj->n_tables; tbl++) {
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
@@ -5325,7 +5325,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				size_t size = S_obj->n_alloc = GMT_CHUNK;
 				M_obj = GMT_create_matrix (API->GMT, 1, GMT_OUT);
-				M_obj->type = GMT_DOUBLE;
+				M_obj->type = API->GMT->current.setting.export_type;
 				M_obj->n_columns = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : API->GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				M_obj->dim = M_obj->n_columns;
 				size *= M_obj->n_columns;
@@ -5365,7 +5365,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				if ((V_obj = GMT_create_vector (API->GMT, col, GMT_OUT)) == NULL)
 					return_error (API, GMT_MEMORY_ERROR);
 				S_obj->resource = V_obj;
-				for (col = 0; col < S_obj->n_columns; col++) V_obj->type[col] = GMT_DOUBLE;
+				for (col = 0; col < S_obj->n_columns; col++) V_obj->type[col] = API->GMT->current.setting.export_type;
 			}
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
 				for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++)	/* Place the output items */
