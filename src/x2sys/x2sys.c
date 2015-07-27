@@ -178,6 +178,13 @@ void gmtmggpath_init (struct GMT_CTRL *GMT) {
 	fclose (fp);
 }
 
+void gmtmggpath_free (struct GMT_CTRL *GMT) {
+	int k;
+	for (k = 0; k < n_gmtmgg_paths; k++)
+		GMT_free (GMT, gmtmgg_path[k]);
+	n_gmtmgg_paths = 0;
+}
+
 int get_first_year (struct GMT_CTRL *GMT, double t)
 {
 	/* obtain yyyy/mm/dd and return year */
@@ -409,6 +416,8 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X)
 	free (X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (GMT, X);
 	for (id = 0; id < n_x2sys_paths; id++) GMT_free (GMT, x2sys_datadir[id]);
+	gmtmggpath_free (GMT);
+	
 	MGD77_end (GMT, &M);
 }
 
