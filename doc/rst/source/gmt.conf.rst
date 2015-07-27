@@ -341,6 +341,13 @@ fonts can be found in the :doc:`gmt` man page.
     set we will parse obsolete GMT 4 options and issue warnings; if 5
     is set then parsing GMT 4 only syntax will result in errors [4].
 
+.. _GMT_EXPORT_TYPE:
+
+**GMT_EXPORT_TYPE**
+    This setting is only used by external interfaces and controls the
+    data type used for table entries.  Choose from double,
+    single, [u]long, [u]int, [u]short, and [u]char [double].
+
 .. _GMT_EXTRAPOLATE_VAL:
 
 **GMT_EXTRAPOLATE_VAL**
