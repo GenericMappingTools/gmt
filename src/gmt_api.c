@@ -2011,6 +2011,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 	p_func_size_t GMT_2D_to_index = NULL;
 
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -2108,7 +2109,8 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 				D_obj->table[D_obj->n_tables] = GMT_memory (API->GMT, NULL, 1, struct GMT_DATATABLE);
 				D_obj->table[D_obj->n_tables]->segment = GMT_memory (API->GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
 				D_obj->table[D_obj->n_tables]->segment[0] = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
-				GMT_alloc_segment (API->GMT, D_obj->table[D_obj->n_tables]->segment[0], M_obj->n_rows, M_obj->n_columns, true);
+				S = D_obj->table[D_obj->n_tables]->segment[0];	/* Shorthand for current segment */
+				GMT_alloc_segment (API->GMT, S, M_obj->n_rows, M_obj->n_columns, true);
 				GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 				for (row = seg = 0; row < M_obj->n_rows; row++) {
 					n_use = gmt_n_cols_needed_for_gaps (API->GMT, M_obj->n_columns);
@@ -2120,33 +2122,34 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 					if ((status = gmt_bin_input_memory (API->GMT, M_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the one we had and add more */
 						if (status == -2) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
 						if (got_data) {	/* If first input segment has header then we already have a segment allocated */
-							GMT_alloc_segment (API->GMT, D_obj->table[D_obj->n_tables]->segment[seg], n_records, M_obj->n_columns, false);
+							GMT_alloc_segment (API->GMT, S, n_records, M_obj->n_columns, false);
 							seg++;	/* Increment number of segments */
-							if (seg == s_alloc) {
-								s_alloc <<= 2;
+							if (seg == s_alloc) {	/* Allocate more space for segments */
+								s_alloc <<= 1;
 								D_obj->table[D_obj->n_tables]->segment = GMT_memory (API->GMT, D_obj->table[D_obj->n_tables]->segment, s_alloc, struct GMT_DATASEGMENT *);
 							}
 							/* Allocate next segment with initial size the remainder of the data */
 							D_obj->table[D_obj->n_tables]->segment[seg] = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
-							GMT_alloc_segment (API->GMT, D_obj->table[D_obj->n_tables]->segment[seg], M_obj->n_rows-n_records, M_obj->n_columns, true);
+							S = D_obj->table[D_obj->n_tables]->segment[seg];	/* Shorthand for current segment */
+							GMT_alloc_segment (API->GMT, S, M_obj->n_rows-n_records, M_obj->n_columns, true);
 							n_records = 0;	/* This is number of recs in current segment */
 						}
 					}
 					else {	/* Data record */
-						for (col = 0; col < M_obj->n_columns; col++) {	/* Place the record into the structure */
-							D_obj->table[D_obj->n_tables]->segment[seg]->coord[col][row] = API->GMT->current.io.curr_rec[col];
-						}
+						for (col = 0; col < M_obj->n_columns; col++)	/* Place the record into the structure */
+							S->coord[col][row] = API->GMT->current.io.curr_rec[col];
 						got_data = true;
 						n_records++;
 					}
 				}
-				if (seg)	/* Got more than one segment, finalize realloc of last segment */
-					GMT_alloc_segment (API->GMT, D_obj->table[D_obj->n_tables]->segment[seg], n_records, M_obj->n_columns, true);
-				else	/* Only got one segment of the expected length */
+				if (seg)	/* Got more than one segment, finalize the realloc of last segment */
+					GMT_alloc_segment (API->GMT, S, n_records, M_obj->n_columns, false);
+				else	/* Only got one segment already allocated to the exact data length */
 					seg = 1;
+				/* Realloc this tables segment array to the actual length [seg] */
 				D_obj->table[D_obj->n_tables]->segment = GMT_memory (API->GMT, D_obj->table[D_obj->n_tables]->segment, seg, struct GMT_DATASEGMENT *);
 				
-				GMTAPI_increment_D (D_obj, M_obj->n_rows, M_obj->n_columns, seg);	/* Update counters for D_obj */
+				GMTAPI_increment_D (D_obj, M_obj->n_rows, M_obj->n_columns, seg);	/* Update counters for D_obj only table */
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
 				if ((new_item = GMTAPI_Validate_ID (API, GMT_IS_DATASET, new_ID, GMT_IN)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
 				API->object[new_item]->data = D_obj;
@@ -4416,7 +4419,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 					if (S_obj->n_alloc != API->current_rec[GMT_OUT]) {	/* Must finalize memory */
 						struct GMT_MATRIX *M_obj = S_obj->resource;
 						size_t size = S_obj->n_alloc = API->current_rec[GMT_OUT];
-						size *= S_obj->n_columns;
+						size *= M_obj->n_columns;
 						if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK)
 							return_error (V_API, error);
 					}
