@@ -284,24 +284,6 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 
 	out = GMT_memory (GMT, NULL, s->n_fields, double);
 
-	for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Set output formats for each output column */
-		if ((int)s->out_order[ocol] == s->t_col) {
-			GMT->current.io.col_type[GMT_OUT][ocol] = GMT_IS_ABSTIME;
-			tpos = ocol;	/* This is the output column with time */
-		}
-		else if ((int)s->out_order[ocol] == s->x_col) {
-			GMT->current.io.col_type[GMT_OUT][ocol] = (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT;
-			xpos = ocol;	/* This is the output column with x */
-		}
-		else if ((int)s->out_order[ocol] == s->y_col) {
-			GMT->current.io.col_type[GMT_OUT][ocol] = (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT;
-			ypos = ocol;	/* This is the output column with y */
-		}
-		else
-			GMT->current.io.col_type[GMT_OUT][ocol] = GMT_IS_FLOAT;
-
-		if (s->info[s->out_order[ocol]].format[0] != '-') gmt_formatting = true;
-	}
 	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;
 
 	if (GMT->common.R.active) {	/* Restrict output to given domain */
@@ -414,6 +396,25 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
+	}
+	/* Override default GMT->current.io.col_type[GMT_OUT] settings */
+	for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Set output formats for each output column */
+		if ((int)s->out_order[ocol] == s->t_col) {
+			GMT->current.io.col_type[GMT_OUT][ocol] = GMT_IS_ABSTIME;
+			tpos = ocol;	/* This is the output column with time */
+		}
+		else if ((int)s->out_order[ocol] == s->x_col) {
+			GMT->current.io.col_type[GMT_OUT][ocol] = (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT;
+			xpos = ocol;	/* This is the output column with x */
+		}
+		else if ((int)s->out_order[ocol] == s->y_col) {
+			GMT->current.io.col_type[GMT_OUT][ocol] = (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT;
+			ypos = ocol;	/* This is the output column with y */
+		}
+		else
+			GMT->current.io.col_type[GMT_OUT][ocol] = GMT_IS_FLOAT;
+
+		if (s->info[s->out_order[ocol]].format[0] != '-') gmt_formatting = true;
 	}
 	if (API->mode && gmt_formatting) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Disabling text formatting for external interface\n");
