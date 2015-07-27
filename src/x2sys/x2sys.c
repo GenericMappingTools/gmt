@@ -763,8 +763,9 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	z = GMT_memory (GMT, NULL, 6, double *);
-	for (i = 0; i < 6; i++) z[i] = GMT_memory (GMT, NULL, p->n_rows, double);
+	/* Only return the data fields requested */
+	z = GMT_memory (GMT, NULL, s->n_out_columns, double *);
+	for (i = 0; i < s->n_out_columns; i++) z[i] = GMT_memory (GMT, NULL, p->n_rows, double);
 
 	for (j = 0; j < p->n_rows; j++) {
 
@@ -773,12 +774,16 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 			return (GMT_GRDIO_READ_FAILED);
 		}
 
-		z[0][j] = record.time * GMT->current.setting.time_system.i_scale + t_off;	/* To get GMT time keeping */
-		z[1][j] = record.lat * MDEG2DEG;
-		z[2][j] = record.lon * MDEG2DEG;
-		z[3][j] = (record.gmt[0] == GMTMGG_NODATA) ? NaN : 0.1 * record.gmt[0];
-		z[4][j] = (record.gmt[1] == GMTMGG_NODATA) ? NaN : record.gmt[1];
-		z[5][j] = (record.gmt[2] == GMTMGG_NODATA) ? NaN : record.gmt[2];
+		for (i = 0; i < s->n_out_columns; i++) {
+			switch (s->out_order[i]) {
+				case 0: z[i][j] = record.time * GMT->current.setting.time_system.i_scale + t_off; break;	/* To get GMT time keeping */
+				case 1: z[i][j] = record.lat * MDEG2DEG; break;
+				case 2: z[i][j] = record.lon * MDEG2DEG; break;
+				case 3: z[i][j] = (record.gmt[0] == GMTMGG_NODATA) ? NaN : 0.1 * record.gmt[0]; break;
+				case 4: z[i][j] = (record.gmt[1] == GMTMGG_NODATA) ? NaN : record.gmt[1]; break;
+				case 5: z[i][j] = (record.gmt[2] == GMTMGG_NODATA) ? NaN : record.gmt[2]; break;
+			}
+		}
 
 	}
 
