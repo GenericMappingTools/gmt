@@ -7027,8 +7027,8 @@ unsigned int GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bo
 			GMT_null_univector (GMT, &(V->data[col]), V->type[col]);
 		}
 	}
-	GMT_free (GMT, V->data);
-	GMT_free (GMT, V->type);
+	if (V->data) GMT_free (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
+	if (V->type) GMT_free (GMT, V->type);
 	return (V->alloc_mode);
 }
 
