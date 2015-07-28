@@ -2240,9 +2240,9 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 				}
 				else {	/* Must copy items individually */
 					struct GMT_DATASEGMENT *S = D_obj->table[D_obj->n_tables]->segment[0];	/* Shorthand for current segment */
-					GMTAPI_get_val = GMTAPI_select_get_function (API, M_obj->type);
-					for (row = 0; row < V_obj->n_rows; row++) {
-						for (col = 0; col < V_obj->n_columns; col++)
+					for (col = 0; col < V_obj->n_columns; col++) {
+						GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[col]);
+						for (row = 0; row < V_obj->n_rows; row++)
 							GMTAPI_get_val (&(V_obj->data[col]), row, &(S->coord[col][row]));
 					}
 				}
@@ -2496,7 +2496,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			V_obj->n_rows = (API->GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of data records [and optionally segment headers] */
 			for (col = 0; col < D_obj->n_columns; col++) V_obj->type[col] = API->GMT->current.setting.export_type;	/* Same data type for all columns */
 			if ((error = GMTAPI_alloc_vectors (API->GMT, V_obj, V_obj->n_rows)) != GMT_OK) return (GMTAPI_report_error (API, error));
-			GMTAPI_put_val = GMTAPI_select_put_function (API, API->GMT->current.setting.export_type);
+			GMTAPI_put_val = GMTAPI_select_put_function (API, API->GMT->current.setting.export_type);	/* Since all columns are of same type */
 			for (tbl = offset = 0; tbl < D_obj->n_tables; tbl++) {
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for this segment */
@@ -5149,9 +5149,11 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 				V_obj = S_obj->resource;
 				n_use = gmt_n_cols_needed_for_gaps (API->GMT, S_obj->n_columns);
 				gmt_update_prev_rec (API->GMT, n_use);
-				GMTAPI_get_val = GMTAPI_select_get_function (API, M_obj->type);
-				for (col = 0; col < S_obj->n_columns; col++)	/* We know the number of columns from registration */
-					 GMTAPI_get_val (&(V_obj->data[col]), API->current_rec[GMT_IN], &(API->GMT->current.io.curr_rec[col]));
+				GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[0]);
+				for (col = 0; col < S_obj->n_columns; col++) {	/* We know the number of columns from registration */
+					if (col && V_obj->type[col] != V_obj->type[col-1]) GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[col]);
+					GMTAPI_get_val (&(V_obj->data[col]), API->current_rec[GMT_IN], &(API->GMT->current.io.curr_rec[col]));
+				}
 				if ((status = gmt_bin_input_memory (API->GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
 					if (status == -2) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
 					record = NULL;
@@ -5449,12 +5451,12 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				col = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : API->GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if ((V_obj = GMT_create_vector (API->GMT, col, GMT_OUT)) == NULL)
 					return_error (API, GMT_MEMORY_ERROR);
-				for (col = 0; col < V_obj->n_columns; col++)	/* Set export data type */
+				for (col = 0; col < V_obj->n_columns; col++)	/* Set same export data type for all vectors */
 					V_obj->type[col] = API->GMT->current.setting.export_type;
 				if ((error = GMTAPI_alloc_vectors (API->GMT, V_obj, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
 				S_obj->resource = V_obj;	/* Save so we can get it next time */
 			}
-			GMTAPI_put_val = GMTAPI_select_put_function (API, API->GMT->current.setting.export_type);
+			GMTAPI_put_val = GMTAPI_select_put_function (API, API->GMT->current.setting.export_type);	/* Since vectors are all the same type */
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
 				for (col = 0; col < V_obj->n_columns; col++)	/* Place the output items */
 					GMTAPI_put_val (&(V_obj->data[col]), API->current_rec[GMT_OUT], API->GMT->session.d_NaN);
