@@ -34,5 +34,5 @@ gmt grdimage t_tmp.nc -J -Ct.cpt -Ba -BWSne -O -K -Y${yoffe}i >> $ps
 gmt psxy -Rt_tmp.nc -J -O -K -L -W2p box >> $ps
 echo "400 192 No extension" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 25% inward taper" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
-gmt psscale -Ct.cpt -D${x}i/${yoff}i/4i/0.1ih -O -K -B0.5 >> $ps
+gmt psscale -Ct.cpt -D${x}i/${yoff}i+w4i/0.1i+h+jTC -O -K -B0.5 >> $ps
 gmt psxy -R -J -O -T >> $ps

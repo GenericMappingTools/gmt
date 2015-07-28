@@ -24,7 +24,7 @@ gmt psxy big_tmp.gmt -R -J -Ss0.1i -W0.25p -Gred -O -K >> $ps
 #gmt pstext big_tmp.gmt -R -J -O -K -F+f8p+jCB -Gwhite -Dj0.1i >> $ps
 # We made the original select.ps with awk:
 #awk -F'\t' '{if ($3 > 7000000) print $1, $2, $4}' capitals.gmt | sed -e 's/\"//g' | pstext -R -J -O -K -F+f8p+jCB -Gwhite -Dj0.1i >> $ps
-gmt pslegend -DjCB/2.9i/CT/0/0.5i -O -K -R -J -F+p1p << EOF >> $ps
+gmt pslegend -DjCB+w2.9i+jCT+o0/0.5i -O -K -R -J -F+p1p << EOF >> $ps
 S 0.1i s 0.15i red 0.25p 0.3i Capital with over 7 million people
 S 0.1i s 0.15i green 0.25p 0.3i Capital with less people than that
 EOF

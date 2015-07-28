@@ -16,6 +16,5 @@ cat << EOF > patt.cpt
 EOF
 gmt grdmath -R-5/5/-5/5 -I1 0 0 CDIST 2.5 DIV DUP MUL NEG EXP 30 MUL = t.nc
 gmt grdview t.nc -JX5i -P -Xc -Yc -K -Cpatt.cpt -Qs -B1 > $ps
-gmt psscale -Cpatt.cpt -D2.5i/-0.5i/4.5i/0.25ih -O -K >> $ps
-gmt psscale -Cpatt.cpt -D5.5i/2.5i/4.5i/0.25i -O >> $ps
-
+gmt psscale -Cpatt.cpt -D2.5i/-0.5i+w4.5i/0.25i+h+jTC -O -K >> $ps
+gmt psscale -Cpatt.cpt -D5.5i/2.5i+w4.5i/0.25i+jML -O >> $ps

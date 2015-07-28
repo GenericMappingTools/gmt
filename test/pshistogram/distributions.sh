@@ -23,7 +23,7 @@ echo "0 1.5 log101p(percent)" | gmt pstext -R -J -O -K -Dj0.1i -F+jTR+f12p >> $p
 gmt pshistogram -Bxaf -Byafg100+u" %" -BWSne+glightblue ${v3206} -R-6000/0/0/105 -JX3i/2.0i -Glightred -L1p -Z1 -Q -W200 -O -K -N0+p1p,red -N1+p1p,green -N2+p1p,blue -X-3.75i -Y2.5i >> $ps
 # R: Cumulative histogram staircase
 gmt pshistogram -Bxaf -Byafg100+u" %" -BWSne+glightblue ${v3206} -R-6000/0/0/105 -JX3i/2.0i -S -L1p -Z1 -Q -W200 -O -K -N0+p1p,red -N1+p1p,green -N2+p1p,blue -X3.75i >> $ps
-gmt pslegend -D0/0/1.2i/BR/0.1i/0.1i -R -J -O -K -F+p2p+gwhite << EOF >> $ps
+gmt pslegend -D0/0+w1.2i+jBR+o0.1i/0.1i -R -J -O -K -F+p2p+gwhite << EOF >> $ps
 S 0.3i - 0.45i - 1p,red 0.7i L@-2@-
 S 0.3i - 0.45i - 1p,green 0.7i L@-1@-
 S 0.3i - 0.45i - 1p,blue 0.7i LMS

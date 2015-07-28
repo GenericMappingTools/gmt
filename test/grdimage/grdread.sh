@@ -15,7 +15,7 @@ gmt grdimage -R-165/195/-90/90 -Ctmp.cpt tmp.nc -J -Bx60f10 -By30f10 -BWeSn --MA
 # Read native binary grid
 gmt grdimage -Rd -Ctmp.cpt tmp.b=bf -J -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -O -K -Y-2.5i >> $ps
 gmt grdimage -R-165/195/-90/90 -Ctmp.cpt tmp.b=bf -J -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -O -K -Y-2.5i >> $ps
-gmt psscale -Ctmp.cpt -D4.5i/4.5i/8i/0.2i -O -K >> $ps
+gmt psscale -Ctmp.cpt -D4.5i/4.5i+w8i/0.2i+jML -O -K >> $ps
 gmt pstext -R0/9/0/9 -Jx1 -O -N -F+f18p+jCM << EOF >> $ps
 -1.2 7.25 NetCDF
 -1.2 2.25 Binary

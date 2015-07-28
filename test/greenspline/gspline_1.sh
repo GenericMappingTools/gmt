@@ -15,7 +15,7 @@ gmt psxy -R$R -J -O -K $T -Sc0.075i -Gblack >> $ps
 gmt greenspline -R-2000/25000 -I100 $T -Sl -D0 | gmt psxy -R$R -JX -O -K -Wthin,. >> $ps
 gmt greenspline -R-2000/25000 -I100 $T -Sc -D0 | gmt psxy -R$R -JX -O -K -Wthin,- >> $ps
 gmt greenspline -R-2000/25000 -I100 $T -St0.25 -D0 | gmt psxy -R$R -J -O -K -Wthin >> $ps
-gmt pslegend -R$R -JX -O -K -F+p -Dx5.9i/2.9i/2.05i/TR --FONT_ANNOT_PRIMARY=12p << EOF >> $ps
+gmt pslegend -R$R -JX -O -K -F+p -Dx5.9i/2.9i+w2.05i+jTR --FONT_ANNOT_PRIMARY=12p << EOF >> $ps
 S 0.2i - 0.35i - 0.5p 0.5i Tension (@%6%t@%% = 0.25)
 S 0.2i - 0.35i - 0.5p,- 0.5i No tension
 S 0.2i - 0.35i - 0.5p,. 0.5i Linear interpolation

@@ -30,6 +30,6 @@ info=`gmt grdinfo -C -M cva_bathy.nc`
 x=`echo $info | cut -f14 -d' '`
 y=`echo $info | cut -f15 -d' '`
 echo $x $y | gmt psxy -R -J -O -K -Sx0.2i -W2p >> $ps
-gmt psscale -Ch.cpt -D3/-0.4/4i/0.125h -O -K -Bxa20f10+u% -By+l"CVA" -I0.5 >> $ps
+gmt psscale -Ch.cpt -D3i/-0.4i+w4i/0.125i+h+jTC -O -K -Bxa20f10+u% -By+l"CVA" -I0.5 >> $ps
 gmt psxy -R -J -O -T >> $ps
 

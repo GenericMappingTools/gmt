@@ -33,7 +33,7 @@ S 0.2i c 0.1i red - 0.5i FAA (Talwani3D)
 S 0.2i c 0.1i darkgreen - 0.5i VGG (Talwani3D)
 S 0.2i c 0.1i brown - 0.5i N (Talwani3D)
 EOF
-gmt pslegend -R -J -O -K -DjTL/2.2i/TL/0.1i/0.1i legend.txt -F+gwhite+p >> $ps
+gmt pslegend -R -J -O -K -DjTL+w2.2i+jTL+o0.1i/0.1i legend.txt -F+gwhite+p >> $ps
 # Plot sphere
 mx=`gmt math -Q $R 2 MUL 1000 DIV 50 DIV 6 MUL =`
 mz=`gmt math -Q $R 2 MUL 6000 DIV 2.5 MUL =`

@@ -20,7 +20,7 @@ gmt grdseamount cart_circ.txt -R-100/100/-100/100 -I1 -F -Z-3000 -r -Gcart_circ.
 gmt grdimage cart_circ.nc -JX3i -P -Baf -BWSne -Ct.cpt -K -X1.1i -Y1.25i > $ps
 gmt grdtrack -Gcart_circ.nc -ELT/RB+d > cart_circ.trk
 gmt psxy -R -J -O -K -W1p cart_circ.trk >> $ps
-gmt psscale -Ct.cpt -D3.25i/-0.4i/5i/0.1ih -B200f100 -O -K >> $ps
+gmt psscale -Ct.cpt -D3.25i/-0.4i+w5i/0.1i+h+jTC -B200f100 -O -K >> $ps
 # LR. Input file for Geographic circular
 cat << EOF > geo_circ.txt
 -0.5	0.5	50	1000	0

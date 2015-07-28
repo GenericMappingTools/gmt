@@ -68,7 +68,7 @@ yoff=`gmt math -Q $HEIGHT $ROW DIV $ROW 1 SUB MUL =`
 gmt logo -O -K -Dx${xoff}i/${yoff}i+jMC+w${width}i >> $ps
 
 height=`gmt math -Q $HEIGHT $ROW DIV =`
-gmt pslegend -O -Dx0/0/$WIDTH/$height/BL >> $ps <<END
+gmt pslegend -O -R -J -DjBR+w$WIDTH+jBR >> $ps <<END
 L $fontsizeL 1 R Values are R/G/B. Names are case-insensitive.
 L $fontsizeL 1 R Optionally, use GREY instead of GRAY.
 END

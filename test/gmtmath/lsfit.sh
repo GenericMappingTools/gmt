@@ -24,7 +24,7 @@ gmt psxy -R-3/3/0/4 -JX6.5i/4i -P -Baf -BWSne stepdata.txt -Sc0.15c -Gblue -K -X
 gmt psxy -R -J -O -K stepfit_lsq.txt -W2p >> $ps
 gmt psxy -R -J -O -K stepfit_svd.txt -Sc2p -Gred >> $ps
 echo "Fit y(x) = a + b*x + c*H(x-$x0) + @~e@~(x)" | gmt pstext -R -J -O -K -F+12p+jRB+cRB -Dj0.2i >> $ps
-gmt pslegend -R -J -O -K -DjTL/1.75i/TL/0.1i/0.1i -F+p << EOF >> $ps
+gmt pslegend -R -J -O -K -DjTL+w1.75i+jTL+o0.1i/0.1i -F+p << EOF >> $ps
 S 0.1i - 0.15i - 2p 0.3i LSQFIT solution
 S 0.1i c 2p  red - 0.3i SVDFIT solution
 S 0.1i c 0.15c  blue - 0.3i Input data

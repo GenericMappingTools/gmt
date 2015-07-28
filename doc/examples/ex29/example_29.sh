@@ -10,7 +10,7 @@ ps=example_29.ps
 
 # This example uses 370 radio occultation data for Mars to grid the topography.
 # Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of
-# Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184–187.
+# Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184-187.
 
 # Make Mars PROJ_ELLIPSOID given their three best-fitting axes:
 a=3399.472

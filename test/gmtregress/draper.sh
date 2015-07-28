@@ -45,7 +45,7 @@ gmt regress -Ey -N2 -Fxmc -T25/80/1 -C99 draper.txt | gmt psxy -R -J -O -K -L+d 
 gmt regress -Ey -N2 -Fxmc -T25/80/1 -C95 draper.txt | gmt psxy -R -J -O -K -L+d -Glightorange >> $ps
 gmt regress -Ey -N2 -Fxmc -T25/80/1 -C68 draper.txt | gmt psxy -R -J -O -K -L+d -Glightred -W2p >> $ps
 gmt psxy -R -J -O -K draper.txt -Sc0.2c -Gblue >> $ps
-gmt pslegend -DjTR/1.65i/RT/0.1i/0.1i -R -J -O -F+p1p << EOF >> $ps
+gmt pslegend -DjTR+w1.65i+jRT+o0.1i/0.1i -R -J -O -F+p1p << EOF >> $ps
 S 0.1i s 0.15i lightgreen  - 0.25i 99% Confidence
 S 0.1i s 0.15i lightorange - 0.25i 95% Confidence
 S 0.1i s 0.15i lightred    - 0.25i 68% Confidence

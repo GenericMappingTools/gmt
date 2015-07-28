@@ -28,10 +28,10 @@ do
 	gmt makecpt -C$left -T-1/1/0.25 > tt.left2.cpt
 	gmt makecpt -C$right -Z > tt.right.cpt
 	gmt makecpt -C$right -T-1/1/0.25 > tt.right2.cpt
-	gmt psscale -D1.55i/${y}i/2.70i/0.125ih -Ctt.left.cpt -B0 -O -K >> $ps
-	gmt psscale -D4.50i/${y}i/2.70i/0.125ih -Ctt.right.cpt -B0 -O -K >> $ps
-	gmt psscale -D1.55i/${y2}i/2.70i/0.125ih -Ctt.left2.cpt -Bf0.25 -O -K >> $ps
-	gmt psscale -D4.50i/${y2}i/2.70i/0.125ih -Ctt.right2.cpt -Bf0.25 -O -K >> $ps
+	gmt psscale -D1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0 -O -K >> $ps
+	gmt psscale -D4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0 -O -K >> $ps
+	gmt psscale -D1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25 -O -K >> $ps
+	gmt psscale -D4.50i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25 -O -K >> $ps
 	gmt pstext -R -J -O -K -D0/0.05i -F+f9p,Helvetica-Bold+jBC >> $ps <<- END
 	1.55 $y ${left}
 	4.50 $y ${right}

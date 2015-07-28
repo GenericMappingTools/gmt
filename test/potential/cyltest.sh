@@ -30,7 +30,7 @@ S 0.2i c 0.05i blue - 0.5i VGG (brute force)
 S 0.2i - 0.3i - 1.5p,red 0.5i FAA (Talwani)
 S 0.2i - 0.3i - 1.5p,darkgreen 0.5i VGG
 EOF
-gmt pslegend -R -J -O -K -DjTL/2i/TL/0.1i/0.1i legend.txt -F+gwhite+p >> $ps
+gmt pslegend -R -J -O -K -DjTL+w2i+jTL+o0.1i/0.1i legend.txt -F+gwhite+p >> $ps
 # Plot cylinder
 gmt psxy -R-100/100/0/5084 -JX6i/-2.5i -O -K -Y-2.75i -Gblack -Bxafg1000+u" km" -Byaf -BWSne << EOF >> $ps
 -25	5084
