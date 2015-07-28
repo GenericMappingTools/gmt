@@ -7069,6 +7069,7 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers, un
 	M->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	M->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;		/* Default to 1 if not set */
+	M->shape = GMT->parent->shape;			/* Default layout (row vs column) selected by GMT_Create_Session [row-major] */
 	return (M);
 }
 

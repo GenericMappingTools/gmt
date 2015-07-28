@@ -801,31 +801,34 @@ Should something go wrong then ``API`` will be returned as ``NULL``.
        /* Master controller which holds all GMT API related information at run-time for a single session.
         * Users can run several GMT sessions concurrently; each session requires its own structure.
         * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
-       uint64_t     current_rec[2];    /* Current record number >= 0 in the combined virtual dataset (in and out) */
-       unsigned int n_objects;         /* Number of currently active input and output data objects */
-       unsigned int unique_ID;         /* Used to create unique IDs for duration of session */
-       unsigned int session_ID;        /* ID of this session */
-       unsigned int unique_var_ID;     /* Used to create unique object IDs (grid,dataset, etc) for duration of session */
-       unsigned int current_item[2];   /* Array number of current dataset being processed (in and out)*/
-       unsigned int pad;               /* Session default for number of rows/cols padding for grids [2] */
-       unsigned int mode;              /* 1 if called via external API (Matlab, Python) [0] */
-       unsigned int leave_grid_scaled; /* 1 if we dont want to unpack a grid after we packed it for writing [0] */
-       bool         registered[2];     /* true if at least one source/destination has been registered (in and out) */
-       bool         io_enabled[2];     /* true if access has been allowed (in and out) */
-       size_t       n_objects_alloc;   /* Allocation counter for data objects */
-       int          error;             /* Error code from latest API call [GMT_OK] */
-       int          last_error;        /* Error code from previous API call [GMT_OK] */
-       int          shelf;             /* Place to pass hidden values within API */
-       unsigned int io_mode[2];        /* 1 if access as set, 0 if record-by-record */
-       struct       GMT_CTRL *GMT;     /* Key structure with low-level GMT internal parameters */
-       struct       GMTAPI_DATA_OBJECT **object; /* List of registered data objects */
-       char        *session_tag;       /* Name tag for this session (or NULL) */
-       bool         internal;          /* true if session was initiated by gmt.c */
-       bool         deep_debug;        /* temporary for debugging */
-       int (*print_func) (FILE *, const char *); /* Pointer to fprintf function (may be reset by external APIs like MEX) */
-       unsigned int do_not_exit;       /* 0 by default, meaning it is OK to call exit (otherwise call return instead) */
-       struct       Gmt_libinfo *lib;  /* List of shared libs to consider */
-       unsigned int n_shared_libs;     /* How many in lib */
+       uint64_t     current_rec[2];     /* Current record number >= 0 in the combined virtual dataset (in and out) */
+       unsigned int n_objects;          /* Number of currently active input and output data objects */
+       unsigned int unique_ID;          /* Used to create unique IDs for duration of session */
+       unsigned int session_ID;         /* ID of this session */
+       unsigned int unique_var_ID;      /* Used to create unique object IDs (grid,dataset, etc) for duration of session */
+       unsigned int current_item[2];    /* Array number of current dataset being processed (in and out)*/
+       unsigned int pad;                /* Session default for number of rows/cols padding for grids [2] */
+       unsigned int mode;               /* 1 if called via external API (MATLAB, Python) [0] */
+       enum         GMT_enum_fmt shape; /* GMT_IS_COL_FORMAT (1) or GMT_IS_ROW_FORMAT (0) [0] */
+       unsigned int leave_grid_scaled;  /* 1 if we don't want to unpack a grid after we packed it for writing [0] */
+       unsigned int n_cores;            /* Number of available cores on this system */
+       unsigned int verbose;            /* Used until GMT is set up */
+       bool         registered[2];      /* true if at least one source/destination has been registered (in and out) */
+       bool         io_enabled[2];      /* true if access has been allowed (in and out) */
+       size_t       n_objects_alloc;    /* Allocation counter for data objects */
+       int          error;              /* Error code from latest API call [GMT_OK] */
+       int          last_error;         /* Error code from previous API call [GMT_OK] */
+       int          shelf;              /* Place to pass hidden values within API */
+       unsigned int io_mode[2];         /* 1 if access as set, 0 if record-by-record */
+       struct       GMT_CTRL *GMT;      /* Key structure with low-level GMT internal parameters */
+       struct       GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
+       char         *session_tag;       /* Name tag for this session (or NULL) */
+       bool         internal;           /* true if session was initiated by gmt.c */
+       bool         deep_debug;         /* temporary for debugging */
+       int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
+       unsigned int do_not_exit;        /* 0 by default, meaning it is OK to call exit (otherwise call return instead) */
+       struct       Gmt_libinfo *lib;   /* List of shared libs to consider */
+       unsigned int n_shared_libs;      /* How many in lib */
    };
 
 .. code-block:: c

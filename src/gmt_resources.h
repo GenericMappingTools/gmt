@@ -48,7 +48,8 @@
 enum GMT_enum_session {
 	GMT_SESSION_NORMAL   = 0,	/* Typical mode to GMT_Create_Session */
 	GMT_SESSION_NOEXIT   = 1,	/* Call return and not exit when error */
-	GMT_SESSION_EXTERNAL = 2};	/* Called by an external API (e.g., Matlab, Python). */
+	GMT_SESSION_EXTERNAL = 2,	/* Called by an external API (e.g., MATLAB, Python). */
+	GMT_SESSION_COLMAJOR = 4};	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
 
 /*! Miscellaneous settings */
 enum GMT_enum_api {
