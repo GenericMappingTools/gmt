@@ -1810,7 +1810,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	if (!strchr (string, '@')) {	/* Plain text ... this is going to be easy! */
 		PSL_command (PSL, "(%s) %s%s", string, justcmd[justify], op[mode]);
 		if (mode == 1) PSL_command (PSL, " S");
-		else if (mode == 2) PSL_command (PSL, " N");
+		else if (mode > 1) PSL_command (PSL, " N");
 		PSL_command (PSL, (angle != 0.0 ) ? " U\n" : "\n");
 		PSL_free (string);
 		return (PSL_NO_ERROR);
@@ -2052,7 +2052,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		ptr = strtok_r (NULL, "@", &plast);
 	}
 	if (mode == 1) PSL_command (PSL, "S\n");
-	else if (mode == 2) PSL_command (PSL, "N\n");
+	else if (mode > 1) PSL_command (PSL, "N\n");
 	if (angle != 0.0) PSL_command (PSL, "U\n");
 	PSL->current.fontsize = 0.0;	/* Force reset */
 
