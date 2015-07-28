@@ -9,6 +9,8 @@ test -z "$1" && exit 1
 # Where the current script resides (need absolute path)
 script_name="$1"
 script="@GMT_SOURCE_DIR@/doc/scripts/${script_name}"
+src="@GMT_SOURCE_DIR@/doc/scripts"
+tut="@GMT_SOURCE_DIR@/doc/tutorial"
 if ! [ -x "${script}" ]; then
   echo "error: cannot execute script ${script}." >&2
   exit 1
@@ -28,18 +30,8 @@ fi
 # Temporary change LANG to C
 LANG=C
 
-# Define variables that are needed *within* test scripts
-GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
+# Additional variables needed in gmtest
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-src="@GMT_SOURCE_DIR@/doc/scripts"
-tut="@GMT_SOURCE_DIR@/doc/tutorial"
-
-# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-unset GMT5_SHAREDIR
-export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
-export GMT_USERDIR="@GMT_BINARY_DIR@/share"
-export GMT_DATADIR="@GMT_SOURCE_DIR@/doc/scripts"
-export PATH="@GMT_SOURCE_DIR@/src:$PATH" # for gmt_shell_functions.sh
 
 # Reset error count
 ERROR=0
@@ -154,14 +146,32 @@ exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_name%.sh}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
+ln -sf "$script" .
 
+# Make a script to capture everything that can be run again
+cat > gmtest.sh << EOF
+LANG=C
+# Define variables that are needed *within* test scripts
+export PATH="@GMT_BINARY_DIR@/src:\$PATH"
+unset GMT5_SHAREDIR
+export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
+export GMT_USERDIR="@GMT_BINARY_DIR@/share"
+export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
+export GMT_SRCDIR="$src"
+export GSHHG_DIR="@GSHHG_PATH@"
+export DCW_DIR="@DCW_PATH@"
+export GMT_BINARY_DIR="@GMT_BINARY_DIR@"
+export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
+export GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
 # Start with proper GMT defaults
 gmt set -Du PS_CHAR_ENCODING ISOLatin1+
-
 # Tentative PS file name
 ps="${script_name%.sh}.ps"
-
 # Now run the original script
 . "${script}"
+EOF
+chmod 755 gmtest.sh
+
+. ./gmtest.sh
 
 # vim: ft=sh

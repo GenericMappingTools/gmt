@@ -13,6 +13,7 @@ test -z "$1" && exit 1
 script_name="$1"
 script_dir=$(dirname "${script_name}")
 script="@GMT_SOURCE_DIR@/test/${script_name}"
+src="@GMT_SOURCE_DIR@/test/${script_dir}"
 if ! [ -x "${script}" ]; then
   echo "error: cannot execute script ${script}." >&2
   exit 1
@@ -23,17 +24,8 @@ shift
 # Temporary change LANG to C
 LANG=C
 
-# Define variables that are needed *within* test scripts
-GMT_BINARY_DIR="@GMT_BINARY_DIR@"
-GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
-GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
-GSHHG_DIR="@GSHHG_PATH@"
-DCW_DIR="@DCW_PATH@"
-HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
-HAVE_OPENMP="@HAVE_OPENMP@"
-HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
+# Additional variables needed in gmtest
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-src="@GMT_SOURCE_DIR@/test/${script_dir}"
 # choose awk
 if type gawk >/dev/null 2>&1 ; then
   export AWK=gawk
@@ -42,13 +34,6 @@ elif type nawk >/dev/null 2>&1 ; then
 else
   export AWK=awk
 fi
-
-# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-unset GMT5_SHAREDIR
-export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
-export GMT_USERDIR="@GMT_BINARY_DIR@/share"
-export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
-export GMT_SRCDIR="$src"
 
 # Reset error count
 ERROR=0
@@ -138,7 +123,6 @@ passfail () {
     now=$(date "+%F %T")
     echo "[FAIL]"
     echo "$now ${script_name}: $(wc -l fail) failed lines" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
-    mv -f fail $1.log
     ((++ERROR))
   else
     echo "[PASS]"
@@ -206,21 +190,29 @@ ln -sf "$script" .
 
 # Make a script to capture everything that can be run again
 cat > gmtest.sh << EOF
+LANG=C
+# Define variables that are needed *within* test scripts
 export PATH="@GMT_BINARY_DIR@/src:\$PATH"
 unset GMT5_SHAREDIR
-export GMT_SHAREDIR="$GMT_SHAREDIR"
-export GMT_USERDIR="$GMT_USERDIR"
+export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
+export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
 export GMT_SRCDIR="$src"
+export GSHHG_DIR="@GSHHG_PATH@"
+export DCW_DIR="@DCW_PATH@"
+export GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
+export GMT_BINARY_DIR="@GMT_BINARY_DIR@"
+export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
+export HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
+export HAVE_OPENMP="@HAVE_OPENMP@"
+export HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
+# Start with proper GMT defaults
 gmt set -Du
+# Now run the original script
 . "${script}"
 EOF
 chmod 755 gmtest.sh
 
-# Start with proper GMT defaults
-gmt set -Du
-
-# Now run the original script
-. "${script}"
+. ./gmtest.sh
 
 # vim: ft=sh
