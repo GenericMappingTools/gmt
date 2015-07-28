@@ -1690,28 +1690,35 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		T = Nin->table[0];
 	}
 	else {	/* Fill in an equidistant output table or grid */
-		if ((Grid = GMT_create_grid (GMT)) == NULL) Return (API->error);
-		delete_grid = true;
-		Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
-		Grid->header->registration = GMT->common.r.registration;
-		Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
-		Z.nz = Grid->header->ny = 1;	/* So that output logic will work for lower dimensions */
-		if (dimension > 1) {
-			Grid->header->wesn[YLO] = Ctrl->R3.range[2];	Grid->header->wesn[YHI] = Ctrl->R3.range[3];
-			Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
-			GMT_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
-			GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
-			GMT_set_grddim (GMT, Grid->header);
-			if (dimension == 3) {	/* Also set nz */
+		if (dimension == 2) {	/* Need a full-fledged Grid creation since we are writing it to who knows where */
+			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->R3.range, Ctrl->I.inc, \
+				GMT->common.r.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			n_ok = Grid->header->nm;
+			Z.nz = 1;	/* So that output logic will work for 1-D */
+		}
+		else {	/* Just a temporary internal grid created and destroyed withing greenspline */
+			if ((Grid = GMT_create_grid (GMT)) == NULL) Return (API->error);
+			delete_grid = true;
+			Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
+			Grid->header->registration = GMT->common.r.registration;
+			Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
+			Z.nz = Grid->header->ny = 1;	/* So that output logic will work for 1-D */
+			if (dimension == 3) {
+				Grid->header->wesn[YLO] = Ctrl->R3.range[2];	Grid->header->wesn[YHI] = Ctrl->R3.range[3];
+				Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
+				GMT_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
+				GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+				GMT_set_grddim (GMT, Grid->header);
+				/* Also set nz */
 				Z.z_min = Ctrl->R3.range[4];	Z.z_max = Ctrl->R3.range[5];
 				Z.z_inc = Ctrl->I.inc[GMT_Z];
 				Z.nz = GMT_get_n (GMT, Z.z_min, Z.z_max, Z.z_inc, Grid->header->registration);
+				n_ok = Grid->header->nm * Z.nz;
+				Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
 			}
+			else	/* Just 1-D */
+				n_ok = Grid->header->nx = GMT_grd_get_nx (GMT, Grid->header);
 		}
-		else
-			Grid->header->nx = GMT_grd_get_nx (GMT, Grid->header);
-		n_ok = Grid->header->nm * Z.nz;
-		if (dimension >= 2) Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
 		Out = Grid;	/* Just point since we created Grid */
 	}
 
@@ -2093,18 +2100,11 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		if (delete_grid)
+		if (delete_grid) /* No longer required for 1-D and 3-D */
 			GMT_free_grid (GMT, &Grid, dimension > 1);
-		else if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Orig\n");
-		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (new_grid && GMT_Destroy_Data (API, &Out) != GMT_OK) {
-			Return (API->error);
-		}
-			
 		GMT_free (GMT, xp);
 		if (dimension > 1) GMT_free (GMT, yp);
 	}

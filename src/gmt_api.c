@@ -1635,38 +1635,34 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction]);
 			break;
 
-	 	case GMT_IS_DUPLICATE_VIA_MATRIX:	/* This means reading or writing a dataset record-by-record via a user matrix [PW: not tested] */
+	 	case GMT_IS_DUPLICATE_VIA_MATRIX:	/* These 2 mean reading or writing a dataset record-by-record via a user matrix */
 		case GMT_IS_REFERENCE_VIA_MATRIX:
 			if (S_obj->family != GMT_IS_DATASET) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_TYPE));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via %s\n",
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction], GMT_via[via]);
-			if (direction == GMT_IN) {	/* Hard-wired limit as pass in from calling program */
+			if (direction == GMT_IN) {	/* Hard-wired limits are passed in from calling program; for outout we have nothing yet */
 				M_obj = S_obj->resource;
 				S_obj->n_rows = M_obj->n_rows;
 				S_obj->n_columns = M_obj->n_columns;
-				API->GMT->common.b.ncol[direction] = M_obj->n_columns;	/* Basically, we are doing what GMT calls binary i/o */
+				API->GMT->common.b.ncol[direction] = M_obj->n_columns;
 			}
-			API->GMT->common.b.active[direction] = true;
-			strcpy (API->GMT->current.io.current_filename[direction], "<memory>");
+			API->GMT->common.b.active[direction] = true;	/* Basically, we are doing what GMT calls binary i/o */
+			strcpy (API->GMT->current.io.current_filename[direction], "<matrix memory>");
 			break;
 
-		 case GMT_IS_DUPLICATE_VIA_VECTOR:	/* These 2 means reading a dataset record-by-record via user vector arrays [PW: not tested] */
+		 case GMT_IS_DUPLICATE_VIA_VECTOR:	/* These 2 mean reading or writing a dataset record-by-record via user vector arrays */
 		 case GMT_IS_REFERENCE_VIA_VECTOR:
 			if (S_obj->family != GMT_IS_DATASET) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_TYPE));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via %s\n",
 					operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction], GMT_via[via]);
-			V_obj = S_obj->resource;
-			if (direction == GMT_OUT && V_obj->alloc_mode == GMT_ALLOC_INTERNALLY) {	/* Must allocate output space */
-				S_obj->n_alloc = GMT_CHUNK;
-				/* S_obj->n_rows is 0 which means we are allocating more space as we need it */
-				if ((error = GMTAPI_alloc_vectors (API->GMT, V_obj, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
+			if (direction == GMT_IN) {	/* Hard-wired limits are passed in from calling program; for outout we have nothing yet */
+				V_obj = S_obj->resource;
+				S_obj->n_rows = V_obj->n_rows;
+				S_obj->n_columns = V_obj->n_columns;
+				API->GMT->common.b.ncol[direction] = V_obj->n_columns;
 			}
-			else
-				S_obj->n_rows = V_obj->n_rows;	/* Hard-wired limit as passed in from calling program */
-			S_obj->n_columns = V_obj->n_columns;
-			API->GMT->common.b.ncol[direction] = V_obj->n_columns;	/* Basically, we are doing what GMT calls binary i/o */
-			API->GMT->common.b.active[direction] = true;
-			strcpy (API->GMT->current.io.current_filename[direction], "<memory>");
+			API->GMT->common.b.active[direction] = true;	/* Basically, we are doing what GMT calls binary i/o */
+			strcpy (API->GMT->current.io.current_filename[direction], "<vector memory>");
 			break;
 
 		default:
@@ -5420,7 +5416,8 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			/* At the first output record the output matrix has not been allocated.
 			 * So first we do that, then later we can increment its size when needed.
 			 * The realloc to final size takes place in GMT_End_IO. */
-			M_obj = S_obj->resource;
+			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
+				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				size_t size = S_obj->n_alloc = GMT_CHUNK;
 				M_obj = GMT_create_matrix (API->GMT, 1U, GMT_OUT);
@@ -5431,8 +5428,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (GMTAPI_report_error (API, error));
 				S_obj->resource = M_obj;	/* Save so we can get it next time */
 			}
-			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
-				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
+			M_obj = S_obj->resource;
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 			GMTAPI_put_val = GMTAPI_select_put_function (API, M_obj->type);
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs in current_record (d) */
@@ -5459,8 +5455,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 		case GMT_IS_REFERENCE_VIA_VECTOR:
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
-			V_obj = S_obj->resource;
-			if (!V_obj) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
+			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				S_obj->n_alloc = GMT_CHUNK;	/* Size in bytes of the initial matrix allocation */
 				col = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : API->GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if ((V_obj = GMT_create_vector (API->GMT, col, GMT_OUT)) == NULL)
@@ -5470,6 +5465,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				if ((error = GMTAPI_alloc_vectors (API->GMT, V_obj, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
 				S_obj->resource = V_obj;	/* Save so we can get it next time */
 			}
+			V_obj = S_obj->resource;
 			GMTAPI_put_val = GMTAPI_select_put_function (API, API->GMT->current.setting.export_type);	/* Since vectors are all the same type */
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
 				for (col = 0; col < V_obj->n_columns; col++)	/* Place the output items */

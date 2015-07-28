@@ -2148,8 +2148,13 @@ int GMT_set_outgrid (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, struc
 	 * data in it (directly or via the pointer).  */
 
 	if (GMT_File_Is_Memory (file) || G->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot store results in a non-GMT read-only input array */
-		*Out = GMT_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
-		(*Out)->alloc_mode = GMT_ALLOC_INTERNALLY;
+		//*Out = GMT_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
+		if ((*Out = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to duplicate grid! - this is not a good thing and may crash this module\n");
+			(*Out) = G;
+		}
+		else
+			(*Out)->alloc_mode = GMT_ALLOC_INTERNALLY;
 		return (true);
 	}
 	/* Here we may overwrite the input grid and just pass the pointer back */

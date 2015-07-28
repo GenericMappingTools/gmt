@@ -336,8 +336,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			for (ij = 0; ij < n; ij++) G2->data[ij] = (float)fabs (G2->data[ij] - median);
 			GMT_sort_array (GMT, G2->data, n, GMT_FLOAT);
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
-			if (new_grid) {	/* Now preserve info and free the temporary grid */
-				/* copy over stat info to G */
+			if (new_grid) {	/* Free the temporary grid */
 				if (GMT_Destroy_Data (API, &G2) != GMT_OK) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G2\n");
 				}
