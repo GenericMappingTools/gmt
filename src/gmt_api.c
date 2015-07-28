@@ -289,7 +289,7 @@ static inline GMT_putfunction GMTAPI_select_put_function (struct GMTAPI_CTRL *AP
 			break;
 	}
 }
-	
+
 static inline GMT_getfunction GMTAPI_select_get_function (struct GMTAPI_CTRL *API, unsigned int type) {
 	switch (type) {	/* Use type to select the correct get function with which to extract a value from the union */
 		case GMT_DOUBLE:	return (GMTAPI_get_val_double);	break;
@@ -681,7 +681,7 @@ int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
 	mem[GMT_IN]  = GMT_File_Is_Memory (ifile);
 	mem[GMT_OUT] = GMT_File_Is_Memory (ofile);
-	
+
 	switch (family) {
 		case GMT_IS_DATASET:
 			method = (mem[GMT_IN]) ? GMT_IS_DUPLICATE_VIA_MATRIX : GMT_IS_FILE;
@@ -926,7 +926,7 @@ unsigned int GMTAPI_Add_Existing (struct GMTAPI_CTRL *API, enum GMT_enum_family 
  *	GMTAPI_process_keys
  *	GMTAPI_get_key
  *	GMTAPI_found_marker
- */ 
+ */
 
 /* Indices into the keys triple codes */
 #define K_OPT		0
@@ -1556,7 +1556,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 	 * Note this is only a mechanism for dataset and textset files where it is common
 	 * to give many files on the command line (e.g., *.txt) and we do rec-by-rec processing. */
 	int *fd = NULL;	/* !!! Must be int* due to nature of Unix system function */
-	int error = 0, kind;
+	int kind;
 	unsigned int via = 0;
 	static const char *dir[2] = {"from", "to"};
 	static const char *operation[2] = {"Reading", "Writing"};
@@ -2475,7 +2475,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 			GMTAPI_put_val  = GMTAPI_select_put_function (API, M_obj->type);
-			
+
 			for (tbl = row_out = 0; tbl < D_obj->n_tables; tbl++) {
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for current segment */
@@ -3828,7 +3828,7 @@ int GMTAPI_Colors2CPT (struct GMTAPI_CTRL *API, char **str) {
 		z += 1.0;				/* Increment z-slice values */
 	}
 	fclose (fp);
-	
+
 	GMT_Report (API, GMT_MSG_DEBUG, "Converted %s to CPT file %s\n", *str, tmp_file);
 
 	free (*str);			/* Because it was allocated with strdup */
@@ -3972,7 +3972,7 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 
 	struct GMTAPI_CTRL *API = NULL;
 	static char *unknown = "unknown";
-	
+
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	API->verbose = (mode >> 2);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
@@ -5132,7 +5132,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 				M_obj = S_obj->resource;
 				n_use = gmt_n_cols_needed_for_gaps (API->GMT, S_obj->n_columns);
 				gmt_update_prev_rec (API->GMT, n_use);
-				
+
 				GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 				GMTAPI_get_val = GMTAPI_select_get_function (API, M_obj->type);
 				for (col = 0; col < S_obj->n_columns; col++) {	/* We know the number of columns from registration */
@@ -6166,11 +6166,11 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, char *args)
 	if (info->suffix[0] == '\0') strncpy (info->suffix, "tapered", GMT_LEN64);	/* Default suffix */
 	info->set = true;	/* We parsed this option */
 	if (info->info_mode == GMT_FFT_SET) {
-		if (dim == 2U && (info->nx <= 0 || info->ny <= 0)) {	
+		if (dim == 2U && (info->nx <= 0 || info->ny <= 0)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error -%c: nx and/or ny are <= 0\n", option);
 			n_errors++;
 		}
-		else if (dim == 1U && info->nx <= 0) {	
+		else if (dim == 1U && info->nx <= 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error -%c: nx is <= 0\n", option);
 			n_errors++;
 		}
@@ -6680,7 +6680,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 * D for datasets but perhaps the geometry needs to be passed too (if known); hence the P|L|D char]
 	 * In addition, the only common option that might take a file is -R which may take a grid as input.
 	 * We check for that in addition to the module-specific info passed via the key variable.
-	
+
 	 */
 
 	unsigned int n_keys, direction, PS, kind, pos, n_items = 0, ku;
@@ -6700,12 +6700,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	struct GMTAPI_CTRL *API = NULL;
 
 	*n = 0;	/* Initialize counter to zero in case we return prematurely */
-	
+
 	if ((*head) && ((*head)->option == GMT_OPT_USAGE || (*head)->option == GMT_OPT_SYNOPSIS)) {	/* Nothing to do */
 		*n = UINT_MAX;
 		return NULL;
 	}
-	
+
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
 	if ((keys = GMTAPI_get_moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
 		GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL);	/* List the available modules */
@@ -6716,7 +6716,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	API->error = GMT_NOERROR;
 
 	/* First some special checks related to unusual GMT syntax or hidden modules */
-	
+
 	/* 1a. Check if this is either the read of write special module, which specifies what data type to deal with via -T<type> */
 	if (!strncmp (module, "gmtread", 7U) || !strncmp (module, "gmtwrite", 8U)) {
 		/* Special case: Must determine which data type we are dealing with via -T<type> */
@@ -6753,7 +6753,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 
 	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) and if PS may be bypassed (magic) */
 	key = GMTAPI_process_keys (API, keys, type, &n_keys, &PS, &magic);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
-	
+
 	/* 2b. Make some specific modifications to the keys given the options passed */
 	if (magic && (opt = GMT_Find_Option (API, magic, *head)))	/* Gave option to a PS-producing module that turns off PS */
 		PS = 0;	/* No PostScript will be produced this time, e.g. pscoast -M, pscontour -D, etc. */
@@ -6784,7 +6784,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 		k = GMTAPI_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
 		family = geometry = -1;	/* Not set yet */
 		if (k >= 0) direction = GMTAPI_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
-		
+
 		if (GMTAPI_found_marker (opt->arg, marker)) {	/* Found an explicit dollar sign within the option, e.g., -G$ or -<$ */
 			if (k == -1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
@@ -6856,10 +6856,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 		else
 			GMT_Report (API, GMT_MSG_DEBUG, "---: Option -%c%s includes no memory reference%s\n", opt->option, opt->arg, satisfy);
 	}
-	
+
 	/* Done processing references that were explicitly given in the options.  Now determine if module
 	 * has required input or output references that we must add (if not specified explicitly above) */
-	
+
 	for (ku = 0; ku < n_keys; ku++) {	/* Each set of keys specifies if the item is required via the 3rd key letter */
 		if (isupper (key[ku][K_DIR])) {	/* Required input|output that was not specified explicitly above */
 			char str[2] = {0,0};
