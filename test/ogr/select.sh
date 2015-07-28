@@ -20,10 +20,10 @@ gmt psxy capitals.gmt -R -J -W0.25p -Ss0.05i -Ggreen -O -K >> $ps
 # Just plot those with > 5 million in red + labels
 gmt pscoast -R -J -Gseashell1 -N1/0.25p,darkred -Wfaint -Baf -B+t"World Capitals" -O -K -A5000 -Dc -Y4.75i >> $ps
 gmt psxy big_tmp.gmt -R -J -Ss0.1i -W0.25p -Gred -O -K >> $ps
-# This line will need further work to specifa text via -a:
-# gmt pstext big_tmp.gmt -R -J -O -K -F+f8p+jCB -Gwhite -Dj0.1i >> $ps
+# This line will need further work to specify text via "gmt select -a":
+#gmt pstext big_tmp.gmt -R -J -O -K -F+f8p+jCB -Gwhite -Dj0.1i >> $ps
 # We made the original select.ps with awk:
-# awk -F'\t' '{if ($3 > 7000000) print $1, $2, $4}' capitals.txt | sed -e 's/\"//g' | pstext -R -J -O -K -F+f8p+jCB -Gwhite -Dj0.1i >> $ps
+#awk -F'\t' '{if ($3 > 7000000) print $1, $2, $4}' capitals.gmt | sed -e 's/\"//g' | pstext -R -J -O -K -F+f8p+jCB -Gwhite -Dj0.1i >> $ps
 gmt pslegend -DjCB/2.9i/CT/0/0.5i -O -K -R -J -F+p1p << EOF >> $ps
 S 0.1i s 0.15i red 0.25p 0.3i Capital with over 7 million people
 S 0.1i s 0.15i green 0.25p 0.3i Capital with less people than that

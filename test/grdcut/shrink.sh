@@ -19,7 +19,7 @@ cat << EOF > replace.txt
 EOF
 gmt grdedit t.nc -Nreplace.txt
 gmt makecpt -Cjet -T0/100/5 > t.cpt
-gmt psscale -Ct.cpt -A -D0/4.2i/8.4i/0.2i -Ba10 -P -K > $ps
+gmt psscale -Ct.cpt -D0/4.2i+w8.4i/0.2i+jML+m -Ba10 -P -K > $ps
 gmt grdimage t.nc -Ct.cpt -JX4i -R -Baf -O -K -X1i >> $ps
 echo 10 5 Original | gmt pstext -R -J -O -K -N -Dj0.5i/0 -F+f24p+jLM >> $ps
 gmt grdcut t.nc -Zn -Gnew.nc

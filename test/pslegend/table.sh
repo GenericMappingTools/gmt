@@ -24,7 +24,7 @@ L - - C Climate
 L - - C WC?
 L - - C OL?
 D 0 1p
-F lightgreen 
+F lightgreen
 S 0.15i c 0.1i red 0.25p
 L - - R Mexico City
 L - - R Mexico
@@ -32,7 +32,7 @@ L - - R 8,851,080
 L - - R Tropical
 L - - C Y
 L - - C Y
-F - 
+F -
 S 0.15i c 0.1i orange 0.25p
 L - - R New York City
 L - - R USA
@@ -47,7 +47,7 @@ L - - R 3,904,657
 L - - R Subtropical
 L - - C Y
 L - - C Y
-F lightblue 
+F lightblue
 S 0.15i c 0.1i green 0.25p
 L - - R Toronto
 L - - R Canada
@@ -55,7 +55,7 @@ L - - R 2,795,060
 L - - R Tempered
 L - - C N
 L - - C N
-F - 
+F -
 S 0.15i c 0.1i blue 0.25p
 L - - R Chicago
 L - - R USA
@@ -70,7 +70,7 @@ L - - R 2,714,856
 L - - R subtropical
 L - - C N
 L - - C N
-F lightred 
+F lightred
 S 0.15i c 0.1i magenta 0.25p
 L - - R Havana
 L - - R Cuba
@@ -78,7 +78,7 @@ L - - R 2,106,146
 L - - R Tropical
 L - - C N
 L - - C N
-F lightblue 
+F lightblue
 S 0.15i c 0.1i white 0.25p
 L - - R Montreal
 L - - R Canada
@@ -88,7 +88,7 @@ L - - C N
 L - - C Y
 D 1p
 V 1p
-F - 
+F -
 N 1
 L 9 4 R Information from Wikipedia
 G 0.05i
@@ -119,5 +119,5 @@ gmt psxy -R -J -O -K -Sc0.1i -Ct.cpt -W0.25p -: << EOF >> $ps
 23.1333N, 82.3833W	7
 45.5000N, 73.5667W	8
 EOF
-gmt pslegend -R0/6/0/8 -Jx1i -Dx3i/4.2i/5.6i/BC -C0.05i -L1.2 -F+p+gsnow1 -B0 -X-0.2i -Y-0.1i -O table.txt >> $ps
+gmt pslegend -R0/6/0/8 -Jx1i -Dx3i/4.2i+w5.6i+jBC+l1.2 -C0.05i -F+p+gsnow1 -B0 -X-0.2i -Y-0.1i -O table.txt >> $ps
 rm -f table.txt t.cpt

@@ -541,7 +541,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""};
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
-	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
+	double off, annot_off, label_off = 0.0, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
 	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], prev_del_z, this_del_z = 0.0;
 	double length = Ctrl->D.dim[GMT_X], width = Ctrl->D.dim[GMT_Y], gap = Ctrl->L.spacing, t_len, max_intens[2], xp[4], yp[4];
 	double *xpos = NULL;
@@ -555,7 +555,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
-	
+
 	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
 	cap  = PSL->internal.line_cap;
 	join = PSL->internal.line_join;
@@ -706,7 +706,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 	}
 
 	if (Ctrl->F.active) {	/* Place rectangle behind the color bar */
-		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
+		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, h_off = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
 
 		/* Must guesstimate the width of the largest horizontal annotation */
 		sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
@@ -753,7 +753,6 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			panel->width = length + dim[XHI] + dim[XLO];	panel->height = width + dim[YHI] + dim[YLO];
 		}
 		else {	/* Determine center and dimensions of vertical background rectangle */
-			double label_off, h_off;
 			h_off = 0.5 * GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 			/* Determine dimensions */
 			annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]);	/* Allow for space between bar and annotations */

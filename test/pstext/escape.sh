@@ -4,7 +4,7 @@
 
 ps=escape.ps
 
-gmt pslegend -R0/100/0/100 -JX250p -D0/0/185p/60p/LT -C5p/5p -L1.2 -F -K -P -Y2i > $ps << EOF
+gmt pslegend -R0/100/0/100 -JX250p -D0/0+w185p/60p+jLT+l1.2 -C5p/5p -F -K -P -Y2i > $ps << EOF
 S 10p - 20p - 1p,255/0/0,-.. 24p @:10:CO@-2@-@:: @:10:injected@::
 S 10p - 20p - 1p,255/0/0,-.. 24p @:10:CO@-2@- injected@::
 EOF

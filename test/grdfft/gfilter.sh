@@ -15,5 +15,5 @@ gmt grdimage ${topo} -Iitopo.nc -Ct.cpt -JM6i -Y6i -Xc -K -P -B5 -BWSne > $ps
 echo "315 -10 Original" | gmt pstext -R${topo} -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
 gmt grdimage low.nc -Iilow.nc -Ct.cpt -J -Y-4.6i -K -O -B5 -BWSne >> $ps
 echo "315 -10 100 km Gaussian" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
-gmt psscale -D3i/-0.4i/5i/0.15ih -O -Ct.cpt -B500 -E+n >> $ps
+gmt psscale -D3i/-0.4i+w5i/0.15i+h+jTC+e+n -O -Ct.cpt -B500 >> $ps
 
