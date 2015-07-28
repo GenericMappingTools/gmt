@@ -5483,7 +5483,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 	if (S_obj->n_alloc && API->current_rec[GMT_OUT] == S_obj->n_alloc) {	/* Must allocate more memory */
 		S_obj->n_alloc += GMT_CHUNK;
 		if (S_obj->method == GMT_IS_DUPLICATE_VIA_MATRIX || S_obj->method == GMT_IS_REFERENCE_VIA_MATRIX) {
-			size_t size = S_obj->n_alloc * S_obj->n_columns;
+			size_t size = S_obj->n_alloc * M_obj->n_columns;
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
 		}
 		else {	/* VIA_VECTOR */

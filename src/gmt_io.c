@@ -676,6 +676,7 @@ int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction) {
 	if (GMT->current.setting.verbose < GMT_MSG_VERBOSE) return GMT_OK;	/* Not in verbose mode anyway */
 #endif
 	if (!GMT->common.b.active[direction]) return GMT_OK;	/* Not using binary i/o */
+	if (GMT->common.b.type[direction] == 0) GMT->common.b.type[direction] = (direction == GMT_IN) ? 'd' : letter[GMT->current.setting.export_type];	/* Only happens for external interfaces */
 	if (GMT->common.b.ncol[direction] == 0) {		/* Number of columns not set yet - delay message */
 		if (direction == GMT_OUT) GMT->common.b.o_delay = true;
 		return GMT_OK;
@@ -3334,7 +3335,7 @@ int GMT_get_io_type (struct GMT_CTRL *GMT, char type)
 		case 'f': t = GMT_FLOAT;  break; /* Binary 4-byte float */
 		case 'd': t = GMT_DOUBLE; break; /* Binary 8-byte double */
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not a valid data type [%c]!\n", type);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Valid data type not set [%c]!\n", type);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			break;
 	}
@@ -3348,6 +3349,12 @@ p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *GMT, int direction, enum GMT_swap_
 	p_to_io_func p = NULL;
 
 	switch (type) {	/* Set read pointer depending on data format */
+		case 'd':	/* Binary 8-byte double */
+			if (direction == GMT_IN)
+				p = (swap & k_swap_in) ? &gmt_d_read_swab : &gmt_d_read;
+			else
+				p = (swap & k_swap_out) ? &gmt_d_write_swab : &gmt_d_write;
+			break;
 		case 'A':	/* ASCII with more than one per record */
 			p = (direction == GMT_IN) ? &gmt_A_read : &gmt_a_write;
 			break;
@@ -3401,12 +3408,6 @@ p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *GMT, int direction, enum GMT_swap_
 				p = (swap & k_swap_in) ? &gmt_f_read_swab : &gmt_f_read;
 			else
 				p = (swap & k_swap_out) ? &gmt_f_write_swab : &gmt_f_write;
-			break;
-		case 'd':	/* Binary 8-byte double */
-			if (direction == GMT_IN)
-				p = (swap & k_swap_in) ? &gmt_d_read_swab : &gmt_d_read;
-			else
-				p = (swap & k_swap_out) ? &gmt_d_write_swab : &gmt_d_write;
 			break;
 		case 'x':
 			break;	/* Binary skip */
