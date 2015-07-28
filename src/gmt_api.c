@@ -3911,8 +3911,10 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 		else  {	/* Successfully freed.  See if this address occurs more than once (e.g., both for in and output); if so just set repeated data pointer to NULL */
 			S_obj->data = S_obj->resource = NULL;
 			for (j = i; j < API->n_objects; j++) {
-				if (API->object[j]->data == address) API->object[j]->data = NULL;		/* Yes, set to NULL so we don't try to free twice */
-				if (API->object[j]->resource == address) API->object[j]->resource = NULL;	/* Yes, set to NULL so we don't try to free twice */
+				if (API->object[j]->data == address)
+					API->object[j]->data = NULL;		/* Yes, set to NULL so we don't try to free twice */
+				if (API->object[j]->resource == address)
+					API->object[j]->resource = NULL;	/* Yes, set to NULL so we don't try to free twice */
 			}
 			n_free++;	/* Number of freed n_objects; do not increment i since GMT_Destroy_Data shuffled the array */
 		}
@@ -4950,7 +4952,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 		if ((out_ID = GMTAPI_Memory_Registered (API, family, GMT_OUT, output)) != GMT_NOTSET) {
 			/* Output is a memory resource, passed via a @GMTAPI@-###### file name, and ###### is the out_ID.
 			   In this case we must make some further checks.  We need to find the API object that holds data.
-			   We do this below and get in_ID (the id of the data to write), whie out_ID is the id of where
+			   We do this below and get in_ID (the id of the data to write), while out_ID is the id of where
 			   things go (the output "memory").  Having the in_ID we get the array index in_item that matches
 			   this ID and of the correct family.  We set direction to GMT_NOTSET since otherwise we may be
 			   denied a hit as we dont really know what the direction is for in_ID.  Once in_item has been
@@ -4963,7 +4965,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 			if (in_ID != GMT_NOTSET) in_item = GMTAPI_Validate_ID (API, family, in_ID, GMT_NOTSET);	/* Get the item in the API array; pass dir = GMT_NOTSET to bypass status check */
 			if (in_item != GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Write_Data: Writing %s to memory object %d from object %d which transfers ownership\n", GMT_family[family], out_ID, in_ID);
-				API->object[in_item]->no_longer_owner = true;	/* Since we have passed the content onto an output object */
+				if (method < GMT_VIA_VECTOR) API->object[in_item]->no_longer_owner = true;	/* Since we have passed the content onto an output object */
 			}
 		}	/* else it is a regular file and we just register it and get the new out_ID needed below */
 		else if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMT_NOTSET) return_error (API, API->error);
