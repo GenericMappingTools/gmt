@@ -60,22 +60,21 @@ Required Arguments
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
     Append the *length* and *width* of the color bar.
-    Give a negative *length* to reverse the scale bar. Append **h** to get a
+    Give a negative *length* to reverse the scale bar. Append **+h** to get a
     horizontal scale [Default is vertical].
-    By default, the anchor point on the scale is assumed to be the top center (CT) for
-    horizontal bars and left middle (LM) for vertical bars, but this
-    can be changed by specifying a 2-char justification code *justify* (see :doc:`pstext`).
+    By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
     Note: If **Dj** is used then *justify* defaults to the mirror opposite setting used to define *refpoint*.
     Finally, you can offset the color scale by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify*.
-    Add sidebar triangles for **b**\ ack- and/or **f**\ oreground
-    colors  with **+e**. Append **f** or **b** for only one sidebar triangle [Default
+    Add sidebar triangles for back- and/or foreground
+    colors with **+e**. Append **f** (foreground) or **b** (background) for only one sidebar triangle [Default
     gives both]. Optionally, append triangle height [Default is half the
     barwidth].
     Move text to opposite side with **+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**].
-    Horizontal scale bars: Move annotations and labels above [below];
-    the unit remains on the left. 
-    Vertical scale bars: Move annotations and labels to the left [right];
+    Horizontal scale bars: Move annotations and labels above the scale bar [Default is below];
+    the unit remains on the left.
+    Vertical scale bars: Move annotations and labels to the left of the scale bar [Default is to the right];
     the unit remains below.
     Append one or more of **a**, **l** or **u** to control which of the annotations, label, and
     unit that will be moved to the opposite side. Append **c** if you want to print a
@@ -117,7 +116,7 @@ Optional Arguments
     Add **+g**\ *fill* to fill the scale box [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
-    x- and y-direction, or individual side spacings between scale and border. 
+    x- and y-direction, or individual side spacings between scale and border.
     Append **+i** to draw a secondary, inner border as well. We use a uniform
     *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
     unless other values are specified. Append **+r** to draw rounded
