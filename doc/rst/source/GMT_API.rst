@@ -776,7 +776,7 @@ and you will typically call it thus:
     void *API = NULL;
     API = GMT_Create_Session ("Session name", 2, 0, NULL);
 
-where :ref:`API <struct-API>` is an opaque pointer to the hidden GMT API control
+where ``API`` is an opaque pointer to the hidden GMT API control
 structure. You will need to pass this pointer to *all* subsequent
 GMT API functions; this is how essential internal information is
 passed from module to module. The key task of this initialization is to
