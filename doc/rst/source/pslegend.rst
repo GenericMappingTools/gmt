@@ -36,7 +36,7 @@ Description
 **pslegend** will make legends that can be overlaid on maps. It reads
 specific legend-related information from an input file [or stdin].
 Unless otherwise noted, annotations will be made using the primary
-annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY) 
+annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -47,16 +47,17 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
-    Append the legend box *width*.  The remaining arguments are optional:
+    Append **+w**\ *width*\ [/*height*] to set
+    the width (and height) of the legend box in plot coordinates (inches, cm, etc.).
     If *height* is zero or not given then we estimate *height* based the expected
     vertical extent of the items to be placed.
-    The *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
-    *refpoint* to an anchor point on the rectangular legend box [CT].  Note that if **-Dj**\ *code*
-    is used and *justify* is not set then *justify* is set equal to *code*.
+    By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*.
     Use **+l**\ *spacing* to change the line-spacing factor in units of the current
-    font size [1.1]. 
-    Finally, you can offset the legend box by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify*.
+    font size [1.1].
+    Finally, add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
+    the direction implied by *justify* (or the direction implied by **-Dj**).
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -73,7 +74,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     Add **+g**\ *fill* to fill the legend box [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
-    x- and y-direction, or individual side spacings between scale and border. 
+    x- and y-direction, or individual side spacings between scale and border.
     Append **+i** to draw a secondary, inner border as well. We use a uniform
     *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
     unless other values are specified. Append **+r** to draw rounded
@@ -124,7 +125,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **#** *comment*
     Records starting with # and blank lines are skipped.
 **A** *cptname*
-    Symbol or cell color fills may be given indirectly via a *z*-value 
+    Symbol or cell color fills may be given indirectly via a *z*-value
     which can be used for the color look-up via the given CPT file *cptname*.
     You may switch to other *cptname* by repeating this command.
 **B** *cptname offset height* [ *optional arguments* ]
@@ -195,7 +196,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     string argument.  If the **-R** **-J** supplied to **pslegend** is
     different than the projection needed for the scale (or not given at
     all, e.g., with **-Dx**), supply the two optional **-R** **-J** settings
-    as well. 
+    as well.
 **N** [*ncolumns* or *relwidth1 relwidth2 ... relwidthn*]
     Change the number of columns in the legend [1]. This only affects
     the printing of symbols (**S**) and labels (**L**). The number of
@@ -225,7 +226,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     can also be given as a justification code L, C, R which justifies the
     symbol with respect to the current column.  If no arguments are given
     to **S** then we simply skip to the next column.  Three **psxy**
-    symbols may take special modifiers: front (**f**), quoted line (**q**)  and vector (**v**). 
+    symbols may take special modifiers: front (**f**), quoted line (**q**)  and vector (**v**).
     You can append modifiers to the symbol and affect how the fronts, quoted lines and
     vectors are presented (see :doc:`psxy` man page for modifiers).
     **pslegend** will determine default settings for all modifiers and

@@ -59,14 +59,14 @@ Required Arguments
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
-    Append the *length* and *width* of the color bar.
+    Append **+w** followed by the *length* and *width* of the color bar.
     Give a negative *length* to reverse the scale bar. Append **+h** to get a
     horizontal scale [Default is vertical].
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
-    Note: If **Dj** is used then *justify* defaults to the mirror opposite setting used to define *refpoint*.
-    Finally, you can offset the color scale by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify*.
+    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*.
+    Finally, add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
+    the direction implied by *justify* (or the direction implied by **-Dj**).
     Add sidebar triangles for back- and/or foreground
     colors with **+e**. Append **f** (foreground) or **b** (background) for only one sidebar triangle [Default
     gives both]. Optionally, append triangle height [Default is half the

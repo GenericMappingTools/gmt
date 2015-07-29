@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: legend.sh 12350 2013-10-17 13:38:22Z fwobbe $
+#	$Id$
 #
 # Testing gmt pslegend capabilities for tables with colors
 

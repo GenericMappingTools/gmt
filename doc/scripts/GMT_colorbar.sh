@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_anchor.sh 14405 2015-06-26 23:02:31Z pwessel $
+#	$Id$
 #
 ps=GMT_colorbar.ps
 gmt makecpt -T-30/30/5 -Cpolar -Z > t.cpt

@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_anchor.sh 14405 2015-06-26 23:02:31Z pwessel $
+#	$Id$
 #
 ps=GMT_panel.ps
 gmt psbasemap -R0/2/0/1 -JX5i/2i -B0 -P -K -DjTL+o0.2i+w1.75i/0.75i -F+glightgreen+r > $ps
