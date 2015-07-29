@@ -207,6 +207,15 @@ Optional Arguments
 Examples
 --------
 
+To plot a a horizontal color scale (12 cm long; 0.5 cm wide) at the reference point (8,1)
+(paper coordinates) with justification at top center and automatic annotation interval, do
+
+   ::
+
+    gmt makecpt -T-200/1000/100 -Crainbow > t.cpt
+    gmt psscale -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm > map.ps
+
+
 To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the
 right of a plot that is 6 inch wide and 4 inch high, using illumination,
 and show back- and foreground colors, and annotating every 5 units, we
