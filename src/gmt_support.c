@@ -2498,16 +2498,16 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 	   2. file is NULL and hence we default to master CPT name "rainbow".
 	   3. A specific master CPT name is given. If this does not exist then things will fail in GMT_makecpt.
 
-	   For 2 & 3 we use zmin/zmax/16+ to build a 16 level CPT via makecpt and return it.
+	   For 2 & 3 we take the master table and linearly shift the z values to fit the range.
 	*/
 
 	if (GMT_File_Is_Memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A cptfile was given and exists or is memory location */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
-	else {	/* Create a roughly equidistant, continuous 16-level CPT on the fly */
-		char out_string[GMT_STR16] = {""}, buffer[GMT_BUFSIZ] = {""}, *master = NULL;
-		int object_ID;
-		double noise;
+	else {	/* Take master cpt and stretch to fit data range */
+		char *master = NULL;
+		unsigned int k;
+		double noise, old_z_min, old_z_max, scale, z_lo, z_hi;
 
 		if (GMT_is_dnan (zmin) || GMT_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
@@ -2517,24 +2517,19 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Passing max <= zmin prevents automatic CPT generation!\n");
 			return (NULL);
 		}
-		/* Here it should be safe to let makecpt create a CPT for us */
-		if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_CPT, GMT_IS_DUPLICATE, GMT_IS_NONE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {	/* Register output */
-			return (NULL);
-		}
-		if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {	/* Make filename with embedded object ID */
-			return (NULL);
-		}
 		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
 		noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 		zmin -= noise;	zmax += noise;
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
-		sprintf (buffer, "-C%s -T%g/%g/16+ -Z ->%s", master, zmin, zmax, out_string);	/* Build actual makecpt command */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No CPT given, providing default CPT via makecpt -C%s -T%g/%g/16+ -Z\n", master, zmin, zmax);
-		if (GMT_Call_Module (GMT->parent, "makecpt", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Build a CPT via makecpt */
-			return (NULL);
-		}
-		if ((P = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {	/* Retrieve the CPT structure */
-			return (NULL);
+		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, master, NULL);
+		/* New z = new_z_min + (old_z - old_z_min)*[(new_z_max - new_z_min)/(old_z_max - old_z_min)] */
+		old_z_min = P->range[0].z_low;	old_z_max = P->range[P->n_colors-1].z_high;
+		scale = (zmax - zmin) * (old_z_max - old_z_min);
+		for (k = 0; k < P->n_colors; k++) {
+			z_lo = zmin + (P->range[k].z_low  - old_z_min) * scale;
+			z_hi = zmin + (P->range[k].z_high - old_z_min) * scale;
+			P->range[k].z_low = z_lo;	P->range[k].z_high = z_hi;
+			P->range[k].i_dz /= scale;
 		}
 	}
 	return (P);

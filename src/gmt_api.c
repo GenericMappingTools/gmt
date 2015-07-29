@@ -4357,6 +4357,8 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 
 	/* Here S is not NULL and no errors have occurred (yet) */
 
+	/* Try this for a fix: */
+	if (direction == GMT_OUT && resource == NULL) S_obj->messenger = true;	/* Output messenger */
 	if (method != GMT_IS_COORD) API->registered[direction] = true;	/* We have at least registered one item */
 	object_ID = GMTAPI_Add_Data_Object (API, S_obj);
 	GMT_Report (API, GMT_MSG_DEBUG, message, object_ID, API->n_objects);
@@ -4776,7 +4778,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
 				size_t len = strlen (file);
 				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt";
-				if (!(strstr (file, "+U") || strstr (file, "+u")))	/* Only append extension and supply path if not containint +u|U */
+				if (!(strstr (file, "+U") || strstr (file, "+u")))	/* Only append extension and supply path if not containing +u|U */
 					GMT_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else	/* Use name as is */
 					strncpy (CPT_file, file, GMT_BUFSIZ);
