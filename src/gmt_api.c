@@ -4964,8 +4964,9 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 			in_ID = GMTAPI_Get_Object (API, family, data);	/* Get the object ID of the input source */
 			if (in_ID != GMT_NOTSET) in_item = GMTAPI_Validate_ID (API, family, in_ID, GMT_NOTSET);	/* Get the item in the API array; pass dir = GMT_NOTSET to bypass status check */
 			if (in_item != GMT_NOTSET) {
+				int out_item = GMTAPI_Validate_ID (API, GMT_NOTSET, out_ID, GMT_OUT);	/* Get the item in the API array; pass family = GMT_NOTSET to bypass status check */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Write_Data: Writing %s to memory object %d from object %d which transfers ownership\n", GMT_family[family], out_ID, in_ID);
-				if (method < GMT_VIA_VECTOR) API->object[in_item]->no_longer_owner = true;	/* Since we have passed the content onto an output object */
+				if (API->object[out_item]->method < GMT_IS_VECTOR) API->object[in_item]->no_longer_owner = true;	/* Since we have passed the content onto an output object */
 			}
 		}	/* else it is a regular file and we just register it and get the new out_ID needed below */
 		else if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMT_NOTSET) return_error (API, API->error);
