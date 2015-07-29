@@ -313,14 +313,14 @@ endif (HAVE_ZLIB)
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (pslib
 	PROPERTIES
-	OUTPUT_NAME psl
+	OUTPUT_NAME gmtpsl
 	PREFIX "${LIB_PREFIX}"
 	IMPORT_PREFIX "${LIB_PREFIX}"
 	VERSION ${GMT_LIB_VERSION}
 	SOVERSION ${GMT_LIB_SOVERSION}
 	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
-# If a renaming of the psl dll has been set in ConfigUser.cmake
+# If a renaming of the gmtpslpsl dll has been set in ConfigUser.cmake
 if (WIN32 AND PSL_DLL_RENAME)
 	set_target_properties (pslib PROPERTIES RUNTIME_OUTPUT_NAME ${PSL_DLL_RENAME})
 endif ()
