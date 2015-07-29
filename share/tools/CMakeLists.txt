@@ -29,6 +29,9 @@ install (PROGRAMS
 	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
 
+option (BASH_COMPLETION_DIR "Install location for gmt bash completion file"
+etc/bash_completion.d)
+
 if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 	install (PROGRAMS
 		gmt_completion.bash
@@ -37,7 +40,7 @@ if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 else (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 	install (FILES
 		gmt_completion.bash
-		DESTINATION etc/bash_completion.d
+		DESTINATION ${BASH_COMPLETION_DIR}
 		COMPONENT Runtime
 		RENAME gmt)
 endif (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
