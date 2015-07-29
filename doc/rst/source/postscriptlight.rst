@@ -125,7 +125,7 @@ would operate via its own control structure). During a single session,
 one or more plots may be created. Here are the functions involved in
 initialization:
 
-**struct PS_CTRL \*New_PSL_Ctrl** (**char** *\*session*)
+**struct PSL_CTRL \*New_PSL_Ctrl** (**char** *\*session*)
 
     This is the first function that must be called as it creates a new
     PSL session. Specifically, it will allocate a new PSL
@@ -133,7 +133,7 @@ initialization:
     pointer that is returned must be passed to all subsequent PSL
     functions.
 
-**long \*PSL_beginsession** (**struct PS_CTRL** *\*PSL*, **long**
+**long \*PSL_beginsession** (**struct PSL_CTRL** *\*PSL*, **long**
 *search*, **char** *\*sharedir*, **char** *\*userdir*)
 
     This is the second function that must be called as it initializes
@@ -142,19 +142,19 @@ initialization:
     for the environmental parameters PSL_SHAREDIR and PSL_USERDIR
     should the corresponding arguments *sharedir* and *userdir* be NULL.
 
-**long PSL_endsession** (**struct PS_CTRL** *\*PSL*)
+**long PSL_endsession** (**struct PSL_CTRL** *\*PSL*)
 
     This function terminates the active PSL session; it is the last
     function you must call in your program. Specifically, this function
     will deallocate memory used and free up resources.
 
-**struct PS_CTRL \*PSL_beginlayer** (**struct PS_CTRL** *\*PSL*,
+**struct PSL_CTRL \*PSL_beginlayer** (**struct PSL_CTRL** *\*PSL*,
 **long** *layer*)
 
     Adds a DSC comment by naming this layer; give a unique integer
     value. Terminate layer with PSL_endlayer
 
-**struct PS_CTRL \*PSL_endlayer** (**struct PS_CTRL** *\*PSL*)
+**struct PSL_CTRL \*PSL_endlayer** (**struct PSL_CTRL** *\*PSL*)
 
     Terminate current layer with a DSC comment.
 
@@ -175,7 +175,7 @@ initialization:
     macro. Fortran programmers should instead call
     **PSL_freefunction**.
 
-**void PSL_beginaxes** (**struct PS_CTRL** *\*PSL*, **double** *llx*,
+**void PSL_beginaxes** (**struct PSL_CTRL** *\*PSL*, **double** *llx*,
 **double** *lly*, **double** *width*, **double** *height*, **double**
 *x0*, **double** *y0*, **double** *x1*, **double** *y1*)
 
@@ -192,7 +192,7 @@ initialization:
     larger than *y1*, and similarly for an x-axis that increases to the
     left.
 
-**void PSL_endaxes** (**struct PS_CTRL** *\*PSL*)
+**void PSL_endaxes** (**struct PSL_CTRL** *\*PSL*)
 
     Terminates the map scalings initialized by **PSL_beginaxes** and
     returns PSL to standard scaling in measurement units.
