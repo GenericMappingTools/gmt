@@ -106,7 +106,7 @@ struct GMT_FRONTLINE {
 
 /* Vector symbols */
 
-/* NOTE: GMT_enum_vecattr must mirror similar settings in pslib.h: PSL_enum_vecattr */
+/* NOTE: GMT_enum_vecattr must mirror similar settings in postscriptlight.h: PSL_enum_vecattr */
 
 enum GMT_enum_vecattr {
 	GMT_VEC_ARROW		= 0,		/* Default head symbol is arrow */
@@ -130,8 +130,8 @@ enum GMT_enum_vecattr {
 	GMT_VEC_FILL		= 8192,		/* Fill vector head using default fill */
 	GMT_VEC_FILL2		= 16384,	/* Fill vector head using supplied v_fill) */
 	GMT_VEC_MARC90		= 32768,	/* Matharc only: if angles subtend 90, draw straight angle symbol */
-	GMT_VEC_COMPONENTS	= 65536,	/* Not needed in pslib: Got vector dx, dy Cartesian components */
-	GMT_VEC_SCALE		= 131072};	/* Not needed in pslib: If not set we determine the required inch-to-degree scale */
+	GMT_VEC_COMPONENTS	= 65536,	/* Not needed in postscriptlight: Got vector dx, dy Cartesian components */
+	GMT_VEC_SCALE		= 131072};	/* Not needed in postscriptlight: If not set we determine the required inch-to-degree scale */
 
 /* Make sure the next three macros are in sync with any changes to GMT_enum_vecattr above! */
 

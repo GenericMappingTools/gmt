@@ -25,7 +25,7 @@
  * PSL conforms to the Encapsulated PostScript Files Specification V 3.0.
  *
  * C considerations:
- *	Include pslib.h in your program.
+ *	Include postscriptlight.h in your program.
  *	All floating point data are assumed to be of type double.
  *	All integer data are assumed to be of type long.
  *
@@ -116,7 +116,7 @@
 #include "gmt_notposix.h"
 #include "common_string.h"
 #include "common_byteswap.h"
-#include "pslib.h"
+#include "postscriptlight.h"
 
 #ifdef HAVE_ZLIB
 #	include <zlib.h>
@@ -3426,7 +3426,7 @@ void psl_def_font_encoding (struct PSL_CTRL *PSL)
 	PSL_command (PSL, "%d array astore def", PSL->internal.N_FONTS);
 	(PSL->internal.comments) ? PSL_command (PSL, "\t%% Initially zero\n") : PSL_command (PSL, "\n");
 
-	/* Define font macros (see pslib.h for details on how to add fonts) */
+	/* Define font macros (see postscriptlight.h for details on how to add fonts) */
 
 	for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_command (PSL, "/F%d {/%s Y}!\n", i, PSL->internal.font[i].name);
 }
@@ -4607,7 +4607,7 @@ int psl_comp_long_asc (const void *p1, const void *p2)
 		return (0);
 }
 
-/* This function copies a file called $PSL_SHAREDIR/pslib/<fname>.ps
+/* This function copies a file called $PSL_SHAREDIR/postscriptlight/<fname>.ps
  * to the postscript output verbatim.
  */
 static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname)
@@ -4616,7 +4616,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname)
 	char buf[PSL_BUFSIZ], fullname[PSL_BUFSIZ];
 	int i;
 
-	psl_getsharepath (PSL, "pslib", fname, ".ps", fullname);
+	psl_getsharepath (PSL, "postscriptlight", fname, ".ps", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: ");
 		perror (fullname);
@@ -4660,7 +4660,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-	psl_getsharepath (PSL, "pslib", "PS_font_info", ".d", fullname);
+	psl_getsharepath (PSL, "postscriptlight", "PS_font_info", ".d", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: ");
 		perror (fullname);
@@ -4688,7 +4688,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 
 	/* Then any custom fonts */
 
-	psl_getsharepath (PSL, "pslib", "CUSTOM_font_info", ".d", fullname);
+	psl_getsharepath (PSL, "postscriptlight", "CUSTOM_font_info", ".d", fullname);
 	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
 
 		if ((in = fopen (fullname, "r")) == NULL)

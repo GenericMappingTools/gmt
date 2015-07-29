@@ -300,7 +300,7 @@ man_pages = [
 ('pshistogram', 'pshistogram', 'Calculate and plot histograms', '', 1),
 ('psimage', 'psimage', 'Place images or EPS files on maps', '', 1),
 ('pslegend', 'pslegend', 'Plot legends on maps', '', 1),
-('pslib', 'pslib', 'A PostScript based plotting library', '', 3),
+('postscriptlight', 'postscriptlight', 'A PostScript based plotting library', '', 3),
 ('psmask', 'psmask', 'Use data tables to clip or mask map areas with no coverage', '', 1),
 ('psrose', 'psrose', 'Plot a polar histogram (rose, sector, windrose diagrams)', '', 1),
 ('psscale', 'psscale', 'Plot a gray or color scale-bar on maps', '', 1),

@@ -77,7 +77,7 @@ Core modules
    pshistogram
    psimage
    pslegend
-   pslib
+   postscriptlight
    psmask
    psrose
    psscale

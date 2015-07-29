@@ -81,14 +81,14 @@
  * PSL_deftextdim	: Sets variables for text height and width in the PS output
  * PSL_defunits:	: Encodes a dimension by name in the PS output
  *
- * For information about usage, syntax etc, see the pslib_f77.1 manual pages
+ * For information about usage, syntax etc, see the postscriptlight_f77.1 manual pages
  *
  * Authors:	Paul Wessel, Dept. of Geology and Geophysics, SOEST, U Hawaii
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, EUMETSAT, Darmstadt, Germany
  *			   Remko.Scharroo@eumetsat.int
- * Date:	18-MAY-2011
- * Version:	5.0 [64-bit enabled API edition]
+ * Date:	28-JUL-2015
+ * Version:	5.1 [64-bit enabled API edition]
  *
  * Thanks to J. Goff and L. Parkes for their contributions to an earlier version.
  *
@@ -99,7 +99,7 @@
  *--------------------------------------------------------------------*/
 
 #include <stdlib.h>
-#include "pslib.h"
+#include "postscriptlight.h"
 
 struct PSL_CTRL *PSL_FORTRAN;        /* Global structure needed for FORTRAN-77 (we think) */
 

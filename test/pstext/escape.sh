@@ -1,6 +1,6 @@
 #!/bin/bash
 # $Id$
-# Check pslib escape functions
+# Check postscriptlight escape functions
 
 ps=escape.ps
 

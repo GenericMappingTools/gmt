@@ -169,8 +169,8 @@ EXTERN_MSC int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAG
 int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I);
 #endif
 
-#ifdef _PSLIB_H
-/* gmt_plot.c prototypes only included if pslib has been included */
+#ifdef _POSTSCRIPTLIGHT_H
+/* gmt_plot.c prototypes only included if postscriptlight has been included */
 
 EXTERN_MSC char * GMT_export2proj4 (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[]);
@@ -202,7 +202,7 @@ EXTERN_MSC int GMT_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR 
 EXTERN_MSC unsigned int GMT_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);
 EXTERN_MSC void GMT_plotend (struct GMT_CTRL *GMT);
 EXTERN_MSC struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
-#endif
+#endif /* _POSTSCRIPTLIGHT_H */
 
 /* gmt_io.c: */
 

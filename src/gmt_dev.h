@@ -90,7 +90,7 @@ extern "C" {
 #include "declspec.h"
 
 /* Declaration for PSL */
-#include "pslib.h"
+#include "postscriptlight.h"
 
 /*--------------------------------------------------------------------
  *      SYSTEM HEADER FILES

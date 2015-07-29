@@ -1,8 +1,8 @@
-.. index:: ! pslib
+.. index:: ! postscriptlight
 
-*****
-pslib
-*****
+***************
+postscriptlight
+***************
 
 .. only:: not man
 
@@ -11,7 +11,7 @@ pslib
 Description
 -----------
 
-PSL was created to make the generation of PostScript page
+PSL (PostScriptLight) was created to make the generation of PostScript page
 description code easier. PS is a page description language developed by
 the Adobe for specifying how a printer should render a page of text or
 graphics. It uses a reverse Polish notation that puts and gets items

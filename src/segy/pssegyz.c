@@ -5,7 +5,7 @@
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /* pssegyzz program to plot segy files in 3d in postscript with variable trace spacing option
- * uses routines from the GMT pslib (the postscript imagemask for plotting a
+ * uses routines from the GMT postscriptlight (the postscript imagemask for plotting a
  * 1-bit depth bitmap which will not obliterate stuff underneath!
  *
  * Author:	Tim Henstock (then@noc.soton.ac.uk)

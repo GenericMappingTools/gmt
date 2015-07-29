@@ -5,7 +5,7 @@
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /* pssegy program to plot segy files in postscript with variable trace spacing option
- * uses the GMT pslib imagemask routines to plot a
+ * uses the GMT postscriptlight imagemask routines to plot a
  * 1-bit depth bitmap which will not obliterate stuff underneath!
  *
  * Author:	Tim Henstock (then@noc.soton.ac.uk)
@@ -689,7 +689,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3); /* set a clip at the map boundary since the image space overlaps a little */
 	PSL_plotbitimage (PSL, 0.0, 0.0, xlen, ylen, 1, bitmap, 8*bm_nx, bm_ny, trans, Ctrl->F.rgb);
-	/* have to multiply by 8 since pslib version of ps_imagemask is based on a _pixel_ count, whereas pssegy uses _byte_ count internally */
+	/* have to multiply by 8 since postscriptlight version of ps_imagemask is based on a _pixel_ count, whereas pssegy uses _byte_ count internally */
 	GMT_map_clip_off (GMT);
 
 	if (fpi != stdin) fclose (fpi);

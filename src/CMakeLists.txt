@@ -240,7 +240,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c
 set (GMT_COMPAT_MODULES minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster)
 
 # libpslib
-set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
+set (GMT_PSL_SRCS postscriptlight.c common_string.c common_string.h common_runpath.c
 	common_runpath.h declspec.h gmt_config.h gmt_notposix.h)
 
 # libgmt
@@ -254,7 +254,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_core_module.h gmt_nan.h gmt_notposix.h gmt_pennames.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h
 	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h
-	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h pslib.h
+	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h postscriptlight.h
 	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h
 	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c
 	gmt_customio.c gmt_dcw.c gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c
@@ -382,7 +382,7 @@ endif (HAVE_ZLIB)
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (pslib
 	PROPERTIES
-	OUTPUT_NAME gmtpsl
+	OUTPUT_NAME postscriptlight
 	PREFIX "${LIB_PREFIX}"
 	IMPORT_PREFIX "${LIB_PREFIX}"
 	VERSION ${GMT_LIB_VERSION}
@@ -614,7 +614,7 @@ install (FILES gmt.h gmt_resources.h declspec.h
 
 if (BUILD_DEVELOPER)
 	# Install Developer headers [These are clean and have no #define HAVE_* configuration]
-	install (FILES pslib.h common_math.h common_string.h gmt_common.h gmt_constants.h gmt_contour.h
+	install (FILES postscriptlight.h common_math.h common_string.h gmt_common.h gmt_constants.h gmt_contour.h
 		gmt_dcw.h gmt_defaults.h gmt_error.h gmt_error_codes.h gmt_fft.h gmt_gdalread.h gmt_grd.h
 		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_nan.h gmt_notposix.h gmt_plot.h
 		gmt_private.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_symbol.h gmt_synopsis.h

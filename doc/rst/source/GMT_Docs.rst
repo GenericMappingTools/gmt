@@ -258,6 +258,10 @@ In addition, here are two established modules that have been given more suitable
     Previously known as ps2raster (this name is recognized
     when GMT is running in compatibility mode).
 
+Finally, we have renamed our PostScript Light (PSL) library from psl
+to PostScriptLight to avoid package name conflicts.  This will eventually
+become decoupled from GMT and end up as a required prerequisite.
+
 New common options
 ------------------
 
@@ -481,7 +485,7 @@ New Features in GMT 5
 GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding over 200 new features
 to an already extensive bag of tricks.  Our PostScript library
-:doc:`PSL <pslib>` has seen a complete rewrite as well
+:doc:`PSL <postscriptlight>` has seen a complete rewrite as well
 and produce shorter and more compact PostScript. However, the big news
 is aimed for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level
@@ -3513,9 +3517,9 @@ binary metafile plot systems since such files cannot easily be modified
 after they have been created. GMT programs also write many comments to
 the plot file which make it easier for users to orient themselves should
 they need to edit the file (e.g., % Start of x-axis) [16]_. All
-GMT programs create PostScript code by calling the :doc:`PSL <pslib>` plot
+GMT programs create PostScript code by calling the :doc:`PSL <postscriptlight>` plot
 library (The user may call these functions from his/her own C or FORTRAN
-plot programs. See the manual pages for :doc:`PSL <pslib>` syntax). Although
+plot programs. See the manual pages for :doc:`PSL <postscriptlight>` syntax). Although
 GMT programs can create very individualized plot code, there will
 always be cases not covered by these programs. Some knowledge of
 PostScript will enable the user to add such features directly into the
@@ -7831,7 +7835,7 @@ Using non-default fonts with GMT
 
 To add additional fonts that you may have purchased or that are
 available freely in the internet or at your institution, see the
-instructions in the ``CUSTOM_font_info.d`` under the ``share/pslib`` directory and continue reading. GMT does
+instructions in the ``CUSTOM_font_info.d`` under the ``share/postscriptlight`` directory and continue reading. GMT does
 not read or process any font files and thus does not know anything about
 installed fonts and their metrics. In order to use extra fonts in
 GMT you need to specify the PostScript name of the relevant fonts in

@@ -13,7 +13,6 @@ PS
    pshistogram
    psimage
    pslegend
-   pslib
    psmask
    psrose
    psscale

@@ -3,7 +3,7 @@
 # $Id$
 #
 # Purpose:      Test all PSL functions at least once
-# GMT progs:    libpslib, psldemo
+# GMT progs:    libpostscriptlight, psldemo
 # Unix progs:   -
 #
 ps=psldemo.ps

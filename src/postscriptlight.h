@@ -14,23 +14,23 @@
  *
  *--------------------------------------------------------------------*/
 /*
- * This include file must be included by all programs using pslib.a
+ * This include file must be included by all programs using postscriptlight
  *
  * Authors:	Paul Wessel, Dept. of Geology and Geophysics, SOEST, U Hawaii
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, Altimetrics
  *			   remko@altimetrics.com
- * Version:	5.0 [64-bit enabled API edition]
- * Date:	15-OCT-2009
+ * Version:	5.1 [64-bit enabled API edition]
+ * Date:	28-JUL-2015
  */
 
 /*!
- * \file pslib.h
- * \brief Include file that must be included by all programs using pslib 
+ * \file postscriptlight.h
+ * \brief Include file that must be included by all programs using postscriptlight 
  */
 
-#ifndef _PSLIB_H
-#define _PSLIB_H
+#ifndef _POSTSCRIPTLIGHT_H
+#define _POSTSCRIPTLIGHT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -257,7 +257,7 @@ struct PSL_CTRL {
 		int outline;			/* Current outline				*/
 	} current;
 	struct INTERNAL {	/* Variables used internally only */
-		char *SHAREDIR;			/* Pointer to path of directory with pslib subdirectory */
+		char *SHAREDIR;			/* Pointer to path of directory with postscriptlight subdirectory */
 		char *USERDIR;			/* Pointer to path of directory with user definitions */
 		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
 		char origin[2];			/* 'r', 'a', 'f', 'c' depending on reference for new origin x and y coordinate */
@@ -411,4 +411,4 @@ EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 }
 #endif
 
-#endif /* _PSLIB_H */
+#endif /* _POSTSCRIPTLIGHT_H */

@@ -3654,7 +3654,7 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 	FILE *in = NULL;
 	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
 
-	GMT_getsharepath (GMT, "pslib", enc->name, ".ps", line, R_OK);
+	GMT_getsharepath (GMT, "postscriptlight", enc->name, ".ps", line, R_OK);
 	if ((in = fopen (line, "r")) == NULL) {
 		perror (line);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -10891,7 +10891,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT) {
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-	GMT_getsharepath (GMT, "pslib", "PS_font_info", ".d", fullname, R_OK);
+	GMT_getsharepath (GMT, "postscriptlight", "PS_font_info", ".d", fullname, R_OK);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -10912,7 +10912,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT) {
 
 	/* Then any custom fonts */
 
-	if (GMT_getsharepath (GMT, "pslib", "CUSTOM_font_info", ".d", fullname, R_OK)) {	/* Decode Custom font file */
+	if (GMT_getsharepath (GMT, "postscriptlight", "CUSTOM_font_info", ".d", fullname, R_OK)) {	/* Decode Custom font file */
 		if ((in = fopen (fullname, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;

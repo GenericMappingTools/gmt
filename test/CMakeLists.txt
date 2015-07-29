@@ -25,7 +25,7 @@ if (DO_TESTS)
 		grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdlandmask
 		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack
 		grdtrend grdvector grdview grdvolume greenspline gshhg kml mapproject ogr
-		project psbasemap pscoast pscontour pshistogram psimage pslegend pslib
+		project psbasemap pscoast pscontour pshistogram psimage pslegend postscriptlight
 		psrose psscale pstext psxy psxyz sample1d spectrum1d sph sph2grd splitxyz
 		surface time trend2d triangulate img meca mgd77 potential spotter x2sys)
 
