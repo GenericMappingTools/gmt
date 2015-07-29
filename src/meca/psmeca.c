@@ -731,11 +731,13 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 		/* If option -C is used, read the new position */
 
 		if (Ctrl->C.active) {
-			xynew[ix] = atof (col[last-1+new_fmt]);
-			xynew[iy] = atof (col[last+new_fmt]);
+			if ((GMT_scanf (GMT, col[last-1+new_fmt], GMT->current.io.col_type[GMT_IN][GMT_X], &xynew[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[last+new_fmt], GMT->current.io.col_type[GMT_IN][GMT_Y], &xynew[iy]) == GMT_IS_NAN)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad newX and/or newY coordinates, must exit)\n", n_rec);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 			if (fabs (xynew[ix]) > EPSIL || fabs (xynew[iy]) > EPSIL) {
 				GMT_setpen (GMT, &Ctrl->C.pen);
-				GMT_geo_to_xy (GMT, xynew[0], xynew[1], &plot_xnew, &plot_ynew);
+				GMT_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
 				GMT_setfill (GMT, &Ctrl->G.fill, true);
 				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->C.size, GMT_SYMBOL_CIRCLE);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
