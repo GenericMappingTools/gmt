@@ -952,7 +952,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 
 		if (Ctrl->Z.active) GMT_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 
-		GMT_geo_to_xy (GMT, xy[0], xy[1], &plot_x, &plot_y);
+		GMT_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
 
 		if (Ctrl->S.symbol) {
 			if (!Ctrl->Q.active) {
