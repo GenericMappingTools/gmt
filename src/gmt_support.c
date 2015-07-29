@@ -2524,7 +2524,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, master, NULL);
 		/* New z = new_z_min + (old_z - old_z_min)*[(new_z_max - new_z_min)/(old_z_max - old_z_min)] */
 		old_z_min = P->range[0].z_low;	old_z_max = P->range[P->n_colors-1].z_high;
-		scale = (zmax - zmin) * (old_z_max - old_z_min);
+		scale = (zmax - zmin) / (old_z_max - old_z_min);
 		for (k = 0; k < P->n_colors; k++) {
 			z_lo = zmin + (P->range[k].z_low  - old_z_min) * scale;
 			z_hi = zmin + (P->range[k].z_high - old_z_min) * scale;
