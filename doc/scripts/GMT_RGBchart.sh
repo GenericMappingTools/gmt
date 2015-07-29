@@ -62,13 +62,10 @@ gmt pstext -R -J -O -K $blacktags -F+f --FONT=black >> $ps
 gmt pstext -R -J -O -K $whitetags -F+f --FONT=white >> $ps
 
 # Put logo in top left corner
-width=`gmt math -Q $WIDTH $COL DIV 0.95 MUL =`
-xoff=`gmt math -Q $WIDTH $COL DIV 2 DIV =`
-yoff=`gmt math -Q $HEIGHT $ROW DIV $ROW 1 SUB MUL =`
-gmt logo -O -K -Dx${xoff}i/${yoff}i+jMC+w${width}i >> $ps
+gmt logo -R -J -O -K -Dg0.5/1+jMC+w$W >> $ps
 
 height=`gmt math -Q $HEIGHT $ROW DIV =`
-gmt pslegend -O -R -J -DjBR+w$WIDTH+jBR >> $ps <<END
+gmt pslegend -O -R -J -DjBR+w$WIDTH >> $ps <<END
 L $fontsizeL 1 R Values are R/G/B. Names are case-insensitive.
 L $fontsizeL 1 R Optionally, use GREY instead of GRAY.
 END
