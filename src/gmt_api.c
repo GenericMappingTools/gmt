@@ -7174,7 +7174,7 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	 * We can handle dimension units (c|i|p), distance units (d|m|s|e|f|k|M|n|u),
 	 * geographic coordinates, absolute dateTtime strings, and regular floats.
 	 *
-	 * Dimensions are returned in cm.
+	 * Dimensions are returned in the current length unit [inch or cm].
 	 * Distances are returned in meters.
 	 * Arc distances are returned in degrees.
 	 * Geographic dd:mm:ss[W|E|S|N] coordinates are returned in decimal degrees.
@@ -7202,8 +7202,8 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	while (GMT_strtok (arg, separators, &pos, p)) {	/* Loop over input aruments */
 		if ((len = strlen (p)) == 0) continue;
 		len--;	/* Position of last char, possibly a unit */
-		if (strchr (GMT_DIM_UNITS, p[len]))	/* Dimension unit (c|i|p), return distance in GMT default length unit [cm] */
-			value = GMT_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT_CM);
+		if (strchr (GMT_DIM_UNITS, p[len]))	/* Dimension unit (c|i|p), return distance in GMT default length unit [inch or cm] */
+			value = GMT_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT->current.setting.proj_length_unit);
 		else if (strchr (GMT_LEN_UNITS, p[len])) {	/* Distance units, return as meters [or degrees if arc] */
 			mode = GMT_get_distance (GMT, p, &value, &unit);
 			GMT_init_distaz (GMT, unit, mode, GMT_MAP_DIST);

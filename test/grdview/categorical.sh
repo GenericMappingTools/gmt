@@ -32,7 +32,7 @@ EOF
 gmt grdview tt.nc -Ctt.cpt -JU31/2.75 -P -B5g5 -BWSne+t"-Qs" -Qs -K --MAP_TITLE_OFFSET=-1i > $ps
 # Then plot as texture tiles -Ts:
 gmt grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-T" -T -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
-gmt psscale -Ctt.cpt -D3i/3i+w1.5i/0.2i+jML -L0.1i -O -K >> $ps
+gmt psscale -Ctt.cpt -Dx3/3+w1.5/0.2+jML -L0.1i -O -K >> $ps
 # Then plot as image -Qi100
 gmt grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-Qi100" -Qi100 -X-3.5 -Y5.0 --MAP_TITLE_OFFSET=-1i >> $ps
 # Finally plot as texture image -Qt100

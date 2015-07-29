@@ -7731,9 +7731,9 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		char *q[2] = {NULL, NULL};
 		size_t len;
 		if ((B->refpoint = GMT_get_refpoint (GMT, text)) == NULL) return (1);	/* Failed basic parsing */
-		
+
 		if (GMT_validate_modifiers (GMT, B->refpoint->args, option, "josw")) return (1);
-		
+
 		/* Reference point args are +w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>]. */
 		/* Required modifier +w */
 		if (GMT_get_modifier (B->refpoint->args, 'w', string)) {
@@ -8349,9 +8349,9 @@ int GMT_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Parsing error: Expected two %s\n", kind[mode]);
 		return -1;
 	}
-	if (mode != GMT_PAIR_COORD) {	/* Since GMT_Get_Value returns cm we scale to inches */
+	if (mode != GMT_PAIR_COORD) {	/* Since GMT_Get_Value returns default project length unit we scale to inches */
 		for (k = 0; k < n; k++)
-			par[k] *= GMT->session.u2u[GMT_CM][GMT_INCH];
+			par[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 	}
 	if (mode == GMT_PAIR_DIM_DUP && n == 1)
 		par[GMT_Y] = par[GMT_X];	/* Duplicate when second is not given */
@@ -8406,7 +8406,8 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
 					n_errors++;
 				}
-				for (n = 0; n < 4; n++) P->padding[n] *= GMT->session.u2u[GMT_CM][GMT_INCH];	/* Since GMT_Get_Value might return cm */
+				/* Since GMT_Get_Value returns in default project length unit, convert to inch */
+				for (n = 0; n < 4; n++) P->padding[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				P->clearance = true;
 				break;
 			case 'd':	/* debug mode for developers */
@@ -11944,7 +11945,7 @@ unsigned int GMT_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 	bool quoted = false;
 	unsigned int n_errors = 0;
 	size_t k, len, start = 0;
-	
+
 	if (!string || string[0] == 0) return 0;	/* Nothing to check */
 	len = strlen (string);
 	for (k = 0; start == 0 && k < (len-1); k++) {
