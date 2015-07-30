@@ -11,9 +11,9 @@ ps=${file}.ps
 ps_outlined=${file}_outlined.ps
 eps_outlined=${file}_outlined.eps
 
-# create file CUSTOM_font_info.d in current working directory
+# create file PSL_custom_fonts.txt in current working directory
 # and add PostScript font names of Linux Biolinum and Libertine
-$AWK '{print $1, 0.700, 0}' << EOF > CUSTOM_font_info.d
+$AWK '{print $1, 0.700, 0}' << EOF > PSL_custom_fonts.txt
 LinBiolinumO
 LinBiolinumOI
 LinBiolinumOB
@@ -100,6 +100,6 @@ gmt pslegend -R -J -DjTR+o0.1c+w8.0c+l1.2 \
 #gmt psconvert -P -A -Tf $ps
 #gmt psconvert -P -A -Tg -E110 $ps
 # clean up
-rm -f gmt.history gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
+rm -f gmt.history gmt.conf PSL_custom_fonts.txt legend.txt ex31CropNoLogo.eps
 
 exit 0

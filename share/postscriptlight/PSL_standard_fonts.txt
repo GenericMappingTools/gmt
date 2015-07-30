@@ -1,8 +1,8 @@
 #	$Id$
 #
 #	Listing of "Standard" 35 PostScript fonts found on most PS printers.
-#	To add additional fonts, create a similar file called CUSTOM_font_info.d
-#	in GMT/share/pslib and add your extra font information there.
+#	To add additional fonts, create a similar file called PSL_custom_fonts.txt
+#	in GMT/share/postscriptlight and add your extra font information there.
 #	The fontheight below is the height of A for unit fontsize.
 #	Encoded = 0 if we may reencode this font as needed.
 #

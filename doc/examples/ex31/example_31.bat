@@ -9,13 +9,13 @@ REM
 echo GMT EXAMPLE 31
 set ps=example_31.ps
 
-REM create file CUSTOM_font_info.d in current working directory
+REM create file PSL_custom_fonts.txt in current working directory
 REM and add PostScript font names of Linux Biolinum and Libertine
 
-echo LinBiolinumO 0.700 0 > CUSTOM_font_info.d
-echo LinBiolinumOI 0.700 0 >> CUSTOM_font_info.d
-echo LinBiolinumOB 0.700 0 >> CUSTOM_font_info.d
-echo LinLibertineOB 0.700 0 >> CUSTOM_font_info.d
+echo LinBiolinumO 0.700 0 > PSL_custom_fonts.txt
+echo LinBiolinumOI 0.700 0 >> PSL_custom_fonts.txt
+echo LinBiolinumOB 0.700 0 >> PSL_custom_fonts.txt
+echo LinLibertineOB 0.700 0 >> PSL_custom_fonts.txt
 
 REM common settings
 gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-1 FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
@@ -83,7 +83,7 @@ REM gmt psconvert -P -A -Tg -E110 %ps%
 
 REM clean up
 del .gmt*
-del CUSTOM_font_info.d
+del PSL_custom_fonts.txt
 del legend.txt
 rem del ex31CropNoLogo.eps
 del gmt.conf

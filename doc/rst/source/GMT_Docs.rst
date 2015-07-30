@@ -7835,11 +7835,11 @@ Using non-default fonts with GMT
 
 To add additional fonts that you may have purchased or that are
 available freely in the internet or at your institution, see the
-instructions in the ``CUSTOM_font_info.d`` under the ``share/postscriptlight`` directory and continue reading. GMT does
+instructions in the ``PSL_custom_fonts.txt`` under the ``share/postscriptlight`` directory and continue reading. GMT does
 not read or process any font files and thus does not know anything about
 installed fonts and their metrics. In order to use extra fonts in
 GMT you need to specify the PostScript name of the relevant fonts in
-the file ``CUSTOM_font_info.d``. You can either edit the existing file distributed with
+the file ``PSL_custom_fonts.txt``. You can either edit the existing file distributed with
 GMT to make the changes global or you can create a new file in the
 current working directory, e.g.,
 
@@ -7880,7 +7880,7 @@ PostScript directly and therefore have to be converted to PFA first.
 However, you most likely will have to tell Ghostscript where to
 find your custom fonts in order to convert your GMT-PostScript-plot
 to PDF or an image with :doc:`psconvert`.
-When you have used the correct PostScript-names of the fonts in ``CUSTOM_font_info.d`` you
+When you have used the correct PostScript-names of the fonts in ``PSL_custom_fonts.txt`` you
 only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
 :doc:`psconvert` in the usual way. Likewise

@@ -1142,6 +1142,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
 	if (!overlay) {	/* Must issue PSL header */
+		char PSL_encoding[64] = {""};
 		PSL_command (PSL, "%%!PS-Adobe-3.0\n");
 
 		/* Write definitions of macros to plotfile */
@@ -1175,7 +1176,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
 		psl_bulkcopy (PSL, "PSL_prologue");	/* General PS code */
-		psl_bulkcopy (PSL, PSL->init.encoding);
+		sprintf (PSL_encoding, "PSL_%s", PSL->init.encoding);	/* Prepend the PSL_ prefix */
+		psl_bulkcopy (PSL, PSL_encoding);
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
 
@@ -4660,7 +4662,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-	psl_getsharepath (PSL, "postscriptlight", "PS_font_info", ".d", fullname);
+	psl_getsharepath (PSL, "postscriptlight", "PSL_standard_fonts", ".txt", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: ");
 		perror (fullname);
@@ -4688,7 +4690,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 
 	/* Then any custom fonts */
 
-	psl_getsharepath (PSL, "postscriptlight", "CUSTOM_font_info", ".d", fullname);
+	psl_getsharepath (PSL, "postscriptlight", "PSL_custom_fonts", ".txt", fullname);
 	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
 
 		if ((in = fopen (fullname, "r")) == NULL)
@@ -4730,7 +4732,7 @@ int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile)
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && PSL->internal.pattern[image_no].status) return (image_no);	/* Already done this */
 
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS)) {	/* Premade pattern yet not used */
-		sprintf (name, "ps_pattern_%02d", image_no);
+		sprintf (name, "PSL_pattern_%02d", image_no);
 		psl_getsharepath (PSL, "postscriptlight", name, ".ras", file);
 	}
 	else {	/* User image, check to see if already used */
@@ -5005,7 +5007,7 @@ int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int
 
 char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *stem, const char *suffix, char *path)
 {
-	/* stem is the name of the file, e.g., CUSTOM_font_info.d
+	/* stem is the name of the file, e.g., PSL_custom_fonts.txt
 	 * subdir is an optional subdirectory name in the PSL->internal.SHAREDIR directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question

@@ -42,6 +42,6 @@ $AWK '{ x0=$1+0.5;y0=$2+0.5;c=$3; \
 	printf "%g %g BR p%s\n",x0,y0,c ; \
 	printf "%g %g TL P%s\n",x0,y0,c}' < tt.in \
 	| gmt pstext -F+f7p,Helvetica-Bold,purple+j -R -J -O -K >> $ps
-gmt psimage -Dx3i/3i+jBL+r80 ${GMT_SOURCE_DIR}/share/pattern/ps_pattern_10.ras -Gfred -Gb- -O -K >> $ps
-gmt psimage -Dx3i/3i+jTL+r80 ${GMT_SOURCE_DIR}/share/pattern/ps_pattern_10.ras -O >> $ps
+gmt psimage -Dx3i/3i+jBL+r80 ${GMT_SOURCE_DIR}/share/pattern/PSL_pattern_10.ras -Gfred -Gb- -O -K >> $ps
+gmt psimage -Dx3i/3i+jTL+r80 ${GMT_SOURCE_DIR}/share/pattern/PSL_pattern_10.ras -O >> $ps
 

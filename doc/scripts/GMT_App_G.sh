@@ -7,7 +7,7 @@
 
 dy=-0.2222
 y0=4.3
-grep -v '^#' "${GMT_SHAREDIR}"/postscriptlight/PS_font_info.d | $AWK '{print $1}' > tt.d
+grep -v '^#' "${GMT_SHAREDIR}"/postscriptlight/PSL_standard_fonts.txt | $AWK '{print $1}' > tt.d
 gmt gmtset MAP_FRAME_PEN thinner
 gmt psxy -R0/5.4/0/$y0 -Jx1i -P -K -B0 <<EOF > GMT_App_G.ps
 >
