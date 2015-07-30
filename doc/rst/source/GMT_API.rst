@@ -1836,7 +1836,8 @@ obtain the two coordinates as decimal degrees by calling
 
 Your program can now check that ``n`` equals 2 and then use the values
 in ``pairs``. Note: Dimensions given with units of inches, cm, or points
-are converted to cm, while distances given in km, nautical miles, miles, feet, or
+are converted to the current default unit set via :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`,
+while distances given in km, nautical miles, miles, feet, or
 survey feet are returned in meters. Arc lengths in minutes and seconds
 are returned in decimal degrees, and date/time values are returned in
 seconds since the epoch (1970).

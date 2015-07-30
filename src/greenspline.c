@@ -1435,6 +1435,9 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	X = GMT_memory (GMT, NULL, n_alloc, double *);
@@ -1443,9 +1446,6 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	obs = GMT_memory (GMT, NULL, n_alloc, double);
 	check_longitude = (dimension == 2 && (Ctrl->D.mode == 1 || Ctrl->D.mode == 2));
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
-		Return (API->error);
-	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read input data and check for data constraint duplicates\n");
 	n = m = n_read = 0;
 	r_min = DBL_MAX;	r_max = -DBL_MAX;

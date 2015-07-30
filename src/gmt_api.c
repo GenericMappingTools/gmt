@@ -188,13 +188,6 @@
 #	define getpid _getpid
 #endif
 
-/* Various functions declared elsewhere but needed here	(see gmt_module.c) */
-EXTERN_MSC void *dlopen (const char *module_name, int mode);
-EXTERN_MSC int dlclose (void *handle);
-EXTERN_MSC void *dlsym (void *handle, const char *name);
-EXTERN_MSC char *dlerror (void);
-EXTERN_MSC void *dlopen_special (const char *name);
-
 EXTERN_MSC int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode);
 EXTERN_MSC void gmt_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t);
 EXTERN_MSC double GMT_fft_kx (uint64_t k, struct GMT_FFT_WAVENUMBER *K);

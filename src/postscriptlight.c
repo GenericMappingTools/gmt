@@ -4731,7 +4731,7 @@ int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile)
 
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS)) {	/* Premade pattern yet not used */
 		sprintf (name, "ps_pattern_%02d", image_no);
-		psl_getsharepath (PSL, "pattern", name, ".ras", file);
+		psl_getsharepath (PSL, "postscriptlight", name, ".ras", file);
 	}
 	else {	/* User image, check to see if already used */
 
