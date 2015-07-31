@@ -349,7 +349,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
-	GMT->current.setting.io_header[GMT_OUT] = true;	/* To output header records */
+	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	
 	sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);

@@ -478,7 +478,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	xdata[1] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-	GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
+	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 
 	if (GMT->common.R.active && GMT->current.proj.projection != GMT_NO_PROJ) {
 		do_project = true;

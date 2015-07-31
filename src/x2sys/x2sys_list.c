@@ -514,6 +514,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
+	GMT_set_tableheader (GMT, GMT_OUT, true);
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
 		char *cmd = NULL;
 		sprintf (record, "Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
@@ -628,7 +629,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 		for (k = 0; k < P[p].nx; k++) {	/* For each crossover */
 			/* First check if this record has a non-NaN COE */
 			if (check_for_NaN && (GMT_is_dnan (P[p].COE[k].data[one][COE_Z]) || GMT_is_dnan (P[p].COE[k].data[two][COE_Z]))) continue;
-			
+			record[0] = 0;	/* Clean slate */
 			for (i = j = 0, first = true; i < n_items; i++, j++) {
 				switch (Ctrl->F.flags[i]) {	/* acdhintTvwxyz */
 					case 'a':	/* Angle between tracks */

@@ -358,6 +358,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
+	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {
 		for (id1 = 0, n_pairs = 0; id1 < n_tracks; id1++) {
 			for (id2 = id1 + Ctrl->L.mode; id2 < n_tracks; id2++) {
