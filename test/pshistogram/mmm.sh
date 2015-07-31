@@ -24,10 +24,10 @@ $mode	700
 $peak	0
 $peak	700
 EOF
-gmt psxy -R -J -O -K -W2p -V tmp >> $ps
+gmt psxy -R -J -O -K -W2p tmp >> $ps
 gmt psbasemap -R -J -O -K -D-4600/-600/280/690 -F+glightgreen+p1p >> $ps
 gmt pshistogram "${src:-.}"/pac.txt -W50 -JX5.5i/3i -Bafg -BWSne -R-6100/-4500/0/700 -L0.25p -Gred -O -K -F -X3i -Y2.75i >> $ps
-gmt psxy -R -J -O -K -W2p -V tmp >> $ps
+gmt psxy -R -J -O -K -W2p tmp >> $ps
 gmt pstext -R -J -O -K -F+jCM+a90+f12p -Gwhite -W0.25p << EOF >> $ps
 $peak	600	peak
 $mode	600	mode
