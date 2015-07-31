@@ -220,11 +220,9 @@ struct GMT_CURRENT {
 	struct GMT_PS ps;		/* Hold parameters related to PS setup */
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */
-#ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */ 
 	struct GMT_GDALREAD_OUT_CTRL gdal_read_out; /* Hold parameters related to options transmitted from gdalread */ 
 	struct GMT_GDALWRITE_CTRL    gdal_write;    /* Hold parameters related to options transmitted to gdalwrite */ 
-#endif
 };
 
 struct GMT_INTERNAL {
@@ -235,9 +233,7 @@ struct GMT_INTERNAL {
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	double **mem_coord;		/* Columns of temp memory */
-#ifdef MEMDEBUG
-	struct MEMORY_TRACKER *mem_keeper;
-#endif
+	struct MEMORY_TRACKER *mem_keeper;	/* Only filled when #ifdef MEMDEBUG  */
 };
 
 struct GMT_SHORTHAND {	/* Holds information for each grid extension shorthand read from the user's .gmtio file */

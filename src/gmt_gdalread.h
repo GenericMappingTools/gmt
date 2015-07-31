@@ -31,6 +31,7 @@
 
 /*! Structure to control which options are transmited to GMT_gdalwrite */
 struct GMT_GDALWRITE_CTRL {
+#ifdef HAVE_GDAL		/* Otherwise this is just an empty struct but that wont change ABI of structs including this */
 	char *driver;		/* The GDAL diver name */
 	char *type;			/* Data type */
 	char *command;		/* command line */
@@ -56,10 +57,12 @@ struct GMT_GDALWRITE_CTRL {
 		int	active;
 		char	*ProjectionRefPROJ4;
 	} P;
+#endif
 };
 
 /*! Structure to control which options are transmited to GMT_gdalread */
 struct GMT_GDALREAD_IN_CTRL {
+#ifdef HAVE_GDAL		/* Otherwise this is just an empty struct but that wont change ABI of structs including this */
 	struct GD_B {	/* Band selection */
 		int active;
 		char *bands;
@@ -121,6 +124,7 @@ struct GMT_GDALREAD_IN_CTRL {
 		char side[1];		/* If array is going to pasted (grdpaste), tell in what side 'lrtb' */
 		int offset;
 	} mini_hdr;
+#endif
 };
 
 /*! Structure to hold metadata info in a per bands basis read */
@@ -135,6 +139,7 @@ struct GDAL_BAND_FNAMES {
 
 /*! Structure with the output data transmited by GMT_gdalread */
 struct GMT_GDALREAD_OUT_CTRL {
+#ifdef HAVE_GDAL		/* Otherwise this is just an empty struct but that wont change ABI of structs including this */
 	/* active is true if the option has been activated */
 	struct UInt8 {			/* Declare byte pointer */
 		int active;
@@ -187,6 +192,7 @@ struct GMT_GDALREAD_OUT_CTRL {
 	} GEOGCorners;
 
 	struct GDAL_BAND_FNAMES *band_field_names;
+#endif
 };
 
 #endif  /* _GMT_GDALREAD_H */
