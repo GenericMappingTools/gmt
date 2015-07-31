@@ -417,7 +417,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 	int k;
 	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
 	double xr2, yr2, dx, dy, dz, p, em, sign2, part2, part3, q, f, z2, p2;
-	double scl, cos_theta_i, sin_theta2_i, cos_phi_i, sin_phi2_i;
+	double scl, cos_theta_i, sin_theta2_i, cos_phi_i, sin_phi2_i, area = 0.0;
 	bool zerog;
 	
 	dz = z_obs;
@@ -460,6 +460,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 			else {
 				dx = x1 - x2;
 				dy = y1 - y2;
+				area += dx * (y1 + y2);
 				side = hypot (dx, dy);
 				iside = 1.0 / side;
 				p = (dy * x1 - dx * y1) * iside;
@@ -497,7 +498,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 		xr1 = xr2;
 		yr1 = yr2;
 	}
-    
+	if (area < 0.0) vsum = -vsum;		/* 2*area will be negative or positive depending on handedness of polygon */
 	return (10 * GAMMA * rho * vsum);	/* To get Eotvos = 0.1 mGal/km */
 }
 
