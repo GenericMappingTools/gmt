@@ -69,6 +69,7 @@ struct MEMORY_ITEM {
 };
 
 struct MEMORY_TRACKER {
+#ifdef MEMDEBUG
 	bool active;	/* Normally true but can be changed to focus on just some allocations */
 	bool search;	/* Normally true but can be changed to skip searching when we know we add a new item */
 	bool do_log;	/* true if we wish to write detailed alloc/free log */
@@ -84,6 +85,7 @@ struct MEMORY_TRACKER {
 	size_t n_alloc;		/* Allocated size of memory pointer array */
 	struct MEMORY_ITEM *root; /* Pointer to splay tree */
 	FILE *fp;	/* For logging if GMT_TRACK_MEMORY is 2 */
+#endif
 };
 
 /* Items needed if -DMEMDEBUG is in effect */
