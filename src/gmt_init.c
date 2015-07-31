@@ -10982,11 +10982,11 @@ struct GMT_CTRL *New_GMT_Ctrl (struct GMTAPI_CTRL *API, char *session, unsigned 
 		{ "z"        , GMT_ZAXIS }
 	};
 	struct GMT_CTRL *GMT = NULL;
-	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS] = {   /* This constant is created by GNUmakefile - do not edit */
-	#include "gmt_ellipsoids.h"	/* This include file is created by GNUmakefile - do not edit */
+	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS] = {   /* This constant is created by CMake - do not edit */
+	#include "gmt_ellipsoids.h"                            /* This include file is created by CMake - do not edit */
 	};
-	struct DATUM datum[GMT_N_DATUMS] = {     /* This constant is created by GNUmakefile - do not edit */
-	#include "gmt_datums.h"		/* This include file is created by GNUmakefile - do not edit */
+	struct DATUM datum[GMT_N_DATUMS] = {    /* This constant is created by CMake - do not edit */
+	#include "gmt_datums.h"                 /* This include file is created by CMake - do not edit */
 	};
 	GMT_UNUSED(session);
 
