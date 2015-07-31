@@ -515,6 +515,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	GMT_set_tableheader (GMT, GMT_OUT, true);
+	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
 		char *cmd = NULL;
 		sprintf (record, "Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
