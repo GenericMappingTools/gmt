@@ -277,8 +277,8 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	}
 	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-	
-	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Ctrl->T.TAG);
+	sprintf (record, " %s", Ctrl->T.TAG);	/* Preserve the leading space for backwards compatibility */
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 
 	for (trk = 0; trk < n_tracks; trk++) {
 

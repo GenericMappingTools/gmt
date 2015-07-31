@@ -197,7 +197,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 	char track_file[GMT_BUFSIZ] = {""}, index_file[GMT_BUFSIZ] = {""}, old_track_file[GMT_BUFSIZ] = {""}, old_index_file[GMT_BUFSIZ] = {""};
 	char track_path[GMT_BUFSIZ] = {""}, index_path[GMT_BUFSIZ] = {""}, old_track_path[GMT_BUFSIZ] = {""}, old_index_path[GMT_BUFSIZ] = {""};
 
-	int error = 0;
+	int error = 0, k;
 	bool found_it, skip;
 
 	FILE *fp = NULL, *fbin = NULL, *ftrack = NULL;
@@ -239,8 +239,9 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track binindex file\n");
 		Return (EXIT_FAILURE);
 	}
-	if (strncmp (&line[2], Ctrl->T.TAG, strlen(Ctrl->T.TAG))) {	/* Hard check to see if the TAG matches what we says it should be */
-		GMT_Report (API, GMT_MSG_NORMAL, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[2]);
+	k = (line[1] == ' ') ? 2 : 1;	/* Since line may be "#TAG" or "# TAG" */
+	if (strncmp (&line[k], Ctrl->T.TAG, strlen(Ctrl->T.TAG))) {	/* Hard check to see if the TAG matches what we says it should be */
+		GMT_Report (API, GMT_MSG_NORMAL, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[k]);
 		Return (EXIT_FAILURE);
 	}
 

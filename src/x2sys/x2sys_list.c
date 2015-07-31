@@ -518,10 +518,10 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
 		char *cmd = NULL;
-		sprintf (record, "Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
+		sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 		cmd = GMT_Create_Cmd (API, options);
-		sprintf (record, "Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
+		sprintf (record, " Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 		GMT_free (GMT, cmd);
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, "");
