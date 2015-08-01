@@ -374,6 +374,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	unsigned int annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
 	unsigned int primary;		/* Axis item number of annotation with largest interval/unit */
 	unsigned int axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
+	unsigned int justify;
 	bool horizontal;		/* true if axis is horizontal */
 	bool neg = below;		/* true if annotations are to the left of or below the axis */
 	bool faro;			/* true if the anchor point of annotations is on the far side of the axis */
@@ -383,8 +384,9 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool do_tick;		/* true unless we are dealing with bits of weeks */
 	bool form;			/* true for outline font */
 	bool ortho = false;		/* true if annotations are orthogonal to axes */
+	bool flip = false;		/* true if annotations are inside axes */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
-	double x, t_use;			/* Misc. variables */
+	double x, t_use, text_angle;		/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
 	char string[GMT_LEN256] = {""};	/* Annotation string */
@@ -404,6 +406,15 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) neg = !neg;	/* Annotations go either below or above the axis */
 	faro = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
 	if (A->type != GMT_TIME) GMT_get_format (GMT, GMT_get_map_interval (GMT, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);	/* Set the annotation format template */
+	text_angle = (ortho == horizontal) ? 90.0 : 0.0;
+	justify = (ortho) ? PSL_MR : PSL_BC;
+	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
+	if (axis != GMT_Z && GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate x/y-annotations when seen "from North" */
+		if (!flip) justify = GMT_flip_justify (GMT, justify);
+		text_angle += 180.0;
+	}
+	else if (flip)
+		justify = GMT_flip_justify (GMT, justify);
 
 	/* Ready to draw axis */
 
@@ -530,7 +541,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 					strncpy (string, label_c[i], GMT_LEN256);
 				else
 					GMT_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
-				PSL_plottext (PSL, 0.0, 0.0, -font.size, string, (ortho == horizontal) ? 90.0 : 0.0, ortho ? PSL_MR : PSL_BC, form);
+				PSL_plottext (PSL, 0.0, 0.0, -font.size, string, text_angle, justify, form);
 			}
 			if (!faro) PSL_command (PSL, "/PSL_A%d_y PSL_A%d_y PSL_AH%d add def\n", annot_pos, annot_pos, annot_pos);
 		}
