@@ -13,7 +13,7 @@ The following were provided by J. Luis:
 
 The following were provided by P. Wessel:
 	gmtflexure	- Compute flexural deformation of 2-D loads, forces, and bending moments
-	grdflexure	- Computes the flexural deformation for a range of rheologies
+	grdflexure	- Computes the flexural deformation under 3-D grid loads for a range of rheologies
 	grdseamount	- Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
 	talwani2d	- Compute gravity, geoid, or VGG over a 2-D body using Talwani's line-integral method
 	talwani3d	- Compute gravity, geoid, or VGG over a D-D body using Talwani's line-integral method

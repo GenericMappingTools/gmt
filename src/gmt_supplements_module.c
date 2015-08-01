@@ -58,8 +58,8 @@ struct Gmt_moduleinfo g_supplements_module[] = {
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<GI,FDi,GGO"},
 	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", "<GI,EGi,GGO"},
 	{"grdseamount", "potential", "Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry", "<DI,GGO"},
-	{"talwani2d", "potential", "Compute free-air anomalies, geoid anomalies or vertical gravity gradients over 2-D bodies", "<DI,NDi,ZGi,GGo,>DO"},
-	{"talwani3d", "potential", "Compute free-air anomalies, geoid anomalies or vertical gravity gradients over 3-D bodies", "<DI,NDi,ZGi,GGo,>DO"},
+	{"talwani2d", "potential", "Compute free-air, geoid or vertical gravity gradients anomalies over 2-D bodies", "<DI,NDi,>DO"},
+	{"talwani3d", "potential", "Compute free-air, geoid or vertical gravity gradients anomalies over 3-D bodies", "<DI,NDi,ZGi,GGo,>DO"},
 	{"pssegyz", "segy", "Plot a SEGY file on a map in 3-D", "-Xo"},
 	{"pssegy", "segy", "Plot a SEGY file on a map", "-Xo"},
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid", "GGO"},
@@ -70,16 +70,16 @@ struct Gmt_moduleinfo g_supplements_module[] = {
 	{"hotspotter", "spotter", "Create CVA image from seamount locations", "<DI,ETI,GGO"},
 	{"originator", "spotter", "Associate seamounts with nearest hotspot point sources", "<DI,ETI,FDi,>DO"},
 	{"rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", ">DO"},
-	{"x2sys_binlist", "x2sys", "Create bin index listing from track data files", ">DO"},
+	{"x2sys_binlist", "x2sys", "Create bin index listing from track data files", ">TO"},
 	{"x2sys_cross", "x2sys", "Calculate crossovers between track data files", "ATi,>DO"},
 	{"x2sys_datalist", "x2sys", "Extract content of track data files", "LTi,ITi,>DO"},
 	{"x2sys_get", "x2sys", "Get track listing from track index database", ">TO"},
 	{"x2sys_init", "x2sys", "Initialize a new x2sys track database", ""},
 	{"x2sys_list", "x2sys", "Extract subset from crossover data base", "LTi,ITi,>DO"},
-	{"x2sys_merge", "x2sys", "Merge an updated COEs table (smaller) into the main table (bigger)", ""},
+	{"x2sys_merge", "x2sys", "Merge an updated COEs table (smaller) into the main table (bigger)", ">TO"},
 	{"x2sys_put", "x2sys", "Update track index database from track bin file", ""},
-	{"x2sys_report", "x2sys", "Report statistics from crossover data base", "LTi,ITi,>DO"},
-	{"x2sys_solve", "x2sys", "Determine least-squares systematic correction from crossovers", ""},
+	{"x2sys_report", "x2sys", "Report statistics from crossover data base", "LTi,ITi,>TO"},
+	{"x2sys_solve", "x2sys", "Determine least-squares systematic correction from crossovers", ">TO"},
 	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
 
@@ -108,7 +108,7 @@ const char *gmt_supplements_module_info (void *API, char *candidate) {
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_supplements_module[module_id].name != NULL &&
-			strcmp (candidate, g_supplements_module[module_id].name))
+	       strcmp (candidate, g_supplements_module[module_id].name))
 		++module_id;
 
 	/* Return Module keys or NULL */

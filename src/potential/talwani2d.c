@@ -16,30 +16,37 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Author:      Paul Wessel and Seung-Sep Kim
+ * Authors:     Paul Wessel and Seung-Sep Kim
  * Date:        10-JUN-2015
  *
  *
  * Calculates gravity due to 2-D crossectional polygonal shapes
  * of an infinite horizontal body [or bodies]
  * It expects all distances to be in meters (you can override
- * with the -K option) and densities to be in kg/m^3.
+ * with the -M option) and densities to be in kg/m^3.
  *
- * Based on method by M. Talwani and M. Ewing, Rapid Computation
- *   of gravitational attraction of three-dimensional bodies of 
- *   arbitrary shape, Geophysics, 25, 203-225, 1960.
- * Extended to handle VGG by Kim / Wessel, 2015, in prep.
+ * Based on methods by:
+ *
+ * Chapman, M. E. (1979), Techniques for interpretation of geoid
+ *    anomalies, J. Geophys. Res., 84(B8), 3793–3801.
+ * Rasmussen, R., and L. B. Pedersen (1979), End corrections in
+ *   potential field modeling, Geophys. Prospect., 27, 749–760.
+ * Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity
+ *    computations for two-dimensional bodies with application to
+ *    the Mendocino submarine fracture zone, J. Geophys. Res., 64, 49–59.
+ * Kim, S.-S., and P. Wessel, 2015, in prep.
+ *
  * Accelerated with OpenMP; see -x.
  */
 
 #define THIS_MODULE_NAME	"talwani2d"
 #define THIS_MODULE_LIB		"potential"
-#define THIS_MODULE_PURPOSE	"Compute free-air anomalies, geoid anomalies or vertical gravity gradients over 2-D bodies"
-#define THIS_MODULE_KEYS	"<DI,NDi,ZGi,GGo,>DO"
+#define THIS_MODULE_PURPOSE	"Compute free-air, geoid or vertical gravity gradients anomalies over 2-D bodies"
+#define THIS_MODULE_KEYS	"<DI,NDi,>DO"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-VRfhior" GMT_ADD_x_OPT
+#define GMT_PROG_OPTIONS "-Vhio" GMT_ADD_x_OPT
 
 #define TOL		1.0e-7
 #define GAMMA 		6.673e-11	/* Gravitational constant */
@@ -59,7 +66,7 @@ struct TALWANI2D_CTRL {
 		bool active;
 		unsigned int mode;
 	} F;
-	struct M {	/* -Mx|z  */
+	struct M {	/* -Mh|z  */
 		bool active[2];	/* True if km, else m */
 	} M;
 	struct N {	/* Output points with optional obs-z values*/
@@ -202,12 +209,12 @@ int GMT_talwani2d_usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<modelfile> is a multiple-segment ASCII file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is down].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file, in kg/m^3.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is positive down].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file (in kg/m^3).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field component:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f = FAA Free-air anomalies (mGal) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   v = VGG Vertical Gravity Gradient (Eotvos = 0.1 mGal/km).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   v = VGG Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x-distances are given in km [meters]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-distances are given in km [meters]\n");
@@ -218,7 +225,7 @@ int GMT_talwani2d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to xinc to indicate the number of points instead.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For FAA only: Optionally append <ymin/ymax> to get 2.5-D solution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.\n");
 	GMT_Option (API, "h,i,o,x,.");
 	return (EXIT_FAILURE);
 }
@@ -500,7 +507,7 @@ double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struc
 
 int GMT_talwani2d (void *V_API, int mode, void *args)
 {
-	int row, error = 0;
+	int row, error = 0, ns;
 	unsigned int k, tbl, seg, n, geometry, n_bodies, dup_node, n_duplicate = 0;
 	size_t n_alloc, n_alloc1;
 	uint64_t dim[4] = {1, 1, 0, 2};
@@ -540,7 +547,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 	/*---------------------------- This is the talwani2d main code ----------------------------*/
 	
 	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
-	scl = (Ctrl->M.active[TALWANI2D_HOR]) ? 1000.0 : 1.0;	/* Perhaps convert to m */
+	scl = (Ctrl->M.active[TALWANI2D_HOR]) ? METERS_IN_A_KM : 1.0;	/* Perhaps convert to m */
 	
 	if (Ctrl->T.active) {
 		/* Make sure the min/man/inc values harmonize */
@@ -608,8 +615,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 				if (!first) {	/* First close previous body */
 					if (!(x[n-1] == x[0] && z[n-1] == z[0])) {	/* Copy first point to last */
 						if (n_duplicate == 1 && dup_node == n) n_duplicate = 0;	/* So it was the last == first duplicate; reset count */
-						x[n] = x[0];
-						z[n] = z[0];
+						x[n] = x[0];	z[n] = z[0];
 						n++;
 					}
 					x = GMT_memory (GMT, x, n, double);
@@ -624,7 +630,11 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 					break;
 				/* Process the next segment header */
-				sscanf (GMT->current.io.segment_header, "%lf",  &rho);
+				ns = sscanf (GMT->current.io.segment_header, "%lf",  &rho);
+				if (ns == 0 && !Ctrl->D.active) {
+					GMT_Report (API, GMT_MSG_VERBOSE, "Neither segment header nor -D specified density - must quit\n");
+					Return (API->error);
+				}
 				if (Ctrl->D.active) rho = Ctrl->D.rho;
 				/* Allocate array for this body */
 				n_alloc = GMT_CHUNK;
@@ -632,7 +642,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 				z = GMT_memory (GMT, NULL, n_alloc, double);
 				n = 0;
 				if (n_bodies == n_alloc1) {
-					n_alloc1 *= 2;
+					n_alloc1 <<= 1;
 					body = GMT_memory (GMT, body, n_alloc1, struct BODY2D);
 				}
 				continue;
@@ -646,8 +656,8 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 		}
 		else {
 			x[n] = in[GMT_X];	z[n] = in[GMT_Y];
-			if (Ctrl->M.active[TALWANI2D_HOR]) x[n] *= 1000.0;	/* Change distances to m */
-			if (Ctrl->M.active[TALWANI2D_VER]) z[n] *= 1000.0;	/* Change distances to m */
+			if (Ctrl->M.active[TALWANI2D_HOR]) x[n] *= METERS_IN_A_KM;	/* Change distances to m */
+			if (Ctrl->M.active[TALWANI2D_VER]) z[n] *= METERS_IN_A_KM;	/* Change distances to m */
 			n++;
 			if (n == n_alloc) {
 				n_alloc += GMT_CHUNK;
