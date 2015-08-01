@@ -482,7 +482,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	j = k;
 	while (j < last && (in[j] == 'x' || in[j] == 'y' || in[j] == 'z')) j++;
 	custom = (in[j] == 'c');	/* Got -B[p|s][xyz]c<customfile> */
-	for (k = 0; k <= last; k++) {
+	for (k = 0; k < last; k++) {
 		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
 			continue;	/* Resume processing */
 		}
@@ -506,13 +506,13 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		switch (in[k]) {
 			case '/': if (mod == 0) n_slashes++; break;	/* Only GMT4 uses slashes */
 			case '+':	/* Plus, might be GMT5 modifier switch */
-			if (k < last && in[k+1] == 's') {mod = 's'; ignore5 = true; gmt5++;}	/* suffix settings */
+				if      (k < last && in[k+1] == 'u') {mod = 'u'; ignore5 = true;  gmt5++;}	/* unit (suffix) settings */
 				else if (k < last && in[k+1] == 'b') {mod = 'b'; ignore5 = false; gmt5++;}	/* 3-D box settings */
 				else if (k < last && in[k+1] == 'g') {mod = 'g'; ignore5 = false; gmt5++;}	/* fill settings */
 				else if (k < last && in[k+1] == 'o') {mod = 'o'; ignore5 = false; gmt5++;}	/* oblique pole settings */
-				else if (k < last && in[k+1] == 'p') {mod = 'p'; ignore5 = true; gmt5++;}	/* prefix settings */
-				else if (k < last && in[k+1] == 'l') {mod = 'l'; ignore5 = true; gmt5++;}	/* Label */
-				else if (k < last && in[k+1] == 't') {mod = 't'; ignore5 = true; gmt5++;}	/* title */
+				else if (k < last && in[k+1] == 'p') {mod = 'p'; ignore5 = true;  gmt5++;}	/* prefix settings */
+				else if (k < last && in[k+1] == 'l') {mod = 'l'; ignore5 = true;  gmt5++;}	/* Label */
+				else if (k < last && in[k+1] == 't') {mod = 't'; ignore5 = true;  gmt5++;}	/* title */
 				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) {ignore5 = false; gmt4++;}	/* Z-axis with 3-D box */
 				break;
 			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
