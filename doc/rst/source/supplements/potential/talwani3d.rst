@@ -132,6 +132,14 @@ for the same model, try
     gmt talwani3d -Ncrossing.txt body.txt -D1700 -Fv > vgg_crossing.txt
 
 
+Finally, the geoid anomaly along the same track in crossing.txt
+for the same model is returned by
+
+::
+
+    gmt talwani3d -Ncrossing.txt body.txt -D1700 -Fn > n_crossing.txt
+
+
 References
 ----------
 

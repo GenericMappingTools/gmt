@@ -21,7 +21,6 @@ Synopsis
 [ **-Z**\ *level*\ [*ymin*\ /*ymax*\ ] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
-[ **-fg** ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-x| ]
@@ -119,6 +118,13 @@ for the same model, try
     gmt talwani2d -Ncrossing.txt body.txt -D1700 -Fv > vgg_crossing.txt
 
 
+The geoid anomaly for the same setup is given by
+
+::
+
+    gmt talwani2d -Ncrossing.txt body.txt -D1700 -Fn > n_crossing.txt
+
+
 Notes
 -----
 
@@ -126,15 +132,15 @@ Notes
    reference level.  We simply remove the most negative (if density contrast
    is positive) or positive (if density contrast is negative) computed value
    from all values, rendering the entire anomaly positive (or negative).  You
-   can use gmt math to change the zero level to suit your needs.
+   can use :doc:`gmtmath </gmtmath>` to change the zero level to suit your needs.
 
 References
 ----------
 
-Chapman, M. E. (1979), Techniques for interpretation of geoid anomalies, J. Geophys. Res., 84(B8), 3793–3801.
+Chapman, M. E. (1979), Techniques for interpretation of geoid anomalies, J. Geophys. Res., 84(B8), 3793-3801.
 Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity computations for
 two-dimensional bodies with application to the Mendocino submarine fracture zone,
-J. Geophys. Res., 64, 49–59.
+J. Geophys. Res., 64, 49-59.
 
 See Also
 --------
