@@ -413,7 +413,6 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid|raster\n");
 
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
-		bool new_grid = false;
 		/* Since these GMT grids COULD be passed in via memory locations, they COULD have pads so we must use general IJ access */
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
@@ -427,7 +426,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			}
 			GMT_grd_init (GMT, Grid->header, options, false);
 
-			new_grid = GMT_set_outgrid (GMT, Ctrl->In.file, Grid, &Out);	/* true if input is a read-only array; else Out == Grid */
+			(void)GMT_set_outgrid (GMT, Ctrl->In.file, Grid, &Out);	/* true if input is a read-only array; else Out == Grid */
 				
 			sprintf (buffer, Ctrl->G.name, rgb[channel]);
 			grdfile = strdup (buffer);

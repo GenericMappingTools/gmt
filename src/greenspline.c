@@ -1317,7 +1317,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	unsigned int dimension = 0, normalize, unit = 0, n_cols, L_Max = 0;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID, way, nx;
-	bool new_grid = false, delete_grid = false, check_longitude, skip;
+	bool delete_grid = false, check_longitude, skip;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",
@@ -1678,7 +1678,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
 			Return (API->error);
 		}
-		new_grid = GMT_set_outgrid (GMT, Ctrl->T.file, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
+		(void)GMT_set_outgrid (GMT, Ctrl->T.file, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
 		n_ok = Grid->header->nm;
 		GMT_grd_loop (GMT, Grid, row, col, ij) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
 		Z.nz = 1;

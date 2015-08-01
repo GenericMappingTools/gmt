@@ -769,13 +769,13 @@ int gmt_bin_input_memory (struct GMT_CTRL *GMT, uint64_t n, uint64_t n_use)
 {	/* Read function which gets one record from the memory reference.
  	 * The current data record has already been read from wherever and is avaialble in GMT->current.io.curr_rec */
 	unsigned int status;
-	uint64_t n_read;
+	//uint64_t n_read;
 
 	GMT->current.io.status = GMT_IO_DATA_RECORD;	/* Default status we expect, but this may change below */
 	GMT->current.io.rec_no++;			/* One more input record read */
 	status = GMT_process_binary_input (GMT, n_use);	/* Check for segment headers */
 	if (status == 1) return (-1);			/* A segment header was found and we are done here */
-	n_read = (GMT->common.i.active) ? GMT_bin_colselect (GMT) : n;	/* We may have used -i and select fewer of the input columns */
+	//n_read = (GMT->common.i.active) ? GMT_bin_colselect (GMT) : n;	/* We may have used -i and select fewer of the input columns */
 
 	if (GMT_gap_detected (GMT)) { GMT_set_gap (GMT); return (-2); }	/* Gap forced a segment header to be issued and we get out */
 	GMT->current.io.pt_no++;	/* Actually got a valid data record */

@@ -223,7 +223,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 
 	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;
 	bool cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
-	unsigned int ocol, last_col, bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0, o_mode;
+	unsigned int ocol, bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0, o_mode;
 	uint64_t row;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
@@ -434,8 +434,6 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, bool);
 	}
 	if (Ctrl->E.active) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Enable segment headers */
-	
-	last_col = s->n_out_columns - 1;	/* column number of last output column */
 	
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {	/* Process each track */
 
