@@ -132,6 +132,12 @@ for the same model, try
     gmt talwani3d -Ncrossing.txt body.txt -D1700 -Fv > vgg_crossing.txt
 
 
+References
+----------
+
+Talwani, M., and M. Ewing (1960), Rapid computation of gravitational attraction of
+three-dimensional bodies of arbitrary shape, Geophysics, 25(203-225).
+
 See Also
 --------
 

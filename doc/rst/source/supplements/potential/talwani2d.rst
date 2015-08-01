@@ -128,6 +128,14 @@ Notes
    from all values, rendering the entire anomaly positive (or negative).  You
    can use gmt math to change the zero level to suit your needs.
 
+References
+----------
+
+Chapman, M. E. (1979), Techniques for interpretation of geoid anomalies, J. Geophys. Res., 84(B8), 3793–3801.
+Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity computations for
+two-dimensional bodies with application to the Mendocino submarine fracture zone,
+J. Geophys. Res., 64, 49–59.
+
 See Also
 --------
 
