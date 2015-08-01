@@ -6952,6 +6952,7 @@ int GMT_Get_Default (void *V_API, char *keyword, char *value)
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (keyword == NULL) return_error (V_API, GMT_NO_PARAMETERS);
 	if (value == NULL) return_error (V_API, GMT_NO_PARAMETERS);
 	API = gmt_get_api_ptr (V_API);
 	strcpy (value, GMT_putparameter (API->GMT, keyword));
@@ -6963,6 +6964,43 @@ int GMT_Get_Default (void *V_API, char *keyword, char *value)
 int GMT_Get_Default_ (char *keyword, char *value, int len1, int len2)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Default (GMT_FORTRAN, keyword, value));
+}
+#endif
+
+/*! . */
+int GMT_Set_Default (void *V_API, char *keyword, char *value)
+{	/* Given the text representation of a GMT or API parameter keyword, assign its value.
+	 */
+	unsigned int error = 0;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (keyword == NULL) return_error (V_API, GMT_NO_PARAMETERS);
+	if (value == NULL) return_error (V_API, GMT_NO_PARAMETERS);
+	API = gmt_get_api_ptr (V_API);
+	/* First intercept any API Keywords */
+	if (!strncmp (keyword, "PAD", 3U)) {
+		int pad = atoi (value);
+		if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
+	}
+	else if (!strncmp (keyword, "LAYOUT", 6U)) {
+		if (strlen (value) != 4U)
+			error = 1;
+		else {
+			int k;
+			for (k = 0; k < 4; k++)
+				API->GMT->current.gdal_read_in.O.mem_layout[k] = value[k];
+		}
+	}
+	else	/* Must process as a GMT setting */
+		error = GMT_setparameter (API->GMT, keyword, value);
+	return_error (V_API, (error) ? GMT_OPTION_NOT_FOUND : GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Set_Default_ (char *keyword, char *value, int len1, int len2)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Set_Default (GMT_FORTRAN, keyword, value));
 }
 #endif
 

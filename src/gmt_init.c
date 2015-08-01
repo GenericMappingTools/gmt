@@ -47,7 +47,7 @@
  *	GMT_loaddefaults		Reads the GMT global parameters from gmt.conf\n
  *	GMT_savedefaults		Writes the GMT global parameters to gmt.conf\n
  *	GMT_parse_?_option		Decode the one of the common options\n
- *	gmt_setparameter		Sets a default value given keyword,value-pair\n
+ *	GMT_setparameter		Sets a default value given keyword,value-pair\n
  *	gmt_setshorthand		Reads and initializes the suffix shorthands\n
  *	GMT_get_ellipsoid		Returns ellipsoid id based on name\n
  *	gmt_scanf_epoch			Get user time origin from user epoch string\n
@@ -79,7 +79,6 @@
 
 extern int gmt_geo_C_format (struct GMT_CTRL *GMT);
 extern void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
-unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value);
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -2508,12 +2507,12 @@ int GMT_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 	if ((this_c = strchr (text, '='))) {
 		/* Got --PAR=VALUE */
 		this_c[0] = '\0';	/* Temporarily remove the '=' character */
-		n = gmt_setparameter (GMT, text, &this_c[1]);
+		n = GMT_setparameter (GMT, text, &this_c[1]);
 		this_c[0] = '=';	/* Put it back were it was */
 	}
 	else
 		/* Got --PAR */
-		n = gmt_setparameter (GMT, text, "true");
+		n = GMT_setparameter (GMT, text, "true");
 	return (n);
 }
 
@@ -3448,7 +3447,7 @@ int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file)
 		keyword[0] = value[0] = '\0';	/* Initialize */
 		sscanf (line, "%s = %[^\n]", keyword, value);
 
-		error += gmt_setparameter (GMT, keyword, value);
+		error += GMT_setparameter (GMT, keyword, value);
 	}
 
 	fclose (fp);
@@ -3473,13 +3472,13 @@ unsigned int GMT_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			p = 0;
 			while (opt->arg[p] && opt->arg[p] != '=') p++;
 			opt->arg[p] = '\0';	/* Temporarily remove the equal sign */
-			n_errors += gmt_setparameter (GMT, opt->arg, &opt->arg[p+1]);
+			n_errors += GMT_setparameter (GMT, opt->arg, &opt->arg[p+1]);
 			opt->arg[p] = '=';	/* Restore the equal sign */
 		}
 		else if (!param)			/* Keep parameter name */
 			param = opt->arg;
 		else {					/* This must be value */
-			n_errors += gmt_setparameter (GMT, param, opt->arg);
+			n_errors += GMT_setparameter (GMT, param, opt->arg);
 			param = NULL;	/* Get ready for next parameter */
 		}
 	}
@@ -3859,7 +3858,7 @@ bool gmt_badvalreport (struct GMT_CTRL *GMT, char *keyword) {
 }
 
 /*! . */
-unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
+unsigned int GMT_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 {
 	unsigned int pos;
 	size_t len;

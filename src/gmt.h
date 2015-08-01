@@ -98,11 +98,12 @@ EXTERN_MSC int GMT_Get_ID 		(void *API, unsigned int family, unsigned int direct
 EXTERN_MSC int64_t GMT_Get_Index	(void *API, struct GMT_GRID_HEADER *header, int row, int col);
 EXTERN_MSC double * GMT_Get_Coord	(void *API, unsigned int family, unsigned int dim, void *container);
 
-/* 6 functions to show and inquire about GMT common options, GMT default settings, convert strings to doubles, and message and report printing */
+/* 7 functions to show and inquire about GMT common options, GMT default settings, convert strings to doubles, and message and report printing */
 
 EXTERN_MSC int GMT_Option		(void *API, char *options);
 EXTERN_MSC int GMT_Get_Common		(void *API, unsigned int option, double *par);
 EXTERN_MSC int GMT_Get_Default		(void *API, char *keyword, char *value);
+EXTERN_MSC int GMT_Set_Default		(void *API, char *keyword, char *value);
 EXTERN_MSC int GMT_Get_Value		(void *API, char *arg, double *par);
 EXTERN_MSC int GMT_Report		(void *API, unsigned int level, char *message, ...);
 EXTERN_MSC int GMT_Message		(void *API, unsigned int mode, char *format, ...);
