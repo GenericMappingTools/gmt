@@ -7354,6 +7354,7 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	return EXIT_SUCCESS;
 }
 
+#if 0
 EXTERN_MSC void GMT_set_mem_layout (struct GMTAPI_CTRL *API, char mem_layout[]);
 void GMT_set_mem_layout(struct GMTAPI_CTRL *API, char mem_layout[]) {
 	int i;
@@ -7361,3 +7362,4 @@ void GMT_set_mem_layout(struct GMTAPI_CTRL *API, char mem_layout[]) {
 		API->GMT->current.gdal_read_in.O.mem_layout[i] = mem_layout[i];
 	return;
 }
+#endif
