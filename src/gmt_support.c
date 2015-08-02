@@ -4026,11 +4026,11 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 			}
 			/* Some sanity checking to make correct combos of modifiers are given */
 			if (((p_mode & GMT_GOT_AZIM) || (p_mode & GMT_GOT_ORIENT)) && (p_mode & GMT_GOT_LENGTH) == 0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Modifiers +a and +o requires +l<length>\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Modifiers +a and +o requires +l<length>\n", option);
 				error++;
 			}
 			if ((p_mode & GMT_GOT_RADIUS) && !((p_mode & GMT_GOT_NP) || (p_mode & GMT_GOT_INC))) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Modifies +r requires +i<inc> or +n<np>\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Modifies +r requires +i<inc> or +n<np>\n", option);
 				error++;
 			}
 			p[s] = '\0';	/* Chop off for now */
@@ -4079,7 +4079,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 				}
 				else {
 					error++;
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  z+ option not applicable here\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  z+ option not applicable here\n", option);
 				}
 			}
 			else if (S->coord[GMT_X][n] == -DBL_MAX) {	/* Meant zmin location */
@@ -4089,7 +4089,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 				}
 				else {
 					error++;
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  z- option not applicable here\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  z- option not applicable here\n", option);
 				}
 			}
 		}
@@ -4176,18 +4176,18 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	}
 	if (G->label_type == GMT_LABEL_IS_FFILE && !G->fixed) {	/* Requires fixed file */
 		error++;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Labeling option +Lf requires the fixed label location setting\n", G->flag);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Labeling option +Lf requires the fixed label location setting\n", G->flag);
 	}
 	if (G->label_type == GMT_LABEL_IS_XFILE && G->crossing != GMT_CONTOUR_XCURVE) {	/* Requires cross file */
 		error++;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Labeling option +Lx requires the crossing lines setting\n", G->flag);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Labeling option +Lx requires the crossing lines setting\n", G->flag);
 	}
 	if (G->spacing && G->dist_kind == 1 && G->label_type == GMT_LABEL_IS_MDIST && G->dist_unit == 0) {	/* Did not specify unit - use same as in -G */
 		GMT->current.map.dist[GMT_LABEL_DIST].func = GMT->current.map.dist[GMT_CONT_DIST].func;
 		GMT->current.map.dist[GMT_LABEL_DIST].scale = GMT->current.map.dist[GMT_CONT_DIST].scale;
 	}
 	if ((G->dist_kind == 1 || G->label_type == GMT_LABEL_IS_MDIST) && !GMT_is_geographic (GMT, GMT_IN)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Map distance options requires a map projection.\n", G->flag);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Map distance options requires a map projection.\n", G->flag);
 		error++;
 	}
 	if (G->angle_type == 0)
@@ -4201,9 +4201,15 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
 		unsigned int geometry = GMT_IS_LINE;
 		if ((G->xp = GMT_read_table (GMT, G->file, GMT_IS_FILE, false, &geometry, false)) == NULL) {	/* Failure to read the file */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
 		}
-		else {
+		else if (G->xp->n_columns < 2 || G->xp->n_records < 2) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
+			GMT_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+			error++;
+		}
+		else {	/* Should be OK to use */
 			for (k = 0; k < G->xp->n_segments; k++) {
 				for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
 					GMT_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
@@ -4218,10 +4224,11 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		int kk, n_col, len;
 		bool bad_record = false;
 		double xy[2];
-
+		/* Reading this way since file has coordinates and possibly a text label */
 		if ((fp = GMT_fopen (GMT, G->file, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c:  Could not open file %s\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
+			return (error);
 		}
 		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;
 		G->f_xy[GMT_X] = GMT_memory (GMT, NULL, n_alloc, double);
@@ -4233,7 +4240,12 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			len = (int)strlen (buffer);
 			for (kk = len - 1; kk >= 0 && strchr (" \t,\r\n", (int)buffer[kk]); kk--);
 			buffer[++kk] = '\n';	buffer[++kk] = '\0';	/* Now have clean C string with \n\0 at end */
-			sscanf (buffer, "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+			len = sscanf (buffer, "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+			if (len != n_col) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
+					len, n_col, GMT->current.io.rec_no, G->file);
+				continue;
+			}
 			if (GMT_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
 			if (GMT_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
 			if (bad_record) {
@@ -4260,7 +4272,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 				strcpy (G->f_label[G->f_n], txt_c);
 			}
 			G->f_n++;
-			if (G->f_n == n_alloc) {
+			if (G->f_n == n_alloc) {	/* ALlocate more space for these records */
 				n_alloc <<= 1;
 				G->f_xy[GMT_X] = GMT_memory (GMT, G->f_xy[GMT_X], n_alloc, double);
 				G->f_xy[GMT_Y] = GMT_memory (GMT, G->f_xy[GMT_Y], n_alloc, double);
@@ -4268,6 +4280,13 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			}
 		}
 		GMT_fclose (GMT, fp);
+		if (G->f_n == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n", G->flag, G->file);
+			error++;
+			GMT_free (GMT, G->f_xy[GMT_X]);
+			GMT_free (GMT, G->f_xy[GMT_Y]);
+			if (n_col == 3) GMT_free (GMT, G->f_label);
+		}
 	}
 
 	return (error);
@@ -8169,7 +8188,7 @@ int gmt_getrose_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_M
 	if (ms->type == GMT_ROSE_MAG) {	/* Magnetic rose */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, ms->dlabel);
 		if (! (k == 3 || k == 5)) {	/* Wrong number of parameters */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c option:  Correct syntax\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Correct syntax\n", option);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-%c[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n", option);
 			error++;
 		}
