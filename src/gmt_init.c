@@ -36,18 +36,17 @@
  *	GMT_hash			Key - id lookup using hashing\n
  *	GMT_begin			Gets history and init parameters\n
  *	GMT_end				Cleans up and returns\n
- *	gmt_history			Read and update the gmt.history file\n
  *	GMT_putcolor			Encode color argument into textstring\n
  *	GMT_putrgb			Encode color argument into r/g/b textstring\n
  *	GMT_puthsv			Encode color argument into h-s-v textstring\n
  *	GMT_putcmyk			Encode color argument into c/m/y/k textstring
+ *	GMT_setparameter		Sets a default value given keyword,value-pair\n
  *
  * The INTERNAL functions are:
  *
  *	GMT_loaddefaults		Reads the GMT global parameters from gmt.conf\n
  *	GMT_savedefaults		Writes the GMT global parameters to gmt.conf\n
  *	GMT_parse_?_option		Decode the one of the common options\n
- *	GMT_setparameter		Sets a default value given keyword,value-pair\n
  *	gmt_setshorthand		Reads and initializes the suffix shorthands\n
  *	GMT_get_ellipsoid		Returns ellipsoid id based on name\n
  *	gmt_scanf_epoch			Get user time origin from user epoch string\n
@@ -2519,7 +2518,7 @@ int GMT_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 int count_xy_terms (char *txt, int64_t *xstart, int64_t *xstop, int64_t *ystart, int64_t *ystop)
 {	/* Process things like xxxxyy, x4y2, etc and find the number of x and y items.
 	 * We return the start=stop= number of x and ystart=ystop = number of y. */
-	
+
 	unsigned int n[2] = {0, 0};
 	size_t len = strlen (txt), k = 0;
 	while (k < len) {
@@ -2576,14 +2575,14 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 	 * dim is either 1 (1-D) or 2 (for 2-D, grdtrend).
  	 * Indicate robust fit by appending +r
 	 */
-	
+
 	unsigned int pos = 0, n_model = 0, part, n_parts, k, j;
 	int64_t order, xstart, xstop, ystart, ystop, step, n_order;
 	size_t end;
 	bool got_intercept;
 	enum GMT_enum_model kind[2];
 	char p[GMT_BUFSIZ] = {""}, type, *this_range = NULL, *arg = NULL, *name = "pcs";
-	
+
 	if (!in_arg || !in_arg[0]) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: No arguments given!\n", option);
 		return -1;	/* No arg given */
@@ -2600,7 +2599,7 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 		if (GMT_compat_check (GMT, 5)) {	/* Allow old-style syntax */
 			char new[GMT_BUFSIZ] = {""};
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -%c%s is deprecated; see usage for new syntax\n", option, arg);
-			if (arg[0] != 'f') new[0] = 'p';	/* So we start with f or p */			
+			if (arg[0] != 'f') new[0] = 'p';	/* So we start with f or p */
 			if (arg[end] == 'r') {
 				arg[end] = '\0';	/* Chop off the r */
 				strcat (new, arg);
@@ -2664,7 +2663,7 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 			case 'c': kind = GMT_COSINE; break;
 			case 's': kind = GMT_SINE; break;
 			case 'f': kind = GMT_FOURIER; break;
-				
+
 		}
 		if (p[1] == 'x' || p[1] == 'y')	{	/* Single building block and not all items of given order */
 			special = true;
@@ -2673,13 +2672,13 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function order (%s)\n", option, this_range);
 			return -1;
 		}
-		
+
 		if (kind != GMT_POLYNOMIAL && xstart == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Cosine|Sine cannot start with order 0.  Use p0 to add a constant\n", option);
 			return -1;
 		}
 		/* Here we have range and kind */
-		
+
 		/* For the Fourier components we need to distinguish bewteen things like cos(x)*sin(y), sin(x)*cos(y), cos(x), etc.  We use these 8 type flags:
 		   0 = C- cos (x)
 		   1 = -C cos (y)
@@ -2784,7 +2783,7 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 	}
 	free (arg);
 	/* Make sure there are no duplicates */
-	
+
 	for (k = 0; k < n_model; k++) {
 		for (j = k+1; j < n_model; j++) {
 			if (M->term[k].kind == M->term[j].kind && M->term[k].order[GMT_X] == M->term[j].order[GMT_X] && M->term[k].order[GMT_Y] == M->term[j].order[GMT_Y] && M->term[k].type == M->term[j].type) {
@@ -5069,7 +5068,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else
 				error = true;
 			break;
-			
+
 		case GMTCASE_GMT_EXTRAPOLATE_VAL:
 			if (!strcmp (lower_value, "nan"))
 				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
@@ -6139,7 +6138,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_LEN256);
 			break;
-			
+
 		case GMTCASE_GMT_EXPORT_TYPE:
 			if (GMT->current.setting.export_type == GMT_DOUBLE)
 				strcpy (value, "double");
@@ -6162,7 +6161,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			else if (GMT->current.setting.export_type == GMT_UCHAR)
 				strcpy (value, "byte");
 			break;
-		
+
 		case GMTCASE_GMT_EXTRAPOLATE_VAL:
 			if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE)
 				strcpy (value, "NaN");
@@ -10996,7 +10995,7 @@ struct GMT_CTRL *New_GMT_Ctrl (struct GMTAPI_CTRL *API, char *session, unsigned 
 
 	/* Assign the daddy */
 	GMT->parent = API;
-	
+
 	/* Assign the three std* pointers */
 
 	GMT->session.std[GMT_IN]  = stdin;
