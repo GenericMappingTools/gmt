@@ -6948,7 +6948,7 @@ int GMT_Get_Default (void *V_API, char *keyword, char *value)
 {	/* Given the text representation of a GMT parameter keyword, return its setting as text.
 	 * value must have enough space for the return information.
 	 */
-	int error;
+	int error = GMT_NOERROR;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -6984,7 +6984,7 @@ int GMT_Get_Default_ (char *keyword, char *value, int len1, int len2)
 int GMT_Set_Default (void *V_API, char *keyword, char *value)
 {	/* Given the text representation of a GMT or API parameter keyword, assign its value.
 	 */
-	unsigned int error = 0;
+	unsigned int error = GMT_NOERROR;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
