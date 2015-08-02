@@ -573,7 +573,7 @@ Overview of the GMT C Application Program Interface
 Users who wish to create their own GMT application based on the API
 must make sure their program goes through the steps below; details for
 each step will be revealed in the following chapter. We have kept the
-API simple: In addition to the GMT modules, there are only 52 public
+API simple: In addition to the GMT modules, there are only 53 public
 functions to become familiar with, but most applications will only use a
 small subset of this selection. Functions either return an integer error
 code (when things go wrong; otherwise it is set to ``GMT_OK (0)``), or they
@@ -698,7 +698,7 @@ Next table gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Data_           | Import a registered data resources                |
 +-------------------------+---------------------------------------------------+
-| GMT_Get_Default_        | Obtain as string one of the GMT default settings  |
+| GMT_Get_Default_        | Obtain one of the API or GMT default settings     |
 +-------------------------+---------------------------------------------------+
 | GMT_Get_ID_             | Obtain the ID of a given resource                 |
 +-------------------------+---------------------------------------------------+
@@ -735,6 +735,8 @@ Next table gives a list of all the functions and their purpose.
 | GMT_Retrieve_Data_      | Obtained link to data in memory via ID            |
 +-------------------------+---------------------------------------------------+
 | GMT_Set_Comment_        | Assign a comment to a data resource               |
++-------------------------+---------------------------------------------------+
+| GMT_Set_Default_        | Set one of the API or GMT default settings        |
 +-------------------------+---------------------------------------------------+
 | GMT_Status_IO_          | Check status of record-by-record i/o              |
 +-------------------------+---------------------------------------------------+
@@ -1842,11 +1844,11 @@ survey feet are returned in meters. Arc lengths in minutes and seconds
 are returned in decimal degrees, and date/time values are returned in
 seconds since the epoch (1970).
 
-Inquiring about a GMT default parameter
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Get or set an API or GMT default parameter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If your program needs to determine one or more of the current
-GMT default settings you can do so via
+API or GMT default settings you can do so via
 
 .. _GMT_Get_Default:
 
@@ -1855,9 +1857,27 @@ GMT default settings you can do so via
     int GMT_Get_Default (void *API, char *keyword, char *value);
 
 where ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) and
-``value`` must be a character array long enough to hold the answer.
+``value`` must be a character array long enough to hold the answer.  In
+addition to the long list of GMT defaults you can also inquire about the
+few API parameters API_PAD (the current pad setting), API_IMAGE_LAYOUT (the
+order and structure of image memory storage), and API_GRID_LAYOUT (order of
+grid memory storage).
 Depending on what parameter you selected you could further convert it to
 a numerical value with ``GMT_Get_Value`` or just use it in a text comparison.
+
+To change any of the API or
+GMT default settings you would use
+
+.. _GMT_Set_Default:
+
+  ::
+
+    int GMT_Set_Default (void *API, char *keyword, char *value);
+
+where as before ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) and
+``value`` must be a character string with the new setting.
+Note that all settings are passed as text strings even if man are
+inherently integers or floats.
 
 .. _sec-func:
 
