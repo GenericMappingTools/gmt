@@ -390,7 +390,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	GMT_memset (Ts, N_TXT, struct GMT_TEXTSEGMENT *);
 	GMT_memset (D, N_DAT, struct GMT_DATASET *);		/* Set these arrays to NULL */
 	GMT_memset (Ds, N_DAT, struct GMT_DATASEGMENT *);
-	
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input text table data\n");
 	if (GMT_compat_check (GMT, 4)) {
 		/* Since pslegend v4 used '>' to indicate a paragraph record we avoid confusion with multiple segment-headers by *
@@ -519,7 +519,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (n_columns == 1 && (pos = atoi (&line[2])) > 1) n_columns = pos;
 						column_number = 0;
 						break;
-						
+
 					case '>':	/* Paragraph text header */
 						if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
 							GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
@@ -581,7 +581,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height given as %g %s; estimated height is %g %s.\n",
 		            scl*Ctrl->D.dim[GMT_Y], GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 		            scl*height, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	
+
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
 		GMT_memset (wesn, 4, double);
@@ -604,26 +604,20 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
-	/* Allow for justification so that the reference point is the plot location of the lower left corner of box */
+	/* Allow for justification and offset so that the reference point is the plot location of the lower left corner of box */
 
-	Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.dim[GMT_X];
-	Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->D.dim[GMT_Y];
+	GMT_shift_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify);
 
-	/* Also deal with any justified offsets if given */
-	
-	Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-	Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
-	
 	/* Set new origin */
-	
+
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 	x_orig = Ctrl->D.refpoint->x;	y_orig = Ctrl->D.refpoint->y;
 	Ctrl->D.refpoint->x = Ctrl->D.refpoint->y = 0.0;	/* For now */
-	
+
 	current_pen = GMT->current.setting.map_default_pen;
 
 	if (Ctrl->F.active) {	/* First place legend frame fill */
-		Ctrl->F.panel->width = Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.dim[GMT_Y];	
+		Ctrl->F.panel->width = Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.dim[GMT_Y];
 		GMT_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 1U, Ctrl->F.panel);
 	}
 
@@ -636,12 +630,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	txtcolor[0] = 0;	/* Reset to black text color */
 	x_off_col[0] = 0.0;	/* The x-coordinate of left side of first column */
 	x_off_col[n_columns] = Ctrl->D.dim[GMT_X];	/* Holds width of a row */
-	
+
 	if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->x + Ctrl->D.dim[GMT_X], row_base_y);
 
 	flush_paragraph = false;
 	gap = Ctrl->C.off[GMT_Y];	/* This gets reset to 0 once we finish the first printable row */
-	
+
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
@@ -1023,7 +1017,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
 							double length, tlen, gap;
 							int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
-							
+
 							if ((D[FRONT] = get_dataset_pointer (API, D[FRONT], GMT_IS_LINE)) == NULL) return (API->error);
 							if (n == 3) {	/* Got line length, tickgap, and ticklength */
 								length = GMT_to_inch (GMT, A);	/* The length of the line */
@@ -1062,7 +1056,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						}
 						else if (symbol[0] == 'q') {	/* Quoted line is different, must plot as a line segment */
 							double length = GMT_to_inch (GMT, size);	/* The length of the line */;
-							
+
 							if ((D[QLINE] = get_dataset_pointer (API, D[QLINE], GMT_IS_LINE)) == NULL) return (API->error);
 							x = 0.5 * length;
 							/* Place pen and fill colors in segment header */
@@ -1222,7 +1216,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							if (Ts[SYM]->n_rows == Ts[SYM]->n_alloc) Ts[SYM]->record = GMT_memory (GMT, Ts[SYM]->record, Ts[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 							sprintf (buffer, "%s %s", sarg, sub);
 							if (debug_print) fprintf (stderr, "%s\n", buffer);
-							
+
 							Ts[SYM]->record[Ts[SYM]->n_rows++] = strdup (buffer);
 							if (Ts[SYM]->n_rows == Ts[SYM]->n_alloc) Ts[SYM]->record = GMT_memory (GMT, Ts[SYM]->record, Ts[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
@@ -1310,7 +1304,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	if (Ctrl->F.active)	/* Draw legend frame box */
 		GMT_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 2U, Ctrl->F.panel);
-	
+
 	/* Time to plot any symbols, text, and paragraphs we collected in the loop */
 
 	if (D[FRONT]) {
@@ -1397,13 +1391,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	if (D[FRONT] && GMT_Destroy_Data (API, &D[FRONT]) != GMT_OK) {
 		Return (API->error);
 	}
-	
+
 	for (id = 0; id < N_TXT; id++) {
 		if (T[id] && GMT_Destroy_Data (API, &T[id]) != GMT_OK) {
 			Return (API->error);
 		}
 	}
-	
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
 	Return (GMT_OK);

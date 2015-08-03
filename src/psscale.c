@@ -1298,7 +1298,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 
 	char text[GMT_LEN256] = {""};
 
-	double dz, xdim, ydim, start_val, stop_val, wesn[4], *z_width = NULL;
+	double dz, dim[2], start_val, stop_val, wesn[4], *z_width = NULL;
 
 	struct PSSCALE_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -1414,23 +1414,15 @@ int GMT_psscale (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.horizontal) {
 		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
-		xdim = fabs (Ctrl->D.dim[GMT_X]);	ydim = Ctrl->D.dim[GMT_Y];
+		dim[GMT_X] = fabs (Ctrl->D.dim[GMT_X]);	dim[GMT_Y] = Ctrl->D.dim[GMT_Y];
 	}
 	else {
-		ydim = fabs (Ctrl->D.dim[GMT_X]);	xdim = Ctrl->D.dim[GMT_Y];
+		dim[GMT_Y] = fabs (Ctrl->D.dim[GMT_X]);	dim[GMT_X] = Ctrl->D.dim[GMT_Y];
 		GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = 0;
 		double_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
-	/* We must do any origin translation manually in psscale */
-	/* Change reference point from what we got to be the lower left point on the bar */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before justify = %d, Bar reference x = %g y = %g\n", Ctrl->D.justify, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
-	Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * xdim;
-	Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * ydim;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Bar referece x = %g y = %g\n", Ctrl->D.justify, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
-	/* Also deal with any justified offsets if given */
-	Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-	Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
+	GMT_shift_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar referece x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 

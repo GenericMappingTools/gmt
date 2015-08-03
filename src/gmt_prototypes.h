@@ -360,6 +360,7 @@ EXTERN_MSC void GMT_sprintf_float (char *string, char *format, double x);
 EXTERN_MSC void GMT_enable_threads (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int GMT_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers);
 EXTERN_MSC double GMT_pol_area (double x[], double y[], uint64_t n);
+EXTERN_MSC void GMT_shift_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double dim[], double off[], int justify);
 
 /* gmt_calclock.c: */
 

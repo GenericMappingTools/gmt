@@ -538,11 +538,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.dim[GMT_X];
-		Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->D.dim[GMT_Y];
-		/* Also deal with any justified offsets if given */
-		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
+		GMT_shift_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify);
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
@@ -570,7 +566,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	}
 
  	if (Ctrl->F.active) {	/* Draw frame, fill only */
-		Ctrl->F.panel->width = Ctrl->D.nx * Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.ny * Ctrl->D.dim[GMT_Y];	
+		Ctrl->F.panel->width = Ctrl->D.nx * Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel->width, 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
  	}
 

@@ -68,6 +68,7 @@
  *  gmt_rgb_to_xyz          Convert RGB to CIELAB XYZ
  *  GMT_sample_cpt          Resamples the current cpt table based on new z-array
  *  gmt_smooth_contour      Use Akima's spline to smooth contour
+ *  GMT_shift_refpoint      Adjust reference point based on size and justification of plotted item
  *  GMT_sprintf_float       Make formatted string from float, while checking for %-apostrophe
  *  gmt_trace_contour       Function that trace the contours in GMT_contours
  *  gmt_polar_adjust        Adjust label justification for polar projection
@@ -319,7 +320,7 @@ void gmt_xyz_to_rgb (double rgb[], double xyz[]) {
 	rgb[2] = GAMMACORRECTION(B);
 }
 
-/**
+/*!
  * Convert CIE XYZ to CIE L*a*b* (CIELAB) with the D65 white point
  *
  * Wikipedia: http://en.wikipedia.org/wiki/Lab_color_space
@@ -11978,6 +11979,7 @@ unsigned int GMT_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 	return n_errors;
 }
 
+/*! . */
 double GMT_pol_area (double x[], double y[], uint64_t n)
 {
 	uint64_t i;
@@ -11995,4 +11997,18 @@ double GMT_pol_area (double x[], double y[], uint64_t n)
 		xold = x[i];	yold = y[i];
 	}
 	return (0.5 * area);
+}
+
+/*! . */
+void GMT_shift_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double dim[], double off[], int justify)
+{
+	/* Adjust reference point based on size and justification of plotted item */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before justify = %d, Dim x = %g y = %g, Reference x = %g y = %g\n", justify, dim[GMT_X], dim[GMT_Y], ref->x, ref->y);
+	ref->x -= 0.5 * ((justify-1)%4) * dim[GMT_X];
+	ref->y -= 0.5 * (justify/4) * dim[GMT_Y];
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Offset x = %g y = %g, Reference x = %g y = %g\n", justify, off[GMT_X], off[GMT_Y], ref->x, ref->y);
+	/* Also deal with any justified offsets if given */
+	ref->x -= ((justify%4)-2) * off[GMT_X];
+	ref->y -= ((justify/4)-1) * off[GMT_Y];
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Reference x = %g y = %g\n", ref->x, ref->y);
 }

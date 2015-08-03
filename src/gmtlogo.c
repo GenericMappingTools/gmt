@@ -60,7 +60,7 @@ struct GMTLOGO_CTRL {
 
 void *New_gmtlogo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTLOGO_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GMTLOGO_CTRL);
 	return (C);
 }
@@ -163,12 +163,12 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 int GMT_gmtlogo (void *V_API, int mode, void *args)
 {	/* High-level function that implements the gmtlogo task */
 	int error, fmode;
-	
+
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
-	double scale, plot_x, plot_y;
-	
+	double scale, plot_x, plot_y, dim[2];
+
 	char cmd[GMT_BUFSIZ] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
-	
+
 	struct GMT_FONT F;
 	struct GMTLOGO_CTRL *Ctrl = NULL;	/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
@@ -201,15 +201,12 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	/* The following is needed to have gmtlogo work correctly in perspective */
 
 	GMT_memset (wesn, 4, double);
+	dim[GMT_X] = Ctrl->D.width, dim[GMT_Y] = 0.5 * Ctrl->D.width; /* Height is 0.5 * width */
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.width;
-		Ctrl->D.refpoint->y -= 0.25 * (Ctrl->D.justify/4) * Ctrl->D.width;	/* 0.25 because height = 0.5 * width */
-		/* Also deal with any justified offsets if given */
-		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
+		GMT_shift_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify);
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
@@ -218,11 +215,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
-		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.width;
-		Ctrl->D.refpoint->y -= 0.25 * (Ctrl->D.justify/4) * Ctrl->D.width;	/* 0.25 because height = 0.5 * width */
-		/* Also deal with any justified offsets if given */
-		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
+		GMT_shift_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify);
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
@@ -236,13 +229,13 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 
 	/* Set up linear projection with logo domain and user width */
-	scale = Ctrl->D.width / 2.0;	/* Scale relative to default size 2 inches */
-	plot_x = 0.5 * Ctrl->D.width;	plot_y = 0.25 * Ctrl->D.width;	/* Center of logo box */
+	scale = dim[GMT_X] / 2.0;	/* Scale relative to default size 2 inches */
+	plot_x = 0.5 * dim[GMT_X];	plot_y = 0.5 * dim[GMT_Y];	/* Center of logo box */
 	if (Ctrl->F.active) {	/* First place legend frame fill */
-		Ctrl->F.panel->width = Ctrl->D.width;	Ctrl->F.panel->height = 0.5 * Ctrl->D.width;	
+		Ctrl->F.panel->width = dim[GMT_X];	Ctrl->F.panel->height = dim[GMT_Y];
 		GMT_draw_map_panel (GMT, plot_x, plot_y, 3U, Ctrl->F.panel);
 	}
-	
+
 	/* Plot the title beneath the map with 1.5 vertical stretching */
 
 	plot_y = 0.027 * scale;
@@ -263,18 +256,18 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none", scale * 1.55, pars);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
-	
+
 	/* Plot the GMT letters as shadows, then full size, using GMT_psxy */
 
 	GMT_getsharepath (GMT, "conf", "gmtlogo_letters", ".txt", file, R_OK);
 
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40",
-		file, scale * 1.55, c_gmt_shadow);   
+		file, scale * 1.55, c_gmt_shadow);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s -W%gp,%s -X-%gi -Y-%gi",
-		file, scale * 2.47, c_gmt_fill, scale * 0.3, c_gmt_outline, scale * 0.483, scale * 0.230);   
+		file, scale * 2.47, c_gmt_fill, scale * 0.3, c_gmt_outline, scale * 0.483, scale * 0.230);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
-	
+
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_INV);
 	GMT_plane_perspective (GMT, -1, 0.0);
 	PSL_command (PSL, "U\n");	/* Ending the encapsulation for gmtlogo */
