@@ -145,8 +145,8 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow")) n_errors++;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else	/* With -Dj, set default to reference justify point, else LB */
-						Ctrl->D.justify = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? Ctrl->D.refpoint->justify : PSL_BL;
+					else	/* With -Dj or -DJ, set default to reference justify point, else LB */
+						Ctrl->D.justify = GMT_just_box (GMT, Ctrl->D.refpoint);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'l', string)) {
 						Ctrl->D.spacing = atof (string);
 					}

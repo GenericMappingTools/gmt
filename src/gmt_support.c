@@ -7728,7 +7728,7 @@ int gmt_ensure_new_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *in
 int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_MAP_INSERT *B)
 {	/* Parse the map insert option, which comes in two flavors:
 	 * 1) -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>]
-	 * 2) -Dg|j|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
+	 * 2) -Dg|j|J|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
 	 */
 	unsigned int col_type[2], k = 0, error = 0;
 	int n;
@@ -7746,7 +7746,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 	/* Determine if we got an reference point or a region */
 
 	if (strchr ("gjnx", text[0])) {	/* Did the reference point thing. */
-		/* Syntax is -Dg|j|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>] */
+		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>] */
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
 		size_t len;
@@ -7775,8 +7775,8 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		/* Optional modifiers +j, +o, +s */
 		if (GMT_get_modifier (B->refpoint->args, 'j', string))
 			B->justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-		else	/* With -Dj, set default to reference justify point, else LB */
-			B->justify = (B->refpoint->mode == GMT_REFPOINT_JUST) ? B->refpoint->justify : PSL_BL;
+		else	/* With -Dj or -DJ, set default to reference justify point, else LB */
+			B->justify = GMT_just_box (GMT, B->refpoint);
 		if (GMT_get_modifier (B->refpoint->args, 'o', string)) {
 			if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, B->off)) < 0) error++;
 		}
@@ -8086,8 +8086,8 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		ms->fancy = true;
 	if (GMT_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
 		ms->justify = GMT_just_decode (GMT, string, PSL_MC);
-	else	/* With -Dj, set default to reference justify point, else LB */
-		ms->justify = (ms->refpoint->mode == GMT_REFPOINT_JUST) ? ms->refpoint->justify : PSL_BL;
+	else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else LB */
+		ms->justify = GMT_just_box (GMT, ms->refpoint);
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
 		if (string[0]) strncpy (ms->label, string, GMT_LEN64);
 		ms->do_label = true;
@@ -8312,8 +8312,8 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	}
 	if (GMT_get_modifier (ms->refpoint->args, 'j', string))
 		ms->justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-	else	/* With -Dj, set default to reference justify point, else LB */
-		ms->justify = (ms->refpoint->mode == GMT_REFPOINT_JUST) ? ms->refpoint->justify : PSL_BL;
+	else	/* With -Dj or -DJ, set default to reference (mirriored) justify point, else LB */
+		ms->justify = GMT_just_box (GMT, ms->refpoint);
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Set labels +lw,e,s,n*/
 		ms->do_label = true;
 		if (string[0] == 0) {	/* Want default labels */
@@ -9981,7 +9981,7 @@ int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify) {
 		case 11: j = 1;		break;
 		default:
 			j = justify;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "called with incorrect argument (%d)\n", j);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_flip_justify called with incorrect argument (%d)\n", j);
 			break;
 	}
 
@@ -11822,13 +11822,14 @@ struct GMT_REFPOINT * GMT_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 	struct GMT_REFPOINT *A = NULL;
 
 	switch (arg[0]) {
-		case 'n':	mode = GMT_REFPOINT_NORM;	break;	/* Normalized coordinates */
-		case 'g':	mode = GMT_REFPOINT_MAP;	break;	/* Map coordinates */
-		case 'j':	mode = GMT_REFPOINT_JUST;	break;	/* Map box justification code */
-		case 'x':	mode = GMT_REFPOINT_PLOT;	break;	/* Plot coordinates */
+		case 'n':	mode = GMT_REFPOINT_NORM;		break;	/* Normalized coordinates */
+		case 'g':	mode = GMT_REFPOINT_MAP;		break;	/* Map coordinates */
+		case 'j':	mode = GMT_REFPOINT_JUST;		break;	/* Map box with justification code */
+		case 'J':	mode = GMT_REFPOINT_JUST_FLIP;	break;	/* Map box with mirrored justification code */
+		case 'x':	mode = GMT_REFPOINT_PLOT;		break;	/* Plot coordinates */
 		default: 	k = 0;	break;	/* None given, reset first arg to be at position 0 */
 	}
-	if (mode == GMT_REFPOINT_JUST) {
+	if (mode == GMT_REFPOINT_JUST || mode == GMT_REFPOINT_JUST_FLIP) {
 		n = find_mod_syntax_start (arg, k);
 		if (arg[n]) {	/* Separated via +modifiers (or nothing follows), but here we know just is 2 chars */
 			strncpy (txt_x, &arg[k], 2);	txt_x[2] = 0;
@@ -11889,6 +11890,7 @@ struct GMT_REFPOINT * GMT_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via plot coordinates (in inches): %g, %g\n", A->x, A->y);
 			break;
 		case GMT_REFPOINT_JUST:
+		case GMT_REFPOINT_JUST_FLIP:
 			A->justify = justify;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via justification code: %s\n", txt_x);
 			break;
@@ -11923,7 +11925,7 @@ void GMT_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert map reference point coordinates from %g, %g to %g, %g\n", A->x, A->y, x, y);
 		A->x = x;	A->y = y;
 	}
-	else if (A->mode == GMT_REFPOINT_JUST) {	/* Convert from justify code to map coordinates, then to plot coordinates */
+	else if (A->mode == GMT_REFPOINT_JUST || A->mode == GMT_REFPOINT_JUST_FLIP) {	/* Convert from justify code to map coordinates, then to plot coordinates */
 		GMT_just_to_lonlat (GMT, A->justify, GMT_is_geographic (GMT, GMT_IN), &A->x, &A->y);
 		GMT_geo_to_xy (GMT, A->x, A->y, &x, &y);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert code reference point coordinates from justification %s to %g, %g\n", GMT_just_code[A->justify], A->x, A->y);

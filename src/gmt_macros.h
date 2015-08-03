@@ -155,5 +155,7 @@
 #define GMT_to_inch(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_INCH)
 #define GMT_to_points(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_PT)
 
+/*! Determine justification required for box item */
+#define GMT_just_box(GMT,refpoint) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? GMT_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : PSL_BL)
 
 #endif  /* _GMT_MACROS_H */

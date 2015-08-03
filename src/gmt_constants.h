@@ -162,6 +162,7 @@ enum GMT_enum_refpoint {
 	GMT_REFPOINT_NOTSET = -1,	/* -D */
 	GMT_REFPOINT_MAP,		/* -Dg */
 	GMT_REFPOINT_JUST,		/* -Dj */
+	GMT_REFPOINT_JUST_FLIP,	/* -DJ */
 	GMT_REFPOINT_NORM,		/* -Dn */
 	GMT_REFPOINT_PLOT};		/* -Dx */
 
@@ -177,7 +178,7 @@ enum GMT_enum_rose {
 enum GMT_enum_model {
 	GMT_POLYNOMIAL, GMT_COSINE, GMT_SINE
 	};
-	
+
 /*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */

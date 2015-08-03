@@ -976,6 +976,7 @@ void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 		GMT_message (GMT, "\t   %sPositioning is specified via one of four coordinate systems:\n", tab[shift]);
 		GMT_message (GMT, "\t   %s  Use -%cg to specify <refpoint> with map coordinates.\n", tab[shift], option);
 		GMT_message (GMT, "\t   %s  Use -%cj to specify <refpoint> with 2-char justification code (LB, CM, etc).\n", tab[shift], option);
+		GMT_message (GMT, "\t   %s  Use -%cJ as -%cj but sets anchor point to mirror of <refpoint>\n", tab[shift], option, option);
 		GMT_message (GMT, "\t   %s  Use -%cn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift], option);
 		GMT_message (GMT, "\t   %s  Use -%cx to specify <refpoint> with plot coordinates.\n", tab[shift], option);
 		GMT_message (GMT, "\t   %sAll except -%cx require the -R and -J options to be set.\n", tab[shift], option);
