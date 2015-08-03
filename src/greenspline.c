@@ -2021,7 +2021,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		if (dimension > 1) yp = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 		nxy = Grid->header->size;
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
-		if (dimension != 2) {	/* Write ascii table to named file or stdout for 1-D or 3-D */
+		if (dimension != 2) {	/* Write ASCII table to named file or stdout for 1-D or 3-D */
 			if (Ctrl->G.active) {
 				if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET)
 					Return (error);
@@ -2079,7 +2079,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, V);
 				}
 			}
-			else if (dimension == 3) {	/* Must dump 3-D grid as ascii slices for now */
+			else if (dimension == 3) {	/* Must dump 3-D grid as ASCII slices for now */
 				V[GMT_Z] = z_level;
 				for (row = 0; row < Grid->header->ny; row++) {
 					V[GMT_Y] = yp[row];

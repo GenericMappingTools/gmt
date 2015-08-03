@@ -1,4 +1,4 @@
-# This is the first 36 degrees from ftp://cddis.gsfc.nasa.gov/pub/egm96/general_info/egm96_to360.ascii
+# This is the first 36 degrees from ftp://cddis.gsfc.nasa.gov/pub/egm96/general_info/egm96_to360.ASCII
 # We are just using this small subset to test sph2grd operations
 #  L   M  C[L][M]             S[L][M]             sigma{C[L][M]}  sigma{S[L][M]}
 #-------------------------------------------------------------------------------

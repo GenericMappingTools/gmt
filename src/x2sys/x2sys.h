@@ -38,9 +38,9 @@
   -------------------
 
     -Type 1:  columns separated by tabs, spaces, or commas:
-	Each field type must be set to 'a' for ascii string
+	Each field type must be set to 'a' for ASCII string
     -Type 2:  FORTRAN card format, all glued together:
-	Each field type must be set to 'A' for ascii string
+	Each field type must be set to 'A' for ASCII string
 	and the start-stop column must be appended at the end of
 	the info line.
 
@@ -121,7 +121,7 @@ struct X2SYS_INFO {
 	/* read_file is a pointer to function that reads this file */
 	int (*read_file) (struct GMT_CTRL *, char *, double ***, struct X2SYS_INFO *, struct X2SYS_FILE_INFO *, struct GMT_IO *, uint64_t *);
 	unsigned int file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
-	bool ascii_out;			/* true if output should be in ascii */
+	bool ascii_out;			/* true if output should be in ASCII */
 	bool multi_segment;		/* true if there are multiple segments in this file */
 	bool geographic;		/* true if x/y data are lon/lat */
 	bool ms_next;			/* true if we just read 1st record in a new segments in this file */
@@ -146,7 +146,7 @@ struct X2SYS_DATA_INFO {
 	bool has_nans;	/* true if there are NaNs in this field */
 	bool do_scale;	/* true if scale != 1 or offset != 0 */
 	char name[32];		/* Name of this data type */
-	char format[32];	/* Output print format for ascii conversion */
+	char format[32];	/* Output print format for ASCII conversion */
 	char intype;		/* Input data type (cuhilfdaA) */
 };
 

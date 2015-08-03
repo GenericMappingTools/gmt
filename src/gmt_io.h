@@ -16,11 +16,11 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Table input/output in GMT can be either ascii or binary (where supported)
+ * Table input/output in GMT can be either ASCII or binary (where supported)
  * and ASCII tables may consist of single or multiple segments.  When the
  * latter is the case usually there is a -M option to signal this case.
  * The structure GMT_IO holds parameters that are used during the reading
- * and processing of ascii tables.
+ * and processing of ASCII tables.
  *
  * Author:	Paul Wessel
  * Date:	15-NOV-2009
@@ -234,8 +234,8 @@ struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 };
 
 struct GMT_IO {				/* Used to process input data records */
-	void * (*input) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ascii or binary tables */
-	int (*output) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to function writing ascii or binary tables */
+	void * (*input) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ASCII or binary tables */
+	int (*output) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to function writing ASCII or binary tables */
 	int (*read_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function reading 1-col z tables in grd2xyz */
 	int (*write_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function writing 1-col z tables in xyz2grd */
 	bool (*ogr_parser) (struct GMT_CTRL *, char *);				/* Set to handle either header or data OGR records */
@@ -246,11 +246,11 @@ struct GMT_IO {				/* Used to process input data records */
 	double prev_rec[GMT_MAX_COLUMNS];	/* The previous data record */
 	struct GMT_GRID_INFO grd_info;
 
-	bool multi_segments[2];	/* true if current Ascii input/output file has multiple segments */
+	bool multi_segments[2];	/* true if current ASCII input/output file has multiple segments */
 	bool skip_bad_records;	/* true if records where x and/or y are NaN or Inf */
 	bool give_report;		/* true if functions should report how many bad records were skipped */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
-	bool read_mixed;		/* true if we are reading ascii x y [z] [variable numbers of text] */
+	bool read_mixed;		/* true if we are reading ASCII x y [z] [variable numbers of text] */
 	bool need_previous;		/* true if when parsing a record we need access to previous record values (e.g., for gap or duplicate checking) */
 	bool warn_geo_as_cartesion;	/* true if we should warn if we read a record with geographic data while the expected format has not been set (i.e., no -J or -fg) */
 
@@ -273,10 +273,10 @@ struct GMT_IO {				/* Used to process input data records */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
-	char current_record[GMT_BUFSIZ];	/* Current ascii record */
-	char segment_header[GMT_BUFSIZ];	/* Current ascii segment header */
+	char current_record[GMT_BUFSIZ];	/* Current ASCII record */
+	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
 	char current_filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
-	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ascii format to overrule format_float_out */
+	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ASCII format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
 	int nvars;			/* Number of requested variablesin netCDF file */
 	uint64_t ncols;			/* Number of total columns in netCDF file */

@@ -93,7 +93,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify one of the following data types (all binary except a):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a  Ascii.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a  ASCII.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c  int8_t, signed 1-byte character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     u  uint8_t, unsigned 1-byte character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     h  int16_t, signed short 2-byte integer.\n");
@@ -104,7 +104,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     L  uint64_t, unsigned long (8-byte) integer.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f  4-byte floating point single precision.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     d  8-byte floating point double precision.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ascii representation: -ZTLa].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
 	GMT_Option (API, "bo,d,f,h,o,s,:,.");
 	
 	return (EXIT_FAILURE);

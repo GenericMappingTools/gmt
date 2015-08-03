@@ -277,7 +277,7 @@ struct PSL_CTRL {
 		int overlay;			/* true if overlay (-O)				*/
 		int landscape;			/* true = Landscape, false = Portrait		*/
 		int text_init;			/* true after PSL_text.ps has been loaded	*/
-		int image_format;		/* 0 writes images in ascii, 2 uses binary	*/
+		int image_format;		/* 0 writes images in ASCII, 2 uses binary	*/
 		int N_FONTS;			/* Total no of fonts;  To add more, modify the file PSL_custom_fonts.txt */
 		int compress;			/* Compresses images with (1) RLE or (2) LZW (3) DEFLATE or (0) None */
 		int deflate_level; 		/* Compression level for DEFLATE (1-9, default 0) */

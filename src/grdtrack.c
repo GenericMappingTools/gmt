@@ -1123,7 +1123,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->Z.active)	/* Simply print out values */
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, value);
 			else if (pure_ascii && n_fields >= 2) {
-				/* Special case: Ascii i/o and at least 3 columns:
+				/* Special case: ASCII i/o and at least 3 columns:
 				   Columns beyond first two could be text strings */
 				if (gmt_skip_output (GMT, value, Ctrl->G.n_grids)) continue;	/* Suppress output due to NaNs */
 

@@ -481,7 +481,7 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (pad[XHI] > 0) width_out += pad[XHI];
 	n_expected = header->nx;
 
-	if (nBits == 32)		/* Either an ascii file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
+	if (nBits == 32)		/* Either an ASCII file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
 		tmp = GMT_memory (GMT, NULL, n_expected, float);
 	else
 		tmp16 = GMT_memory (GMT, NULL, n_expected, int16_t);

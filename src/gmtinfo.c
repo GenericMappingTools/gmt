@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: gmtinfo.c will read ascii or binary tables and report the
+ * Brief synopsis: gmtinfo.c will read ASCII or binary tables and report the
  * extreme values for all columns
  *
  * Author:	Paul Wessel
@@ -454,7 +454,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
 				int sep = 0;
-				if (GMT->common.b.active[GMT_IN]) {	/* Make ascii record */
+				if (GMT->common.b.active[GMT_IN]) {	/* Make ASCII record */
 					GMT_memset (chosen, GMT_BUFSIZ, char);
 					for (col = 0; col < ncol; col++) {	/* Report min/max for each column in the format controlled by -C */
 						GMT_add_to_record (GMT, chosen, dchosen[col], col, sep);

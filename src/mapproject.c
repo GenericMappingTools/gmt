@@ -972,7 +972,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 					d = GMT_az_backaz (GMT, Ctrl->A.lon, Ctrl->A.lat, in[GMT_X], in[GMT_Y], Ctrl->A.reverse);
 				}
 				if (rmode == GMT_READ_MIXED) {
-					/* Special case: Ascii input and at least 3 columns:
+					/* Special case: ASCII input and at least 3 columns:
 					   Columns beyond first two could be text strings */
 
 					/* We will use GMT_strtok to step past the first 2 [or 3] columns.  The remainder
@@ -1019,7 +1019,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 					y_out_max = MAX (y_out_max, out[GMT_Y]);
 				}
 				if (rmode == GMT_READ_MIXED) {
-					/* Special case: Ascii input and at least 3 columns:
+					/* Special case: ASCII input and at least 3 columns:
 					   Columns beyond first two could be text strings */
 
 					/* We will use GMT_strtok to step past the first 2 [or 3] columns.  The remainder

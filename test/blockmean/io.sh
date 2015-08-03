@@ -3,7 +3,7 @@
 #
 # Test that the -i, -o, -bi and bo works OK.
 
-# 1. Prepare input files with 8 columns, both ascii and binary
+# 1. Prepare input files with 8 columns, both ASCII and binary
 cat << EOF > ascii_i.txt
 0	4.1	0	0	4.1	0	41 	1
 3	4.3	9	3	1.3	90	13 	91
@@ -18,7 +18,7 @@ cat << EOF > ascii_i.txt
 EOF
 gmt gmtconvert ascii_i.txt -bo8d > bin_i.b
 
-# 2. do basic gmt blockmean ascii/bin i/o with no -i/-o
+# 2. do basic gmt blockmean ASCII/bin i/o with no -i/-o
 gmt blockmean -R0/5/0/5 -I1 -r ascii_i.txt > ascii_o.txt
 gmt blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -bod | gmt gmtconvert -bi3d > bin_o.txt
 gmt gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = io_answer.txt

@@ -15,8 +15,8 @@
  *   Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /*
- * HOTSPOTTER will (1) read ascii file(s) with records for each seamount
- * (2) read an ascii file with stage or total reconstruction rotations,
+ * HOTSPOTTER will (1) read ASCII file(s) with records for each seamount
+ * (2) read an ASCII file with stage or total reconstruction rotations,
  * (3) convolve the flowline of each seamount with its gravimetric shape, and
  * (4) build a cumulative volcano amplitude (CVA) grid.  The grid is
  * written out in GMT format and can be processed and plotted with GMT.

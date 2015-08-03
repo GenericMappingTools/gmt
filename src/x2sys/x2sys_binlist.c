@@ -16,7 +16,7 @@
  *      Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /* x2sys_binlist will read one or several data files and dump their
- * contents to stdout in ascii or binary (double precision) mode.
+ * contents to stdout in ASCII or binary (double precision) mode.
  * Input data file formats are determined by the definition file
  * given by the -D option.
  *

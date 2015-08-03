@@ -2836,7 +2836,7 @@ int GMT_check_binary_io (struct GMT_CTRL *GMT, uint64_t n_req) {
 	 * Return value is the number of errors that where found.
 	 */
 
-	if (!GMT->common.b.active[GMT_IN]) return (GMT_NOERROR);	/* Let machinery figure out input cols for ascii */
+	if (!GMT->common.b.active[GMT_IN]) return (GMT_NOERROR);	/* Let machinery figure out input cols for ASCII */
 
 	/* These are specific tests for binary input */
 
@@ -7610,7 +7610,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		}
 	}
 
-	if (B_string[0]) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ascii 30) */
+	if (B_string[0]) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ASCII 30) */
 		if (GMT->init.history[B_id]) free (GMT->init.history[B_id]);
 		GMT->init.history[B_id] = strdup (B_string);
 	}

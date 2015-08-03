@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 /*
  * GRDSPOTTER will (1) read a grid with topo/grav/whatever of seamounts,
- * (2) read an ascii file with stage or finite rotations, and (3)
+ * (2) read an ASCII file with stage or finite rotations, and (3)
  * convolve the flowline of each node with its prism volume, and
  * (4) build a cumulative volcano amplitude (CVA) grid.  Optionally, it
  * can also calculate the Data Importance (DI) associated with each node's

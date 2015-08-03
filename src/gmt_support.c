@@ -7873,7 +7873,7 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 	if (options > 0) {	/* Have optional args, make a copy and truncate text */
 		strncpy (txt_cpy, &text[options], GMT_BUFSIZ);
 		text[options] = '\0';
-		for (i = 0; txt_cpy[i]; i++) {	/* Unless +fgjlpu, change other + to ascii 1 to bypass strtok trouble later [f is now deprecated] */
+		for (i = 0; txt_cpy[i]; i++) {	/* Unless +fgjlpu, change other + to ASCII 1 to bypass strtok trouble later [f is now deprecated] */
 			if (txt_cpy[i] == '+' && !strchr ("fgjlpu", (int)txt_cpy[i+1])) txt_cpy[i] = 1;
 		}
 	}

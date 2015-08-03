@@ -196,7 +196,7 @@ Optional Arguments
 This note applies to ASCII output only in combination with binary or
 netCDF input or the **-:** option. See also the note below.
 
-Note On Processing Ascii Input Records
+Note On Processing ASCII Input Records
 --------------------------------------
 
 Unless you are using the **-:** option, selected ASCII input records are

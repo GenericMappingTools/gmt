@@ -564,7 +564,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 	}
-	else {	/* Ascii input with track names */
+	else {	/* ASCII input with track names */
 		char file_TAG[GMT_LEN64] = {""}, file_column[GMT_LEN64] = {""}, unused1[GMT_LEN64] = {""}, unused2[GMT_LEN64] = {""};
 		if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Read first line with TAG and column */
 			GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track file\n");

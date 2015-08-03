@@ -110,7 +110,7 @@ struct GMT_DEFAULTS {
 	bool io_lonlat_toggle[2];           /* true means read/write I/O as lat/lon instead of lon/lat [false,false] */
 	bool io_blankline[2];               /* true means blank lines should be treated as segment breaks [false,false] */
 	bool io_nanline[2];                 /* true means lines with all NaNs should be treated as segment breaks [false,false] */
-	char io_col_separator[8];           /* Separator between output ascii data columns [tab] */
+	char io_col_separator[8];           /* Separator between output ASCII data columns [tab] */
 	char io_gridfile_format[GMT_LEN64]; /* Default grid file format */
 	char io_seg_marker[2];              /* Character used to recognize and write segment headers [>,>] */
 	/* MAP group */

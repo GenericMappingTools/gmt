@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Table input/output in GMT can be either ascii, binary, or netCDF COARDS files
+ * Table input/output in GMT can be either ASCII, binary, or netCDF COARDS files
  * and may consist of single or multiple segments.  These files are accessed
  * via the GMT->current.io.input function pointer which either points to the
  * ASCII read (gmt_ascii_input), the binary read (gmt_bin_input), or the
@@ -30,7 +30,7 @@
  * GMT_Z_IO member ->read_item or ->write_item as these can handle additional
  * binary data types such as char, int, short etc.
  * The structure GMT_IO holds parameters that are used during the reading
- * and processing of ascii tables.  For compliance with a wide variety of
+ * and processing of ASCII tables.  For compliance with a wide variety of
  * binary data formats for grids and their internal nesting the GMT_Z_IO
  * structure and associated functions are used (in xyz2grd and grd2xyz)
  *
@@ -43,22 +43,22 @@
  *  GMT_fclose:         Close a file
  *  GMT_io_init:        Init GMT_IO structure
  *  GMT_write_segmentheader:   Write header record for multisegment files
- *  gmt_ascii_input:    Decode ascii input record
+ *  gmt_ascii_input:    Decode ASCII input record
  *  GMT_scanf:          Robust scanf function with optional dd:mm:ss conversion
  *  GMT_bin_double_input:   Decode binary double precision record
  *  GMT_bin_double_input_swab:  Decode binary double precision record followed by byte-swabbing
  *  GMT_bin_float_input:    Decode binary single precision record
  *  GMT_bin_float_input_swab:   Decode binary single precision record followed by byte-swabbing
  *  gmt_nc_input:       Decode one record of netCDF column-oriented data
- *  GMT_ascii_output:   Write ascii record
+ *  GMT_ascii_output:   Write ASCII record
  *  GMT_bin_double_output:  Write binary double precision record
  *  GMT_bin_double_output_swab: Write binary double precision record after first swabbing
  *  GMT_bin_float_output:   Write binary single precision record
  *  GMT_bin_float_output_swab:  Write binary single precision record after first swabbing
  *  GMT_set_z_io:       Set GMT_Z_IO structure based on -Z
  *  GMT_check_z_io:     Fill in implied missing row/column
- *  gmt_A_read:         Read the next ascii item from input stream (may be more than one per line) z must be regular float
- *  gmt_a_read:         Read 1 ascii item per input record
+ *  gmt_A_read:         Read the next ASCII item from input stream (may be more than one per line) z must be regular float
+ *  gmt_a_read:         Read 1 ASCII item per input record
  *  gmt_c_read:         Read 1 binary int8_t item
  *  gmt_u_read:         Read 1 binary uint8_t item
  *  gmt_h_read:         Read 1 binary int16_t item
@@ -69,7 +69,7 @@
  *  gmt_L_read:         Read 1 binary uint64_t item
  *  gmt_f_read:         Read 1 binary float item
  *  gmt_d_read:         Read 1 binary double item
- *  gmt_a_write:        Write 1 ascii item
+ *  gmt_a_write:        Write 1 ASCII item
  *  gmt_c_write:        Write 1 binary int8_t item
  *  gmt_u_write:        Write 1 binary uint8_t item
  *  gmt_h_write:        Write 1 binary int16_t item
@@ -220,12 +220,12 @@ void GMT_skip_xy_duplicates (struct GMT_CTRL *GMT, bool mode) {
 
 /*! . */
 bool GMT_is_ascii_record (struct GMT_CTRL *GMT) {
-	/* Returns true if the input is potentially an ascii record, possibly with text, and
+	/* Returns true if the input is potentially an ASCII record, possibly with text, and
 	 * there are no options in effect to select specific columns on input or output. */
 	if (GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT]) return (false);	/* Binary, so clearly false */
 	if (GMT->current.io.ndim > 0) return (false);					/* netCDF, so clearly false */
 	if (GMT->common.i.active || GMT->common.o.active) return (false);			/* Selected columns via -i and/or -o, so false */
-	return (true);	/* Might be able to treat record as an ascii record */
+	return (true);	/* Might be able to treat record as an ASCII record */
 }
 
 /*! . */
@@ -626,7 +626,7 @@ bool GMT_input_is_bin (struct GMT_CTRL *GMT, const char *filename)
 		GMT_fclose (GMT, fd);
 		return true;
 	}
-	else return false;	/* No, must be ascii */
+	else return false;	/* No, must be ASCII */
 }
 
 /*! . */
@@ -661,7 +661,7 @@ FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
 	}
 }
 
-/* Table I/O routines for ascii and binary io */
+/* Table I/O routines for ASCII and binary io */
 
 /*! Write verbose message about binary record i/o format */
 int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction) {
@@ -770,8 +770,8 @@ int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 	 * direction is either GMT_IN or GMT_OUT.
 	 * expected is the expected or known number of columns.  Use 0 if not known.
 	 * For binary input or output the number of columns must be specified.
-	 * For ascii output the number of columns must also be specified.
-	 * For ascii input the i/o machinery will set this automatically so expected is ignored.
+	 * For ASCII output the number of columns must also be specified.
+	 * For ASCII input the i/o machinery will set this automatically so expected is ignored.
 	 * Programs that need to read an input record in order to determine how
 	 * many columns on output should call this function after returning the
 	 * first data record; otherwise, call it before registering the resource.
@@ -2708,7 +2708,7 @@ int gmt_d_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 /*! . */
 int gmt_a_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
-	/* write ascii */
+	/* write ASCII */
 	uint64_t i;
 	for (i = 0; i < (n - 1); ++i) {
 		GMT_ascii_output_col (GMT, fp, d[i], GMT_Z);
@@ -5613,7 +5613,7 @@ void gmt_write_multilines (struct GMT_CTRL *GMT, FILE *fp, char *text, char *pre
 
 /*! . */
 void GMT_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols)
-{	/* Common ascii header records added on output */
+{	/* Common ASCII header records added on output */
 	if (GMT->common.b.active[GMT_OUT]) return;		/* No output headers for binary files */
 	if (!GMT->current.setting.io_header[GMT_OUT]) return;	/* No output headers requested, so don't bother */
 	if (GMT->common.h.title) {	/* Optional title(s) provided; could be several lines separated by \n */
@@ -5662,7 +5662,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 	 * Specify io_mode == GMT_WRITE_SEGMENT or GMT_WRITE_TABLE_SEGMENT to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
 
-	bool ascii, close_file = false, append;
+	bool ASCII, close_file = false, append;
 	int save = 0;
 	unsigned int k;
 	uint64_t row = 0, seg, col;
@@ -5677,15 +5677,15 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 
 	append = (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>');	/* Want to append to existing file */
 
-	if (use_GMT_io) {	/* Use GMT->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
+	if (use_GMT_io) {	/* Use GMT->current.io.info settings to determine if input is ASCII/binary, else it defaults to ASCII */
 		strcpy (open_mode, (append) ? GMT->current.io.a_mode : GMT->current.io.w_mode);
-		ascii = !GMT->common.b.active[GMT_OUT];
+		ASCII = !GMT->common.b.active[GMT_OUT];
 	}
 	else {			/* Force ASCII mode */
 		strcpy (open_mode, (append) ? "a" : "w");
-		ascii = true;
+		ASCII = true;
 		psave = GMT->current.io.output;		/* Save the previous pointer since we need to change it back at the end */
-		GMT->current.io.output = GMT->session.output_ascii;	/* Override and use ascii mode */
+		GMT->current.io.output = GMT->session.output_ascii;	/* Override and use ASCII mode */
 	}
 
 	switch (dest_type) {
@@ -5725,7 +5725,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 			break;
 	}
 	if (io_mode < GMT_WRITE_SEGMENT) {
-		if (ascii && GMT->current.setting.io_header[GMT_OUT]) {
+		if (ASCII && GMT->current.setting.io_header[GMT_OUT]) {
 			for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (GMT, fp, table->header[k]);	/* Write any existing header comments */
 			GMT_write_newheaders (GMT, fp, table->n_columns);	/* Write general header block */
 		}
@@ -5747,7 +5747,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Writing data segment to file %s\n", out_file);
-			if (ascii && GMT->current.setting.io_header[GMT_OUT]) {
+			if (ASCII && GMT->current.setting.io_header[GMT_OUT]) {
 				for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (GMT, fp, table->header[k]);	/* Write any existing header comments */
 				GMT_write_newheaders (GMT, fp, table->n_columns);	/* Write general header block */
 			}
@@ -5789,7 +5789,7 @@ int GMT_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 	FILE *fp = NULL;
 
 	if (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>') append = 1;	/* Want to append to existing file */
-	if (use_GMT_io)	/* Use GMT->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
+	if (use_GMT_io)	/* Use GMT->current.io.info settings to determine if input is ASCII/binary, else it defaults to ASCII */
 		strcpy (open_mode, (append) ? GMT->current.io.a_mode : GMT->current.io.w_mode);
 	else			/* Force ASCII mode */
 		strcpy (open_mode, (append) ? "a" : "w");
@@ -6374,7 +6374,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 {
 	/* Reads an entire data set into a single table in memory with any number of segments */
 
-	bool ascii, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false, pol_check, check_geometry;
+	bool ASCII, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false, pol_check, check_geometry;
 	int status;
 	uint64_t n_expected_fields;
 	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0;
@@ -6385,21 +6385,21 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	struct GMT_DATATABLE *T = NULL;
 	void * (*psave) (struct GMT_CTRL *, FILE *, uint64_t *, int *) = NULL;	/* Pointer to function reading tables */
 
-	if (use_GMT_io) {	/* Use GMT->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
+	if (use_GMT_io) {	/* Use GMT->current.io.info settings to determine if input is ASCII/binary, else it defaults to ASCII */
 		n_expected_fields = GMT->common.b.active[GMT_IN] ? GMT->common.b.ncol[GMT_IN] : GMT_MAX_COLUMNS;
 		strcpy (open_mode, GMT->current.io.r_mode);
-		ascii = !GMT->common.b.active[GMT_IN];
+		ASCII = !GMT->common.b.active[GMT_IN];
 	}
 	else {			/* Force ASCII mode */
 		n_expected_fields = GMT_MAX_COLUMNS;	/* GMT->current.io.input will return the number of columns */
 		strcpy (open_mode, "r");
-		ascii = true;
+		ASCII = true;
 		psave = GMT->current.io.input;			/* Save the previous pointer since we need to change it back at the end */
-		GMT->current.io.input = GMT->session.input_ascii;	/* Override and use ascii mode */
+		GMT->current.io.input = GMT->session.input_ascii;	/* Override and use ASCII mode */
 	}
 
 #ifdef SET_IO_MODE
-	if (!ascii) GMT_setmode (GMT, GMT_IN);
+	if (!ASCII) GMT_setmode (GMT, GMT_IN);
 #endif
 
 	pol_check = check_geometry = ((*geometry & GMT_IS_POLY) && (*geometry & GMT_IS_LINE));	/* Have to determine if these are closed polygons or not */
@@ -6490,7 +6490,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 				first_seg = false;
 			}
 			n_read++;
-			if (ascii && !no_segments) {	/* Only ascii files can have info stored in multi-seg header records */
+			if (ASCII && !no_segments) {	/* Only ASCII files can have info stored in multi-seg header records */
 				if (GMT_parse_segment_item (GMT, GMT->current.io.segment_header, "-D", line)) {	/* Found a potential -D<dist> option in the header */
 					if (sscanf (line, "%lg", &d) == 1) T->segment[seg]->dist = d;	/* If readable, assign it to dist, else leave as zero */
 				}
@@ -6504,7 +6504,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 			no_segments = false;	/* This has now served its purpose */
 		}
 		if (GMT_REC_IS_EOF (GMT)) continue;	/* At EOF; get out of this loop */
-		if (ascii && !no_segments) {	/* Only ascii files can have info stored in multi-seg header record */
+		if (ASCII && !no_segments) {	/* Only ASCII files can have info stored in multi-seg header record */
 			char buffer[GMT_BUFSIZ] = {""};
 			if (strlen (GMT->current.io.segment_header)) {
 				T->segment[seg]->header = strdup (GMT->current.io.segment_header);

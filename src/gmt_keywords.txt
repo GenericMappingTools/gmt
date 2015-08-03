@@ -37,15 +37,15 @@ FONT_TITLE			# Font for plot titles
 #-------------------------------------------------------
 # FORMAT Group: Formats of numbers and time-related text
 #-------------------------------------------------------
-FORMAT_CLOCK_IN			# How to decode clock-strings in ascii input
-FORMAT_CLOCK_OUT		# How to write clock-strings to ascii output
+FORMAT_CLOCK_IN			# How to decode clock-strings in ASCII input
+FORMAT_CLOCK_OUT		# How to write clock-strings to ASCII output
 FORMAT_CLOCK_MAP		# How to plot clock-strings on maps
-FORMAT_DATE_IN			# How to decode date-strings in ascii input
-FORMAT_DATE_OUT			# How to write date-strings to ascii output
+FORMAT_DATE_IN			# How to decode date-strings in ASCII input
+FORMAT_DATE_OUT			# How to write date-strings to ASCII output
 FORMAT_DATE_MAP			# How to plot date-strings on maps
-FORMAT_GEO_OUT			# How to write ddd[:mm[:ss[.xx]]] to ascii output
+FORMAT_GEO_OUT			# How to write ddd[:mm[:ss[.xx]]] to ASCII output
 FORMAT_GEO_MAP			# How to plot ddd[:mm[:ss[.xx]]] on maps
-FORMAT_FLOAT_OUT		# How to write floating points to ascii output
+FORMAT_FLOAT_OUT		# How to write floating points to ASCII output
 FORMAT_FLOAT_MAP		# How to plot floating points on maps
 FORMAT_TIME_MAP			# How to plot both month-, week-, and weekday-names on maps [does not go in gmt.conf]
 FORMAT_TIME_PRIMARY_MAP		# How to plot primary month-, week-, and weekday-names on maps

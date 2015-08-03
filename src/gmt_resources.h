@@ -177,7 +177,7 @@ enum GMT_enum_write {
 	GMT_WRITE_NORMAL = 0,		/* Write header and contents of this entity (table or segment) */
 	GMT_WRITE_HEADER = 1,		/* Only write header and not the contents of this entity (table or segment) */
 	GMT_WRITE_SKIP = 2,		/* Entirely skip this entity on output (table or segment) */
-	GMT_WRITE_NOLF = 16};		/* Do not write LF at end of ascii record, and not increment output rec number */
+	GMT_WRITE_NOLF = 16};		/* Do not write LF at end of ASCII record, and not increment output rec number */
 
 enum GMT_enum_header {
 	GMT_HEADER_OFF = 0,		/* Disable header blocks out as default */

@@ -131,8 +131,8 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify one of the following data types (all binary except a):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     A  Ascii (multiple floating point values per record).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a  Ascii (one value per record).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     A  ASCII (multiple floating point values per record).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a  ASCII (one value per record).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c  int8_t, signed 1-byte character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     u  uint8_t, unsigned 1-byte character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     h  int16_t, signed 2-byte integer.\n");

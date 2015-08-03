@@ -430,7 +430,7 @@ struct MGD77_CONTROL {
 	int nc_id;					/* netCDF ID for current open file (MGD77+ only) */
 	int nc_recid;					/* netCDF ID for dimension of records (time) */
 	uint64_t rec_no;				/* Current record to read/write for record-based i/o */
-	int format;					/* -1 if not set, 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ascii table */
+	int format;					/* -1 if not set, 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ASCII table */
 	/* Format-related issues */
 	unsigned int time_format;			/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	struct GMT_TIME_SYSTEM utime;			/* All the information about the Unix time system */
@@ -529,7 +529,7 @@ EXTERN_MSC int MGD77_Write_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_C
 
 /* Secondary user functions */
 
-EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);		/* Hardwired write of ascii/MGD77 header */
+EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);		/* Hardwired write of ASCII/MGD77 header */
 
 /* These are only for developers */
 

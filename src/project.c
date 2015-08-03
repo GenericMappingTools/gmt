@@ -588,7 +588,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 
 	/* Now output  */
 
-	/* Special case for pure ascii since we may pass text */
+	/* Special case for pure ASCII since we may pass text */
 
 	if (P->n_z && pure_ascii) {
 		for (rec = 0; rec < P->n_used; rec++) {

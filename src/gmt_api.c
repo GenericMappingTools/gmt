@@ -1621,7 +1621,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 
 	/* A few things pertaining only to data/text tables */
 	API->GMT->current.io.rec_in_tbl_no = 0;	/* Start on new table */
-	S_obj->import = (S_obj->family == GMT_IS_TEXTSET) ? &GMT_ascii_textinput : API->GMT->current.io.input;	/* The latter may point to ascii or binary input functions */
+	S_obj->import = (S_obj->family == GMT_IS_TEXTSET) ? &GMT_ascii_textinput : API->GMT->current.io.input;	/* The latter may point to ASCII or binary input functions */
 
 	return (GMT_OK);
 }
@@ -4397,7 +4397,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
-	if (direction == GMT_OUT && header == GMT_HEADER_ON && !API->GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ascii header block */
+	if (direction == GMT_OUT && header == GMT_HEADER_ON && !API->GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ASCII header block */
 
 	return_error (V_API, GMT_OK);	/* No error encountered */
 }

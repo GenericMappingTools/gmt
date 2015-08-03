@@ -29,7 +29,7 @@
  * x2sys_read_mgd77file : Specifically reads an ASCII MGD77 file
  * x2sys_read_mgd77ncfile : Specifically reads an netCDF MGD77+ file
  * x2sys_read_ncfile	: Specifically reads an COARDS netCDF file
- * x2sys_read_list	: Read an ascii list of track names
+ * x2sys_read_list	: Read an ASCII list of track names
  * x2sys_dummytimes	: Make dummy times for tracks missing times
  * x2sys_n_data_cols	: Gives number of data columns in this data set
  * x2sys_fopen		: Opening files with error message and exit
@@ -39,7 +39,7 @@
  * x2sys_pick_fields	: Decodes the -F<fields> flag of desired columns
  * x2sys_free_info	: Frees the information structure
  * x2sys_free_data	: Frees the data matrix
- * x2sys_read_coe_dbase : Reads into memory the entire COE ascii database
+ * x2sys_read_coe_dbase : Reads into memory the entire COE ASCII database
  * x2sys_free_coe_dbase : Free the array of COE structures
  *------------------------------------------------------------------
  * Core crossover functions are part of GMT:
@@ -533,7 +533,7 @@ double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n)
 
 /*
  * x2sys_data_read:  Read subroutine for x2_sys data input.
- * This function will read one logical record of ascii or
+ * This function will read one logical record of ASCII or
  * binary data from the open file, and return with a double
  * array called data[] with each data value in it.
  */
@@ -1562,7 +1562,7 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file)
 	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 }
 
-/* Functions dealing with the reading of the COE ascii database */
+/* Functions dealing with the reading of the COE ASCII database */
 
 uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *nt)
 {

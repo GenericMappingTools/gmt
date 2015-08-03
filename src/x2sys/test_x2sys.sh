@@ -38,10 +38,10 @@ rm -f $$.nc
 # Create a *.def file and initialize the tag
 
 cat << EOF > xydz.def
-# This file applies to plain 4-column ascii files with no header record.
+# This file applies to plain 4-column ASCII files with no header record.
 #
 #---------------------------------------------------------------------
-#ASCII		# The input file is ascii
+#ASCII		# The input file is ASCII
 #SKIP 0		# The number of header records to skip
 #---------------------------------------------------------------------
 #name	intype	NaN-proxy?	NaN-proxy	scale	offset	oformat

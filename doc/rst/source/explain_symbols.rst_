@@ -158,7 +158,7 @@
                 \* dist* [0.25].
 
             **f**\ *ffile.d*
-                Reads the ascii file *ffile.d* and places labels at locations in the
+                Reads the ASCII file *ffile.d* and places labels at locations in the
                 file that matches locations along the quoted lines. Inexact matches
                 and points outside the region are skipped.
 

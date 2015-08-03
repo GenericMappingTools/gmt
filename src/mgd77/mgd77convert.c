@@ -144,7 +144,7 @@ int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl
 					case 'm':		/* New ASCII MGD77T file */
 						Ctrl->F.format = MGD77_FORMAT_M7T;
 						break;
-					case 't':		/* Plain ascii dat table */
+					case 't':		/* Plain ASCII dat table */
 						Ctrl->F.format = MGD77_FORMAT_TBL;
 						break;
 					default:
@@ -158,7 +158,7 @@ int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl
 				code_pos = 0;
 				if (opt->arg[code_pos] == '+') Ctrl->T.mode = true, code_pos++;	/* Force overwriting existing files */
 				switch (opt->arg[code_pos]) {									
-					case 'a':		/* Standard ascii MGD77 file */
+					case 'a':		/* Standard ASCII MGD77 file */
 						Ctrl->T.format = MGD77_FORMAT_M77;
 						break;
 					case 'c':
@@ -167,7 +167,7 @@ int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl
 					case 'm':		/* New ASCII MGD77T file */
 						Ctrl->T.format = MGD77_FORMAT_M7T;
 						break;
-					case 't':		/* Plain ascii dat table */
+					case 't':		/* Plain ASCII dat table */
 						Ctrl->T.format = MGD77_FORMAT_TBL;
 						break;
 					default:

@@ -65,7 +65,7 @@ Optional Arguments
     appended vertically [Default]. All files must have the same number
     of segments and number of rows per segment. Note for binary input,
     all the files you want to paste must have the same number of columns
-    (as set with **-bi**); ascii tables can have different number of columns.
+    (as set with **-bi**); ASCII tables can have different number of columns.
 
 **-C**\ [**+l**\ *min*\ ][\ **+u**\ *max*\ ][**+i**]
     Only output segments whose number of records matches your given criteria:
