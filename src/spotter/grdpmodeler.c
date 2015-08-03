@@ -180,32 +180,23 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	/* Plate spreading azimuth */
-						Ctrl->S.mode = PM_AZIM;
-						break;
+						Ctrl->S.mode = PM_AZIM;	 break;
 					case 'd':	/* Distance from point to origin at ridge */
-						Ctrl->S.mode = PM_DIST;
-						break;
+						Ctrl->S.mode = PM_DIST;	 break;
 					case 'r':	/* Plate spreading rate */
-						Ctrl->S.mode = PM_RATE;
-						break;
+						Ctrl->S.mode = PM_RATE;	 break;
 					case 'w':	/* Plate rotation omega */
-						Ctrl->S.mode = PM_OMEGA;
-						break;
+						Ctrl->S.mode = PM_OMEGA; break;
 					case 'x':	/* Change in longitude since origin */
-						Ctrl->S.mode = PM_DLON;
-						break;
+						Ctrl->S.mode = PM_DLON;	 break;
 					case 'y':	/* Change in latitude since origin */
-						Ctrl->S.mode = PM_DLAT;
-						break;
+						Ctrl->S.mode = PM_DLAT;	 break;
 					case 'X':	/* Plate longitude at crust origin */
-						Ctrl->S.mode = PM_LON;
-						break;
+						Ctrl->S.mode = PM_LON;	 break;
 					case 'Y':	/* Plate latitude at crust origin */
-						Ctrl->S.mode = PM_LAT;
-						break;
+						Ctrl->S.mode = PM_LAT;	 break;
 					default:
-						n_errors++;
-						break;
+						n_errors++;		 break;
 				}
 				break;
 			case 'T':
@@ -246,7 +237,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	double lon, lat, d, value = 0.0, t_max = 0.0, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 	
 	char *quantity[N_PM_ITEMS] = { "velocity", "azimuth", "rotation rate", "longitude displacement", \
-		"longitude", "latitude displacement", "latitude", "distance displacement"};
+		"reconstructed longitude", "latitude displacement", "reconstructed latitude", "distance displacement"};
 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *pol = NULL;
@@ -323,6 +314,23 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
 		registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
+	switch (Ctrl->S.mode) {
+		case PM_RATE:	/* Compute plate motion speed at this point in time/space */
+			strcpy (G_mod->header->z_units, "mm/yr");	  break;
+		case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
+			strcpy (G_mod->header->z_units, "degree");	  break;
+		case PM_OMEGA:	/* Compute plate rotation rate omega */
+			strcpy (G_mod->header->z_units, "degree/Myr");	  break;
+		case PM_DLAT:	/* Difference in latitude relative to where this point was formed in the model */
+		case PM_LAT:	/* Latitude where this point was formed in the model */
+			strcpy (G_mod->header->z_units, "degrees_north");  break;
+		case PM_DLON:	/* Difference in longitude relative to where this point was formed in the model */
+		case PM_LON:	/* Longitude where this point was formed in the model */
+			strcpy (G_mod->header->z_units, "degrees_east");  break;
+		case PM_DIST:	/* Distance to origin in km */
+			strcpy (G_mod->header->z_units, "km");		  break;
+	}
+
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);
 	grd_yc = GMT_memory (GMT, NULL, G_mod->header->ny, double);
@@ -335,7 +343,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evalute model prediction grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Evalute model prediction grid for %s (%s)\n", quantity[Ctrl->S.mode], G_mod->header->z_units);
 
 	GMT_init_distaz (GMT, (Ctrl->S.mode == PM_DIST) ? 'k' : 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees, or km if -Sd */
 	if (Ctrl->S.mode == PM_DLON) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
@@ -402,28 +410,6 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 
 	strcpy (G_mod->header->x_units, "degrees_east");
 	strcpy (G_mod->header->y_units, "degrees_north");
-	switch (Ctrl->S.mode) {
-		case PM_RATE:	/* Compute plate motion speed at this point in time/space */
-			strcpy (G_mod->header->z_units, "mm/yr");
-			break;
-		case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-			strcpy (G_mod->header->z_units, "degree");
-			break;
-		case PM_OMEGA:	/* Compute plate rotation rate omega */
-			strcpy (G_mod->header->z_units, "degree/Myr");
-			break;
-		case PM_DLAT:	/* Difference in latitude relative to where this point was formed in the model */
-		case PM_LAT:	/* Latitude where this point was formed in the model */
-			strcpy (G_mod->header->z_units, "degrees_north");
-			break;
-		case PM_DLON:	/* Difference in longitude relative to where this point was formed in the model */
-		case PM_LON:	/* Longitude where this point was formed in the model */
-			strcpy (G_mod->header->z_units, "degrees_east");
-			break;
-		case PM_DIST:	/* Distance to origin in km */
-			strcpy (G_mod->header->z_units, "km");
-			break;
-	}
 	sprintf (G_mod->header->remark, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode], Ctrl->E.file);
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_mod)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_mod) != GMT_OK) {
