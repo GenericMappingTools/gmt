@@ -436,9 +436,15 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'C':	/* Vary symbol color with z */
-				if (Ctrl->C.file) free (Ctrl->C.file);
-				Ctrl->C.file = strdup (opt->arg);
-				Ctrl->C.active = true;
+				if (opt->arg[0]) {
+					if (Ctrl->C.file) free (Ctrl->C.file);
+					Ctrl->C.file = strdup (opt->arg);
+					Ctrl->C.active = true;
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: No CPT table given\n");
+					n_errors++;
+				}
 				break;
 			case 'D':
 				if ((j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) < 1) {

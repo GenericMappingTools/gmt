@@ -279,10 +279,16 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 			/* Processes program-specific parameters */
 
-			case 'C':
-				if (Ctrl->C.file) free (Ctrl->C.file);
-				Ctrl->C.file = strdup (opt->arg);
-				Ctrl->C.active = true;
+			case 'C':	/* Vary symbol color with z */
+				if (opt->arg[0]) {
+					if (Ctrl->C.file) free (Ctrl->C.file);
+					Ctrl->C.file = strdup (opt->arg);
+					Ctrl->C.active = true;
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: No CPT table given\n");
+					n_errors++;
+				}
 				break;
 			case 'D':
 				if ((n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
