@@ -7745,7 +7745,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 
 	/* Determine if we got an reference point or a region */
 
-	if (strchr ("gjnx", text[0])) {	/* Did the reference point thing. */
+	if (strchr ("gjJnx", text[0])) {	/* Did the reference point thing. */
 		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>] */
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
@@ -8003,7 +8003,7 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 
 int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms) {
 	/* This function parses the -L map scale syntax:
-	 *   -L[gjnx]<refpoint>+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+u]
+	 *   -L[g|j|J|n|x]<refpoint>+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+u]
 	 * If the required +w is not present we call the backwards compatible parsert for the previous map scale syntax.
 	 * An optional background panel is handled by a separate option (typically -F). */
 
@@ -11824,7 +11824,7 @@ struct GMT_REFPOINT * GMT_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 	int n, justify = 0;
 	enum GMT_enum_refpoint mode = GMT_REFPOINT_NOTSET;
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, the_rest[GMT_LEN256] = {""};
-	static char *kind = "gjnx";	/* The 4 types of coordinates */
+	static char *kind = "gjJnx";	/* The five types of refpoint specifications */
 	struct GMT_REFPOINT *A = NULL;
 
 	switch (arg[0]) {
@@ -12012,11 +12012,17 @@ void GMT_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double
 {
 	/* Adjust reference point based on size and justification of plotted item, towards a given anchor */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before justify = %d, Dim x = %g y = %g, Reference x = %g y = %g\n", justify, dim[GMT_X], dim[GMT_Y], ref->x, ref->y);
-	ref->x -= 0.5 * ((justify%4)-(anchor%4)) * dim[GMT_X];
-	ref->y -= 0.5 * ((justify/4)-(anchor/4)) * dim[GMT_Y];
+	ref->x += 0.5 * (anchor%4 - justify%4) * dim[GMT_X];
+	ref->y += 0.5 * (anchor/4 - justify/4) * dim[GMT_Y];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Offset x = %g y = %g, Reference x = %g y = %g\n", justify, off[GMT_X], off[GMT_Y], ref->x, ref->y);
 	/* Also deal with any justified offsets if given */
-	ref->x -= ((justify%4)-2) * off[GMT_X];
-	ref->y -= ((justify/4)-1) * off[GMT_Y];
+	if (justify%4 == 3)	/* Right aligned */
+		ref->x -= off[GMT_X];
+	else /* Left or center aligned */
+		ref->x += off[GMT_X];
+	if (justify/4 == 2)	/* Top aligned */
+		ref->y -= off[GMT_Y];
+	else /* Bottom or middle aligned */
+		ref->y += off[GMT_Y];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Reference x = %g y = %g\n", ref->x, ref->y);
 }

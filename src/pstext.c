@@ -222,13 +222,13 @@ int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
 	/* Try to determine if input is the old GMT4-style format.
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode.
 	 * Return 4 if GMT 4, 5 if GMT 5, -1 if nothing can be done */
-	
+
 	int n, k;
 	char size[GMT_LEN256] = {""}, angle[GMT_LEN256] = {""}, font[GMT_LEN256] = {""}, just[GMT_LEN256] = {""}, txt[GMT_BUFSIZ] = {""};
 	char spacing[GMT_LEN256] = {""}, width[GMT_LEN256] = {""}, pjust[GMT_LEN256] = {""};
-	
+
 	if (!buffer || !buffer[0]) return (-1);	/* Nothing to work with */
-	
+
 	if (mode) {	/* Paragraph control record */
 		n = sscanf (buffer, "%s %s %s %s %s %s %s\n", size, angle, font, just, spacing, width, pjust);
 		if (n < 7) return (5);	/* Clearly not the old format since missing items */
@@ -343,7 +343,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z size ...).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z+ also sets -N.\n");
 	GMT_Option (API, "a,c,f,h,p,t,:,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -409,7 +409,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 			case 'F':
 				Ctrl->F.active = true;
 				pos = 0;
-				
+
 				while (GMT_getmodopt (GMT, opt->arg, "afjclh", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c, +l|h */
 					switch (p[0]) {
 						case 'a':	/* Angle */
@@ -598,10 +598,10 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 	int  error = 0, k, fmode, nscan, *c_just = NULL;
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false;
-	
+
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
-	
+
 	size_t n_alloc = 0;
 
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
@@ -655,7 +655,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
-	
+
 	PSL = GMT_plotinit (GMT, options);
 
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -689,7 +689,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		c_font = GMT_memory (GMT, NULL, n_alloc, struct GMT_FONT);
 	}
 	token_separator = (Ctrl->F.read_font) ? PSTEXT_TOKEN_SEPARATORS : GMT_TOKEN_SEPARATORS;	/* Cannot use commas if fonts are to be read */
-	
+
 	do {	/* Keep returning records until we have no more files */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Keep returning records until we have no more files */
 			if (GMT_REC_IS_ERROR (GMT)) {
@@ -716,7 +716,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				}
 
 				if ((nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
-				
+
 				pos = 0;
 
 				if (GMT_compat_check (GMT, 4)) {
@@ -780,7 +780,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
 					tmp = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
 					T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
-					if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify = 4 * (T.block_justify/4) + 2 - (T.block_justify%4 - 2);	/* Flip any L/R code */
+					if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify -= 2 * (T.block_justify%4 - 2);	/* Flip any L/R code */
 				}
 				master_record = true;
 			}
@@ -880,7 +880,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "No active segment label to use; text is blank\n");
 				in_txt = label;
 			}
-			
+
 			nscan += GMT_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
 
 			if (nscan < (int)n_expected_cols) {
@@ -893,7 +893,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			}
 
 			/* Here, in_text holds the text we wish to plot */
-			
+
 			GMT_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) GMT_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			n_read++;
@@ -908,7 +908,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
 				tmp = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
 				T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
-				if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify = 4 * (T.block_justify/4) + 2 - (T.block_justify%4 - 2);	/* Flip any L/R code */
+				if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify -= 2 * (T.block_justify%4 - 2);	/* Flip any L/R code */
 			}
 			if (add) {
 				if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
@@ -959,14 +959,14 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				c_font[m] = T.font;
 				m++;
 			}
-			else {	
+			else {
 				PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
 			}
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 		}
 
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
@@ -986,7 +986,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
 		EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
 		EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
-		
+
 		form |= PSL_TXT_INIT;	/* To lay down all PSL attributes */
 		if (Ctrl->G.mode == PSTEXT_CLIPPLOT) form |= PSL_TXT_SHOW;	/* To place text */
 		form |= PSL_TXT_CLIP_ON;	/* To set clip path */

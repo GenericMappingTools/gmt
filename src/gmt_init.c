@@ -968,7 +968,7 @@ void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string)
 
 
 void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part)
-{	/* For -Dgjnx */
+{	/* For -Dg|j|J|n|x */
 	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "insert", "map scale", "map rose"}, *tab[2] = {"", "     "};
 	unsigned int shift = (kind == GMT_ANCHOR_INSERT) ? 1 : 0;	/* Add additional "tab" to front of message */
 	if (part & 1) {	/* Here string is message, or NULL */
