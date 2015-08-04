@@ -27,21 +27,22 @@
 #define THIS_MODULE_NAME	"grdpmodeler"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Evaluate a plate model on a geographic grid"
-#define THIS_MODULE_KEYS	"<GI,ETI,FDi,GGO"
+#define THIS_MODULE_KEYS	"<GI,ETI,FDi,GGo,>DG"
 
 #include "spotter.h"
 
-#define GMT_PROG_OPTIONS "-:RVbdhi"
+#define GMT_PROG_OPTIONS "-:RVbdhior"
 
-#define N_PM_ITEMS	8
-#define PM_RATE		0
-#define PM_AZIM		1
-#define PM_OMEGA	2
-#define PM_DLON		3
-#define PM_LON		4
-#define PM_DLAT		5
-#define PM_LAT		6
-#define PM_DIST		7
+#define N_PM_ITEMS	9
+#define PM_AZIM		0
+#define PM_DIST		1
+#define PM_STAGE	2
+#define PM_VEL		3
+#define PM_OMEGA	4
+#define PM_DLON		5
+#define PM_DLAT		6
+#define PM_LON		7
+#define PM_LAT		8
 
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -65,9 +66,14 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 		bool active;
 		double inc[2];
 	} I;
-	struct S {	/* -Sa|d|r|w|x|y|X|Y */
+	struct N {	/* -N */
 		bool active;
-		unsigned int mode;
+		double t_upper;
+	} N;
+	struct S {	/* -Sa|d|s|v|w|x|y|X|Y */
+		bool active, km, center;
+		unsigned int mode[N_PM_ITEMS];
+		unsigned int n_items;
 	} S;
 	struct T {	/* -T<fixtime> */
 		bool active;
@@ -98,23 +104,27 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y]\n\t[-T<time>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdpmodeler <agegrdfile> -E<rottable> [-F<polygontable>] [-G<outgrid>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-N<upper_age>] [-SadrswxyXY]\n\t[-T<time>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n",
 		GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
 	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename with the model predictions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of the grid to work on [Default works on the entire grid].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename with the model predictions.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Must contain \"%s\" if more than one item is specified in -S.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default writes x,y,<predictions> to standard output\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
 	GMT_Option (API, "Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Select a model prediction as a function of crustal age.  Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Select one or more model predictions as a function of crustal age.  Choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a : Plate spreading azimuth.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d : Distance to origin of crust in km.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r : Plate motion rate in mm/yr or km/Myr.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s : Plate motion stage ID (1 is youngest).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   w : Rotation rate in degrees/Myr.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   x : Change in longitude since formation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   y : Change in latitude since formation.\n");
@@ -135,7 +145,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0, k;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -176,27 +186,40 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 					n_errors++;
 				}
 				break;
+			case 'N':	/* Extend oldest stage back to this time [no extension] */
+				Ctrl->N.active = true;
+				Ctrl->N.t_upper = atof (opt->arg);
+				break;
 			case 'S':
 				Ctrl->S.active = true;
-				switch (opt->arg[0]) {
-					case 'a':	/* Plate spreading azimuth */
-						Ctrl->S.mode = PM_AZIM;	 break;
-					case 'd':	/* Distance from point to origin at ridge */
-						Ctrl->S.mode = PM_DIST;	 break;
-					case 'r':	/* Plate spreading rate */
-						Ctrl->S.mode = PM_RATE;	 break;
-					case 'w':	/* Plate rotation omega */
-						Ctrl->S.mode = PM_OMEGA; break;
-					case 'x':	/* Change in longitude since origin */
-						Ctrl->S.mode = PM_DLON;	 break;
-					case 'y':	/* Change in latitude since origin */
-						Ctrl->S.mode = PM_DLAT;	 break;
-					case 'X':	/* Plate longitude at crust origin */
-						Ctrl->S.mode = PM_LON;	 break;
-					case 'Y':	/* Plate latitude at crust origin */
-						Ctrl->S.mode = PM_LAT;	 break;
-					default:
-						n_errors++;		 break;
+				while (opt->arg[Ctrl->S.n_items]) {
+					switch (opt->arg[Ctrl->S.n_items]) {
+						case 'a':	/* Plate spreading azimuth */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_AZIM;	 break;
+						case 'd':	/* Distance from point to origin at ridge */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_DIST;	Ctrl->S.km = true;	 break;
+						case 's':	/* Plate motion stage ID */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_STAGE; break;
+						case 'v': case 'r':	/* Plate spreading rate [r is backwards compatible] */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_VEL;	 break;
+						case 'w':	/* Plate rotation omega */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_OMEGA; break;
+						case 'x':	/* Change in longitude since origin */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_DLON;	Ctrl->S.center = true;	 break;
+						case 'y':	/* Change in latitude since origin */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_DLAT;	 break;
+						case 'X':	/* Plate longitude at crust origin */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_LON;	 break;
+						case 'Y':	/* Plate latitude at crust origin */
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_LAT;	 break;
+						default:
+							n_errors++;		 break;
+					}
+					Ctrl->S.n_items++;
+				}
+				if (Ctrl->S.n_items == 0) {	/* Set default which are all the items */
+					Ctrl->S.n_items = N_PM_ITEMS;
+					for (k = 0; k < Ctrl->S.n_items; k++) Ctrl->S.mode[k] = k;
 				}
 				break;
 			case 'T':
@@ -216,9 +239,15 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 	else {	/* Must not have -I -r */
 		n_errors += GMT_check_condition (GMT, Ctrl->I.active || GMT->common.r.active, "Syntax error: Cannot specify input file AND -R -r\n");
 	}
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	if (Ctrl->G.active) {	/* Specified output grid(s) */
+		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->S.n_items > 1 && !strstr (Ctrl->G.file, "%s"), "Syntax error -G: File name must be a template containing \"%s\"\n");
+	}
+	else
+		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file when no output grids are created\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error: Must specify -E\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.n_items == 0, "Syntax error: Must specify one or more fields with -S\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.value < 0.0, "Syntax error -T: Must specify positive age.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -229,21 +258,23 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 
 int GMT_grdpmodeler (void *V_API, int mode, void *args)
 {
-	unsigned int col, row, inside, stage, n_stages, registration;
+	unsigned int col, row, inside, stage, n_stages, registration, k;
 	int retval, error = 0;
 	
-	uint64_t node, seg;
+	bool skip, spotted;
 	
-	double lon, lat, d, value = 0.0, t_max = 0.0, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
+	uint64_t node, seg, n_old = 0, n_outside = 0, n_NaN = 0;
 	
-	char *quantity[N_PM_ITEMS] = { "velocity", "azimuth", "rotation rate", "longitude displacement", \
-		"reconstructed longitude", "latitude displacement", "reconstructed latitude", "distance displacement"};
-
+	double lon, lat, d, value = 0.0, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL, *out = NULL;
+	
+	char *quantity[N_PM_ITEMS] = { "azimuth", "distance displacement", "stage", "velocity", "rotation rate", "longitude displacement", \
+		"latitude displacement", "reconstructed longitude", "reconstructed latitude"};
+	char *tag[N_PM_ITEMS] = { "az", "dist", "stage", "vel", "omega", "dlon", "dlat", "lon", "lat" };
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *pol = NULL;
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct GMT_OPTION *ptr = NULL;
-	struct GMT_GRID *G_age = NULL, *G_mod = NULL;
+	struct GMT_GRID *G_age = NULL, **G_mod = NULL, *G = NULL;
 	struct GRDROTATER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -283,7 +314,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		GMT_memcpy (GMT->common.R.wesn, G_age->header->wesn, 4, double);
 		GMT->common.R.active = true;
 	}
-	else {
+	else {	/* Use the input options of -R -I [and -r] */
 		GMT_memcpy (inc, Ctrl->I.inc, 2, double);
 		registration = GMT->common.r.registration;
 	}
@@ -296,7 +327,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
 	}
 
-	n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, false, 0, &t_max);
+	n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, false, 0, &Ctrl->N.t_upper);
 	for (stage = 0; stage < n_stages; stage++) {
 		if (p[stage].omega < 0.0) {	/* Ensure all stages have positive rotation angles */
 			p[stage].omega = -p[stage].omega;
@@ -305,115 +336,190 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 			if (p[stage].lon > 360.0) p[stage].lon -= 360.0;
 		}
 	}
-	if (Ctrl->T.active && Ctrl->T.value > t_max) {
+	if (Ctrl->T.active && Ctrl->T.value > Ctrl->N.t_upper) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
 		GMT_free (GMT, p);
 		Return (EXIT_FAILURE);
 	}
 	
-	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
-		registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+	if (Ctrl->G.active) {	/* Need one or more output grids */
+		G_mod = GMT_memory (GMT, NULL, Ctrl->S.n_items, struct GMT_GRID *);
+		for (k = 0; k < Ctrl->S.n_items; k++) {
+			if ((G_mod[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
+				registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
-	switch (Ctrl->S.mode) {
-		case PM_RATE:	/* Compute plate motion speed at this point in time/space */
-			strcpy (G_mod->header->z_units, "mm/yr");	  break;
-		case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-			strcpy (G_mod->header->z_units, "degree");	  break;
-		case PM_OMEGA:	/* Compute plate rotation rate omega */
-			strcpy (G_mod->header->z_units, "degree/Myr");	  break;
-		case PM_DLAT:	/* Difference in latitude relative to where this point was formed in the model */
-		case PM_LAT:	/* Latitude where this point was formed in the model */
-			strcpy (G_mod->header->z_units, "degrees_north");  break;
-		case PM_DLON:	/* Difference in longitude relative to where this point was formed in the model */
-		case PM_LON:	/* Longitude where this point was formed in the model */
-			strcpy (G_mod->header->z_units, "degrees_east");  break;
-		case PM_DIST:	/* Distance to origin in km */
-			strcpy (G_mod->header->z_units, "km");		  break;
+			switch (Ctrl->S.mode[k]) {
+				case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
+					strcpy (G_mod[k]->header->z_units, "degree");	     break;
+				case PM_DIST:	/* Distance to origin in km */
+					strcpy (G_mod[k]->header->z_units, "km");	     break;
+				case PM_STAGE:	/* Compute plate motion stage at this point in time/space */
+					strcpy (G_mod[k]->header->z_units, "integer");	     break;
+				case PM_VEL:	/* Compute plate motion speed at this point in time/space */
+					strcpy (G_mod[k]->header->z_units, "mm/yr");	     break;
+				case PM_OMEGA:	/* Compute plate rotation rate omega */
+					strcpy (G_mod[k]->header->z_units, "degree/Myr");    break;
+				case PM_DLAT:	/* Difference in latitude relative to where this point was formed in the model */
+				case PM_LAT:	/* Latitude where this point was formed in the model */
+					strcpy (G_mod[k]->header->z_units, "degrees_north"); break;
+				case PM_DLON:	/* Difference in longitude relative to where this point was formed in the model */
+				case PM_LON:	/* Longitude where this point was formed in the model */
+					strcpy (G_mod[k]->header->z_units, "degrees_east");  break;
+			}
+		}
+		/* Just need on common set of x/y arrays; select G_mod[0] as our template */
+		G = G_mod[0];
+		GMT_Report (API, GMT_MSG_VERBOSE, "Evalute %d model prediction grids based on %s\n", Ctrl->S.n_items, Ctrl->E.file);
 	}
-
-	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
-	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);
-	grd_yc = GMT_memory (GMT, NULL, G_mod->header->ny, double);
+	else {	/* No output grids, must have input age grid to rely on */
+		G = G_age;
+		out = GMT_memory (GMT, NULL, Ctrl->S.n_items + 2, double);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->S.n_items + 2)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		GMT_Report (API, GMT_MSG_VERBOSE, "Evalute %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.file);
+	}
+	
+	grd_x  = GMT_memory (GMT, NULL, G->header->nx, double);
+	grd_y  = GMT_memory (GMT, NULL, G->header->ny, double);
+	grd_yc = GMT_memory (GMT, NULL, G->header->ny, double);
 	/* Precalculate node coordinates in both degrees and radians */
-	for (row = 0; row < G_mod->header->ny; row++) {
-		grd_y[row]  = GMT_grd_row_to_y (GMT, row, G_mod->header);
+	for (row = 0; row < G->header->ny; row++) {
+		grd_y[row]  = GMT_grd_row_to_y (GMT, row, G->header);
 		grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 	}
-	for (col = 0; col < G_mod->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G_mod->header);
+	for (col = 0; col < G->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G->header);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evalute model prediction grid for %s (%s)\n", quantity[Ctrl->S.mode], G_mod->header->z_units);
 
-	GMT_init_distaz (GMT, (Ctrl->S.mode == PM_DIST) ? 'k' : 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees, or km if -Sd */
-	if (Ctrl->S.mode == PM_DLON) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
+	GMT_init_distaz (GMT, (Ctrl->S.km) ? 'k' : 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees, or km if -Sd */
+	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
-	GMT_grd_loop (GMT, G_mod, row, col, node) {
-		G_mod->data[node] = GMT->session.f_NaN;
-		if (Ctrl->F.active) {
+	GMT_grd_loop (GMT, G, row, col, node) {
+		skip = false;
+		if (Ctrl->F.active) {	/* Use the bounding polygon */
 			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
 				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
 				inside = (GMT_inonout (GMT, grd_x[col], grd_y[row], pol->segment[seg]) > 0);
 			}
-			if (!inside) continue;	/* Outside the polygon(s) */
+			if (!inside) skip = true, n_outside++;	/* Outside the polygon(s); set all output grids to NaN for this node */
+		}
+		/* Get age for this node (or the constant age) */
+		if (Ctrl->T.active)
+			age = Ctrl->T.value;
+		else {
+			age = G_age->data[node];
+			if (GMT_is_dnan (age)) skip = true, n_NaN++;		/* No crustal age  */
+			else if (age > Ctrl->N.t_upper) skip = true, n_old++;	/* Outside of model range */
+		}
+		if (skip) {
+			if (Ctrl->G.active) for (k = 0; k < Ctrl->S.n_items; k++) G_mod[k]->data[node] = GMT->session.f_NaN;
+			continue;
 		}
 		/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
-		age = (Ctrl->T.active) ? Ctrl->T.value : G_age->data[node];
-		if (GMT_is_dnan (age)) continue;	/* No crustal age */
 		if ((retval = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
-		stage = retval;
-		switch (Ctrl->S.mode) {
-			case PM_RATE:	/* Compute plate motion speed at this point in time/space */
-				d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat);
-				value = sind (d) * p[stage].omega * GMT->current.proj.DIST_KM_PR_DEG;	/* km/Myr or mm/yr */
-				break;
-			case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-				value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, false) - 90.0;
-				GMT_lon_range_adjust (GMT->current.io.geo.range, &value);
-				break;
-			case PM_OMEGA:	/* Compute plate rotation rate omega */
-				value = p[stage].omega;	/* degree/Myr  */
-				break;
-			case PM_DLAT:	/* Compute latitude where this point was formed in the model */
-				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
-				value = grd_y[row] - GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
-				break;
-			case PM_LAT:	/* Compute latitude where this point was formed in the model */
-				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
-				value = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
-				break;
-			case PM_DLON:	/* Compute latitude where this point was formed in the model */
-				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
-				value = grd_x[col] - lon * R2D;
-				if (fabs (value) > 180.0) value = copysign (360.0 - fabs (value), -value);
-				break;
-			case PM_LON:	/* Compute latitude where this point was formed in the model */
-				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
-				value = lon * R2D;
-				break;
-			case PM_DIST:	/* Compute distance between node and point of origin at ridge */
-				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
-				value = GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D);
-				break;
+		stage = retval;		/* Current rotation stage */
+		spotted = false;	/* Not yet called spotter_backtrack at this node */
+		if (!Ctrl->G.active) {	/* Need x,y for rec-by-rec output */
+			out[GMT_X] = grd_x[col];	out[GMT_Y] = grd_y[row];
 		}
-		G_mod->data[node] = (float)value;
+		for (k = 0; k < Ctrl->S.n_items; k++) {
+			switch (Ctrl->S.mode[k]) {
+				case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
+					value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, false) - 90.0;
+					GMT_lon_range_adjust (GMT->current.io.geo.range, &value);
+					break;
+				case PM_DIST:	/* Compute great-circle distance between node and point of origin at ridge */
+					if (!spotted) {
+						lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
+						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+						spotted = true;
+					}
+					value = GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D);
+					break;
+				case PM_STAGE:	/* Compute plate rotation stage */
+					value = stage;
+					break;
+				case PM_VEL:	/* Compute plate motion speed at this point in time/space */
+					d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat);
+					value = sind (d) * p[stage].omega * GMT->current.proj.DIST_KM_PR_DEG;	/* km/Myr or mm/yr */
+					break;
+				case PM_OMEGA:	/* Compute plate rotation rate omega */
+					value = p[stage].omega;	/* degree/Myr  */
+					break;
+					case PM_DLON:	/* Compute latitude where this point was formed in the model */
+					if (!spotted) {
+						lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
+						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+						spotted = true;
+					}
+					value = grd_x[col] - lon * R2D;
+					if (fabs (value) > 180.0) value = copysign (360.0 - fabs (value), -value);
+					break;
+				case PM_DLAT:	/* Compute latitude where this point was formed in the model */
+					if (!spotted) {
+						lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
+						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+						spotted = true;
+					}
+					value = grd_y[row] - GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					break;
+				case PM_LON:	/* Compute latitude where this point was formed in the model */
+					if (!spotted) {
+						lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
+						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+						spotted = true;
+					}
+					value = lon * R2D;
+					break;
+				case PM_LAT:	/* Compute latitude where this point was formed in the model */
+					if (!spotted) {
+						lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
+						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+						spotted = true;
+					}
+					value = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
+					break;
+			}
+			if (Ctrl->G.active)
+				G_mod[k]->data[node] = (float)value;
+			else
+				out[k+2] = value;
+		}
+		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 	}	
 	
-	/* Now write model prediction grid */
-	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Write predicted grid\n");
-
-	strcpy (G_mod->header->x_units, "degrees_east");
-	strcpy (G_mod->header->y_units, "degrees_north");
-	sprintf (G_mod->header->remark, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode], Ctrl->E.file);
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_mod)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_mod) != GMT_OK) {
-		Return (API->error);
+	if (n_outside) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
+	if (n_old) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
+	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
+	if (Ctrl->G.active) {	/* Need one or more output grids */
+		/* Now write model prediction grid(s) */
+		char file[GMT_BUFSIZ] = {""};
+		for (k = 0; k < Ctrl->S.n_items; k++) {
+			sprintf (file, Ctrl->G.file, tag[k]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Write model prediction grid for %s (%s) to file %s\n", quantity[Ctrl->S.mode[k]], G_mod[k]->header->z_units, file);
+			strcpy (G_mod[k]->header->x_units, "degrees_east");
+			strcpy (G_mod[k]->header->y_units, "degrees_north");
+			sprintf (G_mod[k]->header->remark, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode[k]], Ctrl->E.file);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_mod[k])) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G_mod[k]) != GMT_OK) {
+				Return (API->error);
+			}
+		}
+		GMT_free (GMT, G_mod);
+	}
+	else {
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
+		GMT_free (GMT, out);
 	}
 
 	GMT_free (GMT, grd_x);
