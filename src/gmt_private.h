@@ -93,14 +93,14 @@ struct GMTAPI_DATA_OBJECT {
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
 	void * (*import) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to input function (for DATASET/TEXTSET only) */
-#ifdef DEBUG
+	/* Start of temporary variables for API debug - They are only set when building with /DEBUG */
 	struct GMT_GRID *G;
 	struct GMT_DATASET *D;
 	struct GMT_TEXTSET *T;
 	struct GMT_PALETTE *C;
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
-#endif
+	/* End of temporary variables for API debug - will be removed eventually */
 #ifdef HAVE_GDAL
 	struct GMT_IMAGE *I;
 #endif
