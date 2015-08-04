@@ -2765,11 +2765,7 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 				}
 			}
 			/* Now in inches */
-			B->refpoint->x -= 0.5 * ((B->justify-1)%4) * dim[GMT_X];	/* Adjust to lower left corner */
-			B->refpoint->y -= 0.5 * (B->justify/4) * dim[GMT_Y];
-			/* Also deal with any justified offsets, if given */
-			B->refpoint->x -= ((B->justify%4)-2) * B->off[GMT_X];
-			B->refpoint->y -= ((B->justify/4)-1) * B->off[GMT_Y];
+			GMT_adjust_refpoint (GMT, B->refpoint, dim, B->off, B->justify, PSL_BL);	/* Adjust to bottom left corner */
 			rect[XLO] = B->refpoint->x;	rect[XHI] = B->refpoint->x + dim[GMT_X];	/* Get the min/max map coordinates of the rectangle */
 			rect[YLO] = B->refpoint->y;	rect[YHI] = B->refpoint->y + dim[GMT_Y];
 		}
@@ -2841,7 +2837,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	double unit_width[GMT_N_UNITS] = {1.1, 1.5, 1.5, 1.5, 2.0, 2.0, 2.0, 1.1, 2.25};
 	double name_width[GMT_N_UNITS] = {1.0, 2.3, 4.02, 10.7, 3.2, 2.0, 2.0, 3.05, 8.6};
 	enum GMT_enum_units unit;
-	double x1, x2, y1, y2, tx, ty, dist_to_annot, scale_height, x_left, x_right, bar_length_km;
+	double x1, x2, y1, y2, tx, ty, dist_to_annot, scale_height, x_left, x_right, bar_length_km, dim[4];
 	double XL, YL, XR, YR, dist, scl, bar_width, dx, x0_scl, y0_scl;
 	char txt[GMT_LEN256] = {""}, format[GMT_LEN64] = {""}, *this_label = NULL;
 	/* inch, cm, pt is not used here but in the array since GMT_get_unit_number uses this sequence */
@@ -2882,15 +2878,11 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	dx *= scl; x1 = ms->refpoint->x - dx;	x2 = ms->refpoint->x + dx;
 	y1 = y2 = ms->refpoint->y;
 
-	bar_width = hypot (x2 - x1, y2 - y1);		/* Width of scale bar in inches */
-	scale_height = fabs (GMT->current.setting.map_scale_height);	/* Nominal scale bar height */
+	dim[GMT_X] = bar_width = hypot (x2 - x1, y2 - y1);		/* Width of scale bar in inches */
+	dim[GMT_Y] = scale_height = fabs (GMT->current.setting.map_scale_height);	/* Nominal scale bar height */
 	dist_to_annot = scale_height + 0.75 * GMT->current.setting.map_annot_offset[0];	/* Dist from top of scalebar to top of annotations */
 
-	ms->refpoint->x -= 0.5 * ((ms->justify%4)-2) * bar_width;	/* Adjust to top center */
-	ms->refpoint->y -= 0.5 * ((ms->justify/4)-2) * scale_height;
-	/* Also deal with any justified offsets, if given */
-	ms->refpoint->x -= ((ms->justify%4)-2) * ms->off[GMT_X];
-	ms->refpoint->y -= ((ms->justify/4)-1) * ms->off[GMT_Y];
+	GMT_adjust_refpoint (GMT, ms->refpoint, dim, ms->off, ms->justify, PSL_TC);	/* Adjust refpoint to top center */
 
 	x_left  = ms->refpoint->x - 0.5 * bar_width;	/* x-coordinate of leftmost  scalebar point */
 	x_right = ms->refpoint->x + 0.5 * bar_width;	/* x-coordinate of rightmost scalebar point */
@@ -2912,7 +2904,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 		bar_height = 0.5 * fabs (GMT->current.setting.map_scale_height);	/* Height of the black/white checkered fancy bar */
 		bar_tick_len = 0.75 * fabs (GMT->current.setting.map_scale_height);	/* Length of tickmarks */
 		if (panel && panel->mode) {	/* Place rectangle behind the map scale */
-			double x_center, y_center, dim[4], l_width = 0.0, l_height = 0.0, l_shift = 0.0;
+			double x_center, y_center, l_width = 0.0, l_height = 0.0, l_shift = 0.0;
 
 			/* Adjustment for size of largest annotation is ~half its length (= js+1) times approximate dimensions: */
 			dim[XLO] = dim[XHI] = 0.5 * (js+1) * GMT_DEC_WIDTH * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
@@ -3302,25 +3294,18 @@ void GMT_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr)
 	int tmp_join, tmp_limit;
 	struct PSL_CTRL *PSL= GMT->PSL;
 	struct GMT_MAP_PANEL *panel = mr->panel;
+	double dim[2];
 	if (!mr->plot) return;
 	if (!GMT_is_geographic (GMT, GMT_IN)) return;	/* Only for geographic projections */
 
+	dim[GMT_X] = dim[GMT_Y] = mr->size;
 	GMT_set_refpoint (GMT, mr->refpoint);	/* Finalize reference point plot coordinates, if needed */
-	mr->refpoint->x -= 0.5 * ((mr->justify%4)-2) * mr->size;	/* Adjust to center */
-	mr->refpoint->y -= 0.5 * ((mr->justify/4)-1) * mr->size;
-	/* Also deal with any justified offsets, if given */
-	mr->refpoint->x -= ((mr->justify%4)-2) * mr->off[GMT_X];
-	mr->refpoint->y -= ((mr->justify/4)-1) * mr->off[GMT_Y];
+	GMT_adjust_refpoint (GMT, mr->refpoint, dim, mr->off, mr->justify, PSL_MC);	/* Adjust refpoint to MC */
 
 	if (panel && panel->mode) {	/* Place rectangle behind the map rose */
-		double x_center, y_center, dim[4] = {0.0, 0.0, 0.0, 0.0};
-
-		/* Determine center of gravity for panel */
-		x_center = mr->refpoint->x + 0.5 * (dim[XHI] - dim[XLO]);
-		y_center = mr->refpoint->y + 0.5 * (dim[YHI] - dim[YLO]);
 		/* Determine panel dimensions */
-		panel->width = mr->size + dim[XHI] + dim[XLO];	panel->height = mr->size + dim[YHI] + dim[YLO];
-		GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
+		panel->width = panel->height = mr->size;
+		GMT_draw_map_panel (GMT, mr->refpoint->x, mr->refpoint->y, 3U, panel);
 	}
 
 	/* Temporarily use miter to get sharp points to compass rose */

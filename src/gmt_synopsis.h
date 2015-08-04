@@ -66,7 +66,7 @@
 
 /* Options for map rose, scale and insert, used in pscoast and psbasemap */
 
-#define GMT_XYANCHOR	"[g|j|n|x]<refpoint>"
+#define GMT_XYANCHOR	"[g|j|J|n|x]<refpoint>"
 #define GMT_JUSTIFY	"[+j<justify>]"
 #define GMT_OFFSET	"[+o<dx>[/<dy>]]"
 #define GMT_TROSE_DIR	GMT_XYANCHOR "+w<width>[+f[<level>]]" GMT_JUSTIFY "[+l<w,e,s,n>]" GMT_OFFSET

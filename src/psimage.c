@@ -179,8 +179,8 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 					/* Optional modifiers +j, +n, +o */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else LB */
-						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint);
+					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
+						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
 						n = sscanf (string, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
 						if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
@@ -538,7 +538,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		GMT_shift_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify);
+		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
@@ -548,11 +548,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
-		Ctrl->D.refpoint->x -= 0.5 * ((Ctrl->D.justify-1)%4) * Ctrl->D.dim[GMT_X];
-		Ctrl->D.refpoint->y -= 0.5 * (Ctrl->D.justify/4) * Ctrl->D.dim[GMT_Y];
-		/* Also deal with any justified offsets if given */
-		Ctrl->D.refpoint->x -= ((Ctrl->D.justify%4)-2) * Ctrl->D.off[GMT_X];
-		Ctrl->D.refpoint->y -= ((Ctrl->D.justify/4)-1) * Ctrl->D.off[GMT_Y];
+		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */

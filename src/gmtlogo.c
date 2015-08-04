@@ -86,7 +86,7 @@ int GMT_gmtlogo_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_refpoint_syntax (API->GMT, 'D', "Specify position of the GMT logo [0/0]", GMT_ANCHOR_LOGO, 1);
-	GMT_refpoint_syntax (API->GMT, 'D', "BL", GMT_ANCHOR_LOGO, 2);
+	GMT_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_LOGO, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t  Use +w<width> to set the width of the GMT logo.\n");
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
@@ -122,8 +122,8 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 				else {	/* args are [+j<justify>][+o<dx>[/<dy>]] */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else	/* With -Dj or -DJ, set default to reference justify point, else LB */
-						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint);
+					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
+						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
@@ -165,7 +165,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	int error, fmode;
 
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
-	double scale, plot_x, plot_y, dim[2];
+	double scale, dim[2];
 
 	char cmd[GMT_BUFSIZ] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
 
@@ -206,7 +206,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
-		GMT_shift_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify);
+		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 		PSL = GMT_plotinit (GMT, options);
@@ -215,7 +215,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
-		GMT_shift_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify);
+		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust to BL corner */
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
@@ -230,21 +230,19 @@ int GMT_gmtlogo (void *V_API, int mode, void *args)
 
 	/* Set up linear projection with logo domain and user width */
 	scale = dim[GMT_X] / 2.0;	/* Scale relative to default size 2 inches */
-	plot_x = 0.5 * dim[GMT_X];	plot_y = 0.5 * dim[GMT_Y];	/* Center of logo box */
 	if (Ctrl->F.active) {	/* First place legend frame fill */
 		Ctrl->F.panel->width = dim[GMT_X];	Ctrl->F.panel->height = dim[GMT_Y];
-		GMT_draw_map_panel (GMT, plot_x, plot_y, 3U, Ctrl->F.panel);
+		GMT_draw_map_panel (GMT, 0.5 * dim[GMT_X], 0.5 * dim[GMT_Y], 3U, Ctrl->F.panel);
 	}
 
 	/* Plot the title beneath the map with 1.5 vertical stretching */
 
-	plot_y = 0.027 * scale;
 	sprintf (cmd, "%g,AvantGarde-Demi,%s", scale * 9.5, c_font);	/* Create required font */
 	GMT_getfont (GMT, cmd, &F);
 	fmode = GMT_setfont (GMT, &F);
 	PSL_setfont (PSL, F.id);
 	PSL_command (PSL, "V 1 1.5 scale\n");
-	PSL_plottext (PSL, plot_x, plot_y, F.size, "@#THE@# G@#ENERIC@# M@#APPING@# T@#OOLS@#", 0.0, PSL_BC, fmode);
+	PSL_plottext (PSL, 0.5 * dim[GMT_X], 0.027 * scale, F.size, "@#THE@# G@#ENERIC@# M@#APPING@# T@#OOLS@#", 0.0, PSL_BC, fmode);
 	PSL_command (PSL, "U\n");
 
 	/* Plot the globe via GMT_psclip & GMT_pscoast */

@@ -1,7 +1,7 @@
-**-L**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [\ **+l**\ [*label*]\ ]\ [**+u**]
+**-L**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [\ **+l**\ [*label*]\ ]\ [**+u**]
     Draws a simple map scale centered on the reference point specified
     using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  Scale is calculated for latitude *slat*
@@ -16,7 +16,7 @@
     justified on top of the scale [t]. Change this by giving your own
     label (append **+l**\ *label*).
     Select **+u** to append the unit to all distance annotations along the
-    scale (for the plain scale, **u** will instead select the unit to be
+    scale (for the plain scale, **+u** will instead select the unit to be
     appended to the distance length). Note:
     Use :ref:`FONT_LABEL <FONT_LABEL>` to change the label font and
     :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`

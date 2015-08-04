@@ -156,6 +156,6 @@
 #define GMT_to_points(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_PT)
 
 /*! Determine default justification for box item */
-#define GMT_just_default(GMT,refpoint) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? GMT_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : PSL_BL)
+#define GMT_just_default(GMT,refpoint,just) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? GMT_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : just)
 
 #endif  /* _GMT_MACROS_H */

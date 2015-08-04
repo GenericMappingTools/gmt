@@ -44,7 +44,7 @@ Description
 Several map projections are available, and the user may specify separate
 tickmark intervals for boundary annotation, ticking, and [optionally]
 gridlines. A simple map scale or directional rose may also be plotted.
-At least one of the options **-B**, **-L**, or **-T** must be specified. 
+At least one of the options **-B**, **-L**, or **-T** must be specified.
 
 Required Arguments
 ------------------
@@ -63,29 +63,31 @@ Optional Arguments
 
 **-A**\ [*file*]
     No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline
-    for the (possibly oblique) rectangular map domain.  The plot domain must be given via 
+    for the (possibly oblique) rectangular map domain.  The plot domain must be given via
     **-R** and **-J**, with no other options allowed.  The sampling interval is controlled via
     **MAP_LINE_STEP** parameter.  The coordinates are written to *file* or to standard output if no file
     is specified.
 
 .. include:: explain_-B.rst_
 
-**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*]
+**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*]
     Draw a simple map insert box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
     of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
     (c) Give the reference point on the map for the insert using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** for setting *refpoint* via
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.). Append **+w**\ *width*\ [**u**]\ [/*height*\ [**u**]] of bounding rectangle or box.
-    The optional *justify* code is a 2-char justification string (see :doc:`pstext`) that relates the given
-    reference point to an anchor point on the rectangular insert box [LB].  Note that if **-Dj**\ *code*
-    is used and **+j**\ *justify* is not set then *justify* is set equal to *code*.
-    Finally, you can offset the insert box by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify*.
+    (inches, cm, etc.).
+    Append **+w**\ *width*\ [/*height*] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
+    By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    if **-DJ** is used then *justify* defaults to the mirror opposit of *refpoint*.
+    Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
+    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     If you need access to the placement of the lower left corner of the map insert and
     its dimensions in the current map unit, use **s**\ *file* to write this information
     to *file*.
@@ -98,7 +100,7 @@ Optional Arguments
     Add **+g**\ *fill* to fill the logo box [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
-    x- and y-direction, or individual side spacings between logo and border. 
+    x- and y-direction, or individual side spacings between logo and border.
     Append **+i** to draw a secondary, inner border as well. We use a uniform
     *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
     unless other values are specified. Append **+r** to draw rounded
@@ -135,7 +137,7 @@ Optional Arguments
 
 .. include:: explain_-c.rst_
 
-.. |Add_-f| replace:: This applies only to the coordinates specified in the **-R** option. 
+.. |Add_-f| replace:: This applies only to the coordinates specified in the **-R** option.
 .. include:: explain_-f.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code

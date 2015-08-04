@@ -168,7 +168,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>/<width> for the scale dimensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h for a horizontal scale [Default is vertical].\n");
-	GMT_refpoint_syntax (API->GMT, 'D', "BL", GMT_ANCHOR_COLORBAR, 2);
+	GMT_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_COLORBAR, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to add sidebar triangles for back- and foreground colors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Specify b(ackground) or f(oreground) to get one only [Default is both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append triangle height [Default is half the barwidth].\n");
@@ -288,8 +288,8 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 						Ctrl->D.horizontal = true;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else LB */
-						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint);
+					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
+						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
 						Ctrl->D.move = true;
 						if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
@@ -1422,7 +1422,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		double_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
-	GMT_shift_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify);
+	GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar referece x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 

@@ -90,7 +90,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_refpoint_syntax (API->GMT, 'D', "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify legend width with +w<width>; <height> is optional [estimated from <specfile>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The remaining arguments are optional:\n");
-	GMT_refpoint_syntax (API->GMT, 'D', "LB", GMT_ANCHOR_LEGEND, 2);
+	GMT_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_LEGEND, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   +l sets the linespacing factor in units of the current annotation font size [1.1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
@@ -145,8 +145,8 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow")) n_errors++;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
-					else	/* With -Dj or -DJ, set default to reference justify point, else LB */
-						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint);
+					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
+						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'l', string)) {
 						Ctrl->D.spacing = atof (string);
 					}
@@ -604,9 +604,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
-	/* Allow for justification and offset so that the reference point is the plot location of the lower left corner of box */
+	/* Allow for justification and offset so that the reference point is the plot location of the bottom left corner of box */
 
-	GMT_shift_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify);
+	GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);
 
 	/* Set new origin */
 
