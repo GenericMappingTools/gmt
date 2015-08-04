@@ -11754,12 +11754,18 @@ struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *
 /*! . */
 void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x, double *y)
 {	/* See GMT_just_decode for how text code becomes the justify integer.
- 	 * If geo is true we get point from wesn, else we get from projected coordinates */
+ 	 * If an oblique projection is in effect OR the spacing between graticules is
+ 	 * nonlinear AND we are requesting a justification centered in y, then we must
+	 * use the projectioned coordinates and invert for lon,lat, else we can do our
+	 * calculation on the origianl (geographic or Cartesian) coordinates. */
 	int i, j;
-	double *box = (GMT->common.R.oblique || GMT_IS_NONLINEAR_GRATICULE(GMT)) ? GMT->current.proj.rect : GMT->common.R.wesn;
+	double *box = NULL;
+	bool use_proj;
 
 	i = justify % 4;	/* Split the 2-D justify code into x just 1-3 */
 	j = justify / 4;	/* Split the 2-D justify code into y just 0-2 */
+	use_proj = (GMT->common.R.oblique || (j == 1 && GMT_IS_NONLINEAR_GRATICULE(GMT)));
+	box = (use_proj) ? GMT->current.proj.rect : GMT->common.R.wesn;
 	if (!geo) {	/* Check for negative Cartesian scales */
 		if (!GMT->current.proj.xyz_pos[GMT_X]) i = 4 - i;	/* Negative x-scale, flip left-to-right */
 		if (!GMT->current.proj.xyz_pos[GMT_Y]) j = 2 - j;	/* Negative y-scale, flip top-to-bottom */
@@ -11777,7 +11783,7 @@ void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 		*y = (box[YLO] + box[YHI]) / 2;
 	else
 		*y = box[YHI];
-	if (GMT->common.R.oblique || GMT_IS_NONLINEAR_GRATICULE(GMT)) {	/* Actually computed x,y in inches for oblique box, must convert to lon lat */
+	if (use_proj) {	/* Actually computed x,y in inches for oblique box, must convert to lon lat */
 		double xx = *x, yy = *y;
 		GMT_xy_to_geo (GMT, x, y, xx, yy);
 	}
