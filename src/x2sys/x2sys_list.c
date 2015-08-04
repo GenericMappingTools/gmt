@@ -490,7 +490,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	}
 	/* Time to issue output */
 
-	n_output = n_items;	/* But some items represent a pair */
+	n_output = (unsigned int)n_items;	/* But some items represent a pair */
 	for (i = 0; i < n_items; i++) {
 		switch (Ctrl->F.flags[i]) {	/* acdhintTvwxyz */
 			case 'd':	/* Distance along track */

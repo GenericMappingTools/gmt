@@ -705,8 +705,8 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
-{
+int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s,
+                        struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec) {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
 	 * pointer data.  The input file format is the venerable GMT
@@ -765,7 +765,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 
 	/* Only return the data fields requested */
 	z = GMT_memory (GMT, NULL, s->n_out_columns, double *);
-	for (i = 0; i < s->n_out_columns; i++) z[i] = GMT_memory (GMT, NULL, p->n_rows, double);
+	for (i = 0; i < (int)s->n_out_columns; i++) z[i] = GMT_memory (GMT, NULL, p->n_rows, double);
 
 	for (j = 0; j < p->n_rows; j++) {
 
@@ -774,7 +774,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 			return (GMT_GRDIO_READ_FAILED);
 		}
 
-		for (i = 0; i < s->n_out_columns; i++) {
+		for (i = 0; i < (int)s->n_out_columns; i++) {
 			switch (s->out_order[i]) {
 				case 0: z[i][j] = record.time * GMT->current.setting.time_system.i_scale + t_off; break;	/* To get GMT time keeping */
 				case 1: z[i][j] = record.lat * MDEG2DEG; break;
