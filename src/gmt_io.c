@@ -6783,8 +6783,7 @@ void GMT_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S, enum GM
 }
 
 /*! . */
-void GMT_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum GMT_enum_alloc alloc_mode)
-{
+void GMT_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum GMT_enum_alloc alloc_mode) {
 	unsigned int k;
 	if (!table) return;		/* Do not try to free NULL pointer */
 	for (k = 0; k < table->n_headers; k++) free (table->header[k]);
@@ -6802,8 +6801,8 @@ void GMT_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum GMT
 }
 
 /*! . */
-void GMT_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data)
-{	/* This takes pointer to data array and thus can return it as NULL */
+void GMT_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
+	/* This takes pointer to data array and thus can return it as NULL */
 	unsigned int tbl, k;
 	if (!data) return;	/* Do not try to free NULL pointer */
 	for (tbl = 0; tbl < data->n_tables; tbl++) {
@@ -6816,20 +6815,23 @@ void GMT_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data)
 }
 
 /*! . */
-void GMT_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data)
-{	/* This takes pointer to data array and thus can return it as NULL */
+void GMT_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data) {
+	/* This takes pointer to data array and thus can return it as NULL */
 	GMT_free_dataset_ptr (GMT, *data);
 	GMT_free (GMT, *data);
 }
 
 /*! . */
-void gmt_free_textsegment (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *segment) {
+void GMT_free_textsegment (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *segment, enum GMT_enum_alloc alloc_mode) {
 	/* Free memory allocated by GMT_read_texttable */
 
 	uint64_t row;
 	unsigned int k;
 	if (!segment) return;	/* Do not try to free NULL pointer */
-	for (row = 0; row < segment->n_rows; row++) if (segment->record[row]) free (segment->record[row]);
+	if (alloc_mode == GMT_ALLOC_INTERNALLY) {    /* Free data GMT allocated */ 
+		for (row = 0; row < segment->n_rows; row++)
+			if (segment->record[row]) free (segment->record[row]);
+	}
 	GMT_free (GMT, segment->record);
 	if (segment->label) free ( segment->label);
 	if (segment->header) free ( segment->header);
@@ -6838,11 +6840,11 @@ void gmt_free_textsegment (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *segment
 }
 
 /*! . */
-void gmt_free_texttable (struct GMT_CTRL *GMT, struct GMT_TEXTTABLE *table) {
+void GMT_free_texttable (struct GMT_CTRL *GMT, struct GMT_TEXTTABLE *table, enum GMT_enum_alloc alloc_mode) {
 	unsigned int k;
 	uint64_t seg;
 	if (!table) return;	/* Do not try to free NULL pointer */
-	for (seg = 0; seg < table->n_segments; seg++) gmt_free_textsegment (GMT, table->segment[seg]);
+	for (seg = 0; seg < table->n_segments; seg++) GMT_free_textsegment (GMT, table->segment[seg], alloc_mode);
 	for (k = 0; k < table->n_headers; k++) free (table->header[k]);
 	if (table->n_headers) GMT_free (GMT, table->header);
 	if (table->segment) GMT_free (GMT, table->segment);
@@ -6851,18 +6853,18 @@ void gmt_free_texttable (struct GMT_CTRL *GMT, struct GMT_TEXTTABLE *table) {
 }
 
 /*! . */
-void GMT_free_textset_ptr (struct GMT_CTRL *GMT, struct GMT_TEXTSET *data)
-{	/* This takes pointer to data array and thus can return it as NULL */
+void GMT_free_textset_ptr (struct GMT_CTRL *GMT, struct GMT_TEXTSET *data) {
+	/* This takes pointer to data array and thus can return it as NULL */
 
 	unsigned int tbl, k;
-	for (tbl = 0; tbl < data->n_tables; tbl++) gmt_free_texttable (GMT, data->table[tbl]);
+	for (tbl = 0; tbl < data->n_tables; tbl++) GMT_free_texttable (GMT, data->table[tbl], data->alloc_mode);
 	if (data->table) GMT_free (GMT, data->table);
 	for (k = 0; k < 2; k++) if (data->file[k]) free (data->file[k]);
 }
 
 /*! . */
-void GMT_free_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET **data)
-{	/* This takes pointer to data array and thus can return it as NULL */
+void GMT_free_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET **data) {
+	/* This takes pointer to data array and thus can return it as NULL */
 
 	GMT_free_textset_ptr (GMT, *data);
 	GMT_free (GMT, *data);
