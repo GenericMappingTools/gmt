@@ -239,11 +239,11 @@ Three new modules have also been added to the *potential* supplement:
 	or rheological models (elastic, viscoelastic, firmoviscous).
 
 :doc:`talwani2d <supplements/potential/talwani2d>`:
-	Compute a profile of the free-air gravity anomaly, geoid or vertical gravity gradient
+	Compute a profile of the free-air gravity, geoid or vertical gravity gradient anomaly
 	over a 2-D body given as cross-sectional polygons.
 
 :doc:`talwani3d <supplements/potential/talwani3d>`:
-	Compute a grid or profile of the free-air gravity anomaly or vertical gravity gradient
+	Compute a grid or profile of the free-air gravity, geoid or vertical gravity gradient anomaly
 	over a 3-D body given as polygonal slices.
 
 In addition, here are two established modules that have been given more suitable names:
@@ -478,6 +478,10 @@ A few supplement modules have new features as well:
    observation level.
 
 *  :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>` adds **-H** to compute magnetic anomaly.
+
+*  :doc:`grdpmodeler <supplements/spotter/grdpmodeler>` can now output more than one model
+   prediction into several grids or as a record written to stdout.  Also gains the **-N** option
+   used by other spotter tools to extend the model duration.
 
 New Features in GMT 5
 =====================
