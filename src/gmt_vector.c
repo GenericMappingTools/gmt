@@ -404,9 +404,9 @@ void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned
 {
 	double *oa = (double *)malloc (sizeof(double)*n);
 
-        memcpy(oa,a+n*n1,sizeof(double)*n);
-        memcpy(a+n*n1,a+n*n2,sizeof(double)*n);
-        memcpy(a+n*n2,oa,sizeof(double)*n);
+        memcpy(oa, a+n*n1, sizeof(double)*n);
+        memcpy(a+n*n1, a+n*n2, sizeof(double)*n);
+        memcpy(a+n*n2, oa, sizeof(double)*n);
 
 	double_swap (b[n1], b[n2]);
 
@@ -415,51 +415,48 @@ void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned
 
 int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigned int ndim, double *b, unsigned int m_in, unsigned int mdim)
 {
-    int i,j,k,n;
+    int i, j, k, n, bad = 0;
     double sum, c;
     n=ndim;
 
-    switchRows(a, b, 0, n-1, n);
+    switchRows (a, b, 0, n-1, n);
 
-    for(j=0; j<n-1; j++)
+    for (j = 0; j < (n-1); j++)
     {
-	int jpinc = j+1;
+	int jpinc = j + 1;
 #ifdef _OPENMP
-#pragma omp parallel for private(i,k,c) shared(a,b,j,n)
+#pragma omp parallel for private(i,k,c) shared(GMT,a,b,j,n,bad)
 #endif
-        for(i=j+1; i<n; i++)
+        for (i = j + 1; i < n; i++)
         {
-		while (a[j*n+j]*a[j*n+j] < 1.e-20) {
-			if(jpinc < n) {
-				switchRows(a, b, j, jpinc, n);
-				jpinc +=1;
+		while ((a[j*n+j] * a[j*n+j]) < 1.e-20) {
+			if (jpinc < n) {
+				switchRows (a, b, j, jpinc, n);
+				jpinc++;
 			}
 			else {
-				printf(" GaussJordan meet singular matric\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gaussjordan given a singular matrix\n");
+				bad++;
 			}
 		}
-                c=a[i*n+j]/a[j*n+j];
-                for(k=j+1; k<n; k++)
-                {
-                    a[i*n+k]=a[i*n+k]-c*a[j*n+k];
-                }
-                b[i]=b[i]-c*b[j];
+                c = a[i*n+j] / a[j*n+j];
+                for (k = j + 1; k < n; k++)
+                    a[i*n+k] -= c*a[j*n+k];
+                b[i] -= c*b[j];
         }
     }
 
-    b[n-1]=b[n-1]/a[n*n-1];
+    b[n-1] /= a[n*n-1];
 
-    for(i=n-2; i>=0; i--)
+    for (i = n-2; i >= 0; i--)
     {
-        sum=0;
-        for(j=i+1; j<=n; j++)
-        {
-            sum=sum+a[i*n+j]*b[j];
-        }
-        b[i]=(b[i]-sum)/a[i*n+i];
+        sum = 0;
+        for (j = i + 1; j <= n; j++)
+            sum += a[i*n+j] * b[j];
+        b[i] = (b[i] - sum) / a[i*n+i];
     }
 
-    return(0);
+    return (bad);
 }
 
 /* Given a matrix a[0..m-1][0...n-1], this routine computes its singular
