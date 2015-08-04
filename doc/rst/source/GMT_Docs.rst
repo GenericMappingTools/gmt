@@ -4173,11 +4173,12 @@ Reference and anchor point specification
 
    The placement of a map feature (here abstracted by a green rectangle) in relation
    to the underlying map.  The nine named *reference* points (blue circles) on the map perimeter (and center)
-   can be used to specify a location.  This desired location can then be shifted away
-   from the selected reference point (here LT, red square) by an amount *dx/dy*, yielding the adjusted
-   reference point (orange square).  Using the same system of nine points on the map feature
-   (cyan circles) we select one of these as our *anchor* point (here LT).  The feature is then
-   placed such that its anchor point matches the adjusted reference point.
+   can be used to specify a location.  Using the same system of nine points on the map feature
+   (cyan circles) we select one of these as our *anchor* point (here TL, indicated by the orange square).
+   The anchor point can optionally be shifted away from the anchor point by an amount *dx/dy* in the direction
+   implied by the anchor point (in this case to the top and left), yielding the adjusted
+   anchor point (red square).
+   The feature is then placed such that its adjusted anchor point matches the reference point.
 
 Placing a feature on the map means selecting a *reference* point somewhere on the map and an
 *anchor* point somewhere on the feature, and positioning the feature so that the two points overlap.
@@ -4185,13 +4186,25 @@ It may be helpful to consider the analog of a boat dropping an anchor: The boat 
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
 There are four different ways to specify the reference point on a map, allowing for complete freedom
-to select any location inside or outside the map.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
-the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
+to select any location inside or outside the map.  The reference point syntax is [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*;
+the five codes **g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x** refer to the five ways:
 
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the origin.
    This mechanism is useful when you want to tie the location of the feature to an actual point
    best described by data coordinates.  An example of such a reference point might
    be **g**\ 135W/20N.
+
+#. [**j**] Specify the location using one of the nine *justification codes*, equivalent to the justification
+   codes for placing text strings in :doc:`pstext`.  This mechanism is illustrated in the above figure.
+   This mechanism is preferred when you just want to place the feature in
+   one of the corners or centered at one of the sides (or even smack in the middle).  Justification codes
+   are a combination of a horizontal (**L**, **C**, **R**) and a vertical (**T**, **M**, **B**) code.
+   An example of such a reference point might be **j**\ TL. When used, the anchor point on the map feature
+   will default to the same justification, i.e. TL in this example.
+
+#. [**J**] This is the same as **j**\ put it implies that default anchor point is the mirror opposit of the
+   justification code. So when using **J**\ TL, the anchor point on the map feature will default to BR.
+   This is practical for features that are draw **outside** of the basemap (like color bars ofter are).
 
 #. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distances in inches, centimeters, or
    points from the lower left plot origin.  This mechanism is preferred when you wish to lay out
@@ -4203,31 +4216,35 @@ the four codes **g**\ \|\ **j**\ \|\ **n**\ \|\ **x** refer to the four ways:
    place features at locations best referenced as fractions of the plot dimensions.
    An example of such a reference point might be **n**\ 0.2/0.1.
 
-#. [**j**] Specify the location using one of the nine *justification codes*, equivalent to the justification
-   codes for placing text strings in :doc:`pstext`.  This mechanism is illustrated in the above figure.
-   This mechanism is preferred when you just want to place the feature in
-   one of the corners or centered at one of the sides (or even smack in the middle).  Justification codes
-   are a combination of a horizontal (**L**, **C**, **R**) and a vertical (**T**, **M**, **B**) code.
-   An example of such a reference point might be **j**\ LT.
-
 If no code is specified we default to **x**.
-The reference point may be modified by an optional adjustment:
-
-#. For any of the reference point specifications, but in particular for
-   the justification code method, it is likely that you will wish to offset the reference point away from
-   your selection by some arbitrary amount.  Do so with  **+o**\ *dx*\ [/*dy*], where *dy* = *dx* if it is
-   not provided.  These increments are added to the projected plot coordinates of the reference point, with
-   positive values moving the reference point towards the anchor.  E.g., **+o**\ 0.2c will move the reference
-   point towards the anchor by 0.2 cm.
 
 With the reference point taken care of, it is time to select the anchor point.
 While the reference point selection gives unlimited flexibility to pick
-any point inside or outside the map region, the anchor point selection is limited to the 9 justification points
+any point inside or outside the map region, the anchor point selection is limited to the nine justification points
 discussed for the **j** reference point code above.  Add **+j**\ *anchor* to indicate which justification
 point of the map feature should co-registered with the chosen reference point.  If an anchor point is not
-specified then it defaults to the justification point set for the reference point (if **j**\ *code* was
-used to set it), otherwise it takes on the default value of LB. For instance, **+j**\ TR would instead
+specified then it defaults to the same justification point set for the reference point (if **j**\ *code* was
+used to set it), or to the mirror opposit of the reference point (if **J**\ *code* was used); with all other
+specifications of the reference point, the anchor point takes on the default value of BL. Adding **+j**\ *anchor*
+overrules those defaults. For instance, **+j**\ TR would instead
 select the top right point on the map feature as the anchor.
+
+It is likely that you will wish to offset the anchor point away from
+your selection by some arbitrary amount, particularly if the reference point is specified with **j**\ *code*.
+Do so with  **+o**\ *dx*\ [/*dy*], where *dy* = *dx* if it is not provided.
+These increments are added to the projected plot coordinates of the anchor point, with
+positive values moving the reference point in the same direction as the 2-character code of the anchor point implies.
+Finally, the adjusted anchor point is matched with the reference point.
+
+Take for example an anchor point on the top left of the map feature, either by using a reference point **j**\ TL, or **J**\ BR,
+or explicitly setting **+j**\ TL.
+Then **+o**\ 2c/1c will move the anchor point 2 cm left and 1 cm above the top left corner of the map feature.
+In other words, the top left corner of the map feature will end up 2 cm to the right and 1 cm below the selected reference point.
+
+Similarly **+j**\ BR will align the bottom right corner of the map feature, and **+o**\ 2c/1c will offset it 2 cm to the left
+and 1 cm up. When using middle (M) or center (C) justifications, to offset works the same way as bottom (B) or left (L),
+respectively, i.e., moving the map feature up or to the right.
+
 
 The background panel
 ~~~~~~~~~~~~~~~~~~~~
@@ -4530,7 +4547,7 @@ In addition, we require one modifier to set the logo's size.
 #. Specify logo width.  This is a required modifier and is set via **+w**\ *width*.
    The height is automatically set (it is half the width).  To place a 5 cm wide
    GMT logo, append **+w**\ 5c.
-   
+
 .. figure:: /_images/GMT_coverlogo.*
    :width: 300 px
    :align: center
