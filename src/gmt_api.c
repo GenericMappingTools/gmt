@@ -89,9 +89,9 @@
  *
  * For FFT operations there are 8 additional API functions:
  *
- * GMT_FFT		: Call the forward or inverse FFT
- *   GMT_FFT_1D		: Lower-level 1-D FFT call
- *   GMT_FFT_2D		: Lower-level 2-D FFT call
+ * GMT_FFT			: Call the forward or inverse FFT
+ * GMT_FFT_1D		: Lower-level 1-D FFT call
+ * GMT_FFT_2D		: Lower-level 2-D FFT call
  * GMT_FFT_Create	: Initialize the FFT machinery for given dimension
  * GMT_FFT_Destroy	: Destroy FFT machinery
  * GMT_FFT_Option	: Display the syntax of the GMT FFT option settings
@@ -103,7 +103,7 @@
  * Finally, three low-level F77-callable functions for grid i/o are given:
  *
  * GMT_F77_readgrdinfo_	: Read the header of a GMT grid
- * GMT_F77_readgrd_	: Read a GMT grid from file
+ * GMT_F77_readgrd_		: Read a GMT grid from file
  * GMT_F77_writegrd_	: Write a GMT grid to file
  *
  * --------------------------------------------------------------------------------------------
@@ -7363,3 +7363,10 @@ void GMT_set_mem_layout(struct GMTAPI_CTRL *API, char mem_layout[]) {
 	return;
 }
 #endif
+
+char *GMT_Duplicate_String (void *API, const char* string) {
+	/* Duplicate a string. The interest of this function is to make the memory allocation
+	   inside the GMT lib so that GMT_Destroy_Data we can free it without any concerns of 
+	   Windows DLL hell */
+	   return strdup(string);
+}
