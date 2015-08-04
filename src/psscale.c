@@ -289,7 +289,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else LB */
-						Ctrl->D.justify = GMT_just_box (GMT, Ctrl->D.refpoint);
+						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
 						Ctrl->D.move = true;
 						if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */

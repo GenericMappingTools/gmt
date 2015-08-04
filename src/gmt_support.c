@@ -7776,7 +7776,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		if (GMT_get_modifier (B->refpoint->args, 'j', string))
 			B->justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
 		else	/* With -Dj or -DJ, set default to reference justify point, else LB */
-			B->justify = GMT_just_box (GMT, B->refpoint);
+			B->justify = GMT_just_default (GMT, B->refpoint);
 		if (GMT_get_modifier (B->refpoint->args, 'o', string)) {
 			if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, B->off)) < 0) error++;
 		}
@@ -8087,7 +8087,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	if (GMT_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
 		ms->justify = GMT_just_decode (GMT, string, PSL_MC);
 	else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else LB */
-		ms->justify = GMT_just_box (GMT, ms->refpoint);
+		ms->justify = GMT_just_default (GMT, ms->refpoint);
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
 		if (string[0]) strncpy (ms->label, string, GMT_LEN64);
 		ms->do_label = true;
@@ -8313,7 +8313,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	if (GMT_get_modifier (ms->refpoint->args, 'j', string))
 		ms->justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
 	else	/* With -Dj or -DJ, set default to reference (mirriored) justify point, else LB */
-		ms->justify = GMT_just_box (GMT, ms->refpoint);
+		ms->justify = GMT_just_default (GMT, ms->refpoint);
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Set labels +lw,e,s,n*/
 		ms->do_label = true;
 		if (string[0] == 0) {	/* Want default labels */

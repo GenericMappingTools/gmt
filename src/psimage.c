@@ -180,7 +180,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else LB */
-						Ctrl->D.justify = GMT_just_box (GMT, Ctrl->D.refpoint);
+						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
 						n = sscanf (string, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
 						if (n == 1) Ctrl->D.ny = Ctrl->D.nx;

@@ -123,7 +123,7 @@ int GMT_gmtlogo_parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct G
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else LB */
-						Ctrl->D.justify = GMT_just_box (GMT, Ctrl->D.refpoint);
+						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
