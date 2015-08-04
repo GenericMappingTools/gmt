@@ -4225,9 +4225,9 @@ discussed for the **j** reference point code above.  Add **+j**\ *anchor* to ind
 point of the map feature should co-registered with the chosen reference point.  If an anchor point is not
 specified then it defaults to the same justification point set for the reference point (if **j**\ *code* was
 used to set it), or to the mirror opposit of the reference point (if **J**\ *code* was used); with all other
-specifications of the reference point, the anchor point takes on the default value of BL. Adding **+j**\ *anchor*
-overrules those defaults. For instance, **+j**\ TR would instead
-select the top right point on the map feature as the anchor.
+specifications of the reference point, the anchor point takes on the default value of MC (for map rose and
+map scale) or BL (all other map features). Adding **+j**\ *anchor* overrules those defaults.
+For instance, **+j**\ TR would select the top right point on the map feature as the anchor.
 
 It is likely that you will wish to offset the anchor point away from
 your selection by some arbitrary amount, particularly if the reference point is specified with **j**\ *code*.
