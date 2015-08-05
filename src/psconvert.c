@@ -857,7 +857,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 	}
 	/* Parameters for all the formats available */
 
-	gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dUseFlateCompression=true -dPDFSETTINGS=/prepress -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
+	gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
 	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
 	add_to_list (Ctrl->C.arg, "-dMaxBitmap=2147483647");	/* Add this as GS option to fix bug in GS */
@@ -1155,7 +1155,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			xt = -x0, yt = -y0, w = x1-x0, h = y1-y0, r = 0;
 
 		xt_bak = xt;	yt_bak = yt;		/* Needed when Ctrl->A.resize */
-		
+
 		/* Set new height when width was set and no height given */
 		if (Ctrl->A.new_size[0] > 0.0 && Ctrl->A.new_size[1] == 0.0) Ctrl->A.new_size[1] = Ctrl->A.new_size[0] * h / w;
 
@@ -1169,7 +1169,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		transparency = false;
 		set_background = (Ctrl->A.paint || Ctrl->A.outline);
-		
+
 		while (line_reader (GMT, &line, &line_size, fp) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
 				if (look_for_transparency && strstr (line, " PSL_transp")) {
@@ -1281,7 +1281,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 						n_scan = sscanf (line_, "%s %s %s %*s %*s %*s %s %s", c1, t1, t2, c2, c3);
 					else
 						n_scan = sscanf (line_, "%s %s %s", c1, c2, c3);
-					if (strcmp (c1, "V") || !(n_scan == 3 || n_scan == 5)) 
+					if (strcmp (c1, "V") || !(n_scan == 3 || n_scan == 5))
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Parsing of scale after %%%%BeginPageSetup failed\n");
 					old_scale_x = atof (c2);		old_scale_y = atof (c3);
 					GMT_free (GMT, line_);
