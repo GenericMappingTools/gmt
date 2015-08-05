@@ -7292,12 +7292,13 @@ struct GMT_CTRL *GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 	GMT->init.module_name = mod_name;
 	GMT->init.module_lib  = lib_name;
 
+#if 0
 	/* These are because they are kept between module calls in a same session. So we need to reset them. */
 	GMT->current.setting.verbose = GMT_MSG_QUIET;
 	for (i = 0; i < (unsigned int)GMT->PSL->internal.N_FONTS; i++)
 		GMT->PSL->internal.font[i].encoded = false;
 	GMT->PSL->current.fontsize = 0;
-
+#endif
 	return (GMT);
 }
 
