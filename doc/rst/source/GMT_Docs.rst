@@ -4196,15 +4196,15 @@ the five codes **g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x** refer to the fi
 
 #. [**j**] Specify the location using one of the nine *justification codes*, equivalent to the justification
    codes for placing text strings in :doc:`pstext`.  This mechanism is illustrated in the above figure.
-   This mechanism is preferred when you just want to place the feature in
+   This mechanism is preferred when you just want to place the feature **inside** the basemap at
    one of the corners or centered at one of the sides (or even smack in the middle).  Justification codes
    are a combination of a horizontal (**L**, **C**, **R**) and a vertical (**T**, **M**, **B**) code.
    An example of such a reference point might be **j**\ TL. When used, the anchor point on the map feature
-   will default to the same justification, i.e. TL in this example.
+   will default to the same justification, i.e., TL in this example.
 
-#. [**J**] This is the same as **j**\ put it implies that default anchor point is the mirror opposit of the
+#. [**J**] This is the same as **j**\ except it implies that the default anchor point is the mirror opposite of the
    justification code. So when using **J**\ TL, the anchor point on the map feature will default to BR.
-   This is practical for features that are draw **outside** of the basemap (like color bars ofter are).
+   This is practical for features that are drawn **outside** of the basemap (like color bars often are).
 
 #. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distances in inches, centimeters, or
    points from the lower left plot origin.  This mechanism is preferred when you wish to lay out
@@ -4224,14 +4224,14 @@ any point inside or outside the map region, the anchor point selection is limite
 discussed for the **j** reference point code above.  Add **+j**\ *anchor* to indicate which justification
 point of the map feature should co-registered with the chosen reference point.  If an anchor point is not
 specified then it defaults to the same justification point set for the reference point (if **j**\ *code* was
-used to set it), or to the mirror opposit of the reference point (if **J**\ *code* was used); with all other
+used to set it), or to the mirror opposite of the reference point (if **J**\ *code* was used); with all other
 specifications of the reference point, the anchor point takes on the default value of MC (for map rose and
 map scale) or BL (all other map features). Adding **+j**\ *anchor* overrules those defaults.
 For instance, **+j**\ TR would select the top right point on the map feature as the anchor.
 
 It is likely that you will wish to offset the anchor point away from
-your selection by some arbitrary amount, particularly if the reference point is specified with **j**\ *code*.
-Do so with  **+o**\ *dx*\ [/*dy*], where *dy* = *dx* if it is not provided.
+your selection by some arbitrary amount, particularly if the reference point is specified with **j**\ \|\ **J**\ *code*.
+Do so with  **+o**\ *dx*\ [/*dy*], where *dy* equals *dx* if it is not provided.
 These increments are added to the projected plot coordinates of the anchor point, with
 positive values moving the reference point in the same direction as the 2-character code of the anchor point implies.
 Finally, the adjusted anchor point is matched with the reference point.
@@ -4470,7 +4470,7 @@ supply suitable required and optional modifiers:
 
    Color bar placed beneath a map (here truncated).  We extended the bar to show background and foreground
    colors, and used the frame-annotation machinery to add labels.  The bar was placed with
-   **-D**\ *jBC*\ **+o**\ 0.35i\ **+j**\ *TC*\ **+w**\ 4.5i/0.1i\ **+h**.
+   **-D**\ *JBC*\ **+o**\ 0/0.35i\ **+w**\ 4.5i/0.1i\ **+h**.
 
 Placing map legends
 ~~~~~~~~~~~~~~~~~~~
