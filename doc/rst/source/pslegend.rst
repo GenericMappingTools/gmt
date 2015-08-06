@@ -36,7 +36,7 @@ Description
 **pslegend** will make legends that can be overlaid on maps. It reads
 specific legend-related information from an input file [or stdin].
 Unless otherwise noted, annotations will be made using the primary
-annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY) 
+annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -51,7 +51,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     *dx*/*dy* to shift the legend by that amount in the direction
     implied by the justification. If *height* is zero or not given then
     we estimate *height* based the expected vertical extent of the items
-    to be placed. 
+    to be placed.
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -79,7 +79,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 .. include:: explain_-K.rst_
 
 **-L**\ *spacing*
-    Sets the linespacing factor in units of the current annotation font size [1.1]. 
+    Sets the linespacing factor in units of the current annotation font size [1.1].
 
 .. include:: explain_-O.rst_
 
@@ -136,13 +136,13 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     The **G** record specifies a vertical gap of the given length. In
     addition to the standard units (**i**, **c**, **p**) you may use
     **l** for lines. A negative *gap* will move the current line upwards (thus closing a gap).
-**H** *fontsize*\ \|\ **-** *font*\ \|\ **-** header)
+**H** *fontsize*\ \|\ **-** *font*\ \|\ **-** *header*
     The **H** record plots a centered text string using the specified
     font parameters. Use **-** to default to size and type of **FONT\_TITLE**.
 **I** *imagefile width justification*
     Place an EPS or Sun raster image in the legend justified relative to
     the current point. The image *width* determines the size of the image on the page.
-**L** *fontsize*\ \|\ **-** *font*\ \|\ **-** justification label)
+**L** *fontsize*\ \|\ **-** *font*\ \|\ **-** *justification label*
     The **L** record plots a (L)eft, (C)entered, or (R)ight-justified
     text string within a column using the specified font parameters. Use
     **-** to default to the size and type of **FONT\_LABEL**.
@@ -178,7 +178,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. When plotting just a
     symbol, without text, *dx2* and *text* can be omitted. Three **psxy**
-    symbols may take special modifiers: front (**f**), quoted line (**q**) and vector (**v**). 
+    symbols may take special modifiers: front (**f**), quoted line (**q**) and vector (**v**).
     You can append modifiers to the symbol and affect how the fronts, quoted lines and
     vectors are presented (see :doc:`psxy` man page for modifiers).
     **pslegend** will determine default settings for all modifiers and
