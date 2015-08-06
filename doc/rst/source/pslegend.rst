@@ -143,13 +143,13 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,
     a named color, or an indirect color via z=*value* (requires the **A** command).
     Use **-** to reset to default color.
-**D** [*offset] pen* [**-**\|**+**\|**=**]
+**D** [*offset*] *pen* [**-**\ \|\ **+**\ \|\ **=**]
     The **D** record results in a horizontal line with specified *pen*
     across the legend with one quarter of the line-spacing left blank
     above and below the line. Two gaps of *offset* units are left blank
     between the horizontal line and the left and right frame sides [0]. If
     no pen is given we use MAP\_GRID\_PEN\_PRIMARY, and if *pen* is
-    set to - then no visible line is drawn (we just remember the location
+    set to **-** then no visible line is drawn (we just remember the location
     as a possible start/stop point for a vertical line; see **V**).  To *not* add the
     quarter line-spacing before the line, add **-**.  To *not* add the spacing
     after the line, add **+**.  For no spacing at all, add **=**
@@ -165,17 +165,17 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     The **G** record specifies a vertical gap of the given length. In
     addition to the standard units (**i**, **c**, **p**) you may use
     **l** for lines. A negative *gap* will move the current line upwards (thus closing a gap).
-**H** *fontsize*\ \|\ **-** *font*\ \|\ **-** header
+**H** *fontsize*\ \|\ **-** *font*\ \|\ **-** *header*
     The **H** record plots a centered text string using the specified
     font parameters. Use **-** to default to size and type of **FONT\_TITLE**.
 **I** *imagefile width justification*
     Place an EPS or raster image in the legend justified relative to
     the current point. The image *width* determines the size of the image on the page.
-**L** *fontsize*\ \|\ **-** *font*\ \|\ **-** justification label
+**L** *fontsize*\ \|\ **-** *font*\ \|\ **-** *justification label*
     The **L** record plots a (L)eft, (C)entered, or (R)ight-justified
     text string within a column using the specified font parameters. Use
     **-** to default to the size and type of **FONT\_LABEL**.
-**M** *slon*\ \|\ **-** *slat length*\ [**+f**\ ][**+l**\ [*label*]][**+u**\ ] [**-F**\ *param*] [ **-R**\ *w/e/s/n* **-J**\ *param* ]
+**M** *slon*\ \|\ **-** *slat length* [**+f**\ ][**+l**\ [*label*]][**+u**\ ] [**-F**\ *param*] [ **-R**\ *w/e/s/n* **-J**\ *param* ]
     Place a map scale in the legend. Specify *slon slat*, the point on
     the map where the scale applies (*slon* is only meaningful for
     certain oblique projections. If not needed, you must specify **-**
