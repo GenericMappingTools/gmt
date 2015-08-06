@@ -373,11 +373,11 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	}
 	else {	/* No output grids, must have input age grid to rely on */
 		G = G_age;
-		out = GMT_memory (GMT, NULL, Ctrl->S.n_items + 2, double);
+		out = GMT_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->S.n_items + 2)) != GMT_OK) {
+		if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->S.n_items + 3)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -427,8 +427,8 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		if ((retval = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
 		stage = retval;		/* Current rotation stage */
 		spotted = false;	/* Not yet called spotter_backtrack at this node */
-		if (!Ctrl->G.active) {	/* Need x,y for rec-by-rec output */
-			out[GMT_X] = grd_x[col];	out[GMT_Y] = grd_y[row];
+		if (!Ctrl->G.active) {	/* Need x,y,t for rec-by-rec output */
+			out[GMT_X] = grd_x[col];	out[GMT_Y] = grd_y[row];	out[GMT_Z] = age;
 		}
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			switch (Ctrl->S.mode[k]) {
@@ -491,7 +491,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 			if (Ctrl->G.active)
 				G_mod[k]->data[node] = (float)value;
 			else
-				out[k+2] = value;
+				out[k+3] = value;
 		}
 		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 	}	

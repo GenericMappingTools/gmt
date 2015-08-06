@@ -89,7 +89,7 @@ Optional Arguments
     that contains the format %s; this will be replaced with the corresponding
     tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
     If the **-G** option is not use then we create no grids and instead
-    write *lon, lat, predictions* records to standard output.
+    write *lon, lat, age, predictions* records to standard output.
 **-T**\ *age*
     Use a fixed age for model evaluation (i.e., override the ages in the
     age grid). This lets you evaluate the model at a snapshot in time.
@@ -154,7 +154,7 @@ To save the coordinates of the crust's formation to separate grids, try
     gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
                     -Gpac_origin_%s.nc -SXY
 
-To repeat the same exercise but save output to a table, use
+To repeat the same exercise but save output *lon,lat,age,xorigin,yorigin* to a table, use
 
    ::
 
