@@ -523,7 +523,7 @@ EXTERN_MSC void GMT_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsi
 EXTERN_MSC uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode);
 EXTERN_MSC int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m, double *d, double *v, double *b, double *z, unsigned int *nrots);
 EXTERN_MSC int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag);
-EXTERN_MSC int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int ndim, double *b, unsigned int m, unsigned int mdim);
+EXTERN_MSC int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n, double *b);
 EXTERN_MSC int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m, unsigned int n, double *w, double *v);
 EXTERN_MSC int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode);
 EXTERN_MSC void GMT_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a, bool degrees);
