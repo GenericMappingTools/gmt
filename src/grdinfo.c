@@ -350,7 +350,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		}
 
 		if (GMT_is_geographic (GMT, GMT_IN)) {
-			if (GMT_grd_is_global (GMT, G->header))
+			if (GMT_grd_is_global(GMT, G->header) || G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] <= 0.0)
 				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
 			else if (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] >= 0.0)
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
