@@ -48,15 +48,17 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 #define GMTMATH_ARG_IS_NUMBER	-2
 #define GMTMATH_ARG_IS_PI	-3
 #define GMTMATH_ARG_IS_E	-4
-#define GMTMATH_ARG_IS_EULER	-5
-#define GMTMATH_ARG_IS_TMIN	-6
-#define GMTMATH_ARG_IS_TMAX	-7
-#define GMTMATH_ARG_IS_TRANGE	-8
-#define GMTMATH_ARG_IS_TINC	-9
-#define GMTMATH_ARG_IS_N	-10
-#define GMTMATH_ARG_IS_J_MATRIX	-11
-#define GMTMATH_ARG_IS_T_MATRIX	-12
-#define GMTMATH_ARG_IS_t_MATRIX	-13
+#define GMTMATH_ARG_IS_EPSF	-5
+#define GMTMATH_ARG_IS_EPSD	-6
+#define GMTMATH_ARG_IS_EULER	-7
+#define GMTMATH_ARG_IS_TMIN	-8
+#define GMTMATH_ARG_IS_TMAX	-9
+#define GMTMATH_ARG_IS_TRANGE	-10
+#define GMTMATH_ARG_IS_TINC	-11
+#define GMTMATH_ARG_IS_N	-12
+#define GMTMATH_ARG_IS_J_MATRIX	-13
+#define GMTMATH_ARG_IS_T_MATRIX	-14
+#define GMTMATH_ARG_IS_t_MATRIX	-15
 #define GMTMATH_ARG_IS_STORE	-50
 #define GMTMATH_ARG_IS_RECALL	-51
 #define GMTMATH_ARG_IS_CLEAR	-52
@@ -493,6 +495,8 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\tPI                  = 3.1415926...\n"
 		"\tE                   = 2.7182818...\n"
 		"\tEULER               = 0.5772156...\n"
+		"\tEPSF (single eps)   = 1.192092896e-07\n"
+		"\tEPSD (double eps)   = 2.2204460492503131e-16\n"
 		"\tTMIN, TMAX, TRANGE, or TINC = the corresponding constant.\n"
 		"\tN                   = number of records.\n"
 		"\tT                   = table with t-coordinates.\n"
@@ -3787,6 +3791,8 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	if (txt[0] == '@') return GMTMATH_ARG_IS_RECALL;							/* load from mem location @<label> */
 	if (!(strcmp (txt, "PI") && strcmp (txt, "pi"))) return GMTMATH_ARG_IS_PI;
 	if (!(strcmp (txt, "E") && strcmp (txt, "e"))) return GMTMATH_ARG_IS_E;
+	if (!strcmp (txt, "EPSF")) return GMTMATH_ARG_IS_EPSF;
+	if (!strcmp (txt, "EPSD")) return GMTMATH_ARG_IS_EPSD;
 	if (!strcmp (txt, "EULER")) return GMTMATH_ARG_IS_EULER;
 	if (!strcmp (txt, "TMIN")) return GMTMATH_ARG_IS_TMIN;
 	if (!strcmp (txt, "TMAX")) return GMTMATH_ARG_IS_TMAX;
@@ -4103,14 +4109,16 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	else
 		nstack = 0;
 
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_PI] = M_PI;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_E] = M_E;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_EULER] = M_EULER;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMIN] = Ctrl->T.min;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMAX] = Ctrl->T.max;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_PI]     = M_PI;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_E]      = M_E;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_EPSF]   = FLT_EPSILON;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_EPSD]   = DBL_EPSILON;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_EULER]  = M_EULER;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMIN]   = Ctrl->T.min;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMAX]   = Ctrl->T.max;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TRANGE] = Ctrl->T.max - Ctrl->T.min;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TINC] = Ctrl->T.inc;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N] = (double)n_records;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TINC]   = Ctrl->T.inc;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N]      = (double)n_records;
 
 	gmtmath_init (call_operator, consumed_operands, produced_operands);
 	op = decode_gmt_argument (GMT, "EXCH", &value, localhashnode);
