@@ -14,7 +14,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **trend1d** [ *table* ] **-F**\ **xymrw\|p**
-**-N**\ [**f**]\ *n\_model*\ [**r**] [ *xy[w]file* ]
+**-N**\ [**p**\ \|\ **P\ \|\ **f\ \|\ **F\ \|\ **c\ \|\ **C\ \|\ **s\ \|\ **S\ \|\ **x**\ ]*terms*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
+[ *xy[w]file* ]
 [ **-C**\ *condition\_number* ] [ **-I**\ [*confidence\_level*] ]
 [ |SYN_OPT-V| ] [ **-W** ]
 [ |SYN_OPT-b| ]
@@ -32,7 +33,7 @@ Description
 **trend1d** reads x,y [and w] values from the first two [three] columns
 on standard input [or *file*] and fits a regression model y = f(x) + e
 by [weighted] least squares. The functional form of f(x) may be chosen
-as polynomial or Fourier, and the fit may be made robust by iterative
+as polynomial or Fourier or a compbination, and the fit may be made robust by iterative
 reweighting of the data. The user may also search for the number of
 terms in f(x) which significantly reduce the variance in y. 
 
@@ -44,13 +45,22 @@ Required Arguments
     order to create columns of ASCII [or binary] output. **x** = x,
     **y** = y, **m** = model f(x), **r** = residual y - **m**, **w** =
     weight used in fitting. Alternatively choose **-F**\ **p** (i.e., no
-    other of the 5 letters) to output only the model coefficients
-    (Polynomial).
-**-N**\ [**f**\ ]\ *n\_model*\ [**r**\ ]
-    Specify the number of terms in the model, *n\_model*, whether to fit
-    a Fourier (**-Nf**) or polynomial [Default] model, and append **r**
-    to do a robust fit. E.g., a robust quadratic model is
-    **-N**\ *3*\ **r**.
+    other of the 5 letters) to output only the model coefficients.
+**-N**\ [**p**\ \|\ **P\ \|\ **f\ \|\ **F\ \|\ **c\ \|\ **C\ \|\ **s\ \|\ **S\ \|\ **x**\ ]*terms*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
+    Specify the components of the (possibly mixed) model.  Append
+    one or more comma-separated model components.  Each component is
+    of the form **T**\ *terms*, where **T** is the basis function and
+    *terms* indicates how many in the series we want to include.  Choose
+    **T** from **p** (polynomial of order *terms*), **P** (just the
+    single term *x^terms*), **f** (Fourier series up to order *terms*),
+    **c** (Cosine series up to order *terms*), **s** (sine series up
+    to order *terms*), **F** (single Fourier component or order *terms*),
+    **C** (single cosine component or order *terms*), and
+    **S** (single sine component or order *terms*).  By default the
+    *x*-origin and fundamental period is set to the mid-point and data
+    range, respectively.  Change this using the **+o**\ *origin* and
+    **+l**\ *length* modifiers.  Finally, append **+r** for a robust
+    solution [Default is least squares fit].
 
 Optional Arguments
 ------------------
@@ -107,11 +117,9 @@ Optional Arguments
 Remarks
 -------
 
-If a Fourier model is selected, the domain of x will be shifted and
-scaled to [-pi, pi] and the basis functions used will be 1, cos(x),
-sin(x), cos(2x), sin(2x), ... If a
-polynomial model is selected, the domain of x will be shifted and scaled
-to [-1, 1] and the basis functions will be Chebyshev polynomials. These
+If a polynomial model is included, then the domain of x will be shifted and scaled
+to [-1, 1] and the basis functions will be Chebyshev polynomials provided
+the polygon is of full order (otherwise we stay with powers of x). These
 have a numerical advantage in the form of the matrix which must be
 inverted and allow more accurate solutions. The Chebyshev polynomial of
 degree n has n+1 extrema in [-1, 1], at all of which its value is either
@@ -122,7 +130,7 @@ bx + cxx + ... are also given in Verbose mode but users must realize
 that they are NOT stable beyond degree 7 or 8. See Numerical Recipes for
 more discussion. For evaluating Chebyshev polynomials, see **gmtmath**.
 
-The **-Nr** (robust) and **-I** (iterative) options evaluate the
+The **-N**\ ...**+r** (robust) and **-I** (iterative) options evaluate the
 significance of the improvement in model misfit Chi-Squared by an F
 test. The default confidence limit is set at 0.51; it can be changed
 with the **-I** option. The user may be surprised to find that in most
@@ -151,20 +159,26 @@ To remove a linear trend from data.xy by ordinary least squares, use:
 
    ::
 
-    gmt trend1d data.xy -Fxr -N2 > detrended_data.xy
+    gmt trend1d data.xy -Fxr -Np1 > detrended_data.xy
 
 To make the above linear trend robust with respect to outliers, use:
 
    ::
 
-    gmt trend1d data.xy -Fxr -N2r > detrended_data.xy
+    gmt trend1d data.xy -Fxr -Np1+r > detrended_data.xy
+
+To fit the model y(x) = a + bx^2 + c* cos(2*pi*3*x/l), with l the fundamental period (here l = 15), try:
+
+   ::
+
+    gmt trend1d data.xy -Fxm -NP0,P2,F3+l15 > model.xy
 
 To find out how many terms (up to 20, say in a robust Fourier
 interpolant are significant in fitting data.xy, use:
 
    ::
 
-    gmt trend1d data.xy -Nf20r -I -V
+    gmt trend1d data.xy -Nf20+r -I -V
 
 See Also
 --------

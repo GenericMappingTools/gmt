@@ -77,9 +77,23 @@ struct GMT_OBSERVATION {
 };
 
 /*! For trend-fitting models */
-struct GMT_MODEL {
-	unsigned int kind[2];
-	unsigned int order[2];
+struct GMT_MODEL_TERM {	/* A single model term */
+	unsigned int kind;	/* GMT_POLYNOMIAL | GMT_COSINE | GMT_SINE | GMT_FOURIER */
+	unsigned int order[2];	/* Polygon or Fourier order */
+	unsigned int type;	/* 0-7 for which kind of sin/cos combination */
+};
+
+struct GMT_MODEL {	/* A model consists of n_terms */
+	bool robust;		/* True for L1 fitting [L2] */
+	bool chebyshev;		/* True if given polynomial of order n */
+	bool got_origin[2];	/* True if we got origin(s) */
+	bool got_period[2];	/* True if we got periods(s) */
+	unsigned int dim;	/* 1 or 2 */
+	unsigned int type;	/* 1 = poly, 2 = Fourier, 3 = both */
+	unsigned int n_terms;	/* Terms in model */
+	double origin[2];	/* x (or t) and y origins */
+	double period[2];	/* x (or t) and y periods */
+	struct GMT_MODEL_TERM term[GMT_N_MAX_MODEL];
 };
 
 struct GMT_DIST {	/* Holds info for a particular distance calculation */

@@ -1321,6 +1321,7 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 
 	char *ptr, *stringp = input, sep[] = "/";
 	unsigned int entry = 0;
+	double d;
 
 	if (input[0] != input[strlen(input)-1]) {}
 	else if (input[0] == '=') {}
@@ -1333,7 +1334,7 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 	}
 
 	while ((ptr = strsep (&stringp, sep)) != NULL) { /* using strsep because of possible empty fields */
-		if (*ptr != '\0' || strcmp (ptr, "=") == 0) { /* entry is not blank or "=" */
+		if (*ptr != '\0' || strcmp (ptr, "=") == 0 || strcmp (ptr, " ") == 0) { /* entry is not blank or "=" or " " */
 			switch (entry) {
 				case 0:
 					GMT_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
@@ -1360,7 +1361,8 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 					strncpy (h->z_units, ptr, GMT_GRID_UNIT_LEN80);
 					break;
 				case 3:
-					h->z_scale_factor = strtod (ptr, NULL);
+				 	d = strtod (ptr, NULL);
+					if (d != 0.0) h->z_scale_factor = d;	/* Don'twant scale factor to become zero */
 					break;
 				case 4:
 					h->z_add_offset = strtod (ptr, NULL);

@@ -176,7 +176,7 @@ enum GMT_enum_rose {
 
 /*! Various types of trend model */
 enum GMT_enum_model {
-	GMT_POLYNOMIAL, GMT_COSINE, GMT_SINE
+	GMT_POLYNOMIAL = 0, GMT_CHEBYSHEV, GMT_COSINE, GMT_SINE, GMT_FOURIER
 	};
 
 /*! Various options for FFT calculations [Default is 0] */
