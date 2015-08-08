@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **trend1d** [ *table* ] **-F**\ **xymrw\|p**
-**-N**\ [**p**\ \|\ **P\ \|\ **f\ \|\ **F\ \|\ **c\ \|\ **C\ \|\ **s\ \|\ **S\ \|\ **x**\ ]*terms*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
+**-N**\ [**p**\ \|\ **P**\ \|\ **f**\ \|\ **F**\ \|\ **c**\ \|\ **C**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ ]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
 [ *xy[w]file* ]
 [ **-C**\ *condition\_number* ] [ **-I**\ [*confidence\_level*] ]
 [ |SYN_OPT-V| ] [ **-W** ]
@@ -33,7 +33,7 @@ Description
 **trend1d** reads x,y [and w] values from the first two [three] columns
 on standard input [or *file*] and fits a regression model y = f(x) + e
 by [weighted] least squares. The functional form of f(x) may be chosen
-as polynomial or Fourier or a compbination, and the fit may be made robust by iterative
+as polynomial or Fourier or a mix of the two, and the fit may be made robust by iterative
 reweighting of the data. The user may also search for the number of
 terms in f(x) which significantly reduce the variance in y. 
 
@@ -46,21 +46,25 @@ Required Arguments
     **y** = y, **m** = model f(x), **r** = residual y - **m**, **w** =
     weight used in fitting. Alternatively choose **-F**\ **p** (i.e., no
     other of the 5 letters) to output only the model coefficients.
-**-N**\ [**p**\ \|\ **P\ \|\ **f\ \|\ **F\ \|\ **c\ \|\ **C\ \|\ **s\ \|\ **S\ \|\ **x**\ ]*terms*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
+**-N**\ [**p**\ \|\ **P**\ \|\ **f**\ \|\ **F**\ \|\ **c**\ \|\ **C**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ ]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
     Specify the components of the (possibly mixed) model.  Append
     one or more comma-separated model components.  Each component is
-    of the form **T**\ *terms*, where **T** is the basis function and
-    *terms* indicates how many in the series we want to include.  Choose
-    **T** from **p** (polynomial of order *terms*), **P** (just the
-    single term *x^terms*), **f** (Fourier series up to order *terms*),
-    **c** (Cosine series up to order *terms*), **s** (sine series up
-    to order *terms*), **F** (single Fourier component or order *terms*),
-    **C** (single cosine component or order *terms*), and
-    **S** (single sine component or order *terms*).  By default the
+    of the form **T**\ *n*, where **T** indicates the basis function and
+    *n* indicates the polynomial degree or how many terms in the Fourier series we want to include.  Choose
+    **T** from **p** (polynomial up to degree *terms*), **P** (just the
+    single term *x^n*), **f** (Fourier series with *n* terms),
+    **c** (Cosine series with *n* terms), **s** (sine series with
+    *n* terms), **F** (single Fourier component of order *n*),
+    **C** (single cosine component of order *n*), and
+    **S** (single sine component of order *n*).  By default the
     *x*-origin and fundamental period is set to the mid-point and data
     range, respectively.  Change this using the **+o**\ *origin* and
-    **+l**\ *length* modifiers.  Finally, append **+r** for a robust
-    solution [Default is least squares fit].
+    **+l**\ *length* modifiers.  We normalize *x* before evaluating
+    the basis functions.  Basically, the trigonometric bases all
+    use the normalized x' = (2*pi*(x-\ *origin*\ )/*length*) while
+    the polynomials use x' = 2*(x-x_mid)/(xmax - xmin) for stability. Finally, append **+r** for a robust
+    solution [Default gives a least squares fit].  Use **-V** to see
+    a plain-text representation of the y(x) model specified in **-N**.
 
 Optional Arguments
 ------------------
@@ -81,7 +85,9 @@ Optional Arguments
     model is not significant at the *confidence\_level* level. You may
     set **-I** only, without an attached number; in this case the fit
     will be iterative with a default confidence level of 0.51. Or choose
-    your own level between 0 and 1. See remarks section. 
+    your own level between 0 and 1. See remarks section.  Note that the
+    model terms are added in the order they were given in **-N** so you
+    should place the most important terms first.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -119,7 +125,7 @@ Remarks
 
 If a polynomial model is included, then the domain of x will be shifted and scaled
 to [-1, 1] and the basis functions will be Chebyshev polynomials provided
-the polygon is of full order (otherwise we stay with powers of x). These
+the polygon is of full order (otherwise we stay with powers of x). The Chebyshev polynomials
 have a numerical advantage in the form of the matrix which must be
 inverted and allow more accurate solutions. The Chebyshev polynomial of
 degree n has n+1 extrema in [-1, 1], at all of which its value is either
@@ -130,7 +136,7 @@ bx + cxx + ... are also given in Verbose mode but users must realize
 that they are NOT stable beyond degree 7 or 8. See Numerical Recipes for
 more discussion. For evaluating Chebyshev polynomials, see **gmtmath**.
 
-The **-N**\ ...**+r** (robust) and **-I** (iterative) options evaluate the
+The **-N**\ ...\ **+r** (robust) and **-I** (iterative) options evaluate the
 significance of the improvement in model misfit Chi-Squared by an F
 test. The default confidence limit is set at 0.51; it can be changed
 with the **-I** option. The user may be surprised to find that in most

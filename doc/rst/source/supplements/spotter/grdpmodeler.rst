@@ -67,13 +67,13 @@ Required Arguments
 **-S**\ *flags*
     Type of model prediction(s). Append one or more items: choose from **a** for plate motion
     azimuth, **d** for great-circle distance between current location and its
-    origin at the ridge (in km), **s** for plot motion stage ID (1 is youngest),
+    origin at the ridge (in km), **s** for plate motion model stage ID (1 is youngest),
     **v** for plate motion rate (in mm/yr),
-    **w** for plate rotation rate (degree/Myr), **x** change in
-    longitude relative to location of crust formation, **y** change in
-    latitude relative to location of crust formation, **X** longitude of
-    crust formation, and **Y** latitude of crust formation.
-    If no arguments given we default to all [**adsvwxyXY**].
+    **w** for plate rotation rate (degree/Myr), **x** for change in
+    longitude relative to location of crust formation, **y** for change in
+    latitude relative to location of crust formation, **X** for longitude of
+    crust formation, and **Y** for latitude of crust formation.
+    If no arguments are given we default to all [**adsvwxyXY**].
 
 Optional Arguments
 ------------------
@@ -88,7 +88,7 @@ Optional Arguments
     model prediction in **-S** then the filename *must* be a template
     that contains the format %s; this will be replaced with the corresponding
     tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
-    If the **-G** option is not use then we create no grids and instead
+    If the **-G** option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
 **-T**\ *age*
     Use a fixed age for model evaluation (i.e., override the ages in the
