@@ -503,7 +503,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		/* Now write model prediction grid(s) */
 		char file[GMT_BUFSIZ] = {""};
 		for (k = 0; k < Ctrl->S.n_items; k++) {
-			sprintf (file, Ctrl->G.file, tag[k]);
+			sprintf (file, Ctrl->G.file, tag[Ctrl->S.mode[k]]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write model prediction grid for %s (%s) to file %s\n", quantity[Ctrl->S.mode[k]], G_mod[k]->header->z_units, file);
 			strcpy (G_mod[k]->header->x_units, "degrees_east");
 			strcpy (G_mod[k]->header->y_units, "degrees_north");
