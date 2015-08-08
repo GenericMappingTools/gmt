@@ -2794,20 +2794,25 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 						sprintf (piece, "%c * x^%d", 'a'+ k, M->term[k].order[GMT_X]);
 					break;
 				case GMT_COSINE:
-					sprintf (piece, "%c * cos (2*pi*%d*x/X)", 'a'+k, M->term[k].order[GMT_X]);
+					sprintf (piece, "%c * cos (%d*x)", 'a'+k, M->term[k].order[GMT_X]);
 					break;
 				case GMT_SINE:
-					sprintf (piece, "%c * sin (2*pi*%d*x/X)", 'a'+k, M->term[k].order[GMT_X]);
+					sprintf (piece, "%c * sin (%d*x)", 'a'+k, M->term[k].order[GMT_X]);
 					break;
 			}
 			strcat (report, piece);
 			((n_model - k) > 1) ? strcat (report, " + ") : strcat (report, "\n");
 		}
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, report);
-		if (M->chebyshev)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(We will use Chebyshev polynomials to solve for the polynomial trend.)\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "In the above, x = 2*(x - x_mid)/(x_max - x_min) for polynomials and x = 2*pi*(x - origin)/length for Fourier components\n");
+		if (M->chebyshev) {
+			if (M->type & 1) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The complete polynomial will be represented via Chebyshev polynomials\n");
+		}
+		else {
+			if (M->type & 1) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The partial polynomial will be represented via powers of x\n");
+		}
 	}
-	/* IF we can use Chebyshev polynomials then we switch the kind to indicate this */
+	/* If we can use Chebyshev polynomials then we switch the kind to indicate this */
 	if (M->chebyshev) for (k =  0; k < n_model; k++) if (M->term[k].kind == GMT_POLYNOMIAL) M->term[k].kind = GMT_CHEBYSHEV;
 	return (0);
 }
