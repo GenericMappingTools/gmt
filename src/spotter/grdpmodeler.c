@@ -71,7 +71,7 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 		double t_upper;
 	} N;
 	struct S {	/* -Sa|d|s|v|w|x|y|X|Y */
-		bool active, km, center;
+		bool active, center;
 		unsigned int mode[N_PM_ITEMS];
 		unsigned int n_items;
 	} S;
@@ -197,7 +197,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 						case 'a':	/* Plate spreading azimuth */
 							Ctrl->S.mode[Ctrl->S.n_items] = PM_AZIM;	 break;
 						case 'd':	/* Distance from point to origin at ridge */
-							Ctrl->S.mode[Ctrl->S.n_items] = PM_DIST;	Ctrl->S.km = true;	 break;
+							Ctrl->S.mode[Ctrl->S.n_items] = PM_DIST;	 break;
 						case 's':	/* Plate motion stage ID */
 							Ctrl->S.mode[Ctrl->S.n_items] = PM_STAGE; break;
 						case 'v': case 'r':	/* Plate spreading rate [r is backwards compatible] */
@@ -399,7 +399,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
 
-	GMT_init_distaz (GMT, (Ctrl->S.km) ? 'k' : 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees, or km if -Sd */
+	GMT_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
 	GMT_grd_loop (GMT, G, row, col, node) {
@@ -442,7 +442,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 						spotted = true;
 					}
-					value = GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D);
+					value = GMT->current.proj.DIST_KM_PR_DEG * GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D);
 					break;
 				case PM_STAGE:	/* Compute plate rotation stage */
 					value = stage;
