@@ -469,6 +469,12 @@ changes to syntax will be backwards compatible:
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
    Finally, to match :doc:`psxy` we have added the option **-T** for specifying no data input.
 
+*  :doc:`trend1d` can now fit mixed polynomial and Fourier series models,
+   as well as allowing models with just some terms in a polynomial or the
+   Fourier series, including plain cosine or sine series terms.  Modifiers
+   have been added to specify data origin and fundamental period instead of
+   defaulting to the data mid-point and data range, respectively.
+
 A few supplement modules have new features as well:
 
 *  :doc:`mgd77track <supplements/mgd77/mgd77track>` adds the **-Gn**\ *gap* option to
