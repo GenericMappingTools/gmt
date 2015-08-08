@@ -7370,3 +7370,103 @@ char *GMT_Duplicate_String (void *API, const char* string) {
 	   Windows DLL hell */
 	   return strdup(string);
 }
+
+
+EXTERN_MSC int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword);
+int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword) {
+	/* Currently this is a temporary backdoor to be able to change members of basic API structures 
+	   that had to be declared as immutables in Julia and therefore impossible to change from there.
+	   The API_STRUCT_MEMBER_'STRUCTNAME_MEMBERNUMBER' construct parses the 'STRUCTNAME' as the name
+	   of the structure whose pointer is *ptr and changes the member number 'MEMBERNUMBER'. Example:
+	   API_STRUCT_MEMBER_TEXTSEGMENT_1 will change 'GMT_TEXTSEGMENT.n_rows' member (first member) 
+	   OFC, the member numbering must be exactly on synct with the structure definition.
+	*/
+	unsigned int error = GMT_NOERROR;
+
+	if (!strncmp (keyword, "API_ALLOCMODE_", 14U)) {	/* Change alloc mode */
+		if (keyword[14] == 'T') {
+			struct GMT_TEXTSET *T = (struct GMT_TEXTSET *)ptr;
+			T->alloc_mode = *(int *)what;
+		}
+		else if (keyword[14] == 'D') {
+			struct GMT_DATASET *D = (struct GMT_DATASET *)ptr;
+			D->alloc_mode = *(int *)what;
+		}
+		else if (keyword[14] == 'M') {
+			struct GMT_MATRIX *M = (struct GMT_MATRIX *)ptr;
+			M->alloc_mode = *(int *)what;
+		}
+		else if (keyword[14] == 'G') {
+			struct GMT_GRID *G = (struct GMT_GRID *)ptr;
+			G->alloc_mode = *(int *)what;
+		}
+		else if (keyword[14] == 'V') {
+			struct GMT_VECTOR *V = (struct GMT_VECTOR *)ptr;
+			V->alloc_mode = *(int *)what;
+		}
+		else if (keyword[14] == 'P') {
+			struct GMT_PALETTE *P = (struct GMT_PALETTE *)ptr;
+			P->alloc_mode = *(int *)what;
+		}
+		else	/* Must process as a GMT setting */
+			error = true;
+
+	}
+	else if (!strncmp (keyword, "API_POINTER_", 12U)) {	/* Blindly change a pointer to a scalar. Irritatingly Julia ignores this */
+		if (!strcmp(&keyword[12], "UINT64")) {
+			*(uint64_t *)ptr = *(uint64_t *)what;
+		}
+	}
+	else if (!strncmp (keyword, "API_STRUCT_MEMBER_", 18U)) {	/*  */
+		char *pch;
+		int member;
+		if ((pch = strstr(&keyword[18],"_")) == NULL) {
+			GMT_Report(V_API, GMT_MSG_NORMAL, "Backdoor: Badly constructed parameter %s. Misses name_num part.\n", keyword);
+			return_error(V_API, GMT_NOT_A_VALID_PARAMETER);
+		}
+		member = atoi(++pch);		/* member number */
+		pch--;		pch[0] = '\0';	/* Strip the member string */
+		if (!strcmp(&keyword[18], "TEXTSEGMENT")) {
+			struct GMT_TEXTSEGMENT *T = (struct GMT_TEXTSEGMENT *)ptr;
+			switch (member) {
+				case 1:		T->n_rows  = *(int *)what;	break;
+				case 6:		T->mode    = *(int *)what;	break;
+				default:
+					GMT_Report(V_API, GMT_MSG_NORMAL, "Backdoor: Wrong member number for struct GMT_TEXTSEGMENT. Only 1 or 6 allowed.\n");
+					return_error (V_API, GMT_NOT_A_VALID_PARAMETER);
+					break;
+			}
+		}
+		else if (!strcmp(&keyword[18], "TEXTTABLE")) {
+			struct GMT_TEXTTABLE *T = (struct GMT_TEXTTABLE *)ptr;
+			switch (member) {
+				case 1:		T->n_headers  = *(int *)what;	break;
+				case 2:		T->n_segments = *(int *)what;	break;
+				case 3:		T->n_records  = *(int *)what;	break;
+				case 8:		T->mode       = *(int *)what;	break;
+				default:
+					GMT_Report(V_API, GMT_MSG_NORMAL, "Backdoor: Wrong member number for struct GMT_TEXTTABLE. Only 1,2,3,8 allowed.\n");
+					return_error (V_API, GMT_NOT_A_VALID_PARAMETER);
+					break;
+			}
+		}
+		else if (!strcmp(&keyword[18], "TEXTTABLE")) {
+			struct GMT_TEXTSET *T = (struct GMT_TEXTSET *)ptr;
+			switch (member) {
+				case 1:		T->n_tables    = *(int *)what;	break;
+				case 2:		T->n_segments  = *(int *)what;	break;
+				case 3:		T->n_records   = *(int *)what;	break;
+				case 7:		T->geometry    = *(int *)what;	break;
+				case 8:		T->alloc_level = *(int *)what;	break;
+				case 9:		T->io_mode     = *(int *)what;	break;
+				case 10:	T->alloc_mode  = *(int *)what;	break;
+				default:
+					GMT_Report(V_API, GMT_MSG_NORMAL, "Backdoor: Wrong member number for struct GMT_TEXTSET. Only 1,2,3,7,8,9,10 allowed.\n");
+					return_error (V_API, GMT_NOT_A_VALID_PARAMETER);
+					break;
+			}
+		}
+	}
+
+	return_error (V_API, (error) ? GMT_NOT_A_VALID_PARAMETER : GMT_NOERROR);
+}
