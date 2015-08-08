@@ -316,7 +316,7 @@ man_pages = [
 ('sphtriangulate', 'sphtriangulate', 'Delaunay or Voronoi construction of spherical lon,lat data', '', 1),
 ('splitxyz', 'splitxyz', 'Split xyz[dh] data tables into individual segments', '', 1),
 ('surface', 'surface', 'Grid table data using adjustable tension continuous curvature splines', '', 1),
-('trend1d', 'trend1d', 'Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data', '', 1),
+('trend1d', 'trend1d', 'Fit a [weighted] [robust] polynomial [and/or Fourier] model for y = f(x) to xy[w] data', '', 1),
 ('trend2d', 'trend2d', 'Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data', '', 1),
 ('triangulate', 'triangulate', 'Do optimal (Delaunay) triangulation and gridding of Cartesian table data [method]', '', 1),
 ('xyz2grd', 'xyz2grd', 'Convert data table to a grid file', '', 1),
