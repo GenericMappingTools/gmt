@@ -460,6 +460,7 @@ changes to syntax will be backwards compatible:
    say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
    The **-A** now has new modifiers **x**\ \|\ **y** for creating stair-case curves.
+   The slip-vector symbol can now optionally accept a vector-head angle [30].
    Finally, custom symbols definition tests can now compare two input variables.
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
@@ -467,6 +468,7 @@ changes to syntax will be backwards compatible:
    the **-L** option has been enhanced to create envelope polygons around y(x),
    say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
+   The slip-vector symbol can now optionally accept a vector-head angle [30].
    Finally, to match :doc:`psxy` we have added the option **-T** for specifying no data input.
 
 *  :doc:`trend1d` can now fit mixed polynomial and Fourier series models,
