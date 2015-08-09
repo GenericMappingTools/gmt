@@ -244,7 +244,7 @@ Three new modules have also been added to the *potential* supplement:
 
 :doc:`talwani3d <supplements/potential/talwani3d>`:
 	Compute a grid or profile of the free-air gravity, geoid or vertical gravity gradient anomaly
-	over a 3-D body given as polygonal slices.
+	over a 3-D body given as horizontal polygonal slices.
 
 In addition, here are two established modules that have been given more suitable names:
 
@@ -259,7 +259,7 @@ In addition, here are two established modules that have been given more suitable
     when GMT is running in compatibility mode).
 
 Finally, we have renamed our PostScript Light (PSL) library from psl
-to PostScriptLight to avoid package name conflicts.  This will eventually
+to PostScriptLight to avoid package name conflicts.  This library will eventually
 become decoupled from GMT and end up as a required prerequisite.
 
 New common options
@@ -374,8 +374,8 @@ changes to syntax will be backwards compatible:
 *  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate
    segments on output based on the number of of records it contains.
 
-*  :doc:`gmtmath` adds the operator **BDIST* for binomial distribution, as
-   well as the constants **TRANGE** and **TROW**, and we have renamed the
+*  :doc:`gmtmath` adds the operator **BDIST** for binomial distribution, as
+   well as the constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
    normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).
 
 *  :doc:`grdblend` relaxes the **-W** restriction on only one output grid
@@ -391,15 +391,15 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`grdgradient` adds **-Da** to compute the aspect (down-slope) direction [up-slope].
 
-*  :doc:`grdinfo` plots the projection info of netCDF grids when that is stored in
-    grid's metadata in WKT format.
+*  :doc:`grdinfo` reports the projection info of netCDF grids when that is stored in
+   grid's metadata in WKT format.
 
 *  :doc:`grdmath` adds several new operators, such as **ARC** and **WRAP** for
-   angular operators, **BDIST* for binomial distribution, **LDISTG** (for distances
+   angular operators, **BDIST** for binomial distribution, **LDISTG** (for distances
    to GSHHG), **CDIST2** and **SDIST2**
    (to complement **LDIST2** and **PDIST2**), while **LDIST1** has been renamed
-   to **LDISTC**.  We also add the constants **XRANGE**, **YRANGE**, **XCOL** and
-   **YROW**, and we have renamed the normalized coordinates from **Xn** to **XNORM**
+   to **LDISTC**.  We also add the constants **XRANGE**, **YRANGE**, **XCOL**,
+   **YROW** and **F_EPS**, and we have renamed the normalized coordinates from **Xn** to **XNORM**
    and **Yn** to **YNORM** (but this is backwards compatible).
 
 *  :doc:`grdtrack` add modifier **-G+l**\ *list* modifier to provide a list of grids.
