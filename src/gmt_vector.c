@@ -418,9 +418,6 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n, double *b)
     int i, j, k, bad = 0;
     double c, d;
 
-#ifdef _OPENMP
-#pragma omp parallel for private(i,k,c,d) shared(GMT,a,b,j,n,bad)
-#endif
     for (j = 0; j < (n-1); j++) { /* For all columns j */
 		/* Find j-th pivot */
     	k = j; c = fabs(a[k*n+j]);
@@ -432,6 +429,9 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n, double *b)
 			bad++;
 		}
 		switchRows (a, b, j, k, n);	/* Pivot rows */
+#ifdef _OPENMP
+#pragma omp parallel for private(i,k,c) shared(GMT,a,b,j,n)
+#endif
 		for (i = j + 1; i < n; i++) {
 			c = a[i*n+j] / a[j*n+j];
 			for (k = j + 1; k < n; k++) a[i*n+k] -= c*a[j*n+k];
