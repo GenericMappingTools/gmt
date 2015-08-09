@@ -7594,10 +7594,12 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_free_user_media (Ccopy);		/* Free user-specified media formats */
 
 	/* These are because they are kept between module calls in a same session. So we need to reset them. */
-	GMT->current.setting.verbose = GMT_MSG_QUIET;
-	for (i = 0; i < (unsigned int)GMT->PSL->internal.N_FONTS; i++)
-		GMT->PSL->internal.font[i].encoded = false;
-	GMT->PSL->current.fontsize = 0;
+	if (GMT->hidden.func_level == 0) {	/* Only when top-level module ends */
+		GMT->current.setting.verbose = GMT_MSG_QUIET;
+		for (i = 0; i < (unsigned int)GMT->PSL->internal.N_FONTS; i++)
+			GMT->PSL->internal.font[i].encoded = false;
+		GMT->PSL->current.fontsize = 0;
+	}
 
 	free (Ccopy);	/* Good riddance */
 }
