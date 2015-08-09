@@ -9750,6 +9750,7 @@ int GMT_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 	S->f.f_len = (n == 1) ? 0.15 * S->f.f_gap : GMT_to_inch (GMT, txt_b);
 
 	S->f.f_symbol = GMT_FRONT_FAULT;	/* Default is the fault symbol */
+	S->f.f_angle = 30.0;				/* Default slip arrow angle */
 	S->f.f_sense = GMT_FRONT_CENTERED;	/* Default is centered symbols unless +l or +r is found */
 	S->f.f_pen = 0;				/* Draw outline with pen set via -W, i.e., same as frontline */
 	while ((GMT_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
@@ -9759,7 +9760,9 @@ int GMT_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 			case 'f':	S->f.f_symbol = GMT_FRONT_FAULT;	break;	/* Fault front */
 			case 'l':	S->f.f_sense  = GMT_FRONT_LEFT;		break;	/* Symbols to the left */
 			case 'r':	S->f.f_sense  = GMT_FRONT_RIGHT;	break;	/* Symbols to the right */
-			case 's':	S->f.f_symbol = GMT_FRONT_SLIP;		break;	/* Strike-slip front */
+			case 's':	S->f.f_symbol = GMT_FRONT_SLIP;				/* Strike-slip front */
+						if (p[1]) S->f.f_angle = atof (&p[1]);		/* Set slip arrow angle */
+						break;
 			case 't':	S->f.f_symbol = GMT_FRONT_TRIANGLE;	break;	/* Triangle front */
 			case 'o':	S->f.f_off = GMT_to_inch (GMT, &p[1]);	break;	/* Symbol offset along line */
 			case 'p':	if (p[1]) {	/* Get alternate pen for front-symbol outline [-W] */

@@ -98,6 +98,7 @@ struct GMT_FRONTLINE {
 	double f_gap;		/* Gap between front symbols in inches */
 	double f_len;		/* Length of front symbols in inches */
 	double f_off;		/* Offset of first symbol from start of front in inches */
+	double f_angle;		/* Angle of the slip vector hook [30] */
 	int f_sense;	/* Draw symbols to left (+1), centered (0), or right (-1) of line */
 	int f_symbol;	/* Which symbol to draw along the front line */
 	int f_pen;	/* -1 for no outline (+p), 0 for default outline [-1], +1 if +p<pen> was used to set separate pen for outline */

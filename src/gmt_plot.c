@@ -5782,7 +5782,7 @@ void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 					offy = GMT->current.setting.map_annot_offset[0] * cosa;
 					/* sense == GMT_FRONT_LEFT == left-lateral, R_RIGHT = right lateral */
 					/* arrow "above" line */
-					sincos (angle + (f->f_sense * 30.0 * D2R), &sa, &ca);
+					sincos (angle + (f->f_sense * f->f_angle * D2R), &sa, &ca);
 					xp = x0 + f->f_sense * offx;
 					yp = y0 - f->f_sense * offy;
 					xx[0] = xp - len2 * cosa;
@@ -5794,7 +5794,7 @@ void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 					PSL_plotline (PSL, xx, yy, 3, PSL_MOVE + PSL_STROKE);
 
 					/* arrow "below" line */
-					sincos (angle - (f->f_sense * 150.0 *D2R), &sa, &ca);
+					sincos (angle - (f->f_sense * (180.0 - f->f_angle) * D2R), &sa, &ca);
 					xp = x0 - f->f_sense * offx;
 					yp = y0 + f->f_sense * offy;
 					xx[0] = xp + len2 * cosa;
