@@ -7466,6 +7466,9 @@ int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword) 
 					break;
 			}
 		}
+		/* Reset to the full string. Bad sign, Julia seams to cache the keyword variable and
+		   on a second call we would recieve a trimmed string. */
+		pch[0] = '_';
 	}
 
 	return_error (V_API, (error) ? GMT_NOT_A_VALID_PARAMETER : GMT_NOERROR);
