@@ -28,5 +28,5 @@
 ps=meca_6.ps
 
 echo "1 3 0 0.961 0.204 -0.895 1.045 -0.307 0.716 2 0 0 95% double-couple [-Sm]"  | \
-	gmt psmeca -JX6i -R-1/6/0/6 -Sm6 -N -M -T0 -G200 -K -P -Baf > $ps
-echo  "4 3 0  4.319 37.28 145.8  6 0 0 100% double-couple [-Sa]" | gmt psmeca -J -R -Sa5 -O -G200 >> $ps
+	gmt psmeca -JX6i -R-1/6/0/6 -Sm6c -N -M -T0 -G200 -K -P -Baf > $ps
+echo  "4 3 0  4.319 37.28 145.8  6 0 0 100% double-couple [-Sa]" | gmt psmeca -J -R -Sa5c -O -G200 >> $ps
