@@ -946,7 +946,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 			y_obs = GMT_grd_row_to_y (GMT, row, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) y_obs /= METERS_IN_A_KM;	/* Convert to km */
 			//GMT_Report (API, GMT_MSG_VERBOSE, "Finished row %5d\n", row);
-			for (col = 0; col < G->header->nx; col++) {
+			for (col = 0; col < (int)G->header->nx; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = GMT_IJP (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */

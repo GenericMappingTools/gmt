@@ -269,7 +269,8 @@ double integralI1 (double xa, double xb, double za, double zb, double y)
 	return (part1 + part2 + part3);
 }
 
-double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho, double ymin, double ymax)
+double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0,
+                  double rho, double ymin, double ymax) {
 /*  x0;		X-coordinate of observation point */
 /*  z0;		Z-coordinate of observation point */
 /*  x[];	Array of xpositions */
@@ -278,7 +279,7 @@ double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, 
 /*  rho;	Density contrast */
 /*  ymin;	Extent of body in y-direction */
 /*  ymax; */
-{
+
 	double xx0, zz0, xx1, zz1, part_1, part_2, sum;
 	int i, i1;
 	
@@ -290,7 +291,7 @@ double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 		return GMT->session.d_NaN;
 	}
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < (int)n; i++) {
 		i1 = i + 1;	/* next point is simple since the last is repeated as first */
 		xx1 = x[i1] - x0;
 		zz1 = z[i1] - z0;
@@ -330,7 +331,7 @@ double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n,
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Observation point coincides with a body vertex!\n");
 		return GMT->session.d_NaN;
 	}
-	for (i = 0, sum = 0.0; i < n; i++) {
+	for (i = 0, sum = 0.0; i < (int)n; i++) {
 		i1 = i + 1;	/* next point is simple since the last is repeated as first */
 		xi1 = x[i1] - x0;
 		zi1 = z[i1] - z0;
@@ -358,7 +359,7 @@ double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned int n, do
 	double dx, dz, drsq, two_theta2, two_theta1, sin_2th2, sin_2th1;
 
 	n--;	/* Since first and last point are duplicated */
-	for (i1 = 0; i1 < n; i1++) {
+	for (i1 = 0; i1 < (int)n; i1++) {
 	        i2 = i1 + 1;
 		x1 = x[i1] - x0;
 		z1 = z[i1] - z0;
@@ -408,7 +409,7 @@ double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n
 	double N = 0.0, ni;
 
 	n--;	/* Since last point is repeated */
-	for (i1 = 0; i1 < n; i1++) {
+	for (i1 = 0; i1 < (int)n; i1++) {
 		i2 = i1 + 1;	/* next point is simple since the last is repeated as first */
 		if (z[i1] == z[i2]) continue;		/* Slope mi is zero, so ni == 0 */
 		dy1 = y[i1] - y0;	dy2 = y[i2] - y0;
