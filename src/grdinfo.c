@@ -86,7 +86,7 @@ void Free_grdinfo_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deall
 int GMT_grdinfo_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|-|b]] [-L[0|1|2]] [-M]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|r|b]] [-L[0|1|2]] [-M]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[s]<dz>] [%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -100,7 +100,7 @@ int GMT_grdinfo_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then rounding off will occur but no -R string is issued.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then the -I<xinc>/<yinc> string is issued.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -I- is given then the grid's -R string is issued.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ir is given then the grid's -R string is issued.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ib is given then the grid's bounding box polygon is issued.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set report mode:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L0 reports range of data by actually reading them (not from header).\n");
@@ -150,7 +150,7 @@ int GMT_grdinfo_parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct G
 				Ctrl->I.active = true;
 				if (!opt->arg[0])	/* No args given, we want to output the -I string */
 					Ctrl->I.status = GRDINFO_GIVE_INCREMENTS;
-				else if (opt->arg[0] == '-' && opt->arg[1] == '\0')	/* Dash given, we want to output the actual -R string */
+				else if ((opt->arg[0] == 'r' || opt->arg[0] == '-') && opt->arg[1] == '\0')	/* -Ir: we want to output the actual -R string */
 					Ctrl->I.status = GRDINFO_GIVE_REG_ORIG;
 				else if (opt->arg[0] == 'b' && opt->arg[1] == '\0')	/* -Ib means return grid perimeter as bounding box */
 					Ctrl->I.status = GRDINFO_GIVE_BOUNDBOX;

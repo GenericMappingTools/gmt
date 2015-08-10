@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdinfo** *grdfiles* [ **-C** ] [ **-F** ]
-[ **-I**\ [*dx*\ [/*dy*]\|\ **-**\ \|\ **b**] ]
+[ **-I**\ [*dx*\ [/*dy*]\|\ **r**\ \|\ **b**] ]
 [ **-L**\ [**0**\ \|\ **1**\ \|\ **2**] ] [ **-M** ]
 [ |SYN_OPT-R| ]
 [ **-T**\ [**s**]\ *dz* ]
@@ -55,10 +55,10 @@ Optional Arguments
 **-F**
     Report grid domain and x/y-increments in world mapping format
     [Default is generic]. Does not apply to the **-C** option.
-**-I**\ [*dx*\ [/*dy*]\|\ **-**\ \|\ **b**]
+**-I**\ [*dx*\ [/*dy*]\|\ **r**\ \|\ **b**]
     Report the min/max of the region to the nearest multiple of *dx* and
     *dy*, and output this in the form **-R**\ *w/e/s/n* (unless **-C**
-    is set). To report the actual grid region, select **-I-**. If no
+    is set). To report the actual grid region, select **-Ir**. If no
     argument is given then we report the grid increment in the form
     **-I**\ *xinc/yinc*. If **-Ib** is given we write each grid's
     bounding box polygon instead.
