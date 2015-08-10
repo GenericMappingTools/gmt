@@ -2054,7 +2054,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 					if (dimension == 2 && GMT_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 					V[GMT_X] = xp[col];
 					/* Here, V holds the current output coordinates */
-					for (p = 0, wp = 0.0; p < nm; p++) {
+					for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {
 						r = get_radius (GMT, V, X[p], dimension);
 						if (Ctrl->Q.active) {
 							C = get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
