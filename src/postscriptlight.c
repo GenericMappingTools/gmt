@@ -1703,7 +1703,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			}
 			PSL_command (PSL, "%d F%d (%s) FP ", psl_ip (PSL, size), font, piece);
 			last_chr = ptr[strlen(piece)-1];
-			if (!super_on) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
+			if (!super_on && (last_chr > 0 && last_chr < 255)) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
 		}
 		ptr = strtok_r (NULL, "@", &plast);
 	}
@@ -2049,7 +2049,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			}
 			PSL_command (PSL, "%d F%d (%s) %s\n", psl_ip (PSL, size), font, piece, op[mode]);
 			last_chr = ptr[strlen(piece)-1];
-			if (!super_on) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
+			if (!super_on && (last_chr > 0 && last_chr < 255)) kase = (islower(last_chr)) ? PSL_LC : PSL_UC;
 		}
 		ptr = strtok_r (NULL, "@", &plast);
 	}
