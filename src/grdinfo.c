@@ -590,6 +590,21 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
+		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+			if (global_ymin < -90.0) {
+				global_ymin = -90.0;
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
+			}
+			if (global_ymax > 90.0) {
+				global_ymax = 90.0;
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90.  Reset to +90.\n");
+			}
+			if (fabs (global_xmax - global_xmin) > 360.0) {
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
+				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
+			}
+		}
 		sprintf (record, "%d%s", n_grds, sep);
 		GMT_ascii_format_col (GMT, text, global_xmin, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
 		GMT_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
@@ -621,6 +636,21 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
+		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+			if (global_ymin < -90.0) {
+				global_ymin = -90.0;
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
+			}
+			if (global_ymax > 90.0) {
+				global_ymax = 90.0;
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90.  Reset to +90.\n");
+			}
+			if (fabs (global_xmax - global_xmin) > 360.0) {
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
+				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
+			}
+		}
 		sprintf (record, "-R");
 		GMT_ascii_format_col (GMT, text, global_xmin, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 		GMT_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
