@@ -224,6 +224,85 @@ variable. All segments are expected to have the same number of columns.
        char                  *file[2];      /* Name of file or source [0 = in, 1 = out] */
    };
 
+.. _struct-datatable:
+
+.. code-block:: c
+
+   struct GMT_DATATABLE {  /* To hold an array of line segment structures and header information in one container */
+       /* Variables we document for the API: */
+       unsigned int n_headers;    /* Number of file header records (0 if no header) */
+       uint64_t     n_columns;    /* Number of columns (fields) in each record */
+       uint64_t     n_segments;   /* Number of segments in the array */
+       uint64_t     n_records;    /* Total number of data records across all segments */
+       double      *min;          /* Minimum coordinate for each column */
+       double      *max;          /* Maximum coordinate for each column */
+       char       **header;       /* Array with all file header records, if any) */
+       struct GMT_DATASEGMENT **segment; /* Pointer to array of segments */
+       /* ---- Variables "hidden" from the API ---- */
+       uint64_t     id;           /* The internal number of the table */
+       size_t       n_alloc;      /* The current allocation length of segments */
+       double       dist;         /* Distance from a point to this feature */
+       enum GMT_enum_write mode;  /* 0 = output table, 1 = output header only, 2 = skip table */
+       struct GMT_OGR *ogr;       /* Pointer to struct with all things GMT/OGR (if MULTI-geometry and not MULTIPOINT)  */
+       char        *file[2];      /* Name of file or source [0 = in, 1 = out] */
+   };
+
+.. _struct-datasegment:
+
+.. code-block:: c
+
+   struct GMT_DATASEGMENT {       /* For holding segment lines in memory */
+       /* Variables we document for the API: */
+       uint64_t n_rows;           /* Number of points in this segment */
+       uint64_t n_columns;        /* Number of fields in each record (>= 2) */
+       double  *min;              /* Minimum coordinate for each column */
+       double  *max;              /* Maximum coordinate for each column */
+       double **coord;            /* Coordinates x,y, and possibly other columns */
+       char    *label;            /* Label string (if applicable) */
+       char    *header;           /* Segment header (if applicable) */
+       /* ---- Variables "hidden" from the API ---- */
+       enum GMT_enum_write mode;  /* 0 = output segment, 1 = output header only, 2 = skip segment */
+       enum GMT_enum_pol pol_mode;/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
+       uint64_t id;               /* The internal number of the segment */
+       size_t   n_alloc;          /* The current allocation length of each coord */
+       unsigned int range;        /* Longitude reporting scheme, e.g. GMT_IS_GIVEN_RANGE [0] */
+       int      pole;             /* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
+       double   dist;             /* Distance from a point to this feature */
+       double   lat_limit;        /* For polar caps: the latitude of the point closest to the pole */
+       struct GMT_OGR_SEG *ogr;   /* NULL unless OGR/GMT metadata exist for this segment */
+       struct GMT_DATASEGMENT *next; /* NULL unless polygon and has holes and pointing to next hole */
+       char    *file[2];          /* Name of file or source [0 = in, 1 = out] */
+    };
+
+.. _struct-ogr:
+
+.. code-block:: c
+
+    struct GMT_OGR {  /* Struct with all things GMT/OGR for a table */
+        /* The first parameters are usually set once per data set and do not change */
+        unsigned int  geometry;    /* @G: The geometry of this data set, if known [0 otherwise] */
+        unsigned int  n_aspatial;  /* @T: The number of aspatial fields */
+        char         *region;      /* @R: The region textstring [NULL if not set] */
+        char         *proj[4];     /* @J: The 1-4 projection strings [NULL if not set] */
+        unsigned int *type;        /* @T: The data types of the aspatial fields [NULL if not set]  */
+        char        **name;        /* @N The names of the aspatial fields [NULL if not set]  */
+        /* The following are for OGR data only. It is filled during parsing (current segment) but is then copied to the segment header so it can be accessed later */
+        enum GMT_enum_pol pol_mode;/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
+        char        **tvalue;      /* @D: The text values of the current aspatial fields */
+        double       *dvalue;      /* @D: Same but converted to double (assumed possible) */
+    };
+
+.. _struct-ogr_seg:
+
+.. code-block:: c
+
+    struct GMT_OGR_SEG {           /* Struct with GMT/OGR aspatial data for a segment */
+        enum GMT_enum_pol pol_mode;/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
+        unsigned int   n_aspatial; /* @T: The number of aspatial fields */
+        char         **tvalue;     /* @D: The values of the current aspatial fields (uses GMT_OGR's n_aspatial as length) */
+        double *dvalue;            /* @D: Same but converted to double (assumed possible) */
+    };
+
 Text tables
 ~~~~~~~~~~~
 
@@ -263,6 +342,43 @@ only.
                                                  from tbl and seg numbers */
        enum GMT_enum_alloc    alloc_mode;   /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
        char                  *file[2];      /* Name of file or source [0 = in, 1 = out] */
+   };
+
+
+.. _struct-texttable:
+
+.. code-block:: c
+
+   struct GMT_TEXTTABLE {  /* To hold an array of text segment structures and header information in one container */
+       /* Variables we document for the API: */
+       unsigned int n_headers;   /* Number of file header records (0 if no header) */
+       uint64_t n_segments;      /* Number of segments in the array */
+       uint64_t n_records;       /* Total number of data records across all segments */
+       char   **header;          /* Array with all file header records, if any) */
+       struct GMT_TEXTSEGMENT **segment; /* Pointer to array of segments */
+       /* ---- Variables "hidden" from the API ---- */
+       uint64_t id;              /* The internal number of the table */
+       size_t   n_alloc;         /* The current allocation length of segments */
+       enum GMT_enum_write mode; /* 0 = output table, 1 = output header only, 2 = skip table */
+       char    *file[2];         /* Name of file or source [0 = in, 1 = out] */
+   };
+
+.. _struct-textsegment:
+
+.. code-block:: c
+
+   struct GMT_TEXTSEGMENT {      /* For holding segment text records in memory */
+       /* Variables we document for the API: */
+       uint64_t n_rows;          /* Number of rows in this segment */
+       char   **record;          /* Array of text records */
+       char    *label;           /* Label string (if applicable) */
+       char    *header;          /* Segment header (if applicable) */
+       /* ---- Variables "hidden" from the API ---- */
+       uint64_t id;              /* The internal number of the table */
+       enum GMT_enum_write mode; /* 0 = output segment, 1 = output header only, 2 = skip segment */
+       size_t   n_alloc;         /* Number of rows allocated for this segment */
+       char    *file[2];         /* Name of file or source [0 = in, 1 = out] */
+       char   **tvalue;          /* The values of the OGR/GMT aspatial fields */ 
    };
 
 GMT grids
