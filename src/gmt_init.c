@@ -2644,7 +2644,8 @@ char *gmt_old_trendsyntax (struct GMT_CTRL *GMT, char option, char *in_arg)
 				sprintf (term, "%d", order);
 				strcat (new, term);
 			}
-			strcpy (arg, new);	/* Place revised args */
+			free (arg);	/* Wipe old setting */
+			arg = strdup (new);	/* Place revised args */
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Old-style arguments given and chosen compatibility mode does not allow it\n", option);

@@ -27,15 +27,15 @@
  * This version has been tested on a stack of disks (simulating a
  * sphere) and gave the correct answer.  It expects all distances
  * to be in meters (you can override with the -M option) or to be
- * in degrees lon/lat (will scale for flat earth) and densities
- * to be in kg/m^3.
+ * in degrees lon/lat (will scale for a flat earth) and densities
+ * is expected to be in kg/m^3.
  *
  * Based on methods by
  *
  * M. Talwani and M. Ewing, Rapid Computation of gravitational
- *    attraction of three-dimensional bodies of rbitrary shape,
- *    Geophysics, 25, 203-225, 1960.
- * Kim, S.-S. and P. Wessel, 2015, in prep.
+ *    attraction of three-dimensional bodies of arbitrary shape,
+ *    Geophysics, 25, 203-225, 1960. [for gravity]
+ * Kim, S.-S. and P. Wessel, 2015, in prep. [for VGG and geoid]
  *
  * Accelerated with OpenMP; see -x.
  */
@@ -61,12 +61,13 @@
 #define GMT_TALWANI3D_N_DEPTHS GMT_BUFSIZ	/* Max depths allowed due to OpenMP needing stack array */
 
 #if 0
+/* this is for various debug purposes and will eventually be purged */
 bool dump = false;
 FILE *fp = NULL;
 #endif
 
 struct TALWANI3D_CTRL {
-	struct A {	/* -A positive up  */
+	struct A {	/* -A Set positive up  */
 		bool active;
 	} A;
 	struct D {	/* -D<rho> fixed density to override model files */
@@ -100,7 +101,7 @@ struct TALWANI3D_CTRL {
 	} Z;
 };
 
-struct SLICE {	/* Holds a single contour slice and its density, plus link to next slice at same depth */
+struct SLICE {	/* Holds a single contour slice and its density, plus link to next slice at the same depth */
 	struct SLICE *next;
 	int n;
 	double rho;
@@ -162,7 +163,11 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI3D_VGG; 	break;
 					case 'n': Ctrl->F.mode = TALWANI3D_GEOID;	break;
-					default:  Ctrl->F.mode = TALWANI3D_FAA; 	break;
+					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
+					default:  
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -F: Unrecognized field %c\n", opt->arg[0]);
+						n_errors++;
+						break;
 				}
 				break;
 			case 'G':
@@ -218,6 +223,10 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 	                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
 	                                 "Syntax error -G option: Must specify output gridfile name.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file,
+	                                 "Syntax error -G option: Must specify output gridfile name.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file,
+	                                 "Syntax error -N option: Must specify output gridfile name.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -234,7 +243,7 @@ int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<modelfile> is a multiple-segment ASCII file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is down].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set fixed density contrast that overrides settings in model file (in kg/m^3).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set a fixed density contrast that overrides settings in model file (in kg/m^3).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field component:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f = Free-air anomalies (mGal) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).\n");
@@ -249,7 +258,7 @@ int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append either a constant or the name of gridfile with levels.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If a grid then it also defines the output grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If given a grid then it also defines the output grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot use both -Z<grid> and -R -I [-r].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, else in m [but see -Mh]).\n");
 	GMT_Option (API, "h,i,o,r,x,.");
@@ -278,7 +287,7 @@ double parint (double x[], double y[], int n)
 	 *       in the region  x2 - x1.  If i is 2 or n-1, however, we
 	 *       set x1 = x(1) or x2 = x(n) to cover the entire interval of x.
 	 *
-	 * Programmer:  W.H.F. Smith,  30-AUG-1986.
+	 * Programmer:  W.H.F. Smith,  30-AUG-1986 in Fortran.
 	 * C-version by Paul Wessel, 3/4/91.
 	 *
 	 * Remarks:  This replaces PRBINT, which performed the same operation
@@ -325,12 +334,11 @@ double parint (double x[], double y[], int n)
 double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {	/* Talwani et al., 1959 */
 	int k;
-	double gsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
+	double gsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
 	double xr2, yr2, dx, dy, p, em, sign2, wsign, value, part1, part2, part3, q, f, psi;
 	bool zerog;
 	
-	gsum = 0.0;
-	/* Get x- and y-distances relative to observation point */
+	/* Get x- and y-distances of first point relative to observation point */
 	if (flat) {	/* Got lon, lat and must convert to Flat-Earth km */
 		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
 		y1 = DY_FROM_DLAT (y[0], y_obs);
@@ -347,7 +355,7 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 	}
 				
 	for (k = 1; k < n; k++) {	/* Loop over vertices */
-				
+		/* Get coordinates of next vectex */	
 		if (flat) {
 			x2 = DX_FROM_DLON (x[k], x_obs, y[k], y_obs);
 			y2 = DY_FROM_DLAT (y[k], y_obs);
@@ -418,13 +426,11 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {	/* Kim & Wessel, 2015 */
 	int k;
-	double vsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
-	double xr2, yr2, dx, dy, dz, p, em, sign2, part2, part3, q, f, z2, p2;
+	double vsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside;
+	double xr2, yr2, dx, dy, p, em, sign2, part2, part3, q, f, z2, p2;
 	double scl, cos_theta_i, sin_theta2_i, cos_phi_i, sin_phi2_i, area = 0.0;
 	bool zerog;
 	
-	dz = z_obs;
-	vsum = 0.0;
 	/* Get x- and y-distances relative to observation point */
 	if (flat) {	/* Got lon, lat and must convert to Flat-Earth km */
 		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
@@ -442,7 +448,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 	}
     
 	for (k = 1; k < n; k++) {	/* Loop over vertices */
-        
+        	/* Get coordinates to the next vertex */
 		if (flat) {
 			x2 = DX_FROM_DLON (x[k], x_obs, y[k], y_obs);
 			y2 = DY_FROM_DLAT (y[k], y_obs);
@@ -483,7 +489,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 						sin_theta2_i = 1.0 - cos_theta_i * cos_theta_i;
 						sin_phi2_i   = 1.0 - cos_phi_i   * cos_phi_i;
 						p2 = p * p;
-						z2 = dz * dz;
+						z2 = z_obs * z_obs;
 						scl = p2 / (p2+z2);
 						part2 = scl * (cos_theta_i / sqrt (sin_theta2_i * z2 + p2));
 						part3 = scl * (cos_phi_i   / sqrt (sin_phi2_i   * z2 + p2));
@@ -546,12 +552,11 @@ double integral (double a, double sa, double b, double sb, double c)
 double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
 {	/* Kim & Wessel, 2015 */
 	int k;
-	double nsum, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside, c, z_j = z_obs;
+	double nsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1, yr1, side, iside, c, z_j = z_obs;
 	double xr2, yr2, dx, dy, p_i, theta_i, sign2, part1, part2, fi_i, em, del_alpha, s_fi, s_th;
 	bool zerog;
 	/* Coordinates are in km and g/cm^3 */
 	/* Get x- and y-distances relative to observation point */
-	nsum = 0.0;
 	if (flat) {	/* Got lon, lat and must convert to Flat-Earth km */
 		x1 = DX_FROM_DLON (x[0], x_obs, y[0], y_obs);
 		y1 = DY_FROM_DLAT (y[0], y_obs);
@@ -567,6 +572,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 		yr1 = y1 * ir1;
 	}
 	for (k = 1; k < n; k++) {	/* Loop over vertices */
+		/* Get coordinates of next vertex */
 		if (flat) {
 			x2 = DX_FROM_DLON (x[k], x_obs, y[k], y_obs);
 			y2 = DY_FROM_DLAT (y[k], y_obs);
@@ -639,6 +645,7 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	struct SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
 #if 0
+	/* Debug stuff that will eventually go away after more testing */
 	char file[32] = {""};
 	if (fabs (x_obs - 1.96) < 1e-5) {
 		dump = true;
@@ -692,7 +699,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	
 	bool flat_earth = false, first_slice = true;
 	
-	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "GEOID"};
+	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "GEOID"}, remark[GMT_LEN64] = {""};
 	double z_level, depth, rho;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
 					
@@ -900,7 +907,6 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		if (D->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	
-		z_level = Ctrl->Z.level;	/* Default observation z level unless provided in input file */
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];	/* Current segment */
@@ -911,9 +917,9 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 #pragma omp parallel for private(row,z_level) shared(GMT,Ctrl,S,scl,cake,depths,ndepths,flat_earth)
 #endif
 				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
-				 * with OpenMP active due to race condiations would mess up the output order */
+				 * with OpenMP due to race condiations that would mess up the output order */
 				for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
-					if (S->n_columns == 3 && !Ctrl->Z.active) z_level = S->coord[GMT_Z][row];
+					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->coord[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
 					GMT->hidden.mem_coord[GMT_X][row] = get_one_output3D (S->coord[GMT_X][row]/ scl, S->coord[GMT_Y][row]/ scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
 				}
 				/* This loop is not under OpenMP */
@@ -932,20 +938,22 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Dealing with a grid */
-		int    nx = (int)G->header->nx, ny = (int)G->header->ny;	/* To shut up compiler warnings */
+		int nx = (int)G->header->nx, ny = (int)G->header->ny;	/* To shut up compiler warnings */
 		double y_obs, *x_obs = GMT_memory (GMT, NULL, G->header->nx, double);
 		for (col = 0; col < nx; col++) {
 			x_obs[col] = GMT_grd_col_to_x (GMT, col, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) x_obs[col] /= METERS_IN_A_KM;	/* Convert to km */
 		}
 #ifdef _OPENMP
-				/* Spread calculation over selected cores */
+		/* Spread calculation over selected cores */
 #pragma omp parallel for private(row,col,node,y_obs,z_level) shared(API,GMT,Ctrl,G,x_obs,cake,depths,ndepths,flat_earth)
 #endif
 		for (row = 0; row < ny; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = GMT_grd_row_to_y (GMT, row, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) y_obs /= METERS_IN_A_KM;	/* Convert to km */
-			//GMT_Report (API, GMT_MSG_VERBOSE, "Finished row %5d\n", row);
+#ifndef _OPENMP
+			GMT_Report (API, GMT_MSG_VERBOSE, "Finished row %5d\n", row);
+#endif
 			for (col = 0; col < (int)G->header->nx; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = GMT_IJP (G->header, row, col);
@@ -954,8 +962,9 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 			}
 		}
 		GMT_free (GMT, x_obs);
-		//sprintf (h.remark, "Calculated 3-D gravity from polygon file %s", pfile);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Create %s\n", Ctrl->G.file);
+		sprintf (remark, "Calculated 3-D %s", kind[Ctrl->F.mode]);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remark, G)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
 			Return (API->error);
@@ -964,7 +973,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		
 	/* Clean up memory */
 	
-	for (k = 0; k < ndepths; k++) {
+	for (k = 0; k < ndepths; k++) {	/* Wind through the depthd and free up slices */
 		sl = cake[k].first_slice;
 		slnext = cake[k].first_slice->next;
 		while (slnext) {

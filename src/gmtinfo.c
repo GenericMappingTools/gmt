@@ -286,7 +286,7 @@ int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GM
 int GMT_gmtinfo (void *V_API, int mode, void *args)
 {
 	bool got_stuff = false, first_data_record, give_r_string = false;
-	bool brackets = false, work_on_abs_value, do_report, done;
+	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, o_mode, save_range;
 	uint64_t col, ncol = 0, n = 0;
@@ -418,9 +418,22 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 					}
 				}
 				if (GMT_is_geographic (GMT, GMT_IN)) {
-					if (east < west) east += 360.0;
-					if (south < -90.0) south = -90.0;
-					if (north > +90.0) north = +90.0;
+					if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+						if (south < -90.0) {
+							south = -90.0;
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
+						}
+						if (north > 90.0) {
+							north = 90.0;
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90.  Reset to +90.\n");
+						}
+						if (fabs (east - west) > 360.0) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+							west = (west < 0.0) ? -180.0 : 0.0;
+							east = (west < 0.0) ? +180.0 : 360.0;
+							full_range = true;
+						}
+					}
 				}
 				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting nx/ny */
 					unsigned int sub, add, in_dim[2], out_dim[2];
@@ -438,9 +451,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 				}
 			}
 			if (give_r_string) {	/* Return -R string */
-				sprintf (record, "-R");
-				i = strip_blanks_and_output (GMT, buffer, west, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, east, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+				if (full_range)
+					sprintf (record, "-R%g/%g/", west, east);
+				else {
+					sprintf (record, "-R");
+					i = strip_blanks_and_output (GMT, buffer, west, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+					i = strip_blanks_and_output (GMT, buffer, east, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+				}
 				i = strip_blanks_and_output (GMT, buffer, south, GMT_Y);	strcat (record, &buffer[i]);	strcat (record, "/");
 				i = strip_blanks_and_output (GMT, buffer, north, GMT_Y);	strcat (record, &buffer[i]);
 			}
