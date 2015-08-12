@@ -234,8 +234,7 @@ unsigned int GMT_get_modifier (const char *string, char modifier, char *token)
 #ifdef WIN32
 /* Turn '/c/dir/...' paths into 'c:/dir/...'
  * Must do it in a loop since dir may be several ';'-separated dirs */
-void DOS_path_fix (char *dir)
-{
+void DOS_path_fix (char *dir) {
 	size_t n, k;
 
 	if (!dir || (n = strlen (dir)) < 2U)
@@ -262,12 +261,18 @@ void DOS_path_fix (char *dir)
 		dir[1] = ':';
 	}
 
-	/* Do same with dirs separated by ';' but do not replace '/c/j/...' with 'c:j:/...' */
-	for (k = 4; k < n-2; ++k) {
+	/* Do the same with dirs separated by ';' but do not replace '/c/j/...' with 'c:j:/...' */
+	for (k = 4; k < n-2; k++) {
 		if ( (dir[k-1] == ';' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
 			dir[k] = dir[k+1];
 			dir[k+1] = ':';
 		}
+	}
+
+	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by a e.g. bash shell (msys or cygwin) */
+	for (k = 4; k < n-2; k++) {
+		if ((dir[k-1] == ':' && dir[k+1] == ':' && dir[k+2] == '/' && isalpha ((int)dir[k])) )
+			dir[k-1] = ';';
 	}
 }
 #endif
@@ -299,33 +304,31 @@ void DOS_path_fix (char *dir)
    Note: This function does not work with multibyte strings!  */
 
 int strcasecmp (const char *s1, const char *s2) {
-  const unsigned char *p1 = (const unsigned char *) s1;
-  const unsigned char *p2 = (const unsigned char *) s2;
-  unsigned char c1, c2;
+	const unsigned char *p1 = (const unsigned char *) s1;
+	const unsigned char *p2 = (const unsigned char *) s2;
+	unsigned char c1, c2;
 
-  if (p1 == p2)
-    return 0;
+	if (p1 == p2) return 0;
 
-  do
-    {
-      c1 = TOLOWER (*p1);
-      c2 = TOLOWER (*p2);
+	do {
+		c1 = TOLOWER (*p1);
+		c2 = TOLOWER (*p2);
 
-      if (c1 == '\0')
-        break;
+		if (c1 == '\0')
+			break;
 
-      ++p1;
-      ++p2;
-    }
-  while (c1 == c2);
+		++p1;
+		++p2;
+	}
+	while (c1 == c2);
 
-  if (UCHAR_MAX <= INT_MAX)
-    return c1 - c2;
-  else
-    /* On machines where 'char' and 'int' are types of the same size, the
-       difference of two 'unsigned char' values - including the sign bit -
-       doesn't fit in an 'int'.  */
-    return (c1 > c2 ? 1 : c1 < c2 ? -1 : 0);
+	if (UCHAR_MAX <= INT_MAX)
+		return c1 - c2;
+	else
+		/* On machines where 'char' and 'int' are types of the same size, the
+		difference of two 'unsigned char' values - including the sign bit -
+		doesn't fit in an 'int'.  */
+		return (c1 > c2 ? 1 : c1 < c2 ? -1 : 0);
 }
 #endif /* !defined(HAVE_STRCASECMP) && !defined(HAVE_STRICMP) */
 
