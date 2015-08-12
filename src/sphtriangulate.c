@@ -326,8 +326,8 @@ int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, doub
 
 		for (i = 0; i < n_arcs; i++) {
 			S[0] = Dout[0]->table[0]->segment[i];	/* Shorthand for this output segment */
-			S[0]->coord[GMT_X][0] = V->lon[arc[i].end];	S[1]->coord[GMT_Y][0] = V->lat[arc[i].end];
-			S[0]->coord[GMT_X][1] = V->lon[arc[i].begin];	S[1]->coord[GMT_Y][1] = V->lat[arc[i].begin];
+			S[0]->coord[GMT_X][0] = V->lon[arc[i].end];	S[0]->coord[GMT_Y][0] = V->lat[arc[i].end];
+			S[0]->coord[GMT_X][1] = V->lon[arc[i].begin];	S[0]->coord[GMT_Y][1] = V->lat[arc[i].begin];
 			if (get_area) {
 				dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
 				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g", arc[i].begin, arc[i].end, dist);
@@ -339,10 +339,10 @@ int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, doub
 		GMT_free (GMT, arc);
 	}
 	else {
-		GMT_free (GMT, plon);
-		GMT_free (GMT, plat);
 		if (get_area) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
 	}
+	GMT_free (GMT, plon);
+	GMT_free (GMT, plat);
 	return (GMT_OK);
 }
 
