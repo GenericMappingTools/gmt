@@ -1593,7 +1593,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 		PSL_command (PSL, "(%s) FP ", ptr);
 		last_chr = ptr[strlen(ptr)-1];
 		ptr = strtok_r (NULL, "@", &plast);
-		kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
+		kase = ((last_chr > 0 && last_chr < 255) && islower (last_chr)) ? PSL_LC : PSL_UC;
 		//fprintf (stderr, "text = %s kase = %d\n", ptr, kase);
 	}
 
@@ -1858,7 +1858,8 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		PSL_command (PSL, "(%s) %s\n", ptr, op[mode]);
 		last_chr = ptr[strlen(ptr)-1];
 		ptr = strtok_r (NULL, "@", &plast);
-		kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
+		kase = ((last_chr > 0 && last_chr < 255) && islower (last_chr)) ? PSL_LC : PSL_UC;
+		
 	}
 
 	font = old_font = PSL->current.font_no;

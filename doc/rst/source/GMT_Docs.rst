@@ -471,6 +471,10 @@ changes to syntax will be backwards compatible:
    The slip-vector symbol can now optionally accept a vector-head angle [30].
    Finally, to match :doc:`psxy` we have added the option **-T** for specifying no data input.
 
+*  :doc:`sphdistance` can now also perform a nearest-neighbor gridding where
+   all grid nodes inside a Voronoi polygon is set to the same value as the
+   Voronoi node value, via **-Ez**.
+
 *  :doc:`trend1d` can now fit mixed polynomial and Fourier series models,
    as well as allowing models with just some terms in a polynomial or the
    Fourier series, including plain cosine or sine series terms.  Modifiers

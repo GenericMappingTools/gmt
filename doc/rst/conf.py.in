@@ -311,7 +311,7 @@ man_pages = [
 ('sample1d', 'sample1d', 'Resample 1-D table data using splines', '', 1),
 ('spectrum1d', 'spectrum1d', 'Compute auto- [and cross- ] spectra from one [or two] time-series', '', 1),
 ('sph2grd', 'sph2grd', 'Compute grid from spherical harmonic coefficients', '', 1),
-('sphdistance', 'sphdistance', 'Make grid of distances to nearest points on a sphere', '', 1),
+('sphdistance', 'sphdistance', 'Make Voronoi distance, node, or nearest-neighbor grid on a sphere', '', 1),
 ('sphinterpolate', 'sphinterpolate', 'Spherical gridding in tension of data on a sphere', '', 1),
 ('sphtriangulate', 'sphtriangulate', 'Delaunay or Voronoi construction of spherical lon,lat data', '', 1),
 ('splitxyz', 'splitxyz', 'Split xyz[dh] data tables into individual segments', '', 1),

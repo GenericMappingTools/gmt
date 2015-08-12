@@ -37,7 +37,7 @@
 
 #define THIS_MODULE_NAME	"sphdistance"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Make grid of distances to nearest points on a sphere"
+#define THIS_MODULE_PURPOSE	"Make Voronoi distance, node, or nearest-neighbor grid on a sphere"
 #define THIS_MODULE_KEYS	"<DI,NDi,QDi,GGO"
 
 #include "gmt_dev.h"
@@ -45,12 +45,18 @@
 
 #define GMT_PROG_OPTIONS "-:RVbdhirs" GMT_OPT("F")
 
+enum sphdist_modes {
+	SPHD_DIST = 0,
+	SPHD_NODES = 1,
+	SPHD_VALUES = 2};
+
 struct SPHDISTANCE_CTRL {
 	struct C {	/* -C */
 		bool active;
 	} C;
-	struct E {	/* -E */
+	struct E {	/* -Ed|n|z */
 		bool active;
+		unsigned int mode;
 	} E;
 	struct G {	/* -G<maskfile> */
 		bool active;
@@ -125,7 +131,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: sphdistance [<table>] -G<outgrid> %s [-C] [-E]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: sphdistance [<table>] -G<outgrid> %s [-C] [-En|z|d]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<unit>] [-N<nodetable>] [-Q<voronoitable>] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -139,9 +145,12 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read (but see -Q).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Assign to grid nodes the Voronoi polygon ID [Calculate distances].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the quantity that should be assigned to the grid nodes:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -En The Voronoi polygon ID.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ez The z-value of the Voronoi center node (NN gridding).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ed The distance to the nearest data point [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, or arc (s)econd [e].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   PROJ_ELLIPSOID determines if geodesic or gerat-circle distances are used.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   PROJ_ELLIPSOID determines if geodesic or great-circle distances are used.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify node filename for the Voronoi polygons (sphtriangulate -N output).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Specify table with Voronoi polygons in sphtriangulate -Qv format\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default performs Voronoi construction on input data first].\n");
@@ -184,6 +193,11 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 				break;
 			case 'E':
 				Ctrl->E.active = true;
+				switch (opt->arg[0]) {	/* Select output grid mode */
+					case 'n': Ctrl->E.mode = SPHD_NODES;  break;
+					case 'z': Ctrl->E.mode = SPHD_VALUES; break;
+					default:  Ctrl->E.mode = SPHD_DIST;   break;
+				}
 				break;
 			case 'G':
 				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
@@ -241,7 +255,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	bool first = false, periodic, duplicate_col;
 	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
-	unsigned int row, col, p_col, west_col, east_col, nx1;
+	unsigned int row, col, p_col, west_col, east_col, nx1, n_in = 0;
 	uint64_t n_dup = 0, n_set = 0, side, ij, node, n = 0;
 	uint64_t vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 
@@ -250,6 +264,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	double first_x = 0.0, first_y = 0.0, prev_x = 0.0, prev_y = 0.0, X[3];
 	double *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
+	
+	float f_val = 0.0, *z_val = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 	struct SPHDISTANCE_CTRL *Ctrl = NULL;
@@ -333,7 +349,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Must process input point/line data */
-		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+		n_in = (Ctrl->E.mode == SPHD_VALUES) ? 3 : 2;
+		if ((error = GMT_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
@@ -349,6 +366,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		n_alloc = 0;
 		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
+		if (Ctrl->E.mode == SPHD_VALUES) z_val = GMT_memory (GMT, NULL, n_alloc, float);
 
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
@@ -389,10 +407,12 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 			if (!Ctrl->C.active) {
 				lon[n] = in[GMT_X];	lat[n] = in[GMT_Y];
 			}
+			if (Ctrl->E.mode == SPHD_VALUES) z_val[n] = in[GMT_Z];
 
 			if (++n == n_alloc) {	/* Get more memory */
 				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
 				GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
+				if (Ctrl->E.mode == SPHD_VALUES) z_val = GMT_memory (GMT, z_val, n_alloc, float);
 			}
 			first = false;
 		} while (true);
@@ -478,6 +498,12 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 			P->coord[GMT_Y][vertex] = P->coord[GMT_Y][0];
 			if ((++vertex) == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
+			switch (Ctrl->E.mode) {
+				case SPHD_NODES:	f_val = (float)node;	break;
+				case SPHD_VALUES:	f_val = z_val[node];	break;
+				default:	break;	/* Must compute distances below */
+			}
+			
 		}
 
 		/* Here we have the polygon in P */
@@ -508,7 +534,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 				side = GMT_inonout_sphpol (GMT, grid_lon[col], grid_lat[row], P);	/* No holes to worry about here */
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);
-				Grid->data[ij] = (Ctrl->E.active) ? (float)node : (float)GMT_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
+				if (Ctrl->E.mode == SPHD_DIST) f_val = (float)GMT_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
+				Grid->data[ij] = f_val;
 				n_set++;
 				if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */
 					if (col == 0) Grid->data[ij+nx1] = Grid->data[ij], n_set++;
@@ -539,6 +566,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		GMT_free (GMT, lon);
 		GMT_free (GMT, lat);
 	}
+	if (Ctrl->E.mode == SPHD_VALUES) GMT_free (GMT, z_val);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
