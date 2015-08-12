@@ -273,6 +273,12 @@ void DOS_path_fix (char *dir) {
 	for (k = 4; k < n-2; k++) {
 		if ((dir[k-1] == ':' && dir[k+1] == ':' && dir[k+2] == '/' && isalpha ((int)dir[k])) )
 			dir[k-1] = ';';
+		else if ((dir[k-1] == ':' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
+			/* The form ...:/C/... will become ...;C:/... */
+			dir[k-1] = ';';
+			dir[k] = dir[k+1];
+			dir[k+1] = ':';
+		}
 	}
 }
 #endif
