@@ -7714,6 +7714,12 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 			GMT->session.DATADIR = strdup (this_c);
 			DOS_path_fix (GMT->session.DATADIR);
 		}
+#ifdef WIN32
+		else if (strchr(this_c, ':')) {		/* May happen to have ':' as a path separator when running a MSYS bash shell*/
+			GMT->session.DATADIR = strdup(this_c);
+			DOS_path_fix(GMT->session.DATADIR);
+		}
+#endif
 	}
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
