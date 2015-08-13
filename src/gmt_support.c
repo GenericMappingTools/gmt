@@ -6045,6 +6045,8 @@ unsigned int GMT_inonout_sphpol (struct GMT_CTRL *GMT, double plon, double plat,
 	 *	   c) Draw meridian through P and count intersections:
 	 *		odd: P is inside; even: P is outside
 	 * In all cases, we check if P is on the outline of S
+	 * Limitation: We assume points are closely spaced so that we can do linear
+	 * approximation between successive points in the polygon.
 	 */
 
 	unsigned int count[2];
