@@ -45,10 +45,6 @@
 
 #define GMT_PROG_OPTIONS "-:RVbdhirs" GMT_OPT("F")
 
-#if DEBUG
-int only = -1;
-#endif
-
 enum sphdist_modes {
 	SPHD_DIST = 0,
 	SPHD_NODES = 1,
@@ -471,30 +467,29 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	periodic = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 
-	if (Ctrl->Q.active) {	/* Pre-chewed, just get number of nodes */
+	if (Ctrl->Q.active)	/* Pre-chewed, just get number of nodes */
 		n = Table->n_segments;
-	}
-	else {	/* Need a single polygon structure that we reuse for each polygon */
-		P = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Needed as pointer below */
-		P->coord = GMT_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
-		P->min = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
-		P->max = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
-		P->n_columns = 2;
-
-		GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
-
+	else
 		V = &T.V;
-	}
 
+#ifdef _OPENMP_NOTWORKINGYET
+#pragma omp parallel for private(node,P,p_alloc,node_new,node_stop,vertex_new,vertex,node_last,vertex_last,f_val,south_row,north_row,\
+w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,Table,V,Grid,n,nx1,grid_lon,grid_lat,lon,lat,n_set,duplicate_col)
+#endif
 	for (node = 0; node < n; node++) {
-#if DEBUG
-		if (only >= 0 && node != only) continue;
-#endif		
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing polygon %7ld\r", node);
 		if (Ctrl->Q.active) {	/* Just point to next polygon */
 			P = Table->segment[node];
 		}
 		else {	/* Obtain current polygon from Voronoi listings */
+			if (P == NULL) {	/* Need a single polygon structure that we reuse for each polygon */
+				P = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Needed as pointer below */
+				P->coord = GMT_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
+				P->min = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
+				P->max = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
+				P->n_columns = 2;	p_alloc = 0;
+				GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
+			}
 			node_new = node_stop = V->lend[node];
 			vertex_new = V->listc[node_new];
 
@@ -558,7 +553,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 				side = GMT_inonout_sphpol (GMT, grid_lon[col], grid_lat[row], P);	/* No holes to worry about here */
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);
-				if (Ctrl->E.mode == SPHD_DIST) f_val = (float)GMT_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
+				if (Ctrl->E.mode == SPHD_DIST)
+					f_val = (float)GMT_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
 				Grid->data[ij] = f_val;
 				n_set++;
 				if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */
