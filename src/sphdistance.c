@@ -45,18 +45,28 @@
 
 #define GMT_PROG_OPTIONS "-:RVbdhirs" GMT_OPT("F")
 
+#if DEBUG
+int only = -1;
+#endif
+
 enum sphdist_modes {
 	SPHD_DIST = 0,
 	SPHD_NODES = 1,
 	SPHD_VALUES = 2};
 
 struct SPHDISTANCE_CTRL {
+	struct A {	/* -A[m|p|x|y|step] */
+		bool active;
+		unsigned int mode;
+		double step;
+	} A;
 	struct C {	/* -C */
 		bool active;
 	} C;
-	struct E {	/* -Ed|n|z */
+	struct E {	/* -Ed|n|z[<dist>] */
 		bool active;
 		unsigned int mode;
+		double dist;
 	} E;
 	struct G {	/* -G<maskfile> */
 		bool active;
@@ -100,10 +110,13 @@ void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	if (GMT_360_RANGE (lon_sum, 0.0)) {	/* Contains a pole */
 		if (lat_sum < 0.0) { /* S */
 			P->pole = -1;
+			P->lat_limit = P->min[GMT_Y];
 			P->min[GMT_Y] = -90.0;
+			
 		}
 		else {	/* N */
 			P->pole = +1;
+			P->lat_limit = P->max[GMT_Y];
 			P->max[GMT_Y] = 90.0;
 		}
 		P->min[GMT_X] = 0.0;	P->max[GMT_X] = 360.0;
@@ -114,6 +127,7 @@ void *New_sphdistance_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	struct SPHDISTANCE_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct SPHDISTANCE_CTRL);
+	C->E.dist = 1.0;	/* Default is 1 degree Voronoi edge resampling */
 	C->L.unit = 'e';	/* Default is meter distances */
 	return (C);
 }
@@ -131,7 +145,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: sphdistance [<table>] -G<outgrid> %s [-C] [-En|z|d]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: sphdistance [<table>] -G<outgrid> %s [-C] [-En|z|d[<dr>]]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<unit>] [-N<nodetable>] [-Q<voronoitable>] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -144,11 +158,14 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read (but see -Q).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting Voronoi arcs using great circles, i.e., connect by straight lines,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the quantity that should be assigned to the grid nodes:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -En The Voronoi polygon ID.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ez The z-value of the Voronoi center node (NN gridding).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ed The distance to the nearest data point [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append resampling interval in spherical degrees for polygon arcs [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, or arc (s)econd [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   PROJ_ELLIPSOID determines if geodesic or great-circle distances are used.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify node filename for the Voronoi polygons (sphtriangulate -N output).\n");
@@ -169,7 +186,7 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, k;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -194,10 +211,12 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 			case 'E':
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {	/* Select output grid mode */
-					case 'n': Ctrl->E.mode = SPHD_NODES;  break;
-					case 'z': Ctrl->E.mode = SPHD_VALUES; break;
-					default:  Ctrl->E.mode = SPHD_DIST;   break;
+					case 'n': Ctrl->E.mode = SPHD_NODES;  k = 1;	break;
+					case 'z': Ctrl->E.mode = SPHD_VALUES; k = 1;	break;
+					case 'd': Ctrl->E.mode = SPHD_DIST;   k = 1;	break;
+					default:  Ctrl->E.mode = SPHD_DIST;   k = 0;	break;
 				}
+				if (opt->arg[k]) Ctrl->E.dist = atof (&opt->arg[k]);
 				break;
 			case 'G':
 				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
@@ -460,13 +479,17 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		P->coord = GMT_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
 		P->min = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
 		P->max = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
+		P->n_columns = 2;
 
 		GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
 
 		V = &T.V;
 	}
-	for (node = 0; node < n; node++) {
 
+	for (node = 0; node < n; node++) {
+#if DEBUG
+		if (only >= 0 && node != only) continue;
+#endif		
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing polygon %7ld\r", node);
 		if (Ctrl->Q.active) {	/* Just point to next polygon */
 			P = Table->segment[node];
@@ -508,6 +531,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 
 		/* Here we have the polygon in P */
 
+		P->n_rows = GMT_fix_up_path (GMT, &P->coord[GMT_X], &P->coord[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF);
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);

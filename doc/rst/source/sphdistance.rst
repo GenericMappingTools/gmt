@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**sphdistance** [ *table* ] **-G**\ *grdfile* [ **-C** ] [ **-Ed**\ \|\ **n**\ \|\ **z** ]
+**sphdistance** [ *table* ] **-G**\ *grdfile* [ **-C** ] [ **-Ed**\ \|\ **n**\ \|\ **z**\ [*dist*] ]
 [ |SYN_OPT-I| ]
 [ **-L**\ *unit* ] [ **-Q**\ *voronoi.txt* ]
 [ |SYN_OPT-R| ]
@@ -58,12 +58,14 @@ Optional Arguments
     from one form to the other when necessary [Default keeps both arrays
     in memory]. Not applicable with **-Q**.
 
-**-Ed**\ \|\ **n**\ \|\ **z**
+**-Ed**\ \|\ **n**\ \|\ **z**\ [*dist*]
     Specify the quantity that should be assigned to the grid nodes.  By
     default we compute distances to the nearest data point [**-Ed**].
     Use **-En** to assign the ID numbers of the Voronoi polygons that each
     grid node is inside, or use **-Ez** for a nearest-neighbor grid where
     we assign all nodes inside the polygon the z-value of the center node.
+    Optionally, append the resampling interval along Voronoi arcs in spherical
+    degrees [1].
 
 .. include:: explain_-I.rst_
 
