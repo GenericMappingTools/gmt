@@ -51,7 +51,7 @@ Required Arguments
     one or more comma-separated model components.  Each component is
     of the form **T**\ *n*, where **T** indicates the basis function and
     *n* indicates the polynomial degree or how many terms in the Fourier series we want to include.  Choose
-    **T** from **p** (polynomial up to degree *terms*), **P** (just the
+    **T** from **p** (polynomial with intercept and powers of x up to degree *terms*), **P** (just the
     single term *x^n*), **f** (Fourier series with *n* terms),
     **c** (Cosine series with *n* terms), **s** (sine series with
     *n* terms), **F** (single Fourier component of order *n*),
@@ -173,7 +173,7 @@ To make the above linear trend robust with respect to outliers, use:
 
     gmt trend1d data.xy -Fxr -Np1+r > detrended_data.xy
 
-To fit the model y(x) = a + bx^2 + c* cos(2*pi*3*x/l), with l the fundamental period (here l = 15), try:
+To fit the model y(x) = a + bx^2 + c * cos(2*pi*3*(x/l) + d * sin(2*pi*3*(x/l), with l the fundamental period (here l = 15), try:
 
    ::
 

@@ -513,8 +513,8 @@ int GMT_trend1d_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Choose at least 1, up to 5, any order, of xymrw for ASCII output to stdout.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   x=x, y=y, m=model, r=residual=y-m, w=weight.  w determined iteratively if robust fit used.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively choose -Fp to output only the model coefficients (Polynomial).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify a polynomial, Fourier, or mixed model of any order, separate components by commas:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     p<n> adds complete polynomial up to degree <n>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify a polynomial, Fourier, or mixed model of any order; separate components by commas:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     p<n> adds complete polynomial (including intercept) up to degree <n>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     P<n> (or xx..x adds the component x^<n> only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f<n> adds the Fourier series components 1-n.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     F<n> adds just the <n>'th Fourier component.\n");
@@ -524,7 +524,7 @@ int GMT_trend1d_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     S<n> adds just the <n>'th sine component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +o<orig> to set origin of x [mid-point of x].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l<period> to set fundamental period of x [range of x].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +r for robust model. E.g., robust quadratic = -Np3+r.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +r for robust model. E.g., robust quadratic = -Np2+r.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with (x,y[,w]) data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
