@@ -232,7 +232,7 @@ void transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODE
 	uint64_t i;
 	double offset, scale;
 
-	offset = 0.5 * (xmin + xmax);	/* Mid Range  */
+	offset = (M->intercept) ? 0.5 * (xmin + xmax) : M->origin[GMT_X];	/* Mid Range or actual origin if no intercept */
 	scale = 2.0 / (xmax - xmin);	/* 1 / (1/2 Range)  */
 
 	/* Always normalize x for Chebyshev or polynomial fit */
@@ -251,7 +251,7 @@ void untransform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MO
 	double offset, scale;
 
 	if ((M->type & 1) == 0) return;	/* Nothing to do */
-	offset = 0.5 * (xmin + xmax);	/* Mid Range  */
+	offset = (M->intercept) ? 0.5 * (xmin + xmax) : M->origin[GMT_X];	/* Mid Range or actual origin if no intercept */
 	scale = 0.5 * (xmax - xmin);	/* 1/2 Range  */
 
 	for (i = 0; i < n_data; i++) data[i].x = (data[i].x * scale) + offset;
@@ -812,7 +812,7 @@ int GMT_trend1d (void *V_API, int mode, void *args)
 		sprintf (format, "%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
 		GMT_Message (API, GMT_TIME_NONE, "\n");
-		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
+		if (Ctrl->N.M.chebyshev) GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Model Coefficients (Polynomial): ");
 		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
 		GMT_Message (API, GMT_TIME_NONE, "\n");

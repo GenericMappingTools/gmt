@@ -86,6 +86,7 @@ struct GMT_MODEL_TERM {	/* A single model term */
 struct GMT_MODEL {	/* A model consists of n_terms */
 	bool robust;		/* True for L1 fitting [L2] */
 	bool chebyshev;		/* True if given polynomial of order n */
+	bool intercept;		/* True if given model has intercept */
 	bool got_origin[2];	/* True if we got origin(s) */
 	bool got_period[2];	/* True if we got periods(s) */
 	unsigned int dim;	/* 1 or 2 */

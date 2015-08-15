@@ -2672,7 +2672,7 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 
 	unsigned int pos = 0, n_model = 0, k, j, n_P = 0, n_p = 0;
 	int64_t order, xstart, xstop, step;
-	bool got_intercept, got_pol = false, single;
+	bool got_pol = false, single;
 	enum GMT_enum_model kind;
 	char p[GMT_BUFSIZ] = {""}, *this_range = NULL, *arg = NULL, *name = "pcs", *c = NULL;
 
@@ -2718,7 +2718,7 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 			if (!got_pol && order == 0) {	/* When order == 0 for trig function we substitute polynomial of order 0 instead */
 				M->term[n_model].kind = GMT_POLYNOMIAL;
 				M->term[n_model].order[GMT_X] = (unsigned int)order;
-				got_pol = got_intercept = true;
+				got_pol = M->intercept = true;
 				n_model++;
 				n_P++;
 				M->type |= 1;	/* Polynomial */
@@ -2732,7 +2732,7 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 					M->term[n_model].order[GMT_X] = (unsigned int)order;
 					M->type |= 1;	/* Polynomial */
 					got_pol = true;
-					if (M->term[n_model].order[GMT_X] == 0) got_intercept = true;
+					if (M->term[n_model].order[GMT_X] == 0) M->intercept = true;
 					n_model++;
 					break;
 				case GMT_FOURIER:	/* Add a Fourier basis (2 parts) */
@@ -2777,12 +2777,12 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 			}
 		}
 	}
-	if (n_P == 0 && n_p == 1) M->chebyshev = true;	/* Can fit via Chebyshev polynomials */
+	if (!single && n_P == 0 && n_p == 1) M->chebyshev = true;	/* Can fit via Chebyshev polynomials */
 	M->n_terms = n_model;
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Report our trend model y(x) if -V */
 		char *way[2] = {"last squares", "robust"}, report[GMT_BUFSIZ] = {""}, piece[GMT_LEN64] = {""};
-		if (!got_intercept) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -%c: No intercept term (p0) given\n", option);
+		if (!M->intercept) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -%c: No intercept term (p0) given\n", option);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Solving for %u terms using a %s norm.  The model:\n", n_model, way[M->robust]);
 		sprintf (report, "y(x) = ");
 		for (k =  0; k < n_model; k++) {
