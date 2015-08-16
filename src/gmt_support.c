@@ -7533,7 +7533,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 		text[start] = '\0';	/* Truncate string for now */
 	}
 	if (! (B->boxdraw || B->boxfill)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Need to add at least one of +<pen> or +g<fill>\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Need to add at least one of +p<pen> or +g<fill>\n", option);
 		return (1);
 	}
 	/* Decode the w/e/s/n or width[/height] part */

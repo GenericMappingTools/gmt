@@ -67,7 +67,7 @@ struct PSHISTOGRAM_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} L;
-	struct N {	/* -N[<kind>]+<pen>, <kind = 0,1,2 */
+	struct N {	/* -N[<kind>]+p<pen>, <kind = 0,1,2 */
 		bool active;
 		bool selected[3];
 		struct GMT_PEN pen[3];
@@ -115,24 +115,24 @@ struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 void *New_pshistogram_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	unsigned int k;
 	struct PSHISTOGRAM_CTRL *C = NULL;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct PSHISTOGRAM_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.offset = 6.0 / 72.0;	/* 6 points */
 	C->D.font = GMT->current.setting.font_annot[0];		/* Default font */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Do not fill is default */
 	C->L.pen = GMT->current.setting.map_default_pen;
 	for (k = 0; k < 3; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;
-		
+
 	return (C);
 }
 
 void Free_pshistogram_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);	
-	if (C->C.file) free (C->C.file);	
-	GMT_free (GMT, C);	
+	if (C->Out.file) free (C->Out.file);
+	if (C->C.file) free (C->C.file);
+	GMT_free (GMT, C);
 }
 
 int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, uint64_t n) {
@@ -369,7 +369,7 @@ int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
 
 	return (0);
 }
-	
+
 int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -484,7 +484,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 							break;
 					}
 				}
-				break;		
+				break;
 			case 'F':
 				Ctrl->F.active = true;
 				break;
@@ -576,14 +576,14 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 {
 	bool automatic = false;
 	int error = 0;
-	
+
 	uint64_t n;
 	size_t n_alloc = GMT_CHUNK;
 
 	char format[GMT_BUFSIZ];
-	
+
 	double *data = NULL, stats[6], area, tmp, x_min, x_max, *in = NULL;
-	
+
 	struct PSHISTOGRAM_INFO F;
 	struct PSHISTOGRAM_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -649,7 +649,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 		}
 
 		/* Data record to process */
-		
+
 		data[n] = in[GMT_X];
 		if (!GMT_is_dnan (data[n])) {
 			x_min = MIN (x_min, data[n]);
@@ -662,7 +662,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			data = GMT_memory (GMT, data,  n_alloc, double);
 		}
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {
 		Return (API->error);	/* Disables further data input */
 	}
@@ -719,7 +719,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_DATASEGMENT *S = NULL;
-			
+
 			if (Ctrl->I.mode == 1) {
 				for (ibox = 0; ibox < F.n_boxes; ibox++) {
 					if (Ctrl->I.mode == 1 && F.boxh[ibox] == 0) continue;
@@ -728,7 +728,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			}
 			else
 				n_boxes = F.n_boxes;
-			
+
 			dim[GMT_ROW] = n_boxes;
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
@@ -851,7 +851,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	if (Ctrl->D.just == 0) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Area under histogram is %g\n", area);
-	
+
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
 		unsigned int type, k, NP = 101U;
 		double f, z, xtmp, ytmp, inc;
@@ -878,7 +878,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 					case PSHISTOGRAM_LOG_FREQ_PCT:		yp[k] = d_log1p (GMT, 100.0 * yp[k] / F.n_counted);	break;
 					case PSHISTOGRAM_LOG10_FREQ_PCT:	yp[k] = d_log101p (GMT, 100.0 * yp[k] / F.n_counted);	break;
 				}
-				
+
 				GMT_geo_to_xy (GMT, xp[k], yp[k], &xtmp, &ytmp);
 				xp[k] = xtmp;	yp[k] = ytmp;
 			}
@@ -887,7 +887,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 		GMT_free (GMT, xp);
 		GMT_free (GMT, yp);
 	}
-	
+
 	if (Ctrl->D.just == 0) GMT_map_clip_off (GMT);
 
 	GMT_map_basemap (GMT);
