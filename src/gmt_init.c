@@ -2578,9 +2578,9 @@ int gmt_trend_modifiers (struct GMT_CTRL *GMT, char option, char *c, unsigned in
 	char p[GMT_BUFSIZ] = {""};
 	unsigned int pos = 0;
 	int k;
-	
+
 	/* Gave one or more modifiers */
-	
+
 	while ((GMT_strtok (c, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'o':	/* Origin of axes */
@@ -2766,7 +2766,7 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 		}
 	}
 	free (arg);
-	
+
 	/* Make sure there are no duplicates */
 
 	for (k = 0; k < n_model; k++) {
@@ -9735,7 +9735,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 /*! . */
 int GMT_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 {
-	/* Parser for -Sf<tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>][+<pen>]
+	/* Parser for -Sf<tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>][+p<pen>]
 	 * <tickgap> is required and is either a distance in some unit (append c|i|p)
 	 * or it starts with - and gives the number of desired ticks instead.
 	 * <ticklen> defaults to 15% of <tickgap> but is required if the number
@@ -10162,7 +10162,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			check = false;
 			break;
 
-		case 'f':	/* Fronts: -Sf<spacing>[/<size>][+r+l][+f+t+s+c+b][+o<offset>][+<pen>]	[WAS: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
+		case 'f':	/* Fronts: -Sf<spacing>[/<size>][+r+l][+f+t+s+c+b][+o<offset>][+p<pen>]	[WAS: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
 			p->symbol = GMT_SYMBOL_FRONT;
 			p->f.f_off = 0.0;	p->f.f_symbol = GMT_FRONT_FAULT;	p->f.f_sense = GMT_FRONT_CENTERED;
 			check = false;
