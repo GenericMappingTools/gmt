@@ -139,7 +139,7 @@ echo "0.5 0.4 Satellite" | gmt pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> $p
 # save the weights on output.  Then we will plot the weights and see how things
 # look:
 #
-gmt trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
+gmt trend1d -Fxw -Np2+r samp_ship.pg > samp_ship.xw
 gmt psxy $R -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
 	-BWeSn -UL/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > example_03d.ps
@@ -150,9 +150,9 @@ gmt psxy $R -JX8i/1.1i -O -Y4.25i -Bxf100 -Bya0.5f0.1+l"Weight" -BWesn -Sp0.03i 
 # From this we see that we might want to throw away values where w < 0.6.  So we try that,
 # and this time we also use gmt trend1d to return the residual from the model fit (the 
 # de-trended data):
-gmt trend1d -Fxrw -N2r samp_ship.pg | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
+gmt trend1d -Fxrw -Np2+r samp_ship.pg | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
 	| gmt sample1d -Nsamp.x > samp2_ship.pg
-gmt trend1d -Fxrw -N2r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
+gmt trend1d -Fxrw -Np2+r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
 	| gmt sample1d -Nsamp.x > samp2_sat.pg
 #
 # We plot these to see how they look:
