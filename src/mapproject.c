@@ -707,11 +707,15 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		GMT_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		GMT_set_cartesian (GMT, GMT_IN);
 	}
-	if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
+	else if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
 		GMT_set_geographic (GMT, GMT_IN);
 		GMT_set_geographic (GMT, GMT_OUT);
 		o_type[GMT_X] = GMT_X;	o_type[GMT_Y] = GMT_Y;
 		GMT->current.io.col_type[GMT_IN][GMT_Z] = GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
+	}
+	else if (GMT_is_geographic (GMT, GMT_OUT)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Override -fog for normal operation\n");
+		GMT_set_cartesian (GMT, GMT_OUT);
 	}
 
 	/* Specify input and output expected columns */
