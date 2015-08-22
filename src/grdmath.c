@@ -2094,7 +2094,7 @@ void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 {
 	uint64_t node, row, col, seg, tbl, old_row = INT64_MAX;
 	int i, old_i = INT32_MAX;
-	double lon, lon1, lat, x, y, hor, bin_size, slop, d;
+	double lon, lon1, lat, x, y, hor = DBL_MAX, bin_size, slop, d;
 	double max_hor = 0.0, wesn[4] = {0.0, 360.0, -90.0, 90.0};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;

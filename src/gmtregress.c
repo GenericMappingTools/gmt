@@ -361,7 +361,7 @@ double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int no
 
 double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, unsigned int norm)
 {	/* Return the proper "weighted average" intercept given chosen norm */
-	double intercept;
+	double intercept = 0.0;
 	struct GMT_OBSERVATION *ee = NULL;
 	
 	if (norm != GMTREGRESS_NORM_L2) {	/* Need temporary space for scaled residuals */
@@ -396,7 +396,7 @@ double intercept (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, bool w
 
 double get_scale_factor (unsigned int regression, double slope)
 {	/* Scale that turns a y-misfit into another misfit measures given regression slope */
-	double f;
+	double f = 1.0;	/* To please gcc */
 	slope = fabs (slope);
 	switch (regression) {
 		case GMTREGRESS_X:   f = 1.0 / slope; break;
@@ -690,6 +690,10 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 		case GMTREGRESS_NORM_L1:  misfit = L1_misfit;  break;
 		case GMTREGRESS_NORM_L2:  misfit = L2_misfit;  break;
 		case GMTREGRESS_NORM_LMS: misfit = LMS_misfit; break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Internal error: misfit norm not specified?\n");
+			misfit = L2_misfit;
+			break;
 	}
 	if (GMT_IS_ZERO (fabs (angle) - 90.0)) {	/* Vertical line is a special case since slope is infinity */
 		b = GMT->session.d_NaN;				/* Slope is undefined */
@@ -736,6 +740,10 @@ double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint6
 		case GMTREGRESS_NORM_L1:  scl_func = L1_scale;  break;
 		case GMTREGRESS_NORM_L2:  scl_func = L2_scale;  break;
 		case GMTREGRESS_NORM_LMS: scl_func = LMS_scale; break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Internal error: misfit norm not specified?\n");
+			scl_func = L2_scale;
+			break;
 	}
 	
 	GMT_memset (par,  GMTREGRESS_NPAR, double);	/* Reset all regression parameters */
@@ -874,7 +882,7 @@ double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double 
 	uint64_t k;
 	unsigned int norm = in_norm;
 	bool flipped, reweighted_ls = false;
-	double scale, *x = NULL, *y = NULL, *z = NULL, *ww[3] = {NULL, NULL, NULL};
+	double scale = 0.0, *x = NULL, *y = NULL, *z = NULL, *ww[3] = {NULL, NULL, NULL};
 	
 	if (in_norm == GMTREGRESS_NORM_RLS) {	/* Reweighted Least Squares means first LMS, then remove outliers, then L2 for final result */
 		norm = GMTREGRESS_NORM_LMS;
@@ -929,6 +937,7 @@ double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double 
 			}
 			break;
 	}
+	assert (scale != 0.0);	/* This would be failure */
 	if (flipped) {	/* Must transpose back the results */
 		/* We solved x = a' + b' * y but we wanted y = a + b * x.
 		 * Basic algebra shows a = -a' / b' and b = 1/b'.
@@ -982,7 +991,7 @@ double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double 
 
 int GMT_gmtregress (void *V_API, int mode, void *args)
 {
-	uint64_t k, seg, tbl, col, row, n_try, n_t, n_alloc = 0, n_columns = GMTREGRESS_N_FARGS;
+	uint64_t k, seg, tbl, col, row, n_try = 0, n_t, n_alloc = 0, n_columns = GMTREGRESS_N_FARGS;
 
 	int error = 0;
 	
@@ -1103,7 +1112,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 			}
 			
 			if (Ctrl->A.active) {	/* Explore E vs slope only - no final best regression is returned */
-				uint64_t min_row;
+				uint64_t min_row = 0;
 				double angle, min_E = DBL_MAX;
 				bool weighted = (Ctrl->E.mode == GMTREGRESS_X) ? (w[GMT_X]) : (w[GMT_Y]);	/* true if these pointers are not NULL */
 				

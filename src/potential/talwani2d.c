@@ -509,8 +509,8 @@ double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struc
 int GMT_talwani2d (void *V_API, int mode, void *args)
 {
 	int row, error = 0, ns;
-	unsigned int k, tbl, seg, n, geometry, n_bodies, dup_node, n_duplicate = 0;
-	size_t n_alloc, n_alloc1;
+	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node, n_duplicate = 0;
+	size_t n_alloc = 0, n_alloc1 = 0;
 	uint64_t dim[4] = {1, 1, 0, 2};
 	double scl, rho, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;

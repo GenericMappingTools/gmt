@@ -487,7 +487,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	int error, scol, srow, scol_0, srow_0;
 	
 	unsigned int n_expected_fields, n_out, nx1, d_mode, row, col, row_0, col_0;
-	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col, t1_col;
+	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col = 0, t1_col = 0;
 	
 	uint64_t n_smts = 0, tbl, seg, rec, ij;
 	
@@ -497,9 +497,9 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	
 	float *data = NULL;
 	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
-	double add, f, max, r_km, amplitude, h_scale, z_assign, h_scl, noise, this_user_time, life_span, t_mid, v_curr, v_prev;
+	double add, f, max, r_km, amplitude, h_scale = 0.0, z_assign, h_scl, noise, this_user_time = 0.0, life_span, t_mid, v_curr, v_prev;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM, *V = NULL;
-	double fwd_scale, inv_scale, inch_to_unit, unit_to_inch, prev_user_time, h_curr, h_prev, h0, phi_prev, phi_curr;
+	double fwd_scale, inv_scale, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, phi_prev, phi_curr;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL;
 	void (*shape_func) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
 	double (*phi_solver) (double in[], double f, double v, bool elliptical);
@@ -548,11 +548,17 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	switch (Ctrl->C.mode) {
 		case SHAPE_CONE:  shape_func = cone_area_volume_height;
 				  phi_solver = cone_solver; break;
-		case SHAPE_DISC:  shape_func = disc_area_volume_height; break;
+		case SHAPE_DISC:  shape_func = disc_area_volume_height;
+				  phi_solver = NULL; break;
 		case SHAPE_PARA:  shape_func = para_area_volume_height;
 		  		  phi_solver = para_solver; break;
 		case SHAPE_GAUS:  shape_func = gaussian_area_volume_height;
 		  		  phi_solver = gauss_solver; break;
+		default:
+			GMT_Report (API, GMT_MSG_DEBUG, "Internal error: Shape not set?\n");
+			shape_func = gaussian_area_volume_height;
+			phi_solver = gauss_solver;
+			break;
 	}
 
 	build_mode = (Ctrl->T.active) ? SHAPE_DISC : Ctrl->C.mode;	/* For incremental building we use disc increments regardless of shape */

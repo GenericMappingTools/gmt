@@ -820,7 +820,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		bool periodic = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
-		double xpos[2], width;
+		double xpos[2], width = 0.0;
 
 		/* Determine if we need to worry about repeating periodic symbols */
 		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN)) {

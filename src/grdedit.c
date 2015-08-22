@@ -381,7 +381,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->E.active) {	/* Transpose, flip, or rotate the matrix and possibly exchange x and y info */
 		struct GMT_GRID_HEADER *h_tr = NULL;
-		uint64_t ij, ij_tr;
+		uint64_t ij, ij_tr = 0;
 		float *a_tr = NULL;
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */

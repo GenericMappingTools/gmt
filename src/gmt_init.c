@@ -2672,7 +2672,7 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 
 	unsigned int pos = 0, n_model = 0, k, j, n_P = 0, n_p = 0;
 	int64_t order, xstart, xstop, step;
-	bool got_pol = false, single;
+	bool got_pol = false, single = false;
 	enum GMT_enum_model kind;
 	char p[GMT_BUFSIZ] = {""}, *this_range = NULL, *arg = NULL, *name = "pcs", *c = NULL;
 
@@ -2699,6 +2699,7 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 			case 'c': case 'C': kind = GMT_COSINE; break;
 			case 's': case 'S': kind = GMT_SINE; break;
 			case 'f': case 'F': kind = GMT_FOURIER; break;
+			default: kind = GMT_POLYNOMIAL; break;	/* To please gcc */
 
 		}
 		if (p[0] == 'x')	{	/* Single building block and not all items of given order */

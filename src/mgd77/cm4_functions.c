@@ -129,7 +129,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
 	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows, i_unused = 0;
-	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd = 0, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
+	int *msec, *mjdy, imon = 0, idom = 0, jaft, jmon, jdom, jmjd = 0, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
 	int nout = 0, nygo = 0, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
 	double *mut, *dstx = NULL, dstt = 0., x, y, z, h, t, dumb, bmdl[21], jmdl[12], date, dst, mut_now, alt;

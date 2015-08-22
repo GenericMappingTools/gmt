@@ -240,7 +240,7 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 
 	unsigned int i, j, k, k0, i2, j2, n;
 	int ier;
-	uint64_t row, seg, rhs, w_col;
+	uint64_t row, seg, rhs, w_col = 0;
 	double cond, w = 1.0;
 	double *N = NULL, *r = NULL, *d = NULL, *x = NULL;
 	struct GMT_DATATABLE *T = S->D->table[0];

@@ -1176,7 +1176,7 @@ void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 
 	char   tabs[16] = {""}, frmt[64] = {""};
 	unsigned int row, col, k, i, km = 0, pm = 0, indf;
-	double rho_or_mag, x_o, y_o, tmp = 1, a, DX, DY, s_rad2;
+	double rho_or_mag, x_o, y_o, tmp = 1, a, DX, DY = 0.0, s_rad2;
 	double out_igrf[7], *igrf_dip = NULL, *igrf_dec = NULL;		/* Row vectors for the case where we will need to compute IGRF params */
 	struct BODY_VERTS *body_verts = NULL;
 
@@ -1312,9 +1312,9 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
 	   In case of polyline output (-F) n_pts is the number of output locations (irrelevant otherwise) */
 
 	int i, indf;
-	struct THREAD_STRUCT *threadArg;
+	struct THREAD_STRUCT *threadArg = NULL;
 #ifdef HAVE_GLIB_GTHREAD
-	GThread **threads;
+	GThread **threads = NULL;
 	if (GMT->common.x.n_threads > 1)
 		threads = GMT_memory (GMT, NULL, GMT->common.x.n_threads, GThread *);
 #endif

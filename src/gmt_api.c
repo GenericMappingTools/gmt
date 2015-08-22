@@ -792,7 +792,7 @@ char * GMTAPI_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode)
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
 	time_t right_now;
-	clock_t toc;
+	clock_t toc = 0;
 	unsigned int H, M, S, milli;
 	double T;
 	static char stamp[GMT_LEN256] = {""};
@@ -2015,7 +2015,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
 	unsigned int geometry, n_used = 0;
-	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true, via, got_data = false;
+	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true, via = false, got_data = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
 	uint64_t row, seg, col, ij, n_records = 0, n_use;
 	p_func_size_t GMT_2D_to_index = NULL;
@@ -2500,7 +2500,7 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 
 	int item, first_item = 0, last_item, this_item = GMT_NOTSET, new_item, new_ID;
 	unsigned int n_used = 0;
-	bool update = false, allocate = false, via;
+	bool update = false, allocate = false, via = false;
 	size_t n_alloc;
 	uint64_t row, seg;
 	char *t_ptr = NULL;
@@ -3551,7 +3551,7 @@ int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, enum GMT_enum_family family, un
 	 */
 
 	unsigned int n_reg = 0;
-	int object_ID, item;
+	int object_ID = GMT_NOTSET, item;
 	struct GMT_OPTION *current = NULL;
 
 	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Passed family = %s and geometry = %s\n", GMT_family[family], GMT_geometry[gmtry(geometry)]);
@@ -4687,7 +4687,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	 * Case 4: family is GRID|IMAGE and method = GMT_GRID_DATA_ONLY: Just find already registered resource
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
-	int in_ID = GMT_NOTSET, item;
+	int in_ID = GMT_NOTSET, item = GMT_NOTSET;
 	unsigned int via = 0;
 	bool just_get_data, reset;
 	void *new_obj = NULL;
@@ -6630,7 +6630,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 
 	 */
 
-	unsigned int n_keys, direction, PS, kind, pos, n_items = 0, ku;
+	unsigned int n_keys, direction = 0, PS, kind, pos, n_items = 0, ku;
 	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
 	int family;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
