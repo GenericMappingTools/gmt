@@ -368,7 +368,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 
 				if (p[k].n == 0) continue;
 
-				used_polygons = true;	/* At least som points made it to here */
+				used_polygons = true;	/* At least some points made it to here */
 
 				/* Find min/max of polygon in inches */
 
