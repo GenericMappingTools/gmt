@@ -81,8 +81,8 @@ Optional Arguments
 **-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*]
     Give either names of xyz[m] and *vertex* files or of a *raw* or
     *stl* file defining a close surface. In the first case append a *d*
-    imediatly after **-T** and optionaly a */m* after the vertex file
-    name. In the second case append a *r* or a *s* imediatly after
+    immediately after **-T** and optionally a */m* after the vertex file
+    name. In the second case append a *r* or a *s* immediately after
     **-T** and before the file name. A *vertex* file is a file with N
     rows (one per triangle) and 3 columns with integers defining the
     order by which the points in the *xyz* file are to be connected to

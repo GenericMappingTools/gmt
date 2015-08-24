@@ -460,7 +460,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t   If the elastic thickness is > 1e10 it will be interpreted as the\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   flexural rigidity (by default it is computed from Te and Young modulus).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   If an optional infill density <ri> != <rl> is appended we find an approximate solution.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   Optionaly, append +m to write a grid with the Moho's geopotential effect\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t   Optionally, append +m to write a grid with the Moho's geopotential effect\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   (see -F) from model selected by -T.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-W Specify water depth (or observation level) in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-Z Specify Moho [and swell] average compensation depths.\n");

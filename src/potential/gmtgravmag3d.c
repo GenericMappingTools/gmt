@@ -182,8 +182,8 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S search radius in km\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Give either names of xyz[m] and vertex files or of a file defining a close surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In the first case append an 'd' imediatly after -T and optionaly a /m after the vertex file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In the second case append an 'r' or a 's' imediatly after -T and before the file name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   In the first case append an 'd' immediately after -T and optionally a /m after the vertex file name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   In the second case append an 'r' or a 's' immediately after -T and before the file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z z level of reference plane [Default = 0]\n");

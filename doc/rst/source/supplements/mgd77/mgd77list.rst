@@ -186,7 +186,7 @@ Required Arguments
     The following short-hand flags are also recognized:
 
     **mgd77**
-        This results in all 27 MGD77 fields being written out in the offical MGD77 order.
+        This results in all 27 MGD77 fields being written out in the official MGD77 order.
     **mgd77t**
         The full set of all 26 columns in the MGD77T specification.
     **geo**
