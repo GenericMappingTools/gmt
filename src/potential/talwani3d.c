@@ -692,9 +692,9 @@ int comp_cakes (const void *cake_a, const void *cake_b)
 
 int GMT_talwani3d (void *V_API, int mode, void *args)
 {
-	int row, col, error = 0, ns;
+	int error = 0, ns;
 	unsigned int k, tbl, seg, ndepths = 0, n = 0, dup_node, n_duplicate = 0;
-	uint64_t node;
+	uint64_t row, node;
 	size_t n_alloc = 0, n_alloc1 = 0;
 	
 	bool flat_earth = false, first_slice = true;
@@ -938,7 +938,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Dealing with a grid */
-		int nx = (int)G->header->nx, ny = (int)G->header->ny;	/* To shut up compiler warnings */
+		int col, nx = (int)G->header->nx, ny = (int)G->header->ny;	/* To shut up compiler warnings */
 		double y_obs, *x_obs = GMT_memory (GMT, NULL, G->header->nx, double);
 		for (col = 0; col < nx; col++) {
 			x_obs[col] = GMT_grd_col_to_x (GMT, col, G->header);
