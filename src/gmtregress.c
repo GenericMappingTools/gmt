@@ -882,7 +882,7 @@ double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double 
 	uint64_t k;
 	unsigned int norm = in_norm;
 	bool flipped, reweighted_ls = false;
-	double scale = 0.0, *x = NULL, *y = NULL, *z = NULL, *ww[3] = {NULL, NULL, NULL};
+	double scale = 1.0, *x = NULL, *y = NULL, *z = NULL, *ww[3] = {NULL, NULL, NULL};
 	
 	if (in_norm == GMTREGRESS_NORM_RLS) {	/* Reweighted Least Squares means first LMS, then remove outliers, then L2 for final result */
 		norm = GMTREGRESS_NORM_LMS;

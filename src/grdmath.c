@@ -789,7 +789,7 @@ void grd_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 }
 
 void grd_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: CBAZ 2 1 Cartesian backazimuth from grid nodes to stack x,y.  */
+/*OPERATOR: CBAZ 2 1 Cartesian back-azimuth from grid nodes to stack x,y.  */
 {
 	uint64_t node, row, col;
 	unsigned int prev = last - 1;
@@ -2894,6 +2894,52 @@ void grd_RINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : rintf (stack[last]->G->data[node]);
 }
 
+void assign_grdstack (struct GRDMATH_STACK *Sto, struct GRDMATH_STACK *Sfrom)
+{	/* Copy contents of Sfrom to Sto */
+	Sto->G          = Sfrom->G;
+	Sto->constant   = Sfrom->constant;
+	Sto->alloc_mode = Sfrom->alloc_mode;
+	Sto->factor     = Sfrom->factor;
+}
+
+void grd_ROLL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ROLL 2 0 Cyclicly shifts the top A stack items by an amount B.  */
+{
+	unsigned int prev, top, bottom, k, kk, n_items;
+	int n_shift;
+	struct GRDMATH_STACK Stmp;
+	GMT_UNUSED(GMT); GMT_UNUSED(info);
+	assert (last > 2);	/* Must have at least 3 items on the stack: A single item plus the two roll arguments */
+	prev = last - 1;	/* This gives the number of stack items to include in the cycle */
+	if (!(stack[last]->constant && stack[prev]->constant)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: length and shift must be constants in ROLL!\n");
+		return;
+	}
+	n_items = urint (stack[prev]->factor);
+	n_shift = irint (stack[last]->factor);
+	if (n_items > prev) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Items on stack is fewer than required by ROLL!\n");
+		return;
+	}
+	top = prev - 1;
+	bottom = prev - n_items;
+	for (k = 0; k < (unsigned int)abs (n_shift); k++) {	/* Do the cyclical shift */
+		if (n_shift > 0) {	/* Positive roll */
+			assign_grdstack (&Stmp, stack[top]);	/* Keep copy of top item */
+			for (kk = 1; kk < n_items; kk++)	/* Move all others up one step */
+				assign_grdstack (stack[top-kk+1], stack[top-kk]);
+			assign_grdstack (stack[bottom], &Stmp);	/* Place copy on bottom */
+		}
+		else if (n_shift < 0) {	/* Negative roll */
+			assign_grdstack (&Stmp, stack[bottom]);	/* Keep copy of bottom item */
+			for (kk = 1; kk < n_items; kk++)	/* Move all others down one step */
+				assign_grdstack (stack[bottom+kk-1], stack[bottom+kk]);
+			assign_grdstack (stack[top], &Stmp);	/* Place copy on top */
+		}
+	}
+	return;
+}
+
 void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ROTX 2 1 Rotate A by the (constant) shift B in x-direction.  */
 {
@@ -3030,7 +3076,7 @@ void grd_SAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 }
 
 void grd_SBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: SBAZ 2 1 Spherical backazimuth from grid nodes to stack x,y.  */
+/*OPERATOR: SBAZ 2 1 Spherical back-azimuth from grid nodes to stack x,y.  */
 /* Azimuth from stack point to grid ones (back azimuth) */
 {
 	grd_AZ_sub (GMT, info, stack, last, true);
@@ -3928,7 +3974,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_PI]    = M_PI;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_E]     = M_E;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_EULER] = M_EULER;
-	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_F_EPS]  = FLT_EPSILON;
+	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_F_EPS] = FLT_EPSILON;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XMIN]  = info.G->header->wesn[XLO];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XMAX]  = info.G->header->wesn[XHI];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XINC]  = info.G->header->inc[GMT_X];
@@ -3958,7 +4004,8 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "= %s", opt->arg);
 
-			if (n_items && new_stack < 0 && stack[nstack-1]->constant) {	/* Only a constant provided, set grid accordingly */
+			//if (n_items && new_stack < 0 && stack[nstack-1]->constant) {	/* Only a constant provided, set grid accordingly */
+			if (n_items && (new_stack < 0 || stack[nstack-1]->constant)) {	/* Only a constant provided, set grid accordingly */
 				if (!stack[nstack-1]->G) stack[nstack-1]->G = alloc_stack_grid (GMT, info.G);
 				stack[nstack-1]->alloc_mode = 1;
 				GMT_grd_loop (GMT, info.G, row, col, node) stack[nstack-1]->G->data[node] = (float)stack[nstack-1]->factor;

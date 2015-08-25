@@ -374,7 +374,7 @@ changes to syntax will be backwards compatible:
 *  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate
    segments on output based on the number of of records it contains.
 
-*  :doc:`gmtmath` adds the operator **BDIST** for binomial distribution, as
+*  :doc:`gmtmath` adds the operator **BDIST** for binomial distribution and **ROLL** for cyclic shifts of the stack, as
    well as the constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
    normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).
 
@@ -397,7 +397,8 @@ changes to syntax will be backwards compatible:
 *  :doc:`grdmath` adds several new operators, such as **ARC** and **WRAP** for
    angular operators, **BDIST** for binomial distribution, **LDISTG** (for distances
    to GSHHG), **CDIST2** and **SDIST2**
-   (to complement **LDIST2** and **PDIST2**), while **LDIST1** has been renamed
+   (to complement **LDIST2** and **PDIST2**), and **ROLL** for cyclic shifts of the stack,
+   while **LDIST1** has been renamed
    to **LDISTC**.  We also add the constants **XRANGE**, **YRANGE**, **XCOL**,
    **YROW** and **F_EPS**, and we have renamed the normalized coordinates from **Xn** to **XNORM**
    and **Yn** to **YNORM** (but this is backwards compatible).

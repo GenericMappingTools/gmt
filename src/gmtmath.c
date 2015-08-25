@@ -3087,6 +3087,52 @@ int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
+void assign_gmtstack (struct GMTMATH_STACK *Sto, struct GMTMATH_STACK *Sfrom)
+{	/* Copy contents of Sfrom to Sto */
+	Sto->D          = Sfrom->D;
+	Sto->constant   = Sfrom->constant;
+	Sto->alloc_mode = Sfrom->alloc_mode;
+	Sto->factor     = Sfrom->factor;
+}
+
+int table_ROLL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ROLL 2 0 Cyclicly shifts the top A stack items by an amount B.  */
+{
+	unsigned int prev, top, bottom, k, kk, n_items;
+	int n_shift;
+	struct GMTMATH_STACK Stmp;
+	GMT_UNUSED(GMT); GMT_UNUSED(info); GMT_UNUSED(col);
+	assert (last > 2);	/* Must have at least 3 items on the stack: A single item plus the two roll arguments */
+	prev = last - 1;	/* This gives the number of stack items to include in the cycle */
+	if (!(S[last]->constant && S[prev]->constant)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: length and shift must be constants in ROLL!\n");
+		return -1;
+	}
+	n_items = urint (S[prev]->factor);
+	n_shift = irint (S[last]->factor);
+	if (n_items > prev) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Items on stack is fewer than required by ROLL!\n");
+		return -1;
+	}
+	top = prev - 1;
+	bottom = prev - n_items;
+	for (k = 0; k < (unsigned int)abs (n_shift); k++) {	/* Do the cyclical shift */
+		if (n_shift > 0) {	/* Positive roll */
+			assign_gmtstack (&Stmp, S[top]);	/* Keep copy of top item */
+			for (kk = 1; kk < n_items; kk++)	/* Move all others up one step */
+				assign_gmtstack (S[top-kk+1], S[top-kk]);
+			assign_gmtstack (S[bottom], &Stmp);	/* Place copy on bottom */
+		}
+		else if (n_shift < 0) {	/* Negative roll */
+			assign_gmtstack (&Stmp, S[bottom]);	/* Keep copy of bottom item */
+			for (kk = 1; kk < n_items; kk++)	/* Move all others down one step */
+				assign_gmtstack (S[bottom+kk-1], S[bottom+kk]);
+			assign_gmtstack (S[top], &Stmp);	/* Place copy on top */
+		}
+	}
+	return 0;
+}
+
 int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ROTT 2 1 Rotate A by the (constant) shift B in the t-direction.  */
 {
@@ -3746,8 +3792,9 @@ void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
 	for (i = 0; i < GMTMATH_STACK_SIZE; i++) {
 		if (stack[i]->alloc_mode == 2)
 			GMT_Destroy_Data (API, &stack[i]->D);
-		else if (stack[i]->alloc_mode == 1)
-			GMT_free_dataset (API->GMT, &stack[i]->D); GMT_free (API->GMT, stack[i]);
+		else if (stack[i]->alloc_mode == 1 && stack[i]->D)
+			GMT_free_dataset (API->GMT, &stack[i]->D);
+		GMT_free (API->GMT, stack[i]);
 	}
 }
 
