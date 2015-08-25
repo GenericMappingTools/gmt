@@ -111,7 +111,7 @@ if (SPHINX_FOUND)
 			-w "${CMAKE_CURRENT_BINARY_DIR}/man.log"
 			${CMAKE_CURRENT_BINARY_DIR}/_source
 			${CMAKE_CURRENT_BINARY_DIR}/man
-			COMMAND ${GZIP} -9 -f ${CMAKE_CURRENT_BINARY_DIR}/man/*.?
+			COMMAND ${GZIP} -9 -n -f ${CMAKE_CURRENT_BINARY_DIR}/man/*.?
 			COMMENT "Building manpages...")
 		add_dependencies (docs_man docs_depends)
 	endif (GZIP)
