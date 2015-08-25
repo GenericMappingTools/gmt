@@ -50,18 +50,20 @@ if (UNIX AND NOT NETCDF_FOUND)
 			ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
 			OUTPUT_VARIABLE NETCDF_CONFIG_CFLAGS)
 		if (NETCDF_CONFIG_CFLAGS)
-			string (REGEX MATCHALL "-I[^ ]+" _netcdf_dashI ${NETCDF_CONFIG_CFLAGS})
-			string (REGEX REPLACE "-I" "" _netcdf_includepath "${_netcdf_dashI}")
-			string (REGEX REPLACE "-I[^ ]+" "" _netcdf_cflags_other ${NETCDF_CONFIG_CFLAGS})
+			string (REGEX MATCHALL "(^| )-I[^ ]+" _netcdf_dashI ${NETCDF_CONFIG_CFLAGS})
+			string (REGEX REPLACE "(^| )-I" "" _netcdf_includepath "${_netcdf_dashI}")
+			string (REGEX REPLACE "(^| )-I[^ ]+" "" _netcdf_cflags_other ${NETCDF_CONFIG_CFLAGS})
 		endif (NETCDF_CONFIG_CFLAGS)
 		execute_process (COMMAND ${NETCDF_CONFIG} --libs
 			ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
 			OUTPUT_VARIABLE NETCDF_CONFIG_LIBS)
 		if (NETCDF_CONFIG_LIBS)
-			string (REGEX MATCHALL "-l[^ ]+" _netcdf_dashl ${NETCDF_CONFIG_LIBS})
-			string (REGEX REPLACE "-l" "" _netcdf_lib "${_netcdf_dashl}")
-			string (REGEX MATCHALL "-L[^ ]+" _netcdf_dashL ${NETCDF_CONFIG_LIBS})
-			string (REGEX REPLACE "-L" "" _netcdf_libpath "${_netcdf_dashL}")
+			# Ensure -l is precedeced by whitespace to not match
+		        # '-l' in '-L/usr/lib/x86_64-linux-gnu/hdf5/serial'
+			string (REGEX MATCHALL "(^| )-l[^ ]+" _netcdf_dashl ${NETCDF_CONFIG_LIBS})
+			string (REGEX REPLACE "(^| )-l" "" _netcdf_lib "${_netcdf_dashl}")
+			string (REGEX MATCHALL "(^| )-L[^ ]+" _netcdf_dashL ${NETCDF_CONFIG_LIBS})
+			string (REGEX REPLACE "(^| )-L" "" _netcdf_libpath "${_netcdf_dashL}")
 		endif (NETCDF_CONFIG_LIBS)
 	endif (NETCDF_CONFIG)
 	if (_netcdf_lib)
