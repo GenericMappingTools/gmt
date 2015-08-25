@@ -577,9 +577,15 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		}
 		else if (header->type == GMT_GRID_IS_GD && header->name[i+2] && strstr(&header->name[i+2], ":")) {
 			char *pch;
+			size_t nc_limit = 2147483647U;	/* 2^31 - 1 is the max length of a 1-D array in netCDF */
 			pch = strstr(&header->name[i+2], ":");
 			header->pocket = strdup(++pch);
 			header->name[i-1] = '\0';			/* Done, rip the driver/outtype info from file name */
+			if (!strncmp (header->pocket, "GMT", 3U) && header->nm > nc_limit) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your grid contains more than 2^31 - 1 nodes (%zu) and cannot be stored with the deprecated GMT netCDF format via GDAL.\n", header->nm);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Please choose another grid format such as the default netCDF 4 COARDS-compliant grid format.\n");
+				return (GMT_GRDIO_BAD_DIM);	/* Grid is too large */
+			}
 		}
 		else {
 			j = (i == 1) ? i : i - 1;

@@ -47,6 +47,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 	int nm[2];
 	double dummy[2];
 	char text[GMT_GRID_COMMAND_LEN320+GMT_GRID_REMARK_LEN160];
+	size_t limit = 2147483647U;	/* 2^31 - 1 is the max length of a 1-D array in netCDF */
 	nc_type z_type;
 
 	/* Dimension ids, varibale ids, etc. */
@@ -57,6 +58,11 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter gmt_cdf_grd_info with argument %c\n", (int)job);
 
 	if (job == 'w') {
+		if (header->nm > limit) {	/* Print error message and let things crash */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your grid contains more than 2^31 - 1 nodes (%zu) and cannot be stored with the deprecated GMT netCDF format.\n", header->nm);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Please choose another grid format such as the default netCDF 4 COARDS-compliant grid format.\n");
+			return (GMT_DIM_TOO_LARGE);
+		}
 		GMT_err_trap (nc_def_dim (ncid, "side", 2U, &side_dim));
 		GMT_err_trap (nc_def_dim (ncid, "xysize", header->nm, &xysize_dim));
 
