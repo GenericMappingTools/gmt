@@ -694,7 +694,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 {
 	int error = 0, ns;
 	unsigned int k, tbl, seg, ndepths = 0, n = 0, dup_node, n_duplicate = 0;
-	uint64_t row, node;
+	uint64_t node;
 	size_t n_alloc = 0, n_alloc1 = 0;
 	
 	bool flat_earth = false, first_slice = true;
@@ -909,6 +909,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		if (D->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+				int64_t row;
 				S = D->table[tbl]->segment[seg];	/* Current segment */
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
 				GMT_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
@@ -918,13 +919,13 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 #endif
 				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
 				 * with OpenMP due to race condiations that would mess up the output order */
-				for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
+				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->coord[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
 					GMT->hidden.mem_coord[GMT_X][row] = get_one_output3D (S->coord[GMT_X][row]/ scl, S->coord[GMT_Y][row]/ scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
 				}
 				/* This loop is not under OpenMP */
 				out[GMT_Z] = Ctrl->Z.level;	/* Default observation z level unless provided in input file */
-				for (row = 0; row < S->n_rows; row++) {	/* Loop over output locations */
+				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Loop over output locations */
 					out[GMT_X] = S->coord[GMT_X][row];
 					out[GMT_Y] = S->coord[GMT_Y][row];
 					if (S->n_columns == 3 && !Ctrl->Z.active) out[GMT_Z] = S->coord[GMT_Z][row];
@@ -938,6 +939,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Dealing with a grid */
+		int64_t row;
 		int col, nx = (int)G->header->nx, ny = (int)G->header->ny;	/* To shut up compiler warnings */
 		double y_obs, *x_obs = GMT_memory (GMT, NULL, G->header->nx, double);
 		for (col = 0; col < nx; col++) {
