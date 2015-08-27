@@ -37,61 +37,61 @@
 /* Control structure for grdcontour */
 
 struct GRDCONTOUR_CTRL {
-	struct In {
+	struct GRDCONTOUR_In {
 		bool active;
 		char *file;
 	} In;
 	struct GMT_CONTOUR contour;
-	struct A {	/* -A[-][labelinfo] */
+	struct GRDCONTOUR_A {	/* -A[-][labelinfo] */
 		bool active;
 		unsigned int mode;	/* 1 turns off all labels */
 		double interval;
 		double single_cont;
 	} A;
-	struct C {	/* -C<cont_int> */
+	struct GRDCONTOUR_C {	/* -C<cont_int> */
 		bool active;
 		bool cpt;
 		char *file;
 		double interval;
 		double single_cont;
 	} C;
-	struct D {	/* -D<dumpfile> */
+	struct GRDCONTOUR_D {	/* -D<dumpfile> */
 		bool active;
 		char *file;
 	} D;
-	struct F {	/* -F<way> */
+	struct GRDCONTOUR_F {	/* -F<way> */
 		bool active;
 		int value;
 	} F;
-	struct G {	/* -G[d|f|n|l|L|x|X]<params> */
+	struct GRDCONTOUR_G {	/* -G[d|f|n|l|L|x|X]<params> */
 		bool active;
 	} G;
-	struct L {	/* -L<Low/high> */
+	struct GRDCONTOUR_L {	/* -L<Low/high> */
 		bool active;
 		double low, high;
 	} L;
-	struct Q {	/* -Q<cut> */
+	struct GRDCONTOUR_Q {	/* -Q<cut> */
 		bool active;
 		unsigned int min;
 	} Q;
-	struct S {	/* -S<smooth> */
+	struct GRDCONTOUR_S {	/* -S<smooth> */
 		bool active;
 		unsigned int value;
 	} S;
-	struct T {	/* -T[+|-][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
+	struct GRDCONTOUR_T {	/* -T[+|-][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
 		bool active;
 		bool label;
 		bool low, high;	/* true to tick low and high locals */
 		double dim[2];	/* spacing, length */
 		char *txt[2];	/* Low and high label [-+] */
 	} T;
-	struct W {	/* -W[+]<type><pen> */
+	struct GRDCONTOUR_W {	/* -W[+]<type><pen> */
 		bool active;
 		bool color_cont;
 		bool color_text;
 		struct GMT_PEN pen[2];
 	} W;
-	struct Z {	/* -Z[<fact>[/shift>]][p] */
+	struct GRDCONTOUR_Z {	/* -Z[<fact>[/shift>]][p] */
 		bool active;
 		bool periodic;
 		double scale, offset;
@@ -167,7 +167,8 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>] [-O] [-P] [-Q<cut>] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[+]<type><pen>]\n\t[%s] [%s] [-Z[<fact>[/<shift>]][p]]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[+]<type><pen>]\n\t[%s] [%s] [-Z[<fact>[/<shift>]][p]]\n",
+	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_do_OPT, GMT_c_OPT, GMT_ho_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
 
@@ -218,7 +219,8 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the downward direction.  User may specify to tick only highs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-T+) or lows (-T-) [-T implies both extrema].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].\n", TICKED_SPACING, TICKED_LENGTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].\n",
+	                                 TICKED_SPACING, TICKED_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +lXY (or +l\"low,high\") to place X and Y (or low and high) at the center\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of local lows and highs.  If no labels are given we default to - and +.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., +lLH) we use the as L and H.\n");
@@ -266,7 +268,8 @@ unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct GR
 			n = sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			            "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
 			Ctrl->T.label = false;
 			n_errors++;
 		}
@@ -410,14 +413,17 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 								Ctrl->T.txt[1] = strdup (txt_b);
 							}
 							else {
-								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Give low and high labels either as +lLH or +l<low>,<high>.\n");
+								GMT_Report (API, GMT_MSG_NORMAL,
+								            "Syntax error -T option: Give low and high labels either as +lLH or +l<low>,<high>.\n");
 								n_errors++;
 							}
 						}
 					}
 					else
 						n_errors += grdcontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
-					n_errors += GMT_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0, "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+					n_errors += GMT_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0,
+					                                 "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
+					                                 GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
 			case 'W':	/* Pen settings */
@@ -463,15 +469,18 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 	if (Ctrl->A.interval > 0.0 && (!Ctrl->C.file && Ctrl->C.interval == 0.0)) Ctrl->C.interval = Ctrl->A.interval;
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
+	                                 "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && 
 			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
-			"Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
+	                     "Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Syntax error -L option: lower limit > upper!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0, "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0,
+	                                 "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a cpt file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt,
+	                                 "Syntax error -W option: + or - only valid if -C sets a cpt file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -754,9 +763,11 @@ enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRI
 				if (y[k] > y_max) y_max = y[k];
 			}
 			if (y_min < 0.0 && y_max > 0.0)
-				closed = (y_max > fabs (y_min)) ? cont_is_closed_straddles_equator_north : cont_is_closed_straddles_equator_south;	/* Special flags for meandering closed contours otherwise indistinguishable from polar caps */
+				/* Special flags for meandering closed contours otherwise indistinguishable from polar caps */
+				closed = (y_max > fabs (y_min)) ? cont_is_closed_straddles_equator_north : cont_is_closed_straddles_equator_south;
 			else
-				closed = (y[0] > 0.0) ? cont_is_closed_around_north_pole : cont_is_closed_around_south_pole;		/* N or S polar cap; do not force closure though */
+				/* N or S polar cap; do not force closure though */
+				closed = (y[0] > 0.0) ? cont_is_closed_around_north_pole : cont_is_closed_around_south_pole;
 		}
 	}
 	return (closed);
@@ -1279,7 +1290,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	}
 
 	if (make_plot) {
-		if (Ctrl->contour.hill_label) adjust_hill_label (GMT, &Ctrl->contour, G);	/* Must possibly adjust label angles so that label is readable when following contours */
+		/* Must possibly adjust label angles so that label is readable when following contours */
+		if (Ctrl->contour.hill_label) adjust_hill_label (GMT, &Ctrl->contour, G);
 
 		GMT_contlabel_plot (GMT, &Ctrl->contour);
 		
