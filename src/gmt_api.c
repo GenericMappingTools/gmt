@@ -6619,8 +6619,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *   a syntax error. However, external APIs (mex, Python) can override this and supply the missing items
 	 *   via the given left- and right-hand side arguments to supply input or accept output.
 	 *   Secondary inputs means they are only assigned if the option is actually given.
-	 *   A few modules will have Z = x, which means that normally these modules will produce PostScript,
-	 *   but if this option is given they will not (e.g., pscoast -M, so it will have >Dx, for instance).
+	 *   A few modules will have Z = x (for some letter x not i|I|o|O), which means that normally these modules
+	 *   will produce PostScript, but if the "-x" option is given they will not (For example, pscoast normally creates a
+	 *   PostScript map but pscoast -M will instead export data to stdout, so its key contains the entry >DM,
+	 *   which means that when -M is active the >DM turns into >DO and thus allows for a data set export.
 	 *
 	 * E.g., the surface example would have the word LGI.  The data types P|L|D|G|C|T stand for
 	 * P(olygons), L(ines), D(point data), G(rid), C(PT file), T(ext table). [We originally only had

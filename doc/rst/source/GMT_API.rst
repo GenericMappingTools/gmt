@@ -2331,7 +2331,7 @@ pointed to by ``*head``, the ``marker`` is the special character that
 identifies a data resource (usually $), and we return an array
 that contains specific information for those options that
 (after processing) contain explicit memory references.  The number of
-items in the array is returned via the ``n`` variable.  The function
+items in the array is returned via the ``n_items`` variable.  The function
 returns NULL if there are errors and sets ``API->error`` to the corresponding
 error number.  The GMT_RESOURCE structure is defined below:
 

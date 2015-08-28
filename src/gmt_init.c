@@ -1007,7 +1007,8 @@ void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_refpoint_syntax (GMT, 'D', NULL, GMT_ANCHOR_INSERT, 1);
 	GMT_message (GMT, "\t        Append <width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
 	GMT_refpoint_syntax (GMT, 'D', NULL, GMT_ANCHOR_INSERT, 2);
-	GMT_message (GMT, "\t   Set panel attributes separately via -F option:\n");
+	GMT_message (GMT, "\t     Append +s<file> to save insert lower left corner and dimensions to <file>.\n");
+	GMT_message (GMT, "\t   Set panel attributes separately via the -F option.\n");
 }
 
 /*! .
@@ -2577,7 +2578,7 @@ int gmt_trend_modifiers (struct GMT_CTRL *GMT, char option, char *c, unsigned in
 {
 	char p[GMT_BUFSIZ] = {""};
 	unsigned int pos = 0;
-	int k;
+	int k, sdim = dim;
 
 	/* Gave one or more modifiers */
 
@@ -2588,11 +2589,11 @@ int gmt_trend_modifiers (struct GMT_CTRL *GMT, char option, char *c, unsigned in
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unable to parse the +o arguments (%s)\n", option, &p[1]);
 					return -1;
 				}
-				else if (k != dim) {
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Did not provide %d arguments to +o\n", option, dim);
+				else if (k != sdim) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Did not provide %u arguments to +o\n", option, dim);
 					return -1;
 				}
-				for (k = 0; k < dim; k++) M->got_origin[k] = true;
+				for (k = 0; k < sdim; k++) M->got_origin[k] = true;
 				break;
 			case 'r':
 				M->robust = true;
@@ -2602,11 +2603,11 @@ int gmt_trend_modifiers (struct GMT_CTRL *GMT, char option, char *c, unsigned in
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unable to parse the +l argument (%s)\n", option, &p[1]);
 					return -1;
 				}
-				else if (k != dim) {
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Did not provide %d arguments to +l\n", option, dim);
+				else if (k != sdim) {
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Did not provide %ul arguments to +l\n", option, dim);
 					return -1;
 				}
-				for (k = 0; k < dim; k++) M->got_period[k] = true;
+				for (k = 0; k < sdim; k++) M->got_period[k] = true;
 				break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unrecognized modifier +%s\n", option, p);
@@ -3024,7 +3025,7 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 
 /*! . */
 int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *M)
-{
+{	/* This may eventually switch on dim, but for now it is just 1D */
 		return (GMT_parse_model1d (GMT, option, in_arg, M));
 }
 
