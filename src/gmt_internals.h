@@ -139,6 +139,7 @@ EXTERN_MSC void GMT_str_tolower (char *string);
 EXTERN_MSC void GMT_str_toupper (char *string);
 EXTERN_MSC char *GMT_file_unitscale (char *name);
 EXTERN_MSC void gmt_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat);
+EXTERN_MSC int GMT_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 
 /* Functions declared in gmt_proj.c */
 

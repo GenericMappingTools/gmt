@@ -1756,6 +1756,25 @@ int GMTAPI_Get_Object (struct GMTAPI_CTRL *API, int sfamily, void *ptr)
 }
 
 /*! . */
+void *GMTAPI_Pass_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object, unsigned int family) {
+	/* Simply passes back the object pointer after possibly some minor adjustments to metadata */
+	void *data = (object->data) ? object->data : object->resource;	/* Get pointer to the data */
+	struct GMT_GRID *G = NULL;
+	switch (family) {	/* Do family-specific prepping before passing back the object */
+		case GMT_IS_CPT:
+			if (data) GMT_init_cpt (API->GMT, data);
+			break;
+		case GMT_IS_GRID:	/* Grids need to update the grdtype setting */
+			G = gmt_get_grid_data (data);
+			G->header->grdtype = GMT_get_grdtype (API->GMT, G->header);
+			break;
+		default:	/* Nothing yet for other types */
+			break;
+	}
+	return (data);
+}
+
+/*! . */
 int GMTAPI_get_objectID_from_data_ptr (struct GMTAPI_CTRL *API, void *ptr)
 {	/* Returns the ID of the first object whose data pointer matches *ptr.
  	 * This is necessary since many objects may have the same pointer
@@ -4750,8 +4769,9 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			GMTAPI_Set_Object (API, API->object[item]);
 #endif
 			if (reset) API->object[item]->status = 0;	/* Reset  to unread */
-			if (family == GMT_IS_CPT && API->object[item]->resource) GMT_init_cpt (API->GMT, API->object[item]->resource);
-			return ((API->object[item]->data) ? API->object[item]->data : API->object[item]->resource);	/* Return pointer to the data */
+			return (GMTAPI_Pass_Object (API, API->object[item], family));
+			//if (family == GMT_IS_CPT && API->object[item]->resource) GMT_init_cpt (API->GMT, API->object[item]->resource);
+			//return ((API->object[item]->data) ? API->object[item]->data : API->object[item]->resource);	/* Return pointer to the data */
 		}
 	}
 

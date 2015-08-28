@@ -873,7 +873,7 @@ int gmt_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *
 	return (true);	/* Return true so the calling function can take appropriate action */
 }
 
-int gmt_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
+int GMT_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 {	/* Determine if grid is Cartesian or geographic, and if so if longitude range is <360, ==360, or >360 */
 	if (GMT_x_is_lon (GMT, GMT_IN)) {	/* Data set is geographic with x = longitudes */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT) {
@@ -1003,7 +1003,7 @@ int GMT_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER 
 		header->nan_value = invalid;
 
 	gmt_grd_get_units (GMT, header);
-	header->grdtype = gmt_get_grdtype (GMT, header);
+	header->grdtype = GMT_get_grdtype (GMT, header);
 
 	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 0), file);
 	nx = header->nx;	ny = header->ny;	/* Save copy */
@@ -1089,7 +1089,7 @@ int GMT_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *head
 
 	if (expand) /* Must undo the region extension and reset nx, ny using original pad  */
 		GMT_memcpy (header->wesn, wesn, 4, double);
-	header->grdtype = gmt_get_grdtype (GMT, header);	/* Since may change if a subset */
+	header->grdtype = GMT_get_grdtype (GMT, header);	/* Since may change if a subset */
 	GMT_grd_setpad (GMT, header, pad);	/* Copy the pad to the header */
 	GMT_set_grddim (GMT, header);		/* Update all dimensions */
 	if (expand) GMT_grd_zminmax (GMT, header, grid);	/* Reset min/max since current extrema includes the padded region */
@@ -2203,14 +2203,14 @@ int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, st
 	if (registration & GMT_GRID_DEFAULT_REG) registration |= GMT->common.r.registration;	/* Set the default registration */
 	header->registration = (registration & 1);
 	header->complex_mode = (registration & GMT_GRID_IS_COMPLEX_MASK);
-	header->grdtype = gmt_get_grdtype (GMT, header);
+	header->grdtype = GMT_get_grdtype (GMT, header);
 	GMT_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 1), "");
 	GMT_grd_setpad (GMT, header, GMT->current.io.pad);	/* Assign default GMT pad */
 	GMT_set_grddim (GMT, header);	/* Set all dimensions before returning */
 	gmt_grd_get_units (GMT, header);
 	GMT_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
-	header->grdtype = gmt_get_grdtype (GMT, header);	/* Set grid type (i.e. periodicity for global grids) */
+	header->grdtype = GMT_get_grdtype (GMT, header);	/* Set grid type (i.e. periodicity for global grids) */
 	return (GMT_NOERROR);
 }
 
