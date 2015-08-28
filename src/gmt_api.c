@@ -1756,7 +1756,7 @@ int GMTAPI_Get_Object (struct GMTAPI_CTRL *API, int sfamily, void *ptr)
 }
 
 /*! . */
-void *GMTAPI_Pass_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object, unsigned int family) {
+void *GMTAPI_Pass_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object, unsigned int family, double *wesn) {
 	/* Simply passes back the object pointer after possibly some minor adjustments to metadata */
 	void *data = (object->data) ? object->data : object->resource;	/* Get pointer to the data */
 	struct GMT_GRID *G = NULL;
@@ -1764,9 +1764,16 @@ void *GMTAPI_Pass_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *ob
 		case GMT_IS_CPT:
 			if (data) GMT_init_cpt (API->GMT, data);
 			break;
-		case GMT_IS_GRID:	/* Grids need to update the grdtype setting */
+		case GMT_IS_GRID:	/* Grids need to update the grdtype setting and possibly rotate geographic grids */
 			G = gmt_get_grid_data (data);
 			G->header->grdtype = GMT_get_grdtype (API->GMT, G->header);
+			if (wesn && GMT_grd_is_global (API->GMT, G->header) && G->data) {	/* May have to rotate geographic grid since we are not reading from file */
+				double shift_amount = wesn[XLO] - G->header->wesn[XLO];
+				if (fabs (shift_amount) >= G->header->inc[GMT_X]) {	/* Must do it */
+					GMT_Report (API, GMT_MSG_DEBUG, "Shifting longitudes in grid by %g degrees to fit -R\n", shift_amount);
+					GMT_grd_shift (API->GMT, G, shift_amount);
+				}
+			}
 			break;
 		default:	/* Nothing yet for other types */
 			break;
@@ -4769,7 +4776,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			GMTAPI_Set_Object (API, API->object[item]);
 #endif
 			if (reset) API->object[item]->status = 0;	/* Reset  to unread */
-			return (GMTAPI_Pass_Object (API, API->object[item], family));
+			return (GMTAPI_Pass_Object (API, API->object[item], family, wesn));
 			//if (family == GMT_IS_CPT && API->object[item]->resource) GMT_init_cpt (API->GMT, API->object[item]->resource);
 			//return ((API->object[item]->data) ? API->object[item]->data : API->object[item]->resource);	/* Return pointer to the data */
 		}
