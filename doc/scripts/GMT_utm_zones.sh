@@ -91,8 +91,8 @@ gmt pstext -R -J -O -K -N -F+f10p,Helvetica-Bold << EOF >> GMT_utm_zones.ps
 -90	87	Y
 +90	87	Z
 EOF
-gmt gmtmath -T-180/174/6 T 3 ADD = | $AWK '{if (NR > 1) printf "%s -90 %d\n", $2, NR}' | gmt pstext -R -J -O -K -N -D0/-0.07i -F+f8p,Times-Italic+jCT >> GMT_utm_zones.ps
-gmt gmtmath -T-180/174/6 T 3 ADD = | $AWK '{if (NR > 1) printf "%s 90 %d\n", $2, NR}' | gmt pstext -R -J -O -K -N -D0/0.07i -F+f8p,Times-Italic+jCB >> GMT_utm_zones.ps
+gmt gmtmath -T-180/174/6 T 3 ADD = | $AWK '{printf "%s -90 %d\n", $2, NR}' | gmt pstext -R -J -O -K -N -D0/-0.07i -F+f8p,Times-Italic+jCT >> GMT_utm_zones.ps
+gmt gmtmath -T-180/174/6 T 3 ADD = | $AWK '{printf "%s 90 %d\n", $2, NR}' | gmt pstext -R -J -O -K -N -D0/0.07i -F+f8p,Times-Italic+jCB >> GMT_utm_zones.ps
 gmt pstext -R -J -O -K -D0/0.025i -F+f8p,Times-Italic+jCB << EOF >> GMT_utm_zones.ps
 4.5	72	31X
 15	72	33X
