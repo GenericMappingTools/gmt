@@ -6231,6 +6231,12 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 		return (NULL);
 	}
 
+	/* Skip binary header first, if binary and there is a header given in # of bytes */
+	if (GMT->common.b.active[GMT_IN] && GMT->current.setting.io_n_header_items) {
+		GMT_io_binary_header (GMT, fp, GMT_IN);
+		header = false;	/* No more binary header */
+	}
+
 	in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Get first record */
 	n_read++;
 	if (GMT_REC_IS_EOF(GMT)) {
@@ -6246,7 +6252,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	T->header = GMT_memory (GMT, NULL, n_head_alloc, char *);
 
 	while (status >= 0 && !GMT_REC_IS_EOF (GMT)) {	/* Not yet EOF */
-		if (header) {
+		if (header) {	/* Only true at start of an ASCII file */
 			while ((GMT->current.setting.io_header[GMT_IN] && n_read <= GMT->current.setting.io_n_header_items) || GMT_REC_IS_TABLE_HEADER (GMT)) { /* Process headers */
 				T->header[T->n_headers] = strdup (GMT->current.io.current_record);
 				T->n_headers++;
