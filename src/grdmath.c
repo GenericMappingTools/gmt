@@ -4006,9 +4006,13 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 			//if (n_items && new_stack < 0 && stack[nstack-1]->constant) {	/* Only a constant provided, set grid accordingly */
 			if (n_items && (new_stack < 0 || stack[nstack-1]->constant)) {	/* Only a constant provided, set grid accordingly */
-				if (!stack[nstack-1]->G) stack[nstack-1]->G = alloc_stack_grid (GMT, info.G);
-				stack[nstack-1]->alloc_mode = 1;
-				GMT_grd_loop (GMT, info.G, row, col, node) stack[nstack-1]->G->data[node] = (float)stack[nstack-1]->factor;
+				if (!stack[nstack-1]->G) {
+					stack[nstack-1]->G = alloc_stack_grid (GMT, info.G);
+					stack[nstack-1]->alloc_mode = 1;
+				}
+				if (stack[nstack-1]->constant) {
+					GMT_grd_loop (GMT, info.G, row, col, node) stack[nstack-1]->G->data[node] = (float)stack[nstack-1]->factor;
+				}
 			}
 			this_stack = nstack - 1;
 			GMT_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
