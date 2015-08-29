@@ -917,6 +917,10 @@ int GMTAPI_key_to_family (void *API, char *key, int *family, int *geometry)
 			*family = GMT_IS_PS;
 			*geometry = GMT_IS_NONE;
 			break;
+		case '-':
+			*family = GMT_IS_NONE;
+			*geometry = GMT_IS_NONE;
+			break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_key_to_family: INTERNAL ERROR: key family (%c) not recognized\n", key[K_FAMILY]);
 			return -1;
@@ -933,7 +937,8 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 	 * We return the array of strings and its number (n_items) as well as two vars:
 	 * PS will be 1 if the module produces PostScript, else it is 0.
 	 * magic will be 0 or a magic option that changes the module from PS-producing to data producing. */
-	size_t len, k, n;
+	size_t len, k, n, dir;
+	bool turn_off[2] = {false, false};
 	char **s = NULL, *next = NULL, *tmp = NULL;
 	*PS = 0;	/* No PostScript output indicated so far */
 	*magic = 0;	/* No special option that turns off PS */
@@ -968,6 +973,14 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 		}
 		s[k++] = strdup (next);
 		if (!strcmp (next, "-Xo")) (*PS)++;	/* Found a key for PostScript output */
+		if (next[K_FAMILY] == '-') {	/* Got an option that removes the requirement of an input or output dataset */
+			dir = (next[K_DIR] == 'i' || next[K_DIR] == 'I') ? GMT_IN : GMT_OUT;
+			turn_off[dir] = true;	/* We want no data going in this direction */
+		}
+	}
+	for (k = 0; k < n; k++) {	/* Possibly turn of required input|output settings */
+		if (s[k][K_DIR] == 'I' && turn_off[GMT_IN])  s[k][K_DIR] = 'i';	/* No longer an implicit input */
+		if (s[k][K_DIR] == 'O' && turn_off[GMT_OUT]) s[k][K_DIR] = 'o';	/* No longer an implicit output */
 	}
 	*n_items = (unsigned int)n;	/* Total number of keys for this module */
 	free ((void *)tmp);
@@ -6641,6 +6654,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *    A hyphen (-) means there is no option for this item.
 	 * Y stands for data type (C = CPT, D = Dataset/Point, L = Dataset/Line,
 	 *    P = Dataset/Polygon, G = Grid, I = Image, T = Textset, X = PostScript, ? = type given via module option),
+	 *    wile a hyphen (-) means there is NO data when this option is set (see Z for in or out).
 	 * Z stands for primary inputs (I), primary output (O), secondary input (i), secondary output (o).
 	 *   Primary inputs and outputs need to be assigned, and if not explicitly given will result in
 	 *   a syntax error. However, external APIs (mex, Python) can override this and supply the missing items
@@ -6650,6 +6664,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *   will produce PostScript, but if the "-x" option is given they will not (For example, pscoast normally creates a
 	 *   PostScript map but pscoast -M will instead export data to stdout, so its key contains the entry >DM,
 	 *   which means that when -M is active the >DM turns into >DO and thus allows for a data set export.
+	 *   As another example, the key T-i in psxy means that when -T is used then No input is expected.
 	 *
 	 * E.g., the surface example would have the word LGI.  The data types P|L|D|G|C|T stand for
 	 * P(olygons), L(ines), D(point data), G(rid), C(PT file), T(ext table). [We originally only had
@@ -6777,7 +6792,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			kind = GMT_FILE_EXPLICIT;
 			n_items++;
 		}
-		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
+		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_IS_NONE && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
 			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file */
 			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);

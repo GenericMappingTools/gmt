@@ -88,7 +88,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"grdproject", "core", "Forward and inverse map transformation of grids", "<GI,GGO"},
 	{"grdraster", "core", "Extract subregion from a binary raster and save as a GMT grid", "GGO,TDo"},
 	{"grdsample", "core", "Resample a grid onto a new lattice", "<GI,GGO"},
-	{"grdtrack", "core", "Sample grids at specified (x,y) locations", "<DI,DDo,GGI,>DO"},
+	{"grdtrack", "core", "Sample grids at specified (x,y) locations", "<DI,DDo,GGi,>DO"},
 	{"grdtrend", "core", "Fit trend surface to grids and compute residuals", "<GI,DGo,TGo,WGo"},
 	{"grdvector", "core", "Plot vector field from two component grids", "<GI,CCi,-Xo"},
 	{"grdview", "core", "Create 3-D perspective image or surface mesh from a grid", "<GI,CCi,GGi,IGi,-Xo"},
@@ -96,7 +96,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"greenspline", "core", "Interpolate using Green's functions for splines in 1-3 dimensions", "<DI,ADi,NDi,TGi,CDo,GGO"},
 	{"kml2gmt", "core", "Extract GMT table data from Google Earth KML files", "<TI,>DO"},
 	{"makecpt", "core", "Make GMT color palette tables", ">CO"},
-	{"mapproject", "core", "Do forward and inverse map transformations, datum conversions and geodesy", "<DI,LDi,MDo,>DO"},
+	{"mapproject", "core", "Do forward and inverse map transformations, datum conversions and geodesy", "<DI,LDi,>DO,M-i"},
 	{"nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", "<DI,GGO"},
 	{"project", "core", "Project table data onto lines or great circles, generate tracks, or translate coordinates", "<DI,>DO"},
 	{"psbasemap", "core", "Plot base maps and frames", "-Xo"},
@@ -112,17 +112,18 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"psscale", "core", "Plot a gray-scale or color-scale on maps", "CCI,-Xo"},
 	{"pstext", "core", "Plot or typeset text on maps", "<TI,-Xo"},
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<DI,-Xo"},
-	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<DI,CCi,-Xo"},
-	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<DI,CCi,-Xo"},
+	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<DI,CCi,T-i,-Xo"},
+	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<DI,CCi,T-i,-Xo"},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<DI,NDi,>DO"},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] timeseries", "<DI,>DO"},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<DI,GGO"},
-	{"sphdistance", "core", "Make grid of distances to nearest points on a sphere", "<DI,NDi,QDi,GGO"},
+	{"sphdistance", "core", "Make Voronoi distance, node, or nearest-neighbor grid on a sphere", "<DI,NDi,QDi,GGO"},
 	{"sphinterpolate", "core", "Spherical gridding in tension of data on a sphere", "<DI,GGO"},
 	{"sphtriangulate", "core", "Delaunay or Voronoi construction of spherical lon,lat data", "<DI,GGO,NDo"},
 	{"splitxyz", "core", "Split xyz[dh] data tables into individual segments", "<DI,>DO"},
 	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<DI,DDi,LGi,GGO"},
-	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data", "<DI,>DO"},
+	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<DI,DDi,LGi,GGO"},
+	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [and/or Fourier] model for y = f(x) to xy[w] data", "<DI,>DO"},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", "<DI,>DO"},
 	{"triangulate", "core", "Do optimal (Delaunay) triangulation and gridding of Cartesian table data", "<DI,>DO,GGo"},
 	{"xyz2grd", "core", "Convert data table to a grid file", "<DI,SDo,GGO"},
@@ -173,7 +174,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"grdproject", "core", "Forward and inverse map transformation of grids", "<GI,GGO", &GMT_grdproject},
 	{"grdraster", "core", "Extract subregion from a binary raster and save as a GMT grid", "GGO,TDo", &GMT_grdraster},
 	{"grdsample", "core", "Resample a grid onto a new lattice", "<GI,GGO", &GMT_grdsample},
-	{"grdtrack", "core", "Sample grids at specified (x,y) locations", "<DI,DDo,GGI,>DO", &GMT_grdtrack},
+	{"grdtrack", "core", "Sample grids at specified (x,y) locations", "<DI,DDo,GGi,>DO", &GMT_grdtrack},
 	{"grdtrend", "core", "Fit trend surface to grids and compute residuals", "<GI,DGo,TGo,WGo", &GMT_grdtrend},
 	{"grdvector", "core", "Plot vector field from two component grids", "<GI,CCi,-Xo", &GMT_grdvector},
 	{"grdview", "core", "Create 3-D perspective image or surface mesh from a grid", "<GI,CCi,GGi,IGi,-Xo", &GMT_grdview},
@@ -181,7 +182,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"greenspline", "core", "Interpolate using Green's functions for splines in 1-3 dimensions", "<DI,ADi,NDi,TGi,CDo,GGO", &GMT_greenspline},
 	{"kml2gmt", "core", "Extract GMT table data from Google Earth KML files", "<TI,>DO", &GMT_kml2gmt},
 	{"makecpt", "core", "Make GMT color palette tables", ">CO", &GMT_makecpt},
-	{"mapproject", "core", "Do forward and inverse map transformations, datum conversions and geodesy", "<DI,LDi,MDo,>DO", &GMT_mapproject},
+	{"mapproject", "core", "Do forward and inverse map transformations, datum conversions and geodesy", "<DI,LDi,>DO,M-i", &GMT_mapproject},
 	{"nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", "<DI,GGO", &GMT_nearneighbor},
 	{"project", "core", "Project table data onto lines or great circles, generate tracks, or translate coordinates", "<DI,>DO", &GMT_project},
 	{"psbasemap", "core", "Plot base maps and frames", "-Xo", &GMT_psbasemap},
@@ -197,17 +198,18 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"psscale", "core", "Plot a gray-scale or color-scale on maps", "CCI,-Xo", &GMT_psscale},
 	{"pstext", "core", "Plot or typeset text on maps", "<TI,-Xo", &GMT_pstext},
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<DI,-Xo", &GMT_pswiggle},
-	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<DI,CCi,-Xo", &GMT_psxyz},
-	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<DI,CCi,-Xo", &GMT_psxy},
+	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<DI,CCi,T-i,-Xo", &GMT_psxyz},
+	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<DI,CCi,T-i,-Xo", &GMT_psxy},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<DI,NDi,>DO", &GMT_sample1d},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] timeseries", "<DI,>DO", &GMT_spectrum1d},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<DI,GGO", &GMT_sph2grd},
-	{"sphdistance", "core", "Make grid of distances to nearest points on a sphere", "<DI,NDi,QDi,GGO", &GMT_sphdistance},
+	{"sphdistance", "core", "Make Voronoi distance, node, or nearest-neighbor grid on a sphere", "<DI,NDi,QDi,GGO", &GMT_sphdistance},
 	{"sphinterpolate", "core", "Spherical gridding in tension of data on a sphere", "<DI,GGO", &GMT_sphinterpolate},
 	{"sphtriangulate", "core", "Delaunay or Voronoi construction of spherical lon,lat data", "<DI,GGO,NDo", &GMT_sphtriangulate},
 	{"splitxyz", "core", "Split xyz[dh] data tables into individual segments", "<DI,>DO", &GMT_splitxyz},
 	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<DI,DDi,LGi,GGO", &GMT_surface},
-	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data", "<DI,>DO", &GMT_trend1d},
+	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<DI,DDi,LGi,GGO", &GMT_surface},
+	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [and/or Fourier] model for y = f(x) to xy[w] data", "<DI,>DO", &GMT_trend1d},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", "<DI,>DO", &GMT_trend2d},
 	{"triangulate", "core", "Do optimal (Delaunay) triangulation and gridding of Cartesian table data", "<DI,>DO,GGo", &GMT_triangulate},
 	{"xyz2grd", "core", "Convert data table to a grid file", "<DI,SDo,GGO", &GMT_xyz2grd},
@@ -238,12 +240,12 @@ void gmt_core_module_show_all (void *V_API) {
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
-const char * gmt_core_module_info (void *API, char *candidate) {
+const char *gmt_core_module_info (void *API, char *candidate) {
 	int module_id = 0;
 
 	/* Match actual_name against g_module[module_id].name */
-	while ( g_core_module[module_id].name != NULL &&
-			strcmp (candidate, g_core_module[module_id].name) )
+	while (g_core_module[module_id].name != NULL &&
+	       strcmp (candidate, g_core_module[module_id].name))
 		++module_id;
 
 	/* Return Module keys or NULL */
@@ -252,12 +254,12 @@ const char * gmt_core_module_info (void *API, char *candidate) {
 	
 #ifndef BUILD_SHARED_LIBS
 /* Lookup module id by name, return function pointer */
-void * gmt_core_module_lookup (void *API, const char *candidate) {
+void *gmt_core_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
 
 	/* Match actual_name against g_module[module_id].name */
-	while ( g_core_module[module_id].name != NULL &&
-			strcmp (candidate, g_core_module[module_id].name) )
+	while (g_core_module[module_id].name != NULL &&
+	       strcmp (candidate, g_core_module[module_id].name))
 		++module_id;
 
 	/* Return Module function or NULL */

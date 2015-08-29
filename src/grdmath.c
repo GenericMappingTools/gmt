@@ -127,7 +127,7 @@ struct GRDMATH_STACK {
 	struct GMT_GRID *G;		/* The grid */
 	bool constant;			/* true if a constant (see factor) and S == NULL */
 	double factor;			/* The value if constant is true */
-	unsigned int alloc_mode;	/* 0 is not allocated, 1 is allocated in this program, 2 = allocated elsewhere */
+	unsigned int alloc_mode;	/* 0 is not allocated, 1 is allocated in this program, 2 = allocated elsewhere, 3 for externals */
 };
 
 struct GRDMATH_STORE {
@@ -3761,10 +3761,11 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	unsigned int k;
 
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_OK) {
+		if (stack[k]->alloc_mode == 3)
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Let stack item %d survive module\n", k);
+		else if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
-
 		GMT_free (GMT, stack[k]);
 	}
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
@@ -3779,12 +3780,12 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free info.G\n");
 	}
-	if (info->d_grd_x) GMT_free (GMT, info->d_grd_x);
-	if (info->d_grd_y) GMT_free (GMT, info->d_grd_y);
+	if (info->d_grd_x)  GMT_free (GMT, info->d_grd_x);
+	if (info->d_grd_y)  GMT_free (GMT, info->d_grd_y);
 	if (info->d_grd_xn) GMT_free (GMT, info->d_grd_xn);
 	if (info->d_grd_yn) GMT_free (GMT, info->d_grd_yn);
-	if (info->f_grd_x) GMT_free (GMT, info->f_grd_x);
-	if (info->f_grd_y) GMT_free (GMT, info->f_grd_y);
+	if (info->f_grd_x)  GMT_free (GMT, info->f_grd_x);
+	if (info->f_grd_y)  GMT_free (GMT, info->f_grd_y);
 	if (info->f_grd_xn) GMT_free (GMT, info->f_grd_xn);
 	if (info->f_grd_yn) GMT_free (GMT, info->f_grd_yn);
 	if (info->dx) GMT_free (GMT, info->dx);
@@ -4024,7 +4025,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 			GMT_set_pad (GMT, 2U);			/* Ensure space for BCs in case an API passed pad == 0 */
-			stack[this_stack]->alloc_mode = 2;	/* Since it now is registered */
+			stack[this_stack]->alloc_mode = (GMT_File_Is_Memory (opt->arg)) ? 3 : 2;	/* Since it now is registered */
 			if (n_items) nstack--;	/* Pop off the current stack if there is one */
 			new_stack = nstack;
 			continue;
