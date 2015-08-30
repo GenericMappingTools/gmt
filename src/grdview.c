@@ -63,32 +63,32 @@
 #define GRDVIEW_WATERFALL_Y	4
 
 struct GRDVIEW_CTRL {
-	struct In {
+	struct GRDVIEW_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct GRDVIEW_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct G {	/* -G<drapefile> */
+	struct GRDVIEW_G {	/* -G<drapefile> */
 		bool active;
 		bool image;
 		char *file[3];
 	} G;
-	struct I {	/* -I<intensfile>|<value> */
+	struct GRDVIEW_I {	/* -I<intensfile>|<value> */
 		bool active;
 		bool constant;
 		double value;
 		char *file;
 	} I;
-	struct N {	/* -N<level>[+g<fill>] */
+	struct GRDVIEW_N {	/* -N<level>[+g<fill>] */
 		bool active;
 		bool facade;
 		struct GMT_FILL fill;
 		double level;
 	} N;
-	struct Q {	/* -Q<type>[g] */
+	struct GRDVIEW_Q {	/* -Q<type>[g] */
 		bool active, special;
 		bool outline;
 		bool mask;
@@ -97,17 +97,17 @@ struct GRDVIEW_CTRL {
 		unsigned int dpi;
 		struct GMT_FILL fill;
 	} Q;
-	struct S {	/* -S<smooth> */
+	struct GRDVIEW_S {	/* -S<smooth> */
 		bool active;
 		unsigned int value;
 	} S;
-	struct T {	/* -T[s][o[<pen>]] */
+	struct GRDVIEW_T {	/* -T[s][o[<pen>]] */
 		bool active;
 		bool skip;
 		bool outline;
 		struct GMT_PEN pen;
 	} T;
-	struct W {	/* -W[+]<type><pen> */
+	struct GRDVIEW_W {	/* -W[+]<type><pen> */
 		bool active;
 		bool contour;
 		struct GMT_PEN pen[3];
@@ -129,8 +129,7 @@ struct GRDVIEW_POINT {
 	struct GRDVIEW_POINT *next_point;
 };
 
-struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value)
-{
+struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
 	struct GRDVIEW_CONT *cont, *new_cont;
 
 	if (!binij[bin].first_cont) binij[bin].first_cont = GMT_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
@@ -198,14 +197,13 @@ void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_p
 }
 #endif
 
-double get_intensity (struct GMT_GRID *I, uint64_t k)
-{
+double get_intensity (struct GMT_GRID *I, uint64_t k) {
 	/* Returns the average intensity for this tile */
 	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
 }
 
-unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, uint64_t bin, int bin_inc[])
-{	/* Returns true of the ip,jp point is inside the polygon defined by the tile */
+unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, uint64_t bin, int bin_inc[]) {
+	/* Returns true of the ip,jp point is inside the polygon defined by the tile */
 	unsigned int i, what;
 	double x[6], y[6];
 
@@ -218,8 +216,8 @@ unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *i
 	return (what);
 }
 
-int quick_idist (int x1, int y1, int x2, int y2)
-{	/* Fast integer distance calculation */
+int quick_idist (int x1, int y1, int x2, int y2) {
+	/* Fast integer distance calculation */
 	if ((x2 -= x1) < 0) x2 = -x2;
 	if ((y2 -= y1) < 0) y2 = -y2;
 	return (x2 + y2 - (((x2 > y2) ? y2 : x2) >> 1));
@@ -324,8 +322,7 @@ void Free_grdview_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_PEN P;
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -469,7 +466,8 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				break;
 			case 'L':	/* GMT4 BCs */
 				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+					GMT_Report (API, GMT_MSG_COMPAT,
+					            "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 					strncpy (GMT->common.n.BC, opt->arg, 4U);
 				}
 				else
@@ -483,14 +481,17 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						c[0] = '\0';	/* Truncate string temporarily */
 						Ctrl->N.level = atof (opt->arg);
 						c[0] = '+';	/* Restore the + */
-						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &c[2], &Ctrl->N.fill), "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &c[2], &Ctrl->N.fill),
+						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
 					else if (GMT_compat_check (GMT, 4) && (c = strchr (opt->arg, '/'))) {	/* Deprecated <level>/<fill> */
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
+						GMT_Report (API, GMT_MSG_COMPAT,
+						            "Warning: Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
 						c[0] = ' ';	/* Take out the slash for now */
 						n = sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
-						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, colors, &Ctrl->N.fill), "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, colors, &Ctrl->N.fill),
+						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 						c[0] = '/';	/* Restore the slash */
 					}
@@ -623,10 +624,14 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 		}
 		n_errors += GMT_check_condition (GMT, n_drape == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE, "R/G/B drape requires -Qi option\n");
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file, "Syntax error -I option: Must specify intensity file or value\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) && !Ctrl->C.file && !Ctrl->G.image, "Syntax error: Must specify color palette table\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0, "Syntax error -Qi option: Must specify positive dpi\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set, "Syntax error -T option: Cannot specify -JZ|z\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file,
+	                                 "Syntax error -I option: Must specify intensity file or value\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
+	                                       !Ctrl->C.file && !Ctrl->G.image, "Syntax error: Must specify color palette table\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
+	                                 "Syntax error -Qi option: Must specify positive dpi\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
+	                                 "Syntax error -T option: Cannot specify -JZ|z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -814,7 +819,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 			GMT_Report (API, GMT_MSG_VERBOSE, "Now tracing contour interval %8g\r", cval);
 			/* Old version of loop below could give round-off since we kept subtracting the increments between successive contours.
-			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour. PW, 11/18/2011 */
+			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour.
+			   PW, 11/18/2011 */
 			GMT_grd_loop (GMT, Topo, row, col, ij) {
 				if (!GMT_is_fnan (Z_orig->data[ij])) Z->data[ij] = Z_orig->data[ij] - (float)cval;
 				if (Z->data[ij] == 0.0) Z->data[ij] += (float)small;
@@ -883,7 +889,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
 
-	for (row = 0; row < Topo->header->ny - 1; row++) {	/* Nodes part of tiles completely outside -R is set to NaN and thus not considered below */
+	for (row = 0; row < Topo->header->ny - 1; row++) {
+		/* Nodes part of tiles completely outside -R is set to NaN and thus not considered below */
 		ij = GMT_IJP (Topo->header, row, 0);
 		for (col = 0; col < Topo->header->nx - 1; col++, ij++) {
 			for (jj = n_out = 0; jj < 2; jj++) {	/* Loop over the 4 nodes making up one tile */
@@ -1026,7 +1033,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		float *int_drape = NULL;
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
-		if (Ctrl->C.active && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in cpt file will not work with -Qi\n");
+		if (Ctrl->C.active && P->has_pattern)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in cpt file will not work with -Qi\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "Get and store projected vertices\n");
 
 		PSL_comment (PSL, "Plot 3-D surface using scanline conversion of polygons to raster image\n");
