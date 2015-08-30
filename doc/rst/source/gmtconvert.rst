@@ -13,12 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtconvert** [ *table* ] [ **-A** ] [ **-C**\ [**+l**\ *min*\ ][\ **+u**\ *max*\ ][**+i**]]
+**gmtconvert** [ *table* ] [ **-A** ] [ **-C**\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
 [ **-D**\ [*template*] ]
 [ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
-[ **-I**\ [**tsr**\ ] ] [ **-Q**\ [**~**\ ]\ *selection*]
-[ **-S**\ [**~**\ ]\ *"search string"* \|
-**-S**\ [**~**\ ]/\ *regexp*/[**i**\ ] ]
+[ **-I**\ [**tsr**] ] [ **-Q**\ [**~**]\ *selection*]
+[ **-S**\ [**~**]\ *"search string"* \| **-S**\ [**~**]/\ *regexp*/[**i**] ]
 [ **-T** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -67,7 +66,7 @@ Optional Arguments
     all the files you want to paste must have the same number of columns
     (as set with **-bi**); ASCII tables can have different number of columns.
 
-**-C**\ [**+l**\ *min*\ ][\ **+u**\ *max*\ ][**+i**]
+**-C**\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]
     Only output segments whose number of records matches your given criteria:
     Append **+l**\ *min* to ensure all segment must have at least *min* records
     to be written to output [0], and append **+u**\ *max*  to ensure all segments
@@ -93,7 +92,7 @@ Optional Arguments
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract only one out of *stride* records.
 
-**-I**
+**-I**\ [**tsr**]
     Invert the order of items, i.e., output the items in reverse order,
     starting with the last and ending up with the first item [Default
     keeps original order]. Append up to three items that should be
