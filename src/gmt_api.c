@@ -931,7 +931,7 @@ int GMTAPI_key_to_family (void *API, char *key, int *family, int *geometry)
 	return ((key[K_DIR] == 'i' || key[K_DIR] == 'I') ? GMT_IN : GMT_OUT);	/* Return the direction of the i/o */
 }
 
-char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned int *n_items, unsigned int *PS, char *magic)
+char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, unsigned int *n_items, unsigned int *PS, char *magic)
 {	/* Turn the comma-separated list of 3-char codes into an array of such codes.
  	 * In the process, replace any ?-types with the selected type if type is not 0.
 	 * We return the array of strings and its number (n_items) as well as two vars:
@@ -940,6 +940,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 	size_t len, k, n, dir;
 	bool turn_off[2] = {false, false};
 	char **s = NULL, *next = NULL, *tmp = NULL;
+	struct GMT_OPTION *opt = NULL;
 	*PS = 0;	/* No PostScript output indicated so far */
 	*magic = 0;	/* No special option that turns off PS */
 	*n_items = 0;	/* No keys yet */
@@ -973,7 +974,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, unsigned i
 		}
 		s[k++] = strdup (next);
 		if (!strcmp (next, "-Xo")) (*PS)++;	/* Found a key for PostScript output */
-		if (next[K_FAMILY] == '-') {	/* Got an option that removes the requirement of an input or output dataset */
+		if (next[K_FAMILY] == '-' && GMT_Find_Option (API, next[K_OPT], head)) {	/* Got an option that removes the requirement of an input or output dataset */
 			dir = (next[K_DIR] == 'i' || next[K_DIR] == 'I') ? GMT_IN : GMT_OUT;
 			turn_off[dir] = true;	/* We want no data going in this direction */
 		}
@@ -6743,7 +6744,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	}
 
 	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) and if PS may be bypassed (magic) */
-	key = GMTAPI_process_keys (API, keys, type, &n_keys, &PS, &magic);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
+	key = GMTAPI_process_keys (API, keys, type, *head, &n_keys, &PS, &magic);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
 
 	/* 2b. Make some specific modifications to the keys given the options passed */
 	if (magic && (opt = GMT_Find_Option (API, magic, *head)))	/* Gave option to a PS-producing module that turns off PS */
