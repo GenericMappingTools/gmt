@@ -33,7 +33,7 @@
 #define THIS_MODULE_NAME	"sphtriangulate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Delaunay or Voronoi construction of spherical lon,lat data"
-#define THIS_MODULE_KEYS	"<DI,GGO,NDo"
+#define THIS_MODULE_KEYS	"<DI,>DO,NDo"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"
@@ -41,32 +41,32 @@
 #define GMT_PROG_OPTIONS "-:RVbdhis"
 
 struct SPHTRIANGULATE_CTRL {
-	struct A {	/* -A */
+	struct SPHTRI_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C */
+	struct SPHTRI_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D */
+	struct SPHTRI_D {	/* -D */
 		bool active;
 	} D;
-	struct G {	/* -G<output_grdfile> */
+	struct SPHTRI_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L<unit>] */
+	struct SPHTRI_L {	/* -L<unit>] */
 		bool active;
 		char unit;
 	} L;
-	struct N {	/* -N */
+	struct SPHTRI_N {	/* -N */
 		bool active;
 		char *file;
 	} N;
-	struct Q {	/* -Q */
+	struct SPHTRI_Q {	/* -Q */
 		bool active;
 		unsigned int mode;	/* 0 is Delaunay, 1 is Voronoi */
 	} Q;
-	struct T {	/* -T */
+	struct SPHTRI_T {	/* -T */
 		bool active;
 	} T;
 };
@@ -116,7 +116,8 @@ int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, st
 				}
 				area_triangle = stripack_areas (V[0], V[1], V[2]);
 				area_sphere += area_triangle;
-				sprintf (segment_header, "Triangle: %" PRIu64 " %" PRIu64 "-%" PRIu64 "-%" PRIu64 " Area: %g", k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
+				sprintf (segment_header, "Triangle: %" PRIu64 " %" PRIu64 "-%" PRIu64 "-%" PRIu64 " Area: %g",
+				         k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
 			}
 			else	/* Just a plain header with triangle number */
 				sprintf (segment_header, "Triangle: %" PRIu64, k);
@@ -194,7 +195,8 @@ int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, doub
 
 	char segment_header[GMT_BUFSIZ];
 
-	double area_sphere = 0.0, area_polygon, area_triangle, area_km2 = GMT->session.d_NaN, dist = GMT->session.d_NaN, y[3], V1[3], V2[3], V3[3];
+	double area_sphere = 0.0, area_polygon, area_triangle, area_km2 = GMT->session.d_NaN, dist = GMT->session.d_NaN:
+	double y[3], V1[3], V2[3], V3[3];
 	double *plat = NULL, *plon = NULL, R2;
 
 	struct GMT_DATASEGMENT *S[2] = {NULL, NULL};
@@ -391,8 +393,7 @@ void Free_sphtriangulate_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL 
 	GMT_free (GMT, C);
 }
 
-int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
@@ -425,8 +426,7 @@ int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to sphtriangulate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -482,8 +482,10 @@ int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *
 	}
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && Ctrl->A.active && !Ctrl->N.active, "Syntax error: Binary output does not support storing areas unless -N is used\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3,
+	                                 "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && Ctrl->A.active && !Ctrl->N.active,
+	                                 "Syntax error: Binary output does not support storing areas unless -N is used\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->T.active, "Syntax error -N: Cannot be used with -T.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N: Must specify output file\n");
 
@@ -653,7 +655,8 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	}
 	if (Ctrl->N.active) {
 		GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Since we only have one segment */
-		if (Ctrl->A.active) sprintf (header, "# sphtriangulate nodes (lon, lat, area)"); else sprintf (header, "# sphtriangulate nodes (lon, lat)");
+		if (Ctrl->A.active) sprintf (header, "# sphtriangulate nodes (lon, lat, area)");
+		else sprintf (header, "# sphtriangulate nodes (lon, lat)");
 		Dout[1]->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 		Dout[1]->table[0]->n_headers = 1;
 		Dout[1]->table[0]->header[0] = strdup (header);
