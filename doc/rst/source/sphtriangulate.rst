@@ -60,9 +60,9 @@ Optional Arguments
     from one form to the other when necessary [Default keeps both arrays in memory].
 
 **-D**
-    Used with **-m** to skip the last (repeated) input vertex at the end
+    Used to skip the last (repeated) input vertex at the end
     of a closed segment if it equals the first point in the segment.
-    Requires **-m** [Default uses all points].
+    [Default uses all points].
 
 **-L**\ *unit*
     Specify the unit used for distance and area calculations. Choose
