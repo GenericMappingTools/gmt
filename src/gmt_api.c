@@ -940,7 +940,6 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	size_t len, k, n, dir;
 	bool turn_off[2] = {false, false};
 	char **s = NULL, *next = NULL, *tmp = NULL;
-	struct GMT_OPTION *opt = NULL;
 	*PS = 0;	/* No PostScript output indicated so far */
 	*magic = 0;	/* No special option that turns off PS */
 	*n_items = 0;	/* No keys yet */
@@ -7053,9 +7052,9 @@ int GMT_Set_Default (void *V_API, char *keyword, char *value)
 			GMT_memcpy (API->GMT->current.gdal_read_in.O.mem_layout, value, 4, char);
 	}
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Change grid layout */
-		if (!strncmp (keyword, "columns", 7U))	
+		if (!strncmp (keyword, "columns", 7U))
 			API->shape = GMT_IS_COL_FORMAT;	/* Switch to column-major format */
-		else if (!strncmp (keyword, "rows", 4U))	
+		else if (!strncmp (keyword, "rows", 4U))
 			API->shape = GMT_IS_ROW_FORMAT;	/* Switch to row-major format */
 		else
 			GMT_Report (API, GMT_MSG_NORMAL, "API_GRID_LAYOUT must be either \"columns\" or \"rows\"",  value);
@@ -7411,7 +7410,7 @@ void GMT_set_mem_layout(struct GMTAPI_CTRL *API, char mem_layout[]) {
 
 char *GMT_Duplicate_String (void *API, const char* string) {
 	/* Duplicate a string. The interest of this function is to make the memory allocation
-	   inside the GMT lib so that GMT_Destroy_Data we can free it without any concerns of 
+	   inside the GMT lib so that GMT_Destroy_Data we can free it without any concerns of
 	   Windows DLL hell */
 	   return strdup(string);
 }
@@ -7419,11 +7418,11 @@ char *GMT_Duplicate_String (void *API, const char* string) {
 
 EXTERN_MSC int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword);
 int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword) {
-	/* Currently this is a temporary backdoor to be able to change members of basic API structures 
+	/* Currently this is a temporary backdoor to be able to change members of basic API structures
 	   that had to be declared as immutables in Julia and therefore impossible to change from there.
 	   The API_STRUCT_MEMBER_'STRUCTNAME_MEMBERNUMBER' construct parses the 'STRUCTNAME' as the name
 	   of the structure whose pointer is *ptr and changes the member number 'MEMBERNUMBER'. Example:
-	   API_STRUCT_MEMBER_TEXTSEGMENT_1 will change 'GMT_TEXTSEGMENT.n_rows' member (first member) 
+	   API_STRUCT_MEMBER_TEXTSEGMENT_1 will change 'GMT_TEXTSEGMENT.n_rows' member (first member)
 	   OFC, the member numbering must be exactly on synct with the structure definition.
 	*/
 	unsigned int error = GMT_NOERROR;
