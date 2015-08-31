@@ -3960,9 +3960,9 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 	API->verbose = (mode >> 2);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
-	API->do_not_exit = mode & 1;	/* if set, then API_exit & GMT_exit are simply a return; otherwise they call exit */
-	API->mode  = mode & 2;		/* if false|0 then we dont list read and write as modules */
-	API->shape = (mode & 4) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
+	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* if set, then API_exit & GMT_exit are simply a return; otherwise they call exit */
+	API->mode  = mode & GMT_SESSION_EXTERNAL;		/* if false|0 then we dont list read and write as modules */
+	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we same some CPU */
 	if (session)
 		API->session_tag = strdup (basename (session));	/* Only used in reporting and error messages */
