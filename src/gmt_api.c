@@ -936,7 +936,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
  	 * In the process, replace any ?-types with the selected type if type is not 0.
 	 * We return the array of strings and its number (n_items) as well as two vars:
 	 * PS will be 1 if the module produces PostScript, else it is 0. */
-	size_t len, k, kk, n, dir;
+	size_t len, k, kk, n;
 	int o_id = -1;
 	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -960,21 +960,24 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	/* While processing the array we also check if this is a PostScript-producing module and determine the key # for the primary output */
 	while ((next = strsep (&tmp, ",")) != NULL) {
 		if (strlen (next) != 3) {
-			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: key %s does not contain exactly 3 characters\n", next);
+			GMT_Report (API, GMT_MSG_NORMAL,
+			            "GMTAPI_process_keys: INTERNAL ERROR: key %s does not contain exactly 3 characters\n", next);
 			continue;
 		}
 		s[k] = strdup (next);
 		if (next[K_DIR] == 'O') {	/* Identified primary output key */
 			if (!strncmp (next, ">XO", 3U)) (*PS)++;	/* Found a key for PostScript output. We add but *PS should be 0 or 1 after loop */
 			if (o_id >= 0)	/* Already had a primary output key */
-				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: keys %s contain more than one primary output key\n", string);
+				GMT_Report (API, GMT_MSG_NORMAL,
+				            "GMTAPI_process_keys: INTERNAL ERROR: keys %s contain more than one primary output key\n", string);
 			else
-				o_id = k;
+				o_id = (int)k;
 		}
 		k++;
 	}
 	/* Now do basic check on PostScript count */
-	if (*PS > 1) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: keys %s contain more than one implicit PS output\n", string);
+	if (*PS > 1) GMT_Report (API, GMT_MSG_NORMAL,
+	                         "GMTAPI_process_keys: INTERNAL ERROR: keys %s contain more than one implicit PS output\n", string);
 	for (k = 0; k < n; k++) {	/* Check for presence of any of the magic X,Y,Z keys */
 		if (s[k][K_OPT] == '-') {	/* Key letter X missing: Means that option -Y, if given, changes the type of input|output */
 			/* Must first determine which data type we are dealing with via -T<type> */
@@ -990,12 +993,14 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 				}
 			}
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: INTERNAL ERROR: Required runtime type-getting option (-%c) not given\n", s[k][K_FAMILY]);
+				GMT_Report (API, GMT_MSG_NORMAL,
+				            "GMT_Encode_Options: INTERNAL ERROR: Required runtime type-getting option (-%c) not given\n", s[k][K_FAMILY]);
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
 		else if (s[k][K_FAMILY] == '-') {	/* * Key letter Y missing: Means that -X, if given, changes the type of input|output to secondary (i.e., not required) */
 			if (GMT_Find_Option (API, s[k][K_OPT], head)) {	/* Got the option that removes the requirement of an input or output dataset */
 				for (kk = 0; kk < n; kk++) {	/* Change all primary input|output flags to secondary, depending on Z */
+					if (!s[kk]) continue;		/* A previously processed/freed key */
 					if (s[kk][K_DIR] == 'I' && strchr ("-iI", s[k][K_DIR])) s[kk][K_DIR] = 'i';	/* No longer an implicit input */
 					if (s[kk][K_DIR] == 'O' && strchr ("-oO", s[k][K_DIR])) s[kk][K_DIR] = 'o';	/* No longer an implicit output */
 				}
@@ -2086,7 +2091,7 @@ bool col_check (struct GMT_DATATABLE *T, uint64_t *n_cols) {
 /*! . */
 void GMTAPI_increment_D (struct GMT_DATASET *D_obj, uint64_t n_rows, uint64_t n_columns, uint64_t n_seg)
 {	/* Increment dimensions for this single dataset's single table's last segment */
-	unsigned int last_seg = n_seg - 1;
+	uint64_t last_seg = n_seg - 1;
 	assert (n_seg > 0);
 	D_obj->table[D_obj->n_tables]->segment[last_seg]->n_rows = n_rows;
 	D_obj->table[D_obj->n_tables]->segment[last_seg]->n_columns = D_obj->table[D_obj->n_tables]->n_columns = n_columns;
@@ -2435,8 +2440,8 @@ int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, enum GMT_enum_family famil
 }
 
 /*! . */
-int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_DATASET *D_obj)
-{	/* Does the actual work of writing out the specified data set to one destination.
+int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_DATASET *D_obj) {
+ 	/* Does the actual work of writing out the specified data set to one destination.
 	 * If object_ID == GMT_NOTSET we use the first registered output destination, otherwise we just use the one specified.
 	 * See the GMT API documentation for how mode is used to create multiple files from segments or tables.
 	 */
