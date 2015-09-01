@@ -22,7 +22,7 @@
 #define THIS_MODULE_NAME	"pspolar"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot polarities on the inferior focal half-sphere on maps"
-#define THIS_MODULE_KEYS	"<DI,-Xo"
+#define THIS_MODULE_KEYS	"<DI,>XO"
 
 #include "gmt_dev.h"
 

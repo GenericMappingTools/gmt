@@ -33,7 +33,7 @@
 #define THIS_MODULE_NAME	"psrose"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
-#define THIS_MODULE_KEYS	"<DI,-Xo"
+#define THIS_MODULE_KEYS	"<DI,>XO"
 
 #include "gmt_dev.h"
 

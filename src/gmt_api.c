@@ -931,17 +931,16 @@ int GMTAPI_key_to_family (void *API, char *key, int *family, int *geometry)
 	return ((key[K_DIR] == 'i' || key[K_DIR] == 'I') ? GMT_IN : GMT_OUT);	/* Return the direction of the i/o */
 }
 
-char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, unsigned int *n_items, unsigned int *PS, char *magic)
+char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, unsigned int *n_items, unsigned int *PS)
 {	/* Turn the comma-separated list of 3-char codes into an array of such codes.
  	 * In the process, replace any ?-types with the selected type if type is not 0.
 	 * We return the array of strings and its number (n_items) as well as two vars:
-	 * PS will be 1 if the module produces PostScript, else it is 0.
-	 * magic will be 0 or a magic option that changes the module from PS-producing to data producing. */
-	size_t len, k, n, dir;
-	bool turn_off[2] = {false, false};
-	char **s = NULL, *next = NULL, *tmp = NULL;
+	 * PS will be 1 if the module produces PostScript, else it is 0. */
+	size_t len, k, kk, n, dir;
+	int o_id = -1;
+	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
+	struct GMT_OPTION *opt = NULL;
 	*PS = 0;	/* No PostScript output indicated so far */
-	*magic = 0;	/* No special option that turns off PS */
 	*n_items = 0;	/* No keys yet */
 
 	if (!string) return NULL;	/* Got NULL, just give up */
@@ -958,30 +957,81 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	/* Allocate and populate the character array, then return it and n_items */
 	s = (char **) calloc (n, sizeof (char *));
 	k = 0;
+	/* While processing the array we also check if this is a PostScript-producing module and determine the key # for the primary output */
 	while ((next = strsep (&tmp, ",")) != NULL) {
 		if (strlen (next) != 3) {
 			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: key %s does not contain exactly 3 characters\n", next);
 			continue;
 		}
-		if (!strchr ("IOio", next[K_DIR])) {	/* Means that this option, if given, deactivates the normal default PostScript output */
-			/* E.g, pscoast has >DM and this becomes >DO if -M is used */
-			if (*magic == 0)	/* First time we find one, return the option letter via magic */
-				*magic = next[K_DIR];
+		s[k] = strdup (next);
+		if (next[K_DIR] == 'O') {	/* Identified primary output key */
+			if (!strncmp (next, ">XO", 3U)) (*PS)++;	/* Found a key for PostScript output. We add but *PS should be 0 or 1 after loop */
+			if (o_id >= 0)	/* Already had a primary output key */
+				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: keys %s contain more than one primary output key\n", string);
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: More than one key ends in x\n");
-			next[K_DIR] = 'O';	/* Now implies required output */
+				o_id = k;
 		}
-		s[k++] = strdup (next);
-		if (!strcmp (next, "-Xo")) (*PS)++;	/* Found a key for PostScript output */
-		if (next[K_FAMILY] == '-' && GMT_Find_Option (API, next[K_OPT], head)) {	/* Got an option that removes the requirement of an input or output dataset */
-			dir = (next[K_DIR] == 'i' || next[K_DIR] == 'I') ? GMT_IN : GMT_OUT;
-			turn_off[dir] = true;	/* We want no data going in this direction */
+		k++;
+	}
+	/* Now do basic check on PostScript count */
+	if (*PS > 1) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: keys %s contain more than one implicit PS output\n", string);
+	for (k = 0; k < n; k++) {	/* Check for presence of any of the magic X,Y,Z keys */
+		if (s[k][K_OPT] == '-') {	/* Key letter X missing: Means that option -Y, if given, changes the type of input|output */
+			/* Must first determine which data type we are dealing with via -T<type> */
+			if ((opt = GMT_Find_Option (API, s[k][K_FAMILY], head))) {	/* Found the -Y<type> option */
+				type = toupper (opt->arg[0]);	/* Find type and replace ? in keys with this type in uppercase (DGCIT) in GMTAPI_process_keys below */
+				if (!strchr ("DGCIT", type)) {
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: INTERNAL ERROR: No or bad data type given to read|write (%c)\n", type);
+					return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
+				}
+				for (kk = 0; kk < n; kk++) {	/* DO the substitution for all keys that matches ? */
+					if (s[kk][K_FAMILY] == '?' && strchr ("-iI", s[kk][K_DIR])) s[kk][K_FAMILY] = type;	/* Want input to handle this type of data */
+					if (s[kk][K_FAMILY] == '?' && strchr ("-oO", s[kk][K_DIR])) s[kk][K_FAMILY] = type;	/* Want input to handle this type of data */
+				}
+			}
+			else
+				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: INTERNAL ERROR: Required runtime type-getting option (-%c) not given\n", s[k][K_FAMILY]);
+			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
+		}
+		else if (s[k][K_FAMILY] == '-') {	/* * Key letter Y missing: Means that -X, if given, changes the type of input|output to secondary (i.e., not required) */
+			if (GMT_Find_Option (API, s[k][K_OPT], head)) {	/* Got the option that removes the requirement of an input or output dataset */
+				for (kk = 0; kk < n; kk++) {	/* Change all primary input|output flags to secondary, depending on Z */
+					if (s[kk][K_DIR] == 'I' && strchr ("-iI", s[k][K_DIR])) s[kk][K_DIR] = 'i';	/* No longer an implicit input */
+					if (s[kk][K_DIR] == 'O' && strchr ("-oO", s[k][K_DIR])) s[kk][K_DIR] = 'o';	/* No longer an implicit output */
+				}
+			}
+			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
+		}
+		else if (!strchr ("IOio", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O: Means that option -Z, if given, changes the type of primary output to Y */
+			/* E.g, pscoast has >DM and this turns >XO to >DO only when -M is used */
+			if (magic == 0)	/* First time we find one, get it */
+				magic = s[k][K_DIR];
+			else
+				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: More than one magic key trying to change output type\n");
+			if (GMT_Find_Option (API, magic, head)) {	/* Got the magic option that changes output type */
+				if (o_id == -1)
+					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
+				if (*PS == 1) (*PS)--;			/* No longer PostScript producing module */
+				s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Now implies this data type */
+			}
+			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
 	}
-	for (k = 0; k < n; k++) {	/* Possibly turn of required input|output settings */
-		if (s[k][K_DIR] == 'I' && turn_off[GMT_IN])  s[k][K_DIR] = 'i';	/* No longer an implicit input */
-		if (s[k][K_DIR] == 'O' && turn_off[GMT_OUT]) s[k][K_DIR] = 'o';	/* No longer an implicit output */
+	if (*PS < 0) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: keys %s implies negative number of PS outpust\n", string);
+	/* Shuffle away any NULL entries */
+	for (k = kk = 0; k < n; k++) {
+		if (s[k]) {	/* Must keep this guy */
+			if (k > kk) s[kk] = s[k];
+			kk++;
+		}
 	}
+	n = kk;	/* May have lost some NULLs */
+	for (k = 0; k < n; k++) {
+		strcat (revised, ",");
+		if (!strncmp (s[k], ">XO", 3U)) strcpy (s[k], "-Xo");	/* Replace the logical >XO with harmless -Xo since PS is not written by the API i/o functions */
+		strcat (revised, s[k]);
+	}
+	if (revised[0]) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_process_keys: Revised keys string is %s\n", &revised[1]);
 	*n_items = (unsigned int)n;	/* Total number of keys for this module */
 	free ((void *)tmp);
 	return s;
@@ -2409,10 +2459,10 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 
 	S_obj = API->object[item];	/* S is the object whose data we will export */
 	if (S_obj->family != GMT_IS_DATASET) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_FAMILY));	/* Called with wrong data type */
-	if (mode >= GMT_WRITE_TABLE && !S_obj->filename) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once unless overridden by mode */
 		return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));
 	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;	/* Remove the reset bit */
+	if (mode >= GMT_WRITE_TABLE && !S_obj->filename) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
 	default_method = GMT_IS_FILE;
 	if (S_obj->filename)	/* Write to this file */
 		ptr = S_obj->filename;
@@ -6633,7 +6683,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *   marker	Character that represents a resource, typically $, but could be another char if need be.
 	 *   head	Linked list of GMT options passed for this module. We may hook on 1-2 additional options.
 	 *   We return an array of structures with information about registered resources going to/from GMT.
-	 *   The number of structures is returned by the *n argument. struct GMT_RESOURCE is defined in gmt.h.
+	 *   The number of structures is returned by the *n argument. Struct GMT_RESOURCE is defined in gmt.h.
 	 * Basically, given the module we look up the keys for that module which tells us which options provide
 	 * the input and output selections and which ones are required and which ones are optional.  We then
 	 * scan the given options and if file arguments to the options listed in the keys are missing we are
@@ -6649,29 +6699,43 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 * need several comma-separated XYZ words and these are returned as one string via GMT_Get_Moduleinfo.
 	 * The origin of these words are given by the THIS_MODULE_KEY in every module source code.
 	 *
-	 * X stands for the specific program option (e.g., L for -L, F for -F) or <,>
-	 *    for standard input,output (if reading tables) or command-line files (if reading grids).
-	 *    A hyphen (-) means there is no option for this item.
+	 * X stands for the specific program option (e.g., L for -L, F for -F) or < for standard input and
+	 *    > for standard output (if reading tables) or command-line files (if reading grids).
 	 * Y stands for data type (C = CPT, D = Dataset/Point, L = Dataset/Line,
-	 *    P = Dataset/Polygon, G = Grid, I = Image, T = Textset, X = PostScript, ? = type given via module option),
-	 *    wile a hyphen (-) means there is NO data when this option is set (see Z for in or out).
-	 * Z stands for primary inputs (I), primary output (O), secondary input (i), secondary output (o).
+	 *    P = Dataset/Polygon, G = Grid, I = Image, T = Textset, X = PostScript, ? = type given via a module option),
+	 *    while a hyphen (-) means there is NO data when this option is set (see Z for whether this is for in- or output).
+	 * Z stands for primary inputs (I), primary output (O), secondary input (i), or secondary output (o).
 	 *   Primary inputs and outputs need to be assigned, and if not explicitly given will result in
 	 *   a syntax error. However, external APIs (mex, Python) can override this and supply the missing items
 	 *   via the given left- and right-hand side arguments to supply input or accept output.
 	 *   Secondary inputs means they are only assigned if the option is actually given.
-	 *   A few modules will have Z = x (for some letter x not i|I|o|O), which means that normally these modules
-	 *   will produce PostScript, but if the "-x" option is given they will not (For example, pscoast normally creates a
-	 *   PostScript map but pscoast -M will instead export data to stdout, so its key contains the entry >DM,
-	 *   which means that when -M is active the >DM turns into >DO and thus allows for a data set export.
-	 *   As another example, the key T-i in psxy means that when -T is used then No input is expected.
 	 *
-	 * E.g., the surface example would have the word LGI.  The data types P|L|D|G|C|T stand for
-	 * P(olygons), L(ines), D(point data), G(rid), C(PT file), T(ext table). [We originally only had
-	 * D for datasets but perhaps the geometry needs to be passed too (if known); hence the P|L|D char]
-	 * In addition, the only common option that might take a file is -R which may take a grid as input.
-	 * We check for that in addition to the module-specific info passed via the key variable.
-
+	 * There are a few special cases where X, Y, or Z take on magic behavior:
+	 *
+	 *   A few modules with have X = - (hyphen) and this means the primary input or output (determined by Z)
+	 *   has a data type that is not known until runtime.  A module option tells us which type it is, and this
+	 *   option is encoded in Y.  So the -Y<type> option is _required_ and that is how we can update the primary
+	 *   data type.  Example: gmtread can read any GMT object but requires -T<type>.  It thus has the keys
+	 *   "<?I,>?O,-T-".  Thus, we use -T<type> and replace ? with the dataset implied by <type> both for input
+	 *   and output (since Z was indeterminate).  Use i|o if only input or output should have this treatment.
+	 *
+	 *   A few modules will have Y = - which is another magic key: If the -X option is given then either the input
+	 *   or output (depending on what Z is) will not be required. As an example of this behavior, consider psxy
+	 *   which has a -T option that means "read no input, just write trailer". So the key "T-i" in psxy means that
+	 *   when -T is used then NO input is expected.  This means the primary input key "<DI" is set to "<Di" (secondary)
+	 *   and no attempt is made to connect external input to the psxy input.
+	 *
+	 *   A few modules will specify Z as some letter not i|I|o|O, which means that normally these modules
+	 *   will produce whatever output is specified by the primary setting, but if the "-Z" option is given the primary
+	 *   output will be changed to the given Y.  This is confusing so here are two examples:
+	 *   1. pscoast normally writes PostScript but pscoast -M will instead export data to stdout, so its key
+	 *      contains the entry ">DM", which means that when -M is active then PostScript key ">XO" turns into ">DO" and
+	 *      thus allows for a data set export instead.
+	 *   2. grdinfo normally writes a textset (key ">TO") but with -C it should write a dataset.  It has the magic
+	 *      key ">DC". If the -C option is given then the ">TO" is changed to ">DO".
+	 *
+	 *   After processing, all magic key sequences are set to "---" meaning inactive.
+	 *
 	 */
 
 	unsigned int n_keys, direction = 0, PS, kind, pos, n_items = 0, ku;
@@ -6679,13 +6743,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	int family;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int k;
-	bool activate_output = false, deactivate_output = false;
+	bool deactivate_output = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
-	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[16] = {""};
+	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[16] = {""}, type = 0;
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
-	char type = 0, option, magic;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
 	struct GMTAPI_CTRL *API = NULL;
@@ -6708,20 +6771,11 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 
 	/* First some special checks related to unusual GMT syntax or hidden modules */
 
-	/* 1a. Check if this is either the read of write special module, which specifies what data type to deal with via -T<type> */
-	if (!strncmp (module, "gmtread", 7U) || !strncmp (module, "gmtwrite", 8U)) {
-		/* Special case: Must determine which data type we are dealing with via -T<type> */
-		if ((opt = GMT_Find_Option (API, 'T', *head)))	/* Found the -T<type> option */
-			type = toupper (opt->arg[0]);	/* Find type and replace ? in keys with this type in uppercase (DGCIT) in GMTAPI_process_keys below */
-		if (!strchr ("DGCIT", type)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: No or bad data type given to read|write (%c)\n", type);
-			return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
-		}
-		if (!strncmp (module, "gmtwrite", 8U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
-			/* Found a -<"file" option; this is actually the output file so we reset the option */
-			opt->option = option = GMT_OPT_OUTFILE;
-			deactivate_output = true;	/* Remember to turn off implicit output option since we got one */
-		}
+	/* 1a. Check if this is the write special module, which has flagged its output file as input... */
+	if (!strncmp (module, "gmtwrite", 8U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
+		/* Found a -<"file" option; this is actually the output file so we simply reset the option */
+		opt->option = GMT_OPT_OUTFILE;
+		deactivate_output = true;	/* Remember to turn off implicit output option since we got one */
 	}
 	/* 1b. Check if this is either gmtmath or grdmath which uses the special = outfile syntax and replace by -=<outfile> */
 	if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
@@ -6734,24 +6788,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			}
 		}
 	}
-	/* 1c. Check if this is gmtinfo which writes a DATASET when -C is used or a TEXTSET otherwise */
-	if (!strncmp (module, "gmtinfo", 7U)) {
-		if ((opt = GMT_Find_Option (API, 'C', *head)))	/* Found the -C option */
-			type = 'D';	/* Replace ? in keys with D in GMTAPI_process_keys below */
-		else
-			type = 'T';	/* Replace ? in keys with T in GMTAPI_process_keys below  */
-	}
 
 	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) and if PS may be bypassed (magic) */
-	key = GMTAPI_process_keys (API, keys, type, *head, &n_keys, &PS, &magic);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
+	key = GMTAPI_process_keys (API, keys, type, *head, &n_keys, &PS);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
 
 	/* 2b. Make some specific modifications to the keys given the options passed */
-	if (magic && (opt = GMT_Find_Option (API, magic, *head)))	/* Gave option to a PS-producing module that turns off PS */
-		PS = 0;	/* No PostScript will be produced this time, e.g. pscoast -M, pscontour -D, etc. */
-	if (deactivate_output && (k = GMTAPI_get_key (API, option, key, n_keys)) >= 0)
+	if (deactivate_output && (k = GMTAPI_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
 		key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Since we got an explicit output file already */
-	if (activate_output && (k = GMTAPI_get_key (API, option, key, n_keys)) >= 0)
-		key[k][K_DIR] = toupper (key[k][K_DIR]);	/* Since we must add a required implicit output file */
 
 	/* 3. Count the module options and any input files referenced via marker, then allocate info struct array */
 	for (opt = *head; opt; opt = opt->next) {

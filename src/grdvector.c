@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"grdvector"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot vector field from two component grids"
-#define THIS_MODULE_KEYS	"<GI,CCi,-Xo"
+#define THIS_MODULE_KEYS	"<GI,CCi,>XO"
 
 #include "gmt_dev.h"
 

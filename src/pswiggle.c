@@ -34,7 +34,7 @@
 #define THIS_MODULE_NAME	"pswiggle"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot z = f(x,y) anomalies along tracks"
-#define THIS_MODULE_KEYS	"<DI,-Xo"
+#define THIS_MODULE_KEYS	"<DI,>XO"
 
 #include "gmt_dev.h"
 
