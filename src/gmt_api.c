@@ -1022,7 +1022,6 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
 	}
-	if (*PS < 0) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: keys %s implies negative number of PS outpust\n", string);
 	/* Shuffle away any NULL entries */
 	for (k = kk = 0; k < n; k++) {
 		if (s[k]) {	/* Must keep this guy */
