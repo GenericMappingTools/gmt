@@ -10176,7 +10176,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (GMT_compat_check (GMT, 4)) {
 				len = (int)strlen (text_cp) - 1;
 				if (strchr (text_cp, ':') || (!strchr (text_cp, '+') && len > 0 && strchr ("bcflrst", text_cp[len]))) {	/* Old style */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in Option -Sf: Sf<spacing>/<size>[dir][type][:<offset>] is deprecated syntax\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT,
+					            "Warning in Option -Sf: Sf<spacing>/<size>[dir][type][:<offset>] is deprecated syntax\n");
 					if ((c = strchr (text_cp, ':'))) {	/* Gave :<offset>, set it and strip it off */
 						c++;	/* Skip over the colon */
 						p->f.f_off = GMT_to_inch (GMT, c);
@@ -10223,7 +10224,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			else
 				GMT_parse_front (GMT, text_cp, p);	/* Parse new -Sf syntax */
 			if (p->f.f_sense == GMT_FRONT_CENTERED && p->f.f_symbol == GMT_FRONT_SLIP) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+				            "Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			if (GMT_IS_ZERO (p->f.f_gap) || GMT_IS_ZERO (p->f.f_len)) {
@@ -10237,7 +10239,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				if (!GMT_IS_ZERO (p->f.f_off)) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in Option -Sf: +<offset> cannot be used when number of ticks is specified!\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+					            "Error in Option -Sf: +<offset> cannot be used when number of ticks is specified!\n");
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 			}
@@ -10478,8 +10481,13 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = GMT_SYMBOL_ZDASH;
 			break;
 		case 'k':
-			p->symbol = GMT_SYMBOL_CUSTOM;
 			p->custom = GMT_get_custom_symbol (GMT, text_cp);
+			if (!p->custom) {
+				GMT->init.n_custom_symbols = 0;
+				decode_error++;
+				break;
+			}
+			p->symbol = GMT_SYMBOL_CUSTOM;
 			p->n_required = p->custom->n_required;
 			for (ju = p->n_nondim = 0; ju < p->n_required; ju++) {	/* Flag input columns that are NOT lengths */
 				if (p->custom->type[ju] != GMT_IS_DIMENSION) p->nondim_col[p->n_nondim++] = 2 + col_off + ju;
