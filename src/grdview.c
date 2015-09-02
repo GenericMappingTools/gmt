@@ -40,7 +40,7 @@
 #define THIS_MODULE_NAME	"grdview"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create 3-D perspective image or surface mesh from a grid"
-#define THIS_MODULE_KEYS	"<GI,CCi,GGi,IGi,>XO,RGi"
+#define THIS_MODULE_KEYS	"<GI,CCi,GGi,IGi,>XO,RG!"
 
 #include "gmt_dev.h"
 

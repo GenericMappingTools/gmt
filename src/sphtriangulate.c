@@ -33,7 +33,7 @@
 #define THIS_MODULE_NAME	"sphtriangulate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Delaunay or Voronoi construction of spherical lon,lat data"
-#define THIS_MODULE_KEYS	"<DI,>DO,NDo,RGi"
+#define THIS_MODULE_KEYS	"<DI,>DO,NDo,RG!"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"

@@ -41,7 +41,7 @@
 #define THIS_MODULE_NAME	"grdblend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Blend several partially over-lapping grids into one larger grid"
-#define THIS_MODULE_KEYS	"<TI,GGO,RGi"
+#define THIS_MODULE_KEYS	"<TI,GGO,RG!"
 
 #include "gmt_dev.h"
 

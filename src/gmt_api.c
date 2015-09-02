@@ -928,7 +928,7 @@ int GMTAPI_key_to_family (void *API, char *key, int *family, int *geometry)
 	}
 
 	/* Third key character contains the in/out code */
-	return ((key[K_DIR] == 'i' || key[K_DIR] == 'I') ? GMT_IN : GMT_OUT);	/* Return the direction of the i/o */
+	return ((key[K_DIR] == 'o' || key[K_DIR] == 'O') ? GMT_OUT : GMT_IN);	/* Return the direction of the i/o [note ! means in] */
 }
 
 char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, unsigned int *n_items, unsigned int *PS)
@@ -1007,7 +1007,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			}
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
-		else if (!strchr ("IOio", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O: Means that option -Z, if given, changes the type of primary output to Y */
+		else if (!strchr ("IOio!", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O|!: Means that option -Z, if given, changes the type of primary output to Y */
 			/* E.g, pscoast has >DM and this turns >XO to >DO only when -M is used */
 			if (magic == 0)	/* First time we find one, get it */
 				magic = s[k][K_DIR];
@@ -6823,14 +6823,14 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 		family = geometry = -1;	/* Not set yet */
 		if (k >= 0) direction = GMTAPI_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 
-		if (GMTAPI_found_marker (opt->arg, marker)) {	/* Found an explicit dollar sign within the option, e.g., -G$ or -<$ */
+		if (GMTAPI_found_marker (opt->arg, marker)) {	/* Found an explicit dollar sign within the option, e.g., -G$, -R$ or -<$ */
 			if (k == -1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
 			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
 			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i so we dont add it later */
-			if (k >= 0) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
+			if (k >= 0 && key[k][K_DIR] != '!') key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
 			info[n_items].geometry  = geometry;

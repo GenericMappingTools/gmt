@@ -44,7 +44,7 @@
 #define THIS_MODULE_NAME	"gmtselect"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Select data table subsets based on multiple spatial criteria"
-#define THIS_MODULE_KEYS	"<DI,CDi,FDi,LDi,>DO,RGi"
+#define THIS_MODULE_KEYS	"<DI,CDi,FDi,LDi,>DO,RG!"
 
 #include "gmt_dev.h"
 
