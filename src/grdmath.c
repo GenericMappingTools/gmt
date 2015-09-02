@@ -4025,7 +4025,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 			GMT_set_pad (GMT, 2U);			/* Ensure space for BCs in case an API passed pad == 0 */
-			stack[this_stack]->alloc_mode = (GMT_File_Is_Memory (opt->arg)) ? 3 : 2;	/* Since it now is registered */
+			stack[this_stack]->alloc_mode = (GMT_File_Is_Memory (opt->arg)) ? 3 : 2;	/* Since it now is registered (but set to 3 for external memory) */
 			if (n_items) nstack--;	/* Pop off the current stack if there is one */
 			new_stack = nstack;
 			continue;
@@ -4184,10 +4184,10 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "grid files do not cover the same area!\n");
 					Return (EXIT_FAILURE);
 				}
-				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get header only */
+				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get data */
 					Return (API->error);
 				}
-				stack[nstack]->alloc_mode = 2;
+				stack[nstack]->alloc_mode = (GMT_File_Is_Memory (opt->arg)) ? 3 : 2;	/* Since it now is registered (but set to 3 if external memory) */
 			}
 			nstack++;
 			continue;
