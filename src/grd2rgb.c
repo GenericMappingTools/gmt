@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"grd2rgb"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile"
-#define THIS_MODULE_KEYS	"<GI"
+#define THIS_MODULE_KEYS	"<GI,RGi"
 
 #include "gmt_dev.h"
 

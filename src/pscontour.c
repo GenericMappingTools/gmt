@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"pscontour"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
-#define THIS_MODULE_KEYS	"<DI,CCi,EDi,>DD,>XO"
+#define THIS_MODULE_KEYS	"<DI,CCi,EDi,>DD,>XO,RGi"
 
 #include "gmt_dev.h"
 

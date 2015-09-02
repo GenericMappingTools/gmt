@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"grdvolume"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate grid volume and area constrained by a contour"
-#define THIS_MODULE_KEYS	"<GI,>DO"
+#define THIS_MODULE_KEYS	"<GI,>DO,RGi"
 
 #include "gmt_dev.h"
 

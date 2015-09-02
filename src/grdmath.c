@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"grdmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
-#define THIS_MODULE_KEYS	"<GI,=GO"
+#define THIS_MODULE_KEYS	"<GI,=GO,RGi"
 
 #include "gmt_dev.h"
 

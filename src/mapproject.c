@@ -40,7 +40,7 @@
 #define THIS_MODULE_NAME	"mapproject"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Do forward and inverse map transformations, datum conversions and geodesy"
-#define THIS_MODULE_KEYS	"<DI,LDi,>DO,W-i"
+#define THIS_MODULE_KEYS	"<DI,LDi,>DO,W-i,RGi"
 
 #include "gmt_dev.h"
 

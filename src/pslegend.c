@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"pslegend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot legends on maps"
-#define THIS_MODULE_KEYS	"<TI,ACi,>XO"
+#define THIS_MODULE_KEYS	"<TI,ACi,>XO,RGi"
 
 #include "gmt_dev.h"
 

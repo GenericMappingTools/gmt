@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"grdhisteq"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Perform histogram equalization for a grid"
-#define THIS_MODULE_KEYS	"<GI,GGO,DTo"
+#define THIS_MODULE_KEYS	"<GI,GGO,DTo,RGi"
 
 #include "gmt_dev.h"
 

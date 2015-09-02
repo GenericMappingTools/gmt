@@ -32,7 +32,7 @@
 #define THIS_MODULE_NAME	"grdsample"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Resample a grid onto a new lattice"
-#define THIS_MODULE_KEYS	"<GI,GGO"
+#define THIS_MODULE_KEYS	"<GI,GGO,RGi"
 
 #include "gmt_dev.h"
 
