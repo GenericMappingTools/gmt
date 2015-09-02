@@ -5718,12 +5718,12 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 	enum GMT_enum_family family;
 	struct GMTAPI_CTRL *API = NULL;
 
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* This is a cardinal sin */
 	if (object == NULL) return (false);	/* Null address, quietly skip */
 	if (!ptrvoid(object)) return (false);	/* Null pointer, quietly skip */
-	API = gmt_get_api_ptr (V_API);
-	if ((object_ID = GMTAPI_get_objectID_from_data_ptr (API, object)) == GMT_NOTSET) return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
-	if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, GMT_NOTSET)) == GMT_NOTSET) return_error (API, API->error);
+	API = gmt_get_api_ptr (V_API);		/* Now we need to get that API pointer to check further */
+	if ((object_ID = GMTAPI_get_objectID_from_data_ptr (API, object)) == GMT_NOTSET) return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find the object in the list */
+	if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, GMT_NOTSET)) == GMT_NOTSET) return_error (API, API->error);	/* Could not find that item */
 
 	family = (API->object[item]->actual_family) ? API->object[item]->actual_family : API->object[item]->family;	/* So if dataset via matrix we want family = matrix */
 	switch (family) {	/* Standard 5 families, plus matrix/vector and coordinates */
@@ -5771,6 +5771,7 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 #ifdef DEBUG
 		GMT_list_API (API, "GMT_Destroy_Data");
 #endif
+		
 	}
 	else {
 		/* Quietly ignore these errors: GMT_PTR_IS_NULL, GMT_FREE_EXTERNAL_NOT_ALLOWED, GMT_FREE_WRONG_LEVEL as they are not considered errors here. */
