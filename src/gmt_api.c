@@ -2447,7 +2447,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	 * See the GMT API documentation for how mode is used to create multiple files from segments or tables.
 	 */
 	int item, error, default_method;
-	uint64_t tbl, col, col_pos, row_out, row, seg, ij;
+	uint64_t tbl, col, row_out, row, seg, ij;
 	double value;
 	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -2533,9 +2533,8 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Write this segment's data records to the matrix */
 						for (col = 0; col < M_obj->n_columns; col++) {
-							col_pos = (API->GMT->common.o.active) ? API->GMT->current.io.col[GMT_OUT][col].col : col;	/* Which data column to pick */
 							ij = GMT_2D_to_index (row_out, col, M_obj->dim);
-							value = gmt_select_dataset_value (API->GMT, S, row, col_pos);
+							value = gmt_select_dataset_value (API->GMT, S, row, col);
 							GMTAPI_put_val (&(M_obj->data), ij, value);
 						}
 					}
@@ -2565,8 +2564,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Copy the data records */
 						for (col = 0; col < V_obj->n_columns; col++) {
-							col_pos = (API->GMT->common.o.active) ? API->GMT->current.io.col[GMT_OUT][col].col : col;	/* Which data column to pick */
-							value = gmt_select_dataset_value (API->GMT, S, row, col_pos);
+							value = gmt_select_dataset_value (API->GMT, S, row, col);
 							GMTAPI_put_val (&(V_obj->data[col]), row_out, value);
 						}
 					}
