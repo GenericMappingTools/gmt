@@ -1019,6 +1019,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
 				if (*PS == 1) (*PS)--;			/* No longer PostScript producing module */
 				s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Now implies this data type */
+				s[o_id][K_OPT]    = s[k][K_OPT];	/* Now implies this option */
 			}
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
