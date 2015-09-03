@@ -42,7 +42,7 @@
 #define THIS_MODULE_NAME	"surface"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
-#define THIS_MODULE_KEYS	"<DI,DDi,LGi,GGO,RG!"
+#define THIS_MODULE_KEYS	"<DI,DDi,LGi,GGO,RG+"
 
 #include "gmt_dev.h"
 

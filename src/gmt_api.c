@@ -1008,7 +1008,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			}
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
-		else if (!strchr ("IOio!", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O|!: Means that option -Z, if given, changes the type of primary output to Y */
+		else if (!strchr ("IOio+", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O|+: Means that option -Z, if given, changes the type of primary output to Y */
 			/* E.g, pscoast has >DM and this turns >XO to >DO only when -M is used */
 			if (magic == 0)	/* First time we find one, get it */
 				magic = s[k][K_DIR];
@@ -6833,7 +6833,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			}
 			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
 			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i so we dont add it later */
-			if (k >= 0 && key[k][K_DIR] != '!') key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
+			if (k >= 0 && key[k][K_DIR] != '+') key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
 			info[n_items].geometry  = geometry;
@@ -6846,7 +6846,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g and let -R pass as well*/
 			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
-			if (key[k][K_DIR] == '!')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */
+			if (key[k][K_DIR] == '+')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */
 				skip = number = true;
 			else if (len) {	/* There is a 1-char argument given */
 				if (!GMT_access (API->GMT, opt->arg, F_OK)) {
