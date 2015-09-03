@@ -770,6 +770,7 @@ int gmt_bin_input_memory (struct GMT_CTRL *GMT, uint64_t n, uint64_t n_use)
  	 * The current data record has already been read from wherever and is avaialble in GMT->current.io.curr_rec */
 	unsigned int status;
 	//uint64_t n_read;
+	GMT_UNUSED(n);
 
 	GMT->current.io.status = GMT_IO_DATA_RECORD;	/* Default status we expect, but this may change below */
 	GMT->current.io.rec_no++;			/* One more input record read */
@@ -7463,9 +7464,9 @@ char *GMT_Duplicate_String (void *API, const char* string) {
 	/* Duplicate a string. The interest of this function is to make the memory allocation
 	   inside the GMT lib so that GMT_Destroy_Data we can free it without any concerns of
 	   Windows DLL hell */
-	   return strdup(string);
+	GMT_UNUSED(API);
+	return strdup (string);
 }
-
 
 EXTERN_MSC int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword);
 int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword) {

@@ -76,7 +76,7 @@ struct SPHTRIANGULATE_CTRL {
 };
 
 int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, uint64_t get_arcs, \
-	unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[], char *file0, char *file1)
+	unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	uint64_t i, ij;
 	bool do_authalic;
@@ -191,7 +191,7 @@ int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, st
 }
 
 int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, double *lat, struct STRIPACK_VORONOI *V, bool get_arcs, \
-	unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[], char *file0, char *file1)
+	unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
 	bool do_authalic;
 	unsigned int geometry;
@@ -642,13 +642,13 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 
 	GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 	if (Ctrl->Q.mode == VORONOI) {	/* Selected Voronoi polygons */
-		stripack_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout, NULL, Ctrl->N.file);
+		stripack_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
 		GMT_free (GMT, T.V.lon);	GMT_free (GMT, T.V.lat);
 		GMT_free (GMT, T.V.lend);	GMT_free (GMT, T.V.listc);
 		GMT_free (GMT, T.V.lptr);
 	}
 	else {	/* Selected Delaunay triangles */
-		stripack_delaunay_output (GMT, lon, lat, &T.D, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout, NULL, Ctrl->N.file);
+		stripack_delaunay_output (GMT, lon, lat, &T.D, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
 	}
 
 	Dout[0]->table[0]->header = GMT_memory (GMT, NULL, 1, char *);	/* One header record only */

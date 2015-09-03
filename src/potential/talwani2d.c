@@ -55,6 +55,10 @@
 #define SI_TO_EOTVOS	1.0e9		/* Convert (m/s^2)/m to Eotvos */
 
 struct TALWANI2D_CTRL {
+	struct Out {	/* -> */
+		bool active;
+		char *file;
+	} Out;
 	struct A {	/* -A positive up  */
 		bool active;
 	} A;
@@ -114,13 +118,14 @@ void *New_talwani2d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_talwani2d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	if (C->Out.file) free (C->Out.file);
 	if (C->N.file) free (C->N.file);	
 	GMT_free (GMT, C);	
 }
 
 int GMT_talwani2d_parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_OPTION *options)
 {
-	unsigned int k, n_errors = 0;
+	unsigned int k, n_errors = 0, n_files = 0;
 	int n;
 	struct GMT_OPTION *opt = NULL;
 
@@ -129,6 +134,12 @@ int GMT_talwani2d_parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, stru
 
 			case '<':	/* Input file(s) */
 				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				break;
+			case '>':	/* Got named output file */
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+					Ctrl->Out.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
@@ -194,6 +205,7 @@ int GMT_talwani2d_parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, stru
 				         "Syntax error -Z option: The ymin >= ymax for 2.5-D body\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->F.mode != TALWANI2D_FAA,
 				         "Syntax error -Z option: 2.5-D solution only available for FAA\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	if ((Ctrl->Z.mode & 2) && Ctrl->F.mode == TALWANI2D_FAA) Ctrl->F.mode = TALWANI2D_FAA2;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -508,10 +520,10 @@ double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struc
 
 int GMT_talwani2d (void *V_API, int mode, void *args)
 {
-	int row, error = 0, ns;
+	int srow, error = 0, ns;
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;
-	uint64_t dim[4] = {1, 1, 0, 2};
+	uint64_t dim[4] = {1, 1, 0, 2}, row;
 	double scl, rho, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;
 	
@@ -694,12 +706,12 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 			S = Out->table[tbl]->segment[seg];	/* Current segment */
 #ifdef _OPENMP
 			/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies)
+#pragma omp parallel for private(srow,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies)
 #endif
-			for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
-				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->coord[GMT_Y][row] : Ctrl->Z.level;
-				answer = get_one_output2D (GMT, S->coord[GMT_X][row] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
-				S->coord[GMT_Y][row] = answer;
+			for (srow = 0; srow < (int)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
+				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->coord[GMT_Y][srow] : Ctrl->Z.level;
+				answer = get_one_output2D (GMT, S->coord[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
+				S->coord[GMT_Y][srow] = answer;
 				if (answer < min_answer) min_answer = answer;
 				if (answer > max_answer) max_answer = answer;
 			}
@@ -716,7 +728,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 			}
 		}
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, NULL, Out) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Out) != GMT_OK) {
 		Return (API->error);
 	}
 		

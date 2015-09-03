@@ -58,6 +58,10 @@
  */
 
 struct GMTFLEXURE_CTRL {
+	struct Out {	/* -> */
+		bool active;
+		char *file;
+	} Out;
 	struct A {	/* -A[l|r]<bc>[<args>] */
 		bool active;
 		unsigned int bc[2];	/* Left and Right BC code */
@@ -136,6 +140,7 @@ void *New_gmtflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_gmtflexure_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	if (C->Out.file) free (C->Out.file);
 	if (C->E.file) free (C->E.file);	
 	if (C->Q.file) free (C->Q.file);	
 	if (C->T.file) free (C->T.file);	
@@ -144,7 +149,7 @@ void Free_gmtflexure_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/*
 
 int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	unsigned int side, k, n_errors = 0;
+	unsigned int side, k, n_errors = 0, n_files = 0;
 	int n;
 	bool both;
 	struct GMT_OPTION *opt = NULL;
@@ -153,6 +158,12 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
 
+			case '>':	/* Got named output file */
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+					Ctrl->Out.file = strdup (opt->arg);
+				else
+					n_errors++;
+				break;
 			case 'A':	/* Boundary conditions -A[l|r]<bc>[/<w>|<m>/<f>]*/
 				Ctrl->A.active = true;
 				both = false;	side = 0;
@@ -278,6 +289,7 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error -E option: Must specify plate thickness or rigidity\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "Syntax error -Q option: Must specify load option\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Syntax error -Q option: Must specify equidistant min/max/inc setting\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -1443,7 +1455,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, 0, NULL, NULL, W) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, 0, NULL, Ctrl->Out.file, W) != GMT_OK) {
 		Return (API->error);
 	}
 	

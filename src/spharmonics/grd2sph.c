@@ -37,6 +37,10 @@ struct GRD2SPH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		char *file;
 	} In;
+	struct Out {	/* -> */
+		bool active;
+		char *file;
+	} Out;
 	struct N {	/* -Ng|m|s */
 		bool active;
 		char mode;
@@ -60,6 +64,7 @@ void *New_grd2sph_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_grd2sph_Ctrl (struct GMT_CTRL *GMT, struct GRD2SPH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->In.file) free (C->In.file);	
+	if (C->Out.file) free (C->Out.file);
 	GMT_free (GMT, C);	
 }
 
@@ -90,7 +95,7 @@ int GMT_grd2sph_parse (struct GMT_CTRL *GMT, struct GRD2SPH_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files[] = {0, 0};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -98,7 +103,13 @@ int GMT_grd2sph_parse (struct GMT_CTRL *GMT, struct GRD2SPH_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Got input files */
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files[GMT_IN]++ == 0) Ctrl->In.file = strdup (opt->arg);
+				break;
+			case '>':	/* Got named output file */
+				if (n_files[GMT_OUT]++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+					Ctrl->Out.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -117,7 +128,8 @@ int GMT_grd2sph_parse (struct GMT_CTRL *GMT, struct GRD2SPH_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Can only handle one input grid file\n");
+	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] > 1, "Syntax error: Can only handle one input grid file\n");
+	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->N.mode == 'm' || Ctrl->N.mode == 'g' || Ctrl->N.mode == 's'), "Syntax error: -N Normalization must be one of m, g, or s\\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -165,7 +177,7 @@ int GMT_grd2sph (void *V_API, int mode, void *args)
 	
 	/* Write out the coefficients in D */
 	
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, NULL, D) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 		Return (API->error);
 	}
 		
