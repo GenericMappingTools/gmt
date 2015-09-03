@@ -41,6 +41,10 @@
 #define GMT_PROG_OPTIONS "-:RVbdhis"
 
 struct SPHTRIANGULATE_CTRL {
+	struct SPHTRI_Out {	/* -> */
+		bool active;
+		char *file;
+	} Out;
 	struct SPHTRI_A {	/* -A */
 		bool active;
 	} A;
@@ -132,7 +136,9 @@ int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, st
 				S[0]->coord[GMT_X][i] = lon[D->tri[ij+i]];
 				S[0]->coord[GMT_Y][i] = lat[D->tri[ij+i]];
 			}
+			Dout[0]->table[0]->n_records += 3;
 		}
+		Dout[0]->n_records = Dout[0]->table[0]->n_records;
 		if (get_area) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
 	}
 	else {	/* Want just the arcs (to draw then, probably).  This avoids repeating shared arcs between triangles */
@@ -178,6 +184,7 @@ int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, st
 				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64, arc[i].begin, arc[i].end);
 			S[0]->header = strdup (segment_header);
 		}
+		Dout[0]->table[0]->n_records = Dout[0]->n_records = 2 * n_arcs;
 		GMT_free (GMT, arc);
 	}
 	return (GMT_OK);
@@ -301,7 +308,8 @@ int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, doub
 			GMT_alloc_segment (GMT, S[0], vertex, 2, false);	/* Realloc this output polygon to actual size */
 			GMT_memcpy (S[0]->coord[GMT_X], plon, vertex, double);
 			GMT_memcpy (S[0]->coord[GMT_Y], plat, vertex, double);
-
+			Dout[0]->table[0]->n_records += vertex;
+			Dout[0]->n_records += vertex;
 			if (get_area) area_sphere += area_polygon;
 		}
 	}
@@ -339,6 +347,7 @@ int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, doub
 			S[0]->header = strdup (segment_header);
 		}
 		GMT_free (GMT, arc);
+		Dout[0]->table[0]->n_records = Dout[0]->n_records = 2 * n_arcs;
 	}
 	else {
 		if (get_area) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
@@ -388,6 +397,7 @@ void *New_sphtriangulate_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 
 void Free_sphtriangulate_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	if (C->Out.file) free (C->Out.file);
 	if (C->G.file) free (C->G.file);
 	if (C->N.file) free (C->N.file);
 	GMT_free (GMT, C);
@@ -433,7 +443,7 @@ int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -442,6 +452,12 @@ int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *
 
 			case '<':	/* Skip input files */
 				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				break;
+			case '>':	/* Got named output file */
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+					Ctrl->Out.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -488,6 +504,7 @@ int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *
 	                                 "Syntax error: Binary output does not support storing areas unless -N is used\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->T.active, "Syntax error -N: Cannot be used with -T.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N: Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -644,13 +661,9 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	Dout[0]->table[0]->n_headers = 1;
 	Dout[0]->table[0]->header[0] = strdup (header);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output sources, unless already set */
-		Return (API->error);
-	}
-
 	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Must produce multisegment output files */
 
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, Dout[0]->io_mode, NULL, NULL, Dout[0]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, Dout[0]->io_mode, NULL, Ctrl->Out.file, Dout[0]) != GMT_OK) {
 		Return (API->error);
 	}
 	if (Ctrl->N.active) {

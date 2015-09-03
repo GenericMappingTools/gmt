@@ -6841,19 +6841,22 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			n_items++;
 		}
 		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_IS_NONE && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
-			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g */
+			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g and let -R pass as well*/
 			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
-			if (len) {	/* There is a 1-char argument given */
+			if (key[k][K_DIR] == '!')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */
+				skip = number = true;
+			else if (len) {	/* There is a 1-char argument given */
 				if (!GMT_access (API->GMT, opt->arg, F_OK)) {
 					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: 1-char file found to override implicit specitication\n");
 					skip = true;	/* The file actually exist */
 				}
-				else if (key[k][K_DIR] == '!'  || (key[k][K_FAMILY] == 'C' && !GMT_not_numeric (API->GMT, opt->arg))) {
-					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got -Rg|d or -C<n>, for <n> a single number that overrides implicit CPT specification\n");
+				else if (key[k][K_FAMILY] == 'C' && !GMT_not_numeric (API->GMT, opt->arg)) {
+					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got -C<n>, for <n> a single number that overrides implicit CPT specification\n");
 					skip = number = true;	/* Most likely a contour specification, e.g. -C5 */
 				}
 			}
+			/* else there is no args, e.g., -G, which needs the marker */
 			if (skip) {	/* Not an explicit reference after all but a regular option */
 				kind = GMT_FILE_NONE;
 				if (k >= 0 && !number) {	/* If this was a required input|output it has now been satisfied */
