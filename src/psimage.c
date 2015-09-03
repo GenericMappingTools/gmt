@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"psimage"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Place images or EPS files on maps"
-#define THIS_MODULE_KEYS	"<II,>XO,RG+"
+#define THIS_MODULE_KEYS	"<II,>XO,RG-"
 
 #include "gmt_dev.h"
 

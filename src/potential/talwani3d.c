@@ -43,7 +43,7 @@
 #define THIS_MODULE_NAME	"talwani3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute free-air, geoid or vertical gravity gradients anomalies over 3-D bodies"
-#define THIS_MODULE_KEYS	"<DI,NDi,ZGi,GGo,>DO"
+#define THIS_MODULE_KEYS	"<DI,NDi,ZGi,GGo,>DO,RG-"
 
 #include "gmt_dev.h"
 

@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"psxy"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols on maps"
-#define THIS_MODULE_KEYS	"<DI,CCi,T-i,>XO,RG+"
+#define THIS_MODULE_KEYS	"<DI,CCi,T-i,>XO,RG-"
 
 #include "gmt_dev.h"
 

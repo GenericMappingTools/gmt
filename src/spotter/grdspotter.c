@@ -105,7 +105,7 @@
 #define THIS_MODULE_NAME	"grdspotter"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Create CVA image from a gravity or topography grid"
-#define THIS_MODULE_KEYS	"<GI,AGi,ETI,DGo,LGo,GGO"
+#define THIS_MODULE_KEYS	"<GI,AGi,ETI,DGo,LGo,GGO,RG-"
 
 #include "spotter.h"
 

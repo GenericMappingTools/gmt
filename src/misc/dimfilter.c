@@ -23,7 +23,7 @@
 #define THIS_MODULE_NAME	"dimfilter"
 #define THIS_MODULE_LIB		"misc"
 #define THIS_MODULE_PURPOSE	"Directional filtering of grids in the space domain"
-#define THIS_MODULE_KEYS	"<GI,GGO"
+#define THIS_MODULE_KEYS	"<GI,GGO,RG-"
 
 #include "gmt_dev.h"
 

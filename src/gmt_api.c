@@ -1008,7 +1008,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			}
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
-		else if (!strchr ("IOio+", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O|+: Means that option -Z, if given, changes the type of primary output to Y */
+		else if (!strchr ("IOio-", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O|-: Means that option -Z, if given, changes the type of primary output to Y */
 			/* E.g, pscoast has >DM and this turns >XO to >DO only when -M is used */
 			if (magic == 0)	/* First time we find one, get it */
 				magic = s[k][K_DIR];
@@ -1018,8 +1018,8 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 				if (o_id == -1)
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
 				if (*PS == 1) (*PS)--;			/* No longer PostScript producing module */
-				s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Now implies this data type */
-				s[o_id][K_OPT]    = s[k][K_OPT];	/* Now implies this option */
+				s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Required output now implies this data type */
+				s[o_id][K_OPT]    = s[k][K_OPT];	/* Required output now implies this option */
 			}
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
@@ -2447,7 +2447,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	 * See the GMT API documentation for how mode is used to create multiple files from segments or tables.
 	 */
 	int item, error, default_method;
-	uint64_t tbl, col, row_out, row, seg, ij;
+	uint64_t tbl, col, col_pos, row_out, row, seg, ij;
 	double value;
 	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -2525,16 +2525,17 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for the current segment */
 					if (API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Must write a NaN-segment record to indicate segment break */
-						for (col = 0; col < S->n_columns; col++) {
+						for (col = 0; col < M_obj->n_columns; col++) {
 							ij = GMT_2D_to_index (row_out, col, M_obj->dim);
 							GMTAPI_put_val (&(M_obj->data), ij, API->GMT->session.d_NaN);
 						}
 						row_out++;	/* Due to the extra NaN-data header record we just wrote */
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Write this segment's data records to the matrix */
-						for (col = 0; col < S->n_columns; col++) {
+						for (col = 0; col < M_obj->n_columns; col++) {
+							col_pos = (API->GMT->common.o.active) ? API->GMT->current.io.col[GMT_OUT][col].col : col;	/* Which data column to pick */
 							ij = GMT_2D_to_index (row_out, col, M_obj->dim);
-							value = gmt_select_dataset_value (API->GMT, S, row, col);
+							value = gmt_select_dataset_value (API->GMT, S, row, col_pos);
 							GMTAPI_put_val (&(M_obj->data), ij, value);
 						}
 					}
@@ -2551,20 +2552,21 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			if ((V_obj = GMT_create_vector (API->GMT, col, GMT_OUT)) == NULL)
 				return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));
 			V_obj->n_rows = (API->GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of data records [and any segment headers] */
-			for (col = 0; col < D_obj->n_columns; col++) V_obj->type[col] = API->GMT->current.setting.export_type;	/* Set same data type for all columns */
+			for (col = 0; col < V_obj->n_columns; col++) V_obj->type[col] = API->GMT->current.setting.export_type;	/* Set same data type for all columns */
 			if ((error = GMTAPI_alloc_vectors (API->GMT, V_obj, V_obj->n_rows)) != GMT_OK) return (GMTAPI_report_error (API, error));	/* Allocate space for all columns */
 			GMTAPI_put_val = GMTAPI_select_put_function (API, API->GMT->current.setting.export_type);	/* Since all columns are of same type we get the pointer here */
 			for (tbl = row_out = 0; tbl < D_obj->n_tables; tbl++) {	/* Loop over all tables and segments */
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for this segment */
 					if (API->GMT->current.io.multi_segments[GMT_OUT]) {		/* Must write a NaN-segment record */
-						for (col = 0; col < S->n_columns; col++)
+						for (col = 0; col < V_obj->n_columns; col++)
 							GMTAPI_put_val (&(V_obj->data[col]), row_out, API->GMT->session.d_NaN);
 						row_out++;	/* Due to the extra NaN-data header */
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Copy the data records */
-						for (col = 0; col < S->n_columns; col++) {
-							value = gmt_select_dataset_value (API->GMT, S, row, col);
+						for (col = 0; col < V_obj->n_columns; col++) {
+							col_pos = (API->GMT->common.o.active) ? API->GMT->current.io.col[GMT_OUT][col].col : col;	/* Which data column to pick */
+							value = gmt_select_dataset_value (API->GMT, S, row, col_pos);
 							GMTAPI_put_val (&(V_obj->data[col]), row_out, value);
 						}
 					}
@@ -6715,7 +6717,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *   Primary inputs and outputs need to be assigned, and if not explicitly given will result in
 	 *   a syntax error. However, external APIs (mex, Python) can override this and supply the missing items
 	 *   via the given left- and right-hand side arguments to supply input or accept output.
-	 *   Secondary inputs means they are only assigned if the option is actually given.
+	 *   Secondary inputs means they are only assigned if the option is actually given.  If in|out is irrelevant
+	 *   for an option we use '-'.
 	 *
 	 * There are a few special cases where X, Y, or Z take on magic behavior:
 	 *
@@ -6732,7 +6735,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *   when -T is used then NO input is expected.  This means the primary input key "<DI" is set to "<Di" (secondary)
 	 *   and no attempt is made to connect external input to the psxy input.
 	 *
-	 *   A few modules will specify Z as some letter not i|I|o|O, which means that normally these modules
+	 *   A few modules will specify Z as some letter not i|I|o|O|-, which means that normally these modules
 	 *   will produce whatever output is specified by the primary setting, but if the "-Z" option is given the primary
 	 *   output will be changed to the given Y.  This is confusing so here are two examples:
 	 *   1. pscoast normally writes PostScript but pscoast -M will instead export data to stdout, so its key
@@ -6740,6 +6743,9 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 	 *      thus allows for a data set export instead.
 	 *   2. grdinfo normally writes a textset (key ">TO") but with -C it should write a dataset.  It has the magic
 	 *      key ">DC". If the -C option is given then the ">TO" is changed to ">DO".
+	 *   3. grdcontour normally writes PostScript but grdcontour -D will instead export data to a file set by -D, so its key
+	 *      contains the entry "DDD", which means that when -D is active then PostScript key ">XO" turns into "DDO" and
+	 *      thus allows for a data set export instead.
 	 *
 	 *   After processing, all magic key sequences are set to "---" meaning inactive.
 	 *
@@ -6833,7 +6839,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			}
 			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
 			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i so we dont add it later */
-			if (k >= 0 && key[k][K_DIR] != '+') key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
+			if (k >= 0 && key[k][K_DIR] != '-') key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
 			info[n_items].geometry  = geometry;
@@ -6846,7 +6852,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, char *module, char marker
 			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g and let -R pass as well*/
 			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
-			if (key[k][K_DIR] == '+')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */
+			if (key[k][K_DIR] == '-')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */
 				skip = number = true;
 			else if (len) {	/* There is a 1-char argument given */
 				if (!GMT_access (API->GMT, opt->arg, F_OK)) {

@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"grdpaste"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Join two grids along their common edge"
-#define THIS_MODULE_KEYS	"<GI,GGO,RG+"
+#define THIS_MODULE_KEYS	"<GI,GGO,RG-"
 
 #include "gmt_dev.h"
 

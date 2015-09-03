@@ -34,7 +34,7 @@
 #define THIS_MODULE_NAME	"nearneighbor"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Grid table data using a \"Nearest neighbor\" algorithm"
-#define THIS_MODULE_KEYS	"<DI,GGO,RG+"
+#define THIS_MODULE_KEYS	"<DI,GGO,RG-"
 
 #include "gmt_dev.h"
 

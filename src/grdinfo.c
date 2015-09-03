@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"grdinfo"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract information from grids"
-#define THIS_MODULE_KEYS	"<GI,>TO,>DC,RG+"
+#define THIS_MODULE_KEYS	"<GI,>TO,>DC,RG-"
 
 #include "gmt_dev.h"
 

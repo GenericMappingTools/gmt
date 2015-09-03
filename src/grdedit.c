@@ -35,7 +35,7 @@
 #define THIS_MODULE_NAME	"grdedit"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Modify header or content of a grid"
-#define THIS_MODULE_KEYS	"<GI,NDi,GGO,RG+"
+#define THIS_MODULE_KEYS	"<GI,NDi,GGO,RG-"
 
 #include "gmt_dev.h"
 
