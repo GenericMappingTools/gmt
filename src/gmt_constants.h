@@ -226,6 +226,13 @@ enum GMT_enum_bcr {
 	BCR_BSPLINE,          /* B-spline */
 	BCR_BICUBIC};         /* Bicubic spline */
 
+enum GMT_segmentation {
+	SEGM_ORIGIN_NOTUSED		= 0,
+	SEGM_ORIGIN_FIXED,
+	SEGM_ORIGIN_DATASET,
+	SEGM_ORIGIN_TABLE,
+	SEGM_ORIGIN_SEGMENT};
+
 /*! Various grid/image boundary conditions */
 enum GMT_enum_bc {
 	GMT_BC_IS_NOTSET = 0, /* BC not yet set */

@@ -8363,7 +8363,7 @@ int GMT_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double 
 	 *				Any defaults placed in par will survive.
 	 */
 	int n, k;
-	/* Wrapper around GMT_Get_Value when we know input is either coordintaes or plot dimensions */
+	/* Wrapper around GMT_Get_Value when we know input is either coordinates or plot dimensions */
 	if ((n = GMT_Get_Value (GMT->parent, string, par)) < 0) return n;	/* Parsing error */
 	if ((mode == GMT_PAIR_COORD || mode == GMT_PAIR_DIM_EXACT) && n != 2) {
 		char *kind[2] = {"coordinates", "dimensions"};
@@ -10716,38 +10716,65 @@ void GMT_cols_detrend (struct GMT_CTRL *GMT, double *t, double *x, double *y, ui
 #endif
 
 /*! . */
-struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din) {
+struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, double *origin) {
 	/* Din is a data set with any number of tables and segments and records.
-	 * On output we return pointer to new dataset in which all points in Din are used to
+	 * On output we return a pointer to new dataset in which all points in Din are used to
 	 * form 2-point line segments.  So output will have lots of segments, all of length 2,
 	 * and all these segments are placed in the first (and only) output table.
-	 *
-	 * Dout is the new data set with all the segmentized lines;
+	 * There are two forms of segmentization:
+	 * mode == SEGM_ORIGIN_NOTUSED:
+	 *   We consider consequtive points a segment, hence pt1 -> pt2 is first segment,
+	 *   pt2 -> pt3 the second segment, etc. This gives n_rows-1 segments per data segment.
+	 * mode == SEGM_ORIGIN_FIXED:
+	 *   Here we generate n_rows segments.  Each segment starts at the origin and ends at the
+	 *   initial data point.  The origin is given in the call sequence.
+	 * mode == SEGM_ORIGIN_DATASET:
+	 *   Same as mode == SEGM_ORIGIN_FIXED except origin is set to the first point in the dataset.
+	 * mode == SEGM_ORIGIN_TABLE:
+	 *   Same as mode == SEGM_ORIGIN_FIXED except origin is set to the first point in each input table.
+	 * mode == SEGM_ORIGIN_SEGMENT:
+	 *   Same as mode == SEGM_ORIGIN_FIXED except origin is reset to the first point in each input segment.
+	 * Dout is the new data set with all the segmentized lines;  Note that when mode > 1 we
+	 * generate as many new segments as there are original data, else we are one less.
 	 */
 	uint64_t dim[4] = {1, 0, 2, 0};	/* Put everything in one table, each segment has 2 points */
-	uint64_t tbl, seg, row, col, new_seg, last_row;
+	uint64_t tbl, seg, row, col, new_seg, last_row, off;
+	double coord[2];
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
 
 	dim[GMT_COL] = Din->n_columns;	/* Same number of columns as input dataset */
 	/* Determine how many total segments will be created */
+	off = (mode ==SEGM_ORIGIN_NOTUSED) ? 1 : 0;	/* With mode == SEGM_ORIGIN_NOTUSED we start at point 1 and consider prevous point, else we use all points */
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		Tin = Din->table[tbl];
 		for (seg = 0; seg < Tin->n_segments; seg++)	/* For each segment to resample */
-			dim[GMT_SEG] += Tin->segment[seg]->n_rows - 1;	/* That is how many segments will be derived from these n_rows points */
+			dim[GMT_SEG] += Tin->segment[seg]->n_rows - off;	/* That is how many segments will be derived from these n_rows points */
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Segmentize input data into %" PRIu64 " 2-point segment lines\n", dim[GMT_SEG]);
 	/* Allocate the dataset with one large table */
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* Our new dataset */
 	Tout = D->table[0];	/* The only table */
+	if (mode == SEGM_ORIGIN_FIXED) GMT_memcpy (coord, origin, 2, double);	/* Initialize the origin of segments once */
 	for (tbl = new_seg = 0; tbl < Din->n_tables; tbl++) {
 		Tin = Din->table[tbl];	/* Current input table */
+		if (mode == SEGM_ORIGIN_TABLE || (mode == SEGM_ORIGIN_DATASET && tbl == 0)) {	/* Initialize the origin as 1st point in this table (or each table) */
+			coord[GMT_X] = Tin->segment[0]->coord[GMT_X][0];
+			coord[GMT_Y] = Tin->segment[0]->coord[GMT_Y][0];
+		}
 		for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
+			if (mode == SEGM_ORIGIN_SEGMENT) {	/* Initialize the origin as 1st point in segment */
+				coord[GMT_X] = Tin->segment[seg]->coord[GMT_X][0];
+				coord[GMT_Y] = Tin->segment[seg]->coord[GMT_Y][0];
+			}
 			last_row = 0;
-			for (row = 1; row < Tin->segment[seg]->n_rows; row++, new_seg++) {	/* For each end point in the new 2-point segments */
+			for (row = off; row < Tin->segment[seg]->n_rows; row++, new_seg++) {	/* For each end point in the new 2-point segments */
 				for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
-					Tout->segment[new_seg]->coord[col][0] = Tin->segment[seg]->coord[col][last_row];	/* 1st point */
-					Tout->segment[new_seg]->coord[col][1] = Tin->segment[seg]->coord[col][row];	/* 2nd point */
+					if (mode)	/* Set the origin, copy any additional columns from the point */
+						Tout->segment[new_seg]->coord[col][0] = (col < GMT_Z) ? coord[col] : Tin->segment[seg]->coord[col][row];	/* 1st point */
+					else	/* Set 1st point */
+						Tout->segment[new_seg]->coord[col][0] = Tin->segment[seg]->coord[col][last_row];
+					Tout->segment[new_seg]->coord[col][1] = Tin->segment[seg]->coord[col][row];		/* 2nd point */
 				}
 				last_row = row;
 			}
@@ -10757,7 +10784,6 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 
 	return (D);
 }
-
 
 #define SEG_DIST 2
 #define SEG_AZIM 3

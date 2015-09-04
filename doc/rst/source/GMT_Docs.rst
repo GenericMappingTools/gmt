@@ -369,6 +369,10 @@ Program-specific improvements
 Finally, here is a list of some enhancements to individual modules.  Any
 changes to syntax will be backwards compatible:
 
+*  :doc:`fitcircle` now has a new option **-F** that allows output to be in the
+   form of coordinates only (no text report) and you may choose which items to
+   return by appending suitable flags.
+
 *  :doc:`gmt` now has a --show-cores option that reports the available cores.
 
 *  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate
@@ -376,7 +380,8 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`gmtmath` adds the operator **BDIST** for binomial distribution and **ROLL** for cyclic shifts of the stack, as
    well as the constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
-   normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).
+   normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).  Finally, we added
+   operator **POINT** which reads a data table and places the mean x and mean y on the stack.
 
 *  :doc:`grdblend` relaxes the **-W** restriction on only one output grid
    and adds the new mode **-Wz** to write the weight*zsum grid.

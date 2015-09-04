@@ -56,6 +56,11 @@ struct PSXY_CTRL {
 		double size;
 		struct GMT_PEN pen;
 	} E;
+	struct F {	/* -F<mode> */
+		bool active;
+		unsigned int mode;		/* segment from: 0 = last point, 1 = fixed origin, 2 = 1st point in table, 3 = 1st point in segment */
+		double origin[2];
+	} F;
 	struct G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
@@ -504,6 +509,22 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 					}
 				}
 				GMT_Report (API, GMT_MSG_DEBUG, "Settings for -E: x = %d y = %d\n", Ctrl->E.xbar, Ctrl->E.ybar);
+				break;
+			case 'F':
+				Ctrl->F.active = true;
+				switch (opt->arg[0]) {
+					case 's': Ctrl->F.mode = SEGM_ORIGIN_SEGMENT;	break;
+					case 'd': Ctrl->F.mode = SEGM_ORIGIN_DATASET;	break;
+					case 't': Ctrl->F.mode = SEGM_ORIGIN_TABLE;	break;
+					default:
+						if (opt->arg[0]) {	/* Gave arguments */
+							Ctrl->F.mode = SEGM_ORIGIN_FIXED;
+							if ((j = GMT_get_pair (GMT, opt->arg, GMT_PAIR_COORD, Ctrl->F.origin)) < 2) n_errors++;
+						}
+						else /* Default -F means -Fd */
+							Ctrl->F.mode = SEGM_ORIGIN_DATASET;
+						break;
+				}
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
@@ -1267,7 +1288,17 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			D = GMT_segmentize_data (GMT, Dtmp);	/* Segmentize the data */
+			D = GMT_segmentize_data (GMT, Dtmp, 0, NULL);	/* Segmentize the data */
+			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
+				Return (API->error);
+			}
+		}
+		else if (Ctrl->F.active) {
+			struct GMT_DATASET *Dtmp = NULL;	/* Pointer to GMT multisegment table(s) */
+			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+				Return (API->error);
+			}
+			D = GMT_segmentize_data (GMT, Dtmp, Ctrl->F.mode, Ctrl->F.origin);	/* Segmentize the data */
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
 				Return (API->error);
 			}

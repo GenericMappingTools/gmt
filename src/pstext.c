@@ -906,13 +906,13 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				in_txt = Ctrl->F.text;
 			}
 			else if (Ctrl->F.get_text == GET_CMD_FORMAT) {
-				if (&buffer[pos]) {
+				if (buffer[pos]) {
 					double val = atof (&buffer[pos]);
-					sprintf (buffer, Ctrl->F.text, val);
+					sprintf (text, Ctrl->F.text, val);
 				}
 				else
-					sprintf (buffer, Ctrl->F.text, n_read);
-				in_txt = buffer;
+					sprintf (text, Ctrl->F.text, n_read);
+				in_txt = text;
 			}
 
 			nscan += GMT_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
