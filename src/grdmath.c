@@ -205,7 +205,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_CONV4_LIMIT);
 	GMT_Option (API, "R,V");
 	GMT_Option (API, "bi2,di,f,g,h,i");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, POINT and INSIDE).\n");
 	GMT_Option (API, "n,r,s,x,.");
 
 	return (EXIT_FAILURE);
@@ -2034,7 +2034,7 @@ void grd_KURT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = f_kurt;
 }
 
-/* Helper functions ASCII_read and ASCII_free are used in LDIST* and PDIST* */
+/* Helper functions ASCII_read and ASCII_free are used in LDIST*, PDIST and *POINT */
 
 struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, int geometry, char *op)
 {
@@ -2714,6 +2714,52 @@ void grd_PLMg (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 
 	if (stack[first]->constant) a = GMT_plm_bar (GMT, L, M, stack[first]->factor, false);
 	for (node = 0; node < info->size; node++) stack[first]->G->data[node] = (float)((stack[first]->constant) ? a : GMT_plm_bar (GMT, L, M, stack[first]->G->data[node], false));
+}
+
+void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: POINT 1 2 Return mean_x mean_y of points in ASCII file A.  */
+{
+	uint64_t node, n = 0;
+	unsigned int next = last + 1;
+	double *x = NULL, *y = NULL, pos[2];
+	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASET *D = NULL;
+	int geo = GMT_is_geographic (GMT, GMT_IN) ? 1 : 0;
+
+	/* Read a table and compute mean location */
+	if ((D = ASCII_read (GMT, info, GMT_IS_POINT, "POINT")) == NULL) return;
+	T = D->table[0];	/* Only one table in a single file */
+	if (T->n_segments > 1) {	/* Must build a single table for GMT_centroid */
+		uint64_t seg;
+		size_t n_alloc = 0;
+		GMT_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
+		for (seg = 0; seg < T->n_segments; seg++) {
+			GMT_memcpy (&x[n], T->segment[seg]->coord[GMT_X], T->segment[seg]->n_rows, double);
+			GMT_memcpy (&y[n], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows, double);
+			n += T->segment[seg]->n_rows;
+		}
+	}
+	else {	/* Just a single segment, use pointers */
+		x = T->segment[0]->coord[GMT_X];
+		y = T->segment[0]->coord[GMT_Y];
+		n = T->segment[0]->n_rows;
+	}
+	GMT_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Centroid computed as %g %g\n", pos[GMT_X], pos[GMT_Y]);
+	/* Place mean x and y on the stack */
+	stack[last]->constant = true;
+	stack[last]->factor = pos[GMT_X];
+	/* The last stack needs to be filled */
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[last]->factor;
+	stack[next]->constant = true;
+	stack[next]->factor = pos[GMT_Y];
+	/* The next stack needs to be filled */
+	for (node = 0; node < info->size; node++) stack[next]->G->data[node] = (float)stack[next]->factor;
+	if (T->n_segments > 1) {	/* Free what we allocated */
+		GMT_free (GMT, x);
+		GMT_free (GMT, y);
+	}
+	ASCII_free (GMT, info, &D, "POINT");	/* Free memory used for points */
 }
 
 void grd_POW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3876,7 +3922,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 	for (opt = list; !G_in && opt; opt = opt->next) {	/* Look for a grid file, if given */
 		if (!(opt->option == GMT_OPT_INFILE))	continue;	/* Skip command line options and output file */
-		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;	/* Not grids */
+		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "POINT", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;	/* Not grids */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
@@ -4035,7 +4081,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 		if (op < GRDMATH_ARG_IS_OPERATOR) {	/* File name or factor */
 
-			if (op == GRDMATH_ARG_IS_FILE && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) op = GRDMATH_ARG_IS_ASCIIFILE;
+			if (op == GRDMATH_ARG_IS_FILE && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "POINT", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) op = GRDMATH_ARG_IS_ASCIIFILE;
 
 			if (nstack == GRDMATH_STACK_SIZE) {	/* Stack overflow */
 				error = true;

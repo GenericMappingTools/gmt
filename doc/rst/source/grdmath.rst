@@ -372,6 +372,8 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **PLMg**      | 3 1   | Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **POINT**     | 1 2   | Compute mean x and y from ASCII file A and place them on the stack                                     |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **POW**       | 2 1   | A ^ B                                                                                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **PQUANT**    | 2 1   | The B'th Quantile (0-100%) of A                                                                        |
@@ -535,6 +537,10 @@ Notes On Operators
 
    The operator **LDISTG** is a version of **LDIST** that operates on the GSHHG data. Instead of reading an ASCII file,
    it directly accesses one of the GSHHG data sets as determined by the **-D** and **-A** options.
+
+#. The operator **POINT** reads a ASCII table, computes the mean x and mean
+   y values and places these on the stack.  If geographic data then we use
+   the mean 3-D vector to determine the mean location.
 
 #. The operator **PLM** calculates the associated Legendre polynomial
    of degree L and order M (0 <= M <= L), and its argument is the sine of

@@ -12009,6 +12009,39 @@ double GMT_pol_area (double x[], double y[], uint64_t n)
 }
 
 /*! . */
+void GMT_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo)
+{	/* Estimate mean position */
+	uint64_t i, k;
+	
+	assert (n > 0);
+	if (n == 1) {
+		pos[GMT_X] = x[0];	pos[GMT_Y] = y[0];
+		return;
+	}
+	n--; /* Skip 1st point since it is repeated as last */
+	if (n <= 0) return;
+
+	if (geo) {	/* Geographic data, must use vector mean */
+		double P[3], M[3];
+		GMT_memset (M, 3, double);
+		for (i = 0; i < n; i++) {
+			GMT_geo_to_cart (GMT, y[i], x[i], P, true);
+			for (k = 0; k < 3; k++) M[k] += P[k];
+		}
+		GMT_normalize3v (GMT, M);
+		GMT_cart_to_geo (GMT, &pos[GMT_Y], &pos[GMT_X], M, true);
+	}
+	else {	/* Cartesian mean position */
+		pos[GMT_X] = pos[GMT_Y] = 0.0;
+		for (i = 0; i < n; i++) {
+			pos[GMT_X] += x[i];
+			pos[GMT_Y] += y[i];
+		}
+		pos[GMT_X] /= n;	pos[GMT_Y] /= n;
+	}
+}
+
+/*! . */
 void GMT_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double dim[], double off[], int justify, int anchor)
 {
 	/* Adjust reference point based on size and justification of plotted item, towards a given anchor */
