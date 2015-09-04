@@ -9930,11 +9930,6 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		for (j = (int)strlen (text); j > 0 && text[j] != '/'; --j);
 		if (j == 0) {	/* No slash, i.e., no symbol size given */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
-#if 0
-			/* Removed because it produced erroneous result in example 20 */
-			if (p->size_x == 0.0)		/* It may still come out as zero from the above line */
-				p->size_x = p->given_size_x = GMT_to_inch (GMT, "1");
-#endif
 			n = sscanf (text, "%c%s", &symbol_type, text_cp);
 			col_off++;
 		}
@@ -9942,7 +9937,22 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			text[j] = ' ';
 			n = sscanf (text, "%c%s %s", &symbol_type, text_cp, txt_a);
 			text[j] = '/';
-			p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
+			if (strstr(&txt_a[strlen(txt_a) - 1], "CcIiPp")) {	/* If last char equals a unit char */
+				char t[64];
+				strncmp(t, txt_a, strlen(txt_a) - 1);
+				if (GMT_is_valid_number(t))         /* txt_a is a size string. Decode it. */
+					p->size_x = p->given_size_x = GMT_to_inch(GMT, txt_a);
+				else                                /* txt_a is just the symbol name */
+					strcat(text_cp, "/");	strcat(text_cp, txt_a);
+			}
+			else {                                  /* It still can be a size */
+				if (GMT_is_valid_number(txt_a))     /* Yes, it is */
+					p->size_x = p->given_size_x = GMT_to_inch(GMT, txt_a);
+				else {                              /* No txt_a is the symbol name. */
+					strcat(text_cp, "/");	strcat(text_cp, txt_a);
+					if (p->size_x == 0.0) p->size_x = p->given_size_x;
+				}
+			}
 		}
 	}
 	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
