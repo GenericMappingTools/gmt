@@ -65,8 +65,9 @@ struct PSTEXT_CTRL {
 		struct GMT_FONT font;
 		double angle;
 		int justify, R_justify, nread;
-		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), or 2 = segment header (+h) */
+		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format number using text (+T) */
 		char read[4];		/* Contains a, c, f, and/or j in order required to be read from input */
+		char *text;
 	} F;
 	struct PSTEXT_G {	/* -G<fill> | -Gc|C */
 		bool active;
@@ -140,6 +141,7 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_pstext_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	if (C->F.text) free (C->F.text);
 	GMT_free (GMT, C);
 }
 
@@ -350,6 +352,8 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 #define GET_REC_TEXT	0
 #define GET_SEG_LABEL	1
 #define GET_SEG_HEADER	2
+#define GET_CMD_TEXT	3
+#define GET_CMD_FORMAT	4
 
 int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
@@ -410,7 +414,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				Ctrl->F.active = true;
 				pos = 0;
 
-				while (GMT_getmodopt (GMT, opt->arg, "afjclh", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c, +l|h */
+				while (GMT_getmodopt (GMT, opt->arg, "afjclhtT", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c, +l|h */
 					switch (p[0]) {
 						case 'a':	/* Angle */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
@@ -450,6 +454,24 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 							}
 							else
 								Ctrl->F.get_text = GET_SEG_HEADER;
+							break;
+						case 't':	/* Segment header request */
+							if (Ctrl->F.get_text) {
+								GMT_Report (API, GMT_MSG_COMPAT, "Error: Only one of +l and +h and +t can be selected in -F.\n");
+								n_errors++;
+							}
+							else
+								Ctrl->F.text = strdup (&p[1]);
+							Ctrl->F.get_text = GET_CMD_TEXT;
+							break;
+						case 'T':	/* text format */
+							if (Ctrl->F.get_text) {
+								GMT_Report (API, GMT_MSG_COMPAT, "Error: Only one of +l and +h and +t can be selected in -F.\n");
+								n_errors++;
+							}
+							else
+								Ctrl->F.text = strdup (&p[1]);
+							Ctrl->F.get_text = GET_CMD_FORMAT;
 							break;
 						default:
 							n_errors++;
@@ -867,7 +889,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 							break;
 					}
 				}
-				if (Ctrl->F.get_text == GET_REC_TEXT) in_txt = &buffer[pos];
+				if (Ctrl->F.get_text == GET_REC_TEXT || Ctrl->F.get_text == GET_CMD_FORMAT) in_txt = &buffer[pos];
 			}
 			if (Ctrl->F.get_text == GET_SEG_HEADER) {
 				if (GMT->current.io.segment_header[0] == 0)
@@ -879,6 +901,18 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				if (!GMT_parse_segment_item (GMT, GMT->current.io.segment_header, "-L", label))
 					GMT_Report (API, GMT_MSG_NORMAL, "No active segment label to use; text is blank\n");
 				in_txt = label;
+			}
+			else if (Ctrl->F.get_text == GET_CMD_TEXT) {
+				in_txt = Ctrl->F.text;
+			}
+			else if (Ctrl->F.get_text == GET_CMD_FORMAT) {
+				if (&buffer[pos]) {
+					double val = atof (&buffer[pos]);
+					sprintf (buffer, Ctrl->F.text, val);
+				}
+				else
+					sprintf (buffer, Ctrl->F.text, n_read);
+				in_txt = buffer;
 			}
 
 			nscan += GMT_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
