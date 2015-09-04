@@ -2745,7 +2745,7 @@ void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		n = T->segment[0]->n_rows;
 	}
 	GMT_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Centroid computed as %g %g\n", pos[GMT_X], pos[GMT_Y]);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "[Centroid computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	/* Place mean x and y on the stack */
 	stack[last]->constant = true;
 	stack[last]->factor = pos[GMT_X];

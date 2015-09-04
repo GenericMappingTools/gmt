@@ -12025,11 +12025,13 @@ void GMT_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 		double P[3], M[3];
 		GMT_memset (M, 3, double);
 		for (i = 0; i < n; i++) {
+			y[i] = GMT_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			GMT_geo_to_cart (GMT, y[i], x[i], P, true);
 			for (k = 0; k < 3; k++) M[k] += P[k];
 		}
 		GMT_normalize3v (GMT, M);
 		GMT_cart_to_geo (GMT, &pos[GMT_Y], &pos[GMT_X], M, true);
+		pos[GMT_Y] = GMT_lat_swap (GMT, pos[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 	}
 	else {	/* Cartesian mean position */
 		pos[GMT_X] = pos[GMT_Y] = 0.0;
