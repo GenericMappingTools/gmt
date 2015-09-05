@@ -4333,16 +4333,18 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	if (GMT_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
 	PSL_setdefaults (PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
 
-	if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
+	if ((Out = GMT_Find_Option(GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
 		if (GMT->common.O.active && k == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
+			GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
 		}
-		if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
-			GMT_exit (GMT, EXIT_FAILURE); return NULL;
+		if ((fp = PSL_fopen(&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
+			GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
+			GMT_exit(GMT, EXIT_FAILURE); return NULL;
 		}
 	}
+	else if (PSL->internal.fp != NULL)		/* For example, pslegend has internal calls to psxy where outpu was already set */
+		fp = PSL->internal.fp;				/* and we have to 'remind' it here. */
 
 	/* Initialize the plot header and settings */
 
