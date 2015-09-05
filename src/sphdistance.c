@@ -359,7 +359,14 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		}
 		else {	/* Get extract them from the segment header */
 			for (node = 0; node < Table->n_segments; node++) {
-				sscanf (Table->segment[node]->header, "%*s %*d %lf %lf", &lon[node], &lat[node]);
+				if (Table->segment[node]->header == NULL) {
+					GMT_Report (API, GMT_MSG_NORMAL, "No node-information found in the segment headers - must abort\n");
+					Return (GMT_RUNTIME_ERROR);
+				}
+				if (sscanf (Table->segment[node]->header, "%*s %*d %lf %lf", &lon[node], &lat[node]) != 2) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Could not obtain node-information from the segment headers - must abort\n");
+					Return (GMT_RUNTIME_ERROR);
+				}
 			}
 		}
 	}
