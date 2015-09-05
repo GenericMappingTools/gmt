@@ -281,6 +281,7 @@ struct PSL_CTRL {
 		int N_FONTS;			/* Total no of fonts;  To add more, modify the file PSL_custom_fonts.txt */
 		int compress;			/* Compresses images with (1) RLE or (2) LZW (3) DEFLATE or (0) None */
 		int deflate_level; 		/* Compression level for DEFLATE (1-9, default 0) */
+		int call_level; 		/* Level in a series of module calls from GMT */
 		int color_mode;			/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
 		int line_cap;			/* 0, 1, or 2 for butt, round, or square [butt]	*/
 		int line_join;			/* 0, 1, or 2 for miter, arc, or bevel [miter]	*/

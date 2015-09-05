@@ -1070,7 +1070,7 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage)
 	else if (PSL->internal.origin[0] == 'a' || PSL->internal.origin[1] == 'a')	/* Restore the origin of the plotting */
 		PSL_command (PSL, "%d %d TM\n", PSL->internal.origin[0] == 'a' ? -psl_iz(PSL, PSL->internal.offset[0]) : 0,
 			PSL->internal.origin[1] == 'a' ? -psl_iz(PSL, PSL->internal.offset[1]) : 0);
-	if (PSL->internal.fp != stdout) fclose (PSL->internal.fp);
+	if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) fclose (PSL->internal.fp);
 	memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
 	return (PSL_NO_ERROR);
 }

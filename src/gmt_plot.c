@@ -4343,7 +4343,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			GMT_exit(GMT, EXIT_FAILURE); return NULL;
 		}
 	}
-	else if (PSL->internal.fp != NULL)		/* For example, pslegend has internal calls to psxy where outpu was already set */
+	else if (PSL->internal.call_level > 1)		/* For example, pslegend has internal calls to psxy where outpu was already set */
 		fp = PSL->internal.fp;				/* and we have to 'remind' it here. */
 
 	/* Initialize the plot header and settings */
@@ -4384,6 +4384,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	/* Get title */
 
 	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
+	PSL->internal.call_level = GMT->hidden.func_level;	/* So PSL knows if it is the last to call PSL_plotend */
 
 	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation, GMT->common.O.active, GMT->current.setting.ps_color_mode,
 	               GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, title, fno);
