@@ -9937,13 +9937,13 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			text[j] = ' ';
 			n = sscanf (text, "%c%s %s", &symbol_type, text_cp, txt_a);
 			text[j] = '/';
-			if (strstr(&txt_a[strlen(txt_a) - 1], "CcIiPp")) {	/* If last char equals a unit char */
-				char t[64];
-				strncmp(t, txt_a, strlen(txt_a) - 1);
+			if (strchr("CcIiPp", txt_a[strlen(txt_a) - 1])) {	/* If last char equals a unit char */
+				char t[64] = {""};
+				strncpy(t, txt_a, strlen(txt_a) - 1);
 				if (GMT_is_valid_number(t))         /* txt_a is a size string. Decode it. */
-					p->size_x = p->given_size_x = GMT_to_inch(GMT, txt_a);
+					{p->size_x = p->given_size_x = GMT_to_inch(GMT, txt_a);}
 				else                                /* txt_a is just the symbol name */
-					strcat(text_cp, "/");	strcat(text_cp, txt_a);
+					{strcat(text_cp, "/");	strcat(text_cp, txt_a);}
 			}
 			else {                                  /* It still can be a size */
 				if (GMT_is_valid_number(txt_a))     /* Yes, it is */
