@@ -67,6 +67,11 @@ struct GMTCONVERT_CTRL {
 		bool active;
 		int mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
+	struct F {	/* -F<mode> */
+		bool active;
+		unsigned int mode;
+		double origin[2];
+	} F;
 	struct L {	/* -L */
 		bool active;
 	} L;
@@ -111,7 +116,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>]] [-E[f|l|m<stride>]] [-I[tsr]] [-L] [-Q[~]<selection>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>]] [-E[f|l|m<stride>]] [-F<arg>] [-I[tsr]] [-L] [-Q[~]<selection>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -136,6 +141,13 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extract first and last point per segment only [Output all points].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append f for first only or l for last only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append m<stride> to pass only 1 out of <stride> records.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Segmentize input data into lines.  Append segmentation method:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     d: Make a line from the dataset's first point to all points in the data set [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t: Make a line from each table's first point to all points in the table.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s: Make a line from each segments's first point to all points in the segment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     n: Make a line connecting all points with all other points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     n: Append consecutive points into flow vector format suitable for psxy -Sv+s.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <origin>: Draw rays from given origin to all points in data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert output order of (t)ables, (s)egments, or (r)ecords.  Append any combination of:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t: reverse the order of input tables on output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     s: reverse the order of segments within each table on output.\n");
@@ -234,13 +246,29 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 						Ctrl->E.mode = -3; break;
 				}
 				break;
-			case 'F':	/* Now obsolete, using -o instead */
-				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
-					gmt_parse_o_option (GMT, opt->arg);
+			case 'F':
+				Ctrl->F.active = true;
+				switch (opt->arg[0]) {
+					case 's': Ctrl->F.mode = SEGM_ORIGIN_SEGMENT;	break;
+					case 'd': Ctrl->F.mode = SEGM_ORIGIN_DATASET;	break;
+					case 't': Ctrl->F.mode = SEGM_ORIGIN_TABLE;	break;
+					case 'n': Ctrl->F.mode = SEGM_NETWORK;		break;
+					case 'v': Ctrl->F.mode = SEGM_FLOWVECTOR;	break;
+					default:
+						if (opt->arg[0] && strchr (opt->arg, '/')) {	/* Gave arguments for an origin */
+							Ctrl->F.mode = SEGM_ORIGIN_FIXED;
+							if ((k = GMT_get_pair (GMT, opt->arg, GMT_PAIR_COORD, Ctrl->F.origin)) < 2) n_errors++;
+						}
+						else if (opt->arg[0] == '\0') /* Default -F means -Fd */
+							Ctrl->F.mode = SEGM_ORIGIN_DATASET;
+						else if (GMT_compat_check (GMT, 4)) {
+							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F for output columns is deprecated; use -o instead\n");
+							gmt_parse_o_option (GMT, opt->arg);
+						}
+						else
+							n_errors += GMT_default_error (GMT, opt->option);
+						break;
 				}
-				else
-					n_errors += GMT_default_error (GMT, opt->option);
 				break;
 			case 'I':	/* Invert order or tables, segments, rows as indicated */
 				Ctrl->I.active = true;
@@ -382,6 +410,19 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 	if (GMT->common.a.active && D[GMT_IN]->table[0]->ogr) {
 		GMT_Report (API, GMT_MSG_NORMAL, "The -a option requires a single table without OGR metadata.\n");
 		Return (GMT_RUNTIME_ERROR);
+	}
+	
+	if (Ctrl->F.active) {	/* Segmentizing happens here and then we are done */
+		D[GMT_OUT] = GMT_segmentize_data (GMT, D[GMT_IN], Ctrl->F.mode, Ctrl->F.origin);	/* Segmentize the data */
+		if (GMT_Destroy_Data (API, &D[GMT_IN]) != GMT_OK) {	/* Be gone with the original */
+			Return (API->error);
+		}
+		if (D[GMT_OUT]->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_OUT]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+			Return (API->error);
+		}
+		Return (GMT_OK);	/* We are done! */
 	}
 	
 	/* Determine number of input and output columns for the selected options.

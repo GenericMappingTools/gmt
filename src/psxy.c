@@ -58,7 +58,7 @@ struct PSXY_CTRL {
 	} E;
 	struct F {	/* -F<mode> */
 		bool active;
-		unsigned int mode;		/* segment from: 0 = last point, 1 = fixed origin, 2 = 1st point in table, 3 = 1st point in segment */
+		unsigned int mode;
 		double origin[2];
 	} F;
 	struct G {	/* -G<fill> */
@@ -280,7 +280,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxy [<table>] %s %s [-A[m|p|x|y]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x[+]|y[+]|X|Y][n][cap][/[+|-]<pen>]] [-G<fill>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x[+]|y[+]|X|Y][n][cap][/[+|-]<pen>]] [-F<arg>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I<intens>] [-K] [-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] [-O] [-P] [-S[<symbol>][<size>[unit]]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [-W[+|-][<pen>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, \
@@ -312,6 +312,12 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   5th extra column with the sample size, which is needed to draw a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   notched box-and whisker diagram (notch width represents uncertainty.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the median).  Finally, use -W, -G to affect the 25-75%% box.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Segmentize the input line before plotting as new lines.  Append method:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     d: Draw rays from dataset's very first point to all points in data set [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t: Draw rays from each table's very first point to all points in table.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s: Draw rays from each segments's very first point to all points in segment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     n: Draw rays connecting all points with all other points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     x0/y0: Draw rays from given origin to all points in data set.\n");
 	GMT_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all subheaders (not with -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
@@ -516,6 +522,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 					case 's': Ctrl->F.mode = SEGM_ORIGIN_SEGMENT;	break;
 					case 'd': Ctrl->F.mode = SEGM_ORIGIN_DATASET;	break;
 					case 't': Ctrl->F.mode = SEGM_ORIGIN_TABLE;	break;
+					case 'n': Ctrl->F.mode = SEGM_NETWORK;	break;
 					default:
 						if (opt->arg[0]) {	/* Gave arguments */
 							Ctrl->F.mode = SEGM_ORIGIN_FIXED;

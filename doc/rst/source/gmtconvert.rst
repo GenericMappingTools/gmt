@@ -16,6 +16,7 @@ Synopsis
 **gmtconvert** [ *table* ] [ **-A** ] [ **-C**\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
 [ **-D**\ [*template*] ]
 [ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
+[ **-F**\ [**d**\ \|\ **t**\ \|\ **s**\ \|\ **n**\  \|\ **v**\ \|\ *origin*] ]
 [ **-I**\ [**tsr**] ] [ **-Q**\ [**~**]\ *selection*]
 [ **-S**\ [**~**]\ *"search string"* \| **-S**\ [**~**]/\ *regexp*/[**i**] ]
 [ **-T** ]
@@ -91,6 +92,17 @@ Optional Arguments
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract only one out of *stride* records.
+
+**-F**\ [**d**\ \|\ **t**\ \|\ **s**\ \|\ **n**\  \|\ **v**\ \|\ *origin*]
+    Segment the input data into a series of new line segments, depending
+    on the given mode. Append *origin* to make line segments between each
+    input point and the specified origin.  Choose **d** to let the origin be
+    the first point in the dataset, **t** to reset the origin to the
+    first point in each table, or **s** to reset the origin to the
+    first point in each segment.  Choose **n** to connect every point with
+    other point to form a network, or choose **v** to produce a single segment
+    with records built from consecutive records, yielding input suitable
+    for plotting vectors in psxy with **-Sv+s** [Default is **d**].
 
 **-I**\ [**tsr**]
     Invert the order of items, i.e., output the items in reverse order,
@@ -257,6 +269,13 @@ or just
    ::
 
     gmt gmtconvert file.gmt -aELEVATION > xyz.dat
+
+To connect all points in the file sensors.txt with the specified origin
+at 23.5/19, try
+
+   ::
+
+    gmt gmtconvert sensors.txt -F23.5/19 > lines.txt
 
 See Also
 --------

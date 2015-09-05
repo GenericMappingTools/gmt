@@ -18,7 +18,8 @@ Synopsis
 [ **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ] 
 [ |SYN_OPT-B| ]
 [ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
-[ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ] 
+[ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ]
+[ **-F**\ [**d**\ \|\ **t**\ \|\ **s**\ \|\ **n**\ \|\ *origin*] ]
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
 [ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
@@ -126,6 +127,15 @@ Optional Arguments
     "box-and-whisker" symbol where the notch width reflects the uncertainty
     in the median. Then a 5th extra data column is expected to contain the
     number of points in the distribution.
+
+**-F**\ [**d**\ \|\ **t**\ \|\ **s**\ \|\ **n**\ \|\ *origin*]
+    Segment the input data into a series of new line segments before plotting them, depending
+    on the given mode. Append *origin* to draw lines between each
+    input point and the specified origin.  Choose **d** to let the origin be
+    the first point in the dataset, **t** to reset the origin to the
+    first point in each table, or **s** to reset the origin to the
+    first point in each segment.  Choose **n** to connect each point with a line
+    to every other point to form a network [Default is **d**].
 
 **-G**\ *fill*
     Select color or pattern for filling of symbols or polygons [Default is no fill].

@@ -376,7 +376,9 @@ changes to syntax will be backwards compatible:
 *  :doc:`gmt` now has a --show-cores option that reports the available cores.
 
 *  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate
-   segments on output based on the number of of records it contains.
+   segments on output based on the number of of records it contains.  We also
+   added a **-F** option to create line segments from an input data sets using
+   a variety of connectivity modes.
 
 *  :doc:`gmtmath` adds the operator **BDIST** for binomial distribution and **ROLL** for cyclic shifts of the stack, as
    well as the constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
@@ -467,7 +469,9 @@ changes to syntax will be backwards compatible:
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
    The **-A** now has new modifiers **x**\ \|\ **y** for creating stair-case curves.
    The slip-vector symbol can now optionally accept a vector-head angle [30].
-   Finally, custom symbols definition tests can now compare two input variables.
+   The custom symbols definition tests can now compare two input variables.
+   We also added a **-F** option to draw line segments from an input data sets using
+   a variety of connectivity modes.
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
    modifiers for handling periodic plot symbols.  Likewise,

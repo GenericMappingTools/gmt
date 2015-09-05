@@ -227,7 +227,9 @@ enum GMT_enum_bcr {
 	BCR_BICUBIC};         /* Bicubic spline */
 
 enum GMT_segmentation {
-	SEGM_ORIGIN_NOTUSED		= 0,
+	SEGM_ORIGIN_NOTUSED	= 0,
+	SEGM_FLOWVECTOR,
+	SEGM_NETWORK,
 	SEGM_ORIGIN_FIXED,
 	SEGM_ORIGIN_DATASET,
 	SEGM_ORIGIN_TABLE,
