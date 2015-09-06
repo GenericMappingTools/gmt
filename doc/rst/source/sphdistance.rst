@@ -15,7 +15,7 @@ Synopsis
 
 **sphdistance** [ *table* ] **-G**\ *grdfile* [ **-C** ] [ **-Ed**\ \|\ **n**\ \|\ **z**\ [*dist*] ]
 [ |SYN_OPT-I| ]
-[ **-L**\ *unit* ] [ **-Q**\ *voronoi.txt* ]
+[ **-L**\ *unit* ] [ **-N**\ *nodetable* ] [ **-Q**\ *voronoi.txt* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -76,7 +76,7 @@ Optional Arguments
     approximation is used unless :ref:`PROJ_ELLIPSOID <Projection Parameters>` is set to an actual
     ellipsoid.
 
-**-N**
+**-N**\ *nodetable*
     Read the information pertaining to each Voronoi
     polygon (the unique node lon, lat and polygon area) from a separate
     file [Default acquires this information from the ASCII segment
