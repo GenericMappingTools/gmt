@@ -74,11 +74,11 @@ Optional Arguments
     areas are given in steradians.
 
 **-N**\ *nfile*
-    Write the information pertaining to each polygon (for Delaunay: the
+    Write the information pertaining to each polygon. For Delaunay: the
     three node number and the triangle area (if **-A** was set); for
     Voronoi the unique node lon, lat and polygon area (if **-A** was
     set)) to a separate file. This information is also encoded in the
-    segment headers of ASCII output files]. Required if binary output is needed.
+    segment headers of ASCII output files. Required if binary output is needed.
 
 **d**\ \|\ **v**
     Select between **d**\ elaunay or **v**\ oronoi mode [Delaunay].
