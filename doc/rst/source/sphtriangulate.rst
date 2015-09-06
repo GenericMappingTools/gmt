@@ -80,6 +80,11 @@ Optional Arguments
     set)) to a separate file. This information is also encoded in the
     segment headers of ASCII output files. Required if binary output is needed.
 
+**-Q**\ **d**\ \|\ **v**
+    Append **d** for Delaunay triangles or **v** for Voronoi polygons [Delaunay].
+    If **-bo** is used then **-N** may be used to specify a separate file where the
+    polygon information normally is written.
+
 **d**\ \|\ **v**
     Select between **d**\ elaunay or **v**\ oronoi mode [Delaunay].
 
