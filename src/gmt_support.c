@@ -10773,17 +10773,17 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 	if (mode == SEGM_NETWORK) {	/* Make segments that connect every point with every other point */
 		struct GMT_DATATABLE *Tin2 = NULL;
 		uint64_t tbl2, seg2, row2;
-		bool same;
+		bool same[2] = {false, false};
 		for (tbl = new_seg = 0; tbl < Din->n_tables; tbl++) {
 			Tin = Din->table[tbl];	/* First input table */
 			for (tbl2 = tbl; tbl2 < Din->n_tables; tbl2++) {
 				Tin2 = Din->table[tbl2];	/* Second input table (but might be the same as Tin1) */
-				same = (tbl == tbl2);
+				same[0] = (tbl == tbl2);
 				for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
-					for (seg2 = (same) ? seg : 0; seg2 < Tin2->n_segments; seg2++) {	/* For each input segment to resample */
-						if (same) same = (seg == seg2);	/* So same is only true for identical segments from same table */
+					for (seg2 = (same[0]) ? seg : 0; seg2 < Tin2->n_segments; seg2++) {	/* For each input segment to resample */
+						same[1] = (same[0] && seg == seg2);	/* So same is only true for identical segments from same table */
 						for (row = 0; row < Tin->segment[seg]->n_rows; row++) {	/* For each end point in the new 2-point segments */
-							for (row2 = (same) ? row+1 : 0; row2 < Tin2->segment[seg2]->n_rows; row2++, new_seg++) {	/* For each end point in the new 2-point segments */
+							for (row2 = (same[1]) ? row+1 : 0; row2 < Tin2->segment[seg2]->n_rows; row2++, new_seg++) {	/* For each end point in the new 2-point segments */
 								for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
 									Tout->segment[new_seg]->coord[col][0] = Tin->segment[seg]->coord[col][row];
 									Tout->segment[new_seg]->coord[col][1] = Tin2->segment[seg2]->coord[col][row2];
