@@ -4329,7 +4329,6 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	PSL = GMT->PSL;	/* Shorthand */
 
-	PSL->internal.call_level++;					/* So PSL knows if it is the last to call PSL_plotend */
 	PSL->internal.verbose = GMT->current.setting.verbose;		/* Inherit verbosity level from GMT */
 	if (GMT_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
 	PSL_setdefaults (PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
@@ -4344,8 +4343,6 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			GMT_exit(GMT, EXIT_FAILURE); return NULL;
 		}
 	}
-	else if (PSL->internal.call_level > 1)		/* For example, pslegend has internal calls to psxy where outpu was already set */
-		fp = PSL->internal.fp;				/* and we have to 'remind' it here. */
 
 	/* Initialize the plot header and settings */
 
@@ -4485,7 +4482,6 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 	}
 	for (i = 0; i < 3; i++) if (GMT->current.map.frame.axis[i].file_custom) free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !GMT->common.K.active);
-	PSL->internal.call_level--;	/* Done with this module call */
 }
 
 void GMT_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n)

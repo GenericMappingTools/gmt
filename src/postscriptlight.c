@@ -1070,8 +1070,9 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage)
 	else if (PSL->internal.origin[0] == 'a' || PSL->internal.origin[1] == 'a')	/* Restore the origin of the plotting */
 		PSL_command (PSL, "%d %d TM\n", PSL->internal.origin[0] == 'a' ? -psl_iz(PSL, PSL->internal.offset[0]) : 0,
 			PSL->internal.origin[1] == 'a' ? -psl_iz(PSL, PSL->internal.offset[1]) : 0);
-	if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) fclose (PSL->internal.fp);
+	if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) fclose (PSL->internal.fp);	/* Only level 1 can close the file (if not stdout) */
 	memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
+	PSL->internal.call_level--;	/* Done with this module call */
 	return (PSL_NO_ERROR);
 }
 
@@ -1101,7 +1102,9 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	/* Save original initialization settings */
 
-	PSL->internal.fp = (fp == NULL) ? stdout : fp;
+	PSL->internal.call_level++;	/* Becomes 1 for first module calling it, 2 if that module calls for plotting, etc */
+	if (PSL->internal.call_level == 1) PSL->internal.fp = (fp == NULL) ? stdout : fp;	/* For higher levels we reuse existing file pointer */
+	
 	PSL->internal.overlay = overlay;
 	memcpy (PSL->init.page_size, page_size, 2 * sizeof(double));
 
