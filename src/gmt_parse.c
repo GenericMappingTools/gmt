@@ -103,7 +103,7 @@ int GMT_List_Args (void *V_API, struct GMT_OPTION *head)
 #define ASCII_US	31	/* ASCII code for unit separator (temporarily replacing spaces in quoted text) */
 
 /*! . */
-struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in) {
+struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, void *in) {
 	/* This function will loop over the n_args_in supplied command line arguments (in) and
 	 * returns a linked list of GMT_OPTION structures for each program option.
 	 * These will in turn will be processed by the program-specific option parsers.
@@ -234,25 +234,31 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in) {
 int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 	/* Delete the entire linked list of options, such as those created by GMT_Create_Options */
 
-	struct GMT_OPTION *current = NULL, *delete = NULL;
+	struct GMT_OPTION *current = NULL, *to_delete = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	API = gmt_get_api_ptr (V_API);	/* Cast to GMTAPI_CTRL pointer */
 
 	current = *head;
+	if (current && current->option < 0) {
+		GMT_Report(API, GMT_MSG_NORMAL, "WARNING in GMT_Destroy_Options(): GMT_OPTION struct has junk. Returning before crash\n");
+		*head = NULL;
+		return (GMT_OK);	/* Should we return an error state instead? */
+	}
+
 	while (current) {	/* Start at head and loop over the list and delete the options, one by one. */
-		delete = current;		/* The one we want to delete */
+		to_delete = current;		/* The one we want to delete */
 		current = current->next;	/* But first grab the pointer to the next item */
-		if (delete->arg) free (delete->arg);	/* The option had a text argument allocated by strdup, so free it first */
-		GMT_free (API->GMT, delete);		/* Then free the structure which was allocated by GMT_memory */
+		if (to_delete->arg) free (to_delete->arg);	/* The option had a text argument allocated by strdup, so free it first */
+		GMT_free (API->GMT, to_delete);		/* Then free the structure which was allocated by GMT_memory */
 	}
 	*head = NULL;		/* Reset head to NULL value since it no longer points to any allocated memory */
 	return (GMT_OK);	/* No error encountered */
 }
 
 /*! . */
-char ** GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head)
+char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head)
 {	/* This function creates a character array with the command line options that
 	 * correspond to the linked options provided.  It is the inverse of GMT_Create_Options.
 	 * The number of array strings is returned via *argc.
