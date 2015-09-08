@@ -37,47 +37,47 @@
 /* Control structure for grdimage */
 
 struct GRDIMAGE_CTRL {
-	struct In {
+	struct GRDIMG_In {
 		bool active;
 		bool do_rgb;
 		char *file[3];
 	} In;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct GRDIMG_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D to read GDAL file */
+	struct GRDIMG_D {	/* -D to read GDAL file */
 		bool active;
 		bool mode;	/* Use info of -R option to reference image */
 	} D;
-	struct A {	/* -A to write a GDAL file */
+	struct GRDIMG_A {	/* -A to write a GDAL file */
 		bool active;
 		char *file;
 		char *driver;
 	} A;
-	struct E {	/* -Ei|<dpi> */
+	struct GRDIMG_E {	/* -Ei|<dpi> */
 		bool active;
 		bool device_dpi;
 		unsigned int dpi;
 	} E;
-	struct G {	/* -G[f|b]<rgb> */
+	struct GRDIMG_G {	/* -G[f|b]<rgb> */
 		bool active;
 		double f_rgb[4];
 		double b_rgb[4];
 	} G;
-	struct I {	/* -I<intensfile>|<value> */
+	struct GRDIMG_I {	/* -I<intensfile>|<value> */
 		bool active;
 		bool constant;
 		double value;
 		char *file;
 	} I;
-	struct M {	/* -M */
+	struct GRDIMG_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct GRDIMG_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q */
+	struct GRDIMG_Q {	/* -Q */
 		bool active;
 	} Q;
 };
@@ -103,8 +103,7 @@ void Free_grdimage_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);
 }
 
-int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef HAVE_GDAL
@@ -158,8 +157,7 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdimage and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
