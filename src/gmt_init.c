@@ -9881,7 +9881,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
 
-	if (!strncmp (text, "E-", 2U) || !strncmp (text, "J-", 2U)) {	/* Special degenerate geographic ellipse and rectangle symbols, remove the - to avoid parsing issues */
+	if (!strncmp (text, "E-", 2U) || !strncmp (text, "J-", 2U)) {
+		/* Special degenerate geographic ellipse and rectangle symbols, remove the - to avoid parsing issues */
 		degenerate = true;
 		if (text[2]) strcpy (diameter, &text[2]);	/* Gave circle diameter on command line */
 		text[1] = 0;
@@ -9926,36 +9927,38 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			decode_error = (n != 1);
 		}
 	}
-	else if (text[0] == 'k') {	/* Custom symbol spec */
-		for (j = (int)strlen (text); j > 0 && text[j] != '/'; --j);
-		if (j == 0) {	/* No slash, i.e., no symbol size given */
+	else if (text[0] == 'k') {	/* Custom symbol spec -Sk<path_to_custom_symbol>[/<size>[unit]]*/
+		/* <path_to_custom_symbol> may contains slashes (UNIX) or backslashes (Windows) so we search from the end of the string: */
+		for (j = (int)strlen (text)-1; j > 0 && text[j] != '/'; --j);	/* Determine last slash */
+		if (j == 0) {	/* No slash, i.e., no symbol size given (and no UNIX path either) */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			n = sscanf (text, "%c%s", &symbol_type, text_cp);
 			col_off++;
 		}
-		else {
-			text[j] = ' ';
+		else {	/* Found a slash, is it separating the size or part of UNIX path? */
+			text[j] = ' ';	/* Temporary remove the slash we found */
 			n = sscanf (text, "%c%s %s", &symbol_type, text_cp, txt_a);
-			text[j] = '/';
-			if (strchr("CcIiPp", txt_a[strlen(txt_a) - 1])) {	/* If last char equals a unit char */
-				char t[64] = {""};
-				strncpy(t, txt_a, strlen(txt_a) - 1);
-				if (GMT_is_valid_number(t))         /* txt_a is a size string. Decode it. */
-					{p->size_x = p->given_size_x = GMT_to_inch(GMT, txt_a);}
-				else                                /* txt_a is just the symbol name */
+			text[j] = '/';	/* Restore the bugger */
+			if (strchr("CcIiPp", txt_a[strlen(txt_a) - 1])) {	/* If last char equals a unit char... */
+				char t[GMT_LEN64] = {""};
+				strncpy (t, txt_a, strlen(txt_a) - 1);	/* Make a copy of what we found minus the unit char */
+				if (GMT_is_valid_number(t))         /* txt_a wihtout the unit char is a size string. Decode it. */
+					p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
+				else                                /* txt_a is just the symbol name and text_cp has the directory */
 					{strcat(text_cp, "/");	strcat(text_cp, txt_a);}
 			}
-			else {                                  /* It still can be a size */
-				if (GMT_is_valid_number(txt_a))     /* Yes, it is */
+			else {                                  /* It still can be a size even though no unit was given */
+				if (GMT_is_valid_number (txt_a))     /* Yes, it is */
 					p->size_x = p->given_size_x = GMT_to_inch(GMT, txt_a);
-				else {                              /* No txt_a is the symbol name. */
+				else {                              /* No, txt_a is the symbol name. */
 					strcat(text_cp, "/");	strcat(text_cp, txt_a);
 					if (p->size_x == 0.0) p->size_x = p->given_size_x;
 				}
 			}
 		}
 	}
-	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
+	else if (strchr (GMT_VECTOR_CODES, text[0])) {
+		/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
 		char arg[GMT_LEN64] = {""};
 		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbols size with no +<modifiers> at the end */
 		if (n == 1) strncpy (arg, &text[1], GMT_LEN64);	/* No modifiers present, set arg to text following symbol code */
@@ -9964,7 +9967,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			int one;
 			char txt_c[GMT_LEN256] = {""};
 			p->v.parsed_v4 = false;
-			if (strchr (text, '/') && !strchr (text, '+')) {	/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
+			if (strchr (text, '/') && !strchr (text, '+')) {
+				/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
 				p->v.status |= GMT_VEC_END;		/* Default is head at end */
 				p->size_y = p->given_size_y = 0.0;
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
@@ -9973,7 +9977,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->v.v_width  = (float)GMT_to_inch (GMT, txt_a);
 				p->v.h_length = (float)GMT_to_inch (GMT, txt_b);
 				p->v.h_width  = (float)(GMT_to_inch (GMT, txt_c) * 2.0);
-				p->v.v_angle = (float)atand ((0.5 * p->v.h_width / p->v.h_length) * 2.0);
+				p->v.v_angle  = (float)atand ((0.5 * p->v.h_width / p->v.h_length) * 2.0);
 				p->v.parsed_v4 = true;
 				p->size_x = p->given_size_x = p->v.h_length;
 			}
@@ -10002,7 +10006,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->size_x = p->given_size_x = GMT_to_inch (GMT, arg), check = false;
 		}
 	}
-	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
+	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {
+		/* Symbol, but no size given (size assumed given on command line), only unit information */
 		n = sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
@@ -10016,7 +10021,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 		col_off++;
 	}
-	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1])) {	/* Symbol, but no size given (size assumed given on command line) */
+	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1])) {
+		/* Symbol, but no size given (size assumed given on command line) */
 		n = sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
@@ -10082,9 +10088,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		char s_upper;
 		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 		s_upper = (char)toupper ((int)symbol_type);
-		if (s_upper == 'F' || s_upper == 'V' || s_upper == 'Q' || s_upper == 'M') {	/* "Symbols" that do not take normal symbol size */
+		if (s_upper == 'F' || s_upper == 'V' || s_upper == 'Q' || s_upper == 'M')	/* "Symbols" that do not take a normal symbol size */
 			p->size_y = p->given_size_y = 0.0;
-		}
 		else {
 			p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
 			if (n == 3)
@@ -10346,7 +10351,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				check = false;
 			}
 			break;
-		case 'q':	/* Quoted lines: -Sq[d|n|l|x]<info>[:<labelinfo>] */
+		case 'q':	/* Quoted lines: -Sq[d|n|l|s|x]<info>[:<labelinfo>] */
 			p->symbol = GMT_SYMBOL_QUOTED_LINE;
 			check = false;
 			if (!text[1]) {	/* No args given, must parse segment header later */
@@ -10475,8 +10480,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'w':
 			p->symbol = GMT_SYMBOL_WEDGE;
 			p->n_required = 2;
-			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle */
-			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Angle */
+			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Start angle */
+			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Stop angle */
 			break;
 		case '+':
 			p->symbol = GMT_SYMBOL_PLUS;
@@ -10555,6 +10560,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 /*! Loads the m_per_unit array with the scaling factors that converts various units to meters.
  * Also sets all the names for the units.
  * See gmt_project.h for enums that can be used as array indices) */
+
 void gmt_init_unit_conversion (struct GMT_CTRL *GMT) {
 
 	GMT->current.proj.m_per_unit[GMT_IS_METER]		= 1.0;				/* m in m */
