@@ -2995,7 +2995,6 @@ void GMT_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P)
 	GMT_memcpy (P->patch[GMT_BGD].rgb, P->range[0].rgb_low, 4, double);
 	GMT_memcpy (P->patch[GMT_FGD].rgb, P->range[P->n_colors-1].rgb_high, 4, double);
 	GMT_memcpy (P->patch[GMT_NAN].rgb, GMT->current.setting.color_patch[GMT_NAN], 4, double);
-	P->is_continuous = true;	/* The only kind from the outside (?) */
 	P->model = GMT_RGB;		/* ---" --- */
 }
 
