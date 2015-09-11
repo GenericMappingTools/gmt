@@ -7473,14 +7473,53 @@ char *GMT_Duplicate_String (void *API, const char* string) {
 	return strdup (string);
 }
 
-EXTERN_MSC int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword);
-int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword) {
+EXTERN_MSC int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size_t off);
+int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size_t off) {
+	/* This is a magic backdoor to change static members of API structures that had to be declared as
+	   immutables types in Julia and therefore impossible to change from there.
+	   *ptr  -> structure pointer whose member identified by the offset 'off' is to be changed.
+	   *what -> pointer to the new value of the struct member that will be changed.
+	   *type -> string with the type description, using the Julia types names. e.g. 'UInt32' or 'Float64'
+	   The offset value 'off' is that obtained with the Julia's fieldoffsets() function, which is
+	   equivalent to the 'offsetof()' C macro.
+	*/
+	if (!strcmp(type, "Int32"))
+		*(int *)((char *)ptr + off) = *(int *)what;
+	else if (!strcmp(type, "UInt32"))
+		*(unsigned int *)((char *)ptr + off) = *(unsigned int *)what;
+	else if (!strcmp(type, "Int64"))
+		*(int64_t *)((char *)ptr + off) = *(int64_t *)what;
+	else if (!strcmp(type, "UInt64"))
+		*(uint64_t *)((char *)ptr + off) = *(uint64_t *)what;
+	else if (!strcmp(type, "Float32"))
+		*(float *)((char *)ptr + off) = *(float *)what;
+	else if (!strcmp(type, "Float64"))
+		*(double *)((char *)ptr + off) = *(double *)what;
+	else if (!strcmp(type, "Int16"))
+		*(signed short *)((char *)ptr + off) = *(signed short *)what;
+	else if (!strcmp(type, "UInt16"))
+		*(unsigned short *)((char *)ptr + off) = *(unsigned short *)what;
+	else if (!strcmp(type, "UInt8"))
+		*(unsigned char *)((char *)ptr + off) = *(unsigned char *)what;
+	else if (!strcmp(type, "Int8"))
+		*(char *)((char *)ptr + off) = *(char *)what;
+	else {
+		GMT_Report(V_API, GMT_MSG_NORMAL, "Backdoor: Type (%s) not accepted. Possibly a pointer to something.\n", type);
+		return_error (V_API, GMT_NOT_A_VALID_PARAMETER);
+	}
+	return 0;
+}
+
+EXTERN_MSC int GMT_blind_change_struct_(void *V_API, void *ptr, void *what, char *keyword);
+int GMT_blind_change_struct_(void *V_API, void *ptr, void *what, char *keyword) {
 	/* Currently this is a temporary backdoor to be able to change members of basic API structures
 	   that had to be declared as immutables in Julia and therefore impossible to change from there.
 	   The API_STRUCT_MEMBER_'STRUCTNAME_MEMBERNUMBER' construct parses the 'STRUCTNAME' as the name
 	   of the structure whose pointer is *ptr and changes the member number 'MEMBERNUMBER'. Example:
 	   API_STRUCT_MEMBER_TEXTSEGMENT_1 will change 'GMT_TEXTSEGMENT.n_rows' member (first member)
 	   OFC, the member numbering must be exactly on synct with the structure definition.
+
+	   THIS VERSION IS DEPRECATED AND WILL BE REMOVED
 	*/
 	unsigned int error = GMT_NOERROR;
 
@@ -7551,7 +7590,7 @@ int GMT_blind_change_struct (void *V_API, void *ptr, void *what, char *keyword) 
 					break;
 			}
 		}
-		else if (!strcmp(&keyword[18], "TEXTTABLE")) {
+		else if (!strcmp(&keyword[18], "TEXTSET")) {
 			struct GMT_TEXTSET *T = (struct GMT_TEXTSET *)ptr;
 			switch (member) {
 				case 1:		T->n_tables    = *(int *)what;	break;
