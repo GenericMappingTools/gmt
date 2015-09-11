@@ -2312,6 +2312,42 @@ int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
+/* Laplace stuff based on https://en.wikipedia.org/wiki/Laplace_distribution */
+
+int table_LCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: LCDF 1 1 Cumulative Laplace distribution L(z), with z = A.  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant) a = 0.5 + copysign (0.5, S[last]->factor) * (1.0 - exp (-fabs (S[last]->factor)));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a :  0.5 + copysign (0.5, T->segment[s]->coord[col][row]) * (1.0 - exp (-fabs (T->segment[s]->coord[col][row])));
+	return 0;
+}
+
+int table_LCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: LCRIT 1 1 Critical value for the Laplace distribution, with alpha = A.  */
+{
+	uint64_t s, row;
+	double a = 0.0, p;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant) {
+		p = (1.0 - S[last]->factor) - 0.5;
+		a = -copysign (1.0, p) * log (1.0 - 2.0 * fabs (p));
+	}
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		if (S[last]->constant)
+			T->segment[s]->coord[col][row] = a;
+		else {
+			p = (1.0 - T->segment[s]->coord[col][row]) - 0.5;
+			T->segment[s]->coord[col][row] = -copysign (1.0, p) * log (1.0 - 2.0 * fabs (p));
+		}
+	}
+	return 0;
+}
+
 int table_LE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LE 2 1 1 if A <= B, else 0.  */
 {
@@ -2460,6 +2496,18 @@ int table_LOWER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	}
 	if (info->local) return 0;	/* Done with local */
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = low;
+	return 0;
+}
+
+int table_LPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: LPDF 1 1 Probability density function for Laplace distribution, with z = A.  */
+{
+	uint64_t s, row;
+	double z = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant) z = 0.5 * exp (-fabs (S[last]->factor));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? z : 0.5 *exp (-fabs (T->segment[s]->coord[col][row]));
 	return 0;
 }
 

@@ -2059,6 +2059,36 @@ int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_DATA
 	return 0;
 }
 
+void grd_LCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LCDF 1 1 Cumulative Laplace distribution C(z), with z = A.  */
+{
+	uint64_t node;
+	double a = 0.0;
+
+	if (stack[last]->constant) a = 0.5 + copysign (0.5, stack[last]->factor) * (1.0 - exp (-fabs (stack[last]->factor)));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 0.5f + copysignf (0.5f, stack[last]->G->data[node]) * (1.0 - expf (-fabsf (stack[last]->G->data[node]))));
+}
+
+void grd_LCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LCRIT 1 1 Critical value for the Laplace distribution, with alpha = A.  */
+{
+	uint64_t node;
+	double a = 0.0, p;
+
+	if (stack[last]->constant) {
+		p = (1.0 - stack[last]->factor) - 0.5;
+		a = -copysign (1.0, p) * log (1.0 - 2.0 * fabs (p));
+	}
+	for (node = 0; node < info->size; node++) {
+		if (stack[last]->constant)
+			stack[last]->G->data[node] = (float)a;
+		else {
+			p = (1.0 - stack[last]->G->data[node]) - 0.5;
+			stack[last]->G->data[node] = (float)(-copysign (1.0, p) * log (1.0 - 2.0 * fabs (p)));
+		}
+	}
+}
+
 void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: LDIST 1 1 Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A.  */
 {
@@ -2283,6 +2313,16 @@ void grd_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	}
 	/* Now copy that low value everywhere */
 	for (node = 0; node < info->size; node++) if (!GMT_is_fnan (stack[last]->G->data[node])) stack[last]->G->data[node] = low;
+}
+
+void grd_LPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LPDF 1 1 Laplace probability density distribution C(z), with z = A.  */
+{
+	uint64_t node;
+	double a = 0.0;
+
+	if (stack[last]->constant) a = 0.5 * exp (-fabs (stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 0.5 * expf (-fabsf (stack[last]->G->data[node])));
 }
 
 void grd_LRAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
