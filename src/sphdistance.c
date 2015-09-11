@@ -429,7 +429,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 			if (!Ctrl->C.active) {
 				lon[n] = in[GMT_X];	lat[n] = in[GMT_Y];
 			}
-			if (Ctrl->E.mode == SPHD_VALUES) z_val[n] = in[GMT_Z];
+			if (Ctrl->E.mode == SPHD_VALUES) z_val[n] = (float)in[GMT_Z];
 
 			if (++n == n_alloc) {	/* Get more memory */
 				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }

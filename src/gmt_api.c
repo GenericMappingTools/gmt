@@ -1058,7 +1058,7 @@ unsigned int GMTAPI_found_marker (char *text, char marker)
 	unsigned int ignore = 0;
 	for (k = 0; k < strlen (text); k++) {
 		if (text[k] == '\"' || text[k] == '\'') ignore = !ignore;	/* Toggle on/off */
-		if (!ignore && text[k] == marker) return k + 1;	/* Found, return position (added 1 so results are 1-length) */
+		if (!ignore && text[k] == marker) return (unsigned int)k + 1;	/* Found, return position (added 1 so results are 1-length) */
 	}
 	return 0;	/* Not found */
 }

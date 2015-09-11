@@ -421,7 +421,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 					out[col++] = mean;	out[col++] = stdev;	out[col++] = rms;
 				}
 				if (Ctrl->M.active) {
-					out[col++] = n_nan;
+					out[col++] = (double)n_nan;
 				}
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}

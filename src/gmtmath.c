@@ -1856,7 +1856,7 @@ int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* FPDF is given constant arguments */
 		double value;
 		F = S[prev2]->factor;
-		nu1 = S[prev1]->factor;	nu2 = S[last]->factor;
+		nu1 = (uint64_t)S[prev1]->factor;	nu2 = (uint64_t)S[last]->factor;
 		value = GMT_f_pdf (GMT, F, nu1, nu2);
 		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
 		return 0;
