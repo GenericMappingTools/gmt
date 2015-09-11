@@ -73,13 +73,13 @@ Optional Arguments
     file is specified, **fitcircle** will read from standard input.
 
 **-F**\ *flags*
-
     Normally, **fitcircle** will write its results in the form of a text report, with
     the values intermingled with report sentences.  Use **-F** to only return data
-    coordinates, and append *flags* to specify which coordinates you would like.  You
+    coordinates, and append *flags* to specify which coordinates you would like. You
     can choose from **f** (Flat Earth mean location), **m** (mean location),
     **n** (north pole of great circle), **s** (south pole of great circle), and
     **c** (pole of small circle and its colatitude, which requires **-S**).
+
 **-S**\ [*lat*]
     Attempt to fit a small circle instead of a great circle. The pole
     will be constrained to lie on the great circle connecting the pole
